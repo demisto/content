@@ -21,9 +21,12 @@ For more information, refer to the [Identity Lifecycle Management article](https
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### iam-create-user
+
 ***
 Creates a user.
 
@@ -31,6 +34,7 @@ Creates a user.
 #### Base Command
 
 `iam-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -56,16 +60,20 @@ Creates a user.
 
 
 #### Command Example
+
 ```!iam-create-user user-profile={\"email\": \"john.doe@example.com\", \"givenname\": \"John\", \"surname\": \"Doe\"}```
 
 #### Human Readable Output
+
 ### Create User Results (Salesforce Fusion IAM)
+
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Salesforce Fusion IAM | Salesforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:54:30.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Salesforce Fusion", "name": "Salesforce Fusion"}}|
+| Salesforce Fusion IAM | Salesforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | <john.doe@example.com> | <john.doe@example.com> | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:54:30.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "<john.doe@example.com>", "email": "<john.doe@example.com>"}<br/>credentials: {"provider": {"type": "Salesforce Fusion", "name": "Salesforce Fusion"}}|
 
 
 ### iam-update-user
+
 ***
 Updates an existing user with the data passed in the user-profile argument.
 
@@ -73,6 +81,7 @@ Updates an existing user with the data passed in the user-profile argument.
 #### Base Command
 
 `iam-update-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -98,16 +107,20 @@ Updates an existing user with the data passed in the user-profile argument.
 
 
 #### Command Example
+
 ```!iam-update-user user-profile={\"email\": \"john.doe@example.com\", \"givenname\": \"John\"}```
 
 #### Human Readable Output
+
 ### Update User Results (Salesforce Fusion IAM)
+
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Salesforce Fusion IAM | Salesforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Salesforce Fusion", "name": "Salesforce Fusion"}} |
+| Salesforce Fusion IAM | Salesforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | <john.doe@example.com> | <john.doe@example.com> | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "<john.doe@example.com>", "email": "<john.doe@example.com>"}<br/>credentials: {"provider": {"type": "Salesforce Fusion", "name": "Salesforce Fusion"}} |
 
 
 ### iam-get-user
+
 ***
 Retrieves a single user resource.
 
@@ -115,6 +128,7 @@ Retrieves a single user resource.
 #### Base Command
 
 `iam-get-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -139,16 +153,20 @@ Retrieves a single user resource.
 
 
 #### Command Example
-```!iam-get-user user-profile=`{\"email\": \"john.doe@example.com\"}````
+
+```!iam-get-user user-profile=`{\"email\": \"<john.doe@example.com>\"}````
 
 #### Human Readable Output
+
 ### Get User Results (Salesforce Fusion IAM)
+
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Salesforce Fusion IAM | Salesforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Salesforce Fusion", "name": "Salesforce Fusion"}} |
+| Salesforce Fusion IAM | Salesforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | <john.doe@example.com> | <john.doe@example.com> | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "<john.doe@example.com>", "email": "<john.doe@example.com>"}<br/>credentials: {"provider": {"type": "Salesforce Fusion", "name": "Salesforce Fusion"}} |
 
 
 ### iam-disable-user
+
 ***
 Disable an active user.
 
@@ -156,6 +174,7 @@ Disable an active user.
 #### Base Command
 
 `iam-disable-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -180,10 +199,13 @@ Disable an active user.
 
 
 #### Command Example
+
 ```!iam-disable-user user-profile={\"email\": \"john.doe@example.com\", \"givenname\": \"John\"}```
 
 #### Human Readable Output
+
 ### Disable User Results (Salesforce Fusion IAM)
+
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Salesforce Fusion IAM | Salesforce Fusion IAM_instance_1 | true | false | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Salesforce Fusion", "name": "Salesforce Fusion"}} |
+| Salesforce Fusion IAM | Salesforce Fusion IAM_instance_1 | true | false | 00uujxnbh3uJw4tWA0h7 | <john.doe@example.com> | <john.doe@example.com> | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "<john.doe@example.com>", "email": "<john.doe@example.com>"}<br/>credentials: {"provider": {"type": "Salesforce Fusion", "name": "Salesforce Fusion"}} |

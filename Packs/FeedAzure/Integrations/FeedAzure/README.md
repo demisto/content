@@ -1,4 +1,5 @@
 Azure.CloudIPs Feed Integration.
+
 ## Configure AzureFeed in Cortex
 
 
@@ -21,9 +22,12 @@ Azure.CloudIPs Feed Integration.
 | polling_timeout | Request Timeout | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-get-indicators
+
 ***
 Gets indicators from the feed.
 
@@ -31,6 +35,7 @@ Gets indicators from the feed.
 #### Base Command
 
 `azure-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -43,10 +48,13 @@ Gets indicators from the feed.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-get-indicators```
 
 #### Human Readable Output
+
 ### Indicators from Azure Feed:
+
 |value|type|
 |---|---|
 | 20.37.158.0/23 | CIDR |

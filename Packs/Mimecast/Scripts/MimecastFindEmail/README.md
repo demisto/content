@@ -1,6 +1,7 @@
 Searches all mailboxes to find an email, and returns the list of mailboxes where the email was found. "Yes" will be displayed if the mail was found anywhere or "No" if not.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Searches all mailboxes to find an email, and returns the list of mailboxes where
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * mimecast-query
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -36,5 +40,6 @@ This script uses the following commands and scripts.
 | active | Defines if the search should query recently received messages that are not fully indexed yet. The default is false. Search can be done by mailbox and date time across active messages. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

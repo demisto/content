@@ -7,8 +7,8 @@ This integration was integrated and tested with version 2.0.1551 of Email Hippo.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| MORE Server URL (e.g., https://api.hippoapi.com) |  | True |
-| Email Hippo WHOIS Server URL (e.g., https://api.whoishippo.com) |  | True |
+| MORE Server URL (e.g., <https://api.hippoapi.com>) |  | True |
+| Email Hippo WHOIS Server URL (e.g., <https://api.whoishippo.com>) |  | True |
 | MORE API Key |  | True |
 | WHOIS API Key |  | True |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
@@ -43,8 +43,11 @@ There are no input arguments for this command.
 | EmailHippo.Quota.quotaRemaining | String | The remaining quota. | 
 
 #### Command example
+
 ```!email-hippo-email-quota-get```
+
 #### Context Example
+
 ```json
 {
     "EmailHippo": {
@@ -63,6 +66,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Email quota
+>
 >|Email Quota remaining|Email Quota used|
 >|---|---|
 >| 99 | 1 |
@@ -97,8 +101,11 @@ Return email information and reputation.
 | EmailHippo.Email.Address | String | The email address of the indicator. | 
 
 #### Command example
+
 ```!email email=test@example.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -237,7 +244,8 @@ Return email information and reputation.
 
 #### Human Readable Output
 
->### Email test@example.com
+>### Email <test@example.com>
+>
 >|Hippo Trust Score|Inbox quality score|Result|Spam risk score|
 >|---|---|---|---|
 >| Low | DoNotSend | result: Unverifiable<br/>reason: DomainIsWellKnownDea | Block |
@@ -288,8 +296,11 @@ Returns domain information and reputation.
 | Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. | 
 
 #### Command example
+
 ```!domain domain=example.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -495,6 +506,7 @@ Returns domain information and reputation.
 #### Human Readable Output
 
 >### Domain example.com
+>
 >|Domain Age|Expires On|Name servers|Registered On|Registrar|Status|Time To Expiry|Updated On|
 >|---|---|---|---|---|---|---|---|
 >| 0 year(s), 0 month(s), 0 week(s), 0 day(s) |  | {'Address': 'A.example.NET'},<br/>{'Address': 'B.example.NET'} |  |  |  | 0 year(s), 0 months, 0 week(s), 0 day(s) |  |

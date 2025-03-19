@@ -1,6 +1,7 @@
 Volatility script for command `imageinfo`.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Volatility script for command `imageinfo`.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +21,6 @@ Volatility script for command `imageinfo`.
 | profile | The Volatility profile to use. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

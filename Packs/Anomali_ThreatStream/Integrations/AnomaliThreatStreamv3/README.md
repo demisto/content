@@ -8,7 +8,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://www.test.com) |  | True |
+| Server URL (e.g., <https://www.test.com>) |  | True |
 | Username |  | True |
 | API Key |  | True |
 | URL threshold |  | False |
@@ -26,8 +26,10 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 
 ### Configure Indicator Threshold Parameters
+
 Each indicator has a threshold parameter and an integer `confidence` value that impacts the indicator's DBotScore calculation.  
 The indicator DBotScore is calculated as follows:  
+
 - If you do not specify the threshold parameter value in your instance configuration (recommended):  
 If the indicator `confidence` > 65, the DBotScore value is set to 3 (Malicious).  
 If the indicator `confidence` is between 25 and 65, the DBotScore value is set to 2 (Suspicious).  
@@ -40,9 +42,12 @@ If the indicator `confidence` value is above the threshold parameter value, the 
 For example, if in the instance configuration you set **File threshold** to 10 and the `confidence` value  is 15, the DBotScore is set to 3 (Malicious).
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Checks the reputation of the given IP address.
 
@@ -50,6 +55,7 @@ Checks the reputation of the given IP address.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -297,8 +303,11 @@ Checks the reputation of the given IP address.
 | ThreatStream.IP.Campaign.uuid | String | The UUID of the campaign. | 
 
 #### Command example
+
 ```!ip ip=23.98.23.98 threat_model_association=True```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -413,26 +422,40 @@ Checks the reputation of the given IP address.
 #### Human Readable Output
 
 >### IP reputation for: 23.98.23.98
+>
 >|ASN|Address|Confidence|Country|IType|Modified|Organization|Severity|Source|Status|Tags|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | 23.98.23.98 | 100 |  | apt_ip | 2022-08-01T09:46:41.715Z |  | very-high | Analyst | active | apt, PANW_Test | ip |
+>
 >### Actor details:
+>
 >**No entries.**
+>
 >### Signature details:
+>
 >**No entries.**
+>
 >### ThreatBulletin details:
+>
 >**No entries.**
+>
 >### TTP details:
+>
 >**No entries.**
+>
 >### Vulnerability details:
+>
 >**No entries.**
+>
 >### Campaign details:
+>
 >|name|id|
 >|---|---|
 >| Test Investigation | 111111 |
 
 
 ### domain
+
 ***
 Checks the reputation of the given domain name.
 
@@ -440,6 +463,7 @@ Checks the reputation of the given domain name.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -693,8 +717,11 @@ for time in UTC time. |
 | ThreatStream.Domain.Campaign.uuid | String | The UUID of the campaign. | 
 
 #### Command example
+
 ```!domain domain=y.gp threat_model_association=True```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -768,24 +795,38 @@ for time in UTC time. |
 #### Human Readable Output
 
 >### Domain reputation for: y.gp
+>
 >|ASN|Address|Confidence|Country|IType|Modified|Organization|Severity|Source|Status|Tags|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 24940 | y.gp | 50 | DE | mal_domain | 2021-03-31T10:17:56.207Z | Hetzner Online GmbH | very-high | Analyst | active | malware | domain |
+>
 >### Actor details:
+>
 >**No entries.**
+>
 >### Signature details:
+>
 >**No entries.**
+>
 >### ThreatBulletin details:
+>
 >**No entries.**
+>
 >### TTP details:
+>
 >**No entries.**
+>
 >### Vulnerability details:
+>
 >**No entries.**
+>
 >### Campaign details:
+>
 >**No entries.**
 
 
 ### file
+
 ***
 Checks the reputation of the given hash of the file.
 
@@ -793,6 +834,7 @@ Checks the reputation of the given hash of the file.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1041,8 +1083,11 @@ for time in UTC time. |
 | ThreatStream.File.Campaign.uuid | String | The UUID of the campaign. | 
 
 #### Command example
+
 ```!file file=275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f threat_model_association=True```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1291,32 +1336,46 @@ for time in UTC time. |
 #### Human Readable Output
 
 >### File reputation for: 275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f
+>
 >|Confidence|IType|Modified|SHA256|Severity|Source|Status|Tags|Type|
 >|---|---|---|---|---|---|---|---|---|
->| 50 | apt_md5 | 2022-07-11T16:30:00.359Z | 275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f | very-high | user@email.com | active | apt | SHA256 |
+>| 50 | apt_md5 | 2022-07-11T16:30:00.359Z | 275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f | very-high | <user@email.com> | active | apt | SHA256 |
+>
 >### Actor details:
+>
 >|name|id|
 >|---|---|
 >| Alert report | 47096 |
+>
 >### Signature details:
+>
 >|name|id|
 >|---|---|
 >| signature_threat_model_2 | 333 |
+>
 >### ThreatBulletin details:
+>
 >**No entries.**
+>
 >### TTP details:
+>
 >|name|id|
 >|---|---|
 >| FleaHopper TTP | 1500 |
+>
 >### Vulnerability details:
+>
 >|name|id|
 >|---|---|
 >| CVE-2022-31098 | 177244 |
+>
 >### Campaign details:
+>
 >**No entries.**
 
 
 ### threatstream-email-reputation
+
 ***
 Checks the reputation of the given email address.
 
@@ -1324,6 +1383,7 @@ Checks the reputation of the given email address.
 #### Base Command
 
 `threatstream-email-reputation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1353,9 +1413,11 @@ for time in UTC time. |
 
 
 #### Command Example
+
 ```!threatstream-email-reputation email=egov@ac.in```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1387,10 +1449,11 @@ for time in UTC time. |
 
 #### Human Readable Output
 
->### Email reputation for: egov@ac.in
+>### Email reputation for: <egov@ac.in>
+>
 >|Confidence|Email|Modified|Severity|Source|Status|Tags|Type|
 >|---|---|---|---|---|---|---|---|
->| 10000 | egov@ac.in | 2021-08-01T10:35:53.484Z | high | Analyst | active | apt | email |
+>| 10000 | <egov@ac.in> | 2021-08-01T10:35:53.484Z | high | Analyst | active | apt | email |
 
 
 ### threatstream-get-passive-dns
@@ -1425,8 +1488,11 @@ for time, in UTC time. |
 for time in UTC time. | 
 
 #### Command example
+
 ```!threatstream-get-passive-dns type="domain" value="y.gp" limit="1"```
+
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -1447,6 +1513,7 @@ for time in UTC time. |
 #### Human Readable Output
 
 >### Passive DNS enrichment data for: y.gp
+>
 >|Domain|FirstSeen|Ip|LastSeen|Rrtype|Source|
 >|---|---|---|---|---|---|
 >| y.gp | 2015-07-20 02:33:47 | 78.78.78.67 | 2015-12-19 06:44:35 | A | Anomali Labs |
@@ -1491,9 +1558,11 @@ Imports indicators (observables) into ThreatStream. The imported data must be ap
 | ThreatStream.Import.ImportID | Number | The ID for the import job. | 
 
 #### Command Example
+
 ```!threatstream-import-indicator-with-approval import_type=datatext import_value=78.78.78.67```
 
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -1512,6 +1581,7 @@ Imports indicators (observables) into ThreatStream. The imported data must be ap
 > The identifier for the job on ThreatStream is: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
 
 ### threatstream-import-indicator-without-approval
+
 ***
 Imports indicators (observables) into ThreatStream. Approval is not required for the imported data. You must have the Approve Intel user permission to import without approval using the API.
 
@@ -1521,6 +1591,7 @@ Valid itypes values for the JSON can be found in the Anomaly ThreatStream API do
 #### Base Command
 
 `threatstream-import-indicator-without-approval`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                        | **Required** |
@@ -1543,6 +1614,7 @@ Valid itypes values for the JSON can be found in the Anomaly ThreatStream API do
 There is no context output for this command.
 
 #### Command Example
+
 ```!threatstream-import-indicator-without-approval classification=private file_id=2761@3c9bd2a0-9eac-465b-8799-459df4997b2d```
 
 #### Human Readable Output
@@ -1550,6 +1622,7 @@ There is no context output for this command.
 >The data was imported successfully.
 
 ### threatstream-get-model-list
+
 ***
 Returns a list of threat models.
 
@@ -1557,6 +1630,7 @@ Returns a list of threat models.
 #### Base Command
 
 `threatstream-get-model-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1578,9 +1652,11 @@ Returns a list of threat models.
 
 
 #### Command Example
+
 ```!threatstream-get-model-list model=actor limit=10```
 
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -1623,6 +1699,7 @@ Returns a list of threat models.
 #### Human Readable Output
 
 >### List of Actors
+>
 >|CreatedTime|ID|Name|Type|
 >|---|---|---|---|
 >| 2019-02-19T16:42:00.933984 | 1 | Fleahopper Actor | Actor |
@@ -1633,6 +1710,7 @@ Returns a list of threat models.
 
 
 ### threatstream-get-model-description
+
 ***
 Returns an HTML file with a description of the threat model.
 
@@ -1640,6 +1718,7 @@ Returns an HTML file with a description of the threat model.
 #### Base Command
 
 `threatstream-get-model-description`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1657,9 +1736,11 @@ Returns an HTML file with a description of the threat model.
 
 
 #### Command Example
+
 ```!threatstream-get-model-description model=actor id=1```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -1683,6 +1764,7 @@ Returns an HTML file with a description of the threat model.
 
 
 ### threatstream-get-indicators-by-model
+
 ***
 Returns a list of indicators associated with the specified model and ID of the model.
 
@@ -1690,6 +1772,7 @@ Returns a list of indicators associated with the specified model and ID of the m
 #### Base Command
 
 `threatstream-get-indicators-by-model`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1722,9 +1805,11 @@ Returns a list of indicators associated with the specified model and ID of the m
 
 
 #### Command Example
+
 ```!threatstream-get-indicators-by-model id=731 model=incident```
 
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -1756,12 +1841,14 @@ Returns a list of indicators associated with the specified model and ID of the m
 #### Human Readable Output
 
 >### Indicators list for Threat Model Incident with id 731
+>
 >|ASN|Confidence|Country|ID|IType|Modified|Organization|Severity|Source|Status|Tags|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | 50 |  | 181481953 | mal_email | 2021-03-25T13:27:58.922Z |  | low | Analyst | inactive | tag-approved | email | testemail123@test.com |
+>|  | 50 |  | 181481953 | mal_email | 2021-03-25T13:27:58.922Z |  | low | Analyst | inactive | tag-approved | email | <testemail123@test.com> |
 
 
 ### threatstream-submit-to-sandbox
+
 ***
 Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
 
@@ -1769,6 +1856,7 @@ Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
 #### Base Command
 
 `threatstream-submit-to-sandbox`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1792,9 +1880,11 @@ Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
 
 
 #### Command Example
+
 ```!threatstream-submit-to-sandbox submission_classification="private" report_platform="WINDOWS7" submission_type="file" submission_value="1711@3c9bd2a0-9eac-465b-8799-459df4997b2d" premium_sandbox="false"```
 
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -1810,12 +1900,14 @@ Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
 #### Human Readable Output
 
 >### The submission info for 1711@3c9bd2a0-9eac-465b-8799-459df4997b2d
+>
 >|Platform|ReportID|Status|
 >|---|---|---|
 >| WINDOWS7 | 12418 | processing |
 
 
 ### threatstream-get-analysis-status
+
 ***
 Returns the current status of the report submitted to the sandbox. The report ID is returned from the threatstream-submit-to-sandbox command.
 
@@ -1823,6 +1915,7 @@ Returns the current status of the report submitted to the sandbox. The report ID
 #### Base Command
 
 `threatstream-get-analysis-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1841,9 +1934,11 @@ Returns the current status of the report submitted to the sandbox. The report ID
 
 
 #### Command Example
+
 ```!threatstream-get-analysis-status report_id=12414```
 
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -1860,12 +1955,14 @@ Returns the current status of the report submitted to the sandbox. The report ID
 #### Human Readable Output
 
 >### The analysis status for id 12414
+>
 >|Platform|ReportID|Status|Verdict|
 >|---|---|---|---|
 >| WINDOWS7 | 12414 | errors | Benign |
 
 
 ### threatstream-analysis-report
+
 ***
 Returns the report of a file or URL submitted to the sandbox.
 
@@ -1873,6 +1970,7 @@ Returns the report of a file or URL submitted to the sandbox.
 #### Base Command
 
 `threatstream-analysis-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1911,9 +2009,11 @@ Returns the report of a file or URL submitted to the sandbox.
 
 
 #### Command Example
+
 ```!threatstream-analysis-report report_id="12212"```
 
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -1944,12 +2044,14 @@ Returns the report of a file or URL submitted to the sandbox.
 #### Human Readable Output
 
 >### Report 12212 analysis results
+>
 >|Category|Completed|Duration|ReportID|Started|Verdict|VmID|VmName|
 >|---|---|---|---|---|---|---|---|
 >| Url | 2021-08-19 06:51:52 | 152 | 12212 | 2021-08-19 06:49:20 | Benign |  |  |
 
 
 ### threatstream-get-indicators
+
 ***
 Return filtered indicators from ThreatStream. If a query is defined, it overrides all other arguments that were passed to the command.
 
@@ -1957,6 +2059,7 @@ Return filtered indicators from ThreatStream. If a query is defined, it override
 #### Base Command
 
 `threatstream-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1999,9 +2102,11 @@ for time in UTC time. |
 
 
 #### Command Example
+
 ```!threatstream-get-indicators type=ip status=active limit=5```
 
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -2044,6 +2149,7 @@ for time in UTC time. |
 #### Human Readable Output
 
 >### The indicators results
+>
 >|ASN|Confidence|Country|ID|IType|Modified|Organization|Severity|Source|Status|Tags|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | 100 |  | 239450621 | apt_ip | 2021-05-24T16:42:09.245Z |  | very-high | Analyst | active |  | ip | 78.78.78.67 |
@@ -2051,6 +2157,7 @@ for time in UTC time. |
 
 
 ### threatstream-add-tag-to-model
+
 ***
 Adds tags to intelligence to filter for related entities.
 
@@ -2058,6 +2165,7 @@ Adds tags to intelligence to filter for related entities.
 #### Base Command
 
 `threatstream-add-tag-to-model`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2072,6 +2180,7 @@ Adds tags to intelligence to filter for related entities.
 There is no context output for this command.
 
 #### Command Example
+
 ```!threatstream-add-tag-to-model model=incident model_id=130 tags="suspicious,not valid"```
 
 #### Human Readable Output
@@ -2079,6 +2188,7 @@ There is no context output for this command.
 >Added successfully tags: ['suspicious', 'not valid'] to incident with 130
 
 ### threatstream-create-model
+
 ***
 Creates a threat model with the specified parameters.
 
@@ -2086,6 +2196,7 @@ Creates a threat model with the specified parameters.
 #### Base Command
 
 `threatstream-create-model`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2121,9 +2232,11 @@ Creates a threat model with the specified parameters.
 
 
 #### Command Example
+
 ```!threatstream-create-model model=actor name="New_Created_Actor_1" description="Description of the actor threat model" intelligence=191431508 tags="new actor,test" tlp=red```
 
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -2155,12 +2268,14 @@ Creates a threat model with the specified parameters.
 #### Human Readable Output
 
 >### Indicators list for Threat Model Actor with id 26770
+>
 >|ASN|Confidence|Country|ID|IType|Modified|Organization|Severity|Source|Status|Tags|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | 50 |  | 191431508 | apt_md5 | 2021-09-13T12:40:42.596Z |  | medium | TestSource | active |  | SHA256 | 178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1 |
 
 
 ### threatstream-update-model
+
 ***
 Updates a threat model with specific parameters. If one or more optional parameters are defined, the command overrides previous data stored in ThreatStream.
 
@@ -2168,6 +2283,7 @@ Updates a threat model with specific parameters. If one or more optional paramet
 #### Base Command
 
 `threatstream-update-model`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2204,9 +2320,11 @@ Updates a threat model with specific parameters. If one or more optional paramet
 
 
 #### Command Example
+
 ```!threatstream-update-model model=actor model_id=26769 intelligence=191431508 tags="updated tag,gone"```
 
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -2238,12 +2356,14 @@ Updates a threat model with specific parameters. If one or more optional paramet
 #### Human Readable Output
 
 >### Indicators list for Threat Model Actor with id 26769
+>
 >|ASN|Confidence|Country|ID|IType|Modified|Organization|Severity|Source|Status|Tags|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | 50 |  | 191431508 | apt_md5 | 2021-09-13T12:40:42.596Z |  | medium | TestSource | active |  | SHA256 | 178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1 |
 
 
 ### threatstream-supported-platforms
+
 ***
 Returns a list of supported platforms for default or premium sandbox.
 
@@ -2251,6 +2371,7 @@ Returns a list of supported platforms for default or premium sandbox.
 #### Base Command
 
 `threatstream-supported-platforms`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2273,9 +2394,11 @@ Returns a list of supported platforms for default or premium sandbox.
 
 
 #### Command Example
+
 ```!threatstream-supported-platforms sandbox_type=default```
 
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -2297,12 +2420,14 @@ Returns a list of supported platforms for default or premium sandbox.
 #### Human Readable Output
 
 >### Supported platforms for default sandbox
+>
 >|Label|Name|Platform|Types|
 >|---|---|---|---|
 >| Windows 7 | WINDOWS7 | windows | file,<br/>url |
 
 
 ### url
+
 ***
 Checks the reputation of the given URL.
 
@@ -2310,6 +2435,7 @@ Checks the reputation of the given URL.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2554,8 +2680,11 @@ for time in UTC time. |
 | ThreatStream.URL.Campaign.uuid | String | The UUID of the campaign. | 
 
 #### Command example
+
 ```!url url=http://www.ujhy1.com/ threat_model_association=True```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -2575,16 +2704,20 @@ for time in UTC time. |
 #### Human Readable Output
 
 >### Anomali ThreatStream v3 May:
+>
 >|URL|Result|
 >|---|---|
 >| http:<span>//</span>www.ujhy1.com/ | Not found |
 
 
 ## Additional Considerations for this version
+
 - Remove the **default_threshold** integration parameter.
 - Add integration parameter for global threshold in ***ip***, ***domain***, ***file***, ***url***, and ***threatstream-email-reputation*** commands. 
 - Add ***Include inactive results*** checkbox in integration settings for the ability to get inactive results.
+
 ### threatstream-search-intelligence
+
 ***
 Returns filtered intelligence from ThreatStream. If a query is defined, it overrides all other arguments that were passed to the command.
 
@@ -2592,6 +2725,7 @@ Returns filtered intelligence from ThreatStream. If a query is defined, it overr
 #### Base Command
 
 `threatstream-search-intelligence`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2658,8 +2792,11 @@ Returns filtered intelligence from ThreatStream. If a query is defined, it overr
 | ThreatStream.Intelligence.severity | String | The severity of the intelligence. | 
 
 #### Command example
+
 ```!threatstream-search-intelligence limit=1 status=inactive value=1.2.4.5```
+
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -2734,6 +2871,7 @@ Returns filtered intelligence from ThreatStream. If a query is defined, it overr
 #### Human Readable Output
 
 >### The intelligence results
+>
 >|Can Add Public Tags|Confidence|Created Ts|Expiration Ts|Feed Id|Id|Ip|Is Anonymous|Is Editable|Is Public|Itype|Meta|Modified Ts|Owner Organization Id|Resource Uri|Retina Confidence|Sort|Source|Source Reported Confidence|Status|Tags|Threat Type|Threatscore|Type|Update Id|Uuid|Value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| true | 100 | 2022-04-21T14:27:51.242Z | 2022-07-20T14:27:51.041Z | 0 | 355250247 | 1.2.4.5 | false | false | true | c2_ip | detail2: bifocals_deactivated_on_2022-07-20_14:30:00.151050<br/>severity: medium | 2022-07-20T14:30:02.307Z | 67 | /api/v2/intelligence/355250247/ | -1 | 1658327402307,<br/>355250247 | Analyst | 100 | inactive | {'id': '4w0', 'name': 'abc'},<br/>{'id': 'o8x', 'name': 'feb3fbcf-d18c-4a1a-89af-fbe054e16f6c'},<br/>{'id': 'vuj', 'name': 'Playboook_source_without_approval_on_cloud'} | c2 | 70 | ip | 940700580 | 3e141a49-6fc9-4567-8efb-919565a39752 | 1.2.4.5 |
@@ -2871,8 +3009,11 @@ Gets a list of rules from ThreatStream.
 | ThreatStream.Rule.vulnerabilities.resource_uri | String | Resource URI of the vulnerability with which to associate matched entities. | 
 
 #### Command example
+
 ```!threatstream-list-rule page=2 page_size=2```
+
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -3025,6 +3166,7 @@ Gets a list of rules from ThreatStream.
 #### Human Readable Output
 
 >### Rules
+>
 >|Name|Id|Matches|Created At|Modified At|Is Notify Me|Is Enabled|
 >|---|---|---|---|---|---|---|
 >| rule_2 | 44444 | 0 | 2023-03-30T13:25:42.306343 | 2023-03-30T13:25:45.435220 | true | true |
@@ -3178,8 +3320,11 @@ Create a rule in the ThreatStream platform.
 | ThreatStream.Rule.workgroups | Unknown | Assigned workgroups. | 
 
 #### Command example
+
 ```!threatstream-create-rule rule_name=test_rule keywords=some_keywords match_include=signatures```
+
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -3276,12 +3421,14 @@ Create a rule in the ThreatStream platform.
 #### Human Readable Output
 
 >The rule was created successfully with id: 14093.
+>
 ### threatstream-update-rule
 
 ***
 Updates existing rule from ThreatStream.
 
 Note: Executing this command will overwrite any existing values.
+
 #### Base Command
 
 `threatstream-update-rule`
@@ -3427,8 +3574,11 @@ Note: Executing this command will overwrite any existing values.
 | ThreatStream.Rule.workgroups | Unknown | Assigned workgroups. | 
 
 #### Command example
+
 ```!threatstream-update-rule rule_id=14093 keywords=some_keywords match_include=signatures ```
+
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -3525,6 +3675,7 @@ Note: Executing this command will overwrite any existing values.
 #### Human Readable Output
 
 >### Rules
+>
 >|Name|Id|Matches|Created At|Modified At|Is Notify Me|Is Enabled|
 >|---|---|---|---|---|---|---|
 >| test_rule | 14093 | 0 | 2023-04-03T14:01:19.321124 | 2023-04-03T14:02:45.179609 | true | true |
@@ -3547,11 +3698,15 @@ Delete a rule from ThreatStream.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threatstream-delete-rule rule_id=14093```
+
 #### Human Readable Output
 
 >The rule was deleted successfully.
+>
 ### threatstream-list-user
 
 ***
@@ -3604,8 +3759,11 @@ Gets list of users from ThreatStream. Only users with org admin permission can r
 | ThreatStream.User.user_id | String | ID of the user. | 
 
 #### Command example
+
 ```!threatstream-list-user```
+
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -3696,11 +3854,12 @@ Gets list of users from ThreatStream. Only users with org admin permission can r
 #### Human Readable Output
 
 >### Users
+>
 >|User Id|Email|Is Active|Last Login|
 >|---|---|---|---|
->| 111 | user@email.com | true | 2023-03-30T10:36:23.792915 |
->| 222 | user@email.com | true |  |
->| 333 | user@email.com | true | 2023-03-26T10:47:59.037318 |
+>| 111 | <user@email.com> | true | 2023-03-30T10:36:23.792915 |
+>| 222 | <user@email.com> | true |  |
+>| 333 | <user@email.com> | true | 2023-03-26T10:47:59.037318 |
 
 ### threatstream-list-investigation
 
@@ -3769,8 +3928,11 @@ Gets a list of investigations from ThreatStream.
 | ThreatStream.Investigation.workgroups | Unknown | Assigned workgroups. | 
 
 #### Command example
+
 ```!threatstream-list-investigation page=2 page_size=2```
+
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -3849,10 +4011,11 @@ Gets a list of investigations from ThreatStream.
 #### Human Readable Output
 
 >### Investigations
+>
 >|Name|Id|Created At|Status|Source Type|Reporter|
 >|---|---|---|---|---|---|
->| investigation_1 | 111 | 2023-03-30T11:04:35.320726 | in-progress | user | user@email.com |
->| investigation_2 | 222 | 2023-03-30T11:03:54.265766 | in-progress | user | user@email.com |
+>| investigation_1 | 111 | 2023-03-30T11:04:35.320726 | in-progress | user | <user@email.com> |
+>| investigation_2 | 222 | 2023-03-30T11:03:54.265766 | in-progress | user | <user@email.com> |
 
 ### threatstream-create-investigation
 
@@ -4010,8 +4173,11 @@ Create an investigation at ThreatStream.
 | ThreatStream.Investigation.workgroups | Unknown | Assigned workgroups. | 
 
 #### Command example
+
 ```!threatstream-create-investigation name=new_investigation```
+
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -4122,8 +4288,11 @@ Updates an existing investigation at ThreatStream.
 | ThreatStream.Investigation.tlp | String | Traffic Light Protocol designation for the investigation—red, amber, green, white. | 
 
 #### Command example
+
 ```!threatstream-update-investigation investigation_id=1022 priority=Low status="In-Progress" assignee_id=203```
+
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -4181,6 +4350,7 @@ Updates an existing investigation at ThreatStream.
 #### Human Readable Output
 
 >Investigation was updated successfully with ID: 1022
+>
 ### threatstream-add-investigation-element
 
 ***
@@ -4208,11 +4378,15 @@ Add an element to the existing investigation at ThreatStream.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threatstream-add-investigation-element investigation_id=1022 associated_campaign_ids=111111```
+
 #### Human Readable Output
 
 >All The elements was added successfully to investigation ID: 1022
+>
 ### threatstream-delete-investigation
 
 ***
@@ -4231,11 +4405,15 @@ Deletes an existing investigation at ThreatStream.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threatstream-delete-investigation investigation_id=1022```
+
 #### Human Readable Output
 
 >Investigation was deleted successfully.
+>
 ### threatstream-list-whitelist-entry
 
 ***
@@ -4272,8 +4450,11 @@ Get a list of whitelist entries.
 | ThreatStream.WhitelistEntry.value_type | String | Value type of the entry. | 
 
 #### Command example
+
 ```!threatstream-list-whitelist-entry page=2 page_size=2```
+
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -4304,6 +4485,7 @@ Get a list of whitelist entries.
 #### Human Readable Output
 
 >### Whitelist entries
+>
 >|Id|Value|Resource Uri|Created At|Modified At|Value Type|
 >|---|---|---|---|---|---|
 >| 111 | 1.2.4.5 | /api/v1/orgwhitelist/111/ | 2023-04-02T13:18:00.862395 | 2023-04-02T13:18:00.862395 | ip |
@@ -4344,11 +4526,15 @@ All text in the CSV file must be lower-cased.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threatstream-create-whitelist-entry ips=1.2.4.5```
+
 #### Human Readable Output
 
 >Created 1 item(s).
+>
 ### threatstream-update-whitelist-entry-note
 
 ***
@@ -4368,11 +4554,15 @@ Modify contextual notes associated with existing whitelist entries
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threatstream-update-whitelist-entry-note note="some_note" entry_id=222```
+
 #### Human Readable Output
 
 >The note was updated successfully.
+>
 ### threatstream-delete-whitelist-entry
 
 ***
@@ -4391,11 +4581,15 @@ Delete a whitelist entry.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threatstream-delete-whitelist-entry entry_id=222```
+
 #### Human Readable Output
 
 >The entity was deleted successfully
+>
 ### threatstream-list-import-job
 
 ***
@@ -4456,8 +4650,11 @@ Gets an import list.
 | ThreatStream.Import.visibleForReview | Boolean | Whether the entity is visible for review. | 
 
 #### Command example
+
 ```!threatstream-list-import-job page=2 page_size=2```
+
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -4590,10 +4787,11 @@ Gets an import list.
 #### Human Readable Output
 
 >### Import entries
+>
 >|Id|Date|Status|Reviewed By|Submitted By|Included|Excluded|
 >|---|---|---|---|---|---|---|
->| 111111 | 2023-04-03T14:27:51.896155 | approved | user@email.com | user@email.com | 0 | 0 |
->| 222222 | 2023-04-03T14:27:22.263119 | approved | user@email.com | user@email.com | 0 | 0 |
+>| 111111 | 2023-04-03T14:27:51.896155 | approved | <user@email.com> | <user@email.com> | 0 | 0 |
+>| 222222 | 2023-04-03T14:27:22.263119 | approved | <user@email.com> | <user@email.com> | 0 | 0 |
 
 ### threatstream-approve-import-job
 
@@ -4617,11 +4815,15 @@ Approve all observables in an import job.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threatstream-approve-import-job import_id=111111```
+
 #### Human Readable Output
 
 >The import session was successfully approved.
+>
 ### threatstream-search-threat-model
 
 ***
@@ -4680,8 +4882,11 @@ Retrieve threat model entities from ThreatStream.
 | ThreatStream.ThreatModel.resource_uri | String | Resource URI associated with the entity. | 
 
 #### Command example
+
 ```!threatstream-search-threat-model model_type="signature" signature_type="Carbon Black Query,Bro,ClamAV" limit="50" page="2" page_size="2"```
+
 #### Context Example
+
 ```json
 {
     "ThreatStream": {
@@ -4773,6 +4978,7 @@ Retrieve threat model entities from ThreatStream.
 #### Human Readable Output
 
 >### Threat model entities
+>
 >|Id|Type|Name|Publication Status|Modified At|
 >|---|---|---|---|---|
 >| 111111 | signature | signature_threat_model_1 | new | 2023-03-19T10:09:09.150405+00:00 |
@@ -4799,8 +5005,11 @@ Creates associations between threat model entities on the ThreatStream platform.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threatstream-add-threat-model-association entity_type="Actor" entity_id="26769" associated_entity_ids="1111,2222" associated_entity_type="Attack Pattern"```
+
 #### Human Readable Output
 
 >The Attack Pattern entities with ids 2222, 1111 were associated successfully to entity id: 26769.
@@ -4824,6 +5033,7 @@ Add tags to the indicators
 #### Context Output
 
 There is no context output for this command.
+
 ### threatstream-remove-indicator-tag
 
 ***

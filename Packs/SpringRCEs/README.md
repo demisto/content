@@ -27,6 +27,7 @@ Later, it was discovered that these are two separate vulnerabilities, one in Spr
 * 3.2.3
 
 This pack will provide you with a first response kit which includes:
+
 * Hunting
 * Remediation
 * Mitigations

@@ -12,9 +12,9 @@ In order to connect to the AzureKubernetesServices using either Cortex XSOAR Azu
 
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
-* The application must have **user_impersonation** permission (can be found in *API permissions* section of the Azure Kubernetes Services app registrations).
-* The application must allow **public client flows** (can be found under the *Authentication* section of the Azure Kubernetes Services app registrations).
-* The application must allow public client flows (found under the **Authentication** section of the app) for Device-code based authentications.
+- The application must have **user_impersonation** permission (can be found in *API permissions* section of the Azure Kubernetes Services app registrations).
+- The application must allow **public client flows** (can be found under the *Authentication* section of the Azure Kubernetes Services app registrations).
+- The application must allow public client flows (found under the **Authentication** section of the app) for Device-code based authentications.
 
 In case you want to use Device code flow, you must allow public client flows (can be found under the **Authentication** section of the app).
 
@@ -53,6 +53,7 @@ In order to use the Cortex XSOAR Azure application, use the default application 
 Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
 *Note:* In the *Select members* section, assign the application you created earlier.
 To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
+
    1. In the **Authentication Type** field, select the **Client Credentials** option.
    2. In the **Application ID** field, enter your Client/Application ID.
    3. In the **Tenant ID** field, enter your Tenant ID .
@@ -61,6 +62,7 @@ To configure a Microsoft integration that uses this authorization flow with a se
    6. Save the instance.
 
 ### Testing authentication and connectivity
+
 If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure Kubernetes Services service run the ***!azure-ks-auth-test*** command. 
 If you are using Client Credentials Flow, click **Test** when you are configuring the instance.
 
@@ -98,7 +100,7 @@ If you are using Client Credentials Flow, click **Test** when you are configurin
     | China       | Azure cloud for the Chinese Government                                   |
     | Custom      | Custom endpoint configuration to the Azure cloud. See note below. |
 
-   * Note: In most cases, setting Azure cloud is preferred to setting Azure AD endpoint. Only use it in cases where a custom proxy URL is required for accessing a national cloud.
+   - Note: In most cases, setting Azure cloud is preferred to setting Azure AD endpoint. Only use it in cases where a custom proxy URL is required for accessing a national cloud.
 
 5. Click **Test** to validate the URLs, token, and connection.
 
@@ -491,8 +493,11 @@ Gets all resource groups for a subscription.
 | AzureKS.ResourceGroup.tags.type | String | The type tag associated with the Azure Kubernetes resource group. | 
 
 #### Command example
+
 ```!azure-ks-resource-group-list```
+
 #### Context Example
+
 ```json
 {
     "AzureKS": {
@@ -526,11 +531,13 @@ Gets all resource groups for a subscription.
 #### Human Readable Output
 
 >### Resource Groups List
+>
 >|Name|Location|Tags|
 >|---|---|---|
 >| cloud-shell-storage-eastus | eastus |  |
 >| demi | centralus | Owner: Demi |
 >| compute-integration | eastus |  |
+>
 ### azure-ks-subscriptions-list
 
 ***
@@ -562,8 +569,11 @@ There are no input arguments for this command.
 | AzureKS.Subscription.count.value | Number | The value of the Azure Kubernetes subscription count. | 
 
 #### Command example
+
 ```!azure-ks-subscriptions-list```
+
 #### Context Example
+
 ```json
 {
     "AzureKS": {
@@ -604,6 +614,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Azure Kubernetes Subscriptions list
+>
 >|subscriptionId|tenantId|displayName|state|
 >|---|---|---|---|
 >| 057b1785-fd7b-4ca3- | ebac1a16-81bf-449b- | Access to Azure Active Directory | Enabled |

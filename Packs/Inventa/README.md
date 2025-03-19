@@ -15,4 +15,4 @@ the Data Subject storage details utilizes **Inventa's DSAR Engine**, allowing to
 track on what categories of information related to a certain Data Subject are stored in various data 
 storages such as files, databases etc by simply creating relevant iDSAR (Inventa's DSAR) Incident.
 
-For more information about Inventa visit https://www.1touch.io/
+For more information about Inventa visit <https://www.1touch.io/>

@@ -23,10 +23,14 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### file
+
 ***
 Checks the reputation of an antivirus in Threat Vault.
 
@@ -34,6 +38,7 @@ Checks the reputation of an antivirus in Threat Vault.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -66,8 +71,11 @@ Checks the reputation of an antivirus in Threat Vault.
 | ThreatVault.FileInfo.signatures | String | The signatures. |
 
 #### Command example
+
 ```!file file= 7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -101,12 +109,14 @@ Checks the reputation of an antivirus in Threat Vault.
 #### Human Readable Output
 
 >### Hash 7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8 antivirus reputation:
+>
 >|Active|CreateTime|FileType|MD5|Release|SHA256|SignatureId|
 >|---|---|---|---|---|---|---|
 >| active | 2012-07-04T03:36:54Z | PE32 | 7e8d3744c0a06d3c7ca7f6dbfce3d576 | antivirus: {"first_release_version": "316", "first_release_time": "2010-10-04T17:03:41Z", "last_release_version": "786", "last_release_time": "2012-07-05T17:03:14Z"} | 7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8 | 93534285 |
 
 
 ### cve
+
 ***
 Checks the reputation of CVE in Threat Vault.
 
@@ -114,6 +124,7 @@ Checks the reputation of CVE in Threat Vault.
 #### Base Command
 
 `cve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -153,8 +164,11 @@ Checks the reputation of CVE in Threat Vault.
 | ThreatVault.Vulnerability.latest_release_time | String | The latest release time of the threat. |
 
 #### Command example
+
 ```!cve cve=CVE-2020-2040```
+
 #### Context Example
+
 ```json
 {
     "CVE": {
@@ -178,12 +192,14 @@ Checks the reputation of CVE in Threat Vault.
 #### Human Readable Output
 
 >### CVE CVE-2020-2040 vulnerability reputation:
+>
 >|CVE|Category|Default action|ID|Latest release time|Latest release version|Name|Ori release time|Ori release version|Reference|Severity|Status|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| CVE-2020-2040 | code-execution | reset-server | 59255 | 2020-09-09T09:45:08Z | 8317 | Palo Alto Networks PAN-OS Buffer Overflow Vulnerability | 2020-09-09T09:45:08Z | 8317 | https://security.paloaltonetworks.com/CVE-2020-2040 | critical | released |
+>| CVE-2020-2040 | code-execution | reset-server | 59255 | 2020-09-09T09:45:08Z | 8317 | Palo Alto Networks PAN-OS Buffer Overflow Vulnerability | 2020-09-09T09:45:08Z | 8317 | <https://security.paloaltonetworks.com/CVE-2020-2040> | critical | released |
 
 
 ### threatvault-threat-signature-get
+
 ***
 Gets the antivirus or anti-spyware or files signature.
 
@@ -191,6 +207,7 @@ Gets the antivirus or anti-spyware or files signature.
 #### Base Command
 
 `threatvault-threat-signature-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -309,8 +326,11 @@ Gets the antivirus or anti-spyware or files signature.
 | ThreatVault.SpywareC2.status | String | The status of the threat (e.g., inactive, active, or released). | 
 
 #### Command example
+
 ```!threatvault-threat-signature-get signature_id=93534285```
+
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -344,12 +364,14 @@ Gets the antivirus or anti-spyware or files signature.
 #### Human Readable Output
 
 >### 93534285 antivirus reputation:
+>
 >|Create time|ID|Name|Related sha256 hashes|Release|Severity|Subtype|
 >|---|---|---|---|---|---|---|
 >| 2010-10-01T03:28:57Z | 93534285 | Worm/Win32.autorun.crck | 7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8,<br/>9e12c5cdb069f74487c11758e732d72047b72bedf4373aa9e3a58e8e158380f8 | antivirus: {"first_release_version": "316", "first_release_time": "2010-10-04T17:03:41Z", "last_release_version": "786", "last_release_time": "2012-07-05T17:03:14Z"} | medium | virus |
 
 
 ### threatvault-release-note-get
+
 ***
 Retrieves the release notes information by version.
 
@@ -357,6 +379,7 @@ Retrieves the release notes information by version.
 #### Base Command
 
 `threatvault-release-note-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -384,8 +407,11 @@ Retrieves the release notes information by version.
 | ThreatVault.ReleaseNote.applications.obsoleted | Array | List of obsolete entries. | 
 
 #### Command example
+
 ```!threatvault-release-note-get version=8615```
+
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -802,12 +828,14 @@ Retrieves the release notes information by version.
 #### Human Readable Output
 
 >### Release notes:
+>
 >|Content version|Disabled Spyware|Modified Spyware|Modified Vulnerability|New Spyware|New Vulnerability|Notes|Release time|Release version|type|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 8615-7549 | {'severity': 'critical', 'pan_id': 86322, 'attack_name': 'Manuscrypt Command and Control Traffic Detection', 'category': 'command-and-control', 'action': 'reset-both', 'change_data': 'improved detection logic to address a possible fp issue', 'min_version': '8.1.0', 'max_version': ''} | {'severity': 'critical', 'pan_id': 86322, 'attack_name': 'Manuscrypt Command and Control Traffic Detection', 'category': 'command-and-control', 'action': 'reset-both', 'change_data': 'improved detection logic to address a possible fp issue', 'min_version': '8.1.0', 'max_version': ''} | severity: high<br/>pan_id: 33951<br/>attack_name: Microsoft PowerPoint Presentation Buffer Overrun RCE Vulnerability<br/>cve: CVE-2011-1270<br/>vendor: MS11-036<br/>category: code-execution<br/>action: reset-both<br/>change_data: improved detection logic to address a possible fp issue<br/>min_version: 8.1.0<br/>max_version:  | {'severity': 'critical', 'pan_id': 22059, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22060, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22061, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22062, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22063, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22064, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22065, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22066, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22067, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22068, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22069, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22070, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22071, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22072, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22073, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22074, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22075, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22076, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22077, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 22078, 'attack_name': 'Pastebin Command and Control Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 86663, 'attack_name': 'Manjusaka Default Command and Control Traffic Detection', 'category': 'hacktool', 'action': 'reset-both', 'change_data': 'improved detection logic to cover a new c2 variant', 'min_version': '8.1.0', 'max_version': ''},<br/>{'severity': 'critical', 'pan_id': 86664, 'attack_name': 'SocGholish Malware Download Traffic Detection', 'category': 'spyware', 'action': 'reset-both', 'change_data': 'new coverage', 'min_version': '8.1.0', 'max_version': ''} | severity: medium<br/>pan_id: 92955<br/>attack_name: H3C IMC Intelligent Management Center Remote Code Execution Vulnerability<br/>cve: <br/>vendor: <br/>category: code-execution<br/>action: reset-server<br/>change_data: new coverage<br/>min_version: 8.1.0<br/>max_version:  | <p><strong>Reminder:</strong></p><ul><li>(8/23/22) As part of Applications and Threats content update 8609 (released August 17, 2022), we updated the&nbsp;<em data-stringify-type="italic">vmware&nbsp;</em>App-ID to include coverage for VMware traffic that was previously identified using the&nbsp;<em data-stringify-type="italic">ssl</em>&nbsp;App-ID. Please review&nbsp;<a class="c-link" href="https://live.paloaltonetworks.com/t5/customer-resources/content-8609-vmware-app-id/ta-p/512741" target="_blank" rel="noopener noreferrer" data-stringify-link="&lt;a href='https://live.paloaltonetworks.com/t5/customer-resources/content-8609-vmware-app-id/ta-p/512741' target='_blank'&gt;https://live.paloaltonetworks.com/t5/customer-resources/content-8609-vmware-app-id/ta-p/512741&lt;/a&gt;" data-sk="tooltip_parent">this article</a>&nbsp;for details.<br /><br /></li><li>(8/22/22)&nbsp;As part of the&nbsp;<a class="c-link" href="https://live.paloaltonetworks.com/t5/customer-resources/app-id-decoders-enhancement-plan/ta-p/469547" target="_blank" rel="noopener noreferrer" data-stringify-link="&lt;a href='https://live.paloaltonetworks.com/t5/customer-resources/app-id-decoders-enhancement-plan/ta-p/469547' target='_blank'&gt;https://live.paloaltonetworks.com/t5/customer-resources/app-id-decoders-enhancement-plan/ta-p/469547&lt;/a&gt;" data-sk="tooltip_parent" aria-describedby="sk-tooltip-5262">App-ID&trade; decoders improvement process</a>&nbsp;and as announced on 6/30/2022, we released a&nbsp;<strong data-stringify-type="bold"><em data-stringify-type="italic">dns-non-rfc</em></strong>&nbsp;placeholder App-ID (beginning with content update 8586) and we intend to activate the decoder for this App-ID with the content update scheduled for September 20, 2022. Review&nbsp;<a class="c-link" href="https://live.paloaltonetworks.com/t5/customer-resources/dns-app-id-enhancement-release-plan/ta-p/487590" target="_blank" rel="noopener noreferrer" data-stringify-link="&lt;a href='https://live.paloaltonetworks.com/t5/customer-resources/dns-app-id-enhancement-release-plan/ta-p/487590' target='_blank'&gt;https://live.paloaltonetworks.com/t5/customer-resources/dns-app-id-enhancement-release-plan/ta-p/487590&lt;/a&gt;" data-sk="tooltip_parent">this article</a>&nbsp;for details.</li><li><p>(8/17/22) The update for App-IDs associated with Google Drive API traffic is scheduled for the new App-IDs content update on September 20, 2022. Refer to&nbsp;<a class="c-link" tabindex="-1" href="https://live.paloaltonetworks.com/t5/customer-resources/app-id-update-for-google-drive-apis/ta-p/504345" target="_blank" rel="noopener noreferrer" data-stringify-link="&lt;a href='&lt;a href='https://live.paloaltonetworks.com/t5/customer-resources/app-id-update-for-google-drive-apis/ta-p/504345' target='_blank'&gt;https://live.paloaltonetworks.com/t5/customer-resources/app-id-update-for-google-drive-apis/ta-p/504345&lt;/a&gt;' target='_blank'&gt;&lt;a href='https://live.paloaltonetworks.com/t5/customer-resources/app-id-update-for-google-drive-apis/ta-p/504345&lt;' target='_blank'&gt;https://live.paloaltonetworks.com/t5/customer-resources/app-id-update-for-google-drive-apis/ta-p/504345&lt;&lt;/a&gt;;/a&gt;" data-sk="tooltip_parent" data-remove-tab-index="true">this article</a>&nbsp;for the details.</p></li><li data-stringify-indent="0" data-stringify-border="0"><p>(8/17/22) We released new placeholder App-IDs for several new OT/ICS App-IDs (FL-net, OpenADR, SafetyNET, and Siemens-S7) in content update version 8609 and we intend to activate these new App-IDs with the new App-IDs content update scheduled for September 20, 2022. (Review&nbsp;<a class="c-link" href="https://live.paloaltonetworks.com/t5/customer-resources/release-plan-for-fl-net-openadr-safetynet-and-siemens-s7-app-ids/ta-p/511342" target="_blank" rel="noopener noreferrer" data-stringify-link="&lt;a href='&lt;a href='https://live.paloaltonetworks.com/t5/customer-resources/release-plan-for-fl-net-openadr-safetynet-and-siemens-s7-app-ids/ta-p/511342' target='_blank'&gt;https://live.paloaltonetworks.com/t5/customer-resources/release-plan-for-fl-net-openadr-safetynet-and-siemens-s7-app-ids/ta-p/511342&lt;/a&gt;' target='_blank'&gt;&lt;a href='https://live.paloaltonetworks.com/t5/customer-resources/release-plan-for-fl-net-openadr-safetynet-and-siemens-s7-app-ids/ta-p/511342&lt;' target='_blank'&gt;https://live.paloaltonetworks.com/t5/customer-resources/release-plan-for-fl-net-openadr-safetynet-and-siemens-s7-app-ids/ta-p/511342&lt;&lt;/a&gt;;/a&gt;" data-sk="tooltip_parent">the details here</a>.)</p></li><li data-stringify-indent="0" data-stringify-border="0"><p>(8/17/22) We released a new placeholder App-ID for PsExec traffic in content update version 8609 and we intend to activate this new App-ID, as well, with the new App-IDs content update scheduled for September 20,2022. (Review&nbsp;<a class="c-link" href="https://live.paloaltonetworks.com/t5/customer-resources/new-app-id-announcement-psexec/ta-p/508023" target="_blank" rel="noopener noreferrer" data-stringify-link="&lt;a href='&lt;a href='https://live.paloaltonetworks.com/t5/customer-resources/new-app-id-announcement-psexec/ta-p/508023' target='_blank'&gt;https://live.paloaltonetworks.com/t5/customer-resources/new-app-id-announcement-psexec/ta-p/508023&lt;/a&gt;' target='_blank'&gt;&lt;a href='https://live.paloaltonetworks.com/t5/customer-resources/new-app-id-announcement-psexec/ta-p/508023&lt;' target='_blank'&gt;https://live.paloaltonetworks.com/t5/customer-resources/new-app-id-announcement-psexec/ta-p/508023&lt;&lt;/a&gt;;/a&gt;" data-sk="tooltip_parent">the details here</a>.)</p></li><li data-stringify-indent="0" data-stringify-border="0"><p>(8/17/22) We introduced new App-ID tags to help you categorize your application traffic. The first four of these tags (Proxy Avoidance, Uploading, Posting, Editing, Downloading) are included content update version 8609 and we will continue to introduce one or more of these new App-ID tags in these same monthly content updates where we introduce new App-IDs. Watch these release notes for updates and review&nbsp;<a class="c-link" href="https://live.paloaltonetworks.com/t5/customer-resources/app-id-new-tags-announcement/ta-p/508005" target="_blank" rel="noopener noreferrer" data-stringify-link="&lt;a href='&lt;a href='https://live.paloaltonetworks.com/t5/customer-resources/app-id-new-tags-announcement/ta-p/508005' target='_blank'&gt;https://live.paloaltonetworks.com/t5/customer-resources/app-id-new-tags-announcement/ta-p/508005&lt;/a&gt;' target='_blank'&gt;&lt;a href='https://live.paloaltonetworks.com/t5/customer-resources/app-id-new-tags-announcement/ta-p/508005&lt;' target='_blank'&gt;https://live.paloaltonetworks.com/t5/customer-resources/app-id-new-tags-announcement/ta-p/508005&lt;&lt;/a&gt;;/a&gt;" data-sk="tooltip_parent">this article for details</a>&nbsp;about upcoming new App-ID tags.</p></li><li data-stringify-indent="0" data-stringify-border="0">(7/11/22; updated 8/1/22) As part of the&nbsp;<a class="c-link" tabindex="-1" href="https://live.paloaltonetworks.com/t5/customer-resources/app-id-decoders-enhancement-plan/ta-p/469547" target="_blank" rel="noopener noreferrer" data-stringify-link="&lt;a href='https://live.paloaltonetworks.com/t5/customer-resources/app-id-decoders-enhancement-plan/ta-p/469547' target='_blank'&gt;https://live.paloaltonetworks.com/t5/customer-resources/app-id-decoders-enhancement-plan/ta-p/469547&lt;/a&gt;" data-sk="tooltip_parent" data-remove-tab-index="true">App-ID&trade; decoders improvement process</a>, we will modify the&nbsp;<strong data-stringify-type="bold"><em data-stringify-type="italic">smtp&nbsp;</em></strong>App-ID. As announced on 7/11/2022, we intend to release an&nbsp;<strong data-stringify-type="bold"><em data-stringify-type="italic">smtp-non-rfc</em></strong>&nbsp;placeholder App-ID but now intend to do this with the Applications and Threats content update scheduled for September 20, 2022, and will then activate the decoder for this App-ID with the content update scheduled for October 18, 2022. Review&nbsp;<a class="c-link" tabindex="-1" href="https://live.paloaltonetworks.com/t5/customer-resources/smtp-app-id-enhancement-release-plan/ta-p/508224" target="_blank" rel="noopener noreferrer" data-stringify-link="&lt;a href='https://live.paloaltonetworks.com/t5/customer-resources/smtp-app-id-enhancement-release-plan/ta-p/508224' target='_blank'&gt;https://live.paloaltonetworks.com/t5/customer-resources/smtp-app-id-enhancement-release-plan/ta-p/508224&lt;/a&gt;" data-sk="tooltip_parent" data-remove-tab-index="true">this article</a>&nbsp;for the details.</li></ul> | 2022-09-01T17:04:33Z | 8615 | content |
 
 
 ### threatvault-threat-batch-search
+
 ***
 Retrieves the threats signature metadata by ID, name, or sample hash (sha256 or md5) in batch mode. Batch limit is 100 entries.
 
@@ -815,6 +843,7 @@ Retrieves the threats signature metadata by ID, name, or sample hash (sha256 or 
 #### Base Command
 
 `threatvault-threat-batch-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -910,8 +939,11 @@ Retrieves the threats signature metadata by ID, name, or sample hash (sha256 or 
 | ThreatVault.SpywareC2.status | String | The status of the threat (e.g., inactive, active, or released). | 
 
 #### Command example
+
 ```!threatvault-threat-batch-search sha256=380082fbf9e57bcd524648efce14c92a4cb58cb745c30ef29730959d79164549```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1005,12 +1037,14 @@ Retrieves the threats signature metadata by ID, name, or sample hash (sha256 or 
 #### Human Readable Output
 
 >### File 380082fbf9e57bcd524648efce14c92a4cb58cb745c30ef29730959d79164549:
+>
 >|Active|CreateTime|Description|Family|FileType|MD5|Platform|Release|SHA1|SHA256|Severity|Signature Name|SignatureId|Size|Wildfire verdict|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| active | 2021-12-02T20:27:12Z | This signature detected trojan/Win32 DLL.razy.slo | WGeneric | DLL | ca066f965dfbc5392871d3fa281236cf | Win32 | antivirus: {"first_release_version": "3017", "first_release_time": "2019-06-21T13:37:09Z", "last_release_version": "4258", "last_release_time": "2022-11-05T11:36:34Z"}<br/>wildfire: {"first_release_version": "359199", "first_release_time": "2019-06-19T17:06:35Z", "last_release_version": "713954", "last_release_time": "2022-11-06T12:47:08Z"} | d58869fb948c60bef544e1a36f4489fd76fd10ae | 380082fbf9e57bcd524648efce14c92a4cb58cb745c30ef29730959d79164549 | medium | trojan/Win32 DLL.razy.slo | 280392504 | 176128 | malicious |
 
 
 ### threatvault-threat-search
+
 ***
 Retrieves threat metadata. The nature of the query is determined by the query parameter you provide.
 
@@ -1018,6 +1052,7 @@ Retrieves threat metadata. The nature of the query is determined by the query pa
 #### Base Command
 
 `threatvault-threat-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1128,8 +1163,11 @@ Retrieves threat metadata. The nature of the query is determined by the query pa
 
 
 #### Command example
+
 ```!threatvault-threat-search signature-name=Code+Injection+JS```
+
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -1165,9 +1203,10 @@ Retrieves threat metadata. The nature of the query is determined by the query pa
 #### Human Readable Output
 
 >### 91119 vulnerability reputation:
+>
 >|CVE|Category|Default action|ID|Latest release time|Latest release version|Name|Ori release time|Ori release version|Reference|Severity|Status|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| CVE-2020-28502 | code-execution | alert | 91119 | 2021-05-14T05:00:11Z | 8406 | Node.js Code Injection Vulnerability | 2021-05-14T05:00:11Z | 8406 | https://github.com/s-index/CVE-2020-28502 | high | released |
+>| CVE-2020-28502 | code-execution | alert | 91119 | 2021-05-14T05:00:11Z | 8406 | Node.js Code Injection Vulnerability | 2021-05-14T05:00:11Z | 8406 | <https://github.com/s-index/CVE-2020-28502> | high | released |
 
 
 ## Breaking changes from the previous version of this integration - Palo Alto Networks Threat Vault v2
@@ -1175,7 +1214,9 @@ Retrieves threat metadata. The nature of the query is determined by the query pa
 The following sections list the changes in this version.
 
 ### Commands
+
 The following commands were removed in this version:
+
 * ***threatvault-antivirus-signature-get*** - replaced by ***threatvault-threat-signature-get***.
 * ***threatvault-dns-signature-get-by-id***.
 * ***threatvault-antispyware-signature-get-by-id*** - replaced by ***threatvault-threat-signature-get***.
@@ -1236,9 +1277,11 @@ Retrieve the Advanced Threat Prevention (ATP) report by report id in batch mode.
 | ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Connection | string | ATP Report transaction payload connection | 
 
 #### Command example
+
 ```!threatvault-atp-batch-report-get report_id="a3b93da98349831c5c477370bb352e6b2a75b91c4996b402542b1094b39feff800a"```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -1299,6 +1342,7 @@ Retrieve the Advanced Threat Prevention (ATP) report by report id in batch mode.
 #### Human Readable Output
 
 >### Advanced Threat Prevention Report ID: a3b93da98349831c5c477370bb352e6b2a75b91c4996b402542b1094b39feff800a
+>
 >|panos_info|fw_hostname: abc\nfw_addr_v4: 192.168.2.1\nfw_app_version: 8662-7785\nfw_sw_version: 10.2.3|
 >|report_id|a3b93da98349831c5c477370bb352e6b2a75b91c4996b402542b1094b39feff800a|
 >|sesion_info|session_id: 289\nsession_timestamp: 2023-01-11T19:11:11z|
@@ -1327,9 +1371,11 @@ Retrieve the Advanced Threat Prevention (ATP) analysis report PCAP by reportID
 | ThreatVault.ATP.PCAP.Name | string | Threatvault ATP PCAP Name | 
 
 #### Command example
+
 ```!threatvault-atp-report-pcap-get report_id="5c4b78a92dea9d7bb3171b4f7be131400897fa0e61e6fed9532f2f9de5686b4b"```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -1346,8 +1392,10 @@ Retrieve the Advanced Threat Prevention (ATP) analysis report PCAP by reportID
 #### Human Readable Output
 
 >### Advanced Threat Prevention PCAP Download:
+>
 >|ID|5c4b78a92dea9d7bb3171b4f7be131400897fa0e61e6fed9532f2f9de5686b4b|
 >|Name|5c4b78a92dea9d7bb3171b4f7be131400897fa0e61e6fed9532f2f9de5686b4b.pcap|
 
 ## Additional Considerations for this version
+
 Note: The Threat Vault API key is **not** the same as the Auto Focus API key. Make sure you have the required API key, as instructed on the integration configuration page.

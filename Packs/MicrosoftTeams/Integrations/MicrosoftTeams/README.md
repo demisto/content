@@ -2,56 +2,69 @@ Use the Microsoft Teams integration to send messages and notifications to your t
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
 **Note:** 
+
 - This integration is supported in Cortex XSOAR 8 and up and Cortex XSIAM without using an engine.
 - The integration has the ability to run built-in Cortex XSOAR commands, through a mirrored channel. Make sure to pass the command in the chat exactly as typed in the CORTEX XSOAR CLI. For example: `!DeleteContext all=yes`. Use the command `mirror-investigation` to mirror/create a mirrored channel.
 - For use cases where it is only needed to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
 
 ## Integration Architecture
+
 Data is passed between Microsoft Teams and Cortex XSOAR through the bot that you will configure in Microsoft Teams. A webhook (that you will configure) receives the data from Teams and passes it to the messaging endpoint. The web server on which the integration runs in Cortex XSOAR listens to the messaging endpoint and processes the data from Teams. You can use an engine for communication between Teams and the Cortex XSOAR server. In order to mirror messages from Teams to Cortex XSOAR, the bot must be mentioned, using the @ symbol, in the message.
 
 The web server for the integration runs within a long-running Docker container. Cortex XSOAR maps the Docker port to which the server listens, to the host port (to which Teams posts messages). For more information, see [our documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) and [Docker documentation](https://docs.docker.com/config/containers/container-networking/).
+
 ### Protocol Diagram
+
 ![image](../../doc_files/MicrosoftTeamsProtocalDiagram.png)
 
 ## Important Information
- - The messaging endpoint must be one of the following:
+
+- The messaging endpoint must be one of the following:
  	- the URL of the Cortex XSOAR server, including the configured port
  	- the Cortex XSOAR rerouting URL that you've defined for your Microsoft Teams instance (see the [Using Cortex XSOAR or Cortex XSIAM rerouting](#1-using-cortex-xsoar-or-cortex-xsiam-rerouting) section for more details)
  	- a proxy that redirects the messages received from Teams to the Cortex XSOAR or Cortex XSIAM server (see the [Using NGINX as reverse proxy](#2-using-nginx-as-reverse-proxy) section for more details)
- - Microsoft Teams will send events to the messaging endpoints via HTTPS request, which means the messaging endpoint must be accessible for Microsoft Teams to reach to it. As follows, the messaging endpoint can not contain private IP address or any DNS that will block the request from Microsoft Teams.
+- Microsoft Teams will send events to the messaging endpoints via HTTPS request, which means the messaging endpoint must be accessible for Microsoft Teams to reach to it. As follows, the messaging endpoint can not contain private IP address or any DNS that will block the request from Microsoft Teams.
 In order to verify that the messaging endpoint is open as expected, you can surf to the messaging endpoint from a browser in an environment which is disconnected from the Cortex XSOAR environment.
- - It's important that the port is opened for outside communication and that the port is not being used, meaning that no service is listening on it. Therefore, the default port, 443, should not be used.
- - For additional security, we recommend placing the Teams integration web server behind a reverse proxy (such as NGINX).
- - By default, the web server that the integration starts provides services in HTTP. For communication to be in HTTPS you need to provide a certificate and private key in the following format:
+- It's important that the port is opened for outside communication and that the port is not being used, meaning that no service is listening on it. Therefore, the default port, 443, should not be used.
+- For additional security, we recommend placing the Teams integration web server behind a reverse proxy (such as NGINX).
+- By default, the web server that the integration starts provides services in HTTP. For communication to be in HTTPS you need to provide a certificate and private key in the following format:
+
     ```
      -----BEGIN CERTIFICATE-----
      ...
      -----END CERTIFICATE-----
     ```
+
     ```
      -----BEGIN PRIVATE KEY-----
      ...
      -----END PRIVATE KEY-----
     ```
- - You must not set a certificate and/or private key if you are using the Cortex XSOAR rerouting setup.
- - Microsoft does not support self-signed certificates and requires a chain-trusted certificate issued by a trusted CA.
+
+- You must not set a certificate and/or private key if you are using the Cortex XSOAR rerouting setup.
+- Microsoft does not support self-signed certificates and requires a chain-trusted certificate issued by a trusted CA.
  In order to verify which certificate is used, run the following (replace {MESSAGING-ENDPOINT} with the messaging endpoint):
+
     ```
      curl {MESSAGING-ENDPOINT} -vI
     ```
+
      Make sure the output does not contain the following:
+
     ```
      curl: (60) SSL certificate problem: self signed certificate
     ```
- - The following domains are used by this integration:
-    - microsoft.com
-    - botframework.com
-    - microsoftonline.com
+
+- The following domains are used by this integration:
+  - microsoft.com
+  - botframework.com
+  - microsoftonline.com
 When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), according to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u), it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
 
 ## Migration from Cortex XSOAR 6 to Cortex XSOAR 8 and Cortex XSIAM.
 
 ### Using Cortex XSOAR or Cortex XSIAM rerouting
+
 1. For Cortex XSOAR 8, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
 2. For Cortex XSIAM, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSIAM-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, and replace the `xdr` in the url to `crtx`.
 3. Check the **long running instance** parameter in the integration instance configuration.
@@ -67,6 +80,7 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
 ## Setup Examples
 
 ### 1. Using Cortex XSOAR or Cortex XSIAM rerouting
+
 In this configuration, we will use Cortex XSOAR/Cortex XSIAM functionality, which reroutes HTTPS requests that hit the default port (443) to the web server that the integration spins up.
 
 The messaging endpoint needs to be:
@@ -88,12 +102,14 @@ In addition, make sure ***Instance execute external*** is enabled (for Cortex XS
 
 
 ### 2. Using NGINX as reverse proxy
+
 In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR/Cortex XSIAM, goes through a reverse proxy (e.g., NGINX) which relays the HTTPS requests posted from Microsoft Teams
 to the Cortex XSOAR/Cortex XSIAM server on HTTP.
 
 On NGINX, configure the following:
- - SSL certificate under `ssl_certificate` and `ssl_certificate_key`
- - The Cortex XSOAR server (including the port) under `proxy_pass`, e.g. `http://mydemistoinstance.com:7000`
+
+- SSL certificate under `ssl_certificate` and `ssl_certificate_key`
+- The Cortex XSOAR server (including the port) under `proxy_pass`, e.g. `http://mydemistoinstance.com:7000`
 
 Follow [Configuring Upstream Servers NGINX guide](https://docs.nginx.com/nginx/admin-guide/security-controls/securing-http-traffic-upstream/#configuring-upstream-servers) for more details.
 
@@ -104,6 +120,7 @@ The port (`7000` in this example), to which the reverse proxy should forward the
 ![image](../../doc_files/InstanceConfig7000.png)
 
 ### 3. Using Apache reverse proxy and Cortex XSOAR engine
+
 In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR/Cortex XSIAM, goes through a reverse proxy (e.g., [Apache](https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html)) and possibly a load balancer, which relays the HTTPS requests posted from Microsoft Teams
 to a Cortex XSOAR/Cortex XSIAM engine, which can be put in a DMZ, on HTTP.
 
@@ -115,19 +132,22 @@ The port (`7000` in this example), to which the reverse proxy should forward the
 
 
 ### 4. Using Cloudflare
+
 In this configuration, we will use [Cloudflare proxy](https://support.cloudflare.com/hc/en-us/articles/360039824852-Cloudflare-and-the-Cloud-Conceptual-overview-videos).
 
 The messaging endpoint should be the Cortex XSOAR/Cortex XSIAM URL, which needs to be hosted on Cloudflare, with the port to which Cloudflare proxy directs the HTTPS traffic, e.g., `https://mysite.com:8443`
 
 In the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step, the following need to be configured:
- - The port selected above.
- - A certificate and key for configuring HTTPS web server. This certificate can be self-signed.
+
+- The port selected above.
+- A certificate and key for configuring HTTPS web server. This certificate can be self-signed.
 
 The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxies it to the web server.
 
 All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS web server the integration spins up, and will then be processed.
 
 ## Setup Video
+
 The information in this video is for Cortex XSOAR 6 only.
 
 <video controls>
@@ -138,6 +158,7 @@ The information in this video is for Cortex XSOAR 6 only.
 
 
 ## Old Setup Video (Use the above video)
+
 <video controls>
     <source src="https://github.com/demisto/content-assets/raw/845c0d790ceb4fbac08c5c7852b2a3bed0829778/Assets/MicrosoftTeams/config.mp4"
             type="video/mp4"/>
@@ -157,6 +178,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 
 
 #### Creating the Demisto Bot using Microsoft Azure Portal
+
 1. Navigate to the [Create an Azure Bot page](https://portal.azure.com/#create/Microsoft.AzureBot).
 2. In the Bot Handle field, type **Demisto Bot**.
 3. Fill in the required Subscription and Resource Group, relevant links: [Subscription](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/create-subscription), [Resource Groups](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
@@ -190,13 +212,14 @@ Note: [The chat commands](#chat-commands) are only supported when using the `Aut
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
 4. For the following permissions, search for the permission, select the checkbox, and click **Add permissions**.
-  - User.Read.All
-  - Group.ReadWrite.All
-  - Calls.Initiate.All
-  - Calls.InitiateGroupCall.All
-  - OnlineMeetings.ReadWrite.All
-  - ChannelMember.ReadWrite.All
-  - Channel.Create
+
+- User.Read.All
+- Group.ReadWrite.All
+- Calls.Initiate.All
+- Calls.InitiateGroupCall.All
+- OnlineMeetings.ReadWrite.All
+- ChannelMember.ReadWrite.All
+- Channel.Create
 
 5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
@@ -210,7 +233,9 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
 4. For the following permissions, search for the permission, select the checkbox and click **Add permissions**.
-    ###### Required Application Permissions:
+
+   ###### Required Application Permissions:
+
       - User.Read.All
       - Group.ReadWrite.All
       - OnlineMeetings.ReadWrite.All 
@@ -221,7 +246,8 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
       - TeamsAppInstallation.ReadWriteForChat.All
       - AppCatalog.Read.All
 
-    ###### Required Delegated Permissions:
+   ###### Required Delegated Permissions:
+
       - OnlineMeetings.ReadWrite
       - ChannelMessage.Send
       - Chat.ReadWrite
@@ -245,7 +271,7 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
    - ChannelMember.Read.All
    - ChannelMember.ReadWrite.All
    - TeamsAppInstallation.ReadWriteForTeam
-9. Click **Authentication > Platform configurations > Add a platform.** Choose **Web** and add Redirect URIs: https://login.microsoftonline.com/common/oauth2/nativeclient
+9. Click **Authentication > Platform configurations > Add a platform.** Choose **Web** and add Redirect URIs: <https://login.microsoftonline.com/common/oauth2/nativeclient>
 
 
 ### Configure Microsoft Teams on Cortex XSOAR
@@ -290,7 +316,7 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 5. Set the *Long running instance* parameter to 'True'.
 6. Save the instance.
 7. Click **Test** to validate the URLs, token, and connection.
-8. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
+8. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
 
 ##### Authentication Using the Authorization Code Flow
 
@@ -301,7 +327,7 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 5. Set the *Default team* and the *Notifications channel* parameters.
 6. Set the *Long running instance* parameter to 'True'.
 7. Save the instance.
-8. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
+8. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
 9. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
 10. Save the instance.
 11. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
@@ -310,6 +336,7 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 ### Add the Demisto Bot to a Team
 
 **Notes:**
+
 - The following needs to be done after configuring the integration on Cortex XSOAR/Cortex XSIAM (the previous step).
 - According to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u) it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
 
@@ -332,7 +359,9 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 
 
 ## Known Limitations
+
 ---
+
 - In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to. It will trigger a communication and solve the issue.
 - The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the `Client Credentials flow` due to a limitation in Microsoft's permissions system. 
 - In addition, the chat commands are only supported when using the `Authorization Code flow`.
@@ -343,6 +372,7 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -384,12 +414,15 @@ and picture to match the bot will make it appear to be from the same source.
 | MicrosoftTeams.Message.ID | String | ID of the message sent. | 
 
 ##### Command Example
+
 ```!send-notification channel=General message="hello world!" team=DemistoTeam```
 
 ##### Human Readable Output
+
 Message was sent successfully.
 
 ### mirror-investigation
+
 ***
 Mirrors the Cortex XSOAR/Cortex XSIAM investigation to the specified Microsoft Teams channel. Supports only standard channels.
 
@@ -420,13 +453,16 @@ Mirrors the Cortex XSOAR/Cortex XSIAM investigation to the specified Microsoft T
 There is no context output for this command.
 
 ##### Command Example
+
 ```!mirror-investigation mirror_type=all autoclose=true direction=Both```
 
 
 ##### Human Readable Output
+
 Investigation mirrored successfully in channel incident-100.
 
 ### close-channel
+
 ***
 Deletes the specified Microsoft Teams channel.
 
@@ -452,13 +488,16 @@ Deletes the specified Microsoft Teams channel.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!close-channel channel="example channel"```
 
 
 ##### Human Readable Output
+
 Channel was successfully closed.
 
 ### microsoft-teams-integration-health
+
 ***
 Returns real-time and historical data on the integration status.
 
@@ -466,6 +505,7 @@ Returns real-time and historical data on the integration status.
 ##### Base Command
 
 `microsoft-teams-integration-health`
+
 ##### Input
 
 There are no input arguments for this command.
@@ -475,17 +515,21 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!microsoft-teams-integration-health```
 
 
 ##### Human Readable Output
+>
 >### Microsoft API Health
+>
 >| Bot Framework API Health | Graph API Health |
 >|--------------------------|------------------|
 >| Operational              | Operational      |
 >No mirrored channels.
 
 ### microsoft-teams-ring-user
+
 ***
 Rings a user's Teams account. Note: This is a ring only! no media will play in case the generated call is answered. To use this make sure your Bot has the following permissions - Calls.Initiate.All and Calls.InitiateGroupCall.All
 
@@ -511,13 +555,16 @@ Rings a user's Teams account. Note: This is a ring only! no media will play in c
 There is no context output for this command.
 
 ##### Command Example
+
 ```!microsoft-teams-ring-user username="Avishai Brandeis"```
 
 
 ##### Human Readable Output
+
 Calling Avishai Brandeis
 
 ### microsoft-teams-add-user-to-channel
+
 ***
 Adds a member (user) to a private/shared channel.
 For a comparison of Teams features for each channel type, see the Microsoft documentation:  [Channel feature comparison](https://learn.microsoft.com/en-us/MicrosoftTeams/teams-channels-overview#channel-feature-comparison).
@@ -547,12 +594,15 @@ For a comparison of Teams features for each channel type, see the Microsoft docu
 There is no context output for this command.
 
 ##### Command Example
+
 ```!microsoft-teams-add-user-to-channel channel="example channel" member=itayadmin team=DemistoTeam```
 
 ##### Human Readable Output
+
 The User "itayadmin" has been added to channel "example channel" successfully.
 
 ### microsoft-teams-create-channel
+
 ***
 Creates a new channel in a Microsoft Teams team.
 For more information about the channels types, see the Microsoft documentation: [standard, private, or shared channels](https://support.microsoft.com/en-us/office/teams-can-have-standard-private-or-shared-channels-de3e20b0-7494-439c-b7e5-75899ebe6a0e)
@@ -584,13 +634,16 @@ See also [Channel feature comparison](https://learn.microsoft.com/en-us/Microsof
 There is no context output for this command.
 
 ##### Command Example
+
 ```!microsoft-teams-create-channel channel_name="example channel" team=DemistoTeam description="this is my new channel"```
 
 
 ##### Human Readable Output
+
 The channel "example channel" was created successfully
 
 ### microsoft-teams-create-meeting
+
 ***
 Creates a new meeting in Microsoft Teams.
 
@@ -600,6 +653,7 @@ Creates a new meeting in Microsoft Teams.
 `microsoft-teams-create-meeting`
 
 ##### Required Permissions
+
 `OnlineMeetings.ReadWrite.All` - Application
 `OnlineMeetings.ReadWrite` - Delegated
 
@@ -637,12 +691,15 @@ The authentication process is conducted on behalf of the specific user who initi
 
 
 ##### Command Example
+
 ``` !microsoft-teams-create-meeting member="example user" subject="Important meeting" ```
 
 ##### Human Readable Output
+
 The meeting "Important meeting" was created successfully
 
 ### microsoft-teams-user-remove-from-channel
+
 ***
 Removes a member (user) from a private/shared channel.
 
@@ -669,12 +726,15 @@ Removes a member (user) from a private/shared channel.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!microsoft-teams-user-remove-from-channel channel_name="example channel" member=itayadmin team=DemistoTeam```
 
 ##### Human Readable Output
+
 The User "itayadmin" has been removed from channel "example channel" successfully.
 
 ### microsoft-teams-channel-user-list
+
 ***
 Retrieves a list of members from a channel.
 
@@ -711,23 +771,28 @@ Retrieves a list of members from a channel.
 | MicrosoftTeams.ChannelList.members.visibleHistoryStartDateTime | String   | The timestamp denoting how far back a conversation's history is shared with the conversation member. | 
 
 ##### Command Example
+
 ```!microsoft-teams-channel-user-list channel_name="example channel" team=DemistoTeam```
 
 ##### Human Readable Output
+
 ##### Channel 'example channel' Members List:
+
 | User Id                              | Email          | Tenant Id                            | Membership id                                                                                        | User roles | Display Name | Start DateTime       |
 |--------------------------------------|----------------|--------------------------------------|------------------------------------------------------------------------------------------------------|------------|--------------|----------------------|
-| 359d2c3c-162b-414c-b2eq-386461e5l050 | test@gmail.com | pbae9ao6-01ql-249o-5me3-4738p3e1m941 | MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJkMTQ= | owner      | itayadmin    | 0001-01-01T00:00:00Z |
+| 359d2c3c-162b-414c-b2eq-386461e5l050 | <test@gmail.com> | pbae9ao6-01ql-249o-5me3-4738p3e1m941 | MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJkMTQ= | owner      | itayadmin    | 0001-01-01T00:00:00Z |
 
 
 ### Chat Commands
 
 ### microsoft-teams-chat-create
+
 ***
 Creates a new chat. 
 
 
 Notes:
+
 - Only one oneOnOne chat can exist between two members. If a oneOnOne chat already exists, it will be returned.
 - This command works with the consent user, not with the bot. Which means, the chat is created between the consent user and the user provided in the command's argument.
 
@@ -737,6 +802,7 @@ Notes:
 `microsoft-teams-chat-create`
 
 ##### Required Permissions
+
 `Chat.Create` - Delegated, Application<br>
 `Chat.ReadWrite` - Delegated<br>
 `TeamsAppInstallation.ReadWriteForChat` - Delegated<br>
@@ -769,15 +835,19 @@ Notes:
 | MicrosoftTeams.ChatList.onlineMeetingInfo   | String   | Represents details about an online meeting. If the chat isn't associated with an online meeting, the property is empty. | 
 
 ##### Command Example
+
 ```!microsoft-teams-chat-create chat_type=group member="itayadmin, Bruce Willis" chat_name="example chat"```
 
 ##### Human Readable Output
+
 ##### The chat 'example chat' was created successfully
+
 | Chat Id                                       | Chat name    | Created Date Time       | Last Updated Date Time  | webUrl | Tenant Id                            |
 |-----------------------------------------------|--------------|-------------------------|-------------------------|--------|--------------------------------------|
 | 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | example chat | 2023-01-08T07:51:53.07Z | 2023-01-08T07:51:53.07Z | webUrl | pbae9ao6-01ql-249o-5me3-4738p3e1m941 |
 
 ### microsoft-teams-message-send-to-chat
+
 ***
 Sends a new chat message in the specified chat.
 
@@ -790,6 +860,7 @@ This command works with the consent user, not with the bot. Which means, the mes
 `microsoft-teams-message-send-to-chat`
 
 ##### Required Permissions
+
 `ChatMessage.Send` - Delegated<br>
 `Chat.ReadWrite` - Delegated<br>
 `TeamsAppInstallation.ReadWriteForChat` - Delegated<br>
@@ -837,15 +908,19 @@ This command works with the consent user, not with the bot. Which means, the mes
 | MicrosoftTeams.ChatList.messages.reactions            | String   | Reactions for this chat message \(for example, Like\).                                                                                 | 
 
 ##### Command Example
+
 ```!microsoft-teams-message-send-to-chat chat="example chat" content="Hello World"```
 
 ##### Human Readable Output
+>
 >### Message was sent successfully in the 'example chat' chat.
+>
 >| Chat Id                                       | Created DateTime        | Etag          | From user | From user id                         | From user userIdentityType | Importance | Message Content | Message Type | Message contentType | Message id    | lastModified DateTime   |
 >|-----------------------------------------------|-------------------------|---------------|-----------|--------------------------------------|----------------------------|------------|-----------------|--------------|---------------------|---------------|-------------------------|
 >| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello World     | message      | text                | 1616991463150 | 2021-03-29T04:17:43.15Z |
 
 ### microsoft-teams-chat-add-user
+
 ***
 Adds a member (user) to a group chat.
 
@@ -873,12 +948,15 @@ Adds a member (user) to a group chat.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!microsoft-teams-chat-add-user chat="example chat" member="Bruce Willis" share_history=false```
 
 ##### Human Readable Output
+
 The User "Bruce Willis" has been added to chat "example chat" successfully.
 
 ### microsoft-teams-chat-member-list
+
 ***
 Retrieves a list of members from a chat.
 
@@ -888,6 +966,7 @@ Retrieves a list of members from a chat.
 `microsoft-teams-chat-member-list`
 
 ##### Required Permissions
+
 `Chat.ReadWrite` - Delegated
 `ChatMember.ReadWrite` - Delegated
 
@@ -912,16 +991,20 @@ Retrieves a list of members from a chat.
 | MicrosoftTeams.ChatList.members.visibleHistoryStartDateTime | String   | The timestamp denoting how far back a conversation's history is shared with the conversation member. | 
 
 ##### Command Example
+
 ```!microsoft-teams-chat-member-list chat="example chat"```
 
 ##### Human Readable Output
+>
 >### Chat "example chat" Members List:
+>
 >| User Id                              | User roles | Name         | Email          | Tenant Id                            |
 >|--------------------------------------|------------|--------------|----------------|--------------------------------------|
->| 359d2c3c-162b-414c-b2eq-386461e5l050 | owner      | itayadmin    | test@gmail.com | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |
->| 48d31887-5fad-4d73-a9f5-3c356e68a038 | owner      | Bruce Willis | test@gmail.com | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |
+>| 359d2c3c-162b-414c-b2eq-386461e5l050 | owner      | itayadmin    | <test@gmail.com> | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |
+>| 48d31887-5fad-4d73-a9f5-3c356e68a038 | owner      | Bruce Willis | <test@gmail.com> | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |
 
 ### microsoft-teams-chat-list
+
 ***
 Retrieves a list of chats that the user is part of. If 'chat' is specified - retrieves this chat only.
 
@@ -939,7 +1022,7 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 | **Argument Name** | **Description**                                                                                                                                          | **Required** |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).                                                                         | Optional     | 
-| filter            | Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. | Optional     | 
+| filter            | Filters results. For example: topic eq 'testing'. For more query examples, see <https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http>. | Optional     | 
 | expand            | Expands the results to include members or lastMessagePreview properties. Possible values are: members, lastMessagePreview.                               | Optional     | 
 | limit             | The number of results to retrieve. Default is 50.                                                                                                        | Optional     | 
 | next_link         | A link that specifies a starting point to use for subsequent calls.                                                                                      | Optional     | 
@@ -962,16 +1045,20 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 | MicrosoftTeams.ChatListNextLink             | String   | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
 
 ##### Command Example
+
 ```!microsoft-teams-chat-list filter="topic eq 'testing'"```
 
 ##### Human Readable Output
+>
 >### Chats List:
+>
 >| Chat Id                                       | Chat name | Created Date Time        | Last Updated Date Time   | Chat Type | webUrl | Tenant Id | Last Message Read Date Time |
 >|-----------------------------------------------|-----------|--------------------------|--------------------------|-----------|--------|-----------|-----------------------------|
 >| 19:561082c0f3f847a58069deb8eb300807@thread.v2 | testing   | 2023-01-08T14:15:45.412Z | 2023-01-08T14:15:45.412Z | group     | webUrl | tenantId  | 2023-01-08T14:16:48.662Z    |
 >| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | testing   | 2022-12-29T11:10:49.173Z | 2022-12-29T11:10:49.173Z | group     | webUrl | tenantId  | 2022-12-29T12:00:07.317Z    |
 
 ### microsoft-teams-chat-message-list
+
 ***
 Retrieves a list of messages in a chat.
 
@@ -981,6 +1068,7 @@ Retrieves a list of messages in a chat.
 `microsoft-teams-chat-message-list`
 
 ##### Required Permissions
+
 `Chat.ReadWrite` - Delegated
 
 #### Input
@@ -1024,15 +1112,19 @@ Retrieves a list of messages in a chat.
 | MicrosoftTeams.MessageListNextLink                    | String   | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
 
 ##### Command Example
+
 ```!!microsoft-teams-chat-message-list chat="example chat" order_by=createdDateTime```
 
 ##### Human Readable Output
+>
 >### Messages list in "example chat" chat:
+>
 >| Chat Id                                       | Created DateTime        | Etag          | From user | From user id                         | From user userIdentityType | Importance | Message Content | Message Type | Message contentType | Message id    | lastModified DateTime   |
 >|-----------------------------------------------|-------------------------|---------------|-----------|--------------------------------------|----------------------------|------------|-----------------|--------------|---------------------|---------------|-------------------------|
 >| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello World     | message      | text                | 1616991463150 | 2021-03-29T04:17:43.15Z |
 
 ### microsoft-teams-chat-update
+
 ***
 Updates the chat name. It can only be set for group chats.
 
@@ -1058,12 +1150,15 @@ Updates the chat name. It can only be set for group chats.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!microsoft-teams-chat-update chat="example chat" chat_name="update chat_name"```
 
 ##### Human Readable Output
+
 The name of chat 'example chat' has been successfully changed to 'update chat_name'.
 
 ### microsoft-teams-auth-test
+
 ***
 Tests the connectivity to MicrosoftTeams.
 
@@ -1072,18 +1167,23 @@ Tests the connectivity to MicrosoftTeams.
 `microsoft-teams-auth-test`
 
 ##### Input
+
 There are no input arguments for this command.
 
 ##### Context Output
+
 There is no context output for this command.
 
 ##### Command Example
+
 ```!microsoft-teams-auth-test```
 
 ##### Human Readable Output
+>
 >✅ Success!
 
 ### microsoft-teams-generate-login-url
+
 ***
 Generate the login url used for Authorization code flow.  
 Note: Authorization codes are short-lived. Typically, they expire after about 10 minutes.
@@ -1091,6 +1191,7 @@ Note: Authorization codes are short-lived. Typically, they expire after about 10
 #### Base Command
 
 `microsoft-teams-generate-login-url`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1098,11 +1199,15 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!microsoft-teams-generate-login-url```
+
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 >You will be automatically redirected to a link with the following structure:
 >```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -1115,6 +1220,7 @@ There is no context output for this command.
 ***
 Run this command if for some reason you need to rerun the graph authentication process.
 Notes:
+
 - After making changes to permissions in the Azure Portal, reset the authentication to ensure that the token reflects the updated permissions.
 - This command is triggered automatically when an authentication flow type switch is detected. The auto resetting ensures the integration uses the appropriate token.
 - When switching the authentication type to the `Authorization Code Flow`, this command will be triggered automatically. Then you will need to regenerate the **Authorization code** parameter by running the ***microsoft-teams-generate-login-url*** command, and to verify the authentication by running the ***!microsoft-teams-auth-test*** command.
@@ -1132,6 +1238,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ### microsoft-teams-token-permissions-list
+
 ***
 Retrieves the API permissions associated with the used graph access token. 
 
@@ -1142,16 +1249,21 @@ Use this command if you encounter insufficient permissions error when attempting
 `microsoft-teams-token-permissions-list`
 
 ##### Input
+
 There are no input arguments for this command.
 
 ##### Context Output
+
 There is no context output for this command.
 
 ##### Command Example
+
 ```!microsoft-teams-token-permissions-list```
 
 ##### Human Readable Output
+>
 >### The API permissions obtained for the used graph access token are:
+>
 >| Permission          |
 >|---------------------|
 >| Group.ReadWrite.All |
@@ -1160,6 +1272,7 @@ There is no context output for this command.
 
 
 ### microsoft-teams-create-messaging-endpoint
+
 ***
 Generates the messaging endpoint, based on the server URL, the server version, and the instance configurations. 
 
@@ -1176,13 +1289,17 @@ The messaging endpoint should be added to the Demisto bot configuration in Micro
 | engine_url          | If your instance configuration involves a Cortex XSOAR engine, provide the engine's IP (or DNS name) and the port in use in the following format - `https://IP:port` or `http://IP:port`. For example - `https://my-engine.name:443`, `http://1.1.1.1:443`. | Optional     | 
 
 ##### Context Output
+
 There is no context output for this command.
 
 ##### Command Example
+
 ```!microsoft-teams-create-messaging-endpoint```
 
 ##### Human Readable Output
+>
 >### The messaging endpoint is: 
+>
 >|```https://ext-viso-test.crtx-qa-uat.us.paloaltonetworks.com/xsoar/instance/execute/teams-instance```
 >
 > The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the prerequisites of the integration's setup.
@@ -1216,15 +1333,19 @@ Updates a message.
 
 
 ##### Command Example
+
 ```!microsoft-teams-message-update message_id=1737151779 team=MyTeam channel=General message="New message"```
 
 ##### Human Readable Output
+
 Message was sent successfully.
 
 ## Running commands from Microsoft Teams
+
 You can run Cortex XSOAR/Cortex XSIAM commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
 
 ## Direct messages commands
+
 You can chat with the bot in direct messages in order to retrieve data (list incidents and tasks) and run operations (create incident and mirror an investigation) related to Cortex XSOAR.
 
 You can send the message `help` in order to see the supported commands:

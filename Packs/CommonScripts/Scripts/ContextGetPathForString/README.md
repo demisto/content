@@ -1,5 +1,7 @@
 Searches for a string in context and returns the context path, it will return null if nothing is found.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +11,7 @@ Searches for a string in context and returns the context path, it will return nu
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +20,6 @@ Searches for a string in context and returns the context path, it will return nu
 | str | The string to search for in context. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

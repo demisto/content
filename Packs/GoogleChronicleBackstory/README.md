@@ -4,4 +4,4 @@ Chronicle is a cloud service, built as a specialized layer on top of core Google
 
 Chronicle instances, APIs and search parameters are all accessible directly within Cortex XSOAR for full automation of playbooks.
 
-For more information, please visit https://chronicle.security/products/platform/
+For more information, please visit <https://chronicle.security/products/platform/>

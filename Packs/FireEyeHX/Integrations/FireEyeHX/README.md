@@ -5,7 +5,7 @@ FireEye Endpoint Security is an integrated solution that detects what others mis
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. https://192.168.0.1:3000) | True |
+| Server URL (e.g. <https://192.168.0.1:3000>) | True |
 | Credentials | True |
 | Password | True |
 | Version | True |
@@ -17,9 +17,12 @@ FireEye Endpoint Security is an integrated solution that detects what others mis
 | Incidents Fetch Interval | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fireeye-hx-host-containment
+
 ***
 Apply containment for a specific host, so that it no longer has access to other systems.
 
@@ -27,6 +30,7 @@ Apply containment for a specific host, so that it no longer has access to other 
 #### Base Command
 
 `fireeye-hx-host-containment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -64,10 +68,12 @@ Apply containment for a specific host, so that it no longer has access to other 
 
 
 #### Command Example
+
 ``` !fireeye-hx-host-containment agentId=”uGvn34ZkM3bfSf1nOT” ```
 ```!fireeye-hx-host-containment hostname=“DESKTOP-HK8OI62”```
 
 #### Context Example
+
 ```json
  {  
    "FireEyeHX":{  
@@ -125,6 +131,7 @@ Apply containment for a specific host, so that it no longer has access to other 
 
 
 ### fireeye-hx-cancel-containment
+
 ***
 Release a specific host from containment.
 
@@ -132,6 +139,7 @@ Release a specific host from containment.
 #### Base Command
 
 `fireeye-hx-cancel-containment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -169,10 +177,12 @@ Release a specific host from containment.
 
 
 #### Command Examples
+
 ```!fireeye-hx-cancel-containment hostname=“DESKTOP-HK8OI62”```
 ```!fireeye-hx-cancel-containment agentId=”uGvn34ZkM3bfSf1nOT”```
 
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -230,6 +240,7 @@ Release a specific host from containment.
 
 
 ### fireeye-hx-get-alerts
+
 ***
 Get a list of alerts, use the different arguments to filter the results returned.
 
@@ -237,6 +248,7 @@ Get a list of alerts, use the different arguments to filter the results returned
 #### Base Command
 
 `fireeye-hx-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -279,9 +291,11 @@ Get a list of alerts, use the different arguments to filter the results returned
 
 
 #### Command Example
+
 ```!fireeye-hx-get-alerts limit="10" sort="id" sortOrder="descending" ```
 
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -345,6 +359,7 @@ Get a list of alerts, use the different arguments to filter the results returned
 
 
 ### fireeye-hx-suppress-alert
+
 ***
 Suppress alert by ID
 
@@ -352,6 +367,7 @@ Suppress alert by ID
 #### Base Command
 
 `fireeye-hx-suppress-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -364,10 +380,12 @@ Suppress alert by ID
 There is no context output for this command.
 
 #### Command Example
+
 ``` !fireeye-hx-suppress-alert alertId=2 ```
 
 
 ### fireeye-hx-get-indicators
+
 ***
 Get a list of indicators
 
@@ -375,6 +393,7 @@ Get a list of indicators
 #### Base Command
 
 `fireeye-hx-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -406,9 +425,11 @@ Get a list of indicators
 
 
 #### Command Example
+
 ```!fireeye-hx-get-indicators limit=2```
 
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -499,6 +520,7 @@ Get a list of indicators
 #### Human Readable Output
 
 >### FireEye HX Get Indicator- None
+>
 >|OS|Name|Created By|Active Since|Category|Signature|Active Condition|Hosts With Alerts|Source Alerts|
 >|---|---|---|---|---|---|---|---|---|
 >| win, osx, linux | 34757fe7-bdd7-4c85-b0e1-9adfb5e48300 | api-admin | 2021-10-17T11:56:18.818Z | Custom |  | 0 | 0 | 0 |
@@ -506,6 +528,7 @@ Get a list of indicators
 
 
 ### fireeye-hx-get-indicator
+
 ***
 Get a specific indicator details
 
@@ -513,6 +536,7 @@ Get a specific indicator details
 #### Base Command
 
 `fireeye-hx-get-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -540,9 +564,11 @@ Get a specific indicator details
 
 
 #### Command Example
+
 ```!fireeye-hx-get-indicator category=Custom name="5def0b16-87bc-42a2-877a-bca45ebcbc9a"```
 
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -626,6 +652,7 @@ Get a specific indicator details
 #### Human Readable Output
 
 >### Indicator "5def0b16-87bc-42a2-877a-bca45ebcbc9a" Alerts on
+>
 >|Event Type|Operator|Value|
 >|---|---|---|
 >| dnsLookupEvent | equal | example.lol |
@@ -633,6 +660,7 @@ Get a specific indicator details
 
 
 ### fireeye-hx-get-host-information
+
 ***
 Get information on a host associated with an agent.
 
@@ -640,6 +668,7 @@ Get information on a host associated with an agent.
 #### Base Command
 
 `fireeye-hx-get-host-information`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -677,9 +706,11 @@ Get information on a host associated with an agent.
 
 
 #### Command Example
+
 ```!fireeye-hx-get-host-information hostName=”DESKTOP-XXX”```
 
 #### Context Output
+
 ```json
 {
     "FireEyeHX": {
@@ -747,6 +778,7 @@ Get information on a host associated with an agent.
 
 
 ### fireeye-hx-get-alert
+
 ***
 Get details of a specific alert
 
@@ -754,6 +786,7 @@ Get details of a specific alert
 #### Base Command
 
 `fireeye-hx-get-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -783,6 +816,7 @@ Get details of a specific alert
 
 
 ### fireeye-hx-file-acquisition
+
 ***
 Aquire a specific file as a password protected zip file. The password for unlocking the zip file is 'unzip-me'.
 
@@ -790,6 +824,7 @@ Aquire a specific file as a password protected zip file. The password for unlock
 #### Base Command
 
 `fireeye-hx-file-acquisition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -814,9 +849,11 @@ Aquire a specific file as a password protected zip file. The password for unlock
 
 
 #### Command Example
+
 ```!fireeye-hx-file-acquisition fileName="test.txt"filePath="C:\\Users\\user\\Documents" hostName="DESKTOP-DES01"```
 
 #### Context Output
+
 ```json
 "FireEyeHX": {
         "Acquisitions": {
@@ -853,6 +890,7 @@ Aquire a specific file as a password protected zip file. The password for unlock
 
 
 ### fireeye-hx-delete-file-acquisition
+
 ***
 Delete the file acquisition, by ID.
 
@@ -860,6 +898,7 @@ Delete the file acquisition, by ID.
 #### Base Command
 
 `fireeye-hx-delete-file-acquisition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -872,11 +911,13 @@ Delete the file acquisition, by ID.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fireeye-hx-delete-file-acquisition acquisitionId=10```
 
 
 
 ### fireeye-hx-data-acquisition
+
 ***
 Start a data acquisition process to gather artifacts from the system disk and memory. The data is fetched as mans file.
 
@@ -884,6 +925,7 @@ Start a data acquisition process to gather artifacts from the system disk and me
 #### Base Command
 
 `fireeye-hx-data-acquisition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -907,9 +949,11 @@ Start a data acquisition process to gather artifacts from the system disk and me
 
 
 #### Command Example
+
 ```! fireeye-hx-data-acquisition hostName="DESKTOP-DES01" defaultSystemScript=win```
 
 #### Contex Example
+
 ```json
 {
     "FireEyeHX": {
@@ -961,6 +1005,7 @@ Start a data acquisition process to gather artifacts from the system disk and me
 
 
 ### fireeye-hx-delete-data-acquisition
+
 ***
 Delete data acquisition.
 
@@ -968,6 +1013,7 @@ Delete data acquisition.
 #### Base Command
 
 `fireeye-hx-delete-data-acquisition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -980,11 +1026,13 @@ Delete data acquisition.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fireeye-hx-delete-data-acquisition acquisitionId=10```
 
 
 
 ### fireeye-hx-search
+
 ***
 Search endpoints to check all hosts or a subset of hosts for a specific file or indicator.
 
@@ -992,6 +1040,7 @@ Search endpoints to check all hosts or a subset of hosts for a specific file or 
 #### Base Command
 
 `fireeye-hx-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1050,6 +1099,7 @@ Search endpoints to check all hosts or a subset of hosts for a specific file or 
 
 
 ### fireeye-hx-get-host-set-information
+
 ***
 Get a list of all host sets known to your HX Series appliance
 
@@ -1057,6 +1107,7 @@ Get a list of all host sets known to your HX Series appliance
 #### Base Command
 
 `fireeye-hx-get-host-set-information`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1082,9 +1133,11 @@ Get a list of all host sets known to your HX Series appliance
 
 
 #### Command Example
+
 ```!fireeye-hx-get-host-set-information```
 
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -1102,12 +1155,14 @@ Get a list of all host sets known to your HX Series appliance
 #### Human Readable Output
 
 >### FireEye HX Get Host Sets Information
+>
 >|Name|ID|Type|
 >|---|---|---|
 >| Demisto | 1001 | venn |
 
 
 ### fireeye-hx-create-indicator
+
 ***
 Create new indicator
 
@@ -1115,6 +1170,7 @@ Create new indicator
 #### Base Command
 
 `fireeye-hx-create-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1154,6 +1210,7 @@ Create new indicator
 
 
 ### fireeye-hx-append-conditions
+
 ***
 Add conditions to an indicator. Conditions can be MD5, hash values, domain names and IP addresses.
 
@@ -1161,6 +1218,7 @@ Add conditions to an indicator. Conditions can be MD5, hash values, domain names
 #### Base Command
 
 `fireeye-hx-append-conditions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1177,6 +1235,7 @@ There is no context output for this command.
 
 
 ### fireeye-hx-get-all-hosts-information
+
 ***
 Get information on all hosts
 
@@ -1184,6 +1243,7 @@ Get information on all hosts
 #### Base Command
 
 `fireeye-hx-get-all-hosts-information`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1219,9 +1279,11 @@ Get information on all hosts
 
 
 #### Command Example
+
 ```!fireeye-hx-get-all-hosts-information```
 
 #### Context Example
+
 ```json
 {
     "Endpoint": [
@@ -1263,6 +1325,7 @@ Get information on all hosts
 #### Human Readable Output
 
 >### FireEye HX Get Hosts Information
+>
 >|Host Name|Host IP|Agent ID|Agent Version|OS|Last Poll|Containment State|Domain|Last Alert|
 >|---|---|---|---|---|---|---|---|---|
 >| WIN10X64 | 1.1.1.1 | Hqb2ns3oui1fpzg0BxI1Ch | 31.28.17 | win | 2021-10-18T13:59:44.000Z | normal | WORKGROUP | _id: 2<br/>url: /hx/api/v3/alerts/2 |
@@ -1270,6 +1333,7 @@ Get information on all hosts
 
 
 ### fireeye-hx-initiate-data-acquisition
+
 ***
 Initiate a data acquisition process to gather artifacts from the system disk and memory
 
@@ -1277,6 +1341,7 @@ Initiate a data acquisition process to gather artifacts from the system disk and
 #### Base Command
 
 `fireeye-hx-initiate-data-acquisition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1302,6 +1367,7 @@ Initiate a data acquisition process to gather artifacts from the system disk and
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -1309,6 +1375,7 @@ Initiate a data acquisition process to gather artifacts from the system disk and
 
 
 ### fireeye-hx-get-data-acquisition
+
 ***
 Gather artifacts from the system disk and memory for the given acquisition id. The data is fetched as mans file
 
@@ -1316,6 +1383,7 @@ Gather artifacts from the system disk and memory for the given acquisition id. T
 #### Base Command
 
 `fireeye-hx-get-data-acquisition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1337,12 +1405,13 @@ Gather artifacts from the system disk and memory for the given acquisition id. T
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
 
 
- Error Responses - Timeout Error
+Error Responses - Timeout Error
 -------------------------------
 
  **Timeout error** indicates that time limitation for the command has exceeded before results are returned.
@@ -1352,37 +1421,39 @@ Gather artifacts from the system disk and memory for the given acquisition id. T
   
 
   2. Navigate to **Settings** > **About** > **Troubleshooting** > **Server Configuration**.
- 4. click **Add Server Configuration**.
- 6. Set the **key** field using this format: FireEye HX.<*command-name*>.timeout.
- 8. Set the **value** field to the desired time limit for the command to run (in minutes).
+  4. click **Add Server Configuration**.
+  6. Set the **key** field using this format: FireEye HX.<*command-name*>.timeout.
+  8. Set the **value** field to the desired time limit for the command to run (in minutes).
   ![](../../doc_files/FireEyeHX_mceclip0.png)
 
   
 
- Known Limitations
+Known Limitations
 -----------------
 
- ### Acquisitions limitations
+### Acquisitions limitations
 
-  * Acquisitions are stored for 14 days or until the aggregate size of all acquisitions exceeds the acquisition space limit, which is from 30 GB to 9 TB, depending on the HX Series appliance**.** 
- * When the acquisition space is completely full and automatic triages fill 10 percent of the acquisition space, the HX Series appliance reclaims disk space by removing automatic triage collections.
- * When the acquisition space is 90 percent full, no new acquisitions can be created, and bulk acquisitions that are running might be canceled**.** 
-  ### Containment Limitations
+* Acquisitions are stored for 14 days or until the aggregate size of all acquisitions exceeds the acquisition space limit, which is from 30 GB to 9 TB, depending on the HX Series appliance**.** 
+* When the acquisition space is completely full and automatic triages fill 10 percent of the acquisition space, the HX Series appliance reclaims disk space by removing automatic triage collections.
+* When the acquisition space is 90 percent full, no new acquisitions can be created, and bulk acquisitions that are running might be canceled**.** 
 
-  * Some hosts cannot be contained.
- * The time it takes to contain a host varies, based on factors such as agent connectivity, network traffic, and other jobs running in your environment.
- * You can only contain a host if the agent package for that host is available on the HX Series appliance.
+### Containment Limitations
+
+* Some hosts cannot be contained.
+* The time it takes to contain a host varies, based on factors such as agent connectivity, network traffic, and other jobs running in your environment.
+* You can only contain a host if the agent package for that host is available on the HX Series appliance.
    
 
- Command Timeout
+Command Timeout
 ---------------
 
  The following commands have high potential to exceed the default time limit for a running command. To avoid command timeout, change the command timeout settings.
 
-  * fireeye-hx-search
- * fireeye-hx-data-acquisition
- * fireeye-hx-file-acquisition
-  ### Configure Command Timeout
+* fireeye-hx-search
+* fireeye-hx-data-acquisition
+* fireeye-hx-file-acquisition
+
+### Configure Command Timeout
 
 1. Navigate to **Settings** > **About** > **Troubleshooting**. 
 2. In the **Server Configuration** section, click **Add Server Configuration**.

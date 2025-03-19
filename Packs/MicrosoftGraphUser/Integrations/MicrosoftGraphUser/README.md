@@ -2,9 +2,11 @@ Unified gateway to security insights - all from a unified Microsoft Graph User A
 
 
 ## Authentication
+
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).  
 
 Required Permissions:
+
 - Directory.Read.All - Delegated
 - User.ReadWrite.All - Application
 - User.Read - Delegated
@@ -27,7 +29,7 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 | **Parameter**                                                          | **Description**                                                                                                                                                                                                                                                                                                                                        | **Required** |
 |------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | Azure Cloud                        | See option table below.
-| Host URL (e.g., https://graph.microsoft.com)                           |                                                                                                                                                                                                                                                                                                                                                        | True         |
+| Host URL (e.g., <https://graph.microsoft.com>)                           |                                                                                                                                                                                                                                                                                                                                                        | True         |
 | ID / client ID                                                         |                                                                                                                                                                                                                                                                                                                                                        | False        |
 | Token / Tenant ID                                                      |                                                                                                                                                                                                                                                                                                                                                        | False        |
 | Key / Client Secret                                                    |                                                                                                                                                                                                                                                                                                                                                        | False        |
@@ -57,9 +59,12 @@ Azure cloud options
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### msgraph-user-account-disable
+
 ***
 Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
 but does not terminate an existing session. Supported only in a self deployed app flow with the
@@ -69,6 +74,7 @@ Permission: Directory.AccessAsUser.All(Delegated)
 #### Base Command
 
 `msgraph-user-account-disable`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -77,6 +83,7 @@ Permission: Directory.AccessAsUser.All(Delegated)
 
 
 ### msgraph-user-unblock
+
 ***
 Unblock a user.
 
@@ -84,6 +91,7 @@ Unblock a user.
 #### Base Command
 
 `msgraph-user-unblock`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -92,12 +100,15 @@ Unblock a user.
 
 
 #### Command example
+
 ```!msgraph-user-unblock user=1875cf87-ebf9-4a29-b5e2-74e36591296e```
+
 #### Human Readable Output
 
 >"1875cf87-ebf9-4a29-b5e2-74e36591296e" unblocked. It might take several minutes for the changes to take affect across all applications. 
 
 ### msgraph-user-update
+
 ***
 Updates the properties of a user object.
 Permissions: - User.ReadWrite (Delegated & Application)
@@ -106,6 +117,7 @@ Permissions: - User.ReadWrite (Delegated & Application)
 #### Base Command
 
 `msgraph-user-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -132,8 +144,11 @@ Permissions: - User.ReadWrite (Delegated & Application)
 | MSGraphUser.UserPrincipalName | String | User's principal name. | 
 
 #### Command example
+
 ```!msgraph-user-update user=1875cf87-ebf9-4a29-b5e2-74e36591296e updated_fields="MobilePhone=050123456"```
+
 #### Context Example
+
 ```json
 {
     "Account": {
@@ -167,12 +182,14 @@ Permissions: - User.ReadWrite (Delegated & Application)
 #### Human Readable Output
 
 >### 1875cf87-ebf9-4a29-b5e2-74e36591296e data
+>
 >| Display Name |Given Name|ID|Mobile Phone|Surname|User Principal Name|
 --------------|---|---|---|---|---|---|
->| Test 1 | Test | 1875cf87-ebf9-4a29-b5e2-74e36591296e | 050123456 | Test | test1@demistodev.onmicrosoft.com |
+>| Test 1 | Test | 1875cf87-ebf9-4a29-b5e2-74e36591296e | 050123456 | Test | <test1@demistodev.onmicrosoft.com> |
 
 
 ### msgraph-user-delete
+
 ***
 Deletes an existing user.
 Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application)
@@ -181,6 +198,7 @@ Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Appl
 #### Base Command
 
 `msgraph-user-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -189,6 +207,7 @@ Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Appl
 
 
 ### msgraph-user-create
+
 ***
 Creates a new user.
 Permissions: - User.ReadWrite.All (Delegated & Application)
@@ -197,6 +216,7 @@ Permissions: - User.ReadWrite.All (Delegated & Application)
 #### Base Command
 
 `msgraph-user-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -206,7 +226,7 @@ Permissions: - User.ReadWrite.All (Delegated & Application)
 | on_premises_immutable_id | Only needs to be specified when creating a new user account if you are using a federated domain for the user's userPrincipalName (UPN) property. | Optional | 
 | mail_nickname | The mail alias for the user. | Required | 
 | password | The password profile for the user. | Required | 
-| user_principal_name |  The user principal name, for example: foo@test.com. . | Required | 
+| user_principal_name |  The user principal name, for example: <foo@test.com>. . | Required | 
 | other_properties |  Optional properties for the user, for example: "displayName=name,mobilePhone=phone-num" . | Optional | 
 
 
@@ -235,14 +255,16 @@ Permissions: - User.ReadWrite.All (Delegated & Application)
 | Account.Type | String | The account entity type. | 
 
 ### msgraph-user-get
+
 ***
-Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+Retrieves the properties and relationships of a user object. For more information, visit: <https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0>).
 Permissions: - User.Read (Delegated) - User.Read.All (Application)
 
 
 #### Base Command
 
 `msgraph-user-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -276,8 +298,11 @@ Permissions: - User.Read (Delegated) - User.Read.All (Application)
 | Account.Type | String | The account entity type. | 
 
 #### Command example
+
 ```!msgraph-user-get user=1875cf87-ebf9-4a29-b5e2-74e36591296e```
+
 #### Context Example
+
 ```json
 {
     "Account": {
@@ -311,12 +336,14 @@ Permissions: - User.Read (Delegated) - User.Read.All (Application)
 #### Human Readable Output
 
 >### 1875cf87-ebf9-4a29-b5e2-74e36591296e data
+>
 >| Display Name |Given Name|ID|Mobile Phone|Surname|User Principal Name|
 --------------|---|---|---|---|---|---|
->| Test 1 | Test | 1875cf87-ebf9-4a29-b5e2-74e36591296e | 050123456 | Test | test1@demistodev.onmicrosoft.com |
+>| Test 1 | Test | 1875cf87-ebf9-4a29-b5e2-74e36591296e | 050123456 | Test | <test1@demistodev.onmicrosoft.com> |
 
 
 ### msgraph-user-list
+
 ***
 Retrieves a list of user objects.
 Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
@@ -325,13 +352,14 @@ Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
 #### Base Command
 
 `msgraph-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | properties | A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone". | Optional | 
 | next_page | The URL for the next page in the list. | Optional | 
-| filter | Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. | Optional | 
+| filter | Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: <https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http>. | Optional | 
 
 
 #### Context Output
@@ -360,8 +388,11 @@ Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
 | Account.Type | String | The account entity type. | 
 
 #### Command example
+
 ```!msgraph-user-list```
+
 #### Context Example
+
 ```json
 {
     "Account": [
@@ -434,16 +465,19 @@ Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
 #### Human Readable Output
 
 >### All Graph Users
+>
 >To get further results, enter this to the next_page parameter:
 >https:<span>//</span>graph.microsoft.com/v1.0/users?$select=id%2cdisplayName%2cjobTitle%2cmobilePhone%2cmail&$count=true&$skiptoken=m~AQAnO2Q2MjljMzcwNjFjOTQ4NTE4ZjNkODBlYTZjMDc2NTVmOzswOzA7
+>
 >|Display Name|ID|Job Title|Mail|Mobile Phone|
 >|---|---|---|---|---|
->| Test 1 | 023096d0-595e-47b5-80dd-ea5886ab9294 |  | test1@demistodev.onmicrosoft.com | 050505050 |
->| Test 2 | 0628c545-94f6-4d07-8bc6-e6718ba1bc95 |  | test2@demistodev.onmicrosoft.com |  |
+>| Test 1 | 023096d0-595e-47b5-80dd-ea5886ab9294 |  | <test1@demistodev.onmicrosoft.com> | 050505050 |
+>| Test 2 | 0628c545-94f6-4d07-8bc6-e6718ba1bc95 |  | <test2@demistodev.onmicrosoft.com> |  |
 >| Test 3 | 082b3bc9-bb2d-4d12-8b1a-d84a53229696 |  |  |  |
 
 
 ### msgraph-direct-reports
+
 ***
 Retrieves the direct reports for a user. Direct reports are the people who have that user configured as their manager.
 
@@ -451,6 +485,7 @@ Retrieves the direct reports for a user. Direct reports are the people who have 
 #### Base Command
 
 `msgraph-direct-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -463,7 +498,7 @@ Retrieves the direct reports for a user. Direct reports are the people who have 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MSGraphUserDirectReports.Manager | String | The manager's user principal name \(UPN\). | 
-| MSGraphUserDirectReports.Reports.@Odata.Type | String | A string value that can be used to classify user types in your directory, such as "Member" and "Guest". | 
+| <MSGraphUserDirectReports.Reports.@Odata.Type> | String | A string value that can be used to classify user types in your directory, such as "Member" and "Guest". | 
 | MSGraphUserDirectReports.Reports.DisplayName | String | The name displayed in the address book for the user. This is usually the combination of the user's first name, middle initial and last name. | 
 | MSGraphUserDirectReports.Reports.GivenName | String | The given name \(first name\) of the user. | 
 | MSGraphUserDirectReports.Reports.ID | String | The user ID in Microsoft Graph User. | 
@@ -476,8 +511,11 @@ Retrieves the direct reports for a user. Direct reports are the people who have 
 | MSGraphUserDirectReports.Reports.UserPrincipalName | String | The user principal name \(UPN\) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization. | 
 
 #### Command example
+
 ```!msgraph-direct-reports user=259d2a3c-167b-411c-b2ee-88646ce6e054```
+
 #### Context Example
+
 ```json
 {
     "MSGraphUserDirectReports": {
@@ -505,12 +543,14 @@ Retrieves the direct reports for a user. Direct reports are the people who have 
 #### Human Readable Output
 
 >### 259d2a3c-167b-411c-b2ee-88646ce6e054 - direct reports
+>
 >|@Odata.Type| Display Name | Given Name |ID|Mobile Phone| Surname | User Principal Name|
 >|--------|------------|---|---|---------|--------------------------------|---|
->| #microsoft.graph.user | Test 1 | Test | 1875cf87-ebf9-4a29-b5e2-74e36591296e | 050123456 | Test | test1@demistodev.onmicrosoft.com |
+>| #microsoft.graph.user | Test 1 | Test | 1875cf87-ebf9-4a29-b5e2-74e36591296e | 050123456 | Test | <test1@demistodev.onmicrosoft.com> |
 
 
 ### msgraph-user-get-manager
+
 ***
 Retrieves the properties from the manager of a user.
 
@@ -518,6 +558,7 @@ Retrieves the properties from the manager of a user.
 #### Base Command
 
 `msgraph-user-get-manager`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -543,8 +584,11 @@ Retrieves the properties from the manager of a user.
 | MSGraphUserManager.Manager.UserPrincipalName | String | User's principal name. | 
 
 #### Command example
+
 ```!msgraph-user-get-manager user=1875cf87-ebf9-4a29-b5e2-74e36591296e```
+
 #### Context Example
+
 ```json
 {
     "MSGraphUserManager": {
@@ -569,12 +613,14 @@ Retrieves the properties from the manager of a user.
 #### Human Readable Output
 
 >### 1875cf87-ebf9-4a29-b5e2-74e36591296e - manager
+>
 >| Display Name |Given Name|ID|Mobile Phone|Surname|User Principal Name|
 --------------|---|---|---|---|---|---|
->| Test 2 | Test | 259d2a3c-167b-411c-b2ee-88646ce6e054 | 050505050 | Test | test2@demistodev.onmicrosoft.com |
+>| Test 2 | Test | 259d2a3c-167b-411c-b2ee-88646ce6e054 | 050505050 | Test | <test2@demistodev.onmicrosoft.com> |
 
 
 ### msgraph-user-assign-manager
+
 ***
 Assigns a manager to the specified user.
 Permission: - User.ReadWrite (Delegated) or - User.ReadWrite (Application)
@@ -583,6 +629,7 @@ Permission: - User.ReadWrite (Delegated) or - User.ReadWrite (Application)
 #### Base Command
 
 `msgraph-user-assign-manager`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -594,13 +641,17 @@ Permission: - User.ReadWrite (Delegated) or - User.ReadWrite (Application)
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!msgraph-user-assign-manager user=1875cf87-ebf9-4a29-b5e2-74e36591296e manager=259d2a3c-167b-411c-b2ee-88646ce6e054```
+
 #### Human Readable Output
 
 >A manager was assigned to user "1875cf87-ebf9-4a29-b5e2-74e36591296e". It might take several minutes for the changes to take effect across all applications.
 
 ### msgraph-user-change-password
+
 ***
 Changes the user password.
 Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)
@@ -609,6 +660,7 @@ Note: In order to change the password, you need additional permissions: Auth Adm
 #### Base Command
 
 `msgraph-user-change-password`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -620,6 +672,7 @@ Note: In order to change the password, you need additional permissions: Auth Adm
 
 
 ### msgraph-user-test
+
 ***
 Tests connectivity to Microsoft Graph User.
 
@@ -627,6 +680,7 @@ Tests connectivity to Microsoft Graph User.
 #### Base Command
 
 `msgraph-user-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -634,8 +688,11 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!msgraph-user-test```
+
 #### Human Readable Output
 
 >ok
@@ -669,6 +726,7 @@ Generate the login url used for Authorization code flow.
 #### Base Command
 
 `msgraph-user-generate-login-url`
+
 #### Input
 
 There are no input arguments for this command.
@@ -678,11 +736,13 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```msgraph-user-generate-login-url```
 
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -691,13 +751,16 @@ and paste it in your instance configuration under the **Authorization code** par
 
 
 ### msgraph-user-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
 #### Base Command
 
 `msgraph-user-auth-reset`
+
 #### Input
+
 There are no input arguments for this command.
 
 #### Context Output

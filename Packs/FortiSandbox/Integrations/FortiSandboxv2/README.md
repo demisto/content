@@ -63,8 +63,11 @@ Runs reputation on files.
 | DBotScore.Message | String | Optional message to show an API response. For example, "Not found". |
 
 #### Command example
+
 ```!file file=936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -124,8 +127,11 @@ Runs reputation on URLs.
 | DBotScore.Message | String | Optional message to show an API response. For example, "Not found". |
 
 #### Command example
+
 ```!url url=www.google.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -189,7 +195,7 @@ Scheduled command to upload any file type to be sandboxed. The system swiftly id
 | FortiSandbox.Submission.sha256 | String | The SHA256 of the submitted file. |
 | FortiSandbox.Submission.sha1 | String | The SHA1 of the submitted file. |
 | FortiSandbox.Submission.malware_name | String | Virus name if it's a known virus. |
-| FortiSandbox.Submission.vid | Number | The virus ID. Detailed information of the virus can be found at: \`http://www.fortiguard.com/encyclopedia/virus/\#id=virus_id\` by replacing \`virus_id\` with the given value. |
+| FortiSandbox.Submission.vid | Number | The virus ID. Detailed information of the virus can be found at: \`<http://www.fortiguard.com/encyclopedia/virus/\#id=virus_id\`> by replacing \`virus_id\` with the given value. |
 | FortiSandbox.Submission.infected_os | String | The OS version of the FortiSandbox VM that was used to make the suspicious verdict. |
 | FortiSandbox.Submission.detection_os | String | The name of the virtual machine images that scanned the file. |
 | FortiSandbox.Submission.rating_source | String | One of: \`AV Scan\`, \`Cloud Query\`, \`Sandboxing\`, \`Static Scan\`, \`Other\`. |
@@ -216,7 +222,9 @@ Scheduled command to upload any file type to be sandboxed. The system swiftly id
 | DBotScore.Message | String | Optional message to show an API response. For example, "Not found". |
 
 #### Command example
+
 ```!fortisandbox-submission-file-upload entry_id=418@e75b29e7-17a8-41bc-8555-ef233dd8bac9```
+
 #### Human Readable Output
 
 >## No jobs were created yet for the submission 7048126795285831956.
@@ -265,7 +273,7 @@ Scheduled command to upload URLs through a text file or directly to be sandboxed
 | FortiSandbox.Submission.sha256 | String | The SHA256 of the submitted file. |
 | FortiSandbox.Submission.sha1 | String | The SHA1 of the submitted file. |
 | FortiSandbox.Submission.malware_name | String | Virus name if it's a known virus. |
-| FortiSandbox.Submission.vid | Number | The virus ID. Detailed information of the virus can be found at: \`http://www.fortiguard.com/encyclopedia/virus/\#id=virus_id\` by replacing \`virus_id\` with the given value. |
+| FortiSandbox.Submission.vid | Number | The virus ID. Detailed information of the virus can be found at: \`<http://www.fortiguard.com/encyclopedia/virus/\#id=virus_id\`> by replacing \`virus_id\` with the given value. |
 | FortiSandbox.Submission.infected_os | String | The OS version of the FortiSandbox VM that was used to make the suspicious verdict. |
 | FortiSandbox.Submission.detection_os | String | The name of the virtual machine images that scanned the file. |
 | FortiSandbox.Submission.rating_source | String | One of: \`AV Scan\`, \`Cloud Query\`, \`Sandboxing\`, \`Static Scan\`, \`Other\`. |
@@ -287,7 +295,9 @@ Scheduled command to upload URLs through a text file or directly to be sandboxed
 | DBotScore.Message | String | Optional message to show an API response. For example, "Not found". |
 
 #### Command example
+
 ```!fortisandbox-submission-url-upload urls=www.google.com```
+
 #### Human Readable Output
 
 >## No jobs were created yet for the submission 7048126856924000534.
@@ -310,8 +320,11 @@ Cancel a running job submission. Note: Jobs that are already being processed can
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortisandbox-submission-cancel id=7047969418633282747```
+
 #### Human Readable Output
 
 >## The cancellation of the submission 7047969418633282747 was successfully sent.
@@ -349,7 +362,7 @@ Get the verdict of the provided job.
 | FortiSandbox.Submission.rating_source | String | One of: \`AV Scan\`, \`Cloud Query\`, \`Sandboxing\`, \`Static Scan\`, \`Other\`. |
 | FortiSandbox.Submission.score | Number | One of the following: \`RISK_UNKNOWN -1\`, \`RISK_CLEAN 0\`, \`RISK_MALICIOUS 1\`, \`RISK_HIGH 2\`, \`RISK_MEDIUM 3\`, \`RISK_LOW 4\`. |
 | FortiSandbox.Submission.untrusted | Number | 0: the result can be trusted 1: since this files' scan, scan environment has changed. |
-| FortiSandbox.Submission.vid | Number | The virus ID. Detailed information of the virus can be found at: \`http://www.fortiguard.com/encyclopedia/virus/\#id=virus_id\` by replacing \`virus_id\` with the given value. |
+| FortiSandbox.Submission.vid | Number | The virus ID. Detailed information of the virus can be found at: \`<http://www.fortiguard.com/encyclopedia/virus/\#id=virus_id\`> by replacing \`virus_id\` with the given value. |
 | FortiSandbox.Submission.detail_url | String | URL to the job overview. |
 | FortiSandbox.Submission.download_url | String | The input URL/file name encoded in Base64. |
 | FortiSandbox.Submission.jid | String | The ID of the job. |
@@ -378,8 +391,11 @@ Get the verdict of the provided job.
 | DBotScore.Message | String | Optional message to show an API response. For example, "Not found". |
 
 #### Command example
+
 ```!fortisandbox-submission-job-verdict id=7047959279104315513```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -437,6 +453,7 @@ Get the verdict of the provided job.
 #### Human Readable Output
 
 >### The verdict for the job 7047959279104315513:
+>
 >|Jid|Name|Start Ts|Finish Ts|Category|Malware Name|Rating|Detail Url|
 >|---|---|---|---|---|---|---|---|
 >| 7047959279104315513 | helloworld.txt<br/> | 1710245223 | 1710245223 | NotApplicable | N/A | Clean | https:<span>//</span>0.0.0.0/job-detail/?sid=7047959252528592869&jid=7047959279104315513&req_type=file-csearch |
@@ -465,8 +482,11 @@ Get a list of jobs that were created from a submission.
 | FortiSandbox.Submission.jid | String | The ID of the job. |
 
 #### Command example
+
 ```!fortisandbox-submission-job-list id=7047969418633282747```
+
 #### Context Example
+
 ```json
 {
     "FortiSandbox": {
@@ -481,6 +501,7 @@ Get a list of jobs that were created from a submission.
 #### Human Readable Output
 
 >### The submission 7047969418633282747 job IDs:
+>
 >|Jid|
 >|---|
 >| 7047969436160637757 |
@@ -512,8 +533,11 @@ Get a PDF report of the provided submission.
 | InfoFile.Info | String | Basic information of the file. |
 
 #### Command example
+
 ```!fortisandbox-submission-job-report identifier=7047959279104315513```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -532,8 +556,11 @@ Get a PDF report of the provided submission.
 
 
 ## Breaking changes from the previous version of this integration - FortiSandbox v2
+
 ### Commands
+
 #### The following commands were removed in this version:
+
 * ***fortisandbox-simple-file-rating-sha256*** - this command was replaced by ***file***.
 * ***fortisandbox-simple-file-rating-sha1*** - this command was replaced by ***file***.
 * ***fortisandbox-url-rating*** - this command was replaced by ***url***.

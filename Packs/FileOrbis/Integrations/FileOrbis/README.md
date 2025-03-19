@@ -2,6 +2,7 @@ Manage FileOrbis operations.
 This integration was integrated and tested with version >10.0.0 of FileOrbis (You should see XSOAR settings on management).
 
 ## Configure the FileOrbis for Cortex XSOAR
+
 1. Navigate to **Security > XSOAR** settings on management.
 2. Click **Active** checkbox.
 3. Click **Save** button.
@@ -19,9 +20,12 @@ This integration was integrated and tested with version >10.0.0 of FileOrbis (Yo
 | Use system proxy settings | Use system proxy settings. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fileorbis-change-user-status
+
 ***
 Changes user status
 
@@ -29,6 +33,7 @@ Changes user status
 #### Base Command
 
 `fileorbis-change-user-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -48,9 +53,11 @@ Changes user status
 
 
 #### Command Example
+
 ``` !fileorbis-change-user-status user_id="69a0e65c-54d7-4210-9cc4-08c40d1a0b9d" status="1" ```
 
 #### Context Example
+
 ```json
 {
     "FileOrbis": {
@@ -63,6 +70,7 @@ Changes user status
     }
 }
 ```
+
 #### Human Readable Output
 
 | **Success** | **Status** | **Message** | **UserID** |

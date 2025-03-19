@@ -89,9 +89,9 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 >cacheDuration|platformType|threat|threatEntryType|threatType
 >---|---|---|---|---
->300s | ANY_PLATFORM | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
->300s | WINDOWS | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
->300s | LINUX | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
->300s | ALL_PLATFORMS | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
->300s | OSX | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
->300s | CHROME | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
+>300s | ANY_PLATFORM | {"url":"<http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"}> | URL | MALWARE
+>300s | WINDOWS | {"url":"<http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"}> | URL | MALWARE
+>300s | LINUX | {"url":"<http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"}> | URL | MALWARE
+>300s | ALL_PLATFORMS | {"url":"<http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"}> | URL | MALWARE
+>300s | OSX | {"url":"<http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"}> | URL | MALWARE
+>300s | CHROME | {"url":"<http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"}> | URL | MALWARE

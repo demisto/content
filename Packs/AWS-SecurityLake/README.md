@@ -6,7 +6,9 @@ Security Lake helps you analyze security data, so you can get a more complete un
 The data lake is backed by Amazon Simple Storage Service (Amazon S3) buckets, and you retain ownership over your data.
 
 ## What does this pack do
+
 ### AWS SecurityLake
+
 This integration enables you to:
 
 - List data lakes.

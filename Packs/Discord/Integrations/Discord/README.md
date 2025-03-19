@@ -1,4 +1,5 @@
 This is the Discord integration for sending Messages from XSOAR to Discord  server made by Trustnet
+
 ## Configure Discord in Cortex
 
 

@@ -2,20 +2,22 @@ VMware Carbon Black Endpoint Standard (formerly known as Carbon Black Defense) i
 This integration was integrated and tested with version 1.1.2 of Carbon Black Endpoint Standard
 
 ## New Features in Carbon Black Endpoint Standard v2
+
 The Carbon Black Endpoint Standard v1 integration is deprecated because Carbon Black released a new version of their API. Use the Carbon Black Endpoint Standard v2 integration instead. The following are the new features in V2.
 
 ### New Commands
 
 The Carbon Black Endpoint Standard v2 integration supports the following new commands:
+
 * Operations on devices:
-    * [cbd-device-background-scan](#cbd-device-background-scan) Starts a background scan on a device by ID.
-    * [cbd-device-background-scan-stop](#cbd-device-background-scan-stop) Stops a background scan on a device by ID.
-    * [cbd-device-bypass](#cbd-device-bypass) Bypasses a device.
-    * [cbd-device-unbypass](#cbd-device-unbypass) Unbypasses a device.
-    * [cbd-device-policy-update](#cbd-device-policy-update) Updates the devices to the specified policy ID.
-    * [cbd-device-update-sensor-version](#cbd-device-update-sensor-version) Updates the version of a sensor.
-    * [cbd-device-quarantine](#cbd-device-quarantine) Quarantines the device.
-    * [cbd-device-unquarantine](#cbd-device-unquarantine) Unquarantines the device.
+  * [cbd-device-background-scan](#cbd-device-background-scan) Starts a background scan on a device by ID.
+  * [cbd-device-background-scan-stop](#cbd-device-background-scan-stop) Stops a background scan on a device by ID.
+  * [cbd-device-bypass](#cbd-device-bypass) Bypasses a device.
+  * [cbd-device-unbypass](#cbd-device-unbypass) Unbypasses a device.
+  * [cbd-device-policy-update](#cbd-device-policy-update) Updates the devices to the specified policy ID.
+  * [cbd-device-update-sensor-version](#cbd-device-update-sensor-version) Updates the version of a sensor.
+  * [cbd-device-quarantine](#cbd-device-quarantine) Quarantines the device.
+  * [cbd-device-unquarantine](#cbd-device-unquarantine) Unquarantines the device.
 * [cbd-alerts-search](#cbd-alerts-search) Retrieves all alerts using some arguments (query, ID, type, category) to filter the results.
 * [cbd-find-events-details](#cbd-find-events-details) Retrieves details for enriched events.
 * [cbd-find-events-details-results](#cbd-find-events-details-results) Retrieves the status for an enriched events detail request for a given job ID.
@@ -23,6 +25,7 @@ The Carbon Black Endpoint Standard v2 integration supports the following new com
 * [cbd-find-processes-results](#cbd-find-processes-results) Retrieves the results of a process search identified by the job ID.
 
 #### Deprecated Commands in Carbon Black Endpoint Standard v1
+
 The following commands from the Carbon Black Endpoint Standard v1 integration have been deprecated and replaced with the v2 commands as shown.
 
 | Deprecated Command | Replaced with v2 Commands | 
@@ -34,18 +37,23 @@ The following commands from the Carbon Black Endpoint Standard v1 integration ha
 | cbd-find-processes | [cbd-find-processes](#cbd-find-processes) returns a *job_id* to use in the [cbd-find-processes-results](#cbd-find-processes-results) command as an argument. |
 
 ### Playbooks
+
 There are 3 new playbooks:
+
 * **Carbon Black Endpoint Standard Find Events** - Finds events using a search query (or device_id, etc.).
 * **Carbon Black Endpoint Standard Find Event Details** - Receives event IDs and returns details about the event.
 * **Carbon Black Endpoint Standard Find Processes** - Finds processes using a search query (or device_id, etc.).
 
 ### Mapper
+
 **Carbon Black Endpoint Standard Mapper**.
 
 ### Layout
+
 **Carbon Black Endpoint Standard Incoming Layout**.
 
 ### Classifier
+
 **Carbon Black Endpoint Standard**
 
 ## Configure Carbon Black Endpoint Standard in Cortex
@@ -73,18 +81,23 @@ There are 3 new playbooks:
 | Maximum number of incidents per fetch |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cbd-get-alert-details
+
 ***
 Get details about the events that led to an alert by its ID. This includes retrieving metadata around the alert as well as a list of all the events associated with the alert. Only API keys of type “API” can call the alerts API.
 
 ##### Required Permissions
+
 RBAC Permissions Required - org.alerts: READ
 
 #### Base Command
 
 `cbd-get-alert-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -162,9 +175,11 @@ RBAC Permissions Required - org.alerts: READ
 
 
 #### Command Example
+
 ```!cbd-get-alert-details alertId=3d541e1d-8930-4651-85c3-8cd9728d9776```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -237,21 +252,25 @@ RBAC Permissions Required - org.alerts: READ
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Get Alert Details
+>
 >|Id|Category|Device Id|Device Name|Device Username|Create Time|Ioc Hit|Policy Name|Process Name|Type|Severity|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 1234 | THREAT | 5678 | AB\winABC-123 | jon@example.com | 2021-04-04T10:42:54.143Z | ((netconn_port:5355 device_os:WINDOWS)) -enriched:true | default | svchost.exe | WATCHLIST | 1 |
+>| 1234 | THREAT | 5678 | AB\winABC-123 | <jon@example.com> | 2021-04-04T10:42:54.143Z | ((netconn_port:5355 device_os:WINDOWS)) -enriched:true | default | svchost.exe | WATCHLIST | 1 |
 
 
 ### cbd-device-search
+
 ***
 Searches devices in your organization.
 
 ##### Required Permissions
+
 RBAC Permissions Required - device: READ
 
 #### Base Command
 
 `cbd-device-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -351,9 +370,11 @@ RBAC Permissions Required - device: READ
 
 
 #### Command Example
+
 ```!cbd-device-search```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -665,6 +686,7 @@ RBAC Permissions Required - device: READ
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Devices List Results
+>
 >|Id|Name|Os|Policy Name|Quarantined|Status|Target Priority|Last Internal Ip Address|Last External Ip Address|Last Contact Time|Last Location|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 1234 | bo1tapsandbox-01 | LINUX | LRDemo-JH | false | REGISTERED | MEDIUM | 8.8.8.8 | 1.1.1.1 | 2021-04-04T13:29:14.616Z | UNKNOWN |
@@ -672,15 +694,18 @@ RBAC Permissions Required - device: READ
 >| 9101 | RTEST\Oleg-TB2-Win10E | WINDOWS | default | false | REGISTERED | LOW | 8.8.8.8 | 1.1.1.1 | 2021-04-04T13:29:13.643Z | OFFSITE |
 
 ### cbd-find-processes
+
 ***
 Creates a process search job. The results for the search job may be requested using the returned job ID. At least one of the arguments (not including: rows, start, and time_range) is required.
 
 ##### Required Permissions
+
 RBAC Permissions Required - org.search.events: CREATE
 
 #### Base Command
 
 `cbd-find-processes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -719,9 +744,11 @@ RBAC Permissions Required - org.search.events: CREATE
 
 
 #### Command Example
+
 ```!cbd-find-processes query=chrome```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -737,21 +764,25 @@ RBAC Permissions Required - org.search.events: CREATE
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Processes Search
+>
 >|Job Id|
 >|---|
 >| f5a2ae0e-c3f7-4443-882d-009097eaabd3 |
 
 
 ### cbd-find-events
+
 ***
 Creates an enriched events search job. The results for the search job may be requested using the returned job ID. At least one of the arguments (not including: rows, start, time_range) is required).
 
 ##### Required Permissions
+
 RBAC Permissions Required - org.search.events: CREATE
 
 #### Base Command
 
 `cbd-find-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -789,9 +820,11 @@ RBAC Permissions Required - org.search.events: CREATE
 
 
 #### Command Example
+
 ```!cbd-find-events query=chrome```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -807,21 +840,25 @@ RBAC Permissions Required - org.search.events: CREATE
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Events Search
+>
 >|Job Id|
 >|---|
 >| b853bf18-d1f3-4dcc-b590-6626ee547bec |
 
 
 ### cbd-find-processes-results
+
 ***
 Retrieves the results of a process search identified by the job ID.
 
 ##### Required Permissions
+
 RBAC Permissions Required - org.search.events: READ
 
 #### Base Command
 
 `cbd-find-processes-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -845,9 +882,11 @@ RBAC Permissions Required - org.search.events: READ
 
 
 #### Command Example
+
 ```!cbd-find-processes-results job_id=a79f5a25-5ab4-4df7-b806-62e0aedd7034```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -985,6 +1024,7 @@ RBAC Permissions Required - org.search.events: READ
 #### Human Readable Output
 
 >### The Results For The Process Search
+>
 >|Device Id|Device Name|Process Name|Device Policy Id|Enriched Event Type|
 >|---|---|---|---|---|
 >| 1234 | vm-2k12-vg63 | c:\program files (x86)\google\chrome\application\chrome.exe | 1234 | NETWORK |
@@ -993,15 +1033,18 @@ RBAC Permissions Required - org.search.events: READ
 
 
 ### cbd-get-policies
+
 ***
 Gets the list of policies available in your organization.
 
 ##### Required Permissions
+
 Live Response Permissions Required
 
 #### Base Command
 
 `cbd-get-policies`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1021,9 +1064,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cbd-get-policies```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -1791,6 +1836,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Policies
+>
 >|Id|Priority Level|System Policy|Latest Revision|Version|
 >|---|---|---|---|---|
 >| 6525 | LOW | true | 2021-04-02T06:05:12.000Z | 2 |
@@ -1799,15 +1845,18 @@ There are no input arguments for this command.
 
 
 ### cbd-get-policy
+
 ***
 Retrieves a policy object by ID.
 
 ##### Required Permissions
+
 Live Response Permissions Required
 
 #### Base Command
 
 `cbd-get-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1830,9 +1879,11 @@ Live Response Permissions Required
 
 
 #### Command Example
+
 ```!cbd-get-policy policyId=6527```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -2008,21 +2059,25 @@ Live Response Permissions Required
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Policy
+>
 >|Id|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|
 >| 6527 | Detection_Servers | 2021-02-15T20:41:32.000Z | 2 | HIGH | true |
 
 
 ### cbd-set-policy
+
 ***
 Resets policy fields.
 
 ##### Required Permissions
+
 Live Response Permissions Required
 
 #### Base Command
 
 `cbd-set-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2046,9 +2101,11 @@ Live Response Permissions Required
 
 
 #### Command Example
+
 ```!cbd-set-policy policy=123456 keyValue=`{"policyInfo": {"description": "update example", "name": "xsoar test1", "id": 123456, "policy": {"sensorSettings": [{"name": "SHOW_UI", "value": "true"}]}, "priorityLevel": "HIGH"}}````
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -2253,21 +2310,25 @@ Live Response Permissions Required
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Policy
+>
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
 >| 123456 | update example | xsoar test1 | 2021-04-04T13:28:57.000Z | 2 | HIGH | false |
 
 
 ### cbd-create-policy
+
 ***
 Creates a new policy on the CB Defense backend.
 
 ##### Required Permissions
+
 Live Response Permissions Required
 
 #### Base Command
 
 `cbd-create-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2293,9 +2354,11 @@ Live Response Permissions Required
 
 
 #### Command Example
+
 ```!cbd-create-policy description=`This is xsoar's test policy` name=`xsoar test3` priorityLevel=HIGH policy=`{}````
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -2701,21 +2764,25 @@ Live Response Permissions Required
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Policy
+>
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
 >| 67586 | This is xsoar's test policy | xsoar test3 | 2021-04-04T13:28:49.000Z | 2 | HIGH | false |
 
 
 ### cbd-delete-policy
+
 ***
 Deletes a policy from the CB Defense backend. This may return an error if devices are actively assigned to the policy ID requested for deletion. Note: System policies cannot be deleted.
 
 ##### Required Permissions
+
 Live Response Permissions Required
 
 #### Base Command
 
 `cbd-delete-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2728,26 +2795,31 @@ Live Response Permissions Required
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-delete-policy policyId=67585```
 
 #### Human Readable Output
 
 >### The policy 67585 was deleted successfully
+>
 >|Message|Success|
 >|---|---|
 >| Success | true |
 
 
 ### cbd-update-policy
+
 ***
 Updates an existing policy with a new policy. Note: System policies cannot be modified.
 
 ##### Required Permissions
+
 Live Response Permissions Required
 
 #### Base Command
 
 `cbd-update-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2774,9 +2846,11 @@ Live Response Permissions Required
 
 
 #### Command Example
+
 ```!cbd-update-policy id=123456 description=`This is xsoar's test policy after an update` name=`xsoar test1` priorityLevel=LOW policy=`{"sensorSettings": [{"name": "SHOW_UI", "value": "false"}]}````
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -2981,21 +3055,25 @@ Live Response Permissions Required
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Policy
+>
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
 >| 123456 | This is xsoar's test policy after an update | xsoar test1 | 2021-04-04T13:29:00.000Z | 2 | LOW | false |
 
 
 ### cbd-add-rule-to-policy
+
 ***
 Adds a new rule to an existing policy. Note: System policies cannot be modified.
 
 ##### Required Permissions
+
 Live Response Permissions Required
 
 #### Base Command
 
 `cbd-add-rule-to-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3013,9 +3091,11 @@ Live Response Permissions Required
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-add-rule-to-policy action=ALLOW operation=RANSOM required=true type=REPUTATION value=COMPANY_BLACK_LIST policyId=123456```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -3231,21 +3311,25 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Policy
+>
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
 >| 123456 | This is xsoar's test policy after an update | xsoar test1 | 2021-04-04T13:29:04.000Z | 2 | LOW | false |
 
 
 ### cbd-update-rule-in-policy
+
 ***
 Updates an existing rule with a new rule. Note: System policies cannot be modified.
 
 ##### Required Permissions
+
 Live Response Permissions Required
 
 #### Base Command
 
 `cbd-update-rule-in-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3264,9 +3348,11 @@ Live Response Permissions Required
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-update-rule-in-policy action=ALLOW operation=RANSOM required=false id=23 type=REPUTATION value=COMPANY_BLACK_LIST policyId=123456```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -3482,21 +3568,25 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Policy
+>
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
 >| 123456 | This is xsoar's test policy after an update | xsoar test1 | 2021-04-04T13:29:07.000Z | 2 | LOW | false |
 
 
 ### cbd-delete-rule-from-policy
+
 ***
 Removes a rule from an existing policy. Note: System policies cannot be modified.
 
 ##### Required Permissions
+
 Live Response Permissions Required
 
 #### Base Command
 
 `cbd-delete-rule-from-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3510,26 +3600,31 @@ Live Response Permissions Required
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-delete-rule-from-policy policyId=123456 ruleId=23```
 
 #### Human Readable Output
 
 >### The rule was successfully deleted from the policy
+>
 >|Message|Success|
 >|---|---|
 >| Success | true |
 
 
 ### cbd-find-events-results
+
 ***
 Retrieves the result for an enriched events search request for a given job ID. By default returns 10 rows.
 
 ##### Required Permissions
+
 RBAC Permissions Required - org.search.events: READ
 
 #### Base Command
 
 `cbd-find-events-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3553,9 +3648,11 @@ RBAC Permissions Required - org.search.events: READ
 
 
 #### Command Example
+
 ```!cbd-find-events-results job_id=82d1df67-0edc-43e6-8e1b-c3dd9d42a3e9```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -3682,6 +3779,7 @@ RBAC Permissions Required - org.search.events: READ
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Event Results
+>
 >|Event Id|Device Id|Event Network Remote Port|Event Network Remote Ipv4|Event Network Local Ipv4|Enriched Event Type|
 >|---|---|---|---|---|---|
 >| 1234 | 1112 |  |  |  | CREATE_PROCESS |
@@ -3690,15 +3788,18 @@ RBAC Permissions Required - org.search.events: READ
 
 
 ### cbd-find-events-details
+
 ***
 Initiates a request to retrieve detail fields for enriched events.  the job_id that returns from this command can be used to get the results using the "cbd-find-events-details-results" command.
 
 ##### Required Permissions
+
 RBAC Permissions Required - org.search.events: CREATE
 
 #### Base Command
 
 `cbd-find-events-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3714,9 +3815,11 @@ RBAC Permissions Required - org.search.events: CREATE
 
 
 #### Command Example
+
 ```!cbd-find-events-details event_ids=`["b5eeb4ec953411eb8af72dacb2908592"]````
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -3732,21 +3835,25 @@ RBAC Permissions Required - org.search.events: CREATE
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Event Details Search
+>
 >|Job Id|
 >|---|
 >| 3b7c0a61-2ef5-4541-b9bb-2389bd009d32 |
 
 
 ### cbd-find-events-details-results
+
 ***
 Retrieves the status for an enriched events detail request for a given job ID.
 
 ##### Required Permissions
+
 RBAC Permissions Required - org.search.events: READ
 
 #### Base Command
 
 `cbd-find-events-details-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3769,9 +3876,11 @@ RBAC Permissions Required - org.search.events: READ
 
 
 #### Command Example
+
 ```!cbd-find-events-details-results job_id=ee9d8548-e356-45b5-97e5-307713a56e26```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -3872,21 +3981,25 @@ RBAC Permissions Required - org.search.events: READ
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Event Details Results
+>
 >|Event Id|Device Id|Event Network Remote Port|Event Network Remote Ipv4|Event Network Local Ipv4|Enriched Event Type|
 >|---|---|---|---|---|---|
 >| 1234 | 5678 | 80 | 8.8.8.8 | 1.1.1.1 | NETWORK |
 
 
 ### cbd-device-quarantine
+
 ***
 Quarantines the device. Not supported for devices in a Linux operating system.
 
 ##### Required Permissions
+
 RBAC Permissions Required - device.quarantine: EXECUTE
 
 #### Base Command
 
 `cbd-device-quarantine`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3899,6 +4012,7 @@ RBAC Permissions Required - device.quarantine: EXECUTE
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-device-quarantine device_id=123456```
 
 #### Human Readable Output
@@ -3906,16 +4020,19 @@ There is no context output for this command.
 >Device quarantine successfully
 
 ### cbd-device-unquarantine
+
 ***
 Unquarantines the device. Not supported for devices in a Linux operating system.
 
 
 ##### Required Permissions
+
 RBAC Permissions Required - device.quarantine: EXECUTE
 
 #### Base Command
 
 `cbd-device-unquarantine`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3928,6 +4045,7 @@ RBAC Permissions Required - device.quarantine: EXECUTE
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-device-unquarantine device_id=123456```
 
 #### Human Readable Output
@@ -3935,15 +4053,18 @@ There is no context output for this command.
 >Device unquarantine successfully
 
 ### cbd-device-background-scan
+
 ***
 Starts a background scan on the device. Not supported for devices in a Linux operating system.
 
 ##### Required Permissions
+
 RBAC Permissions Required - device.bg-scan: EXECUTE
 
 #### Base Command
 
 `cbd-device-background-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3956,6 +4077,7 @@ RBAC Permissions Required - device.bg-scan: EXECUTE
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-device-background-scan device_id=123456```
 
 #### Human Readable Output
@@ -3963,15 +4085,18 @@ There is no context output for this command.
 >Background scan started successfully
 
 ### cbd-device-background-scan-stop
+
 ***
 Stops a background scan on the device. Not supported for devices in a Linux operating system.
 
 ##### Required Permissions
+
 RBAC Permissions Required - device.bg-scan: EXECUTE
 
 #### Base Command
 
 `cbd-device-background-scan-stop`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3984,6 +4109,7 @@ RBAC Permissions Required - device.bg-scan: EXECUTE
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-device-background-scan-stop device_id=123456```
 
 #### Human Readable Output
@@ -3991,15 +4117,18 @@ There is no context output for this command.
 >Background scan stopped successfully
 
 ### cbd-device-bypass
+
 ***
 Bypasses a device.
 
 ##### Required Permissions
+
 RBAC Permissions Required - device.bypass: EXECUTE
 
 #### Base Command
 
 `cbd-device-bypass`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4012,6 +4141,7 @@ RBAC Permissions Required - device.bypass: EXECUTE
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-device-bypass device_id=123456```
 
 #### Human Readable Output
@@ -4019,15 +4149,18 @@ There is no context output for this command.
 >Device bypass successfully
 
 ### cbd-device-unbypass
+
 ***
 Unbypasses a device.
 
 ##### Required Permissions
+
 RBAC Permissions Required - device.bypass: EXECUTE
 
 #### Base Command
 
 `cbd-device-unbypass`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4040,6 +4173,7 @@ RBAC Permissions Required - device.bypass: EXECUTE
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-device-unbypass device_id=123456```
 
 #### Human Readable Output
@@ -4047,15 +4181,18 @@ There is no context output for this command.
 >Device unbypass successfully
 
 ### cbd-device-policy-update
+
 ***
 Updates the devices to the specified policy ID.
 
 ##### Required Permissions
+
 RBAC Permissions Required - device.policy: UPDATE
 
 #### Base Command
 
 `cbd-device-policy-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4069,6 +4206,7 @@ RBAC Permissions Required - device.policy: UPDATE
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-device-policy-update device_id=123456 policy_id=123456```
 
 #### Human Readable Output
@@ -4076,15 +4214,18 @@ There is no context output for this command.
 >Policy updated successfully
 
 ### cbd-device-update-sensor-version
+
 ***
 Updates the version of a sensor.
 
 ##### Required Permissions
+
 RBAC Permissions Required - device.kits: EXECUTE
 
 #### Base Command
 
 `cbd-device-update-sensor-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4098,6 +4239,7 @@ RBAC Permissions Required - device.kits: EXECUTE
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-device-update-sensor-version device_id=123456 sensor_version={\"AMAZON_LINUX\":\"1.2.3.4\"}```
 
 #### Human Readable Output
@@ -4105,15 +4247,18 @@ There is no context output for this command.
 >Version update to {"AMAZON_LINUX":"1.2.3.4"} was successful
 
 ### cbd-alerts-search
+
 ***
 Gets details on the events that led to an alert. This includes retrieving metadata around the alert as well as the event associated with the alert.
 
 ##### Required Permissions
+
 RBAC Permissions Required - org.alerts: READ
 
 #### Base Command
 
 `cbd-alerts-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4202,9 +4347,11 @@ RBAC Permissions Required - org.alerts: READ
 
 
 #### Command Example
+
 ```!cbd-alerts-search```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -4405,8 +4552,9 @@ RBAC Permissions Required - org.alerts: READ
 #### Human Readable Output
 
 >### Carbon Black Endpoint Standard Alerts List Results
+>
 >|Id|Category|Device Id|Device Name|Device Username|Create Time|Ioc Hit|Policy Name|Process Name|Type|Severity|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 1234 | THREAT | 1234 | QA\win2k16-vg6-11 | jon@example.com | 2021-04-04T13:28:21.393Z |  | default | setup.exe | CB_ANALYTICS | 2 |
->| 5678 | THREAT | 5678 | cb-komand-w12 | jon@example.com | 2021-04-04T13:28:06.812Z | ((netconn_port:5355 device_os:WINDOWS)) -enriched:true | default | svchost.exe | WATCHLIST | 1 |
->| 9101 | THREAT | 9101 | BITGLASS-INC\Win10 | office@net.com | 2021-04-04T13:28:05.399Z | ((netconn_port:5355 device_os:WINDOWS)) -enriched:true | default | svchost.exe | WATCHLIST | 1 |
+>| 1234 | THREAT | 1234 | QA\win2k16-vg6-11 | <jon@example.com> | 2021-04-04T13:28:21.393Z |  | default | setup.exe | CB_ANALYTICS | 2 |
+>| 5678 | THREAT | 5678 | cb-komand-w12 | <jon@example.com> | 2021-04-04T13:28:06.812Z | ((netconn_port:5355 device_os:WINDOWS)) -enriched:true | default | svchost.exe | WATCHLIST | 1 |
+>| 9101 | THREAT | 9101 | BITGLASS-INC\Win10 | <office@net.com> | 2021-04-04T13:28:05.399Z | ((netconn_port:5355 device_os:WINDOWS)) -enriched:true | default | svchost.exe | WATCHLIST | 1 |

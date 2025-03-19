@@ -1,12 +1,14 @@
 # Proofpoint TAP
+
 Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and provide additional visibility into phishing and other malicious email attacks.
 This integration was integrated and tested with version v2 of Proofpoint TAP v2
+
 ## Configure Proofpoint TAP v2 in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | e.g., https://tap-api-v2.proofpoint.com | True |
+| Server URL | e.g., <https://tap-api-v2.proofpoint.com> | True |
 | Service Principal | The password refers to secret | True |
 | API Version | v1 is deprecated for new instances. The current API version is v2. | False |
 | Trust any certificate (not secure) |  | False |
@@ -21,9 +23,12 @@ This integration was integrated and tested with version v2 of Proofpoint TAP v2
 | Incident type |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### proofpoint-get-events
+
 ***
 Fetches events for all clicks and messages relating to known threats within the specified time period. Details as per clicks/blocked.
 
@@ -31,6 +36,7 @@ Fetches events for all clicks and messages relating to known threats within the 
 #### Base Command
 
 `proofpoint-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -137,9 +143,11 @@ Fetches events for all clicks and messages relating to known threats within the 
 
 
 #### Command Example
+
 ```!proofpoint-get-events interval="2021-06-07T02:00:00Z/2021-06-07T03:00:00Z"```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -223,11 +231,13 @@ Fetches events for all clicks and messages relating to known threats within the 
 #### Human Readable Output
 
 >### Proofpoint Events
+>
 >|clicksBlocked|clicksPermitted|messagesBlocked|messagesDelivered|queryEndTime|
 >|---|---|---|---|---|
->|  |  | {'spamScore': 100, 'phishScore': 100, 'threatsInfoMap': [{'threatID': '9a53601a616eb78609e525c0f73356c3d9ff80f00e782105ff08c53ee5a3cfca', 'threatStatus': 'active', 'classification': 'phish', 'threatUrl': 'https://threatinsight.proofpoint.com', 'threatTime': '2021-06-07T00:47:12.000Z', 'threat': 'storage.libertychurch9848737878.io/login/verify', 'campaignID': None, 'threatType': 'url'}, {'threatID': 'b72f9ac2cec86c5f2fb795ea47f2aea23d402fe46c5c64e2565363464b1b0eb2', 'threatStatus': 'active', 'classification': 'phish', 'threatUrl': 'https://threatinsight.proofpoint.com/1c863185-589c-ad2d-49cb-0020fe555aae/threat/email/b72f9ac2cec86c5f2fb795ea47f2aea23d402fe46c5c64e2565363464b1b0eb2', 'threatTime': '2021-06-07T00:47:23.000Z', 'threat': 'libertychurch9848737878.io', 'campaignID': None, 'threatType': 'url'}, {'threatID': 'da0ba8d6a9d5111900f5927eb4554e49fd30e6c5c4ad5b0c975feeb19c3bfc5b', 'threatStatus': 'active', 'classification': 'phish', 'threatUrl': 'https://threatinsight.proofpoint.com/1c863185-589c-ad2d-49cb-0020fe555aae/threat/email/da0ba8d6a9d5111900f5927eb4554e49fd30e6c5c4ad5b0c975feeb19c3bfc5b', 'threatTime': '2021-06-07T00:47:22.000Z', 'threat': 'storage.libertychurch9848737878.io/login/', 'campaignID': None, 'threatType': 'url'}], 'messageTime': '2021-06-07T01:50:00.000Z', 'impostorScore': 0.0, 'malwareScore': 0, 'cluster': 'hosted', 'subject': 'Your mailbox is full......', 'quarantineFolder': 'Phish', 'quarantineRule': 'inbound_spam_phish', 'policyRoutes': ['default_inbound'], 'modulesRun': ['av', 'spf', 'dkimv', 'spam', 'dmarc', 'pdr', 'urldefense'], 'messageSize': 3684, 'headerFrom': '"xxxx@xxx.com" <xxxx@xxx.com>', 'headerReplyTo': None, 'fromAddress': ['xxxx@xxx.com'], 'ccAddresses': [], 'replyToAddress': [], 'toAddresses': ['xxxx@xxx.com'], 'xmailer': None, 'messageParts': [{'disposition': 'inline', 'sha256': '99e2546be00c1c2a763a51861f6b29818710dsfsdf51843dc18542ba1417b0b464c00f', 'md5': 'af671999d59182d8e66e100d4140b577', 'filename': 'text.html', 'sandboxStatus': None, 'oContentType': 'text/html', 'contentType': 'text/html'}], 'completelyRewritten': False, 'id': '867899c4-bbde-9948-f0a2-740c13aafb98', 'QID': '3901vhsdvf0q5d-1', 'GUID': '9JRzwqisvsdvZEzBenEM48ItsowO9ZJ1jmBbo', 'sender': 'xxxx@xxx.com', 'recipient': ['xxxx@xxx.com'], 'senderIP': '000.000.000.000', 'messageID': '<xxxx@xxx.com>'}
+>|  |  | {'spamScore': 100, 'phishScore': 100, 'threatsInfoMap': [{'threatID': '9a53601a616eb78609e525c0f73356c3d9ff80f00e782105ff08c53ee5a3cfca', 'threatStatus': 'active', 'classification': 'phish', 'threatUrl': 'https://threatinsight.proofpoint.com', 'threatTime': '2021-06-07T00:47:12.000Z', 'threat': 'storage.libertychurch9848737878.io/login/verify', 'campaignID': None, 'threatType': 'url'}, {'threatID': 'b72f9ac2cec86c5f2fb795ea47f2aea23d402fe46c5c64e2565363464b1b0eb2', 'threatStatus': 'active', 'classification': 'phish', 'threatUrl': 'https://threatinsight.proofpoint.com/1c863185-589c-ad2d-49cb-0020fe555aae/threat/email/b72f9ac2cec86c5f2fb795ea47f2aea23d402fe46c5c64e2565363464b1b0eb2', 'threatTime': '2021-06-07T00:47:23.000Z', 'threat': 'libertychurch9848737878.io', 'campaignID': None, 'threatType': 'url'}, {'threatID': 'da0ba8d6a9d5111900f5927eb4554e49fd30e6c5c4ad5b0c975feeb19c3bfc5b', 'threatStatus': 'active', 'classification': 'phish', 'threatUrl': 'https://threatinsight.proofpoint.com/1c863185-589c-ad2d-49cb-0020fe555aae/threat/email/da0ba8d6a9d5111900f5927eb4554e49fd30e6c5c4ad5b0c975feeb19c3bfc5b', 'threatTime': '2021-06-07T00:47:22.000Z', 'threat': 'storage.libertychurch9848737878.io/login/', 'campaignID': None, 'threatType': 'url'}], 'messageTime': '2021-06-07T01:50:00.000Z', 'impostorScore': 0.0, 'malwareScore': 0, 'cluster': 'hosted', 'subject': 'Your mailbox is full......', 'quarantineFolder': 'Phish', 'quarantineRule': 'inbound_spam_phish', 'policyRoutes': ['default_inbound'], 'modulesRun': ['av', 'spf', 'dkimv', 'spam', 'dmarc', 'pdr', 'urldefense'], 'messageSize': 3684, 'headerFrom': '"<xxxx@xxx.com>" <xxxx@xxx.com>', 'headerReplyTo': None, 'fromAddress': ['xxxx@xxx.com'], 'ccAddresses': [], 'replyToAddress': [], 'toAddresses': ['xxxx@xxx.com'], 'xmailer': None, 'messageParts': [{'disposition': 'inline', 'sha256': '99e2546be00c1c2a763a51861f6b29818710dsfsdf51843dc18542ba1417b0b464c00f', 'md5': 'af671999d59182d8e66e100d4140b577', 'filename': 'text.html', 'sandboxStatus': None, 'oContentType': 'text/html', 'contentType': 'text/html'}], 'completelyRewritten': False, 'id': '867899c4-bbde-9948-f0a2-740c13aafb98', 'QID': '3901vhsdvf0q5d-1', 'GUID': '9JRzwqisvsdvZEzBenEM48ItsowO9ZJ1jmBbo', 'sender': '<xxxx@xxx.com>', 'recipient': ['xxxx@xxx.com'], 'senderIP': '000.000.000.000', 'messageID': '<xxxx@xxx.com>'}
 
 ### proofpoint-get-forensics
+
 ***
 Returns forensics evidence.
 
@@ -235,6 +245,7 @@ Returns forensics evidence.
 #### Base Command
 
 `proofpoint-get-forensics`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -384,9 +395,11 @@ Returns forensics evidence.
 
 
 #### Command Example
+
 ```!proofpoint-get-forensics campaignId="35e291e1-c9da-4ebd-b229-538bf759b546"```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -414,12 +427,14 @@ Returns forensics evidence.
 #### Human Readable Output
 
 >### Forensic results from ProofPoint for ID: 35e291e1-c9da-4ebd-b229-538bf759b546
+>
 >|ID|Scope|Type|
 >|---|---|---|
 >| 35e291e1-c9da-4ebd-b229-538bf759b546 | CAMPAIGN |  |
 
 
 ### proofpoint-get-events-clicks-blocked
+
 ***
 Gets events for clicks to malicious URLs blocked in the specified time period. Must provide either the interval or time_range arguments.
 
@@ -427,6 +442,7 @@ Gets events for clicks to malicious URLs blocked in the specified time period. M
 #### Base Command
 
 `proofpoint-get-events-clicks-blocked`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -459,9 +475,11 @@ Gets events for clicks to malicious URLs blocked in the specified time period. M
 
 
 #### Command Example
+
 ```!proofpoint-get-events-clicks-blocked time_range="1 hour"```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -487,12 +505,14 @@ Gets events for clicks to malicious URLs blocked in the specified time period. M
 #### Human Readable Output
 
 >### Blocked Clicks
+>
 >|Id|Sender IP|Recipient|Classification|Threat ID|Threat URL|Threat Status|Threat Time|Click Time|Campaign Id|User Agent|
 >|---|---|---|---|---|---|---|---|---|---|---|
->|  | 000.000.000.000 | xxxx@xxx.com | MALWARE | threat_num2 | https://threatinsight.proofpoint.com |  | 2010-01-22T00:00:20.000Z | 2010-01-22T00:00:10.000Z | 46e01b8a-c899-404d-bcd9-189bb393d1a7 | Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0 |
+>|  | 000.000.000.000 | <xxxx@xxx.com> | MALWARE | threat_num2 | <https://threatinsight.proofpoint.com> |  | 2010-01-22T00:00:20.000Z | 2010-01-22T00:00:10.000Z | 46e01b8a-c899-404d-bcd9-189bb393d1a7 | Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0 |
 
 
 ### proofpoint-get-events-clicks-permitted
+
 ***
 Get events for clicks to malicious URLs permitted in the specified time period.  Must provide either the interval or time_range arguments.
 
@@ -500,6 +520,7 @@ Get events for clicks to malicious URLs permitted in the specified time period. 
 #### Base Command
 
 `proofpoint-get-events-clicks-permitted`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -532,9 +553,11 @@ Get events for clicks to malicious URLs permitted in the specified time period. 
 
 
 #### Command Example
+
 ```!proofpoint-get-events-clicks-permitted time_range="1 hour"```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -560,12 +583,14 @@ Get events for clicks to malicious URLs permitted in the specified time period. 
 #### Human Readable Output
 
 >### Permitted Clicks
+>
 >|Id|Sender IP|Recipient|Classification|Threat ID|Threat URL|Threat Status|Threat Time|Click Time|Campaign Id|User Agent|
 >|---|---|---|---|---|---|---|---|---|---|---|
->|  | 192.0.2.255 | xxxx@xxx.com| MALWARE | threat_num2 | https://threatinsight.proofpoint.com |  | 2010-01-22T00:00:20.000Z | 2010-01-22T00:00:10.000Z | 46e01b8a-c899-404d-bcd9-189bb393d1a7 | Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0 |
+>|  | 192.0.2.255 | <xxxx@xxx.com>| MALWARE | threat_num2 | <https://threatinsight.proofpoint.com> |  | 2010-01-22T00:00:20.000Z | 2010-01-22T00:00:10.000Z | 46e01b8a-c899-404d-bcd9-189bb393d1a7 | Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0 |
 
 
 ### proofpoint-get-events-messages-blocked
+
 ***
 Get events for blocked messages in the specified time period. Must provide either the interval or time_range arguments.
 
@@ -573,6 +598,7 @@ Get events for blocked messages in the specified time period. Must provide eithe
 #### Base Command
 
 `proofpoint-get-events-messages-blocked`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -618,9 +644,11 @@ Get events for blocked messages in the specified time period. Must provide eithe
 
 
 #### Command Example
+
 ```!proofpoint-get-events-messages-blocked interval="2021-06-07T02:00:00Z/2021-06-07T03:00:00Z"```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -702,16 +730,20 @@ Get events for blocked messages in the specified time period. Must provide eithe
 #### Human Readable Output
 
 >### Blocked Messages
+>
 >|Sender IP|Sender|Recipient|Subject|Message Size|Message Time|Malware Score|Phish Score|Spam Score|
 >|---|---|---|---|---|---|---|---|---|
->| 000.000.000.000 | xxxx@xxx.com | xxxx@xxx.com | Your mailbox is full...... | 3684 | 2021-06-07T01:50:00.000Z | 0 | 100 | 100 |
+>| 000.000.000.000 | <xxxx@xxx.com> | <xxxx@xxx.com> | Your mailbox is full...... | 3684 | 2021-06-07T01:50:00.000Z | 0 | 100 | 100 |
+>
 >### Blocked Messages Threats Information
+>
 >|Sender|Recipient|Subject|Classification|Threat|Threat Status|Threat Url|Threat ID|Threat Time|Campaign ID|
 >|---|---|---|---|---|---|---|---|---|---|
->| xxxx@xxx.com | xxxx@xxx.com | Your mailbox is full...... | phish | login/verify | active | https://threatinsight.proofpoint.com | 9a53601a616eb78609e525c0f3ee5a3cfca | 2021-06-07T00:47:12.000Z |  |
+>| <xxxx@xxx.com> | <xxxx@xxx.com> | Your mailbox is full...... | phish | login/verify | active | <https://threatinsight.proofpoint.com> | 9a53601a616eb78609e525c0f3ee5a3cfca | 2021-06-07T00:47:12.000Z |  |
 
 
 ### proofpoint-get-events-messages-delivered
+
 ***
 Get events for delivered messages in the specified time period. Must provide either the interval or time_range arguments.
 
@@ -719,6 +751,7 @@ Get events for delivered messages in the specified time period. Must provide eit
 #### Base Command
 
 `proofpoint-get-events-messages-delivered`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -764,9 +797,11 @@ Get events for delivered messages in the specified time period. Must provide eit
 
 
 #### Command Example
+
 ```!proofpoint-get-events-messages-delivered interval="2021-06-03T17:00:00Z/2021-06-03T18:00:00Z"```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -844,17 +879,20 @@ Get events for delivered messages in the specified time period. Must provide eit
 #### Human Readable Output
 
 >### Delivered Messages
+>
 >|Sender IP|Sender|Recipient|Subject|Message Size|Message Time|Malware Score|Phish Score|Spam Score|
 >|---|---|---|---|---|---|---|---|---|
->| 00.000.000.0000 | xxxx@xxx.com | xxxx@xxx.com | = | 10171 | 2021-06-02T13:41:32.000Z | 0 | 0 | 43 |
+>| 00.000.000.0000 | <xxxx@xxx.com> | <xxxx@xxx.com> | = | 10171 | 2021-06-02T13:41:32.000Z | 0 | 0 | 43 |
 >
 >### Delivered Messages Threats Information
+>
 >|Sender|Recipient|Subject|Classification|Threat|Threat Status|Threat Url|Threat ID|Threat Time|Campaign ID|
 >|---|---|---|---|---|---|---|---|---|---|
->| xxxx@xxx.com | xxxx@xxx.com | = | phish | https://bit.ly | active | https://threatinsight.proofpoint.com| 45fe3b35b7bd2adfad6dea4d305bea3e7c1a2b8gfhh03d03 | 2021-06-03T07:17:11.000Z |  |
+>| <xxxx@xxx.com> | <xxxx@xxx.com> | = | phish | <https://bit.ly> | active | <https://threatinsight.proofpoint.com>| 45fe3b35b7bd2adfad6dea4d305bea3e7c1a2b8gfhh03d03 | 2021-06-03T07:17:11.000Z |  |
 
 
 ### proofpoint-list-issues
+
 ***
 Get events for clicks to malicious URLs permitted and messages delivered containing a known attachment threat within the specified time period. Must provide either the interval or time_range arguments.
 
@@ -862,6 +900,7 @@ Get events for clicks to malicious URLs permitted and messages delivered contain
 #### Base Command
 
 `proofpoint-list-issues`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -923,9 +962,11 @@ Get events for clicks to malicious URLs permitted and messages delivered contain
 
 
 #### Command Example
+
 ```!proofpoint-list-issues interval="2021-06-03T17:00:00Z/2021-06-03T18:00:00Z"```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -1003,21 +1044,25 @@ Get events for clicks to malicious URLs permitted and messages delivered contain
 #### Human Readable Output
 
 >### Delivered Messages
+>
 >|Sender IP|Sender|Recipient|Subject|Message Size|Message Time|Malware Score|Phish Score|Spam Score|
 >|---|---|---|---|---|---|---|---|---|
->| 00.000.000.0000 | xxxx@xxx.com | xxxx@xxx.com | = | 10171 | 2021-06-02T13:41:32.000Z | 0 | 0 | 43 |
+>| 00.000.000.0000 | <xxxx@xxx.com> | <xxxx@xxx.com> | = | 10171 | 2021-06-02T13:41:32.000Z | 0 | 0 | 43 |
 >
 >### Delivered Messages Threats Information
+>
 >|Sender|Recipient|Subject|Classification|Threat|Threat Status|Threat Url|Threat ID|Threat Time|Campaign ID|
 >|---|---|---|---|---|---|---|---|---|---|
->| xxxx@xxx.com | xxxx@xxx.com | = | phish | https://bit.ly | active | https://threatinsight.proofpoint.com| 45fe3b35b7bd2adfad6dea4d305bea3e7c1a2b8gfhh03d03 | 2021-06-03T07:17:11.000Z |  |
+>| <xxxx@xxx.com> | <xxxx@xxx.com> | = | phish | <https://bit.ly> | active | <https://threatinsight.proofpoint.com>| 45fe3b35b7bd2adfad6dea4d305bea3e7c1a2b8gfhh03d03 | 2021-06-03T07:17:11.000Z |  |
 
 
 >### Permitted click from list-issues command result:
+>
 >**No entries.**
 
 
 ### proofpoint-list-campaigns
+
 ***
 Gets a list of IDs of campaigns active in a specified time period. Must provide either the interval or time_range arguments.
 
@@ -1025,6 +1070,7 @@ Gets a list of IDs of campaigns active in a specified time period. Must provide 
 #### Base Command
 
 `proofpoint-list-campaigns`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1044,9 +1090,11 @@ Gets a list of IDs of campaigns active in a specified time period. Must provide 
 
 
 #### Command Example
+
 ```!proofpoint-list-campaigns interval="2021-06-01T11:00:00Z/2021-06-02T11:00:00Z"```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -1061,12 +1109,14 @@ Gets a list of IDs of campaigns active in a specified time period. Must provide 
 #### Human Readable Output
 
 >### Campaigns List
+>
 >|Id|Last Updated At|
 >|---|---|
 >| 7c91b71fdgdfgdfg591a1ad38 | 2021-06-03T13:01:57.000Z |
 
 
 ### proofpoint-get-campaign
+
 ***
 Gets details for a given campaign.
 
@@ -1074,6 +1124,7 @@ Gets details for a given campaign.
 #### Base Command
 
 `proofpoint-get-campaign`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1095,9 +1146,11 @@ Gets details for a given campaign.
 
 
 #### Command Example
+
 ```!proofpoint-get-campaign campaign_id="f3ff0874-85ef-475e-b3fe-d05f97b2ed3f"```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -1138,36 +1191,44 @@ Gets details for a given campaign.
 #### Human Readable Output
 
 >### Campaign Information
+>
 >|Id|Name|Description|Start Date|Notable|
 >|---|---|---|---|---|
->| f3ff08dfbdb5e-b3fe-d05f97b2ed3f | AgentTesla \| Compressed Executables \| "techie" \| 25 March 2021 | Messages purporting to be e.g.<br/><br/>* from &lt;xxxx@xxx.com&gt;' and subject "Re: New Order From customer".<br/><br/>These messages contain compressed executables that lead to the installation of AgentTesla with the following example configuration:<br/><br/><pre>C2_Email_Address: xxxx@xxx.com<br/>C2_Email_Password: <br/>C2_Email_Server: xxxx@xxx.com</pre> | 2021-03-25T00:00:00.000Z | false |
+>| f3ff08dfbdb5e-b3fe-d05f97b2ed3f | AgentTesla \| Compressed Executables \| "techie" \| 25 March 2021 | Messages purporting to be e.g.<br/><br/>* from &lt;<xxxx@xxx.com>&gt;' and subject "Re: New Order From customer".<br/><br/>These messages contain compressed executables that lead to the installation of AgentTesla with the following example configuration:<br/><br/><pre>C2_Email_Address: xxxx@xxx.com<br/>C2_Email_Password: <br/>C2_Email_Server: xxxx@xxx.com</pre> | 2021-03-25T00:00:00.000Z | false |
 >
 >### Campaign Members
+>
 >**No entries.**
 >
 >### Families
+>
 >|Id|Name|
 >|---|---|
 >| 69a63403-dbfdfb4cb-3d2ffb85b98e | Keylogger |
 >
 >### Techniques
+>
 >|Id|Name|
 >|---|---|
 >| e48835be-xcvxcvaa-d1a85494067c | Compressed Executable |
 >
 >### Actors
+>
 >**No entries.**
 >
 >### Brands
+>
 >**No entries.**
 >
 >### Malware
+>
 >|Id|Name|
 >|---|---|
 >| 4b500558-23d0-sfdsdf1cb4cf8a21fb | AgentTesla |
 
 
 ### proofpoint-list-most-attacked-users
+
 ***
 Gets a list of the most attacked users in the organization.
 
@@ -1175,6 +1236,7 @@ Gets a list of the most attacked users in the organization.
 #### Base Command
 
 `proofpoint-list-most-attacked-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1196,9 +1258,11 @@ Gets a list of the most attacked users in the organization.
 
 
 #### Command Example
+
 ```!proofpoint-list-most-attacked-users window="14"```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -1240,17 +1304,20 @@ Gets a list of the most attacked users in the organization.
 #### Human Readable Output
 
 >### Most Attacked Users Information
+>
 >|Total Vap Users|Interval|Average Attack Index|Vap Attack Index Threshold|
 >|---|---|---|---|
 >| 7 | 2021-05-23T21:44:53Z/2021-06-06T21:44:53Z | 307.05145 | 965.9637 |
 >
 >### Threat Families
+>
 >|Mailbox|Threat Family Name|Threat Score|
 >|---|---|---|
->| xxxx@xxx.com | credential phishing | 7008 |
+>| <xxxx@xxx.com> | credential phishing | 7008 |
 
 
 ### proofpoint-get-top-clickers
+
 ***
 Gets a list of the top clickers in the organization for a specified time period.
 
@@ -1258,6 +1325,7 @@ Gets a list of the top clickers in the organization for a specified time period.
 #### Base Command
 
 `proofpoint-get-top-clickers`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1277,9 +1345,11 @@ Gets a list of the top clickers in the organization for a specified time period.
 
 
 #### Command Example
+
 ```!proofpoint-get-top-clickers window="90"```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -1319,16 +1389,20 @@ Gets a list of the top clickers in the organization for a specified time period.
 #### Human Readable Output
 
 >### Top Clickers Users Information
+>
 >|Total Top Clickers|Interval|
 >|---|---|
 >| 1 | 2021-03-09T07:17:00Z/2021-06-07T07:17:00Z |
+>
 >### Threat Families
+>
 >|Mailbox|Threat Family Name|Threat Score|
 >|---|---|---|
->| xxxx@xxx.com | Malware |  |
+>| <xxxx@xxx.com> | Malware |  |
 
 
 ### proofpoint-url-decode
+
 ***
 Decodes URLs that have been rewritten by TAP to their original, target URL.
 
@@ -1336,6 +1410,7 @@ Decodes URLs that have been rewritten by TAP to their original, target URL.
 #### Base Command
 
 `proofpoint-url-decode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1353,9 +1428,11 @@ Decodes URLs that have been rewritten by TAP to their original, target URL.
 
 
 #### Command Example
+
 ```!proofpoint-url-decode urls="https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e="```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -1371,6 +1448,7 @@ Decodes URLs that have been rewritten by TAP to their original, target URL.
 #### Human Readable Output
 
 >### URLs decoded information
+>
 >|Encoded Url|Decoded Url|
 >|---|---|
->| https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e= | http://links.mkt3337.com/ctt?kn=3&ms=MzQ3OTg3MDQS1&r=MzkxNzk3NDkwMDA0S0&b=0&j=MTMwMjA1ODYzNQS2&mt=1&rt=0 |
+>| <https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e=> | <http://links.mkt3337.com/ctt?kn=3&ms=MzQ3OTg3MDQS1&r=MzkxNzk3NDkwMDA0S0&b=0&j=MTMwMjA1ODYzNQS2&mt=1&rt=0> |

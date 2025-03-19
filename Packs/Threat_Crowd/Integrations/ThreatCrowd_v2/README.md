@@ -1,5 +1,6 @@
 Query Threat Crowd for reports.
 This integration was integrated and tested with version v2 of ThreatCrowd
+
 ## Configure ThreatCrowd v2 in Cortex
 
 
@@ -12,9 +13,12 @@ This integration was integrated and tested with version v2 of ThreatCrowd
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Get a report of an IP address.
 
@@ -22,6 +26,7 @@ Get a report of an IP address.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -51,9 +56,11 @@ Get a report of an IP address.
 
 
 #### Command Example
+
 ```!ip ip="x.x.x.x"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -107,14 +114,18 @@ Get a report of an IP address.
 #### Human Readable Output
 
 >### Threat crowd report for ip x.x.x.x: 
->  ### DBotScore: BAD 
+>
+> ### DBotScore: BAD 
+>
 >### Resolutions
+>
 >|domain|last_resolved|
 >|---|---|
 >| example.example.net | 2018-08-05 |
->| www.example.com | 2020-01-11 |
+>| <www.example.com> | 2020-01-11 |
 > 
 > ### Hashes
+>
 >|Hashes|
 >|---|
 >| 16e0a5aa50917ecadc0c2a7726e72ad0 |
@@ -126,11 +137,14 @@ Get a report of an IP address.
 >| 36e6f6f725c77e505ccb466069c41c15 |
 >| 3e06f3e3f4da7ea914bbd42bd17c7aef |
 >| 4d8d5d96caa717c92fea5ac2b1d6ae23 |
+>
 >### References
+>
 >**No entries.**
 
 
 ### domain
+
 ***
 Get a report of a domain.
 
@@ -138,6 +152,7 @@ Get a report of a domain.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -169,9 +184,11 @@ Get a report of a domain.
 
 
 #### Command Example
+
 ```!domain domain="example.com"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -215,8 +232,11 @@ Get a report of a domain.
 #### Human Readable Output
 
 >### Threat crowd report for domain example.com 
+>
 > ### DBotScore: BAD 
+>
 >### Resolutions
+>
 >|ip_address|last_resolved|
 >|---|---|
 >| x.x.x.x | 2014-04-01 |
@@ -225,18 +245,21 @@ Get a report of a domain.
 >| x.x.x.x | 2020-10-18 |
 > 
 > ### Subdomains
+>
 >|subdomains|
 >|---|
 >| example.example.com |
 
 > 
->###  
+>### 
+>
 >|emails|permalink|references|response_code|value|votes|
 >|---|---|---|---|---|---|
->| domains@example.info,<br/>example@example.com |  | https://www.threatcrowd.org/domain.php?domain=example.com | example.example | 1 | example.com | -1 |
+>| <domains@example.info>,<br/><example@example.com> |  | <https://www.threatcrowd.org/domain.php?domain=example.com> | example.example | 1 | example.com | -1 |
 
 
 ### email
+
 ***
 Get a report of an email address.
 
@@ -244,6 +267,7 @@ Get a report of an email address.
 #### Base Command
 
 `email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -268,9 +292,11 @@ Get a report of an email address.
 
 
 #### Command Example
+
 ```!email email=example@example.com```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -301,15 +327,18 @@ Get a report of an email address.
 
 #### Human Readable Output
 
->Threat crowd report for Email example@example.com 
+>Threat crowd report for Email <example@example.com> 
 > DBotScore: None 
+>
 > ### Results
+>
 >|domains|permalink|response_code|value|
 >|---|---|---|---|
->| example.com,<br/> | https://www.threatcrowd.org/email.php?email=example@example.com |  | 1 | example@example.com |
+>| example.com,<br/> | <https://www.threatcrowd.org/email.php?email=example@example.com> |  | 1 | <example@example.com> |
 
 
 ### threat-crowd-antivirus
+
 ***
 Get a report of an antivirus.
 
@@ -317,6 +346,7 @@ Get a report of an antivirus.
 #### Base Command
 
 `threat-crowd-antivirus`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -336,9 +366,11 @@ Get a report of an antivirus.
 
 
 #### Command Example
+
 ```!threat-crowd-antivirus antivirus="plugx" using=ThreatCrowdv2_instance_1```
 
 #### Context Example
+
 ```json
 {
     "ThreatCrowd": {
@@ -367,12 +399,14 @@ Get a report of an antivirus.
 #### Human Readable Output
 
 >### Threat crowd report for antivirus plugx
+>
 >|hashes|permalink|response_code|value|
 >|---|---|---|---|
->| 31d0e421894004393c48de1769744687,<br/>5cd3f073caac28f915cf501d00030b31,<br/>bbd9acdd758ec2316855306e83dba469,<br/>ef9d8cd06de03bd5f07b01c1cce9761f,<br/>06bd026c77ce6ab8d85b6ae92bb34034,<br/>2af64ba808c79dccd2c1d84f010b22d7,<br/>47a311084bffddf6c00b4eb947b4086b,<br/>4c5e55c2ce6e9176970aeecf9533cdbf,<br/>4f92b6c9c55142ee562e8237ce1436a2,<br/>876f24c4102a4e911ab77ee328643dd2 | https://www.threatcrowd.org/listMalware.php?antivirus=plugx | 1 | plugx |
+>| 31d0e421894004393c48de1769744687,<br/>5cd3f073caac28f915cf501d00030b31,<br/>bbd9acdd758ec2316855306e83dba469,<br/>ef9d8cd06de03bd5f07b01c1cce9761f,<br/>06bd026c77ce6ab8d85b6ae92bb34034,<br/>2af64ba808c79dccd2c1d84f010b22d7,<br/>47a311084bffddf6c00b4eb947b4086b,<br/>4c5e55c2ce6e9176970aeecf9533cdbf,<br/>4f92b6c9c55142ee562e8237ce1436a2,<br/>876f24c4102a4e911ab77ee328643dd2 | <https://www.threatcrowd.org/listMalware.php?antivirus=plugx> | 1 | plugx |
 
 
 ### file
+
 ***
 Get a report of a hash.
 
@@ -380,6 +414,7 @@ Get a report of a hash.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -412,9 +447,11 @@ Get a report of a hash.
 
 
 #### Command Example
+
 ```!file file=31d0e421894004393c48de1769744687 using=ThreatCrowdv2_instance_1```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -463,8 +500,11 @@ Get a report of a hash.
 #### Human Readable Output
 
 >Threat crowd report for File 31d0e421894004393c48de1769744687: 
+>
 > ### DBotScore: None 
+>
 > ### Results
+>
 >|domains|ips|md5|permalink|references|response_code|scans|sha1|value|
 >|---|---|---|---|---|---|---|---|---|
->| hpservice.homepc.it,facebook.controlliamo.com | 8.8.8.8 | 31d0e421894004393c48de1769744687 | https://www.threatcrowd.org/malware.php?md5=31d0e421894004393c48de1769744687 |  | 1 | Error Scanning File,Malware-gen*Win32*Malware-gen,Gen*Variant.Symmi.50061,W32/Trojan.VSQD-1927,BDS/Plugx.266990,Gen*Variant.Symmi.50061,Gen*Variant.Symmi.50061,Win32/Korplug.CF,W32/FakeAV.CX,Generic11_c.CDQL | 4f0eb746d81a616fb9bdff058997ef47a4209a76 | 31d0e421894004393c48de1769744687 |
+>| hpservice.homepc.it,facebook.controlliamo.com | 8.8.8.8 | 31d0e421894004393c48de1769744687 | <https://www.threatcrowd.org/malware.php?md5=31d0e421894004393c48de1769744687> |  | 1 | Error Scanning File,Malware-gen*Win32*Malware-gen,Gen*Variant.Symmi.50061,W32/Trojan.VSQD-1927,BDS/Plugx.266990,Gen*Variant.Symmi.50061,Gen*Variant.Symmi.50061,Win32/Korplug.CF,W32/FakeAV.CX,Generic11_c.CDQL | 4f0eb746d81a616fb9bdff058997ef47a4209a76 | 31d0e421894004393c48de1769744687 |

@@ -7,7 +7,7 @@ This is the default integration for this content pack when configured by the Dat
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://192.168.0.1:3000) |  | True |
+| Server URL (e.g., <https://192.168.0.1:3000>) |  | True |
 | User Name |  | True |
 | Password |  | True |
 | Trust any certificate (not secure) |  | False |

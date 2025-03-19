@@ -1,6 +1,7 @@
 Indicates whether a given value is a member of given array.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Indicates whether a given value is a member of given array.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Indicates whether a given value is a member of given array.
 | value | The value to look for in the array. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

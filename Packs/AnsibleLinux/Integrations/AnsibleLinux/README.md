@@ -3,30 +3,39 @@ This integration enables the management of Linux hosts directly from XSOAR using
 To use this integration, configure an instance of this integration. This will associate a credential to be used to access hosts when commands are run. The commands from this integration will take the Linux host address(es) as an input, and use the saved credential associated to the instance to execute. Create separate instances if multiple credentials are required.
 
 ## Requirements
+
 The Linux host(s) being managed requires Python >= 2.6. Different commands will use different underlying Ansible modules, and may have their own unique package requirements. Refer to the individual command documentation for further information.
 
 ## Network Requirements
+
 By default, TCP port 22 will be used to initiate a SSH connection to the Linux host.
 
 The connection will be initiated from the XSOAR engine/server specified in the instance settings.
 
 ## Credentials
+
 This integration supports a number of methods of authenticating with the Linux Host:
+
 1. Username & Password entered into the integration
 2. Username & Password credential from the XSOAR credential manager
 3. Username and SSH Key from the XSOAR credential manager
 
 ## Permissions
+
 Whilst un-privileged Linux user privileges can be used, a SuperUser account is recommended as most commands will require elevated permissions to execute.
 
 ## Privilege Escalation
+
 Ansible can use existing privilege escalation systems to allow a user to execute tasks as another. Different from the user that logged into the machine (remote user). This is done using existing privilege escalation tools, which you probably already use or have configured, like sudo, su, or doas. Unless you are remoting into the system as root (uid 0) you will need to escalate your privileges to a super user. Use the Integration parameters `Escalate Privileges`, `Privilege Escalation Method`, `Privilege Escalation User`, `Privileges Escalation Password` to configure this.
 
 ## Concurrency
+
 This integration supports execution of commands against multiple hosts concurrently. The `host` parameter accepts a list of addresses, and will run the command in parallel as per the **Concurrency Factor** value.
 
 ## Further information
+
 This integration is powered by Ansible 2.9. Further information can be found on that the following locations:
+
 * [Ansible Getting Started](https://docs.ansible.com/ansible/latest/user_guide/intro_getting_started.html)
 * [Module Documentation](https://docs.ansible.com/ansible/2.9/modules/list_of_all_modules.html)
 
@@ -45,13 +54,17 @@ This integration is powered by Ansible 2.9. Further information can be found on 
 | Privilege Escalation Password | Set the privilege escalation password. | False |
 
 ## Testing
+
 This integration does not support testing from the integration management screen. Instead it is recommended to use the `!linux-gather-facts`command providing an example `host` as the command argument. This command will connect to the specified host with the configured credentials in the integration, and if successful output general information about the host.
 
 ## Idempotence
+
 The action commands in this integration are idempotent. This means that the result of performing it once is exactly the same as the result of performing it repeatedly without any intervening actions.
 
 ## State Arguement
+
 Some of the commands in this integration take a state argument. These define the desired end state of the object being managed. As a result these commands are able to perform multiple management operations depending on the desired state value. Common state values are:
+
 | **State** | **Result** |
 | --- | --- |
 | present | Object should exist. If not present, the object will be created with the provided parameters. If present but not with correct parameters, it will be modified to met provided parameters. |
@@ -59,22 +72,29 @@ Some of the commands in this integration take a state argument. These define the
 | stopped | Object should be stopped not running. |
 | restarted | Object will be restarted. |
 | absent | Object should not exist. If it it exists it will be deleted. |
+
 ## Complex Command Inputs
+
 Some commands may require structured input arguments such as `lists` or `dictionary`, these can be provided in standard JSON notation wrapped in double curly braces. For example a argument called `dns_servers` that accepts a list of server IPs 8.8.8.8 and 8.8.4.4 would be entered as `dns_servers="{{ ['8.8.8.8', '8.8.4.4'] }}"`.
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
+
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### linux-alternatives
+
 ***
 Manages alternative programs for common commands
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/alternatives_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/alternatives_module.html>
 
 
 #### Base Command
 
 `linux-alternatives`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -93,9 +113,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-alternatives host="123.123.123.123" name="java" path="/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.292.b10-0.el8_3.x86_64/jre/bin/java" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -111,18 +133,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### linux-at
+
 ***
 Schedule the execution of a command or script file via the at command
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/at_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/at_module.html>
 
 
 #### Base Command
 
 `linux-at`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -143,9 +168,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-at host="123.123.123.123" command="ls -d / >/dev/null" count="20" units="minutes" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -165,29 +192,32 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * count: 20
->  * script_file: /tmp/at248vavr9
->  * state: present
->  * units: minutes
+>
+> * changed: True
+> * count: 20
+> * script_file: /tmp/at248vavr9
+> * state: present
+> * units: minutes
 
 
 ### linux-authorized-key
+
 ***
 Adds or removes an SSH authorized key
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/authorized_key_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/authorized_key_module.html>
 
 
 #### Base Command
 
 `linux-authorized-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host | hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance. | Required | 
 | user | The username on the remote host whose authorized_keys file will be modified. | Required | 
-| key | The SSH public key(s), as a string or (since Ansible 1.9) url (https://github.com/username.keys). | Required | 
+| key | The SSH public key(s), as a string or (since Ansible 1.9) url (<https://github.com/username.keys>). | Required | 
 | path | Alternate path to the authorized_keys file.<br/>When unset, this value defaults to `~/.ssh/authorized_keys`. | Optional | 
 | manage_dir | Whether this module should manage the directory of the authorized key file.<br/>If set to `yes`, the module will create the directory, as well as set the owner and permissions of an existing directory.<br/>Be sure to set `manage_dir=no` if you are using an alternate directory for authorized_keys, as set with `path`, since you could lock yourself out of SSH access.<br/>See the example below. Possible values are: Yes, No. Default is Yes. | Optional | 
 | state | Whether the given key (with the given key_options) should or should not be in the file. Possible values are: absent, present. Default is present. | Optional | 
@@ -215,9 +245,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-authorized-key host="123.123.123.123" user="charlie" state="present" key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/...REDACTED..uH04Ef2RICcn1iCtsqQcMZfoqFftRcGi2MyYFyRQrFs= charlie@web01" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -244,29 +276,32 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * comment: None
->  * exclusive: False
->  * follow: False
->  * key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/...REDACTED..uH04Ef2RICcn1iCtsqQcMZfoqFftRcGi2MyYFyRQrFs= charlie@web01
->  * key_options: None
->  * keyfile: /home/charlie/.ssh/authorized_keys
->  * manage_dir: True
->  * path: None
->  * state: present
->  * user: charlie
->  * validate_certs: True
+>
+> * changed: True
+> * comment: None
+> * exclusive: False
+> * follow: False
+> * key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/...REDACTED..uH04Ef2RICcn1iCtsqQcMZfoqFftRcGi2MyYFyRQrFs= charlie@web01
+> * key_options: None
+> * keyfile: /home/charlie/.ssh/authorized_keys
+> * manage_dir: True
+> * path: None
+> * state: present
+> * user: charlie
+> * validate_certs: True
 
 
 ### linux-capabilities
+
 ***
 Manage Linux capabilities
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/capabilities_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/capabilities_module.html>
 
 
 #### Base Command
 
 `linux-capabilities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -284,14 +319,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-cron
+
 ***
 Manage cron.d and crontab entries
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/cron_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/cron_module.html>
 
 
 #### Base Command
 
 `linux-cron`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -323,9 +360,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-cron host="123.123.123.123" name="check dirs" minute="0" hour="5,2" job="ls -alh > /dev/null" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -347,22 +386,29 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ## Envs
->    * 0: EMAIL
->  * ## Jobs
->    * 0: check dirs
+>
+> * changed: False
+>
+> * ## Envs
+>
+>   * 0: EMAIL
+>
+> * ## Jobs
+>
+>   * 0: check dirs
 
 
 ### linux-cronvar
+
 ***
 Manage variables in crontabs
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/cronvar_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/cronvar_module.html>
 
 
 #### Base Command
 
 `linux-cronvar`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -385,9 +431,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-cronvar host="123.123.123.123" name="EMAIL" value="doug@ansibmod.con.com" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -406,20 +454,25 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ## Vars
->    * 0: EMAIL
+>
+> * changed: False
+>
+> * ## Vars
+>
+>   * 0: EMAIL
 
 
 ### linux-dconf
+
 ***
 Modify and read dconf database
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/dconf_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/dconf_module.html>
 
 
 #### Base Command
 
 `linux-dconf`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -438,9 +491,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-dconf host="123.123.123.123" key="/org/gnome/desktop/input-sources/sources" value="[('xkb', 'us'), ('xkb', 'se')]" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -456,18 +511,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### linux-debconf
+
 ***
 Configure a .deb package
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/debconf_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/debconf_module.html>
 
 
 #### Base Command
 
 `linux-debconf`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -488,14 +546,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-filesystem
+
 ***
 Makes a filesystem
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/filesystem_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/filesystem_module.html>
 
 
 #### Base Command
 
 `linux-filesystem`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -515,9 +575,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-filesystem host="123.123.123.123" fstype="ext2" dev="/dev/sdb1" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -533,18 +595,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### linux-firewalld
+
 ***
 Manage arbitrary ports/services with firewalld
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html>
 
 
 #### Base Command
 
 `linux-firewalld`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -573,9 +638,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-firewalld host="123.123.123.123" service="https" permanent="True" state="enabled" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -592,19 +659,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * msg: Permanent operation
+>
+> * changed: False
+> * msg: Permanent operation
 
 
 ### linux-gather-facts
+
 ***
 Gathers facts about remote hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html>
 
 
 #### Base Command
 
 `linux-gather-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -620,9 +690,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-gather-facts host="123.123.123.123"```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -1119,456 +1191,573 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * architecture: x86_64
->  * bios_date: 04/05/2016
->  * bios_vendor: Phoenix Technologies LTD
->  * bios_version: 6.00
->  * board_asset_tag: NA
->  * board_name: 440BX Desktop Reference Platform
->  * board_serial: None
->  * board_vendor: Intel Corporation
->  * board_version: None
->  * chassis_asset_tag: No Asset Tag
->  * chassis_serial: None
->  * chassis_vendor: No Enclosure
->  * chassis_version: N/A
->  * distribution: CentOS
->  * distribution_file_parsed: True
->  * distribution_file_path: /etc/redhat-release
->  * distribution_file_variety: RedHat
->  * distribution_major_version: 8
->  * distribution_release: Core
->  * distribution_version: 8.2
->  * domain: lan
->  * effective_group_id: 0
->  * effective_user_id: 0
->  * fips: False
->  * form_factor: Other
->  * fqdn: web01.lan
->  * hostname: web01
->  * hostnqn: 
->  * is_chroot: False
->  * iscsi_iqn: 
->  * kernel: 4.18.0-193.28.1.el8_2.x86_64
->  * kernel_version: #1 SMP Thu Oct 22 00:20:22 UTC 2020
->  * machine: x86_64
->  * machine_id: c919c21e349f4cbe8cf16333aae4701d
->  * memfree_mb: 1412
->  * memtotal_mb: 1986
->  * nodename: web01
->  * os_family: RedHat
->  * pkg_mgr: dnf
->  * processor_cores: 1
->  * processor_count: 1
->  * processor_nproc: 1
->  * processor_threads_per_core: 1
->  * processor_vcpus: 1
->  * product_name: VMware Virtual Platform
->  * product_serial: VMware-56 4d d7 77 f1 ba 7c ad-c0 15 39 73 2f bb 37 cb
->  * product_uuid: 77d74d56-baf1-ad7c-c015-39732fbb37cb
->  * product_version: None
->  * python_version: 3.6.8
->  * real_group_id: 0
->  * real_user_id: 0
->  * selinux_python_present: True
->  * service_mgr: systemd
->  * ssh_host_key_ecdsa_public: AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBCjaVzeB+MYtwIxrdDDkNbnVktX/g7yWTJsEKq7ccOVo2JbfnB1rYlVKK52faQvw/W34LG7u3MArRV7mGtll4Gc=
->  * ssh_host_key_ecdsa_public_keytype: ecdsa-sha2-nistp256
->  * ssh_host_key_ed25519_public: AAAAC3NzaC1lZDI1NTE5AAAAIEqirZU8jupDZ8wJylI4U2fqx3cFNfCUhZB1u4PKnJnW
->  * ssh_host_key_ed25519_public_keytype: ssh-ed25519
->  * ssh_host_key_rsa_public: AAAAB3NzaC1yc2EAAAADAQABAAABgQDR3MCoxjeeZzPx+bhSkYBC7naJddiDaKB8v9WNqhDlrdu4AkNK1jqdBgWY4pfTG4+x3ZF//rWgAVVVD2Laih8ErlGmhJOPB4hO9SfB7OBUK5uZaD5jRIl5tvqca9GZboXL4WczjQFTA/0mJJ1uAdGiolkmdyv8tKU92C4OioU4UN9q0bOk+H1yuiwKY3EjRxxrcC3Sxjr63Ojew5SJZsqG+J5dGJI7M63NaePTS3rjrIWcmGjfUQa0vLuZ8uTqsxh3IB2tyNuOlov0ybrKPk5JGmtpvhA2Z6D5TmNOgyHEYqM1CrArcZmCX9EVfly+YQ7NCOLoPKKGOqqKOTuw2ygIZuTOt4IGLDXMiMUgkTECAwUuWykeUwhXOeVSyiMknIuCn/ui1/gQU5JKvhsqNko4hNZKerBGe1wu4upZd7tAsQ63ppEO+tQvy5o4BUudZQtdSQc01WzO0RyRcx1NRIJaezzhGa22naKgaf9zER/hRyypNZNmuLlHhVs6fyXvjPM=
->  * ssh_host_key_rsa_public_keytype: ssh-rsa
->  * swapfree_mb: 1639
->  * swaptotal_mb: 1639
->  * system: Linux
->  * system_capabilities_enforced: True
->  * system_vendor: VMware, Inc.
->  * uptime_seconds: 331832
->  * user_dir: /root
->  * user_gecos: root
->  * user_gid: 0
->  * user_id: root
->  * user_shell: /bin/bash
->  * user_uid: 0
->  * userspace_architecture: x86_64
->  * userspace_bits: 64
->  * virtualization_role: guest
->  * virtualization_type: VMware
->  * discovered_interpreter_python: /usr/libexec/platform-python
->  * module_setup: True
->  * ## All_Ipv4_Addresses
->    * 0: 123.123.123.123
->  * ## All_Ipv6_Addresses
->    * 0: 11:11:11:11:11:11:11:11
->    * 1: 11:11:11:11:11:11:11:12
->  * ## Apparmor
->    * status: disabled
->  * ## Cmdline
->    * BOOT_IMAGE: (hd0,msdos1)/vmlinuz-4.18.0-193.28.1.el8_2.x86_64
->    * quiet: True
->    * rd.lvm.lv: cs/swap
->    * resume: /dev/mapper/cs-swap
->    * rhgb: True
->    * ro: True
->    * root: /dev/mapper/cs-root
->  * ## Date_Time
->    * date: 2021-07-08
->    * day: 08
->    * epoch: 1625721772
->    * hour: 14
->    * iso8601: 2021-07-08T05:22:52Z
->    * iso8601_basic: 20210708T142252659998
->    * iso8601_basic_short: 20210708T142252
->    * iso8601_micro: 2021-07-08T05:22:52.659998Z
->    * minute: 22
->    * month: 07
->    * second: 52
->    * time: 14:22:52
->    * tz: JST
->    * tz_offset: +0900
->    * weekday: Thursday
->    * weekday_number: 4
->    * weeknumber: 27
->    * year: 2021
->  * ## Default_Ipv4
->    * address: 123.123.123.123
->    * alias: ens192
->    * broadcast: 192.168.1.255
->    * gateway: 192.168.1.1
->    * interface: ens192
->    * macaddress: 00:0c:29:bb:37:cb
->    * mtu: 1500
->    * netmask: 255.255.255.0
->    * network: 192.168.1.0
->    * type: ether
->  * ## Default_Ipv6
->  * ## Device_Links
->    * ### Ids
->      * #### Dm-0
->        * 0: dm-name-cs-root
->        * 1: dm-uuid-LVM-YhrXQybKNO1NfDqL2i4yG9N2vQ9W5Ix0PcUDF884ZLUhBT5nET1F2IFZs8MpqFoT
->    * ### Labels
->    * ### Masters
->      * #### Sda2
->        * 0: dm-0
->        * 1: dm-1
->    * ### Uuids
->      * #### Dm-0
->        * 0: 9cf80eb1-50cf-48e5-af07-49d65717fab7
->  * ## Devices
->    * ### Dm-0
->      * host: 
->      * model: None
->      * removable: 0
->      * rotational: 0
->      * sas_address: None
->      * sas_device_handle: None
->      * scheduler_mode: 
->      * sectors: 28090368
->      * sectorsize: 512
->      * size: 13.39 GB
->      * support_discard: 0
->      * vendor: None
->      * virtual: 1
->      * #### Holders
->      * #### Links
->        * ##### Ids
->          * 0: dm-name-cs-root
->          * 1: dm-uuid-LVM-YhrXQybKNO1NfDqL2i4yG9N2vQ9W5Ix0PcUDF884ZLUhBT5nET1F2IFZs8MpqFoT
->        * ##### Labels
->        * ##### Masters
->        * ##### Uuids
->          * 0: 9cf80eb1-50cf-48e5-af07-49d65717fab7
->      * #### Partitions
->  * ## Dns
->    * ### Nameservers
->      * 0: 192.168.1.1
->      * 1: fe80::1213:31ff:fec2:926c%ens192
->    * ### Search
->      * 0: lan
->  * ## Ens192
->    * active: True
->    * device: ens192
->    * macaddress: 00:0c:29:bb:37:cb
->    * module: vmxnet3
->    * mtu: 1500
->    * pciid: 0000:0b:00.0
->    * promisc: False
->    * speed: 10000
->    * type: ether
->    * ### Features
->      * esp_hw_offload: off [fixed]
->      * esp_tx_csum_hw_offload: off [fixed]
->      * fcoe_mtu: off [fixed]
->      * generic_receive_offload: on
->      * generic_segmentation_offload: on
->      * highdma: on
->      * hw_tc_offload: off [fixed]
->      * l2_fwd_offload: off [fixed]
->      * large_receive_offload: on
->      * loopback: off [fixed]
->      * netns_local: off [fixed]
->      * ntuple_filters: off [fixed]
->      * receive_hashing: off [fixed]
->      * rx_all: off [fixed]
->      * rx_checksumming: on
->      * rx_fcs: off [fixed]
->      * rx_gro_hw: off [fixed]
->      * rx_udp_tunnel_port_offload: off [fixed]
->      * rx_vlan_filter: on [fixed]
->      * rx_vlan_offload: on
->      * rx_vlan_stag_filter: off [fixed]
->      * rx_vlan_stag_hw_parse: off [fixed]
->      * scatter_gather: on
->      * tcp_segmentation_offload: on
->      * tls_hw_record: off [fixed]
->      * tls_hw_rx_offload: off [fixed]
->      * tls_hw_tx_offload: off [fixed]
->      * tx_checksum_fcoe_crc: off [fixed]
->      * tx_checksum_ip_generic: on
->      * tx_checksum_ipv4: off [fixed]
->      * tx_checksum_ipv6: off [fixed]
->      * tx_checksum_sctp: off [fixed]
->      * tx_checksumming: on
->      * tx_esp_segmentation: off [fixed]
->      * tx_fcoe_segmentation: off [fixed]
->      * tx_gre_csum_segmentation: off [fixed]
->      * tx_gre_segmentation: off [fixed]
->      * tx_gso_partial: off [fixed]
->      * tx_gso_robust: off [fixed]
->      * tx_ipxip4_segmentation: off [fixed]
->      * tx_ipxip6_segmentation: off [fixed]
->      * tx_lockless: off [fixed]
->      * tx_nocache_copy: off
->      * tx_scatter_gather: on
->      * tx_scatter_gather_fraglist: off [fixed]
->      * tx_sctp_segmentation: off [fixed]
->      * tx_tcp6_segmentation: on
->      * tx_tcp_ecn_segmentation: off [fixed]
->      * tx_tcp_mangleid_segmentation: off
->      * tx_tcp_segmentation: on
->      * tx_udp_segmentation: off [fixed]
->      * tx_udp_tnl_csum_segmentation: off [fixed]
->      * tx_udp_tnl_segmentation: off [fixed]
->      * tx_vlan_offload: on
->      * tx_vlan_stag_hw_insert: off [fixed]
->      * vlan_challenged: off [fixed]
->    * ### Hw_Timestamp_Filters
->    * ### Ipv4
->      * address: 123.123.123.123
->      * broadcast: 192.168.1.255
->      * netmask: 255.255.255.0
->      * network: 192.168.1.0
->    * ### Ipv6
->    * ### List
->      * address: 11:11:11:11:11:11:11:11
->      * prefix: 64
->      * scope: global
->    * ### List
->      * address: 11:11:11:11:11:11:11:12
->      * prefix: 64
->      * scope: link
->    * ### Timestamping
->      * 0: rx_software
->      * 1: software
->  * ## Fibre_Channel_Wwn
->  * ## Interfaces
->    * 0: lo
->    * 1: ens192
->  * ## Lo
->    * active: True
->    * device: lo
->    * mtu: 65536
->    * promisc: False
->    * type: loopback
->    * ### Features
->      * esp_hw_offload: off [fixed]
->      * esp_tx_csum_hw_offload: off [fixed]
->      * fcoe_mtu: off [fixed]
->      * generic_receive_offload: on
->      * generic_segmentation_offload: on
->      * highdma: on [fixed]
->      * hw_tc_offload: off [fixed]
->      * l2_fwd_offload: off [fixed]
->      * large_receive_offload: off [fixed]
->      * loopback: on [fixed]
->      * netns_local: on [fixed]
->      * ntuple_filters: off [fixed]
->      * receive_hashing: off [fixed]
->      * rx_all: off [fixed]
->      * rx_checksumming: on [fixed]
->      * rx_fcs: off [fixed]
->      * rx_gro_hw: off [fixed]
->      * rx_udp_tunnel_port_offload: off [fixed]
->      * rx_vlan_filter: off [fixed]
->      * rx_vlan_offload: off [fixed]
->      * rx_vlan_stag_filter: off [fixed]
->      * rx_vlan_stag_hw_parse: off [fixed]
->      * scatter_gather: on
->      * tcp_segmentation_offload: on
->      * tls_hw_record: off [fixed]
->      * tls_hw_rx_offload: off [fixed]
->      * tls_hw_tx_offload: off [fixed]
->      * tx_checksum_fcoe_crc: off [fixed]
->      * tx_checksum_ip_generic: on [fixed]
->      * tx_checksum_ipv4: off [fixed]
->      * tx_checksum_ipv6: off [fixed]
->      * tx_checksum_sctp: on [fixed]
->      * tx_checksumming: on
->      * tx_esp_segmentation: off [fixed]
->      * tx_fcoe_segmentation: off [fixed]
->      * tx_gre_csum_segmentation: off [fixed]
->      * tx_gre_segmentation: off [fixed]
->      * tx_gso_partial: off [fixed]
->      * tx_gso_robust: off [fixed]
->      * tx_ipxip4_segmentation: off [fixed]
->      * tx_ipxip6_segmentation: off [fixed]
->      * tx_lockless: on [fixed]
->      * tx_nocache_copy: off [fixed]
->      * tx_scatter_gather: on [fixed]
->      * tx_scatter_gather_fraglist: on [fixed]
->      * tx_sctp_segmentation: on
->      * tx_tcp6_segmentation: on
->      * tx_tcp_ecn_segmentation: on
->      * tx_tcp_mangleid_segmentation: on
->      * tx_tcp_segmentation: on
->      * tx_udp_segmentation: off [fixed]
->      * tx_udp_tnl_csum_segmentation: off [fixed]
->      * tx_udp_tnl_segmentation: off [fixed]
->      * tx_vlan_offload: off [fixed]
->      * tx_vlan_stag_hw_insert: off [fixed]
->      * vlan_challenged: on [fixed]
->    * ### Hw_Timestamp_Filters
->    * ### Ipv4
->      * address: 127.0.0.1
->      * broadcast: 
->      * netmask: 255.0.0.0
->      * network: 127.0.0.0
->    * ### Ipv6
->    * ### List
->      * address: ::1
->      * prefix: 128
->      * scope: host
->    * ### Timestamping
->      * 0: tx_software
->      * 1: rx_software
->      * 2: software
->  * ## Local
->  * ## Lsb
->  * ## Lvm
->    * ### Lvs
->      * #### Root
->        * size_g: 13.39
->        * vg: cs
->      * #### Swap
->        * size_g: 1.60
->        * vg: cs
->    * ### Pvs
->      * #### /Dev/Sda2
->        * free_g: 0
->        * size_g: 15.00
->        * vg: cs
->    * ### Vgs
->      * #### Cs
->        * free_g: 0
->        * num_lvs: 2
->        * num_pvs: 1
->        * size_g: 15.00
->  * ## Memory_Mb
->    * ### Nocache
->      * free: 1709
->      * used: 277
->    * ### Real
->      * free: 1412
->      * total: 1986
->      * used: 574
->    * ### Swap
->      * cached: 0
->      * free: 1639
->      * total: 1639
->      * used: 0
->  * ## Mounts
->  * ## 9Cf80Eb1-50Cf-48E5-Af07-49D65717Fab7
->    * block_available: 3057926
->    * block_size: 4096
->    * block_total: 3508736
->    * block_used: 450810
->    * device: /dev/mapper/cs-root
->    * fstype: xfs
->    * inode_available: 6985488
->    * inode_total: 7022592
->    * inode_used: 37104
->    * mount: /
->    * options: rw,seclabel,relatime,attr2,inode64,noquota
->    * size_available: 12525264896
->    * size_total: 14371782656
->    * uuid: 9cf80eb1-50cf-48e5-af07-49d65717fab7
->  * ## 99851642-260F-4D7E-83Dd-7Cc990D49126
->    * block_available: 201086
->    * block_size: 4096
->    * block_total: 249830
->    * block_used: 48744
->    * device: /dev/sda1
->    * fstype: ext4
->    * inode_available: 65227
->    * inode_total: 65536
->    * inode_used: 309
->    * mount: /boot
->    * options: rw,seclabel,relatime
->    * size_available: 823648256
->    * size_total: 1023303680
->    * uuid: 99851642-260f-4d7e-83dd-7cc990d49126
->  * ## Proc_Cmdline
->    * BOOT_IMAGE: (hd0,msdos1)/vmlinuz-4.18.0-193.28.1.el8_2.x86_64
->    * quiet: True
->    * resume: /dev/mapper/cs-swap
->    * rhgb: True
->    * ro: True
->    * root: /dev/mapper/cs-root
->    * ### Rd.Lvm.Lv
->      * 0: cs/root
->      * 1: cs/swap
->  * ## Processor
->    * 0: 0
->    * 1: GenuineIntel
->    * 2: Intel(R) Core(TM) i7 CPU         920  @ 2.67GHz
->  * ## Python
->    * executable: /usr/libexec/platform-python
->    * has_sslcontext: True
->    * type: cpython
->    * ### Version
->      * major: 3
->      * micro: 8
->      * minor: 6
->      * releaselevel: final
->      * serial: 0
->    * ### Version_Info
->      * 0: 3
->      * 1: 6
->      * 2: 8
->      * 3: final
->      * 4: 0
->  * ## Selinux
->    * config_mode: enforcing
->    * mode: enforcing
->    * policyvers: 31
->    * status: enabled
->    * type: targeted
->  * ## System_Capabilities
->    * 0: cap_chown
->  * ## Gather_Subset
->    * 0: all
+>
+> * architecture: x86_64
+> * bios_date: 04/05/2016
+> * bios_vendor: Phoenix Technologies LTD
+> * bios_version: 6.00
+> * board_asset_tag: NA
+> * board_name: 440BX Desktop Reference Platform
+> * board_serial: None
+> * board_vendor: Intel Corporation
+> * board_version: None
+> * chassis_asset_tag: No Asset Tag
+> * chassis_serial: None
+> * chassis_vendor: No Enclosure
+> * chassis_version: N/A
+> * distribution: CentOS
+> * distribution_file_parsed: True
+> * distribution_file_path: /etc/redhat-release
+> * distribution_file_variety: RedHat
+> * distribution_major_version: 8
+> * distribution_release: Core
+> * distribution_version: 8.2
+> * domain: lan
+> * effective_group_id: 0
+> * effective_user_id: 0
+> * fips: False
+> * form_factor: Other
+> * fqdn: web01.lan
+> * hostname: web01
+> * hostnqn: 
+> * is_chroot: False
+> * iscsi_iqn: 
+> * kernel: 4.18.0-193.28.1.el8_2.x86_64
+> * kernel_version: #1 SMP Thu Oct 22 00:20:22 UTC 2020
+> * machine: x86_64
+> * machine_id: c919c21e349f4cbe8cf16333aae4701d
+> * memfree_mb: 1412
+> * memtotal_mb: 1986
+> * nodename: web01
+> * os_family: RedHat
+> * pkg_mgr: dnf
+> * processor_cores: 1
+> * processor_count: 1
+> * processor_nproc: 1
+> * processor_threads_per_core: 1
+> * processor_vcpus: 1
+> * product_name: VMware Virtual Platform
+> * product_serial: VMware-56 4d d7 77 f1 ba 7c ad-c0 15 39 73 2f bb 37 cb
+> * product_uuid: 77d74d56-baf1-ad7c-c015-39732fbb37cb
+> * product_version: None
+> * python_version: 3.6.8
+> * real_group_id: 0
+> * real_user_id: 0
+> * selinux_python_present: True
+> * service_mgr: systemd
+> * ssh_host_key_ecdsa_public: AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBCjaVzeB+MYtwIxrdDDkNbnVktX/g7yWTJsEKq7ccOVo2JbfnB1rYlVKK52faQvw/W34LG7u3MArRV7mGtll4Gc=
+> * ssh_host_key_ecdsa_public_keytype: ecdsa-sha2-nistp256
+> * ssh_host_key_ed25519_public: AAAAC3NzaC1lZDI1NTE5AAAAIEqirZU8jupDZ8wJylI4U2fqx3cFNfCUhZB1u4PKnJnW
+> * ssh_host_key_ed25519_public_keytype: ssh-ed25519
+> * ssh_host_key_rsa_public: AAAAB3NzaC1yc2EAAAADAQABAAABgQDR3MCoxjeeZzPx+bhSkYBC7naJddiDaKB8v9WNqhDlrdu4AkNK1jqdBgWY4pfTG4+x3ZF//rWgAVVVD2Laih8ErlGmhJOPB4hO9SfB7OBUK5uZaD5jRIl5tvqca9GZboXL4WczjQFTA/0mJJ1uAdGiolkmdyv8tKU92C4OioU4UN9q0bOk+H1yuiwKY3EjRxxrcC3Sxjr63Ojew5SJZsqG+J5dGJI7M63NaePTS3rjrIWcmGjfUQa0vLuZ8uTqsxh3IB2tyNuOlov0ybrKPk5JGmtpvhA2Z6D5TmNOgyHEYqM1CrArcZmCX9EVfly+YQ7NCOLoPKKGOqqKOTuw2ygIZuTOt4IGLDXMiMUgkTECAwUuWykeUwhXOeVSyiMknIuCn/ui1/gQU5JKvhsqNko4hNZKerBGe1wu4upZd7tAsQ63ppEO+tQvy5o4BUudZQtdSQc01WzO0RyRcx1NRIJaezzhGa22naKgaf9zER/hRyypNZNmuLlHhVs6fyXvjPM=
+> * ssh_host_key_rsa_public_keytype: ssh-rsa
+> * swapfree_mb: 1639
+> * swaptotal_mb: 1639
+> * system: Linux
+> * system_capabilities_enforced: True
+> * system_vendor: VMware, Inc.
+> * uptime_seconds: 331832
+> * user_dir: /root
+> * user_gecos: root
+> * user_gid: 0
+> * user_id: root
+> * user_shell: /bin/bash
+> * user_uid: 0
+> * userspace_architecture: x86_64
+> * userspace_bits: 64
+> * virtualization_role: guest
+> * virtualization_type: VMware
+> * discovered_interpreter_python: /usr/libexec/platform-python
+> * module_setup: True
+>
+> * ## All_Ipv4_Addresses
+>
+>   * 0: 123.123.123.123
+>
+> * ## All_Ipv6_Addresses
+>
+>   * 0: 11:11:11:11:11:11:11:11
+>   * 1: 11:11:11:11:11:11:11:12
+>
+> * ## Apparmor
+>
+>   * status: disabled
+>
+> * ## Cmdline
+>
+>   * BOOT_IMAGE: (hd0,msdos1)/vmlinuz-4.18.0-193.28.1.el8_2.x86_64
+>   * quiet: True
+>   * rd.lvm.lv: cs/swap
+>   * resume: /dev/mapper/cs-swap
+>   * rhgb: True
+>   * ro: True
+>   * root: /dev/mapper/cs-root
+>
+> * ## Date_Time
+>
+>   * date: 2021-07-08
+>   * day: 08
+>   * epoch: 1625721772
+>   * hour: 14
+>   * iso8601: 2021-07-08T05:22:52Z
+>   * iso8601_basic: 20210708T142252659998
+>   * iso8601_basic_short: 20210708T142252
+>   * iso8601_micro: 2021-07-08T05:22:52.659998Z
+>   * minute: 22
+>   * month: 07
+>   * second: 52
+>   * time: 14:22:52
+>   * tz: JST
+>   * tz_offset: +0900
+>   * weekday: Thursday
+>   * weekday_number: 4
+>   * weeknumber: 27
+>   * year: 2021
+>
+> * ## Default_Ipv4
+>
+>   * address: 123.123.123.123
+>   * alias: ens192
+>   * broadcast: 192.168.1.255
+>   * gateway: 192.168.1.1
+>   * interface: ens192
+>   * macaddress: 00:0c:29:bb:37:cb
+>   * mtu: 1500
+>   * netmask: 255.255.255.0
+>   * network: 192.168.1.0
+>   * type: ether
+>
+> * ## Default_Ipv6
+>
+> * ## Device_Links
+>
+>   * ### Ids
+>
+>     * #### Dm-0
+>
+>       * 0: dm-name-cs-root
+>       * 1: dm-uuid-LVM-YhrXQybKNO1NfDqL2i4yG9N2vQ9W5Ix0PcUDF884ZLUhBT5nET1F2IFZs8MpqFoT
+>
+>   * ### Labels
+>
+>   * ### Masters
+>
+>     * #### Sda2
+>
+>       * 0: dm-0
+>       * 1: dm-1
+>
+>   * ### Uuids
+>
+>     * #### Dm-0
+>
+>       * 0: 9cf80eb1-50cf-48e5-af07-49d65717fab7
+>
+> * ## Devices
+>
+>   * ### Dm-0
+>
+>     * host: 
+>     * model: None
+>     * removable: 0
+>     * rotational: 0
+>     * sas_address: None
+>     * sas_device_handle: None
+>     * scheduler_mode: 
+>     * sectors: 28090368
+>     * sectorsize: 512
+>     * size: 13.39 GB
+>     * support_discard: 0
+>     * vendor: None
+>     * virtual: 1
+>
+>     * #### Holders
+>
+>     * #### Links
+>
+>       * ##### Ids
+>
+>         * 0: dm-name-cs-root
+>         * 1: dm-uuid-LVM-YhrXQybKNO1NfDqL2i4yG9N2vQ9W5Ix0PcUDF884ZLUhBT5nET1F2IFZs8MpqFoT
+>
+>       * ##### Labels
+>
+>       * ##### Masters
+>
+>       * ##### Uuids
+>
+>         * 0: 9cf80eb1-50cf-48e5-af07-49d65717fab7
+>
+>     * #### Partitions
+>
+> * ## Dns
+>
+>   * ### Nameservers
+>
+>     * 0: 192.168.1.1
+>     * 1: fe80::1213:31ff:fec2:926c%ens192
+>
+>   * ### Search
+>
+>     * 0: lan
+>
+> * ## Ens192
+>
+>   * active: True
+>   * device: ens192
+>   * macaddress: 00:0c:29:bb:37:cb
+>   * module: vmxnet3
+>   * mtu: 1500
+>   * pciid: 0000:0b:00.0
+>   * promisc: False
+>   * speed: 10000
+>   * type: ether
+>
+>   * ### Features
+>
+>     * esp_hw_offload: off [fixed]
+>     * esp_tx_csum_hw_offload: off [fixed]
+>     * fcoe_mtu: off [fixed]
+>     * generic_receive_offload: on
+>     * generic_segmentation_offload: on
+>     * highdma: on
+>     * hw_tc_offload: off [fixed]
+>     * l2_fwd_offload: off [fixed]
+>     * large_receive_offload: on
+>     * loopback: off [fixed]
+>     * netns_local: off [fixed]
+>     * ntuple_filters: off [fixed]
+>     * receive_hashing: off [fixed]
+>     * rx_all: off [fixed]
+>     * rx_checksumming: on
+>     * rx_fcs: off [fixed]
+>     * rx_gro_hw: off [fixed]
+>     * rx_udp_tunnel_port_offload: off [fixed]
+>     * rx_vlan_filter: on [fixed]
+>     * rx_vlan_offload: on
+>     * rx_vlan_stag_filter: off [fixed]
+>     * rx_vlan_stag_hw_parse: off [fixed]
+>     * scatter_gather: on
+>     * tcp_segmentation_offload: on
+>     * tls_hw_record: off [fixed]
+>     * tls_hw_rx_offload: off [fixed]
+>     * tls_hw_tx_offload: off [fixed]
+>     * tx_checksum_fcoe_crc: off [fixed]
+>     * tx_checksum_ip_generic: on
+>     * tx_checksum_ipv4: off [fixed]
+>     * tx_checksum_ipv6: off [fixed]
+>     * tx_checksum_sctp: off [fixed]
+>     * tx_checksumming: on
+>     * tx_esp_segmentation: off [fixed]
+>     * tx_fcoe_segmentation: off [fixed]
+>     * tx_gre_csum_segmentation: off [fixed]
+>     * tx_gre_segmentation: off [fixed]
+>     * tx_gso_partial: off [fixed]
+>     * tx_gso_robust: off [fixed]
+>     * tx_ipxip4_segmentation: off [fixed]
+>     * tx_ipxip6_segmentation: off [fixed]
+>     * tx_lockless: off [fixed]
+>     * tx_nocache_copy: off
+>     * tx_scatter_gather: on
+>     * tx_scatter_gather_fraglist: off [fixed]
+>     * tx_sctp_segmentation: off [fixed]
+>     * tx_tcp6_segmentation: on
+>     * tx_tcp_ecn_segmentation: off [fixed]
+>     * tx_tcp_mangleid_segmentation: off
+>     * tx_tcp_segmentation: on
+>     * tx_udp_segmentation: off [fixed]
+>     * tx_udp_tnl_csum_segmentation: off [fixed]
+>     * tx_udp_tnl_segmentation: off [fixed]
+>     * tx_vlan_offload: on
+>     * tx_vlan_stag_hw_insert: off [fixed]
+>     * vlan_challenged: off [fixed]
+>
+>   * ### Hw_Timestamp_Filters
+>
+>   * ### Ipv4
+>
+>     * address: 123.123.123.123
+>     * broadcast: 192.168.1.255
+>     * netmask: 255.255.255.0
+>     * network: 192.168.1.0
+>
+>   * ### Ipv6
+>
+>   * ### List
+>
+>     * address: 11:11:11:11:11:11:11:11
+>     * prefix: 64
+>     * scope: global
+>
+>   * ### List
+>
+>     * address: 11:11:11:11:11:11:11:12
+>     * prefix: 64
+>     * scope: link
+>
+>   * ### Timestamping
+>
+>     * 0: rx_software
+>     * 1: software
+>
+> * ## Fibre_Channel_Wwn
+>
+> * ## Interfaces
+>
+>   * 0: lo
+>   * 1: ens192
+>
+> * ## Lo
+>
+>   * active: True
+>   * device: lo
+>   * mtu: 65536
+>   * promisc: False
+>   * type: loopback
+>
+>   * ### Features
+>
+>     * esp_hw_offload: off [fixed]
+>     * esp_tx_csum_hw_offload: off [fixed]
+>     * fcoe_mtu: off [fixed]
+>     * generic_receive_offload: on
+>     * generic_segmentation_offload: on
+>     * highdma: on [fixed]
+>     * hw_tc_offload: off [fixed]
+>     * l2_fwd_offload: off [fixed]
+>     * large_receive_offload: off [fixed]
+>     * loopback: on [fixed]
+>     * netns_local: on [fixed]
+>     * ntuple_filters: off [fixed]
+>     * receive_hashing: off [fixed]
+>     * rx_all: off [fixed]
+>     * rx_checksumming: on [fixed]
+>     * rx_fcs: off [fixed]
+>     * rx_gro_hw: off [fixed]
+>     * rx_udp_tunnel_port_offload: off [fixed]
+>     * rx_vlan_filter: off [fixed]
+>     * rx_vlan_offload: off [fixed]
+>     * rx_vlan_stag_filter: off [fixed]
+>     * rx_vlan_stag_hw_parse: off [fixed]
+>     * scatter_gather: on
+>     * tcp_segmentation_offload: on
+>     * tls_hw_record: off [fixed]
+>     * tls_hw_rx_offload: off [fixed]
+>     * tls_hw_tx_offload: off [fixed]
+>     * tx_checksum_fcoe_crc: off [fixed]
+>     * tx_checksum_ip_generic: on [fixed]
+>     * tx_checksum_ipv4: off [fixed]
+>     * tx_checksum_ipv6: off [fixed]
+>     * tx_checksum_sctp: on [fixed]
+>     * tx_checksumming: on
+>     * tx_esp_segmentation: off [fixed]
+>     * tx_fcoe_segmentation: off [fixed]
+>     * tx_gre_csum_segmentation: off [fixed]
+>     * tx_gre_segmentation: off [fixed]
+>     * tx_gso_partial: off [fixed]
+>     * tx_gso_robust: off [fixed]
+>     * tx_ipxip4_segmentation: off [fixed]
+>     * tx_ipxip6_segmentation: off [fixed]
+>     * tx_lockless: on [fixed]
+>     * tx_nocache_copy: off [fixed]
+>     * tx_scatter_gather: on [fixed]
+>     * tx_scatter_gather_fraglist: on [fixed]
+>     * tx_sctp_segmentation: on
+>     * tx_tcp6_segmentation: on
+>     * tx_tcp_ecn_segmentation: on
+>     * tx_tcp_mangleid_segmentation: on
+>     * tx_tcp_segmentation: on
+>     * tx_udp_segmentation: off [fixed]
+>     * tx_udp_tnl_csum_segmentation: off [fixed]
+>     * tx_udp_tnl_segmentation: off [fixed]
+>     * tx_vlan_offload: off [fixed]
+>     * tx_vlan_stag_hw_insert: off [fixed]
+>     * vlan_challenged: on [fixed]
+>
+>   * ### Hw_Timestamp_Filters
+>
+>   * ### Ipv4
+>
+>     * address: 127.0.0.1
+>     * broadcast: 
+>     * netmask: 255.0.0.0
+>     * network: 127.0.0.0
+>
+>   * ### Ipv6
+>
+>   * ### List
+>
+>     * address: ::1
+>     * prefix: 128
+>     * scope: host
+>
+>   * ### Timestamping
+>
+>     * 0: tx_software
+>     * 1: rx_software
+>     * 2: software
+>
+> * ## Local
+>
+> * ## Lsb
+>
+> * ## Lvm
+>
+>   * ### Lvs
+>
+>     * #### Root
+>
+>       * size_g: 13.39
+>       * vg: cs
+>
+>     * #### Swap
+>
+>       * size_g: 1.60
+>       * vg: cs
+>
+>   * ### Pvs
+>
+>     * #### /Dev/Sda2
+>
+>       * free_g: 0
+>       * size_g: 15.00
+>       * vg: cs
+>
+>   * ### Vgs
+>
+>     * #### Cs
+>
+>       * free_g: 0
+>       * num_lvs: 2
+>       * num_pvs: 1
+>       * size_g: 15.00
+>
+> * ## Memory_Mb
+>
+>   * ### Nocache
+>
+>     * free: 1709
+>     * used: 277
+>
+>   * ### Real
+>
+>     * free: 1412
+>     * total: 1986
+>     * used: 574
+>
+>   * ### Swap
+>
+>     * cached: 0
+>     * free: 1639
+>     * total: 1639
+>     * used: 0
+>
+> * ## Mounts
+>
+> * ## 9Cf80Eb1-50Cf-48E5-Af07-49D65717Fab7
+>
+>   * block_available: 3057926
+>   * block_size: 4096
+>   * block_total: 3508736
+>   * block_used: 450810
+>   * device: /dev/mapper/cs-root
+>   * fstype: xfs
+>   * inode_available: 6985488
+>   * inode_total: 7022592
+>   * inode_used: 37104
+>   * mount: /
+>   * options: rw,seclabel,relatime,attr2,inode64,noquota
+>   * size_available: 12525264896
+>   * size_total: 14371782656
+>   * uuid: 9cf80eb1-50cf-48e5-af07-49d65717fab7
+>
+> * ## 99851642-260F-4D7E-83Dd-7Cc990D49126
+>
+>   * block_available: 201086
+>   * block_size: 4096
+>   * block_total: 249830
+>   * block_used: 48744
+>   * device: /dev/sda1
+>   * fstype: ext4
+>   * inode_available: 65227
+>   * inode_total: 65536
+>   * inode_used: 309
+>   * mount: /boot
+>   * options: rw,seclabel,relatime
+>   * size_available: 823648256
+>   * size_total: 1023303680
+>   * uuid: 99851642-260f-4d7e-83dd-7cc990d49126
+>
+> * ## Proc_Cmdline
+>
+>   * BOOT_IMAGE: (hd0,msdos1)/vmlinuz-4.18.0-193.28.1.el8_2.x86_64
+>   * quiet: True
+>   * resume: /dev/mapper/cs-swap
+>   * rhgb: True
+>   * ro: True
+>   * root: /dev/mapper/cs-root
+>
+>   * ### Rd.Lvm.Lv
+>
+>     * 0: cs/root
+>     * 1: cs/swap
+>
+> * ## Processor
+>
+>   * 0: 0
+>   * 1: GenuineIntel
+>   * 2: Intel(R) Core(TM) i7 CPU         920  @ 2.67GHz
+>
+> * ## Python
+>
+>   * executable: /usr/libexec/platform-python
+>   * has_sslcontext: True
+>   * type: cpython
+>
+>   * ### Version
+>
+>     * major: 3
+>     * micro: 8
+>     * minor: 6
+>     * releaselevel: final
+>     * serial: 0
+>
+>   * ### Version_Info
+>
+>     * 0: 3
+>     * 1: 6
+>     * 2: 8
+>     * 3: final
+>     * 4: 0
+>
+> * ## Selinux
+>
+>   * config_mode: enforcing
+>   * mode: enforcing
+>   * policyvers: 31
+>   * status: enabled
+>   * type: targeted
+>
+> * ## System_Capabilities
+>
+>   * 0: cap_chown
+>
+> * ## Gather_Subset
+>
+>   * 0: all
 
 
 ### linux-gconftool2
+
 ***
 Edit GNOME Configurations
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gconftool2_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/gconftool2_module.html>
 
 
 #### Base Command
 
 `linux-gconftool2`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1592,9 +1781,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-gconftool2 host="123.123.123.123" key="/desktop/gnome/interface/font_name" value_type="string" value="Serif 12" state=present```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -1610,18 +1801,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### linux-getent
+
 ***
 A wrapper to the unix getent utility
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/getent_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/getent_module.html>
 
 
 #### Base Command
 
 `linux-getent`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1641,9 +1835,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-getent host="123.123.123.123" database="passwd" key="root" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -1659,18 +1855,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### linux-group
+
 ***
 Add or remove groups
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/group_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/group_module.html>
 
 
 #### Base Command
 
 `linux-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1691,9 +1890,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-group host="123.123.123.123" name="somegroup" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -1713,22 +1914,25 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * gid: 1000
->  * name: somegroup
->  * state: present
->  * system: False
+>
+> * changed: False
+> * gid: 1000
+> * name: somegroup
+> * state: present
+> * system: False
 
 
 ### linux-hostname
+
 ***
 Manage hostname
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hostname_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/hostname_module.html>
 
 
 #### Base Command
 
 `linux-hostname`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1745,9 +1949,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-hostname host="123.123.123.123" name="web01" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -1764,19 +1970,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * name: web01
+>
+> * changed: False
+> * name: web01
 
 
 ### linux-interfaces-file
+
 ***
 Tweak settings in /etc/network/interfaces files
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/interfaces_file_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/interfaces_file_module.html>
 
 
 #### Base Command
 
 `linux-interfaces-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1810,14 +2019,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-iptables
+
 ***
 Modify iptables rules
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/iptables_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/iptables_module.html>
 
 
 #### Base Command
 
 `linux-iptables`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1872,9 +2083,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-iptables host="123.123.123.123" chain="INPUT" source="8.8.8.8" jump="DROP" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -1896,24 +2109,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * chain: INPUT
->  * changed: False
->  * flush: False
->  * ip_version: ipv4
->  * rule: -s 8.8.8.8 -j DROP
->  * state: present
->  * table: filter
+>
+> * chain: INPUT
+> * changed: False
+> * flush: False
+> * ip_version: ipv4
+> * rule: -s 8.8.8.8 -j DROP
+> * state: present
+> * table: filter
 
 
 ### linux-java-cert
+
 ***
 Uses keytool to import/remove key from java keystore (cacerts)
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/java_cert_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/java_cert_module.html>
 
 
 #### Base Command
 
 `linux-java-cert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1944,9 +2160,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-java-cert host="123.123.123.123" cert_url="google.com" cert_port="443" keystore_path="/usr/lib/jvm/jre-1.8.0/lib/security/cacerts" keystore_pass="changeit" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -1962,18 +2180,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### linux-java-keystore
+
 ***
 Create or delete a Java keystore in JKS format.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/java_keystore_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/java_keystore_module.html>
 
 
 #### Base Command
 
 `linux-java-keystore`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2000,9 +2221,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-java-keystore host="123.123.123.123" name="example" certificate="-----BEGIN CERTIFICATE-----\\nMIIB2zCCAYW...DDejA=\\n-----END CERTIFICATE-----" private_key="-----BEGIN PRIVATE KEY-----\\nMIIBVAIBADANBgkq...NGA56xjg=\\n-----END PRIVATE KEY-----"  dest="/etc/security/keystore.jks" password="changeit"```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -2018,18 +2241,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### linux-kernel-blacklist
+
 ***
 Deny list kernel modules
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/kernel_blacklist_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/kernel_blacklist_module.html>
 
 
 #### Base Command
 
 `linux-kernel-blacklist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2047,9 +2273,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-kernel-blacklist host="123.123.123.123" name="nouveau" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -2067,20 +2295,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * name: nouveau
->  * state: present
+>
+> * changed: False
+> * name: nouveau
+> * state: present
 
 
 ### linux-known-hosts
+
 ***
 Add or remove a host from the C(known_hosts) file
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/known_hosts_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/known_hosts_module.html>
 
 
 #### Base Command
 
 `linux-known-hosts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2100,9 +2331,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-known-hosts host="123.123.123.123" path="/etc/ssh/ssh_known_hosts" name="host1.example.com" key="host1.example.com,10.9.8.77 ssh-rsa ASDeararAIUHI324324" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -2130,30 +2363,33 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * gid: 0
->  * group: root
->  * hash_host: False
->  * key: host1.example.com,10.9.8.77 ssh-rsa ASDeararAIUHI324324
->  * mode: 0644
->  * name: host1.example.com
->  * owner: root
->  * path: /etc/ssh/ssh_known_hosts
->  * secontext: system_u:object_r:etc_t:s0
->  * size: 56
->  * state: file
->  * uid: 0
+>
+> * changed: False
+> * gid: 0
+> * group: root
+> * hash_host: False
+> * key: host1.example.com,10.9.8.77 ssh-rsa ASDeararAIUHI324324
+> * mode: 0644
+> * name: host1.example.com
+> * owner: root
+> * path: /etc/ssh/ssh_known_hosts
+> * secontext: system_u:object_r:etc_t:s0
+> * size: 56
+> * state: file
+> * uid: 0
 
 
 ### linux-listen-ports-facts
+
 ***
 Gather facts on processes listening on TCP and UDP ports.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/listen_ports_facts_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/listen_ports_facts_module.html>
 
 
 #### Base Command
 
 `linux-listen-ports-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2169,9 +2405,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-listen-ports-facts host="123.123.123.123" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -2209,35 +2447,44 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * discovered_interpreter_python: /usr/libexec/platform-python
->  * ## Tcp_Listen
->  * ## Sshd
->    * address: 0.0.0.0
->    * name: sshd
->    * pid: 964
->    * port: 22
->    * protocol: tcp
->    * stime: Sun Jul  4 18:12:31 2021
->    * user: root
->  * ## Udp_Listen
->  * ## Chronyd
->    * address: 127.0.0.1
->    * name: chronyd
->    * pid: 890
->    * port: 323
->    * protocol: udp
->    * stime: Sun Jul  4 18:12:29 2021
->    * user: chrony
+>
+> * discovered_interpreter_python: /usr/libexec/platform-python
+>
+> * ## Tcp_Listen
+>
+> * ## Sshd
+>
+>   * address: 0.0.0.0
+>   * name: sshd
+>   * pid: 964
+>   * port: 22
+>   * protocol: tcp
+>   * stime: Sun Jul  4 18:12:31 2021
+>   * user: root
+>
+> * ## Udp_Listen
+>
+> * ## Chronyd
+>
+>   * address: 127.0.0.1
+>   * name: chronyd
+>   * pid: 890
+>   * port: 323
+>   * protocol: udp
+>   * stime: Sun Jul  4 18:12:29 2021
+>   * user: chrony
 
 ### linux-locale-gen
+
 ***
 Creates or removes locales
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/locale_gen_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/locale_gen_module.html>
 
 
 #### Base Command
 
 `linux-locale-gen`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2254,14 +2501,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-modprobe
+
 ***
 Load or unload kernel modules
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/modprobe_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/modprobe_module.html>
 
 
 #### Base Command
 
 `linux-modprobe`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2279,9 +2528,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-modprobe host="123.123.123.123" name="8021q" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -2300,21 +2551,24 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * name: 8021q
->  * params: 
->  * state: present
+>
+> * changed: False
+> * name: 8021q
+> * params: 
+> * state: present
 
 
 ### linux-mount
+
 ***
 Control active and configured mount points
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/mount_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/mount_module.html>
 
 
 #### Base Command
 
 `linux-mount`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2339,9 +2593,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-mount host="123.123.123.123" path="/mnt/dvd" "src"="/dev/sr0" fstype="iso9660" opts="ro,noauto" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -2364,25 +2620,28 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * dump: 0
->  * fstab: /etc/fstab
->  * fstype: iso9660
->  * name: /mnt/dvd
->  * opts: ro,noauto
->  * passno: 0
->  * src: /dev/sr0
+>
+> * changed: False
+> * dump: 0
+> * fstab: /etc/fstab
+> * fstype: iso9660
+> * name: /mnt/dvd
+> * opts: ro,noauto
+> * passno: 0
+> * src: /dev/sr0
 
 
 ### linux-open-iscsi
+
 ***
 Manage iSCSI targets with Open-iSCSI
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/open_iscsi_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/open_iscsi_module.html>
 
 
 #### Base Command
 
 `linux-open-iscsi`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2408,14 +2667,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-pam-limits
+
 ***
 Modify Linux PAM limits
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pam_limits_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/pam_limits_module.html>
 
 
 #### Base Command
 
 `linux-pam-limits`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2439,9 +2700,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-pam-limits host="123.123.123.123" domain="joe" limit_type="soft" limit_item="nofile" value="64000" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -2458,20 +2721,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * msg: joe	soft	nofile	64000
+>
+> * changed: False
+> * msg: joe	soft	nofile	64000
 >
 
 
 ### linux-pamd
+
 ***
 Manage PAM Modules
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pamd_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/pamd_module.html>
 
 
 #### Base Command
 
 `linux-pamd`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2503,9 +2769,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-pamd host="123.123.123.123" name="system-auth" type="auth" control="required" module_path="pam_faillock.so" new_control="sufficient" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -2523,20 +2791,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * backupdest: 
->  * change_count: 0
->  * changed: False
+>
+> * backupdest: 
+> * change_count: 0
+> * changed: False
 
 
 ### linux-parted
+
 ***
 Configure block device partitions
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/parted_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/parted_module.html>
 
 
 #### Base Command
 
 `linux-parted`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2563,9 +2834,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-parted host="123.123.123.123" device="/dev/sdb" number="1" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -2603,37 +2876,46 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * script: 
->  * ## Disk
->    * dev: /dev/sdb
->    * logical_block: 512
->    * model: VMware Virtual disk
->    * physical_block: 512
->    * size: 1048576.0
->    * table: msdos
->    * unit: kib
->  * ## Partitions
->  * ## 
->    * begin: 1024.0
->    * end: 1048576.0
->    * fstype: ext2
->    * name: 
->    * num: 1
->    * size: 1047552.0
->    * unit: kib
->    * ### Flags
+>
+> * changed: False
+> * script: 
+>
+> * ## Disk
+>
+>   * dev: /dev/sdb
+>   * logical_block: 512
+>   * model: VMware Virtual disk
+>   * physical_block: 512
+>   * size: 1048576.0
+>   * table: msdos
+>   * unit: kib
+>
+> * ## Partitions
+>
+> * ## 
+>
+>   * begin: 1024.0
+>   * end: 1048576.0
+>   * fstype: ext2
+>   * name: 
+>   * num: 1
+>   * size: 1047552.0
+>   * unit: kib
+>
+>   * ### Flags
 
 
 ### linux-pids
+
 ***
 Retrieves process IDs list if the process is running otherwise return empty list
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pids_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/pids_module.html>
 
 
 #### Base Command
 
 `linux-pids`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2650,9 +2932,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-pids host="123.123.123.123" name="python" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -2669,14 +2953,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-ping
+
 ***
 Try to connect to host, verify a usable python and return C(pong) on success
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ping_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/ping_module.html>
 
 
 #### Base Command
 
 `linux-ping`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2693,9 +2979,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-ping host="123.123.123.123" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -2712,14 +3000,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-python-requirements-info
+
 ***
 Show python path and assert dependency versions
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/python_requirements_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/python_requirements_info_module.html>
 
 
 #### Base Command
 
 `linux-python-requirements-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2741,9 +3031,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-python-requirements-info host="123.123.123.123" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -2774,33 +3066,41 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * python: /usr/libexec/platform-python
->  * python_version: 3.6.8 (default, Aug 24 2020, 17:57:11) 
+>
+> * changed: False
+> * python: /usr/libexec/platform-python
+> * python_version: 3.6.8 (default, Aug 24 2020, 17:57:11) 
 >[GCC 8.3.1 20191121 (Red Hat 8.3.1-5)]
->  * ## Mismatched
->  * ## Not_Found
->  * ## Python_System_Path
->    * 0: /tmp/python_requirements_info_payload_ppjh5d0o/python_requirements_info_payload.zip
->    * 1: /usr/lib64/python36.zip
->    * 2: /usr/lib64/python3.6
->    * 3: /usr/lib64/python3.6/lib-dynload
->    * 4: /usr/local/lib64/python3.6/site-packages
->    * 5: /usr/local/lib/python3.6/site-packages
->    * 6: /usr/lib64/python3.6/site-packages
->    * 7: /usr/lib/python3.6/site-packages
->  * ## Valid
+>
+> * ## Mismatched
+>
+> * ## Not_Found
+>
+> * ## Python_System_Path
+>
+>   * 0: /tmp/python_requirements_info_payload_ppjh5d0o/python_requirements_info_payload.zip
+>   * 1: /usr/lib64/python36.zip
+>   * 2: /usr/lib64/python3.6
+>   * 3: /usr/lib64/python3.6/lib-dynload
+>   * 4: /usr/local/lib64/python3.6/site-packages
+>   * 5: /usr/local/lib/python3.6/site-packages
+>   * 6: /usr/lib64/python3.6/site-packages
+>   * 7: /usr/lib/python3.6/site-packages
+>
+> * ## Valid
 
 
 ### linux-reboot
+
 ***
 Reboot a machine
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/reboot_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/reboot_module.html>
 
 
 #### Base Command
 
 `linux-reboot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2825,14 +3125,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-seboolean
+
 ***
 Toggles SELinux booleans
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/seboolean_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/seboolean_module.html>
 
 
 #### Base Command
 
 `linux-seboolean`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2852,14 +3154,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-sefcontext
+
 ***
 Manages SELinux file context mapping definitions
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sefcontext_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/sefcontext_module.html>
 
 
 #### Base Command
 
 `linux-sefcontext`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2883,14 +3187,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-selinux
+
 ***
 Change policy and state of SELinux
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/selinux_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/selinux_module.html>
 
 
 #### Base Command
 
 `linux-selinux`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2913,9 +3219,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-selinux host="123.123.123.123" policy="targeted" state="enforcing" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -2936,23 +3244,26 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * configfile: /etc/selinux/config
->  * msg: 
->  * policy: targeted
->  * reboot_required: False
->  * state: enforcing
+>
+> * changed: False
+> * configfile: /etc/selinux/config
+> * msg: 
+> * policy: targeted
+> * reboot_required: False
+> * state: enforcing
 
 
 ### linux-selinux-permissive
+
 ***
 Change permissive domain in SELinux policy
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/selinux_permissive_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/selinux_permissive_module.html>
 
 
 #### Base Command
 
 `linux-selinux-permissive`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2972,14 +3283,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-selogin
+
 ***
 Manages linux user to SELinux user mapping
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/selogin_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/selogin_module.html>
 
 
 #### Base Command
 
 `linux-selogin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3001,14 +3314,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-seport
+
 ***
 Manages SELinux network port type definitions
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/seport_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/seport_module.html>
 
 
 #### Base Command
 
 `linux-seport`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3030,14 +3345,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-service
+
 ***
 Manage services
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/service_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/service_module.html>
 
 
 #### Base Command
 
 `linux-service`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3060,9 +3377,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-service host="123.123.123.123" name="httpd" state="started" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -3080,241 +3399,246 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * name: httpd
->  * state: started
->  * ## Status
->    * ActiveEnterTimestamp: Thu 2021-07-08 14:12:41 JST
->    * ActiveEnterTimestampMonotonic: 331222117201
->    * ActiveExitTimestampMonotonic: 0
->    * ActiveState: active
->    * After: system.slice basic.target systemd-journald.socket systemd-tmpfiles-setup.service -.mount nss-lookup.target remote-fs.target httpd-init.service sysinit.target network.target tmp.mount
->    * AllowIsolate: no
->    * AllowedCPUs: 
->    * AllowedMemoryNodes: 
->    * AmbientCapabilities: 
->    * AssertResult: yes
->    * AssertTimestamp: Thu 2021-07-08 14:12:41 JST
->    * AssertTimestampMonotonic: 331221986103
->    * Before: shutdown.target
->    * BlockIOAccounting: no
->    * BlockIOWeight: [not set]
->    * CPUAccounting: no
->    * CPUAffinity: 
->    * CPUQuotaPerSecUSec: infinity
->    * CPUSchedulingPolicy: 0
->    * CPUSchedulingPriority: 0
->    * CPUSchedulingResetOnFork: no
->    * CPUShares: [not set]
->    * CPUUsageNSec: [not set]
->    * CPUWeight: [not set]
->    * CacheDirectoryMode: 0755
->    * CanIsolate: no
->    * CanReload: yes
->    * CanStart: yes
->    * CanStop: yes
->    * CapabilityBoundingSet: cap_chown cap_dac_override cap_dac_read_search cap_fowner cap_fsetid cap_kill cap_setgid cap_setuid cap_setpcap cap_linux_immutable cap_net_bind_service cap_net_broadcast cap_net_admin cap_net_raw cap_ipc_lock cap_ipc_owner cap_sys_module cap_sys_rawio cap_sys_chroot cap_sys_ptrace cap_sys_pacct cap_sys_admin cap_sys_boot cap_sys_nice cap_sys_resource cap_sys_time cap_sys_tty_config cap_mknod cap_lease cap_audit_write cap_audit_control cap_setfcap cap_mac_override cap_mac_admin cap_syslog cap_wake_alarm cap_block_suspend
->    * CollectMode: inactive
->    * ConditionResult: yes
->    * ConditionTimestamp: Thu 2021-07-08 14:12:41 JST
->    * ConditionTimestampMonotonic: 331221986102
->    * ConfigurationDirectoryMode: 0755
->    * Conflicts: shutdown.target
->    * ControlGroup: /system.slice/httpd.service
->    * ControlPID: 0
->    * DefaultDependencies: yes
->    * Delegate: no
->    * Description: The Apache HTTP Server
->    * DevicePolicy: auto
->    * Documentation: man:httpd.service(8)
->    * DynamicUser: no
->    * EffectiveCPUs: 
->    * EffectiveMemoryNodes: 
->    * Environment: LANG=C
->    * ExecMainCode: 0
->    * ExecMainExitTimestampMonotonic: 0
->    * ExecMainPID: 7626
->    * ExecMainStartTimestamp: Thu 2021-07-08 14:12:41 JST
->    * ExecMainStartTimestampMonotonic: 331221988640
->    * ExecMainStatus: 0
->    * ExecReload: { path=/usr/sbin/httpd ; argv[]=/usr/sbin/httpd $OPTIONS -k graceful ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
->    * ExecStart: { path=/usr/sbin/httpd ; argv[]=/usr/sbin/httpd $OPTIONS -DFOREGROUND ; ignore_errors=no ; start_time=[Thu 2021-07-08 14:12:41 JST] ; stop_time=[n/a] ; pid=7626 ; code=(null) ; status=0/0 }
->    * FailureAction: none
->    * FileDescriptorStoreMax: 0
->    * FragmentPath: /usr/lib/systemd/system/httpd.service
->    * GID: [not set]
->    * GuessMainPID: yes
->    * IOAccounting: no
->    * IOSchedulingClass: 0
->    * IOSchedulingPriority: 0
->    * IOWeight: [not set]
->    * IPAccounting: no
->    * IPEgressBytes: 18446744073709551615
->    * IPEgressPackets: 18446744073709551615
->    * IPIngressBytes: 18446744073709551615
->    * IPIngressPackets: 18446744073709551615
->    * Id: httpd.service
->    * IgnoreOnIsolate: no
->    * IgnoreSIGPIPE: yes
->    * InactiveEnterTimestampMonotonic: 0
->    * InactiveExitTimestamp: Thu 2021-07-08 14:12:41 JST
->    * InactiveExitTimestampMonotonic: 331221988825
->    * InvocationID: 7bb9f1e196514d5f87dfb3602a1c9e32
->    * JobRunningTimeoutUSec: infinity
->    * JobTimeoutAction: none
->    * JobTimeoutUSec: infinity
->    * KeyringMode: private
->    * KillMode: mixed
->    * KillSignal: 28
->    * LimitAS: infinity
->    * LimitASSoft: infinity
->    * LimitCORE: infinity
->    * LimitCORESoft: infinity
->    * LimitCPU: infinity
->    * LimitCPUSoft: infinity
->    * LimitDATA: infinity
->    * LimitDATASoft: infinity
->    * LimitFSIZE: infinity
->    * LimitFSIZESoft: infinity
->    * LimitLOCKS: infinity
->    * LimitLOCKSSoft: infinity
->    * LimitMEMLOCK: 65536
->    * LimitMEMLOCKSoft: 65536
->    * LimitMSGQUEUE: 819200
->    * LimitMSGQUEUESoft: 819200
->    * LimitNICE: 0
->    * LimitNICESoft: 0
->    * LimitNOFILE: 262144
->    * LimitNOFILESoft: 1024
->    * LimitNPROC: 7805
->    * LimitNPROCSoft: 7805
->    * LimitRSS: infinity
->    * LimitRSSSoft: infinity
->    * LimitRTPRIO: 0
->    * LimitRTPRIOSoft: 0
->    * LimitRTTIME: infinity
->    * LimitRTTIMESoft: infinity
->    * LimitSIGPENDING: 7805
->    * LimitSIGPENDINGSoft: 7805
->    * LimitSTACK: infinity
->    * LimitSTACKSoft: 8388608
->    * LoadState: loaded
->    * LockPersonality: no
->    * LogLevelMax: -1
->    * LogRateLimitBurst: 0
->    * LogRateLimitIntervalUSec: 0
->    * LogsDirectoryMode: 0755
->    * MainPID: 7626
->    * MemoryAccounting: yes
->    * MemoryCurrent: 30425088
->    * MemoryDenyWriteExecute: no
->    * MemoryHigh: infinity
->    * MemoryLimit: infinity
->    * MemoryLow: 0
->    * MemoryMax: infinity
->    * MemorySwapMax: infinity
->    * MountAPIVFS: no
->    * MountFlags: 
->    * NFileDescriptorStore: 0
->    * NRestarts: 0
->    * NUMAMask: 
->    * NUMAPolicy: n/a
->    * Names: httpd.service
->    * NeedDaemonReload: no
->    * Nice: 0
->    * NoNewPrivileges: no
->    * NonBlocking: no
->    * NotifyAccess: main
->    * OOMScoreAdjust: 0
->    * OnFailureJobMode: replace
->    * PermissionsStartOnly: no
->    * Perpetual: no
->    * PrivateDevices: no
->    * PrivateMounts: no
->    * PrivateNetwork: no
->    * PrivateTmp: yes
->    * PrivateUsers: no
->    * ProtectControlGroups: no
->    * ProtectHome: no
->    * ProtectKernelModules: no
->    * ProtectKernelTunables: no
->    * ProtectSystem: no
->    * RefuseManualStart: no
->    * RefuseManualStop: no
->    * RemainAfterExit: no
->    * RemoveIPC: no
->    * Requires: system.slice sysinit.target -.mount
->    * RequiresMountsFor: /var/tmp
->    * Restart: no
->    * RestartUSec: 100ms
->    * RestrictNamespaces: no
->    * RestrictRealtime: no
->    * RestrictSUIDSGID: no
->    * Result: success
->    * RootDirectoryStartOnly: no
->    * RuntimeDirectoryMode: 0755
->    * RuntimeDirectoryPreserve: no
->    * RuntimeMaxUSec: infinity
->    * SameProcessGroup: no
->    * SecureBits: 0
->    * SendSIGHUP: no
->    * SendSIGKILL: yes
->    * Slice: system.slice
->    * StandardError: inherit
->    * StandardInput: null
->    * StandardInputData: 
->    * StandardOutput: journal
->    * StartLimitAction: none
->    * StartLimitBurst: 5
->    * StartLimitIntervalUSec: 10s
->    * StartupBlockIOWeight: [not set]
->    * StartupCPUShares: [not set]
->    * StartupCPUWeight: [not set]
->    * StartupIOWeight: [not set]
->    * StateChangeTimestamp: Thu 2021-07-08 14:12:41 JST
->    * StateChangeTimestampMonotonic: 331222165344
->    * StateDirectoryMode: 0755
->    * StatusErrno: 0
->    * StatusText: Running, listening on: port 80
->    * StopWhenUnneeded: no
->    * SubState: running
->    * SuccessAction: none
->    * SyslogFacility: 3
->    * SyslogLevel: 6
->    * SyslogLevelPrefix: yes
->    * SyslogPriority: 30
->    * SystemCallErrorNumber: 0
->    * TTYReset: no
->    * TTYVHangup: no
->    * TTYVTDisallocate: no
->    * TasksAccounting: yes
->    * TasksCurrent: 213
->    * TasksMax: 12488
->    * TimeoutStartUSec: 1min 30s
->    * TimeoutStopUSec: 1min 30s
->    * TimerSlackNSec: 50000
->    * Transient: no
->    * Type: notify
->    * UID: [not set]
->    * UMask: 0022
->    * UnitFilePreset: disabled
->    * UnitFileState: disabled
->    * UtmpMode: init
->    * Wants: httpd-init.service
->    * WatchdogTimestamp: Thu 2021-07-08 14:12:41 JST
->    * WatchdogTimestampMonotonic: 331222117198
->    * WatchdogUSec: 0
+>
+> * changed: False
+> * name: httpd
+> * state: started
+>
+> * ## Status
+>
+>   * ActiveEnterTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * ActiveEnterTimestampMonotonic: 331222117201
+>   * ActiveExitTimestampMonotonic: 0
+>   * ActiveState: active
+>   * After: system.slice basic.target systemd-journald.socket systemd-tmpfiles-setup.service -.mount nss-lookup.target remote-fs.target httpd-init.service sysinit.target network.target tmp.mount
+>   * AllowIsolate: no
+>   * AllowedCPUs: 
+>   * AllowedMemoryNodes: 
+>   * AmbientCapabilities: 
+>   * AssertResult: yes
+>   * AssertTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * AssertTimestampMonotonic: 331221986103
+>   * Before: shutdown.target
+>   * BlockIOAccounting: no
+>   * BlockIOWeight: [not set]
+>   * CPUAccounting: no
+>   * CPUAffinity: 
+>   * CPUQuotaPerSecUSec: infinity
+>   * CPUSchedulingPolicy: 0
+>   * CPUSchedulingPriority: 0
+>   * CPUSchedulingResetOnFork: no
+>   * CPUShares: [not set]
+>   * CPUUsageNSec: [not set]
+>   * CPUWeight: [not set]
+>   * CacheDirectoryMode: 0755
+>   * CanIsolate: no
+>   * CanReload: yes
+>   * CanStart: yes
+>   * CanStop: yes
+>   * CapabilityBoundingSet: cap_chown cap_dac_override cap_dac_read_search cap_fowner cap_fsetid cap_kill cap_setgid cap_setuid cap_setpcap cap_linux_immutable cap_net_bind_service cap_net_broadcast cap_net_admin cap_net_raw cap_ipc_lock cap_ipc_owner cap_sys_module cap_sys_rawio cap_sys_chroot cap_sys_ptrace cap_sys_pacct cap_sys_admin cap_sys_boot cap_sys_nice cap_sys_resource cap_sys_time cap_sys_tty_config cap_mknod cap_lease cap_audit_write cap_audit_control cap_setfcap cap_mac_override cap_mac_admin cap_syslog cap_wake_alarm cap_block_suspend
+>   * CollectMode: inactive
+>   * ConditionResult: yes
+>   * ConditionTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * ConditionTimestampMonotonic: 331221986102
+>   * ConfigurationDirectoryMode: 0755
+>   * Conflicts: shutdown.target
+>   * ControlGroup: /system.slice/httpd.service
+>   * ControlPID: 0
+>   * DefaultDependencies: yes
+>   * Delegate: no
+>   * Description: The Apache HTTP Server
+>   * DevicePolicy: auto
+>   * Documentation: man:httpd.service(8)
+>   * DynamicUser: no
+>   * EffectiveCPUs: 
+>   * EffectiveMemoryNodes: 
+>   * Environment: LANG=C
+>   * ExecMainCode: 0
+>   * ExecMainExitTimestampMonotonic: 0
+>   * ExecMainPID: 7626
+>   * ExecMainStartTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * ExecMainStartTimestampMonotonic: 331221988640
+>   * ExecMainStatus: 0
+>   * ExecReload: { path=/usr/sbin/httpd ; argv[]=/usr/sbin/httpd $OPTIONS -k graceful ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+>   * ExecStart: { path=/usr/sbin/httpd ; argv[]=/usr/sbin/httpd $OPTIONS -DFOREGROUND ; ignore_errors=no ; start_time=[Thu 2021-07-08 14:12:41 JST] ; stop_time=[n/a] ; pid=7626 ; code=(null) ; status=0/0 }
+>   * FailureAction: none
+>   * FileDescriptorStoreMax: 0
+>   * FragmentPath: /usr/lib/systemd/system/httpd.service
+>   * GID: [not set]
+>   * GuessMainPID: yes
+>   * IOAccounting: no
+>   * IOSchedulingClass: 0
+>   * IOSchedulingPriority: 0
+>   * IOWeight: [not set]
+>   * IPAccounting: no
+>   * IPEgressBytes: 18446744073709551615
+>   * IPEgressPackets: 18446744073709551615
+>   * IPIngressBytes: 18446744073709551615
+>   * IPIngressPackets: 18446744073709551615
+>   * Id: httpd.service
+>   * IgnoreOnIsolate: no
+>   * IgnoreSIGPIPE: yes
+>   * InactiveEnterTimestampMonotonic: 0
+>   * InactiveExitTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * InactiveExitTimestampMonotonic: 331221988825
+>   * InvocationID: 7bb9f1e196514d5f87dfb3602a1c9e32
+>   * JobRunningTimeoutUSec: infinity
+>   * JobTimeoutAction: none
+>   * JobTimeoutUSec: infinity
+>   * KeyringMode: private
+>   * KillMode: mixed
+>   * KillSignal: 28
+>   * LimitAS: infinity
+>   * LimitASSoft: infinity
+>   * LimitCORE: infinity
+>   * LimitCORESoft: infinity
+>   * LimitCPU: infinity
+>   * LimitCPUSoft: infinity
+>   * LimitDATA: infinity
+>   * LimitDATASoft: infinity
+>   * LimitFSIZE: infinity
+>   * LimitFSIZESoft: infinity
+>   * LimitLOCKS: infinity
+>   * LimitLOCKSSoft: infinity
+>   * LimitMEMLOCK: 65536
+>   * LimitMEMLOCKSoft: 65536
+>   * LimitMSGQUEUE: 819200
+>   * LimitMSGQUEUESoft: 819200
+>   * LimitNICE: 0
+>   * LimitNICESoft: 0
+>   * LimitNOFILE: 262144
+>   * LimitNOFILESoft: 1024
+>   * LimitNPROC: 7805
+>   * LimitNPROCSoft: 7805
+>   * LimitRSS: infinity
+>   * LimitRSSSoft: infinity
+>   * LimitRTPRIO: 0
+>   * LimitRTPRIOSoft: 0
+>   * LimitRTTIME: infinity
+>   * LimitRTTIMESoft: infinity
+>   * LimitSIGPENDING: 7805
+>   * LimitSIGPENDINGSoft: 7805
+>   * LimitSTACK: infinity
+>   * LimitSTACKSoft: 8388608
+>   * LoadState: loaded
+>   * LockPersonality: no
+>   * LogLevelMax: -1
+>   * LogRateLimitBurst: 0
+>   * LogRateLimitIntervalUSec: 0
+>   * LogsDirectoryMode: 0755
+>   * MainPID: 7626
+>   * MemoryAccounting: yes
+>   * MemoryCurrent: 30425088
+>   * MemoryDenyWriteExecute: no
+>   * MemoryHigh: infinity
+>   * MemoryLimit: infinity
+>   * MemoryLow: 0
+>   * MemoryMax: infinity
+>   * MemorySwapMax: infinity
+>   * MountAPIVFS: no
+>   * MountFlags: 
+>   * NFileDescriptorStore: 0
+>   * NRestarts: 0
+>   * NUMAMask: 
+>   * NUMAPolicy: n/a
+>   * Names: httpd.service
+>   * NeedDaemonReload: no
+>   * Nice: 0
+>   * NoNewPrivileges: no
+>   * NonBlocking: no
+>   * NotifyAccess: main
+>   * OOMScoreAdjust: 0
+>   * OnFailureJobMode: replace
+>   * PermissionsStartOnly: no
+>   * Perpetual: no
+>   * PrivateDevices: no
+>   * PrivateMounts: no
+>   * PrivateNetwork: no
+>   * PrivateTmp: yes
+>   * PrivateUsers: no
+>   * ProtectControlGroups: no
+>   * ProtectHome: no
+>   * ProtectKernelModules: no
+>   * ProtectKernelTunables: no
+>   * ProtectSystem: no
+>   * RefuseManualStart: no
+>   * RefuseManualStop: no
+>   * RemainAfterExit: no
+>   * RemoveIPC: no
+>   * Requires: system.slice sysinit.target -.mount
+>   * RequiresMountsFor: /var/tmp
+>   * Restart: no
+>   * RestartUSec: 100ms
+>   * RestrictNamespaces: no
+>   * RestrictRealtime: no
+>   * RestrictSUIDSGID: no
+>   * Result: success
+>   * RootDirectoryStartOnly: no
+>   * RuntimeDirectoryMode: 0755
+>   * RuntimeDirectoryPreserve: no
+>   * RuntimeMaxUSec: infinity
+>   * SameProcessGroup: no
+>   * SecureBits: 0
+>   * SendSIGHUP: no
+>   * SendSIGKILL: yes
+>   * Slice: system.slice
+>   * StandardError: inherit
+>   * StandardInput: null
+>   * StandardInputData: 
+>   * StandardOutput: journal
+>   * StartLimitAction: none
+>   * StartLimitBurst: 5
+>   * StartLimitIntervalUSec: 10s
+>   * StartupBlockIOWeight: [not set]
+>   * StartupCPUShares: [not set]
+>   * StartupCPUWeight: [not set]
+>   * StartupIOWeight: [not set]
+>   * StateChangeTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * StateChangeTimestampMonotonic: 331222165344
+>   * StateDirectoryMode: 0755
+>   * StatusErrno: 0
+>   * StatusText: Running, listening on: port 80
+>   * StopWhenUnneeded: no
+>   * SubState: running
+>   * SuccessAction: none
+>   * SyslogFacility: 3
+>   * SyslogLevel: 6
+>   * SyslogLevelPrefix: yes
+>   * SyslogPriority: 30
+>   * SystemCallErrorNumber: 0
+>   * TTYReset: no
+>   * TTYVHangup: no
+>   * TTYVTDisallocate: no
+>   * TasksAccounting: yes
+>   * TasksCurrent: 213
+>   * TasksMax: 12488
+>   * TimeoutStartUSec: 1min 30s
+>   * TimeoutStopUSec: 1min 30s
+>   * TimerSlackNSec: 50000
+>   * Transient: no
+>   * Type: notify
+>   * UID: [not set]
+>   * UMask: 0022
+>   * UnitFilePreset: disabled
+>   * UnitFileState: disabled
+>   * UtmpMode: init
+>   * Wants: httpd-init.service
+>   * WatchdogTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * WatchdogTimestampMonotonic: 331222117198
+>   * WatchdogUSec: 0
 
 
 ### linux-service-facts
+
 ***
 Return service state information as fact data
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/service_facts_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/service_facts_module.html>
 
 
 #### Base Command
 
 `linux-service-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3330,9 +3654,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-service-facts host="123.123.123.123" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -4346,849 +4672,1185 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * discovered_interpreter_python: /usr/libexec/platform-python
->  * ## Services
->    * ### Networkmanager-Dispatcher.Service
->      * name: NetworkManager-dispatcher.service
->      * source: systemd
->      * state: inactive
->      * status: enabled
->    * ### Networkmanager-Wait-Online.Service
->      * name: NetworkManager-wait-online.service
->      * source: systemd
->      * state: stopped
->      * status: enabled
->    * ### Networkmanager.Service
->      * name: NetworkManager.service
->      * source: systemd
->      * state: running
->      * status: enabled
->    * ### Arp-Ethers.Service
->      * name: arp-ethers.service
->      * source: systemd
->      * state: inactive
->      * status: disabled
->    * ### Atd.Service
->      * name: atd.service
->      * source: systemd
->      * state: running
->      * status: enabled
->    * ### Auditd.Service
->      * name: auditd.service
->      * source: systemd
->      * state: running
->      * status: enabled
->    * ### Autovt@.Service
->      * name: autovt@.service
->      * source: systemd
->      * state: unknown
->      * status: enabled
->    * ### Blk-Availability.Service
->      * name: blk-availability.service
->      * source: systemd
->      * state: inactive
->      * status: disabled
->    * ### Chrony-Dnssrv@.Service
->      * name: chrony-dnssrv@.service
->      * source: systemd
->      * state: unknown
->      * status: static
->    * ### Chrony-Wait.Service
->      * name: chrony-wait.service
->      * source: systemd
->      * state: inactive
->      * status: disabled
->    * ### Chronyd.Service
->      * name: chronyd.service
->      * source: systemd
->      * state: running
->      * status: enabled
->    * ### Console-Getty.Service
->      * name: console-getty.service
->      * source: systemd
->      * state: inactive
->      * status: disabled
->    * ### Container-Getty@.Service
->      * name: container-getty@.service
->      * source: systemd
->      * state: unknown
->      * status: static
->    * ### Cpupower.Service
->      * name: cpupower.service
->      * source: systemd
->      * state: stopped
->      * status: disabled
->    * ### Crond.Service
->      * name: crond.service
->      * source: systemd
->      * state: running
->      * status: enabled
->    * ### Dbus-Org.Fedoraproject.Firewalld1.Service
->      * name: dbus-org.fedoraproject.FirewallD1.service
->      * source: systemd
->      * state: active
->      * status: enabled
->    * ### Dbus-Org.Freedesktop.Hostname1.Service
->      * name: dbus-org.freedesktop.hostname1.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Dbus-Org.Freedesktop.Locale1.Service
->      * name: dbus-org.freedesktop.locale1.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Dbus-Org.Freedesktop.Login1.Service
->      * name: dbus-org.freedesktop.login1.service
->      * source: systemd
->      * state: active
->      * status: static
->    * ### Dbus-Org.Freedesktop.Nm-Dispatcher.Service
->      * name: dbus-org.freedesktop.nm-dispatcher.service
->      * source: systemd
->      * state: inactive
->      * status: enabled
->    * ### Dbus-Org.Freedesktop.Portable1.Service
->      * name: dbus-org.freedesktop.portable1.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Dbus-Org.Freedesktop.Timedate1.Service
->      * name: dbus-org.freedesktop.timedate1.service
->      * source: systemd
->      * state: inactive
->      * status: enabled
->    * ### Dbus.Service
->      * name: dbus.service
->      * source: systemd
->      * state: running
->      * status: static
->    * ### Debug-Shell.Service
->      * name: debug-shell.service
->      * source: systemd
->      * state: inactive
->      * status: disabled
->    * ### Dm-Event.Service
->      * name: dm-event.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Dnf-Makecache.Service
->      * name: dnf-makecache.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Dracut-Cmdline.Service
->      * name: dracut-cmdline.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Dracut-Initqueue.Service
->      * name: dracut-initqueue.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Dracut-Mount.Service
->      * name: dracut-mount.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Dracut-Pre-Mount.Service
->      * name: dracut-pre-mount.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Dracut-Pre-Pivot.Service
->      * name: dracut-pre-pivot.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Dracut-Pre-Trigger.Service
->      * name: dracut-pre-trigger.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Dracut-Pre-Udev.Service
->      * name: dracut-pre-udev.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Dracut-Shutdown.Service
->      * name: dracut-shutdown.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Ebtables.Service
->      * name: ebtables.service
->      * source: systemd
->      * state: stopped
->      * status: disabled
->    * ### Emergency.Service
->      * name: emergency.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Firewalld.Service
->      * name: firewalld.service
->      * source: systemd
->      * state: running
->      * status: enabled
->    * ### Fstrim.Service
->      * name: fstrim.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Getty@.Service
->      * name: getty@.service
->      * source: systemd
->      * state: unknown
->      * status: enabled
->    * ### test@test.service
->      * name: test@test.service
->      * source: systemd
->      * state: running
->      * status: unknown
->    * ### Grub-Boot-Indeterminate.Service
->      * name: grub-boot-indeterminate.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Halt-Local.Service
->      * name: halt-local.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Htcacheclean.Service
->      * name: htcacheclean.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Httpd.Service
->      * name: httpd.service
->      * source: systemd
->      * state: running
->      * status: disabled
->    * ### Httpd@.Service
->      * name: httpd@.service
->      * source: systemd
->      * state: unknown
->      * status: disabled
->    * ### Import-State.Service
->      * name: import-state.service
->      * source: systemd
->      * state: stopped
->      * status: enabled
->    * ### Initrd-Cleanup.Service
->      * name: initrd-cleanup.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Initrd-Parse-Etc.Service
->      * name: initrd-parse-etc.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Initrd-Switch-Root.Service
->      * name: initrd-switch-root.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Initrd-Udevadm-Cleanup-Db.Service
->      * name: initrd-udevadm-cleanup-db.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Iprdump.Service
->      * name: iprdump.service
->      * source: systemd
->      * state: inactive
->      * status: disabled
->    * ### Iprinit.Service
->      * name: iprinit.service
->      * source: systemd
->      * state: inactive
->      * status: disabled
->    * ### Iprupdate.Service
->      * name: iprupdate.service
->      * source: systemd
->      * state: inactive
->      * status: disabled
->    * ### Irqbalance.Service
->      * name: irqbalance.service
->      * source: systemd
->      * state: stopped
->      * status: enabled
->    * ### Kdump.Service
->      * name: kdump.service
->      * source: systemd
->      * state: stopped
->      * status: enabled
->    * ### Kmod-Static-Nodes.Service
->      * name: kmod-static-nodes.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Ldconfig.Service
->      * name: ldconfig.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Loadmodules.Service
->      * name: loadmodules.service
->      * source: systemd
->      * state: stopped
->      * status: enabled
->    * ### Lvm2-Lvmpolld.Service
->      * name: lvm2-lvmpolld.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Lvm2-Monitor.Service
->      * name: lvm2-monitor.service
->      * source: systemd
->      * state: stopped
->      * status: enabled
->    * ### Lvm2-Pvscan@.Service
->      * name: lvm2-pvscan@.service
->      * source: systemd
->      * state: unknown
->      * status: static
->    * ### Lvm2-Pvscan@8:2.Service
->      * name: lvm2-pvscan@8:2.service
->      * source: systemd
->      * state: stopped
->      * status: unknown
->    * ### Man-Db-Cache-Update.Service
->      * name: man-db-cache-update.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Messagebus.Service
->      * name: messagebus.service
->      * source: systemd
->      * state: active
->      * status: static
->    * ### Microcode.Service
->      * name: microcode.service
->      * source: systemd
->      * state: stopped
->      * status: enabled
->    * ### Nftables.Service
->      * name: nftables.service
->      * source: systemd
->      * state: inactive
->      * status: disabled
->    * ### Nis-Domainname.Service
->      * name: nis-domainname.service
->      * source: systemd
->      * state: stopped
->      * status: enabled
->    * ### Plymouth-Halt.Service
->      * name: plymouth-halt.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Plymouth-Kexec.Service
->      * name: plymouth-kexec.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Plymouth-Poweroff.Service
->      * name: plymouth-poweroff.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Plymouth-Quit-Wait.Service
->      * name: plymouth-quit-wait.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Plymouth-Quit.Service
->      * name: plymouth-quit.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Plymouth-Read-Write.Service
->      * name: plymouth-read-write.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Plymouth-Reboot.Service
->      * name: plymouth-reboot.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Plymouth-Start.Service
->      * name: plymouth-start.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Plymouth-Switch-Root.Service
->      * name: plymouth-switch-root.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Polkit.Service
->      * name: polkit.service
->      * source: systemd
->      * state: running
->      * status: static
->    * ### Quotaon.Service
->      * name: quotaon.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Rc-Local.Service
->      * name: rc-local.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Rdisc.Service
->      * name: rdisc.service
->      * source: systemd
->      * state: inactive
->      * status: disabled
->    * ### Rescue.Service
->      * name: rescue.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Rngd-Wake-Threshold.Service
->      * name: rngd-wake-threshold.service
->      * source: systemd
->      * state: stopped
->      * status: disabled
->    * ### Rngd.Service
->      * name: rngd.service
->      * source: systemd
->      * state: running
->      * status: enabled
->    * ### Rsyslog.Service
->      * name: rsyslog.service
->      * source: systemd
->      * state: running
->      * status: enabled
->    * ### Selinux-Autorelabel-Mark.Service
->      * name: selinux-autorelabel-mark.service
->      * source: systemd
->      * state: stopped
->      * status: enabled
->    * ### Selinux-Autorelabel.Service
->      * name: selinux-autorelabel.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Serial-Getty@.Service
->      * name: serial-getty@.service
->      * source: systemd
->      * state: unknown
->      * status: disabled
->    * ### Sshd-Keygen@.Service
->      * name: sshd-keygen@.service
->      * source: systemd
->      * state: unknown
->      * status: disabled
->    * ### test1@test.service
->      * name: test1@test.service
->      * source: systemd
->      * state: stopped
->      * status: unknown
->    * ### test2@test.service
->      * name: test2@test.service
->      * source: systemd
->      * state: stopped
->      * status: unknown
->    * ### test3@test.service
->      * name: test3@test.service
->      * source: systemd
->      * state: stopped
->      * status: unknown
->    * ### Sshd.Service
->      * name: sshd.service
->      * source: systemd
->      * state: running
->      * status: enabled
->    * ### Sshd@.Service
->      * name: sshd@.service
->      * source: systemd
->      * state: unknown
->      * status: static
->    * ### Sssd-Autofs.Service
->      * name: sssd-autofs.service
->      * source: systemd
->      * state: inactive
->      * status: indirect
->    * ### Sssd-Kcm.Service
->      * name: sssd-kcm.service
->      * source: systemd
->      * state: stopped
->      * status: indirect
->    * ### Sssd-Nss.Service
->      * name: sssd-nss.service
->      * source: systemd
->      * state: inactive
->      * status: indirect
->    * ### Sssd-Pac.Service
->      * name: sssd-pac.service
->      * source: systemd
->      * state: inactive
->      * status: indirect
->    * ### Sssd-Pam.Service
->      * name: sssd-pam.service
->      * source: systemd
->      * state: inactive
->      * status: indirect
->    * ### Sssd-Ssh.Service
->      * name: sssd-ssh.service
->      * source: systemd
->      * state: inactive
->      * status: indirect
->    * ### Sssd-Sudo.Service
->      * name: sssd-sudo.service
->      * source: systemd
->      * state: inactive
->      * status: indirect
->    * ### Sssd.Service
->      * name: sssd.service
->      * source: systemd
->      * state: running
->      * status: enabled
->    * ### Syslog.Service
->      * name: syslog.service
->      * source: systemd
->      * state: active
->      * status: enabled
->    * ### System-Update-Cleanup.Service
->      * name: system-update-cleanup.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Ask-Password-Console.Service
->      * name: systemd-ask-password-console.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Ask-Password-Plymouth.Service
->      * name: systemd-ask-password-plymouth.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Ask-Password-Wall.Service
->      * name: systemd-ask-password-wall.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Backlight@.Service
->      * name: systemd-backlight@.service
->      * source: systemd
->      * state: unknown
->      * status: static
->    * ### Systemd-Binfmt.Service
->      * name: systemd-binfmt.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Coredump@.Service
->      * name: systemd-coredump@.service
->      * source: systemd
->      * state: unknown
->      * status: static
->    * ### test4@test.service
->      * name: test4@test.service
->      * source: systemd
->      * state: stopped
->      * status: unknown
->    * ### Systemd-Exit.Service
->      * name: systemd-exit.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Firstboot.Service
->      * name: systemd-firstboot.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Fsck-Root.Service
->      * name: systemd-fsck-root.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Fsck@.Service
->      * name: systemd-fsck@.service
->      * source: systemd
->      * state: unknown
->      * status: static
->    * ### Systemd-Fsck@Dev-Disk-By\X2Duuid-99851642\X2D260F\X2D4D7E\X2D83Dd\X2D7Cc990D49126.Service
->      * name: systemd-fsck@dev-disk-by\x2duuid-99851642\x2d260f\x2d4d7e\x2d83dd\x2d7cc990d49126.service
->      * source: systemd
->      * state: stopped
->      * status: unknown
->    * ### Systemd-Halt.Service
->      * name: systemd-halt.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Hibernate-Resume@.Service
->      * name: systemd-hibernate-resume@.service
->      * source: systemd
->      * state: unknown
->      * status: static
->    * ### Systemd-Hibernate.Service
->      * name: systemd-hibernate.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Hostnamed.Service
->      * name: systemd-hostnamed.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Hwdb-Update.Service
->      * name: systemd-hwdb-update.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Hybrid-Sleep.Service
->      * name: systemd-hybrid-sleep.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Initctl.Service
->      * name: systemd-initctl.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Journal-Catalog-Update.Service
->      * name: systemd-journal-catalog-update.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Journal-Flush.Service
->      * name: systemd-journal-flush.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Journald.Service
->      * name: systemd-journald.service
->      * source: systemd
->      * state: running
->      * status: static
->    * ### Systemd-Kexec.Service
->      * name: systemd-kexec.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Localed.Service
->      * name: systemd-localed.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Logind.Service
->      * name: systemd-logind.service
->      * source: systemd
->      * state: running
->      * status: static
->    * ### Systemd-Machine-Id-Commit.Service
->      * name: systemd-machine-id-commit.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Modules-Load.Service
->      * name: systemd-modules-load.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Portabled.Service
->      * name: systemd-portabled.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Poweroff.Service
->      * name: systemd-poweroff.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Quotacheck.Service
->      * name: systemd-quotacheck.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Random-Seed.Service
->      * name: systemd-random-seed.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Reboot.Service
->      * name: systemd-reboot.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Remount-Fs.Service
->      * name: systemd-remount-fs.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Resolved.Service
->      * name: systemd-resolved.service
->      * source: systemd
->      * state: inactive
->      * status: disabled
->    * ### Systemd-Rfkill.Service
->      * name: systemd-rfkill.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Suspend-Then-Hibernate.Service
->      * name: systemd-suspend-then-hibernate.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Suspend.Service
->      * name: systemd-suspend.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Sysctl.Service
->      * name: systemd-sysctl.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Sysusers.Service
->      * name: systemd-sysusers.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Timedated.Service
->      * name: systemd-timedated.service
->      * source: systemd
->      * state: inactive
->      * status: masked
->    * ### Systemd-Tmpfiles-Clean.Service
->      * name: systemd-tmpfiles-clean.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Tmpfiles-Setup-Dev.Service
->      * name: systemd-tmpfiles-setup-dev.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Tmpfiles-Setup.Service
->      * name: systemd-tmpfiles-setup.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Udev-Settle.Service
->      * name: systemd-udev-settle.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Systemd-Udev-Trigger.Service
->      * name: systemd-udev-trigger.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Udevd.Service
->      * name: systemd-udevd.service
->      * source: systemd
->      * state: running
->      * status: static
->    * ### Systemd-Update-Done.Service
->      * name: systemd-update-done.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Update-Utmp-Runlevel.Service
->      * name: systemd-update-utmp-runlevel.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Update-Utmp.Service
->      * name: systemd-update-utmp.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-User-Sessions.Service
->      * name: systemd-user-sessions.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Vconsole-Setup.Service
->      * name: systemd-vconsole-setup.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### Systemd-Volatile-Root.Service
->      * name: systemd-volatile-root.service
->      * source: systemd
->      * state: inactive
->      * status: static
->    * ### Tcsd.Service
->      * name: tcsd.service
->      * source: systemd
->      * state: inactive
->      * status: disabled
->    * ### Teamd@.Service
->      * name: teamd@.service
->      * source: systemd
->      * state: unknown
->      * status: static
->    * ### Timedatex.Service
->      * name: timedatex.service
->      * source: systemd
->      * state: inactive
->      * status: enabled
->    * ### Tuned.Service
->      * name: tuned.service
->      * source: systemd
->      * state: running
->      * status: enabled
->    * ### Unbound-Anchor.Service
->      * name: unbound-anchor.service
->      * source: systemd
->      * state: stopped
->      * status: static
->    * ### User-Runtime-Dir@.Service
->      * name: user-runtime-dir@.service
->      * source: systemd
->      * state: unknown
->      * status: static
->    * ### test5@test.service
->      * name: test5@test.service
->      * source: systemd
->      * state: stopped
->      * status: unknown
->    * ### User@.Service
->      * name: user@.service
->      * source: systemd
->      * state: unknown
->      * status: static
->    * ### test6@test.service
->      * name: test6@test.service
->      * source: systemd
->      * state: running
->      * status: unknown
->    * ### Vgauthd.Service
->      * name: vgauthd.service
->      * source: systemd
->      * state: running
->      * status: enabled
->    * ### Vmtoolsd.Service
->      * name: vmtoolsd.service
->      * source: systemd
->      * state: running
->      * status: enabled
+>
+> * discovered_interpreter_python: /usr/libexec/platform-python
+>
+> * ## Services
+>
+>   * ### Networkmanager-Dispatcher.Service
+>
+>     * name: NetworkManager-dispatcher.service
+>     * source: systemd
+>     * state: inactive
+>     * status: enabled
+>
+>   * ### Networkmanager-Wait-Online.Service
+>
+>     * name: NetworkManager-wait-online.service
+>     * source: systemd
+>     * state: stopped
+>     * status: enabled
+>
+>   * ### Networkmanager.Service
+>
+>     * name: NetworkManager.service
+>     * source: systemd
+>     * state: running
+>     * status: enabled
+>
+>   * ### Arp-Ethers.Service
+>
+>     * name: arp-ethers.service
+>     * source: systemd
+>     * state: inactive
+>     * status: disabled
+>
+>   * ### Atd.Service
+>
+>     * name: atd.service
+>     * source: systemd
+>     * state: running
+>     * status: enabled
+>
+>   * ### Auditd.Service
+>
+>     * name: auditd.service
+>     * source: systemd
+>     * state: running
+>     * status: enabled
+>
+>   * ### <Autovt@.Service>
+>
+>     * name: <autovt@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: enabled
+>
+>   * ### Blk-Availability.Service
+>
+>     * name: blk-availability.service
+>     * source: systemd
+>     * state: inactive
+>     * status: disabled
+>
+>   * ### <Chrony-Dnssrv@.Service>
+>
+>     * name: <chrony-dnssrv@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: static
+>
+>   * ### Chrony-Wait.Service
+>
+>     * name: chrony-wait.service
+>     * source: systemd
+>     * state: inactive
+>     * status: disabled
+>
+>   * ### Chronyd.Service
+>
+>     * name: chronyd.service
+>     * source: systemd
+>     * state: running
+>     * status: enabled
+>
+>   * ### Console-Getty.Service
+>
+>     * name: console-getty.service
+>     * source: systemd
+>     * state: inactive
+>     * status: disabled
+>
+>   * ### <Container-Getty@.Service>
+>
+>     * name: <container-getty@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: static
+>
+>   * ### Cpupower.Service
+>
+>     * name: cpupower.service
+>     * source: systemd
+>     * state: stopped
+>     * status: disabled
+>
+>   * ### Crond.Service
+>
+>     * name: crond.service
+>     * source: systemd
+>     * state: running
+>     * status: enabled
+>
+>   * ### Dbus-Org.Fedoraproject.Firewalld1.Service
+>
+>     * name: dbus-org.fedoraproject.FirewallD1.service
+>     * source: systemd
+>     * state: active
+>     * status: enabled
+>
+>   * ### Dbus-Org.Freedesktop.Hostname1.Service
+>
+>     * name: dbus-org.freedesktop.hostname1.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Dbus-Org.Freedesktop.Locale1.Service
+>
+>     * name: dbus-org.freedesktop.locale1.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Dbus-Org.Freedesktop.Login1.Service
+>
+>     * name: dbus-org.freedesktop.login1.service
+>     * source: systemd
+>     * state: active
+>     * status: static
+>
+>   * ### Dbus-Org.Freedesktop.Nm-Dispatcher.Service
+>
+>     * name: dbus-org.freedesktop.nm-dispatcher.service
+>     * source: systemd
+>     * state: inactive
+>     * status: enabled
+>
+>   * ### Dbus-Org.Freedesktop.Portable1.Service
+>
+>     * name: dbus-org.freedesktop.portable1.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Dbus-Org.Freedesktop.Timedate1.Service
+>
+>     * name: dbus-org.freedesktop.timedate1.service
+>     * source: systemd
+>     * state: inactive
+>     * status: enabled
+>
+>   * ### Dbus.Service
+>
+>     * name: dbus.service
+>     * source: systemd
+>     * state: running
+>     * status: static
+>
+>   * ### Debug-Shell.Service
+>
+>     * name: debug-shell.service
+>     * source: systemd
+>     * state: inactive
+>     * status: disabled
+>
+>   * ### Dm-Event.Service
+>
+>     * name: dm-event.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Dnf-Makecache.Service
+>
+>     * name: dnf-makecache.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Dracut-Cmdline.Service
+>
+>     * name: dracut-cmdline.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Dracut-Initqueue.Service
+>
+>     * name: dracut-initqueue.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Dracut-Mount.Service
+>
+>     * name: dracut-mount.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Dracut-Pre-Mount.Service
+>
+>     * name: dracut-pre-mount.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Dracut-Pre-Pivot.Service
+>
+>     * name: dracut-pre-pivot.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Dracut-Pre-Trigger.Service
+>
+>     * name: dracut-pre-trigger.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Dracut-Pre-Udev.Service
+>
+>     * name: dracut-pre-udev.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Dracut-Shutdown.Service
+>
+>     * name: dracut-shutdown.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Ebtables.Service
+>
+>     * name: ebtables.service
+>     * source: systemd
+>     * state: stopped
+>     * status: disabled
+>
+>   * ### Emergency.Service
+>
+>     * name: emergency.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Firewalld.Service
+>
+>     * name: firewalld.service
+>     * source: systemd
+>     * state: running
+>     * status: enabled
+>
+>   * ### Fstrim.Service
+>
+>     * name: fstrim.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### <Getty@.Service>
+>
+>     * name: <getty@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: enabled
+>
+>   * ### <test@test.service>
+>
+>     * name: <test@test.service>
+>     * source: systemd
+>     * state: running
+>     * status: unknown
+>
+>   * ### Grub-Boot-Indeterminate.Service
+>
+>     * name: grub-boot-indeterminate.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Halt-Local.Service
+>
+>     * name: halt-local.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Htcacheclean.Service
+>
+>     * name: htcacheclean.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Httpd.Service
+>
+>     * name: httpd.service
+>     * source: systemd
+>     * state: running
+>     * status: disabled
+>
+>   * ### <Httpd@.Service>
+>
+>     * name: <httpd@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: disabled
+>
+>   * ### Import-State.Service
+>
+>     * name: import-state.service
+>     * source: systemd
+>     * state: stopped
+>     * status: enabled
+>
+>   * ### Initrd-Cleanup.Service
+>
+>     * name: initrd-cleanup.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Initrd-Parse-Etc.Service
+>
+>     * name: initrd-parse-etc.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Initrd-Switch-Root.Service
+>
+>     * name: initrd-switch-root.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Initrd-Udevadm-Cleanup-Db.Service
+>
+>     * name: initrd-udevadm-cleanup-db.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Iprdump.Service
+>
+>     * name: iprdump.service
+>     * source: systemd
+>     * state: inactive
+>     * status: disabled
+>
+>   * ### Iprinit.Service
+>
+>     * name: iprinit.service
+>     * source: systemd
+>     * state: inactive
+>     * status: disabled
+>
+>   * ### Iprupdate.Service
+>
+>     * name: iprupdate.service
+>     * source: systemd
+>     * state: inactive
+>     * status: disabled
+>
+>   * ### Irqbalance.Service
+>
+>     * name: irqbalance.service
+>     * source: systemd
+>     * state: stopped
+>     * status: enabled
+>
+>   * ### Kdump.Service
+>
+>     * name: kdump.service
+>     * source: systemd
+>     * state: stopped
+>     * status: enabled
+>
+>   * ### Kmod-Static-Nodes.Service
+>
+>     * name: kmod-static-nodes.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Ldconfig.Service
+>
+>     * name: ldconfig.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Loadmodules.Service
+>
+>     * name: loadmodules.service
+>     * source: systemd
+>     * state: stopped
+>     * status: enabled
+>
+>   * ### Lvm2-Lvmpolld.Service
+>
+>     * name: lvm2-lvmpolld.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Lvm2-Monitor.Service
+>
+>     * name: lvm2-monitor.service
+>     * source: systemd
+>     * state: stopped
+>     * status: enabled
+>
+>   * ### <Lvm2-Pvscan@.Service>
+>
+>     * name: <lvm2-pvscan@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: static
+>
+>   * ### Lvm2-Pvscan@8:2.Service
+>
+>     * name: lvm2-pvscan@8:2.service
+>     * source: systemd
+>     * state: stopped
+>     * status: unknown
+>
+>   * ### Man-Db-Cache-Update.Service
+>
+>     * name: man-db-cache-update.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Messagebus.Service
+>
+>     * name: messagebus.service
+>     * source: systemd
+>     * state: active
+>     * status: static
+>
+>   * ### Microcode.Service
+>
+>     * name: microcode.service
+>     * source: systemd
+>     * state: stopped
+>     * status: enabled
+>
+>   * ### Nftables.Service
+>
+>     * name: nftables.service
+>     * source: systemd
+>     * state: inactive
+>     * status: disabled
+>
+>   * ### Nis-Domainname.Service
+>
+>     * name: nis-domainname.service
+>     * source: systemd
+>     * state: stopped
+>     * status: enabled
+>
+>   * ### Plymouth-Halt.Service
+>
+>     * name: plymouth-halt.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Plymouth-Kexec.Service
+>
+>     * name: plymouth-kexec.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Plymouth-Poweroff.Service
+>
+>     * name: plymouth-poweroff.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Plymouth-Quit-Wait.Service
+>
+>     * name: plymouth-quit-wait.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Plymouth-Quit.Service
+>
+>     * name: plymouth-quit.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Plymouth-Read-Write.Service
+>
+>     * name: plymouth-read-write.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Plymouth-Reboot.Service
+>
+>     * name: plymouth-reboot.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Plymouth-Start.Service
+>
+>     * name: plymouth-start.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Plymouth-Switch-Root.Service
+>
+>     * name: plymouth-switch-root.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Polkit.Service
+>
+>     * name: polkit.service
+>     * source: systemd
+>     * state: running
+>     * status: static
+>
+>   * ### Quotaon.Service
+>
+>     * name: quotaon.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Rc-Local.Service
+>
+>     * name: rc-local.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Rdisc.Service
+>
+>     * name: rdisc.service
+>     * source: systemd
+>     * state: inactive
+>     * status: disabled
+>
+>   * ### Rescue.Service
+>
+>     * name: rescue.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Rngd-Wake-Threshold.Service
+>
+>     * name: rngd-wake-threshold.service
+>     * source: systemd
+>     * state: stopped
+>     * status: disabled
+>
+>   * ### Rngd.Service
+>
+>     * name: rngd.service
+>     * source: systemd
+>     * state: running
+>     * status: enabled
+>
+>   * ### Rsyslog.Service
+>
+>     * name: rsyslog.service
+>     * source: systemd
+>     * state: running
+>     * status: enabled
+>
+>   * ### Selinux-Autorelabel-Mark.Service
+>
+>     * name: selinux-autorelabel-mark.service
+>     * source: systemd
+>     * state: stopped
+>     * status: enabled
+>
+>   * ### Selinux-Autorelabel.Service
+>
+>     * name: selinux-autorelabel.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### <Serial-Getty@.Service>
+>
+>     * name: <serial-getty@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: disabled
+>
+>   * ### <Sshd-Keygen@.Service>
+>
+>     * name: <sshd-keygen@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: disabled
+>
+>   * ### <test1@test.service>
+>
+>     * name: <test1@test.service>
+>     * source: systemd
+>     * state: stopped
+>     * status: unknown
+>
+>   * ### <test2@test.service>
+>
+>     * name: <test2@test.service>
+>     * source: systemd
+>     * state: stopped
+>     * status: unknown
+>
+>   * ### <test3@test.service>
+>
+>     * name: <test3@test.service>
+>     * source: systemd
+>     * state: stopped
+>     * status: unknown
+>
+>   * ### Sshd.Service
+>
+>     * name: sshd.service
+>     * source: systemd
+>     * state: running
+>     * status: enabled
+>
+>   * ### <Sshd@.Service>
+>
+>     * name: <sshd@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: static
+>
+>   * ### Sssd-Autofs.Service
+>
+>     * name: sssd-autofs.service
+>     * source: systemd
+>     * state: inactive
+>     * status: indirect
+>
+>   * ### Sssd-Kcm.Service
+>
+>     * name: sssd-kcm.service
+>     * source: systemd
+>     * state: stopped
+>     * status: indirect
+>
+>   * ### Sssd-Nss.Service
+>
+>     * name: sssd-nss.service
+>     * source: systemd
+>     * state: inactive
+>     * status: indirect
+>
+>   * ### Sssd-Pac.Service
+>
+>     * name: sssd-pac.service
+>     * source: systemd
+>     * state: inactive
+>     * status: indirect
+>
+>   * ### Sssd-Pam.Service
+>
+>     * name: sssd-pam.service
+>     * source: systemd
+>     * state: inactive
+>     * status: indirect
+>
+>   * ### Sssd-Ssh.Service
+>
+>     * name: sssd-ssh.service
+>     * source: systemd
+>     * state: inactive
+>     * status: indirect
+>
+>   * ### Sssd-Sudo.Service
+>
+>     * name: sssd-sudo.service
+>     * source: systemd
+>     * state: inactive
+>     * status: indirect
+>
+>   * ### Sssd.Service
+>
+>     * name: sssd.service
+>     * source: systemd
+>     * state: running
+>     * status: enabled
+>
+>   * ### Syslog.Service
+>
+>     * name: syslog.service
+>     * source: systemd
+>     * state: active
+>     * status: enabled
+>
+>   * ### System-Update-Cleanup.Service
+>
+>     * name: system-update-cleanup.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Ask-Password-Console.Service
+>
+>     * name: systemd-ask-password-console.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Ask-Password-Plymouth.Service
+>
+>     * name: systemd-ask-password-plymouth.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Ask-Password-Wall.Service
+>
+>     * name: systemd-ask-password-wall.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### <Systemd-Backlight@.Service>
+>
+>     * name: <systemd-backlight@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: static
+>
+>   * ### Systemd-Binfmt.Service
+>
+>     * name: systemd-binfmt.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### <Systemd-Coredump@.Service>
+>
+>     * name: <systemd-coredump@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: static
+>
+>   * ### <test4@test.service>
+>
+>     * name: <test4@test.service>
+>     * source: systemd
+>     * state: stopped
+>     * status: unknown
+>
+>   * ### Systemd-Exit.Service
+>
+>     * name: systemd-exit.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Firstboot.Service
+>
+>     * name: systemd-firstboot.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Fsck-Root.Service
+>
+>     * name: systemd-fsck-root.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### <Systemd-Fsck@.Service>
+>
+>     * name: <systemd-fsck@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: static
+>
+>   * ### Systemd-Fsck@Dev-Disk-By\X2Duuid-99851642\X2D260F\X2D4D7E\X2D83Dd\X2D7Cc990D49126.Service
+>
+>     * name: systemd-fsck@dev-disk-by\x2duuid-99851642\x2d260f\x2d4d7e\x2d83dd\x2d7cc990d49126.service
+>     * source: systemd
+>     * state: stopped
+>     * status: unknown
+>
+>   * ### Systemd-Halt.Service
+>
+>     * name: systemd-halt.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### <Systemd-Hibernate-Resume@.Service>
+>
+>     * name: <systemd-hibernate-resume@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: static
+>
+>   * ### Systemd-Hibernate.Service
+>
+>     * name: systemd-hibernate.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Hostnamed.Service
+>
+>     * name: systemd-hostnamed.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Hwdb-Update.Service
+>
+>     * name: systemd-hwdb-update.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Hybrid-Sleep.Service
+>
+>     * name: systemd-hybrid-sleep.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Initctl.Service
+>
+>     * name: systemd-initctl.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Journal-Catalog-Update.Service
+>
+>     * name: systemd-journal-catalog-update.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Journal-Flush.Service
+>
+>     * name: systemd-journal-flush.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Journald.Service
+>
+>     * name: systemd-journald.service
+>     * source: systemd
+>     * state: running
+>     * status: static
+>
+>   * ### Systemd-Kexec.Service
+>
+>     * name: systemd-kexec.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Localed.Service
+>
+>     * name: systemd-localed.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Logind.Service
+>
+>     * name: systemd-logind.service
+>     * source: systemd
+>     * state: running
+>     * status: static
+>
+>   * ### Systemd-Machine-Id-Commit.Service
+>
+>     * name: systemd-machine-id-commit.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Modules-Load.Service
+>
+>     * name: systemd-modules-load.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Portabled.Service
+>
+>     * name: systemd-portabled.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Poweroff.Service
+>
+>     * name: systemd-poweroff.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Quotacheck.Service
+>
+>     * name: systemd-quotacheck.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Random-Seed.Service
+>
+>     * name: systemd-random-seed.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Reboot.Service
+>
+>     * name: systemd-reboot.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Remount-Fs.Service
+>
+>     * name: systemd-remount-fs.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Resolved.Service
+>
+>     * name: systemd-resolved.service
+>     * source: systemd
+>     * state: inactive
+>     * status: disabled
+>
+>   * ### Systemd-Rfkill.Service
+>
+>     * name: systemd-rfkill.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Suspend-Then-Hibernate.Service
+>
+>     * name: systemd-suspend-then-hibernate.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Suspend.Service
+>
+>     * name: systemd-suspend.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Sysctl.Service
+>
+>     * name: systemd-sysctl.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Sysusers.Service
+>
+>     * name: systemd-sysusers.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Timedated.Service
+>
+>     * name: systemd-timedated.service
+>     * source: systemd
+>     * state: inactive
+>     * status: masked
+>
+>   * ### Systemd-Tmpfiles-Clean.Service
+>
+>     * name: systemd-tmpfiles-clean.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Tmpfiles-Setup-Dev.Service
+>
+>     * name: systemd-tmpfiles-setup-dev.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Tmpfiles-Setup.Service
+>
+>     * name: systemd-tmpfiles-setup.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Udev-Settle.Service
+>
+>     * name: systemd-udev-settle.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Systemd-Udev-Trigger.Service
+>
+>     * name: systemd-udev-trigger.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Udevd.Service
+>
+>     * name: systemd-udevd.service
+>     * source: systemd
+>     * state: running
+>     * status: static
+>
+>   * ### Systemd-Update-Done.Service
+>
+>     * name: systemd-update-done.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Update-Utmp-Runlevel.Service
+>
+>     * name: systemd-update-utmp-runlevel.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Update-Utmp.Service
+>
+>     * name: systemd-update-utmp.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-User-Sessions.Service
+>
+>     * name: systemd-user-sessions.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Vconsole-Setup.Service
+>
+>     * name: systemd-vconsole-setup.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### Systemd-Volatile-Root.Service
+>
+>     * name: systemd-volatile-root.service
+>     * source: systemd
+>     * state: inactive
+>     * status: static
+>
+>   * ### Tcsd.Service
+>
+>     * name: tcsd.service
+>     * source: systemd
+>     * state: inactive
+>     * status: disabled
+>
+>   * ### <Teamd@.Service>
+>
+>     * name: <teamd@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: static
+>
+>   * ### Timedatex.Service
+>
+>     * name: timedatex.service
+>     * source: systemd
+>     * state: inactive
+>     * status: enabled
+>
+>   * ### Tuned.Service
+>
+>     * name: tuned.service
+>     * source: systemd
+>     * state: running
+>     * status: enabled
+>
+>   * ### Unbound-Anchor.Service
+>
+>     * name: unbound-anchor.service
+>     * source: systemd
+>     * state: stopped
+>     * status: static
+>
+>   * ### <User-Runtime-Dir@.Service>
+>
+>     * name: <user-runtime-dir@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: static
+>
+>   * ### <test5@test.service>
+>
+>     * name: <test5@test.service>
+>     * source: systemd
+>     * state: stopped
+>     * status: unknown
+>
+>   * ### <User@.Service>
+>
+>     * name: <user@.service>
+>     * source: systemd
+>     * state: unknown
+>     * status: static
+>
+>   * ### <test6@test.service>
+>
+>     * name: <test6@test.service>
+>     * source: systemd
+>     * state: running
+>     * status: unknown
+>
+>   * ### Vgauthd.Service
+>
+>     * name: vgauthd.service
+>     * source: systemd
+>     * state: running
+>     * status: enabled
+>
+>   * ### Vmtoolsd.Service
+>
+>     * name: vmtoolsd.service
+>     * source: systemd
+>     * state: running
+>     * status: enabled
 
 
 ### linux-setup
+
 ***
 Gathers facts about remote hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/setup_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/setup_module.html>
 
 
 #### Base Command
 
 `linux-setup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5208,14 +5870,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-sysctl
+
 ***
 Manage entries in sysctl.conf.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sysctl_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/sysctl_module.html>
 
 
 #### Base Command
 
 `linux-sysctl`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5237,9 +5901,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-sysctl host="123.123.123.123" name="vm.swappiness" value="5" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -5255,18 +5921,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### linux-systemd
+
 ***
 Manage services
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/systemd_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/systemd_module.html>
 
 
 #### Base Command
 
 `linux-systemd`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5292,9 +5961,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-systemd host="123.123.123.123" state="started" name="httpd" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -5312,241 +5983,246 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * name: httpd
->  * state: started
->  * ## Status
->    * ActiveEnterTimestamp: Thu 2021-07-08 14:12:41 JST
->    * ActiveEnterTimestampMonotonic: 331222117201
->    * ActiveExitTimestampMonotonic: 0
->    * ActiveState: active
->    * After: system.slice basic.target systemd-journald.socket systemd-tmpfiles-setup.service -.mount nss-lookup.target remote-fs.target httpd-init.service sysinit.target network.target tmp.mount
->    * AllowIsolate: no
->    * AllowedCPUs: 
->    * AllowedMemoryNodes: 
->    * AmbientCapabilities: 
->    * AssertResult: yes
->    * AssertTimestamp: Thu 2021-07-08 14:12:41 JST
->    * AssertTimestampMonotonic: 331221986103
->    * Before: shutdown.target
->    * BlockIOAccounting: no
->    * BlockIOWeight: [not set]
->    * CPUAccounting: no
->    * CPUAffinity: 
->    * CPUQuotaPerSecUSec: infinity
->    * CPUSchedulingPolicy: 0
->    * CPUSchedulingPriority: 0
->    * CPUSchedulingResetOnFork: no
->    * CPUShares: [not set]
->    * CPUUsageNSec: [not set]
->    * CPUWeight: [not set]
->    * CacheDirectoryMode: 0755
->    * CanIsolate: no
->    * CanReload: yes
->    * CanStart: yes
->    * CanStop: yes
->    * CapabilityBoundingSet: cap_chown cap_dac_override cap_dac_read_search cap_fowner cap_fsetid cap_kill cap_setgid cap_setuid cap_setpcap cap_linux_immutable cap_net_bind_service cap_net_broadcast cap_net_admin cap_net_raw cap_ipc_lock cap_ipc_owner cap_sys_module cap_sys_rawio cap_sys_chroot cap_sys_ptrace cap_sys_pacct cap_sys_admin cap_sys_boot cap_sys_nice cap_sys_resource cap_sys_time cap_sys_tty_config cap_mknod cap_lease cap_audit_write cap_audit_control cap_setfcap cap_mac_override cap_mac_admin cap_syslog cap_wake_alarm cap_block_suspend
->    * CollectMode: inactive
->    * ConditionResult: yes
->    * ConditionTimestamp: Thu 2021-07-08 14:12:41 JST
->    * ConditionTimestampMonotonic: 331221986102
->    * ConfigurationDirectoryMode: 0755
->    * Conflicts: shutdown.target
->    * ControlGroup: /system.slice/httpd.service
->    * ControlPID: 0
->    * DefaultDependencies: yes
->    * Delegate: no
->    * Description: The Apache HTTP Server
->    * DevicePolicy: auto
->    * Documentation: man:httpd.service(8)
->    * DynamicUser: no
->    * EffectiveCPUs: 
->    * EffectiveMemoryNodes: 
->    * Environment: LANG=C
->    * ExecMainCode: 0
->    * ExecMainExitTimestampMonotonic: 0
->    * ExecMainPID: 7626
->    * ExecMainStartTimestamp: Thu 2021-07-08 14:12:41 JST
->    * ExecMainStartTimestampMonotonic: 331221988640
->    * ExecMainStatus: 0
->    * ExecReload: { path=/usr/sbin/httpd ; argv[]=/usr/sbin/httpd $OPTIONS -k graceful ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
->    * ExecStart: { path=/usr/sbin/httpd ; argv[]=/usr/sbin/httpd $OPTIONS -DFOREGROUND ; ignore_errors=no ; start_time=[Thu 2021-07-08 14:12:41 JST] ; stop_time=[n/a] ; pid=7626 ; code=(null) ; status=0/0 }
->    * FailureAction: none
->    * FileDescriptorStoreMax: 0
->    * FragmentPath: /usr/lib/systemd/system/httpd.service
->    * GID: [not set]
->    * GuessMainPID: yes
->    * IOAccounting: no
->    * IOSchedulingClass: 0
->    * IOSchedulingPriority: 0
->    * IOWeight: [not set]
->    * IPAccounting: no
->    * IPEgressBytes: 18446744073709551615
->    * IPEgressPackets: 18446744073709551615
->    * IPIngressBytes: 18446744073709551615
->    * IPIngressPackets: 18446744073709551615
->    * Id: httpd.service
->    * IgnoreOnIsolate: no
->    * IgnoreSIGPIPE: yes
->    * InactiveEnterTimestampMonotonic: 0
->    * InactiveExitTimestamp: Thu 2021-07-08 14:12:41 JST
->    * InactiveExitTimestampMonotonic: 331221988825
->    * InvocationID: 7bb9f1e196514d5f87dfb3602a1c9e32
->    * JobRunningTimeoutUSec: infinity
->    * JobTimeoutAction: none
->    * JobTimeoutUSec: infinity
->    * KeyringMode: private
->    * KillMode: mixed
->    * KillSignal: 28
->    * LimitAS: infinity
->    * LimitASSoft: infinity
->    * LimitCORE: infinity
->    * LimitCORESoft: infinity
->    * LimitCPU: infinity
->    * LimitCPUSoft: infinity
->    * LimitDATA: infinity
->    * LimitDATASoft: infinity
->    * LimitFSIZE: infinity
->    * LimitFSIZESoft: infinity
->    * LimitLOCKS: infinity
->    * LimitLOCKSSoft: infinity
->    * LimitMEMLOCK: 65536
->    * LimitMEMLOCKSoft: 65536
->    * LimitMSGQUEUE: 819200
->    * LimitMSGQUEUESoft: 819200
->    * LimitNICE: 0
->    * LimitNICESoft: 0
->    * LimitNOFILE: 262144
->    * LimitNOFILESoft: 1024
->    * LimitNPROC: 7805
->    * LimitNPROCSoft: 7805
->    * LimitRSS: infinity
->    * LimitRSSSoft: infinity
->    * LimitRTPRIO: 0
->    * LimitRTPRIOSoft: 0
->    * LimitRTTIME: infinity
->    * LimitRTTIMESoft: infinity
->    * LimitSIGPENDING: 7805
->    * LimitSIGPENDINGSoft: 7805
->    * LimitSTACK: infinity
->    * LimitSTACKSoft: 8388608
->    * LoadState: loaded
->    * LockPersonality: no
->    * LogLevelMax: -1
->    * LogRateLimitBurst: 0
->    * LogRateLimitIntervalUSec: 0
->    * LogsDirectoryMode: 0755
->    * MainPID: 7626
->    * MemoryAccounting: yes
->    * MemoryCurrent: 30425088
->    * MemoryDenyWriteExecute: no
->    * MemoryHigh: infinity
->    * MemoryLimit: infinity
->    * MemoryLow: 0
->    * MemoryMax: infinity
->    * MemorySwapMax: infinity
->    * MountAPIVFS: no
->    * MountFlags: 
->    * NFileDescriptorStore: 0
->    * NRestarts: 0
->    * NUMAMask: 
->    * NUMAPolicy: n/a
->    * Names: httpd.service
->    * NeedDaemonReload: no
->    * Nice: 0
->    * NoNewPrivileges: no
->    * NonBlocking: no
->    * NotifyAccess: main
->    * OOMScoreAdjust: 0
->    * OnFailureJobMode: replace
->    * PermissionsStartOnly: no
->    * Perpetual: no
->    * PrivateDevices: no
->    * PrivateMounts: no
->    * PrivateNetwork: no
->    * PrivateTmp: yes
->    * PrivateUsers: no
->    * ProtectControlGroups: no
->    * ProtectHome: no
->    * ProtectKernelModules: no
->    * ProtectKernelTunables: no
->    * ProtectSystem: no
->    * RefuseManualStart: no
->    * RefuseManualStop: no
->    * RemainAfterExit: no
->    * RemoveIPC: no
->    * Requires: system.slice sysinit.target -.mount
->    * RequiresMountsFor: /var/tmp
->    * Restart: no
->    * RestartUSec: 100ms
->    * RestrictNamespaces: no
->    * RestrictRealtime: no
->    * RestrictSUIDSGID: no
->    * Result: success
->    * RootDirectoryStartOnly: no
->    * RuntimeDirectoryMode: 0755
->    * RuntimeDirectoryPreserve: no
->    * RuntimeMaxUSec: infinity
->    * SameProcessGroup: no
->    * SecureBits: 0
->    * SendSIGHUP: no
->    * SendSIGKILL: yes
->    * Slice: system.slice
->    * StandardError: inherit
->    * StandardInput: null
->    * StandardInputData: 
->    * StandardOutput: journal
->    * StartLimitAction: none
->    * StartLimitBurst: 5
->    * StartLimitIntervalUSec: 10s
->    * StartupBlockIOWeight: [not set]
->    * StartupCPUShares: [not set]
->    * StartupCPUWeight: [not set]
->    * StartupIOWeight: [not set]
->    * StateChangeTimestamp: Thu 2021-07-08 14:12:41 JST
->    * StateChangeTimestampMonotonic: 331222165344
->    * StateDirectoryMode: 0755
->    * StatusErrno: 0
->    * StatusText: Running, listening on: port 80
->    * StopWhenUnneeded: no
->    * SubState: running
->    * SuccessAction: none
->    * SyslogFacility: 3
->    * SyslogLevel: 6
->    * SyslogLevelPrefix: yes
->    * SyslogPriority: 30
->    * SystemCallErrorNumber: 0
->    * TTYReset: no
->    * TTYVHangup: no
->    * TTYVTDisallocate: no
->    * TasksAccounting: yes
->    * TasksCurrent: 213
->    * TasksMax: 12488
->    * TimeoutStartUSec: 1min 30s
->    * TimeoutStopUSec: 1min 30s
->    * TimerSlackNSec: 50000
->    * Transient: no
->    * Type: notify
->    * UID: [not set]
->    * UMask: 0022
->    * UnitFilePreset: disabled
->    * UnitFileState: disabled
->    * UtmpMode: init
->    * Wants: httpd-init.service
->    * WatchdogTimestamp: Thu 2021-07-08 14:12:41 JST
->    * WatchdogTimestampMonotonic: 331222117198
->    * WatchdogUSec: 0
+>
+> * changed: False
+> * name: httpd
+> * state: started
+>
+> * ## Status
+>
+>   * ActiveEnterTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * ActiveEnterTimestampMonotonic: 331222117201
+>   * ActiveExitTimestampMonotonic: 0
+>   * ActiveState: active
+>   * After: system.slice basic.target systemd-journald.socket systemd-tmpfiles-setup.service -.mount nss-lookup.target remote-fs.target httpd-init.service sysinit.target network.target tmp.mount
+>   * AllowIsolate: no
+>   * AllowedCPUs: 
+>   * AllowedMemoryNodes: 
+>   * AmbientCapabilities: 
+>   * AssertResult: yes
+>   * AssertTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * AssertTimestampMonotonic: 331221986103
+>   * Before: shutdown.target
+>   * BlockIOAccounting: no
+>   * BlockIOWeight: [not set]
+>   * CPUAccounting: no
+>   * CPUAffinity: 
+>   * CPUQuotaPerSecUSec: infinity
+>   * CPUSchedulingPolicy: 0
+>   * CPUSchedulingPriority: 0
+>   * CPUSchedulingResetOnFork: no
+>   * CPUShares: [not set]
+>   * CPUUsageNSec: [not set]
+>   * CPUWeight: [not set]
+>   * CacheDirectoryMode: 0755
+>   * CanIsolate: no
+>   * CanReload: yes
+>   * CanStart: yes
+>   * CanStop: yes
+>   * CapabilityBoundingSet: cap_chown cap_dac_override cap_dac_read_search cap_fowner cap_fsetid cap_kill cap_setgid cap_setuid cap_setpcap cap_linux_immutable cap_net_bind_service cap_net_broadcast cap_net_admin cap_net_raw cap_ipc_lock cap_ipc_owner cap_sys_module cap_sys_rawio cap_sys_chroot cap_sys_ptrace cap_sys_pacct cap_sys_admin cap_sys_boot cap_sys_nice cap_sys_resource cap_sys_time cap_sys_tty_config cap_mknod cap_lease cap_audit_write cap_audit_control cap_setfcap cap_mac_override cap_mac_admin cap_syslog cap_wake_alarm cap_block_suspend
+>   * CollectMode: inactive
+>   * ConditionResult: yes
+>   * ConditionTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * ConditionTimestampMonotonic: 331221986102
+>   * ConfigurationDirectoryMode: 0755
+>   * Conflicts: shutdown.target
+>   * ControlGroup: /system.slice/httpd.service
+>   * ControlPID: 0
+>   * DefaultDependencies: yes
+>   * Delegate: no
+>   * Description: The Apache HTTP Server
+>   * DevicePolicy: auto
+>   * Documentation: man:httpd.service(8)
+>   * DynamicUser: no
+>   * EffectiveCPUs: 
+>   * EffectiveMemoryNodes: 
+>   * Environment: LANG=C
+>   * ExecMainCode: 0
+>   * ExecMainExitTimestampMonotonic: 0
+>   * ExecMainPID: 7626
+>   * ExecMainStartTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * ExecMainStartTimestampMonotonic: 331221988640
+>   * ExecMainStatus: 0
+>   * ExecReload: { path=/usr/sbin/httpd ; argv[]=/usr/sbin/httpd $OPTIONS -k graceful ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+>   * ExecStart: { path=/usr/sbin/httpd ; argv[]=/usr/sbin/httpd $OPTIONS -DFOREGROUND ; ignore_errors=no ; start_time=[Thu 2021-07-08 14:12:41 JST] ; stop_time=[n/a] ; pid=7626 ; code=(null) ; status=0/0 }
+>   * FailureAction: none
+>   * FileDescriptorStoreMax: 0
+>   * FragmentPath: /usr/lib/systemd/system/httpd.service
+>   * GID: [not set]
+>   * GuessMainPID: yes
+>   * IOAccounting: no
+>   * IOSchedulingClass: 0
+>   * IOSchedulingPriority: 0
+>   * IOWeight: [not set]
+>   * IPAccounting: no
+>   * IPEgressBytes: 18446744073709551615
+>   * IPEgressPackets: 18446744073709551615
+>   * IPIngressBytes: 18446744073709551615
+>   * IPIngressPackets: 18446744073709551615
+>   * Id: httpd.service
+>   * IgnoreOnIsolate: no
+>   * IgnoreSIGPIPE: yes
+>   * InactiveEnterTimestampMonotonic: 0
+>   * InactiveExitTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * InactiveExitTimestampMonotonic: 331221988825
+>   * InvocationID: 7bb9f1e196514d5f87dfb3602a1c9e32
+>   * JobRunningTimeoutUSec: infinity
+>   * JobTimeoutAction: none
+>   * JobTimeoutUSec: infinity
+>   * KeyringMode: private
+>   * KillMode: mixed
+>   * KillSignal: 28
+>   * LimitAS: infinity
+>   * LimitASSoft: infinity
+>   * LimitCORE: infinity
+>   * LimitCORESoft: infinity
+>   * LimitCPU: infinity
+>   * LimitCPUSoft: infinity
+>   * LimitDATA: infinity
+>   * LimitDATASoft: infinity
+>   * LimitFSIZE: infinity
+>   * LimitFSIZESoft: infinity
+>   * LimitLOCKS: infinity
+>   * LimitLOCKSSoft: infinity
+>   * LimitMEMLOCK: 65536
+>   * LimitMEMLOCKSoft: 65536
+>   * LimitMSGQUEUE: 819200
+>   * LimitMSGQUEUESoft: 819200
+>   * LimitNICE: 0
+>   * LimitNICESoft: 0
+>   * LimitNOFILE: 262144
+>   * LimitNOFILESoft: 1024
+>   * LimitNPROC: 7805
+>   * LimitNPROCSoft: 7805
+>   * LimitRSS: infinity
+>   * LimitRSSSoft: infinity
+>   * LimitRTPRIO: 0
+>   * LimitRTPRIOSoft: 0
+>   * LimitRTTIME: infinity
+>   * LimitRTTIMESoft: infinity
+>   * LimitSIGPENDING: 7805
+>   * LimitSIGPENDINGSoft: 7805
+>   * LimitSTACK: infinity
+>   * LimitSTACKSoft: 8388608
+>   * LoadState: loaded
+>   * LockPersonality: no
+>   * LogLevelMax: -1
+>   * LogRateLimitBurst: 0
+>   * LogRateLimitIntervalUSec: 0
+>   * LogsDirectoryMode: 0755
+>   * MainPID: 7626
+>   * MemoryAccounting: yes
+>   * MemoryCurrent: 30425088
+>   * MemoryDenyWriteExecute: no
+>   * MemoryHigh: infinity
+>   * MemoryLimit: infinity
+>   * MemoryLow: 0
+>   * MemoryMax: infinity
+>   * MemorySwapMax: infinity
+>   * MountAPIVFS: no
+>   * MountFlags: 
+>   * NFileDescriptorStore: 0
+>   * NRestarts: 0
+>   * NUMAMask: 
+>   * NUMAPolicy: n/a
+>   * Names: httpd.service
+>   * NeedDaemonReload: no
+>   * Nice: 0
+>   * NoNewPrivileges: no
+>   * NonBlocking: no
+>   * NotifyAccess: main
+>   * OOMScoreAdjust: 0
+>   * OnFailureJobMode: replace
+>   * PermissionsStartOnly: no
+>   * Perpetual: no
+>   * PrivateDevices: no
+>   * PrivateMounts: no
+>   * PrivateNetwork: no
+>   * PrivateTmp: yes
+>   * PrivateUsers: no
+>   * ProtectControlGroups: no
+>   * ProtectHome: no
+>   * ProtectKernelModules: no
+>   * ProtectKernelTunables: no
+>   * ProtectSystem: no
+>   * RefuseManualStart: no
+>   * RefuseManualStop: no
+>   * RemainAfterExit: no
+>   * RemoveIPC: no
+>   * Requires: system.slice sysinit.target -.mount
+>   * RequiresMountsFor: /var/tmp
+>   * Restart: no
+>   * RestartUSec: 100ms
+>   * RestrictNamespaces: no
+>   * RestrictRealtime: no
+>   * RestrictSUIDSGID: no
+>   * Result: success
+>   * RootDirectoryStartOnly: no
+>   * RuntimeDirectoryMode: 0755
+>   * RuntimeDirectoryPreserve: no
+>   * RuntimeMaxUSec: infinity
+>   * SameProcessGroup: no
+>   * SecureBits: 0
+>   * SendSIGHUP: no
+>   * SendSIGKILL: yes
+>   * Slice: system.slice
+>   * StandardError: inherit
+>   * StandardInput: null
+>   * StandardInputData: 
+>   * StandardOutput: journal
+>   * StartLimitAction: none
+>   * StartLimitBurst: 5
+>   * StartLimitIntervalUSec: 10s
+>   * StartupBlockIOWeight: [not set]
+>   * StartupCPUShares: [not set]
+>   * StartupCPUWeight: [not set]
+>   * StartupIOWeight: [not set]
+>   * StateChangeTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * StateChangeTimestampMonotonic: 331222165344
+>   * StateDirectoryMode: 0755
+>   * StatusErrno: 0
+>   * StatusText: Running, listening on: port 80
+>   * StopWhenUnneeded: no
+>   * SubState: running
+>   * SuccessAction: none
+>   * SyslogFacility: 3
+>   * SyslogLevel: 6
+>   * SyslogLevelPrefix: yes
+>   * SyslogPriority: 30
+>   * SystemCallErrorNumber: 0
+>   * TTYReset: no
+>   * TTYVHangup: no
+>   * TTYVTDisallocate: no
+>   * TasksAccounting: yes
+>   * TasksCurrent: 213
+>   * TasksMax: 12488
+>   * TimeoutStartUSec: 1min 30s
+>   * TimeoutStopUSec: 1min 30s
+>   * TimerSlackNSec: 50000
+>   * Transient: no
+>   * Type: notify
+>   * UID: [not set]
+>   * UMask: 0022
+>   * UnitFilePreset: disabled
+>   * UnitFileState: disabled
+>   * UtmpMode: init
+>   * Wants: httpd-init.service
+>   * WatchdogTimestamp: Thu 2021-07-08 14:12:41 JST
+>   * WatchdogTimestampMonotonic: 331222117198
+>   * WatchdogUSec: 0
 
 
 ### linux-sysvinit
+
 ***
 Manage SysV services.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sysvinit_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/sysvinit_module.html>
 
 
 #### Base Command
 
 `linux-sysvinit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5571,14 +6247,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-timezone
+
 ***
 Configure timezone setting
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/timezone_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/timezone_module.html>
 
 
 #### Base Command
 
 `linux-timezone`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5596,9 +6274,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-timezone host="123.123.123.123" name="Asia/Tokyo" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -5614,18 +6294,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### linux-ufw
+
 ***
 Manage firewall with UFW
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ufw_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/ufw_module.html>
 
 
 #### Base Command
 
 `linux-ufw`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5659,14 +6342,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-user
+
 ***
 Manage user accounts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/user_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/user_module.html>
 
 
 #### Base Command
 
 `linux-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5734,14 +6419,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-xfs-quota
+
 ***
 Manage quotas on XFS filesystems
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/xfs_quota_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/xfs_quota_module.html>
 
 
 #### Base Command
 
 `linux-xfs-quota`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5773,14 +6460,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-htpasswd
+
 ***
 manage user files for basic authentication
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/htpasswd_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/htpasswd_module.html>
 
 
 #### Base Command
 
 `linux-htpasswd`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5811,14 +6500,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-supervisorctl
+
 ***
 Manage the state of a program or group of programs running via supervisord
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/supervisorctl_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/supervisorctl_module.html>
 
 
 #### Base Command
 
 `linux-supervisorctl`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5842,14 +6533,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-openssh-cert
+
 ***
 Generate OpenSSH host or user certificates.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssh_cert_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/openssh_cert_module.html>
 
 
 #### Base Command
 
 `linux-openssh-cert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5890,14 +6583,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-openssh-keypair
+
 ***
 Generate OpenSSH private and public keys.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssh_keypair_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/openssh_keypair_module.html>
 
 
 #### Base Command
 
 `linux-openssh-keypair`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5933,9 +6628,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-openssh-keypair host="123.123.123.123" path="/tmp/id_ssh_rsa" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -5957,24 +6654,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * comment: 
->  * filename: /tmp/id_ssh_rsa
->  * fingerprint: SHA256:vlhiKW0d9Ud7gFGnUOFCEYl3c3B/XcFtEiz2JggpXnw
->  * public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDI5EKvHE4IhXqNA5zgWqbmYXxGdTKLuU0UQ4THQCnvMGR1BnfikSK+kT33Iq9wi3btoKoeqrgE8TMPb4On69akaPNnOgi2Dk+l0OoQBzIvn9m3RqvrtUFUDLTNckt/lrNIeIk3KXu22fcp0qoIgMNJmjYcY6Qbm8pCcVbXp6X3nbqk3glI2sTkM25UxbOLnbbyGrUMfUfAWGWC1wyyQktSc/5j41aZlvUhv/x54DBL8ASa/OeMxn9DboIm2flp+JgqDIm8rZXIucZjT6tool3XYseNJ0UxykQsAx36Gw2HGOXJbukiDlS0X5ifuj412uSh+g+UDvlaEjDhYasW2m7geDlZEJkSduELPar8pDP7RAqN3YIbv+zD+bOfZeSrxSzfIF103hcv+pAVXWqCwMSN1mSVdnuI9FLmTQ6a2TGE9OBwjbn+k2Vlxn0+aMZrT6R+M6rNsfUGLZRQviN+y8tvYDhsXmJhkhHo4XmdYRJmnHzWEETvboakATbTsqUVheyLS3tPgn7guDAQw67RBc/D7zPw6fuf9Xw9IhwqwH/MySskqsz3B7leuiYPqBaijAKw3Wdn1VmhszHC8kJL2RaEmTp4gNmMMp1H4V2zfH1f+jSG4gfwqJe/3xeNlBsKDvKDik5TRt6fzSlNbgvEOfijlABRU3rjg+kEUFvzHPcp1Q==
->  * size: 4096
->  * type: rsa
+>
+> * changed: False
+> * comment: 
+> * filename: /tmp/id_ssh_rsa
+> * fingerprint: SHA256:vlhiKW0d9Ud7gFGnUOFCEYl3c3B/XcFtEiz2JggpXnw
+> * public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDI5EKvHE4IhXqNA5zgWqbmYXxGdTKLuU0UQ4THQCnvMGR1BnfikSK+kT33Iq9wi3btoKoeqrgE8TMPb4On69akaPNnOgi2Dk+l0OoQBzIvn9m3RqvrtUFUDLTNckt/lrNIeIk3KXu22fcp0qoIgMNJmjYcY6Qbm8pCcVbXp6X3nbqk3glI2sTkM25UxbOLnbbyGrUMfUfAWGWC1wyyQktSc/5j41aZlvUhv/x54DBL8ASa/OeMxn9DboIm2flp+JgqDIm8rZXIucZjT6tool3XYseNJ0UxykQsAx36Gw2HGOXJbukiDlS0X5ifuj412uSh+g+UDvlaEjDhYasW2m7geDlZEJkSduELPar8pDP7RAqN3YIbv+zD+bOfZeSrxSzfIF103hcv+pAVXWqCwMSN1mSVdnuI9FLmTQ6a2TGE9OBwjbn+k2Vlxn0+aMZrT6R+M6rNsfUGLZRQviN+y8tvYDhsXmJhkhHo4XmdYRJmnHzWEETvboakATbTsqUVheyLS3tPgn7guDAQw67RBc/D7zPw6fuf9Xw9IhwqwH/MySskqsz3B7leuiYPqBaijAKw3Wdn1VmhszHC8kJL2RaEmTp4gNmMMp1H4V2zfH1f+jSG4gfwqJe/3xeNlBsKDvKDik5TRt6fzSlNbgvEOfijlABRU3rjg+kEUFvzHPcp1Q==
+> * size: 4096
+> * type: rsa
 
 
 ### linux-acl
+
 ***
 Set and retrieve file ACL information.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/acl_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/acl_module.html>
 
 
 #### Base Command
 
 `linux-acl`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6002,14 +6702,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-archive
+
 ***
 Creates a compressed archive of one or more files or trees
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/archive_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/archive_module.html>
 
 
 #### Base Command
 
 `linux-archive`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6045,14 +6747,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-assemble
+
 ***
 Assemble configuration files from fragments
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/assemble_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/assemble_module.html>
 
 
 #### Base Command
 
 `linux-assemble`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6086,14 +6790,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-blockinfile
+
 ***
 Insert/update/remove a text block surrounded by marker lines
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/blockinfile_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/blockinfile_module.html>
 
 
 #### Base Command
 
 `linux-blockinfile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6129,14 +6835,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-file
+
 ***
 Manage files and file properties
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/file_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/file_module.html>
 
 
 #### Base Command
 
 `linux-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6171,14 +6879,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-find
+
 ***
 Return a list of files based on specific criteria
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/find_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/find_module.html>
 
 
 #### Base Command
 
 `linux-find`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6210,9 +6920,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-find host="123.123.123.123" paths="/tmp" age="2d" recurse="True" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -6232,22 +6944,26 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * examined: 18
->  * matched: 0
->  * msg: 
->  * ## Files
+>
+> * changed: False
+> * examined: 18
+> * matched: 0
+> * msg: 
+>
+> * ## Files
 
 
 ### linux-ini-file
+
 ***
 Tweak settings in INI files
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ini_file_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/ini_file_module.html>
 
 
 #### Base Command
 
 `linux-ini-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6280,9 +6996,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-ini-file host="123.123.123.123" path="/etc/conf" section="drinks" option="fav" value="lemonade" mode="0600" backup="True" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -6308,28 +7026,31 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * gid: 0
->  * group: root
->  * mode: 0600
->  * msg: OK
->  * owner: root
->  * path: /etc/conf
->  * secontext: system_u:object_r:etc_t:s0
->  * size: 25
->  * state: file
->  * uid: 0
+>
+> * changed: False
+> * gid: 0
+> * group: root
+> * mode: 0600
+> * msg: OK
+> * owner: root
+> * path: /etc/conf
+> * secontext: system_u:object_r:etc_t:s0
+> * size: 25
+> * state: file
+> * uid: 0
 
 
 ### linux-iso-extract
+
 ***
 Extract files from an ISO image
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/iso_extract_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/iso_extract_module.html>
 
 
 #### Base Command
 
 `linux-iso-extract`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6350,14 +7071,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-lineinfile
+
 ***
 Manage lines in text files
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/lineinfile_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/lineinfile_module.html>
 
 
 #### Base Command
 
 `linux-lineinfile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6393,9 +7116,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-lineinfile host="123.123.123.123" path="/etc/selinux/config" regexp="^SELINUX=" line="SELINUX=enforcing" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -6413,20 +7138,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * backup: 
->  * changed: False
->  * msg: 
+>
+> * backup: 
+> * changed: False
+> * msg: 
 
 
 ### linux-replace
+
 ***
 Replace all instances of a particular string in a file using a back-referenced regular expression
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/replace_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/replace_module.html>
 
 
 #### Base Command
 
 `linux-replace`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6459,9 +7187,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-replace host="123.123.123.123" path="/etc/hosts" regexp="(\\s+)old\\.host\\.name(\\s+.*)?$" replace="\\1new.host.name\\2" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -6478,19 +7208,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * msg: 
+>
+> * changed: False
+> * msg: 
 
 
 ### linux-stat
+
 ***
 Retrieve file or file system status
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/stat_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/stat_module.html>
 
 
 #### Base Command
 
 `linux-stat`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6512,9 +7245,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-stat host="123.123.123.123" path="/etc/foo.conf" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -6530,18 +7265,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * exists: False
+>
+> * exists: False
 
 
 ### linux-synchronize
+
 ***
 A wrapper around rsync to make common tasks in your playbooks quick and easy
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/synchronize_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/synchronize_module.html>
 
 
 #### Base Command
 
 `linux-synchronize`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6583,14 +7321,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-tempfile
+
 ***
 Creates temporary files and directories
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/tempfile_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/tempfile_module.html>
 
 
 #### Base Command
 
 `linux-tempfile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6610,9 +7350,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-tempfile host="123.123.123.123" state="directory" suffix="build" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -6637,27 +7379,30 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * gid: 0
->  * group: root
->  * mode: 0700
->  * owner: root
->  * path: /tmp/ansible.eehilh3tbuild
->  * secontext: unconfined_u:object_r:user_tmp_t:s0
->  * size: 6
->  * state: directory
->  * uid: 0
+>
+> * changed: True
+> * gid: 0
+> * group: root
+> * mode: 0700
+> * owner: root
+> * path: /tmp/ansible.eehilh3tbuild
+> * secontext: unconfined_u:object_r:user_tmp_t:s0
+> * size: 6
+> * state: directory
+> * uid: 0
 
 
 ### linux-unarchive
+
 ***
 Unpacks an archive after (optionally) copying it from the local machine.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/unarchive_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/unarchive_module.html>
 
 
 #### Base Command
 
 `linux-unarchive`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6693,14 +7438,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-xml
+
 ***
 Manage bits and pieces of XML files or strings
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/xml_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/xml_module.html>
 
 
 #### Base Command
 
 `linux-xml`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6740,14 +7487,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-expect
+
 ***
 Executes a command and responds to prompts.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/expect_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/expect_module.html>
 
 
 #### Base Command
 
 `linux-expect`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6770,14 +7519,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-bower
+
 ***
 Manage bower packages with bower
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/bower_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/bower_module.html>
 
 
 #### Base Command
 
 `linux-bower`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6800,14 +7551,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-bundler
+
 ***
 Manage Ruby Gem dependencies with Bundler
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/bundler_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/bundler_module.html>
 
 
 #### Base Command
 
 `linux-bundler`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6835,14 +7588,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-composer
+
 ***
 Dependency Manager for PHP
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/composer_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/composer_module.html>
 
 
 #### Base Command
 
 `linux-composer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6872,14 +7627,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-cpanm
+
 ***
 Manages Perl library dependencies.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/cpanm_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/cpanm_module.html>
 
 
 #### Base Command
 
 `linux-cpanm`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6905,14 +7662,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-gem
+
 ***
 Manage Ruby gems
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gem_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/gem_module.html>
 
 
 #### Base Command
 
 `linux-gem`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6942,14 +7701,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-maven-artifact
+
 ***
 Downloads an Artifact from a Maven Repository
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/maven_artifact_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/maven_artifact_module.html>
 
 
 #### Base Command
 
 `linux-maven-artifact`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6960,7 +7721,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | version | The maven version coordinate. Default is latest. | Optional | 
 | classifier | The maven classifier coordinate. | Optional | 
 | extension | The maven type/extension coordinate. Default is jar. | Optional | 
-| repository_url | The URL of the Maven Repository to download from.<br/>Use s3://... if the repository is hosted on Amazon S3, added in version 2.2.<br/>Use file://... if the repository is local, added in version 2.6. Default is https://repo1.maven.org/maven2. | Optional | 
+| repository_url | The URL of the Maven Repository to download from.<br/>Use s3://... if the repository is hosted on Amazon S3, added in version 2.2.<br/>Use file://... if the repository is local, added in version 2.6. Default is <https://repo1.maven.org/maven2>. | Optional | 
 | username | The username to authenticate as to the Maven Repository. Use AWS secret key of the repository is hosted on S3. | Optional | 
 | password | The password to authenticate with to the Maven Repository. Use AWS secret access key of the repository is hosted on S3. | Optional | 
 | headers | Add custom HTTP headers to a request in hash/dict format. | Optional | 
@@ -6989,14 +7750,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-npm
+
 ***
 Manage node.js packages with npm
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/npm_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/npm_module.html>
 
 
 #### Base Command
 
 `linux-npm`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7023,14 +7786,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-pear
+
 ***
 Manage pear/pecl packages
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pear_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/pear_module.html>
 
 
 #### Base Command
 
 `linux-pear`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7049,14 +7814,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-pip
+
 ***
 Manages Python library dependencies
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pip_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/pip_module.html>
 
 
 #### Base Command
 
 `linux-pip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7089,9 +7856,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-pip host="123.123.123.123" name="bottle" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -7127,36 +7896,47 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * requirements: None
->  * state: present
->  * stderr: WARNING: Running pip install with root privileges is generally not a good idea. Try `pip3 install --user` instead.
 >
->  * stdout: Requirement already satisfied: bottle in /usr/local/lib/python3.6/site-packages
+> * changed: False
+> * requirements: None
+> * state: present
+> * stderr: WARNING: Running pip install with root privileges is generally not a good idea. Try `pip3 install --user` instead.
 >
->  * version: None
->  * virtualenv: None
->  * ## Cmd
->    * 0: /usr/bin/pip3
->    * 1: install
->    * 2: bottle
->  * ## Name
->    * 0: bottle
->  * ## Stderr_Lines
->    * 0: WARNING: Running pip install with root privileges is generally not a good idea. Try `pip3 install --user` instead.
->  * ## Stdout_Lines
->    * 0: Requirement already satisfied: bottle in /usr/local/lib/python3.6/site-packages
+> * stdout: Requirement already satisfied: bottle in /usr/local/lib/python3.6/site-packages
+>
+> * version: None
+> * virtualenv: None
+>
+> * ## Cmd
+>
+>   * 0: /usr/bin/pip3
+>   * 1: install
+>   * 2: bottle
+>
+> * ## Name
+>
+>   * 0: bottle
+>
+> * ## Stderr_Lines
+>
+>   * 0: WARNING: Running pip install with root privileges is generally not a good idea. Try `pip3 install --user` instead.
+>
+> * ## Stdout_Lines
+>
+>   * 0: Requirement already satisfied: bottle in /usr/local/lib/python3.6/site-packages
 
 
 ### linux-pip-package-info
+
 ***
 pip package information
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pip_package_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/pip_package_info_module.html>
 
 
 #### Base Command
 
 `linux-pip-package-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7174,14 +7954,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-yarn
+
 ***
 Manage node.js packages with Yarn
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yarn_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/yarn_module.html>
 
 
 #### Base Command
 
 `linux-yarn`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7210,14 +7992,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-apk
+
 ***
 Manages apk packages
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apk_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/apk_module.html>
 
 
 #### Base Command
 
 `linux-apk`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7240,14 +8024,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-apt
+
 ***
 Manages apt-packages
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/apt_module.html>
 
 
 #### Base Command
 
 `linux-apt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7284,14 +8070,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-apt-key
+
 ***
 Add or remove an apt key
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_key_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/apt_key_module.html>
 
 
 #### Base Command
 
 `linux-apt-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7315,14 +8103,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-apt-repo
+
 ***
 Manage APT repositories via apt-repo
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_repo_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/apt_repo_module.html>
 
 
 #### Base Command
 
 `linux-apt-repo`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7342,14 +8132,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-apt-repository
+
 ***
 Add and remove APT repositories
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_repository_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/apt_repository_module.html>
 
 
 #### Base Command
 
 `linux-apt-repository`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7372,14 +8164,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-apt-rpm
+
 ***
 apt_rpm package manager
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_rpm_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/apt_rpm_module.html>
 
 
 #### Base Command
 
 `linux-apt-rpm`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7398,14 +8192,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-dpkg-selections
+
 ***
 Dpkg package selection selections
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/dpkg_selections_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/dpkg_selections_module.html>
 
 
 #### Base Command
 
 `linux-dpkg-selections`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7422,14 +8218,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-flatpak
+
 ***
 Manage flatpaks
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/flatpak_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/flatpak_module.html>
 
 
 #### Base Command
 
 `linux-flatpak`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7455,14 +8253,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-flatpak-remote
+
 ***
 Manage flatpak repository remotes
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/flatpak_remote_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/flatpak_remote_module.html>
 
 
 #### Base Command
 
 `linux-flatpak-remote`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7488,14 +8288,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-homebrew
+
 ***
 Package manager for Homebrew
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/homebrew_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/homebrew_module.html>
 
 
 #### Base Command
 
 `linux-homebrew`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7517,14 +8319,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-homebrew-cask
+
 ***
 Install/uninstall homebrew casks.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/homebrew_cask_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/homebrew_cask_module.html>
 
 
 #### Base Command
 
 `linux-homebrew-cask`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7550,14 +8354,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-homebrew-tap
+
 ***
 Tap a Homebrew repository.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/homebrew_tap_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/homebrew_tap_module.html>
 
 
 #### Base Command
 
 `linux-homebrew-tap`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7576,14 +8382,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-layman
+
 ***
 Manage Gentoo overlays
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/layman_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/layman_module.html>
 
 
 #### Base Command
 
 `linux-layman`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7603,14 +8411,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-package
+
 ***
 Generic OS package manager
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/package_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/package_module.html>
 
 
 #### Base Command
 
 `linux-package`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7629,14 +8439,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-package-facts
+
 ***
 package information as facts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/package_facts_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/package_facts_module.html>
 
 
 #### Base Command
 
 `linux-package-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7654,9 +8466,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-package-facts host="123.123.123.123" manager="auto" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -7704,44 +8518,57 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * discovered_interpreter_python: /usr/libexec/platform-python
->  * ## Packages
->    * ### Gconf2
->    * ### Gconf2
->      * arch: x86_64
->      * epoch: None
->      * name: GConf2
->      * release: 22.el8
->      * source: rpm
->      * version: 3.2.6
->    * ### Networkmanager
->    * ### Networkmanager
->      * arch: x86_64
->      * epoch: 1
->      * name: NetworkManager
->      * release: 5.el8_2
->      * source: rpm
->      * version: 1.22.8
->    * ### Networkmanager-Libnm
->    * ### Networkmanager-Libnm
->      * arch: x86_64
->      * epoch: 1
->      * name: NetworkManager-libnm
->      * release: 5.el8_2
->      * source: rpm
->      * version: 1.22.8
+>
+> * discovered_interpreter_python: /usr/libexec/platform-python
+>
+> * ## Packages
+>
+>   * ### Gconf2
+>
+>   * ### Gconf2
+>
+>     * arch: x86_64
+>     * epoch: None
+>     * name: GConf2
+>     * release: 22.el8
+>     * source: rpm
+>     * version: 3.2.6
+>
+>   * ### Networkmanager
+>
+>   * ### Networkmanager
+>
+>     * arch: x86_64
+>     * epoch: 1
+>     * name: NetworkManager
+>     * release: 5.el8_2
+>     * source: rpm
+>     * version: 1.22.8
+>
+>   * ### Networkmanager-Libnm
+>
+>   * ### Networkmanager-Libnm
+>
+>     * arch: x86_64
+>     * epoch: 1
+>     * name: NetworkManager-libnm
+>     * release: 5.el8_2
+>     * source: rpm
+>     * version: 1.22.8
 
 
 
 ### linux-yum
+
 ***
 Manages packages with the I(yum) package manager
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yum_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/yum_module.html>
 
 
 #### Base Command
 
 `linux-yum`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7783,14 +8610,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-yum-repository
+
 ***
 Add or remove YUM repositories
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html>
 
 
 #### Base Command
 
 `linux-yum-repository`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7864,9 +8693,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-yum-repository host="123.123.123.123" name="epel" description="EPEL YUM repo" baseurl="https://download.fedoraproject.org/pub/epel/$releasever/$basearch/" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -7884,20 +8715,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * repo: epel
->  * state: present
+>
+> * changed: False
+> * repo: epel
+> * state: present
 
 
 ### linux-zypper
+
 ***
 Manage packages on SUSE and openSUSE
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/zypper_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/zypper_module.html>
 
 
 #### Base Command
 
 `linux-zypper`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7923,14 +8757,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-zypper-repository
+
 ***
 Add and remove Zypper repositories
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/zypper_repository_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/zypper_repository_module.html>
 
 
 #### Base Command
 
 `linux-zypper-repository`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7957,14 +8793,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-snap
+
 ***
 Manages snaps
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/snap_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/snap_module.html>
 
 
 #### Base Command
 
 `linux-snap`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7989,14 +8827,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-redhat-subscription
+
 ***
 Manage registration and subscriptions to RHSM using the C(subscription-manager) command
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/redhat_subscription_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/redhat_subscription_module.html>
 
 
 #### Base Command
 
 `linux-redhat-subscription`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8036,14 +8876,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-rhn-channel
+
 ***
 Adds or removes Red Hat software channels
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhn_channel_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/rhn_channel_module.html>
 
 
 #### Base Command
 
 `linux-rhn-channel`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8065,14 +8907,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-rhn-register
+
 ***
 Manage Red Hat Network registration using the C(rhnreg_ks) command
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhn_register_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/rhn_register_module.html>
 
 
 #### Base Command
 
 `linux-rhn-register`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8098,9 +8942,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!linux-rhn-register host="123.123.123.123" state="absent" username="joe_user" password="somepass" ```
 
 #### Context Example
+
 ```json
 {
     "Linux": {
@@ -8117,19 +8963,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * msg: System already unregistered.
+>
+> * changed: False
+> * msg: System already unregistered.
 
 
 ### linux-rhsm-release
+
 ***
 Set or Unset RHSM Release version
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhsm_release_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/rhsm_release_module.html>
 
 
 #### Base Command
 
 `linux-rhsm-release`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8147,14 +8996,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-rhsm-repository
+
 ***
 Manage RHSM repositories using the subscription-manager command
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhsm_repository_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/rhsm_repository_module.html>
 
 
 #### Base Command
 
 `linux-rhsm-repository`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8175,14 +9026,16 @@ When this module is used to change the repository states, this list contains the
 
 
 ### linux-rpm-key
+
 ***
 Adds or removes a gpg key from the rpm db
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rpm_key_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/rpm_key_module.html>
 
 
 #### Base Command
 
 `linux-rpm-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8202,14 +9055,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### linux-get-url
+
 ***
 Downloads files from HTTP, HTTPS, or FTP to node
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/get_url_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/get_url_module.html>
 
 
 #### Base Command
 
 `linux-get-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8221,7 +9076,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | force | If `yes` and `dest` is not a directory, will download the file every time and replace the file if the contents change. If `no`, the file will only be downloaded if the destination does not exist. Generally should be `yes` only for small local files.<br/>Prior to 0.6, this module behaved as if `yes` was the default.<br/>Alias `thirsty` has been deprecated and will be removed in 2.13. Possible values are: Yes, No. Default is No. | Optional | 
 | backup | Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly. Possible values are: Yes, No. Default is No. | Optional | 
 | sha256sum | If a SHA-256 checksum is passed to this parameter, the digest of the destination file will be calculated after it is downloaded to ensure its integrity and verify that the transfer completed successfully. This option is deprecated. Use `checksum` instead. | Optional | 
-| checksum | If a checksum is passed to this parameter, the digest of the destination file will be calculated after it is downloaded to ensure its integrity and verify that the transfer completed successfully. Format: &lt;algorithm&gt;:&lt;checksum\|url&gt;, e.g. checksum="sha256:D98291AC[...]B6DC7B97", checksum="sha256:http://example.com/path/sha256sum.txt"<br/>If you worry about portability, only the sha1 algorithm is available on all platforms and python versions.<br/>The third party hashlib library can be installed for access to additional algorithms.<br/>Additionally, if a checksum is passed to this parameter, and the file exist under the `dest` location, the `destination_checksum` would be calculated, and if checksum equals `destination_checksum`, the file download would be skipped (unless `force` is true). If the checksum does not equal `destination_checksum`, the destination file is deleted. | Optional | 
+| checksum | If a checksum is passed to this parameter, the digest of the destination file will be calculated after it is downloaded to ensure its integrity and verify that the transfer completed successfully. Format: &lt;algorithm&gt;:&lt;checksum\|url&gt;, e.g. checksum="sha256:D98291AC[...]B6DC7B97", checksum="sha256:<http://example.com/path/sha256sum.txt>"<br/>If you worry about portability, only the sha1 algorithm is available on all platforms and python versions.<br/>The third party hashlib library can be installed for access to additional algorithms.<br/>Additionally, if a checksum is passed to this parameter, and the file exist under the `dest` location, the `destination_checksum` would be calculated, and if checksum equals `destination_checksum`, the file download would be skipped (unless `force` is true). If the checksum does not equal `destination_checksum`, the destination file is deleted. | Optional | 
 | use_proxy | if `no`, it will not use a proxy, even if one is defined in an environment variable on the target hosts. Possible values are: Yes, No. Default is Yes. | Optional | 
 | validate_certs | If `no`, SSL certificates will not be validated.<br/>This should only be used on personally controlled sites using self-signed certificates. Possible values are: Yes, No. Default is Yes. | Optional | 
 | timeout | Timeout in seconds for URL request. Default is 10. | Optional | 
@@ -8268,6 +9123,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### Troubleshooting
+
 The Ansible-Runner container is not suitable for running as a non-root user.
 Therefore, the Ansible integrations will fail if you follow the instructions in [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide). 
 
@@ -8275,7 +9131,7 @@ The `docker.run.internal.asuser` server configuration causes the software that i
 
 The Ansible-Runner software is required to run as root as it applies its own isolation via bwrap to the Ansible execution environment. 
 
-This is a limitation of the Ansible-Runner software itself https://github.com/ansible/ansible-runner/issues/611.
+This is a limitation of the Ansible-Runner software itself <https://github.com/ansible/ansible-runner/issues/611>.
 
 A workaround is to use the `docker.run.internal.asuser.ignore` server setting and to configure Cortex XSOAR to ignore the Ansible container image by setting the value of `demisto/ansible-runner` and afterwards running /reset_containers to reload any containers that might be running to ensure they receive the configuration.
 

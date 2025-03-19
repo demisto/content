@@ -14,6 +14,7 @@
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -193,6 +194,7 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 ### taegis-execute-playbook
 
 #### Base Command
+
 `!taegis-execute-playbook`
 
 #### Inputs
@@ -439,6 +441,7 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 ### taegis-fetch-endpoint
 
 #### Base Command
+
 `!taegis-fetch-endpoint`
 
 #### Inputs
@@ -482,6 +485,7 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 ### taegis-fetch-investigation
 
 #### Base Command
+
 `!taegis-fetch-investigation`
 
 #### Inputs
@@ -529,6 +533,7 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 ### taegis-fetch-investigation-alerts
 
 #### Base Command
+
 `!taegis-fetch-investigation-alerts`
 
 #### Inputs
@@ -566,6 +571,7 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 ### taegis-fetch-playbook-execution
 
 #### Base Command
+
 `!taegis-fetch-playbook-execution`
 
 #### Inputs
@@ -612,6 +618,7 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 ### taegis-fetch-users
 
 #### Base Command
+
 `!taegis-fetch-users`
 
 #### Inputs
@@ -760,6 +767,7 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 ### taegis-update-investigation
 
 #### Base Command
+
 `!taegis-update-investigation`
 
 #### Inputs

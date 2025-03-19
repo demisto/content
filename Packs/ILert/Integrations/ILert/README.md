@@ -19,10 +19,12 @@ This integration was integrated and tested with API version 1 of iLert.
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### iLert-submit-event
+
 ***
 Creates a new event/incident in iLert (in order to use this command you have to enter the Integration Key in the integration settings)
 
@@ -45,12 +47,15 @@ Creates a new event/incident in iLert (in order to use this command you have to 
 There is no context output for this command.
 
 #### Command Example
+
 ``` !ilert-submit-event summary="Test incident" ```
 
 #### Human Readable Output
+
 Incident has been created.
 
 ### ilert-acknowledge-event
+
 ***
 Acknowledges an existing event in iLert
 
@@ -71,13 +76,16 @@ Acknowledges an existing event in iLert
 There is no context output for this command.
 
 #### Command Example
+
 ``` !ilert-acknowledge-event incident_key="ctx312" ```
 
 #### Human Readable Output
+
 Incident has been acknowledged.
 
 
 ### ilert-resolve-event
+
 ***
 Resolves an existing event in iLert
 
@@ -98,7 +106,9 @@ Resolves an existing event in iLert
 There is no context output for this command.
 
 #### Command Example
+
 ``` !iLert-resolve-event incident_key="ctx312" ```
 
 #### Human Readable Output
+
 Incident has been resolved.

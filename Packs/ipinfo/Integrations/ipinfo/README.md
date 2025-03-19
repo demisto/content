@@ -1,7 +1,9 @@
 Use the ipinfo.io API to get data about an IP address
 
 ## IPinfo v2 is now available
+
 It's recommended to use `IPinfo v2`, rather than `IPinfo`:
+
 - IPinfo v2 allows setting source reliability.
 - IPinfo v2 enriches data with IP-hostname relationships.
 - On IPinfo v2, the `ip-field` command has been removed: all outputs are available by running `ip`.
@@ -18,9 +20,12 @@ It's recommended to use `IPinfo v2`, rather than `IPinfo`:
 | use_https | Use HTTPS connections | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Check IP reputation (when information is available, returns a JSON with details).  Uses all configured Threat Intelligence feeds
 
@@ -28,6 +33,7 @@ Check IP reputation (when information is available, returns a JSON with details)
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -63,6 +69,7 @@ Check IP reputation (when information is available, returns a JSON with details)
 | DBotScore.Score | Number | The actual score. |
 
 #### Command Example
+
 ``` !ip ip=1.1.1.1 ```
 
 #### Human Readable Output
@@ -76,12 +83,13 @@ Check IP reputation (when information is available, returns a JSON with details)
 | loc | 25.7867,-80.1800 | 
 | org | AS13335 Cloudflare, Inc. | 
 | postal | 33132 | 
-| readme | https://ipinfo.io/missingauth | 
+| readme | <https://ipinfo.io/missingauth> | 
 | region | Florida | 
 | timezone | America/New_York | 
 
 
 ### ipinfo_field
+
 ***
 Retrieve value for a specific field from the IP address information
 
@@ -89,6 +97,7 @@ Retrieve value for a specific field from the IP address information
 #### Base Command
 
 `ipinfo_field`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -102,7 +111,9 @@ Retrieve value for a specific field from the IP address information
 There is no context output for this command.
 
 #### Command Example
+
 ``` !ipinfo_field ip=1.1.1.1 field=city ```
 
 #### Human Readable Output
+
 Miami

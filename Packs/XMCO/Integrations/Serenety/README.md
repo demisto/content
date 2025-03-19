@@ -2,13 +2,14 @@ XMCO Serenety
 
 
 ## Configure XMCO Serenety in Cortex
+
 To configure an instance of XMCO Serenety integration in Cortex XSOAR:
 
 
 
 | **Parameter**                               | **Required** |
 |---------------------------------------------| ------------ |
-| Server URL (e.g. https://leportail.xmco.fr) | True         |
+| Server URL (e.g. <https://leportail.xmco.fr>) | True         |
 | API Key                                     | True         |
 | Trust any certificate (not secure)          | False        |
 | Use system proxy settings                   | False        |

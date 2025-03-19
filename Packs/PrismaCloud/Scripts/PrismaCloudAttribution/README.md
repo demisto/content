@@ -1,6 +1,7 @@
 Recursively extracts specified fields from provided list of assets for Prisma Cloud attribution use case.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Recursively extracts specified fields from provided list of assets for Prisma Cl
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Recursively extracts specified fields from provided list of assets for Prisma Cl
 | fields | Fields to be returned \(comma separated\). |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -36,9 +39,11 @@ Recursively extracts specified fields from provided list of assets for Prisma Cl
 
 
 ## Script Example
+
 ```!PrismaCloudAttribution assets="${Redlock.Asset}"```
 
 ## Context Example
+
 ```json
 {
     "PrismaCloud": {
@@ -85,6 +90,7 @@ Recursively extracts specified fields from provided list of assets for Prisma Cl
 ## Human Readable Output
 
 >### Results
+>
 >|accountId|accountName|cloudType|fqdn|hasAlert|id|ip|regionId|resourceName|resourceType|rrn|service|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 12345 | aws-user-personal | aws | application-lb-624166765.us-east-1.elb.amazonaws.com | false | arn:aws:elasticloadbalancing:us-east-1:12345:loadbalancer/app/application-lb/1398164320221c02 |  | us-east-1 | application-lb | Managed Load Balancer | rrn::managedLb:us-east-1:12345:b38d940663c047b02c2116be49695cf353976dff:arn%3Aaws%3Aelasticloadbalancing%3Aus-east-1%3A12345%3Aloadbalancer%2Fapp%2Fapplication-lb%2F1398164320221c02 | Amazon Elastic Load Balancing |

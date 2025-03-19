@@ -7,7 +7,7 @@ This integration was integrated and tested with version v2 of decyfir
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Incident type |  | False |
-| DeCYFIR Server URL (e.g. https://decyfir.cyfirma.com) |  | True |
+| DeCYFIR Server URL (e.g. <https://decyfir.cyfirma.com>) |  | True |
 | DeCYFIR API Key |  | True |
 | Fetch incidents |  | False |
 | Trust any certificate (not secure) |  | False |

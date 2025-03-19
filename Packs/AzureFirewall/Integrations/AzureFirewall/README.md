@@ -40,6 +40,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### azure-firewall-auth-start
 
 ***
@@ -56,6 +57,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### azure-firewall-auth-complete
 
 ***
@@ -72,6 +74,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### azure-firewall-auth-reset
 
 ***
@@ -88,6 +91,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### azure-firewall-list
 
 ***
@@ -116,8 +120,11 @@ List Azure firewalls in the specified resource group or subscription.
 | AzureFirewall.Firewall.location | String | Firewall resource location. | 
 
 #### Command example
+
 ```!azure-firewall-list resource=resource_group limit=1 page=1```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -167,6 +174,7 @@ List Azure firewalls in the specified resource group or subscription.
 #### Human Readable Output
 
 >### Firewall List:
+>
 > Current page size: 1
 > Showing page 1 out others that may exist.
 >
@@ -203,8 +211,11 @@ Retrieve Azure firewall information.
 | AzureFirewall.Firewall.location | String | Firewall resource location. | 
 
 #### Command example
+
 ```!azure-firewall-get firewall_names=test-ip interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -254,6 +265,7 @@ Retrieve Azure firewall information.
 #### Human Readable Output
 
 >### Firewall test-ip information:
+>
 >|Name|Id|Location|Subnet|Threat Intel Mode|Private Ip Address|Provisioning State|
 >|---|---|---|---|---|---|---|
 >| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 189.160.40.11 | Succeeded |
@@ -286,8 +298,11 @@ List the collection rules in the firewall or policy. One of the arguments 'firew
 | AzureFirewall.RuleCollection.name | String | Rule collection unique name. | 
 
 #### Command example
+
 ```!azure-firewall-rule-collection-list policy=xsoar-policy rule_type=network_rule limit=1 page=1```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -344,6 +359,7 @@ List the collection rules in the firewall or policy. One of the arguments 'firew
 #### Human Readable Output
 
 >### xsoar-policy Rule Collections List:
+>
 > Current page size: 1
 > Showing page 1 out others that may exist.
 > 
@@ -380,8 +396,11 @@ List rules in the firewall or in the policy. One of the arguments 'firewall_name
 | AzureFirewall.Rule.name | String | Rule name. | 
 
 #### Command example
+
 ```!azure-firewall-rule-list policy=xsoar-policy collection_name=playbook-collection rule_type=network_rule limit=1 page=1```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -415,6 +434,7 @@ List rules in the firewall or in the policy. One of the arguments 'firewall_name
 #### Human Readable Output
 
 >### Policy xsoar-policy network_rule Rules List:
+>
 > Current page size: 1
 > Showing page 1 out others that may exist.
 > 
@@ -450,8 +470,11 @@ Retrieve rule information. One of the arguments 'firewall_name' or 'policy' must
 | AzureFirewall.Rule.name | String | Rule name. | 
 
 #### Command example
+
 ```!azure-firewall-rule-get policy=xsoar-policy collection_name=playbook-collection rule_name=new-playbook-rule```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -484,6 +507,7 @@ Retrieve rule information. One of the arguments 'firewall_name' or 'policy' must
 #### Human Readable Output
 
 >### Rule new-playbook-rule Information:
+>
 >|Name|
 >|---|
 >| new-playbook-rule |
@@ -523,8 +547,11 @@ Create a firewall policy. This command only creates the policy resource. In orde
 | AzureFirewall.Policy.name | String | Policy resource name. | 
 
 #### Command example
+
 ```!azure-firewall-policy-create policy_name=xsoar-policy threat_intelligence_mode=Alert location=eastus tier=Standard interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -555,6 +582,7 @@ Create a firewall policy. This command only creates the policy resource. In orde
 #### Human Readable Output
 
 >### Successfully Created Policy "xsoar-policy"
+>
 >|Name|Id|Tier|Location|Firewalls|Base Policy|Child Policies|Provisioning State|
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Updating |
@@ -592,8 +620,11 @@ Update the policy resource. The command will update the provided arguments.
 | AzureFirewall.Policy.name | String | Policy resource name. | 
 
 #### Command example
+
 ```!azure-firewall-policy-update policy_name=xsoar-policy threat_intelligence_mode=Deny interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -624,6 +655,7 @@ Update the policy resource. The command will update the provided arguments.
 #### Human Readable Output
 
 >### Successfully Updated Policy "xsoar-policy"
+>
 >|Name|Id|Tier|Location|Firewalls|Base Policy|Child Policies|Provisioning State|
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Updating |
@@ -656,8 +688,11 @@ Retrieve policy information.
 | AzureFirewall.Policy.name | String | Policy resource name. | 
 
 #### Command example
+
 ```!azure-firewall-policy-get policy_names=xsoar-policy interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -688,6 +723,7 @@ Retrieve policy information.
 #### Human Readable Output
 
 >### Policy xsoar-policy information:
+>
 >|Name|Id|Tier|Location|Firewalls|Base Policy|Child Policies|Provisioning State|
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Succeeded |
@@ -712,6 +748,7 @@ Delete policy resource.
 #### Context Output
 
 There is no context output for this command.
+
 ### azure-firewall-policy-list
 
 ***
@@ -737,9 +774,13 @@ List the policy in the resource group or subscription.
 | --- | --- | --- |
 | AzureFirewall.Policy.id | String | Policy resource ID. | 
 | AzureFirewall.Policy.name | String | Policy resource name. | 
+
 #### Command example
+
 ```!azure-firewall-policy-list resource=resource_group limit=1 page=1```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -770,6 +811,7 @@ List the policy in the resource group or subscription.
 #### Human Readable Output
 
 >### Policy List:
+>
 > Current page size: 1
 > Showing page 1 out others that may exist.
 > 
@@ -806,8 +848,11 @@ Attach a policy to a firewall. The policy and firewall have to belong to the sam
 | AzureFirewall.Firewall.location | String | Firewall resource location. | 
 
 #### Command example
+
 ```!azure-firewall-policy-attach firewall_names=test-ip policy_id=/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -860,6 +905,7 @@ Attach a policy to a firewall. The policy and firewall have to belong to the sam
 #### Human Readable Output
 
 >### Successfully Updated Firewall "test-ip"
+>
 >|Name|Id|Location|Subnet|Threat Intel Mode|Private Ip Address|Provisioning State|
 >|---|---|---|---|---|---|---|
 >| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 189.160.40.11 | Updating |
@@ -892,8 +938,11 @@ Remove a policy from the firewall. This command will detach the policy and firew
 | AzureFirewall.Firewall.location | String | Firewall resource location. | 
 
 #### Command example
+
 ```!azure-firewall-policy-detach firewall_names=test-ip interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -943,6 +992,7 @@ Remove a policy from the firewall. This command will detach the policy and firew
 #### Human Readable Output
 
 >### Successfully Updated Firewall "test-ip"
+>
 >|Name|Id|Location|Subnet|Threat Intel Mode|Private Ip Address|Provisioning State|
 >|---|---|---|---|---|---|---|
 >| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 189.160.40.11 | Updating |
@@ -982,9 +1032,13 @@ Create a network rule collection in a firewall or policy. The command will retur
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!azure-firewall-network-rule-collection-create policy=xsoar-policy collection_name=playbook-collection collection_priority=105 action=Allow rule_name=playbook-rule description=test-playbook-collection protocols=UDP,TCP source_type=ip_address source_ips=189.160.40.11,189.160.40.11 destination_type=ip_address destinations=189.160.40.11,189.160.40.11 destination_ports=8080 interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -1019,6 +1073,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Successfully Updated Policy "xsoar-policy"
+>
 >|Name|Id|Tier|Location|Firewalls|Base Policy|Child Policies|Provisioning State|
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Updating |
@@ -1047,9 +1102,13 @@ Delete a network rule collection from the firewall or policy. One of the argumen
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!azure-firewall-network-rule-collection-delete policy=xsoar-policy collection_name=playbook-collection interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -1084,6 +1143,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Successfully Updated Policy "xsoar-policy"
+>
 >|Name|Id|Tier|Location|Firewalls|Base Policy|Child Policies|Provisioning State|
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Updating |
@@ -1121,9 +1181,13 @@ Create a network rule in the firewall or policy rule collection. One of the argu
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!azure-firewall-network-rule-create policy=xsoar-policy collection_name=playbook-collection rule_name=new-playbook-rule description=test-playbook-collection protocols=UDP,TCP source_type=ip_address source_ips=189.160.40.11,189.160.40.11 destination_type=ip_address destinations=189.160.40.11,189.160.40.11 destination_ports=8080 interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -1158,6 +1222,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Successfully Updated Policy "xsoar-policy"
+>
 >|Name|Id|Tier|Location|Firewalls|Base Policy|Child Policies|Provisioning State|
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Updating |
@@ -1195,9 +1260,13 @@ Update the network rule in the firewall. The provided arguments will replace the
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!azure-firewall-network-rule-update policy=xsoar-policy collection_name=playbook-collection rule_name=new-playbook-rule protocols=UDP interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -1232,6 +1301,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Successfully Updated Policy "xsoar-policy"
+>
 >|Name|Id|Tier|Location|Firewalls|Base Policy|Child Policies|Provisioning State|
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Succeeded |
@@ -1261,9 +1331,13 @@ Delete a network rule from the collection. One of the arguments 'firewall_name' 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!azure-firewall-network-rule-delete policy=xsoar-policy collection_name=playbook-collection rule_names=new-playbook-rule interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -1298,6 +1372,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Successfully Updated Policy "xsoar-policy"
+>
 >|Name|Id|Tier|Location|Firewalls|Base Policy|Child Policies|Provisioning State|
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Updating |
@@ -1328,9 +1403,13 @@ Update a network rule collection in a firewall or policy. The command will updat
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!azure-firewall-network-rule-collection-update policy=xsoar-policy collection_name=playbook-collection priority=201 action=Deny interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -1365,6 +1444,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Successfully Updated Policy "xsoar-policy"
+>
 >|Name|Id|Tier|Location|Firewalls|Base Policy|Child Policies|Provisioning State|
 >|---|---|---|---|---|---|---|---|
 >| xsoar-policy | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy | Standard | eastus |  |  |  | Succeeded |
@@ -1391,9 +1471,13 @@ Retrieve service tags information.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!azure-firewall-service-tag-list location=eastus limit=1 page=3```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -1427,6 +1511,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Service Tag List:
+>
 > Current page size: 1
 > Showing page 3 out others that may exist.
 > 
@@ -1464,8 +1549,11 @@ Create an IP group.
 | AzureFirewall.IPGroup.properties.ipAddresses | String | List of IP addresses or IP address prefixes in the IP groups resource. | 
 
 #### Command example
+
 ```!azure-firewall-ip-group-create ip_group_name=xsoar-ip-group ips=189.160.40.11 location=eastus interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -1491,6 +1579,7 @@ Create an IP group.
 #### Human Readable Output
 
 >### Successfully Created IP Group "xsoar-ip-group"
+>
 >|Name|Id|Ip Addresses|Firewalls|Firewall Policies|Provisioning State|
 >|---|---|---|---|---|---|
 >| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 189.160.40.11 |  |  | Updating |
@@ -1525,8 +1614,11 @@ Update an IP group. Add or remove IP addresses from the group.
 | AzureFirewall.IPGroup.properties.ipAddresses | String | List of IP addresses or IP address prefixes in the IP groups resource. | 
 
 #### Command example
+
 ```!azure-firewall-ip-group-update ip_group_name=xsoar-ip-group ips_to_add=189.160.40.11,189.160.40.11 ips_to_remove=189.160.40.11,1.1.1 interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -1553,6 +1645,7 @@ Update an IP group. Add or remove IP addresses from the group.
 #### Human Readable Output
 
 >### xsoar-ip-group IP Group Information:
+>
 >|Name|Id|Ip Addresses|Firewalls|Firewall Policies|Provisioning State|
 >|---|---|---|---|---|---|
 >| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 189.160.40.11,<br/>189.160.40.11 |  |  | Updating |
@@ -1585,8 +1678,11 @@ List IP groups in a resource group or subscription.
 | AzureFirewall.IPGroup.properties.ipAddresses | String | List of IP addresses or IP address prefixes in the IP groups resource. | 
 
 #### Command example
+
 ```!azure-firewall-ip-group-list resource=resource_group limit=1 page=1```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -1612,6 +1708,7 @@ List IP groups in a resource group or subscription.
 #### Human Readable Output
 
 >### IP Group List:
+>
 > Current page size: 1
 > Showing page 1 out others that may exist.
 > 
@@ -1648,8 +1745,11 @@ Retrieve IP group information.
 | AzureFirewall.IPGroup.properties.ipAddresses | String | List of IP addresses or IP address prefixes in the IP groups resource. | 
 
 #### Command example
+
 ```!azure-firewall-ip-group-get ip_group_names=xsoar-ip-group interval=10 timeout=600```
+
 #### Context Example
+
 ```json
 {
     "AzureFirewall": {
@@ -1678,6 +1778,7 @@ Retrieve IP group information.
 #### Human Readable Output
 
 >### xsoar-ip-group IP Group Information:
+>
 >|Name|Id|Ip Addresses|Firewalls|Firewall Policies|Provisioning State|
 >|---|---|---|---|---|---|
 >| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 189.160.40.11 |  |  | Succeeded |
@@ -1702,9 +1803,13 @@ Delete an IP group resource.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!azure-firewall-ip-group-delete ip_group_names=xsoar-ip-group```
+
 #### Human Readable Output
+>
 >IP Group xsoar-ip-group deleted successfully.
 
 ### azure-firewall-subscriptions-list

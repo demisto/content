@@ -71,8 +71,11 @@ Query FES Portal for ARO.
 | FESPortal.Aro.type | String | Type. | 
 
 #### Command example
+
 ```!cov-mgsec-get-aro query="since=2023-11-30 18:00:00"```
+
 #### Context Example
+
 ```json
 {
     "FESPortal": {
@@ -109,10 +112,11 @@ Query FES Portal for ARO.
 #### Human Readable Output
 
 >### AROs
+>
 >|Organization|Resolution|Severity|Status|Title|Type|
 >|---|---|---|---|---|---|
->| ID: 9d4297ea-089e-42bd-884d-51744e31a471<br/>email: foo@bar.com<br/>name: Acme | Unresolved | Critical | Open | test2 | Action |
->| ID: e0e04c8b-d50c-4379-bfd6-5e0f2b1037cd<br/>email: foo@bar.com<br/>name: Capsule Corp | Unresolved | High | Open | Vulnerable Software Detected | Recommendation |
+>| ID: 9d4297ea-089e-42bd-884d-51744e31a471<br/>email: <foo@bar.com><br/>name: Acme | Unresolved | Critical | Open | test2 | Action |
+>| ID: e0e04c8b-d50c-4379-bfd6-5e0f2b1037cd<br/>email: <foo@bar.com><br/>name: Capsule Corp | Unresolved | High | Open | Vulnerable Software Detected | Recommendation |
 
 
 ### cov-mgsec-list-org
@@ -138,8 +142,11 @@ There are no input arguments for this command.
 | FESPortal.Org.name | String | Name. | 
 
 #### Command example
+
 ```!cov-mgsec-list-org```
+
 #### Context Example
+
 ```json
 {
     "FESPortal": {
@@ -164,10 +171,11 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Organizations
+>
 >|Id|Email|Email Aro Details|Name|
 >|---|---|---|---|
->| 9d4297ea-089e-42bd-884d-51744e31a471 | foo@bar.com | false | Acme |
->| e0e04c8b-d50c-4379-bfd6-5e0f2b1037cd | foo@bar.com | false | Capsule Corp |
+>| 9d4297ea-089e-42bd-884d-51744e31a471 | <foo@bar.com> | false | Acme |
+>| e0e04c8b-d50c-4379-bfd6-5e0f2b1037cd | <foo@bar.com> | false | Capsule Corp |
 
 
 ### cov-mgsec-transition-aro
@@ -269,8 +277,11 @@ Transition an ARO.
 | FESPortal.Aro.type | String | Type. | 
 
 #### Command example
+
 ```!cov-mgsec-transition-aro aro_id="7ea9b17d-7529-4b17-b0e7-92334d6c674b" resolution="Resolved" comment="Risk mitigated."```
+
 #### Context Example
+
 ```json
 {
     "FESPortal": {
@@ -320,9 +331,11 @@ Transition an ARO.
 #### Human Readable Output
 
 >### ARO
+>
 >|Id|Alert Key|Count|Creation Time|Details|Display Url|Last Updated Time|Organization|Resolution|Resolution Duration Seconds|Resolution Time|Serial Id|Severity|Status| Steps|Title|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 7ea9b17d-7529-4b17-b0e7-92334d6c674b | test_alert_key | 1 | 2023-08-16 19:48:02 | ARO Details | test_url | 2023-11-30 19:01:59 | ID: test_ID<br/>email: null<br/>name: test_org_id | Resolved | 9155637 | 2023-11-30 19:01:59 | 15 | Low | Open | {'ID': 'test_id', 'completed': True, 'label': 'test_resolution_step', 'last_updated_time': '2023-10-24 20:53:45'} | test_aro_title | Observation |
+>
 ### cov-mgsec-broker-cloud-action-by-aro
 
 ***
@@ -351,8 +364,11 @@ Broker - Cloud Action By ARO.
 | FESBroker.result | String | Result | 
 
 #### Command example
+
 ```!cov-mgsec-broker-cloud-action-by-aro action_type=DISABLE_USER aro_id=00000000-1111-2222-3333-444444444444```
+
 #### Context Example
+
 ```json
 {
     "FESBroker": {
@@ -373,6 +389,7 @@ Broker - Cloud Action By ARO.
 #### Human Readable Output
 
 >### Command Result
+>
 >|action_id|action_params|action_type|created_time|result|status|
 >|---|---|---|---|---|---|
 >| 00000000-1111-2222-3333-444444444444 | user: azure credential configuration endpoint service | disable_user | 2024-02-22T01:27:04.344179Z | SUCCESS | COMPLETE |
@@ -404,8 +421,11 @@ Broker - Endpoint Action By ARO.
 | FESBroker.task_id | Number | Endpoint Action Task ID | 
 
 #### Command example
+
 ```!cov-mgsec-broker-endpoint-action-by-aro action_type=DEFENDER_QUICK_SCAN aro_id=00000000-1111-2222-3333-444444444444```
+
 #### Context Example
+
 ```json
 {
     "FESBroker": {
@@ -422,6 +442,7 @@ Broker - Endpoint Action By ARO.
 #### Human Readable Output
 
 >### Command Result - Success
+>
 >|agent_uuid|covalence_appliance|host_identifier|task_id|
 >|---|---|---|---|
 >| 00000000-1111-2222-3333-444444444444 | 2000-001-XX-0 | 00000000-1111-2222-3333-444444444444 | 26876 |
@@ -448,8 +469,11 @@ Broker - Ping.
 | FESBroker.APIStatus | String | API Status | 
 
 #### Command example
+
 ```!cov-mgsec-broker-ping```
+
 #### Context Example
+
 ```json
 {
     "FESBroker": {
@@ -489,8 +513,11 @@ Broker - Endpoint Action By Host.
 | FESBroker.task_id | Number | Endpoint Action Task ID | 
 
 #### Command example
+
 ```!cov-mgsec-broker-endpoint-action-by-host action_type=DEFENDER_QUICK_SCAN host_identifier=test-hostname org_id=00000000-1111-2222-3333-444444444444```
+
 #### Context Example
+
 ```json
 {
     "FESBroker": {
@@ -507,6 +534,7 @@ Broker - Endpoint Action By Host.
 #### Human Readable Output
 
 >### Command Result - Success
+>
 >|agent_uuid|covalence_appliance|host_identifier|task_id|
 >|---|---|---|---|
 >| 00000000-1111-2222-3333-444444444444 | 2000-001-XX-0 | test-hostname | 24773 |
@@ -535,8 +563,11 @@ Broker - List organizations.
 | FESBroker.client_id | String | Client ID | 
 
 #### Command example
+
 ```!cov-mgsec-broker-list-org```
+
 #### Context Example
+
 ```json
 {
     "FESBroker": {
@@ -554,6 +585,7 @@ Broker - List organizations.
 #### Human Readable Output
 
 >### Organizations
+>
 >|ID|client_id|name|
 >|---|---|---|
 >| 00000000-1111-2222-3333-444444444444 | 2024-1384-SAN | 110 Sand Company |
@@ -613,8 +645,11 @@ Comment on an ARO.
 | FESPortal.Aro.visible_to.name | String | ARO Comment Visible to Name | 
 
 #### Command example
+
 ```!cov-mgsec-comment-aro aro_id="b25e461e-75e9-415b-a631-6d0f4516f33a" comment="Risk mitigated."```
+
 #### Context Example
+
 ```json
 {
     "FESPortal": {
@@ -671,6 +706,7 @@ Comment on an ARO.
 #### Human Readable Output
 
 >### ARO
+>
 >|Acknowledged|Acknowledged By|Acknowledged Time|Aro Id|Author|Author Organization|Author Organization Type|Created Time|Id|Last Updated Time|Sensitive|Source|Text|Type|Visible To|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| true | ID: abcdefghijklmnopqrstuvwxyzabd1<br/>avatar_file_url: null<br/>email: foo@bar.com<br/>first_name: John<br/>last_name: Smith | 2024-04-12 17:01:25 | b25e461e-75e9-415b-a631-6d0f4516f33a | ID: abcdefghijklmnopqrstuvwxyzabd1<br/>avatar_file_url: null<br/>email: foo@bar.com<br/>first_name: John<br/>last_name: Smith | ID: 00000000-1111-2222-3333-444444444444<br/>email: foo@bar.com<br/>name: Field Effect | Field Effect | 2024-04-12 17:01:25 | b14a53a4-23ac-488d-b992-dbc1d5ef5361 | 2024-04-12 17:01:25 | false | Portal | Risk mitigated. | Comment | {'ID': '00000000-1111-2222-3333-444444444444', 'email': None, 'name': 'Tradecraft Test & Development (Do Not Delete)'},<br/>{'ID': '00000000-1111-2222-3333-444444444444', 'email': 'foo@bar.com', 'name': 'Field Effect'} |
+>| true | ID: abcdefghijklmnopqrstuvwxyzabd1<br/>avatar_file_url: null<br/>email: <foo@bar.com><br/>first_name: John<br/>last_name: Smith | 2024-04-12 17:01:25 | b25e461e-75e9-415b-a631-6d0f4516f33a | ID: abcdefghijklmnopqrstuvwxyzabd1<br/>avatar_file_url: null<br/>email: <foo@bar.com><br/>first_name: John<br/>last_name: Smith | ID: 00000000-1111-2222-3333-444444444444<br/>email: <foo@bar.com><br/>name: Field Effect | Field Effect | 2024-04-12 17:01:25 | b14a53a4-23ac-488d-b992-dbc1d5ef5361 | 2024-04-12 17:01:25 | false | Portal | Risk mitigated. | Comment | {'ID': '00000000-1111-2222-3333-444444444444', 'email': None, 'name': 'Tradecraft Test & Development (Do Not Delete)'},<br/>{'ID': '00000000-1111-2222-3333-444444444444', 'email': '<foo@bar.com>', 'name': 'Field Effect'} |

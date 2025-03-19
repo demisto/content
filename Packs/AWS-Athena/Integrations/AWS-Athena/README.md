@@ -144,6 +144,7 @@ Stop an existing running query.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-athena-get-query-execution
 
 ***

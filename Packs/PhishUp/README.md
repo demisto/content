@@ -30,6 +30,7 @@ power.
 
 
 PRODUCT FEATURES
+
 - Logo detection
 - Intelligence Tools
 - Reporting
@@ -49,6 +50,7 @@ PRODUCT FEATURES
 
 The opportunities we offer you as Phishup.co, an advanced threat detection technology supported by
 artificial intelligence, that protects your business from known and unknown (zero-day) threats,
+
 - Uses thousands of feature vectors gathered from recent attack trends and starts tracking any
 domain name from the moment it is purchased.
 - Uses advanced real-time machine learning and image processing to detect malicious URLs at the

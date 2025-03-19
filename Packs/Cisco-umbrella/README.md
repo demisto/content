@@ -27,6 +27,7 @@ Depending on your API access tier, the Umbrella Investigate API limits the numbe
 #### Commands with Rate Limits:
 
 ##### General Commands:
+
 - `!umbrella-get-domain-queryvolume`
 - `!umbrella-list-resource-record`
 - `!umbrella-domain-related domain`
@@ -40,42 +41,51 @@ Depending on your API access tier, the Umbrella Investigate API limits the numbe
 - `!umbrella-get-domain-risk-score`
 
 **Rate Limits:**
+
 - **Integration** — 3 requests per second
 - **Tier 1** — 3 requests per second
 - **Tier 2** — 12 requests per second
 - **Tier 3** — 12 requests per second
 
 ##### WHOIS-Related Commands:
+
 - `!umbrella-get-domain-whois-history`
 - `!umbrella-get-nameserver-whois`
 - `!umbrella-get-email-whois`
 - `!umbrella-get-whois-for-domain`
 
 **Rate Limits:**
+
 - **Integration** — 3 requests per second
 - **Tier 1** — 3 requests per second
 - **Tier 2** — 12 requests per second
 - **Tier 3** — 48 requests per second
 
 ##### Regex WHOIS Command:
+
 - `!umbrella-get-regex-whois`
 
 **Rate Limits (All Tiers):**
+
 - 18 requests per minute
 
 ##### Domain Categorization Command:
+
 - `!umbrella-domain-categorization`
 
 **Rate Limits:**
+
 - **Integration** — 3 requests per second
 - **Tier 1** — 3 requests per second
 - **Tier 2** — 150 requests per second
 - **Tier 3** — 150 requests per second
 
 ##### Domain Search Commands:
+
 - `!umbrella-domain-search`
 - `!domain`
 
 **Rate Limits:**
+
 - Searches prefixed with `.*` characters — 3 requests per minute
 - All other searches — 18 requests per minute

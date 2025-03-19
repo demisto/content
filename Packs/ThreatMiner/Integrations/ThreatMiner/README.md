@@ -12,9 +12,12 @@ Data Mining for Threat Intelligence
 | ThreatMiner API URL |  | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### domain
+
 ***
 Retrieves data from ThreatMiner about a specified domain.
 
@@ -24,6 +27,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -62,6 +66,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 ### ip
+
 ***
 Retrieves data from ThreatMiner about a specified IP address.
 
@@ -69,6 +74,7 @@ Retrieves data from ThreatMiner about a specified IP address.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -103,6 +109,7 @@ Retrieves data from ThreatMiner about a specified IP address.
 | IP.ASN | unknown | Related ASN. | 
 
 ### file
+
 ***
 Retrieves data from ThreatMiner about a specified file.
 
@@ -110,6 +117,7 @@ Retrieves data from ThreatMiner about a specified file.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

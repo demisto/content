@@ -6,7 +6,7 @@ This integration was integrated and tested with version v1 of DeCYFIR Feed
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| DeCYFIR Server URL (e.g. https://decyfir.cyfirma.com) |  | True |
+| DeCYFIR Server URL (e.g. <https://decyfir.cyfirma.com>) |  | True |
 | DeCYFIR API Key |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |

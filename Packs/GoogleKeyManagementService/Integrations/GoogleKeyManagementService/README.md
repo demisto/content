@@ -12,9 +12,12 @@ Use the Google Key Management Service API for CryptoKey management and encrypt/d
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### google-kms-create-key
+
 ***
 Creates a new CryptoKey within a KeyRing.
 
@@ -22,11 +25,12 @@ Creates a new CryptoKey within a KeyRing.
 #### Base Command
 
 `google-kms-create-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | key_ring | A grouping of keys for organizational purposes.<br/>Keyword 'default' uses the default KeyRing. Default is default. | Required | 
 | crypto_key | The ID for the created crypto-key. It must be unique within a KeyRing and match the regular expression [a-zA-Z0-9_-]{1,63}. | Required | 
 | labels | Labels with user-defined metadata. | Optional | 
@@ -61,6 +65,7 @@ creates a new version of this CryptoKey and marks the new version as primary. |
 | GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime | Date | The time this CryptoKeyVersion's key material was generated. | 
 
 ### google-kms-symmetric-decrypt
+
 ***
 Decrypts data that was protected by Encrypt.
 
@@ -68,11 +73,12 @@ Decrypts data that was protected by Encrypt.
 #### Base Command
 
 `google-kms-symmetric-decrypt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical region where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical region where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | key_ring | A grouping of keys for organizational purposes.<br/>Keyword 'default' uses the default KeyRing. Default is default. | Required | 
 | crypto_key | The ID for the crypto-key to use. | Required | 
 | simple_ciphertext | The ciphertext to decrypt to simple plain text. | Optional | 
@@ -90,6 +96,7 @@ Decrypts data that was protected by Encrypt.
 | GoogleKMS.SymmetricDecrypt.Plaintext | String | The decrypted plaintext. | 
 
 ### google-kms-symmetric-encrypt
+
 ***
 Encrypts data, so it can only be recovered by a call to Decrypt.
 
@@ -97,11 +104,12 @@ Encrypts data, so it can only be recovered by a call to Decrypt.
 #### Base Command
 
 `google-kms-symmetric-encrypt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For example, https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For example, <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | key_ring | A grouping of keys for organizational purposes.<br/>Keyword 'default' uses the default KeyRing. Default is default. | Required | 
 | crypto_key | The ID for the crypto-key to use. | Required | 
 | simple_plaintext | Simple plain text to encrypt. Must be no larger than 64KiB. | Optional | 
@@ -119,6 +127,7 @@ Encrypts data, so it can only be recovered by a call to Decrypt.
 | GoogleKMS.SymmetricEncrypt.Ciphertext | String | The encrypted ciphertext. | 
 
 ### google-kms-get-key
+
 ***
 Returns metadata for a given CryptoKey, and its primary CryptoKeyVersion.
 
@@ -126,11 +135,12 @@ Returns metadata for a given CryptoKey, and its primary CryptoKeyVersion.
 #### Base Command
 
 `google-kms-get-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For example, https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' sets the location to the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For example, <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' sets the location to the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | key_ring | A grouping of keys for organizational purposes.<br/>Keyword 'default' uses the default KeyRing. Default is default. | Required | 
 | crypto_key | The ID for the fetched crypto-key. | Required | 
 
@@ -156,6 +166,7 @@ creates a new version of this CryptoKey and marks the new version as primary. |
 | GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime | Date | The time this CryptoKeyVersion's key material was generated. | 
 
 ### google-kms-update-key
+
 ***
 Updates a CryptoKey.
 
@@ -163,11 +174,12 @@ Updates a CryptoKey.
 #### Base Command
 
 `google-kms-update-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | key_ring | A grouping of keys for organizational purposes.<br/>Keyword 'default' uses the default KeyRing. Default is default. | Required | 
 | crypto_key | The ID for the updated crypto-key. | Required | 
 | next_rotation_time | The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically<br/>creates a new version of this CryptoKey and marks the new version as primary.<br/>Key rotations performed manually via cryptoKeyVersions.create and cryptoKeys.updatePrimaryVersion do not affect nextRotationTime.<br/><br/>Keys with purpose ENCRYPT_DECRYPT, support automatic rotation. For other keys, this field must be omitted.<br/><br/>A timestamp or a date in RFC3339 UTC "Zulu" format, accurate to nanoseconds. For example, "2014-10-02T15:01:23.045123456Z". | Optional | 
@@ -201,6 +213,7 @@ creates a new version of this CryptoKey and marks the new version as primary. |
 | GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime | Date | The time this CryptoKeyVersion's key material was generated. | 
 
 ### google-kms-destroy-key
+
 ***
 Schedules a CryptoKeyVersion for destruction.
 
@@ -208,11 +221,12 @@ Schedules a CryptoKeyVersion for destruction.
 #### Base Command
 
 `google-kms-destroy-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For example, see https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For example, see <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | key_ring | A grouping of keys for organizational purposes.<br/>Keyword 'default' uses the default KeyRing. Default is default. | Required | 
 | crypto_key | The ID for the crypto-key to destroy. | Required | 
 | crypto_key_version | The CryptoKeyVersion ID to destroy. Use keyword 'default' to use the primary CryptoKeyVersion of the given CryptoKey. Default is default. | Required | 
@@ -221,7 +235,9 @@ Schedules a CryptoKeyVersion for destruction.
 #### Context Output
 
 There is no context output for this command.
+
 ### google-kms-restore-key
+
 ***
 Restores a CryptoKeyVersion in the DESTROY_SCHEDULED state.
 
@@ -229,11 +245,12 @@ Restores a CryptoKeyVersion in the DESTROY_SCHEDULED state.
 #### Base Command
 
 `google-kms-restore-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For example, see https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For example, see <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | key_ring | A grouping of keys for organizational purposes.<br/>Keyword 'default' uses the default KeyRing. Default is default. | Required | 
 | crypto_key | The ID for the crypto-key to restore. | Required | 
 | crypto_key_version | The CryptoKeyVersion ID to restore. Use keyword 'default' to use the primary CryptoKeyVersion of the given CryptoKey. Default is default. | Required | 
@@ -242,7 +259,9 @@ Restores a CryptoKeyVersion in the DESTROY_SCHEDULED state.
 #### Context Output
 
 There is no context output for this command.
+
 ### google-kms-disable-key
+
 ***
 Disables a CryptoKeyVersion of a given CryptoKey.
 
@@ -250,11 +269,12 @@ Disables a CryptoKeyVersion of a given CryptoKey.
 #### Base Command
 
 `google-kms-disable-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | key_ring | A grouping of keys for organizational purposes.<br/>Keyword 'default' uses the default KeyRing. Default is default. | Required | 
 | crypto_key | The ID for the crypto-key to disable. | Required | 
 | crypto_key_version | The CryptoKeyVersion ID to disable. Use keyword 'default' to use the primary CryptoKeyVersion of the given CryptoKey. Default is default. | Required | 
@@ -263,7 +283,9 @@ Disables a CryptoKeyVersion of a given CryptoKey.
 #### Context Output
 
 There is no context output for this command.
+
 ### google-kms-enable-key
+
 ***
 Enables a CryptoKeyVersion of a given CryptoKey.
 
@@ -271,11 +293,12 @@ Enables a CryptoKeyVersion of a given CryptoKey.
 #### Base Command
 
 `google-kms-enable-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | key_ring | A grouping of keys for organizational purposes.<br/>Keyword 'default' uses the default KeyRing. Default is default. | Required | 
 | crypto_key | The ID for the crypto-key to enable. | Required | 
 | crypto_key_version | The CryptoKeyVersion ID to enable. Use keyword 'default' to use the primary CryptoKeyVersion of the given CryptoKey. Default is default. | Required | 
@@ -284,7 +307,9 @@ Enables a CryptoKeyVersion of a given CryptoKey.
 #### Context Output
 
 There is no context output for this command.
+
 ### google-kms-list-keys
+
 ***
 Lists all keys in key ring.
 
@@ -292,11 +317,12 @@ Lists all keys in key ring.
 #### Base Command
 
 `google-kms-list-keys`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | key_ring | A grouping of keys for organizational purposes.<br/>Keyword 'default' uses the default KeyRing. Default is default. | Required | 
 | key_state | Shows only keys with this primary CryptoKeyVersion state. Leave empty to show all. Can be: "CRYPTO_KEY_VERSION_STATE_UNSPECIFIED", "PENDING_GENERATION", "ENABLED", "DISABLED", "DESTROYED", "DESTROY_SCHEDULED", "PENDING_IMPORT", "IMPORT_FAILED". Possible values are: CRYPTO_KEY_VERSION_STATE_UNSPECIFIED, PENDING_GENERATION, ENABLED, DISABLED, DESTROYED, DESTROY_SCHEDULED, PENDING_IMPORT, IMPORT_FAILED. | Optional | 
 
@@ -304,7 +330,9 @@ Lists all keys in key ring.
 #### Context Output
 
 There is no context output for this command.
+
 ### google-kms-asymmetric-encrypt
+
 ***
 Encrypts data using a asymmetric CryptoKey
 
@@ -312,11 +340,12 @@ Encrypts data using a asymmetric CryptoKey
 #### Base Command
 
 `google-kms-asymmetric-encrypt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' uses the location to the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' uses the location to the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | key_ring | A grouping of keys for organizational purposes.<br/>Keyword 'default' uses the default KeyRing. Default is default. | Required | 
 | crypto_key | The ID for the crypto-key to use. | Required | 
 | crypto_key_version | The CryptoKeyVersion to use. | Required | 
@@ -334,6 +363,7 @@ Encrypts data using a asymmetric CryptoKey
 | GoogleKMS.AsymmetricEncrypt.Ciphertext | String | The encrypted ciphertext | 
 
 ### google-kms-asymmetric-decrypt
+
 ***
 Decrypts data using an asymmetric CryptoKey.
 
@@ -341,11 +371,12 @@ Decrypts data using an asymmetric CryptoKey.
 #### Base Command
 
 `google-kms-asymmetric-decrypt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled, and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled, and where the corresponding cryptographic keys are stored. For more information, see <https://cloud.google.com/kms/docs/locations><br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | key_ring | A grouping of keys for organizational purposes.<br/>Keyword 'default' uses the default KeyRing. Default is default. | Required | 
 | crypto_key | The ID for the crypto-key to use. | Required | 
 | crypto_key_version | The CryptoKeyVersion to use. | Required | 
@@ -363,6 +394,7 @@ Decrypts data using an asymmetric CryptoKey.
 | GoogleKMS.AsymmetricDecrypt.Plaintext | String | The decrypted plain text. | 
 
 ### google-kms-list-key-rings
+
 ***
 Lists all KeyRings in a given location.
 
@@ -370,11 +402,12 @@ Lists all KeyRings in a given location.
 #### Base Command
 
 `google-kms-list-key-rings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | all | Returns all KeyRings from all locations. Default is no. Possible values are: yes, no. Default is no. | Optional | 
 
 
@@ -386,6 +419,7 @@ Lists all KeyRings in a given location.
 | GoogleKMS.KeyRing.CreateTime | Date | The creation time of the KeyRing. | 
 
 ### google-kms-list-all-keys
+
 ***
 Lists all CryptoKeys across all KeyRings in a given location.
 
@@ -393,11 +427,12 @@ Lists all CryptoKeys across all KeyRings in a given location.
 #### Base Command
 
 `google-kms-list-all-keys`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | all | Whether to return all CryptoKeys from all KeyRings across all locations. Possible values are: yes, no. Default is no. | Optional | 
 | key_state | Shows only keys with this primary CryptoKeyVersion state. Leave empty to show all. Possible values are: CRYPTO_KEY_VERSION_STATE_UNSPECIFIED, PENDING_GENERATION, ENABLED, DISABLED, DESTROYED, DESTROY_SCHEDULED, PENDING_IMPORT, IMPORT_FAILED. | Optional | 
 
@@ -424,6 +459,7 @@ marks the new version as primary. |
 | GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime | Date | The time this CryptoKeyVersion's key material was generated. | 
 
 ### google-kms-get-public-key
+
 ***
 Returns the public key from a given CryptoKey.
 
@@ -431,11 +467,12 @@ Returns the public key from a given CryptoKey.
 #### Base Command
 
 `google-kms-get-public-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
+| location | The geographical regions where requests to Cloud KMS for a given resource are handled,<br/>and where the corresponding cryptographic keys are stored. For more information, see <https://cloud.google.com/kms/docs/locations>.<br/>Keyword 'default' uses the default location. Possible values are: default, global, asia-east1, asia-east2, asia-northeast1, asia-northeast2, asia-south1, asia-southeast1, australia-southeast1, europe-north1, europe-west1, europe-west2, europe-west3, europe-west4, europe-west6, northamerica-northeast1, us-central1, us-east1, us-east4, us-west1, us-west2, southamerica-east1, eur4, nam4, asia, europe, us. Default is default. | Required | 
 | key_ring | A grouping of keys for organizational purposes.<br/>Keyword 'default' uses the default KeyRing. Default is default. | Required | 
 | crypto_key | The ID for the crypto-key to use. | Required | 
 | crypto_key_version | The CryptoKeyVersion to use. | Required | 

@@ -1,5 +1,7 @@
 Checks the sender of the email via a `Pipl` search. Use this script for phishing incidents.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,11 +11,14 @@ Checks the sender of the email via a `Pipl` search. Use this script for phishing
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * pipl-search
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,5 +27,6 @@ This script uses the following commands and scripts.
 | fullmail | The raw email text to regex the sender from. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

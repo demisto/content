@@ -274,7 +274,7 @@ There are no input arguments for this command.
 
 >|displayName|isExternal|mailbox|mailboxId|
 >|---|---|---|--- |
->| test | false |test@demistodev.onmicrosoft.com | /o=Exchange***/ou=Exchange Administrative Group ()/cn=**/cn=**-**|
+>| test | false |<test@demistodev.onmicrosoft.com> | /o=Exchange***/ou=Exchange Administrative Group ()/cn=**/cn=**-**|
 
 #### Context Example
 
@@ -497,7 +497,7 @@ Searches for items in the specified mailbox. Specific permissions are needed for
 
 >|sender|subject|hasAttachments|datetimeReceived|receivedBy|author|toRecipients|
 >|---|---|---|---|---|---|---|
->| test2@demistodev.onmicrosoft.com | Get Attachment Email |true |2019-08-11T10:57:37Z|test@demistodev.onmicrosoft.com|test2@demistodev.onmicrosoft.com|test@demistodev.onmicrosoft.com|
+>| <test2@demistodev.onmicrosoft.com> | Get Attachment Email |true |2019-08-11T10:57:37Z|<test@demistodev.onmicrosoft.com>|<test2@demistodev.onmicrosoft.com>|<test@demistodev.onmicrosoft.com>|
 
 #### Context Example
 
@@ -588,7 +588,7 @@ Retrieves contacts for a specified mailbox.
 
 >|changekey|culture|datetimeCreated|datetimeReceived|datetimeSent|displayName|emailAddresses|fileAs|fileAsMapping|givenName|id|importance|itemClass|lastModifiedName|lastModifiedTime|postalAddressIndex|sensitivity|subject|uniqueBody|webClientReadFormQueryString|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| EABYACAADcsxRwRjq/zTrN6vWSzKAK1Dl3N | en-US |2019-08-05T12:35:36Z |2019-08-05T12:35:36Z|2019-08-05T12:35:36Z|Contact Name|some@dev.microsoft.com|Contact Name|LastCommaFirst|Contact Name|AHSNNK3NQNcasnc3SAS/zTrN6vWSzK4OWAAAAAAEOAADrxRwRjq/zTrNFSsfsfVWAAK1KsF3AAA=|Normal|IPM.Contact|John Smith|2019-08-05T12:35:36Z|None|Normal|Contact Name| |<https://outlook.office365.com/owa/?ItemID>=***|
+>| EABYACAADcsxRwRjq/zTrN6vWSzKAK1Dl3N | en-US |2019-08-05T12:35:36Z |2019-08-05T12:35:36Z|2019-08-05T12:35:36Z|Contact Name|<some@dev.microsoft.com>|Contact Name|LastCommaFirst|Contact Name|AHSNNK3NQNcasnc3SAS/zTrN6vWSzK4OWAAAAAAEOAADrxRwRjq/zTrNFSsfsfVWAAK1KsF3AAA=|Normal|IPM.Contact|John Smith|2019-08-05T12:35:36Z|None|Normal|Contact Name| |<https://outlook.office365.com/owa/?ItemID>=***|
 
 #### Context Example
 
@@ -627,6 +627,7 @@ Retrieves contacts for a specified mailbox.
 
 ***
 This operation verifies aliases and matches display names to the correct mailbox user. It handles one ambiguous name at a time. If there are multiple potential matches, all will be returned, but limited to a maximum of 100 candidates.
+
 #### Base Command
 
 `ews-resolve-name`
@@ -741,7 +742,7 @@ This operation verifies aliases and matches display names to the correct mailbox
 
 >| primary_email_address         |name|mailbox_type|routing_type|
 >|-------------------------------|---|---|---|
->| ews-2016-test@lab-demisto.com | ews-2016-test EW2016. | Mailbox | SMTP |
+>| <ews-2016-test@lab-demisto.com> | ews-2016-test EW2016. | Mailbox | SMTP |
 
 
 ### ews-get-out-of-office
@@ -781,7 +782,7 @@ Retrieves the out-of-office status for a specified mailbox.
 
 >|end|externalAudienc|mailbox|start|state|
 >|---|---|---|---|---|
->| 2019-08-12T13:00:00Z | all |test@demistodev.onmicrosoft.com|2019-08-11T13:00:00Z|Disabled|
+>| 2019-08-12T13:00:00Z | all |<test@demistodev.onmicrosoft.com>|2019-08-11T13:00:00Z|Disabled|
 
 #### Context Example
 
@@ -1080,7 +1081,7 @@ Retrieves items from a specified folder in a mailbox. The items are order by the
 
 >|sender|subject|hasAttachments|datetimeReceived|receivedBy|author|toRecipients|itemId|
 >|---|---|---|---|---|---|---|---|
->| test2@demistodev.onmicrosoft.com |Get Attachment Email|true|2019-08-11T10:57:37Z|test@demistodev.onmicrosoft.com|test2@demistodev.onmicrosoft.com|test@demistodev.onmicrosoft.com|AAFSFSFFtlsUQZfBJebinpkUAAABjKMGAACyyVyFtlsUQZfBJebinpkUAAAsfw+jAAA=|
+>| <test2@demistodev.onmicrosoft.com> |Get Attachment Email|true|2019-08-11T10:57:37Z|<test@demistodev.onmicrosoft.com>|<test2@demistodev.onmicrosoft.com>|<test@demistodev.onmicrosoft.com>|AAFSFSFFtlsUQZfBJebinpkUAAABjKMGAACyyVyFtlsUQZfBJebinpkUAAAsfw+jAAA=|
 
 #### Context Example
 
@@ -1365,7 +1366,7 @@ There is no context output for this command.
 
 >|displayNam|mailbox|mailboxtype|
 >|---|---|---|
->| John Wick|john@wick.com|MailBox|
+>| John Wick|<john@wick.com>|MailBox|
 
 #### Context Example
 
@@ -1517,7 +1518,7 @@ Replies to an email using EWS.
 
 >|attachments|from|subject|to|
 >|---|---|---|---|
->|  | avishai@demistodev.onmicrosoft.com | Hi | avishai@demistodev.onmicrosoft.com |
+>|  | <avishai@demistodev.onmicrosoft.com> | Hi | <avishai@demistodev.onmicrosoft.com> |
 
 
 #### Base Command
@@ -1554,7 +1555,7 @@ There is no context output for this command.
 
 >|attachments|from|subject|to|
 >|---|---|---|---|
->|  | avishai@demistodev.onmicrosoft.com | hi | avishai@demistodev.onmicrosoft.com |
+>|  | <avishai@demistodev.onmicrosoft.com> | hi | <avishai@demistodev.onmicrosoft.com> |
 
 
 ## Additional Information

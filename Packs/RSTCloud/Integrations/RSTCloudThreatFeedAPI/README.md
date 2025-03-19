@@ -1,7 +1,7 @@
 This is the RST Threat Feed integration for interacting with API
 This integration was integrated and tested with RST Cloud - Threat Feed API v1
 
-Please contact the RST Cloud team via email support@rstcloud.net to obtain a key and ask any questions you have.
+Please contact the RST Cloud team via email <support@rstcloud.net> to obtain a key and ask any questions you have.
 Also, the following contact details can be used:
 
 - **URL**: [https://www.rstcloud.net/contact](https://www.rstcloud.net/contact)

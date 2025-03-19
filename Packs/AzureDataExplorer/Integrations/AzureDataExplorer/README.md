@@ -74,7 +74,7 @@ In order to use the Cortex XSOAR Azure application, use the default application 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Cluster URL (e.g. https://help.kusto.windows.net) |  | True |
+| Cluster URL (e.g. <https://help.kusto.windows.net>) |  | True |
 | Application ID |  | True |
 | Client Activity Prefix | A customized prefix of the client activity identifier for the query execution. For example, for a prefix value of 'XSOAR-DataExplorer', the client activity ID will be in the format of:  'XSOAR-DataExplorer;&amp;lt;UUID&amp;gt;'. | True |
 | Trust any certificate (not secure) |  | False |
@@ -86,16 +86,20 @@ In order to use the Cortex XSOAR Azure application, use the default application 
 | Authorization code | for Authorization Code mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-data-explorer-search-query-execute
+
 ***
-Execute a Kusto Query Language (KQL) query against the given database inside a cluster. The Kusto query is a read-only request to process data and return results. To learn more about KQL go to https://docs.microsoft.com/en-us/azure/kusto/query/.
+Execute a Kusto Query Language (KQL) query against the given database inside a cluster. The Kusto query is a read-only request to process data and return results. To learn more about KQL go to <https://docs.microsoft.com/en-us/azure/kusto/query/>.
 
 
 #### Base Command
 
 `azure-data-explorer-search-query-execute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -116,9 +120,11 @@ Execute a Kusto Query Language (KQL) query against the given database inside a c
 
 
 #### Command Example
+
 ```!azure-data-explorer-search-query-execute database_name=Samples query="StormEvents| limit 1"```
 
 #### Context Example
+
 ```json
 {
     "AzureDataExplorer": {
@@ -168,12 +174,14 @@ Execute a Kusto Query Language (KQL) query against the given database inside a c
 #### Human Readable Output
 
 >### Results of executing search query with client activity ID: XSOAR-DataExplorer;759d43a9-cdc1-4882-8f8b-3e8d8a703f1e
+>
 >|Begin Lat|Begin Location|Begin Lon|Damage Crops|Damage Property|Deaths Direct|Deaths Indirect|End Lat|End Location|End Lon|End Time|Episode Id|Episode Narrative|Event Id|Event Narrative|Event Type|Injuries Direct|Injuries Indirect|Source|Start Time|State|Storm Summary|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 28.0393 | MELBOURNE BEACH | -80.6048 | 0 | 0 | 0 | 0 | 28.0393 | MELBOURNE BEACH | -80.6048 | 2007-09-29T08:11:00 | 11091 | Showers and thunderstorms lingering along the coast produced waterspouts in Brevard County. | 61032 | A waterspout formed in the Atlantic southeast of Melbourne Beach and briefly moved toward shore. | Waterspout | 0 | 0 | Trained Spotter | 2007-09-29T08:11:00 | ATLANTIC SOUTH | TotalDamages: 0<br/>StartTime: 2007-09-29T08:11:00.0000000Z<br/>EndTime: 2007-09-29T08:11:00.0000000Z<br/>Details: {"Description": "A waterspout formed in the Atlantic southeast of Melbourne Beach and briefly moved toward shore.", "Location": "ATLANTIC SOUTH"} |
 
 
 ### azure-data-explorer-search-query-list
+
 ***
 List search queries that have reached a final state in the given database.  A database admin or database monitor can see any command that was invoked on their database. Other users can only see queries that they themselves invoked.
 
@@ -181,6 +189,7 @@ List search queries that have reached a final state in the given database.  A da
 #### Base Command
 
 `azure-data-explorer-search-query-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -250,9 +259,11 @@ List search queries that have reached a final state in the given database.  A da
 
 
 #### Command Example
+
 ```!azure-data-explorer-search-query-list database_name=Samples limit=1```
 
 #### Context Example
+
 ```json
 {
     "AzureDataExplorer": {
@@ -347,14 +358,16 @@ List search queries that have reached a final state in the given database.  A da
 #### Human Readable Output
 
 >### List of Completed Search Queries 
+>
 >Showing 0 to 1 records out of 134.
 > 
 >|Client Activity Id|User|Text|Database|Started On|Last Updated On|State|
 >|---|---|---|---|---|---|---|
->| KustoWebV2;f1be2c7e-f810-437b-a1f8-f8bbbedf238d | dataExplorer@qmasterslabgmail.onmicrosoft.com | set notruncation;<br/>Covid19 | Samples | 2021-11-24T15:15:27 | 2021-11-24T15:15:27 | Completed |
+>| KustoWebV2;f1be2c7e-f810-437b-a1f8-f8bbbedf238d | <dataExplorer@qmasterslabgmail.onmicrosoft.com> | set notruncation;<br/>Covid19 | Samples | 2021-11-24T15:15:27 | 2021-11-24T15:15:27 | Completed |
 
 
 ### azure-data-explorer-running-search-query-list
+
 ***
 List currently executing search queries in the given database. A database admin or database monitor can see any search query that was invoked on their database.
 Other users can only see search queries that they themselves invoked.
@@ -363,6 +376,7 @@ Other users can only see search queries that they themselves invoked.
 #### Base Command
 
 `azure-data-explorer-running-search-query-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -415,9 +429,11 @@ Other users can only see search queries that they themselves invoked.
 
 
 #### Command Example
+
 ```!azure-data-explorer-running-search-query-list database_name=Samples limit=1```
 
 #### Context Example
+
 ```json
 {
     "AzureDataExplorer": {
@@ -449,14 +465,16 @@ Other users can only see search queries that they themselves invoked.
 #### Human Readable Output
 
 >### List of Currently running Search Queries 
+>
 >Showing 0 to 1 records out of 2.
 > 
 >|Client Activity Id|User|Text|Database|Started On|Last Updated On|State|
 >|---|---|---|---|---|---|---|
->| KustoWebV2;c6ff3e99-d2cb-4a3e-ab05-955ae383a7c6 | dataExplorer@qmasterslabgmail.onmicrosoft.com | set notruncation;<br/>Covid19_Bing | Samples | 2021-11-24T15:16:34 | 2021-11-24T15:16:34 | InProgress |
+>| KustoWebV2;c6ff3e99-d2cb-4a3e-ab05-955ae383a7c6 | <dataExplorer@qmasterslabgmail.onmicrosoft.com> | set notruncation;<br/>Covid19_Bing | Samples | 2021-11-24T15:16:34 | 2021-11-24T15:16:34 | InProgress |
 
 
 ### azure-data-explorer-running-search-query-cancel
+
 ***
 Starts a best-effort attempt to cancel a specific running search query in the specified database.
 
@@ -464,6 +482,7 @@ Starts a best-effort attempt to cancel a specific running search query in the sp
 #### Base Command
 
 `azure-data-explorer-running-search-query-cancel`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -482,9 +501,11 @@ Starts a best-effort attempt to cancel a specific running search query in the sp
 | AzureDataExplorer.CanceledSearchQuery.ReasonPhrase | String | The reason for canceling the running query. | 
 
 #### Command Example
+
 ```!azure-data-explorer-running-search-query-cancel database_name=Samples client_activity_id=xxxx-xxxxx-xxxxx```
 
 #### Context Example
+
 ```json
 {
     "AzureDataExplorer": {
@@ -500,11 +521,13 @@ Starts a best-effort attempt to cancel a specific running search query in the sp
 #### Human Readable Output
 
 >### Canceled Search Query xxxx-xxxxx-xxxxx
+>
 >|Client Request Id|Reason Phrase|Running Query Canceled|
 >|---|---|---|
 >| xxxx-xxxxx-xxxxx | None | false |
 
 ### azure-data-explorer-auth-start
+
 ***
 Run this command to start the authorization process and follow the instructions in the command results.
 
@@ -512,6 +535,7 @@ Run this command to start the authorization process and follow the instructions 
 #### Base Command
 
 `azure-data-explorer-auth-start`
+
 #### Input
 
 There are no input arguments for this command.
@@ -519,7 +543,9 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### azure-data-explorer-auth-complete
+
 ***
 Run this command to complete the authorization process. This should be used after running the azure-data-explorer-auth-start command.
 
@@ -527,6 +553,7 @@ Run this command to complete the authorization process. This should be used afte
 #### Base Command
 
 `azure-data-explorer-auth-complete`
+
 #### Input
 
 There are no input arguments for this command.
@@ -534,7 +561,9 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### azure-data-explorer-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
@@ -542,6 +571,7 @@ Run this command if for some reason you need to rerun the authentication process
 #### Base Command
 
 `azure-data-explorer-auth-reset`
+
 #### Input
 
 There are no input arguments for this command.
@@ -549,7 +579,9 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### azure-data-explorer-auth-test
+
 ***
 Run this command to test the connectivity to Azure Data Explorer.
 
@@ -557,6 +589,7 @@ Run this command to test the connectivity to Azure Data Explorer.
 #### Base Command
 
 `azure-data-explorer-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -566,12 +599,14 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ### azure-data-explorer-generate-login-url
+
 ***
 Generate the login url used for Authorization code flow.
 
 #### Base Command
 
 `azure-data-explorer-generate-login-url`
+
 #### Input
 
 There are no input arguments for this command.
@@ -581,11 +616,13 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```azure-data-explorer-generate-login-url```
 
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 >```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```

@@ -3,6 +3,7 @@ Specify a indicator query and instance name to create the EDL.
 The allocated ports are tracked in an XSOAR list to ensure duplicate ports aren't used. 
 
 ### Setup Notes
+
 You should first create an XSOAR list which can be used to keep track of the
 ports which have been allocated by this automation.
 If there are existing EDLs these ports should be added to the new list in a 

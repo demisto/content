@@ -1,6 +1,6 @@
 Enterprise Mobility Management (EMM) for Apple devices (Mac, iPhone, Apple TV, iPad). Can be used to control various configurations via different policies, install and uninstall applications, lock devices, smart groups searches, and more.
 This integration was integrated and tested with version 10.28.0 of jamf v2
-JAMF classic API: https://www.jamf.com/developers/apis/classic/reference/#/
+JAMF classic API: <https://www.jamf.com/developers/apis/classic/reference/#/>
 
 ## Configure jamf v2 on Cortex XSOAR
 
@@ -22,6 +22,7 @@ JAMF classic API: https://www.jamf.com/developers/apis/classic/reference/#/
 
 
 ### Required Permissions
+
 In order to run JAMF V2 commands, the user should have a set of minimum permissions on the Jamf Pro server. Changing permissions on Jamf Pro server can be done using the following steps inside the Jamf Pro management GUI:
 
 1.Go to “Management Settings → All Settings → Jamf Pro User Accounts & Group”
@@ -53,9 +54,12 @@ In order to run JAMF V2 commands, the user should have a set of minimum permissi
 
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### jamf-get-computers
+
 ***
 Returns a list of all computers with their associated IDs. By default, returns the first 50 computers to the context (ID + name).
 This command is a replacement for ``jamf-get-computers`` in jamf v1 integration.
@@ -65,6 +69,7 @@ This command is a replacement for ``jamf-get-computers`` in jamf v1 integration.
 `jamf-get-computers`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -87,9 +92,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computers limit=3```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -121,17 +128,21 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Paging for get computers
+>
 >|Current Page|Page Size|Total Results|
 >|---|---|---|
 >| 0 | 3 | 137 |
 
 >### Jamf get computers result
+>
 >|ID|Name|
 >|---|---|
 >| 1 | Computer 95 |
 >| 2 | Computer 104 |
 >| 3 | Computer 124 |
+>
 ### jamf-get-computers-basic-subset
+
 ***
 Returns the “basic” subset for all of the computers. The “basic” subset includes: MAC address, model, UDID, name, department, building, serial number, username, ID.
 
@@ -141,6 +152,7 @@ Returns the “basic” subset for all of the computers. The “basic” subset 
 `jamf-get-computers-basic-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -170,9 +182,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computers-basic-subset limit=3```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -234,11 +248,13 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Paging for get computers
+>
 >|Current Page|Page Size|Total Results|
 >|---|---|---|
 >| 0 | 3 | 137 |
 
 >### Jamf get computers result 
+>
 >|ID|Mac Address|Name|Serial Number|UDID|Username|
 >|---|---|---|---|---|---|
 >| 1 | 18:5B:35:CA:12:56 | Computer 95 | BA40F81C60A2 | CA40F812-60A3-11E4-90B8-12DF261F2C7E | user91 |
@@ -247,6 +263,7 @@ Jamf Pro Server Objects → Computers → Read
 
 
 ### jamf-get-computer-by-id
+
 ***
 Returns the "general" subset of a specific computer, e.g.: name, MAC address, IP, serial number, UDID, etc.
 
@@ -256,6 +273,7 @@ Returns the "general" subset of a specific computer, e.g.: name, MAC address, IP
 `jamf-get-computer-by-id`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -313,9 +331,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-by-id id=1```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -374,12 +394,14 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Jamf get computers result for computer ID: 1
+>
 >|ID|IP Address|Jamf Version|MAC Address|Name|Platform|Serial Number|UDID|
 >|---|---|---|---|---|---|---|---|
 >| 1 | 123.243.192.21 | 9.6.29507.c | 18:5B:35:CA:12:56 | Computer 95 | Mac | BA40F81C60A2 | CA40F812-60A3-11E4-90B8-12DF261F2C7E |
 
 
 ### jamf-get-computer-by-match
+
 ***
 Matches computers by specific characteristics and returns general data on each of the computers.
 
@@ -389,6 +411,7 @@ Matches computers by specific characteristics and returns general data on each o
 `jamf-get-computer-by-match`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -429,9 +452,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-by-match match="Computer 9*" limit=3```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -514,11 +539,13 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Paging for get computers
+>
 >|Current Page|Page Size|Total Results|
 >|---|---|---|
 >| 0 | 3 | 10 |
 
 >### Jamf get computers result 
+>
 >|ID|Mac Address|Name|Serial Number|UDID|Username|
 >|---|---|---|---|---|---|
 >| 1 | 18:5B:35:CA:12:56 | Computer 95 | BA40F81C60A2 | CA40F812-60A3-11E4-90B8-12DF261F2C7E | user91 |
@@ -527,6 +554,7 @@ Jamf Pro Server Objects → Computers → Read
 
 
 ### jamf-get-computer-general-subset
+
 ***
 Returns the general subset for a specific computer according to the given arguments.
 
@@ -536,6 +564,7 @@ Returns the general subset for a specific computer according to the given argume
 `jamf-get-computer-general-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -597,9 +626,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-general-subset identifier=name identifier_value="Computer 95"```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -663,12 +694,14 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Jamf computer General subset result
+>
 >|Alternate MAC address|ID|IP address|MAC address|Managed|Name|Platform|Serial Number|UDID|
 >|---|---|---|---|---|---|---|---|---|
 >| B0:34:95:EC:97:C4 | 1 | 123.243.192.21 | 18:5B:35:CA:12:56 | false | Computer 95 | Mac | BA40F81C60A2 | CA40F812-60A3-11E4-90B8-12DF261F2C7E |
 
 
 ### jamf-get-computer-location-subset
+
 ***
 Returns the location subset for a specific computer according to the given arguments.
 
@@ -678,6 +711,7 @@ Returns the location subset for a specific computer according to the given argum
 `jamf-get-computer-location-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -706,9 +740,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-location-subset identifier=name identifier_value="Computer 95"```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -736,12 +772,14 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Jamf computer Location subset result
+>
 >|Email Address|Phone|Real Name|Room|Username|
 >|---|---|---|---|---|
->| User91@email.com | 612-605-6625 | User 91 | 100 Walker Street	 <br/>Level 14, Suite 3 | user91 |
+>| <User91@email.com> | 612-605-6625 | User 91 | 100 Walker Street	 <br/>Level 14, Suite 3 | user91 |
 
 
 ### jamf-get-computer-purchasing-subset
+
 ***
 Returns the purchasing subset for a specific computer according to the given arguments.
 
@@ -751,6 +789,7 @@ Returns the purchasing subset for a specific computer according to the given arg
 `jamf-get-computer-purchasing-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -789,9 +828,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-purchasing-subset identifier=name identifier_value="Computer 95"```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -830,12 +871,14 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Jamf computer Purchasing subset result
+>
 >|Is Leased|Is Purchased|
 >|---|---|
 >| false | true |
 
 
 ### jamf-get-computer-peripherals-subset
+
 ***
 Returns the peripherals subset for a specific computer according to the given arguments.
 
@@ -845,6 +888,7 @@ Returns the peripherals subset for a specific computer according to the given ar
 `jamf-get-computer-peripherals-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -864,9 +908,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-peripherals-subset identifier=name identifier_value="Computer 95"```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -883,10 +929,12 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Jamf computer Peripherals subset result
+>
 >**No entries.**
 
 
 ### jamf-get-computer-hardware-subset
+
 ***
 Returns the hardware subset for a specific computer according to the given arguments.
 
@@ -896,6 +944,7 @@ Returns the hardware subset for a specific computer according to the given argum
 `jamf-get-computer-hardware-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -970,9 +1019,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-hardware-subset identifier=id identifier_value="138"```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -1119,12 +1170,14 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Jamf computer Hardware subset result
+>
 >|storage|
 >|---|
 >| {'disk0': 500277} |
 
 
 ### jamf-get-computer-certificates-subset
+
 ***
 Returns the certificates subset for a specific computer according to the given arguments.
 
@@ -1134,6 +1187,7 @@ Returns the certificates subset for a specific computer according to the given a
 `jamf-get-computer-certificates-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -1157,9 +1211,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-certificates-subset identifier=id identifier_value="138"```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -1205,6 +1261,7 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Jamf computer Certificates subset result
+>
 >|Common Name|Expires Epoch|Expires UTC|Identity|
 >|---|---|---|---|
 >| com.apple.systemdefault | 2249728390000 | 2041-04-16T12:33:10.000+0000 | true |
@@ -1214,6 +1271,7 @@ Jamf Pro Server Objects → Computers → Read
 
 
 ### jamf-get-computer-security-subset
+
 ***
 Returns the security subset for a specific computer according to the given arguments.
 
@@ -1223,6 +1281,7 @@ Returns the security subset for a specific computer according to the given argum
 `jamf-get-computer-security-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -1244,9 +1303,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-security-subset identifier=name identifier_value="Computer 95"```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -1267,12 +1328,14 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Jamf computer Security subset result
+>
 >|Common Name|Expires UTC|Identity|
 >|---|---|---|
 >| false | unknown | unknown |
 
 
 ### jamf-get-computer-software-subset
+
 ***
 Returns the software subset for a specific computer according to the given arguments.
 
@@ -1282,6 +1345,7 @@ Returns the software subset for a specific computer according to the given argum
 `jamf-get-computer-software-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -1320,9 +1384,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-software-subset identifier=name identifier_value="Computer 95"```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -1556,12 +1622,14 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Jamf computer Software subset result
+>
 >|Number of installed applications|Number of running services |
 >|---|---|
 >| 48 | 0 |
 
 
 ### jamf-get-computer-extension-attributes-subset
+
 ***
 Returns the extension attributes subset for a specific computer according to the given arguments.
 
@@ -1571,6 +1639,7 @@ Returns the extension attributes subset for a specific computer according to the
 `jamf-get-computer-extension-attributes-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -1594,9 +1663,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-extension-attributes-subset identifier=name identifier_value="Computer 95"```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -1663,6 +1734,7 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Jamf computer ExtensionAttributes subset result
+>
 >|ID|Name|Type|Value|
 >|---|---|---|---|
 >| 5 | Battery Cycle Count | String | false |
@@ -1675,6 +1747,7 @@ Jamf Pro Server Objects → Computers → Read
 
 
 ### jamf-get-computer-groups-accounts-subset
+
 ***
 Returns the groups accounts subset for a specific computer according to the given arguments.
 
@@ -1684,6 +1757,7 @@ Returns the groups accounts subset for a specific computer according to the give
 `jamf-get-computer-groups-accounts-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -1718,9 +1792,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-groups-accounts-subset identifier=id identifier_value="138"```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -1816,12 +1892,14 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Jamf computer GroupsAccounts subset result
+>
 >|Number of groups|Number of local accounts|
 >|---|---|
 >| 43 | 4 |
 
 
 ### jamf-get-computer-iphones-subset
+
 ***
 Returns the iPhones subset for a specific computer according to the given arguments.
 
@@ -1831,6 +1909,7 @@ Returns the iPhones subset for a specific computer according to the given argume
 `jamf-get-computer-iphones-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -1850,9 +1929,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-iphones-subset identifier=id identifier_value="138"```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -1869,10 +1950,12 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Jamf computer iphones subset result
+>
 >**No entries.**
 
 
 ### jamf-get-computer-configuration-profiles-subset
+
 ***
 Returns the configuration profiles subset for a specific computer according to the given arguments.
 
@@ -1882,6 +1965,7 @@ Returns the configuration profiles subset for a specific computer according to t
 `jamf-get-computer-configuration-profiles-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Computers → Read
 
 #### Input
@@ -1904,9 +1988,11 @@ Jamf Pro Server Objects → Computers → Read
 
 
 #### Command Example
+
 ```!jamf-get-computer-configuration-profiles-subset identifier=id identifier_value="138"```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -1942,6 +2028,7 @@ Jamf Pro Server Objects → Computers → Read
 #### Human Readable Output
 
 >### Jamf computer ConfigurationProfiles subset result
+>
 >|Configuration profile ID|Is Removable|
 >|---|---|
 >| -1 | false |
@@ -1950,6 +2037,7 @@ Jamf Pro Server Objects → Computers → Read
 
 
 ### jamf-computer-lock
+
 ***
 Sends the "DeviceLock" command to a computer. This command logs the user out of the computer, restarts the computer, and then locks the computer. Optional: Displays a message on the computer when it locks.
 
@@ -1959,6 +2047,7 @@ Sends the "DeviceLock" command to a computer. This command logs the user out of 
 `jamf-computer-lock`
 
 #### Required Permissions
+
 Jamf Pro Server Actions → Send Computer Remote Lock Command
 
 Jamf Pro Server Objects → Computers → Create
@@ -1983,9 +2072,11 @@ Jamf Pro Server Objects → Computers → Create
 
 
 #### Command Example
+
 ```!jamf-computer-lock id=138 passcode=123456```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -2001,12 +2092,14 @@ Jamf Pro Server Objects → Computers → Create
 #### Human Readable Output
 
 >### Computer 138 locked successfully
+>
 >|Command UUID|Computer ID|Name|
 >|---|---|---|
 >| 2f410832-c87e-4b4c-aab7-8edaa22b2e08 | 138 | DeviceLock |
 
 
 ### jamf-computer-erase
+
 ***
 Sends the “EraseDevice'' command to a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type.
 
@@ -2016,6 +2109,7 @@ Sends the “EraseDevice'' command to a computer. Permanently erases all the dat
 `jamf-computer-erase`
 
 #### Required Permissions
+
 Jamf Pro Server Actions → Send Computer Remote Wipe Command
 
 Jamf Pro Server Objects → Computers → Create
@@ -2038,9 +2132,11 @@ Jamf Pro Server Objects → Computers → Create
 
 
 #### Command Example
+
 ```!jamf-computer-erase id=138 passcode=123456```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -2056,12 +2152,14 @@ Jamf Pro Server Objects → Computers → Create
 #### Human Readable Output
 
 >### Computer 138 erased successfully
+>
 >|Command UUID|Computer ID|Name|
 >|---|---|---|
 >| 91cfac41-7826-4d73-b8b7-9ab34848f2f2 | 138 | EraseDevice |
 
 
 ### jamf-get-users
+
 ***
 Returns a list of users with their IDs and names. By default, returns the first 50 users to the context (ID + name).
 
@@ -2071,6 +2169,7 @@ Returns a list of users with their IDs and names. By default, returns the first 
 `jamf-get-users`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Users → Read
 
 #### Input
@@ -2093,9 +2192,11 @@ Jamf Pro Server Objects → Users → Read
 
 
 #### Command Example
+
 ```!jamf-get-users limit=3```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -2127,14 +2228,17 @@ Jamf Pro Server Objects → Users → Read
 #### Human Readable Output
 
 >### Paging for get users
+>
 >|Current Page|Page Size|Total Results|
 >|---|---|---|
 >| 0 | 3 | 98 |
 
 >### Jamf get users result 
+>
 > Total results:98
 >Results per page: 3
 >Page: 0
+>
 >|ID|Name|
 >|---|---|
 >| 81 | AHarrison |
@@ -2143,6 +2247,7 @@ Jamf Pro Server Objects → Users → Read
 
 
 ### jamf-get-user-by-id
+
 ***
 Returns a specific user with general data about the user according to the given ID.
 
@@ -2152,6 +2257,7 @@ Returns a specific user with general data about the user according to the given 
 `jamf-get-user-by-id`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Users → Read
 
 Jamf Pro Server Settings → Apple Education Support → Read (in order to view these fields: “enable_custom_photo_url” and “custom_photo_url”)
@@ -2201,9 +2307,11 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 
 
 #### Command Example
+
 ```!jamf-get-user-by-id id=1```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -2281,12 +2389,14 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 #### Human Readable Output
 
 >### Jamf get user result
+>
 >|Email|ID|Name|Phone|
 >|---|---|---|---|
->| User28@email.com | 1 | user28 | 612-605-6625 |
+>| <User28@email.com> | 1 | user28 | 612-605-6625 |
 
 
 ### jamf-get-user-by-name
+
 ***
 Returns a specific user with general data about the user according to the given name.
 
@@ -2296,6 +2406,7 @@ Returns a specific user with general data about the user according to the given 
 `jamf-get-user-by-name`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Users → Read
 
 Jamf Pro Server Settings → Apple Education Support → Read (in order to view these fields: “enable_custom_photo_url” and “custom_photo_url”)
@@ -2345,9 +2456,11 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 
 
 #### Command Example
+
 ```!jamf-get-user-by-name name=tomertest```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -2426,12 +2539,14 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 #### Human Readable Output
 
 >### Jamf get user result
+>
 >|Email|ID|Name|
 >|---|---|---|
->| tomertest@test.com | 97 | tomertest |
+>| <tomertest@test.com> | 97 | tomertest |
 
 
 ### jamf-get-user-by-email
+
 ***
 Returns a specific user with general data about the user according to the given email.
 
@@ -2441,6 +2556,7 @@ Returns a specific user with general data about the user according to the given 
 `jamf-get-user-by-email`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Users → Read
 
 Jamf Pro Server Settings → Apple Education Support → Read (in order to view these fields: “enable_custom_photo_url” and “custom_photo_url”)
@@ -2490,9 +2606,11 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 
 
 #### Command Example
+
 ```!jamf-get-user-by-email email=user28@email.com```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -2566,12 +2684,14 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 #### Human Readable Output
 
 >### Jamf get user result
+>
 >|Email|ID|Name|Phone|
 >|---|---|---|---|
->| User28@email.com | 1 | user28 | 612-605-6625 |
+>| <User28@email.com> | 1 | user28 | 612-605-6625 |
 
 
 ### jamf-get-mobile-devices
+
 ***
 Returns a list of devices with  basic data on each. By default, returns the first 50 devices to the context (ID + name).
 
@@ -2581,6 +2701,7 @@ Returns a list of devices with  basic data on each. By default, returns the firs
 `jamf-get-mobile-devices`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Input
@@ -2615,9 +2736,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-devices limit=3```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -2685,11 +2808,13 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Paging for get mobile devices
+>
 >|Current Page|Page Size|Total Results|
 >|---|---|---|
 >| 0 | 3 | 114 |
 
 >### Jamf get mobile devices result 
+>
 >|ID|Name|Serial Number|UDID|
 >|---|---|---|---|
 >| 1 | Device 71 | CA44F4D060A3 | ca44f4c660a311e490b812df261f2c7e |
@@ -2698,6 +2823,7 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 ### jamf-get-mobile-device-by-id
+
 ***
 Returns the "general" subset of a specific mobile device, e.g.: name, MAC address, IP, serial number, UDID. etc.
 
@@ -2707,6 +2833,7 @@ Returns the "general" subset of a specific mobile device, e.g.: name, MAC addres
 `jamf-get-mobile-device-by-id`
 
 #### Required Permissions
+
 Jamf-get-mobile-device-by-id
 
 Jamf Pro Server Objects → Mobile Devices → Read
@@ -2808,9 +2935,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-device-by-id id=114```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -2881,12 +3010,14 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Jamf get mobile devices result on mobile ID:114
+>
 >|Bluetooth MAC address|ID|IP address|Managed|Model|Model Number|Name|Serial Number|Supervised|UDID|WIFI MAC address|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| F8:E9:4E:8C:34:F5 | 114 | 123.243.192.22 | false | iPhone XS Max | NT6J2LL | test iPhone | F2LXX5ZKKPHG | false | 00008020-001C285E3EE1002E | F8:E9:4E:96:21:FB |
 
 
 ### jamf-get-mobile-device-by-match
+
 ***
 Matches mobile devices by specific characteristics and returns general data on each one of the mobile devices.
 
@@ -2896,6 +3027,7 @@ Matches mobile devices by specific characteristics and returns general data on e
 `jamf-get-mobile-device-by-match`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Input
@@ -2933,9 +3065,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-device-by-match match="B0:65:BD:4E:50:5D"```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -2969,17 +3103,20 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Paging for get mobile devices
+>
 >|Current Page|Page Size|Total Results|
 >|---|---|---|
 >| 0 | 50 | 1 |
 
 >### Jamf get mobile devices result 
+>
 >|ID|Name|Serial Number|UDID|
 >|---|---|---|---|
 >| 1 | Device 71 | CA44F4D060A3 | ca44f4c660a311e490b812df261f2c7e |
 
 
 ### jamf-get-mobile-device-general-subset
+
 ***
 Returns the general subset for a specific mobile device according to the given arguments.
 
@@ -2989,6 +3126,7 @@ Returns the general subset for a specific mobile device according to the given a
 `jamf-get-mobile-device-general-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Input
@@ -3063,9 +3201,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-device-general-subset identifier=id identifier_value=1```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -3141,12 +3281,14 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Jamf mobile device General subset result
+>
 >|Bluetooth MAC address|ID|IP address|Managed|Model|Model Number|Name|Serial Number|Supervised|UDID|WIFI MAC address|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| B0:65:BD:4E:50:2A | 1 | 71.13.172.131 | true | iPad 3rd Generation (Wi-Fi) | MD333LL | Device 71 | CA44F4D060A3 | false | ca44f4c660a311e490b812df261f2c7e | B0:65:BD:4E:50:5D |
 
 
 ### jamf-get-mobile-device-location-subset
+
 ***
 Returns the location subset for a specific mobile device according to the given arguments.
 
@@ -3156,6 +3298,7 @@ Returns the location subset for a specific mobile device according to the given 
 `jamf-get-mobile-device-location-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Input
@@ -3184,9 +3327,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-device-location-subset identifier=id identifier_value=1```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -3214,12 +3359,14 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Jamf mobile device Location subset result
+>
 >|Email Address|Phone|Real Name|Room|Username|
 >|---|---|---|---|---|
->| User28@email.com | 612-605-6625 | User 28 | 315 Graham Ave | user28 |
+>| <User28@email.com> | 612-605-6625 | User 28 | 315 Graham Ave | user28 |
 
 
 ### jamf-get-mobile-device-purchasing-subset
+
 ***
 Returns the purchasing subset for a specific mobile device according to the given arguments.
 
@@ -3229,6 +3376,7 @@ Returns the purchasing subset for a specific mobile device according to the give
 `jamf-get-mobile-device-purchasing-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Input
@@ -3265,9 +3413,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-device-purchasing-subset identifier=id identifier_value=114```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -3304,12 +3454,14 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Jamf mobile device Purchasing subset result
+>
 >|Is Leased|Is Purchased|
 >|---|---|
 >| false | true |
 
 
 ### jamf-get-mobile-device-applications-subset
+
 ***
 Returns the applications subset for a specific mobile device according to the given arguments.
 
@@ -3319,6 +3471,7 @@ Returns the applications subset for a specific mobile device according to the gi
 `jamf-get-mobile-device-applications-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Input
@@ -3341,9 +3494,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-device-applications-subset identifier=id identifier_value=114```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -3360,12 +3515,14 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Jamf mobile device Applications subset result
+>
 >|Number of applications|
 >|---|
 >| 0 |
 
 
 ### jamf-get-mobile-device-security-subset
+
 ***
 Returns the security subset for a specific mobile device according to the given arguments.
 
@@ -3375,6 +3532,7 @@ Returns the security subset for a specific mobile device according to the given 
 `jamf-get-mobile-device-security-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Mobile Devices → Read
 
 *Jamf Pro Server Actions → Send Mobile Device Lost Mode Command 
@@ -3446,9 +3604,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-device-security-subset identifier=id identifier_value=114```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -3492,12 +3652,14 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Jamf mobile device Security subset result
+>
 >|Activation Lock Enabled|Block Level Encryption Capable|Data Protection|File Level Encryption Capable|Hardware Encryption|Jailbreak Detected|Lost Mode Enable Issued UTC|Lost Mode Enabled|Lost Mode Enforced|Passcode Compliant|Passcode Lock Grace Period Enforced|Passcode Present|Phone|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| true | true | true | true | 3 | Unknown | 2021-05-11T13:40:33.498+0000 | Unsupervised Device | false | true | Immediate | true | true |
 
 
 ### jamf-get-mobile-device-network-subset
+
 ***
 Returns the network subset for a specific mobile device according to the given arguments.
 
@@ -3507,6 +3669,7 @@ Returns the network subset for a specific mobile device according to the given a
 `jamf-get-mobile-device-network-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Input
@@ -3540,9 +3703,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-device-network-subset identifier=id identifier_value=114```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -3575,12 +3740,14 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Jamf mobile device Network subset result
+>
 >|Cellular Technology|Data Roaming Enabled|Imei|Meid|Voice_roaming_enabled|
 >|---|---|---|---|---|
 >| Both | false | 35 727309 398808 9 | 35727309398808 | No |
 
 
 ### jamf-get-mobile-device-certificates-subset
+
 ***
 Returns the certificates subset for a specific mobile device according to the given arguments.
 
@@ -3590,6 +3757,7 @@ Returns the certificates subset for a specific mobile device according to the gi
 `jamf-get-mobile-device-certificates-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Input
@@ -3611,9 +3779,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-device-certificates-subset identifier=id identifier_value=114```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -3643,6 +3813,7 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Jamf mobile device Certificates subset result
+>
 >|Common Name|Expires Epoch|Expires UTC|Identity|
 >|---|---|---|---|
 >| F53DA0E7-9CEC-436E-90A4-0128769F5A2A | 1683813623000 | 2023-05-11T14:00:23.000+0000 | true |
@@ -3650,6 +3821,7 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 ### jamf-get-mobile-device-provisioning-profiles-subset
+
 ***
 Returns the provisioning profiles subset for a specific mobile device according to the given arguments.
 
@@ -3659,6 +3831,7 @@ Returns the provisioning profiles subset for a specific mobile device according 
 `jamf-get-mobile-device-provisioning-profiles-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Input
@@ -3683,9 +3856,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-device-provisioning-profiles-subset identifier=id identifier_value=114```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -3702,10 +3877,12 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Jamf mobile device ProvisioningProfiles subset result
+>
 >**No entries.**
 
 
 ### jamf-get-mobile-device-configuration-profiles-subset
+
 ***
 Returns the configuration profiles subset for a specific mobile device according to the given arguments.
 
@@ -3715,6 +3892,7 @@ Returns the configuration profiles subset for a specific mobile device according
 `jamf-get-mobile-device-configuration-profiles-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Input
@@ -3738,9 +3916,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-device-configuration-profiles-subset identifier=id identifier_value=114```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -3764,12 +3944,14 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Jamf mobile device ConfigurationProfiles subset result
+>
 >|Display Name|identifier|uuid|version|
 >|---|---|---|---|
 >| MDM Profile | 00000000-0000-0000-A000-4A414D460003 | 00000000-0000-0000-A000-4A414D460003 | 1 |
 
 
 ### jamf-get-mobile-device-groups-subset
+
 ***
 Returns the mobile device groups subset for a specific mobile device according to the given arguments.
 
@@ -3779,6 +3961,7 @@ Returns the mobile device groups subset for a specific mobile device according t
 `jamf-get-mobile-device-groups-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Input
@@ -3799,9 +3982,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-device-groups-subset identifier=id identifier_value=114```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -3818,12 +4003,14 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Jamf mobile device MobileDeviceGroups subset result
+>
 >|Number of groups|
 >|---|
 >| 0 |
 
 
 ### jamf-get-mobile-device-extension-attributes-subset
+
 ***
 Returns the extension attributes subset for a specific mobile device according to the given arguments.
 
@@ -3833,6 +4020,7 @@ Returns the extension attributes subset for a specific mobile device according t
 `jamf-get-mobile-device-extension-attributes-subset`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Input
@@ -3856,9 +4044,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 #### Command Example
+
 ```!jamf-get-mobile-device-extension-attributes-subset identifier=id identifier_value=114```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -3939,6 +4129,7 @@ Jamf Pro Server Objects → Mobile Devices → Read
 #### Human Readable Output
 
 >### Jamf mobile device ExtensionAttributes subset result
+>
 >|ID|Name|Type|Value|
 >|---|---|---|---|
 >| 9 | Asset Selector | String | false |
@@ -3953,6 +4144,7 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 
 ### jamf-get-computers-by-application
+
 ***
 Returns a list of computers with basic information on each.
 
@@ -3962,6 +4154,7 @@ Returns a list of computers with basic information on each.
 `jamf-get-computers-by-application`
 
 #### Required Permissions
+
 Jamf Pro Server Objects → Advanced Computer Searches → Read
 
 #### Input
@@ -3990,9 +4183,11 @@ Jamf Pro Server Objects → Advanced Computer Searches → Read
 
 
 #### Command Example
+
 ```!jamf-get-computers-by-application application=safar* limit=3```
 
 #### Context Example
+
 ```json
 {
     "JAMF": {
@@ -4034,11 +4229,13 @@ Jamf Pro Server Objects → Advanced Computer Searches → Read
 #### Human Readable Output
 
 >### Paging for get mobile devices
+>
 >|Current Page|Page Size|Total Results|
 >|---|---|---|
 >| 0 | 3 | 96 |
 
 >### Jamf computers by application result
+>
 >|Sum of computers|version|
 >|---|---|
 >| 2 | 14.0.3 |
@@ -4047,8 +4244,11 @@ Jamf Pro Server Objects → Advanced Computer Searches → Read
 
 
 ### jamf-mobile-device-lost-mode
+
 ***
+
 #### This is a beta command
+
 This is a beta command - couldn't be tested due to technical limitations. Enables “lost mode” on a specific device. Lost Mode is a feature that allows you to lock a mobile device and track the device's location. The device reports the GPS coordinates of the point where the device received the command. This feature adds additional protection to mobile devices and their data in the event that a device is lost or stolen.
 
 
@@ -4057,6 +4257,7 @@ This is a beta command - couldn't be tested due to technical limitations. Enable
 `jamf-mobile-device-lost-mode`
 
 #### Required Permissions
+
 Jamf Pro Server Actions → Send Mobile Device Lost Mode Command
 
 Jamf Pro Server Objects → Mobile Devices → Create
@@ -4080,15 +4281,20 @@ Jamf Pro Server Objects → Mobile Devices → Create
 
 
 #### Command Example
+
 ```jamf-mobile-device-lost-mode id=114 ```
 
 #### Human Readable Output
+>
 >### Computer 114 locked successfully
 
 
 ### jamf-mobile-device-erase
+
 ***
+
 #### This is a beta command
+
 This is a beta command - couldn't be tested due to technical limitations. Permanently erases all data on the device and deactivates the device.
 
 
@@ -4097,6 +4303,7 @@ This is a beta command - couldn't be tested due to technical limitations. Perman
 `jamf-mobile-device-erase`
 
 #### Required Permissions
+
 Jamf Pro Server Actions → Send Mobile Device Remote Wipe Command
 
 Jamf Pro Server Objects → Mobile Devices → Create
@@ -4121,6 +4328,7 @@ Jamf Pro Server Objects → Mobile Devices → Create
 
 
 #### Command Example
+
 ```jamf-mobile-device-erase id=114```
 
 #### Human Readable Output
@@ -4128,6 +4336,7 @@ Jamf Pro Server Objects → Mobile Devices → Create
 >### Computer 114 erased successfully
 
 ### endpoint
+
 ***
 Returns information about an endpoint.
 
@@ -4135,6 +4344,7 @@ Returns information about an endpoint.
 #### Base Command
 
 `endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4159,9 +4369,11 @@ Returns information about an endpoint.
 
 
 #### Command Example
+
 ```!endpoint id=138```
 
 #### Context Example
+
 ```json
 {
     "Endpoint": {
@@ -4177,6 +4389,7 @@ Returns information about an endpoint.
 #### Human Readable Output
 
 >### Cortex XDR Endpoint
+>
 >|Hostname|ID|MACAddress|OS|Vendor|
 >|---|---|---|---|---|
 >| test MacBook Pro | 138 | F0:18:98:3F:DB:8E | Mac | JAMF v2 |

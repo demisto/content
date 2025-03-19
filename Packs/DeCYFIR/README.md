@@ -4,6 +4,7 @@ CYFIRMA’s core platform, DeCYFIR, combines cyber threat intelligence with atta
 With DeCYFIR’s APIs, security teams obtain a complete view of their external threat landscape and receive actionable insights to ensure their cybersecurity posture is robust, resilient, and able to counter emerging cyber threats.
 
 #### This packs empowers security teams with the following capabilities:
+
 - Monitor your entire external attack surfaces as they emerge.
 - Gain knowledge of vulnerabilities and understand the threat actors, campaigns, attack methods which could be used by adversaries. 
 - Stay informed of data breach/leaks and this includes company email addresses, intellectual property info, confidential data.

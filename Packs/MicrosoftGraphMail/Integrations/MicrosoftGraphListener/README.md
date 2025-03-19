@@ -11,7 +11,7 @@ The integration imports email messages from the destination folder in the target
 The OData parameter can be used to create different queries for the `msgraph-mail-list-emails` and `msgraph-mail-get-email` commands. Please see [OData Docs](https://docs.microsoft.com/en-us/graph/query-parameters) for detailed information.
 Examples:
 !msgraph-mail-list-emails odata=&quot;$select=from&quot;
-!msgraph-mail-list-emails odata=&quot;$filter=from/emailAddress/address eq &#39;azure-noreply@microsoft.com&#39;&quot;
+!msgraph-mail-list-emails odata=&quot;$filter=from/emailAddress/address eq &#39;<azure-noreply@microsoft.com>&#39;&quot;
 !msgraph-mail-list-emails odata=&quot;$filter=sentDateTime gt 2020-03-25T09:35:23Z and sentDateTime lt 2020-03-25T12:04:47Z&quot;
 
 Note:
@@ -67,7 +67,7 @@ The following permissions are required for Shared Mailbox:
 | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
 | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
 | Fetch incidents |  | False |
-| Email address from which to fetch incidents (e.g., "example@demisto.com") | During authentication, ensure you are logged in to this email address. | True |
+| Email address from which to fetch incidents (e.g., "<example@demisto.com>") | During authentication, ensure you are logged in to this email address. | True |
 | Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing) |  | True |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
 | Maximum number of emails to pull per fetch |  | False |
@@ -143,9 +143,12 @@ Creates a draft message in the specified user's mailbox.
 Replies to an email using Graph Mail Single User.
 
 ##### Required Permissions
+
 **The following permissions are required for this command:**
-- Mail.Send (Application)
-- Mail.ReadWrite (Application) - to send attachments > 3mb
+
+* Mail.Send (Application)
+* Mail.ReadWrite (Application) - to send attachments > 3mb
+
 #### Base Command
 
 `reply-mail`
@@ -184,9 +187,11 @@ Replies to an email using Graph Mail Single User.
 Sends an email using Microsoft Graph.
 
 ##### Required Permissions
+
 **The following permissions are required for this command:**
-- Mail.Send (Application)
-- Mail.ReadWrite (Application) - to send attachments > 3mb
+
+* Mail.Send (Application)
+* Mail.ReadWrite (Application) - to send attachments > 3mb
 
 #### Base Command
 
@@ -277,6 +282,7 @@ Sends a draft email using Microsoft Graph.
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-mail-test
 
 ***
@@ -294,6 +300,7 @@ Tests connectivity of the email.
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-mail-auth-reset
 
 ***
@@ -304,11 +311,13 @@ Run this command if for some reason you need to rerun the authentication process
 `msgraph-mail-auth-reset`
 
 #### Input
+
 There are no input arguments for this command.
 
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-mail-list-emails
 
 ***
@@ -323,7 +332,7 @@ Gets the properties of returned emails. Typically shows partial results, use the
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | odata | An OData query. See [OData Usage](#odata-usage) for OData usage examples. | Optional | 
-| search | The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see https://tools.ietf.org/html/rfc3986#section-2.2. | Optional | 
+| search | The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see <https://tools.ietf.org/html/rfc3986#section-2.2>. | Optional | 
 | page_size | The maximum number of emails to fetch in one request. Default is 20. | Optional | 
 | pages_to_pull | The number of pages of emails to return (maximum is 10 emails per page). Default is 1. | Optional | 
 | ran_once_flag | Flag for rate limit retry. | Optional | 
@@ -471,6 +480,7 @@ Update the status of an email to read / unread.
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-mail-generate-login-url
 
 ***
@@ -489,11 +499,13 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```msgraph-mail-generate-login-url```
 
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -607,6 +619,7 @@ Returns the folder list under the specified folder.
 | MSGraphMail.Folders.ParentFolderID | String | The parent folder ID. | 
 | MSGraphMail.Folders.TotalItemCount | Number | The total number of email messages in the folder. | 
 | MSGraphMail.Folders.UnreadItemCount | Number | The number of unread email messages in the folder. | 
+
 ### msgraph-mail-list-rules
 
 ***
@@ -635,6 +648,7 @@ List email rules for a user's mailbox using Microsoft Graph API.
 | MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. | 
 | MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. | 
 | MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. | 
+
 ### msgraph-mail-get-rule
 
 ***
@@ -663,6 +677,7 @@ Get details of a specific email rule by ID for a user's mailbox using Microsoft 
 | MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. | 
 | MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. | 
 | MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. | 
+
 ### msgraph-mail-delete-rule
 
 ***
@@ -685,6 +700,7 @@ There is no context output for this command.
 ## Troubleshooting
 
 In case of a **hash verification** error:
+
 1. Use the Oproxy flow to generate a new pair of credentials. This is crucial as it ensures that any issues related to authentication can be mitigated with fresh credentials.
 2. Execute the command ***!msgraph-mail-auth-reset***. This command resets the authentication mechanism, allowing for the new credentials to be accepted.
 3. Insert the newly created credentials into the original instance where the error occurred. Make sure the credentials are entered correctly to avoid further errors.

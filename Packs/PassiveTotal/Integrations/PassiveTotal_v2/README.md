@@ -247,7 +247,7 @@ Gets WHOIS information records based on field matching queries.
 
 >|Domain|WHOIS Server|Registrar|Contact Email|Name Servers|Registrant|Admin|Tech|Creation Date (GMT)|Expire Date (GMT)|Updated Date (GMT)|Last Scanned (GMT)|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
+>| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | <domains@riskiq.com> | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** <domains@riskiq.com>,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** <domains@riskiq.com>,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** <domains@riskiq.com>,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
 
 
 ### pt-get-components
@@ -373,13 +373,13 @@ Retrieves the host attribute components for a domain or IP address. Maximum 2000
 
 >|Hostname|First (GMT)|Last (GMT)|Category|Value|Version|
 >|---|---|---|---|---|---|
->| www.furth.com.ar | 2020-05-29 10:57:44 | 2020-05-29 10:57:44 | Framework | PHP |  |
->| www.furth.com.ar | 2020-05-29 10:57:44 | 2020-05-29 10:57:44 | Server | Apache |  |
->| www.furth.com.ar | 2016-01-11 23:45:15 | 2017-10-24 15:53:52 | Server Module | mod_bwlimited | 1.4 |
->| www.furth.com.ar | 2016-01-11 23:45:15 | 2017-10-24 15:53:52 | Server Module | OpenSSL | 1.0.1e-fips |
->| www.furth.com.ar | 2016-01-11 23:45:15 | 2017-10-24 15:53:52 | Server | Apache | 2.2.29 |
->| www.furth.com.ar | 2016-01-11 23:45:15 | 2017-10-24 15:53:52 | Operating System | Unix |  |
->| www.furth.com.ar | 2016-01-11 23:45:15 | 2017-10-24 15:53:52 | Server Module | mod_ssl | 2.2.29 |
+>| <www.furth.com.ar> | 2020-05-29 10:57:44 | 2020-05-29 10:57:44 | Framework | PHP |  |
+>| <www.furth.com.ar> | 2020-05-29 10:57:44 | 2020-05-29 10:57:44 | Server | Apache |  |
+>| <www.furth.com.ar> | 2016-01-11 23:45:15 | 2017-10-24 15:53:52 | Server Module | mod_bwlimited | 1.4 |
+>| <www.furth.com.ar> | 2016-01-11 23:45:15 | 2017-10-24 15:53:52 | Server Module | OpenSSL | 1.0.1e-fips |
+>| <www.furth.com.ar> | 2016-01-11 23:45:15 | 2017-10-24 15:53:52 | Server | Apache | 2.2.29 |
+>| <www.furth.com.ar> | 2016-01-11 23:45:15 | 2017-10-24 15:53:52 | Operating System | Unix |  |
+>| <www.furth.com.ar> | 2016-01-11 23:45:15 | 2017-10-24 15:53:52 | Server Module | mod_ssl | 2.2.29 |
 
 
 ### pt-get-trackers
@@ -536,14 +536,14 @@ Retrieves the host attribute trackers for a domain or IP address. Maximum 2000 r
 >|---|---|---|---|---|
 >| filmesonlinegratis.net | 2016-10-14 10:16:38 | 2020-06-14 19:43:28 | GoogleAnalyticsTrackingId | ua-70630818-3 |
 >| filmesonlinegratis.net | 2016-10-14 10:16:38 | 2020-06-14 19:43:28 | GoogleAnalyticsAccountNumber | ua-70630818 |
->| www.filmesonlinegratis.net | 2012-03-07 05:53:50 | 2016-10-13 15:38:35 | GoogleAnalyticsAccountNumber | ua-11598035 |
->| www.filmesonlinegratis.net | 2012-03-07 05:53:50 | 2016-10-13 15:38:35 | GoogleAnalyticsTrackingId | ua-11598035-1 |
+>| <www.filmesonlinegratis.net> | 2012-03-07 05:53:50 | 2016-10-13 15:38:35 | GoogleAnalyticsAccountNumber | ua-11598035 |
+>| <www.filmesonlinegratis.net> | 2012-03-07 05:53:50 | 2016-10-13 15:38:35 | GoogleAnalyticsTrackingId | ua-11598035-1 |
 >| filmesonlinegratis.net | 2014-02-11 01:30:40 | 2016-09-13 03:54:34 | GoogleAnalyticsTrackingId | ua-11598035-1 |
 >| filmesonlinegratis.net | 2014-02-11 01:30:40 | 2016-09-13 03:54:34 | GoogleAnalyticsAccountNumber | ua-11598035 |
->| www.filmesonlinegratis.net | 2016-07-02 00:46:33 | 2016-09-02 11:09:30 | TumblrId | 25.media |
->| www.filmesonlinegratis.net | 2012-11-27 06:06:44 | 2015-09-26 05:52:23 | FacebookId | filmesog |
+>| <www.filmesonlinegratis.net> | 2016-07-02 00:46:33 | 2016-09-02 11:09:30 | TumblrId | 25.media |
+>| <www.filmesonlinegratis.net> | 2012-11-27 06:06:44 | 2015-09-26 05:52:23 | FacebookId | filmesog |
 >| filmesonlinegratis.net | 2014-02-11 01:30:40 | 2015-09-24 05:12:39 | FacebookId | filmesog |
->| www.filmesonlinegratis.net | 2012-03-07 05:53:50 | 2012-03-07 16:00:45 | WhosAmungUsId | 6cdg |
+>| <www.filmesonlinegratis.net> | 2012-03-07 05:53:50 | 2012-03-07 16:00:45 | WhosAmungUsId | 6cdg |
 
 
 ### pt-get-pdns-details
@@ -710,7 +710,7 @@ Retrieves the passive DNS results from active account sources.
 >| furth.com.ar | domain | CNAME | 2020-06-17 12:26:33 | 2010-12-15 09:10:10 | 2020-06-17 05:26:33 | riskiq, pingly | abf781b2484ea79d521cffb0745b71319d4db1158f71bb019b41077f8e55b035 |
 >| 77.81.241.5 | ip | A | 2020-06-17 12:26:33 | 2020-05-29 03:57:44 | 2020-06-17 05:26:33 | riskiq, pingly | d7183564ca617e173fc26aeff66a38bb5c1b9089e56819851183860b9a37ccca |
 >| 184.75.255.33 | ip | A | 2020-06-17 12:26:33 | 2016-01-11 15:45:15 | 2017-10-24 08:53:52 | riskiq | 345780dcde96f0c28e3b93ec53bd33067f26075f30c2d4e49fafe0d2396194ca |
->| webmaster@furth.com.ar | email | SOA | 2020-06-17 12:26:33 | 2020-06-17 05:26:33 | 2020-06-17 05:26:33 | pingly | 63deb7c38cbea98f631777fd3ba89de0c270178bd37eb6a270ee7e37b3cd92e5 |
+>| <webmaster@furth.com.ar> | email | SOA | 2020-06-17 12:26:33 | 2020-06-17 05:26:33 | 2020-06-17 05:26:33 | pingly | 63deb7c38cbea98f631777fd3ba89de0c270178bd37eb6a270ee7e37b3cd92e5 |
 >| furth.com.ar | domain | MX | 2020-06-17 12:26:33 | 2020-06-17 05:26:33 | 2020-06-17 05:26:33 | pingly | 24fa99da36eecc22b8970a33f8adf0f150598391319df4fc02128d677999e886 |
 
 
@@ -838,8 +838,8 @@ Retrieves SSL certificates for a given field value.
 
 >|Sha1|Serial Number|Issued (GMT)|Expires (GMT)|SSL Version|First (GMT)|Last (GMT)|Issuer Common Name|Subject Common Name|Subject Alternative Names|Issuer Organization Name|Subject Organization Name|Subject Locality Name|Subject State/Province Name|Issuer Country|Subject Country|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 8848e868b190d0fdcb6f39c37b5382c87e0976b0 | 6995036355238373586 | Jan 15 13:15:00 2019 GMT | Apr 09 13:15:00 2019 GMT | 3 | 2019-01-15 13:40:31 | 2019-01-16 03:00:34 | Google Internet Authority G3 | www.google.com | www.google.com | Google Trust Services | Google LLC | Mountain View | California | US | US |
->| 995b005f44be53bf3e5921901d79a98e54afd329 | 6995036355238373586 | Jan 15 13:15:00 2019 GMT | Apr 09 13:15:00 2019 GMT | 3 | 2019-01-25 22:34:01 | 2019-02-07 20:39:43 | Google Internet Authority G3 | www.google.com | www.google.com | Google Trust Services | Google LLC | Mountain View | California | US | US |
+>| 8848e868b190d0fdcb6f39c37b5382c87e0976b0 | 6995036355238373586 | Jan 15 13:15:00 2019 GMT | Apr 09 13:15:00 2019 GMT | 3 | 2019-01-15 13:40:31 | 2019-01-16 03:00:34 | Google Internet Authority G3 | <www.google.com> | <www.google.com> | Google Trust Services | Google LLC | Mountain View | California | US | US |
+>| 995b005f44be53bf3e5921901d79a98e54afd329 | 6995036355238373586 | Jan 15 13:15:00 2019 GMT | Apr 09 13:15:00 2019 GMT | 3 | 2019-01-25 22:34:01 | 2019-02-07 20:39:43 | Google Internet Authority G3 | <www.google.com> | <www.google.com> | Google Trust Services | Google LLC | Mountain View | California | US | US |
 
 
 ### pt-get-host-pairs
@@ -1160,7 +1160,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 >|Domain|WHOIS Server|Registrar|Contact Email|Name Servers|Registrant|Admin|Tech|Creation Date (GMT)|Expire Date (GMT)|Updated Date (GMT)|Last Scanned (GMT)|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
+>| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | <domains@riskiq.com> | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** <domains@riskiq.com>,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** <domains@riskiq.com>,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** <domains@riskiq.com>,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
 >The reputation score for 'riskiq.com' is 3 and is classified as 'UNKNOWN'.
 
 >### Reputation Rules
@@ -1514,7 +1514,7 @@ Gets WHOIS information records based on queries.
 
 >|Domain|WHOIS Server|Registrar|Contact Email|Name Servers|Registrant|Admin|Tech|Creation Date (GMT)|Expire Date (GMT)|Updated Date (GMT)|Last Scanned (GMT)|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
+>| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | <domains@riskiq.com> | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** <domains@riskiq.com>,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** <domains@riskiq.com>,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** <domains@riskiq.com>,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
 
 
 ### pt-get-cookies
@@ -2830,7 +2830,7 @@ Retrieves the attack surface vulnerability observation information of the indivi
 >|Name|Type|First Seen (GMT)|Last Seen (GMT)|
 >|---|---|---|---|
 >| riskiq.app | HOST | 2018-05-11 20:40:17 | 2021-09-19 14:46:48 |
->| www.riskiq.app | HOST | 2018-06-30 00:03:32 | 2021-09-15 19:36:38 |
+>| <www.riskiq.app> | HOST | 2018-06-30 00:03:32 | 2021-09-15 19:36:38 |
 
 
 ### pt-list-third-party-attack-surface-assets
@@ -3187,4 +3187,4 @@ Retrieves the attack surface vulnerability observation information of the given 
 >|Name|Type|First Seen (GMT)|Last Seen (GMT)|
 >|---|---|---|---|
 >| blog.accesstage.com.br | HOST | 2015-05-12 14:58:34 | 2021-09-21 06:14:39 |
->| www.accesstage.com.br | HOST | 2010-09-22 14:57:20 | 2021-09-22 00:21:45 |
+>| <www.accesstage.com.br> | HOST | 2010-09-22 14:57:20 | 2021-09-22 00:21:45 |

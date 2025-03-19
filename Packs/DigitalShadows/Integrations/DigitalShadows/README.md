@@ -1,4 +1,5 @@
 Digital Shadows monitors and manages an organization's digital risk across the widest range of data sources within the open, deep, and dark web.
+
 ## Configure Digital Shadows in Cortex
 
 
@@ -13,9 +14,12 @@ Digital Shadows monitors and manages an organization's digital risk across the w
 | incidentType | Incident type | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ds-get-breach-reviews
+
 ***
 Retrieve all review updates for a given data breach record
 
@@ -23,6 +27,7 @@ Retrieve all review updates for a given data breach record
 #### Base Command
 
 `ds-get-breach-reviews`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -45,6 +50,7 @@ Retrieve all review updates for a given data breach record
 
 
 ### ds-snapshot-breach-status
+
 ***
 Snapshot the review status of a data breach record
 
@@ -52,6 +58,7 @@ Snapshot the review status of a data breach record
 #### Base Command
 
 `ds-snapshot-breach-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -68,6 +75,7 @@ There is no context output for this command.
 
 
 ### ds-find-breach-records
+
 ***
 Find data breach records
 
@@ -75,6 +83,7 @@ Find data breach records
 #### Base Command
 
 `ds-find-breach-records`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -114,9 +123,11 @@ Find data breach records
 
 
 #### Command Example
+
 ```!ds-find-breach-records pagination_size=2```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -167,13 +178,15 @@ Find data breach records
 #### Human Readable Output
 
 >### Digital Shadows Breach Records
+>
 > Content| DataBreachId| DomainNames| Id| Password| PriorRowTextBreachCount| PriorUsernameBreachCount| PriorUsernamePasswordBreachCount| Published| Review Created| Review Status| Review User| Username
 >---|---|---|---|---|---|---|---|---|---|---|---|---
->A | 99000001 | xsoar.com | 140260931001 | 1 |   | 0 | 0 | 2019-05-30T20:52:59.489Z |   | OPEN |   | some_mail@mail.com
->aB | 99000002 | xsoar.com | 140261100001 | 2 |   | 0 | 0 | 2019-05-30T20:53:00.635Z |   | OPEN |   | another_mail@mail.com
+>A | 99000001 | xsoar.com | 140260931001 | 1 |   | 0 | 0 | 2019-05-30T20:52:59.489Z |   | OPEN |   | <some_mail@mail.com>
+>aB | 99000002 | xsoar.com | 140261100001 | 2 |   | 0 | 0 | 2019-05-30T20:53:00.635Z |   | OPEN |   | <another_mail@mail.com>
 
 
 ### ds-get-breach-summary
+
 ***
 Summary of all data breaches for the current client
 
@@ -181,6 +194,7 @@ Summary of all data breaches for the current client
 #### Base Command
 
 `ds-get-breach-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -192,9 +206,11 @@ Summary of all data breaches for the current client
 There is no context output for this command.
 
 #### Command Example
+
 ```!ds-get-breach-summary```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -204,6 +220,7 @@ There is no context output for this command.
 >{"breachesPerDomain":[{"count":3,"key":"molnnet.com"}],"totalBreaches":3,"totalUsernames":238,"usernamesPerDomain":[{"count":238,"key":"xsoar.com"}]}
 
 ### ds-find-breach-usernames
+
 ***
 Find unique usernames found across all data breaches
 
@@ -211,6 +228,7 @@ Find unique usernames found across all data breaches
 #### Base Command
 
 `ds-find-breach-usernames`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -236,9 +254,11 @@ Find unique usernames found across all data breaches
 
 
 #### Command Example
+
 ```!ds-find-breach-usernames pagination_size=2```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -261,13 +281,15 @@ Find unique usernames found across all data breaches
 #### Human Readable Output
 
 >### Digital SHadows Breach Reviews
+>
 > BreachCount| DistinctPasswordCount| Username
 >---|---|---
->1 | 1 | mail1@mail.com
->1 | 1 | mail2@mail.com
+>1 | 1 | <mail1@mail.com>
+>1 | 1 | <mail2@mail.com>
 
 
 ### ds-get-breach
+
 ***
 Retrieve a data breach by its id
 
@@ -275,6 +297,7 @@ Retrieve a data breach by its id
 #### Base Command
 
 `ds-get-breach`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -302,9 +325,11 @@ Retrieve a data breach by its id
 
 
 #### Command Example
+
 ```!ds-get-breach breach_id=99000001```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -333,12 +358,14 @@ Retrieve a data breach by its id
 #### Human Readable Output
 
 >### Digital Shadows Breaches
+>
 > DataClasses| DomainCount| DomainName| Id| IncidentId| IncidentScope| IncidentSeverity| IncidentTitle| IncidentType| Occurred| RecordCount| SourceUrl| Title
 >---|---|---|---|---|---|---|---|---|---|---|---|---
 >EMAIL_ADDRESSES,PASSWORDS | 3372 | xsoar.com | 99000001 | 99002706 | ORGANIZATION | HIGH | Report of data leak from xsoar.com | DATA_LEAKAGE | 2016-07-03 | 5846 | some_url | Report of data leak from xsoar.com
 
 
 ### ds-get-breach-records
+
 ***
 Find data breach records
 
@@ -346,6 +373,7 @@ Find data breach records
 #### Base Command
 
 `ds-get-breach-records`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -381,9 +409,11 @@ Find data breach records
 
 
 #### Command Example
+
 ```!ds-get-breach-records breach_id=99000001 pagination_size=2```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -424,13 +454,15 @@ Find data breach records
 #### Human Readable Output
 
 >### Digital Shadows Breach Records
+>
 > Id| Password| PriorRowTextBreachCount| PriorUsernameBreachCount| PriorUsernamePasswordBreachCount| Published| Review Created| Review Status| Review User| Username
 >---|---|---|---|---|---|---|---|---|---
->140260931001 | 1 |   | 0 | 0 | 2019-05-30T20:52:59.489Z |   | OPEN |   | some_mail@mail.com
->140260944001 | 2 |   | 0 | 0 | 2019-05-30T20:52:59.489Z |   | OPEN |   | another_mail@mail.com
+>140260931001 | 1 |   | 0 | 0 | 2019-05-30T20:52:59.489Z |   | OPEN |   | <some_mail@mail.com>
+>140260944001 | 2 |   | 0 | 0 | 2019-05-30T20:52:59.489Z |   | OPEN |   | <another_mail@mail.com>
 
 
 ### ds-find-data-breaches
+
 ***
 Find data breaches
 
@@ -438,6 +470,7 @@ Find data breaches
 #### Base Command
 
 `ds-find-data-breaches`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -479,9 +512,11 @@ Find data breaches
 
 
 #### Command Example
+
 ```!ds-find-data-breaches pagination_size=2```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -528,6 +563,7 @@ Find data breaches
 #### Human Readable Output
 
 >### Digital Shadows Breaches
+>
 > DataClasses| DomainCount| DomainName| Id| IncidentId| IncidentScope| IncidentSeverity| IncidentTitle| IncidentType| Modified| Occurred| OrganisationUsernameCount| RecordCount| SourceUrl| Title
 >---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 >  | 3372 | xsoar.com | 99000001 | 99002706 | ORGANIZATION | HIGH | Report of data leak from xsoar.com | DATA_LEAKAGE | 2018-07-24T18:24:59.449Z | 2016-07-03 | 100 | 5846 | some_url | Report of data leak from xsoar.com
@@ -535,6 +571,7 @@ Find data breaches
 
 
 ### ds-get-incident
+
 ***
 Retrieve an incident by its id
 
@@ -542,6 +579,7 @@ Retrieve an incident by its id
 #### Base Command
 
 `ds-get-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -573,9 +611,11 @@ Retrieve an incident by its id
 
 
 #### Command Example
+
 ```!ds-get-incident incident_id=99002724```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -606,12 +646,14 @@ Retrieve an incident by its id
 #### Human Readable Output
 
 >### Digital Shadows Incidents
+>
 > Alerted| Description| Id| ImpactDescription| Internal| Mitigation| Modified| Occurred| Review Created| Review Status| Review User| Scope| Severity| SubType| Title| Type
 >---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 >  | Several documents in .docx, .xls, and .ppt format were identified on a publicly accessible some derive on the following IP: 1.2.3.4.  <br/> | 99002724 | The IP address contained 30 documents relating to the Company at the following paths: <br/><br/>1.	hxxps://1.2.3.4//man | false | As the drives are no longer accessible.| 2020-11-06T00:22:57.753Z | 2018-08-23T03:45:57.215Z | 2019-08-01T13:19:53.522Z | UNREAD |   | ORGANIZATION | MEDIUM | UNMARKED_DOCUMENT | Vendor documents identified on publicly accessible Network Attached Storage drive | DATA_LEAKAGE
 
 
 ### ds-get-incident-reviews
+
 ***
 Retrieve all review updates for a given incident
 
@@ -619,6 +661,7 @@ Retrieve all review updates for a given incident
 #### Base Command
 
 `ds-get-incident-reviews`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -641,9 +684,11 @@ Retrieve all review updates for a given incident
 
 
 #### Command Example
+
 ```!ds-get-incident-reviews incident_id=99002724```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -667,12 +712,14 @@ Retrieve all review updates for a given incident
 #### Human Readable Output
 
 >### Digital Shadows Incident Reviews
+>
 > Created| Note| Status| User EmailAddress| User FullName| User Id| User Role| User Status| Version
 >---|---|---|---|---|---|---|---|---
 >2019-08-01T13:19:53.522Z |   | UNREAD |   |   |   |   |   | 1
 
 
 ### ds-snapshot-incident-review
+
 ***
 Snapshot the review status of an incident
 
@@ -680,6 +727,7 @@ Snapshot the review status of an incident
 #### Base Command
 
 `ds-snapshot-incident-review`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -696,6 +744,7 @@ There is no context output for this command.
 
 
 ### ds-find-incidents-filtered
+
 ***
 Find incidents with filtering options
 
@@ -703,6 +752,7 @@ Find incidents with filtering options
 #### Base Command
 
 `ds-find-incidents-filtered`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -759,9 +809,11 @@ Find incidents with filtering options
 
 
 #### Command Example
+
 ```!ds-find-incidents-filtered pagination_size=3```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -803,12 +855,14 @@ Find incidents with filtering options
 #### Human Readable Output
 
 >### Digital Shadows Incidents
+>
 > Alerted| Description| Id| Internal| Mitigation| Modified| Occurred| Published| RecordCount| RestrictedContent| Review Created| Review Status| Review User| Scope| Score| Severity| SubType| Title| Type| Verified| Version
 >---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 >  | Several documents in .docx, .xls, and .ppt format were identified on a publicly accessible some derive on the following IP: 1.2.3.4. | 99002724 |   | As the drives are no longer accessible. | 2020-11-05T00:33:48.344Z | 2018-08-23T03:45:57.215Z | 2020-11-04T23:59:59.999Z |   |   | 2019-08-01T13:19:53.522Z | UNREAD |   | ORGANIZATION | 0 | MEDIUM | {"Error":"You must provide the query to use"} | Vendor documents identified on publicly accessible Network Attached Storage drive | DATA_LEAKAGE | {"Error":"You must provide the query to use"} | {"Error":"You must provide the query to use"}
 
 
 ### ds-get-incidents-summary
+
 ***
 Aggregated summary of incident information used to generate reports/statistics
 
@@ -816,6 +870,7 @@ Aggregated summary of incident information used to generate reports/statistics
 #### Base Command
 
 `ds-get-incidents-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -837,6 +892,7 @@ Aggregated summary of incident information used to generate reports/statistics
 There is no context output for this command.
 
 #### Command Example
+
 ```!ds-get-incidents-summary pagination_size=2```
 
 
@@ -845,6 +901,7 @@ There is no context output for this command.
 >{"keySet":[null],"ranges":[{"groupedIncidentCounts":[{"count":25}],"rangeEnd":"2020-11-05T17:37:26.533Z","rangeStart":"2020-11-01T00:00:00.000Z","total":25}]}
 
 ### ds-get-apt-report
+
 ***
 Retrieve details of the specified APT report
 
@@ -852,6 +909,7 @@ Retrieve details of the specified APT report
 #### Base Command
 
 `ds-get-apt-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -873,6 +931,7 @@ Retrieve details of the specified APT report
 
 
 ### ds-get-intelligence-incident
+
 ***
 Retrieve an intelligence incident by its id
 
@@ -880,6 +939,7 @@ Retrieve an intelligence incident by its id
 #### Base Command
 
 `ds-get-intelligence-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -911,9 +971,11 @@ Retrieve an intelligence incident by its id
 
 
 #### Command Example
+
 ```!ds-get-intelligence-incident incident_id=6470614```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -943,12 +1005,14 @@ Retrieve an intelligence incident by its id
 #### Human Readable Output
 
 >### Digital Shadows Intelligence Incident
+>
 > Description| Id| IndicatorOfCompromiseCount| Internal| LinkedContentIncidents| Modified| Occurred| Published| RelatedIncidentId| RestrictedContent| Scope| Severity| SubType| Title| Type| Verified| Version
 >---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 >Summary: some event in the past | 6470614 | 0 | false |   | 2018-08-30T07:18:22.566Z | 2016-02-08T10:55:00.000Z | 2016-02-08T12:22:03.203Z |   | false | GLOBAL | LOW |   | 08 Feb 2016 protest update | CYBER_THREAT | 2016-02-08T11:22:48.539Z | 12
 
 
 ### ds-get-intelligence-incident-iocs
+
 ***
 Retrieve the indicatorsOfCompromise for this intel incident
 
@@ -956,6 +1020,7 @@ Retrieve the indicatorsOfCompromise for this intel incident
 #### Base Command
 
 `ds-get-intelligence-incident-iocs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -986,6 +1051,7 @@ Retrieve the indicatorsOfCompromise for this intel incident
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -993,6 +1059,7 @@ Retrieve the indicatorsOfCompromise for this intel incident
 
 
 ### ds-find-intelligence-incidents
+
 ***
 Find intelligence incidents
 
@@ -1000,6 +1067,7 @@ Find intelligence incidents
 #### Base Command
 
 `ds-find-intelligence-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1047,9 +1115,11 @@ Find intelligence incidents
 
 
 #### Command Example
+
 ```!ds-find-intelligence-incidents pagination_size=2```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -1100,6 +1170,7 @@ Find intelligence incidents
 #### Human Readable Output
 
 >### Digital Shadows Intelligence Incidents
+>
 > Description| Id| IndicatorOfCompromiseCount| Internal| LinkedContentIncidents| Modified| Occurred| Published| RelatedIncidentId| RestrictedContent| Scope| Severity| SubType| Title| Type| Verified| Version
 >---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 >A new post was added to Happy Blog. | 65624604 | 0 | false |   | 2020-11-05T15:53:33.166Z | 2020-11-05T05:48:42.588Z | 2020-11-05T15:53:33.161Z |   | false | GLOBAL | LOW |   | Tipper: Richardson Sales Performance named on Happy Blog  | CYBER_THREAT | 2020-11-05T14:01:48.656Z | 7
@@ -1107,6 +1178,7 @@ Find intelligence incidents
 
 
 ### ds-find-intelligence-incidents-regional
+
 ***
 Incidents grouped by the target country over a given time range
 
@@ -1114,6 +1186,7 @@ Incidents grouped by the target country over a given time range
 #### Base Command
 
 `ds-find-intelligence-incidents-regional`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1153,6 +1226,7 @@ Incidents grouped by the target country over a given time range
 
 
 ### ds-get-intelligence-threat
+
 ***
 Retrieve a specific item of intelligence by its id
 
@@ -1160,6 +1234,7 @@ Retrieve a specific item of intelligence by its id
 #### Base Command
 
 `ds-get-intelligence-threat`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1200,9 +1275,11 @@ Retrieve a specific item of intelligence by its id
 
 
 #### Command Example
+
 ```!ds-get-intelligence-threat threat_id=2351```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -1318,12 +1395,14 @@ Retrieve a specific item of intelligence by its id
 #### Human Readable Output
 
 >### Digital Shadows Intelligence Threat
+>
 > ActivityLevel| AnnouncementIncidentIDs| AptReportIDs| AssociatedEventIDs| AttackEvidenceIncidentIDs| EndDate| Id| ImageId| ImageThumbnailId| IndicatorOfCompromiseCount| LastActive| LatestIncident| LatestIncidentID| Recurring| StartDate| ThreatLevel| Type
 >---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 >INACTIVE |   |   |   |   |   | 2351 | id | id | 0 | 2016-07-20T22:00:00.000Z |   |   |   |   | LOW | ACTOR
 
 
 ### ds-get-intelligence-threat-iocs
+
 ***
 Retrieve the indicatorsOfCompromise for a threat record
 
@@ -1331,6 +1410,7 @@ Retrieve the indicatorsOfCompromise for a threat record
 #### Base Command
 
 `ds-get-intelligence-threat-iocs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1360,6 +1440,7 @@ Retrieve the indicatorsOfCompromise for a threat record
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -1367,6 +1448,7 @@ Retrieve the indicatorsOfCompromise for a threat record
 
 
 ### ds-get-intelligence-threat-activity
+
 ***
 Threat activity based on the number of intelligence incidents over a given period of time.
 
@@ -1374,6 +1456,7 @@ Threat activity based on the number of intelligence incidents over a given perio
 #### Base Command
 
 `ds-get-intelligence-threat-activity`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1392,6 +1475,7 @@ Threat activity based on the number of intelligence incidents over a given perio
 There is no context output for this command.
 
 #### Command Example
+
 ```!ds-get-intelligence-threat-activity threat_id=2351 filter_dateRange=2016-08-16T19:55:00.000Z/2016-09-16T19:55:00.000Z```
 
 
@@ -1400,6 +1484,7 @@ There is no context output for this command.
 >{"tagActivities":[{"counts":[{"count":0,"key":"2016-09-13T19:55:00.001Z/2016-09-16T19:55:00.000Z"},{"count":1,"key":"2016-09-10T19:55:00.001Z/2016-09-13T19:55:00.000Z"},{"count":1,"key":"2016-09-07T19:55:00.001Z/2016-09-10T19:55:00.000Z"},{"count":4,"key":"2016-09-04T19:55:00.001Z/2016-09-07T19:55:00.000Z"},{"count":0,"key":"2016-09-01T19:55:00.001Z/2016-09-04T19:55:00.000Z"},{"count":0,"key":"2016-08-29T19:55:00.001Z/2016-09-01T19:55:00.000Z"},{"count":0,"key":"2016-08-26T19:55:00.001Z/2016-08-29T19:55:00.000Z"},{"count":0,"key":"2016-08-23T19:55:00.001Z/2016-08-26T19:55:00.000Z"},{"count":0,"key":"2016-08-20T19:55:00.001Z/2016-08-23T19:55:00.000Z"},{"count":0,"key":"2016-08-17T19:55:00.001Z/2016-08-20T19:55:00.000Z"},{"count":0,"key":"2016-08-16T19:55:00.000Z/2016-08-17T19:55:00.000Z"}],"from":"2016-08-16T19:55:00.000Z","incidents":[{"id":11303017,"scope":"GLOBAL"},{"id":11300637,"scope":"GLOBAL"},{"id":11212704,"scope":"GLOBAL"},{"id":11187135,"scope":"GLOBAL"},{"id":11187153,"scope":"GLOBAL"},{"id":11186833,"scope":"GLOBAL"}],"tag":{"id":3065,"name":"The Real Deal","threat":{"activityLevel":"INACTIVE","closedSource":false,"id":2144,"threatLevel":{"type":"LOW"},"type":"LOCATION"}},"until":"2016-09-16T19:55:00.000Z"},{"counts":[{"count":0,"key":"2016-09-13T19:55:00.001Z/2016-09-16T19:55:00.000Z"},{"count":0,"key":"2016-09-10T19:55:00.001Z/2016-09-13T19:55:00.000Z"},{"count":1,"key":"2016-09-07T19:55:00.001Z/2016-09-10T19:55:00.000Z"},{"count":0,"key":"2016-09-04T19:55:00.001Z/2016-09-07T19:55:00.000Z"},{"count":0,"key":"2016-09-01T19:55:00.001Z/2016-09-04T19:55:00.000Z"},{"count":0,"key":"2016-08-29T19:55:00.001Z/2016-09-01T19:55:00.000Z"},{"count":0,"key":"2016-08-26T19:55:00.001Z/2016-08-29T19:55:00.000Z"},{"count":0,"key":"2016-08-23T19:55:00.001Z/2016-08-26T19:55:00.000Z"},{"count":1,"key":"2016-08-20T19:55:00.001Z/2016-08-23T19:55:00.000Z"},{"count":0,"key":"2016-08-17T19:55:00.001Z/2016-08-20T19:55:00.000Z"},{"count":0,"key":"2016-08-16T19:55:00.000Z/2016-08-17T19:55:00.000Z"}],"from":"2016-08-16T19:55:00.000Z","incidents":[{"id":11258586,"scope":"GLOBAL"},{"id":10924047,"scope":"GLOBAL"}],"tag":{"id":4742,"name":"CrdClub","threat":{"activityLevel":"INACTIVE","closedSource":false,"id":3199,"threatLevel":{"type":"LOW"},"type":"LOCATION"}},"until":"2016-09-16T19:55:00.000Z"},{"counts":[{"count":0,"key":"2016-09-13T19:55:00.001Z/2016-09-16T19:55:00.000Z"},{"count":1,"key":"2016-09-10T19:55:00.001Z/2016-09-13T19:55:00.000Z"},{"count":0,"key":"2016-09-07T19:55:00.001Z/2016-09-10T19:55:00.000Z"},{"count":0,"key":"2016-09-04T19:55:00.001Z/2016-09-07T19:55:00.000Z"},{"count":0,"key":"2016-09-01T19:55:00.001Z/2016-09-04T19:55:00.000Z"},{"count":0,"key":"2016-08-29T19:55:00.001Z/2016-09-01T19:55:00.000Z"},{"count":0,"key":"2016-08-26T19:55:00.001Z/2016-08-29T19:55:00.000Z"},{"count":0,"key":"2016-08-23T19:55:00.001Z/2016-08-26T19:55:00.000Z"},{"count":0,"key":"2016-08-20T19:55:00.001Z/2016-08-23T19:55:00.000Z"},{"count":0,"key":"2016-08-17T19:55:00.001Z/2016-08-20T19:55:00.000Z"},{"count":0,"key":"2016-08-16T19:55:00.000Z/2016-08-17T19:55:00.000Z"}],"from":"2016-08-16T19:55:00.000Z","incidents":[{"id":11303017,"scope":"GLOBAL"}],"tag":{"id":3044,"name":"Hell Forum","threat":{"activityLevel":"INACTIVE","closedSource":false,"id":2122,"threatLevel":{"type":"MEDIUM"},"type":"LOCATION"}},"until":"2016-09-16T19:55:00.000Z"},{"counts":[{"count":0,"key":"2016-09-13T19:55:00.001Z/2016-09-16T19:55:00.000Z"},{"count":0,"key":"2016-09-10T19:55:00.001Z/2016-09-13T19:55:00.000Z"},{"count":1,"key":"2016-09-07T19:55:00.001Z/2016-09-10T19:55:00.000Z"},{"count":0,"key":"2016-09-04T19:55:00.001Z/2016-09-07T19:55:00.000Z"},{"count":0,"key":"2016-09-01T19:55:00.001Z/2016-09-04T19:55:00.000Z"},{"count":0,"key":"2016-08-29T19:55:00.001Z/2016-09-01T19:55:00.000Z"},{"count":0,"key":"2016-08-26T19:55:00.001Z/2016-08-29T19:55:00.000Z"},{"count":0,"key":"2016-08-23T19:55:00.001Z/2016-08-26T19:55:00.000Z"},{"count":0,"key":"2016-08-20T19:55:00.001Z/2016-08-23T19:55:00.000Z"},{"count":0,"key":"2016-08-17T19:55:00.001Z/2016-08-20T19:55:00.000Z"},{"count":0,"key":"2016-08-16T19:55:00.000Z/2016-08-17T19:55:00.000Z"}],"from":"2016-08-16T19:55:00.000Z","incidents":[{"id":11222970,"scope":"GLOBAL"}],"tag":{"id":6966,"name":"Hansa","threat":{"activityLevel":"INACTIVE","closedSource":false,"id":4159,"threatLevel":{"type":"VERY_LOW"},"type":"LOCATION"}},"until":"2016-09-16T19:55:00.000Z"},{"counts":[{"count":0,"key":"2016-09-13T19:55:00.001Z/2016-09-16T19:55:00.000Z"},{"count":0,"key":"2016-09-10T19:55:00.001Z/2016-09-13T19:55:00.000Z"},{"count":0,"key":"2016-09-07T19:55:00.001Z/2016-09-10T19:55:00.000Z"},{"count":0,"key":"2016-09-04T19:55:00.001Z/2016-09-07T19:55:00.000Z"},{"count":0,"key":"2016-09-01T19:55:00.001Z/2016-09-04T19:55:00.000Z"},{"count":0,"key":"2016-08-29T19:55:00.001Z/2016-09-01T19:55:00.000Z"},{"count":0,"key":"2016-08-26T19:55:00.001Z/2016-08-29T19:55:00.000Z"},{"count":0,"key":"2016-08-23T19:55:00.001Z/2016-08-26T19:55:00.000Z"},{"count":1,"key":"2016-08-20T19:55:00.001Z/2016-08-23T19:55:00.000Z"},{"count":0,"key":"2016-08-17T19:55:00.001Z/2016-08-20T19:55:00.000Z"},{"count":0,"key":"2016-08-16T19:55:00.000Z/2016-08-17T19:55:00.000Z"}],"from":"2016-08-16T19:55:00.000Z","incidents":[{"id":10923947,"scope":"GLOBAL"}],"tag":{"id":3048,"name":"AlphaBay","threat":{"activityLevel":"INACTIVE","closedSource":false,"id":2126,"threatLevel":{"type":"VERY_LOW"},"type":"LOCATION"}},"until":"2016-09-16T19:55:00.000Z"},{"counts":[{"count":0,"key":"2016-09-13T19:55:00.001Z/2016-09-16T19:55:00.000Z"},{"count":0,"key":"2016-09-10T19:55:00.001Z/2016-09-13T19:55:00.000Z"},{"count":0,"key":"2016-09-07T19:55:00.001Z/2016-09-10T19:55:00.000Z"},{"count":0,"key":"2016-09-04T19:55:00.001Z/2016-09-07T19:55:00.000Z"},{"count":0,"key":"2016-09-01T19:55:00.001Z/2016-09-04T19:55:00.000Z"},{"count":0,"key":"2016-08-29T19:55:00.001Z/2016-09-01T19:55:00.000Z"},{"count":0,"key":"2016-08-26T19:55:00.001Z/2016-08-29T19:55:00.000Z"},{"count":0,"key":"2016-08-23T19:55:00.001Z/2016-08-26T19:55:00.000Z"},{"count":0,"key":"2016-08-20T19:55:00.001Z/2016-08-23T19:55:00.000Z"},{"count":1,"key":"2016-08-17T19:55:00.001Z/2016-08-20T19:55:00.000Z"},{"count":0,"key":"2016-08-16T19:55:00.000Z/2016-08-17T19:55:00.000Z"}],"from":"2016-08-16T19:55:00.000Z","incidents":[{"id":10847816,"scope":"GLOBAL"}],"tag":{"id":3121,"name":"DownThem","threat":{"activityLevel":"INACTIVE","closedSource":false,"id":2275,"threatLevel":{"type":"LOW"},"type":"LOCATION"}},"until":"2016-09-16T19:55:00.000Z"}],"threatType":"LOCATION","timeSpanDays":31}
 
 ### ds-find-intelligence-threats
+
 ***
 Find intelligence threat records
 
@@ -1407,6 +1492,7 @@ Find intelligence threat records
 #### Base Command
 
 `ds-find-intelligence-threats`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1434,9 +1520,11 @@ Find intelligence threat records
 
 
 #### Command Example
+
 ```!ds-find-intelligence-threats filter_dateRange=2016-08-16T19:55:00.000Z/2016-08-16T19:55:00.000Z```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -1456,12 +1544,14 @@ Find intelligence threat records
 #### Human Readable Output
 
 >### Digital Shadows Intelligence Threats
+>
 > ActivityLevel| Event| Id| ImageId| LastActive| ThreatLevelType| Type
 >---|---|---|---|---|---|---
 >INACTIVE |   | 5013 |   | 2016-08-16T19:55:00.000Z | LOW | SPECIFIC_TTP
 
 
 ### ds-find-intelligence-threats-regional
+
 ***
 Threat profiles associated with incidents over a given time range
 
@@ -1469,6 +1559,7 @@ Threat profiles associated with incidents over a given time range
 #### Base Command
 
 `ds-find-intelligence-threats-regional`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1510,6 +1601,7 @@ Threat profiles associated with incidents over a given time range
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -1517,6 +1609,7 @@ Threat profiles associated with incidents over a given time range
 
 
 ### ds-get-port-reviews
+
 ***
 Retrieve all review updates for a given port inspection
 
@@ -1524,6 +1617,7 @@ Retrieve all review updates for a given port inspection
 #### Base Command
 
 `ds-get-port-reviews`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1546,6 +1640,7 @@ Retrieve all review updates for a given port inspection
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -1553,6 +1648,7 @@ Retrieve all review updates for a given port inspection
 
 
 ### ds-snapshot-port-review
+
 ***
 Snapshot the review status of a port inspection
 
@@ -1560,6 +1656,7 @@ Snapshot the review status of a port inspection
 #### Base Command
 
 `ds-snapshot-port-review`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1576,6 +1673,7 @@ Snapshot the review status of a port inspection
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -1583,6 +1681,7 @@ There is no context output for this command.
 
 
 ### ds-find-ports
+
 ***
 Find ports
 
@@ -1590,6 +1689,7 @@ Find ports
 #### Base Command
 
 `ds-find-ports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1637,9 +1737,11 @@ Find ports
 
 
 #### Command Example
+
 ```!ds-find-ports pagination_size=1```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -1674,12 +1776,14 @@ Find ports
 #### Human Readable Output
 
 >### Digital Shadows Ports
+>
 > DiscoveredOpen| Id| Incident Id| Incident Published| Incident Scope| Incident Severity| Incident SubType| Incident Title| Incident Type| IpAddress| PortNumber| Review Status| Review UserId| Review UserName| Review Version| Transport
 >---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 >2018-08-22T00:58:07.014Z | 8247047 | 99002722 | 2020-11-03T21:44:41.840Z | ORGANIZATION | MEDIUM | EXPOSED_PORT | Blacklisted open ports found on IP | INFRASTRUCTURE | 1.2.3.4 | 179 | OPEN |   |   |   | TCP
 
 
 ### ds-find-secure-sockets
+
 ***
 Find secure sockets
 
@@ -1687,6 +1791,7 @@ Find secure sockets
 #### Base Command
 
 `ds-find-secure-sockets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1741,6 +1846,7 @@ Find secure sockets
 
 
 ### ds-find-vulnerabilities
+
 ***
 Find vulnerabilities
 
@@ -1748,6 +1854,7 @@ Find vulnerabilities
 #### Base Command
 
 `ds-find-vulnerabilities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1792,9 +1899,11 @@ Find vulnerabilities
 
 
 #### Command Example
+
 ```!ds-find-vulnerabilities pagination_size=2```
 
 #### Context Example
+
 ```json
 {
     "DigitalShadows": {
@@ -1849,6 +1958,7 @@ Find vulnerabilities
 #### Human Readable Output
 
 >### Digital Shadows Vulnerabilities
+>
 > CveId| Discovered| Id| Incident Id| Incident Published| Incident Scope| Incident Severity| Incident SubType| Incident Title| Incident Type| IpAddress| Review Status| Review UserId| Review UserName| Review Version
 >---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 >CVE-id | 2018-04-12T14:15:51.991Z | 529072 | 99002720 | 2020-11-04T17:32:57.855Z | ORGANIZATION | VERY_HIGH | CVE | CVE with 4 exploits detected on 1.2.3.4.<br/> | INFRASTRUCTURE | 1.2.3.4 | UNREAD |   |   |  
@@ -1856,6 +1966,7 @@ Find vulnerabilities
 
 
 ### ds-search
+
 ***
 Perform a textual search against the available record types
 
@@ -1863,6 +1974,7 @@ Perform a textual search against the available record types
 #### Base Command
 
 `ds-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1886,6 +1998,7 @@ Perform a textual search against the available record types
 There is no context output for this command.
 
 #### Command Example
+
 ```!ds-search query=breach pagination_size=1```
 
 
@@ -1895,6 +2008,7 @@ There is no context output for this command.
 >{"content":[{"entity":{"author":"name","id":"id","observableCounts":{"cve":{"count":1,"exceededMaximum":false},"email":{"count":0,"exceededMaximum":false},"host":{"count":0,"exceededMaximum":false},"ipV4":{"count":0,"exceededMaximum":false},"md5":{"count":0,"exceededMaximum":false},"sha1":{"count":0,"exceededMaximum":false},"sha256":{"count":0,"exceededMaximum":false}},"published":"2016-05-16T00:00:00.000Z","screenshot":{"id":"id,"link":"https://portal-digitalshadows.com/api/external/resources/id"},"screenshotThumbnail":{"id":"id","link":"https://portal-digitalshadows.com/api/thumbnails/id.jpg"},"siteCategories":["BLOG","SECURITY_COMMENTATOR"],"title":"The popular crime forum nnn...","sortDate":"2016-05-16T00:00:00.000Z","type":"BLOG_POST"}],"currentPage":{"offset":0,"size":1},"facets":{},"total":284483}
 
 ### ds-get-tags
+
 ***
 Batch retrieve specic tags by their ids
 
@@ -1902,6 +2016,7 @@ Batch retrieve specic tags by their ids
 #### Base Command
 
 `ds-get-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

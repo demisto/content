@@ -14,9 +14,12 @@ This integration was integrated and tested with version 1.0.0 of SecneurX Analys
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### snx-analysis-get-verdict
+
 ***
 Get verdict summary report of the analyzed sample
 
@@ -24,6 +27,7 @@ Get verdict summary report of the analyzed sample
 #### Base Command
 
 `snx-analysis-get-verdict`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -46,10 +50,12 @@ Get verdict summary report of the analyzed sample
 | SecneurXAnalysis.Verdict.submission_time | String | Analysis queued sample submission time value. |
 
 #### Human Readable Output
+
 |sha256|status|submission_time|task_uuid|url|verdict|
-| 2323714b7571c9c87e71799499d577126a487ff58177247e5b67a83a866f83a5 | Completed | 2022-07-22 07:37:10 | 2323714b7571c9c87e71799499d577126a487ff58177247e5b67a83a866f83a5-2022-07-22-07-37-10 | https://google.com | Clean |
+| 2323714b7571c9c87e71799499d577126a487ff58177247e5b67a83a866f83a5 | Completed | 2022-07-22 07:37:10 | 2323714b7571c9c87e71799499d577126a487ff58177247e5b67a83a866f83a5-2022-07-22-07-37-10 | <https://google.com> | Clean |
 
 ### snx-analysis-get-completed
+
 ***
 Get the list of submitted samples whose status is marked as "Completed"
 
@@ -57,6 +63,7 @@ Get the list of submitted samples whose status is marked as "Completed"
 #### Base Command
 
 `snx-analysis-get-completed`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -70,10 +77,12 @@ Get the list of submitted samples whose status is marked as "Completed"
 There is no context output for this command.
 
 #### Human Readable Output
+
 |task_uuid|verdict|file_name|report_available|
 | ce5869808c1c4e99c7df7122118d06f0b38a7f302d5f5504a419626336156182-2022-07-22-07-45-21 | No Threats |  | true |
 
 ### snx-analysis-get-pending
+
 ***
 Get the list of submitted samples that are still in pending state
 
@@ -81,6 +90,7 @@ Get the list of submitted samples that are still in pending state
 #### Base Command
 
 `snx-analysis-get-pending`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -94,10 +104,12 @@ Get the list of submitted samples that are still in pending state
 There is no context output for this command.
 
 #### Human Readable Output
+
 |task_uuid|file_name|status|sha256|
 | 4f751e74f7d05e6ebc27de36caa03c889b3d6bb57755aacd454bbce63a0da313-2022-07-21-15-28-20 | 4f751e74f7d05e6ebc27de36caa03c889b3d6bb57755aacd454bbce63a0da313 | Analyzing | 4f751e74f7d05e6ebc27de36caa03c889b3d6bb57755aacd454bbce63a0da313 |
 
 ### snx-analysis-get-status
+
 ***
 Get the status of all the submitted samples
 
@@ -105,6 +117,7 @@ Get the status of all the submitted samples
 #### Base Command
 
 `snx-analysis-get-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -118,11 +131,13 @@ Get the status of all the submitted samples
 There is no context output for this command.
 
 #### Human Readable Output
+
 |task_uuid|file_name|status|sha256|
 | ce5869808c1c4e99c7df7122118d06f0b38a7f302d5f5504a419626336156182-2022-07-22-07-45-21 | sample.exe | Completed | ce5869808c1c4e99c7df7122118d06f0b38a7f302d5f5504a419626336156182 |
 | 2323714b7571c9c87e71799499d577126a487ff58177247e5b67a83a866f83a5-2022-07-22-07-37-10 | sample_2.dll | Completed | 2323714b7571c9c87e71799499d577126a487ff58177247e5b67a83a866f83a5 |
 
 ### snx-analysis-submit-file
+
 ***
 Submit a file for Analysis
 
@@ -130,6 +145,7 @@ Submit a file for Analysis
 #### Base Command
 
 `snx-analysis-submit-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -151,10 +167,12 @@ Submit a file for Analysis
 | SecneurXAnalysis.SubmitFile.submission_time | String | Submission Time Created at the time the file was submitted | 
 
 #### Human Readable Output
+
 |task_uuid|submission_time|
 | 2323714b7571c9c87e71799499d577126a487ff58177247e5b67a83a866f83a5-2022-07-22-07-27-42 | 2022-07-22 07:27:42 |
 
 ### snx-analysis-submit-url
+
 ***
 Submit the URL for Analysis
 
@@ -162,6 +180,7 @@ Submit the URL for Analysis
 #### Base Command
 
 `snx-analysis-submit-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -180,10 +199,12 @@ Submit the URL for Analysis
 | SecneurXAnalysis.SubmitURL.submission_time | String | Submission Time Created at the time the file was submitted | 
 
 #### Human Readable Output
+
 |task_uuid|submission_time|
 | 2323714b7571c9c87e71799499d577126a487ff58177247e5b67a83a866f8fff-2022-07-22-07-12-15 | 2022-07-22 07:12:15 |
 
 ### snx-analysis-get-report
+
 ***
 Get the detailed report of the analyzed sample.
 
@@ -191,6 +212,7 @@ Get the detailed report of the analyzed sample.
 #### Base Command
 
 `snx-analysis-get-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -221,6 +243,7 @@ Get the detailed report of the analyzed sample.
 | SecneurXAnalysis.Report.Status | String | Analysis queued sample state |
 
 ### snx-analysis-get-quota
+
 ***
 Get the API Key quota usage details.
 
@@ -239,5 +262,6 @@ Get the API Key quota usage details.
 | SecneurXAnalysis.Quota.unused | String | Unused count of API Key |
 
 #### Human Readable Output
+
 | allowed | scale | start_time | unused | used |
 | 100 | MONTH | 01 Sep 2022 00:00:00 UTC | 60 | 40 |

@@ -14,10 +14,14 @@ This integration was integrated and tested with version 1.7 of Drift
     | Trust any certificate (not secure) |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### drift-get-contact
+
 ***
 Retrieve a contact using their email address (for multiple) or ID (for single).
 
@@ -25,6 +29,7 @@ Retrieve a contact using their email address (for multiple) or ID (for single).
 #### Base Command
 
 `drift-get-contact`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -42,6 +47,7 @@ Retrieve a contact using their email address (for multiple) or ID (for single).
 | Drift.Contacts.Attributes | unknown | Attributes of the contact \(JSON dict\). | 
 
 ### drift-update-contact
+
 ***
 Patch Contact Updates using contact ID
 
@@ -49,6 +55,7 @@ Patch Contact Updates using contact ID
 #### Base Command
 
 `drift-update-contact`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -66,6 +73,7 @@ Patch Contact Updates using contact ID
 | Drift.Contacts.attributes | unknown | Attributes of the contact \(JSON dict\). | 
 
 ### drift-delete-contact
+
 ***
 Delete Contact using contact ID
 
@@ -73,6 +81,7 @@ Delete Contact using contact ID
 #### Base Command
 
 `drift-delete-contact`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -83,7 +92,9 @@ Delete Contact using contact ID
 #### Context Output
 
 There is no context output for this command.
+
 ### drift-post-contact
+
 ***
 Post New Contact using a new contact Email 
 
@@ -91,6 +102,7 @@ Post New Contact using a new contact Email
 #### Base Command
 
 `drift-post-contact`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

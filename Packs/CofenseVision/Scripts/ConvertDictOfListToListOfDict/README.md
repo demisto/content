@@ -1,6 +1,7 @@
 Converts dictionary of lists to list of dictionaries.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Converts dictionary of lists to list of dictionaries.
 | Cortex XSOAR Version | 6.2.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ Converts dictionary of lists to list of dictionaries.
 | key | Object Key. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

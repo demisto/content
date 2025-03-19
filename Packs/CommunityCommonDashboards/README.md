@@ -1,4 +1,5 @@
 # Community Common Dashboards
+
 This content pack contains two dashboards:
 
 * CISO Metrics
@@ -49,6 +50,7 @@ The incident effort list is a JSON dictonary with two values for each XSOAR inci
 * **Automated_effort**: average analyst minutes per incident if the incident is responded to with XSOAR
 
 Example:
+
 ```
     {
 	    "Malware": [20, 2],
@@ -62,6 +64,7 @@ Example:
 The **XSOARValueMetrics** automation updates JSON dictionaries stored in these lists containing the monthly metrics collected. The dashboard widgets pull data from these lists for display.
 
 Example:
+
 ```
     {
         "YEAR": "2023", 
@@ -101,6 +104,7 @@ This automation collects metrics for a specified time window and generates metri
 The time window is expected to be a complete month specified by the "firstday" and "lastday" arguments. If partial months are used, the open durations and SLA metrics is the average of the last set of incidents found, while incident counts are incremented. For more details on how the data is updated, see the "mode" argument for different options.
 
 ##### Inputs
+
 * firstday - required argument to set the start day for searching incidents
 
 Example:
@@ -122,9 +126,9 @@ Example:
     ```lastyearlist=MetricsLastYear```
 
 * mode -  argument controls saving monthly statistics in this year's XSOAR list (a JSON object) as specified in the "thisyearlist" argument:  
-    * increment
-    * noupdate
-    * initialize
+  * increment
+  * noupdate
+  * initialize
 
 The default mode is "mode=increment" and expects the time windows for each query to be contiguous months with no gaps or overlaps in the time window specified by the "firstday" and "lastday" arguments. If the time windows overlap, then incidents will be double counted. If there are gaps between time windows, then incidents may be missed.  If the query needs to run and not update the saved statistics, use "mode=noupdate".  In the event a month with saved statistics needs to be rebuilt, use "mode=initialize" with the first day and the last day of the month to reset the values.
 
@@ -134,22 +138,22 @@ Example:
     ```slatimers="customsla1,customsla2,customsla3"```
 
 * filters - optional argument is a CSV list thats support the following field names to filter incidents on:
-    * severity              
-        * unknown
-        * information
-        * low
-        * medium
-        * high
-        * critical
-    * status or notstatus
-        * pending
-        * active
-        * done
-        * archive
-    * type
-        * is the name of a single incident type
-    * owner
-        * is the name of a single incident owner
+  * severity              
+    * unknown
+    * information
+    * low
+    * medium
+    * high
+    * critical
+  * status or notstatus
+    * pending
+    * active
+    * done
+    * archive
+  * type
+    * is the name of a single incident type
+  * owner
+    * is the name of a single incident owner
 
 Example: 
     ```filters="type=typea,status=done,severity=high"```
@@ -169,11 +173,11 @@ Dashboard widget script that presents monthly values over the year from the metr
 * listname - the XSOAR list with stored metrics for the year
 * efflistname - XSOAR incident effort list with manual and automated effort estimates by incident type
 * metrictype - type of metric to display in the dashboard widget
-    * SLA Metrics
-    * Closed Incidents
-    * Incidents
-    * Incident Open Duration
-    * Effort Reduction
+  * SLA Metrics
+  * Closed Incidents
+  * Incidents
+  * Incident Open Duration
+  * Effort Reduction
 
 Example: 
     ```XMetrics listname=MetricsThisYear efflistname=IncidentEffort metrictype="SLA Metrics"```
@@ -187,11 +191,11 @@ Dashboard widget script that presents annual totals over the current year from t
 * listname - the XSOAR metrics list with stored metrics for the year
 * efflistname - XSOAR incident effort list with manual and automated effort estimates by incident type
 * metrictype - type of metric to display in the dashboard widget
-    * SLA Metrics
-    * Closed Incidents
-    * Incidents
-    * Incident Open Duration
-    * Effort Reduction
+  * SLA Metrics
+  * Closed Incidents
+  * Incidents
+  * Incident Open Duration
+  * Effort Reduction
 
 Example: 
     ```XMetricsTotal listname=MetricsThisYear efflistname=IncidentEffort metrictype="Effort Reduction"```

@@ -6,13 +6,13 @@ This integration was integrated and tested with version 23.12.0 of CyberArk EPM.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| SAML/EPM Logon URL | SAML example: https://login.epm.cyberark.com/SAML/Logon. | True |
+| SAML/EPM Logon URL | SAML example: <https://login.epm.cyberark.com/SAML/Logon>. | True |
 | Username |  | True |
 | Password |  | True |
 | Set name | A comma-separated list of set names. | True |
 | Application ID | Required for local\(EPM\) authentication only. | False |
-| Authentication URL | Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/api/v1/authn. | False |
-| Application URL | Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/home/\[APP_NAME\]/\[APP_ID\]. | False |
+| Authentication URL | Required for SAML authentication only, Example for PAN OKTA: <https://paloaltonetworks.okta.com/api/v1/authn>. | False |
+| Application URL | Required for SAML authentication only, Example for PAN OKTA: <https://paloaltonetworks.okta.com/home/\[APP_NAME\]/\[APP_ID\>]. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Maximum number of events per fetch |  | False |
@@ -46,8 +46,8 @@ Gets admin audits from Cyber Ark EPM.
 
 |Administrator|Description|EventTime|Feature|InternalSessionId|LoggedAt|LoggedFrom|PermissionDescription|Role|SetName|_time|eventTypeXsiam|
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| admin@paloaltonetworks.com | API Get Admin audit data /API/Sets/47f5830e-383a-4db1-9e5f-b38ed0448a92/AdminAudit?dateFrom=2023-12-17T12:17:35.384Z&limit=250 GET DateFrom: 2023-12-17T12:17:35.384Z, DateTo: , offset: 0, limit: 250 | 2023-12-17T12:38:26.53Z | Public API | 239076 | 2023-12-14T13:09:49.81Z | 1.1.1.1 | None | SetUser | PANW Production(palo alto networks inc.) | 2023-12-17T12:38:26.53Z | set admin audit data |
-| admin@paloaltonetworks.com | API Get Admin audit data /API/Sets/47f5830e-383a-4db1-9e5f-b38ed0448a92/AdminAudit?dateFrom=2023-12-17T12:38:01.454Z&limit=250 GET DateFrom: 2023-12-17T12:38:01.454Z, DateTo: , offset: 0, limit: 250 | 2023-12-17T12:39:26.703Z | Public API | 239076 | 2023-12-14T13:09:49.81Z | 1.1.1.1 | None | SetUser | PANW Production(palo alto networks inc.) | 2023-12-17T12:39:26.703Z | set admin audit data |
+| <admin@paloaltonetworks.com> | API Get Admin audit data /API/Sets/47f5830e-383a-4db1-9e5f-b38ed0448a92/AdminAudit?dateFrom=2023-12-17T12:17:35.384Z&limit=250 GET DateFrom: 2023-12-17T12:17:35.384Z, DateTo: , offset: 0, limit: 250 | 2023-12-17T12:38:26.53Z | Public API | 239076 | 2023-12-14T13:09:49.81Z | 1.1.1.1 | None | SetUser | PANW Production(palo alto networks inc.) | 2023-12-17T12:38:26.53Z | set admin audit data |
+| <admin@paloaltonetworks.com> | API Get Admin audit data /API/Sets/47f5830e-383a-4db1-9e5f-b38ed0448a92/AdminAudit?dateFrom=2023-12-17T12:38:01.454Z&limit=250 GET DateFrom: 2023-12-17T12:38:01.454Z, DateTo: , offset: 0, limit: 250 | 2023-12-17T12:39:26.703Z | Public API | 239076 | 2023-12-14T13:09:49.81Z | 1.1.1.1 | None | SetUser | PANW Production(palo alto networks inc.) | 2023-12-17T12:39:26.703Z | set admin audit data |
 
 #### Context Output
 
@@ -103,6 +103,7 @@ Gets events from Cyber Ark EPM.
 #### Human Readable Output
 
 ### Detailed Evens
+
 |_time|accessAction|accessTargetName|accessTargetType|agentEventCount|agentId|applicationSubType|arrivalTime|authorizationRights|bundleId|bundleName|bundleVersion|company|computerName|deceptionType|displayName|eventCount|eventType|eventTypeXsiam|evidences|exposedUsers|fatherProcess|fileAccessPermission|fileDescription|fileName|filePath|filePathWithoutFilename|fileQualifier|fileSize|fileVersion|firstEventDate|hash|interpreter|justification|justificationEmail|lastEventDate|logonAttemptTypeId|logonStatusId|lureUser|modificationTime|operatingSystemType|originUserUID|originalFileName|owner|packageName|policyCategory|policyName|processCertificateIssuer|processCommandLine|productCode|productName|productVersion|publisher|runAsUsername|skippedCount|sourceName|sourceProcessCertificateIssuer|sourceProcessCommandLine|sourceProcessHash|sourceProcessPublisher|sourceProcessSigner|sourceProcessUsername|sourceType|sourceWSIp|sourceWSName|symLink|threatProtectionAction|threatProtectionActionId|upgradeCode|userIsAdmin|userName|winEventRecordId|winEventType|workingDirectory|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 2023-12-17T12:37:11.855Z | false |  | Internet | 1 | f8443d50-4e35-442e-a886-d543080d5def |  | 2023-12-17T12:37:11.855Z |  |  |  |  | Microsoft Corporation | W-5CG3423Q0T | 0 | Settings (SystemSettingsAdminFlows.exe) | 1 | Trust | detailed raw |  |  |  |  | Settings | SystemSettingsAdminFlows.exe | C:\WINDOWS\system32\SystemSettingsAdminFlows.exe | C:\WINDOWS\system32\ | 4965081445568567330 | 683304 | 10.0.22621.2792 | 2023-12-17T12:37:06.555Z | 6F15BDE5240C45B44449A82B0F7F834D7993AE8C |  |  |  | 2023-12-17T12:37:06.555Z | 0 | 0 |  | 2023-12-15T02:32:22.31Z | Windows |  | SystemSettingsAdminFlows.EXE | NT SERVICE\TrustedInstaller | Microsoft® Windows® Operating System (TiWorker.exe) |  |  |  | ChangeStartupTaskStatus 9223372036854775808 \"Logitech Download Assistant\" 0 |  | Microsoft® Windows® Operating System | 10.0.22621.2792 | Microsoft Windows |  | 0 | Microsoft® Windows® Operating System (TiWorker.exe) |  |  |  |  |  |  | LocalDisk |  |  |  | ALL | 0 |  | true | PALOALTONETWORK\cbartuvia | 0 | 0 |  |

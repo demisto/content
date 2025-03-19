@@ -1,6 +1,7 @@
 Converts a XML string to JSON format.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Converts a XML string to JSON format.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +21,6 @@ Converts a XML string to JSON format.
 | verbose | Prints the JSON result to War Room. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

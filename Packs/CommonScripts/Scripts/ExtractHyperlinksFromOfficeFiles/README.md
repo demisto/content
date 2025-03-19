@@ -47,4 +47,4 @@ Extract hyperlinks from office files. Supported file types are: xlsx, docx, pptx
 
 ># Extracted hyperlinks are:
 >
->https://www.paloaltonetworks.com/
+><https://www.paloaltonetworks.com/>

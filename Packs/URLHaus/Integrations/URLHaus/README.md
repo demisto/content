@@ -6,7 +6,7 @@ This integration was integrated and tested with version v1 of URLhaus.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://192.168.0.1) |  | False |
+| Server URL (e.g. <https://192.168.0.1>) |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -17,9 +17,12 @@ This integration was integrated and tested with version v1 of URLhaus.
 | Number of retries | Determines how many times a command should be retried before raising an error. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### url
+
 ***
 Retrieves URL information from URLhaus.
 
@@ -29,6 +32,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -69,8 +73,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 | URLhaus.URL.Payload.VT.Link | String | Link to the VirusTotal report. | 
 
 #### Command example
+
 ```!url using-brand=URLhaus url=http://example.com/anklet/WQG1/?i=1```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -140,12 +147,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### URLhaus reputation for http:<span>//</span>example.com/anklet/WQG1/?i=1
+>
 >|Date added|Description|Status|Threat|URLhaus ID|URLhaus link|
 >|---|---|---|---|---|---|
 >| 2022-01-20T14:11:09 | The URL is inactive (offline) and serving no payload | offline | malware_download | 1992762 | https:<span>//</span>urlhaus.abuse.ch/url/1992762/ |
 
 
 ### domain
+
 ***
 Retrieves domain information from URLhaus.
 
@@ -155,6 +164,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -186,8 +196,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 | URLhaus.Domain.Blacklist.Status | String | Status of the URL in the block list. | 
 
 #### Command example
+
 ```!domain using-brand=URLhaus domain=example.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -243,12 +256,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### URLhaus reputation for example.com
+>
 >|Description|First seen|URLhaus link|
 >|---|---|---|
 >| There is no information about Domain in the blacklist | 2022-01-27T12:51:03 | https:<span>//</span>urlhaus.abuse.ch/host/example.com/ |
 
 
 ### file
+
 ***
 Retrieves file information from URLhaus.
 
@@ -256,6 +271,7 @@ Retrieves file information from URLhaus.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -295,8 +311,11 @@ Retrieves file information from URLhaus.
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 #### Command example
+
 ```!file using-brand=URLhaus file=7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -353,12 +372,14 @@ Retrieves file information from URLhaus.
 #### Human Readable Output
 
 >### URLhaus reputation for SHA256 : 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89
+>
 >|First seen|Last seen|MD5|SHA256|Signature|URLhaus link|
 >|---|---|---|---|---|---|
->| 2022-01-18T11:18:31 | 2022-01-28T09:36:21 | 2ff9cce7a08215ded0945de5965d2a0a | 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89 | BazaLoader | https://urlhaus-api.abuse.ch/v1/download/7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89/ |
+>| 2022-01-18T11:18:31 | 2022-01-28T09:36:21 | 2ff9cce7a08215ded0945de5965d2a0a | 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89 | BazaLoader | <https://urlhaus-api.abuse.ch/v1/download/7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89/> |
 
 
 ### urlhaus-download-sample
+
 ***
 Downloads a malware sample from URLhaus.
 
@@ -366,6 +387,7 @@ Downloads a malware sample from URLhaus.
 #### Base Command
 
 `urlhaus-download-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -389,7 +411,9 @@ Downloads a malware sample from URLhaus.
 | File.Extension | string | File extension. | 
 
 #### Command example
+
 ```!urlhaus-download-sample file=254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b```
+
 #### Human Readable Output
 
 >```

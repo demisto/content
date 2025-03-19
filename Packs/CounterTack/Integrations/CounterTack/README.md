@@ -5,7 +5,7 @@ CounterTack empowers endpoint security teams to assure endpoint protection for I
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. https://democloud.countertack.com) | True |
+| Server URL (e.g. <https://democloud.countertack.com>) | True |
 | User Name | True |
 | Password | True |
 | Use system proxy settings | False |
@@ -17,9 +17,12 @@ CounterTack empowers endpoint security teams to assure endpoint protection for I
 | Fetch behviors incidents | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### countertack-get-endpoints
+
 ***
 Returns information for endpoints.
 
@@ -27,6 +30,7 @@ Returns information for endpoints.
 #### Base Command
 
 `countertack-get-endpoints`
+
 #### Input
 
 There are no input arguments for this command.
@@ -80,6 +84,7 @@ There are no input arguments for this command.
 | Endpoint.ID | string | The ID of the Endpoints. | 
 
 ### countertack-get-behaviors
+
 ***
 Returns information for all behaviors.
 
@@ -87,6 +92,7 @@ Returns information for all behaviors.
 #### Base Command
 
 `countertack-get-behaviors`
+
 #### Input
 
 There are no input arguments for this command.
@@ -109,6 +115,7 @@ There are no input arguments for this command.
 | CounterTack.Behavior.LastReported | date | The time that the behavior was last seen. | 
 
 ### countertack-get-endpoint
+
 ***
 Get information on specific endpoint
 
@@ -116,6 +123,7 @@ Get information on specific endpoint
 #### Base Command
 
 `countertack-get-endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -170,6 +178,7 @@ Get information on specific endpoint
 | Endpoint.OSVersion | string | The version of the endpoint sensor. | 
 
 ### countertack-get-behavior
+
 ***
 Gets information of a given behavior.
 
@@ -177,6 +186,7 @@ Gets information of a given behavior.
 #### Base Command
 
 `countertack-get-behavior`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -203,6 +213,7 @@ Gets information of a given behavior.
 | CounterTack.Behavior.LastReported | date | The time that the behavior was last seen. | 
 
 ### countertack-get-endpoint-tags
+
 ***
 Gets the tags of a given endpoint.
 
@@ -210,6 +221,7 @@ Gets the tags of a given endpoint.
 #### Base Command
 
 `countertack-get-endpoint-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -225,6 +237,7 @@ Gets the tags of a given endpoint.
 | CounterTack.Endpoint.EndpointId | string | The ID of the endpoints. | 
 
 ### countertack-add-tags
+
 ***
 Adds tags to a given endpoint.
 
@@ -232,6 +245,7 @@ Adds tags to a given endpoint.
 #### Base Command
 
 `countertack-add-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -248,6 +262,7 @@ Adds tags to a given endpoint.
 | CounterTack.Endpoint.Tags | string | The tags that were added to the endpoint. | 
 
 ### countertack-delete-tags
+
 ***
 Deletes the supplied tags from a given endpoint.
 
@@ -255,6 +270,7 @@ Deletes the supplied tags from a given endpoint.
 #### Base Command
 
 `countertack-delete-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -271,6 +287,7 @@ Deletes the supplied tags from a given endpoint.
 | CounterTack.Endpoint.Tags | string | The tags of the specified endpoint | 
 
 ### countertack-add-behavior-tags
+
 ***
 Adds tags to a given behavior.
 
@@ -278,6 +295,7 @@ Adds tags to a given behavior.
 #### Base Command
 
 `countertack-add-behavior-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -294,6 +312,7 @@ Adds tags to a given behavior.
 | CounterTack.Behavior.Tags | string | The tags of the behavior. | 
 
 ### countertack-delete-behavior-tags
+
 ***
 Deletes the supplied tags from a given behavior.
 
@@ -301,6 +320,7 @@ Deletes the supplied tags from a given behavior.
 #### Base Command
 
 `countertack-delete-behavior-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -317,6 +337,7 @@ Deletes the supplied tags from a given behavior.
 | CounterTack.Behavior.Tags | Unknown | The tags of the behavior. | 
 
 ### countertack-endpoint-quarantine
+
 ***
 Quarantines a given endpoint.
 
@@ -324,6 +345,7 @@ Quarantines a given endpoint.
 #### Base Command
 
 `countertack-endpoint-quarantine`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -339,6 +361,7 @@ Quarantines a given endpoint.
 | CounterTack.Endpoint.IsQuarantine | boolean | Is the endpoint currently quarantined. | 
 
 ### countertack-disable-quarantine
+
 ***
 Removes a given endpoint from quarantine.
 
@@ -346,6 +369,7 @@ Removes a given endpoint from quarantine.
 #### Base Command
 
 `countertack-disable-quarantine`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -361,6 +385,7 @@ Removes a given endpoint from quarantine.
 | CounterTack.Endpoint.IsQuarantine | string | Is the endpoint is currently quarantined. | 
 
 ### countertack-extract-file
+
 ***
 Extracts a file from given endpoint.
 
@@ -368,6 +393,7 @@ Extracts a file from given endpoint.
 #### Base Command
 
 `countertack-extract-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -396,6 +422,7 @@ Extracts a file from given endpoint.
 | CounterTack.File.EndpointIds | string | The ID of the source this command is being sent to. | 
 
 ### countertack-delete-file
+
 ***
 Deletes a file from the given endpoint.
 
@@ -403,6 +430,7 @@ Deletes a file from the given endpoint.
 #### Base Command
 
 `countertack-delete-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -414,7 +442,9 @@ Deletes a file from the given endpoint.
 #### Context Output
 
 There is no context output for this command.
+
 ### countertack-get-all-files
+
 ***
 Gets all extracted files for all endpoints.
 
@@ -422,6 +452,7 @@ Gets all extracted files for all endpoints.
 #### Base Command
 
 `countertack-get-all-files`
+
 #### Input
 
 There are no input arguments for this command.
@@ -453,6 +484,7 @@ There are no input arguments for this command.
 | File.Size | number | The size of the extracted file \(in bytes\). | 
 
 ### countertack-get-endpoint-files
+
 ***
 Returns all extracted files from a given endpoint.
 
@@ -460,6 +492,7 @@ Returns all extracted files from a given endpoint.
 #### Base Command
 
 `countertack-get-endpoint-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -493,6 +526,7 @@ Returns all extracted files from a given endpoint.
 | File.Size | number | The size of the extracted file \(bytes\). | 
 
 ### countertack-get-file-information
+
 ***
 Gets the information of a given file.
 
@@ -500,6 +534,7 @@ Gets the information of a given file.
 #### Base Command
 
 `countertack-get-file-information`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -534,6 +569,7 @@ Gets the information of a given file.
 | File.Size | number | The size of the extracted file \(in bytes\). | 
 
 ### countertack-download-file
+
 ***
 Downloads an extracted file in ZIP format. The password to unlock the ZIP file is `sentinel`.
 
@@ -541,6 +577,7 @@ Downloads an extracted file in ZIP format. The password to unlock the ZIP file i
 #### Base Command
 
 `countertack-download-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -564,6 +601,7 @@ Downloads an extracted file in ZIP format. The password to unlock the ZIP file i
 | File.Extension | string | The extension of the file \(.zip\). | 
 
 ### countertack-search-events
+
 ***
 Searches for events, using CQL expression.
 
@@ -571,6 +609,7 @@ Searches for events, using CQL expression.
 #### Base Command
 
 `countertack-search-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -614,6 +653,7 @@ Searches for events, using CQL expression.
 | CounterTack.Event.SourceProcessUser | string | The user associated with the process | 
 
 ### countertack-kill-process
+
 ***
 Terminates all instances of the process identified in the command. Processes can be identified by the PID or process name.
 
@@ -621,6 +661,7 @@ Terminates all instances of the process identified in the command. Processes can
 #### Base Command
 
 `countertack-kill-process`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -646,6 +687,7 @@ Terminates all instances of the process identified in the command. Processes can
 | CounterTack.Endpoint.RequestTime | date | The time at which the client requested the command. | 
 
 ### countertack-search-hashes
+
 ***
 Searches for hashes using CQL expressions (Contextual Query Language) to represent queries.
 
@@ -653,6 +695,7 @@ Searches for hashes using CQL expressions (Contextual Query Language) to represe
 #### Base Command
 
 `countertack-search-hashes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -674,6 +717,7 @@ Searches for hashes using CQL expressions (Contextual Query Language) to represe
 | File.SSDeep | string | The ssdeep of the file. | 
 
 ### countertack-search-endpoints
+
 ***
 Request for endpoints search using CQL expression (Contextual Query Language) to represent queries.
 
@@ -681,6 +725,7 @@ Request for endpoints search using CQL expression (Contextual Query Language) to
 #### Base Command
 
 `countertack-search-endpoints`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -733,6 +778,7 @@ Request for endpoints search using CQL expression (Contextual Query Language) to
 | Endpoint.Id | String | The ID of the Endpoints. | 
 
 ### countertack-search-behaviors
+
 ***
 Request for behaviors search using CQL expression (Contextual Query Language) to represent queries.
 
@@ -740,6 +786,7 @@ Request for behaviors search using CQL expression (Contextual Query Language) to
 #### Base Command
 
 `countertack-search-behaviors`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

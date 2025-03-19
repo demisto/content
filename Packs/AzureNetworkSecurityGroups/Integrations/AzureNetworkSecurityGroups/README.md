@@ -22,6 +22,7 @@ To add the registration, refer to the following [Microsoft article](https://lear
 - Microsoft Graph - permission `offline_access` of type Delegated
 
 To add a permission:
+
 1. Navigate to **Home** > **App registrations**.
 2. Search for your app under 'all applications'.
 3. Click **API permissions** > **Add permission**.
@@ -149,6 +150,7 @@ List all network security groups.
 #### Human Readable Output
 
 > ### Network Security Groups
+>
 >|etag|id|location|name|tags|type|
 >|---|---|---|---|---|---|
 >| W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg | westeurope | alerts-nsg |  | Microsoft.Network/networkSecurityGroups |
@@ -230,6 +232,7 @@ List all rules of the specified security groups.
 #### Human Readable Output
 
 > ### Rules in alerts-nsg
+>
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRanges|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.8.8.8 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -371,6 +374,7 @@ Create a security rule.
 #### Human Readable Output
 
 > ### Rules rulerule
+>
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRange|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | * | * | Inbound | W/"276dc93a-488d-47a1-8971-19a1171242a9" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/rulerule | rulerule | 4096 | * | Updating | 1.1.1.1 | * | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -458,6 +462,7 @@ Update a security rule. If one does not exist, it will be created.
 #### Human Readable Output
 
 > ### Rules XSOAR_Rule
+>
 >|access|description|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRange|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | description | 11.0.0.0/8 | 8080 | Outbound | W/"9fad6036-4c3a-4d60-aac9-18281dba3305" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/XSOAR_Rule | XSOAR_Rule | 100 | * | Succeeded | 10.0.0.0/8 | * | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -538,6 +543,7 @@ Get a specific rule.
 #### Human Readable Output
 
 > ### Rules wow
+>
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRanges|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.8.8.8 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -565,7 +571,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-> To sign in, use a web browser to open the page https://microsoft.com/devicelogin
+> To sign in, use a web browser to open the page <https://microsoft.com/devicelogin>
 > and enter the code CODECODE to authenticate.
 > Run the ***!azure-nsg-auth-complete*** command in the War Room.
 
@@ -789,6 +795,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 > ### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
     You will be automatically redirected to a link with the following structure:
     ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -871,6 +878,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 > ### Azure Network Security Groups Subscriptions list
+>
 >|subscriptionId|tenantId|displayName|state|
 >|---|---|---|---|
 >| 057b1785-fd7b-4 | ebac1a16-81bf-449 | Access to Azure Active Directory | Enabled |
@@ -949,6 +957,7 @@ Gets all resource groups for a subscription.
 #### Human Readable Output
 
 > ### Resource Groups List
+>
 >|Name|Location|Tags|
 >|---|---|---|
 >| cloud-shell-storage-eastus | eastus |  |
@@ -991,8 +1000,11 @@ Creates or updates a network interface.
 | AzureNSG.NetworkInterface.subnetId | List | The subnet ID of the IP configuration. | 
 
 #### Command example
+
 ```!azure-nsg-network-interfaces-create ip_config_name=ipconfig1 location=westeurope nic_name=test subnet_name=default vnet_name=reso-vnet```
+
 #### Context Example
+
 ```json
 {
     "AzureNSG": {
@@ -1111,14 +1123,18 @@ Creates or updates a network interface.
 #### Human Readable Output
 
 >### Network Interface
+>
 >|Name|Etag|Provisioning State|Ip Configuration Name|Ip Configuration Private IP Address|Subnet Id|
 >|---|---|---|---|---|---|
 >| test | 74523636-2749-426b-745f-9f41512228 | Succeeded | ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default |
 
 
 #### Command example
+
 ```!azure-nsg-network-interfaces-create ip_config_name=ipconfig1 location=westeurope nic_name=test subnet_name=default vnet_name=reso-vnet nsg_name=b_tdemo```
+
 #### Context Example
+
 ```json
 {
     "AzureNSG": {
@@ -1243,6 +1259,7 @@ Creates or updates a network interface.
 #### Human Readable Output
 
 >### Network Interface
+>
 >|Name|Etag|Provisioning State|Ip Configuration Name|Ip Configuration Private IP Address|Subnet Id|
 >|---|---|---|---|---|---|
 >| test | b5266977-8529-4415-9476-5884552427dec | Succeeded | ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default |
@@ -1279,8 +1296,11 @@ Gets virtual networks in a resource group.
 | AzureNSG.VirtualNetwork.subnetID | List | List of the virtual network's subnets ID. | 
 
 #### Command example
+
 ```!azure-nsg-virtual-networks-list```
+
 #### Context Example
+
 ```json
 {
     "AzureNSG": {
@@ -1466,6 +1486,7 @@ Gets virtual networks in a resource group.
 #### Human Readable Output
 
 >### Virtual Networks List
+>
 >|Name|Etag|Location|Address Prefixes|Subnet Name|Subnet Adrdress Prefix|Subnet ID|
 >|---|---|---|---|---|---|---|
 >| reso-vnet | 78562e03-4a6b-4845-dswae-ds541c4808ba5 | westeurope | 1.1.1.1/16 | default | 1.1.1.1/24 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TE/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TEST/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR___/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/B_TEST/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC1/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC2/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/TEST/ipConfigurations/IPCONFIG1 |
@@ -1499,8 +1520,11 @@ Creates a network security group in the specified resource group.
 | AzureNSG.SecurityGroup.properties.securityRules | List | A collection of security rules of the network security group. | 
 
 #### Command example
+
 ```!azure-nsg-security-group-create location=westeurope security_group_name=b_tdemo```
+
 #### Context Example
+
 ```json
 {
     "AzureNSG": {
@@ -1658,6 +1682,7 @@ Creates a network security group in the specified resource group.
 #### Human Readable Output
 
 >### Security Group List
+>
 >|Name|Etag|Location|
 >|---|---|---|
 >| b_tdemo | 8459e4-6553-526e-bsad-asx54dxbb7ee78 | westeurope |
@@ -1701,8 +1726,11 @@ Gets network interfaces in a resource group.
 | AzureNSG.NetworkInterfaces.kind | String | The network interface's kind. | 
 
 #### Command example
+
 ```!azure-nsg-network-interfaces-list all_results=false limit=3```
+
 #### Context Example
+
 ```json
 {
     "AzureNSG": {
@@ -2062,6 +2090,7 @@ Gets network interfaces in a resource group.
 #### Human Readable Output
 
 >### Network Interfaces List
+>
 >|Name|Id|Provisioning State|Ip Configuration Name|Ip Configuration ID|Ip Configuration Private IP Address|Ip Configuration Public IP Address Name|Internal Domain Name Suffix|Location|Kind|
 >|---|---|---|---|---|---|---|---|---|---|
 >| b_te | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te | Succeeded | ipconfig1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te/ipConfigurations/ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/public-ip-name | example.ax.internal.cloudapp.net | westeurope | Regular |
@@ -2101,8 +2130,11 @@ Gets public IP addresses in a resource group.
 | AzureNSG.PublicIPAdress.fqdn | String | The public IP address's fully qualified domain name \(FQDN\). | 
 
 #### Command example
+
 ```!azure-nsg-public-ip-addresses-list```
+
 #### Context Example
+
 ```json
 {
     "AzureNSG": {
@@ -2158,6 +2190,7 @@ Gets public IP addresses in a resource group.
 #### Human Readable Output
 
 >### Public IP Addresses List
+>
 >|Name|Id|Etag|Provisioning State|Public IP Address Version|Ip Address|
 >|---|---|---|---|---|---|
 >| public-ip-name | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/public-ip-name | 54525785-f484-4dsa-a419-452115d9969 | Succeeded | IPv4 | 1.1.1.1 |

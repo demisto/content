@@ -1,9 +1,13 @@
 Manage Secrets and Protect Confidential Data using Fortanix Data Security Manager (DSM)
 
 ## Authorize Cortext XSOAR to Fortanix DSM
+
 #### User/password or Client Certificate Auth Method
+
 These fields accept  the *Username*  and *Password* parameters for a user or App. These credentials may also be used for mutual-TLS using a client key and certificate. The may be signed by a Trusted CA if Fortanix DSM is configured accordingly.
+
 #### API KEY Auth Method
+
 An easy and quick way to test the integration is to specify the *Basic Authentication token* parameter from the Fortanix DSM App's API KEY.
 
 
@@ -12,7 +16,7 @@ An easy and quick way to test the integration is to specify the *Basic Authentic
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Fortanix DSM server endpoint | URL e.g., https://amer.smartkey.io | True |
+| Fortanix DSM server endpoint | URL e.g., <https://amer.smartkey.io> | True |
 | Username / App UUID / Certificate | If Certificate, specify PEM | False |
 | Password / App Secret / Private Key | Private key cannot be encrypted | False |
 | API Key | Alternative to Username and Password | False |
@@ -23,9 +27,12 @@ An easy and quick way to test the integration is to specify the *Basic Authentic
 | Encryption and decryption mode | e.g. FPE, GCM, CBC | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fortanix-list-secrets
+
 ***
 List secrets from one or more specified group(s)
 
@@ -33,6 +40,7 @@ List secrets from one or more specified group(s)
 #### Base Command
 
 `fortanix-list-secrets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -51,6 +59,7 @@ List secrets from one or more specified group(s)
 | Fortanix.Secret.Group | unknown | Group ID | 
 
 ### fortanix-get-secret-metadata
+
 ***
 Get the secret metadata without exposing its value
 
@@ -58,6 +67,7 @@ Get the secret metadata without exposing its value
 #### Base Command
 
 `fortanix-get-secret-metadata`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -73,6 +83,7 @@ Get the secret metadata without exposing its value
 | Fortanix.Secret | unknown | Secret metadata, if successful | 
 
 ### fortanix-fetch-secret
+
 ***
 Retrieve the secret value
 
@@ -80,6 +91,7 @@ Retrieve the secret value
 #### Base Command
 
 `fortanix-fetch-secret`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -94,6 +106,7 @@ Retrieve the secret value
 | Fortanix.Secret.Value | unknown | Sensitive value of the secret | 
 
 ### fortanix-new-secret
+
 ***
 Import a new secret
 
@@ -101,6 +114,7 @@ Import a new secret
 #### Base Command
 
 `fortanix-new-secret`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -118,6 +132,7 @@ Import a new secret
 | Fortanix.Secret | unknown | Secret metadata, if successful | 
 
 ### fortanix-rotate-secret
+
 ***
 Update an existing secret, which will be rotated
 
@@ -125,6 +140,7 @@ Update an existing secret, which will be rotated
 #### Base Command
 
 `fortanix-rotate-secret`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -141,6 +157,7 @@ Update an existing secret, which will be rotated
 | Fortanix.Secret | unknown | Secret metadata, if successful | 
 
 ### fortanix-delete-secret
+
 ***
 Delete the secret
 
@@ -148,6 +165,7 @@ Delete the secret
 #### Base Command
 
 `fortanix-delete-secret`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -162,6 +180,7 @@ Delete the secret
 | Fortanix.Secret.Result | unknown | Deletion status | 
 
 ### fortanix-invoke-plugin
+
 ***
 Invoke a Fortanix Plugin that is executed in a Confidential Computing enclave
 
@@ -169,6 +188,7 @@ Invoke a Fortanix Plugin that is executed in a Confidential Computing enclave
 #### Base Command
 
 `fortanix-invoke-plugin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -184,6 +204,7 @@ Invoke a Fortanix Plugin that is executed in a Confidential Computing enclave
 | Fortanix.Plugin.Output | unknown | Plugin invocation output | 
 
 ### fortanix-encrypt
+
 ***
 Protects data using key configured in Fortanix DSM
 
@@ -191,6 +212,7 @@ Protects data using key configured in Fortanix DSM
 #### Base Command
 
 `fortanix-encrypt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -207,6 +229,7 @@ Protects data using key configured in Fortanix DSM
 | Fortanix.Data.Cipher | unknown | Encryption output | 
 
 ### fortanix-decrypt
+
 ***
 Reveal data using key configured in Fortanix DSM
 
@@ -214,6 +237,7 @@ Reveal data using key configured in Fortanix DSM
 #### Base Command
 
 `fortanix-decrypt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

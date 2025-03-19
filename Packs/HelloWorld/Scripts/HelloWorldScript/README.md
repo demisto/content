@@ -1,5 +1,7 @@
 Hello World Script
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +11,7 @@ Hello World Script
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,6 +19,7 @@ Hello World Script
 | name | Hello command \- prints hello to anyone. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -24,9 +28,11 @@ Hello World Script
 
 
 ## Script Example
+
 ```!HelloWorldScript name=DBot```
 
 ## Context Example
+
 ```
 {
     "HelloWorld": {
@@ -36,4 +42,5 @@ Hello World Script
 ```
 
 ## Human Readable Output
+
 ## Hello DBot

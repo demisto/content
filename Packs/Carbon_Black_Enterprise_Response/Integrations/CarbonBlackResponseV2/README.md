@@ -12,7 +12,7 @@ Some changes have been made that might affect your existing content.
 | API Token |  | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
-| Filter alerts by query | Advanced query string. Accepts the same data as the search box on the Alert Search page.<br/>For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf.<br/>If provided, other search filters are not allowed. | False |
+| Filter alerts by query | Advanced query string. Accepts the same data as the search box on the Alert Search page.<br/>For more information on the query syntax see <https://developer.carbonblack.com/resources/query_overview.pdf>.<br/>If provided, other search filters are not allowed. | False |
 | Filter alerts by status |  | False |
 | Filter alerts by feed name |  | False |
 | Maximum Number Of Incidents To Fetch |  | False |
@@ -21,9 +21,12 @@ Some changes have been made that might affect your existing content.
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cb-edr-processes-search
+
 ***
 Process search
 
@@ -31,6 +34,7 @@ Process search
 #### Base Command
 
 `cb-edr-processes-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,7 +45,7 @@ Process search
 | parent_name | The parent process name. | Optional | 
 | process_path | The process path. | Optional | 
 | md5 | The md5 of the binary image backing the process. | Optional | 
-| query | Advanced query string. Accepts the same data as the search box on the Process Search page. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf. If not provided, at least one other search field must be provided. | Optional | 
+| query | Advanced query string. Accepts the same data as the search box on the Process Search page. For more information on the query syntax see <https://developer.carbonblack.com/resources/query_overview.pdf>. If not provided, at least one other search field must be provided. | Optional | 
 | group_by | group by a field name. For example, if parameter group=id, search will return one result per process. Note that results will still honor sorting specified by the search. Even within group, it will return result that is first in the sort order. Grouping will be slower (sometimes much slower) than regular results. | Optional | 
 | sort | Sort rows by this field and order. last_update desc by default. | Optional | 
 | facet | Return facet results. ‘false’ by default, set to ‘true’ for facets. Possible values are: true, false. | Optional | 
@@ -97,9 +101,11 @@ for example, this will be the external IP of the network the endpoint lives on. 
 
 
 #### Command Example
+
 ```!cb-edr-processes-search process_name=chrome.exe limit=2```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackEDR": {
@@ -201,7 +207,9 @@ for example, this will be the external IP of the network the endpoint lives on. 
 #### Human Readable Output
 
 >#### Carbon Black EDR - Process Search Results### 
+>
 >Showing 0 - 2 out of 3379 results.
+>
 >|Process Path|Process ID|Segment ID|Process md5|Process Name|Hostname|Process PID|Username|Last Update|Is Terminated|
 >|---|---|---|---|---|---|---|---|---|---|
 >| c:\program files (x86)\google\chrome\application\chrome.exe | 00000018-0000-164c-01d5-9ed472b33472 | 1622034003651 | 8698e468bc379e30383a72ce63da7972 | chrome.exe | ec2amaz-l4c2okc | 5708 | EC2AMAZ-L4C2OKC\Administrator | 2021-05-26T12:51:30.227Z | false |
@@ -209,6 +217,7 @@ for example, this will be the external IP of the network the endpoint lives on. 
 
 
 ### cb-edr-process-get
+
 ***
 Gets basic process information for segment  of process.
 
@@ -216,6 +225,7 @@ Gets basic process information for segment  of process.
 #### Base Command
 
 `cb-edr-process-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -314,9 +324,11 @@ for example, this will be the external IP of the network the endpoint lives on. 
 
 
 #### Command Example
+
 ```!cb-edr-process-get get_related=true process_id="00000018-0000-164c-01d5-9ed472b33472" segment_id=1622034003651```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackEDR": {
@@ -467,12 +479,14 @@ for example, this will be the external IP of the network the endpoint lives on. 
 #### Human Readable Output
 
 >### Carbon Black EDR - Process
+>
 >|Hostname|Is Terminated|Last Update|Process ID|Process Name|Process PID|Process Path|Process md5|Segment ID|Username|
 >|---|---|---|---|---|---|---|---|---|---|
 >| ec2amaz-l4c2okc | false | 2021-05-26T12:51:30.227Z | 00000018-0000-164c-01d5-9ed472b33472 | chrome.exe | 5708 | c:\program files (x86)\google\chrome\application\chrome.exe | 8698e468bc379e30383a72ce63da7972 | 1622034003651 | EC2AMAZ-L4C2OKC\Administrator |
 
 
 ### cb-edr-process-segments-get
+
 ***
 Gets segment data for a given process.
 
@@ -480,6 +494,7 @@ Gets segment data for a given process.
 #### Base Command
 
 `cb-edr-process-segments-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -501,9 +516,11 @@ Gets segment data for a given process.
 
 
 #### Command Example
+
 ```!cb-edr-process-segments-get process_id="00000018-0000-164c-01d5-9ed472b33472" limit=2```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackEDR": {
@@ -547,6 +564,7 @@ Gets segment data for a given process.
 >]
 
 ### cb-edr-sensor-installer-download
+
 ***
 Download a zip archive including a sensor installer for Windows, Mac OS X or Linux.
 
@@ -554,6 +572,7 @@ Download a zip archive including a sensor installer for Windows, Mac OS X or Lin
 #### Base Command
 
 `cb-edr-sensor-installer-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -567,6 +586,7 @@ Download a zip archive including a sensor installer for Windows, Mac OS X or Lin
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -574,6 +594,7 @@ There is no context output for this command.
 
 
 ### cb-edr-process-events-list
+
 ***
 Gets the events for the process with CB process id (process_id) and segment id (segment_id).
 
@@ -581,6 +602,7 @@ Gets the events for the process with CB process id (process_id) and segment id (
 #### Base Command
 
 `cb-edr-process-events-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -661,9 +683,11 @@ RemoteThread if remote thread creation; ProcessOpen if process handle open with 
 
 
 #### Command Example
+
 ```!cb-edr-process-events-list process_id="00000018-0000-164c-01d5-9ed472b33472" segment_id=1622034003651 count=2```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackEDR": {
@@ -769,6 +793,7 @@ RemoteThread if remote thread creation; ProcessOpen if process handle open with 
 >}
 
 ### cb-edr-unquarantine-device
+
 ***
 Unquarantine the endpoint
 
@@ -776,6 +801,7 @@ Unquarantine the endpoint
 #### Base Command
 
 `cb-edr-unquarantine-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -788,6 +814,7 @@ Unquarantine the endpoint
 There is no context output for this command.
 
 #### Command Example
+
 ```!cb-edr-unquarantine-device sensor_id=15```
 
 #### Human Readable Output
@@ -795,6 +822,7 @@ There is no context output for this command.
 >Sensor was un-isolated successfully.
 
 ### cb-edr-quarantine-device
+
 ***
 Isolate the endpoint from the network
 
@@ -802,6 +830,7 @@ Isolate the endpoint from the network
 #### Base Command
 
 `cb-edr-quarantine-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -814,6 +843,7 @@ Isolate the endpoint from the network
 There is no context output for this command.
 
 #### Command Example
+
 ```!cb-edr-quarantine-device sensor_id=15```
 
 #### Human Readable Output
@@ -821,6 +851,7 @@ There is no context output for this command.
 >Sensor was isolated successfully.
 
 ### cb-edr-sensors-list
+
 ***
 List the CarbonBlack sensors
 
@@ -828,6 +859,7 @@ List the CarbonBlack sensors
 #### Base Command
 
 `cb-edr-sensors-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -897,9 +929,11 @@ List the CarbonBlack sensors
 
 
 #### Command Example
+
 ```!cb-edr-sensors-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackEDR": {
@@ -1018,6 +1052,7 @@ List the CarbonBlack sensors
 #### Human Readable Output
 
 >### Carbon Black EDR - Sensors
+>
 >|Sensor Id|Computer Name|Status|Power State|Group ID|OS Version|Health Score|Is Isolating|Node Id|Sensor Version|IP Address/MAC Info|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 15 | WIN-SOSSKVTTQAB | Online | 0 | 1 | 1 | 20 | false | 0 | 006.001.002.71109 | 06d3d4a5ba28 |
@@ -1026,6 +1061,7 @@ List the CarbonBlack sensors
 >Showing 2 out of 24 results.
 
 ### cb-edr-watchlist-delete
+
 ***
 Delete a Watchlist that is specified using ID.
 
@@ -1033,6 +1069,7 @@ Delete a Watchlist that is specified using ID.
 #### Base Command
 
 `cb-edr-watchlist-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1045,6 +1082,7 @@ Delete a Watchlist that is specified using ID.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cb-edr-watchlist-delete id=2412```
 
 #### Human Readable Output
@@ -1052,6 +1090,7 @@ There is no context output for this command.
 >success
 
 ### cb-edr-watchlist-update
+
 ***
 Updates a Watchlist that is specified using ID.
 
@@ -1059,6 +1098,7 @@ Updates a Watchlist that is specified using ID.
 #### Base Command
 
 `cb-edr-watchlist-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1074,6 +1114,7 @@ Updates a Watchlist that is specified using ID.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cb-edr-watchlist-update id=2406 description="example description" search_query=chrome.exe```
 
 #### Human Readable Output
@@ -1081,6 +1122,7 @@ There is no context output for this command.
 >success
 
 ### cb-edr-watchlist-update-action
+
 ***
 Updates a Watchlist action that is specified using ID.
 
@@ -1088,6 +1130,7 @@ Updates a Watchlist action that is specified using ID.
 #### Base Command
 
 `cb-edr-watchlist-update-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1102,6 +1145,7 @@ Updates a Watchlist action that is specified using ID.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cb-edr-watchlist-update id=2406 action_type=alert enabled=True```
 
 #### Human Readable Output
@@ -1109,6 +1153,7 @@ There is no context output for this command.
 >success
 
 ### cb-edr-watchlist-create
+
 ***
 Creates a new Watchlist within EDR,
 
@@ -1116,6 +1161,7 @@ Creates a new Watchlist within EDR,
 #### Base Command
 
 `cb-edr-watchlist-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1134,9 +1180,11 @@ Creates a new Watchlist within EDR,
 
 
 #### Command Example
+
 ```!cb-edr-watchlist-create name=example_name search_query=chrome.exe```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackEDR": {
@@ -1152,6 +1200,7 @@ Creates a new Watchlist within EDR,
 >Successfully created new watchlist with id 2414
 
 ### cb-edr-watchlists-list
+
 ***
 Retrieve watchlist in Carbon black Response.
 
@@ -1159,6 +1208,7 @@ Retrieve watchlist in Carbon black Response.
 #### Base Command
 
 `cb-edr-watchlists-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1189,9 +1239,11 @@ Valid values are ‘modules’ and ‘events’ for binary and process watchlist
 
 
 #### Command Example
+
 ```!cb-edr-watchlists-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackEDR": {
@@ -1237,6 +1289,7 @@ Valid values are ‘modules’ and ‘events’ for binary and process watchlist
 
 >Carbon Black EDR - Watchlists### 
 >Showing 2 out of 33 results.
+>
 >|Description|Group ID|ID|Name|Query|Total Hits|
 >|---|---|---|---|---|---|
 >| updating description for playbook test. | -1 | 1870 | chrome | chrome.exe | 9071 |
@@ -1244,6 +1297,7 @@ Valid values are ‘modules’ and ‘events’ for binary and process watchlist
 
 
 ### cb-edr-binary-ban
+
 ***
 Prevent execution of a specified md5 hash
 
@@ -1251,6 +1305,7 @@ Prevent execution of a specified md5 hash
 #### Base Command
 
 `cb-edr-binary-ban`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1267,6 +1322,7 @@ Prevent execution of a specified md5 hash
 There is no context output for this command.
 
 #### Command Example
+
 ```!cb-edr-binary-ban md5=0ea59cf80ef9703b3d92ca6b25426458 text=example```
 
 #### Human Readable Output
@@ -1274,6 +1330,7 @@ There is no context output for this command.
 >Ban for md5 0ea59cf80ef9703b3d92ca6b25426458 already exists
 
 ### cb-edr-binary-bans-list
+
 ***
 Returns a list of banned hashes
 
@@ -1281,6 +1338,7 @@ Returns a list of banned hashes
 #### Base Command
 
 `cb-edr-binary-bans-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1310,9 +1368,11 @@ Returns a list of banned hashes
 
 
 #### Command Example
+
 ```!cb-edr-binary-bans-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackEDR": {
@@ -1367,6 +1427,7 @@ Returns a list of banned hashes
 #### Human Readable Output
 
 >### Carbon Black EDR -Banned Hashes
+>
 >|Text|Timestamp|User ID|Username|md5|
 >|---|---|---|---|---|
 >| test | 2021-06-10 06:25:58.431602+00:00 | 1 | admin | 0ea59cf80ef9703b3d92ca6b25426456 |
@@ -1374,6 +1435,7 @@ Returns a list of banned hashes
 
 
 ### cb-edr-alert-update
+
 ***
 Alerts update and resolution.
 Updating Alerts requires an API key with Global Administrator privileges.
@@ -1382,6 +1444,7 @@ Updating Alerts requires an API key with Global Administrator privileges.
 #### Base Command
 
 `cb-edr-alert-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1389,7 +1452,7 @@ Updating Alerts requires an API key with Global Administrator privileges.
 | alert_ids | Alert unique identifier. | Required | 
 | status | The requested status to <br/>. Possible values are: Resolved, Unresolved, In Progress, False Positive. | Optional | 
 | set_ignored | Setting is_ignored to True for an Alert carries through to the threat report that generated the Alert. Any further hits on IOCs contained within that report will no longer trigger an Alert. Possible values are: true, false. | Optional | 
-| query | Advanced query string. Accepts the same data as the search box on the Process Search page. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf. If not provided, at least one other search field must be provided. | Optional | 
+| query | Advanced query string. Accepts the same data as the search box on the Process Search page. For more information on the query syntax see <https://developer.carbonblack.com/resources/query_overview.pdf>. If not provided, at least one other search field must be provided. | Optional | 
 
 
 #### Context Output
@@ -1397,6 +1460,7 @@ Updating Alerts requires an API key with Global Administrator privileges.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cb-edr-alert-update alert_ids=9f67733c-0632-4c55-bae0-985d9440c207 status=Unresolved```
 
 #### Human Readable Output
@@ -1404,6 +1468,7 @@ There is no context output for this command.
 >Alert was updated successfully.
 
 ### cb-edr-alert-search
+
 ***
 Retrieve alerts from Carbon Black Response.
 
@@ -1411,6 +1476,7 @@ Retrieve alerts from Carbon Black Response.
 #### Base Command
 
 `cb-edr-alert-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1420,7 +1486,7 @@ Retrieve alerts from Carbon Black Response.
 | feedname | Alert feedname to filter by. | Optional | 
 | hostname | Alert hostname to filter by. | Optional | 
 | report | Alert report name (watchlist_id) to filter by. | Optional | 
-| query | Advanced query string. Accepts the same data as the search box. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf. If not provided, at least one other search field must be provided. | Optional | 
+| query | Advanced query string. Accepts the same data as the search box. For more information on the query syntax see <https://developer.carbonblack.com/resources/query_overview.pdf>. If not provided, at least one other search field must be provided. | Optional | 
 | sort | Sort rows by this field and order. server_added_timestamp desc by default. | Optional | 
 | facet | Return facet results. 'false' by default, set to 'true' for facets. | Optional | 
 | limit | Maximum number of alerts to show, 10 by default. | Optional | 
@@ -1475,9 +1541,11 @@ for example, this will be the external IP of the network the endpoint lives on. 
 
 
 #### Command Example
+
 ```!cb-edr-alert-search status=Unresolved limit=2```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackEDR": {
@@ -1582,6 +1650,7 @@ for example, this will be the external IP of the network the endpoint lives on. 
 
 >Carbon Black EDR - Alert Search Results### 
 >Showing 0 - 2 out of 9669 results.
+>
 >|Alert ID|Created Time|File Name|File Path|Hostname|Segment ID|Severity|Source md5|Status|
 >|---|---|---|---|---|---|---|---|---|
 >| 5d652495-cca6-4bca-9007-579a5ee984a2 | 2018-03-13T15:07:26.805Z | svchost.exe | c:\windows\system32\svchost.exe | win-sosskvttqab | 1520953646722 | 60.75 | e3a2ad05e24105b35e986cf9cb38ec47 | Unresolved |
@@ -1589,6 +1658,7 @@ for example, this will be the external IP of the network the endpoint lives on. 
 
 
 ### cb-edr-binary-summary
+
 ***
 Returns the metadata for the binary with the provided md5
 
@@ -1596,6 +1666,7 @@ Returns the metadata for the binary with the provided md5
 #### Base Command
 
 `cb-edr-binary-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1613,7 +1684,7 @@ One of Signed, Unsigned, Expired, Bad Signature, Invalid Signature, Invalid Chai
 Untrusted Root, or Explicit Distrust. | 
 | CarbonBlackEDR.BinaryMetadata.observed_filename | String | A list of strings, one per unique filename this binary has been seen as. | 
 | CarbonBlackEDR.BinaryMetadata.product_version | String | If present, Product version from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinaryMetadata.digsig_issuer | String | If signed and present, the issuer name. | 
 | CarbonBlackEDR.BinaryMetadata.signed | String | Digital signature status.
 One of Signed, Unsigned, Expired, Bad Signature, Invalid Signature, Invalid Chain,
@@ -1627,14 +1698,14 @@ Untrusted Root, or Explicit Distrust. |
 | CarbonBlackEDR.BinaryMetadata.group | String | A list of 0 or more sensor groups \(by name\) in which this binary was observed. | 
 | CarbonBlackEDR.BinaryMetadata.event_partition_id | Number | The ID of the event partition associated with the binary file. | 
 | CarbonBlackEDR.BinaryMetadata.file_version | String | If present, File version from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinaryMetadata.company_name | String | If present, Company name from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinaryMetadata.internal_name | String | If present, Internal name from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinaryMetadata.icon | String | The icon of the file. | 
 | CarbonBlackEDR.BinaryMetadata.product_name | String | If present, Product name from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinaryMetadata.digsig_result_code | String | HRESULT_FROM_WIN32 for the result of the digital signature operation via WinVerifyTrust. | 
 | CarbonBlackEDR.BinaryMetadata.timestamp | Date | The time of the file search. | 
 | CarbonBlackEDR.BinaryMetadata.copied_mod_len | Number | Bytes copied from remote host, if file is &gt; 25MB this will be less than orig_mod_len. | 
@@ -1647,17 +1718,18 @@ The | character serves as the delimiter between the hostname and the sensorid. |
 | CarbonBlackEDR.BinaryMetadata.watchlists.wid | String | The wid of the watchlist. | 
 | CarbonBlackEDR.BinaryMetadata.watchlists.value | Date | The value of the watchlist. | 
 | CarbonBlackEDR.BinaryMetadata.legal_copyright | String | If present, Legal copyright from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinaryMetadata.original_filename | String | If present, Original filename from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinaryMetadata.cb_version | Number | The version of Carbon Black. | 
 | CarbonBlackEDR.BinaryMetadata.os_type | String | The operating system type of the computer for this process; one of windows, linux, osx. | 
 | CarbonBlackEDR.BinaryMetadata.file_desc | String | If present, File description from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinaryMetadata.last_seen | Date | The last seen time of the file. | 
 
 
 #### Command Example
+
 ```!cb-edr-binary-summary md5=9532bd6c36a788d329668ac0d30ce822```
 
 #### Human Readable Output
@@ -1665,6 +1737,7 @@ https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?r
 >File 9532bd6c36a788d329668ac0d30ce822 could not be found
 
 ### cb-edr-binary-download
+
 ***
 Download the binary with this md5 hash.
 
@@ -1672,6 +1745,7 @@ Download the binary with this md5 hash.
 #### Base Command
 
 `cb-edr-binary-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1684,9 +1758,11 @@ Download the binary with this md5 hash.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cb-edr-binary-download md5=e3a2ad05e24105b35e986cf9cb38ec47```
 
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -1705,6 +1781,7 @@ There is no context output for this command.
 
 
 ### cb-edr-binary-search
+
 ***
 Binary search
 
@@ -1712,6 +1789,7 @@ Binary search
 #### Base Command
 
 `cb-edr-binary-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1725,7 +1803,7 @@ Binary search
 | hostname | Hostname of the computer on<br/>which the process was executed. | Optional | 
 | sort | Sort rows by this field and order. server_added_timestamp desc by default. | Optional | 
 | observed_filename | Full path of the binary at the time<br/>of collection. | Optional | 
-| query | Advanced query string. Accepts the same data as the search box. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf. If not provided, at least one other search field must be provided. | Optional | 
+| query | Advanced query string. Accepts the same data as the search box. For more information on the query syntax see <https://developer.carbonblack.com/resources/query_overview.pdf>. If not provided, at least one other search field must be provided. | Optional | 
 | facet | Return facet results. ‘false’ by default, set to ‘true’ for facets. | Optional | 
 | facet_field | facet field name to return. Multiple facet.field parameters can be specified in a query. | Optional | 
 | limit | Return this many rows, 10 by default. | Optional | 
@@ -1741,15 +1819,15 @@ Binary search
 | CarbonBlackEDR.BinarySearch.highlights | String | A list of highlight objects matching the query string. Format the same as the process event object. | 
 | CarbonBlackEDR.BinarySearch.Results.host_count | Number | The count of unique endpoints which have ever reported this binary. | 
 | CarbonBlackEDR.BinarySearch.Results.original_filename | String | If present, Original filename from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinarySearch.Results.legal_copyright | String | If present, Legal copyright from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinarySearch.Results.digsig_result | String | Digital signature status.
 One of Signed, Unsigned, Expired, Bad Signature, Invalid Signature, Invalid Chain,
 Untrusted Root, or Explicit Distrust. | 
 | CarbonBlackEDR.BinarySearch.Results.observed_filename | String | A list of strings, one per unique filename this binary has been seen as. | 
 | CarbonBlackEDR.BinarySearch.Results.product_version | String | If present, Product version from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinarySearch.Results.watchlists.wid | String | The wid of the watchlist. | 
 | CarbonBlackEDR.BinarySearch.Results.watchlists.value | Date | The value of the watchlist. | 
 | CarbonBlackEDR.BinarySearch.Results.facet_id | Number | The id of the facet searched. | 
@@ -1770,29 +1848,31 @@ The | character serves as the delimiter between the hostname and the sensorid. |
 | CarbonBlackEDR.BinarySearch.results.event_partition_id | Number | The ID of the event partition associated with the binary file. | 
 | CarbonBlackEDR.BinarySearch.Results.digsig_result_code | String | HRESULT_FROM_WIN32 for the result of the digital signature operation via WinVerifyTrust. | 
 | CarbonBlackEDR.BinarySearch.Results.file_version | String | If present, File version from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinarySearch.Results.signed | String | Digital signature status: One of Signed, Unsigned, Expired, Bad Signature, Invalid Signature,
 Invalid Chain, Untrusted Root, or Explicit Distrust. | 
 | CarbonBlackEDR.BinarySearch.Results.last_seen | Date | The last seen time of the file. | 
 | CarbonBlackEDR.BinarySearch.Results.company_name | String | If present, Company name from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinarySearch.Results.internal_name | String | If present, Internal name from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinarySearch.Results.timestamp | Date | Search creation time. | 
 | CarbonBlackEDR.BinarySearch.Results.cb_version | Number | The version of Carbon Black. | 
 | CarbonBlackEDR.BinarySearch.Results.os_type | String | The operating system type of this binary; one of windows, linux, osx. | 
 | CarbonBlackEDR.BinarySearch.Results.file_desc | String | If present, File description from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinarySearch.Results.product_name | String | If present, Product name from FileVersionInformation. For more information check
-https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+<https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 | CarbonBlackEDR.BinarySearch.Results.server_added_timestamp | Date | The first time this binary was received on the server in the server GMT time. | 
-| CarbonBlackEDR.BinarySearch.Results.private_build | String | If present, Private build from FileVersionInformation. For more information check https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
+| CarbonBlackEDR.BinarySearch.Results.private_build | String | If present, Private build from FileVersionInformation. For more information check <https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0> | 
 
 
 #### Command Example
+
 ```!cb-edr-binary-search company_name=Microsoft limit=2```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackEDR": {
@@ -1902,6 +1982,7 @@ https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?r
 
 >Carbon Black EDR - Binary Search Results### 
 >Showing 0 - 2 out of 9585 results.
+>
 >|md5|Group|OS Type|Host Count|Last Seen|Is Executable Image|Timestamp|
 >|---|---|---|---|---|---|---|
 >| 83263B667637FD878685D6A8401742CB | default group | Windows | 1 | 2018-01-17T08:00:05.631Z | false | 2018-01-17T00:58:55.134Z |
@@ -1909,6 +1990,7 @@ https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?r
 
 
 ### endpoint
+
 ***
 Display information about the given sensor
 
@@ -1916,6 +1998,7 @@ Display information about the given sensor
 #### Base Command
 
 `endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1953,9 +2036,11 @@ Display information about the given sensor
 
 
 #### Command Example
+
 ```!endpoint id=15 ip=x.x.x.x hostname=WIN-SOSSKVTTQAB using="VMware Carbon Black EDR_instance_1"```
 
 #### Context Example
+
 ```json
 {
     "Endpoint": {
@@ -1975,6 +2060,7 @@ Display information about the given sensor
 #### Human Readable Output
 
 >### Carbon Black EDR -  Endpoint: 15
+>
 >|Hostname|ID|IPAddress|IsIsolated|MACAddress|Memory|OSVersion|Status|Vendor|
 >|---|---|---|---|---|---|---|---|---|
 >| WIN-SOSSKVTTQAB | 15 | x.x.x.x | No ~~~~~~~~| 06d3d4a5ba28 | 1073332224 | Windows Server 2012 R2 Server Standard, 64-bit | Online | Carbon Black Response |

@@ -2,6 +2,7 @@ Replaces regex match/es that are found in the string.
 This script will return the string after the replacement was performed.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +12,7 @@ This script will return the string after the replacement was performed.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,6 +25,7 @@ This script will return the string after the replacement was performed.
 | multiLine | Pass true to indicate 'data'  is a multi-line string, false otherwise. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

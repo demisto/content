@@ -6,7 +6,7 @@ DVE Score is also the most comprehensive CVE enrichment solution on the market: 
 ·    Track threats from CVEs that most others define as irrelevant or obsolete, but a higher probability of being exploited by active cyber threat actors.
 ·    Gain visibility as well as the ability to prioritize and articulate the remediation process across the organization - straight from Cortex XSOAR
 
-To obtain access to Cybersixgill DVE Score feed via Cortex XSOAR, please contact Cybersixgill at getstarted@cybersixgill.com.
+To obtain access to Cybersixgill DVE Score feed via Cortex XSOAR, please contact Cybersixgill at <getstarted@cybersixgill.com>.
 
 ## Configure Sixgill_DVE_Feed in Cortex
 

@@ -9,7 +9,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://api.opsgenie.com) |  | True |
+| Server URL (e.g., <https://api.opsgenie.com>) |  | True |
 | API Token |  | False |
 | Fetch incidents |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
@@ -18,15 +18,18 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | Status | Fetch only events with selected status. If query is used, this parameter will be overridden. | False |
 | Priority | Fetch only events with selected priority. If query is used, this parameter will be overridden. | False |
 | Tags | Fetch only events with selected tags. If query is used, this parameter will be overridden. | False |
-| Query | Query parameters will be used as URL encoded values for “query” key. i.e. 'https://api.opsgenie.com/v2/alerts?query=status%3Aopenor%20acknowledged%3Atrue&amp;amp;limit=10&amp;amp;sort=createdAt' | False |
+| Query | Query parameters will be used as URL encoded values for “query” key. i.e. '<https://api.opsgenie.com/v2/alerts?query=status%3Aopenor%20acknowledged%3Atrue&amp;amp;limit=10&amp;amp;sort=createdAt>' | False |
 | Incident type |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### opsgenie-create-alert
+
 ***
 Create an alert in Opsgenie.
 
@@ -34,6 +37,7 @@ Create an alert in Opsgenie.
 #### Base Command
 
 `opsgenie-create-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -65,9 +69,11 @@ Create an alert in Opsgenie.
 
 
 #### Command Example
+
 ```!opsgenie-create-alert message="Example Message"```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -88,12 +94,14 @@ Create an alert in Opsgenie.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|---|
 >| Create | 4c4623e3-0b3f-47b7-becd-907d3e51d129-1638366498716 | 4c4623e3-0b3f-47b7-becd-907d3e51d129-1638366498716 | 3cc69931-167f-411c-a331-768997c29d2e | true | 2021-12-01T13:48:18.757Z | Created alert | true |
 
 
 ### opsgenie-get-alerts
+
 ***
 List the current alerts from OpsGenie.
 
@@ -101,6 +109,7 @@ List the current alerts from OpsGenie.
 #### Base Command
 
 `opsgenie-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -152,9 +161,11 @@ List the current alerts from OpsGenie.
 
 
 #### Command Example
+
 ```!opsgenie-get-alerts limit=1```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -195,12 +206,14 @@ List the current alerts from OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|id|createdAt|acknowledged|count|status|
 >|---|---|---|---|---|
 >| 4c4623e3-0b3f-47b7-becd-907d3e51d129-1638366498716 | 2021-12-01T13:48:18.716Z | false | 1 | open |
 
 
 ### opsgenie-delete-alert
+
 ***
 Delete an alert from OpsGenie.
 
@@ -208,6 +221,7 @@ Delete an alert from OpsGenie.
 #### Base Command
 
 `opsgenie-delete-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -231,9 +245,11 @@ Delete an alert from OpsGenie.
 
 
 #### Command Example
+
 ```!opsgenie-delete-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -254,12 +270,14 @@ Delete an alert from OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|---|
 >| Delete |  |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:40.911Z | Alert does not exist | false |
 
 
 ### opsgenie-ack-alert
+
 ***
 Acknowledge an alert in OpsGenie.
 
@@ -267,6 +285,7 @@ Acknowledge an alert in OpsGenie.
 #### Base Command
 
 `opsgenie-ack-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -291,9 +310,11 @@ Acknowledge an alert in OpsGenie.
 
 
 #### Command Example
+
 ```!opsgenie-ack-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -314,12 +335,14 @@ Acknowledge an alert in OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|---|
 >| Acknowledge |  |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:23.374Z | Alert does not exist | false |
 
 
 ### opsgenie-close-alert
+
 ***
 Close an alert in OpsGenie.
 
@@ -327,6 +350,7 @@ Close an alert in OpsGenie.
 #### Base Command
 
 `opsgenie-close-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -351,9 +375,11 @@ Close an alert in OpsGenie.
 
 
 #### Command Example
+
 ```!opsgenie-close-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -374,12 +400,14 @@ Close an alert in OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|---|
 >| Close |  |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:38.491Z | Alert does not exist | false |
 
 
 ### opsgenie-assign-alert
+
 ***
 Assign an OpsGenie alert.
 
@@ -387,6 +415,7 @@ Assign an OpsGenie alert.
 #### Base Command
 
 `opsgenie-assign-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -413,9 +442,11 @@ Assign an OpsGenie alert.
 
 
 #### Command Example
+
 ```!opsgenie-assign-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 owner_username=b@g.com```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -436,12 +467,14 @@ Assign an OpsGenie alert.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|---|
 >| Assign |  |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:24.942Z | Alert does not exist | false |
 
 
 ### opsgenie-add-responder-alert
+
 ***
 Add a responder to an OpsGenie alert.
 
@@ -449,6 +482,7 @@ Add a responder to an OpsGenie alert.
 #### Base Command
 
 `opsgenie-add-responder-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -475,9 +509,11 @@ Add a responder to an OpsGenie alert.
 
 
 #### Command Example
+
 ```!opsgenie-add-responder-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 responders=schedule,name,test_schedule```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -498,12 +534,14 @@ Add a responder to an OpsGenie alert.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|---|
 >| Add Responder |  |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:26.82Z | Alert does not exist | false |
 
 
 ### opsgenie-get-escalations
+
 ***
 Get escalations from OpsGenie.
 
@@ -511,6 +549,7 @@ Get escalations from OpsGenie.
 #### Base Command
 
 `opsgenie-get-escalations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -538,9 +577,11 @@ Get escalations from OpsGenie.
 
 
 #### Command Example
+
 ```!opsgenie-get-escalations```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -666,13 +707,15 @@ Get escalations from OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie Escalations
+>
 >|description|id|name|ownerTeam|rules|
 >|---|---|---|---|---|
 >|  | 9a441a8d-2410-43f4-9ef2-f7a265e12b74 | Engineering_escalation | id: 51d69df8-c40b-439e-9808-e1a78e54f91b<br/>name: Engineering | {'condition': 'if-not-acked', 'notifyType': 'default', 'delay': {'timeAmount': 0, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': '7835aa84-7440-41d5-90bf-92e0045714d5', 'name': 'Engineering_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'next', 'delay': {'timeAmount': 5, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': '7835aa84-7440-41d5-90bf-92e0045714d5', 'name': 'Engineering_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'all', 'delay': {'timeAmount': 10, 'timeUnit': 'minutes'}, 'recipient': {'type': 'team', 'id': '51d69df8-c40b-439e-9808-e1a78e54f91b', 'name': 'Engineering'}} |
->|  | c8a0f950-577c-4da5-894b-1fd463d9f51c | Integration Team_escalation | id: fbbc3f9a-12f4-4794-9938-7e0a85a06f8b<br/>name: Integration Team | {'condition': 'if-not-acked', 'notifyType': 'default', 'delay': {'timeAmount': 0, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': 'df918339-b999-4878-b69b-3c2c0d508b01', 'name': 'Integration Team_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'default', 'delay': {'timeAmount': 1, 'timeUnit': 'minutes'}, 'recipient': {'type': 'user', 'id': '154d6425-c120-4beb-a3e6-a66c8c44f61d', 'username': 'dvilenchik@paloaltonetworks.com'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'next', 'delay': {'timeAmount': 5, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': 'df918339-b999-4878-b69b-3c2c0d508b01', 'name': 'Integration Team_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'all', 'delay': {'timeAmount': 10, 'timeUnit': 'minutes'}, 'recipient': {'type': 'team', 'id': 'fbbc3f9a-12f4-4794-9938-7e0a85a06f8b', 'name': 'Integration Team'}} |
+>|  | c8a0f950-577c-4da5-894b-1fd463d9f51c | Integration Team_escalation | id: fbbc3f9a-12f4-4794-9938-7e0a85a06f8b<br/>name: Integration Team | {'condition': 'if-not-acked', 'notifyType': 'default', 'delay': {'timeAmount': 0, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': 'df918339-b999-4878-b69b-3c2c0d508b01', 'name': 'Integration Team_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'default', 'delay': {'timeAmount': 1, 'timeUnit': 'minutes'}, 'recipient': {'type': 'user', 'id': '154d6425-c120-4beb-a3e6-a66c8c44f61d', 'username': '<dvilenchik@paloaltonetworks.com>'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'next', 'delay': {'timeAmount': 5, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': 'df918339-b999-4878-b69b-3c2c0d508b01', 'name': 'Integration Team_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'all', 'delay': {'timeAmount': 10, 'timeUnit': 'minutes'}, 'recipient': {'type': 'team', 'id': 'fbbc3f9a-12f4-4794-9938-7e0a85a06f8b', 'name': 'Integration Team'}} |
 
 
 ### opsgenie-escalate-alert
+
 ***
 Escalate an OpsGenie alert.
 
@@ -680,6 +723,7 @@ Escalate an OpsGenie alert.
 #### Base Command
 
 `opsgenie-escalate-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -707,9 +751,11 @@ Escalate an OpsGenie alert.
 
 
 #### Command Example
+
 ```!opsgenie-escalate-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 escalation_id=9a441a8d-2410-43f4-9ef2-f7a265e12b74```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -730,12 +776,14 @@ Escalate an OpsGenie alert.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|---|
 >| Escalate |  |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:31.549Z | Alert does not exist | false |
 
 
 ### opsgenie-add-alert-tag
+
 ***
 Add tag to the OpsGenie alert.
 
@@ -743,6 +791,7 @@ Add tag to the OpsGenie alert.
 #### Base Command
 
 `opsgenie-add-alert-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -768,9 +817,11 @@ Add tag to the OpsGenie alert.
 
 
 #### Command Example
+
 ```!opsgenie-add-alert-tag alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 tags=1,2,3```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -791,12 +842,14 @@ Add tag to the OpsGenie alert.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|---|
 >| Add Tags |  |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:33.376Z | Alert does not exist | false |
 
 
 ### opsgenie-remove-alert-tag
+
 ***
 Remove a tag from the OpsGenie alert.
 
@@ -804,6 +857,7 @@ Remove a tag from the OpsGenie alert.
 #### Base Command
 
 `opsgenie-remove-alert-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -829,9 +883,11 @@ Remove a tag from the OpsGenie alert.
 
 
 #### Command Example
+
 ```!opsgenie-remove-alert-tag alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 tags=1,2,3```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -852,12 +908,14 @@ Remove a tag from the OpsGenie alert.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|---|
 >| Remove Tags |  |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:35.606Z | Alert does not exist | false |
 
 
 ### opsgenie-get-alert-attachments
+
 ***
 Get the attachments of the alert.
 
@@ -865,6 +923,7 @@ Get the attachments of the alert.
 #### Base Command
 
 `opsgenie-get-alert-attachments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -889,6 +948,7 @@ Get the attachments of the alert.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -896,6 +956,7 @@ Get the attachments of the alert.
 
 
 ### opsgenie-get-schedules
+
 ***
 Get a schedule from OpsGenie.
 
@@ -903,6 +964,7 @@ Get a schedule from OpsGenie.
 #### Base Command
 
 `opsgenie-get-schedules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -925,9 +987,11 @@ Get a schedule from OpsGenie.
 
 
 #### Command Example
+
 ```!opsgenie-get-schedules```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -976,6 +1040,7 @@ Get a schedule from OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie Schedule
+>
 >|description|enabled|id|name|ownerTeam|rotations|timezone|
 >|---|---|---|---|---|---|---|
 >| Schedule when escalation was activated | true | 5892636c-6183-4788-99d6-6d93b9095194 | Escalation Schedule | id: fbbc3f9a-12f4-4794-9938-7e0a85a06f8b<br/>name: Integration Team |  | Asia/Jerusalem |
@@ -984,6 +1049,7 @@ Get a schedule from OpsGenie.
 
 
 ### opsgenie-get-schedule-overrides
+
 ***
 Get schedule overrides.
 
@@ -991,6 +1057,7 @@ Get schedule overrides.
 #### Base Command
 
 `opsgenie-get-schedule-overrides`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1016,15 +1083,18 @@ Get schedule overrides.
 
 
 #### Command Example
+
 ```!opsgenie-get-schedule-overrides schedule_id=5892636c-6183-4788-99d6-6d93b9095194```
 
 #### Human Readable Output
 
 >### OpsGenie Schedule
+>
 >**No entries.**
 
 
 ### opsgenie-get-on-call
+
 ***
 Get the on-call users for the provided schedule.
 
@@ -1032,6 +1102,7 @@ Get the on-call users for the provided schedule.
 #### Base Command
 
 `opsgenie-get-on-call`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1054,9 +1125,11 @@ Get the on-call users for the provided schedule.
 
 
 #### Command Example
+
 ```!opsgenie-get-on-call schedule_id=5892636c-6183-4788-99d6-6d93b9095194```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -1087,12 +1160,14 @@ Get the on-call users for the provided schedule.
 #### Human Readable Output
 
 >### OpsGenie Schedule OnCall
+>
 >|_parent|onCallParticipants|
 >|---|---|
->| id: 5892636c-6183-4788-99d6-6d93b9095194<br/>name: Escalation Schedule<br/>enabled: true | {'id': '154d6425-c120-4beb-a3e6-a66c8c44f61d', 'name': 'dvilenchik@paloaltonetworks.com', 'type': 'user'} |
+>| id: 5892636c-6183-4788-99d6-6d93b9095194<br/>name: Escalation Schedule<br/>enabled: true | {'id': '154d6425-c120-4beb-a3e6-a66c8c44f61d', 'name': '<dvilenchik@paloaltonetworks.com>', 'type': 'user'} |
 
 
 ### opsgenie-create-incident
+
 ***
 Create an incident in Opsgenie.
 
@@ -1100,6 +1175,7 @@ Create an incident in Opsgenie.
 #### Base Command
 
 `opsgenie-create-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1127,9 +1203,11 @@ Create an incident in Opsgenie.
 
 
 #### Command Example
+
 ```!opsgenie-create-incident message="test" responders=team,name,test_team,team,name,test_team_1```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -1149,12 +1227,14 @@ Create an incident in Opsgenie.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|incidentId|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|
 >| Create | 4ba53100-30dc-47a6-992a-a96df4d1ba20 | 3cc69931-167f-411c-a331-768997c29d2e | true | 2021-12-01T13:48:49.133Z | Incident created successfully | true |
 
 
 ### opsgenie-delete-incident
+
 ***
 Delete an incident from OpsGenie.
 
@@ -1162,6 +1242,7 @@ Delete an incident from OpsGenie.
 #### Base Command
 
 `opsgenie-delete-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1184,9 +1265,11 @@ Delete an incident from OpsGenie.
 
 
 #### Command Example
+
 ```!opsgenie-delete-incident incident_id=c59086e0-bf2c-44e2-bdfb-ed7747cc126b```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -1206,12 +1289,14 @@ Delete an incident from OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|incidentId|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|
 >| Delete |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:52.534Z |  | false |
 
 
 ### opsgenie-get-incidents
+
 ***
 List the current incidents from OpsGenie.
 
@@ -1219,6 +1304,7 @@ List the current incidents from OpsGenie.
 #### Base Command
 
 `opsgenie-get-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1256,9 +1342,11 @@ List the current incidents from OpsGenie.
 
 
 #### Command Example
+
 ```!opsgenie-get-incidents limit=1```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -1293,12 +1381,14 @@ List the current incidents from OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|id|createdAt|status|
 >|---|---|---|
 >| 4ba53100-30dc-47a6-992a-a96df4d1ba20 | 2021-12-01T13:48:49.006Z | open |
 
 
 ### opsgenie-close-incident
+
 ***
 Close an incident from OpsGenie.
 
@@ -1306,6 +1396,7 @@ Close an incident from OpsGenie.
 #### Base Command
 
 `opsgenie-close-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1329,9 +1420,11 @@ Close an incident from OpsGenie.
 
 
 #### Command Example
+
 ```!opsgenie-close-incident incident_id=c59086e0-bf2c-44e2-bdfb-ed7747cc126b```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -1351,12 +1444,14 @@ Close an incident from OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|incidentId|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|
 >| Close |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:50.974Z |  | false |
 
 
 ### opsgenie-resolve-incident
+
 ***
 Resolve an incident from OpsGenie.
 
@@ -1364,6 +1459,7 @@ Resolve an incident from OpsGenie.
 #### Base Command
 
 `opsgenie-resolve-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1387,9 +1483,11 @@ Resolve an incident from OpsGenie.
 
 
 #### Command Example
+
 ```!opsgenie-resolve-incident incident_id=b15c7555-d685-4a96-8798-46320618004e```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -1409,12 +1507,14 @@ Resolve an incident from OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|incidentId|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|
 >| Resolve |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:57.042Z |  | false |
 
 
 ### opsgenie-add-responder-incident
+
 ***
 Add a responder to an OpsGenie incident.
 
@@ -1422,6 +1522,7 @@ Add a responder to an OpsGenie incident.
 #### Base Command
 
 `opsgenie-add-responder-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1446,9 +1547,11 @@ Add a responder to an OpsGenie incident.
 
 
 #### Command Example
+
 ```!opsgenie-add-responder-incident incident_id=577424c1-b03c-4d23-9871-da0d395fea17 responders="team,name,Integration Team"```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -1468,12 +1571,14 @@ Add a responder to an OpsGenie incident.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|incidentId|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|
 >| Add Responder |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:59.193Z | Given teams/users already added as responders. | false |
 
 
 ### opsgenie-add-tag-incident
+
 ***
 Add a tag to the OpsGenie incident.
 
@@ -1481,6 +1586,7 @@ Add a tag to the OpsGenie incident.
 #### Base Command
 
 `opsgenie-add-tag-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1505,9 +1611,11 @@ Add a tag to the OpsGenie incident.
 
 
 #### Command Example
+
 ```!opsgenie-add-tag-incident incident_id=b15c7555-d685-4a96-8798-46320618004e tags=1,2,3```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -1527,12 +1635,14 @@ Add a tag to the OpsGenie incident.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|incidentId|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|
 >| Add Tags | b15c7555-d685-4a96-8798-46320618004e | 3cc69931-167f-411c-a331-768997c29d2e | true | 2021-12-01T13:49:00.839Z | Added tags | true |
 
 
 ### opsgenie-remove-tag-incident
+
 ***
 Remove a tag from the OpsGenie alert.
 
@@ -1540,6 +1650,7 @@ Remove a tag from the OpsGenie alert.
 #### Base Command
 
 `opsgenie-remove-tag-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1564,9 +1675,11 @@ Remove a tag from the OpsGenie alert.
 
 
 #### Command Example
+
 ```!opsgenie-remove-tag-incident incident_id=b15c7555-d685-4a96-8798-46320618004e tags=1,2```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -1586,17 +1699,20 @@ Remove a tag from the OpsGenie alert.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|incidentId|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|
 >| Remove Tags | b15c7555-d685-4a96-8798-46320618004e | 3cc69931-167f-411c-a331-768997c29d2e | true | 2021-12-01T13:49:02.53Z | Removed tags | true |
 
 ### opsgenie-invite-user
+
 ***
 Invite a user to OpsGenie
 
 #### Base Command
 
 `opsgenie-invite-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1615,9 +1731,11 @@ Invite a user to OpsGenie
 
 
 #### Command Example
+
 ```!opsgenie-invite-user username=test@example.com fullName="Test XSOAR" role=user```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -1632,11 +1750,13 @@ Invite a user to OpsGenie
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|Id|name|
 >|---|---|
->| 3cc69931-167f-411c-a331-768997c29d2e | test@example.com |
+>| 3cc69931-167f-411c-a331-768997c29d2e | <test@example.com> |
 
 ### opsgenie-get-teams
+
 ***
 Get teams
 
@@ -1644,6 +1764,7 @@ Get teams
 #### Base Command
 
 `opsgenie-get-teams`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1663,9 +1784,11 @@ Get teams
 
 
 #### Command Example
+
 ```!opsgenie-get-teams```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -1696,6 +1819,7 @@ Get teams
 #### Human Readable Output
 
 >### OpsGenie Team
+>
 >|description|id|links|name|
 >|---|---|---|---|
 >| Engineering | 51d69df8-c40b-439e-9808-e1a78e54f91b | web: https:<span>//</span>demisto1.app.opsgenie.com/teams/dashboard/51d69df8-c40b-439e-9808-e1a78e54f91b/main<br/>api: https:<span>//</span>api.opsgenie.com/v2/teams/51d69df8-c40b-439e-9808-e1a78e54f91b | Engineering |
@@ -1703,12 +1827,14 @@ Get teams
 
 
 ### opsgenie-get-request
+
 ***
 Get a request in Opsgenie.
 
 #### Base Command
 
 `opsgenie-get-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1742,9 +1868,11 @@ Get a request in Opsgenie.
 
 
 #### Command Example
+
 ```opsgenie-get-request request_id=b79800b2-4378-4249-8677-0bf2332b8a1f request_type=alerts"```
 
 #### Context Example
+
 ```json
 {
     "OpsGenie": {
@@ -1765,6 +1893,7 @@ Get a request in Opsgenie.
 #### Human Readable Output
 
 >### OpsGenie
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|status|success|
 >|---|---|---|---|---|---|---|---|
 >| Create | 4c4623e3-0b3f-47b7-becd-907d3e51d129-1638366498716 | 4c4623e3-0b3f-47b7-becd-907d3e51d129-1638366498716 | 3cc69931-167f-411c-a331-768997c29d2e | true | 2021-12-01T13:48:18.757Z | Created alert | true |
@@ -1773,18 +1902,22 @@ Get a request in Opsgenie.
 ## Breaking changes from the previous version of this integration - OpsGenie v3
 
 ### Commands
+
 Removed the following commands in this version:
+
 * ***opsgenie-list-alerts*** - this command was replaced by *opsgenie-get-alerts*.
 * ***opsgenie-get-alert*** - this command was replaced by *opsgenie-get-alerts*.
 * ***opsgenie-get-schedule*** - this command was replaced by *opsgenie-get-schedules*.
 * ***opsgenie-list-schedules*** - this command was replaced by *opsgenie-get-schedules*.
 
 ### Arguments
-- In the ***opsgenie-get-on-call*** command, the *schedule-id* argument was replaced by the *schedule_id* and *schedule_name* arguments.
-- In the ***opsgenie-create-alert*** command, the default value of the *priority* argument was changed to 'P3'.
+
+* In the ***opsgenie-get-on-call*** command, the *schedule-id* argument was replaced by the *schedule_id* and *schedule_name* arguments.
+* In the ***opsgenie-create-alert*** command, the default value of the *priority* argument was changed to 'P3'.
 
 ### Outputs
-- In the ***opsgenie-create-alert*** command the following outputs were replaced:
+
+* In the ***opsgenie-create-alert*** command the following outputs were replaced:
   * *OpsGenieV2.CreatedAlert.action* - replaced by *OpsGenie.Alert.action*.
   * *OpsGenieV2.CreatedAlert.alertId* - replaced by *OpsGenie.Alert.alertId*.
   * *OpsGenieV2.CreatedAlert.alias* - replaced by *OpsGenie.Alert.alias*.
@@ -1795,7 +1928,7 @@ Removed the following commands in this version:
   * *OpsGenieV2.CreatedAlert.status* - replaced by *OpsGenie.Alert.status*.
   * *OpsGenieV2.CreatedAlert.success* - replaced by *OpsGenie.Alert.success*.
 
-- In the ***opsgenie-delete-alert*** command the following outputs were replaced:
+* In the ***opsgenie-delete-alert*** command the following outputs were replaced:
   * *OpsGenieV2.DeletedAlert.action* - replaced by *OpsGenie.DeletedAlert.action*.
   * *OpsGenieV2.DeletedAlert.alertId* - replaced by *OpsGenie.DeletedAlert.alertId*.
   * *OpsGenieV2.DeletedAlert.alias* - replaced by *OpsGenie.DeletedAlert.alias*.
@@ -1806,7 +1939,7 @@ Removed the following commands in this version:
   * *OpsGenieV2.DeletedAlert.status* - replaced by *OpsGenie.DeletedAlert.status*.
   * *OpsGenieV2.DeletedAlert.success* - replaced by *OpsGenie.DeletedAlert.success*.
 
-- In the ***opsgenie-ack-alert*** command the following outputs were replaced:
+* In the ***opsgenie-ack-alert*** command the following outputs were replaced:
   * *OpsGenieV2.AckedAlert.action* - replaced by *OpsGenie.AckedAlert.action*.
   * *OpsGenieV2.AckedAlert.alertId* -replaced by *OpsGenie.AckedAlert.alertId*.
   * *OpsGenieV2.AckedAlert.alias* -replaced by *OpsGenie.AckedAlert.alias*.
@@ -1817,7 +1950,7 @@ Removed the following commands in this version:
   * *OpsGenieV2.AckedAlert.status* - replaced by *OpsGenie.AckedAlert.status*.
   * *OpsGenieV2.AckedAlert.success* - replaced by *OpsGenie.AckedAlert.success*.
 
-- In the ***opsgenie-get-on-call*** command the following outputs were replaced:
+* In the ***opsgenie-get-on-call*** command the following outputs were replaced:
   * *OpsGenieV2.OnCall._parent.enabled* - replaced by *OpsGenie.Schedule.OnCall._parent.enabled*.
   * *OpsGenieV2.OnCall._parent.id* - replaced by *OpsGenie.Schedule.OnCall._parent.id*.
   * *OpsGenieV2.OnCall._parent.name* - replaced by *OpsGenie.Schedule.OnCall._parent.name*.
@@ -1825,7 +1958,7 @@ Removed the following commands in this version:
   * *OpsGenieV2.OnCall.onCallParticipants.name* - replaced by *OpsGenie.Schedule.OnCall.onCallParticipants.name*.
   * *OpsGenieV2.OnCall.onCallParticipants.type* - replaced by *OpsGenie.Schedule.OnCall.onCallParticipants.type*.
 
-- In the ***opsgenie-close-alert*** command the following outputs were replaced:
+* In the ***opsgenie-close-alert*** command the following outputs were replaced:
   * *OpsGenieV2.CloseAlert.action* - replaced by *OpsGenie.ClosedAlert.action*.
   * *OpsGenieV2.CloseAlert.alertId* - replaced by *OpsGenie.ClosedAlert.alertId*.
   * *OpsGenieV2.CloseAlert.alias* - replaced by *OpsGenie.ClosedAlert.alias*.

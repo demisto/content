@@ -63,7 +63,7 @@ Channel IDs typically follow the format `C` + an alphanumeric string.
 
 ### Creating a Custom App
 
-1. Navigate to: https://api.slack.com/apps/ .
+1. Navigate to: <https://api.slack.com/apps/> .
 2. Click **Create an App**.
 
 ![create-app-1](../../doc_files/SlackDocs_create_app.png)
@@ -541,6 +541,7 @@ Get details about a specified user.
 #### Human Readable Output
 
 > ### Details for Slack user: cortex_xsoar
+>
 >|ID|Username|Name|
 >|---|---|---|
 >| U0XXXXXXXX | demisto_integration | cortex_xsoar |

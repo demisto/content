@@ -1,4 +1,5 @@
 Cryptocurrency will help classify Cryptocurrency indicators as suspicious when ingested.
+
 ## Configure Cryptocurrency in Cortex
 
 
@@ -8,9 +9,12 @@ Cryptocurrency will help classify Cryptocurrency indicators as suspicious when i
 | reputation | Reputation | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### crypto
+
 ***
 Return Cryptocurrency reputation.
 
@@ -18,6 +22,7 @@ Return Cryptocurrency reputation.
 #### Base Command
 
 `crypto`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -39,9 +44,11 @@ Return Cryptocurrency reputation.
 
 
 #### Command Example
+
 ```!crypto crypto=bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i```
 
 #### Context Example
+
 ```json
 {
     "Cryptocurrency": {
@@ -61,6 +68,7 @@ Return Cryptocurrency reputation.
 #### Human Readable Output
 
 >### Cryptocurrency reputation for bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i
+>
 >|Address|Cryptocurrency Address Type|Reputation|
 >|---|---|---|
 >| bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i | bitcoin | Suspicious |

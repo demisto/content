@@ -13,9 +13,12 @@ This integration was integrated and tested with version 1.20 of BreachRx
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### breachrx-incident-create
+
 ***
 Create a privacy Incident on the BreachRx platform.
 
@@ -23,6 +26,7 @@ Create a privacy Incident on the BreachRx platform.
 #### Base Command
 
 `breachrx-incident-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,6 +45,7 @@ Create a privacy Incident on the BreachRx platform.
 | BreachRx.Incident.identifier | string | The unique identifier of the privacy Incident on the BreachRx platform. |
 
 ### breachrx-incident-actions-get
+
 ***
 Fetch all actions for a BreachRx privacy Incident.
 
@@ -48,6 +53,7 @@ Fetch all actions for a BreachRx privacy Incident.
 #### Base Command
 
 `breachrx-incident-actions-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -66,6 +72,7 @@ Fetch all actions for a BreachRx privacy Incident.
 | BreachRx.Incident.Actions.user.email | string | The email of the assigned user of an Action on a BreachRx privacy Incident, if that Action is assigned to a user \(null otherwise\). |
 
 ### breachrx-incident-import
+
 ***
 Link a BreachRx privacy Incident with an XSOAR Incident.
 
@@ -73,6 +80,7 @@ Link a BreachRx privacy Incident with an XSOAR Incident.
 #### Base Command
 
 `breachrx-incident-import`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -90,6 +98,7 @@ Link a BreachRx privacy Incident with an XSOAR Incident.
 | BreachRx.Incident.identifier | string | The unique identifier of the privacy Incident on the BreachRx platform. |
 
 ### breachrx-incident-get
+
 ***
 Find a BreachRx privacy Incident on the connected BreachRx platform.
 
@@ -97,6 +106,7 @@ Find a BreachRx privacy Incident on the connected BreachRx platform.
 #### Base Command
 
 `breachrx-incident-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -5,7 +5,9 @@ The Access playbook orchestrates across multiple products to extract and enrich 
 
 
 ##### What does this pack do?
+
 The playbooks included in this pack help you save time and automate repetitive tasks associated with Malware incidents:
+
 - Create an Access incident within Cortex XSOAR associated with the unauthorized access.
 - Extract and enrich user information, and retrieve the user’s manager details.
 - Extract and enrich IP information.

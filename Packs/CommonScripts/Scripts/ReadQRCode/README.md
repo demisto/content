@@ -55,7 +55,8 @@ The output of this script includes the output of the script "extractIndicators" 
 ### Human Readable Output
 
 >### QR Code Read
+>
 >|Text|
 >|---|
->| https://xsoar.pan.dev/ |
+>| <https://xsoar.pan.dev/> |
 

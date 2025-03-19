@@ -24,6 +24,7 @@ get details of the mantis issue
 | Mantis.Issue.reporter | Unknown | reporter of the issue | 
 | Mantis.Issue.status | Unknown | status of the issues created | 
 | Mantis.Issue.created_at | Unknown | time  at which issue created | 
+
 ### mantis-create-issue
 
 ***
@@ -45,6 +46,7 @@ create a Mantis issue
 #### Context Output
 
 There is no context output for this command.
+
 ### mantis-get-issues
 
 ***
@@ -64,6 +66,7 @@ get a list of mantis issues
 #### Context Output
 
 There is no context output for this command.
+
 ### mantis-add-note
 
 ***
@@ -84,6 +87,7 @@ add Note to a Mantis issue
 #### Context Output
 
 There is no context output for this command.
+
 ### mantis-close-issue
 
 ***

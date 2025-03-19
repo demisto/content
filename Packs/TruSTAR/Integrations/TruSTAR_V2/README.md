@@ -1,21 +1,25 @@
 TruSTAR is an Intelligence Management Platform that helps you operationalize data across tools and teams, helping you prioritize investigations and accelerate incident response.
 This integration was integrated and tested with version 0.3.31 of TruSTAR v2
+
 ## Configure TruSTAR v2 in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| server | Server URL \(e.g. https://api.trustar.co\) | True |
-| station | Station URL \(e.g. https://station.trustar.co\) |  |
+| server | Server URL \(e.g. <https://api.trustar.co\>) | True |
+| station | Station URL \(e.g. <https://station.trustar.co\>) |  |
 | key | TruSTAR API Key | True |
 | secret | TruSTAR API Secret | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### trustar-search-indicators
+
 ***
 Searches for all indicators that contain the given search term.
 
@@ -23,6 +27,7 @@ Searches for all indicators that contain the given search term.
 #### Base Command
 
 `trustar-search-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -60,9 +65,11 @@ Searches for all indicators that contain the given search term.
 
 
 #### Command Example
+
 ```!trustar-search-indicators```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -397,31 +404,32 @@ Searches for all indicators that contain the given search term.
 #### Human Readable Output
 
 >### Results
+>
 >|indicatorType|value|
 >|---|---|
 >| MD5 | 7aef3cfa5a71fb2010d8b7ffca95ccf0 |
->| URL | https://api.intel471.com/v1/download/malwareintel/b5b10e9b7dc006800dda70d2538d487a737490631b15bd2f5b0448aff6a7b860.zip |
+>| URL | <https://api.intel471.com/v1/download/malwareintel/b5b10e9b7dc006800dda70d2538d487a737490631b15bd2f5b0448aff6a7b860.zip> |
 >| MALWARE | SMOKELOADER |
 >| SHA1 | f5b9b2828b1cc279700e403b1da7ae6087160c61 |
 >| SHA256 | b5b10e9b7dc006800dda70d2538d487a737490631b15bd2f5b0448aff6a7b860 |
 >| SHA1 | 6b642c67b51809a851c08a019312a84073e5fd2e |
 >| MD5 | 33cda57b3af3856a31fec725ecad44f9 |
 >| SHA256 | bb5e7e6f1b1bedd9759b1d16d9f34ff97722706c85df7feb9a7f772121d4508d |
->| URL | https://api.intel471.com/v1/download/malwareintel/bb5e7e6f1b1bedd9759b1d16d9f34ff97722706c85df7feb9a7f772121d4508d.zip |
->| URL | https://api.intel471.com/v1/download/malwareintel/1bb1a78d2366930a83f94932dc481ec5d24309b3c676902ef2d755c430a67f21.zip |
+>| URL | <https://api.intel471.com/v1/download/malwareintel/bb5e7e6f1b1bedd9759b1d16d9f34ff97722706c85df7feb9a7f772121d4508d.zip> |
+>| URL | <https://api.intel471.com/v1/download/malwareintel/1bb1a78d2366930a83f94932dc481ec5d24309b3c676902ef2d755c430a67f21.zip> |
 >| SHA1 | 22c864a9597b0112b345ecc2f39b96b39e055728 |
 >| SHA256 | 1bb1a78d2366930a83f94932dc481ec5d24309b3c676902ef2d755c430a67f21 |
 >| MD5 | 61b73375a486e3ca1a8d3e98434a9623 |
->| URL | https://api.intel471.com/v1/download/malwareintel/b45fc4e1523c2bde997dd0c76e7d5124d940b06601556fdd4a42b9cf20357c87.zip |
+>| URL | <https://api.intel471.com/v1/download/malwareintel/b45fc4e1523c2bde997dd0c76e7d5124d940b06601556fdd4a42b9cf20357c87.zip> |
 >| SHA256 | b45fc4e1523c2bde997dd0c76e7d5124d940b06601556fdd4a42b9cf20357c87 |
 >| MD5 | 75040606c388b7675adaa17b91fe6e9c |
 >| SHA1 | 9ad5b0aec764c0a9c42b019fdbeac672030ec64d |
 >| MD5 | 017008c65929cf54ee4a035b490c5f4b |
 >| SHA1 | c5429e1391d52404eaca77289ead47853e68263d |
->| URL | https://api.intel471.com/v1/download/malwareintel/2234bc82dd0aa9586b664c4bb679988b653afd8b367f3c8e29f181c37028feab.zip |
+>| URL | <https://api.intel471.com/v1/download/malwareintel/2234bc82dd0aa9586b664c4bb679988b653afd8b367f3c8e29f181c37028feab.zip> |
 >| SHA256 | 2234bc82dd0aa9586b664c4bb679988b653afd8b367f3c8e29f181c37028feab |
 >| SHA256 | 26113fb83b96dbea7ada873cc84c2a5b66e1bc6761f7011b14e11f1567d4e430 |
->| URL | https://api.intel471.com/v1/download/malwareintel/26113fb83b96dbea7ada873cc84c2a5b66e1bc6761f7011b14e11f1567d4e430.zip |
+>| URL | <https://api.intel471.com/v1/download/malwareintel/26113fb83b96dbea7ada873cc84c2a5b66e1bc6761f7011b14e11f1567d4e430.zip> |
 >| MD5 | 4f4af35ed47d965bcd1012f2da2d75cd |
 >| SHA1 | da3111fb65f02659d52900412c8968a342fd19ae |
 
@@ -429,6 +437,7 @@ Searches for all indicators that contain the given search term.
 
 
 ### trustar-get-enclaves
+
 ***
 Returns the list of all enclaves that the user has access to, as well as whether they can read, create, and update reports in that enclave.
 
@@ -436,6 +445,7 @@ Returns the list of all enclaves that the user has access to, as well as whether
 #### Base Command
 
 `trustar-get-enclaves`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -455,9 +465,11 @@ Returns the list of all enclaves that the user has access to, as well as whether
 
 
 #### Command Example
+
 ```!trustar-get-enclaves```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -942,6 +954,7 @@ Returns the list of all enclaves that the user has access to, as well as whether
 #### Human Readable Output
 
 >### TruSTAR Enclaves
+>
 >|create|id|name|read|type|update|
 >|---|---|---|---|---|---|
 >| false | ed35f85a-d6bf-4e74-a0f8-61651abf705e | IBM X-Force | true | CLOSED | false |
@@ -1007,6 +1020,7 @@ Returns the list of all enclaves that the user has access to, as well as whether
 
 
 ### trustar-related-indicators
+
 ***
 Finds all reports that contain any of the given indicators and returns correlated indicators from those reports.
 
@@ -1014,6 +1028,7 @@ Finds all reports that contain any of the given indicators and returns correlate
 #### Base Command
 
 `trustar-related-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1047,9 +1062,11 @@ Finds all reports that contain any of the given indicators and returns correlate
 
 
 #### Command Example
+
 ```!trustar-related-indicators indicators=WANNACRY```
 
 #### Context Example
+
 ```
 {
     "CVE": {
@@ -1395,18 +1412,19 @@ Finds all reports that contain any of the given indicators and returns correlate
 #### Human Readable Output
 
 >### Results
+>
 >|indicatorType|value|
 >|---|---|
 >| SHA256 | ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa |
->| URL | https://urlhaus.abuse.ch/url/407033/ |
->| URL | http://demo.singhealth.xyz/files/wannacry/generalelectioncandidates.pdf.exe |
+>| URL | <https://urlhaus.abuse.ch/url/407033/> |
+>| URL | <http://demo.singhealth.xyz/files/wannacry/generalelectioncandidates.pdf.exe> |
 >| URL | demo.singhealth.xyz |
->| URL | https://urlhaus-api.abuse.ch/v1/download/ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa/ |
+>| URL | <https://urlhaus-api.abuse.ch/v1/download/ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa/> |
 >| MD5 | 84c82835a5d21bbcf75a61706d8ab549 |
->| URL | http://demo.singhealth.xyz/files/wannacry/ransomware.wannacry.zip |
+>| URL | <http://demo.singhealth.xyz/files/wannacry/ransomware.wannacry.zip> |
 >| MD5 | efe76bf09daba2c594d2bc173d9b5cf0 |
->| URL | https://urlhaus.abuse.ch/url/407034/ |
->| URL | https://urlhaus-api.abuse.ch/v1/download/707a9f323556179571bc832e34fa592066b1d5f2cac4a7426fe163597e3e618a/ |
+>| URL | <https://urlhaus.abuse.ch/url/407034/> |
+>| URL | <https://urlhaus-api.abuse.ch/v1/download/707a9f323556179571bc832e34fa592066b1d5f2cac4a7426fe163597e3e618a/> |
 >| SHA256 | 707a9f323556179571bc832e34fa592066b1d5f2cac4a7426fe163597e3e618a |
 >| SHA256 | ce997cff0db912bf873636856b883915ebbbb9d2672a31539710e2b301fdea51 |
 >| IP | 201.35.192.251 |
@@ -1424,6 +1442,7 @@ Finds all reports that contain any of the given indicators and returns correlate
 >| CVE | CVE-2017-0147 |
 
 ### trustar-trending-indicators
+
 ***
 Find indicators that are trending in the community.
 
@@ -1431,6 +1450,7 @@ Find indicators that are trending in the community.
 #### Base Command
 
 `trustar-trending-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1464,9 +1484,11 @@ Find indicators that are trending in the community.
 
 
 #### Command Example
+
 ```!trustar-trending-indicators days_back=1 indicator_type=MALWARE```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -1529,6 +1551,7 @@ Find indicators that are trending in the community.
 #### Human Readable Output
 
 >### Results
+>
 >|correlationCount|indicatorType|value|
 >|---|---|---|
 >| 85 | MALWARE | TRICKBOT |
@@ -1544,6 +1567,7 @@ Find indicators that are trending in the community.
 
 
 ### trustar-indicators-metadata
+
 ***
 Provide metadata associated with a list of indicators, including value, indicatorType, noteCount, sightings, lastSeen, enclaveIds, and tags. The metadata is determined based on the enclaves the user making the request has READ access to.
 
@@ -1551,6 +1575,7 @@ Provide metadata associated with a list of indicators, including value, indicato
 #### Base Command
 
 `trustar-indicators-metadata`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1588,9 +1613,11 @@ Provide metadata associated with a list of indicators, including value, indicato
 
 
 #### Command Example
+
 ```!trustar-indicators-metadata indicators=37.26.41.210```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -1624,12 +1651,14 @@ Provide metadata associated with a list of indicators, including value, indicato
 #### Human Readable Output
 
 >### Results
+>
 >|correlationCount|enclaveIds|firstSeen|indicatorType|lastSeen|notes|tags|value|
 >|---|---|---|---|---|---|---|---|
 >| 0 | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | 2020-07-02 04:59:03 | IP | 2020-07-02 04:59:03 |  |  | 37.26.41.210 |
 
 
 ### trustar-indicator-summaries
+
 ***
 Provides structured summaries about indicators, which are derived from intelligence sources on the TruSTAR Marketplace.
 
@@ -1637,6 +1666,7 @@ Provides structured summaries about indicators, which are derived from intellige
 #### Base Command
 
 `trustar-indicator-summaries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1679,12 +1709,14 @@ Provides structured summaries about indicators, which are derived from intellige
 
 
 #### Command Example
+
 ```!trustar-indicator-summaries values=LOCKY,23.121.54.102```
 
 #### Human Readable Output
 
 
 ### trustar-get-whitelisted-indicators
+
 ***
 Gets a list of indicators that the user’s company has added to allow list.
 
@@ -1692,6 +1724,7 @@ Gets a list of indicators that the user’s company has added to allow list.
 #### Base Command
 
 `trustar-get-whitelisted-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1723,9 +1756,11 @@ Gets a list of indicators that the user’s company has added to allow list.
 
 
 #### Command Example
+
 ```!trustar-get-whitelisted-indicators```
 
 #### Context Example
+
 ```
 {
     "Account": {
@@ -1978,30 +2013,32 @@ Gets a list of indicators that the user’s company has added to allow list.
 #### Human Readable Output
 
 >### Results
+>
 >|indicatorType|value|
 >|---|---|
->| EMAIL_ADDRESS | htain@trustar.co |
+>| EMAIL_ADDRESS | <htain@trustar.co> |
 >| URL | savc.net |
 >| IP | 22.37.45.53 |
 >| IP | 1.1.1.1 |
 >| IP | 88.249.181.198 |
 >| MD5 | 1e82dd741e908d02e4eff82461f1297e |
->| URL | https://www.binarydefense.com |
+>| URL | <https://www.binarydefense.com> |
 >| URL | docusign.com |
->| URL | www.badsite.net |
+>| URL | <www.badsite.net> |
 >| URL | safrica24.com |
->| URL | https://my.silobreaker.com/5_2273991310555742265 |
+>| URL | <https://my.silobreaker.com/5_2273991310555742265> |
 >| URL | test123.com |
->| URL | https://my.silobreaker.com/5_2273903231513919758 |
->| URL | https://urlscan.io/search/#lihkg.com |
+>| URL | <https://my.silobreaker.com/5_2273903231513919758> |
+>| URL | <https://urlscan.io/search/#lihkg.com> |
 >| SHA256 | 3b05383323d4c1485f5a4d5dddfe55275e441c66714cee101baee9cdd19b18cc |
->| URL | https://cf-p.falcon.crowdstrike.com/2017/04/26202230/chollima1.png |
+>| URL | <https://cf-p.falcon.crowdstrike.com/2017/04/26202230/chollima1.png> |
 >| SOFTWARE | \windows\system32\cmd.exe |
 >| IP | 109.120.214.195 |
 
 
 
 ### trustar-get-reports
+
 ***
 Returns incident reports matching the specified filters. All parameters are optional: if nothing is specified, the latest 25 reports accessible by the user will be returned (matching the view the user would have by logging into Station).
 
@@ -2009,6 +2046,7 @@ Returns incident reports matching the specified filters. All parameters are opti
 #### Base Command
 
 `trustar-get-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2032,9 +2070,11 @@ Returns incident reports matching the specified filters. All parameters are opti
 
 
 #### Command Example
+
 ```!trustar-get-reports enclave_ids=6ef1078c-a74a-4b42-9344-56c6adea0bda from_time="1 day ago"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2045,6 +2085,7 @@ Returns incident reports matching the specified filters. All parameters are opti
 
 
 ### trustar-get-indicators-for-report
+
 ***
 Return a list of indicators extracted from a report.
 
@@ -2052,6 +2093,7 @@ Return a list of indicators extracted from a report.
 #### Base Command
 
 `trustar-get-indicators-for-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2084,9 +2126,11 @@ Return a list of indicators extracted from a report.
 
 
 #### Command Example
+
 ```!trustar-get-indicators-for-report report_id=6e00a714-379a-4db8-ac0c-812a629c8288```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -2168,16 +2212,18 @@ Return a list of indicators extracted from a report.
 #### Human Readable Output
 
 >### Results
+>
 >|indicatorType|value|
 >|---|---|
 >| SHA1 | c5737f53ea049a88162297604b41c791dd8583b3 |
->| URL | http://travellux.nl |
+>| URL | <http://travellux.nl> |
 >| URL | travellux.nl |
->| URL | https://zenshin-talent.us4.list-manage.com/profile?u=bf272ebe406152763de31f5a2&id=d178821f2b&e=0cbc95e07c |
->| URL | https://zenshin-talent.us4.list-manage.com/unsubscribe?u=bf272ebe406152763de31f5a2&id=d178821f2b&e=0cbc95e07c&c=d1fe02d910 |
+>| URL | <https://zenshin-talent.us4.list-manage.com/profile?u=bf272ebe406152763de31f5a2&id=d178821f2b&e=0cbc95e07c> |
+>| URL | <https://zenshin-talent.us4.list-manage.com/unsubscribe?u=bf272ebe406152763de31f5a2&id=d178821f2b&e=0cbc95e07c&c=d1fe02d910> |
 
 
 ### trustar-move-report
+
 ***
 Move a report from one enclave to another.
 
@@ -2185,6 +2231,7 @@ Move a report from one enclave to another.
 #### Base Command
 
 `trustar-move-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2198,9 +2245,11 @@ Move a report from one enclave to another.
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-move-report report_id=20ce2d7f-4a25-4bed-a74e-ec99bf0b46db dest-enclave-id=71001c42-2d05-4491-bf35-ee7c678b92da```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2211,6 +2260,7 @@ There is no context output for this command.
 
 
 ### trustar-copy-report
+
 ***
 Copies a report from one enclave to another.
 
@@ -2218,6 +2268,7 @@ Copies a report from one enclave to another.
 #### Base Command
 
 `trustar-copy-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2231,9 +2282,11 @@ Copies a report from one enclave to another.
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-copy-report report_id=6e00a714-379a-4db8-ac0c-812a629c8288 dest_enclave_id=c879f089-ffbd-4a2f-8144-d3e8bdbd6981```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2245,6 +2298,7 @@ There is no context output for this command.
 
 
 ### trustar-submit-report
+
 ***
 Submit a new incident report, and receive the ID it has been assigned in TruSTAR’s system.
 
@@ -2252,6 +2306,7 @@ Submit a new incident report, and receive the ID it has been assigned in TruSTAR
 #### Base Command
 
 `trustar-submit-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2275,9 +2330,11 @@ Submit a new incident report, and receive the ID it has been assigned in TruSTAR
 
 
 #### Command Example
+
 ```!trustar-submit-report title="foo title" report_body="the report body" enclave_ids=080234eb-d818-4507-a676-dae5c5927d94```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -2293,12 +2350,14 @@ Submit a new incident report, and receive the ID it has been assigned in TruSTAR
 #### Human Readable Output
 
 >### TruSTAR report was successfully created
+>
 >|distributionType|enclaveIds|id|reportBody|reportDeepLink|timeBegan|title|
 >|---|---|---|---|---|---|---|
->| ENCLAVE | 080234eb-d818-4507-a676-dae5c5927d94 | 5cf979cb-aae6-4270-8295-52a2ed2b36a1 | the report body | https://station.trustar.co/constellation/reports/5cf979cb-aae6-4270-8295-52a2ed2b36a1 | 2020-07-02T20:51:05.817066+00:00 | foo title |
+>| ENCLAVE | 080234eb-d818-4507-a676-dae5c5927d94 | 5cf979cb-aae6-4270-8295-52a2ed2b36a1 | the report body | <https://station.trustar.co/constellation/reports/5cf979cb-aae6-4270-8295-52a2ed2b36a1> | 2020-07-02T20:51:05.817066+00:00 | foo title |
 
 
 ### trustar-delete-report
+
 ***
 Deletes a report as specified by given id (id can be TruSTAR report id or external id).
 
@@ -2306,6 +2365,7 @@ Deletes a report as specified by given id (id can be TruSTAR report id or extern
 #### Base Command
 
 `trustar-delete-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2320,9 +2380,11 @@ There is no context output for this command.
 
 
 #### Command Example
+
 ```!trustar-delete-report report_id=20ce2d7f-4a25-4bed-a74e-ec99bf0b46db```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2333,6 +2395,7 @@ There is no context output for this command.
 
 
 ### trustar-correlated-reports
+
 ***
 Returns a list of all reports that contain any of the provided indicator values.
 
@@ -2340,6 +2403,7 @@ Returns a list of all reports that contain any of the provided indicator values.
 #### Base Command
 
 `trustar-correlated-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2355,9 +2419,11 @@ Returns a list of all reports that contain any of the provided indicator values.
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-correlated-reports indicators=WANNACRY```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2369,6 +2435,7 @@ There is no context output for this command.
 
 
 ### trustar-report-details
+
 ***
 Finds a report by its ID and returns the report details.
 
@@ -2376,6 +2443,7 @@ Finds a report by its ID and returns the report details.
 #### Base Command
 
 `trustar-report-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2395,9 +2463,11 @@ Finds a report by its ID and returns the report details.
 
 
 #### Command Example
+
 ```!trustar-report-details report_id=6e00a714-379a-4db8-ac0c-812a629c8288```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -2413,12 +2483,14 @@ Finds a report by its ID and returns the report details.
 #### Human Readable Output
 
 >### TruSTAR report ID 6e00a714-379a-4db8-ac0c-812a629c8288 details
+>
 >|created|distributionType|enclaveIds|externalTrackingId|id|reportBody|reportDeepLink|timeBegan|title|updated|
 >|---|---|---|---|---|---|---|---|---|---|
->| 2020-06-22 15:25:04 | ENCLAVE | d915e45a-d0c8-4a75-987a-775649020c96 | PGJmMjcyZWJlNDA2MTUyNzYzZGUzMWY1YTIuMGNiYzk1ZTA3Yy4yMDIwMDYxNzEzMTQyNS5kMWZlMDJkOTEwLmNmYjY5Mjg1QG1haWwyMjYuc2VhODEubWNzdi5uZXQ+ | 6e00a714-379a-4db8-ac0c-812a629c8288 | <br/>==================================================<br/> EMAIL THREAD DATE: 2020-06-22 11:22:59<br/>==================================================<br/>Fwd: Looking to hire? | https://station.trustar.co/constellation/reports/6e00a714-379a-4db8-ac0c-812a629c8288 | 2020-06-22 15:25:04 | The new title | 2020-06-22 15:25:04 |
+>| 2020-06-22 15:25:04 | ENCLAVE | d915e45a-d0c8-4a75-987a-775649020c96 | PGJmMjcyZWJlNDA2MTUyNzYzZGUzMWY1YTIuMGNiYzk1ZTA3Yy4yMDIwMDYxNzEzMTQyNS5kMWZlMDJkOTEwLmNmYjY5Mjg1QG1haWwyMjYuc2VhODEubWNzdi5uZXQ+ | 6e00a714-379a-4db8-ac0c-812a629c8288 | <br/>==================================================<br/> EMAIL THREAD DATE: 2020-06-22 11:22:59<br/>==================================================<br/>Fwd: Looking to hire? | <https://station.trustar.co/constellation/reports/6e00a714-379a-4db8-ac0c-812a629c8288> | 2020-06-22 15:25:04 | The new title | 2020-06-22 15:25:04 |
 
 
 ### trustar-update-report
+
 ***
 Update the report with the specified ID. Either the internal TruSTAR report ID or an external tracking ID can be used. Only the fields passed will be updated. All others will be left unchanged.
 
@@ -2426,6 +2498,7 @@ Update the report with the specified ID. Either the internal TruSTAR report ID o
 #### Base Command
 
 `trustar-update-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2450,9 +2523,11 @@ Update the report with the specified ID. Either the internal TruSTAR report ID o
 
 
 #### Command Example
+
 ```!trustar-update-report report_id=6e00a714-379a-4db8-ac0c-812a629c8288 title="The new title"```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -2468,12 +2543,14 @@ Update the report with the specified ID. Either the internal TruSTAR report ID o
 #### Human Readable Output
 
 >### TruSTAR report was successfully updated
+>
 >|created|distributionType|enclaveIds|externalTrackingId|externalUrl|id|reportBody|reportDeepLink|timeBegan|title|updated|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 2020-06-22 15:25:04 | ENCLAVE | d915e45a-d0c8-4a75-987a-775649020c96 | PGJmMjcyZWJlNDA2MTUyNzYzZGUzMWY1YTIuMGNiYzk1ZTA3Yy4yMDIwMDYxNzEzMTQyNS5kMWZlMDJkOTEwLmNmYjY5Mjg1QG1haWwyMjYuc2VhODEubWNzdi5uZXQ+ |  | 6e00a714-379a-4db8-ac0c-812a629c8288 | <br/>==================================================<br/> EMAIL THREAD DATE: 2020-06-22 11:22:59<br/>==================================================<br/>Fwd: Looking to hire? | https://station.trustar.co/constellation/reports/6e00a714-379a-4db8-ac0c-812a629c8288 | 2020-06-22 15:25:04 | The new title | 2020-06-22 15:25:04 |
+>| 2020-06-22 15:25:04 | ENCLAVE | d915e45a-d0c8-4a75-987a-775649020c96 | PGJmMjcyZWJlNDA2MTUyNzYzZGUzMWY1YTIuMGNiYzk1ZTA3Yy4yMDIwMDYxNzEzMTQyNS5kMWZlMDJkOTEwLmNmYjY5Mjg1QG1haWwyMjYuc2VhODEubWNzdi5uZXQ+ |  | 6e00a714-379a-4db8-ac0c-812a629c8288 | <br/>==================================================<br/> EMAIL THREAD DATE: 2020-06-22 11:22:59<br/>==================================================<br/>Fwd: Looking to hire? | <https://station.trustar.co/constellation/reports/6e00a714-379a-4db8-ac0c-812a629c8288> | 2020-06-22 15:25:04 | The new title | 2020-06-22 15:25:04 |
 
 
 ### trustar-search-reports
+
 ***
 Searches for all reports that contain the given search term.
 
@@ -2481,6 +2558,7 @@ Searches for all reports that contain the given search term.
 #### Base Command
 
 `trustar-search-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2503,9 +2581,11 @@ Searches for all reports that contain the given search term.
 
 
 #### Command Example
+
 ```!trustar-search-reports search_term=WANNACRY```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -2618,13 +2698,14 @@ Searches for all reports that contain the given search term.
 #### Human Readable Output
 
 >### TruSTAR reports that contain the term WANNACRY
+>
 >|created|distributionType|enclaveIds|id|title|updated|
 >|---|---|---|---|---|---|
->| 2020-07-02 19:14:00 | ENCLAVE | d039cebb-fb2a-411f-bbc8-7e6a80af105f | 319b7fa5-0be0-4ff0-aac8-f4455f7a99ce | URLhaus - http://demo.singhealth.xyz/files/WannaCry/GeneralElectionCandidates.pdf.exe | 2020-07-02 19:14:00 |
->| 2020-07-02 15:11:01 | ENCLAVE | d039cebb-fb2a-411f-bbc8-7e6a80af105f | 899d6193-0dab-40b6-9a23-7bc8ee7145ba | URLhaus - http://demo.singhealth.xyz/files/WannaCry/Ransomware.WannaCry.zip | 2020-07-02 15:11:01 |
+>| 2020-07-02 19:14:00 | ENCLAVE | d039cebb-fb2a-411f-bbc8-7e6a80af105f | 319b7fa5-0be0-4ff0-aac8-f4455f7a99ce | URLhaus - <http://demo.singhealth.xyz/files/WannaCry/GeneralElectionCandidates.pdf.exe> | 2020-07-02 19:14:00 |
+>| 2020-07-02 15:11:01 | ENCLAVE | d039cebb-fb2a-411f-bbc8-7e6a80af105f | 899d6193-0dab-40b6-9a23-7bc8ee7145ba | URLhaus - <http://demo.singhealth.xyz/files/WannaCry/Ransomware.WannaCry.zip> | 2020-07-02 15:11:01 |
 >| 2020-07-02 04:59:03 | ENCLAVE | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | 5f0d4d95-834b-4ce2-8bfc-7c8ad109a88d | hybridanalysispublicfeed-5b7f02a9c9aae2fad269a1b00b4398ab-2020-07-02 03:56:51 | 2020-07-02 04:59:03 |
 >| 2020-07-02 04:59:00 | ENCLAVE | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | a18578c1-3217-4401-80a5-97520bf484f2 | hybridanalysispublicfeed-4e12d4af0963a8def144bf358e6bf6b7-2020-07-02 03:07:35 | 2020-07-02 04:59:00 |
->| 2020-06-20 05:34:03 | ENCLAVE | ed35f85a-d6bf-4e74-a0f8-61651abf705e | dea957a9-3b79-4976-ae29-12e86e6e799e | X-Force URL: https://searchsecurity.techtarget.com/news/252463452/WannaCry-infections-continue-to-spread-2-years-later. | 2020-07-02 03:10:01 |
+>| 2020-06-20 05:34:03 | ENCLAVE | ed35f85a-d6bf-4e74-a0f8-61651abf705e | dea957a9-3b79-4976-ae29-12e86e6e799e | X-Force URL: <https://searchsecurity.techtarget.com/news/252463452/WannaCry-infections-continue-to-spread-2-years-later>. | 2020-07-02 03:10:01 |
 >| 2020-07-01 18:04:00 | ENCLAVE | 82c899e4-1031-4e5a-bb0b-c91a4e95150c | 9b5861b9-fdf2-4f22-a36a-cce2bdd9b6f0 | Indonesia | 2020-07-01 18:04:00 |
 >| 2020-04-01 19:55:00 | ENCLAVE | 82c899e4-1031-4e5a-bb0b-c91a4e95150c | e5831db3-17b7-44a7-bb24-ff0d1c64f1b3 | India Global Spotlight (Analyst Knowledge Page) | 2020-06-30 13:21:00 |
 >| 2020-06-30 04:23:01 | ENCLAVE | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | 9812510b-60ce-46fb-989b-85fbb5050b8e | hybridanalysispublicfeed-f25e024d175c1be65d6888412601ce32-2020-06-30 03:02:40 | 2020-06-30 04:23:01 |
@@ -2633,21 +2714,22 @@ Searches for all reports that contain the given search term.
 >| 2020-06-26 08:02:03 | ENCLAVE | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | f41ab1af-153e-4c3b-a634-93d5715f6d79 | hybridanalysispublicfeed-1685c35cea07561d27d02ead16579b80-2020-06-26 07:08:12 | 2020-06-26 08:02:03 |
 >| 2020-06-26 07:56:03 | ENCLAVE | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | eb67ce91-5206-4a2a-bec4-ffb30382b7fd | hybridanalysispublicfeed-23d365aaa5a9d0deebc8eb3ac1120119-2020-06-26 07:08:22 | 2020-06-26 07:56:03 |
 >| 2020-05-15 00:03:18 | ENCLAVE | 82c899e4-1031-4e5a-bb0b-c91a4e95150c | eab34a1a-7eda-40fa-a77f-8eaef75d5672 | REvil/Sodinokibi Threatens to Release Documents on Law Firms and President Trump | 2020-06-24 16:56:00 |
->| 2020-06-20 07:01:01 | ENCLAVE | 011ad71b-fd7d-44c2-834a-0d751299fb1f | f575bd0e-eff5-4be0-a37b-af97ef4b0757 | virustotal-URL-https://www.seattletimes.com/business/boeing-aerospace/boeing-hit-by-wannacry-virus-fears-it-could-cripple-some-jet-production/. | 2020-06-20 07:01:01 |
->| 2020-06-20 05:34:04 | ENCLAVE | ed35f85a-d6bf-4e74-a0f8-61651abf705e | f854ab11-8c44-4438-9cd1-aeb882f90df2 | X-Force URL: https://www.bloomberg.com/news/articles/2017-12-19/u-s-blames-north-korea-for-cowardly-wannacry-cyberattack. | 2020-06-20 05:34:04 |
->| 2020-06-20 05:30:00 | ENCLAVE | ed35f85a-d6bf-4e74-a0f8-61651abf705e | d6f75e4a-0f0c-4e9b-b798-ce5eaf3a3e2a | X-Force URL: https://www.dataprotectionreport.com/2017/05/wannacry-ransomware-attack-summary/ | 2020-06-20 05:30:00 |
->| 2020-06-20 05:25:00 | ENCLAVE | ed35f85a-d6bf-4e74-a0f8-61651abf705e | 4c65b47c-a290-4a83-8cde-a23019ce0301 | X-Force URL: https://www.forbes.com/sites/leemathews/2017/05/16/wannacry-ransomware-ms17-010/#1fe38b312609. | 2020-06-20 05:25:00 |
->| 2020-06-20 05:05:02 | ENCLAVE | ed35f85a-d6bf-4e74-a0f8-61651abf705e | 9e524c31-918e-4888-b5f2-04d029433ee2 | X-Force URL: https://www.seattletimes.com/business/boeing-aerospace/boeing-hit-by-wannacry-virus-fears-it-could-cripple-some-jet-production/. | 2020-06-20 05:05:02 |
+>| 2020-06-20 07:01:01 | ENCLAVE | 011ad71b-fd7d-44c2-834a-0d751299fb1f | f575bd0e-eff5-4be0-a37b-af97ef4b0757 | virustotal-URL-<https://www.seattletimes.com/business/boeing-aerospace/boeing-hit-by-wannacry-virus-fears-it-could-cripple-some-jet-production/>. | 2020-06-20 07:01:01 |
+>| 2020-06-20 05:34:04 | ENCLAVE | ed35f85a-d6bf-4e74-a0f8-61651abf705e | f854ab11-8c44-4438-9cd1-aeb882f90df2 | X-Force URL: <https://www.bloomberg.com/news/articles/2017-12-19/u-s-blames-north-korea-for-cowardly-wannacry-cyberattack>. | 2020-06-20 05:34:04 |
+>| 2020-06-20 05:30:00 | ENCLAVE | ed35f85a-d6bf-4e74-a0f8-61651abf705e | d6f75e4a-0f0c-4e9b-b798-ce5eaf3a3e2a | X-Force URL: <https://www.dataprotectionreport.com/2017/05/wannacry-ransomware-attack-summary/> | 2020-06-20 05:30:00 |
+>| 2020-06-20 05:25:00 | ENCLAVE | ed35f85a-d6bf-4e74-a0f8-61651abf705e | 4c65b47c-a290-4a83-8cde-a23019ce0301 | X-Force URL: <https://www.forbes.com/sites/leemathews/2017/05/16/wannacry-ransomware-ms17-010/#1fe38b312609>. | 2020-06-20 05:25:00 |
+>| 2020-06-20 05:05:02 | ENCLAVE | ed35f85a-d6bf-4e74-a0f8-61651abf705e | 9e524c31-918e-4888-b5f2-04d029433ee2 | X-Force URL: <https://www.seattletimes.com/business/boeing-aerospace/boeing-hit-by-wannacry-virus-fears-it-could-cripple-some-jet-production/>. | 2020-06-20 05:05:02 |
 >| 2020-06-18 12:56:00 | ENCLAVE | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | e152cbcd-d61b-4b16-875a-9cec8d232643 | hybridanalysispublicfeed-6fd816cb36211fe24153420494319d86-2020-06-18 12:33:35 | 2020-06-18 12:56:00 |
 >| 2020-06-18 06:54:00 | ENCLAVE | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | 4d1b8092-35c2-42f4-853b-d4156ea0cfc0 | hybridanalysispublicfeed-2e215373915334aafb1e6f0fd6e626c6-2020-06-18 06:15:42 | 2020-06-18 06:54:00 |
 >| 2020-06-18 06:46:40 | ENCLAVE | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | 0bc27068-ae06-41da-8721-000524fe45cf | hybridanalysispublicfeed-2da0875fd08114fec91e54a1bac0f142-2020-06-18 06:15:32 | 2020-06-18 06:46:40 |
 >| 2020-06-13 00:57:02 | ENCLAVE | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | 2d805eb5-0f4b-434f-8017-ad80f5ef795d | hybridanalysispublicfeed-84c82835a5d21bbcf75a61706d8ab549-2020-06-12 23:39:58 | 2020-06-13 00:57:02 |
 >| 2020-04-17 21:18:30 | ENCLAVE | 82c899e4-1031-4e5a-bb0b-c91a4e95150c | 72a99972-02e2-4414-9e56-e3b2d170f7ae | Global Spotlight - North Korea (Analyst Knowledge Page) | 2020-06-12 20:06:16 |
->| 2020-06-10 20:37:01 | ENCLAVE | d039cebb-fb2a-411f-bbc8-7e6a80af105f | e36505b3-de31-48f9-a39b-9dba57051fe2 | URLhaus - https://github.com/71e6fd52/wannacry/raw/master/wannacry.exe | 2020-06-10 20:37:01 |
+>| 2020-06-10 20:37:01 | ENCLAVE | d039cebb-fb2a-411f-bbc8-7e6a80af105f | e36505b3-de31-48f9-a39b-9dba57051fe2 | URLhaus - <https://github.com/71e6fd52/wannacry/raw/master/wannacry.exe> | 2020-06-10 20:37:01 |
 >| 2020-03-25 17:41:22 | ENCLAVE | 82c899e4-1031-4e5a-bb0b-c91a4e95150c | e218d224-c92f-4004-8614-580d8a02440b | Hungary Global Spotlight (Analyst Knowledge Page) | 2020-06-09 20:48:08 |
 
 
 ### trustar-add-to-whitelist
+
 ***
 Add to allow list a list of indicator values for the user’s company.
 
@@ -2655,6 +2737,7 @@ Add to allow list a list of indicator values for the user’s company.
 #### Base Command
 
 `trustar-add-to-whitelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2667,9 +2750,11 @@ Add to allow list a list of indicator values for the user’s company.
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-add-to-whitelist indicators=8.8.8.8```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2679,6 +2764,7 @@ There is no context output for this command.
 >['8.8.8.8'] added to the allow list successfully
 
 ### trustar-remove-from-whitelist
+
 ***
 Delete an indicator from the user’s company allow list.
 
@@ -2686,6 +2772,7 @@ Delete an indicator from the user’s company allow list.
 #### Base Command
 
 `trustar-remove-from-whitelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2700,9 +2787,11 @@ There is no context output for this command.
 
 
 #### Command Example
+
 ```!trustar-remove-from-whitelist indicator=8.8.8.8 indicator_type=IP```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2713,6 +2802,7 @@ There is no context output for this command.
 
 
 ### trustar-get-phishing-submissions
+
 ***
 Fetches all phishing submissions that fit the given criteria
 
@@ -2720,6 +2810,7 @@ Fetches all phishing submissions that fit the given criteria
 #### Base Command
 
 `trustar-get-phishing-submissions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2746,9 +2837,11 @@ Fetches all phishing submissions that fit the given criteria
 
 
 #### Command Example
+
 ```!trustar-get-phishing-submissions from_time="7 days ago"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2760,6 +2853,7 @@ Fetches all phishing submissions that fit the given criteria
 
 
 ### trustar-set-triage-status
+
 ***
 Marks a phishing email submission with one of the phishing namespace tags
 
@@ -2767,6 +2861,7 @@ Marks a phishing email submission with one of the phishing namespace tags
 #### Base Command
 
 `trustar-set-triage-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2780,9 +2875,11 @@ Marks a phishing email submission with one of the phishing namespace tags
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-set-triage-status submission_id=6e00a714-379a-4db8-ac0c-812a629c8288 status=CONFIRMED```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2793,6 +2890,7 @@ There is no context output for this command.
 
 
 ### trustar-get-phishing-indicators
+
 ***
 Get phishing indicators that match the given criteria.
 
@@ -2800,6 +2898,7 @@ Get phishing indicators that match the given criteria.
 #### Base Command
 
 `trustar-get-phishing-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2839,9 +2938,11 @@ Get phishing indicators that match the given criteria.
 
 
 #### Command Example
+
 ```!trustar-get-phishing-indicators from_time="7 days ago"```
 
 #### Context Example
+
 ```
 {}
 ```

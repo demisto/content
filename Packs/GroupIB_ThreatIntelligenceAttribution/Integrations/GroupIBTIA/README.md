@@ -225,7 +225,7 @@ Command performs Group IB event lookup in compromised/account collection with pr
 
 >|client ipv4 ip|cnc cnc|cnc domain|cnc ipv4 asn|cnc ipv4 city|cnc ipv4 countryCode|cnc ipv4 countryName|cnc ipv4 ip|cnc ipv4 provider|cnc ipv4 region|cnc url|companyId|dateDetected|domain|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|id|login|malware id|malware name|malware stixGuid|oldId|password|portalLink|silentInsert|sourceType|stixGuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 0.0.0.0 | <http://some.ru> | some.ru | AS1111 | Moscow | RU | Russian Federation | 11.11.11.11 | some.ru | Moscow | http://some.ru | -1 | 2020-02-22T01:21:03+00:00 | some.ru | A2 | 80 | 100 | red | red | 90 | 253b9a136f0d574149fc43691eaf7ae27aff141a | some.ru | 411ac9df6c5515922a56e30013e8b8b366eeec80 | PredatorStealer | 2f7650f4-bc72-2068-d1a5-467b688975d8 | 396792583 | @some@ | <https://bt.group-ib.com/cd/accounts?searchValue=id:253b9a136f0d574149fc43691eaf7ae27aff141a> | 0 | Botnet | 8abb3aa9-e351-f837-d61a-856901c3dc9d |
+>| 0.0.0.0 | <http://some.ru> | some.ru | AS1111 | Moscow | RU | Russian Federation | 11.11.11.11 | some.ru | Moscow | <http://some.ru> | -1 | 2020-02-22T01:21:03+00:00 | some.ru | A2 | 80 | 100 | red | red | 90 | 253b9a136f0d574149fc43691eaf7ae27aff141a | some.ru | 411ac9df6c5515922a56e30013e8b8b366eeec80 | PredatorStealer | 2f7650f4-bc72-2068-d1a5-467b688975d8 | 396792583 | @some@ | <https://bt.group-ib.com/cd/accounts?searchValue=id:253b9a136f0d574149fc43691eaf7ae27aff141a> | 0 | Botnet | 8abb3aa9-e351-f837-d61a-856901c3dc9d |
 
 >### URL indicator
 
@@ -530,7 +530,7 @@ Command performs Group IB event lookup in compromised/breached collection with p
 
 >|addInfo|email|evaluation|id|leakName|password|uploadTime|
 >|---|---|---|---|---|---|---|
->| address: <br/> | some@gmail.com | admiraltyCode: C3<br/>credibility: 50<br/>reliability: 50<br/>severity: green<br/>tlp: amber<br/>ttl: null | 277c4112d348c91f6dabe9467f0d18ba | some.com | AC91C480FDE9D7ACB8AC4B78310EB2TD,<br/>1390DDDFA28AE085D23518A035703112 | 2021-06-12T03:02:00 |
+>| address: <br/> | <some@gmail.com> | admiraltyCode: C3<br/>credibility: 50<br/>reliability: 50<br/>severity: green<br/>tlp: amber<br/>ttl: null | 277c4112d348c91f6dabe9467f0d18ba | some.com | AC91C480FDE9D7ACB8AC4B78310EB2TD,<br/>1390DDDFA28AE085D23518A035703112 | 2021-06-12T03:02:00 |
 
 
 
@@ -700,7 +700,7 @@ Command performs Group IB event lookup in compromised/mule collection with provi
 
 >|account|cnc cnc|cnc domain|cnc ipv4 ip|cnc url|dateAdd|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|hash|id|malware id|malware name|malware stixGuid|oldId|organization name|portalLink|sourceType|stixGuid|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1111111111111111 | <http://some.ru> | some | 11.11.11.11 | http://some.ru | 2020-02-21T13:02:00+00:00 | A2 | 80 | 100 | red | amber | 30 | some | 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | 5a2b741f8593f88178623848573abc899f9157d4 | Anubis | 7d837524-7b01-ddc9-a357-46e7136a9852 | 392993084 | Some | <https://bt.group-ib.com/cd/mules?searchValue=id:50a3b4abbfca5dcbec9c8b3a110598f61ba90a99> | Botnet | 2da6b164-9a12-6db5-4346-2a80a4e03255 | Person |
+>| 1111111111111111 | <http://some.ru> | some | 11.11.11.11 | <http://some.ru> | 2020-02-21T13:02:00+00:00 | A2 | 80 | 100 | red | amber | 30 | some | 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | 5a2b741f8593f88178623848573abc899f9157d4 | Anubis | 7d837524-7b01-ddc9-a357-46e7136a9852 | 392993084 | Some | <https://bt.group-ib.com/cd/mules?searchValue=id:50a3b4abbfca5dcbec9c8b3a110598f61ba90a99> | Botnet | 2da6b164-9a12-6db5-4346-2a80a4e03255 | Person |
 
 >### URL indicator
 
@@ -891,7 +891,7 @@ Command performs Group IB event lookup in compromised/imei collection with provi
 
 >|client ipv4 asn|client ipv4 countryCode|client ipv4 countryName|client ipv4 ip|client ipv4 provider|cnc cnc|cnc domain|cnc ipv4 asn|cnc ipv4 countryCode|cnc ipv4 countryName|cnc ipv4 ip|cnc ipv4 provider|cnc url|dateDetected|device iccid|device imei|device imsi|device model|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|id|malware id|malware name|malware stixGuid|oldId|operator number|portalLink|sourceType|stixGuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| AS11111 | NL | Netherlands | 11.11.11.11 | Some Company | <http://some.ru> | some.ru | AS11111 | FR | France | 11.11.11.11 | Some | http://some.ru | 2020-02-11T03:12:43+00:00 | ~ | Some | ~ | Nexus S/2.3.7 ($$$Flexnet v.5.5) | A2 | 80 | 100 | red | red | 30 | 0c1426048474df19ada9d0089ef8b3efce906556 | 8790a290230b3b4c059c2516a6adace1eac16066 | FlexNet | b51140c2-a88b-a95c-f5b0-1c5d1855ffde | 396766002 | ~ | <https://bt.group-ib.com/cd/imei?searchValue=id:0c1426048474df19ada9d0089ef8b3efce906556> | Botnet | 9cff66e9-c2b3-26ca-771a-c9e4d501c453 |
+>| AS11111 | NL | Netherlands | 11.11.11.11 | Some Company | <http://some.ru> | some.ru | AS11111 | FR | France | 11.11.11.11 | Some | <http://some.ru> | 2020-02-11T03:12:43+00:00 | ~ | Some | ~ | Nexus S/2.3.7 ($$$Flexnet v.5.5) | A2 | 80 | 100 | red | red | 30 | 0c1426048474df19ada9d0089ef8b3efce906556 | 8790a290230b3b4c059c2516a6adace1eac16066 | FlexNet | b51140c2-a88b-a95c-f5b0-1c5d1855ffde | 396766002 | ~ | <https://bt.group-ib.com/cd/imei?searchValue=id:0c1426048474df19ada9d0089ef8b3efce906556> | Botnet | 9cff66e9-c2b3-26ca-771a-c9e4d501c453 |
 
 >### URL indicator
 
@@ -1056,7 +1056,7 @@ Command performs Group IB event lookup in osi/git_leak collection with provided 
 
 >|bind|companyId|data|file|fileDiff|fileDiffId|fileId|hash|info|parentFileId|
 >|---|---|---|---|---|---|---|---|---|---|
->| {'bindBy': 'cert', 'companyId': [2692], 'data': 'cert', 'type': 'keyword'} | 2692 | commonKeywords: {"password": ["password"]} | <https://bt.group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZS0zOTFkYjVkNWYxN2FiNmNiYmJmN2MzNWQxZjRkMDc2Y2I0YzgzMGYwOTdiMmE5ZWRkZDJkZjdiMDY1MDcwOWE3> | <https://bt.group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZURpZmYtMzkxZGI1ZDVmMTdhYjZjYmJiZjdjMzVkMWY0ZDA3NmNiNGM4MzBmMDk3YjJhOWVkZGQyZGY3YjA2NTA3MDlhNw>== | a2187ee179076a22e550e8f7fbc51840e87aba260431ab9cb2d4e0192ad4134c | 391db5d5f17ab6cbbbf7c35d1f4d076cb4c830f097b2a9eddd2df7b0650709a7 | Some | authorEmail: some@gmail.ru <br>authorName: some<br>dateCreated: 2020-01-03T11:17:52+00:00<br>timestamp: 1617794272 | ead0d8ae9f2347789941ebacde88ad2e3b1ef691 |
+>| {'bindBy': 'cert', 'companyId': [2692], 'data': 'cert', 'type': 'keyword'} | 2692 | commonKeywords: {"password": ["password"]} | <https://bt.group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZS0zOTFkYjVkNWYxN2FiNmNiYmJmN2MzNWQxZjRkMDc2Y2I0YzgzMGYwOTdiMmE5ZWRkZDJkZjdiMDY1MDcwOWE3> | <https://bt.group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZURpZmYtMzkxZGI1ZDVmMTdhYjZjYmJiZjdjMzVkMWY0ZDA3NmNiNGM4MzBmMDk3YjJhOWVkZGQyZGY3YjA2NTA3MDlhNw>== | a2187ee179076a22e550e8f7fbc51840e87aba260431ab9cb2d4e0192ad4134c | 391db5d5f17ab6cbbbf7c35d1f4d076cb4c830f097b2a9eddd2df7b0650709a7 | Some | authorEmail: <some@gmail.ru> <br>authorName: some<br>dateCreated: 2020-01-03T11:17:52+00:00<br>timestamp: 1617794272 | ead0d8ae9f2347789941ebacde88ad2e3b1ef691 |
 
 
 
@@ -1306,7 +1306,7 @@ Command performs Group IB event lookup in osi/vulnerability collection with prov
 
 >|bulletinFamily|cvss score|cvss vector|dateLastSeen|dateModified|datePublished|description|displayOptions isFavourite|displayOptions isHidden|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|exploitCount|extCvss base|extCvss environmental|extCvss exploitability|extCvss impact|extCvss mImpact|extCvss overall|extCvss temporal|extCvss vector|extDescription|href|id|lastseen|modified|portalLink|provider|published|references|reporter|title|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| NVD | 7.5 | AV:N/AC:L/Au:N/C:P/I:P/A:P | 2021-02-11T14:35:24+03:00 | 2021-02-11T00:45:00+03:00 | 2021-02-10T19:15:00+03:00 | Description | false | false | A1 | 100 | 100 | red | green | 30 | 0 | 9.8 | 0.0 | 3.9 | 5.9 | 0.0 | 9.8 | 0.0 | CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H | Big description | <https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2021-27152> | CVE-2021-27152 | 2021-02-11T14:35:24+03:00 | 2021-02-11T00:45:00+03:00 | <https://bt.group-ib.com/osi/vulnerabilities?searchValue=id:CVE-2021-27152> | some.ru | 2021-02-10T19:15:00+03:00 | <https://pierrekim.github.io/blog/2021-01-12-fiberhome-ont-0day-vulnerabilities.html#httpd-hardcoded-credentials>,<br>https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2021-27152 | some.ru | CVE-2021-27152 | cve |
+>| NVD | 7.5 | AV:N/AC:L/Au:N/C:P/I:P/A:P | 2021-02-11T14:35:24+03:00 | 2021-02-11T00:45:00+03:00 | 2021-02-10T19:15:00+03:00 | Description | false | false | A1 | 100 | 100 | red | green | 30 | 0 | 9.8 | 0.0 | 3.9 | 5.9 | 0.0 | 9.8 | 0.0 | CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H | Big description | <https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2021-27152> | CVE-2021-27152 | 2021-02-11T14:35:24+03:00 | 2021-02-11T00:45:00+03:00 | <https://bt.group-ib.com/osi/vulnerabilities?searchValue=id:CVE-2021-27152> | some.ru | 2021-02-10T19:15:00+03:00 | <https://pierrekim.github.io/blog/2021-01-12-fiberhome-ont-0day-vulnerabilities.html#httpd-hardcoded-credentials>,<br><https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2021-27152> | some.ru | CVE-2021-27152 | cve |
 
 >### softwareMixed table
 
@@ -1918,7 +1918,7 @@ Command performs Group IB event lookup in attacks/deface collection with provide
 
 >|date|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|id|mirrorLink|portalLink|providerDomain|siteUrl|source|targetDomain|targetIp countryName|targetIp ip|threatActor id|threatActor isAPT|threatActor name|tsCreate|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2021-01-21T02:22:18+00:00 | B2 | 80 | 80 | orange | amber | 30 | 6009637a1135cd001ef46e21 | <https://some.ru/id:-6009637a1135cd001ef46e21>: | <https://bt.group-ib.com/attacks/deface?searchValue=id:6009637a1135cd001ef46e21> | some.ru | <http://some.ru> | some.ru | some.ru | Indonesia | 11.11.11.11 | d7ff75c35f93dce6f5410bba9a6c206bdff66555 | false | FRK48 | 2021-01-21T11:19:52+00:00 | http://some.ru |
+>| 2021-01-21T02:22:18+00:00 | B2 | 80 | 80 | orange | amber | 30 | 6009637a1135cd001ef46e21 | <https://some.ru/id:-6009637a1135cd001ef46e21>: | <https://bt.group-ib.com/attacks/deface?searchValue=id:6009637a1135cd001ef46e21> | some.ru | <http://some.ru> | some.ru | some.ru | Indonesia | 11.11.11.11 | d7ff75c35f93dce6f5410bba9a6c206bdff66555 | false | FRK48 | 2021-01-21T11:19:52+00:00 | <http://some.ru> |
 
 >### URL indicator
 
@@ -2888,7 +2888,7 @@ Command performs Group IB event lookup in malware/cnc collection by provided ID.
 
 >|cnc|dateDetected|dateLastSeen|domain|id|oldId|stixGuid|url|
 >|---|---|---|---|---|---|---|---|
->| <https://some.ru> | 2021-04-25T13:37:23+00:00 | 2021-04-25T13:37:23+00:00 | some.ru | aeed277396e27e375d030a91533aa232444d0089 | 211146923 | 417b2644-1105-d65b-4b67-a78e82f59b65 | https://some.ru |
+>| <https://some.ru> | 2021-04-25T13:37:23+00:00 | 2021-04-25T13:37:23+00:00 | some.ru | aeed277396e27e375d030a91533aa232444d0089 | 211146923 | 417b2644-1105-d65b-4b67-a78e82f59b65 | <https://some.ru> |
 
 >### ipv4 table
 

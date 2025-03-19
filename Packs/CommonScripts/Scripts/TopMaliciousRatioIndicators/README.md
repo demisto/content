@@ -20,4 +20,5 @@ Inputs
 
 Outputs
 ---
+
 There are no outputs for this script.

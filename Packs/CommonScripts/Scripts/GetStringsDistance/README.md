@@ -1,6 +1,7 @@
 Gets the string distance between *inputString* and *compareString* (*compareString* can be a comma-separated list) based on the Levenshtein Distance algorithm.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Gets the string distance between *inputString* and *compareString* (*compareStri
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +21,7 @@ Gets the string distance between *inputString* and *compareString* (*compareStri
 | distance | The distance that is considered close. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

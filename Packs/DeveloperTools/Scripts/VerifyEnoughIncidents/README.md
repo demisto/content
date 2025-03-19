@@ -1,6 +1,7 @@
 Check whether a given query returns enough incidents.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Check whether a given query returns enough incidents.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Check whether a given query returns enough incidents.
 | size | The amount of incidents in which to check. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -28,9 +31,11 @@ Check whether a given query returns enough incidents.
 
 
 ## Script Example
+
 ```!VerifyEnoughIncidents query="sourceInstance:Some_Integration_instance_1" size="1"```
 
 ## Context Example
+
 ```json
 {
     "IncidentsCheck": {
@@ -44,6 +49,7 @@ Check whether a given query returns enough incidents.
 ## Human Readable Output
 
 >### Results
+>
 >|ConditionMet|Query|Size|
 >|---|---|---|
 >| true | sourceInstance:Some_Integration_instance_1 | 1 |

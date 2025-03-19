@@ -33,10 +33,10 @@ These fields also support the use of API key headers. To use API key headers, sp
 
 As an example, we'll be looking at the Palo-Alto-sha256 feed. This feed will ingest indicators of type File. These are the feed instance configuration parameters for our example
 
-**Indicator Type** - File.
-**Server URL**: <https://digitalwitness.zeroday.live/exports/download/Palo-Alto-sha256.csv>.
-**Credentials** - user: *XXX*, password: *XXX* - need to be obtained from Zero Day Live portal.
+__Indicator Type__ - File.
+__Server URL__: <https://digitalwitness.zeroday.live/exports/download/Palo-Alto-sha256.csv>.
+__Credentials__ - user: *XXX*, password: *XXX* - need to be obtained from Zero Day Live portal.
 
 The other paramer values can stay with defualt
 
-**Field Names** - There is only single field and that field is the indicator to fetch. So to confgiure that we can leave default `value` as is.
+__Field Names__ - There is only single field and that field is the indicator to fetch. So to confgiure that we can leave default `value` as is.

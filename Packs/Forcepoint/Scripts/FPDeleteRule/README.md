@@ -7,6 +7,7 @@ It is possible that a password of length zero could be generated. It is therefor
 The `debug` parameter will print certain properties of the command into the War Room for easy diagnostics.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -16,6 +17,7 @@ The `debug` parameter will print certain properties of the command into the War 
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -31,6 +33,7 @@ The `debug` parameter will print certain properties of the command into the War 
 | debug | Enable this to see various values as they pass through the function. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

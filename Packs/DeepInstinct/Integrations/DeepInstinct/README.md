@@ -1,4 +1,5 @@
 ## Overview
+
 ---
 
 Deep Instinct
@@ -6,6 +7,7 @@ This integration was integrated and tested with version 2.3.1.17 of Deep Instinc
 
 
 ## Configure Deep Instinct on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -18,13 +20,17 @@ This integration was integrated and tested with version 2.3.1.17 of Deep Instinc
     * __Incident type__
     * __First event ID to fetch from__
 4. Click __Test__ to validate the URLs, token, and connection.
+
 ## Fetched Incidents Data
+
 ---
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. deepinstinct-get-device
 2. deepinstinct-get-events
 3. deepinstinct-get-all-groups
@@ -38,22 +44,26 @@ After you successfully execute a command, a DBot message appears in the War Room
 11. deepinstinct-delete-files-remotely
 12. deepinstinct-terminate-processes
 13. deepinstinct-close-events
+
 ### 1. deepinstinct-get-device
+
 ---
 get specific device by ID
+
 ##### Base Command
 
 `deepinstinct-get-device`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | device_id | The device ID | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | DeepInstinct.devices.ID | number | Device ID | 
 | DeepInstinct.devices.os | string | Device OS | 
@@ -83,9 +93,11 @@ get specific device by ID
 
 
 ##### Command Example
+
 ```!deepinstinct-get-device device_id=1```
 
 ##### Context Example
+
 ```
 {
     "DeepInstinct.Devices": {
@@ -119,28 +131,33 @@ get specific device by ID
 ```
 
 ##### Human Readable Output
+
 ### Device
+
 |agent_version|brain_version|connectivity_status|deployment_status|distinguished_name|domain|group_id|group_name|hostname|id|ip_address|last_contact|last_registration|log_status|mac_address|msp_id|msp_name|os|osv|policy_id|policy_name|scanned_files|tag|tenant_id|tenant_name|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 2.3.1.12 | 115wt | EXPIRED | REGISTERED | OU=Organizations & Sites,DC=bancshares,DC=mib |  | 3 | Windows Default Group | Mock_2020-04-09 17:49:39.408405_1 | 1 | 192.168.88.80 | 2020-04-09T14:49:39.711487Z | 2020-04-09T14:49:39.722292Z | NA | 00:00:00:00:00:00 | 1 | MSP 1 | WINDOWS | Windows | 3 | Windows Default Policy | 0 |  | 1 | Tenant 1 |
 
 
 ### 2. deepinstinct-get-events
+
 ---
 Get all events. Max events in response can be 50, use first_event_id parameter to define first event id to get
+
 ##### Base Command
 
 `deepinstinct-get-events`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | first_event_id | First event id to get as max events in response can be 50 | Optional | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | DeepInstinct.Events.events.ID | number | event ID | 
 | DeepInstinct.Events.events.device_id | number | event device ID | 
@@ -166,9 +183,11 @@ Get all events. Max events in response can be 50, use first_event_id parameter t
 
 
 ##### Command Example
+
 ```!deepinstinct-get-events```
 
 ##### Context Example
+
 ```
 {
     "DeepInstinct.Events": [
@@ -587,7 +606,9 @@ Get all events. Max events in response can be 50, use first_event_id parameter t
 ```
 
 ##### Human Readable Output
+
 ### Events
+
 |action|certificate_thumbprint|certificate_vendor_name|close_timestamp|close_trigger|comment|deep_classification|device_id|file_archive_hash|file_hash|file_size|file_status|file_type|id|insertion_timestamp|last_action|last_reoccurrence|model|msp_id|msp_name|path|recorded_device_info|reoccurrence_count|sandbox_status|status|tenant_id|tenant_name|threat_severity|timestamp|trigger|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | PREVENTED |  |  | 2020-04-22T10:27:45.391625Z | CLOSED_BY_ADMIN |  |  | 1 | d1838b541ff7ffe6489d120d89dfa855665fd2c708491f336c7267069387053f | d1838b541ff7ffe6489d120d89dfa855665fd2c708491f336c7267069387053f | 18127052 | NOT_UPLOADED | ZIP | 1 | 2020-04-09T14:49:41.170331Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file1.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:39.408405_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:41.154850Z | BRAIN | STATIC_ANALYSIS |
@@ -603,20 +624,23 @@ Get all events. Max events in response can be 50, use first_event_id parameter t
 
 
 ### 3. deepinstinct-get-all-groups
+
 ---
 get all groups
+
 ##### Base Command
 
 `deepinstinct-get-all-groups`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | DeepInstinct.Groups.ID | number | group id | 
 | DeepInstinct.Groups.os | string | group operation system | 
@@ -628,9 +652,11 @@ get all groups
 
 
 ##### Command Example
+
 ```!deepinstinct-get-all-groups first_event_id=0```
 
 ##### Context Example
+
 ```
 {
     "DeepInstinct.Groups": [
@@ -694,7 +720,9 @@ get all groups
 ```
 
 ##### Human Readable Output
+
 ### Groups
+
 |id|is_default_group|msp_id|msp_name|name|os|policy_id|
 |---|---|---|---|---|---|---|
 | 1 | true | 1 | MSP 1 | Android Default Group | ANDROID | 1 |
@@ -706,20 +734,23 @@ get all groups
 
 
 ### 4. deepinstinct-get-all-policies
+
 ---
 get all policies
+
 ##### Base Command
 
 `deepinstinct-get-all-policies`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | DeepInstinct.Policies.ID | number | policy ID | 
 | DeepInstinct.Policies.name | string | policy name | 
@@ -730,9 +761,11 @@ get all policies
 
 
 ##### Command Example
+
 ```!deepinstinct-get-all-policies```
 
 ##### Context Example
+
 ```
 {
     "DeepInstinct.Policies": [
@@ -789,7 +822,9 @@ get all policies
 ```
 
 ##### Human Readable Output
+
 ### Policies
+
 |id|is_default_policy|msp_id|msp_name|name|os|
 |---|---|---|---|---|---|
 | 2 | true | 1 | MSP 1 | iOS Default Policy | IOS |
@@ -801,14 +836,17 @@ get all policies
 
 
 ### 5. deepinstinct-add-hash-to-blacklist
+
 ---
 add file hash to block list
+
 ##### Base Command
 
 `deepinstinct-add-hash-to-blacklist`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | policy_id | policy ID | Required | 
 | file_hash | file hash | Required | 
@@ -820,20 +858,25 @@ add file hash to block list
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-add-hash-to-blacklist file_hash=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00 policy_id=6 comment=mycomment```
 
 ##### Human Readable Output
+
 ok
 
 ### 6. deepinstinct-add-hash-to-whitelist
+
 ---
 add file hash to allow list
+
 ##### Base Command
 
 `deepinstinct-add-hash-to-whitelist`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | policy_id | policy ID | Required | 
 | file_hash | file hash | Required | 
@@ -845,20 +888,25 @@ add file hash to allow list
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-add-hash-to-whitelist file_hash=wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww00 policy_id=6 comment=mycomment```
 
 ##### Human Readable Output
+
 ok
 
 ### 7. deepinstinct-remove-hash-from-blacklist
+
 ---
 remove file hash from block list
+
 ##### Base Command
 
 `deepinstinct-remove-hash-from-blacklist`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | policy_id | policy ID | Required | 
 | file_hash | file hash | Required | 
@@ -869,20 +917,25 @@ remove file hash from block list
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-remove-hash-from-blacklist file_hash=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00 policy_id=6```
 
 ##### Human Readable Output
+
 ok
 
 ### 8. deepinstinct-remove-hash-from-whitelist
+
 ---
 remove file hash from allow list
+
 ##### Base Command
 
 `deepinstinct-remove-hash-from-whitelist`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | policy_id | policy ID | Required | 
 | file_hash | file hash | Required | 
@@ -893,20 +946,25 @@ remove file hash from allow list
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-remove-hash-from-whitelist file_hash=wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww00 policy_id=6```
 
 ##### Human Readable Output
+
 ok
 
 ### 9. deepinstinct-add-devices-to-group
+
 ---
 add multiple devices to group
+
 ##### Base Command
 
 `deepinstinct-add-devices-to-group`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | group_id | group ID | Required | 
 | device_ids | comma separated devices ids | Required | 
@@ -917,20 +975,25 @@ add multiple devices to group
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-add-devices-to-group device_ids=1 group_id=6```
 
 ##### Human Readable Output
+
 ok
 
 ### 10. deepinstinct-remove-devices-from-group
+
 ---
 remove list of devices from group
+
 ##### Base Command
 
 `deepinstinct-remove-devices-from-group`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | group_id | group ID to remove from | Required | 
 | device_ids | comma separeted list of device ids to remove | Required | 
@@ -941,20 +1004,25 @@ remove list of devices from group
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-remove-devices-from-group device_ids=1 group_id=6```
 
 ##### Human Readable Output
+
 ok
 
 ### 11. deepinstinct-delete-files-remotely
+
 ---
 delete multiple files remotely
+
 ##### Base Command
 
 `deepinstinct-delete-files-remotely`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | event_ids | comma separeted list of event ids | Required | 
 
@@ -964,20 +1032,25 @@ delete multiple files remotely
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-delete-files-remotely event_ids=1```
 
 ##### Human Readable Output
+
 ok
 
 ### 12. deepinstinct-terminate-processes
+
 ---
 terminate list of processes
+
 ##### Base Command
 
 `deepinstinct-terminate-processes`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | event_ids | comma separeted list of event ids | Required | 
 
@@ -987,20 +1060,25 @@ terminate list of processes
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-terminate-processes event_ids=1,2```
 
 ##### Human Readable Output
+
 ok
 
 ### 13. deepinstinct-close-events
+
 ---
 close list of events
+
 ##### Base Command
 
 `deepinstinct-close-events`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | event_ids | comma separeted list of event ids | Required | 
 
@@ -1010,7 +1088,9 @@ close list of events
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-close-events event_ids=1```
 
 ##### Human Readable Output
+
 ok

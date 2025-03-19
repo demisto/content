@@ -3,6 +3,7 @@ prevention, investigation, and response across endpoints, identities, email, and
 protection against sophisticated attacks.
 
 ## Authentication Using the Device Code Flow
+
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
 to link Microsoft 365 Defender with Cortex XSOAR.
 
@@ -16,6 +17,7 @@ To connect to the Microsoft 365 Defender:
 At the end of the process you'll see a message that you've logged in successfully.
 
 *Note: In case of a password change, the `microsoft-365-defender-auth-reset` command should be executed followed by the authentication process described above.*
+
 ### Cortex XSOAR App
 
 In order to use the Cortex XSOAR application, use the default application ID.
@@ -26,11 +28,13 @@ In order to use the Cortex XSOAR application, use the default application ID.
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. For more details, follow [Self Deployed Application - Device Code Flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow).
 
 #### Required Permissions
+
 The required API permissions are for the ***Microsoft Threat Protection*** app.
- * offline_access - Delegate
- * AdvancedHunting.Read - Delegated
- * Incident.ReadWrite.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
- * AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
+
+* offline_access - Delegate
+* AdvancedHunting.Read - Delegated
+* Incident.ReadWrite.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
+* AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
 
 ## Self-Deployed Application - Client Credentials Flow
 
@@ -43,8 +47,9 @@ Follow these steps for a self-deployed configuration:
 5. Enter your Tenant ID in the ***Tenant ID*** parameter.
 
 #### Required Permissions
- * AdvancedHunting.Read.All - Application
- * Incident.ReadWrite.All - Application
+
+* AdvancedHunting.Read.All - Application
+* Incident.ReadWrite.All - Application
 
 ## Configure Microsoft 365 Defender on Cortex XSOAR
 
@@ -164,6 +169,7 @@ Disclaimer: The closing form currently does not support the **Microsoft 365 Defe
 If classification is required, please manually update the **Microsoft 365 Defender Classification** via the layout before closing the incident.
 
 When closing incidents from XSOAR to Microsoft 365 Defender, the following logic is applied to map the **Close Reason** field:
+
 1. **General Status Update**:  
    When an incident is marked as closed in XSOAR, the `status` field in Microsoft 365 Defender will always be set to **Resolved**.  
 
@@ -308,6 +314,7 @@ There is no context output for this command.
 
 
 >###Authorization instructions
+>
 >1. To sign in, use a web browser to open the page {URL}
 >and enter the code {code} to authenticate.
 >2. Run the !microsoft-365-defender-auth-complete command in the War Room.
@@ -341,6 +348,7 @@ There is no context output for this command.
 
 
 ### microsoft-365-defender-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
@@ -370,6 +378,7 @@ There is no context output for this command.
 
 
 ### microsoft-365-defender-auth-test
+
 ***
 Tests the connectivity to the Microsoft 365 Defender.
 
@@ -377,6 +386,7 @@ Tests the connectivity to the Microsoft 365 Defender.
 #### Base Command
 
 `microsoft-365-defender-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -386,9 +396,11 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-365-defender-auth-test```
 
 #### Human Readable Output
+>
 >✅ Success!
 
 
@@ -410,7 +422,7 @@ Get the most recent incidents.
 | limit | Number of incidents in the list. Maximum is 100. Default is 100. | Optional | 
 | offset | Number of entries to skip. | Optional | 
 | timeout | The time limit in seconds for the http request to run. Default is 30. | Optional | 
-| odata | Filter incidents using odata query: https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-list-incidents?view=o365-worldwide. Example: `{"$filter":"lastUpdateTime gt 2022-08-29T06:00:00.29Z"}`. | Optional | 
+| odata | Filter incidents using odata query: <https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-list-incidents?view=o365-worldwide>. Example: `{"$filter":"lastUpdateTime gt 2022-08-29T06:00:00.29Z"}`. | Optional | 
 
 #### Context Output
 
@@ -446,6 +458,7 @@ Get the most recent incidents.
 
 
 ### microsoft-365-defender-incident-get
+
 ***
 Get incident with the given ID.
 
@@ -453,6 +466,7 @@ Get incident with the given ID.
 #### Base Command
 
 `microsoft-365-defender-incident-get`
+
 #### Input
 
 ### microsoft-365-defender-incident-get
@@ -574,13 +588,17 @@ Details on how to write queries you can find [here](https://docs.microsoft.com/e
 
 
 #### Command Example
+
 ```!microsoft-365-defender-advanced-hunting query=AlertInfo```
 
 #### Human Readable Output
->###  Result of query: AlertInfo:
+>
+>### Result of query: AlertInfo:
+>
 >|Timestamp|AlertId|Title|Category|Severity|ServiceSource|DetectionSource|AttackTechniques|
 >|---|---|---|---|---|---|---|---|
 >| 2021-04-25T10:11:00Z | alertId | eDiscovery search started or exported | InitialAccess | Medium | Microsoft Defender for Office 365 | Microsoft Defender for Office 365 |  |
+>
 ### get-mapping-fields
 
 ***
@@ -598,6 +616,7 @@ Returns the list of fields to map in outgoing mirroring. This command is only us
 #### Context Output
 
 There is no context output for this command.
+
 ### update-remote-system
 
 ***
@@ -615,6 +634,7 @@ Updates the remote incident with local incident changes. This method is only use
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
 
 ***
@@ -634,6 +654,7 @@ Get remote data from a remote incident. This method does not update the current 
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
 
 ***

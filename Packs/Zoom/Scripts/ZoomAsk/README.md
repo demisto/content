@@ -60,6 +60,7 @@ This requires the external endpoint for interactive responses to be available fo
 You can also utilize a dropdown list instead, by specifying the `responseType` argument.
 
 To use `ZoomAsk` via playbook:
+
 1. Add the `ZoomAsk` script to a playbook as a task.
 2. In the `message` argument, specify the message to be sent.
 3. Configure the response options by filling out the `option1` and `option2` arguments (default values are 'Yes' and 'No').

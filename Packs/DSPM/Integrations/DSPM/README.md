@@ -1,12 +1,15 @@
 # Overview
+
 The Prisma Cloud DSPM(Data Security Posture Management) integration enhances the management and remediation of DSPM risks. The integration provides users with actionable data, insights and a seamless workflow for addressing potential security threats.
 
 # Use Cases
+
 - Remediation of DSPM out-of-the-box risks based on automated playbooks.
 - Close or update risks by interacting with DSPM API using a dedicated list of building blocks.
 - Distribute DSPM risks to other systems.
 
 # Prerequisites
+
  1. An active Prisma Cloud DSPM account
  2. Slack V3 Pack
  3. AWS-S3 Pack
@@ -93,8 +96,11 @@ Retrieves risk findings matching the input criteria.
 | DSPM.RiskFinding.status | String | The current status of the risk finding \(e.g., Open, Closed\). | 
 
 #### Command example
+
 ```!dspm-list-risk-findings```
+
 #### Context Example
+
 ```json
 {
   "DSPM": {
@@ -119,6 +125,7 @@ Retrieves risk findings matching the input criteria.
 #### Human Readable Output
 
 >### Results
+>
 >|Asset|Cloud Environment|Cloud Provider|Compliance Standards|First Discovered|ID|Project ID|Rule Name|Severity|Status|
 >|---|---|---|---|---|---|---|---|---|---|
 >|{}|UNKNOWN|AWS|{}|2024-09-27T11:55:39.059125Z|00000000-0000-4f99-0000-616843b6b19e|********|Empty storage asset|LOW|OPEN|
@@ -154,8 +161,11 @@ Retrieves the details of a risk for the provided risk ID.
 | DSPM.RiskFinding.status | String | The current status of the risk finding \(e.g., Open, Closed\). | 
 
 #### Command example
+
 ```!dspm-get-risk-finding-by-id finding_id="00000000-0000-4f99-0000-616843b6b19e"```
+
 #### Context Example
+
 ```json
 {
     "DSPM": {
@@ -178,6 +188,7 @@ Retrieves the details of a risk for the provided risk ID.
 #### Human Readable Output
 
 >### Results
+>
 >|Asset|Cloud Environment|Cloud Provider|Compliance Standards|First Discovered|ID|Project ID|Rule Name|Severity|Status|
 >|---|---|---|---|---|---|---|---|---|---|
 >|{}|UNKNOWN|AWS|{}|2024-09-27T11:55:39.059125Z|00000000-0000-4f99-0000-616843b6b19e|********|Empty storage asset|LOW|OPEN|
@@ -228,8 +239,11 @@ Retrieves a list of assets for the company.
 | DSPM.Asset.tags | Unknown | Tags related to the asset. | 
 
 #### Command example
+
 ```!dspm-list-assets cloudProviderEqual=AWS serviceTypeEqual=S3```
+
 #### Context Example
+
 ```json
 {
     "DSPM": {
@@ -258,6 +272,7 @@ Retrieves a list of assets for the company.
 #### Human Readable Output
 
 >### Results
+>
 >|Asset Dig Tags|Cloud Environment|Cloud Provider|Encrypted|ID|Lifecycle|Name|Open Alerts Count|Open Risks Count|Open To World|Project ID|Project Name|Service Type|Tags|Data Type Groups|Data Types|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | TESTING | AWS | true | arn:aws:s3:::dymmy-ci0jq3kgvjnccdfp-us-east-1 | RUNNING | dymmy-ci0jq3kgvjnccdfp-us-east-1 | 0 | 0 | false | ************ | ************ | S3 |  |  |  |
@@ -299,8 +314,11 @@ Retrieves details for the specified asset ID.
 | DSPM.AssetDetails.tags | Unknown | Tags related to the asset. | 
 
 #### Command example
+
 ```!dspm-get-asset-details asset_id="arn:aws:s3:::dummyS3-cifp-us-east-1"```
+
 #### Context Example
+
 ```json
 {
     "DSPM": {
@@ -329,6 +347,7 @@ Retrieves details for the specified asset ID.
 #### Human Readable Output
 
 >### Results
+>
 >|assetDigTags|cloudEnvironment|cloudProvider|dataTypeGroups|dataTypes|encrypted|id|lifecycle|name|openAlertsCount|openRisksCount|openToWorld|projectId|projectName|serviceType|tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|   | TESTING | AWS |  |  | true | arn:aws:s3:::dummyS3-cifp-us-east-1 | RUNNING | dymmy-ci0jq3kgvjnccdfp-us-east-1 | 0 | 0 | false | ************ | ************ | S3 |  |
@@ -368,8 +387,11 @@ Retrieves file details for the specified asset ID.
 | DSPM.AssetFiles.isDbDump | Boolean | Asset file is a database dump. | 
 
 #### Command example
+
 ```!dspm-get-asset-files-by-id asset_id="arn:aws:s3:::dummyS3-cifp-us-east-1"```
+
 #### Context Example
+
 ```json
 {
     "files": [
@@ -510,8 +532,11 @@ Return list of fields for structured assets such as RDS, Aurora, and BigQuery.
 | DSPM.AssetFields.schemaName | String | Asset field schema name. | 
 
 #### Command example
+
 ```!dspm-get-list-of-asset-fields-by-id assetId="arn:aws:rds:::dummyrds-cifp-us-east-1"```
+
 #### Context Example
+
 ```json
 {
     "fields": [
@@ -572,8 +597,11 @@ There are no input arguments for this command.
 | DSPM.DataTypes.No | Number | Data types number. | 
 
 #### Command example
+
 ```!dspm-get-data-types```
+
 #### Context Example
+
 ```json
 {
     "DSPM": {
@@ -606,6 +634,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Data Types
+>
 > | No | Key  |
 > |----|------|
 >| 1  | ID Number - Aadhaar (India) |
@@ -635,8 +664,11 @@ There are no input arguments for this command.
 | DSPM.Label.No | unknown | Label number. | 
 
 #### Command example
+
 ```!dspm-list-labels```
+
 #### Context Example
+
 ```json
 {
     "DSPM": {
@@ -669,6 +701,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Data Types
+>
 > | No | Key  |
 > |----|------|
 >| 1  | PCI |
@@ -720,8 +753,11 @@ Retrieves a list of data type findings for the company.
 | DSPM.DataTypesFinding.recordsAtRisk.low | Integer | The number of low-risk records found for this data type. | 
 
 #### Command example
+
 ```!dspm-list-data-types-findings cloudProviderEqual=AWS```
+
 #### Context Example
+
 ```json
 [{
         "dataTypeName": "AADHAAR_INDIVIDUAL_IDENTIFICATION",
@@ -747,6 +783,7 @@ Retrieves a list of data type findings for the company.
 #### Human Readable Output
 
 >### Data Types Findings
+
 | dataTypeName | label | records | publicRecords | assets | clouds | regions | lastFound | recordsAtRisk.high | recordsAtRisk.medium | recordsAtRisk.low |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | AADHAAR_INDIVIDUAL_IDENTIFICATION | PII | 4 | 0 | 1 | AWS | us-east-1 | 2024-05-09T03:24:29Z | 0 | 4 | 0 |
@@ -777,8 +814,11 @@ Updates the status of a risk finding.
 | DSPM.RiskFindingStatusUpdate.riskFindingId | String | Risk finding ID. | 
 
 #### Command example
+
 ```!dspm-update-risk-finding-status riskFindingId="00000000-0000-4f99-0000-616843b6b19e" status=INVESTIGATING```
+
 #### Context Example
+
 ```json
 {
     "DSPM": {
@@ -794,6 +834,7 @@ Updates the status of a risk finding.
 #### Human Readable Output
 
 >### Risk Status Update
+>
 >|Risk Finding ID|Old Status|New Status|
 >|---|---|---|
 >| 00000000-0000-4f99-0000-616843b6b19e | INVESTIGATING | INVESTIGATING |
@@ -823,8 +864,11 @@ Updates the status of an alert.
 | DSPM.AlertStatusUpdate.alertId | String | Alert ID. | 
 
 #### Command example
+
 ```!dspm-update-alert-status alertId="000000608" status=INVESTIGATING```
+
 #### Context Example
+
 ```json
 {
     "DSPM": {
@@ -840,6 +884,7 @@ Updates the status of an alert.
 #### Human Readable Output
 
 >### Alert Status Update
+>
 >| Alert ID | Old Status | New Status |
 >|---|---|---|
 >| 000000608 | INVESTIGATING | INVESTIGATING |
@@ -904,8 +949,11 @@ Fetch list of alerts.
 | DSPM.Alert.eventRawData | String | Alert event raw data. | 
 
 #### Command example
+
 ```!dspm-list-alerts cloudEnvironmentEquals="TESTING"```
+
 #### Context Example
+
 ```json
 {
     "DSPM": {
@@ -939,6 +987,7 @@ Fetch list of alerts.
 #### Human Readable Output
 
 >### DSPM Alert
+>
 >| Alert ID | Detection Time | Policy Name | Asset Name | Cloud Provider | Cloud Environment | Policy Severity | Policy Category | Status | Event Actor | Event Action Medium | Event Source | Policy Frameworks | eventRawData |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 340256006 | 2024-08-07T18:55:50.64996Z | Asset made public | mikeys3 | AWS | TESTING | HIGH | ATTACK | OPEN | dummy_email | CONSOLE | ***.**.**.***.*** | MITRE-T1098 | "{\"eventVersion\":\"1.09\",\"userIdentity\":{\"type\":\"AssumedRole\",\"principalId\":\"AROASI3QR4HKUAIEPBICG:dummy_email\",\"arn\":\"arn:aws:sts::576847873638:assumed-role/sso_admin-tac-nam/dummy_email\",\"accountId\":\"576847873638\",\"accessKeyId\":\"ASIASI3QR4HK2LDI5JMN\",\"sessionContext\":{\"sessionIssuer\":{\"type\":\"Role\",\"principalId\":\"AROASI3QR4HKUAIEPBICG\",\"arn\":\"arn:aws:iam::576847873638:role/sso_admin-tac-nam\",\"accountId\":\"576847873638\",\"userName\":\"sso_admin-tac-nam\"},\"attributes\":{\"creationDate\":\"2024-08-07T18:51:51Z\",\"mfaAuthenticated\":\"false\"}}},\"eventTime\":\"2024-08-07T18:55:37Z\",\"eventSource\":\"s3.amazonaws.com\",\"eventName\":\"PutBucketPolicy\",\"awsRegion\":\"us-east-1\",\"sourceIPAddress\":\"***.**.**.***.***\",\"userAgent\":\"[S3Console/0.4, aws-internal/3 aws-sdk-java/1.12.488 Linux/5.10.220-187.867.amzn2int.x86_64 OpenJDK_64-Bit_Server_VM/25.372-b08 java/1.8.0_372 vendor/Oracle_Corporation cfg/retry-mode/standard]\",\"requestParameters\":{\"bucketPolicy\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"Statement1\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":[\"s3:AbortMultipartUpload\",\"s3:DeleteObject\",\"s3:GetObject\",\"s3:ListBucketMultipartUploads\",\"s3:ListMultipartUploadParts\",\"s3:PutObject\"],\"Resource\":[\"arn:aws:s3:::mikeys3\",\"arn:aws:s3:::mikeys3/*\"]}]},\"bucketName\":\"mikeys3\",\"Host\":\"s3.amazonaws.com\",\"policy\":\"\"},\"responseElements\":null,\"additionalEventData\":{\"SignatureVersion\":\"SigV4\",\"CipherSuite\":\"TLS_AES_128_GCM_SHA256\",\"bytesTransferredIn\":568,\"AuthenticationMethod\":\"AuthHeader\",\"x-amz-id-2\":\"KXHYo+o2TWL/Gnk0pmKY+gV+0YufF6uGyD3GRwK+FXEJ7eai772ytOzbV9CwwoBq+pezhB5PPR/6RxZyhOyZltIBowBOyQih\",\"bytesTransferredOut\":0},\"requestID\":\"CJ3J7M851NAGAF58\",\"eventID\":\"df06b9ad-79dc-4a17-ae0e-82ecff9cfa5e\",\"readOnly\":false,\"resources\":[{\"accountId\":\"576847873638\",\"type\":\"AWS::S3::Bucket\",\"ARN\":\"arn:aws:s3:::mikeys3\"}],\"eventType\":\"AwsApiCall\",\"managementEvent\":true,\"recipientAccountId\":\"576847873638\",\"vpcEndpointId\":\"vpce-f40dc59d\",\"eventCategory\":\"Management\",\"tlsDetails\":{\"tlsVersion\":\"TLSv1.3\",\"cipherSuite\":\"TLS_AES_128_GCM_SHA256\",\"clientProvidedHostHeader\":\"s3.amazonaws.com\"}}"

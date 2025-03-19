@@ -2,10 +2,12 @@ The Exabeam Security Management Platform provides end-to-end detection, User Eve
 This integration was integrated and tested with version 53.5 of Exabeam.
 
 ### Authentication Methods
+
 There are 2 authentication methods:
- - **API Token** - API token should be entered in the “API Token” parameter. In order to use the “Fetch Incident” functionality in this integration, the username must be provided also in the “Username” parameter.
- - **Basic Authentication** - Providing username and password in the corresponding parameters in the configuration. This method also allows fetching incidents.
- - ***Deprecated***:
+
+- **API Token** - API token should be entered in the “API Token” parameter. In order to use the “Fetch Incident” functionality in this integration, the username must be provided also in the “Username” parameter.
+- **Basic Authentication** - Providing username and password in the corresponding parameters in the configuration. This method also allows fetching incidents.
+- ***Deprecated***:
  API Key entered in the “password” parameter and `__token` in the username parameter. This method won’t allow fetching incidents.
 
 ### Generate a Cluster Authentication Token
@@ -25,7 +27,7 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g https://100.24.16.156:8484) |  | True |
+| Server URL (e.g <https://100.24.16.156:8484>) |  | True |
 | Username |  | False |
 | Password |  | False |
 | API Token | Cluster Authentication Token | False |
@@ -56,13 +58,17 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
 - Important: Duplicate notable users are never fetched unless the "Reset the 'last run' timestamp" button is pressed.
 
 #### Note
+
 The "Reset the 'last run' timestamp" button resets both the regular fetch and the Exabeam Notable User fetch.
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### exabeam-get-notable-users
+
 ***
 Returns notable users in a period of time.
 
@@ -70,6 +76,7 @@ Returns notable users in a period of time.
 #### Base Command
 
 `exabeam-get-notable-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -97,10 +104,13 @@ Returns notable users in a period of time.
 
 
 #### Command Example
+
 ```!exabeam-get-notable-users limit=3 time_period="1 year"```
 
 #### Human Readable Output
+
 ### Exabeam Notable Users:
+
 |UserName|UserFullName|Title|Department|Labels|NotableSessionIds|EmployeeType|FirstSeen|LastSeen|LastActivity|Location|
 |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
 |username|fullname|Network Engineer|IT|privileged_user|session_id|employee|2018-08-01T11:50:16|2018-09-09T16:36:13|Account is active|Atlanta|
@@ -109,6 +119,7 @@ Returns notable users in a period of time.
 
 
 ### exabeam-get-watchlists
+
 ***
 Returns all watchlist IDs and titles.
 
@@ -116,6 +127,7 @@ Returns all watchlist IDs and titles.
 #### Base Command
 
 `exabeam-get-watchlists`
+
 #### Input
 
 There are no input arguments for this command.
@@ -130,10 +142,13 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!exabeam-get-watchlists```
 
 #### Human Readable Output
+
 ### Exabeam Watchlists:
+
 |WatchlistID|Title|Category|
 |--- |--- |--- |
 |5c869ab0315c745d905a26d9|Executive Users|UserLabels|
@@ -143,6 +158,7 @@ There are no input arguments for this command.
 
 
 ### exabeam-get-peer-groups
+
 ***
 Returns all peer groups.
 
@@ -150,6 +166,7 @@ Returns all peer groups.
 #### Base Command
 
 `exabeam-get-peer-groups`
+
 #### Input
 
 There are no input arguments for this command.
@@ -162,10 +179,13 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!exabeam-get-peer-groups```
 
 #### Human Readable Output
+
 ### Exabeam Peer Groups:
+
 |Name|
 |--- |
 |Marketing|
@@ -178,6 +198,7 @@ There are no input arguments for this command.
 
 
 ### exabeam-get-user-info
+
 ***
 Returns user information data for the username.
 
@@ -185,6 +206,7 @@ Returns user information data for the username.
 #### Base Command
 
 `exabeam-get-user-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -212,16 +234,20 @@ Returns user information data for the username.
 
 
 #### Command Example
+
 ```!exabeam-get-user-info username={username}```
 
 #### Human Readable Output
+
 ### User {username} information:
+
 |Username|RiskScore|AverageRiskScore|LastSessionID|FirstSeen|LastSeen|LastActivityType|AccountNames|PeerGroupFieldName|PeerGroupFieldValue|PeerGroupDisplayName|PeerGroupType|
 |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
 |{username}|163|102.53|{session_id}|2018-08-01T11:50:16|2018-09-09T16:36:13|Account is active|{account_name}|Peer Groups|root|root|Group|
 
 
 ### exabeam-get-user-labels
+
 ***
 Returns all labels of the user.
 
@@ -229,6 +255,7 @@ Returns all labels of the user.
 #### Base Command
 
 `exabeam-get-user-labels`
+
 #### Input
 
 There are no input arguments for this command.
@@ -241,10 +268,13 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!exabeam-get-user-labels```
 
 #### Human Readable Output
+
 ### Exabeam User Labels:
+
 |Label|
 |--- |
 |privileged_user|
@@ -252,6 +282,7 @@ There are no input arguments for this command.
 
 
 ### exabeam-get-user-sessions
+
 ***
 Returns sessions for the given username and time range.
 
@@ -259,6 +290,7 @@ Returns sessions for the given username and time range.
 #### Base Command
 
 `exabeam-get-user-sessions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -283,10 +315,13 @@ Returns sessions for the given username and time range.
 
 
 #### Command Example
+
 ```!exabeam-get-user-sessions username={username} start_time=2018-08-01T11:50:16```
 
 #### Human Readable Output
+
 ### User {username} sessions information:
+
 |SessionID|RiskScore|InitialRiskScore|StartTime|EndTime|LoginHost|Label|
 |--- |--- |--- |--- |--- |--- |--- |
 |session_id|0|0|2018-08-01T14:05:46|2018-08-01T20:00:17|login_host||
@@ -294,6 +329,7 @@ Returns sessions for the given username and time range.
 
 
 ### exabeam-delete-watchlist
+
 ***
 Deletes a watchlist.
 
@@ -301,6 +337,7 @@ Deletes a watchlist.
 #### Base Command
 
 `exabeam-delete-watchlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -313,13 +350,16 @@ Deletes a watchlist.
 There is no context output for this command.
 
 #### Command Example
+
 ```!exabeam-delete-watchlist watchlist_id=5de50f82088c6a000865408d```
 
 #### Human Readable Output
+
 The watchlist 5de50f82088c6a000865408d was deleted successfully.
 
 
 ### exabeam-get-asset-data
+
 ***
 Returns asset data.
 
@@ -327,6 +367,7 @@ Returns asset data.
 #### Base Command
 
 `exabeam-get-asset-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -346,16 +387,20 @@ Returns asset data.
 
 
 #### Command Example
+
 ```!exabeam-get-asset-data asset_name={host_name}```
 
 #### Human Readable Output
+
 ### Exabeam Asset Data:
+
 |AssetType|FirstSeen|HostName|IPAddress|LastSeen|
 |--- |--- |--- |--- |--- |
 |Windows|2018-07-03T14:21:00|host_name|ip_address|2018-09-30T16:23:17|
 
 
 ### exabeam-get-session-info-by-id
+
 ***
 Returns session info data for the given ID.
 
@@ -363,6 +408,7 @@ Returns session info data for the given ID.
 #### Base Command
 
 `exabeam-get-session-info-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -393,16 +439,20 @@ Returns session info data for the given ID.
 
 
 #### Command Example
+
 ```!exabeam-get-session-info-by-id session_id=test-20200630233800```
 
 #### Human Readable Output
+
 ### Session test-20200630233800 Information
+
 |Accounts|End Time|Initial Risk Score|Login Host|Num Of Accounts|Num Of Assets|Num Of Events|Num Of Reasons|Num Of Security Events|Num Of Zones|Risk Score|Session Id|Start Time|Username|Zones|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | test | 2020-07-01T04:38:00 | 0 | test | 1 | 4 | 2 | 6 | 0 | 2 | 21 | test-20200630233800 | 2020-06-30T23:38:00 | test | los angeles office,<br/>chicago office |
 
 
 ### exabeam-list-top-domains
+
 ***
 List top domains of a sequence.
 
@@ -410,6 +460,7 @@ List top domains of a sequence.
 #### Base Command
 
 `exabeam-list-top-domains`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -428,14 +479,18 @@ List top domains of a sequence.
 
 
 #### Command Example
+
 ```!exabeam-list-top-domains sequence_id=test-20200630233800 sequence_type=session```
 
 #### Human Readable Output
+
 ### Sequence test-20200630233800 Top Domains
+
 **No entries.**
 
 
 ### exabeam-list-triggered-rules
+
 ***
 Gets all the triggered rules of a sequence.
 
@@ -443,6 +498,7 @@ Gets all the triggered rules of a sequence.
 #### Base Command
 
 `exabeam-list-triggered-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -475,10 +531,13 @@ Gets all the triggered rules of a sequence.
 
 
 #### Command Example
+
 ```!exabeam-list-triggered-rules sequence_id=test-20200630233800 sequence_type=session```
 
 #### Human Readable Output
+
 ### Sequence test-20200630233800 Triggered Rules
+
 |_Id|anchorScore|anomalyFactor|createdTime|eType|eventId|riskScore|ruleData|ruleId|ruleType|scoreData|sessionId|triggeringTime|username|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 60072e97131b380006eb2208 | 15.0 | 1.0 | 2021-01-19T19:10:15.330000 | local-logon | 2311678@m | 15.0 | featureValue: tks_en_dd7_kt<br/>scopeValue: test<br/>modelName: LL-UH | LL-UH-F | session | histScoreData: {"weight": 1.0, "rawScore": 1.0585832492943268} | test-20200630233800 | 2020-06-30T23:38:00 | test |
@@ -487,6 +546,7 @@ Gets all the triggered rules of a sequence.
 
 
 ### exabeam-get-asset-info
+
 ***
 Returns asset information for given asset ID (hostname or IP address).
 
@@ -494,6 +554,7 @@ Returns asset information for given asset ID (hostname or IP address).
 #### Base Command
 
 `exabeam-get-asset-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -520,16 +581,20 @@ Returns asset information for given asset ID (hostname or IP address).
 
 
 #### Command Example
+
 ```!exabeam-get-asset-info asset_id=test_asset```
 
 #### Human Readable Output
+
 ### Asset test_asset Information
+
 |Asset Id|Asset Type|First Seen|Host Name|Ip Address|Last Seen|Latest Sequence Id|Risk Score|Zone|
 |---|---|---|---|---|---|---|---|---|
 | test_asset | Windows | 2020-06-01T14:41:00 | test_asset | 8.8.8.8 | 2020-07-02T19:58:00 | asset@test_asset-20200630 | 0.0 | new york office |
 
 
 ### exabeam-list-asset-timeline-next-events
+
 ***
 Gets next events for a given asset.
 
@@ -537,6 +602,7 @@ Gets next events for a given asset.
 #### Base Command
 
 `exabeam-list-asset-timeline-next-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -578,22 +644,28 @@ Gets next events for a given asset.
 
 
 #### Command Example
+
 ```!exabeam-list-asset-timeline-next-events asset_id=test_asset event_time="2 years ago" sequence_types=session```
 
 #### Human Readable Output
+
 # Asset test_asset Next Events
+
 ### 1 local-logon event(s) between 2020-06-01 15:29:00 and 2020-06-01 15:29:00
+
 |Account|AuthPackage|AuthProcess|DestHost|DestIp|Domain|EntityAssetId|EventCategory|EventCode|EventId|EventType|Getvalue('ZoneInfo', Dest)|Hash|Host|IsSessionFirst|LogonTypeText|NonmachineUser|RawlogTime|SessionId|SessionOrder|Source|SrcHost|SrcIp|SrcZone|Time|User|UserSid|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | test_account1 | ntlm | Kerberos | tks_en_360_kt | 8.8.8.8 | kt_cloud | asset@test_asset-20200601 | user-events,<br/>asset-events | 4624 | 279@m | local-logon | zone55 | 1421552590 | dc_486 | true | 2 - Interactive | blozano | 2020-06-01T15:29:00 | blozano-20200601152900 | 1 | Windows | test_asset | 8.8.8.8 | los angeles office | 2020-06-01T15:29:00 | blozano | test_drive\blozano |
 
 ### 2 remote-access event(s) between 2020-06-01 16:00:00 and 2020-06-01 16:03:00
+
 |Account|AssetFeature|AuthPackage|AuthProcess|DestHost|DestIp|Domain|EntityAssetId|EventCategory|EventCode|EventId|EventType|Getvalue('ZoneInfo', Dest)|Hash|Host|LogonTypeText|NtlmHost|RawlogTime|SessionId|SessionOrder|Source|SrcHost|SrcHostWindows|SrcIp|SrcZone|Time|User|UserSid|ZoneFeature|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | test_account1 | test_asset:test_asset2 | ntlm | Negotiate | test_asset2 | 8.8.8.8 | dev_kt | asset@test_asset-20200601 | user-events,<br/>asset-events | 4624 | 562@m | remote-access | chicago office | 1895168631 | dc_887 | 3 - Network | test_asset | 2020-06-01T16:00:00 | test_account1-20200601160000 | 2 | Windows | test_asset | test_asset | 8.8.8.8 | zone55 | 2020-06-01T16:00:00 | test_account1 | test_drive\test_account1 | zone55:chicago office |
 | test_account2 | test_asset:test_asset3 | ntlm | Kerberos | test_asset3 | 8.8.8.8 | dev_kt | asset@test_asset-20200601 | user-events,<br/>asset-events | 4624 | 873@m | remote-access | zone55 | 1665078914 | dc_879 | 3 - Network | test_asset | 2020-06-01T16:02:00 | test_account2-20200601140600 | 3 | Windows | test_asset | test_asset | 8.8.8.8 | los angeles office | 2020-06-01T16:02:00 | test_account2 | test_drive\test_account2 | zone55:los angeles office |
 
 ### exabeam-list-security-alerts-by-asset
+
 ***
 Gets security alerts for a given asset.
 
@@ -601,6 +673,7 @@ Gets security alerts for a given asset.
 #### Base Command
 
 `exabeam-list-security-alerts-by-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -648,16 +721,20 @@ Gets security alerts for a given asset.
 
 
 #### Command Example
+
 ```!exabeam-list-security-alerts-by-asset asset_id=lt-test_asset-888```
 
 #### Human Readable Output
+
 ### Asset lt-test_asset-888 Security Alerts
+
 |Account|Additional _ Info|Alert _ Id|Alert _ Name|Alert _ Severity|Alert _ Type|Dest _ Host|Dest _ Ip|Dest _ Port|Entity _ Asset _ Id|Event _ Id|Event _ Type|Hash|Host|Local _ Asset|Malware _ Url|Md 5|Process|Process _ Name|Rawlog _ Time|Sensor _ Id|Session _ Id|Session _ Order|Source|Src _ Dest _ Alert|Src _ Host|Src _ Ip|Src _ Port|Time|User|Vendor|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | test_account |   default_taxes: | 1956 | test1 | 4 | Export-ReportView-Contact | tks_en_eff_kt | 8.8.8.8 | 1117 | asset@lt-test_asset-888-20200613,<br/>asset@tks_en_eff_kt-20200613,<br/>asset@10.37.0.17-20200613,<br/>asset@192.168.16.137-20200613 | 968178@m | security-alert | 781895093 | dc_936 | lt-test_asset-888 | test.com | e62ef0ed95b79d4c6327d410cb8100348c | test.exe | test.exe | 2020-06-13T17:25:00 | 0xun6f | test_asset-20200613154800 | 22 | Palo Alto Networks WildFire | Backdoor-FFBM:lt-test_asset-888:tks_en_eff_kt | lt-test_asset-888 | 8.8.8.8 | 1204 | 2020-06-13T17:25:00 | test_asset | Palo Alto Networks WildFire |
-| test_account |  * **Pull Request**: [] | 3770 | test2 | LOW | Export-Report | tks_en_0b3_kt | 8.8.8.8 | 105 | asset@lt-test_asset-888-20200613,<br/>asset@tks_en_0b3_kt-20200613,<br/>asset@10.37.0.17-20200613,<br/>asset@10.136.0.55-20200613 | 954176@m | security-alert | 1734360022 | dc_936 | lt-test_asset-888 | http://test.com/ | 1c30fae6dadda43962e2444445d3f87f70 | test.exe | test.exe | 2020-06-13T16:16:00 | 0x6m5w | test_asset-20200613154800 | 6 | Palo Alto Networks WildFire | Exploit/CVE-2015-1539:lt-test_asset-888:tks_en_0b3_kt | lt-test_asset-888 | 8.8.8.8 | 1204 | 2020-06-13T16:16:00 | test_asset | Palo Alto Networks WildFire |
+| test_account |  * **Pull Request**: [] | 3770 | test2 | LOW | Export-Report | tks_en_0b3_kt | 8.8.8.8 | 105 | asset@lt-test_asset-888-20200613,<br/>asset@tks_en_0b3_kt-20200613,<br/>asset@10.37.0.17-20200613,<br/>asset@10.136.0.55-20200613 | 954176@m | security-alert | 1734360022 | dc_936 | lt-test_asset-888 | <http://test.com/> | 1c30fae6dadda43962e2444445d3f87f70 | test.exe | test.exe | 2020-06-13T16:16:00 | 0x6m5w | test_asset-20200613154800 | 6 | Palo Alto Networks WildFire | Exploit/CVE-2015-1539:lt-test_asset-888:tks_en_0b3_kt | lt-test_asset-888 | 8.8.8.8 | 1204 | 2020-06-13T16:16:00 | test_asset | Palo Alto Networks WildFire |
 
 ### exabeam-search-rules
+
 ***
 Searches for rules by a keyword.
 
@@ -665,6 +742,7 @@ Searches for rules by a keyword.
 #### Base Command
 
 `exabeam-search-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -705,15 +783,19 @@ Searches for rules by a keyword.
 
 
 #### Command Example
+
 ```!exabeam-search-rules limit=1 keyword=account```
 
 #### Human Readable Output
+
 ### Rule Search Results
+
 |Can Simple Edit|Category Display Name|Category Id|Disabled|Effective|Rule Def|Rule Id|State|
 |---|---|---|---|---|---|---|---|
 | false | Account Creation and Management | Account Creation and Management | false | true | ruleId: AM-GOU-A<br/>ruleName: Abnormal account OU addition to this group<br/>ruleDescription: OU means Organizational Unit - a container within a Microsoft Active Directory domain which can hold users, groups, and computers. Account management events are notable because they can provide a path for an attacker to move laterally through a system.<br/>reasonTemplate: Abnormal account OU {default\|event.account_ou} addition to group {default\|event.group_name}<br/>aggregateReasonTemplate: Abnormal account OU addition to this group: {default\|featureValue\|histogram}<br/>ruleType: session<br/>classifyIf: (count(account_ou, 'member-added') = 1)<br/>ruleEventTypes: member-added<br/>disabled: false<br/>modelName: AM-GOU<br/>factFeatureName: account_ou<br/>hasDynamicScore: false<br/>score: 7.0<br/>percentileThreshold: 0.1<br/>ruleExpression: ((confidence_factor >= 0.8) && ((num_observations > 0) && (num_observations &lt; percentile_threshold_count)))<br/>dependencyExpression: NA<br/>ruleCategory: Account Creation and Management<br/>ruleLabels:  | AM-GOU-A | ModifiedExabeam |
 
 ### exabeam-get-rule-string
+
 ***
 Gets a rule's information as a string.
 
@@ -721,6 +803,7 @@ Gets a rule's information as a string.
 #### Base Command
 
 `exabeam-get-rule-string`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -737,16 +820,20 @@ Gets a rule's information as a string.
 
 
 #### Command Example
+
 ```!exabeam-get-rule-string rule_id=AM-GOU-A```
 
 #### Human Readable Output
+
 ### Rule AM-GOU-A String
+
 |Rule Id|Rule String|
 |---|---|
 | AM-GOU-A | AM-GOU-A {<br/>  RuleName = "Abnormal account OU addition to this group"<br/>  RuleDescription = "OU means Organizational Unit - a container within a Microsoft Active Directory domain which can hold users, groups, and computers. Account management events are notable because they can provide a path for an attacker to move laterally through a system."<br/>  ReasonTemplate = "Abnormal account OU {default\|event.account_ou} addition to group {default\|event.group_name}"<br/>  AggregateReasonTemplate = "Abnormal account OU addition to this group: {default\|featureValue\|histogram}"<br/>  RuleType = "session"<br/>  RuleCategory = "Account Creation and Management"<br/>  ClassifyIf = "count(account_ou,'member-added')=1"<br/>  RuleEventTypes = ["member-added"]<br/>  Disabled = "FALSE"<br/>  Model = "AM-GOU"<br/>  FactFeatureName = "account_ou"<br/>  Score = "7"<br/>  HistShapeScoring {<br/>    Enabled = true<br/>  }<br/>  PercentileThreshold = "0.1"<br/>  RuleExpression = "confidence_factor>=0.8 && num_observations>0 && num_observations &lt;percentile_threshold_count"<br/>  DependencyExpression = "NA"<br/>  RuleLabels {<br/>    mitre = ["T1078"]<br/>  }<br/>} |
 
 
 ### exabeam-fetch-rules
+
 ***
 Gets all rules.
 
@@ -754,6 +841,7 @@ Gets all rules.
 #### Base Command
 
 `exabeam-fetch-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -793,16 +881,20 @@ Gets all rules.
 
 
 #### Command Example
+
 ```!exabeam-fetch-rules limit=1```
 
 #### Human Readable Output
+
 ### Rule Search Results
+
 |Can Simple Edit|Category Display Name|Category Id|Disabled|Effective|Rule Def|Rule Id|State|
 |---|---|---|---|---|---|---|---|
 | false | Account Creation and Management | Account Creation and Management | false | true | ruleId: AM-GOU-A<br/>ruleName: Abnormal account OU addition to this group<br/>ruleDescription: OU means Organizational Unit - a container within a Microsoft Active Directory domain which can hold users, groups, and computers. Account management events are notable because they can provide a path for an attacker to move laterally through a system.<br/>reasonTemplate: Abnormal account OU {default\|event.account_ou} addition to group {default\|event.group_name}<br/>aggregateReasonTemplate: Abnormal account OU addition to this group: {default\|featureValue\|histogram}<br/>ruleType: session<br/>classifyIf: (count(account_ou, 'member-added') = 1)<br/>ruleEventTypes: member-added<br/>disabled: false<br/>modelName: AM-GOU<br/>factFeatureName: account_ou<br/>hasDynamicScore: false<br/>score: 7.0<br/>percentileThreshold: 0.1<br/>ruleExpression: ((confidence_factor >= 0.8) && ((num_observations > 0) && (num_observations &lt; percentile_threshold_count)))<br/>dependencyExpression: NA<br/>ruleCategory: Account Creation and Management<br/>ruleLabels:  | AM-GOU-A | ModifiedExabeam |
 
 
 ### exabeam-get-rules-model-definition
+
 ***
 Gets a rule model definition by name.
 
@@ -810,6 +902,7 @@ Gets a rule model definition by name.
 #### Base Command
 
 `exabeam-get-rules-model-definition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -844,16 +937,20 @@ Gets a rule model definition by name.
 
 
 #### Command Example
+
 ```!exabeam-get-rules-model-definition model_name=AM-AG```
 
 #### Human Readable Output
+
 ### Model AM-AG Definition
+
 |Aging Window|Alpha|Category|Convergence Filter|Cut Off|Description|Disabled|Feature|Feature Name|Feature Type|Histogram Event Types|Max Number Of Bins|Model Template|Model Type|Name|Scope Type|Scope Value|Train If|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 32 | 0.8 | Other | confidence_factor>=0.8 | 5 | Models which security groups users are being added to in the organization | FALSE | group_name | group_name | group_name | member-added | 1000000 | Account management, groups which users are being added to | CATEGORICAL | AM-AG | ORG | org | TRUE |
 
 
 ### exabeam-watchlist-add-items
+
 ***
 Add watchlist items by their names or from a CSV file.
 
@@ -861,6 +958,7 @@ Add watchlist items by their names or from a CSV file.
 #### Base Command
 
 `exabeam-watchlist-add-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -877,13 +975,16 @@ Add watchlist items by their names or from a CSV file.
 There is no context output for this command.
 
 #### Command Example
+
 ```!exabeam-watchlist-add-items category=Assets watchlist_id=60249dfb130b3800075b8e36 items=asset1,asset2```
 
 #### Human Readable Output
+
 Successfully added 2 items to watchlist 60249dfb130b3800075b8e36.
 
 
 ### exabeam-watchlist-asset-search
+
 ***
 Gets the assets of a specified watchlist according to a keyword.
 
@@ -891,6 +992,7 @@ Gets the assets of a specified watchlist according to a keyword.
 #### Base Command
 
 `exabeam-watchlist-asset-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -917,10 +1019,13 @@ Gets the assets of a specified watchlist according to a keyword.
 
 
 #### Command Example
+
 ```!exabeam-watchlist-asset-search watchlist_id=60249dfb130b3800075b8e36 keyword=s```
 
 #### Human Readable Output
+
 ### Watchlist 60249dfb130b3800075b8e36 Assets Search Results
+
 |Asset Type|First Seen|Host Name|Ip Address|Last Seen|Risk Score|Risk State|Zone|
 |---|---|---|---|---|---|---|---|
 | Windows | 2020-06-01T15:01:00 | asset1 | 8.8.8.8 | 2020-07-03T23:16:00 | 0.0 | compromised | atlanta office |
@@ -928,6 +1033,7 @@ Gets the assets of a specified watchlist according to a keyword.
 
 
 ### exabeam-watchlist-remove-items
+
 ***
 Removes items from a watchlist.
 
@@ -935,6 +1041,7 @@ Removes items from a watchlist.
 #### Base Command
 
 `exabeam-watchlist-remove-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -949,13 +1056,16 @@ Removes items from a watchlist.
 There is no context output for this command.
 
 #### Command Example
+
 ```!exabeam-watchlist-remove-items category=Assets watchlist_id=60249dfb130b3800075b8e36 items=asset1,asset2```
 
 #### Human Readable Output
+
 Successfully removed 2 items from watchlist 60249dfb130b3800075b8e36.
 
 
 ### exabeam-list-context-table-records
+
 ***
 Returns a list of a context table records.
 
@@ -963,6 +1073,7 @@ Returns a list of a context table records.
 #### Base Command
 
 `exabeam-list-context-table-records`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -985,10 +1096,13 @@ Returns a list of a context table records.
 
 
 #### Command Example
+
 ```!exabeam-list-context-table-records context_table_name=test_table```
 
 #### Human Readable Output
+
 ### Context Table `test_table` Records
+
 |Id|Position|Source Type|Key|Value|
 |---|---|---|---|---|
 | 0-0 | 0 | Manual | ktest2 | v3 |
@@ -999,6 +1113,7 @@ Returns a list of a context table records.
 
 
 ### exabeam-add-context-table-records
+
 ***
 Add records to the context table.
 
@@ -1006,6 +1121,7 @@ Add records to the context table.
 #### Base Command
 
 `exabeam-add-context-table-records`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1029,11 +1145,15 @@ Add records to the context table.
 
 
 #### Command Example
+
 ```!exabeam-add-context-table-records context_table_name=test_table context_table_type=key_value records=testk1:v1,testv2:,testv3:v31;v32```
 
 #### Human Readable Output
+
 ### Context Table test_do_not_remove Update Details
+
 createdSize: 3, updatedSize: 0, removedSize: 0, duplicates: []
+
 |Change Id|Change Type|Context Table Name|Record|Session Id|
 |---|---|---|---|---|
 | 45dc28dc-28be-426c-9293-d7f477f85408 | created | test_table | key: testk1<br/>value: v1 | f0283c9c-7317-457b-b9de-43888960b4cb |
@@ -1042,6 +1162,7 @@ createdSize: 3, updatedSize: 0, removedSize: 0, duplicates: []
 
 
 ### exabeam-update-context-table-records
+
 ***
 Updates records of a context table.
 
@@ -1049,6 +1170,7 @@ Updates records of a context table.
 #### Base Command
 
 `exabeam-update-context-table-records`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1072,11 +1194,15 @@ Updates records of a context table.
 
 
 #### Command Example
+
 ```!exabeam-update-context-table-records context_table_name=test_key_only context_table_type=key_only records=0-0:test,0-1:test1```
 
 #### Human Readable Output
+
 ### Context Table test_key_only Update Details
+
 createdSize: 0, updatedSize: 2, removedSize: 0, duplicates: []
+
 |Change Id|Change Type|Context Table Name|Record|Session Id|
 |---|---|---|---|---|
 | 9be31efc-0aac-4c56-98e1-dedec68f32dd | updated | test_key_only | key: test<br/>id: 0-0 | fdf0fd02-bf87-4c03-ad09-cc53e4c8aaee |
@@ -1085,6 +1211,7 @@ createdSize: 0, updatedSize: 2, removedSize: 0, duplicates: []
 
 
 ### exabeam-get-context-table-in-csv
+
 ***
 Export a context table to CSV.
 
@@ -1092,6 +1219,7 @@ Export a context table to CSV.
 #### Base Command
 
 `exabeam-get-context-table-in-csv`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1104,10 +1232,12 @@ Export a context table to CSV.
 There is no context output for this command.
 
 #### Command Example
+
 ```!exabeam-get-context-table-in-csv context_table_name=test_table```
 
 
 ### exabeam-add-context-table-records-from-csv
+
 ***
 Add context table records from CSV file in a specific modification session.
 
@@ -1115,6 +1245,7 @@ Add context table records from CSV file in a specific modification session.
 #### Base Command
 
 `exabeam-add-context-table-records-from-csv`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1131,11 +1262,15 @@ Add context table records from CSV file in a specific modification session.
 There is no context output for this command.
 
 #### Command Example
+
 ```!exabeam-add-context-table-records-from-csv context_table_name=test_table file_entry_id=2034d0d-86ad-04bc3dfa1272 has_header=true append_or_replace=append```
 
 #### Human Readable Output
+
 ### Context Table test_table Update Details
+
 createdSize: 2, updatedSize: 0, removedSize: 0, duplicates: []
+
 |Change Id|Change Type|Context Table Name|Record|Session Id|
 |---|---|---|---|---|
 | 4a376a74-7f02-49cc-ac37-d73f37ba7809 | created | test_table | key: k33<br/>value: 1 | 15b2499c-8506-48ed-9431-7dce94de33a2 |
@@ -1143,6 +1278,7 @@ createdSize: 2, updatedSize: 0, removedSize: 0, duplicates: []
 
 
 ### exabeam-delete-context-table-records
+
 ***
 Delete records from a context table.
 
@@ -1150,6 +1286,7 @@ Delete records from a context table.
 #### Base Command
 
 `exabeam-delete-context-table-records`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1172,11 +1309,15 @@ Delete records from a context table.
 
 
 #### Command Example
+
 ```!exabeam-delete-context-table-records context_table_name=test_table context_table_type=key_value records=testk11,testv2```
 
 #### Human Readable Output
+
 ### Context Table test_table Update Details
+
 createdSize: 0, updatedSize: 0, removedSize: 2, duplicates: []
+
 |Change Id|Change Type|Context Table Name|Record|Session Id|
 |---|---|---|---|---|
 | e4469b52-ac45-4c97-91af-16c31b8fbb49 | removed | test_table | key: <br/>id: testk11 | 64e660b7-5f70-40df-adf7-3e8a4bf25462 |
@@ -1186,6 +1327,7 @@ createdSize: 0, updatedSize: 0, removedSize: 2, duplicates: []
 #### Base Command
 
 `exabeam-get-notable-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1224,10 +1366,12 @@ createdSize: 0, updatedSize: 0, removedSize: 2, duplicates: []
 
 
 #### Command Example
+
 ```!exabeam-get-notable-assets limit=1 time_period="1 day"```
 
 
 ### exabeam-get-notable-session-details
+
 ***
 Returns notable session details.
 
@@ -1235,6 +1379,7 @@ Returns notable session details.
 #### Base Command
 
 `exabeam-get-notable-session-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1270,10 +1415,12 @@ Returns notable session details.
 
 
 #### Command Example
+
 ```!exabeam-get-notable-session-details asset_id=asset_id sort_by=date sort_order=asc limit=1```
 
 
 ### exabeam-get-notable-sequence-details
+
 ***
 Returns sequence details for the given asset ID and time range.
 
@@ -1281,6 +1428,7 @@ Returns sequence details for the given asset ID and time range.
 #### Base Command
 
 `exabeam-get-notable-sequence-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1313,10 +1461,12 @@ Returns sequence details for the given asset ID and time range.
 
 
 #### Command Example
+
 ```!exabeam-get-notable-sequence-details asset_id=asset_id start_time="30 days"```
 
 
 ### exabeam-get-sequence-eventtypes
+
 ***
 Returns sequence event types for the given asset sequence ID and time range.
 
@@ -1324,6 +1474,7 @@ Returns sequence event types for the given asset sequence ID and time range.
 #### Base Command
 
 `exabeam-get-sequence-eventtypes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1345,16 +1496,19 @@ Returns sequence event types for the given asset sequence ID and time range.
 
 
 #### Command Example
+
 ```!exabeam-get-sequence-eventtypes asset_sequence_id=asset_sequence_id search_str="search_str"```
 
 
 ### exabeam-list-incident
+
 ***
 Returns incidents from Exabeam.
 
 #### Base Command
 
 `exabeam-list-incident`
+
 #### Input
 
 | **Argument Name** | **Description**                                                            | **Required** |
@@ -1388,4 +1542,5 @@ Returns incidents from Exabeam.
 | Exabeam.incidents.fields.description  | String | The incident description. | 
 
 #### Command Example
+
 ```!exabeam-list-incident priority=high```

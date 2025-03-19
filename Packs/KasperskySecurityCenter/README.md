@@ -5,6 +5,7 @@ We appreciate your feedback on the quality and usability of the pack to help us 
 The integration in this pack enables you to manage your endpoints and groups.
 
 ## What does this pack do?
+
 The integration in this pack enables you to run commands that:
 
 - Returns a list of hosts based on your specified filter.
@@ -22,5 +23,6 @@ The integration in this pack enables you to run commands that:
 ## Prerequisites
 
 The user should be assigned to a role with the relevant devices in scope, and the following access rights:
+
 - Basic functionality - Read
 - Management of administration groups - Modify

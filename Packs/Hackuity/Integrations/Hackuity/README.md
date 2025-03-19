@@ -13,9 +13,12 @@ This integration was integrated and tested with version 1.25.0 of Hackuity
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### hackuity-search-findings
+
 ***
 Search for findings in Hackuity.
 
@@ -23,6 +26,7 @@ Search for findings in Hackuity.
 #### Base Command
 
 `hackuity-search-findings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -57,8 +61,11 @@ Search for findings in Hackuity.
 | Hackuity.Findings.VulnType.Name | String | The name of the vulnerability type | 
 
 #### Command example
+
 ```!hackuity-search-findings asset_name=example.com```
+
 #### Context Example
+
 ```json
 {
     "Hackuity": {
@@ -119,6 +126,7 @@ Search for findings in Hackuity.
 #### Human Readable Output
 
 >### Findings
+>
 >|Asset|VulnType|Attributes|Score|Status|
 >|---|---|---|---|---|
 >| ID: NKTVm2RU4606<br/>Name: example.com<br/>Type: DOMAIN | ID: common-vulnerability-exposure<br/>Name: Common Vulnerability and Exposure (CVE) | cve_id: CVE-2015-6550 | CVSS: 10.0<br/>TRS: 693 | Ignored: false<br/>State: CLOSED<br/>SubState: FIXED |
@@ -126,6 +134,7 @@ Search for findings in Hackuity.
 
 
 ### hackuity-search-vulndb-vulnerabilities
+
 ***
 Search for vulndb vulnerabilities in Hackuity.
 
@@ -133,6 +142,7 @@ Search for vulndb vulnerabilities in Hackuity.
 #### Base Command
 
 `hackuity-search-vulndb-vulnerabilities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -166,8 +176,11 @@ Search for vulndb vulnerabilities in Hackuity.
 | Hackuity.Vulnerabilities.VulnType.Name | String | The name of the vulnerability type | 
 
 #### Command example
+
 ```!hackuity-search-vulndb-vulnerabilities asset_name=example.com```
+
 #### Context Example
+
 ```json
 {
     "Hackuity": {
@@ -238,6 +251,7 @@ Search for vulndb vulnerabilities in Hackuity.
 #### Human Readable Output
 
 >### VulnDB vulnerabilities
+>
 >|VulnTypes|Description|Attributes|Score|Findings|Seen|
 >|---|---|---|---|---|---|
 >| {'ID': 'common-vulnerability-exposure', 'Name': 'Common Vulnerability and Exposure (CVE)'} | An information disclosure vulnerability exists when the Windows Network Driver Interface Specification (NDIS) improperly handles memory.To exploit this vulnerability, an attacker would first have to gain execution on the victim system, aka 'Windows Network Driver Interface Specification (NDIS) Information Disclosure Vulnerability'. | {'key': 'cve_id', 'value': 'CVE-2020-0705'} | CVSS: 9.0<br/>TRS: 636 | Total: 1<br/>Open: 1<br/>Closed: 0<br/>Ignored: 0 | First: 2021-03-03T07:56:07Z |
@@ -245,6 +259,7 @@ Search for vulndb vulnerabilities in Hackuity.
 
 
 ### hackuity-search-provider-vulnerabilities
+
 ***
 Search for provider vulnerabilities in Hackuity.
 
@@ -252,6 +267,7 @@ Search for provider vulnerabilities in Hackuity.
 #### Base Command
 
 `hackuity-search-provider-vulnerabilities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -285,8 +301,11 @@ Search for provider vulnerabilities in Hackuity.
 | Hackuity.Vulnerabilities.VulnType.Name | String | The name of the vulnerability type | 
 
 #### Command example
+
 ```!hackuity-search-provider-vulnerabilities asset_name=example.com```
+
 #### Context Example
+
 ```json
 {
     "Hackuity": {
@@ -347,6 +366,7 @@ Search for provider vulnerabilities in Hackuity.
 #### Human Readable Output
 
 >### Provider vulnerabilities
+>
 >|VulnTypes|Description|Attributes|Score|Findings|Seen|
 >|---|---|---|---|---|---|
 >| {'ID': 'common-vulnerability-exposure', 'Name': 'Common Vulnerability and Exposure (CVE)'} | KB4561669: Windows 7 and Windows Server 2008 R2 June 2020 Security Update |  | CVSS: 9.0<br/>TRS: 636 | Total: 10<br/>Open: 8<br/>Closed: 2<br/>Ignored: 0 | First: 2021-03-03T07:56:07Z |
@@ -354,6 +374,7 @@ Search for provider vulnerabilities in Hackuity.
 
 
 ### hackuity-dashboard-widgets
+
 ***
 List the widgets in the default dashboard of the user.
 
@@ -361,6 +382,7 @@ List the widgets in the default dashboard of the user.
 #### Base Command
 
 `hackuity-dashboard-widgets`
+
 #### Input
 
 There are no input arguments for this command.
@@ -374,8 +396,11 @@ There are no input arguments for this command.
 | Hackuity.Dashboard.Widgets.Type | String | The type of the widget | 
 
 #### Command example
+
 ```!hackuity-dashboard-widgets```
+
 #### Context Example
+
 ```json
 {
     "Hackuity": {
@@ -398,12 +423,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Dashboard widgets
+>
 >|ID|Type|Params|
 >|---|---|---|
 >| abcd3fgh1jklmn0pqrstuv | ASSETS_OVERVIEW | nbDaysToCompare: 28<br/>withTotal: true |
 
 
 ### hackuity-dashboard-data
+
 ***
 Get the data of a dashboard widget
 
@@ -411,6 +438,7 @@ Get the data of a dashboard widget
 #### Base Command
 
 `hackuity-dashboard-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -425,8 +453,11 @@ Get the data of a dashboard widget
 | Hackuity.Dashboard.Data | Unknown | The data of the widget | 
 
 #### Command example
+
 ```!hackuity-dashboard-data widget_id=abcd3fgh1jklmn0pqrstuv```
+
 #### Context Example
+
 ```json
 {
     "Hackuity": {
@@ -445,6 +476,7 @@ Get the data of a dashboard widget
 #### Human Readable Output
 
 >### Dashboard widget data (abcd3fgh1jklmn0pqrstuv)
+>
 >|currentNbAssets|previousNbAssets|
 >|---|---|
 >| 456 | 123 |

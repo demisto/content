@@ -1,6 +1,7 @@
 Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Parse an email from an eml or msg file and populate all relevant context data to
 | Tags | email, phishing, enhancement, file |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Parse an email from an eml or msg file and populate all relevant context data to
 | max_depth | How many levels deep we should parse the attached emails \(e.g. email contains an emails contains an email\). Default depth level is 3. Minimum level is 1, if set to 1 the script will parse only the first level email |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -38,7 +41,7 @@ Parse an email from an eml or msg file and populate all relevant context data to
 | Email.HeadersMap.CC | Email 'cc' addresses | Unknown |
 | Email.HeadersMap.Reply-To | The email address for return mail | String |
 | Email.HeadersMap.Received | List of all the servers/computers through which the message traveled | String |
-| Email.HeadersMap.Message-ID | A unique string assigned by the mail system when the message is first created. These can easily be forged. \(e.g. 5c530c1b.1c69fb81.bd826.0eff@mx.google.com\) | String |
+| Email.HeadersMap.Message-ID | A unique string assigned by the mail system when the message is first created. These can easily be forged. \(e.g. <5c530c1b.1c69fb81.bd826.0eff@mx.google.com>\) | String |
 | Email.AttachmentsData.Name | The name of the attachment | String |
 | Email.AttachmentsData.Content-ID | The content-id of the attachment | String |
 | Email.AttachmentsData.Content-Disposition | The content-disposition of the attachment | String |

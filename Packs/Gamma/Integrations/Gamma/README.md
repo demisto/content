@@ -19,16 +19,19 @@ Gamma Enterprise DLP provides 1-click automatic discovery and remediation of dat
 Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### gamma-get-violation-list
+
 ***
 Fetch DLP violations found across SaaS applications monitored by Gamma 
 
 #### Base Command
 
 `gamma-get-violation-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,9 +55,11 @@ Fetch DLP violations found across SaaS applications monitored by Gamma
 | GammaViolation.app_name | String | Name of the application |
 
 #### Command Example
+
 ```!gamma-get-violation-list minimum_violation=998 limit=1```
 
 #### Context Example
+
 ```json
 {
     "response": [
@@ -85,6 +90,7 @@ Fetch DLP violations found across SaaS applications monitored by Gamma
 ```
 
 ### gamma-get-violation
+
 ***
 Fetches a single DLP violation. This command is the same as gamma-get-violation-list except that this
  command only returns the DLP violation details of the given violation id.  
@@ -114,9 +120,11 @@ Fetches a single DLP violation. This command is the same as gamma-get-violation-
 | GammaViolation.app_name | String | Name of the application |
 
 #### Command Example
+
 ```!gamma-get-violation violation=998```
 
 #### Context Example
+
 ```json
 {
     "response": [
@@ -147,6 +155,7 @@ Fetches a single DLP violation. This command is the same as gamma-get-violation-
 ```
 
 ### gamma-update-violation
+
 ***
 Updates a DLP violation status in Gamma  
 
@@ -164,4 +173,5 @@ Updates a DLP violation status in Gamma
 
 
 #### Context Output
+
 There is no context output for this command

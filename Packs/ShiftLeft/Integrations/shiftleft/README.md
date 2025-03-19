@@ -11,9 +11,12 @@ This integration was integrated and tested with v4 api of ShiftLeft CORE.
 | Use system proxy settings | Use system proxy settings. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### shiftleft-list-apps
+
 ***
 Return list of apps.
 
@@ -21,6 +24,7 @@ Return list of apps.
 #### Base Command
 
 `shiftleft-list-apps`
+
 #### Input
 
 There are no input arguments for this command.
@@ -31,6 +35,7 @@ There is no context output for this command.
 
 
 #### Command Example
+
 ```!shiftleft-list-apps```
 
 #### Human Readable Output
@@ -38,6 +43,7 @@ There is no context output for this command.
 
 
 ### shiftleft-list-app-findings
+
 ***
 Return list of app findings.
 
@@ -45,6 +51,7 @@ Return list of app findings.
 #### Base Command
 
 `shiftleft-list-app-findings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -60,6 +67,7 @@ Return list of app findings.
 There is no context output for this command.
 
 #### Command Example
+
 ``` !shiftleft-list-app-findings ```
 
 #### Human Readable Output
@@ -67,6 +75,7 @@ There is no context output for this command.
 
 
 ### shiftleft-list-app-secrets
+
 ***
 Return list of app secrets.
 
@@ -74,6 +83,7 @@ Return list of app secrets.
 #### Base Command
 
 `shiftleft-list-app-secrets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -88,6 +98,7 @@ Return list of app secrets.
 There is no context output for this command.
 
 #### Command Example
+
 ``` !shiftleft-list-app-secrets app_name=myapp123```
 
 #### Human Readable Output

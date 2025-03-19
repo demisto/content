@@ -7,7 +7,7 @@ This is the default integration for this content pack when configured by the Dat
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://192.168.0.1) |  | True |
+| Server URL (e.g., <https://192.168.0.1>) |  | True |
 | API Key for the authentication. |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -20,9 +20,12 @@ This is the default integration for this content pack when configured by the Dat
 | POST URL of the JSON alert source. | You can find this value by navigating to Sources -&amp;gt; JSON event source -&amp;gt; POST URL. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### proofpoint-trap-get-events
+
 ***
 Retrieves all incident metadata from Threat Response by specifying filter criteria such as the state of the incident or time of closure.
 
@@ -30,6 +33,7 @@ Retrieves all incident metadata from Threat Response by specifying filter criter
 #### Base Command
 
 `proofpoint-trap-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -3,6 +3,7 @@
 <~XSIAM>
 
 ## Log Ingestion Configuration 
+
 Follow the steps below to configure ingestion of McAfee ePO event records into Cortex XSIAM.
 
 ### Configuration on McAfee ePO
@@ -10,6 +11,7 @@ Follow the steps below to configure ingestion of McAfee ePO event records into C
 #### Create a Custom Database View 
 
 Connect to the McAfee ePO's underlying MS SQL Server database and create a custom view as described [here](https://learn.microsoft.com/en-us/sql/relational-databases/views/create-views?view=sql-server-ver16) based on the following ePO's database views:  
+
 - `dbo.EPOEvents`
 - `dbo.EPOComputerProperties`
 - `dbo.EPOLeafNode`
@@ -20,6 +22,7 @@ Use the sample SQL query below as a reference for creating the custom view, and 
 This query retrieves event records from the `EPOEvents` view from within the last hour, and joins it with various additional views for enriching the returned fieldset. 
 
 ##### Custom View SQL Query Sample
+
 ```
 SELECT 
   dbo.EPExtendedEvent.AnalyzerContentVersion,
@@ -93,6 +96,7 @@ WHERE dbo.EPOEvents.ReceivedUTC >= DATEADD(HOUR, -1, GETUTCDATE())   -- customiz
 ### Configuration on Cortex XSIAM 
 
 #### Configure a Broker VM on Cortex XSIAM
+
 If you do not yet have a Broker VM configured, follow the instructions [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM). 
 
 
@@ -100,7 +104,8 @@ If you do not yet have a Broker VM configured, follow the instructions [here](ht
 
 Activate a database collector as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Activate-the-Database-Collector).
 
-* When configuring the *Database Query* section, set the following parameters:
+- When configuring the *Database Query* section, set the following parameters:
+
    | Parameter         | Value    
    | :---              | :---                    
    | `Rising Column`   | Enter *AutoID*.  
@@ -111,7 +116,8 @@ Activate a database collector as described [here](https://docs-cortex.paloaltone
    | `Product`         | Enter *ePO*. 
   
    
-* Under the SQL Query editor, enter the following query, replacing <CUSTOM_VIEW_NAME> with the actual custom view name created on the McAfee ePO database: 
+- Under the SQL Query editor, enter the following query, replacing <CUSTOM_VIEW_NAME> with the actual custom view name created on the McAfee ePO database: 
+
    ```SQL
       SELECT * FROM <CUSTOM_VIEW_NAME>
       WHERE AutoID > ?

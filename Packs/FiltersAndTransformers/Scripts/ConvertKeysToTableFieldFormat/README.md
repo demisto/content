@@ -2,10 +2,12 @@ Converts object keys to match table keys. Use this when mapping object/collectio
 (An array of objects/collections is also supported).
 
 Example:
- * Input: { "Engine": "val1", "Max Results": 13892378, "Key_With^Special   (characters)": true }
- * Output: { "engine": "val1", "maxresults": 13892378, "keywithspecialcharacters": true }
+
+* Input: { "Engine": "val1", "Max Results": 13892378, "Key_With^Special   (characters)": true }
+* Output: { "engine": "val1", "maxresults": 13892378, "keywithspecialcharacters": true }
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -15,6 +17,7 @@ Example:
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,5 +25,6 @@ Example:
 | value | The object to convert. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

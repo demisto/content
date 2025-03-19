@@ -1217,6 +1217,7 @@ Creates a new endpoint on Cisco ISE according to the passed MAC address and cust
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CiscoISE.Endpoint.MACAddress | string | MAC address of the new endpoint. | 
+
 ### cisco-ise-get-nodes
 
 ***
@@ -1235,6 +1236,7 @@ There are no input arguments for this command.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CiscoISE.NodesData | unknown | Details of all deployment ISE nodes. | 
+
 ### cisco-ise-get-endpoint-id-by-name
 
 ***
@@ -1256,6 +1258,7 @@ Returns an EndpointID using its name (Available on ISE 2.3 and later versions).
 | --- | --- | --- |
 | Endpoint.ID | string | Endpoint ID. | 
 | Endpoint.MACAddress | string | Endpoint MAC address. | 
+
 ### cisco-ise-remove-policy
 
 ***
@@ -1278,6 +1281,7 @@ Removes an Adapative Network Control policy from an endpoint.
 | --- | --- | --- |
 | CiscoISE.Endpoint.MACAddress | string | The MAC address of the endpoint. | 
 | CiscoISE.Endpoint.PolicyName | string | The policy name that was removed from the endpoint. | 
+
 ### cisco-ise-get-session-data-by-ip
 
 ***

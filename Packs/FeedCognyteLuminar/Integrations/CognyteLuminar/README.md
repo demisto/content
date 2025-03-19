@@ -32,9 +32,12 @@ This connector allows integration of intelligence-based IOC data and customer-re
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### luminar-get-indicators
+
 ***
 Gets Luminar Indicators
 
@@ -42,6 +45,7 @@ Gets Luminar Indicators
 #### Base Command
 
 `luminar-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,9 +56,13 @@ Gets Luminar Indicators
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!luminar-get-indicators limit="3"```
+
 #### Context Example
+
 ```json
 {
     "Luminar": {
@@ -127,14 +135,16 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Indicators from Luminar
+>
 >|Indicator Type|Indicator Value|Malware Family|
 >|---|---|---|
 >| File | a35866ff36a7ec0a226b8f814f3642185742020e | SlayerRAT v0.4 |
 >| Domain | xbodyyellow.top | Locky |
->| Email | javamaker@inbox.ru | OilRig |
+>| Email | <javamaker@inbox.ru> | OilRig |
 
 
 ### luminar-get-leaked-records
+
 ***
 Gets Luminar Leaked Records
 
@@ -142,6 +152,7 @@ Gets Luminar Leaked Records
 #### Base Command
 
 `luminar-get-leaked-records`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -152,9 +163,13 @@ Gets Luminar Leaked Records
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!luminar-get-leaked-records limit="3"```
+
 #### Context Example
+
 ```json
 {
     "Luminar": {
@@ -206,14 +221,16 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Leaked Credentials from Luminar
+>
 >|Indicator Type| Indicator Value |Credentials|
 >|-----------------|---|---|
->| Account | a@a.com         | ###### |
->| Account | b@b.com         | ###### |
->| Account | c@c.com         | ###### |
+>| Account | <a@a.com>         | ###### |
+>| Account | <b@b.com>         | ###### |
+>| Account | <c@c.com>         | ###### |
 
 
 ### luminar-reset-fetch-indicators
+
 ***
 WARNING: This command will reset your fetch history.
 
@@ -221,6 +238,7 @@ WARNING: This command will reset your fetch history.
 #### Base Command
 
 `luminar-reset-fetch-indicators`
+
 #### Input
 
 There are no input arguments for this command.
@@ -228,8 +246,11 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!luminar-reset-fetch-indicators```
+
 #### Human Readable Output
 
 >Fetch history deleted successfully

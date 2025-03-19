@@ -329,10 +329,10 @@ Adds a new IOC source document. At least one IOC is required.
 | severity | Source severity level. Possible values are: High, Medium, Low. | Optional | 
 | tags | Comma-separated list of user tags for the document. | Optional | 
 | domains | Comma-separated list of domain IOC values to add. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to add. For example: "http://securitywap.com/path". | Optional | 
+| urls | Comma-separated list of URL IOC values to add. For example: "<http://securitywap.com/path>". | Optional | 
 | ips | Comma-separated list of IP IOC values to add. For example: 8.8.8.8,1.2.3.4. | Optional | 
 | hashes | Comma-separated list of hash IOC values to add. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to add. For example: test@test.com. | Optional | 
+| emails | Comma-separated list of email IOC values to add. For example: <test@test.com>. | Optional | 
 
 #### Context Output
 
@@ -411,10 +411,10 @@ Create new IOCs to existing IOC source documents. At least one IOC is required.
 | --- | --- | --- |
 | source_id | The ID of the source document (dependencies - use threat-command-source-ioc-get command with  source_type="Files" to get all the document source IDs). | Required | 
 | domains | Comma-separated list of domain IOC values to create. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to create. For example: "http://securitywap.com/path". | Optional | 
+| urls | Comma-separated list of URL IOC values to create. For example: "<http://securitywap.com/path>". | Optional | 
 | ips | Comma-separated list of IP IOC values to create. For example: 8.8.8.8,1.2.3.4. | Optional | 
 | hashes | Comma-separated list of hash IOC values to create. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to create. For example: test@test.com. | Optional | 
+| emails | Comma-separated list of email IOC values to create. For example: <test@test.com>. | Optional | 
 
 #### Context Output
 
@@ -619,10 +619,10 @@ You can add an IOC to your user whitelist (even if it is already on the system w
 | --- | --- | --- |
 | is_whitelisted | The whitelist status for the IOCs. Add to the user whitelist - The IOCs will not be passed to integrated devices. Do not whitelist - The IOCs will be passed to integrated devices, even if the IOCs are on the system whitelist. . Possible values are: Add to the user whitelist, Do not whitelist. | Required | 
 | domains | Comma-separated list of domain IOC values to apply is_whitelisted to. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to apply is_whitelisted to. For example: "http://securitywap.com/path". | Optional | 
+| urls | Comma-separated list of URL IOC values to apply is_whitelisted to. For example: "<http://securitywap.com/path>". | Optional | 
 | ips | Comma-separated list of IP IOC values to apply is_whitelisted to. For example: 8.8.8.8,1.2.3.4. | Optional | 
 | hashes | Comma-separated list of hash IOC values to apply is_whitelisted to. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to apply is_whitelisted to. For example: test@test.com. | Optional | 
+| emails | Comma-separated list of email IOC values to apply is_whitelisted to. For example: <test@test.com>. | Optional | 
 
 #### Context Output
 
@@ -650,10 +650,10 @@ Reverts IOC values to the system-default whitelist status. The ETP Suite automat
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domains | Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to be reverted back to the system whitelist default. For example: "http://securitywap.com/path". | Optional | 
+| urls | Comma-separated list of URL IOC values to be reverted back to the system whitelist default. For example: "<http://securitywap.com/path>". | Optional | 
 | ips | Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: 8.8.8.8,1.2.3.4. | Optional | 
 | hashes | Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: test@test.com. | Optional | 
+| emails | Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: <test@test.com>. | Optional | 
 
 #### Context Output
 
@@ -681,10 +681,10 @@ Adds an IOC to an internal Remediation Blocklist. By sending the blocklist to se
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domains | Comma-separated list of domain IOC values to add to the Remediation blocklist. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to add to the Remediation blocklist. For example: "http://securitywap.com/path". | Optional | 
+| urls | Comma-separated list of URL IOC values to add to the Remediation blocklist. For example: "<http://securitywap.com/path>". | Optional | 
 | ips | Comma-separated list of IP IOC valuesto add to the Remediation blocklist. For example: 8.8.8.8,1.2.3.4. | Optional | 
 | hashes | Comma-separated list of hash IOC values to add to the Remediation blocklist. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to add to the Remediation blocklist. For example: test@test.com. | Optional | 
+| emails | Comma-separated list of email IOC values to add to the Remediation blocklist. For example: <test@test.com>. | Optional | 
 
 #### Context Output
 
@@ -712,10 +712,10 @@ Removes IOC values from the Remediation blocklist. There is no indication of suc
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domains | Comma-separated list of domain IOC values to remove from the Remediation blocklist. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to remove from the Remediation blocklist. For example: "http://securitywap.com/path". | Optional | 
+| urls | Comma-separated list of URL IOC values to remove from the Remediation blocklist. For example: "<http://securitywap.com/path>". | Optional | 
 | ips | Comma-separated list of IP IOC values to remove from the Remediation blocklist. For example: 8.8.8.8,1.2.3.4. | Optional | 
 | hashes | Comma-separated list of hash IOC values to remove from the Remediation blocklist. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to remove from the Remediation blocklist. For example: test@test.com. | Optional | 
+| emails | Comma-separated list of email IOC values to remove from the Remediation blocklist. For example: <test@test.com>. | Optional | 
 
 #### Context Output
 
@@ -744,10 +744,10 @@ Changes the severity of existing IOCs for the requester account (overrides the s
 | --- | --- | --- |
 | severity | The severity of the IOCs. Possible values are: High, Medium, Low. | Required | 
 | domains | Comma-separated list of domain IOC values to update the severity. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to update the severity. For example: "http://securitywap.com/path". | Optional | 
+| urls | Comma-separated list of URL IOC values to update the severity. For example: "<http://securitywap.com/path>". | Optional | 
 | ips | Comma-separated list of IP IOC values to update the severity. For example: 8.8.8.8,1.2.3.4. | Optional | 
 | hashes | Comma-separated list of hash IOC values to update the severity. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to update the severity. For example: test@test.com. | Optional | 
+| emails | Comma-separated list of email IOC values to update the severity. For example: <test@test.com>. | Optional | 
 
 #### Context Output
 
@@ -776,10 +776,10 @@ Adds comments to IOCs. At least one IOC is required.
 | --- | --- | --- |
 | comment | The comment to add. | Required | 
 | domains | Comma-separated list of domain IOC values to add the comment to. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to add the comment to. For example: "http://securitywap.com/path". | Optional | 
+| urls | Comma-separated list of URL IOC values to add the comment to. For example: "<http://securitywap.com/path>". | Optional | 
 | ips | Comma-separated list of IP IOC values to add the comment to. For example: 8.8.8.8,1.2.3.4. | Optional | 
 | hashes | Comma-separated list of hash IOC values to add the comment to. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to add the comment to. For example: test@test.com. | Optional | 
+| emails | Comma-separated list of email IOC values to add the comment to. For example: <test@test.com>. | Optional | 
 
 #### Context Output
 
@@ -1237,9 +1237,9 @@ Change selected IOCs blocklist status.
 | --- | --- | --- |
 | alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
 | domains | Comma-separated list of domain IOC values to add. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to add. For example: "http://securitywap.com/path". | Optional | 
+| urls | Comma-separated list of URL IOC values to add. For example: "<http://securitywap.com/path>". | Optional | 
 | ips | Comma-separated list of IP IOC values to add. For example: 8.8.8.8,1.2.3.4. | Optional | 
-| emails | Comma-separated list of email IOC values to add. For example: test@test.com. | Optional | 
+| emails | Comma-separated list of email IOC values to add. For example: <test@test.com>. | Optional | 
 | blocklist_status | Blocklist status. Possible values are: Sent, Not Sent. | Required | 
 
 #### Context Output
@@ -1569,9 +1569,9 @@ Get alert's analyst response
 
 >|Initiator|Message|Date|
 >|---|---|---|
->| test@test.com | Hello| 2023-04-03T15:02:34.641Z |
+>| <test@test.com> | Hello| 2023-04-03T15:02:34.641Z |
 >| Intsights | Hi| 2023-04-03T15:40:56.195Z |
->| test@test.com | thank you| 2023-04-03T18:29:41.169Z |
+>| <test@test.com> | thank you| 2023-04-03T18:29:41.169Z |
 
 
 ### threat-command-alert-activity-log-get
@@ -3007,7 +3007,7 @@ Get the details of the MSSPs users (In case you are an MSSP account).
 
 >|Id|Email|Role|Is Deleted|
 >|---|---|---|---|
->| 64214bc94c75609d09ebb56a | test@test.com | Admin | false |
+>| 64214bc94c75609d09ebb56a | <test@test.com> | Admin | false |
 
 
 ### threat-command-account-user-list
@@ -3130,7 +3130,7 @@ List the users in your account. Mainly used to assign alerts.
 
 >|Id|Email|First Name|Last Name|Role|Is Deleted|
 >|---|---|---|---|---|---|
->| 59490cd818a3b902664b4ed7 | test@test.com | test | test | Admin | false |
+>| 59490cd818a3b902664b4ed7 | <test@test.com> | test | test | Admin | false |
 
 
 ### threat-command-alert-type-list

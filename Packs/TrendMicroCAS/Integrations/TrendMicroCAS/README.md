@@ -1,4 +1,5 @@
 Use Trend Micro Cloud App Security integration to protect against ransomware, phishing, malware, and unauthorized transmission of sensitive data for cloud applications, such as Microsoft 365, Box, Dropbox, Google G Suite and Salesforce.
+
 ## Configure TrendMicro Cloud App Security in Cortex
 
 
@@ -15,9 +16,12 @@ Use Trend Micro Cloud App Security integration to protect against ransomware, ph
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### trendmicro-cas-security-events-list
+
 ***
 Retrieves security event logs of services.
 
@@ -25,6 +29,7 @@ Retrieves security event logs of services.
 #### Base Command
 
 `trendmicro-cas-security-events-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -76,9 +81,11 @@ Retrieves security event logs of services.
 
 
 #### Command Example
+
 ```!trendmicro-cas-security-events-list service=onedrive event_type=securityrisk start="1 day"```
 
 #### Context Example
+
 ```
 {
     "TrendMicroCAS": {
@@ -154,12 +161,14 @@ Retrieves security event logs of services.
 #### Human Readable Output
 
 >### securityrisk events in onedrive
+>
 >|log_item_id|detection_time|security_risk_name|affected_user|action|action_result|
 >|---|---|---|---|---|---|
->| b4f632b3-f797-45cb-aa28-207e6aa58a8d | 2020-08-09T21:12:16.000Z | 20170813_125133.jpg | avishai@demistodev.onmicrosoft.com | Quarantine | success |
+>| b4f632b3-f797-45cb-aa28-207e6aa58a8d | 2020-08-09T21:12:16.000Z | 20170813_125133.jpg | <avishai@demistodev.onmicrosoft.com> | Quarantine | success |
 
 
 ### trendmicro-cas-email-sweep
+
 ***
 Searches for email messages in mailboxes, matching search criteria.
 
@@ -167,11 +176,12 @@ Searches for email messages in mailboxes, matching search criteria.
 #### Base Command
 
 `trendmicro-cas-email-sweep`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mailbox | The Email address of the mailbox for which to search.<br/>A non-prefix wildcard is supported. For example, u*ser@gmail.com or user@gm*ail.com. | Optional | 
+| mailbox | The Email address of the mailbox for which to search.<br/>A non-prefix wildcard is supported. For example, u*<ser@gmail.com> or user@gm*ail.com. | Optional | 
 | lastndays | The number of days (n × 24 hours) before the request is sent to search.<br/>Do not configure lastndays and start/end at the same time. | Optional | 
 | start | The start time to search for email messages using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".<br/>The request searches email messages according to the following settings:<br/>If both start and end are not added, the request searches email messages within seven days (7 × 24 hours) before the request was sent.<br/>If both start and end are added, the request searches email messages within this configured duration. Ensure the end time is no earlier than the start time.<br/>If only start is added, the request searches email messages within seven days (7 × 24 hours) after the start time.<br/>If only end is added, the request searches email messages within seven days (7 × 24 hours) before the end time.<br/>Do not configure lastndays and start/end at the same time. | Optional | 
 | end | The end time to search for email messages using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".<br/>Cloud App Security saves the meta information of email messages for 90 days.<br/>The request searches email messages according to the following settings:<br/>If both start and end are not added, the request searches email messages within seven days (7 × 24 hours) before the request was sent.<br/>If both start and end are added, the request searches email messages within this duration. Ensure the end time is no earlier than the start time.<br/>If only start is added, the request searches email messages within seven days (7 × 24 hours) after the start time.<br/>If only end is added, the request searches email messages within seven days (7 × 24 hours) before the end time.<br/>Do not configure lastndays and start/end at the same time. | Optional | 
@@ -180,8 +190,8 @@ Searches for email messages in mailboxes, matching search criteria.
 | file_name | The name of the attachment file for which to search, with or without a filename extension. A non-prefix wildcard is supported. For example, me*ssage. | Optional | 
 | file_extension | The filename extension of attachment files for which to search without a period ".". A non-prefix wildcard is supported. For example, do* | Optional | 
 | url | The URL contained in an email body or in an attachment for which to search. Type the<br/>full URL.  | Optional | 
-| sender | The email address of the sender for which to search. Type the full email address. A non-prefix wildcard is supported. For example, u*ser@gmail.com. | Optional | 
-| recipient | The email address of the recipient for which to search. Type the full email address. A non-prefix wildcard is supported. For example, u*ser@gmail.com. | Optional | 
+| sender | The email address of the sender for which to search. Type the full email address. A non-prefix wildcard is supported. For example, u*<ser@gmail.com>. | Optional | 
+| recipient | The email address of the recipient for which to search. Type the full email address. A non-prefix wildcard is supported. For example, u*<ser@gmail.com>. | Optional | 
 | message_id | The Internet message ID of the email message for which to search.  Can be obtained from Microsoft Graph API or EWS API. | Optional | 
 | source_ip | The Source IP address, with or without a subnet mask, of the email message to search. For example, xx.yy.zz.ww or xx.yy.zz.ww/16. | Optional | 
 | source_domain | The Source domain of email messages for which to search. Type a complete domain name. A non-prefix wildcard is supported. For example, gm*ail.com. | Optional | 
@@ -212,9 +222,11 @@ Searches for email messages in mailboxes, matching search criteria.
 
 
 #### Command Example
+
 ```!trendmicro-cas-email-sweep lastndays=2 limit=2```
 
 #### Context Example
+
 ```
 {
     "TrendMicroCAS": {
@@ -291,13 +303,15 @@ Searches for email messages in mailboxes, matching search criteria.
 #### Human Readable Output
 
 >### Search Results
+>
 >|mail_message_delivery_time|mail_message_id|mail_message_sender|mail_message_subject|mail_unique_id|mailbox|
 >|---|---|---|---|---|---|
->| 2020-08-08T03:20:53.000Z | <0d25a1993958467e92fe6243427e9c92@WIN-MICMSOEE1BU.demisto.int> | buildtests@demisto.int | Demisto Incident Summary Report | AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq-zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq-zTrN6vWSzK4OWAAOn2KLJAAA= | ser@onmicrosoft.com |
->| 2020-08-08T04:27:11.000Z | <VI1PR07MB577569FD6DFA9073792BA49399460@VI1PR07MB5775.eurprd07.prod.outlook.com> | avishai@demistodev.onmicrosoft.com | Test mail from Demisto | AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq-zTrN6vWSzK4OWAAAAAAEJAADrxRwRjq-zTrN6vWSzK4OWAAOn9rC3AAA= | ser@onmicrosoft.com |
+>| 2020-08-08T03:20:53.000Z | <0d25a1993958467e92fe6243427e9c92@WIN-MICMSOEE1BU.demisto.int> | <buildtests@demisto.int> | Demisto Incident Summary Report | AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq-zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq-zTrN6vWSzK4OWAAOn2KLJAAA= | <ser@onmicrosoft.com> |
+>| 2020-08-08T04:27:11.000Z | <VI1PR07MB577569FD6DFA9073792BA49399460@VI1PR07MB5775.eurprd07.prod.outlook.com> | <avishai@demistodev.onmicrosoft.com> | Test mail from Demisto | AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq-zTrN6vWSzK4OWAAAAAAEJAADrxRwRjq-zTrN6vWSzK4OWAAOn9rC3AAA= | <ser@onmicrosoft.com> |
 
 
 ### trendmicro-cas-user-take-action
+
 ***
 Takes action on a batch of specified user accounts, such as disabling users accounts, 
 requesting multi-factor authentication, and requesting to reset a password for users accounts.
@@ -307,11 +321,12 @@ Relevant for office365 exchange only.
 #### Base Command
 
 `trendmicro-cas-user-take-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action_type | Action to take on a user's account. Can be: <br/>"ACCOUNT_DISABLE": Disables a user's account.<br/>"ACCOUNT_ENABLE_MFA": Enforces a user to perform a multi-factor authentication before being forced to change their password.<br/>"ACCOUNT_RESET_PASSWORD": Requests to reset the password for a user's account.<br/>NOTE: Before using ACCOUNT_ENABLE_MFA and ACCOUNT_RESET_PASSWORD, you need to assign the Administrator role to Cloud App Security.<br/>For more information, see https://docs.trendmicro.com/en-us/enterprise/cloud-app-security-integration-api-online-help/supported-cloud-app-_001/threat-mitigation-ap/take-actions-on-user/assigning-the-user-a.aspx. | Required | 
+| action_type | Action to take on a user's account. Can be: <br/>"ACCOUNT_DISABLE": Disables a user's account.<br/>"ACCOUNT_ENABLE_MFA": Enforces a user to perform a multi-factor authentication before being forced to change their password.<br/>"ACCOUNT_RESET_PASSWORD": Requests to reset the password for a user's account.<br/>NOTE: Before using ACCOUNT_ENABLE_MFA and ACCOUNT_RESET_PASSWORD, you need to assign the Administrator role to Cloud App Security.<br/>For more information, see <https://docs.trendmicro.com/en-us/enterprise/cloud-app-security-integration-api-online-help/supported-cloud-app-_001/threat-mitigation-ap/take-actions-on-user/assigning-the-user-a.aspx>. | Required | 
 | account_user_email | Comma separated email addresses to take action. | Required | 
 
 
@@ -326,9 +341,11 @@ Relevant for office365 exchange only.
 
 
 #### Command Example
+
 ```!trendmicro-cas-user-take-action action_type=ACCOUNT_DISABLE account_user_email=ser@onmicrosoft.com```
 
 #### Context Example
+
 ```
 {
     "TrendMicroCAS": {
@@ -347,12 +364,14 @@ Relevant for office365 exchange only.
 #### Human Readable Output
 
 >### Action: ACCOUNT_DISABLE on users: ['avishai@demistodev.onmicrosoft.com'] was initiated
+>
 >|account_user_email|action_type|batch_id|traceId|
 >|---|---|---|---|
->| ser@onmicrosoft.com | ACCOUNT_DISABLE | 84266eaa-fe0b-4071-855d-423317a4c139 | fb8aacbb-c6ab-4f99-825f-3a6f266cff15 |
+>| <ser@onmicrosoft.com> | ACCOUNT_DISABLE | 84266eaa-fe0b-4071-855d-423317a4c139 | fb8aacbb-c6ab-4f99-825f-3a6f266cff15 |
 
 
 ### trendmicro-cas-email-take-action
+
 ***
 Takes action on a batch of specified email messages, such as deleting and quarantining email messages.
 Relevant for office365 exchange only.
@@ -361,6 +380,7 @@ Relevant for office365 exchange only.
 #### Base Command
 
 `trendmicro-cas-email-take-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -383,9 +403,11 @@ Relevant for office365 exchange only.
 
 
 #### Command Example
+
 ```!trendmicro-cas-email-take-action action_type=MAIL_DELETE mail_message_delivery_time=2020-08-08T03:20:53.000Z mail_message_id=<0d25a1993958467e92fe6243427e9c92@WIN-MICMSOEE1BU.demisto.int> mail_unique_id=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq-zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq-zTrN6vWSzK4OWAAOn2KLJAAA= mailbox=ser@onmicrosoft.com```
 
 #### Context Example
+
 ```
 {
     "TrendMicroCAS": {
@@ -401,13 +423,15 @@ Relevant for office365 exchange only.
 
 #### Human Readable Output
 
->### Action: MAIL_DELETE on mailbox: avishai@demistodev.onmicrosoft.com was initiated
+>### Action: MAIL_DELETE on mailbox: <avishai@demistodev.onmicrosoft.com> was initiated
+>
 >|action_type|batch_id|mailbox|traceId|
 >|---|---|---|---|
->| MAIL_DELETE | 73534edc-011b-4318-a8ca-942af948434e | ser@onmicrosoft.com | 63c5ee4e-ec52-4124-9052-852e9f894f33 |
+>| MAIL_DELETE | 73534edc-011b-4318-a8ca-942af948434e | <ser@onmicrosoft.com> | 63c5ee4e-ec52-4124-9052-852e9f894f33 |
 
 
 ### trendmicro-cas-user-action-result-query
+
 ***
 Queries the results of actions taken on a user's account.
 
@@ -415,6 +439,7 @@ Queries the results of actions taken on a user's account.
 #### Base Command
 
 `trendmicro-cas-user-action-result-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -443,9 +468,11 @@ Queries the results of actions taken on a user's account.
 
 
 #### Command Example
+
 ```!trendmicro-cas-user-action-result-query batch_id=e9397872-9f6c-4c92-9bdc-45cc7fefaa86```
 
 #### Context Example
+
 ```
 {
     "TrendMicroCAS": {
@@ -469,12 +496,14 @@ Queries the results of actions taken on a user's account.
 #### Human Readable Output
 
 >### Action Result
+>
 >|action_id|status|action_type|account_user_email|action_executed_at|error_message|
 >|---|---|---|---|---|---|
->| 56222d76-5a49-4b73-aadd-7e8e439c7f10 | Failed | ACCOUNT_DISABLE | ser@onmicrosoft.com | 2020-08-09T23:27:15.620Z | graph api exception, message=One or more errors occurred. |
+>| 56222d76-5a49-4b73-aadd-7e8e439c7f10 | Failed | ACCOUNT_DISABLE | <ser@onmicrosoft.com> | 2020-08-09T23:27:15.620Z | graph api exception, message=One or more errors occurred. |
 
 
 ### trendmicro-cas-email-action-result-query
+
 ***
 Queries the results of actions taken for email messages.
 
@@ -482,6 +511,7 @@ Queries the results of actions taken for email messages.
 #### Base Command
 
 `trendmicro-cas-email-action-result-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -513,9 +543,11 @@ Queries the results of actions taken for email messages.
 
 
 #### Command Example
+
 ```!trendmicro-cas-email-action-result-query batch_id=c3fba8cb-3736-4208-bf8b-a09e1aea9d9f```
 
 #### Context Example
+
 ```
 {
     "TrendMicroCAS": {
@@ -542,12 +574,14 @@ Queries the results of actions taken for email messages.
 #### Human Readable Output
 
 >### Action Result
+>
 >|action_id|status|action_type|account_user_email|action_executed_at|error_message|
 >|---|---|---|---|---|---|
->| 1c46ef63-04d8-46dc-a17d-653223c40728 | Success | MAIL_DELETE | ser@onmicrosoft.com | 2020-08-09T23:25:13.973Z |  |
+>| 1c46ef63-04d8-46dc-a17d-653223c40728 | Success | MAIL_DELETE | <ser@onmicrosoft.com> | 2020-08-09T23:25:13.973Z |  |
 
 
 ### trendmicro-cas-blocked-lists-get
+
 ***
 Retrieves all blocked senders, URLs, and SHA-1 hash values that have been configured to quarantine Exchange Online email messages.
 
@@ -555,6 +589,7 @@ Retrieves all blocked senders, URLs, and SHA-1 hash values that have been config
 #### Base Command
 
 `trendmicro-cas-blocked-lists-get`
+
 #### Input
 
 There are no input arguments for this command.
@@ -569,9 +604,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!trendmicro-cas-blocked-lists-get```
 
 #### Context Example
+
 ```
 {
     "TrendMicroCAS": {
@@ -596,12 +633,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Blocked List
+>
 >|filehashes|senders|urls|
 >|---|---|---|
->| f3cdddb37f6a933d6a256bd98b4bc703a448c621 | 456@gmail.com,<br/>123@gmail.com | fttg.com/,<br/>ubb.com/,<br/>ggyu.com/ |
+>| f3cdddb37f6a933d6a256bd98b4bc703a448c621 | <456@gmail.com>,<br/><123@gmail.com> | fttg.com/,<br/>ubb.com/,<br/>ggyu.com/ |
 
 
 ### trendmicro-cas-blocked-lists-update
+
 ***
 Adds or removes senders, URLs, SHA-1 hash values to or from blocked lists. You must specify one of senders, urls, or filehashes.
 
@@ -609,6 +648,7 @@ Adds or removes senders, URLs, SHA-1 hash values to or from blocked lists. You m
 #### Base Command
 
 `trendmicro-cas-blocked-lists-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -629,9 +669,11 @@ Adds or removes senders, URLs, SHA-1 hash values to or from blocked lists. You m
 
 
 #### Command Example
+
 ```!trendmicro-cas-blocked-lists-update action_type=create urls=ubb.com,ggyu.com filehashes=f3cdddb37f6a933d6a256bd98b4bc703a448c621 senders=123@gmail.com,456@gmail.com```
 
 #### Context Example
+
 ```
 {
     "TrendMicroCAS": {
@@ -655,6 +697,7 @@ Adds or removes senders, URLs, SHA-1 hash values to or from blocked lists. You m
 #### Human Readable Output
 
 >### Add rules successfully.
+>
 >|filehashes|senders|urls|
 >|---|---|---|
->| f3cdddb37f6a933d6a256bd98b4bc703a448c621 | 123@gmail.com,<br/>456@gmail.com | ubb.com,<br/>ggyu.com |
+>| f3cdddb37f6a933d6a256bd98b4bc703a448c621 | <123@gmail.com>,<br/><456@gmail.com> | ubb.com,<br/>ggyu.com |

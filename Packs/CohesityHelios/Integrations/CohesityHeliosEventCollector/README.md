@@ -7,7 +7,7 @@ This is the default integration for this content pack when configured by the Dat
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://helios.cohesity.com) |  | True |
+| Server URL (e.g. <https://helios.cohesity.com>) |  | True |
 | API Key | The API Key to use for connection | False |
 | The maximum number of events per type. Default is 50000. | The collector pulls both Audit Logs and Alerts. This parameter sets the the maximum fetch number limit for each type. | False |
 | Trust any certificate (not secure) |  | False |

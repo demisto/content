@@ -1,4 +1,5 @@
 Check any URL to detect supsicious behavior.
+
 ## Configure CheckPhish in Cortex
 
 
@@ -14,9 +15,12 @@ Check any URL to detect supsicious behavior.
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### CheckPhish-check-urls
+
 ***
 Checks URLs against the CheckPhish database and returns the results.
 
@@ -26,6 +30,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `CheckPhish-check-urls`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -53,9 +58,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!CheckPhish-check-urls url=`test.com```
 
 #### Context Example
+
 ```json
 {
     "CheckPhish": {
@@ -82,13 +89,15 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Human Readable Output
 
->### CheckPhish reputation for http://test.com/
+>### CheckPhish reputation for <http://test.com/>
+>
 >|url|disposition|brand|status|jobID|
 >|---|---|---|---|---|
->| http://test.com/ | clean | unknown | DONE | 49a3a20b-ec4b-4581-9a55-56716d9e0c6e |
+>| <http://test.com/> | clean | unknown | DONE | 49a3a20b-ec4b-4581-9a55-56716d9e0c6e |
 
 
 ### url
+
 ***
 Retrieves URL information from CheckPhish.
 
@@ -98,6 +107,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -130,9 +140,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!url url=test.com```
 
 #### Context Example
+
 ```json
 {
     "CheckPhish": {
@@ -159,7 +171,8 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Human Readable Output
 
->### CheckPhish reputation for http://test.com/
+>### CheckPhish reputation for <http://test.com/>
+>
 >|url|disposition|brand|status|jobID|
 >|---|---|---|---|---|
->| http://test.com/ | clean | unknown | DONE | 6df1ebef-3be3-48a9-8970-c5afeda8d58d |
+>| <http://test.com/> | clean | unknown | DONE | 6df1ebef-3be3-48a9-8970-c5afeda8d58d |

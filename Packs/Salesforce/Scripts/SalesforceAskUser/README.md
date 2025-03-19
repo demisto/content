@@ -1,6 +1,7 @@
 Asks a user a question via Salesforce Chatter and process the reply directly into the investigation.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Asks a user a question via Salesforce Chatter and process the reply directly int
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * salesforce-push-comment
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -31,5 +35,6 @@ This script uses the following commands and scripts.
 | link | The link to add to the message. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

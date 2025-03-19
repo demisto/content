@@ -3,7 +3,9 @@ This Brute Force content pack contains the ‘Brute Force Investigation - Generi
 
 
 ##### What does this pack do?
+
 The playbook  included in this pack handles the following use-cases:
+
 - Brute Force IP Detected - A detection of source IPs that are exceeding a high threshold of rejected and/or invalid logins.
 - Brute Force Increase Percentage - A detection of large increase percentages in various brute force statistics over different periods of time.
 - Brute Force Potentially Compromised Accounts - A detection of accounts that have shown a high amount of failed logins with one successful login.

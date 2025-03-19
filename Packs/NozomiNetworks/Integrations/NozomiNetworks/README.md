@@ -19,9 +19,12 @@ This integration is used to gather alert and asset information from Nozomi.
 | incidentPerRun | Specifies the maximum number of incidents to retrieve  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### nozomi-find-assets
+
 ***
 This command permits you to get some assets from Nozomi, you can use the query filter to to refine your search. With the limits you can decide the max number of assets you can retrieve from Nozomi, the limit can't be bigger than 1000.
 
@@ -29,6 +32,7 @@ This command permits you to get some assets from Nozomi, you can use the query f
 #### Base Command
 
 `nozomi-find-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -57,9 +61,11 @@ This command permits you to get some assets from Nozomi, you can use the query f
 
 
 #### Command Example
+
 ```!nozomi-find-assets limit=3 filter="| where level == 4"```
 
 #### Context Example
+
 ```
 {
     "Nozomi": {
@@ -132,6 +138,7 @@ This command permits you to get some assets from Nozomi, you can use the query f
 >Nozomi Networks - No assets found
 
 ### nozomi-close-incidents-as-security
+
 ***
 Close incidents as security
 
@@ -139,6 +146,7 @@ Close incidents as security
 #### Base Command
 
 `nozomi-close-incidents-as-security`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -156,9 +164,11 @@ Close incidents as security
 
 
 #### Command Example
+
 ```!nozomi-close-incidents-as-security ids=['fa441619-39d4-46c1-a2fb-fc3b285c0b64']```
 
 #### Context Example
+
 ```
 {
     "Nozomi": {
@@ -176,6 +186,7 @@ Close incidents as security
 >Command changes the status of alerts passed as "closed_as_security" in Nozomi Networks platform.
 
 ### nozomi-close-incidents-as-change
+
 ***
 Close incidents as change
 
@@ -183,6 +194,7 @@ Close incidents as change
 #### Base Command
 
 `nozomi-close-incidents-as-change`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -200,9 +212,11 @@ Close incidents as change
 
 
 #### Command Example
+
 ```!nozomi-close-incidents-as-change ids=['fa441619-39d4-46c1-a2fb-fc3b285c0b64']```
 
 #### Context Example
+
 ```
 {
     "Nozomi": {
@@ -220,6 +234,7 @@ Close incidents as change
 >Command changes the status of alerts passed as "closed_as_change" in Nozomi Networks platform.
 
 ### nozomi-query
+
 ***
 Can execute a nozomi query to get all the information you want.
 A query can be something like that: "alerts | select id name status ack | where status == open"
@@ -229,6 +244,7 @@ Take a look to n2os manual to know how to do a query.
 #### Base Command
 
 `nozomi-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -245,9 +261,11 @@ Take a look to n2os manual to know how to do a query.
 
 
 #### Command Example
+
 ```!nozomi-query query="links | where from match 192.168.10.2 | where protocol match ssh"```
 
 #### Context Example
+
 ```
 {
     "Nozomi": {
@@ -259,10 +277,12 @@ Take a look to n2os manual to know how to do a query.
 #### Human Readable Output
 
 >### Nozomi Networks - Results for Query
+>
 >**No entries.**
 
 
 ### nozomi-find-ip-by-mac
+
 ***
 Find a node ip from a mac address
 
@@ -270,6 +290,7 @@ Find a node ip from a mac address
 #### Base Command
 
 `nozomi-find-ip-by-mac`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -287,9 +308,11 @@ Find a node ip from a mac address
 
 
 #### Command Example
+
 ```!nozomi-find-ip-by-mac mac='00:0c:29:22:50:26' only_nodes_confirmed='True'```
 
 #### Context Example
+
 ```
 {
     "Nozomi": {

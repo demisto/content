@@ -1,7 +1,9 @@
 # Azure Data Explorer Pack
+
 Use the Azure Data Explorer pack to collect and analyze data inside Azure Data Explorer clusters, and to manage search queries.<br>
 
 ## What does this pack do?
+
 - Execute a Kusto Query Language (KQL) query against the given database inside a cluster.
 - List search queries that have reached a final state in the given database.
 - List currently executing search queries in the given database.

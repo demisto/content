@@ -17,14 +17,18 @@ This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### confluence-cloud-space-create
+
 ***
 Creates a new space.<br/>
 Note: If no permissions are specified, the default space permissions defined by the Confluence cloud account admin will be used.
 
 #### Create Space with permissions
+
 - The command arguments 'permission_account_id', 'permission_group_name', and 'permission_operations' can be used to limit access of the space to one individual or one group.<br/>
 For Example: !confluence-cloud-space-create unique_key=”Demo” name=”DemoSpace”  permission_account_id=”123af245667” permission_group_name=”administrators” permission_operations=”read:space,write:page”
   
@@ -34,6 +38,7 @@ A valid JSON schema can be found [here](https://developer.atlassian.com/cloud/co
 #### Base Command
 
 `confluence-cloud-space-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -45,7 +50,7 @@ A valid JSON schema can be found [here](https://developer.atlassian.com/cloud/co
 | permission_account_id | The account ID of the user to whom permission should be granted. <br/><br/>Note: To retrieve the account ID, execute the confluence-cloud-user-list command. | Optional | 
 | permission_group_name | The group name to whom permission should be granted. <br/><br/>Note: To retrieve the group name, execute the confluence-cloud-group-list command. | Optional | 
 | permission_operations | A comma-separated list of the permissions that should be applied.<br/><br/>Note: Requires either permission_account_id or permission_group_name.<br/><br/>Format accepted: operation1:targetType1, operation2:targetType2<br/><br/>For example: read:space, create:page<br/><br/>Possible values for operations: create, read, delete, export, administer.<br/>Possible values for targetType: space, page, blogpost, comment, attachment. | Optional | 
-| advanced_permissions | Specify 'advanced_permissions' to grant access to multiple users or groups. 'advanced_permissions' has priority over 'permission_operations'. <br/><br/>Note: Add backslash(\\) before quotes.<br/><br/>For example: [ { \"subjects\": { \"user\": { \"results\": [ { \"accountId\": \"5ff2e30b4d2179006ea18449\" } ] }, \"group\": { \"results\": [ { \"name\": \"administrators\" } ] } }, \"operation\": { \"operation\": \"read\", \"targetType\": \"space\" }, \"anonymousAccess\": false, \"unlicensedAccess\": false } ]<br/><br/>To prepare a valid JSON for advanced_permissions, navigate to https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-post and see the permission parameter in it. | Optional | 
+| advanced_permissions | Specify 'advanced_permissions' to grant access to multiple users or groups. 'advanced_permissions' has priority over 'permission_operations'. <br/><br/>Note: Add backslash(\\) before quotes.<br/><br/>For example: [ { \"subjects\": { \"user\": { \"results\": [ { \"accountId\": \"5ff2e30b4d2179006ea18449\" } ] }, \"group\": { \"results\": [ { \"name\": \"administrators\" } ] } }, \"operation\": { \"operation\": \"read\", \"targetType\": \"space\" }, \"anonymousAccess\": false, \"unlicensedAccess\": false } ]<br/><br/>To prepare a valid JSON for advanced_permissions, navigate to <https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-post> and see the permission parameter in it. | Optional | 
 
 
 #### Context Output
@@ -101,9 +106,11 @@ A valid JSON schema can be found [here](https://developer.atlassian.com/cloud/co
 
 
 #### Command Example
+
 ```!confluence-cloud-space-create name="hello_world" unique_key="helloworld111"```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -2199,12 +2206,14 @@ A valid JSON schema can be found [here](https://developer.atlassian.com/cloud/co
 #### Human Readable Output
 
 >### Space
+>
 >|ID|Name|Type|Status|
 >|---|---|---|---|
 >| 16711682 | [hello_world](https://xsoar-bd.atlassian.net/wiki/spaces/helloworld111) | global | current |
 
 
 ### confluence-cloud-content-create
+
 ***
 Creates a page or blogpost for a given space.<br/>
 Note: To view the expansion of content properties, execute confluence-cloud-content-list and confluence-cloud-content-search commands.
@@ -2213,6 +2222,7 @@ Note: To view the expansion of content properties, execute confluence-cloud-cont
 #### Base Command
 
 `confluence-cloud-content-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2311,9 +2321,11 @@ Note: To view the expansion of content properties, execute confluence-cloud-cont
 
 
 #### Command Example
+
 ```!confluence-cloud-content-create title="XSOAR_Page_234567" type=page space_key="XSOAR"```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -2465,12 +2477,14 @@ Note: To view the expansion of content properties, execute confluence-cloud-cont
 #### Human Readable Output
 
 >### Content
+>
 >|ID|Title|Type|Status|Space Name|Created By|Created At|
 >|---|---|---|---|---|---|---|
 >| 16711862 | [XSOAR_Page_234567](https://xsoar-bd.atlassian.net/wiki/spaces/XSOAR/pages/16711862/XSOAR_Page_234567) | page | current | XSOAR_Project | John Doe | 2021-09-02T06:36:33.937Z |
 
 
 ### confluence-cloud-comment-create
+
 ***
 Creates a comment for the given content.<br/>
 Note: To view the expansion of content properties, execute the confluence-cloud-content-list and confluence-cloud-content-search commands.
@@ -2479,6 +2493,7 @@ Note: To view the expansion of content properties, execute the confluence-cloud-
 #### Base Command
 
 `confluence-cloud-comment-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2576,9 +2591,11 @@ Note: To view the expansion of content properties, execute the confluence-cloud-
 
 
 #### Command Example
+
 ```!confluence-cloud-comment-create body_value="hello" body_representation="storage" container_id=2031630```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -2769,12 +2786,14 @@ Note: To view the expansion of content properties, execute the confluence-cloud-
 #### Human Readable Output
 
 >### Comment
+>
 >|ID|Title|Type|Status|Space Name|Created By|Created At|
 >|---|---|---|---|---|---|---|
 >| 16711873 | [Re: XSOAR_blogpost](https://xsoar-bd.atlassian.net/wiki/spaces/XSOAR/blog/2021/08/06/2031630/XSOAR_blogpost?focusedCommentId=16711873#comment-16711873) | comment | current | XSOAR_Project | John Doe | 2021-09-02T06:36:36.737Z |
 
 
 ### confluence-cloud-space-list
+
 ***
 Returns a list of all Confluence spaces.
 
@@ -2782,6 +2801,7 @@ Returns a list of all Confluence spaces.
 #### Base Command
 
 `confluence-cloud-space-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2793,7 +2813,7 @@ Returns a list of all Confluence spaces.
 | status | Filter the results to list the spaces based on their status. <br/>Possible values: current, archived.<br/><br/>Note: The term 'current' refers to the space that is currently active. | Optional | 
 | type | Filter the results to list the spaces based on their type. <br/>Possible values: global, personal. | Optional | 
 | favourite | Filter the results to the favorite spaces of the current user. <br/>Possible values: true, false. | Optional | 
-| expand | Indicates which properties to expand. <br/>For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional | 
+| expand | Indicates which properties to expand. <br/>For reference, visit <https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-get>.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional | 
 
 
 #### Context Output
@@ -2849,9 +2869,11 @@ Returns a list of all Confluence spaces.
 
 
 #### Command Example
+
 ```!confluence-cloud-space-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -2940,6 +2962,7 @@ Returns a list of all Confluence spaces.
 #### Human Readable Output
 
 >### Space(s)
+>
 >|ID|Space Key|Name|Type|Status|Created By|Created At|
 >|---|---|---|---|---|---|---|
 >| 12943669 | unique2 | [11Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio urna, tempus molestie, porttitor ut, iaculis quis, sem. Phasellus rhoncus. Aenean id metus id velit](https://xsoar-bd.atlassian.net/wiki/spaces/unique2) | global | current | John Doe | 2021-08-26T08:50:12.879Z |
@@ -2947,6 +2970,7 @@ Returns a list of all Confluence spaces.
 
 
 ### confluence-cloud-content-list
+
 ***
 Returns the list of content of Confluence.
 
@@ -2954,6 +2978,7 @@ Returns the list of content of Confluence.
 #### Base Command
 
 `confluence-cloud-content-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2966,7 +2991,7 @@ Returns the list of content of Confluence.
 | sort_key | Key based on which the response will be sorted.<br/><br/>Note: If 'sort_order' is specified, 'sort_key' is required. | Optional | 
 | creation_date | The date from which to return the content created on that specific date. <br/>Formats accepted: 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd. | Optional | 
 | status | Filter the results to a set of content based on their status. If set to any, content with any status is returned. <br/>Possible values: any, current, trashed, draft, archived.<br/><br/>Note: The term 'current' refers to the content that is currently active. | Optional | 
-| expand | Indicates which properties to expand. <br/>For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional | 
+| expand | Indicates which properties to expand. <br/>For reference, visit <https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-get>.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional | 
 
 
 #### Context Output
@@ -3045,9 +3070,11 @@ Returns the list of content of Confluence.
 
 
 #### Command Example
+
 ```!confluence-cloud-content-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -3347,6 +3374,7 @@ Returns the list of content of Confluence.
 #### Human Readable Output
 
 >### Content(s)
+>
 >|ID|Title|Type|Status|Space Name|Created By|Created At|Version
 >|---|---|---|---|---|---|---|---|
 >| 65639 | [demo](https://xsoar-bd.atlassian.net/wiki/spaces/~680738455/pages/65639/demo) | page | current | John Doe | John Doe | 2021-08-02T09:53:05.077Z | 2 |
@@ -3354,6 +3382,7 @@ Returns the list of content of Confluence.
 
 
 ### confluence-cloud-content-delete
+
 ***
 Delete the content depending on the content's type and status.<br/><br/>
 Note: If the content's type is page or blogpost, it should be moved to trash before deleting permanently.
@@ -3362,6 +3391,7 @@ Note: If the content's type is page or blogpost, it should be moved to trash bef
 #### Base Command
 
 `confluence-cloud-content-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3375,6 +3405,7 @@ Note: If the content's type is page or blogpost, it should be moved to trash bef
 There is no context output for this command.
 
 #### Command Example
+
 ```!confluence-cloud-content-delete content_id="3704312"```
 
 #### Human Readable Output
@@ -3382,6 +3413,7 @@ There is no context output for this command.
 >Content with Id 3704312 is deleted successfully.
 
 ### confluence-cloud-content-update
+
 ***
 Update the existing content with new content.<br/>
 Note: Updating draft content is currently not supported.
@@ -3390,6 +3422,7 @@ Note: Updating draft content is currently not supported.
 #### Base Command
 
 `confluence-cloud-content-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3488,9 +3521,11 @@ Note: Updating draft content is currently not supported.
 
 
 #### Command Example
+
 ```!confluence-cloud-content-update content_id=2097159 title="testing123" type=page version=5```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -3644,19 +3679,22 @@ Note: Updating draft content is currently not supported.
 #### Human Readable Output
 
 >### Content
+>
 >|ID|Title|Type|Status|Space Name|Created By|Created At|
 >|---|---|---|---|---|---|---|
 >| 2097159 | [testing123](https://xsoar-bd.atlassian.net/wiki/spaces/XSOAR/pages/2097159/testing123) | page | current | XSOAR_Project | John Doe | 2021-08-06T06:23:36.076Z |
 
 
 ### confluence-cloud-content-search
+
 ***
-Retrieves a list of content using the Confluence Query Language (CQL).<br/><br/>For more information on CQL, see: https://developer.atlassian.com/cloud/confluence/advanced-searching-using-cql/.
+Retrieves a list of content using the Confluence Query Language (CQL).<br/><br/>For more information on CQL, see: <https://developer.atlassian.com/cloud/confluence/advanced-searching-using-cql/>.
 
 
 #### Base Command
 
 `confluence-cloud-content-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3665,7 +3703,7 @@ Retrieves a list of content using the Confluence Query Language (CQL).<br/><br/>
 | limit | Number of records to retrieve in the response. <br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
 | content_status | Filter the result based on the content status.<br/>Possible values: current, draft, archived.<br/><br/>Note: Supports multiple comma-separated values. | Optional | 
 | next_page_token | Retrieves the next page records for the given query (next_page_token retrieved in previous content response). | Optional | 
-| expand | Indicates which properties to expand. <br/>For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-search-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional | 
+| expand | Indicates which properties to expand. <br/>For reference, visit <https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-search-get>.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional | 
 
 
 #### Context Output
@@ -3746,9 +3784,11 @@ Retrieves a list of content using the Confluence Query Language (CQL).<br/><br/>
 
 
 #### Command Example
+
 ```!confluence-cloud-content-search query="type=page" limit=2```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -4079,14 +4119,17 @@ Retrieves a list of content using the Confluence Query Language (CQL).<br/><br/>
 #### Human Readable Output
 
 >### Content(s)
+>
 >|ID|Title|Type|Status|Space Name|Created By|Created At|Version|
 >|---|---|---|---|---|---|---|---|
 >| 8912897 | [Trial_1](https://xsoar-bd.atlassian.net/wiki/spaces/TRIAL/pages/8912897/Trial_1) | page | current | Trial | John Doe | 2021-08-19T09:11:19.755Z | 3 |
 >| 8847372 | [Testing_XSOAR](https://xsoar-bd.atlassian.net/wiki/spaces/TRIAL/pages/8847372/Testing_XSOAR) | page | current | Trial | John Doe | 2021-08-19T10:09:37.066Z | 3 |
+>
 Run the command with argument next_page_token=_sa_WyJcdDg4NDczNzIgUU5aRTlIVzxbclZnSitSZXBSTU4gY3AiXQ== to see the next set of contents.
 
 
 ### confluence-cloud-user-list
+
 ***
 Returns a list of users.
 
@@ -4094,6 +4137,7 @@ Returns a list of users.
 #### Base Command
 
 `confluence-cloud-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4120,9 +4164,11 @@ Returns a list of users.
 
 
 #### Command Example
+
 ```!confluence-cloud-user-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -4167,6 +4213,7 @@ Returns a list of users.
 #### Human Readable Output
 
 >### User(s)
+>
 >|Account ID|Name|User Type|
 >|---|---|---|
 >| 5d9afe0010f4800c341a2bba | Opsgenie Incident Timeline | known |
@@ -4174,6 +4221,7 @@ Returns a list of users.
 
 
 ### confluence-cloud-group-list
+
 ***
 Returns all user groups.
 
@@ -4181,6 +4229,7 @@ Returns all user groups.
 #### Base Command
 
 `confluence-cloud-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4201,9 +4250,11 @@ Returns all user groups.
 
 
 #### Command Example
+
 ```!confluence-cloud-group-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -4232,6 +4283,7 @@ Returns all user groups.
 #### Human Readable Output
 
 >### Group(s)
+>
 >|ID|Name|
 >|---|---|
 >| 10453df5-f7fc-47be-8ca7-bc2949c1bd5b | administrators |
@@ -4286,9 +4338,11 @@ Retrieves a list of events from the Atlassian Confluence Cloud instance.
 | ConfluenceCloud.Event.associatedObjects.objectType | String | Type of the associated object. | 
 
 #### Command Example
+
 ```!confluence-cloud-get-events limit=1```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {

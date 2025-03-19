@@ -20,9 +20,12 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### aws-iam-create-user
+
 ***
 Creates a new IAM user for your AWS account.
 
@@ -30,6 +33,7 @@ Creates a new IAM user for your AWS account.
 #### Base Command
 
 `aws-iam-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -53,10 +57,12 @@ Creates a new IAM user for your AWS account.
 
 
 #### Command Example
+
 ```!aws-iam-create-user userName=Test path=/testusers/```
 
 
 ### aws-iam-get-user
+
 ***
 Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
 
@@ -64,6 +70,7 @@ Retrieves information about the specified IAM user, including the user's creatio
 #### Base Command
 
 `aws-iam-get-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -87,10 +94,12 @@ Retrieves information about the specified IAM user, including the user's creatio
 
 
 #### Command Example
+
 ``` !aws-iam-get-user userName=test```
 
 
 ### aws-iam-list-users
+
 ***
 Lists the IAM users, returns all users in the AWS account.
 
@@ -98,6 +107,7 @@ Lists the IAM users, returns all users in the AWS account.
 #### Base Command
 
 `aws-iam-list-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -120,12 +130,14 @@ Lists the IAM users, returns all users in the AWS account.
 
 
 #### Command Example
+
 ``` !aws-iam-list-users```
 
 
 
 
 ### aws-iam-update-user
+
 ***
 Updates the name and/or the path of the specified IAM user.
 
@@ -133,6 +145,7 @@ Updates the name and/or the path of the specified IAM user.
 #### Base Command
 
 `aws-iam-update-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -150,12 +163,14 @@ Updates the name and/or the path of the specified IAM user.
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-iam-update-user oldUserName=test newUserName=NewUserName34 newPath=/iamtest/ ```
 
 
 
 
 ### aws-iam-delete-user
+
 ***
 Deletes the specified IAM user. The user must not belong to any groups or have any access keys, signing certificates, or attached policies.
 
@@ -163,6 +178,7 @@ Deletes the specified IAM user. The user must not belong to any groups or have a
 #### Base Command
 
 `aws-iam-delete-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -178,12 +194,14 @@ Deletes the specified IAM user. The user must not belong to any groups or have a
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-iam-delete-user userName=userName34 ```
 
 
 
 
 ### aws-iam-update-login-profile
+
 ***
 Changes the password for the specified IAM user.
 
@@ -191,6 +209,7 @@ Changes the password for the specified IAM user.
 #### Base Command
 
 `aws-iam-update-login-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -208,12 +227,14 @@ Changes the password for the specified IAM user.
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-iam-update-login-profile userName=userName34 newPassword=ArdVaEC@1#$F%g% passwordResetRequired=True raw-response=true```
 
 
 
 
 ### aws-iam-create-group
+
 ***
 Creates a new iam group.
 
@@ -221,6 +242,7 @@ Creates a new iam group.
 #### Base Command
 
 `aws-iam-create-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -244,12 +266,14 @@ Creates a new iam group.
 
 
 #### Command Example
+
 ```!aws-iam-create-group groupName=test path=/testgroups/ ```
 
 
 
 
 ### aws-iam-list-groups
+
 ***
 Lists all the IAM groups in the AWS account
 
@@ -257,6 +281,7 @@ Lists all the IAM groups in the AWS account
 #### Base Command
 
 `aws-iam-list-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -278,12 +303,14 @@ Lists all the IAM groups in the AWS account
 
 
 #### Command Example
+
 ``` !aws-iam-list-groups```
 
 
 
 
 ### aws-iam-list-groups-for-user
+
 ***
 Lists the IAM groups that the specified IAM user belongs to.
 
@@ -291,6 +318,7 @@ Lists the IAM groups that the specified IAM user belongs to.
 #### Base Command
 
 `aws-iam-list-groups-for-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -313,12 +341,14 @@ Lists the IAM groups that the specified IAM user belongs to.
 
 
 #### Command Example
+
 ```aws-iam-list-groups-for-user userName=test ```
 
 
 
 
 ### aws-iam-add-user-to-group
+
 ***
 Adds the specified user to the specified group.
 
@@ -326,6 +356,7 @@ Adds the specified user to the specified group.
 #### Base Command
 
 `aws-iam-add-user-to-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -342,12 +373,14 @@ Adds the specified user to the specified group.
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-iam-add-user-to-group userName=userName34 groupName=test ```
 
 
 
 
 ### aws-iam-create-access-key
+
 ***
 Creates a new AWS secret access key and corresponding AWS access key ID for the specified user. The default status for new keys is Active .
 
@@ -355,6 +388,7 @@ Creates a new AWS secret access key and corresponding AWS access key ID for the 
 #### Base Command
 
 `aws-iam-create-access-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -376,12 +410,14 @@ Creates a new AWS secret access key and corresponding AWS access key ID for the 
 
 
 #### Command Example
+
 ```!aws-iam-create-access-key userName=userName34 ```
 
 
 
 
 ### aws-iam-update-access-key
+
 ***
 Changes the status of the specified access key from Active to Inactive, or vice versa. This operation can be used to disable a user's key as part of a key rotation workflow.
 
@@ -389,6 +425,7 @@ Changes the status of the specified access key from Active to Inactive, or vice 
 #### Base Command
 
 `aws-iam-update-access-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -406,12 +443,14 @@ Changes the status of the specified access key from Active to Inactive, or vice 
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-iam-update-access-key userName=test accessKeyId=AKIAJSFAUQ7EDFPN7Y2D2A status=Inactive```
 
 
 
 
 ### aws-iam-list-access-keys-for-user
+
 ***
 Returns information about the access key IDs associated with the specified IAM user.
 
@@ -419,6 +458,7 @@ Returns information about the access key IDs associated with the specified IAM u
 #### Base Command
 
 `aws-iam-list-access-keys-for-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -440,12 +480,14 @@ Returns information about the access key IDs associated with the specified IAM u
 
 
 #### Command Example
+
 ```!aws-iam-list-access-keys-for-user userName=userName34 ```
 
 
 
 
 ### aws-iam-list-policies
+
 ***
 Lists all the managed policies that are available in your AWS account, including your own customer-defined managed policies and all AWS managed policies.
 
@@ -453,6 +495,7 @@ Lists all the managed policies that are available in your AWS account, including
 #### Base Command
 
 `aws-iam-list-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -480,12 +523,14 @@ Lists all the managed policies that are available in your AWS account, including
 
 
 #### Command Example
+
 ``` !aws-iam-list-policies scope=AWS onlyAttached=True```
 
 
 
 
 ### aws-iam-list-roles
+
 ***
 Lists all IAM roles
 
@@ -493,6 +538,7 @@ Lists all IAM roles
 #### Base Command
 
 `aws-iam-list-roles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -517,12 +563,14 @@ Lists all IAM roles
 
 
 #### Command Example
+
 ``` !aws-iam-list-roles```
 
 
 
 
 ### aws-iam-attach-policy
+
 ***
 Attaches the specified managed policy to the specified IAM Entity.
 
@@ -530,6 +578,7 @@ Attaches the specified managed policy to the specified IAM Entity.
 #### Base Command
 
 `aws-iam-attach-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -544,12 +593,14 @@ Attaches the specified managed policy to the specified IAM Entity.
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-iam-attach-policy type=User entityName=userName34 policyArn=arn:aws:iam::aws:policy/AmazonSQSFullAccess```
 
 
 
 
 ### aws-iam-detach-policy
+
 ***
 Removes the specified managed policy from the specified IAM Entity.
 
@@ -557,6 +608,7 @@ Removes the specified managed policy from the specified IAM Entity.
 #### Base Command
 
 `aws-iam-detach-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -574,12 +626,14 @@ Removes the specified managed policy from the specified IAM Entity.
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-iam-detach-policy type=User entityName=userName34 policyArn=arn:aws:iam::aws:policy/AmazonSQSFullAccess ```
 
 
 
 
 ### aws-iam-delete-login-profile
+
 ***
 Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services through the AWS Management Console.
 
@@ -587,6 +641,7 @@ Deletes the password for the specified IAM user, which terminates the user's abi
 #### Base Command
 
 `aws-iam-delete-login-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -602,12 +657,14 @@ Deletes the password for the specified IAM user, which terminates the user's abi
 There is no context output for this command.
 
 #### Command Example
+
 ``` !aws-iam-delete-login-profile userName=userName34```
 
 
 
 
 ### aws-iam-delete-group
+
 ***
 Deletes the specified IAM group. The group must not contain any users or have any attached policies.
 
@@ -615,6 +672,7 @@ Deletes the specified IAM group. The group must not contain any users or have an
 #### Base Command
 
 `aws-iam-delete-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -630,12 +688,14 @@ Deletes the specified IAM group. The group must not contain any users or have an
 There is no context output for this command.
 
 #### Command Example
+
 ``` !aws-iam-delete-group groupName=Group123```
 
 
 
 
 ### aws-iam-remove-user-from-group
+
 ***
 Removes the specified user from the specified group.
 
@@ -643,6 +703,7 @@ Removes the specified user from the specified group.
 #### Base Command
 
 `aws-iam-remove-user-from-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -659,12 +720,14 @@ Removes the specified user from the specified group.
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-iam-remove-user-from-group userName=userName34 groupName=Group123 ```
 
 
 
 
 ### aws-iam-create-login-profile
+
 ***
 Creates a password for the specified user, giving the user the ability to access AWS services through the AWS Management Console.
 
@@ -672,6 +735,7 @@ Creates a password for the specified user, giving the user the ability to access
 #### Base Command
 
 `aws-iam-create-login-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -689,12 +753,14 @@ Creates a password for the specified user, giving the user the ability to access
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-iam-create-login-profile userName=userName34 password=Avd#sdf$12VB6*cvg passwordResetRequired=True ```
 
 
 
 
 ### aws-iam-delete-access-key
+
 ***
 Deletes the access key pair associated with the specified IAM user.
 
@@ -702,6 +768,7 @@ Deletes the access key pair associated with the specified IAM user.
 #### Base Command
 
 `aws-iam-delete-access-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -718,12 +785,14 @@ Deletes the access key pair associated with the specified IAM user.
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-iam-delete-access-key userName=userName34 AccessKeyId=ABCDEFGGHDJQ7E7X5PADN7Y2D2A ```
 
 
 
 
 ### aws-iam-create-instance-profile
+
 ***
 Creates a new instance profile.
 
@@ -731,6 +800,7 @@ Creates a new instance profile.
 #### Base Command
 
 `aws-iam-create-instance-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -754,12 +824,14 @@ Creates a new instance profile.
 
 
 #### Command Example
+
 ``` !aws-iam-create-instance-profile instanceProfileName=testprofile path=/test/```
 
 
 
 
 ### aws-iam-delete-instance-profile
+
 ***
 Deletes the specified instance profile. The instance profile must not have an associated role.
 
@@ -767,6 +839,7 @@ Deletes the specified instance profile. The instance profile must not have an as
 #### Base Command
 
 `aws-iam-delete-instance-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -782,12 +855,14 @@ Deletes the specified instance profile. The instance profile must not have an as
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-iam-delete-instance-profile instanceProfileName=testprofile ```
 
 
 
 
 ### aws-iam-list-instance-profiles
+
 ***
 Lists all the instance profiles tin your AWS account.
 
@@ -795,6 +870,7 @@ Lists all the instance profiles tin your AWS account.
 #### Base Command
 
 `aws-iam-list-instance-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -824,12 +900,14 @@ Lists all the instance profiles tin your AWS account.
 
 
 #### Command Example
+
 ``` !aws-iam-list-instance-profiles```
 
 
 
 
 ### aws-iam-add-role-to-instance-profile
+
 ***
 Adds the specified IAM role to the specified instance profile. An instance profile can contain only one role, and this limit cannot be increased. You can remove the existing role and then add a different role to an instance profile.
 
@@ -837,6 +915,7 @@ Adds the specified IAM role to the specified instance profile. An instance profi
 #### Base Command
 
 `aws-iam-add-role-to-instance-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -868,12 +947,14 @@ Adds the specified IAM role to the specified instance profile. An instance profi
 
 
 #### Command Example
+
 ``` !aws-iam-add-role-to-instance-profile instanceProfileName=testprofile roleName=EC2ReadOnly```
 
 
 
 
 ### aws-iam-remove-role-from-instance-profile
+
 ***
 Removes the specified IAM role from the specified EC2 instance profile.
 
@@ -881,6 +962,7 @@ Removes the specified IAM role from the specified EC2 instance profile.
 #### Base Command
 
 `aws-iam-remove-role-from-instance-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -912,12 +994,14 @@ Removes the specified IAM role from the specified EC2 instance profile.
 
 
 #### Command Example
+
 ```!aws-iam-remove-role-from-instance-profile instanceProfileName=testprofile roleName=EC2ReadOnly ```
 
 
 
 
 ### aws-iam-list-instance-profiles-for-role
+
 ***
 Lists the instance profiles that have the specified associated IAM role.
 
@@ -925,6 +1009,7 @@ Lists the instance profiles that have the specified associated IAM role.
 #### Base Command
 
 `aws-iam-list-instance-profiles-for-role`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -955,12 +1040,14 @@ Lists the instance profiles that have the specified associated IAM role.
 
 
 #### Command Example
+
 ``` !aws-iam-list-instance-profiles-for-role roleName=EC2ReadOnly```
 
 
 
 
 ### aws-iam-get-instance-profile
+
 ***
 Retrieves information about the specified instance profile.
 
@@ -968,6 +1055,7 @@ Retrieves information about the specified instance profile.
 #### Base Command
 
 `aws-iam-get-instance-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -998,12 +1086,14 @@ Retrieves information about the specified instance profile.
 
 
 #### Command Example
+
 ```!aws-iam-get-instance-profile instanceProfileName=testprofile ```
 
 
 
 
 ### aws-iam-get-role
+
 ***
 Retrieves information about the specified role.
 
@@ -1011,6 +1101,7 @@ Retrieves information about the specified role.
 #### Base Command
 
 `aws-iam-get-role`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1038,12 +1129,14 @@ Retrieves information about the specified role.
 
 
 #### Command Example
+
 ```!aws-iam-get-role roleName=ec2readonly ```
 
 
 
 
 ### aws-iam-delete-role
+
 ***
 Deletes the specified role. The role must not have any policies attached. 
 
@@ -1051,6 +1144,7 @@ Deletes the specified role. The role must not have any policies attached.
 #### Base Command
 
 `aws-iam-delete-role`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1066,12 +1160,14 @@ Deletes the specified role. The role must not have any policies attached.
 There is no context output for this command.
 
 #### Command Example
+
 ``` !aws-iam-delete-role roleName=test-role```
 
 
 
 
 ### aws-iam-create-role
+
 ***
 Creates a new role for your AWS account.
 
@@ -1079,6 +1175,7 @@ Creates a new role for your AWS account.
 #### Base Command
 
 `aws-iam-create-role`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1108,6 +1205,7 @@ Creates a new role for your AWS account.
 
 
 #### Command Example
+
 ``` 
     !aws-iam-create-role roleName=testrole assumeRolePolicyDocument="{
     "Version": "2012-10-17",
@@ -1125,6 +1223,7 @@ Creates a new role for your AWS account.
 
 
 ### aws-iam-create-policy
+
 ***
 Creates a new managed policy for your AWS account.  This operation creates a policy version with a version identifier of v1 and sets v1 as the policy's default version.
 
@@ -1132,6 +1231,7 @@ Creates a new managed policy for your AWS account.  This operation creates a pol
 #### Base Command
 
 `aws-iam-create-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1163,6 +1263,7 @@ Creates a new managed policy for your AWS account.  This operation creates a pol
 
 
 #### Command Example
+
 ```
 !aws-iam-create-policy policyName=test-policy policyDocument="{  
 "Version": "2012-10-17",  
@@ -1186,6 +1287,7 @@ Creates a new managed policy for your AWS account.  This operation creates a pol
 
 
 ### aws-iam-delete-policy
+
 ***
 Deletes the specified managed policy.  Before you can delete a managed policy, you must first detach the policy from all users, groups, and roles that it is attached to. In addition you must delete all the policy's versions.
 
@@ -1193,6 +1295,7 @@ Deletes the specified managed policy.  Before you can delete a managed policy, y
 #### Base Command
 
 `aws-iam-delete-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1208,12 +1311,14 @@ Deletes the specified managed policy.  Before you can delete a managed policy, y
 There is no context output for this command.
 
 #### Command Example
+
 ``` !aws-iam-delete-policy policyArn=arn:aws:iam::123456789:policy/test-policy```
 
 
 
 
 ### aws-iam-create-policy-version
+
 ***
 Creates a new version of the specified managed policy. To update a managed policy, you create a new policy version. A managed policy can have up to five versions. If the policy has five versions, you must delete an existing version using DeletePolicyVersion before you create a new version.  Optionally, you can set the new version as the policy's default version. The default version is the version that is in effect for the IAM users, groups, and roles to which the policy is attached.
 
@@ -1221,6 +1326,7 @@ Creates a new version of the specified managed policy. To update a managed polic
 #### Base Command
 
 `aws-iam-create-policy-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1244,6 +1350,7 @@ Creates a new version of the specified managed policy. To update a managed polic
 
 
 #### Command Example
+
 ``` 
 !aws-iam-create-policy-version policyArn=arn:aws:iam::123456789:policy/test-policy policyDocument="{  
 "Version": "2012-10-17",  
@@ -1268,6 +1375,7 @@ Creates a new version of the specified managed policy. To update a managed polic
 
 
 ### aws-iam-delete-policy-version
+
 ***
 Deletes the specified version from the specified managed policy.  You cannot delete the default version from a policy using this API. To delete the default version from a policy, use DeletePolicy . To find out which version of a policy is marked as the default version, use ListPolicyVersions .
 
@@ -1275,6 +1383,7 @@ Deletes the specified version from the specified managed policy.  You cannot del
 #### Base Command
 
 `aws-iam-delete-policy-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1291,12 +1400,14 @@ Deletes the specified version from the specified managed policy.  You cannot del
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-iam-delete-policy-version policyArn=arn:aws:iam::123456789:policy/test-policy versionId=v1 ```
 
 
 
 
 ### aws-iam-list-policy-versions
+
 ***
 Lists information about the versions of the specified managed policy, including the version that is currently set as the policy's default version.
 
@@ -1304,6 +1415,7 @@ Lists information about the versions of the specified managed policy, including 
 #### Base Command
 
 `aws-iam-list-policy-versions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1322,12 +1434,14 @@ Lists information about the versions of the specified managed policy, including 
 
 
 #### Command Example
+
 ```!aws-iam-list-policy-versions policyArn=arn:aws:iam::123456789:policy/test-policy ```
 
 
 
 
 ### aws-iam-get-policy-version
+
 ***
 Retrieves information about the specified version of the specified managed policy, including the policy document.
 
@@ -1335,6 +1449,7 @@ Retrieves information about the specified version of the specified managed polic
 #### Base Command
 
 `aws-iam-get-policy-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1357,12 +1472,14 @@ Retrieves information about the specified version of the specified managed polic
 
 
 #### Command Example
+
 ```!aws-iam-get-policy-version policyArn=arn:aws:iam::123456789:policy/test-policy versionId=v3 ```
 
 
 
 
 ### aws-iam-set-default-policy-version
+
 ***
 Sets the specified version of the specified policy as the policy's default (operative) version.  This operation affects all users, groups, and roles that the policy is attached to.
 
@@ -1370,6 +1487,7 @@ Sets the specified version of the specified policy as the policy's default (oper
 #### Base Command
 
 `aws-iam-set-default-policy-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1386,12 +1504,14 @@ Sets the specified version of the specified policy as the policy's default (oper
 There is no context output for this command.
 
 #### Command Example
+
 ``` !aws-iam-set-default-policy-version policyArn=arn:aws:iam::123456789:policy/test-policy versionId=v2```
 
 
 
 
 ### aws-iam-create-account-alias
+
 ***
 Creates an alias for your AWS account.
 
@@ -1399,6 +1519,7 @@ Creates an alias for your AWS account.
 #### Base Command
 
 `aws-iam-create-account-alias`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1414,12 +1535,14 @@ Creates an alias for your AWS account.
 There is no context output for this command.
 
 #### Command Example
+
 ``` !aws-iam-create-account-alias accountAlias=test-alias```
 
 
 
 
 ### aws-iam-delete-account-alias
+
 ***
 Deletes the specified AWS account alias.
 
@@ -1427,6 +1550,7 @@ Deletes the specified AWS account alias.
 #### Base Command
 
 `aws-iam-delete-account-alias`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1442,12 +1566,14 @@ Deletes the specified AWS account alias.
 There is no context output for this command.
 
 #### Command Example
+
 ``` !aws-iam-delete-account-alias accountAlias=demisto-test-alias```
 
 
 
 
 ### aws-iam-get-account-password-policy
+
 ***
 Get AWS account's password policy
 
@@ -1455,6 +1581,7 @@ Get AWS account's password policy
 #### Base Command
 
 `aws-iam-get-account-password-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1469,6 +1596,7 @@ Get AWS account's password policy
 
 
 ### aws-iam-update-account-password-policy
+
 ***
 Create/update password policy
 
@@ -1476,6 +1604,7 @@ Create/update password policy
 #### Base Command
 
 `aws-iam-update-account-password-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1497,6 +1626,7 @@ There is no context output for this command.
 
 
 ### aws-iam-list-role-policies
+
 ***
 Lists the names of the inline policies that are embedded in the specified IAM role.
 
@@ -1504,6 +1634,7 @@ Lists the names of the inline policies that are embedded in the specified IAM ro
 #### Base Command
 
 `aws-iam-list-role-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1517,10 +1648,12 @@ Lists the names of the inline policies that are embedded in the specified IAM ro
 | AWS.IAM.Roles.RoleName.Policies | Unknown | A list of policy names. | 
 
 #### Command Example
+
 ``` !aws-iam-list-role-policies roleName=test-RoleARN```
 
 
 ### aws-iam-get-role-policy
+
 ***
 Retrieves the specified inline policy document that is embedded with the specified IAM role.
 
@@ -1528,6 +1661,7 @@ Retrieves the specified inline policy document that is embedded with the specifi
 #### Base Command
 
 `aws-iam-get-role-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1543,10 +1677,12 @@ Retrieves the specified inline policy document that is embedded with the specifi
 | AWS.IAM.Roles.PolicyDocument | string | The policy document. | 
 
 #### Command Example
+
 ``` !aws-iam-get-role-policy roleName=test-RoleARN policyName=testPolicy```
 
 
 ### aws-iam-get-policy
+
 ***
 Retrieves information about the specified managed policy, including the policy's default version and the total number of
  IAM users, groups, and roles to which the policy is attached.
@@ -1555,6 +1691,7 @@ Retrieves information about the specified managed policy, including the policy's
 #### Base Command
 
 `aws-iam-get-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1573,15 +1710,18 @@ Retrieves information about the specified managed policy, including the policy's
 | AWS.IAM.Policy.Description | string | A friendly description of the policy. | 
 
 #### Command Example
+
 ``` !aws-iam-get-policy policyName=testPolicy```
 
 ### aws-iam-list-user-policies
+
 ***
 Lists the names of the inline policies embedded in the specified IAM user.
 
 #### Base Command
 
 `aws-iam-list-user-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1602,15 +1742,18 @@ Lists the names of the inline policies embedded in the specified IAM user.
 | AWS.IAM.Users.InlinePoliciesMarker | string | First element of next page of items. | 
 
 #### Command Example
+
 ``` !aws-iam-list-user-policies userName=testUser```
 
 ### aws-iam-list-attached-user-polices
+
 ***
 Lists all managed policies that are attached to the specified IAM user.
 
 #### Base Command
 
 `aws-iam-list-attached-user-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1632,15 +1775,18 @@ Lists all managed policies that are attached to the specified IAM user.
 | AWS.IAM.Users.AttachedPoliciesMarker | string | First element of next page of items. | 
 
 #### Command Example
+
 ``` !aws-iam-list-attached-user-policies userName=testUser```
 
 ### aws-iam-list-attached-group-policies
+
 ***
 Lists all managed policies that are attached to the specified IAM group.
 
 #### Base Command
 
 `aws-iam-list-attached-group-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1662,15 +1808,18 @@ Lists all managed policies that are attached to the specified IAM group.
 | AWS.IAM.Groups.AttachedPoliciesMarker | string | First element of next page of items. | 
 
 #### Command Example
+
 ``` !aws-iam-list-attached-group-policies groupName=testGroup```
 
 ### aws-iam-get-user-login-profile
+
 ***
 Lists all managed policies that are attached to the specified IAM user.
 
 #### Base Command
 
 `aws-iam-get-user-login-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1686,6 +1835,7 @@ Lists all managed policies that are attached to the specified IAM user.
 | AWS.IAM.Users.LoginProfile.PasswordResetRequired | boolean | Specifies whether the user is required to set a new password on next sign-in. | 
 
 #### Command Example
+
 ``` !aws-iam-get-user-login-profile userName=testUser```
 
 ### aws-iam-put-role-policy
@@ -1712,6 +1862,7 @@ Adds or updates an inline policy document that is embedded in the specified IAM 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-iam-put-user-policy
 
 ***
@@ -1785,6 +1936,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 ### Added the following tags to role {role_name}
+
 |Key|Value|
 |---|---|
 | Key | Value |
@@ -1812,6 +1964,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 ### Added the following tags to user {user_name}
+
 |Key|Value|
 |---|---|
 | Key | Value |
@@ -1839,6 +1992,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 ### Untagged the following tags from user {user_name}
+
 |Removed keys|
 |---|
 | Key1 |
@@ -1866,6 +2020,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 ### Untagged the following tags from role {role_name}
+
 |Removed keys|
 |---|
 | Key1 |
@@ -1898,9 +2053,11 @@ Retrieves information about when the specified access key was last used. The inf
 #### Human Readable Output
 
 ### Found the following information about access key access_Key_Id
+
 |ID|UserName|LastUsedDate|LastUsedServiceName|LastUsedRegion|
 |---|---|---|---|---|
 | access_Key_Id | user_name | 2023-06-06T14:32:00 | test | Here |
+
 ### aws-iam-list-attached-role-policies
 
 ***
@@ -1930,8 +2087,11 @@ List all managed policies that are attached to the specified IAM role.
 | AWS.IAM.Roles.AttachedPolicies.Query.Marker | string | When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request. | 
 
 #### Command example
+
 ```!aws-iam-list-attached-role-policies roleName=myRoleName```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1963,7 +2123,9 @@ List all managed policies that are attached to the specified IAM role.
 #### Human Readable Output
 
 >### Results
+>
 ### Attached Policies for Role myRoleName
+
 |PolicyArn|PolicyName|RoleName|
 |---|---|---|
 | arn:aws:iam::000000000000:policy/my-policy | my-policy-name | myRoleName |
@@ -2021,6 +2183,7 @@ Deletes a virtual MFA device.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-iam-deactivate-mfa-devices
 
 ***

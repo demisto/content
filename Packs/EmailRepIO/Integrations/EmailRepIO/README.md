@@ -1,20 +1,24 @@
 EmailRep.io provides the reputation and reports for email addresses.
 This integration was integrated and tested with version EmailRep Alpha API v0.1 of EmailRep.io
+
 ## Configure EmailRepIO in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g., https://emailrep.io\) | True |
+| url | Server URL \(e.g., <https://emailrep.io\>) | True |
 | apikey | API Key | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### emailrepio-email-reputation-get
+
 ***
 Gets the EmailRepIO reputation for the given email address.
 
@@ -22,6 +26,7 @@ Gets the EmailRepIO reputation for the given email address.
 #### Base Command
 
 `emailrepio-email-reputation-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -63,11 +68,13 @@ Gets the EmailRepIO reputation for the given email address.
 
 
 #### Command Example
+
 ```!emailrepio-email-reputation-get email_address="test@example.com" ```
 
 
 
 ### email
+
 ***
 Gets the DBot score for the given email address using the EmailRepIO reputation.
 
@@ -75,6 +82,7 @@ Gets the DBot score for the given email address using the EmailRepIO reputation.
 #### Base Command
 
 `email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -121,10 +129,12 @@ Gets the DBot score for the given email address using the EmailRepIO reputation.
 
 
 #### Command Example
+
 ```!email email="test@example.com" ```
 
 
 ### emailrepio-email-address-report
+
 ***
 Reports a malicious email address to EmailRepIO.  You tag the type of malicious activity associated with the email address. The date of the malicious activity defaults to the current time unless otherwise specified.
 
@@ -132,6 +142,7 @@ Reports a malicious email address to EmailRepIO.  You tag the type of mali
 #### Base Command
 
 `emailrepio-email-address-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -148,5 +159,6 @@ Reports a malicious email address to EmailRepIO.  You tag the type of mali
 There is no context output for this command.
 
 #### Command Example
+
 ```!emailrepio-email-address-report email_address="test@example.com" tags="spam"```
 

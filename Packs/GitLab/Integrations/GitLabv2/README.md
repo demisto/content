@@ -1,8 +1,11 @@
 ## Overview
+
 GitLab v2 is The DevOps platform that empowers organizations to maximize the overall return on software development by delivering software faster and efficiently while strengthening security and compliance.
 
 ## Use Cases
+
 This integration enables you to:
+
 - Create, close, or update a GitLab issue.
 - Get a list of all GitLab issues you have access to.
 - Create, close, update and delete a GitLab issue note.
@@ -19,8 +22,10 @@ This integration enables you to:
 - Trigger a pipeline in the GitLab project.
 
 #### Create a Personal Access Token 
+
 Personal access tokens (PATs) are an alternative to using passwords for authentication to GitLab when using the GitLab API. 
 To generate a new token:
+
 1. Navigate to the upper-right corner of any page and click your **profile photo**. 
 2. In the left sidebar, click **Preferences**. 
 3. In the left sidebar, click **Access tokens**.
@@ -30,6 +35,7 @@ To generate a new token:
 7. Click **Create personal access token** and copy the api key generated.-+
 
 #### Create a Trigger Token
+
 Trigger tokens allow you to trigger a pipeline for a branch using it to authenticate on an API call.
 
 **Prerequisite:**
@@ -46,6 +52,7 @@ You must have at least the Maintainer role for the project.
    - You can only see the first 4 characters for tokens created by other project members.
 
 #### Get Project ID
+
 1. Go to the desired project example gitlab.com/username/project1.
 2. Under the project name get the argument project_id
 
@@ -57,7 +64,7 @@ You must have at least the Maintainer role for the project.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://gitlab.com/api/v4) |  | False |
+    | Server URL (e.g. <https://gitlab.com/api/v4>) |  | False |
     | API Key | The API Key to use for connection | True |
     | Trigger Token | The trigger token to run pipelines | False |
     | Project ID |  | True |
@@ -65,10 +72,14 @@ You must have at least the Maintainer role for the project.
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### gitlab-version-get
+
 ***
 Retrieve version information for this GitLab instance.
 
@@ -76,6 +87,7 @@ Retrieve version information for this GitLab instance.
 #### Base Command
 
 `gitlab-version-get`
+
 #### Input
 
 There are no input arguments for this command.
@@ -88,8 +100,11 @@ There are no input arguments for this command.
 | GitLab.Version.revision | String | The revision of this GitLab instance. | 
 
 #### Command example
+
 ```!gitlab-version-get```
+
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -107,6 +122,7 @@ There are no input arguments for this command.
 > reversion: 4cfc3f317b2 
 
 ### gitlab-file-get
+
 ***
 Allows to receive information about file in repository like name, size, content.
 
@@ -114,6 +130,7 @@ Allows to receive information about file in repository like name, size, content.
 #### Base Command
 
 `gitlab-file-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -139,6 +156,7 @@ Allows to receive information about file in repository like name, size, content.
 | GitLab.File.execute_filemode | Boolean | If the file is excute in filemode \(Bool\) | 
 
 ### gitlab-file-create
+
 ***
 This allows you to create a single file. File path or entry_id must be specified.
 
@@ -146,6 +164,7 @@ This allows you to create a single file. File path or entry_id must be specified
 #### Base Command
 
 `gitlab-file-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -168,15 +187,18 @@ This allows you to create a single file. File path or entry_id must be specified
 | GitLab.File.branch | String | Name of the new branch to create. | 
 
 #### Command Example
+
 `!gitlab-file-create file_path=path branch=main entry_id=.gitlab-ci.yml author_email=email@google.com author_name=authorName file_content='cfgdfr' commit_message=addFile execute_filemode=True`
 
 #### Human Readable Output
+>
 > File created successfully.
 
 
 #### Base Command
 
 `gitlab-file-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -202,12 +224,15 @@ This allows you to create a single file. File path or entry_id must be specified
 | GitLab.File.branch | String | The name of the branch. | 
 
 #### Command Example
+
 `!gitlab-file-update file_path=./gitlabca branch=thisbranch start_branch=main encoding=base64 author_email=author@email.com author_name=name entry_id=.gitlab-ci.yml file_content="contant of file" commit_message=commit last_commit_id=5 execute_filemode=True`
 
 #### Human Readable Output
+>
 > File updated successfully.
 
 ### gitlab-file-delete
+
 ***
 Editing existing file in repository.
 
@@ -215,6 +240,7 @@ Editing existing file in repository.
 #### Base Command
 
 `gitlab-file-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -229,12 +255,15 @@ Editing existing file in repository.
 There is no context output for this command.
 
 #### Command Example
+
 `!gitlab-file-delete branch=main file file_path=./gitlabca commit_message=deleteFile`
 
 #### Human Readable Output
+>
 > File deleted successfully.
 
 ### gitlab-issue-list
+
 ***
 Get a list of a project's issues.
 
@@ -242,6 +271,7 @@ Get a list of a project's issues.
 #### Base Command
 
 `gitlab-issue-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -283,21 +313,26 @@ Get a list of a project's issues.
 | GitLab.Issue.assignee.name | String | The name of the assignee. | 
 
 #### Command Example
+
 `!gitlab-issue-list limit=1 page=1 assignee_id=1 assignee_username=Assignusername author_id=4 author_username=usernameAuthoe confidential=False created_after=2000-09-15T17:22:42.246Z created_before=2022-09-15T17:22:42.246Z due_date=2023-09-15T17:22:42.246Z epic_id=1 issue_type=Issue labels=label2 milestone=PR order_by=Weight partial_response=false`
 
 #### Human Readable Output
+
 ## List Issues:
+
 |Issue_iid|Title|CreatedAt|CreatedBy|UpdatedAt|State|Assignee|
 |---|---|---|---|---|---|---|
 |4|issueExample|2000-09-15T17:22:42.246Z|demo-user|2000-09-15T17:23:42.246Z|Open|demoAssignee|
 
 ### gitlab-issue-update
+
 ***
 Updates an existing project issue. This call is also used to mark an issue as closed. The iid can be taken from gitlab-issue-list.
 
 #### Base Command
 
 `gitlab-issue-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -373,15 +408,19 @@ Updates an existing project issue. This call is also used to mark an issue as cl
 | GitLab.Issue.task_completion_status.completed_count | Number | dictionary of status. | 
 
 #### Command Example
+
 `!gitlab-issue-update issue_iid=20 add_labels=label3 assignee_ids=2 confidential=False description=UpdateDesc discussion_locked=False due_date=2022-09-15T17:22:42.246Z epic_id=1 epic_iid=2 issue_type=Issue milestone_id=16 remove_labels=label1 state_event=Close title=updateTitle partial_response=false`
 
 #### Human Readable Output
+
 ## Update Issue:
+
 |Iid|Title|CreatedAt|CreatedBy|UpdatedAt|Milstone|State|Assignee|
 |---|---|---|---|---|---|---|---|
 |4|iisueExample|2000-09-15T17:22:42.246Z|demo-user|2000-09-15T17:23:42.246Z|16|Open|demoAssignee|
 
 ### gitlab-commit-list
+
 ***
 Get a list of repository commits in a project.
 
@@ -389,6 +428,7 @@ Get a list of repository commits in a project.
 #### Base Command
 
 `gitlab-commit-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -407,10 +447,13 @@ Get a list of repository commits in a project.
 | partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 #### Command Example
+
 `!gitlab-commit-list limit=1 page=1 commit_id=c156b66b ref_name=main created_before=2022-09-15T17:22:42.246Z created_after=2000-09-15T17:22:42.246Z path=./ all=True with_stats=True first_parent=True order=Default partial_response=false`
 
 #### Human Readable Output
+
 ## List Commits:
+
 |Title|Message|ShortId|Author|CreatedAt|
 |---|---|---|---|---|
 |commitExample|this is example|c156b66b|demo-user|2000-09-15T17:22:42.246Z|
@@ -435,6 +478,7 @@ Get a list of repository commits in a project.
 
 
 ### gitlab-merge-request-list
+
 ***
 Get all merge requests for this project.
 
@@ -442,6 +486,7 @@ Get all merge requests for this project.
 #### Base Command
 
 `gitlab-merge-request-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -484,15 +529,19 @@ Get all merge requests for this project.
 | GitLab.MergeRequest.reviewers | Number | The reviewer of the merge requests. | 
 
 #### Command Example
+
 `!gitlab-merge-request-list limit=1 page=1 state=Opened order_by=title sort=asc milestone=Any labels=label1 created_before=2022-11-15T17:22:42.246Z created_after=2000-09-15T17:22:42.246Z updated_after=2000-09-15T17:22:42.246Z updated_before=2022-09-15T17:22:42.246Z scope=All author_id=1 author_username=usernameAuthor assignee_id=1 reviewer_id=6 reviewer_username=username source_branch=sourceBranceName target_branch=main search=gitlab partial_response=false`
 
 #### Human Readable Output
+
 ## List Merge requests :
+
 |Iid|Title|CreatedAt|CreatedBy|UpdatedAt|Status|MergeBy|MergedAt|Reviewers|
 |---|---|---|---|---|---|---|---|---|
 |444|MergeExample|2022-10-15T17:22:42.246Z|demo-user|2022-11-15T17:23:42.246Z|Open|demoMerge|2022-10-15T17:22:42.246Z|demoReviewer|
 
 ### gitlab-merge-request-create
+
 ***
 Creates a new merge request.
 
@@ -500,6 +549,7 @@ Creates a new merge request.
 #### Base Command
 
 `gitlab-merge-request-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -603,12 +653,15 @@ Creates a new merge request.
 | GitLab.MergeRequest.user.can_merge | Boolean | If the user can merge. | 
 
 #### Command Example
+
 `!gitlab-merge-request-create  source_branch=NewName target_branch=main title=titleName assignee_ids=1 reviewer_ids2 description=description target_project_id=3320 labels=label1 milestone_id=1 remove_source_branch=False allow_collaboration=False allow_maintainer_to_push=False approvals_before_merge=2 squash=False partial_response=false`
 
 #### Human Readable Output
+
 ## Merge request created successfully.
 
 ### gitlab-merge-request-update
+
 ***
 Updates an existing merge request. You can change the target branch, title, or even close the MR.
 
@@ -616,6 +669,7 @@ Updates an existing merge request. You can change the target branch, title, or e
 #### Base Command
 
 `gitlab-merge-request-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -746,12 +800,15 @@ Updates an existing merge request. You can change the target branch, title, or e
 | GitLab.MergeRequest.task_completion_status.completed_count | Integer | The number of task completed completion. | 
 
 #### Command Example
+
 `!gitlab-merge-request-update merge_request_id target_branch=NewName title=newTitle assignee_ids=1 reviewer_ids=2 description=UpdateDesc target_project_id=3003 add_labels=label2 remove_labels=label1 milestone_id=1 state_event=Close remove_source_branch=True squash=True discussion_locked=True allow_collaboration=True allow_maintainer_to_push=True partial_response=false`
 
 #### Human Readable Output
+
 ## Merge request updated successfully.
 
 ### gitlab-issue-note-create
+
 ***
 Creates a new note to a single project issue.
 
@@ -759,6 +816,7 @@ Creates a new note to a single project issue.
 #### Base Command
 
 `gitlab-issue-note-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -793,8 +851,11 @@ Creates a new note to a single project issue.
 | GitLab.IssueNote.noteable_iid | Number | The noteable IID. | 
 
 #### Command example
+
 ```!gitlab-issue-note-create issue_iid=4 body=body confidential=True partial_response=false```
+
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -831,6 +892,7 @@ Creates a new note to a single project issue.
 >Issue note created successfully
 
 ### gitlab-issue-note-delete
+
 ***
 Deletes an existing note of an issue.
 
@@ -838,6 +900,7 @@ Deletes an existing note of an issue.
 #### Base Command
 
 `gitlab-issue-note-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -853,12 +916,15 @@ Deletes an existing note of an issue.
 | GitLab.IssueNote.message | String | issue note message | 
 
 #### Command Example
+
 `!gitlab-issue-note-delete issue_iid=4 note_id=1045951925`
 
 #### Human Readable Output
+
 ## Issue note deleted successfully
 
 ### gitlab-issue-note-update
+
 ***
 Modify existing note of an issue.
 
@@ -866,6 +932,7 @@ Modify existing note of an issue.
 #### Base Command
 
 `gitlab-issue-note-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -900,12 +967,15 @@ Modify existing note of an issue.
 | GitLab.IssueNote.noteable_iid | Number | The notable internal ID. | 
 
 #### Command Example
+
 `!gitlab-issue-note-update issue_iid=4 note_id=1045951925 body=UpdatedBody partial_response=false`
 
 #### Human Readable Output
+
 ## Issue note updated was updated successfully.
 
 ### gitlab-issue-note-list
+
 ***
 Gets a list of all notes for a single issue.
 
@@ -913,6 +983,7 @@ Gets a list of all notes for a single issue.
 #### Base Command
 
 `gitlab-issue-note-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -949,15 +1020,19 @@ Gets a list of all notes for a single issue.
 | GitLab.IssueNote.noteable_iid | Number | The notable internal ID. | 
 
 #### Command Example
+
 `!gitlab-issue-note-list limit=1 page=1 partial_response=false`
 
 #### Human Readable Output
+
 ## List Issue notes:
+
 |Id|Author|Text|CreatedAt|UpdatedAt|
 |---|---|---|---|---|
 |4|authorExample|text example|2000-09-15T17:22:42.246Z|2000-09-15T17:23:42.246Z|
 
 ### gitlab-merge-request-note-list
+
 ***
 Gets a list of all notes for a single merge request.
 
@@ -965,6 +1040,7 @@ Gets a list of all notes for a single merge request.
 #### Base Command
 
 `gitlab-merge-request-note-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1001,14 +1077,19 @@ Gets a list of all notes for a single merge request.
 | GitLab.MergeRequestNote.noteable_iid | Number | The merge request's noteable IID. | 
 
 #### Command example
+
 ```!gitlab-merge-request-note-list limit=1 page=1 merge_request_iid=5 sort=asc order_by=created_at partial_response=false```
+
 #### Human Readable Output
+>
 >### List Merge Issue Notes
+
 |Id|Author|Text|CreatedAt|UpdatedAt|
 |---|---|---|---|---|
 |41|demoAuthor|example|2000-09-15T17:22:42.246Z|2000-09-15T17:23:42.246Z|
 
 ### gitlab-merge-request-note-create
+
 ***
 Creates a new note for a single merge request.
 
@@ -1016,6 +1097,7 @@ Creates a new note for a single merge request.
 #### Base Command
 
 `gitlab-merge-request-note-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1049,8 +1131,11 @@ Creates a new note for a single merge request.
 | GitLab.MergeRequestNote.noteable_iid | Number | The merge request's noteable IID. | 
 
 #### Command example
+
 ```!gitlab-merge-request-note-create merge_request_iid=5 body=body partial_response=false```
+
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -1087,6 +1172,7 @@ Creates a new note for a single merge request.
 >Merge request note created successfully.
 
 ### gitlab-merge-request-note-update
+
 ***
 Modify existing note of a merge request.
 
@@ -1094,6 +1180,7 @@ Modify existing note of a merge request.
 #### Base Command
 
 `gitlab-merge-request-note-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1128,12 +1215,15 @@ Modify existing note of a merge request.
 | GitLab.MergeRequestNote.noteable_iid | Number | The merge request's noteable IID. | 
 
 #### Command Example
+
 `!gitlab-merge-request-note-update merge_request_iid=5 body=UpdatedBody note_id=1100241092`
 
 #### Human Readable Output
+>
 > Merge request note was updated successfully.
 
 ### gitlab-merge-request-note-delete
+
 ***
 Deletes an existing note of a merge request.
 
@@ -1141,6 +1231,7 @@ Deletes an existing note of a merge request.
 #### Base Command
 
 `gitlab-merge-request-note-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1154,12 +1245,15 @@ Deletes an existing note of a merge request.
 There is no context output for this command.
 
 #### Command Example
+
 `!gitlab-merge-request-note-delete merge_request_iid=5 note_id=1100241092`
 
 #### Human Readable Output
+>
 > Merge request note was deleted successfully.
 
 ### gitlab-issue-create
+
 ***
 Create an issue.
 
@@ -1167,6 +1261,7 @@ Create an issue.
 #### Base Command
 
 `gitlab-issue-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1226,8 +1321,11 @@ Create an issue.
 | GitLab.Issue.task_completion_status.completed_count | Number | The issue's completion status completed counter. | 
 
 #### Command example
+
 ```!gitlab-issue-create description=issueDescription title=issueTitle labels=label1,label2 partial_response=false```
+
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -1303,12 +1401,14 @@ Create an issue.
 #### Human Readable Output
 
 >### Created Issue
+>
 >|Iid|Title|CreatedAt|CreatedBy|UpdatedAt|State|
 >|---|---|---|---|---|---|
 >| 21 | issueTitle | 2022-10-11T09:34:55.292Z | Test Account | 2022-10-11T09:34:55.292Z | opened |
 
 
 ### gitlab-project-list
+
 ***
 Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with simple fields are returned.
 
@@ -1316,6 +1416,7 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
 #### Base Command
 
 `gitlab-project-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1448,15 +1549,19 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
 | GitLab.Project.permissions.project_access | Unknown | The project access\(permissions\). | 
 
 #### Command Example
+
 `!gitlab-project-list limit=1 page=1 membership=True order_by=Name owned=True sort=desc visibillity=public with_issues_enabled=True with_merge_requests_enabled=True partial_response=false`
 
 #### Human Readable Output
+
 ## List Projects:
+
 |Id|Name|Description|Path|
 |---|---|---|---|
 |11209|first-project-01|this is the first project|first-project-repository|
 
 ### gitlab-group-project-list
+
 ***
 Get the list of projects of a given group.
 
@@ -1464,6 +1569,7 @@ Get the list of projects of a given group.
 #### Base Command
 
 `gitlab-group-project-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1585,15 +1691,19 @@ Get the list of projects of a given group.
 | GitLab.GroupProject.security_and_compliance_enabled | Boolean | If the security and compliance is enabled. | 
 
 #### Command Example 
+
 `!gitlab-group-project-list limit=1 page=1 group_id=1`
 
 #### Human Readable Output
+
 ## List of the group projects
+
 |Id|Name|Description|Path|
 |---|---|---|---|
 |1|GroupProjectExample|this is a group project example|groupproject1|
 
 ### gitlab-raw-file-get
+
 ***
 Get the file in a raw format.
 
@@ -1622,6 +1732,7 @@ Get the file in a raw format.
 ```!gitlab-raw-file-get file_path=./gitlabca ref=main```
 
 ### gitlab-branch-create
+
 ***
 Creates a new branch in the repository.
 
@@ -1629,6 +1740,7 @@ Creates a new branch in the repository.
 #### Base Command
 
 `gitlab-branch-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1662,8 +1774,11 @@ Creates a new branch in the repository.
 | GitLab.Branch.web_url | String | The branch's web url. | 
 
 #### Command example
+
 ```!gitlab-branch-create  branch=newBranch ref=main partial_response=true```
+
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -1702,12 +1817,14 @@ Creates a new branch in the repository.
 #### Human Readable Output
 
 >### Create Branch
+>
 >|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|
 >|---|---|---|---|---|---|
 >| newBranch | eadec971 | Update CheckRawFileCommand_main | 2022-10-02T10:01:15.000+00:00 | false | false |
 
 
 ### gitlab-branch-delete
+
 ***
 Deletes a branch from the repository.
 
@@ -1715,6 +1832,7 @@ Deletes a branch from the repository.
 #### Base Command
 
 `gitlab-branch-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1731,9 +1849,11 @@ There is no context output for this command.
 ```!gitlab-branch-delete branch=new-branch-example```
 
 #### Human Readable Output
+
 Branch deleted successfully
 
 ### gitlab-merged-branch-delete
+
 ***
 Deletes all branches that are merged into the project's default branch.
 
@@ -1741,6 +1861,7 @@ Deletes all branches that are merged into the project's default branch.
 #### Base Command
 
 `gitlab-merged-branch-delete`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1748,9 +1869,13 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!gitlab-merged-branch-delete ```
+
 #### Context Example
+
 ```json
 {
     "message": "202 Accepted"
@@ -1762,6 +1887,7 @@ There is no context output for this command.
 >Merged branches Deleted successfully
 
 ### gitlab-branch-list
+
 ***
 Get a list of repository branches from a project, sorted by name alphabetically.
 
@@ -1769,6 +1895,7 @@ Get a list of repository branches from a project, sorted by name alphabetically.
 #### Base Command
 
 `gitlab-branch-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1804,15 +1931,19 @@ Get a list of repository branches from a project, sorted by name alphabetically.
 | GitLab.Branch.commit.parent_ids | String | The branch commit's parent ids. | 
 
 #### Command Example
+
 `!gitlab-branch-list limit=1 page=1 branch_name=branchName search=searchString partial_response=false`
 
 #### Human Readable Output
+
 ## Branch details:
+
 |Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|
 |---|---|---|---|---|---|
 |branchName|c1123|CommitTitle|2000-09-15T17:22:42.246Z|true|false|
 
 ### gitlab-group-list
+
 ***
 Get a list of visible groups for the authenticated user. When accessed without authentication, only public groups are returned. By default, this request returns 20 results at a time because the API results are paginated
 
@@ -1820,6 +1951,7 @@ Get a list of visible groups for the authenticated user. When accessed without a
 #### Base Command
 
 `gitlab-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1865,15 +1997,19 @@ Get a list of visible groups for the authenticated user. When accessed without a
 | GitLab.Group.created_at | Date | The group's creation time. | 
 
 #### Command Example
+
 `!gitlab-group-list limit=1 page=1 skip_groups=1,2 all_available=False search=string order_by=Name sort=asc owned=True min_access_level=1 top_level_only=False`
 
 #### Human Readable Output
+
 ## List Groups:
+
 |Id|Name|Path|Description|CreatedAt|Visibility|
 |---|---|---|---|---|---|
 |4|groupExample|demgroup|example description|2000-09-15T17:22:42.246Z|private|
 
 ### gitlab-group-member-list
+
 ***
 Gets a list of group or project members viewable by the authenticated user.
 
@@ -1881,6 +2017,7 @@ Gets a list of group or project members viewable by the authenticated user.
 #### Base Command
 
 `gitlab-group-member-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1913,15 +2050,19 @@ Gets a list of group or project members viewable by the authenticated user.
 | GitLab.Group.email | String | The group member email. | 
 
 #### Command Example
+
 `!gitlab-group-member-list group_id=1130`
 
 #### Human Readable Output
+
 ## List Group Members:
+
 |Id|Name|UserName|MembershipState|ExpiresAt|
 |---|---|---|---|---|
 |4|demo|demgroup|Active|2000-09-15T17:22:42.246Z|
 
 ### gitlab-code-search
+
 ***
 Using Scope blobs. Blobs searches are performed on both filenames and contents.
 
@@ -1929,6 +2070,7 @@ Using Scope blobs. Blobs searches are performed on both filenames and contents.
 #### Base Command
 
 `gitlab-code-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1953,15 +2095,19 @@ Using Scope blobs. Blobs searches are performed on both filenames and contents.
 
 
 #### Command Example
+
 `!gitlab-code-search search=testSearch limit=1 page=1`
 
 #### Human Readable Output
+
 ## Results:
+
 |basename|data|filename|id|path|project_id
 |---|---|---|---|---|---|
 |README|testSearch|exampleCode|123|README.md|5531|
 
 ### gitlab-project-user-list
+
 ***
 Get the users list of a project.
 
@@ -1969,6 +2115,7 @@ Get the users list of a project.
 #### Base Command
 
 `gitlab-project-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1990,16 +2137,20 @@ Get the users list of a project.
 | GitLab.User.web_url | String | The user's web url. |
 
 #### Command Example
+
 `!gitlab-project-user-list search=DemoName  limit=1 page=1`
 
 #### Human Readable Output
+
 ## List Users :
+
 |Id|UserName|Name|State|WebLink|
 |---|---|---|---|---|
 |123|demoExample|demo user|active|WebLink/demoExample|
 
 
 ## API relevant Scopes for each command
+
 | **api** | **read_api** | **read_user** | **read_repository** | **write_repository** |
 | --- | --- | --- | --- | --- |
 | gitlab-group-project-list | gitlab-group-project-list | gitlab-version-get | gitlab-raw-file-get | gitlab-file-create |
@@ -2033,6 +2184,7 @@ Get the users list of a project.
 | gitlab-file-delete |  |  |  |  |
 | gitlab-code-search |  |  |  |  |
 | gitlab-project-user-list |  |  |  |  |
+
 ### gitlab-pipelines-list
 
 ***
@@ -2072,6 +2224,7 @@ Gets the details of the pipelines.
 | GitLab.Pipeline.user.state | String | State of the user who triggered the pipeline. | 
 | GitLab.Pipeline.user.avatar_url | String | Avatar URL of the user who trigerred the pipeline. | 
 | GitLab.Pipeline.user.web_url | String | Web URL of the user who triggered the pipeline. | 
+
 ### gitlab-pipelines-schedules-list
 
 ***
@@ -2103,6 +2256,7 @@ Gets the details of the pipeline schedules.
 | GitLab.PipelineSchedule.last_pipeline.sha | String | SHA of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given. | 
 | GitLab.PipelineSchedule.last_pipeline.ref | String | Reference of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given. | 
 | GitLab.PipelineSchedule.last_pipeline.status | String | Status of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given. | 
+
 ### gitlab-jobs-list
 
 ***
@@ -2138,6 +2292,7 @@ Gets job details.
 | GitLab.Job.ref | String | Reference name of the job. | 
 | GitLab.Job.stage | String | Stage of the job. | 
 | GitLab.Job.web_url | String | Web URL of the job. | 
+
 ### gitlab-artifact-get
 
 ***

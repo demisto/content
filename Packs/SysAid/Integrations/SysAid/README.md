@@ -20,9 +20,12 @@ This integration was integrated and tested with version 21.4.44 of SysAid.
 | Include Archived |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### sysaid-table-list
+
 ***
 Retrieve all lists (tables) related to a specific entity, or a specific list from an entity.
 
@@ -30,6 +33,7 @@ Retrieve all lists (tables) related to a specific entity, or a specific list fro
 #### Base Command
 
 `sysaid-table-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -51,8 +55,11 @@ Retrieve all lists (tables) related to a specific entity, or a specific list fro
 | SysAid.List.values | String | The values of the list. | 
 
 #### Command example
+
 ```!sysaid-table-list list_id=known_error```
+
 #### Context Example
+
 ```json
 {
     "SysAid": {
@@ -81,12 +88,14 @@ Retrieve all lists (tables) related to a specific entity, or a specific list fro
 #### Human Readable Output
 
 >### List ID known_error Results:
+>
 >|Id|Caption|Values|
 >|---|---|---|
 >| known_error | Known Error | {'id': 'P', 'caption': 'Production'},<br/>{'id': 'D', 'caption': 'Development'},<br/>{'id': 'N', 'caption': 'No'} |
 
 
 ### sysaid-asset-list
+
 ***
 List all assets or get a specific asset by ID. Cortex XSOAR recommends filtering the results by the desired fields.
 
@@ -94,6 +103,7 @@ List all assets or get a specific asset by ID. Cortex XSOAR recommends filtering
 #### Base Command
 
 `sysaid-asset-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -113,8 +123,11 @@ List all assets or get a specific asset by ID. Cortex XSOAR recommends filtering
 | SysAid.Asset.info | String | The info of the asset. | 
 
 #### Command example
+
 ```!sysaid-asset-list fields=all```
+
 #### Context Example
+
 ```json
 {
     "SysAid": {
@@ -3067,7 +3080,9 @@ List all assets or get a specific asset by ID. Cortex XSOAR recommends filtering
 #### Human Readable Output
 
 >Showing 100 results from page 1:
+>
 >### Asset Results:
+>
 >|Id|Name|Info|
 >|---|---|---|
 >| 0A-3E-E9-13-2B-E4 | EC2AMAZ-S0GM752 | Model: t3.large |
@@ -3076,6 +3091,7 @@ List all assets or get a specific asset by ID. Cortex XSOAR recommends filtering
 
 
 ### sysaid-asset-search
+
 ***
 Get information about a specific asset. Cortex XSOAR recommends filtering the results by the desired fields.
 
@@ -3083,6 +3099,7 @@ Get information about a specific asset. Cortex XSOAR recommends filtering the re
 #### Base Command
 
 `sysaid-asset-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3102,8 +3119,11 @@ Get information about a specific asset. Cortex XSOAR recommends filtering the re
 | SysAid.Asset.info | String | The info of the asset. | 
 
 #### Command example
+
 ```!sysaid-asset-search query=Test fields=all```
+
 #### Context Example
+
 ```json
 {
     "SysAid": {
@@ -5076,7 +5096,9 @@ Get information about a specific asset. Cortex XSOAR recommends filtering the re
 #### Human Readable Output
 
 >Showing 100 results from page 1:
+>
 >### Asset Results:
+>
 >|Id|Name|Info|
 >|---|---|---|
 >| 5171019c-fa80-4905-a577-c95eb518de90 | Test Phone | Model: Galaxy S22,<br/>Description: Test smartphone |
@@ -5084,6 +5106,7 @@ Get information about a specific asset. Cortex XSOAR recommends filtering the re
 
 
 ### sysaid-filter-list
+
 ***
 List all filters. Cortex XSOAR recommends filtering the results by the desired fields.
 
@@ -5091,6 +5114,7 @@ List all filters. Cortex XSOAR recommends filtering the results by the desired f
 #### Base Command
 
 `sysaid-filter-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5108,8 +5132,11 @@ List all filters. Cortex XSOAR recommends filtering the results by the desired f
 | SysAid.Filter.values | String | The values of the filter. | 
 
 #### Command example
+
 ```!sysaid-filter-list fields=all```
+
 #### Context Example
+
 ```json
 {
     "SysAid": {
@@ -6669,6 +6696,7 @@ List all filters. Cortex XSOAR recommends filtering the results by the desired f
 #### Human Readable Output
 
 >### Filter Results:
+>
 >|Id|Caption|Type|Values|
 >|---|---|---|---|
 >| priority | Priority | list | ${list.all}: All,<br/>1: Highest,<br/>2: Very High,<br/>3: High,<br/>4: Normal,<br/>5: Low |
@@ -6682,6 +6710,7 @@ List all filters. Cortex XSOAR recommends filtering the results by the desired f
 
 
 ### sysaid-user-list
+
 ***
 Get list of users in SysAid. Cortex XSOAR recommends filtering the results by the desired fields.
 
@@ -6689,6 +6718,7 @@ Get list of users in SysAid. Cortex XSOAR recommends filtering the results by th
 #### Base Command
 
 `sysaid-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6711,8 +6741,11 @@ Get list of users in SysAid. Cortex XSOAR recommends filtering the results by th
 | SysAid.User.isGuest | Boolean | Whether the SysAid user is a guest or not. | 
 
 #### Command example
+
 ```!sysaid-user-list fields=all```
+
 #### Context Example
+
 ```json
 {
     "SysAid": {
@@ -7742,7 +7775,9 @@ Get list of users in SysAid. Cortex XSOAR recommends filtering the results by th
 #### Human Readable Output
 
 >Showing 100 results from page 1:
+>
 >### Filter Results:
+>
 >|id|name|isAdmin|isManager|isSysAidAdmin|isGuest|
 >|---|---|---|---|---|---|
 >| 3 | sysaid-adi-dmst | false | false | false | false |
@@ -7751,6 +7786,7 @@ Get list of users in SysAid. Cortex XSOAR recommends filtering the results by th
 
 
 ### sysaid-user-search
+
 ***
 Get information about a specific asset. Cortex XSOAR recommends filtering the results by the desired fields.
 
@@ -7758,6 +7794,7 @@ Get information about a specific asset. Cortex XSOAR recommends filtering the re
 #### Base Command
 
 `sysaid-user-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7781,8 +7818,11 @@ Get information about a specific asset. Cortex XSOAR recommends filtering the re
 | SysAid.User.isGuest | Boolean | Whether the SysAid user is a guest or not. | 
 
 #### Command example
+
 ```!sysaid-user-search query=dmst fields=all```
+
 #### Context Example
+
 ```json
 {
     "SysAid": {
@@ -8473,7 +8513,9 @@ Get information about a specific asset. Cortex XSOAR recommends filtering the re
 #### Human Readable Output
 
 >Showing 100 results from page 1:
+>
 >### User Results:
+>
 >|id|name|isAdmin|isManager|isSysAidAdmin|isGuest|
 >|---|---|---|---|---|---|
 >| 3 | sysaid-adi-dmst | false | false | false | false |
@@ -8481,6 +8523,7 @@ Get information about a specific asset. Cortex XSOAR recommends filtering the re
 
 
 ### sysaid-service-record-list
+
 ***
 List all service requests. Cortex XSOAR recommends filtering the results by the desired fields.
 
@@ -8488,6 +8531,7 @@ List all service requests. Cortex XSOAR recommends filtering the results by the 
 #### Base Command
 
 `sysaid-service-record-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8514,8 +8558,11 @@ List all service requests. Cortex XSOAR recommends filtering the results by the 
 | SysAid.ServiceRecord.notes | String | The notes of the service record. | 
 
 #### Command example
+
 ```!sysaid-service-record-list type=all fields=all```
+
 #### Context Example
+
 ```json
 {
     "SysAid": {
@@ -13397,7 +13444,9 @@ List all service requests. Cortex XSOAR recommends filtering the results by the 
 #### Human Readable Output
 
 >Showing 100 results from page 1:
+>
 >### Service Record Results:
+>
 >|Id|Title|Status|Modify Time|Service Record Type|
 >|---|---|---|---|---|
 >| 25 | Cannot access email - Test  | New | 03/15/2022 04:53:20 AM | Incident |
@@ -13416,6 +13465,7 @@ List all service requests. Cortex XSOAR recommends filtering the results by the 
 
 
 ### sysaid-service-record-search
+
 ***
 Search by a query through all service records. Cortex XSOAR recommends filtering the results by the desired fields.
 
@@ -13423,6 +13473,7 @@ Search by a query through all service records. Cortex XSOAR recommends filtering
 #### Base Command
 
 `sysaid-service-record-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -13449,8 +13500,11 @@ Search by a query through all service records. Cortex XSOAR recommends filtering
 | SysAid.ServiceRecord.notes | String | The notes of the service record. | 
 
 #### Command example
+
 ```!sysaid-service-record-search type=all query=test fields=all```
+
 #### Context Example
+
 ```json
 {
     "SysAid": {
@@ -17791,7 +17845,9 @@ Search by a query through all service records. Cortex XSOAR recommends filtering
 #### Human Readable Output
 
 >Showing 100 results from page 1:
+>
 >### Service Record Results:
+>
 >|Id|Title|Status|Modify Time|Service Record Type|
 >|---|---|---|---|---|
 >| 25 | Cannot access email - Test  | New | 03/15/2022 04:53:20 AM | Incident |
@@ -17806,6 +17862,7 @@ Search by a query through all service records. Cortex XSOAR recommends filtering
 
 
 ### sysaid-service-record-update
+
 ***
 The valid statuses can be retrieved using the "sysaid-table-list" command.
 
@@ -17813,6 +17870,7 @@ The valid statuses can be retrieved using the "sysaid-table-list" command.
 #### Base Command
 
 `sysaid-service-record-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -17851,13 +17909,17 @@ The valid statuses can be retrieved using the "sysaid-table-list" command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!sysaid-service-record-update id=6 status=2```
+
 #### Human Readable Output
 
 >Service Record 6 Updated Successfully.
 
 ### sysaid-service-record-close
+
 ***
 Close a service record. Sets the service record status to the default Close status, as defined in the Help Desk settings.
 
@@ -17865,6 +17927,7 @@ Close a service record. Sets the service record status to the default Close stat
 #### Base Command
 
 `sysaid-service-record-close`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -17876,13 +17939,17 @@ Close a service record. Sets the service record status to the default Close stat
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!sysaid-service-record-close id=6 solution="Closing via API call"```
+
 #### Human Readable Output
 
 >Service Record 6 Closed Successfully.
 
 ### sysaid-service-record-template-get
+
 ***
 Gets the template of a service record. Cortex XSOAR recommends filtering the results by the desired fields.
 
@@ -17890,6 +17957,7 @@ Gets the template of a service record. Cortex XSOAR recommends filtering the res
 #### Base Command
 
 `sysaid-service-record-template-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -17912,8 +17980,11 @@ Gets the template of a service record. Cortex XSOAR recommends filtering the res
 | SysAid.ServiceRecordTemplate.keyCaption | String | The key caption of the service record template entry. | 
 
 #### Command example
+
 ```!sysaid-service-record-template-get type=incident fields=all```
+
 #### Context Example
+
 ```json
 {
     "SysAid": {
@@ -18648,6 +18719,7 @@ Gets the template of a service record. Cortex XSOAR recommends filtering the res
 #### Human Readable Output
 
 >### Service Record Results:
+>
 >|Key|Value|Mandatory|Editable|Type|Key Caption|
 >|---|---|---|---|---|---|
 >| third_level_category |  | false | true | list | Third Level Category |
@@ -18712,6 +18784,7 @@ Gets the template of a service record. Cortex XSOAR recommends filtering the res
 
 
 ### sysaid-service-record-create
+
 ***
 Create a new service record and return the newly created service record. The valid statuses can be retrieved using the "sysaid-table-list" command. Cortex XSOAR recommends filtering the results by the desired fields.
 
@@ -18719,6 +18792,7 @@ Create a new service record and return the newly created service record. The val
 #### Base Command
 
 `sysaid-service-record-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -18768,8 +18842,11 @@ Create a new service record and return the newly created service record. The val
 | SysAid.ServiceRecord.notes | String | The notes of the service record. | 
 
 #### Command example
+
 ```!sysaid-service-record-create type=request description="This is a test" title="Test SR from API" sr_type=6 fields=all```
+
 #### Context Example
+
 ```json
 {
     "SysAid": {
@@ -19494,12 +19571,14 @@ Create a new service record and return the newly created service record. The val
 #### Human Readable Output
 
 >### Service Record Results:
+>
 >|Id|Title|Status|Service Record Type|Notes|
 >|---|---|---|---|---|
 >| 0 | Basic Request Process | New | Request Template | If relevant, add this Request details to the Knowledge base. Close the Request. |
 
 
 ### sysaid-service-record-delete
+
 ***
 Delete one or more service records.
 
@@ -19507,6 +19586,7 @@ Delete one or more service records.
 #### Base Command
 
 `sysaid-service-record-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -19518,8 +19598,11 @@ Delete one or more service records.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!sysaid-service-record-delete ids=2,32```
+
 #### Human Readable Output
 
 >Service Records 2,32 Deleted Successfully.
@@ -19543,8 +19626,11 @@ Add an attachment to a service record.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!sysaid-service-record-attach-file file_id=110@51d40811-801a-4b26-8861-68474c40b347 id=25```
+
 #### Human Readable Output
 
 >File uploaded to Service Record 25 successfully.
@@ -19583,9 +19669,11 @@ Download an attachment to a service record.
 | File.Extension | String | The extension of the file. | 
 
 #### Command example
+
 ```!sysaid-service-record-get-file file_id="-80357423_-1872498142" id=37 file_name="file_name.png"```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -19627,8 +19715,11 @@ Delete an attachment from a service record.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!sysaid-service-record-delete-file id=25 file_id=534492489_354835714```
+
 #### Human Readable Output
 
 >File deleted from Service Record 25 successfully.
@@ -19661,8 +19752,11 @@ Returns the information for the specified service record.
 | SysAid.ServiceRecord.notes | String | The notes of the service record. | 
 
 #### Command example
+
 ```!sysaid-service-record-get id=25 fields=all```
+
 #### Context Example
+
 ```json
 {
     "SysAid": {
@@ -19784,6 +19878,7 @@ Returns the information for the specified service record.
 #### Human Readable Output
 
 >### Service Record Results:
+>
 >|Id|Title|Status|Modify Time|Service Record Type| Notes                                                                                                                                                                                            |
 >|---|---|---|---|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|
 >| 25 | Cannot access email - Test  | New | 04/19/2023 05:48:02 AM | Incident | sysaid-dmst (04/19/2023 05:48 AM):<br/>   Note<br/>,<br/><br/>sysaid-dmst (04/19/2023 05:34 AM):<br/>   this is a new note<br/>,<br/><br/>sysaid-dmst (03/10/2022 12:59:20):<br/>   THis is a note |
@@ -19820,8 +19915,11 @@ Add a note to a Service Record
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!sysaid-service-record-add-note id=25 note=`this is a new note````
+
 #### Human Readable Output
 
 >Updated record with new note

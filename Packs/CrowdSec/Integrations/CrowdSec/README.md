@@ -11,9 +11,12 @@ Identify Malicious IP addresses with the CrowdSec CTI API.
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Check the specified IP Address against the CrowdSec CTI.
 
@@ -21,6 +24,7 @@ Check the specified IP Address against the CrowdSec CTI.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

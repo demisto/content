@@ -2,6 +2,7 @@ WithSecure event collector integration for Cortex XSIAM.
 This integration was integrated and tested with version 1.0 of WithSecure API
 
 ## Authentication Process
+
 To create a Client ID and Client Secret, see this [documentation](https://connect.withsecure.com/getting-started/elements#:~:text=API%20deprecation%20policy.-,Getting%20client%20credentials,-To%20use%20Elements).
 
 ## Configure WithSecure Event Collector in Cortex
@@ -44,10 +45,13 @@ Manual command used to fetch events and display them.
 There is no context output for this command.
 
 #### Command example
+
 ```!with-secure-get-events limit=2 fetch_from="90 days"```
 
 #### Human Readable Output
+
 ### With Secure Events
+
 |action|clientTimestamp|details|device|engine|id|organization|persistenceTimestamp|serverTimestamp|severity|
 |---|---|---|---|---|---|---|---|---|---|
 | created | 2023-03-15T21:58:34Z | incidentPublicId: 4550314-13<br>fingerprint: 10e34c3d5a3b531505140351b515e5d0f563b761<br>initialDetectionTimestamp: 1678917621712<br>risk: MEDIUM<br>categories: LATERAL_MOVEMENT<br>incidentId: b7ffb469-44c2-4cc0-9adb-6a3663bba393<br>clientTimestamp: 1678917514000<br>resolution: UNCONFIRMED<br>userSam: NT AUTHORITY\SYSTEM | name: WIN10-TMPLT<br>id: 45581e9d-266c-4676-9f55-1ff36f7519f9 | edr | dae559cd-37fe-3fc8-8fb1-7098c8a4d368_0 | name: Palo Alto_comp<br>id: b856d1ab-29c1-4803-b9b5-91ec7b24f94c | 2023-03-15T22:00:22.985Z | 2023-03-15T22:00:22.574Z | critical |

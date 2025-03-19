@@ -1,5 +1,6 @@
 Use the Digital Defense Frontline VM to identify and evaluate the security and business risks of network devices and applications deployed as premise, cloud, or hybrid network-based implementations.
 This integration was integrated and tested with version 6.2.4 of Digital Defense FrontlineVM
+
 ## Configure Digital Defense FrontlineVM in Cortex
 
 
@@ -14,9 +15,12 @@ This integration was integrated and tested with version 6.2.4 of Digital Defense
 | incidentFrequency | Rate at which to check vulnerability events when fetching incidents | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### frontline-get-assets
+
 ***
 Retrieves the asset's information from Frontline VM.
 
@@ -24,6 +28,7 @@ Retrieves the asset's information from Frontline VM.
 #### Base Command
 
 `frontline-get-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,6 +55,7 @@ Retrieves the asset's information from Frontline VM.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -57,6 +63,7 @@ Retrieves the asset's information from Frontline VM.
 
 
 ### frontline-get-vulns
+
 ***
 Retrieves vulnerability information from Frontline VM.
 
@@ -64,6 +71,7 @@ Retrieves vulnerability information from Frontline VM.
 #### Base Command
 
 `frontline-get-vulns`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -92,6 +100,7 @@ Retrieves vulnerability information from Frontline VM.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -99,6 +108,7 @@ Retrieves vulnerability information from Frontline VM.
 
 
 ### frontline-scan-asset
+
 ***
 Performs a scan on the specified asset.
 
@@ -106,6 +116,7 @@ Performs a scan on the specified asset.
 #### Base Command
 
 `frontline-scan-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -128,6 +139,7 @@ Performs a scan on the specified asset.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

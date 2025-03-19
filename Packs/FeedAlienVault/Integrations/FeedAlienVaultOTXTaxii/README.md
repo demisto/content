@@ -10,7 +10,7 @@ This integration can only fetch indicators from **active** collections. Active c
 | feed | The fetch indicators. | False |
 | feedReputation | The indicator reputation. | False |
 | feedReliability | The source's reliability. | True |
-| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at <https://us-cert.cisa.gov/tlp> | False |
 | feedExpirationPolicy | The feed's expiration policy. | False |
 | feedExpirationInterval | The interval after which the feed expires. | False |
 | feedFetchInterval | The feed fetch interval. | False |
@@ -30,10 +30,12 @@ If you do not know which collections are available - do not set the `Collections
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get indicators
+
 ***
 Gets the indicators from AlienVault OTX.
 
@@ -41,6 +43,7 @@ Gets the indicators from AlienVault OTX.
 ##### Base Command
 
 `alienvaultotx-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -53,11 +56,14 @@ Gets the indicators from AlienVault OTX.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!alienvaultotx-get-indicators limit=3```
 
 
 ##### Human Readable Output
+
 ### Indicators from AlienVault OTX TAXII:
+
 |value|type|
 |---|---|
 | 1.2.3.4 | IP |
@@ -65,6 +71,7 @@ There is no context output for this command.
 | demisto\<span\>.com | Domain |
 
 ## Video Demo
+
 <video controls>
     <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedAlienVault/AlienVault_OTX_Feed_Demo.mp4"
             type="video/mp4"/>

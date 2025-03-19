@@ -13,7 +13,7 @@ Note: Install the MITRE ATT&CK pack if you want the feed to create MITRE ATT&CK 
 | feed | Fetch indicators | False |
 | feedReputation | Indicator Reputation | False |
 | feedReliability | Source Reliability | True |
-| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp. | False |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at <https://us-cert.cisa.gov/tlp>. | False |
 | feedExpirationPolicy | The feed’s expiration policy. | False |
 | feedExpirationInterval | The interval after which the feed expires. | False |
 | feedFetchInterval | Feed Fetch Interval | False |
@@ -23,9 +23,12 @@ Note: Install the MITRE ATT&CK pack if you want the feed to create MITRE ATT&CK 
 | insecure | Trust any certificate \(not secure\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### unit42-get-indicators
+
 ***
 Retrieves a limited number of the indicators.
 
@@ -33,6 +36,7 @@ Retrieves a limited number of the indicators.
 #### Base Command
 
 `unit42-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -45,9 +49,11 @@ Retrieves a limited number of the indicators.
 There is no context output for this command.
 
 #### Command Example
+
 !unit42-get-indicators limit=3
 
 #### Human Readable Output
+
 |value|type|
 |---|---|
 | c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839 | File |

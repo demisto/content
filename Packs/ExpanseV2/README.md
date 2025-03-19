@@ -7,6 +7,7 @@ Through a powerful set of playbooks, analysts can correlate the discovered infor
 > **Note**: This Pack, as well as its previously named **Expanse v2** Integration, were renamed to **Cortex Xpanse**. All other content items are still named the same.
 
 ##### What does this pack do?
+
 - Provides the **Cortex Xpanse** integration (for Cortex Xpanse Expander), which allows XSOAR to collect Xpanse Issues and bi-directionally mirror them. Several commands are available to search, tag, and update issues and assets in Expander. The integration also supports the services API.
 - Provides a feed integration named **Expanse Expander Feed**, which is compatible with the Cortex XSOAR Threat Intel Management capabilities to retrieve and store discovered assets (IPs, IP ranges, domains, certificates) in Cortex XSOAR for analysis and correlation.
 - Provides an **Expanse Issue** incident type with dedicated fields and layouts.
@@ -14,6 +15,7 @@ Through a powerful set of playbooks, analysts can correlate the discovered infor
 - Provides dashboards that display the network perimeter as discovered by Xpanse and the status of Xpanse Issues.
 
 ##### How to use this pack?
+
 - After the Xpanse API key is added in the **Cortex Xpanse** integration and the parameters are set, the Xpanse issues will start getting mapped to the Expanse incident type and the **Handle Expanse Incident** playbook will automatically be launched.
 - If you are only interested in enrichment and attribution, you can use the **Handle Expanse Incident - Attribution Only** playbook instead, by assigning it to the **Expanse Issue** incident type.
 - This pack also includes a generic playbook called **Xpanse Incident Handling - Generic**. In order to use it, configure the instance without any classifier and choose **Xpanse Issue - Generic** as the incident type.

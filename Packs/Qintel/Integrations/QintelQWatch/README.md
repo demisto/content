@@ -19,9 +19,12 @@ This integration was integrated and tested with version 1.1.6 of QWatch
 | Default Incident Severity | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### qintel-qwatch-exposures
+
 ***
 Search QWatch for exposed credentials
 
@@ -29,6 +32,7 @@ Search QWatch for exposed credentials
 #### Base Command
 
 `qintel-qwatch-exposures`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -45,9 +49,11 @@ Search QWatch for exposed credentials
 
 
 #### Command Example
+
 ```!qintel-qwatch-exposures email=test@example.local```
 
 #### Context Example
+
 ```json
 {
     "Qintel": {
@@ -85,10 +91,10 @@ Search QWatch for exposed credentials
 
 #### Human Readable Output
 
->### Qintel QWatch exposures for: test@example.local
+>### Qintel QWatch exposures for: <test@example.local>
 >
 >|Email|Password|Source|Loaded|First Seen|Last Seen|
 >|---|---|---|---|---|---|
->| test@example.local | SuperSecretPassword | combo-BigComboList | 2021-02-05 04:35:33 | 2020-03-25 09:38:40 | 2021-02-05 04:35:33 |
->| test@example.local | SuperSecretPassword | dump-example.local | 2020-08-10 02:10:11 | 2020-03-25 09:38:40 | 2021-02-05 04:35:33 |
->| test@example.local | SuperSecretPassword | malware-evilbot_March_22_2020 | 2020-03-25 09:38:40 | 2020-03-25 09:38:40 | 2021-02-05 04:35:33 |
+>| <test@example.local> | SuperSecretPassword | combo-BigComboList | 2021-02-05 04:35:33 | 2020-03-25 09:38:40 | 2021-02-05 04:35:33 |
+>| <test@example.local> | SuperSecretPassword | dump-example.local | 2020-08-10 02:10:11 | 2020-03-25 09:38:40 | 2021-02-05 04:35:33 |
+>| <test@example.local> | SuperSecretPassword | malware-evilbot_March_22_2020 | 2020-03-25 09:38:40 | 2020-03-25 09:38:40 | 2021-02-05 04:35:33 |

@@ -6,7 +6,7 @@ This integration was integrated and tested with version 1 of AttackSurfaceManage
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Your server URL | The ASM API URL.  Leave as \`https://asm-api.advantage.mandiant.com/\` if you're unsure | True |
+| Your server URL | The ASM API URL.  Leave as \`<https://asm-api.advantage.mandiant.com/\`> if you're unsure | True |
 | Access Key | The Access and Secret Keys used for authentication | True |
 | Secret Key |  | True |
 | Project ID | The ASM Project ID to retrieve issues from | False |
@@ -70,7 +70,7 @@ There are no input arguments for this command.
 
 >|ID|Name|Owner|
 >|---|---|---|
->| 6797 | ASMQA_AttackSurfaceAPP | name@attacksurface.app |
+>| 6797 | ASMQA_AttackSurfaceAPP | <name@attacksurface.app> |
 
 
 ### attacksurfacemanagement-get-collections

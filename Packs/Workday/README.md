@@ -1,6 +1,7 @@
 <~XSIAM>
 
 This pack supports collection and modeling of the following event types:
+
 - *User activity* audit log entries.
 - *Sign-on* events. 
 

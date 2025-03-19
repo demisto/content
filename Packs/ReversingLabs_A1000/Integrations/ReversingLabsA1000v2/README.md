@@ -60,8 +60,11 @@ Retrieve sample analysis results
 | ReversingLabs.a1000_report | Unknown | A1000 report | 
 
 #### Command example
+
 ```!reversinglabs-a1000-get-results hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -423,6 +426,7 @@ Retrieve sample analysis results
 #### Human Readable Output
 
 >## ReversingLabs A1000 results for: a94775deb818a4d68635eeed3d16abc7f7b8bdd6
+>
 >    **Type:** Binary/Archive  
 >    **Size:** 607237 bytes  
 >**MD5:** a322205db6c3b1c451725b84f1d010cc  
@@ -470,8 +474,11 @@ Upload sample to A1000 for analysis
 | ReversingLabs.a1000_upload_report | Unknown | A1000 report | 
 
 #### Command example
+
 ```!reversinglabs-a1000-upload-sample entryId="7469@08d0efc0-7fc6-4c26-8ae9-f3bfc7b92a59" comment="this_is_a_comment" tags="one_tag"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -501,6 +508,7 @@ Upload sample to A1000 for analysis
 #### Human Readable Output
 
 >## ReversingLabs A1000 upload sample
+>
 > **Message:** Done.
 >    **ID:** 150
 >    **SHA1:** 0000a0a549be5b7a95b782d31f73d8f608c4a440
@@ -542,8 +550,11 @@ Upload sample to A1000 and retrieve analysis results
 | ReversingLabs.a1000_report | Unknown | A1000 report | 
 
 #### Command example
+
 ```!reversinglabs-a1000-upload-sample-and-get-results entryId="7469@08d0efc0-7fc6-4c26-8ae9-f3bfc7b92a59" comment="this_is_a_comment" tags="one_tag"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -5314,6 +5325,7 @@ Upload sample to A1000 and retrieve analysis results
 #### Human Readable Output
 
 >## ReversingLabs A1000 results for: 0000a0a549be5b7a95b782d31f73d8f608c4a440
+>
 > **Type:** PE/Exe
 >    **Size:** 385774 bytes 
 >**MD5:** 96d17cad51f2b7c817481e5a724c9b3f
@@ -5336,7 +5348,9 @@ Upload sample to A1000 and retrieve analysis results
 >    **Extracted file count:** 6
 >    **Identification name:** NSIS
 >    **Identification version:** Generic
+>
 >### ReversingLabs threat indicators
+>
 >|category|description|id|priority|reasons|relevance|
 >|---|---|---|---|---|---|
 >| 22 | Deletes files in Windows system directories. | 101 | 7 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: DeleteFileA'},<br/>{'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: GetSystemDirectoryA'} | 0 |
@@ -5402,8 +5416,11 @@ Delete an uploaded sample from A1000
 | ReversingLabs.a1000_delete_report | Unknown | A1000 file delete report | 
 
 #### Command example
+
 ```!reversinglabs-a1000-delete-sample hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -5433,6 +5450,7 @@ Delete an uploaded sample from A1000
 #### Human Readable Output
 
 >## ReversingLabs A1000 delete sample
+>
 > **Message:** Sample deleted successfully.
 >    **MD5:** a984de0ce47a8d5337ef569c812b57d0
 >    **SHA1:** 0000a0a381d31e0dafcaa22343d2d7e40ff76e06
@@ -5462,8 +5480,11 @@ List files extracted from a sample.
 | ReversingLabs.a1000_list_extracted_report | Unknown | A1000 list extracted files report. |
 
 #### Command example
+
 ```!reversinglabs-a1000-list-extracted-files hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6" max_results="2"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -5535,6 +5556,7 @@ List files extracted from a sample.
 #### Human Readable Output
 
 >### Extracted files
+>
 >|SHA1|Name|Path|Info|Size|Local First Seen|Local Last Seen|Malware Status|Risk Score|Identification Name|Identification Version|Type Display|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad | aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad.rl | aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad.rl | PE/Exe | 1432064 | 2022-10-27T11:03:31.473395Z | 2023-08-10T00:15:32.849362Z | malicious | 10 |  |  | PE/Exe |
@@ -5560,9 +5582,13 @@ Download sample from A1000
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!reversinglabs-a1000-download-sample hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6"```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -5583,6 +5609,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >## ReversingLabs A1000 download sample 
+>
 >Requested sample is available for download under the name a94775deb818a4d68635eeed3d16abc7f7b8bdd6
 
 ### reversinglabs-a1000-reanalyze
@@ -5607,8 +5634,11 @@ Re-analyze sample on A1000
 | ReversingLabs.a1000_reanalyze_report | Unknown | Get extracted files report | 
 
 #### Command example
+
 ```!reversinglabs-a1000-reanalyze hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -5676,6 +5706,7 @@ Re-analyze sample on A1000
 #### Human Readable Output
 
 >## ReversingLabs A1000 re-analyze sample
+>
 >**Message:** Sample is queued for analysis.
 >    **MD5:** a322205db6c3b1c451725b84f1d010cc
 >    **SHA1:** a94775deb818a4d68635eeed3d16abc7f7b8bdd6
@@ -5699,9 +5730,13 @@ Download samples obtained through the unpacking process
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!reversinglabs-a1000-download-extracted-files hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6"```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -5723,6 +5758,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >## ReversingLabs A1000 download extraced files 
+>
 >Extracted files are available for download under the name a94775deb818a4d68635eeed3d16abc7f7b8bdd6.zip
 
 ### reversinglabs-a1000-get-classification
@@ -5761,8 +5797,11 @@ Retrieve classification report for a sample
 | ReversingLabs.a1000_classification_report | Unknown | A1000 classification report | 
 
 #### Command example
+
 ```!reversinglabs-a1000-get-classification hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6" localOnly="False"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -5844,6 +5883,7 @@ Retrieve classification report for a sample
 #### Human Readable Output
 
 >## ReversingLabs A1000 get classification for sha1: a94775deb818a4d68635eeed3d16abc7f7b8bdd6
+>
 >**Classification:** malicious
 >**Riskscore:** 10
 >**First seen:** 2022-12-19T11:39:11Z
@@ -5883,8 +5923,11 @@ Search for hashes on A1000 using multi-part search criteria.
 | ReversingLabs.a1000_advanced_search_report | Unknown | A1000 classification report | 
 
 #### Command example
+
 ```!reversinglabs-a1000-advanced-search query="av-count:5 available:TRUE" ticloud="False" result_limit=2```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -5903,6 +5946,7 @@ Search for hashes on A1000 using multi-part search criteria.
 #### Human Readable Output
 
 >## Reversinglabs A1000 advanced Search 
+>
 >Full report is returned in a downloadable file
 
 ### reversinglabs-a1000-url-report
@@ -5927,8 +5971,11 @@ Get a report for the submitted URL.
 | ReversingLabs.a1000_url_report | Unknown | A1000 URL report | 
 
 #### Command example
+
 ```!reversinglabs-a1000-url-report url="http://akiwinds.duckdns.org/chats/fre.php"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -6068,15 +6115,18 @@ Get a report for the submitted URL.
 #### Human Readable Output
 
 >## ReversingLabs A1000 URL Report for http:<span>//</span>akiwinds.duckdns.org/chats/fre.php
+>
 > **Classification**: malicious
 >    
 >## Third party reputation statistics
+>
 > **Total**: 20
 >    **Malicious**: 1
 >    **Clean**: 0
 >    **Undetected**: 19
 >    
 >## Analysis statistics
+>
 > **Unknown**: None
 >    **Suspicious**: None
 >    **Malicious**: None
@@ -6089,6 +6139,7 @@ Get a report for the submitted URL.
 > ## Third party reputation sources
 >
 > ### Sources
+>
 >|detection|source|update_time|
 >|---|---|---|
 >| undetected | phishing_database | 2023-06-06T10:57:14 |
@@ -6113,9 +6164,11 @@ Get a report for the submitted URL.
 >| undetected | urlhaus | 2023-06-06T09:24:38 |
 >
 > ### Last analysis
+>
 >**No entries.**
 >
 > ### Analysis history
+>
 >**No entries.**
 
 
@@ -6141,8 +6194,11 @@ Get a report for the submitted domain.
 | ReversingLabs.a1000_domain_report | Unknown | A1000 domain report | 
 
 #### Command example
+
 ```!reversinglabs-a1000-domain-report domain="ink-scape.online"```
+
 #### Context Example
+
 ```json
 {
     "Domain": {
@@ -6274,8 +6330,11 @@ Get a report for the submitted domain.
 #### Human Readable Output
 
 >## ReversingLabs A1000 Domain Report for ink-scape.online
+>
 > **Modified time**: 2023-06-06T13:52:05
+>
 > ### Top threats
+>
 >|files_count|risk_score|threat_name|
 >|---|---|---|
 >| 1 | 10 | Win64.Trojan.Casdet |
@@ -6284,12 +6343,14 @@ Get a report for the submitted domain.
 >| 1 | 10 | Win32.Trojan.Fragtor |
 >
 > ### Third party reputation statistics
+>
 > **Malicious**: 1
 >    **Undetected**: 12
 >    **Clean**: 0
 >    **Total**: 13
 >    
 > ### Downloaded files statistics
+>
 > **Unknown**: 0
 >    **Suspicious**: 0
 >    **Malicious**: 4
@@ -6299,11 +6360,13 @@ Get a report for the submitted domain.
 >**Last DNS records time**: 2023-05-11T17:46:01
 >    
 > ### Last DNS records
+>
 >|provider|type|value|
 >|---|---|---|
 >| ReversingLabs | A | 37.140.192.210 |
 >
 > ### Third party reputation sources
+>
 >|detection|source|update_time|
 >|---|---|---|
 >| undetected | phishing_database | 2023-06-06T01:26:52 |
@@ -6343,8 +6406,11 @@ Get a report for the submitted IP address.
 | ReversingLabs.a1000_ip_address_report | Unknown | A1000 IP address report | 
 
 #### Command example
+
 ```!reversinglabs-a1000-ip-address-report ip_address="105.101.110.37"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -6436,17 +6502,22 @@ Get a report for the submitted IP address.
 #### Human Readable Output
 
 >## ReversingLabs A1000 IP Address Report for 105.101.110.37
+>
 > **Modified time**: 2023-06-06T14:00:43
+>
 > ### Top threats
+>
 >**No entries.**
 >
 > ### Third party reputation statistics
+>
 > **Malicious**: 2
 >    **Undetected**: 5
 >    **Clean**: 0
 >    **Total**: 7
 >    
 > ### Downloaded files statistics
+>
 > **Unknown**: 0
 >    **Suspicious**: 0
 >    **Malicious**: 0
@@ -6454,6 +6525,7 @@ Get a report for the submitted IP address.
 >    **Total**: 0
 >    
 > ### Third party reputation sources
+>
 >|category|detect_time|detection|source|update_time|
 >|---|---|---|---|---|
 >|  |  | undetected | alphamountain | 2023-06-06T13:52:05 |
@@ -6491,8 +6563,11 @@ Get a list of files downloaded from an IP address.
 | ReversingLabs.a1000_ip_address_downloaded_files | Unknown | A1000 Files downloaded from IP address | 
 
 #### Command example
+
 ```!reversinglabs-a1000-ip-downloaded-files classification="MALICIOUS" page_size="2" max_results="2" ip_address="123.140.161.243" extended_results="true"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -6555,7 +6630,9 @@ Get a list of files downloaded from an IP address.
 #### Human Readable Output
 
 >## ReversingLabs A1000 Files Downloaded From IP Address 123.140.161.243
+>
 > ### Files downloaded from IP address
+>
 >|classification|first_download|first_seen|last_download|last_download_url|last_seen|malware_family|malware_type|md5|platform|risk_score|sample_available|sample_size|sample_type|sha1|sha256|subplatform|threat_name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| MALICIOUS | 2022-11-02T07:38:05 | 2022-11-02T07:38:05 | 2022-11-02T07:38:05 | http:<span>//</span>uaery.top/dl/buildz.exe | 2023-04-27T15:22:05 | RedLine | Trojan | 1af44914e2340ab6da17a3a61609a2e4 | Win32 | 10 | true | 840704 |  | 03359456add1d7c5eae291f8f50576e0a324cbbd | 069027da6066f79736223dbc9fa99a42533cfbdf24f6e683f6e9d3934f009afa |  | Win32.Trojan.RedLine |
@@ -6586,8 +6663,11 @@ Get a list of IP-to-domain resolutions.
 | ReversingLabs.a1000_ip_domain_resolutions | Unknown | A1000 IP-to-domain resolutions | 
 
 #### Command example
+
 ```!reversinglabs-a1000-ip-domain-resolutions ip_address="142.250.186.142" page_size="2" max_results="2"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -6620,7 +6700,9 @@ Get a list of IP-to-domain resolutions.
 #### Human Readable Output
 
 >## ReversingLabs A1000 IP-to-domain Resolutions for IP address 142.250.186.142
+>
 > ### IP-to-domain resolutions
+>
 >|host_name|last_resolution_time|provider|
 >|---|---|---|
 >| pl16304805.trustedcpmrevenue.com | 2022-01-22T14:42:19 | ReversingLabs |
@@ -6651,8 +6733,11 @@ Get a list of URLs hosted on the requested IP address.
 | ReversingLabs.a1000_ip_urls | Unknown | A1000 URL-s hosted on an IP address | 
 
 #### Command example
+
 ```!reversinglabs-a1000-ip-urls ip_address="142.250.186.142" page_size="2" max_results="2"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -6681,7 +6766,9 @@ Get a list of URLs hosted on the requested IP address.
 #### Human Readable Output
 
 >## ReversingLabs A1000 URL-s Hosted On IP Address 142.250.186.142
+>
 > ### URL-s hosted on the IP address
+>
 >|url|
 >|---|
 >| https:<span>//</span>vam.simpleintactloop.com/?kw=25&s1=dfadc40091de4d20b5ae5178a3ed04cf&s2=25&s3=1812092 |
@@ -6713,8 +6800,11 @@ Perform user tag actions for a sample - Get existing tags, create new tags or de
 | ReversingLabs.a1000_user_tags | Unknown | Actions for managing user tags on samples. | 
 
 #### Command example
+
 ```!reversinglabs-a1000-user-tags hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" tags="tag3,tag4" action="CREATE"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -6729,6 +6819,7 @@ Perform user tag actions for a sample - Get existing tags, create new tags or de
 #### Human Readable Output
 
 >## ReversingLabs A1000 user tags - CREATE tags
+>
 > **Tag list**: ["tag3","tag4"]
 
 ### reversinglabs-a1000-file-analysis-status
@@ -6754,8 +6845,11 @@ Check the analysis status of submitted files.
 | ReversingLabs.a1000_file_analysis_status | Unknown | Analysis status of requested files. | 
 
 #### Command example
+
 ```!reversinglabs-a1000-file-analysis-status hashes="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" analysis_status="processed"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -6775,9 +6869,12 @@ Check the analysis status of submitted files.
 #### Human Readable Output
 
 >## ReversingLabs A1000 file analysis status
+>
 > **Hash type**: sha1
 >**Only status**: processed
+>
 >### Analysis status
+>
 >|hash_value|status|
 >|---|---|
 >| 0000a0a381d31e0dafcaa22343d2d7e40ff76e06 | processed |
@@ -6806,8 +6903,11 @@ Perform PDF report actions for a sample - create a report, check the status of a
 | ReversingLabs.a1000_pdf_report | Unknown | Actions for creating and downloading PDF reports. | 
 
 #### Command example
+
 ```!reversinglabs-a1000-pdf-report hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" action="CREATE REPORT"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -6822,6 +6922,7 @@ Perform PDF report actions for a sample - create a report, check the status of a
 #### Human Readable Output
 
 >## ReversingLabs A1000 PDF report - CREATE REPORT
+>
 >**Status endpoint**: /api/pdf/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/status
 > **Download endpoint**: /api/pdf/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/download
 
@@ -6855,8 +6956,11 @@ Retrieve the static analysis report for a local sample.
 | ReversingLabs.a1000_static_analysis_report | Unknown | The static analysis report. | 
 
 #### Command example
+
 ```!reversinglabs-a1000-static-analysis-report hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -10509,6 +10613,7 @@ Retrieve the static analysis report for a local sample.
 #### Human Readable Output
 
 >## ReversingLabs A1000 static analysis report for 0000a0a381d31e0dafcaa22343d2d7e40ff76e06
+>
 > **Classification**: 3
 >    **Factor**: 8
 >    **Result**: Win32.Downloader.Unruy
@@ -10517,14 +10622,18 @@ Retrieve the static analysis report for a local sample.
 >    **SHA-256**: b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3
 >    **SHA-512**: 9357144084c64531dec928de2a85c924d8079b50b5e98ab2c61ae59b97992a39b833f618341e91b071ec94e65bd901ebdf892851e5a4247e1557a55c14923da5
 >    **Story**: This file (SHA1: 0000a0a381d31e0dafcaa22343d2d7e40ff76e06) is a 32-bit portable executable application. The application uses the Windows graphical user interface (GUI) subsystem. Appended data was detected at the file&#x27;s end. Its length is smaller than the size of the image. This application has access to running processes. Libraries kernel32 Generic and user32 Generic were detected in the file. There are no extracted files.
+>
 > ### Indicators
+>
 >|category|description|id|priority|reasons|relevance|
 >|---|---|---|---|---|---|
 >| 4 | Allocates additional memory in the calling process. | 17985 | 3 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: HeapAlloc'} | 0 |
 >| 10 | Loads additional libraries. | 69 | 2 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: LoadLibraryA'} | 1 |
 >| 10 | Loads additional APIs. | 70 | 2 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: GetProcAddress'},<br/>{'propagated': False, 'category': 'Indicator Match', 'description': 'Matched another indicator that describes the following: Loads additional libraries.'} | 0 |
 >| 16 | Uses string related methods. | 18050 | 1 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: lstrcatA'} | 0 |
+>
 > ### Tags
+>
 >|ticore|user|
 >|---|---|
 >| antivirus,<br/>arch-x86,<br/>capability-execution,<br/>desktop,<br/>entropy-high,<br/>gui,<br/>machine-learning,<br/>overlay,<br/>rich-header | tag1,<br/>tag2,<br/>tag3,<br/>tag4 |
@@ -10555,8 +10664,11 @@ Perform dynamic analysis report actions for a sample - create a report, check th
 | ReversingLabs.a1000_dynamic_analysis_report | Unknown | Actions for creating and downloading dynamic analysis reports. | 
 
 #### Command example
+
 ```!reversinglabs-a1000-dynamic-analysis-report report_format="pdf" hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" action="CREATE REPORT"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -10571,6 +10683,7 @@ Perform dynamic analysis report actions for a sample - create a report, check th
 #### Human Readable Output
 
 >## ReversingLabs A1000 dynamic analysis report - CREATE REPORT
+>
 >**Status endpoint**: /api/rl_dynamic_analysis/export/summary/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/pdf/status/
 > **Download endpoint**: /api/rl_dynamic_analysis/export/summary/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/pdf/download/
 
@@ -10613,8 +10726,11 @@ Perform sample classification actions - get sample classification, set sample cl
 | ReversingLabs.a1000_sample_classification | Unknown | Sample classification actions. | 
 
 #### Command example
+
 ```!reversinglabs-a1000-sample-classification hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" action="GET CLASSIFICATION" system="local" local_only="true" av_scanners="false" classification="malicious"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -10669,6 +10785,7 @@ Perform sample classification actions - get sample classification, set sample cl
 #### Human Readable Output
 
 >## ReversingLabs A1000 sample classification - GET CLASSIFICATION
+>
 >**Classification**: malicious
 >        **Risk score**: 8
 >        **First seen**: 2011-09-21T02:09:00Z
@@ -10706,8 +10823,11 @@ Perform A1000 YARA actions.
 | ReversingLabs.a1000_yara | Unknown | YARA actions. | 
 
 #### Command example
+
 ```!reversinglabs-a1000-yara action="GET RULESETS"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -10776,6 +10896,7 @@ Perform A1000 YARA actions.
 #### Human Readable Output
 
 >## ReversingLabs A1000 YARA - GET RULESETS
+>
 >|count|next|previous|results|source|status|type|
 >|---|---|---|---|---|---|---|
 >| 4 |  |  | {'status': 'pending', 'suspicious_match_count': 0, 'malicious_match_count': 1, 'goodware_match_count': 27, 'unknown_match_count': 1, 'name': 'get_money3', 'owner': 'admin', 'last_matched': '2024-06-05T15:47:06.917422Z', 'system_ruleset': False, 'cloud_synced': False},<br/>{'status': 'pending', 'suspicious_match_count': 0, 'malicious_match_count': 0, 'goodware_match_count': 2, 'unknown_match_count': 0, 'name': 'Rule_Find_PDF_with_URLs', 'owner': 'admin', 'last_matched': '2024-05-24T16:00:19.220946Z', 'system_ruleset': False, 'cloud_synced': False},<br/>{'status': 'pending', 'suspicious_match_count': 0, 'malicious_match_count': 0, 'goodware_match_count': 0, 'unknown_match_count': 0, 'name': 'MislavTesting', 'owner': 'admin', 'last_matched': None, 'system_ruleset': False, 'cloud_synced': False},<br/>{'status': 'active', 'suspicious_match_count': 0, 'malicious_match_count': 0, 'goodware_match_count': 0, 'unknown_match_count': 0, 'name': 'test_yara_rule', 'owner': 'admin', 'last_matched': None, 'system_ruleset': False, 'cloud_synced': True} | all | all | my |
@@ -10805,8 +10926,11 @@ Perform A1000 YARA Retroactive Hunt actions.
 | ReversingLabs.a1000_yara_retro | Unknown | YARA Retro actions. | 
 
 #### Command example
+
 ```!reversinglabs-a1000-yara-retro action="LOCAL SCAN STATUS" ruleset_name="get_money3"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -10854,6 +10978,7 @@ Perform A1000 YARA Retroactive Hunt actions.
 #### Human Readable Output
 
 >## ReversingLabs A1000 YARA Retroactive Hunt - LOCAL SCAN STATUS
+>
 >|message|status|success|
 >|---|---|---|
 >|  | state: COMPLETED<br/>started: 2024-05-24T15:58:55.075337+00:00<br/>stopped: 2024-05-24T16:28:13.110974+00:00<br/>samples: 281<br/>processed: 371<br/>history: {'state': 'COMPLETED', 'started': '2024-05-24T15:58:55.075337+00:00', 'stopped': '2024-05-24T16:28:13.110974+00:00', 'samples': 281, 'started_username': 'admin', 'stopped_username': None},<br/>{'state': 'COMPLETED', 'started': '2022-11-15T10:14:16.515681+00:00', 'stopped': '2022-11-15T10:14:20.687855+00:00', 'samples': 11, 'started_username': 'admin', 'stopped_username': None},<br/>{'state': 'COMPLETED', 'started': '2022-11-11T15:02:00.683418+00:00', 'stopped': '2022-11-11T15:02:07.011490+00:00', 'samples': 11, 'started_username': 'admin', 'stopped_username': None} | true |
@@ -10881,8 +11006,11 @@ Get a list of all top-level containers from which the requested samples have bee
 | ReversingLabs.a1000_list_containers | Unknown | A10000 list top-level containers. | 
 
 #### Command example
+
 ```!reversinglabs-a1000-list-containers sample_hashes="0000a0a381d31e0dafcaa22343d2d7e40ff76e06,661566e9131c39a1b34cabde9a14877d9bcb3d90"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -10899,6 +11027,7 @@ Get a list of all top-level containers from which the requested samples have bee
 #### Human Readable Output
 
 >## ReversingLabs A1000 List containers for hashes
+>
 >|count|next|previous|results|
 >|---|---|---|---|
 >| 0 |  |  |  |
@@ -10940,8 +11069,11 @@ Actions for uploading a sample from a URL and fetching the analysis results.
 | ReversingLabs.a1000_upload_from_url_actions | Unknown | Actions for uploading a sample from a URL and fetching the analysis results. | 
 
 #### Command example
+
 ```!reversinglabs-a1000-upload-from-url-actions action="UPLOAD" file_url="https://download.sublimetext.com/sublime_text_build_4169_x64_setup.exe" crawler="local" sandbox_platform="windows10"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -10962,7 +11094,9 @@ Actions for uploading a sample from a URL and fetching the analysis results.
 #### Human Readable Output
 
 >## ReversingLabs A1000 URL sample actions - UPLOAD
+>
 >### Upload results
+>
 >|code|detail|message|
 >|---|---|---|
 >| 201 | id: 419<br/>user: 1<br/>created: 2024-06-05T15:50:40.409482Z<br/>filename: https:<span>//</span>download.sublimetext.com/sublime_text_build_4169_x64_setup.exe | Done. |

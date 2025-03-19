@@ -1,5 +1,6 @@
 Endpoint Standard is an industry-leading next-generation antivirus (NGAV) and behavioral endpoint detection and response (EDR) solution. Endpoint Standard is delivered through the Carbon Black Cloud, an endpoint protection platform that consolidates security in the cloud using a single agent, console and data set.
 This integration was integrated and tested with version 1.1.2 of Carbon Black Endpoint Standard v3.
+
 ### Migration to Carbon Black Endpoint Standard v3
 
 #### Deprecated Commands in Carbon Black Endpoint Standard v2
@@ -33,12 +34,15 @@ The following commands from the Carbon Black Endpoint Standard v2 integration ha
 
 
 ### Mapper
+
 **Carbon Black Endpoint Standard Mapper**.
 
 ### Layout
+
 **Carbon Black Endpoint Standard Incoming Layout**.
 
 ### Classifier
+
 **Carbon Black Endpoint Standard**
 
 ## Configure Carbon Black Endpoint Standard v3 in Cortex
@@ -176,8 +180,11 @@ Gets alert details according to alert ID, including alert metadata and a list of
 | CarbonBlackDefense.Alert.ml_classification_anomalies | Unknown | The anomalies identified by the machine learning classification. | 
 
 #### Command example
+
 ```!cbd-get-alert-details alertId=abc-123```
+
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -295,6 +302,7 @@ Gets alert details according to alert ID, including alert metadata and a list of
 #### Human Readable Output
 
 >### Carbon Black Defense Get Alert Details
+>
 >|Id|Device Id|Device Name|Device Username|Ioc Hit|Reason|Type|Threat Id|Device Policy|Severity|
 >|---|---|---|---|---|---|---|---|---|---|
 >| dummy_id  | 6612391 | EIP\WW-20002 | EIP\Administrator | (fileless_scriptload_cmdline:Register-ScheduledTask OR fileless_scriptload_cmdline:New-ScheduledTask OR scriptload_content:Register-ScheduledTask OR scriptload_content:New-ScheduledTask) AND NOT (process_cmdline:windows\\ccm\\systemtemp OR crossproc_name:windows\\ccm\\ccmexec.exe OR (process_publisher:"VMware, Inc." AND process_publisher_state:FILE_SIGNATURE_STATE_TRUSTED)) | Process powershell.exe was detected by the report "Execution - AMSI - New Fileless Scheduled Task Behavior Detected" in watchlist "AMSI Threat Intelligence" | WATCHLIST | C21CA826573A8D974C1E93C8471AAB7F | default | 5 |
@@ -409,8 +417,11 @@ Gets alert details, including alert metadata and the event associated with the a
 | CarbonBlackDefense.Alert.childproc_cmdline | String | The command line of the child process related to the alert. | 
 
 #### Command example
+
 ```!cbd-alerts-search reputation=NOT_LISTED rows=3 type=all```
+
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -700,6 +711,7 @@ Gets alert details, including alert metadata and the event associated with the a
 #### Human Readable Output
 
 >### Carbon Black Defense Alerts List Results
+>
 >|Id|Device Id|Device Name|Device Username|Backend Timestamp|
 >|---|---|---|---|---|
 >| dummy_id | 8213794 | win1122H2new | Administrator | 2024-07-09T12:22:14.999Z |
@@ -811,8 +823,11 @@ Retrieves a policy object by ID.
 | CarbonBlackDefense.Policy.priorityLevel | String | The priority level of the policy. | 
 
 #### Command example
+
 ```!cbd-get-policy policyId=80947```
+
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -1094,6 +1109,7 @@ Retrieves a policy object by ID.
 #### Human Readable Output
 
 >### Carbon Black Defense Policy
+>
 >|Id|Name|Priority Level|Is System|Description|
 >|---|---|---|---|---|
 >| dummy_id | AWN BAS | MEDIUM | false | aaaaaaaa |
@@ -1126,8 +1142,11 @@ There are no input arguments for this command.
 | CarbonBlackDefense.PolicySummary.total_num_devices | Number | The total number of devices associated with the policy. | 
 
 #### Command example
+
 ```!cbd-get-policies-summary```
+
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -1187,6 +1206,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Policies summaries
+>
 >|Id|Name|Priority Level|Is System|
 >|---|---|---|---|
 >| 80947 | AWN BAS | MEDIUM | false |
@@ -1299,8 +1319,11 @@ Creates a new policy on the CB Defense backend.
 | CarbonBlackDefense.Policy.priorityLevel | String | The priority level of the policy. | 
 
 #### Command example
+
 ```!cbd-create-policy policy="{\"name\": \"test4\", \"description\": \"aaaaaaaa\",\"org_key\": \"7DESJ9GN\", \"priority_level\": \"MEDIUM\", \"rules\": [], \"sensor_settings\": [{\"name\": \"ALLOW_UNINSTALL\", \"value\": \"true\"}]}"```
+
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -1441,6 +1464,7 @@ Creates a new policy on the CB Defense backend.
 #### Human Readable Output
 
 >### Policy created successfully
+>
 >|Id|Description|Name|Priority Level|Is System|
 >|---|---|---|---|---|
 >| 170044 | aaaaaaaa | test4 | MEDIUM | false |
@@ -1534,8 +1558,11 @@ Update an existing policy on the CB Defense backend.
 | CarbonBlackDefense.Policy.priorityLevel | String | The priority level of the policy. | 
 
 #### Command example
+
 ```!cbd-update-policy id=80947 policy="{\"name\": \"AWN BAS\", \"description\": \"aaaaaaaa\",\"org_key\": \"7DESJ9GN\", \"priority_level\": \"MEDIUM\", \"rules\": [], \"sensor_settings\": [{\"name\": \"ALLOW_UNINSTALL\", \"value\": \"true\"}]}"```
+
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -1857,6 +1884,7 @@ Update an existing policy on the CB Defense backend.
 #### Human Readable Output
 
 >### Policy with ID: 80947 updated successfully
+>
 >|Id|Description|Name|Priority Level|Is System|
 >|---|---|---|---|---|
 >| 80947 | aaaaaaaa | AWN BAS | MEDIUM | false |
@@ -1964,7 +1992,9 @@ Deletes a policy from the CB Defense backend. This may return an error if device
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cbd-delete-policy policyId=169977```
 
 #### Human Readable Output
@@ -2149,8 +2179,11 @@ Updates an existing rule with a new rule. Note: System policies cannot be modifi
 | CarbonBlackDefense.Policy.priorityLevel | String | The priority level of the policy. | 
 
 #### Command example
+
 ```!cbd-update-rule-in-policy action=IGNORE type=REPUTATION value=COMMON_WHITE_LIST operation=MEMORY_SCRAPE required=true policyId=12345 id=47```
+
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -2325,6 +2358,7 @@ Updates an existing rule with a new rule. Note: System policies cannot be modifi
 #### Human Readable Output
 
 >### Carbon Black Defense Policy
+>
 >|Id|Name|Priority Level|Is System|Description|
 >|---|---|---|---|---|
 >| 169994 | tesssttsss | MEDIUM | false | aaaaaaaa |
@@ -2349,7 +2383,9 @@ Removes a rule from an existing policy. Note: System policies cannot be modified
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cbd-delete-rule-from-policy ruleId=47 policyId=169994```
 
 #### Human Readable Output
@@ -2427,9 +2463,11 @@ Creates a process search job and retrieves the search results. At least one of t
 | CarbonBlackDefense.Process.Results.scriptload_count | Number | The number of scripts loaded by the process. | 
 
 #### Command example
+
 ```!cbd-find-processes device_id=5217044```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -2520,6 +2558,7 @@ Creates a process search job and retrieves the search results. At least one of t
 #### Human Readable Output
 
 >### The Results For The Process Search
+>
 >|Device Id|Device Name|Process Name|Device Policy Id|
 >|---|---|---|---|
 >| 1234 | r7betalab\r7betalab-arw04 | c:\windows\system32\windowspowershell\v1.0\powershell.exe | 80947 |
@@ -2619,8 +2658,11 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 | CarbonBlackDefense.EventDetails.Results.process_sha256 | unknown | The SHA-256 hash. | 
 
 #### Command example
+
 ```!cbd-find-observation-details process_hash=abc1234```
+
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -2745,6 +2787,7 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 #### Human Readable Output
 
 >### Defense Event Details Results
+>
 >|Observation Id|Event Id|Device Id|Device External Ip|Device Internal Ip|Enriched Event Type|
 >|---|---|---|---|---|---|
 >| dummy_observation_id | dummy_event_id | 1234 | 1.1.1.1 | 1.1.1.1 | CREATE_PROCESS |
@@ -2871,9 +2914,11 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 | CarbonBlackDefense.Events.Results.watchlist_hit | String | Indicates if the event matches a watchlist entry. | 
 
 #### Command example
+
 ```!cbd-find-observation device_id=12345```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -2988,6 +3033,7 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 #### Human Readable Output
 
 >### Defense Event Results
+>
 >|Event Id|Device Id|Enriched Event Type|
 >|---|---|---|
 >| 8d815dc93ab211efb74fe9e3b00b3b6a | 6685063 | CREATE_PROCESS |
@@ -3100,8 +3146,11 @@ Searches devices in your organization.
 | CarbonBlackDefense.Device.windows_platform | String | Deprecated for os_version. \(CLIENT_X86, CLIENT_X64, SERVER_X86, SERVER_X64, CLIENT_ARM64, SERVER_ARM64\). | 
 
 #### Command example
+
 ```!cbd-device-search```
+
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -3978,6 +4027,7 @@ Searches devices in your organization.
 #### Human Readable Output
 
 >### Carbon Black Defense Devices List Results
+>
 >|Id|Name|Os|Policy Name|Quarantined|Status|Target Priority|Last Internal Ip Address|Last External Ip Address|Last Contact Time|Last Location|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 6494305 | CB-H10 | WINDOWS | default | false | REGISTERED | MEDIUM | 1.1.1.1 | 1.1.1.1 | 2024-07-09T15:30:29.175Z | OFFSITE |
@@ -4020,6 +4070,7 @@ Quarantines the device. Not supported for devices in a Linux operating system.
 #### Context Output
 
 There is no context output for this command.
+
 ### cbd-device-unquarantine
 
 ***
@@ -4038,6 +4089,7 @@ Unquarantines the device. Not supported for devices in a Linux operating system.
 #### Context Output
 
 There is no context output for this command.
+
 ### cbd-device-background-scan
 
 ***
@@ -4056,6 +4108,7 @@ Starts a background scan on the device. Not supported for devices in a Linux ope
 #### Context Output
 
 There is no context output for this command.
+
 ### cbd-device-background-scan-stop
 
 ***
@@ -4074,6 +4127,7 @@ Stops a background scan on the device. Not supported for devices in a Linux oper
 #### Context Output
 
 There is no context output for this command.
+
 ### cbd-device-bypass
 
 ***
@@ -4092,6 +4146,7 @@ Bypasses a device.
 #### Context Output
 
 There is no context output for this command.
+
 ### cbd-device-unbypass
 
 ***
@@ -4110,6 +4165,7 @@ Unbypasses a device.
 #### Context Output
 
 There is no context output for this command.
+
 ### cbd-device-policy-update
 
 ***
@@ -4129,6 +4185,7 @@ Updates the devices to the specified policy ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cbd-device-update-sensor-version
 
 ***
@@ -4148,6 +4205,7 @@ Updates the version of a sensor.
 #### Context Output
 
 There is no context output for this command.
+
 ### cbd-find-processes-results
 
 ***
@@ -4193,8 +4251,11 @@ Retrieves the search results using the specified job ID.
 | CarbonBlackDefense.Process.Results.scriptload_count | Number | The number of scripts loaded by the process. | 
 
 #### Command example
+
 ```!cbd-find-processes-results job_id=abc-123 rows=2```
+
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -4285,6 +4346,7 @@ Retrieves the search results using the specified job ID.
 #### Human Readable Output
 
 >### The Results For The Process Search
+>
 >|Device Id|Device Name|Process Name|Device Policy Id|
 >|---|---|---|---|
 >| 1234 | r7betalab\r7betalab-arw04 | c:\windows\system32\windowspowershell\v1.0\powershell.exe | 80947 |
@@ -4377,8 +4439,11 @@ Retrieves the search results using the specified job ID.
 | CarbonBlackDefense.EventDetails.Results.process_sha256 | unknown | The SHA-256 hash. | 
 
 #### Command example
+
 ```!cbd-find-observation-details-results job_id=abc-1234 rows=2```
+
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -4503,6 +4568,7 @@ Retrieves the search results using the specified job ID.
 #### Human Readable Output
 
 >### Defense Event Details Results
+>
 >|Observation Id|Event Id|Device Id|Device External Ip|Device Internal Ip|Enriched Event Type|
 >|---|---|---|---|---|---|
 >| dummy_observation_id | dummy_event_id | 1234 | 1.1.1.1 | 1.1.1.1 | CREATE_PROCESS |
@@ -4602,8 +4668,11 @@ Retrieves the search results using the specified job ID.
 | CarbonBlackDefense.Events.Results.watchlist_hit | String | Indicates if the event matches a watchlist entry. | 
 
 #### Command example
+
 ```!cbd-find-observation-results job_id=abc-1234 rows=2```
+
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefense": {
@@ -4718,6 +4787,7 @@ Retrieves the search results using the specified job ID.
 #### Human Readable Output
 
 >### Defense Event Results
+>
 >|Event Id|Device Id|Enriched Event Type|
 >|---|---|---|
 >| 8d815dc93ab211efb74fe9e3b00b3b6a | 6685063 | CREATE_PROCESS |

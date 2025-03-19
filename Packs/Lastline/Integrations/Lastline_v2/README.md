@@ -8,7 +8,7 @@ Use the Lastline v2 integration to provide threat analysts and incident response
 3. Click **Add instance** to create and configure a new integration instance. 
 Note that you can configure your instance using an API Key and API Token OR using an Email Address and Password.
     - **Name**: a textual name for the integration instance.
-    - **Server URL (e.g. https://analysis.lastline.com)**
+    - **Server URL (e.g. <https://analysis.lastline.com>)**
     - **API Key for accessing Lastline APIs**
     - **API Token for accessing Lastline APIs**
     - **Email Address for accessing Lastline APIs using account based authentication**
@@ -16,15 +16,18 @@ Note that you can configure your instance using an API Key and API Token OR usin
     - **Use system proxy settings**
     - **Trust any certificate (not secure)**
     - **Threshold**
-4. Click __Test__ to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, token, and connection.
 
 
 ### Check the reputation of a file
+
 ---
 Checks the file reputation of the specified file hashes. Supports MD5, SHA1, and SHA256 hashes.
+
 ##### Base Command
 
 `file`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -68,9 +71,11 @@ Checks the file reputation of the specified file hashes. Supports MD5, SHA1, and
 
 
 ##### Command Example
+
 ```!file file=03bc132ee4a10f6d656fc21315fc7a65797be69a```
 
 ##### Context Example
+
 ```
 {
     "DBotScore": [
@@ -104,28 +109,33 @@ Checks the file reputation of the specified file hashes. Supports MD5, SHA1, and
 ##### Human Readable Output
 
 ##### Lastline analysis for file: 441666007e579b040967e72c13e5133b
+
 **Score: 0**
 
 Task UUID: 2b9d578d02540010179339d362664f9b
 Submission Time: 2020-02-25 06:58:19
+
 |MD5|SHA1|SHA256|Type|
 |---|---|---|---|
 | 441666007e579b040967e72c13e5133b | 03bc132ee4a10f6d656fc21315fc7a65797be69a | fd977f34a9514ece503fa3ff3976ed3f305a101b3c5ff31a1293a9d0b607dfc1 | application/zip |
 
 
 ### Submit a URL for analysis
+
 ---
 Submits a URL for analysis.
 
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 ##### Base Command
 
 `lastline-upload-url`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url |  The URL to analyze. For example: https://www.demisto.com.  | Required | 
+| url |  The URL to analyze. For example: <https://www.demisto.com>.  | Required | 
 | threshold | The score threshold that determines if the file is malicious. The default value is "70". | Optional | 
 
 
@@ -160,9 +170,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ##### Command Example
+
 ```!lastline-upload-url url="https://www.demisto.com" threshold=80```
 
 ##### Context Example
+
 ```
 {
     "URL": {
@@ -185,23 +197,29 @@ Notice: Submitting indicators using this command might make the indicator data p
 ```
 
 ##### Human Readable Output
-##### Lastline analysis for url: https://www.demisto.com
+
+##### Lastline analysis for url: <https://www.demisto.com>
+
 **Score: 0**
 
 Task UUID: c62b15a9e3dc00101e9557a0b6a17d3f
 Submission Time: 2020-02-24 07:05:33
+
 |Data|
 |---|
-| https://www.demisto.com |
+| <https://www.demisto.com> |
 
 
 ### Upload a file for analysis
+
 ---
 Submits a file for analysis.\
 Note: Due to a limitation in Lastline's API, EML files are not supported.
+
 ##### Base Command
 
 `lastline-upload-file`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -245,9 +263,11 @@ Note: Due to a limitation in Lastline's API, EML files are not supported.
 
 
 ##### Command Example
+
 ```!lastline-upload-file EntryID=152@374 threshold=40```
 
 ##### Context Example
+
 ```
 {
     "DBotScore": {
@@ -273,22 +293,28 @@ Note: Due to a limitation in Lastline's API, EML files are not supported.
 ```
 
 ##### Human Readable Output
+
 ##### Lastline analysis for file: 441666007e579b040967e72c13e5133b
+
 **Score: 0**
 
 Task UUID: 2b9d578d02540010179339d362664f9b
 Submission Time: 2020-02-25 06:58:19
+
 |MD5|SHA1|SHA256|Type|
 |---|---|---|---|
 | 441666007e579b040967e72c13e5133b | 03bc132ee4a10f6d656fc21315fc7a65797be69a | fd977f34a9514ece503fa3ff3976ed3f305a101b3c5ff31a1293a9d0b607dfc1 | application/zip |
 
 
 ### Get an analysis report
+
 ---
 Returns an analysis report.
+
 ##### Base Command
 
 `lastline-get-report`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -336,9 +362,11 @@ Returns an analysis report.
 
 
 ##### Command Example
+
 ```!lastline-get-report uuid=b32ed21999be00100eca07d07cb7bf38 threshold=70```
 
 ##### Context Example
+
 ```
 {
     "URL": {
@@ -361,22 +389,28 @@ Returns an analysis report.
 ```
 
 ##### Human Readable Output
-##### Lastline analysis for url: https://google.com
+
+##### Lastline analysis for url: <https://google.com>
+
 **Score: 0**
 
 Task UUID: b32ed21999be00100eca07d07cb7bf38
 Submission Time: 2019-12-31 02:40:44
+
 |Data|
 |---|
-| https://google.com |
+| <https://google.com> |
 
 
 ### Get a list of tasks
+
 ---
 Returns a list of tasks.
+
 ##### Base Command
 
 `lastline-get-task-list`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -390,11 +424,14 @@ Returns a list of tasks.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!lastline-get-task-list after=2020-01-01T00:00:00 before=2020-01-02T00:00:00```
 
 
 ##### Human Readable Output
+
 ##### tasks
+
 |UUID|Time|Status|
 |---|---|---|
 | b32ed21999be00100eca07d07cb7bf38 | 2019-12-31T02:40:44 | Completed |
@@ -402,11 +439,14 @@ There is no context output for this command.
 
 
 ### Get the status of a submission
+
 ---
 Checks the status of a submission.
+
 ##### Base Command
 
 `lastline-check-status`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -453,9 +493,11 @@ Checks the status of a submission.
 
 
 ##### Command Example
+
 ```!lastline-check-status uuid=b32ed21999be00100eca07d07cb7bf38```
 
 ##### Context Example
+
 ```
 {
     "URL": {
@@ -478,11 +520,14 @@ Checks the status of a submission.
 ```
 
 ##### Human Readable Output
-##### Lastline analysis for url: https://google.com
+
+##### Lastline analysis for url: <https://google.com>
+
 **Score: 0**
 
 Task UUID: b32ed21999be00100eca07d07cb7bf38
 Submission Time: 2019-12-31 02:40:44
+
 |Data|
 |---|
-| https://google.com |
+| <https://google.com> |

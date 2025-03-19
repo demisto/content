@@ -25,12 +25,15 @@ This integration was integrated and tested with version 4.3.0 of Armorblox
 
 7. Click **Test** to validate the URLs, token, and connection. 
 8. Save and Exit to enable the instance. 
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
 ### armorblox-check-remediation-action
+
 ***
 Check the recommended remediation action for any incident 
 
@@ -38,6 +41,7 @@ Check the recommended remediation action for any incident
 #### Base Command
 
 `armorblox-check-remediation-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -53,10 +57,12 @@ Check the recommended remediation action for any incident
 
 
 #### Command Example
+
 ```!armorblox-check-remediation-action ```
 
 
 #### Context Example
+
 ```
    {
         "Armorblox": 
@@ -77,6 +83,7 @@ Check the recommended remediation action for any incident
 | **remediation_actions** | **NEEDS REVIEW** |
 
 ### fetch-incidents
+
 ***
 Gets a list of armorblox incidents
 

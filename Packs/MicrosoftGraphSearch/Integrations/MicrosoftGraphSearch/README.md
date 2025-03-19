@@ -1,4 +1,5 @@
 Use the Microsoft Search API in Microsoft Graph to search content stored in OneDrive or SharePoint: files, folders, lists, list items, or sites.
+
 ## Configure Microsoft Graph Search in Cortex
 
 

@@ -460,8 +460,8 @@ Requires an active session and (if specified) membership to the channel or team 
 
 >|username|email|role|id|
 >|---|---|---|---|
->| admin | admin@admin.com |  | 8a6t7whumbdbxrawretujh6rre |
->| dev | admin@ddev.com |  | o9hpcwz73fdwxe9adue8jxo16o |
+>| admin | <admin@admin.com> |  | 8a6t7whumbdbxrawretujh6rre |
+>| dev | <admin@ddev.com> |  | o9hpcwz73fdwxe9adue8jxo16o |
 
 
 ### mattermost-send-file

@@ -1,6 +1,7 @@
 Downloads files from a specified machine without requiring approval.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Downloads files from a specified machine without requiring approval.
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * grr_get_files
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -26,5 +30,6 @@ This script uses the following commands and scripts.
 | pathtype | The path type to glob in. Can be, "UNSET", "OS", "TSK", "REGISTRY", "MEMORY", or "TMPFILE". |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

@@ -17,15 +17,19 @@ If you have any question feel free to concat us: [info@phishup.com](mailto:info@
 | PhishUp Playbook Actions | If there is any Phishing activity in mail, what should PhishUp do? | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### url
+
 ***
 PhishUp Url investigation
 
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,6 +54,7 @@ PhishUp Url investigation
 #### Base Command
 
 `phishup-get-chosen-action`
+
 #### Input
 
 There are no input arguments for this command.
@@ -64,6 +69,7 @@ There are no input arguments for this command.
 #### Base Command
 
 `phishup-evaluate-response`
+
 #### Input
 
 There are no input arguments for this command.

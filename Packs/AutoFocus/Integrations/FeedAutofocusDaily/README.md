@@ -12,7 +12,7 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 | api_key | API Key. | False |
 | feedReputation | The indicator reputation. | False |
 | feedReliability | The source's reliability. | True |
-| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at <https://us-cert.cisa.gov/tlp> | False |
 | feedExpirationPolicy | The feed's expiration policy. | False |
 | feedExpirationInterval | The interval after which the feed expires. | False |
 | feedFetchInterval | The feed fetch interval. | False |
@@ -24,10 +24,12 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get Indicators
+
 ***
 Gets the indicators from AutoFocus.
 
@@ -36,6 +38,7 @@ Note: This command does not create indicators within Cortex XSOAR.
 ##### Base Command
 
 `autofocus-daily-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -49,11 +52,14 @@ Note: This command does not create indicators within Cortex XSOAR.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!autofocus-daily-get-indicators limit=4```
 
 
 ##### Human Readable Output
+
 ### Indicators from AutoFocus:
+
 |Value|Type|
 |---|---|
 | demsito\<Span\>.com | Domain |

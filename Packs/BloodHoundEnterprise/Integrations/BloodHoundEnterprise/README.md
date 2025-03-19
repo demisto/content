@@ -22,6 +22,7 @@ This integration was integrated and tested with version 1.0.0 of BloodHound Ente
 4. Click **Test** to validate the connection using the provided details.
 
 ## Note:
+
     This API can be run only with ADMIN privileges.
 
 ## Commands

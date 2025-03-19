@@ -23,6 +23,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ***
 Generates a bpa report. Steps - 
+
 - Get information about Pan-OS/Panorama device.
 - Get configuration file of Pan-OS/Panorama. If the user provided an entry_id to a config file this step is skipped.
 - Use the information retrieved above to generate a BPA report.
@@ -50,7 +51,9 @@ By default, there is no context output for this command.
 When using show_in_context = True flag the generated report will be inserted to the context data.
 
 #### Command example
+
 ```!aiops-bpa-report-generate requester_email=testl@gmail.com requester_name=test```
+
 #### Human Readable Output
 
 #### - Initiated
@@ -68,4 +71,5 @@ When using show_in_context = True flag the generated report will be inserted to 
 #### - If timed out
 
 > Scheduled entry timed out.
-#####  This indicates that the configuration file is not in the correct format or that the timeout period is insufficient for generating the report.
+>
+##### This indicates that the configuration file is not in the correct format or that the timeout period is insufficient for generating the report.

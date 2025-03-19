@@ -1,6 +1,7 @@
 Retrieves the current date and time. 
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Retrieves the current date and time.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +24,7 @@ Retrieves the current date and time.
 | hoursAgo | Subtracts hoursAgo hours from current time. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

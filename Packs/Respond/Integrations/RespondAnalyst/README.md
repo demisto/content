@@ -1,4 +1,5 @@
 #### What is the Respond Analyst/Mandiant Defense Engine?
+
 Disclaimer: Respond Software was recently acquired by FireEye and has rebranded from the Respond Analyst to the Mandiant Defense Engine. These terms refer to the same product. Most of this integration was written prior to rebranding, and primarily includes references to Respond. This will be updated in the future, at which point this disclaimer will be removed. 
 
 Mandiant Defense is the cybersecurity investigation automation solution that connects the dots across disparate cybersecurity data to find real incidents fast. The Mandiant Defense engine is built to accelerate investigations for security operations teams in defense agencies, government bodies, universities, large enterprises, and leading managed service providers to get investigation power at machine speed. Mandiant Defense works with the broadest range of vendors, sensors, threat intelligence and data repositories in the industry to improve detection and response while raising security analyst productivity.
@@ -6,6 +7,7 @@ Mandiant Defense is the cybersecurity investigation automation solution that con
 #### What does this pack do?
 
 This pack provides a set of commands which can be executed against an instance of the Respond Analyst. The commands allow users to retrieve information from Respond and modify incidents from within XSOAR. Additionally, this integration supports bi-directional mirroring (for XSOAR v6 and above) of 
+
 - incident closure status
 - incident assignee
 - incident feedback and notes
@@ -28,15 +30,18 @@ Use the Mandiant Automated Defense integration to fetch and update incidents fro
 | Trust any certificate (not secure) |  | False |
 | Incident type |  | False |
 | Fetch incidents |  | False |
-| API Token | steps to generate an API token here -&amp;gt; https://knowledge-base.respond-software.com/knowledge/api-token | True |
+| API Token | steps to generate an API token here -&amp;gt; <https://knowledge-base.respond-software.com/knowledge/api-token> | True |
 | Max Fetch |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
 | Incidents Fetch Interval |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### mad-get-incident
+
 ***
 pull data for a specific incident from MAD. This command will only return an output of the incident data. it does not create a new incident
 
@@ -44,6 +49,7 @@ pull data for a specific incident from MAD. This command will only return an out
 #### Base Command
 
 `mad-get-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -98,6 +104,7 @@ pull data for a specific incident from MAD. This command will only return an out
 | Mandiant.AutomatedDefense.Incident.feedback.comments | String | feedback comments | 
 
 ### mad-close-incident
+
 ***
 close an incident in Respond and provide feedback on that incident. If the incident is already closed, feedback can still be updated. Additional comments and an updated closure code are viable options for updates on an incident that has already been closed (and on incidents that have not been closed yet as well)
 
@@ -105,6 +112,7 @@ close an incident in Respond and provide feedback on that incident. If the incid
 #### Base Command
 
 `mad-close-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -118,7 +126,9 @@ close an incident in Respond and provide feedback on that incident. If the incid
 #### Context Output
 
 There is no context output for this command.
+
 ### mad-assign-user
+
 ***
 assign a user to a Respond incident
 
@@ -126,6 +136,7 @@ assign a user to a Respond incident
 #### Base Command
 
 `mad-assign-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -138,7 +149,9 @@ assign a user to a Respond incident
 #### Context Output
 
 There is no context output for this command.
+
 ### mad-remove-user
+
 ***
 unassign a user from a Respond incident
 
@@ -146,6 +159,7 @@ unassign a user from a Respond incident
 #### Base Command
 
 `mad-remove-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -158,7 +172,9 @@ unassign a user from a Respond incident
 #### Context Output
 
 There is no context output for this command.
+
 ### mad-get-escalations
+
 ***
 Get escalation data associated with incident. In Respond, an 'escalation' is a specific event derived from a cybersecurity telemetry. Escalations are compiled together to form Incidents in Respond.
 
@@ -166,6 +182,7 @@ Get escalation data associated with incident. In Respond, an 'escalation' is a s
 #### Base Command
 
 `mad-get-escalations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -177,10 +194,12 @@ Get escalation data associated with incident. In Respond, an 'escalation' is a s
 #### Context Output
 
 There is no context output for this command.
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Mandiant Automated Defense (Formerly Respond Software) corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 

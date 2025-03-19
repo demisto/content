@@ -15,6 +15,7 @@ Integrate with SAP's services to execute get and disable operations for employee
 | Use system proxy settings | Use system proxy settings. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -26,6 +27,7 @@ Retrieves a single user resource.
 #### Base Command
 
 ***iam-get-user***
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,6 +52,7 @@ Retrieves a single user resource.
 
 
 #### Command Example
+
 ```!iam-get-user user-profile={"username": "john.doe@example.com"}```
 
 #### Human Readable Output
@@ -57,6 +60,7 @@ Retrieves a single user resource.
 
 
 ### iam-disable-user
+
 ***
 Disable an active user.
 
@@ -64,6 +68,7 @@ Disable an active user.
 #### Base Command
 
 `iam-disable-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -88,4 +93,5 @@ Disable an active user.
 
 
 #### Command Example
+
 ```!iam-disable-user user-profile={"username": "john.doe@example.com"}```
