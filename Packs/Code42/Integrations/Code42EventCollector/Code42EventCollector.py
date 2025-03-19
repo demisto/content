@@ -113,6 +113,7 @@ class Client:
             sort_dir="asc",
             sort_key=EventSearchTerm.EVENT_INSERTED,
         )
+        demisto.debug(f'First query: {query.dict()}')
         for filter in query.groups[0].filters:
             filter.term = EventSearchTerm.EVENT_INSERTED
 
@@ -127,6 +128,9 @@ class Client:
             response = self.code42_client.file_events.v2.search(query)
             if current_events := response.file_events:
                 file_events.extend(current_events)
+        demisto.debug(f'Final query: {query.dict()}')
+        demisto.debug(
+            f'Fetched {len(file_events)} events. First ID : {file_events[0].event.id!r}. Last ID: {file_events[-1].event.id!r}')
 
         file_events = file_events[:limit]
 
