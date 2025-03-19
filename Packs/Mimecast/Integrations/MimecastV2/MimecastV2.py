@@ -141,7 +141,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     return results, len_of_results
 
 
-def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
+def fetch_held_messages_with_pagination(api_endpoint: str, data: list, limit: int = 100,
                                         dedup_messages: list = [], current_next_page: str = ''):
     """
     Creates paging response for fetching held_messages.
@@ -165,10 +165,7 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
         response = http_request('POST', api_endpoint, payload, headers=headers)
         if failure_response := response.get('fail'):
             raise Exception(json.dumps(failure_response[0].get('errors')))
-        if response_param:
-            response_data = response.get('data')[0].get(response_param, [])
-        else:
-            response_data = response.get('data', [])
+        response_data = response.get('data', [])
         for entry in response_data:
             entry_id = entry.get('id')
             if not entry_id or entry_id not in dedup_messages:  # Dedup for fetch
@@ -2064,7 +2061,7 @@ def fetch_incidents():
             last_fetch_held_messages_date_time = last_fetch_date_time
     current_fetch = last_fetch
     current_fetch_held_message = last_fetch_held_messages
-    demisto.debug(f"handle_first_time_fetch {current_fetch=}, {last_fetch=}, "
+    demisto.debug(f"last fetch dates {current_fetch=}, {last_fetch=}, "
                   f"{last_fetch_date_time=}, {current_fetch_held_message=}, {last_fetch_held_messages=},"
                   f" {last_fetch_held_messages_date_time=}")
 
@@ -2221,13 +2218,9 @@ def fetch_held_messages(last_fetch_held_messages_date_time,
             dedup_held_messages = [held_message.get('id')]
             demisto.debug(f"Increased last_fetch to {last_fetch_held_messages}")
         elif temp_date == last_fetch_held_messages:
-            if isinstance(dedup_held_messages, List):
-                dedup_held_messages.append(held_message_id)
-                demisto.debug(f"Appended a held message {held_message_id} to dedup as temp_date=last_fetch_held_messages"
+            dedup_held_messages.append(held_message_id)
+            demisto.debug(f"Appended a held message {held_message_id} to dedup as temp_date=last_fetch_held_messages"
                               f"={last_fetch_held_messages}")
-            else:
-                demisto.debug(f"dedup_held_messages is not of type List but of type "
-                              f"{type(dedup_held_messages)}.")
         else:
             demisto.debug("dedup_held_messages and last_fetch_held_messages remain the same for"
                           f"{held_message_id} as {temp_date=} < {last_fetch_held_messages=}")
