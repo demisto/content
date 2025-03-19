@@ -2220,7 +2220,7 @@ def fetch_held_messages(last_fetch_held_messages_date_time,
         elif temp_date == last_fetch_held_messages:
             dedup_held_messages.append(held_message_id)
             demisto.debug(f"Appended a held message {held_message_id} to dedup as temp_date=last_fetch_held_messages"
-                              f"={last_fetch_held_messages}")
+                          f"={last_fetch_held_messages}")
         else:
             demisto.debug("dedup_held_messages and last_fetch_held_messages remain the same for"
                           f"{held_message_id} as {temp_date=} < {last_fetch_held_messages=}")
