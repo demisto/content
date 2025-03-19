@@ -12,11 +12,11 @@ def main():
         if args.get("new", "") == "":
             return
         playbooks = args.get("new")
-        demisto.executeCommand("UnitTest", {'playbook': playbooks, 'addAfter': MULTISELECT, 'testType': "Multiselect"})
+        demisto.executeCommand("UnitTest", {"playbook": playbooks, "addAfter": MULTISELECT, "testType": "Multiselect"})
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f"UnitTestingMultiSelect: Exception failed to execute. Error: {str(ex)}")
+        return_error(f"UnitTestingMultiSelect: Exception failed to execute. Error: {ex!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
