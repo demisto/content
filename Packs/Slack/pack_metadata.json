@@ -42,6 +42,7 @@
         "xpanse",
         "platform"
     ],
+    "defaultDataSource": "Slack Event Collector",
     "supportedModules": [
         "identity_threat",
         "C1",
@@ -51,6 +52,5 @@
         "X3",
         "X5",
         "ENT_PLUS"
-    ],
-    "defaultDataSource": "Slack Event Collector"
+    ]
 }
