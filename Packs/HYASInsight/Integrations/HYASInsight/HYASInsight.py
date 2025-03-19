@@ -487,8 +487,7 @@ def c2_attribution_lookup_to_markdown(results: list[Dict], title: str) -> str:
 def passive_hash_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
-    # type: list[tuple[str, str, Callable]]
-    keys = [("Domain", "domain", str), ("MD5 Count", "md5_count", str)]
+    keys: list[tuple[str, str, Callable]] = [("Domain", "domain", str), ("MD5 Count", "md5_count", str)]
 
     headers = [k[0] for k in keys]
     for result in results:
@@ -593,7 +592,7 @@ def open_source_indicators_lookup_to_markdown(results: list[Dict], title: str) -
 def device_geo_indicators_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
-    keys = [
+    keys: list[tuple[str, str, Callable]] = [
         ("Date Time", "datetime", str),
         ("Device User Agent", "device_user_agent", str),
         ("Geo Country Alpha 2", "geo_country_alpha_2", str),
@@ -603,11 +602,11 @@ def device_geo_indicators_lookup_to_markdown(results: list[Dict], title: str) ->
         ("Latitude", "latitude", int),
         ("Longitude", "longitude", int),
         ("WiFi BSSID", "wifi_bssid", str),
-    ]  # type: List[Tuple[str, str, Callable]]
+    ]
 
     headers = [k[0] for k in keys]
     for result in results:
-        row = {}  # type: Dict[str, Any]
+        row: dict[str, Any] = {}
         for ckey, rkey, f in keys:
             if rkey in result:
                 row[ckey] = f(result[rkey])
