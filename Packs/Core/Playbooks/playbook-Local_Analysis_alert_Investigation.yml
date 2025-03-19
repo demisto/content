@@ -2460,10 +2460,4 @@ marketplaces:
 - platform
 - marketplacev2
 
-supportedModules:
- - C3
- - X0
- - X1
- - X3
- - X5
- - ENT_PLUS
+
