@@ -1660,7 +1660,7 @@ def list_files_command():
 
 def remove_slashes(content)->str:
     """If the content string contains $\\{<some_value>} the function will
-       remove the slashes and return it like this: ${<some_value>}
+       remove the slashes and returns it like this: ${<some_value>}
     """
     return re.sub(r"\$\\({[^}]+})", r"$\1", content)
 
