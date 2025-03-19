@@ -85,7 +85,7 @@ def to_upper_camel_case(word):
 
 
 def get_host_status():
-    """ Returns the status of the connected hosts. """
+    """ Returns the status of the connected hosts. test """
 
     args = demisto.args()
     token = login()
