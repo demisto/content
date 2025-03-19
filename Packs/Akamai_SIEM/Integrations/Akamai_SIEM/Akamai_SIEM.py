@@ -1206,8 +1206,16 @@ def main():  # pragma: no cover
                                                    multiple_threads=True, data_format="json")
                     demisto.info("Finished executing send_events_to_xsiam, waiting for futures to end.")
                     data_size = 0
+                    should_fail = False
                     for future in concurrent.futures.as_completed(futures):
-                        data_size += future.result()
+                        try:
+                            data_size += future.result()
+                        except Exception as e:
+                            demisto.info(f"Got an error when executing send_events_to_xsiam: {e}")
+                            should_fail = True
+                    if should_fail:
+                        raise DemistoException(
+                            "Encountered an error while sending events to xsiam, will attempt to send all events to xsiam again.")
                     demisto.info(f"Done sending {data_size} events to xsiam."
                                  f"sent {total_events_count} events to xsiam in total during this interval.")
                 set_integration_context({"offset": offset})
