@@ -1725,8 +1725,10 @@ class Client(BaseClient):
                 timeout=timeout,
                 error_handler=self.error_handler,
             )
-        except requests.exceptions.ReadTimeout:
-            demisto.debug('A timeout occurred during the request')
+
+        # Handle response timeout (`ReadTimeout`) or response ending prematurely (`ChunkedEncodingError`)
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
+            demisto.debug(f'An error occurred during the request: {str(e)}. Trying again in the next fetch with a reduced limit.')
             set_new_limit = True
             response = ''
 
