@@ -141,6 +141,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
+      '#error#':
+      - "25"
       '#none#':
       - "15"
     scriptarguments:
@@ -195,7 +197,8 @@ tasks:
       timeout_in_seconds:
         simple: "120"
     separatecontext: false
-    continueonerrortype: ""
+    continueonerror: true
+    continueonerrortype: errorPath
     view: |-
       {
         "position": {
@@ -330,7 +333,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "22"
+      - "25"
       "yes":
       - "16"
     separatecontext: false
@@ -638,6 +641,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
+      '#error#':
+      - "25"
       '#none#':
       - "15"
     scriptarguments:
@@ -664,47 +669,13 @@ tasks:
       timeout_in_seconds:
         simple: "120"
     separatecontext: false
-    continueonerrortype: ""
+    continueonerror: true
+    continueonerrortype: errorPath
     view: |-
       {
         "position": {
           "x": -40,
           "y": 600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 36226619-1561-46d4-8cc6-c52b2fc1044c
-    type: regular
-    task:
-      id: 36226619-1561-46d4-8cc6-c52b2fc1044c
-      version: -1
-      name: Quarantine failed
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      message:
-        simple: Quarantine failed.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 960
         }
       }
     note: false
@@ -768,7 +739,7 @@ tasks:
       {
         "position": {
           "x": -40,
-          "y": -120
+          "y": -109
         }
       }
     note: false
@@ -833,6 +804,46 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 942487c5-0c60-4be2-aa56-4c85d6718a0f
+    type: regular
+    task:
+      id: 942487c5-0c60-4be2-aa56-4c85d6718a0f
+      version: -1
+      name: Manual action needed – file couldn't be quarantined
+      description: |-
+        Dear Analyst,
+
+        The playbook was unable to quarantine the file due to the following possible reasons:
+
+        - The file is not located on the local host.
+        - The endpoint is currently disconnected.
+
+        Please take manual action to quarantine the file.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -844,8 +855,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1905,
-        "width": 1210,
+        "height": 1900,
+        "width": 1211,
         "x": -260,
         "y": -480
       }
