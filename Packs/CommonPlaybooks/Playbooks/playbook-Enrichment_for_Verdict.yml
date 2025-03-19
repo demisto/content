@@ -1559,8 +1559,4 @@ outputs:
 tests:
 - Enrichment for Verdict - Test
 fromversion: 6.6.0
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
+
