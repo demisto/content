@@ -12,16 +12,16 @@ import urllib3
 from CommonServerPython import *  # noqa: F401
 from requests import HTTPError, Response
 
-DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
-EMAIL = demisto.params().get('credentials')['identifier']
-API_KEY = demisto.params().get('credentials')['password']
-FIRST_RUN_TIME_RANGE = int(demisto.params().get('first_run_time_range').strip())
-PROXY = demisto.params().get('proxy')
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+EMAIL = demisto.params().get("credentials")["identifier"]
+API_KEY = demisto.params().get("credentials")["password"]
+FIRST_RUN_TIME_RANGE = int(demisto.params().get("first_run_time_range").strip())
+PROXY = demisto.params().get("proxy")
+if not demisto.params().get("proxy", False):
+    del os.environ["HTTP_PROXY"]
+    del os.environ["HTTPS_PROXY"]
+    del os.environ["http_proxy"]
+    del os.environ["https_proxy"]
 
 
 class EndpointActionType(str, Enum):
@@ -66,7 +66,7 @@ class ActionByCloudAccountResponse:
     result: Literal["SUCCESS", "FAILED", "PENDING"]
 
 
-class Portal():
+class Portal:
     def __init__(self, bearer=None, portal_url="https://services.fieldeffect.net/v1", provider=None, verbose=False):
         self.auth = None
         self.portal_url = portal_url
@@ -80,12 +80,12 @@ class Portal():
             self.auth = {"token": bearer, "expires": datetime.now() + timedelta(days=10 * 365), "refresh": None}
             self.provider_id = self.get_provider_id()
         else:
-            raise ValueError('Bearer is missing')
+            raise ValueError("Bearer is missing")
 
     class AuthScheme:
-        FES = 'FieldEffectAuth'
-        BEARER = 'Bearer'
-        KEY = 'FieldEffectKey'
+        FES = "FieldEffectAuth"
+        BEARER = "Bearer"
+        KEY = "FieldEffectKey"
 
     def try_saved_token(self, token):
         # Return True if this token works, also save this token as the token
@@ -102,8 +102,14 @@ class Portal():
             self.auth = None
             return False
 
-    def paginated_get(self, uri: str,
-                      page_size: int = 500, limit: Optional[int] = None, query: Optional[Dict[str, Any]] = None, **kwargs,):
+    def paginated_get(
+        self,
+        uri: str,
+        page_size: int = 500,
+        limit: Optional[int] = None,
+        query: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ):
         results = []
         query = query or {}
 
@@ -127,7 +133,6 @@ class Portal():
         results.extend(r["items"])
 
         while True:
-
             results_length = len(results)
 
             # break if the limit or total number of results has been exceeded
@@ -147,56 +152,54 @@ class Portal():
         return results
 
     def get(self, uri, query=None, headers=None, remove_subdomain=False, **kwargs):
-        return self._request(uri, method='GET', query=query, headers=headers, remove_subdomain=remove_subdomain,
-                             **kwargs)
+        return self._request(uri, method="GET", query=query, headers=headers, remove_subdomain=remove_subdomain, **kwargs)
 
     def post(self, uri, query=None, headers=None, remove_subdomain=False, **kwargs):
-        return self._request(uri, method='POST', query=query, headers=headers, remove_subdomain=remove_subdomain, **kwargs)
+        return self._request(uri, method="POST", query=query, headers=headers, remove_subdomain=remove_subdomain, **kwargs)
 
-    def _request(self, uri, method='GET', query=None, json=None, data=None, files=None, headers=None,
-                 remove_subdomain=False, **kwargs):
-        all_headers = {
-            'Content-Type': 'application/json'
-        } if json is not None else {}
+    def _request(
+        self, uri, method="GET", query=None, json=None, data=None, files=None, headers=None, remove_subdomain=False, **kwargs
+    ):
+        all_headers = {"Content-Type": "application/json"} if json is not None else {}
 
         if headers is not None:
             all_headers.update(headers)
         if self.auth:
-            auth = '{} {}'.format(self.scheme, self.auth['token'])
-            all_headers.update({'Authorization': auth})
+            auth = "{} {}".format(self.scheme, self.auth["token"])
+            all_headers.update({"Authorization": auth})
 
-        url = f'{self.portal_url}/{uri if len(kwargs) == 0 else uri.format(**kwargs)}'
+        url = f"{self.portal_url}/{uri if len(kwargs) == 0 else uri.format(**kwargs)}"
         if remove_subdomain:
-            url = url.replace('services.', '')
+            url = url.replace("services.", "")
 
         if self.verbose:
-            sys.stdout.write(f'{method} {url} ')
+            sys.stdout.write(f"{method} {url} ")
 
-        if method == 'GET':
+        if method == "GET":
             r = requests.get(url, headers=all_headers, params=query)
-        elif method == 'POST':
+        elif method == "POST":
             r = requests.post(url, headers=all_headers, json=json, data=data, params=query, files=files)
-        elif method == 'PUT':
+        elif method == "PUT":
             r = requests.put(url, headers=all_headers, json=json, data=data, params=query, files=files)
-        elif method == 'DELETE':
+        elif method == "DELETE":
             r = requests.delete(url, headers=all_headers, params=query)
         else:
-            raise AssertionError(f'Unsupported HTTP method: {method}')
+            raise AssertionError(f"Unsupported HTTP method: {method}")
 
         if self.verbose:
-            sys.stdout.write(str(r.status_code) + '\n')
+            sys.stdout.write(str(r.status_code) + "\n")
         if r.status_code >= 400:
             raise HTTPError(r.text)
         return r
 
     def get_provider_id(self):
-        r = self.get('my_providers', auth=self.auth)
+        r = self.get("my_providers", auth=self.auth)
         if not r.json():
-            raise ValueError(f'Account {EMAIL} is not part of any provider')
-        return r.json()[0]['ID']
+            raise ValueError(f"Account {EMAIL} is not part of any provider")
+        return r.json()[0]["ID"]
 
     def find_provider(self, provider):
-        r = self.get('providers', auth=self.auth)
+        r = self.get("providers", auth=self.auth)
         providers = r.json()
         for prov in providers:
             if provider == prov["name"] or provider == prov["ID"]:
@@ -204,11 +207,11 @@ class Portal():
         return None
 
     def get_organizations(self):
-        r = self.get('my_providers/{id}/organizations', auth=self.auth, id=self.provider_id)
+        r = self.get("my_providers/{id}/organizations", auth=self.auth, id=self.provider_id)
         return r.json()
 
     def find_organizations(self, org):
-        r = self.get('my_providers/{id}/organizations', auth=self.auth, id=self.provider_id)
+        r = self.get("my_providers/{id}/organizations", auth=self.auth, id=self.provider_id)
         orgs = r.json()
         matches = []
         for o in orgs:
@@ -221,24 +224,21 @@ class Portal():
         if "query" not in kwargs:
             kwargs["query"] = {}
         kwargs["query"]["limit"] = 500
-        r = self.get('providers/{id}/aros', auth=self.auth, id=self.provider_id, **kwargs).json()
+        r = self.get("providers/{id}/aros", auth=self.auth, id=self.provider_id, **kwargs).json()
         aros.extend(r["items"])
         while len(aros) < r["total"]:
             kwargs["query"]["page"] = r["page"] + 1
-            r = self.get('providers/{id}/aros', auth=self.auth, id=self.provider_id, **kwargs).json()
+            r = self.get("providers/{id}/aros", auth=self.auth, id=self.provider_id, **kwargs).json()
             aros.extend(r["items"])
         return aros
 
     def get_active_response_profile(self, org_id):
-        r = self.get('my_organizations/{org_id}', auth=self.auth, org_id=org_id)
+        r = self.get("my_organizations/{org_id}", auth=self.auth, org_id=org_id)
         org_details = r.json()
-        return org_details.get('active_response_profile', None)
+        return org_details.get("active_response_profile", None)
 
     def transition_aro(self, aro_id, resolution, comment="", is_comment_sensitive=False):
-        request = {
-            "status": "Open",
-            "resolution": resolution
-        }
+        request = {"status": "Open", "resolution": resolution}
         if comment:
             request["comment"] = {"text": comment, "sensitive": is_comment_sensitive}
 
@@ -246,11 +246,7 @@ class Portal():
         return r.json()
 
     def comment_aro(self, aro_id, comment="", is_comment_sensitive=False):
-        request = {
-            "aro_id": aro_id,
-            "sensitive": is_comment_sensitive,
-            "text": comment
-        }
+        request = {"aro_id": aro_id, "sensitive": is_comment_sensitive, "text": comment}
 
         r = self.post("aro_comments", json=request)
         return r.json()
@@ -273,9 +269,9 @@ class Portal():
         :param org_id: Org ID.
         :return: List of organization contacts.
         """
-        r = self.get('organizations/{org_id}', auth=self.auth, org_id=org_id)
+        r = self.get("organizations/{org_id}", auth=self.auth, org_id=org_id)
         org_details = r.json()
-        return org_details.get('contacts', None)
+        return org_details.get("contacts", None)
 
     def list_organization_language(self, org_id: str) -> Dict[str, Any]:
         """
@@ -283,9 +279,9 @@ class Portal():
         :param org_id: Org ID.
         :return: Default Language
         """
-        r = self.get('organizations/{org_id}', auth=self.auth, org_id=org_id)
+        r = self.get("organizations/{org_id}", auth=self.auth, org_id=org_id)
         org_details = r.json()
-        locale = org_details.get('profile', {}).get("default_locale", None)
+        locale = org_details.get("profile", {}).get("default_locale", None)
         return {"default_language": locale}
 
 
@@ -338,7 +334,8 @@ class BrokerClient:
         return response
 
     def endpoint_action_by_aro(
-            self, action_type: EndpointActionType, aro_id: str, to_dataclass: bool = False) -> dict | ActionByHostResponse:
+        self, action_type: EndpointActionType, aro_id: str, to_dataclass: bool = False
+    ) -> dict | ActionByHostResponse:
         response: dict = self._request(
             method="POST",
             path=f"/endpoint/aro/{action_type.value}",
@@ -349,7 +346,8 @@ class BrokerClient:
         return response
 
     def cloud_action_by_aro(
-            self, action_type: CloudActionType, aro_id: str, to_dataclass: bool = False) -> dict | ActionByCloudAccountResponse:
+        self, action_type: CloudActionType, aro_id: str, to_dataclass: bool = False
+    ) -> dict | ActionByCloudAccountResponse:
         response: dict = self._request(
             method="POST",
             path=f"/cloud/aro/{action_type.value}",
@@ -369,7 +367,7 @@ class BrokerClient:
         check_authentication: bool = True,
     ) -> Response:
         if check_authentication is True and not isinstance(self.session.headers.get("Authorization"), str):
-            raise Exception('Must provide API Authorization to use Broker commands.')
+            raise Exception("Must provide API Authorization to use Broker commands.")
 
         host_and_path = f"{self.host}{path}"
 
@@ -377,19 +375,20 @@ class BrokerClient:
             resp: Response = self.session.get(host_and_path, verify=self.verify_ssl, timeout=self.timeout)
         else:
             resp: Response = self.session.post(  # type: ignore[no-redef]
-                host_and_path, json=json, data=data, verify=self.verify_ssl, timeout=self.timeout)
+                host_and_path, json=json, data=data, verify=self.verify_ssl, timeout=self.timeout
+            )
 
         resp.raise_for_status()
         return resp
 
 
-''' Commands '''
+""" Commands """
 
 
 def portal_check():
-    '''
+    """
     Poking to the portal to make sure it's up
-    '''
+    """
     try:
         Portal(bearer=API_KEY)
         return True
@@ -399,7 +398,7 @@ def portal_check():
 
 
 def fetch_incidents(last_run, first_run_time_range):
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get("last_fetch", None)
     aro_time_max = datetime.utcnow() - timedelta(seconds=1)
 
     if last_fetch is None:
@@ -409,9 +408,7 @@ def fetch_incidents(last_run, first_run_time_range):
     assert aro_time_min is not None
 
     p = Portal(bearer=API_KEY)
-    query = {'resolution': 'Unresolved',
-             'since': aro_time_min.strftime(DATE_FORMAT),
-             'until': aro_time_max.strftime(DATE_FORMAT)}
+    query = {"resolution": "Unresolved", "since": aro_time_min.strftime(DATE_FORMAT), "until": aro_time_max.strftime(DATE_FORMAT)}
     aros = p.get_aros(query=query)
 
     incidents = []
@@ -420,28 +417,28 @@ def fetch_incidents(last_run, first_run_time_range):
     # it's required to traverse aros in chronological order (so last element first)
     # to avoid duplicating incidents
     for a in reversed(aros):
-        created_time = dateparser.parse(a['creation_time'])
+        created_time = dateparser.parse(a["creation_time"])
         assert created_time is not None, f'could not parse {a["creation_time"]}'
         if created_time != last_fetch:
             created_time_str = created_time.strftime(DATE_FORMAT)
 
-            if a.get('organization', None):
-                org_name = a['organization'].get('name', 'No org name')
-                org_id = a['organization'].get('ID', None)
+            if a.get("organization", None):
+                org_name = a["organization"].get("name", "No org name")
+                org_id = a["organization"].get("ID", None)
             else:
-                org_name = 'No org name'
+                org_name = "No org name"
                 org_id = None
 
-            aro_type = a.get('type', 'No ARO type')
+            aro_type = a.get("type", "No ARO type")
 
-            aro_title = a.get('title', 'No title')
+            aro_title = a.get("title", "No title")
 
             incident: Dict[str, Any] = {
-                'name': f'''[{org_name}] [{aro_type}] {aro_title}''',
-                'occured': created_time_str,
-                'rawJSON': json.dumps(a)
+                "name": f"""[{org_name}] [{aro_type}] {aro_title}""",
+                "occured": created_time_str,
+                "rawJSON": json.dumps(a),
             }
-            if a.get('severity', None):
+            if a.get("severity", None):
                 # XSOAR mapping
                 # Unknown: 0
                 # Informational: 0.5
@@ -449,39 +446,39 @@ def fetch_incidents(last_run, first_run_time_range):
                 # Medium: 2
                 # High: 3
                 # Critical: 4
-                severity_from_portal = a['severity']
-                if severity_from_portal == 'Informational':
-                    incident['severity'] = 0.5
-                elif severity_from_portal == 'Warning':
-                    incident['severity'] = 1
-                elif severity_from_portal == 'Low':
-                    incident['severity'] = 1
-                elif severity_from_portal == 'Medium':
-                    incident['severity'] = 2
-                elif severity_from_portal == 'High':
-                    incident['severity'] = 3
-                elif severity_from_portal == 'Critical':
-                    incident['severity'] = 4
+                severity_from_portal = a["severity"]
+                if severity_from_portal == "Informational":
+                    incident["severity"] = 0.5
+                elif severity_from_portal == "Warning":
+                    incident["severity"] = 1
+                elif severity_from_portal == "Low":
+                    incident["severity"] = 1
+                elif severity_from_portal == "Medium":
+                    incident["severity"] = 2
+                elif severity_from_portal == "High":
+                    incident["severity"] = 3
+                elif severity_from_portal == "Critical":
+                    incident["severity"] = 4
             else:
-                incident['severity'] = 0
-            if a.get('details', None):
-                incident['details'] = a['details']
-                if a.get('steps', None) and len(a['steps']) > 0:
-                    incident['details'] += '\n\nMitigation Steps\n'
-                    for step in a['steps']:
-                        incident['details'] += f'''- {step['label']}\n'''
+                incident["severity"] = 0
+            if a.get("details", None):
+                incident["details"] = a["details"]
+                if a.get("steps", None) and len(a["steps"]) > 0:
+                    incident["details"] += "\n\nMitigation Steps\n"
+                    for step in a["steps"]:
+                        incident["details"] += f"""- {step['label']}\n"""
                 if org_id:
                     active_response_profile = p.get_active_response_profile(org_id)
                     if active_response_profile:
-                        policy = active_response_profile.get('response_policy')
-                        options = active_response_profile.get('options')
-                        incident['details'] += '\nActive Response Profile\n'
-                        incident['details'] += f'''- Response policy: {policy}\n'''
-                        incident['details'] += f'''- Exclusions/ Modifications: {options}\n'''
+                        policy = active_response_profile.get("response_policy")
+                        options = active_response_profile.get("options")
+                        incident["details"] += "\nActive Response Profile\n"
+                        incident["details"] += f"""- Response policy: {policy}\n"""
+                        incident["details"] += f"""- Exclusions/ Modifications: {options}\n"""
 
             incidents.append(incident)
 
-    next_run = {'last_fetch': aro_time_max.strftime(DATE_FORMAT)}
+    next_run = {"last_fetch": aro_time_max.strftime(DATE_FORMAT)}
 
     return next_run, incidents
 
@@ -489,32 +486,27 @@ def fetch_incidents(last_run, first_run_time_range):
 def get_aros():
     p = Portal(bearer=API_KEY)
 
-    q = demisto.args().get('query', None)
+    q = demisto.args().get("query", None)
 
     if q:
         query = {}  # pragma: no cover
-        for param in q.split('&'):
-            key = param.split('=')[0]
-            value = param.split('=')[1]
+        for param in q.split("&"):
+            key = param.split("=")[0]
+            value = param.split("=")[1]
             query[key] = value
 
-            if 'org' in query:
-                org = p.find_organizations(query['org'])
+            if "org" in query:
+                org = p.find_organizations(query["org"])
                 if not org:
                     raise ValueError(f'Unknown organization named {query["org"]}')
-                del query['org']
-                query['organization_id'] = org[0]['ID']
+                del query["org"]
+                query["organization_id"] = org[0]["ID"]
         aros = p.get_aros(query=query)
     else:
         aros = p.get_aros()
 
-    details = argToBoolean(demisto.args().get('details', 'false'))
-    keys = ['title',
-            'organization',
-            'resolution',
-            'severity',
-            'status',
-            'type']
+    details = argToBoolean(demisto.args().get("details", "false"))
+    keys = ["title", "organization", "resolution", "severity", "status", "type"]
 
     if not details:
         filtered_r = []
@@ -547,139 +539,120 @@ def comment_aro_command():
 
 def list_escalation_contacts_command(portal_instance, args):
     contacts = []
-    headers = ['priority', 'first_name', 'last_name', 'job_title', 'phone_number', 'secondary_phone', 'email', 'notes']
+    headers = ["priority", "first_name", "last_name", "job_title", "phone_number", "secondary_phone", "email", "notes"]
     result = portal_instance.list_escalation_contacts(**args)
-    if result and result[0]['organization_id'] == args['org_id']:
-        for contact in result[0]['escalation_contacts']:
+    if result and result[0]["organization_id"] == args["org_id"]:
+        for contact in result[0]["escalation_contacts"]:
             # Extract the required fields
             contact_info = {
-                'priority': contact.get('priority'),
-                'first_name': contact.get('first_name'),
-                'last_name': contact.get('last_name'),
-                'job_title': contact.get('job_title'),
-                'phone_number': contact.get('phone_number'),
-                'secondary_phone': contact.get('secondary_phone'),
-                'email': contact.get('email'),
-                'notes': contact.get('notes')
+                "priority": contact.get("priority"),
+                "first_name": contact.get("first_name"),
+                "last_name": contact.get("last_name"),
+                "job_title": contact.get("job_title"),
+                "phone_number": contact.get("phone_number"),
+                "secondary_phone": contact.get("secondary_phone"),
+                "email": contact.get("email"),
+                "notes": contact.get("notes"),
             }
             contacts.append(contact_info)
 
-        readable_output = tableToMarkdown('Escalation Contacts', contacts, headers=headers,
-                                          headerTransform=string_to_table_header)
+        readable_output = tableToMarkdown(
+            "Escalation Contacts", contacts, headers=headers, headerTransform=string_to_table_header
+        )
     else:
         readable_output = "No escalation contacts found."
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='FESPortal.Org',
-        outputs_key_field='ID',
-        outputs=contacts
+        readable_output=readable_output, outputs_prefix="FESPortal.Org", outputs_key_field="ID", outputs=contacts
     )
 
 
 def list_organization_key_contacts_command(portal_instance, args):
     contacts = []
-    headers = ['first_name', 'last_name', 'phone_number', 'email', 'type']
+    headers = ["first_name", "last_name", "phone_number", "email", "type"]
     result = portal_instance.list_organization_contacts(**args)
     if result:
         for contact in result:
             # Extract the required fields
-            if contact['type'] in ["Administrative", "Technical - Primary", "Technical - Secondary", "Primary", "Technical"]:
-                details_key = contact.get('contact_info') or contact.get('user')  # Data can be in either key.
+            if contact["type"] in ["Administrative", "Technical - Primary", "Technical - Secondary", "Primary", "Technical"]:
+                details_key = contact.get("contact_info") or contact.get("user")  # Data can be in either key.
                 contact_info = {
-                    'first_name': details_key.get('first_name'),
-                    'last_name': details_key.get('last_name'),
-                    'phone_number': details_key.get('phone_number'),
-                    'email': details_key.get('email'),
-                    'type': contact['type']
-
+                    "first_name": details_key.get("first_name"),
+                    "last_name": details_key.get("last_name"),
+                    "phone_number": details_key.get("phone_number"),
+                    "email": details_key.get("email"),
+                    "type": contact["type"],
                 }
                 contacts.append(contact_info)
-        readable_output = tableToMarkdown('Key Contacts', contacts, headers=headers, headerTransform=string_to_table_header)
+        readable_output = tableToMarkdown("Key Contacts", contacts, headers=headers, headerTransform=string_to_table_header)
     else:
         readable_output = "No key contacts found."
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='FESPortal.Org',
-        outputs_key_field='ID',
-        outputs=contacts
+        readable_output=readable_output, outputs_prefix="FESPortal.Org", outputs_key_field="ID", outputs=contacts
     )
 
 
 def list_organization_language_command(portal_instance, args):
     result = portal_instance.list_organization_language(**args)
     if result:
-        readable_output = tableToMarkdown('Default Organization Language', result, headerTransform=string_to_table_header)
+        readable_output = tableToMarkdown("Default Organization Language", result, headerTransform=string_to_table_header)
     else:
         readable_output = "No default language found."
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='FESPortal.Org',
-        outputs_key_field='ID',
-        outputs=result
-    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="FESPortal.Org", outputs_key_field="ID", outputs=result)
 
 
-''' Broker Commands '''
+""" Broker Commands """
 
 
 def ping_broker_command(broker_instance: BrokerClient):
     result = broker_instance.ping()
-    if 'pong' in result:
-        readable_output = '## Success'
+    if "pong" in result:
+        readable_output = "## Success"
     else:
-        readable_output = f'Failure - {result}.'
+        readable_output = f"Failure - {result}."
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='FESBroker.APIStatus',
-        outputs_key_field='',
-        outputs=result
+        readable_output=readable_output, outputs_prefix="FESBroker.APIStatus", outputs_key_field="", outputs=result
     )
 
 
 def list_organizations_broker_command(broker_instance: BrokerClient):
     result = broker_instance.organizations()
     if result:
-        readable_output = tableToMarkdown('Organizations', result)
+        readable_output = tableToMarkdown("Organizations", result)
     else:
         readable_output = "No broker organizations found."
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='FESBroker.Org',
-        outputs_key_field='ID',
-        outputs=result
-    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="FESBroker.Org", outputs_key_field="ID", outputs=result)
 
 
 def endpoint_action_by_host_broker_command(broker_instance: BrokerClient, args):
     action_type = EndpointActionType[args["action_type"]]
     result = broker_instance.endpoint_action_by_host(action_type, args["org_id"], args["host_identifier"])
     return CommandResults(
-        readable_output=tableToMarkdown('Command Result - Success', result),
-        outputs_prefix='FESBroker.Action',
-        outputs_key_field='agent_uuid',
-        outputs=result
+        readable_output=tableToMarkdown("Command Result - Success", result),
+        outputs_prefix="FESBroker.Action",
+        outputs_key_field="agent_uuid",
+        outputs=result,
     )
 
 
 def endpoint_action_by_aro_broker_command(broker_instance: BrokerClient, args):
     action_type = EndpointActionType[args["action_type"]]
-    result = broker_instance.endpoint_action_by_aro(action_type, args['aro_id'])
+    result = broker_instance.endpoint_action_by_aro(action_type, args["aro_id"])
     return CommandResults(
-        readable_output=tableToMarkdown('Command Result - Success', result),
-        outputs_prefix='FESBroker.Action',
-        outputs_key_field='agent_uuid',
-        outputs=result
+        readable_output=tableToMarkdown("Command Result - Success", result),
+        outputs_prefix="FESBroker.Action",
+        outputs_key_field="agent_uuid",
+        outputs=result,
     )
 
 
 def cloud_action_by_aro_broker_command(broker_instance: BrokerClient, args):
     action_type = CloudActionType[args["action_type"]]
-    result = broker_instance.cloud_action_by_aro(action_type, args['aro_id'])
+    result = broker_instance.cloud_action_by_aro(action_type, args["aro_id"])
     return CommandResults(
-        readable_output=tableToMarkdown('Command Result', result),
-        outputs_prefix='FESBroker.Action',
-        outputs_key_field='action_id',
-        outputs=result
+        readable_output=tableToMarkdown("Command Result", result),
+        outputs_prefix="FESBroker.Action",
+        outputs_key_field="action_id",
+        outputs=result,
     )
 
 
@@ -687,11 +660,11 @@ def main():
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    broker_url = params.get('broker_url', '')
+    broker_url = params.get("broker_url", "")
     return_error_msg = None
-    demisto.info(f'{command} is called')
+    demisto.info(f"{command} is called")
 
-    if broker_url and (command.startswith("cov-mgsec-broker") or command == 'test-module'):
+    if broker_url and (command.startswith("cov-mgsec-broker") or command == "test-module"):
         # Initialize Broker client only if required, allowing the Portal commands to still function if the Broker
         # connection is down or unwanted.
         broker_instance = BrokerClient(host=broker_url, api_key=API_KEY)
@@ -702,97 +675,80 @@ def main():
     portal_instance = Portal(bearer=API_KEY)
 
     try:
-        if command == 'test-module':
+        if command == "test-module":
             portal_result = portal_check()
             if broker_url:
                 broker_result = bool(broker_instance.ping() == "pong")
                 if broker_result is True and portal_result is True:
-                    return_results('ok')
+                    return_results("ok")
             elif portal_result is True:
-                return_results('ok')
+                return_results("ok")
 
-        elif command == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(
-                last_run=demisto.getLastRun(),
-                first_run_time_range=FIRST_RUN_TIME_RANGE)
+        elif command == "fetch-incidents":
+            next_run, incidents = fetch_incidents(last_run=demisto.getLastRun(), first_run_time_range=FIRST_RUN_TIME_RANGE)
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif command == 'cov-mgsec-get-aro':
+        elif command == "cov-mgsec-get-aro":
             r = get_aros()
             if r:
-                readable_output = tableToMarkdown('AROs', r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output = tableToMarkdown("AROs", r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                readable_output = 'No AROs found'
+                readable_output = "No AROs found"
 
             results = CommandResults(
-                outputs_prefix='FESPortal.ARO',
-                outputs_key_field='ID',
-                outputs=r,
-                readable_output=readable_output
+                outputs_prefix="FESPortal.ARO", outputs_key_field="ID", outputs=r, readable_output=readable_output
             )
             return_results(results)
-        elif command == 'cov-mgsec-list-org':
+        elif command == "cov-mgsec-list-org":
             r = list_organizations()
             if r:
-                readable_output = tableToMarkdown('Organizations', r, removeNull=True,
-                                                  headerTransform=string_to_table_header)
+                readable_output = tableToMarkdown("Organizations", r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                readable_output = 'No organizations found'
+                readable_output = "No organizations found"
 
             results = CommandResults(
-                outputs_prefix='FESPortal.Org',
-                outputs_key_field='ID',
-                outputs=r,
-                readable_output=readable_output
+                outputs_prefix="FESPortal.Org", outputs_key_field="ID", outputs=r, readable_output=readable_output
             )
             return_results(results)
-        elif command == 'cov-mgsec-transition-aro':
+        elif command == "cov-mgsec-transition-aro":
             r = transition_aro_command()
             if r:
-                readable_output = tableToMarkdown('ARO', r, removeNull=True,
-                                                  headerTransform=string_to_table_header)
+                readable_output = tableToMarkdown("ARO", r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                readable_output = 'Error transitioning ARO.'
+                readable_output = "Error transitioning ARO."
 
             results = CommandResults(
-                outputs_prefix='FESPortal.Org',
-                outputs_key_field='ID',
-                outputs=r,
-                readable_output=readable_output
+                outputs_prefix="FESPortal.Org", outputs_key_field="ID", outputs=r, readable_output=readable_output
             )
             return_results(results)
-        elif command == 'cov-mgsec-comment-aro':
+        elif command == "cov-mgsec-comment-aro":
             r = comment_aro_command()
             if r:
-                readable_output = tableToMarkdown('ARO', r, removeNull=True,
-                                                  headerTransform=string_to_table_header)
+                readable_output = tableToMarkdown("ARO", r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                readable_output = 'Error commenting on ARO.'
+                readable_output = "Error commenting on ARO."
 
             results = CommandResults(
-                outputs_prefix='FESPortal.Org',
-                outputs_key_field='ID',
-                outputs=r,
-                readable_output=readable_output
+                outputs_prefix="FESPortal.Org", outputs_key_field="ID", outputs=r, readable_output=readable_output
             )
             return_results(results)
-        elif command == 'cov-mgsec-list-escalation-contacts':
+        elif command == "cov-mgsec-list-escalation-contacts":
             return_results(list_escalation_contacts_command(portal_instance, args))
-        elif command == 'cov-mgsec-list-key-contacts':
+        elif command == "cov-mgsec-list-key-contacts":
             return_results(list_organization_key_contacts_command(portal_instance, args))
-        elif command == 'cov-mgsec-list-language':
+        elif command == "cov-mgsec-list-language":
             return_results(list_organization_language_command(portal_instance, args))
-        elif command == 'cov-mgsec-broker-ping':
+        elif command == "cov-mgsec-broker-ping":
             return_results(ping_broker_command(broker_instance))
-        elif command == 'cov-mgsec-broker-list-org':
+        elif command == "cov-mgsec-broker-list-org":
             return_results(list_organizations_broker_command(broker_instance))
-        elif command == 'cov-mgsec-broker-endpoint-action-by-host':
+        elif command == "cov-mgsec-broker-endpoint-action-by-host":
             return_results(endpoint_action_by_host_broker_command(broker_instance, args))
-        elif command == 'cov-mgsec-broker-endpoint-action-by-aro':
+        elif command == "cov-mgsec-broker-endpoint-action-by-aro":
             return_results(endpoint_action_by_aro_broker_command(broker_instance, args))
-        elif command == 'cov-mgsec-broker-cloud-action-by-aro':
+        elif command == "cov-mgsec-broker-cloud-action-by-aro":
             return_results(cloud_action_by_aro_broker_command(broker_instance, args))
     except HTTPError as e:
         demisto.error(traceback.format_exc())
@@ -801,15 +757,16 @@ def main():
             http_text = e.response.text  # Try to extract a text response if it exists.
         except AttributeError:
             http_text = e.response
-        return_error_msg = (f'Failed to execute {command} command with HTTP response: {str(http_text)}.'
-                            f'\nStack trace: {traceback.format_exc()}')
+        return_error_msg = (
+            f"Failed to execute {command} command with HTTP response: {http_text!s}.\nStack trace: {traceback.format_exc()}"
+        )
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error_msg = f'Failed to execute {command} command. Error: {str(e)}.\nStack trace: {traceback.format_exc()}'
+        return_error_msg = f"Failed to execute {command} command. Error: {e!s}.\nStack trace: {traceback.format_exc()}"
 
     if return_error_msg:
         return_error(return_error_msg)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -1,8 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *
-import urllib3
 from urllib.parse import unquote, urlencode
 
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -31,12 +31,7 @@ class Client(BaseClient):
 
 
 def get_events(
-    client: Client,
-    fetch_type: str,
-    fetch_limit: int,
-    last_run: dict = {},
-    start_date: str = "",
-    end_date: str = ""
+    client: Client, fetch_type: str, fetch_limit: int, last_run: dict = {}, start_date: str = "", end_date: str = ""
 ) -> tuple:
     """
     Fetches events of the specified type (ALERTS or AUDIT) with support for pagination and deduplication.
@@ -59,9 +54,7 @@ def get_events(
         - Handles pagination, deduplication, and enforces fetch limits.
         - Builds the next run metadata to resume fetching seamlessly.
     """
-    start_date, end_date = calculate_fetch_dates(
-        start_date, last_run.get(fetch_type, {}), end_date
-    )
+    start_date, end_date = calculate_fetch_dates(start_date, last_run.get(fetch_type, {}), end_date)
     last_run = last_run.get(fetch_type, {})
     demisto.debug(f"start fetching {fetch_type} type. with last_run: {last_run}")
 
@@ -82,17 +75,20 @@ def get_events(
         if next_page_url := response.get("_links", {}).get("next", {}).get("href"):
             has_next = True
         current_batch_events = response.get(RESPONSE_MAPPING_KEY.get(fetch_type), [])
-        deduplicate_events(
-            current_batch_events, params.get("startDate"), DATE_KEYS.get(fetch_type, "")
-        )
+        deduplicate_events(current_batch_events, params.get("startDate"), DATE_KEYS.get(fetch_type, ""))
         fetched_events.extend(current_batch_events[pagination_offset:])
         if len(fetched_events) >= fetch_limit:
             demisto.debug(f"We reached the fetch limit . limit is: {fetch_limit}. received: {len(fetched_events)} events.")
             fetched_events = fetched_events[:fetch_limit]
-            return fetched_events, prepare_next_run(fetch_type=fetch_type, fetch_limit=fetch_limit,
-                                                    last_batch_events=current_batch_events, fetched_events=fetched_events,
-                                                    request_url=request_url, previous_offset=last_run.get("offset", 0),
-                                                    last_run=last_run)
+            return fetched_events, prepare_next_run(
+                fetch_type=fetch_type,
+                fetch_limit=fetch_limit,
+                last_batch_events=current_batch_events,
+                fetched_events=fetched_events,
+                request_url=request_url,
+                previous_offset=last_run.get("offset", 0),
+                last_run=last_run,
+            )
         pagination_offset = 0
     # Events are fetched in descending order by date.
     # For new fetches (not paginated), use the latest event's date as the "last_fetch".
@@ -100,11 +96,7 @@ def get_events(
     last_fetch = (
         last_run.get("last_fetch")
         if last_run.get("next_page")
-        else (
-            fetched_events[0].get(DATE_KEYS.get(fetch_type, ""))
-            if fetched_events
-            else params.get("last_fetch")
-        )
+        else (fetched_events[0].get(DATE_KEYS.get(fetch_type, "")) if fetched_events else params.get("last_fetch"))
     )
     return fetched_events, {"last_fetch": last_fetch}
 
@@ -116,7 +108,7 @@ def prepare_next_run(
     fetched_events: list[dict],
     request_url: str,
     previous_offset: int,
-    last_run: dict
+    last_run: dict,
 ) -> dict:
     """
     Calculates metadata for the next fetch, including the last fetch timestamp, next page URL, and pagination offset.
@@ -139,30 +131,16 @@ def prepare_next_run(
     previous_last_date = last_run.get("last_fetch", "")
 
     pagination_offset = fetch_limit % len(last_batch_events)
-    next_page_url = (
-        request_url if fetch_type == AUDIT or pagination_offset else previous_page_url
-    )
-    is_paginated_fetch = is_fetch_paginated(
-        fetch_type, next_page_url, request_url, previous_page_url
-    )
+    next_page_url = request_url if fetch_type == AUDIT or pagination_offset else previous_page_url
+    is_paginated_fetch = is_fetch_paginated(fetch_type, next_page_url, request_url, previous_page_url)
     return {
-        "last_fetch": (
-            previous_last_date
-            if previous_page_url
-            else fetched_events[0].get(DATE_KEYS.get(fetch_type, ""))
-        ),
+        "last_fetch": (previous_last_date if previous_page_url else fetched_events[0].get(DATE_KEYS.get(fetch_type, ""))),
         "next_page": next_page_url,
-        "offset": (
-            pagination_offset
-            if is_paginated_fetch
-            else pagination_offset + previous_offset
-        ),
+        "offset": (pagination_offset if is_paginated_fetch else pagination_offset + previous_offset),
     }
 
 
-def is_fetch_paginated(
-    fetch_type: str, next_page_url: str, request_url: str, previous_page_url: str
-) -> bool:
+def is_fetch_paginated(fetch_type: str, next_page_url: str, request_url: str, previous_page_url: str) -> bool:
     """
     Determines whether the fetch process is paginated between fetches.
 
@@ -205,16 +183,12 @@ def deduplicate_events(events: list, start_date: Any, date_key: str) -> None:
     events[:] = [
         event
         for event in events
-        if (event_date := arg_to_datetime(event.get(date_key)))
-        and start_date
-        and event_date > start_date
+        if (event_date := arg_to_datetime(event.get(date_key))) and start_date and event_date > start_date
     ]
     demisto.debug(f"got {len(events)} after deduplication")
 
 
-def calculate_fetch_dates(
-    start_date: str, last_run: dict, end_date: str = ""
-) -> tuple[str, str]:
+def calculate_fetch_dates(start_date: str, last_run: dict, end_date: str = "") -> tuple[str, str]:
     """
     Calculates the start and end dates for fetching events.
 
@@ -236,11 +210,7 @@ def calculate_fetch_dates(
     """
     now_utc_time = get_current_time()
     # argument > last run > current time
-    start_date = (
-        start_date
-        or last_run.get("last_fetch")
-        or ((now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
-    )
+    start_date = start_date or last_run.get("last_fetch") or ((now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
     # argument > current time
     end_date = end_date or now_utc_time.strftime(DATE_FORMAT)
     return start_date, end_date
@@ -290,12 +260,8 @@ def validate_start_and_end_dates(args):
         start_date_str = start_date.strftime(DATE_FORMAT)
     if end_date := arg_to_datetime(args.get("end_date")):
         end_date_str = end_date.strftime(DATE_FORMAT)
-    if (end_date and not start_date) or (
-        start_date and end_date and start_date >= end_date
-    ):
-        raise ValueError(
-            "Either the start date is missing or it is greater than the end date. Please provide valid dates."
-        )
+    if (end_date and not start_date) or (start_date and end_date and start_date >= end_date):
+        raise ValueError("Either the start date is missing or it is greater than the end date. Please provide valid dates.")
     return start_date_str, end_date_str
 
 
@@ -312,10 +278,14 @@ def get_events_command(client: Client, args: dict) -> tuple[List[Dict], CommandR
     alerts = [item for item in all_events if "id" in item]
     events = [item for item in all_events if "id" not in item]
 
-    alerts_table = tableToMarkdown(name="Test Alerts", t=alerts, headers=["SOURCE_LOG_TYPE", "alertType", "startDate", "id",
-                                                                          "duration", "suppressed", "meta", "violationCount"])
-    event_table = tableToMarkdown("Test Events", events, ["SOURCE_LOG_TYPE", "aid", "date", "event", "ipAddress",
-                                                          "uid", "user", "accountGroupName"])
+    alerts_table = tableToMarkdown(
+        name="Test Alerts",
+        t=alerts,
+        headers=["SOURCE_LOG_TYPE", "alertType", "startDate", "id", "duration", "suppressed", "meta", "violationCount"],
+    )
+    event_table = tableToMarkdown(
+        "Test Events", events, ["SOURCE_LOG_TYPE", "aid", "date", "event", "ipAddress", "uid", "user", "accountGroupName"]
+    )
 
     return all_events, CommandResults(readable_output=f"{alerts_table}\n{event_table}", raw_response=all_events)
 
@@ -380,9 +350,7 @@ def add_time_to_events(events: List[Dict] | None):
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(
-                arg=event.get("startDate") or event.get("date")
-            )
+            create_time = arg_to_datetime(arg=event.get("startDate") or event.get("date"))
             event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
@@ -419,20 +387,13 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get("insecure", True)
 
     proxy = params.get("proxy", False)
-    max_alerts_per_fetch = (
-        arg_to_number(params.get("max_alerts_per_fetch")) or DEFAULT_MAX_FETCH_ALERT
-    )
-    max_events_per_fetch = (
-        arg_to_number(params.get("max_events_per_fetch"))
-        or DEFAULT_MAX_FETCH_AUDIT_EVENTS
-    )
+    max_alerts_per_fetch = arg_to_number(params.get("max_alerts_per_fetch")) or DEFAULT_MAX_FETCH_ALERT
+    max_events_per_fetch = arg_to_number(params.get("max_events_per_fetch")) or DEFAULT_MAX_FETCH_AUDIT_EVENTS
 
     demisto.debug(f"Command being called is {command}")
     try:
         headers = {"Authorization": f"Bearer {api_key}"}
-        client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if command == "test-module":
             return_results(test_module(client))
@@ -458,7 +419,7 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """
