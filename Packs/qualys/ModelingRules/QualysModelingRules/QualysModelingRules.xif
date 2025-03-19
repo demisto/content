@@ -27,6 +27,7 @@ filter
     entity_name = if( Details ~= "\"entityName\":\"([^\"]+)" , arraystring(regextract(Details, "\"entityName\":\"([^\"]+)"), ""), null),
     format = trim(if( Details ~= "FORMAT:([^\s]+)" , arraystring(regextract(Details, "FORMAT:([^\s]+)"), ""), null), ","),
     function = if( Details ~= "Function=\[([^\]]+)" , arraystring(regextract(Details, "Function=\[([^\]]+)"), ""), null),
+    id_report = if( Details ~= "ID:([^\s]+)" , arraystring(regextract(Details, "ID:([^\s]+)"), ""), null),
     modules = if( Details ~= "\"modules\":\"([^\"]+)" , arraystring(regextract(Details, "\"modules\":\"([^\"]+)"), ""), null),
     name = if( Details ~= "\"name\":\"([^\"]+)" , arraystring(regextract(Details, "\"name\":\"([^\"]+)"), ""), null),
     operation = if( Details ~=  "\"operation\":\"([^\"]+)", arraystring(regextract(Details, "\"operation\":\"([^\"]+)"), ""), null),
@@ -40,6 +41,7 @@ filter
 | alter
     xdm.observer.action = Action,
     xdm.observer.type = modules,
+    xdm.event.id = coalesce(req_id, id_report),
     xdm.event.original_event_type = coalesce(concat(Module, " - ", Action), entity_name),
     xdm.event.type = event_type,
     xdm.event.description = Details,
