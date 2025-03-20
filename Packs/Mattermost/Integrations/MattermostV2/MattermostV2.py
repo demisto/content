@@ -1724,7 +1724,11 @@ def list_group_members_command(client: HTTPClient, args: dict[str, Any]) -> Comm
     group_id = args.get('group_id', '')
     page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE))
+    limit = arg_to_number(args.get('limit', ''))
     member_details = {}
+    if limit:
+        page = DEFAULT_PAGE_NUMBER
+        page_size = limit
 
     params = {'page': page, 'per_page': page_size}
     member_details = client.list_group_members_request(group_id, params)

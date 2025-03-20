@@ -591,6 +591,9 @@ script:
       description: The page number to retrieve. Default value is 0.
     - name: page_size
       description: The size of the page to retrieve. Default value is 50.
+    - name: limit
+      description: How many results to retrieve. Will override the page and page_size
+        arguments if given.
     outputs:
     - contextPath: Mattermost.Groups.id
       description: The ID of the group.
