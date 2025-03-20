@@ -292,7 +292,7 @@ def main() -> None:
                         message = error.get("result", {})["message"]
                 except Exception:
                     message = (
-                        "Unknown error. Please verify that the API" f" URL and Token are correctly configured. RAW Error: {err}"
+                        f"Unknown error. Please verify that the API URL and Token are correctly configured. RAW Error: {err}"
                     )
                 raise DemistoException(f"Failed due to - {message}")
 

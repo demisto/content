@@ -43,7 +43,7 @@ def main():
         res = demisto.executeCommand("createList", {"listName": model_name, "listData": file_content["modelData"]})
     else:
         return_error(
-            f"Unsupported *modelStoreType* value received ({storing_method})." ' *modelStoreType* should be "mlModel" or "list"'
+            f'Unsupported *modelStoreType* value received ({storing_method}). *modelStoreType* should be "mlModel" or "list"'
         )
 
     if is_error(res):

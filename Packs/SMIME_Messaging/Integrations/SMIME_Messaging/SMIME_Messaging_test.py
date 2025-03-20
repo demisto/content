@@ -83,7 +83,7 @@ def test_sign():
 
     sign = sign_email(client, {"message_body": message_body}).readable_output
     assert (
-        'MIME-Version: 1.0\nContent-Type: multipart/signed; protocol="application/x-pkcs7-signature"; ' 'micalg="sha1";' in sign
+        'MIME-Version: 1.0\nContent-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha1";' in sign
     )
 
 

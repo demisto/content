@@ -65,7 +65,7 @@ def test_fetch_indicators(requests_mock):
 
     mock_socradar_api_key = "APIKey"
     mock_response = util_load_json("test_data/fetch_indicators_response.json")
-    suffix = f"threat/intelligence/socradar_collections?key={mock_socradar_api_key}" f"&collection_names=MockCollectionName"
+    suffix = f"threat/intelligence/socradar_collections?key={mock_socradar_api_key}&collection_names=MockCollectionName"
     requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{suffix}", json=mock_response)
 
     client = Client(
@@ -93,7 +93,7 @@ def test_fetch_indicators_handles_error(requests_mock):
 
     mock_socradar_api_key = "APIKey"
     mock_response = util_load_json("test_data/fetch_indicators_response_error.json")
-    suffix = f"threat/intelligence/socradar_collections?key={mock_socradar_api_key}" f"&collection_names=MockCollectionName"
+    suffix = f"threat/intelligence/socradar_collections?key={mock_socradar_api_key}&collection_names=MockCollectionName"
     requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{suffix}", json=mock_response)
 
     client = Client(
@@ -116,7 +116,7 @@ def test_get_indicators_command(requests_mock):
 
     mock_socradar_api_key = "APIKey"
     mock_response = util_load_json("test_data/get_indicators_response.json")
-    suffix = f"threat/intelligence/socradar_collections?key={mock_socradar_api_key}" f"&collection_names=MockCollectionName"
+    suffix = f"threat/intelligence/socradar_collections?key={mock_socradar_api_key}&collection_names=MockCollectionName"
     requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{suffix}", json=mock_response)
 
     client = Client(
@@ -147,7 +147,7 @@ def test_get_indicators_command_handles_error(requests_mock):
 
     mock_socradar_api_key = "APIKey"
     mock_response = util_load_json("test_data/get_indicators_response_error.json")
-    suffix = f"threat/intelligence/socradar_collections?key={mock_socradar_api_key}" f"&collection_names=MockCollectionName"
+    suffix = f"threat/intelligence/socradar_collections?key={mock_socradar_api_key}&collection_names=MockCollectionName"
     requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{suffix}", json=mock_response)
 
     client = Client(

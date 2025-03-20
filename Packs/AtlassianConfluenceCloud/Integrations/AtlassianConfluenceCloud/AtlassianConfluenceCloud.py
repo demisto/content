@@ -20,7 +20,7 @@ LOGGING_INTEGRATION_NAME = "[Atlassian Confluence Cloud]"
 HTTP_ERROR = {
     401: "An error occurred while validating the credentials, please check the username or password.",
     404: "The resource cannot be found.",
-    500: "The server encountered an internal error for Atlassian Confluence Cloud " "and was unable to complete your request.",
+    500: "The server encountered an internal error for Atlassian Confluence Cloud and was unable to complete your request.",
 }
 URL_SUFFIX = {
     "CONTENT_SEARCH": "/wiki/rest/api/content/search",
@@ -65,7 +65,7 @@ MESSAGES = {
     "'permanent delete' or 'permanent delete draft'.",
     "INVALID_TITLE_LENGTH": "Title cannot be longer than 255 characters.",
     "INVALID_SPACE_NAME_LENGTH": "Space name cannot be longer than 200 characters.",
-    "INVALID_SPACE_KEY": "Space Key cannot be longer than 255 characters and should contain alphanumeric characters " "only.",
+    "INVALID_SPACE_KEY": "Space Key cannot be longer than 255 characters and should contain alphanumeric characters only.",
     "PRIVATE_SPACE_PERMISSION": "Permission can not be granted for a private space.",
 }
 OUTPUT_PREFIX = {
@@ -523,7 +523,7 @@ def prepare_hr_for_content_search(contents: list, url_prefix: str) -> str:
     for content in contents:
         hr_record = {
             "ID": content.get("id", ""),
-            "Title": f"[{content.get('title', '')}]" f"({url_prefix}{content.get('_links', {}).get('webui', '')})",
+            "Title": f"[{content.get('title', '')}]({url_prefix}{content.get('_links', {}).get('webui', '')})",
             "Type": content.get("type", ""),
             "Status": content.get("status", ""),
             "Space Name": content.get("space", {}).get("name", ""),
@@ -558,7 +558,7 @@ def validate_delete_content_args(args: dict[str, str]):
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("content_id"))
 
     status = args.get("deletion_type", "").lower()
-    if status and status not in LEGAL_DELETION_TYPES.keys():
+    if status and status not in LEGAL_DELETION_TYPES:
         raise ValueError(MESSAGES["INVALID_DELETION_TYPE"])
 
 
@@ -930,7 +930,7 @@ def prepare_hr_for_space_list(spaces: list[dict[str, Any]], url_prefix: str) -> 
         hr_record = {
             "ID": space.get("id", ""),
             "Space Key": space.get("key", ""),
-            "Name": f"[{space.get('name', '')}]" f"({url_prefix}{space.get('_links', {}).get('webui', '')})",
+            "Name": f"[{space.get('name', '')}]({url_prefix}{space.get('_links', {}).get('webui', '')})",
             "Type": space.get("type", ""),
             "Status": space.get("status", ""),
             "Created By": space.get("history", {}).get("createdBy", {}).get("displayName", ""),

@@ -18,7 +18,7 @@ def client(mocker):
     client = Client(base_url="http://base_url", verify=False, client_id="client_id", client_secret="client_secret", proxy=False)
 
     mocker.patch.object(Client, "get_access_token", return_value="access_token")
-    yield client
+    return client
 
 
 @pytest.fixture()

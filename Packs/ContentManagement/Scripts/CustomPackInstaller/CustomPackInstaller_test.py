@@ -85,4 +85,4 @@ def test_install_custom_pack_no_specify_instance(mocker):
 
     _, _ = install_custom_pack("Pack1", "true", "true")
     execute_command_args = execute_command_mock.call_args_list[0][0]
-    assert "using" not in execute_command_args[1].keys()
+    assert "using" not in execute_command_args[1]

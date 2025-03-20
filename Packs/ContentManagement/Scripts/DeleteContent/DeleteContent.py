@@ -586,7 +586,7 @@ def get_and_delete_entities(
                 if status:
                     successfully_deleted.append(id_and_name)
                 else:
-                    demisto.debug(f"Did not find or could not delete {entity_api.name} with " f"id {entity_id} in xsoar.")
+                    demisto.debug(f"Did not find or could not delete {entity_api.name} with id {entity_id} in xsoar.")
                     not_deleted.append(id_and_name)
             else:
                 not_deleted.append({"id": entity_id, "name": entity_id})
@@ -718,7 +718,7 @@ def main():  # pragma: no cover
         return_results(get_and_delete_needed_ids(demisto.args()))
 
     except Exception as e:
-        return_error(f"Error occurred while deleting contents.\n{e}" f"\n{traceback.format_exc()}")
+        return_error(f"Error occurred while deleting contents.\n{e}\n{traceback.format_exc()}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

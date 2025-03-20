@@ -54,7 +54,7 @@ class TestsThreatExchangeV2:
         {STATUS: ThreatExchangeV2Status.NON_MALICIOUS},
     ]  # No malicious statuses, Suspicious statuses <= 1, non_malicious statuses <= 50%
     not_suspicious_test_err_msg = (
-        "No malicious statuses, Suspicious statuses <= 1, non_malicious statuses <= 50% - " "DBot Score should be 0"
+        "No malicious statuses, Suspicious statuses <= 1, non_malicious statuses <= 50% - DBot Score should be 0"
     )
 
     non_malicious_test_input = [
@@ -63,7 +63,7 @@ class TestsThreatExchangeV2:
         {STATUS: ThreatExchangeV2Status.UNKNOWN},
         {STATUS: ThreatExchangeV2Status.NON_MALICIOUS},
     ]  # No malicious or suspicious statuses, non_malicious statuses > 50%
-    non_malicious_test_err_msg = "No malicious or suspicious statuses, non_malicious statuses > 50% - " "DBot Score should be 1"
+    non_malicious_test_err_msg = "No malicious or suspicious statuses, non_malicious statuses > 50% - DBot Score should be 1"
 
     unknown_test_input = [
         {STATUS: ThreatExchangeV2Status.UNKNOWN},
@@ -83,7 +83,7 @@ class TestsThreatExchangeV2:
         {STATUS: ThreatExchangeV2Status.UNKNOWN},
     ]
     four_engines_three_positive_test_err_msg = (
-        "Number of engines should be 4, number of positive (Malicious)" " detections should be 3"
+        "Number of engines should be 4, number of positive (Malicious) detections should be 3"
     )
 
     four_engines_two_positive_test_input = [
@@ -93,7 +93,7 @@ class TestsThreatExchangeV2:
         {STATUS: ThreatExchangeV2Status.MALICIOUS},
     ]
     four_engines_two_positive_test_err_msg = (
-        "Number of engines should be 4, number of positive (Malicious)" " detections should be 2"
+        "Number of engines should be 4, number of positive (Malicious) detections should be 2"
     )
 
     four_engines_no_positive_test_input = [
@@ -103,7 +103,7 @@ class TestsThreatExchangeV2:
         {STATUS: ThreatExchangeV2Status.NON_MALICIOUS},
     ]
     four_engines_no_positive_test_err_msg = (
-        "Number of engines should be 4, number of positive (Malicious) " "detections should be 0"
+        "Number of engines should be 4, number of positive (Malicious) detections should be 0"
     )
 
     # Inputs for test_flatten_outputs_paging:

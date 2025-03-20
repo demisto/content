@@ -37,7 +37,7 @@ XDR_INCIDENT_FIELDS = {
         "xsoar_field_name": "xdrresolvecomment",
     },
     "manual_severity": {
-        "description": "Incident severity assigned by the user. " "This does not affect the calculated severity low medium high",
+        "description": "Incident severity assigned by the user. This does not affect the calculated severity low medium high",
         "xsoar_field_name": "severity",
     },
     "close_reason": {"description": "The close reason of the XSOAR incident", "xsoar_field_name": "closeReason"},
@@ -228,7 +228,7 @@ class Client(CoreClient):
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the XDR server when the client clock is not in sync to the server
-                raise DemistoException(f"{err!s} please validate that your both " f"XSOAR and XDR server clocks are in sync")
+                raise DemistoException(f"{err!s} please validate that your both XSOAR and XDR server clocks are in sync")
             else:
                 raise
 
@@ -566,7 +566,7 @@ def update_incident_command(client, args):
 
     if assigned_user_pretty_name and not assigned_user_mail:
         raise DemistoException(
-            "To set a new assigned_user_pretty_name, " 'you must also provide a value for the "assigned_user_mail" argument.'
+            'To set a new assigned_user_pretty_name, you must also provide a value for the "assigned_user_mail" argument.'
         )
 
     client.update_incident(
@@ -787,7 +787,7 @@ def insert_cef_alerts_command(client, args):
     elif isinstance(alerts, str):
         alerts = json.loads(alerts) if alerts[0] == "[" and alerts[-1] == "]" else [alerts]
     else:
-        raise ValueError('Invalid argument "cef_alerts". It should be either list of strings (cef alerts), ' "or single string")
+        raise ValueError('Invalid argument "cef_alerts". It should be either list of strings (cef alerts), or single string')
 
     client.insert_cef_alerts(alerts)
 
@@ -833,12 +833,12 @@ def sync_incoming_incident_owners(incident_data):
         user_info = demisto.findUser(email=incident_data.get("assigned_user_mail"))
         if user_info:
             demisto.debug(
-                f"Syncing incident owners: XDR incident {incident_data.get('incident_id')}, " f"owner {user_info.get('username')}"
+                f"Syncing incident owners: XDR incident {incident_data.get('incident_id')}, owner {user_info.get('username')}"
             )
             incident_data["owner"] = user_info.get("username")
 
         else:
-            demisto.debug(f"The user assigned to XDR incident {incident_data.get('incident_id')} " f"is not registered on XSOAR")
+            demisto.debug(f"The user assigned to XDR incident {incident_data.get('incident_id')} is not registered on XSOAR")
 
 
 def handle_incoming_user_unassignment(incident_data):
@@ -892,7 +892,7 @@ def close_incident_in_xsoar(incident_data):
     }
     incident_data["closeReason"] = closing_entry["Contents"]["closeReason"]
     incident_data["closeNotes"] = closing_entry["Contents"]["closeNotes"]
-    demisto.debug(f"close_incident_in_xsoar {incident_data['closeReason']=} " f"{incident_data['closeNotes']=}")
+    demisto.debug(f"close_incident_in_xsoar {incident_data['closeReason']=} {incident_data['closeNotes']=}")
 
     if incident_data.get("status") == "resolved_known_issue":
         close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
@@ -1034,7 +1034,7 @@ def get_remote_data_command(client, args, excluded_alert_fields=[], remove_nulls
             return GetRemoteDataResponse(mirrored_object=incident_data, entries=[])
 
     except Exception as e:
-        demisto.debug(f"Error in XDR incoming mirror for incident {remote_args.remote_incident_id} \n" f"Error message: {e!s}")
+        demisto.debug(f"Error in XDR incoming mirror for incident {remote_args.remote_incident_id} \nError message: {e!s}")
 
         if "Rate limit exceeded" in str(e):
             return_error("API rate limit")
@@ -1100,12 +1100,12 @@ def update_remote_system_command(client, args):
                 demisto.debug("update_remote_system_command: closed xdr alerts")
         else:
             demisto.debug(
-                f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] " f"as it is not new nor changed"
+                f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is not new nor changed"
             )
         return parsed_args.remote_incident_id
 
     except Exception as e:
-        demisto.debug(f"Error in outgoing mirror for incident {parsed_args.remote_incident_id} \n" f"Error message: {e!s}")
+        demisto.debug(f"Error in outgoing mirror for incident {parsed_args.remote_incident_id} \nError message: {e!s}")
 
         return parsed_args.remote_incident_id
 
@@ -1116,7 +1116,7 @@ def update_related_alerts(client: Client, args: dict):
     comment = f"Resolved by XSOAR, due to incident {incident_id} that has been resolved."
     demisto.debug(f"{new_status=}, {comment=}")
     if not new_status:
-        raise DemistoException(f"Failed to update alerts related to incident {incident_id}," "no status found")
+        raise DemistoException(f"Failed to update alerts related to incident {incident_id},no status found")
     incident_extra_data = client.get_incident_extra_data(incident_id=incident_id)
     if "alerts" in incident_extra_data and "data" in incident_extra_data["alerts"]:
         alerts_array = incident_extra_data["alerts"]["data"]
@@ -1353,7 +1353,7 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
         )
     # API is limited to 100 alerts per request, doing the request in batches of 100.
     for index in range(0, len(alerts_list), 100):
-        alerts_sublist = alerts_list[index : index + 100]
+        alerts_sublist = alerts_list[index: index + 100]
         demisto.debug(f"{alerts_sublist=}, {severity=}, {status=}, {comment=}")
         array_of_sublist_ids = client.update_alerts_in_xdr_request(alerts_sublist, severity, status, comment)
         array_of_all_ids += array_of_sublist_ids
@@ -1419,7 +1419,7 @@ def main():  # pragma: no cover
                 excluded_alert_fields=excluded_alert_fields,
                 remove_nulls_from_alerts=remove_nulls_from_alerts,
             )
-            demisto.debug(f"Finished a fetch incidents cycle, {next_run=}." f"Fetched {len(incidents)} incidents.")
+            demisto.debug(f"Finished a fetch incidents cycle, {next_run=}.Fetched {len(incidents)} incidents.")
             # demisto.debug(f"{incidents=}") # uncomment to debug, otherwise spams the log
 
             last_run_obj = demisto.getLastRun()
@@ -1629,7 +1629,7 @@ def main():  # pragma: no cover
                 file_details_results(client, args, True)
             else:  # status is not in polling value and operation was not COMPLETED_SUCCESSFULLY
                 polling.outputs_prefix = (
-                    f'{args.get("integration_context_brand", "CoreApiModule")}' f'.RetrievedFiles(val.action_id == obj.action_id)'
+                    f'{args.get("integration_context_brand", "CoreApiModule")}.RetrievedFiles(val.action_id == obj.action_id)'
                 )
                 return_results(polling)
 

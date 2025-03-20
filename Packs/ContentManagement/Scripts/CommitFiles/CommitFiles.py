@@ -179,7 +179,7 @@ def commit_content_item_bitbucket(branch_name: str, content_file: ContentFile, n
     try:
         demisto.executeCommand("bitbucket-commit-create", args=commit_args)
     except DemistoException as e:
-        raise DemistoException(f"Failed to execute bitbucket-commit-create command. Error: {e}, " f"{traceback.format_exc()}")
+        raise DemistoException(f"Failed to execute bitbucket-commit-create command. Error: {e}, {traceback.format_exc()}")
 
 
 def commit_content_item_azure_devops(branch_name: str, content_file: ContentFile, new_files: List, modified_files: List):

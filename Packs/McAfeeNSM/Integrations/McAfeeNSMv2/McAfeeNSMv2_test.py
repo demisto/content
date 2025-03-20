@@ -148,14 +148,14 @@ def test_rule_object_type_cases(given_rule_object_type, expected_rule_object_typ
 
 
 check_source_and_destination_params = [
-    ("1", None, None, None, "create", "If you provide at least one of the source " "fields, you must provide all of them."),
+    ("1", None, None, None, "create", "If you provide at least one of the source fields, you must provide all of them."),
     (
         None,
         "HOST_IPV_4",
         None,
         None,
         "create",
-        "If you provide at least one of the " "source fields, you must provide all" " of them.",
+        "If you provide at least one of the source fields, you must provide all of them.",
     ),
     (
         None,
@@ -163,7 +163,7 @@ check_source_and_destination_params = [
         "1",
         None,
         "create",
-        "If you provide at least one of the " "destination fields, you must provide all of " "them.",
+        "If you provide at least one of the destination fields, you must provide all of them.",
     ),
     (
         None,
@@ -171,9 +171,9 @@ check_source_and_destination_params = [
         None,
         "IPV_4_ADDRESS_RANGE",
         "create",
-        "If you provide at least one" " of the destination fields," " you must provide all of " "them.",
+        "If you provide at least one of the destination fields, you must provide all of them.",
     ),
-    (None, None, None, None, "create", "You must provide the source fields or " "destination fields or both."),
+    (None, None, None, None, "create", "You must provide the source fields or destination fields or both."),
 ]
 
 
@@ -247,7 +247,7 @@ check_args_create_rule_params = [
         None,
         None,
         6,
-        "The version of the IP in " '"rule_object_type" should match ' "the addresses version.",
+        'The version of the IP in "rule_object_type" should match the addresses version.',
     ),
     (
         "NETWORK_IPV_4",
@@ -954,7 +954,7 @@ def test_get_domains_command(mocker, mcafeensmv2_client):
     expected_result = util_load_json("test_data/commands_test_data.json").get("expected_get_domains")
     mocker.patch.object(mcafeensmv2_client, "get_domains_request", return_value=response)
     result = get_domains_command(mcafeensmv2_client, args)
-    expected_readable_output = "### Domain no.0\n" "|ID|Name|\n" "|---|---|\n" "| 0 | My Company |\n"
+    expected_readable_output = "### Domain no.0\n|ID|Name|\n|---|---|\n| 0 | My Company |\n"
     assert result.readable_output == expected_readable_output
     assert result.outputs == expected_result
 
@@ -1029,7 +1029,7 @@ update_alerts_command_params = [
     (args2_update_alerts, "If you provide one of the time parameters, you must provide the other as well"),
     (
         args3_update_alerts,
-        "If you provided a start time or end time, you must assign the " 'time_period parameter with the value "CUSTOM"',
+        'If you provided a start time or end time, you must assign the time_period parameter with the value "CUSTOM"',
     ),
 ]
 
@@ -1563,7 +1563,7 @@ def test_check_required_arg__with_value_0():
             {"sigsetConfigPercentageComplete": "0", "sigsetConfigStatusMessage": "mock"},
             (
                 [0],
-                "\nThe current percentage of deployment for 'push_configuration_signature_set' is: 0%\n                \nAnd the current message is: mock\n",
+                "\nThe current percentage of deployment for 'push_configuration_signature_set' is: 0%\n                \nAnd the current message is: mock\n",   # noqa: E501
             ),
         ),  # noqa: E501
         ({"sigsetConfigPercentageComplete": 100, "sigsetConfigStatusMessage": "DOWNLOAD COMPLETE"}, ([1], "")),

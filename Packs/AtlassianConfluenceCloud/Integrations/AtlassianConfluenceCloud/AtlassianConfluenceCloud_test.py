@@ -224,7 +224,7 @@ def test_confluence_cloud_content_create_command_when_valid_response_is_returned
 
     expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_command_response.json"))
     requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "content_create" "/content_create_command_context.json"))
+    expected_context_output = util_load_json(os.path.join("test_data", "content_create/content_create_command_context.json"))
 
     with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
@@ -271,7 +271,7 @@ def test_confluence_cloud_content_create_command_when_object_not_present(request
     expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
     requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response[0])
     expected_context_output = util_load_json(
-        os.path.join("test_data", "content_create" "/content_create_object_not_present.json")
+        os.path.join("test_data", "content_create/content_create_object_not_present.json")
     )
 
     with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
@@ -300,7 +300,7 @@ def test_confluence_cloud_comment_create_command_when_valid_response_is_returned
 
     expected_response = util_load_json(os.path.join("test_data", "comment_create/comment_create_command_response.json"))
     requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "comment_create" "/comment_create_command_context.json"))
+    expected_context_output = util_load_json(os.path.join("test_data", "comment_create/comment_create_command_context.json"))
 
     with open(os.path.join("test_data", "comment_create/comment_create_command.md")) as f:
         expected_readable_output = f.read()
@@ -411,7 +411,7 @@ def test_confluence_cloud_content_search_command_when_valid_response_is_returned
 
     expected_response = util_load_json(os.path.join("test_data", "content_search/content_search_command_response.json"))
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "content_search/" "content_search_command_context.json"))
+    expected_context_output = util_load_json(os.path.join("test_data", "content_search/content_search_command_context.json"))
 
     with open(os.path.join("test_data", "content_search/content_search_command.md")) as f:
         expected_readable_output = f.read()
@@ -454,7 +454,7 @@ def test_confluence_cloud_content_search_command_when_invalid_argument_value_are
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_search_command
 
-    expected_response = util_load_json(os.path.join("test_data", "content_search" "/content_search_invalid_query_argument.json"))
+    expected_response = util_load_json(os.path.join("test_data", "content_search/content_search_invalid_query_argument.json"))
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], status_code=400, json=expected_response)
 
     with capfd.disabled():
@@ -497,7 +497,7 @@ def test_confluence_cloud_content_list_command_when_valid_response_is_returned(r
 
     expected_response = util_load_json(os.path.join("test_data", "content_list/content_list_command_response.json"))
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "content_list/" "content_list_command_context.json"))
+    expected_context_output = util_load_json(os.path.join("test_data", "content_list/content_list_command_context.json"))
 
     with open(os.path.join("test_data", "content_list/content_list_command.md")) as f:
         expected_readable_output = f.read()
@@ -571,7 +571,7 @@ def test_confluence_cloud_space_create_command_when_valid_response_is_returned(r
 
     expected_response = util_load_json(os.path.join("test_data", "space_create/space_create_command_response.json"))
     requests_mock.post(BASE_URL + URL_SUFFIX["SPACE"], json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "space_create" "/space_create_command_context.json"))
+    expected_context_output = util_load_json(os.path.join("test_data", "space_create/space_create_command_context.json"))
 
     with open(os.path.join("test_data", "space_create/space_create_command.md")) as f:
         expected_readable_output = f.read()
@@ -723,7 +723,7 @@ def test_confluence_cloud_content_update_command_when_valid_response_is_returned
 
     expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_command_response.json"))
     requests_mock.put(BASE_URL + URL_SUFFIX["CONTENT"] + "/2097159", json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "content_create" "/content_create_command_context.json"))
+    expected_context_output = util_load_json(os.path.join("test_data", "content_create/content_create_command_context.json"))
 
     with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
@@ -770,7 +770,7 @@ def test_confluence_cloud_content_update_command_when_object_not_present(request
     expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
     requests_mock.put(BASE_URL + URL_SUFFIX["CONTENT"] + "/2097159", json=expected_response[0])
     expected_context_output = util_load_json(
-        os.path.join("test_data", "content_create" "/content_create_object_not_present.json")
+        os.path.join("test_data", "content_create/content_create_object_not_present.json")
     )
 
     with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
@@ -800,7 +800,7 @@ def test_confluence_cloud_comment_create_command_when_object_not_present(request
     expected_response = util_load_json(os.path.join("test_data", "comment_create/comment_create_object_not_present.json"))
     requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response[0])
     expected_context_output = util_load_json(
-        os.path.join("test_data", "comment_create" "/comment_create_object_not_present.json")
+        os.path.join("test_data", "comment_create/comment_create_object_not_present.json")
     )
 
     with open(os.path.join("test_data", "comment_create/comment_create_object_not_present.md")) as f:
@@ -830,7 +830,7 @@ def test_confluence_cloud_space_list_command_when_key_not_present(requests_mock)
     expected_response = util_load_json(os.path.join("test_data", "space_list/space_list_command_key_not_present_response.json"))
     requests_mock.get(BASE_URL + URL_SUFFIX["SPACE"], json=expected_response)
     expected_context_output = util_load_json(
-        os.path.join("test_data", "space_list" "/space_list_command_key_not_present_context" ".json")
+        os.path.join("test_data", "space_list/space_list_command_key_not_present_context.json")
     )
 
     with open(os.path.join("test_data", "space_list/space_list_command_key_not_present.md")) as f:
@@ -862,7 +862,7 @@ def test_confluence_cloud_content_search_command_when_object_not_present(request
     )
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], json=expected_response)
     expected_context_output = util_load_json(
-        os.path.join("test_data", "content_search" "/content_search_object_not_present_context.json")
+        os.path.join("test_data", "content_search/content_search_object_not_present_context.json")
     )
 
     with open(os.path.join("test_data", "content_search/content_search_object_not_present.md")) as f:
@@ -887,10 +887,10 @@ def test_confluence_cloud_content_list_command_when_when_object_not_present(requ
     """
     from AtlassianConfluenceCloud import DEFAULT_EXPANDED_FIELD_CONTENT, confluence_cloud_content_list_command
 
-    expected_response = util_load_json(os.path.join("test_data", "content_list" "/content_list_object_not_present_response.json"))
+    expected_response = util_load_json(os.path.join("test_data", "content_list/content_list_object_not_present_response.json"))
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
     expected_context_output = util_load_json(
-        os.path.join("test_data", "content_list/" "content_list_object_not_present_context.json")
+        os.path.join("test_data", "content_list/content_list_object_not_present_context.json")
     )
 
     with open(os.path.join("test_data", "content_list/content_list_object_not_present.md")) as f:

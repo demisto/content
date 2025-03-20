@@ -181,7 +181,7 @@ def get_incident_actions_command(
     if not incidents:
         if not incident_name and not incident_identifier:
             raise Exception(
-                "Error: No BreachRx privacy Incident associated with this Incident," " and no Incident search terms provided."
+                "Error: No BreachRx privacy Incident associated with this Incident, and no Incident search terms provided."
             )
 
         incidents = [client.get_incident(incident_name, incident_identifier)]

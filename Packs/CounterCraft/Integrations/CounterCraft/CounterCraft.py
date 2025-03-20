@@ -147,7 +147,7 @@ def get_signature(request_method, request_headers, path, query_string, private_k
         + "\n"
         + get_serialized_headers(x_headers)
         + "\n"
-        + (path if query_string.strip() == b"" else "%s?%s" % (path, query_string.strip().decode("utf-8")))
+        + (path if query_string.strip() == b"" else f"{path}?{query_string.strip().decode('utf - 8')}")
     )
 
     return sign(private_key, string_to_sign).decode("utf-8")
@@ -168,7 +168,7 @@ def get_serialized_headers(x_headers):
 
         res[k.strip().lower()].append(v.strip())
 
-    return "\n".join("%s:%s" % (k, v) for k, v in sorted({k: ",".join(v) for k, v in res.items()}.items()))
+    return "\n".join(f"{k}:{v}" for k, v in sorted({k: ",".join(v) for k, v in res.items()}.items()))
 
 
 def http_request(request_method, path, data={}, params=""):
@@ -190,7 +190,7 @@ def http_request(request_method, path, data={}, params=""):
         urllib.parse.urlencode(params).encode("utf-8"),
         SECRET_KEY,
     )
-    headers["Authorization"] = "APIKey %s:%s" % (API_KEY, signature)
+    headers["Authorization"] = f"APIKey {API_KEY}:{signature}"
     url = SERVER + path
 
     proxies = None
@@ -202,7 +202,7 @@ def http_request(request_method, path, data={}, params=""):
     )
 
     if res.status_code not in [200, 201, 204]:
-        demisto.debug("Error doing the HTTP query. We got a %s: %s" % (res.status_code, res.text))
+        demisto.debug(f"Error doing the HTTP query. We got a {res.status_code}: {res.text}")
         return_error(ERR_DICT[res.status_code])
 
     try:
@@ -288,7 +288,7 @@ def list_dsns_command():
 
     new_dsns = []
     for o in res["data"]:
-        new_dsns.append({new_key: o[old_key] if old_key in o else None for old_key, new_key in DSN_FIELDS.items()})
+        new_dsns.append({new_key: o.get(old_key, None) for old_key, new_key in DSN_FIELDS.items()})
     context = createContext(new_dsns, removeNull=True)
 
     return_entry_results(
@@ -309,7 +309,7 @@ def list_providers_command():
 
     new_providers = []
     for o in res["data"]:
-        new_providers.append({new_key: o[old_key] if old_key in o else None for old_key, new_key in PROVIDER_FIELDS.items()})
+        new_providers.append({new_key: o.get(old_key, None) for old_key, new_key in PROVIDER_FIELDS.items()})
     context = createContext(new_providers, removeNull=True)
 
     return_entry_results(
@@ -337,7 +337,7 @@ def list_campaigns_command():
 
     new_campaigns = []
     for o in res["data"]:
-        new_campaigns.append({new_key: o[old_key] if old_key in o else None for old_key, new_key in CAMPAIGN_FIELDS.items()})
+        new_campaigns.append({new_key: o.get(old_key, None) for old_key, new_key in CAMPAIGN_FIELDS.items()})
     context = createContext(new_campaigns, removeNull=True)
 
     return_entry_results(
@@ -365,7 +365,7 @@ def list_hosts_command():
 
     new_hosts = []
     for o in res["data"]:
-        new_hosts.append({new_key: o[old_key] if old_key in o else None for old_key, new_key in HOST_FIELDS.items()})
+        new_hosts.append({new_key: o.get(old_key, None) for old_key, new_key in HOST_FIELDS.items()})
 
     context = createContext(new_hosts, removeNull=True)
     contextHosts = createContext([return_host_standard_context(x) for x in res["data"]], removeNull=True)
@@ -395,7 +395,7 @@ def list_services_command():
 
     new_services = []
     for o in res["data"]:
-        new_services.append({new_key: o[old_key] if old_key in o else None for old_key, new_key in SERVICE_FIELDS.items()})
+        new_services.append({new_key: o.get(old_key, None) for old_key, new_key in SERVICE_FIELDS.items()})
     context = createContext(new_services, removeNull=True)
 
     return_entry_results(
@@ -423,7 +423,7 @@ def list_breadcrumbs_command():
 
     new_breadcrumbs = []
     for o in res["data"]:
-        new_breadcrumbs.append({new_key: o[old_key] if old_key in o else None for old_key, new_key in BREADCRUMB_FIELDS.items()})
+        new_breadcrumbs.append({new_key: o.get(old_key, None) for old_key, new_key in BREADCRUMB_FIELDS.items()})
     context = createContext(new_breadcrumbs, removeNull=True)
 
     return_entry_results(
@@ -451,7 +451,7 @@ def list_incidents_command():
 
     new_incidents = []
     for o in res["data"]:
-        new_incidents.append({new_key: o[old_key] if old_key in o else None for old_key, new_key in INCIDENT_FIELDS.items()})
+        new_incidents.append({new_key: o.get(old_key, None) for old_key, new_key in INCIDENT_FIELDS.items()})
     context = createContext(new_incidents, removeNull=True)
 
     return_entry_results(
@@ -483,7 +483,7 @@ def get_object_command():
 
     new_objects = []
     for o in res["data"]:
-        new_objects.append({new_key: o[old_key] if old_key in o else None for old_key, new_key in OBJECT_FIELDS.items()})
+        new_objects.append({new_key: o.get(old_key, None) for old_key, new_key in OBJECT_FIELDS.items()})
     context = createContext(new_objects, removeNull=True)
 
     return_entry_results(
@@ -527,7 +527,7 @@ def get_events_command():
 
     new_events = []
     for o in res["data"]:
-        new_events.append({new_key: o[old_key] if old_key in o else None for old_key, new_key in EVENT_FIELDS.items()})
+        new_events.append({new_key: o.get(old_key, None) for old_key, new_key in EVENT_FIELDS.items()})
     context = createContext(new_events, removeNull=True)
 
     return_entry_results(
@@ -556,7 +556,7 @@ def list_notifications(last_fetched):
     """
 
     criteria = {
-        "criteria": 'plugin_code:CONSOLE AND notifications.ctime:["%s" TO *]' % last_fetched,
+        "criteria": f'plugin_code:CONSOLE AND notifications.ctime:["{last_fetched}" TO *]',
         "order": "-ctime",
         "with_stats": True,
     }
@@ -577,7 +577,7 @@ def create_campaign_command():
 
     res = http_request("POST", "/campaigns", data=data)
 
-    campaign = {new_key: res[old_key] if old_key in res else None for old_key, new_key in CAMPAIGN_FIELDS.items()}
+    campaign = {new_key: res.get(old_key, None) for old_key, new_key in CAMPAIGN_FIELDS.items()}
 
     context = createContext(campaign, removeNull=True)
 
@@ -654,7 +654,7 @@ def create_host_machine_command():
 
     res = http_request("POST", "/hosts", data=data)
 
-    host = {new_key: res[old_key] if old_key in res else None for old_key, new_key in HOST_FIELDS.items()}
+    host = {new_key: res.get(old_key, None) for old_key, new_key in HOST_FIELDS.items()}
 
     context = createContext(host, removeNull=True)
 

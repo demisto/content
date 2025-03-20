@@ -1285,7 +1285,7 @@ def test_xdr_iocs_sync_command_sync_for_fetch_fails(
     with pytest.raises(DemistoException) as e:
         xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
     assert e.value.message == (
-        "Failed to sync indicators with error Response status was not success, " "response={'reply': {'success': False}}."
+        "Failed to sync indicators with error Response status was not success, response={'reply': {'success': False}}."
     )
 
 
@@ -1321,7 +1321,7 @@ def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
     mock_update_integration_context_override.assert_called_with(update_is_first_sync_phase="false")
     debug_calls = [call.args[0] for call in mock_demisto_debug.call_args_list]
     expected_debug_message = (
-        "pushing IOCs to XDR:The following 2 IOCs were not pushed due to following errors:123: error1.456:" " error2."
+        "pushing IOCs to XDR:The following 2 IOCs were not pushed due to following errors:123: error1.456: error2."
     )
     assert any(expected_debug_message in call for call in debug_calls), f"Expected debug message not found in: {debug_calls}"
 
@@ -1503,7 +1503,7 @@ def test_parse_xsoar_field_name_and_link(xsoar_comment_field: list[str], expecte
             "should only contain the field name,"
             " or the field name with the phrase indicator_link, separated by a comma.",
         ),
-        (["a", "b", "c"], ("The parameter xsoar_comment_field=['a', 'b', 'c'] cannot contain more than " "two values")),
+        (["a", "b", "c"], ("The parameter xsoar_comment_field=['a', 'b', 'c'] cannot contain more than two values")),
     ),
 )
 def test_parse_xsoar_field_name_and_link_exceptions(xsoar_comment_field: list[str], informative_message: str):

@@ -24,7 +24,7 @@ THREAT_TAGS_SUFFIX = "threat_tags"
 TAGGED_OBJECTS_SUFFIX = "tagged_objects"
 THREAT_EXCHANGE_MEMBERS_SUFFIX = "threat_exchange_members"
 TIMEOUT_FOR_LIST_CALLS = 30
-DEFAULT_DESCRIPTION_FOR_MALICIOUS_INDICATOR = "Indicator was classified as malicious by more than {}%" " of detection engines."
+DEFAULT_DESCRIPTION_FOR_MALICIOUS_INDICATOR = "Indicator was classified as malicious by more than {}% of detection engines."
 
 
 class ThreatExchangeV2Status:

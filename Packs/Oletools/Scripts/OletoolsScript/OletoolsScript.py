@@ -211,7 +211,7 @@ def main():  # pragma: no cover
         return_results(ole_client.run())
     except Exception as e:
         return_error(
-            f"The script failed with the following error:\n {e}" f"\n Logs form oletools:\n {custom_handler.get_last_log_msg()}"
+            f"The script failed with the following error:\n {e}\n Logs form oletools:\n {custom_handler.get_last_log_msg()}"
         )
 
 

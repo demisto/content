@@ -28,7 +28,7 @@ class CyberTriageClient(BaseClient):
     ):
         base_url = (
             f"https://{server}:{rest_port}/api/"
-            if not (server.startswith("https://") or server.startswith("http://"))
+            if not (server.startswith(("https://", "http://")))
             else f"{server}:{rest_port}/api/"
         )
         req_headers = {"restApiKey": api_key}

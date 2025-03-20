@@ -571,7 +571,7 @@ def test_create_asset_command(
 
 
 @pytest.mark.parametrize(
-    "report_templates_mock_file, report_config_mock_data, report_mock_data, " "expected_output_context_file",
+    "report_templates_mock_file, report_config_mock_data, report_mock_data, expected_output_context_file",
     [("client_get_report_templates", {"id": 1}, {"id": 2}, "create_report_commands")],
 )
 def test_create_report_commands(
@@ -1181,7 +1181,7 @@ def test_download_report_command(mocker, mock_client: Client):
 
 
 @pytest.mark.parametrize(
-    "asset_mock_file, asset_vulnerability_api_mock_file, vulnerability_api_mock_file, " "expected_output_context_file",
+    "asset_mock_file, asset_vulnerability_api_mock_file, vulnerability_api_mock_file, expected_output_context_file",
     [
         (
             "client_get_asset",

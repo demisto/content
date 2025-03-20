@@ -20,7 +20,7 @@ def update_file_prefix(file_name: str) -> str:
     Removing the "playbook-" prefix from files name.
     """
     if file_name.startswith("playbook-"):
-        return file_name[len("playbook-") :]
+        return file_name[len("playbook-"):]
     if file_name.startswith("automation-"):
         return file_name.replace("automation-", "script-")
     return file_name
@@ -110,12 +110,11 @@ def get_included_ids_command(args: dict[str, Any]) -> CommandResults:
     Return:
         CommandResults Outputs with included ids dict and excluded ids dict, ready to pass to DeleteContent script.
     """
-    if excluded_ids_dicts := args.get("exclude_ids_list", []):
-        if not isinstance(excluded_ids_dicts, list):
-            try:
-                excluded_ids_dicts = json.loads(str(args.get("exclude_ids_list")))
-            except json.JSONDecodeError as err:
-                raise ValueError(f"Failed decoding excluded_ids_list as json: {err!s}")
+    if (excluded_ids_dicts := args.get("exclude_ids_list", [])) and not isinstance(excluded_ids_dicts, list):
+        try:
+            excluded_ids_dicts = json.loads(str(args.get("exclude_ids_list")))
+        except json.JSONDecodeError as err:
+            raise ValueError(f"Failed decoding excluded_ids_list as json: {err!s}")
 
     custom_content_ids = get_custom_content_ids(file_entry_id=args.get("file_entry_id"))
 
@@ -124,18 +123,18 @@ def get_included_ids_command(args: dict[str, Any]) -> CommandResults:
     if excluded_ids_dicts:
         # Merge exclusion dicts
         for excluded_ids_dict in excluded_ids_dicts:
-            for excluded_entity in excluded_ids_dict.keys():
+            for excluded_entity in excluded_ids_dict:
                 excluded_ids[excluded_entity] += excluded_ids_dict.get(excluded_entity, [])
 
         # Exclude what is relevant
-        for custom_entity in custom_content_ids.keys():
+        for custom_entity in custom_content_ids:
             included_custom_ids_names[custom_entity] = filter_lists(
                 include=custom_content_ids.get(custom_entity, []), exclude=excluded_ids.get(custom_entity, [])
             )
 
         # Remove included entities from excluded dict
         for entity in included_custom_ids_names:
-            if entity in excluded_ids.keys():
+            if entity in excluded_ids:
                 excluded_ids.pop(entity)
 
     else:

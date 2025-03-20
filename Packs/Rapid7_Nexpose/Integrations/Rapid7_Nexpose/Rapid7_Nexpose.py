@@ -3803,7 +3803,7 @@ def create_vulnerability_exception_command(
 
     if scope_type_enum != VulnerabilityExceptionScopeType.GLOBAL and scope_id is None:
         raise ValueError(
-            f'"scope_id" must be set when using scopes different than ' f'"{VulnerabilityExceptionScopeType.GLOBAL.value}".'
+            f'"scope_id" must be set when using scopes different than "{VulnerabilityExceptionScopeType.GLOBAL.value}".'
         )
 
     response_data = client.create_vulnerability_exception(
@@ -5902,7 +5902,7 @@ def update_vulnerability_exception_expiration_command(
     )
 
     return CommandResults(
-        readable_output=f"Successfully updated expiration date " f"of vulnerability exception {vulnerability_exception_id}.",
+        readable_output=f"Successfully updated expiration date of vulnerability exception {vulnerability_exception_id}.",
         raw_response=response,
     )
 

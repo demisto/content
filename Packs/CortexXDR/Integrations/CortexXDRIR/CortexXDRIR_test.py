@@ -1538,7 +1538,7 @@ def test_update_alerts_in_xdr_command_invalid_response_no_reply(mocker):
     with pytest.raises(DemistoException) as e:
         update_alerts_in_xdr_command(xdrIr_client, args)
     assert e.value.message == (
-        "Parse Error. Response not in format, can't find reply key. " "The response {'alerts_ids': ['1', '2', '3']}."
+        "Parse Error. Response not in format, can't find reply key. The response {'alerts_ids': ['1', '2', '3']}."
     )
 
 
@@ -1675,7 +1675,7 @@ def test_update_alerts_in_xdr_request_invalid_response():
         }
         client.update_alerts_in_xdr_request(alerts_ids, severity, status, comment)
     assert e.value.message == (
-        "Parse Error. Response not in format, can't find reply key. " "The response {'replys': {'alerts_ids': '1,2,3'}}."
+        "Parse Error. Response not in format, can't find reply key. The response {'replys': {'alerts_ids': '1,2,3'}}."
     )
 
 

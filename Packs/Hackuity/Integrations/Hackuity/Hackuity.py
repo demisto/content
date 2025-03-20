@@ -139,7 +139,7 @@ class Client(BaseClient):
         try:
             response = self.http_request(
                 method="GET",
-                url_suffix=(f"/namespaces/{self.namespace}" f"/dashboards/{self.get_user_id()}" f"/widgets/{widget_id}/data"),
+                url_suffix=(f"/namespaces/{self.namespace}/dashboards/{self.get_user_id()}/widgets/{widget_id}/data"),
             )
         except DemistoException as e:
             if e.res.status_code == 404:

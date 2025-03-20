@@ -210,10 +210,7 @@ class Configuration:
 
 def list_exists(list_name: str) -> bool:
     res = demisto.executeCommand("getList", {"listName": list_name})[0]
-    if res["Type"] == entryTypes["error"] and "Item not found" in res["Contents"]:
-        return False
-    else:
-        return True
+    return res["Type"] == entryTypes["error"] and "Item not found" in res["Contents"]
 
 
 def create_context(full_configuration: Configuration) -> Dict[str, List[Dict[str, str]]]:

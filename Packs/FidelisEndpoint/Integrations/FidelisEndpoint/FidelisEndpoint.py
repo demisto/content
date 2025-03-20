@@ -1562,7 +1562,7 @@ def query_events_command(client: Client, args: dict) -> tuple[str, dict, dict]:
                 "value": additional_filter_split[2],
             }
         else:
-            raise Exception("Make sure that the additional_filter argument is in valid format.\n " "For Example: pid = 1234")
+            raise Exception("Make sure that the additional_filter argument is in valid format.\n For Example: pid = 1234")
 
     contents = []
     context = []

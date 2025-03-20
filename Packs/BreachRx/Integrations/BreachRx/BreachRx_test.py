@@ -23,39 +23,27 @@ def util_load_json(path):
 
 
 def introspection_matcher(request):
-    if "IntrospectionQuery" in request.json().get("query"):
-        return True
-    return False
+    return "IntrospectionQuery" in request.json().get("query")
 
 
 def create_incident_matcher(request):
-    if request.json().get("query") == print_ast(create_incident_mutation):
-        return True
-    return False
+    return request.json().get("query") == print_ast(create_incident_mutation)
 
 
 def get_severities_matcher(request):
-    if request.json().get("query") == print_ast(get_incident_severities):
-        return True
-    return False
+    return request.json().get("query") == print_ast(get_incident_severities)
 
 
 def get_types_matcher(request):
-    if request.json().get("query") == print_ast(get_incident_types):
-        return True
-    return False
+    return request.json().get("query") == print_ast(get_incident_types)
 
 
 def get_incident_matcher(request):
-    if request.json().get("query") == print_ast(get_incident_by_name):
-        return True
-    return False
+    return request.json().get("query") == print_ast(get_incident_by_name)
 
 
 def get_actions_matcher(request):
-    if request.json().get("query") == print_ast(get_actions_for_incident):
-        return True
-    return False
+    return request.json().get("query") == print_ast(get_actions_for_incident)
 
 
 def set_up_mocker(m, found_incident=True):
@@ -110,10 +98,11 @@ def test_create_incident_command_no_description():
 
         create_incident_request = m.request_history[-1]
         assert incident_name == create_incident_request.json()["variables"]["name"]
-        assert """An Incident copied from the Palo Alto Networks XSOAR platform.
+        assert (create_incident_request.json()["variables"]["description"] ==
+                """An Incident copied from the Palo Alto Networks XSOAR platform.
             <br>
             <br>
-            XSOAR Incident Name: 1""" == create_incident_request.json()["variables"]["description"]
+            XSOAR Incident Name: 1""")
 
     assert results.outputs_prefix == "BreachRx.Incident"
     assert results.outputs_key_field == "id"
@@ -135,7 +124,7 @@ def test_create_incident_command_no_incident_name():
         results = create_incident_command(client, description=incident_description)
 
         create_incident_request = m.request_history[-1]
-        assert "1" == create_incident_request.json()["variables"]["name"]
+        assert create_incident_request.json()["variables"]["name"] == "1"
         assert incident_description == create_incident_request.json()["variables"]["description"]
 
     assert results.outputs_prefix == "BreachRx.Incident"
@@ -224,7 +213,7 @@ def test_get_incident_actions_command_no_incident_context():
             get_incident_actions_command(client)
 
     assert str(error.value) == (
-        "Error: No BreachRx privacy Incident associated with this Incident," " and no Incident search terms provided."
+        "Error: No BreachRx privacy Incident associated with this Incident, and no Incident search terms provided."
     )
 
 

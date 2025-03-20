@@ -1208,7 +1208,7 @@ def checkpoint_delete_threat_indicator_command(client: Client, identifier) -> Co
         result.update(current_result)
         printable_result = {"message": current_result.get("message")}
         current_readable_output = tableToMarkdown(
-            f"CheckPoint status for deleting {item[1]}" f"threat indicator:", printable_result
+            f"CheckPoint status for deleting {item[1]}threat indicator:", printable_result
         )
         readable_output = readable_output + current_readable_output
 
@@ -1394,7 +1394,7 @@ def checkpoint_delete_access_rule_command(client: Client, identifier, layer: str
         result.update(current_result)
         printable_result = {"message": current_result.get("message")}
         current_readable_output = tableToMarkdown(
-            f"CheckPoint data for deleting access rule " f"range: {item[1]}", printable_result
+            f"CheckPoint data for deleting access rule range: {item[1]}", printable_result
         )
         readable_output = readable_output + current_readable_output
 
@@ -1593,7 +1593,7 @@ def checkpoint_delete_application_site_command(client: Client, identifier) -> Co
         result.update(current_result)
         printable_result = {"message": current_result.get("message")}
         current_readable_output = tableToMarkdown(
-            f"CheckPoint data for deleting application site " f": {item[1]}", printable_result
+            f"CheckPoint data for deleting application site : {item[1]}", printable_result
         )
         readable_output = readable_output + current_readable_output
 
@@ -1701,7 +1701,7 @@ def checkpoint_add_application_site_category_command(client: Client, identifier:
 
         printable_result = build_printable_result(headers, current_result)
         current_readable_output = tableToMarkdown(
-            f"CheckPoint data for adding application site" f" category {item[1]}:",
+            f"CheckPoint data for adding application site category {item[1]}:",
             printable_result,
             headers=headers,
             removeNull=True,
@@ -2311,7 +2311,7 @@ def main():  # pragma: no cover
     verify_certificate = not params.get("insecure", False)
 
     if server.startswith("https://"):
-        server = server[len("https://") :]
+        server = server[len("https://"):]
 
     if server.endswith("/"):
         server = server[:-1]
@@ -2507,7 +2507,7 @@ def main():  # pragma: no cover
                 demisto.setIntegrationContext({})
 
         elif "Missing header: [X-chkp-sid]" in e_message or "Authentication to server failed" in e_message:
-            error_text_parts.append("Wrong credentials! " "Please check the username and password you entered and try again.")
+            error_text_parts.append("Wrong credentials! Please check the username and password you entered and try again.")
             demisto.setIntegrationContext({})
 
         error_text_parts.append(f"\nError: {e!s}")

@@ -85,7 +85,7 @@ def output_file(data, description, output_format):
     elif output_format == "json":
         data_encoded = json.dumps(data).encode("utf8")
     else:
-        return_error("Invalid output format: %s" % output_format)
+        return_error(f"Invalid output format: {output_format}")
     entry = fileResult(file_name, data_encoded)
     entry["Contents"] = data
     entry["HumanReadable"] = description
@@ -150,7 +150,7 @@ def hash_incident(fields_to_hash, un_populate_fields):
         new_incident_list.append(incident)
 
     # Output
-    desc = "Fetched %d incidents successfully by the query: %s" % (len(new_incident_list), args.get("query"))
+    desc = f"Fetched {len(new_incident_list)} incidents successfully by the query: {args.get('query')}"
     entry = output_file(new_incident_list, desc, args["outputFormat"])
     return entry
 

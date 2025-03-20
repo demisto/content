@@ -311,7 +311,7 @@ def setup_search_events(
     # We're replacing the placeholders in the request parameters with the actual values from the last run.
     # This is how we make the requests from the API to be more dynamic and reusable.
     substitutions: list[tuple[str, str]] = [
-        (place_holder.value, last_run.get(place_holder.value))
+        (place_holder.value, last_run.get(place_holder.value))  # type: ignore[misc]
         for place_holder in PlaceHolders  # type: ignore[misc]
         if last_run.get(place_holder.value) is not None
     ]

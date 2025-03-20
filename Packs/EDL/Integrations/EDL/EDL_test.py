@@ -939,7 +939,7 @@ def test_get_indicators_to_format_csv():
     indicators = indicators_data.read()
 
     assert (
-        indicators == 'name,type\n"google.com","URL"\n"demisto.com","URL"\n"demisto.com/qwertqwer","URL"\n' '"demisto.com","URL"'
+        indicators == 'name,type\n"google.com","URL"\n"demisto.com","URL"\n"demisto.com/qwertqwer","URL"\n"demisto.com","URL"'
     )
 
 

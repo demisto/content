@@ -211,7 +211,7 @@ def get_iocs_generator(size=200, query=f"expirationStatus:active AND ({Client.qu
     search_after_array = None
     try:
         filter_fields = (
-            "value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap," "comments,id,CustomFields"
+            "value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields"
             if is_xsiam_or_xsoar_saas()
             else None
         )
@@ -227,8 +227,7 @@ def get_iocs_generator(size=200, query=f"expirationStatus:active AND ({Client.qu
             iocs = batch.get("iocs", [])
             last_fetched = iocs[-1]
             ioc_count += len(iocs)
-            for ioc in iocs:
-                yield ioc
+            yield from iocs
             if stop_iteration and ioc_count >= MAX_INDICATORS_TO_SYNC:
                 # info_log_for_fetch(ioc.get('modified'), ioc.get('value'), search_after_array, ioc_count)
                 raise StopIteration
@@ -341,7 +340,7 @@ def parse_demisto_single_comment(ioc: dict, comment_field_name: str, comments_as
     if comment_field_name == "comments":
         if comments_as_tags:
             raise DemistoException(
-                "When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)." "Set a different value."
+                "When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`).Set a different value."
             )
 
         # default behavior, take last comment's content value where type==IndicatorCommentRegular

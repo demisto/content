@@ -100,7 +100,7 @@ def validate_params_for_fetch_incidents(params: dict[str, Any], last_run: dict) 
 
     # get user provided fetch_first interval
     first_fetch = params.get("first_fetch")
-    first_fetch = DEFAULT_FIRST_FETCH if not first_fetch else first_fetch
+    first_fetch = first_fetch if first_fetch else DEFAULT_FIRST_FETCH
 
     # Validate the first_fetch value
     create_time = validate_date(first_fetch)
@@ -283,7 +283,7 @@ def check_required_arguments(required_arguments: list[str], args: dict[str, Any]
     """
     missing_args = []
     for arg in required_arguments:
-        if arg not in args.keys():
+        if arg not in args:
             missing_args.append(arg)
     if missing_args:
         raise ValueError(MESSAGES["MISSING_REQUIRED_ARGUMENTS_ERROR"].format(", ".join(missing_args)))

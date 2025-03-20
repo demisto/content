@@ -31,9 +31,9 @@ APP: Flask = Flask("demisto-edl")
 EDL_LIMIT_ERR_MSG: str = "Please provide a valid integer for List Size"
 EDL_CIDR_SIZR_MSG: str = "Please provide a valid integer for CIDR size"
 EDL_OFFSET_ERR_MSG: str = "Please provide a valid integer for Starting Index"
-EDL_COLLAPSE_ERR_MSG: str = "The Collapse parameter can only get the following: 0 - none, " "1 - range, 2 - CIDR"
+EDL_COLLAPSE_ERR_MSG: str = "The Collapse parameter can only get the following: 0 - none, 1 - range, 2 - CIDR"
 EDL_MISSING_REFRESH_ERR_MSG: str = (
-    'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' "6 months, 1 day, etc.)"
+    'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, 6 months, 1 day, etc.)'
 )
 EDL_FORMAT_ERR_MSG: str = "Please provide a valid format from: text, json, csv, mgw and proxysg"
 EDL_MWG_TYPE_ERR_MSG: str = (
@@ -944,7 +944,7 @@ def url_handler(indicator: str, url_protocol_stripping: bool, url_port_stripping
         indicator = _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator)
 
     if url_truncate and len(indicator) >= PAN_OS_MAX_URL_LEN:
-        indicator = indicator[0 : PAN_OS_MAX_URL_LEN - 1]
+        indicator = indicator[0: PAN_OS_MAX_URL_LEN - 1]
 
     return indicator
 
@@ -1172,7 +1172,7 @@ def route_edl() -> Response:
     ]  # type: ignore[assignment]
 
     demisto.debug(
-        f'edl: Returning response with the following headers:\n' f'{[f"{header[0]}: {header[1]}" for header in headers]}'
+        f'edl: Returning response with the following headers:\n{[f"{header[0]}: {header[1]}" for header in headers]}'
     )
 
     resp = Response(edl_data, status=200, mimetype=mimetype, headers=headers)
@@ -1542,9 +1542,7 @@ def check_platform_and_version(params: dict) -> bool:
         (bool): True if the platform is xsoar or xsoar hosted and no port specified, false otherwise
     """
     platform = demisto.demistoVersion().get("platform", "xsoar")
-    if platform in ["xsoar", "xsoar_hosted"] and not is_demisto_version_ge("8.0.0") and not params.get("longRunningPort"):
-        return True
-    return False
+    return platform in ["xsoar", "xsoar_hosted"] and not is_demisto_version_ge("8.0.0") and not params.get("longRunningPort")
 
 
 def main():

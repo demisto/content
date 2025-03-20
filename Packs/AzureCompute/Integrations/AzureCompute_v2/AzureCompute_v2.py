@@ -937,7 +937,7 @@ def get_public_ip_details_command(client: MsGraphClient, args: dict, params: dic
         response = get_single_ip_details_from_list_of_ip_details(response_for_all_ips, address_name)
         if not response:
             raise ValueError(
-                f"'{address_name}' was not found. " "Please try specifying the resource group the IP would be associated with."
+                f"'{address_name}' was not found. Please try specifying the resource group the IP would be associated with."
             )
         address_id = response.get("id")
         resource_group = address_id.split("resourceGroups/")[1].split("/providers")[0]

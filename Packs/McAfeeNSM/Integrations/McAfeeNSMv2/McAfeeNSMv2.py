@@ -1014,7 +1014,7 @@ def update_source_destination_object(
     if rule_object_id:
         if rule_object_id == -1:
             raise Exception(
-                "If you want to delete an address please provide is_overwrite=true and the relevant " "rule_object_id=-1."
+                "If you want to delete an address please provide is_overwrite=true and the relevant rule_object_id=-1."
             )
         new_object = {"RuleObjectId": rule_object_id, "RuleObjectType": rule_object_type}
         old_id = obj[0].get("RuleObjectId")
@@ -1526,7 +1526,7 @@ def create_rule_object_command(client: Client, args: dict) -> CommandResults:
     response = {"ruleobjId": response.get("createdResourceId")}
 
     return CommandResults(
-        readable_output=f'The rule object no.{response.get("ruleobjId")} ' f'was created successfully',
+        readable_output=f'The rule object no.{response.get("ruleobjId")} was created successfully',
         outputs_prefix="NSM.Rule",
         outputs=response,
         raw_response=response,

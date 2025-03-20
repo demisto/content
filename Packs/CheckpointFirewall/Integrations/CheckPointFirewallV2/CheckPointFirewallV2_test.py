@@ -172,7 +172,7 @@ def test_checkpoint_test_connection_command__not_logged_in(requests_mock):
     base_url = f"https://{SERVER_URL}"
     requests_mock.post(f"{base_url}/show-api-versions", json={"message": "Missing header: [X-chkp-sid]"})
     client = CheckPointFirewallV2.Client(base_url=base_url, use_ssl=False, use_proxy=False)
-    assert client.test_connection() == "\nWrong credentials! Please check the username and password you entered" " and try again."
+    assert client.test_connection() == "\nWrong credentials! Please check the username and password you entered and try again."
     assert not client.has_performed_login
 
 

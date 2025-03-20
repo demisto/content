@@ -152,7 +152,7 @@ list_files = [
         "_links": {
             "git": "https://api.github.com/repos/SomeUser/content/git/blobs/1111111111111111111111111111111111111111",
             "html": "https://github.com/SomeUser/content/blob/Hi_2/Packs/Hi/Integrations/Folder/hello.py",
-            "self": "https://api.github.com/repos/SomeUser/content/contents/Packs/Hi/Integrations/Folder/hello.py?ref" "=Hi_2",
+            "self": "https://api.github.com/repos/SomeUser/content/contents/Packs/Hi/Integrations/Folder/hello.py?ref=Hi_2",
         },
         "download_url": "https://raw.githubusercontent.com/SomeUser/content/Hi_2/Packs/Hi/Integrations/Folder/hello.py",
         "git_url": "https://api.github.com/repos/SomeUser/content/git/blobs/1111111111111111111111111111111111111111",

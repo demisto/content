@@ -247,9 +247,8 @@ def fetch_incidents(
         incident_created_time = alert_trigger_at.timestamp()
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-        if last_fetch:
-            if incident_created_time <= last_fetch:
-                continue
+        if last_fetch and incident_created_time <= last_fetch:
+            continue
 
         alert_timestamp = dateparser.parse(alert.get("timestamp"))  # type: ignore
         if not alert_timestamp:

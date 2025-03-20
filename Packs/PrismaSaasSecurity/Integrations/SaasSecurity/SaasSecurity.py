@@ -521,7 +521,7 @@ def fetch_incidents(
     ).get("resources", [])
 
     last_fetch_datetime = datetime.strptime(last_fetch, SAAS_SECURITY_DATE_FORMAT)
-    incidents = list()
+    incidents = []
     for inc in results:
         date_updated = inc.get("updated_at")
         date_updated_dt = datetime.strptime(date_updated, SAAS_SECURITY_DATE_FORMAT) + timedelta(milliseconds=1)
@@ -559,7 +559,8 @@ def get_remote_data_command(client, args):
     """
     remote_args = GetRemoteDataArgs(args)
     demisto.debug(
-        f"Performing get-remote-data command with incident id: {remote_args.remote_incident_id} and last_update: {remote_args.last_update}"
+        f"Performing get-remote-data command with incident id: {remote_args.remote_incident_id}"
+        f" and last_update: {remote_args.last_update}"
     )
 
     incident_data = {}
@@ -580,23 +581,22 @@ def get_remote_data_command(client, args):
         entries = []
 
         state = delta and delta.get("state")
-        if state and state.lower() == "closed":
-            if demisto.params().get("close_incident"):
-                demisto.debug(f"Incident is closed: {remote_args.remote_incident_id}")
-                entries.append(
-                    {
-                        "Type": EntryType.NOTE,
-                        "Contents": {"dbotIncidentClose": True, "closeReason": f'From SaasSecurity: {delta.get("category")}'},
-                        "ContentsFormat": EntryFormat.JSON,
-                    }
-                )
+        if state and state.lower() == "closed" and demisto.params().get("close_incident"):
+            demisto.debug(f"Incident is closed: {remote_args.remote_incident_id}")
+            entries.append(
+                {
+                    "Type": EntryType.NOTE,
+                    "Contents": {"dbotIncidentClose": True, "closeReason": f'From SaasSecurity: {delta.get("category")}'},
+                    "ContentsFormat": EntryFormat.JSON,
+                }
+            )
 
         demisto.debug(f"Update incident {remote_args.remote_incident_id} with fields: {delta}")
         return GetRemoteDataResponse(mirrored_object=delta, entries=entries)
 
     except Exception as e:
         demisto.debug(
-            f"Error in Saas Security incoming mirror for incident {remote_args.remote_incident_id} \n" f"Error message: {e!s}"
+            f"Error in Saas Security incoming mirror for incident {remote_args.remote_incident_id} \nError message: {e!s}"
         )
 
         if incident_data:
@@ -628,7 +628,7 @@ def get_modified_remote_data_command(client, args):
 
     raw_incidents = client.get_incidents(from_time=last_update_utc, limit=100).get("resources", [])
 
-    modified_incident_ids = list()
+    modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get("incident_id")
         modified_incident_ids.append(str(incident_id))
@@ -711,7 +711,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
             )
     else:
         demisto.debug(
-            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] " f"as it is not new nor changed."
+            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is not new nor changed."
         )
 
     return parsed_args.remote_incident_id

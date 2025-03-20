@@ -15,7 +15,7 @@ def get_phishing_map_labels(comma_values):
             labels_dict[splited[0].strip()] = splited[1].strip()
         else:
             labels_dict[v] = v
-    return {k: v for k, v in labels_dict.items()}
+    return dict(labels_dict.items())
 
 
 def build_query_in_reepect_to_phishing_labels(args):
