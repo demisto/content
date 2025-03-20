@@ -5,7 +5,7 @@ from CloudflareWAF import Client
 
 
 '''MOCK PARAMETERS '''
-CREDENTIALS = "credentials"
+CREDENTIALS = '{"Authorization": "Bearer YOUR_TOKEN"}'
 ACCOUNT_ID = "account_id"
 ZONE_ID = "zone_id"
 
