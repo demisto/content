@@ -23,7 +23,8 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "vkorenkov@varonis.com",
@@ -31,5 +32,11 @@
     ],
     "githubUser": [
         "vdobrotskyi-varonis"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
