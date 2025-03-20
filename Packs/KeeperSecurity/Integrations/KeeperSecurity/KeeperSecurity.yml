@@ -61,5 +61,6 @@ script:
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)
