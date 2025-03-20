@@ -15,24 +15,50 @@ def util_load_json(path: str):
 
 
 @pytest.mark.parametrize(
-    "command, expected_has_enabled_instance",
+    "command, modules, expected_has_enabled_instance",
     [
         pytest.param(
             Command("wildfire-get-verdict", {"file_hash": SHA_256_HASH}, Brands.WILDFIRE_V2),
+            {
+                "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
+                "instance_ir": {"brand": Brands.CORE_IR.value, "state": "disabled"},
+            },
             True,
-            id="Brand active",
+            id="Command brand active, other brand disabled",
         ),
         pytest.param(
             Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR),
+            {
+                "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
+                "instance_ir": {"brand": Brands.CORE_IR.value, "state": "disabled"},
+            },
             False,
-            id="Brand disabled",
+            id="Command brand disabled, other brand active",
+        ),
+        pytest.param(
+            Command("core-get-endpoints", {"limit": 10}, Brands.CORE_IR),
+            {
+                "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
+                "instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"},
+            },
+            True,
+            id="All brands active",
+        ),
+        pytest.param(
+            Command("wildfire-get-sample", {"sha256": SHA_256_HASH}, Brands.WILDFIRE_V2),
+            {
+                "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "disabled"},
+                "instance_ir": {"brand": Brands.CORE_IR.value, "state": "disabled"},
+            },
+            False,
+            id="All brands disabled",
         ),
     ],
 )
-def test_command_has_enabled_instance(command: Command, expected_has_enabled_instance: bool):
+def test_command_has_enabled_instance(command: Command, modules: dict, expected_has_enabled_instance: bool):
     """
     Given:
-        - Command objects with source brand and arguments dictionaries.
+        - Command objects with source brand and arguments dictionaries and modules context from `demisto.getModules()`.
 
     When:
         - Calling `Command.has_enabled_instance`.
@@ -40,11 +66,6 @@ def test_command_has_enabled_instance(command: Command, expected_has_enabled_ins
     Assert:
         - Ensure value is True if an integration instance of the brand is active. Otherwise, False.
     """
-    modules = {
-        "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
-        "instance_ir": {"brand": Brands.CORE_IR.value, "state": "disabled"},
-    }
-
     assert command.has_enabled_instance(modules) == expected_has_enabled_instance
 
 
