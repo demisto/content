@@ -37,11 +37,11 @@ def try_str_to_datetime(time: str) -> datetime:
         return datetime.strptime(time, ISO_8601_FORMAT).astimezone(timezone.utc)
     except Exception as _:
         pass
-    return datetime.strptime(time, TIME_FORMAT_WITHMS).astimezone(timezone.utc)
+    return datetime.strptime((time[:26] + 'Z') if len(time) > 26 else time, TIME_FORMAT_WITHMS).astimezone(timezone.utc)
 
 
 def get_current_datetime() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.utcnow().astimezone(timezone.utc)
 
 
 class FetchIncidentsError(Exception):
@@ -863,7 +863,12 @@ def generate_threat_incidents(client, threats, max_page_number, start_datetime, 
                 break
 
         threat_details["messages"] = all_filtered_messages
-        received_time = all_filtered_messages[0].get("receivedTime")
+        if all_filtered_messages:
+            received_time = all_filtered_messages[0].get("receivedTime")
+        elif threat_details.get("messages", []):
+            received_time = threat_details.get("messages", [])[0].get("receivedTime")
+        else:
+            received_time = ""
         incident = {
             "dbotMirrorId": str(threat["threatId"]),
             "name": "Threat",
@@ -934,28 +939,26 @@ def fetch_incidents(
     """
     try:
         last_fetch = last_run.get("last_fetch", first_fetch_time)
-        last_fetch_datetime = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
-        last_fetch = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+        last_fetch = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
 
-        start_time = last_fetch_datetime
         current_datetime = get_current_datetime()
-        end_time = current_datetime
+
+        start_time = last_fetch
+        end_time = datetime.now(timezone.utc)
 
         if polling_lag is not None:
             start_time = start_time - polling_lag
             end_time = end_time - polling_lag
 
-        current_datetime = get_current_datetime()
-        start_timestamp = start_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-        end_timestamp = end_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        start_timestamp = start_time.strftime(ISO_8601_FORMAT)
+        end_timestamp = end_time.strftime(ISO_8601_FORMAT)
 
-        current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         all_incidents = []
         current_pending_incidents_to_fetch = max_incidents_to_fetch
         threat_incidents, abuse_campaign_incidents, account_takeover_cases_incidents = [], [], []
 
         if fetch_threats:
-            threats_filter = f"remediationTimestamp gte {start_timestamp} and remediationTimestamp lte {end_timestamp}"
+            threats_filter = f"latestTimeRemediated gte {start_timestamp} and latestTimeRemediated lte {end_timestamp}"
             threats_response = client.get_paginated_threats_list(
                 filter_=threats_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
             threat_incidents = generate_threat_incidents(
@@ -964,14 +967,14 @@ def fetch_incidents(
         current_pending_incidents_to_fetch -= len(threat_incidents)
 
         if fetch_abuse_campaigns:
-            abuse_campaigns_filter = f"lastReportedTime gte {last_fetch}"
+            abuse_campaigns_filter = f"lastReportedTime gte {start_timestamp}"
             abuse_campaigns_response = client.get_paginated_abusecampaigns_list(
                 filter_=abuse_campaigns_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
             abuse_campaign_incidents = generate_abuse_campaign_incidents(client, abuse_campaigns_response.get('campaigns', []))
         current_pending_incidents_to_fetch -= len(abuse_campaign_incidents)
 
         if fetch_account_takeover_cases:
-            account_takeover_cases_filter = f"lastModifiedTime gte {last_fetch}"
+            account_takeover_cases_filter = f"lastModifiedTime gte {start_timestamp}"
             account_takeover_cases_response = client.get_paginated_cases_list(
                 filter_=account_takeover_cases_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
             account_takeover_cases_incidents = generate_account_takeover_cases_incidents(
@@ -983,7 +986,7 @@ def fetch_incidents(
         raise FetchIncidentsError(f"Error while fetching incidents: {e}")
 
     next_run = {
-        "last_fetch": current_iso_format_time
+        "last_fetch": current_datetime.strftime(ISO_8601_FORMAT)
     }
 
     return next_run, all_incidents[:max_incidents_to_fetch]
