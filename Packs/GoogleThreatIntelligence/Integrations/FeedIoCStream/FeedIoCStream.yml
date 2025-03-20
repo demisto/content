@@ -30,7 +30,7 @@ configuration:
   name: limit
   defaultvalue: '10'
   type: 0
-  additionalinfo: Limit of indicators to fetch from IoC Stream. Max 40.
+  additionalinfo: The maximum number of indicators to fetch from IoC Stream.
   required: false
   section: Collect
 - display: Indicator Reputation
@@ -124,13 +124,13 @@ script:
   commands:
   - arguments:
     - defaultValue: '10'
-      description: The maximum number of results to return. The default value is 10. Max 40.
+      description: The maximum number of results to return. The default value is 10.
       name: limit
     - description: Filter your IoC Stream (e.g., "source_type:hunting_ruleset" for LiveHunt, "source_type:retrohunt_job" for RetroHunt). Leave empty to receive all.
       name: filter
     description: Gets the indicators from Google Threat Intelligence IoC Stream.
     name: gti-iocstream-get-indicators
-  dockerimage: demisto/python3:3.11.10.111526
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
   script: '-'
