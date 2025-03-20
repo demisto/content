@@ -10,9 +10,10 @@ from collections.abc import Callable
 
 
 class Brands(Enum):
-    TIM = "TIM"  # Threat Intelligence Module
-    WILDFIRE_V2 = "WildFire-v2"  # Palo Alto Networks WildFire v2
-    CORE_IR = "Cortex Core - IR"  # Core - Investigation & Response
+    FILE_REPUTATION = "Reputation"  # [Built-in command] `!file` command
+    TIM = "TIM"  # [Built-in component] Threat Intelligence Module
+    WILDFIRE_V2 = "WildFire-v2"  # [Installable integration] Palo Alto Networks WildFire v2
+    CORE_IR = "Cortex Core - IR"  # [Installable integration] Core - Investigation & Response
 
     def __str__(self):
         """Formatted string representation for context output"""
@@ -312,6 +313,7 @@ def execute_file_reputation(command: Command) -> tuple[dict, list[CommandResults
     Returns:
         tuple[dict, list[CommandResults]]: A tuple of the transformed context output, and human-readable command results.
     """
+    demisto.debug(f"Starting to execute file reputation command with args: {command.args}.")
     entry_context, readable_command_results = command.execute()
 
     context_output: dict[str, Any] = {"DBotScore": []}
@@ -340,6 +342,7 @@ def execute_wildfire_verdict(command: Command) -> tuple[dict, list[CommandResult
     Returns:
         tuple[dict, list[CommandResults]]: A tuple of the transformed context output, and human-readable command results.
     """
+    demisto.debug(f"Starting to execute Wildfire verdict command with args: {command.args}.")
     entry_context, readable_command_results = command.execute()
 
     context_output: dict[str, Any] = {"DBotScore": []}
@@ -367,6 +370,7 @@ def execute_ir_hash_analytics(command: Command) -> tuple[dict, list[CommandResul
     Returns:
         tuple[dict, list[CommandResults]]: A tuple of the transformed context output, and human-readable command results.
     """
+    demisto.debug(f"Starting to execute IR hash analytics command with args: {command.args}.")
     entry_context, readable_command_results = command.execute()
 
     context_output: dict[str, Any] = {}  # No DBotScore in entry context
