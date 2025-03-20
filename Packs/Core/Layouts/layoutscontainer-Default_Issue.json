@@ -8,31 +8,31 @@
             },
             {
                 "id": "w68olunplf",
-                "name": "Alert Overview",
+                "name": "Issue Overview",
                 "sections": [
                     {
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 2,
                         "i": "w68olunplf-3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "details",
-                                "height": 52,
-                                "id": "454bde00-98d5-11ee-a5aa-39f0d8c6d1cc",
-                                "index": 0,
-                                "listId": "w68olunplf-3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
                             {
                                 "endCol": 2,
                                 "fieldId": "timestamp",
                                 "height": 26,
                                 "id": "ca3282e0-ac81-11ed-90e1-81bc84c0d1fb",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "alertid",
+                                "height": 26,
+                                "id": "abb90370-2762-11ec-9959-2922ebe0f011",
                                 "index": 1,
+                                "listId": "3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -41,7 +41,7 @@
                                 "fieldId": "type",
                                 "height": 26,
                                 "id": "incident-type-field",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -51,8 +51,28 @@
                                 "fieldId": "playbookid",
                                 "height": 26,
                                 "id": "incident-playbookId-field",
-                                "index": 4,
+                                "index": 3,
                                 "listId": "w68olunplf-3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourcehostname",
+                                "height": 26,
+                                "id": "bfb2d810-2762-11ec-9959-2922ebe0f011",
+                                "index": 4,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceip",
+                                "height": 26,
+                                "id": "c28fb940-2762-11ec-9959-2922ebe0f011",
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -62,7 +82,7 @@
                                 "fieldId": "severity",
                                 "height": 26,
                                 "id": "incident-severity-field",
-                                "index": 5,
+                                "index": 6,
                                 "listId": "3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -72,45 +92,16 @@
                                 "fieldId": "sourcebrand",
                                 "height": 26,
                                 "id": "incident-sourceBrand-field",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "tags",
-                                "height": 26,
-                                "id": "10f0cfa0-9810-11ee-99ee-4be4f8dc69b3",
                                 "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "sourceip",
+                                "fieldId": "sourceinstance",
                                 "height": 26,
-                                "id": "c28fb940-2762-11ec-9959-2922ebe0f011",
+                                "id": "incident-sourceInstance-field",
                                 "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "mitreattcktactic",
-                                "height": 26,
-                                "id": "6bd5e520-98d5-11ee-a5aa-39f0d8c6d1cc",
-                                "index": 9,
-                                "listId": "w68olunplf-3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "mitreattcktechnique",
-                                "height": 26,
-                                "id": "769a1710-98d5-11ee-a5aa-39f0d8c6d1cc",
-                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -118,15 +109,28 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Alert Details",
+                        "name": "Issue Details",
                         "static": false,
                         "w": 1,
                         "x": 0,
                         "y": 0
                     },
                     {
+                        "h": 2,
+                        "i": "w68olunplf-3podiwrjhh-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 3,
                         "i": "w68olunplf-3podiwrjhh-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxW": 3,
                         "minH": 1,
@@ -135,12 +139,12 @@
                         "static": false,
                         "type": "workplan",
                         "w": 1,
-                        "x": 1,
+                        "x": 2,
                         "y": 0
                     },
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 2,
                         "i": "w68olunplf-3podiwrjhh-caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
@@ -178,15 +182,101 @@
                         "name": "Closing Information",
                         "static": false,
                         "w": 1,
-                        "x": 1,
+                        "x": 0,
                         "y": 4
                     },
                     {
+                        "h": 4,
+                        "i": "w68olunplf-3podiwrjhh-9e343160-ac82-11ed-90e1-81bc84c0d1fb",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Command and Task Results",
+                        "query": {
+                            "categories": [
+                                "commandAndResults",
+                                "playbookTaskResult",
+                                "playbookTaskStartAndDone",
+                                "playbookErrors"
+                            ],
+                            "preDefinedFilters": true,
+                            "tags": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "w68olunplf-3podiwrjhh-22ce89f0-b040-11ed-95eb-6fbf73c92c07",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Malicious or Suspicious Indicators",
+                        "query": "reputation:Bad or reputation:Suspicious",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "w68olunplf-3podiwrjhh-5b7abf80-b040-11ed-95eb-6fbf73c92c07",
                         "items": [
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "cabada80-b057-11ed-95eb-6fbf73c92c07",
+                                "index": 0,
+                                "listId": "3podiwrjhh-5b7abf80-b040-11ed-95eb-6fbf73c92c07",
+                                "name": "Extract indicators from text file",
+                                "scriptId": "ExtractIndicatorsFromTextFile",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "exclude_TLD": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "exclude_indicators": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "unescape_domain": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "cc0ed1c0-b057-11ed-95eb-6fbf73c92c07",
+                                "index": 1,
+                                "listId": "3podiwrjhh-5b7abf80-b040-11ed-95eb-6fbf73c92c07",
+                                "name": "Extract indicators from a blog",
+                                "scriptId": "ParseHTMLIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
                             {
                                 "args": {
                                     "using-brand": {
@@ -201,7 +291,7 @@
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "cd789af0-b057-11ed-95eb-6fbf73c92c07",
-                                "index": 0,
+                                "index": 2,
                                 "listId": "3podiwrjhh-5b7abf80-b040-11ed-95eb-6fbf73c92c07",
                                 "name": "Enrich indicators",
                                 "scriptId": "Builtin|||enrichIndicators",
@@ -217,10 +307,48 @@
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "199cd250-b055-11ed-95eb-6fbf73c92c07",
-                                "index": 1,
+                                "index": 3,
                                 "listId": "3podiwrjhh-5b7abf80-b040-11ed-95eb-6fbf73c92c07",
                                 "name": "Tag Indicators",
                                 "scriptId": "AppendindicatorFieldWrapper",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "comment": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "1760ec10-b055-11ed-95eb-6fbf73c92c07",
+                                "index": 4,
+                                "name": "Block Hash List",
+                                "scriptId": "Cortex Core - IR|||core-blocklist-files",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "comment": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "18782870-b055-11ed-95eb-6fbf73c92c07",
+                                "index": 5,
+                                "name": "Allow Hash List",
+                                "scriptId": "Cortex Core - IR|||core-allowlist-files",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }
@@ -232,11 +360,11 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "w68olunplf-3podiwrjhh-c0edb6d0-b1d8-11ed-922b-b50d0a485e48",
                         "items": [
@@ -247,8 +375,22 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
-                                "id": "5231c120-b1db-11ed-922b-b50d0a485e48",
+                                "id": "557b46d0-b1db-11ed-922b-b50d0a485e48",
                                 "index": 0,
+                                "name": "Domain Prevalence",
+                                "scriptId": "Cortex Core - IR|||core-get-domain-analytics-prevalence",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "5231c120-b1db-11ed-922b-b50d0a485e48",
+                                "index": 1,
                                 "name": "IP Prevalence",
                                 "scriptId": "Cortex Core - IR|||core-get-IP-analytics-prevalence",
                                 "sectionItemType": "button",
@@ -261,10 +403,52 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
+                                "id": "5359ed70-b1db-11ed-922b-b50d0a485e48",
+                                "index": 2,
+                                "name": "Hash Prevalence",
+                                "scriptId": "Cortex Core - IR|||core-get-hash-analytics-prevalence",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "56c44190-b1db-11ed-922b-b50d0a485e48",
+                                "index": 3,
+                                "name": "Process Prevalence",
+                                "scriptId": "Cortex Core - IR|||core-get-process-analytics-prevalence",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
                                 "id": "57db2fd0-b1db-11ed-922b-b50d0a485e48",
-                                "index": 1,
-                                "name": "User Prevalence",
-                                "scriptId": "DisableUserWrapper",
+                                "index": 4,
+                                "name": "CMD Prevalence",
+                                "scriptId": "Cortex Core - IR|||core-get-cmd-analytics-prevalence",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "59147320-b1db-11ed-922b-b50d0a485e48",
+                                "index": 5,
+                                "name": "Registry Prevalence",
+                                "scriptId": "Cortex Core - IR|||core-get-registry-analytics-prevalence",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }
@@ -280,83 +464,34 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 2,
                         "hideName": false,
                         "i": "w68olunplf-3podiwrjhh-68821790-b77b-11ed-a817-f75b1612b8eb",
                         "items": [
                             {
                                 "endCol": 2,
+                                "fieldId": "hostname",
+                                "height": 26,
+                                "id": "81791550-b77b-11ed-a817-f75b1612b8eb",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "hostip",
+                                "height": 26,
+                                "id": "831d4f70-b77b-11ed-a817-f75b1612b8eb",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "username",
                                 "height": 26,
                                 "id": "88fe9700-b77b-11ed-a817-f75b1612b8eb",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "samaccountname",
-                                "height": 26,
-                                "id": "30c1b470-98ce-11ee-8aac-c7473a83f305",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "accountstatus",
-                                "height": 26,
-                                "id": "38a50d90-98ce-11ee-8aac-c7473a83f305",
                                 "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "email",
-                                "height": 26,
-                                "id": "4d3ebd00-9810-11ee-99ee-4be4f8dc69b3",
-                                "index": 3,
-                                "listId": "w68olunplf-3podiwrjhh-68821790-b77b-11ed-a817-f75b1612b8eb",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "accountmemberof",
-                                "height": 26,
-                                "id": "06c05890-9818-11ee-99ee-4be4f8dc69b3",
-                                "index": 4,
-                                "listId": "w68olunplf-3podiwrjhh-68821790-b77b-11ed-a817-f75b1612b8eb",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "cloudaccountid",
-                                "height": 26,
-                                "id": "593a3cd0-9818-11ee-99ee-4be4f8dc69b3",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "accountid",
-                                "height": 26,
-                                "id": "d6fc9860-98cd-11ee-8aac-c7473a83f305",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "manageremailaddress",
-                                "height": 26,
-                                "id": "2ef1f0f0-98e3-11ee-a5aa-39f0d8c6d1cc",
-                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -364,89 +499,11 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Identity Details",
+                        "name": "Target Identification",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 3,
-                        "hideName": false,
-                        "i": "w68olunplf-a0a75d10-98cb-11ee-8aac-c7473a83f305",
-                        "items": [
-                            {
-                                "args": {},
-                                "buttonClass": "error",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 44,
-                                "hexColor": null,
-                                "id": "58c9e200-98cc-11ee-8aac-c7473a83f305",
-                                "index": 0,
-                                "name": "Clear User's Sessions - Okta ",
-                                "scriptId": "Okta v2|||okta-clear-user-sessions",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {},
-                                "buttonClass": "error",
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 44,
-                                "hexColor": null,
-                                "id": "5ed87b20-98cc-11ee-8aac-c7473a83f305",
-                                "index": 1,
-                                "listId": "w68olunplf-a0a75d10-98cb-11ee-8aac-c7473a83f305",
-                                "name": "Revoke User's Sessions - Azure",
-                                "scriptId": "Microsoft Graph User|||msgraph-user-session-revoke",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {},
-                                "buttonClass": "error",
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 44,
-                                "hexColor": null,
-                                "id": "af5e7ea0-98cc-11ee-8aac-c7473a83f305",
-                                "index": 2,
-                                "listId": "w68olunplf-a0a75d10-98cb-11ee-8aac-c7473a83f305",
-                                "name": "Reset Password - Active Directory",
-                                "scriptId": "Active Directory Query v2|||ad-set-new-password",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {},
-                                "buttonClass": "error",
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 44,
-                                "hexColor": null,
-                                "id": "af5e7ea0-98cc-11ee-8aac-c7473a83f305",
-                                "index": 3,
-                                "listId": "w68olunplf-a0a75d10-98cb-11ee-8aac-c7473a83f305",
-                                "name": "Disable Account",
-                                "scriptId": "DisableUserWrapper",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Response Actions",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
+                        "y": 2
                     }
                 ],
                 "showEmptyFields": true,
@@ -458,8 +515,134 @@
                 "name": "Technical Information",
                 "sections": [
                     {
-                        "h": 8,
-                        "i": "w68olunplf-3podiwrjhh-bc5306a0-9fdd-11ed-882b-b559788954b9",
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "3podiwrjhh-caseinfoid-38f848d0-9a45-11ed-aff5-5d4496197108",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "agent_ip_addresses",
+                                "height": 26,
+                                "id": "b7595950-a2e5-11ed-81fe-3f9032ac5cab",
+                                "index": -2,
+                                "listId": "3podiwrjhh-caseinfoid-38f848d0-9a45-11ed-aff5-5d4496197108",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "remotehost",
+                                "height": 26,
+                                "id": "84f9a7d0-b73f-11ed-977b-dd8e6ac87856",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "remoteip",
+                                "height": 26,
+                                "id": "73f879c0-b73f-11ed-977b-dd8e6ac87856",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "remoteport",
+                                "height": 26,
+                                "id": "771ceb40-b73f-11ed-977b-dd8e6ac87856",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "emailrecipient",
+                                "height": 26,
+                                "id": "068bfa90-b75a-11ed-b1c8-ebf36972036b",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "targetprocessname",
+                                "height": 26,
+                                "id": "a4917850-b75a-11ed-b1c8-ebf36972036b",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "targetprocesssha256",
+                                "height": 26,
+                                "id": "a5cb30d0-b75a-11ed-b1c8-ebf36972036b",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "targetprocesscmd",
+                                "height": 26,
+                                "id": "a6abf3e0-b75a-11ed-b1c8-ebf36972036b",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "filename",
+                                "height": 26,
+                                "id": "2d64c880-b75b-11ed-b1c8-ebf36972036b",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "filemd5",
+                                "height": 26,
+                                "id": "30bcf430-b75b-11ed-b1c8-ebf36972036b",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "filesha256",
+                                "height": 26,
+                                "id": "32744120-b75b-11ed-b1c8-ebf36972036b",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "filepath",
+                                "height": 26,
+                                "id": "33aa2910-b75b-11ed-b1c8-ebf36972036b",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Destination Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "h": 4,
+                        "i": "3podiwrjhh-bc5306a0-9fdd-11ed-882b-b559788954b9",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -469,25 +652,21 @@
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
-                        "w": 1,
-                        "x": 2,
+                        "w": 2,
+                        "x": 1,
                         "y": 0
                     },
                     {
-                        "description": "Additional Found alerts by Mitre tactics related to the user.",
-                        "displayType": "ROW",
                         "h": 3,
-                        "hideName": false,
-                        "i": "w68olunplf-86548370-9808-11ee-b83f-43a8d6b51fe8",
+                        "i": "3podiwrjhh-5183f540-ab96-11ed-baee-3d8f7e1bb0df",
                         "items": [
                             {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "alertsearchresults",
-                                "height": 106,
-                                "id": "924379c0-9808-11ee-b83f-43a8d6b51fe8",
+                                "endCol": 2,
+                                "fieldId": "incident_labels",
+                                "height": 26,
+                                "id": "517b1ba0-ab96-11ed-baee-3d8f7e1bb0df",
                                 "index": 0,
-                                "listId": "w68olunplf-86548370-9808-11ee-b83f-43a8d6b51fe8",
+                                "isVisible": true,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -495,44 +674,99 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Found Related Alerts",
+                        "name": "Unmapped fields",
                         "static": false,
+                        "type": "labels",
                         "w": 2,
-                        "x": 0,
-                        "y": 2
+                        "x": 1,
+                        "y": 4
                     },
                     {
-                        "displayType": "CARD",
-                        "h": 2,
+                        "displayType": "ROW",
+                        "h": 3,
                         "hideName": false,
-                        "i": "w68olunplf-9915bec0-980d-11ee-99ee-4be4f8dc69b3",
+                        "i": "3podiwrjhh-1b0aaae0-b73f-11ed-977b-dd8e6ac87856",
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "numberoffoundrelatedalerts",
-                                "height": 53,
-                                "id": "ca488090-980d-11ee-99ee-4be4f8dc69b3",
+                                "fieldId": "hostname",
+                                "height": 26,
+                                "id": "886de700-b73f-11ed-977b-dd8e6ac87856",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "failedlogonevents",
-                                "height": 53,
-                                "id": "e8499fc0-980d-11ee-99ee-4be4f8dc69b3",
+                                "fieldId": "localip",
+                                "height": 26,
+                                "id": "3608ea50-b73f-11ed-977b-dd8e6ac87856",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "endCol": 2,
+                                "fieldId": "localport",
+                                "height": 26,
+                                "id": "381423a0-b73f-11ed-977b-dd8e6ac87856",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "username",
+                                "height": 26,
+                                "id": "9dc24820-b777-11ed-8813-5b758e756634",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "emailsender",
+                                "height": 26,
+                                "id": "01033340-b75a-11ed-b1c8-ebf36972036b",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "initiatedby",
+                                "height": 26,
+                                "id": "99158f20-b75a-11ed-b1c8-ebf36972036b",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "userrisklevel",
-                                "height": 53,
-                                "id": "dcabafa0-980d-11ee-99ee-4be4f8dc69b3",
-                                "index": 2,
-                                "listId": "w68olunplf-9915bec0-980d-11ee-99ee-4be4f8dc69b3",
+                                "fieldId": "initiatormd5",
+                                "height": 26,
+                                "id": "41fb0430-b75b-11ed-b1c8-ebf36972036b",
+                                "index": 7,
+                                "listId": "3podiwrjhh-1b0aaae0-b73f-11ed-977b-dd8e6ac87856",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "initiatorsha256",
+                                "height": 26,
+                                "id": "9d3306a0-b75a-11ed-b1c8-ebf36972036b",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "initiatorcmd",
+                                "height": 26,
+                                "id": "9f4a4de0-b75a-11ed-b1c8-ebf36972036b",
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -540,43 +774,12 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Investigation Results",
+                        "name": "Source Details",
                         "static": false,
                         "w": 1,
-                        "x": 1,
-                        "y": 0
-                    },
-                    {
-                        "h": 2,
-                        "i": "w68olunplf-05a38270-980e-11ee-99ee-4be4f8dc69b3",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Investigation Verdict",
-                        "query": "VerdictResult",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamic",
-                        "w": 1,
+                        "wrapLabels": true,
                         "x": 0,
                         "y": 0
-                    },
-                    {
-                        "h": 3,
-                        "i": "w68olunplf-6ee6cfe0-982b-11ee-9d69-eb396ec63adf",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Malicious or Suspicious Indicators",
-                        "query": "reputation:Bad or reputation:Suspicious",
-                        "queryType": "input",
-                        "static": false,
-                        "type": "indicators",
-                        "w": 2,
-                        "x": 0,
-                        "y": 5
                     }
                 ],
                 "showEmptyFields": true,
@@ -966,8 +1169,8 @@
         ]
     },
     "group": "incident",
-    "id": "Identity Analytics Alerts",
-    "name": "Identity Analytics Alerts",
+    "id": "Default",
+    "name": "Default",
     "quickView": {
         "sections": [
             {
@@ -1054,6 +1257,10 @@
                     {
                         "fieldId": "incident_phonenumber",
                         "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tags",
+                        "isVisible": true
                     }
                 ],
                 "isVisible": true,
@@ -1082,10 +1289,9 @@
     },
     "system": false,
     "version": -1,
-    "fromVersion": "6.10.0",
+    "fromVersion": "6.8.0",
     "description": "",
     "marketplaces": [
-        "marketplacev2",
-        "xpanse"
+        "platform"
     ]
 }
