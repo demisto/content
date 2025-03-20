@@ -339,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 38413bd4-068b-4893-bef6-84092de8e2f7
+    taskid: f08fe1d4-5b5c-4301-a44e-2675e47330ef
     type: regular
     task:
-      id: 38413bd4-068b-4893-bef6-84092de8e2f7
+      id: f08fe1d4-5b5c-4301-a44e-2675e47330ef
       version: -1
       name: Search for user related alerts
       description: |-
@@ -360,7 +360,7 @@ tasks:
       extend-context:
         simple: RelatedUserAlertsResults=
       fromdate:
-        simple: 1 hours ago
+        simple: 2 hours ago
       ignore-outputs:
         simple: "true"
       includeinformational:
@@ -375,7 +375,7 @@ tasks:
       {
         "position": {
           "x": 2124,
-          "y": 692
+          "y": 690
         }
       }
     note: false
@@ -387,10 +387,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: e92500a7-896d-499d-889e-aa5cf7f28e95
+    taskid: 2392caac-db5f-49e5-8b00-3039cbae5920
     type: regular
     task:
-      id: e92500a7-896d-499d-889e-aa5cf7f28e95
+      id: 2392caac-db5f-49e5-8b00-3039cbae5920
       version: -1
       name: Count found related alerts
       description: Counts the number of found related alerts.
@@ -408,6 +408,11 @@ tasks:
         complex:
           root: RelatedUserAlertsResults
           transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=Array.isArray(val) ? val : Object.values(val)'
           - operator: count
     separatecontext: false
     continueonerrortype: ""
@@ -571,10 +576,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: c89ca767-4745-455c-94fa-624889834f09
+    taskid: 0d707528-17eb-4308-a565-eb0d954c99bd
     type: regular
     task:
-      id: c89ca767-4745-455c-94fa-624889834f09
+      id: 0d707528-17eb-4308-a565-eb0d954c99bd
       version: -1
       name: Get Azure risky users
       description: Returns a list of all risky users and their properties.
@@ -589,7 +594,7 @@ tasks:
       risk_level:
         simple: high
       updated_after:
-        simple: 1 day
+        simple: 2 days
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -609,10 +614,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: ff83e272-69d7-4bb6-822c-3ff69c39c03e
+    taskid: 7aad704c-1e57-4f01-825b-81bbfa4cf682
     type: condition
     task:
-      id: ff83e272-69d7-4bb6-822c-3ff69c39c03e
+      id: 7aad704c-1e57-4f01-825b-81bbfa4cf682
       version: -1
       name: Check if the user is risky
       description: Checks if the user is indicated as risky in Azure AD.
@@ -832,10 +837,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: a933af40-2ee5-41ab-979c-8d98a7d50eb4
+    taskid: d9179648-e64c-4aba-b49a-a56ff0118a50
     type: regular
     task:
-      id: a933af40-2ee5-41ab-979c-8d98a7d50eb4
+      id: d9179648-e64c-4aba-b49a-a56ff0118a50
       version: -1
       name: Save detection results
       description: Saves a context key with a value of 1 if the user is risky in Core IR, 0 otherwise.
@@ -1469,7 +1474,7 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "22_26_#default#": 0.22,
+      "22_26_#default#": 0.12,
       "33_42_#default#": 0.12,
       "38_41_Disable": 0.57,
       "38_42_Do not disable": 0.23
