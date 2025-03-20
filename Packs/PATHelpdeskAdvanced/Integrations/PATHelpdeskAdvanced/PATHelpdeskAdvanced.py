@@ -119,7 +119,7 @@ class Filter(NamedTuple):
     def _parse(string: str) -> "Filter":
         if not (match := FILTER_CONDITION_REGEX.match(string)):
             raise DemistoException(
-                f"Cannot parse {string}. " 'Expected a phrase of the form ["key" operator "value"] or ["key" operator null]'
+                f'Cannot parse {string}. Expected a phrase of the form ["key" operator "value"] or ["key" operator null]'
             )
         return Filter(
             key=match["key"],

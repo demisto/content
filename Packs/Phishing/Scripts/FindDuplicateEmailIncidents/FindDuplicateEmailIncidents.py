@@ -357,10 +357,10 @@ def create_new_incident_low_similarity(duplicate_incidents_df):
         formatted_incident, headers = format_incident_hr(duplicate_incidents_df)
         message += tableToMarkdown("Most similar incidents found", formatted_incident, headers=headers)
         message += (
-            "The threshold for considering 2 incidents as duplicate is a similarity " f"of {SIMILARITY_THRESHOLD * 100:.1f}%.\n"
+            f"The threshold for considering 2 incidents as duplicate is a similarity of {SIMILARITY_THRESHOLD * 100:.1f}%.\n"
         )
         message += (
-            "Therefore these 2 incidents will not be considered as duplicate and the current incident " "will remain active.\n"
+            "Therefore these 2 incidents will not be considered as duplicate and the current incident will remain active.\n"
         )
     return_entry(message)
 
@@ -389,7 +389,7 @@ def main():
         max_incidents_to_return = int(max_incidents_to_return)
     except Exception:
         return_error(
-            f'Illegal value of arguement "maxIncidentsToReturn": {max_incidents_to_return}. ' "Value should be an integer"
+            f'Illegal value of arguement "maxIncidentsToReturn": {max_incidents_to_return}. Value should be an integer'
         )
     new_incident = demisto.incidents()[0]
     type_field = input_args.get("incidentTypeFieldName", "type")

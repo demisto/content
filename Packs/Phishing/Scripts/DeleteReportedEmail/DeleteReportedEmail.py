@@ -177,11 +177,7 @@ def was_email_found_security_and_compliance(search_results: list):
 
     """
     success_results = search_results[0].get("SuccessResults").split(", ")
-    for item in success_results:
-        if item.startswith("Item count"):
-            if int(item.split(": ")[1]) > 0:
-                return True
-    return False
+    return any(item.startswith("Item count") and int(item.split(": ")[1]) > 0 for item in success_results)
 
 
 def security_and_compliance_delete_mail(
@@ -304,7 +300,7 @@ def get_search_args(args: dict):
     delete_from_brand = delete_from_brand_handler(incident_info, args)
 
     missing_field_error_message = (
-        "'{field_name}' field could not be found.\n" f"See {DOCS_TROUBLESHOOTING_URL} for possible solutions."
+        f"'{{field_name}}' field could not be found.\nSee {DOCS_TROUBLESHOOTING_URL} for possible solutions."
     )
 
     if not email_origin or email_origin.lower() == "none":
@@ -328,7 +324,7 @@ def get_search_args(args: dict):
         "EWS v2": {"target-mailbox": user_id},
         "MicrosoftGraphMail": {
             "user_id": user_id,
-            "odata": f'"$filter=internetMessageId eq ' f"'{quote(unquote(message_id))}'\"",
+            "odata": f'"$filter=internetMessageId eq ' f"'{quote(unquote(message_id))}'\"",  # noqa: ISC001
         },
         "SecurityAndCompliance": {"to_user_id": user_id, "from_user_id": from_user_id},
         "SecurityAndComplianceV2": {"to_user_id": user_id, "from_user_id": from_user_id},

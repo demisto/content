@@ -73,7 +73,7 @@ def test_validated_search_terms_bad_arg():
     with pytest.raises(ValueError) as e:
         validated_search_terms(pre_validation)
     if not e:
-        assert False
+        pytest.fail()
     else:
         assert e.value.args[0] == "Country ISO code should be 3 characters long"
 
@@ -187,7 +187,7 @@ def test_results_in_progress_polling_true_with_file(mocker, requests_mock):
     assert len(scan_result) == len(hash_response_json) + 1
     assert [o["state"] for o in scan_result[0].outputs] == ["SUCCESS", "SUCCESS"]
     assert [o["verdict"] for o in scan_result[0].outputs] == ["malicious", "malicious"]
-    assert [o.bwc_fields["url_analysis"] for o in map(lambda x: x.indicator, scan_result[1:])] == [False, False]
+    assert [o.bwc_fields["url_analysis"] for o in (x.indicator for x in scan_result[1:])] == [False, False]
 
 
 def test_results_in_progress_polling_false(requests_mock):
@@ -384,7 +384,9 @@ def test_crowdstrike_submit_url_command_poll(requests_mock, mocker):
         client, {"url": BASE_URL, "environmentID": 300, "comment": "some comment", "polling": True}
     )
 
-    assert submit_call.called and search_call.called and state_call.called
+    assert submit_call.called
+    assert search_call.called
+    assert state_call.called
 
     assert submit_response in [args.args[0]["Contents"] for args in list(demisto.results.call_args_list)]
     assert result.scheduled_command is not None
@@ -398,7 +400,7 @@ def test_get_api_id_onlyfile():
     with pytest.raises(ValueError) as e:
         get_api_id({"file": "filename", "environmentId": "", "JobID": ""})
     if not e:
-        assert False
+        pytest.fail()
     else:
         assert e.value.args[0] == "Must supply JobID or environmentID and file"
 
@@ -440,8 +442,8 @@ def test_crowdstrike_analysis_overview_refresh_command(requests_mock):
     assert (
         crowdstrike_analysis_overview_refresh_command(client, {"file": "filehash"}).readable_output
         == "The request to refresh the analysis overview was sent successfully."
-        and call.called
     )
+    assert call.called
 
 
 def test_crowdstrike_analysis_overview_command(requests_mock):
@@ -492,4 +494,5 @@ def test_main(command_name, method_name, mocker):
     mocker.patch.object(demisto, "args", return_value={})
     env_method_mock = mocker.patch(f"CrowdStrikeFalconSandboxV2.{method_name}", return_value="OK")
     main()
-    assert env_method_mock.called and env_method_mock.return_value == "OK"
+    assert env_method_mock.called
+    assert env_method_mock.return_value == "OK"

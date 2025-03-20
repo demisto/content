@@ -4,8 +4,8 @@ from CommonServerPython import *  # noqa: F401
 
 def salesforce_ask_user():
     retries = int(demisto.args().get("retries"))
-    persistent = True if demisto.args().get("persistent") == "true" else False
-    for i in range(retries):
+    persistent = demisto.args().get("persistent") == "true"
+    for _i in range(retries):
         res = demisto.executeCommand("addEntitlement", {"persistent": persistent})
         if isError(res[0]):
             if "[investigations] [investigation] (15)" in res[0]["Contents"]:
@@ -15,7 +15,7 @@ def salesforce_ask_user():
         entitlement = res[0]["Contents"]
         break
 
-    comment_suffix = " - #{0} {1}".format(demisto.incidents()[0]["id"], entitlement)
+    comment_suffix = f" - #{demisto.incidents()[0]['id']} {entitlement}"
     task = demisto.args().get("task")
     if task:
         comment_suffix += f" #{task}"

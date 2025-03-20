@@ -99,7 +99,7 @@ def test_block_builder_command_list(mocker):
             return [
                 {
                     "Type": entryTypes["note"],
-                    "HumanReadable": "Message sent to Slack successfully.\nThread ID is: " "1660645689.649679",
+                    "HumanReadable": "Message sent to Slack successfully.\nThread ID is: 1660645689.649679",
                     "Contents": {
                         "ts": "ts",
                         "channel": "channel",
@@ -136,7 +136,7 @@ def test_block_builder_command_url(mocker):
             return [
                 {
                     "Type": entryTypes["note"],
-                    "HumanReadable": "Message sent to Slack successfully.\nThread ID is: " "1660645689.649679",
+                    "HumanReadable": "Message sent to Slack successfully.\nThread ID is: 1660645689.649679",
                     "Contents": {
                         "ts": "ts",
                         "channel": "channel",

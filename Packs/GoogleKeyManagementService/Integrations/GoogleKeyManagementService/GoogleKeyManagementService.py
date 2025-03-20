@@ -1253,7 +1253,7 @@ def get_public_key_command(client: Client, args: dict[str, Any]) -> tuple[str, d
 
     return (
         f"The Public Key for CryptoKey {crypto_key_id} is:\n{public_key_context.get('PEM')}",
-        {f"{INTEGRATION_CONTEXT_NAME}.PublicKey(val.CryptoKey == obj.CryptoKey " f"&& val.PEM == obj.PEM": public_key_context},
+        {f"{INTEGRATION_CONTEXT_NAME}.PublicKey(val.CryptoKey == obj.CryptoKey && val.PEM == obj.PEM": public_key_context},
         public_key_context,
     )
 

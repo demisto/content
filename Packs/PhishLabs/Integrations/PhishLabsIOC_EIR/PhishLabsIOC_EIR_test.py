@@ -408,8 +408,6 @@ def test_duplicated_incident(mocker):
     )
 
     assert len(incident_report) == 3
-    assert "1"
-    assert "2"
     assert "3" in new_last_run.get("lastIds")
 
     incidents = [

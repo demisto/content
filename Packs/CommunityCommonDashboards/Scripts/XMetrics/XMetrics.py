@@ -70,7 +70,7 @@ def SetMetricColors(wstats: list, metrictype: str) -> list:
 
     for stat in wstats:
         i = 0
-        for g in stat["groups"]:
+        for _g in stat["groups"]:
             stat["groups"][i]["color"] = colors[i % len(colors)]
             i += 1
 
@@ -90,9 +90,8 @@ def TaskWidgetGroup(wstats: list, name: str, groups: list) -> list:
 def LoadList(listname: str) -> dict:
     results = demisto.executeCommand("getList", {"listName": listname})[0]["Contents"]
     fields = {}
-    if "Item not found" not in results and (results is not None or results != ""):
-        if results != "":
-            fields = json.loads(results)
+    if "Item not found" not in results and (results is not None or results != "") and results != "":
+        fields = json.loads(results)
     return fields
 
 
@@ -104,7 +103,7 @@ def BuildIncidentTable(incidents, metrictype: str) -> dict:
 
     for inctype, v in incidents.items():
         monthindex = 0
-        for month, cnt in v.items():
+        for _month, cnt in v.items():
             if inctype not in table:
                 table[inctype] = [0] * 12
             table[inctype][monthindex] = int(int(cnt) / divisor)
@@ -119,7 +118,7 @@ def BuildEffortReductionTable(incidents, efforts) -> dict:
 
     for inctype, v in incidents.items():
         monthindex = 0
-        for month, val in v.items():
+        for _month, val in v.items():
             ival = int(val)
             if inctype in efforts:
                 deleff = efforts[inctype][0] - efforts[inctype][1]
@@ -134,7 +133,7 @@ def BuildEffortReductionTable(incidents, efforts) -> dict:
 
     for inctype, v in table.items():
         monthindex = 0
-        for month in v:
+        for _month in v:
             if total[monthindex] > 0:
                 table[inctype][monthindex] = int((table[inctype][monthindex] / total[monthindex]) * 100.0)
             monthindex += 1
@@ -153,7 +152,7 @@ def BuildEffortTable(incidents, efforts) -> dict:
     for inctype, v in incidents.items():
         # Sum the incident counts times the effort estimates in minutes, converted to hours
         monthindex = 0
-        for month, val in v.items():
+        for _month, val in v.items():
             if inctype in efforts:
                 table["Manual Incident Effort"][monthindex] += int((int(val) * efforts[inctype][0]) / 60)
                 table["Automated Incident Effort"][monthindex] += int((int(val) * efforts[inctype][1]) / 60)

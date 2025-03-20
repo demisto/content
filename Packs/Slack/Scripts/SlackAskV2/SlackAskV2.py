@@ -70,7 +70,7 @@ def main():
     if response_type == "thread":
         for option in user_options:
             options.append(option.split("#")[0])
-        string_options = " or ".join(list(map(lambda o: f"`{o}`", options)))
+        string_options = " or ".join([f"`{o}`" for o in options])
         message = "{} - Please reply to this thread with {}.".format(demisto.args()["message"], string_options)
         args["message"] = json.dumps(
             {
@@ -120,7 +120,7 @@ def main():
     except ValueError as e:
         if "Unsupported Command" in str(e):
             return_error(
-                "The command is unsupported by this script. If you have SlackV2 enabled, " "please use SlackAsk instead."
+                "The command is unsupported by this script. If you have SlackV2 enabled, please use SlackAsk instead."
             )
         else:
             return_error("An error has occurred while executing the send-notification command", error=e)

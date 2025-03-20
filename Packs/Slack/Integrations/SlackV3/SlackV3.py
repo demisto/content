@@ -770,7 +770,7 @@ def mirror_investigation():
             if mirror_to != "channel" or private:
                 body["is_private"] = True
 
-            conversation = send_slack_request_sync(
+            conversation = send_slack_request_sync(  # type: ignore[var-annotated]
                 CLIENT,
                 "conversations.create",  # type: ignore
                 body=body,
@@ -1379,7 +1379,8 @@ def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
     entitlement_match = re.search(ENTITLEMENT_REGEX, text)
     if entitlement_match:
         content, guid, incident_id, task_id = extract_entitlement(entitlement_match.group(), text)
-        demisto.handleEntitlementForUser(incident_id, guid, user.get("profile", {}).get("email"), content, task_id)  # type: ignore
+        demisto.handleEntitlementForUser(incident_id, guid, user.get(
+            "profile", {}).get("email"), content, task_id)  # type: ignore
 
         return "Thank you for your response."
     else:
@@ -1482,7 +1483,7 @@ def fetch_context(force_refresh: bool = False) -> dict:
     now = int(datetime.now(timezone.utc).timestamp())
     if (now >= CACHE_EXPIRY) or force_refresh:
         demisto.debug(
-            f"Cached context has expired or forced refresh. forced refresh value is {force_refresh}. " f"Fetching new context"
+            f"Cached context has expired or forced refresh. forced refresh value is {force_refresh}. Fetching new context"
         )
         CACHE_EXPIRY = next_expiry_time()
         CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)

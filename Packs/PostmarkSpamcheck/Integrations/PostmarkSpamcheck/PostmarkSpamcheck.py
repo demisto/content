@@ -42,7 +42,7 @@ def test_module_command(client):
     Tests Postmark Spamcheck API connectivity
     """
     result = client.spamcheck(email="", options="short")
-    if result:
+    if result:  # noqa: RET503
         return "ok"
 
 
@@ -73,7 +73,7 @@ def spamcheck_command(client: Client, file_path: str, args: dict) -> dict:
     response = client.spamcheck(email=email, options=options)
 
     if not response and not response.get("success"):
-        raise Exception("Failed submitting mail to Postmark Spamcheck API: %s\n" % file_path)
+        raise Exception(f"Failed submitting mail to Postmark Spamcheck API: {file_path}\n")
     else:
         return response
 

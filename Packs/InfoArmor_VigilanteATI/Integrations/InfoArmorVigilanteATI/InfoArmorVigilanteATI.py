@@ -56,7 +56,8 @@ def http_request(method, url, hmac_url, params={}, data=None):
         res.json()
     except Exception:
         return_error(
-            f"Response failed, the response body is not json.\nURL: {fullurl}\nStatusCode: {res.status_code}\nResponse: \n{res.text}"
+            f"Response failed, the response body is not json.\nURL: {fullurl}\nStatusCode:"
+            f" {res.status_code}\nResponse: \n{res.text}"
         )
 
     return res
@@ -342,7 +343,7 @@ def remove_none_params(params_dict):
     """
     filter only the params that have values
     """
-    return dict((k, v) for k, v in params_dict.items() if v is not None)
+    return {k: v for k, v in params_dict.items() if v is not None}
 
 
 def query_ecrime_intelligence_database(query, q_forum, q_start_data, limit, re_token=None):
@@ -420,7 +421,8 @@ def query_accounts_command(args):
             "Contents": results,
             "HumanReadable": markdown,
             "EntryContext": {
-                "VigilanteATI.Account(val.email == obj.email && val.password == obj.password && val.leak_id && obj.leak_id)": accounts
+                "VigilanteATI.Account(val.email == obj.email && val.password == obj.password"
+                " && val.leak_id && obj.leak_id)": accounts
             },
         }
     )

@@ -123,7 +123,7 @@ class Client(BaseClient):
 
             if len(cases) == max_records:
                 break
-            elif len(cases_temp) == index + 1:
+            if len(cases_temp) == index + 1:
                 params["offset"] += len(cases_temp)
                 cases_temp = self._http_request("GET", url_suffix=suffix, params=assign_params(**params), timeout=20).get(
                     "data", []

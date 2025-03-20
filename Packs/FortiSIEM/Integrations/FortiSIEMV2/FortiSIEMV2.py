@@ -567,7 +567,8 @@ def events_search_results_command(client: FortiSIEMClient, args: dict[str, Any])
     start_index = (page - 1) * limit  # type: ignore[operator]
     response = client.events_search_results_request(search_id, start_index, limit)  # type: ignore[arg-type]
     outputs, total_pages = format_search_events_results(response, limit)  # type: ignore[arg-type]
-    header = format_readable_output_header(f"Search Query: {search_id} Results", limit, page, total_pages)  # type: ignore[arg-type]
+    header = format_readable_output_header(
+        f"Search Query: {search_id} Results", limit, page, total_pages)  # type: ignore[arg-type]
     readable_outputs = tableToMarkdown(
         header,
         get_list_events_readable_output(outputs),
@@ -621,11 +622,11 @@ def cmdb_devices_list_command(client: FortiSIEMClient, args: dict[str, Any]) -> 
     validate_ip_ranges(include_ip_range, exclude_ip_range)
 
     response = client.cmdb_devices_list_request(
-        include_ip_list,
+        include_ip_list,  # type: ignore[arg-type]
         exclude_ip_list,  # type: ignore[arg-type]
-        include_ip_range,
-        exclude_ip_range,
-    )  # type: ignore[arg-type]
+        include_ip_range,  # type: ignore[arg-type]
+        exclude_ip_range,  # type: ignore[arg-type]
+    )
     outputs, total_pages = format_list_commands_output(response, ["devices", "device"], page, limit)  # type: ignore[arg-type]
     header = format_readable_output_header("List CMDB devices", limit, page, total_pages)  # type: ignore[arg-type]
     readable_output = tableToMarkdown(
@@ -699,7 +700,7 @@ def monitored_organizations_list_command(client: FortiSIEMClient, args: dict[str
     readable_output = tableToMarkdown(
         format_readable_output_header(
             "List Monitored Organizations",
-            limit,
+            limit,  # type: ignore[arg-type]
             page,  # type: ignore[arg-type]
             total_pages_number,
         ),
@@ -935,22 +936,22 @@ def watchlist_add_command(client: FortiSIEMClient, args: dict[str, Any]) -> Comm
     validate_add_watchlist_args(first_seen, last_seen)  # type: ignore[arg-type]
     response = client.watchlist_add_request(
         display_name,
-        description,
+        description,  # type: ignore[arg-type]
         is_case_sensitive,  # type: ignore[arg-type]
         data_creation_type,  # type: ignore[arg-type]
-        value_type,
+        value_type,  # type: ignore[arg-type]
         age_out,
         inclusive,  # type: ignore[arg-type]
         entry_value,  # type: ignore[arg-type]
         entry_age_out,
-        count,
-        first_seen,
+        count,  # type: ignore[arg-type]
+        first_seen,  # type: ignore[arg-type]
         last_seen,  # type: ignore[arg-type]
-        triggering_rules,
+        triggering_rules,  # type: ignore[arg-type]
     )  # type: ignore[arg-type]
 
     output, _ = format_watchlist_output(
-        response, f"The Watchlist group: {display_name} " f"already exists or one of the argument is invalid."
+        response, f"The Watchlist group: {display_name} already exists or one of the argument is invalid."
     )
 
     readable_output = tableToMarkdown(
@@ -991,15 +992,15 @@ def watchlist_entry_add_command(client: FortiSIEMClient, args: dict[str, Any]) -
     disable_age_out = not age_out
     response = client.watchlist_entry_add_request(
         watchlist_id,
-        value,
+        value,  # type: ignore[arg-type]
         inclusive,
         count,  # type: ignore[arg-type]
         triggering_rules,  # type: ignore[arg-type]
         age_out,
-        last_seen,
+        last_seen,  # type: ignore[arg-type]
         first_seen,  # type: ignore[arg-type]
-        data_creation_type,
-        description,
+        data_creation_type,  # type: ignore[arg-type]
+        description,  # type: ignore[arg-type]
         disable_age_out,
     )  # type: ignore[arg-type]
     command_results = CommandResults(
@@ -1034,7 +1035,7 @@ def watchlist_entry_update_command(client: FortiSIEMClient, args: dict[str, Any]
 
     response = client.watchlist_entry_update_request(
         entry_id,
-        value,
+        value,  # type: ignore[arg-type]
         inclusive=inclusive,
         count=count,  # type: ignore[arg-type]
         description=description,
@@ -1362,9 +1363,9 @@ def format_readable_output_header(base_header: str, limit: int, page: int = None
     """
     if total_pages:
         if total_pages > 0:
-            base_header += f" \nShowing page {page} out of {total_pages} total pages." f" Current page size: {limit}."
+            base_header += f" \nShowing page {page} out of {total_pages} total pages. Current page size: {limit}."
     else:
-        base_header += f" \nShowing page {page} out of others that may exist." f" Current page size: {limit}."
+        base_header += f" \nShowing page {page} out of others that may exist. Current page size: {limit}."
 
     return base_header
 
@@ -1703,7 +1704,8 @@ def format_incidents(relevant_incidents: List[dict]) -> List[dict]:
         List[dict]: Formatted incidents.
     """
     for incident in relevant_incidents:
-        incident["normalizedEventSeverity"] = INCIDENT_EVENT_CATEGORY_MAPPING.get(incident.get("eventSeverityCat"), 0.5)  # type: ignore[arg-type]
+        incident["normalizedEventSeverity"] = INCIDENT_EVENT_CATEGORY_MAPPING.get(
+            incident.get("eventSeverityCat"), 0.5)  # type: ignore[arg-type]
         format_integer_field_to_verbal(incident)  # formatting integer attributes.
 
         for attribute_name in REFORMAT_INCIDENT_FIELDS:  # formatting nested attributes.
@@ -1988,7 +1990,7 @@ def main() -> None:
                 first_fetch,  # type: ignore[arg-type]
                 status_filter_list,
                 fetch_with_events,
-                max_events_fetch,
+                max_events_fetch,  # type: ignore[arg-type]
                 demisto.getLastRun(),
             )  # type: ignore[arg-type]
 
@@ -2017,7 +2019,7 @@ def main() -> None:
     except Exception as e:
         err_message = str(e)
         if "Not authorized" in err_message:
-            return_error(f"You are not authorized to use FortiSIEM. Please validate your username and password." f"{err_message}")
+            return_error(f"You are not authorized to use FortiSIEM. Please validate your username and password.{err_message}")
         if "HTTP Status 500 - Request failed" in err_message:
             return_error(f"Failed to execute the command. Please validate command arguments.{err_message}")
         return_error(err_message)

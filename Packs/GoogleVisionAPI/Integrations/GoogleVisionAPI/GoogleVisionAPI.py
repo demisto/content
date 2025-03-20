@@ -49,7 +49,7 @@ def get_credentials():
                 )
         return service_account.ServiceAccountCredentials.from_json_keyfile_dict(json_keyfile, scopes=SERVICE_SCOPES)
     except Exception as e:
-        err_msg = "An error occurred while trying to construct an OAuth2 " f"ServiceAccountCredentials object - {e!s}"
+        err_msg = f"An error occurred while trying to construct an OAuth2 ServiceAccountCredentials object - {e!s}"
         return_error(err_msg)
 
 

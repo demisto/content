@@ -66,7 +66,7 @@ def main():
     if response_type == "thread":
         for option in user_options:
             options.append(option.split("#")[0])
-        string_options = " or ".join(list(map(lambda o: f"`{o}`", options)))
+        string_options = " or ".join([f"`{o}`" for o in options])
         message = "{} - Please reply to this thread with {}.".format(demisto.args()["message"], string_options)
         args["message"] = json.dumps(
             {

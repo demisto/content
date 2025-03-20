@@ -220,7 +220,7 @@ class Client(BaseClient):
                 params = {"limit": self.limit, "offset": self.offset}
                 self.offset += self.limit
             req_url = f"{self._base_url}/stix"
-            req_headers = {"Authorization": "Bearer %s" % access_token}
+            req_headers = {"Authorization": f"Bearer {access_token}"}
             luminar_feed = requests.get(req_url, params=params, headers=req_headers).json()
             luminar_objects = luminar_feed.get("objects")
             if not luminar_objects or len(luminar_objects) == 1:
@@ -417,7 +417,7 @@ def module_test(client: Client) -> str:
     try:
         client.fetch_access_token()
     except Exception:
-        raise Exception("Could not connect to Luminar API\n" "\nCheck your credentials and try again.")
+        raise Exception("Could not connect to Luminar API\n\nCheck your credentials and try again.")
     return "ok"
 
 

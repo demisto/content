@@ -8,7 +8,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def to_string(value: Any) -> Optional[str]:
-    if isinstance(value, (list, dict)) or value is None:
+    if isinstance(value, list | dict) or value is None:
         return None
     try:
         return str(value)
@@ -88,7 +88,7 @@ class EntryFilter:
                     yield from iterate_value(v)
 
             elif isinstance(value, dict):
-                for k, v in value.items():
+                for _k, v in value.items():
                     yield from iterate_value(v)
             else:
                 yield value
@@ -199,7 +199,7 @@ def main():
     ):
         if entry.entry["ID"] not in exclude_ids:
             rent = {"ID": entry.entry["ID"]}
-            if "verbose" == output_option and entry.match:
+            if output_option == "verbose" and entry.match:
                 rent["Where"] = entry.match[0][:128]
                 rent["Text"] = entry.value_matched
             ents.append(rent)
@@ -225,8 +225,8 @@ def main():
         if output_option != "quiet":
             header = assign_params(
                 ID="Entry ID",
-                Where="Where" if "verbose" == output_option else None,
-                Text="Text" if "verbose" == output_option else None,
+                Where="Where" if output_option == "verbose" else None,
+                Text="Text" if output_option == "verbose" else None,
             )
             md += "\n" + tblToMd("", ents, headers=header.keys(), headerTransform=lambda h: header.get(h, ""))
         return_outputs(md)

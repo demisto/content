@@ -62,7 +62,7 @@ INCIDENT_HEADERS = [
 COMMENT_HEADERS = ["ID", "IncidentID", "Message", "AuthorName", "AuthorEmail", "CreatedTimeUTC"]
 
 ENTITIES_RETENTION_PERIOD_MESSAGE = (
-    "\nNotice that in the current Azure Sentinel API version, the retention period " "for GetEntityByID is 30 days."
+    "\nNotice that in the current Azure Sentinel API version, the retention period for GetEntityByID is 30 days."
 )
 
 DEFAULT_LIMIT = 20
@@ -699,7 +699,7 @@ def get_remote_data_command(client: AzureSentinelClient, args: Dict[str, Any]) -
         return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
 
     except Exception as e:
-        demisto.debug(f"Error in Microsoft Sentinel incoming mirror for incident: {remote_incident_id}\n" f"Error message: {e!s}")
+        demisto.debug(f"Error in Microsoft Sentinel incoming mirror for incident: {remote_incident_id}\nError message: {e!s}")
 
         if not mirrored_data:
             mirrored_data = {"id": remote_incident_id}
@@ -768,7 +768,7 @@ def update_incident_request(
     required_fields = ("severity", "status", "title")
     if any(field not in data for field in required_fields):
         raise DemistoException(
-            f"Update incident request is missing one of the required fields for the " f"API: {required_fields}"
+            f"Update incident request is missing one of the required fields for the API: {required_fields}"
         )
 
     severity = data.get("severity", "")
@@ -850,7 +850,7 @@ def update_remote_system_command(client: AzureSentinelClient, args: Dict[str, An
 
         except Exception as e:
             demisto.error(
-                f"Error in Microsoft Sentinel outgoing mirror for incident {remote_incident_id}. " f"Error message: {e!s}"
+                f"Error in Microsoft Sentinel outgoing mirror for incident {remote_incident_id}. Error message: {e!s}"
             )
     else:
         demisto.debug(f"Skipping updating remote incident {remote_incident_id} as it didn't change.")

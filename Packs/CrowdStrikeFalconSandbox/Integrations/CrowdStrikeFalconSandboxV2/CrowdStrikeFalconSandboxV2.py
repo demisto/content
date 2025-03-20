@@ -121,7 +121,7 @@ def translate_verdict(param: str) -> int:
 
 def split_query_to_term_args(query: str) -> dict[str, Any]:
     def get_value(term: str) -> str:
-        return term[term.index(":") + 1 :].strip()
+        return term[term.index(":") + 1:].strip()
 
     def get_key(term: str) -> str:
         return term[: term.index(":")].strip()
@@ -201,14 +201,14 @@ def has_error_state(client: Client, key: str) -> bool:
 
 class BWCFile(Common.File):
     def __init__(self, bwc_fields: dict, key_change_map: dict, only_given_fields, *args, **kwargs):
-        super(BWCFile, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.bwc_fields = bwc_fields
         self.key_change_map = key_change_map
         self.only_given_fields = only_given_fields
 
     def to_context(self) -> Any:
         super_ret = super().to_context()
-        for key in super_ret.keys():
+        for key in super_ret:
             if key.startswith("File"):
                 super_ret[key].update(map_dict_keys(self.bwc_fields, self.key_change_map, self.only_given_fields))
         return super_ret

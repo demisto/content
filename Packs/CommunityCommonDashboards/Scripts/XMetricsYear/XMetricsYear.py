@@ -5,9 +5,8 @@ from CommonServerPython import *  # noqa: F401
 def LoadList(listname: str) -> dict:
     results = demisto.executeCommand("getList", {"listName": listname})[0]["Contents"]
     fields = {}
-    if "Item not found" not in results and (results is not None or results != ""):
-        if results != "":
-            fields = json.loads(results)
+    if "Item not found" not in results and (results is not None or results != "") and results != "":
+        fields = json.loads(results)
     return fields
 
 

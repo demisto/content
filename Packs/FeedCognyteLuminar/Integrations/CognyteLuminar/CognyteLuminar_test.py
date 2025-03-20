@@ -216,7 +216,7 @@ def test_fetch_luminar_api_feeds(requests_mock):
     post_req_headers = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
     requests_mock.post(post_req_url, headers=post_req_headers, json={"access_token": "12345"})
     access_token = client.fetch_access_token()
-    get_req_headers = {"Authorization": "Bearer %s" % access_token}
+    get_req_headers = {"Authorization": f"Bearer {access_token}"}
     requests_mock.get(get_req_url, headers=get_req_headers, json=lumanar_data)
     response = client.fetch_luminar_api_feeds()
     response_list = []
@@ -236,7 +236,7 @@ def test_get_luminar_indicators_list(mocker, requests_mock):
     post_req_headers = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
     requests_mock.post(post_req_url, headers=post_req_headers, json={"access_token": "12345"})
     access_token = client.fetch_access_token()
-    get_req_headers = {"Authorization": "Bearer %s" % access_token}
+    get_req_headers = {"Authorization": f"Bearer {access_token}"}
     requests_mock.get(get_req_url, headers=get_req_headers, json=lumanar_data)
     response = client.fetch_luminar_api_feeds()
     response_list = []
@@ -255,7 +255,7 @@ def test_luminar_leaked_credentials_list(mocker, requests_mock):
     post_req_headers = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
     requests_mock.post(post_req_url, headers=post_req_headers, json={"access_token": "12345"})
     access_token = client.fetch_access_token()
-    get_req_headers = {"Authorization": "Bearer %s" % access_token}
+    get_req_headers = {"Authorization": f"Bearer {access_token}"}
     requests_mock.get(get_req_url, headers=get_req_headers, json=user_account_record)
     response = client.fetch_luminar_api_feeds()
     response_list = []

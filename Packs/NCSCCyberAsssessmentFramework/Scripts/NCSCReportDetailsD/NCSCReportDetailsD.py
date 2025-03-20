@@ -29,7 +29,7 @@ def main():
         return ""
     incidents = sorted(incidents, key=lambda x: x["id"])
     incident = incidents[0]
-    original_question_data = json.loads(demisto.executeCommand("getList", {"listName": "NCSC CAF " "Assessment"})[0]["Contents"])
+    original_question_data = json.loads(demisto.executeCommand("getList", {"listName": "NCSC CAF Assessment"})[0]["Contents"])
     original_question_data = original_question_data[assessment_field]
     if incident:
         md: str = ""
@@ -41,7 +41,7 @@ def main():
         assessment_result = calculate_overall(assessment_details)
         answered_questions = ""
         for x in range(len(assessment_questions)):
-            table = list()
+            table = []
             original_answers = [
                 a.get("answers") for a in original_question_data if a["question"] == assessment_questions.get(str(x))
             ][0]
@@ -80,7 +80,7 @@ def main():
 
     else:
         md = ""
-    demisto.results(md)
+    demisto.results(md)  # noqa: RET503
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:

@@ -83,7 +83,7 @@ def test_main__with_address_type(mocker):
         "Cryptocurrency(val.Address && val.Address == obj.Address)": [
             {"Address": "bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i", "AddressType": "bitcoin"}
         ],
-        "DBotScore(" "val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
             {
                 "Indicator": "bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i",
                 "Type": "cryptocurrency",

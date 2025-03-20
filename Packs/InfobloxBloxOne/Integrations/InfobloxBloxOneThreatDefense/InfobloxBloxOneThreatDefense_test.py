@@ -143,7 +143,7 @@ class TestE2E:
             main()
 
         assert mock_results.call_args[0][0]["Type"] == 4
-        assert "authentication error" == mock_results.call_args[0][0]["Contents"]
+        assert mock_results.call_args[0][0]["Contents"] == "authentication error"
 
     def test_command_test_module(self, requests_mock, mocker, mock_results):
         patch_command_args_and_params(mocker, "test-module", {})
@@ -151,7 +151,7 @@ class TestE2E:
         main()
 
         assert request_call.called_once
-        assert "ok" == mock_results.call_args[0][0]
+        assert mock_results.call_args[0][0] == "ok"
 
     def test_not_implemented_command(self, mocker):
         patch_command_args_and_params(mocker, "not-implemented-command", {})
@@ -181,7 +181,7 @@ class TestBloxOneTDClient:
             text=load_json_file("bloxone-td-lookalike-domain-list"),
         )
         blox_client.lookalike_domain_list(user_filter="test-filter")
-        assert "test-filter" == lookalike_request_mock.request_history[0].qs["_filter"][0]
+        assert lookalike_request_mock.request_history[0].qs["_filter"][0] == "test-filter"
 
     def test_lookalike_domain_list_with_target_domain(self, blox_client, requests_mock):
         lookalike_request_mock = requests_mock.get(
@@ -189,7 +189,7 @@ class TestBloxOneTDClient:
             text=load_json_file("bloxone-td-lookalike-domain-list"),
         )
         blox_client.lookalike_domain_list(target_domain="target.domain")
-        assert 'target_domain=="target.domain"' == lookalike_request_mock.request_history[0].qs["_filter"][0]
+        assert lookalike_request_mock.request_history[0].qs["_filter"][0] == 'target_domain=="target.domain"'
 
     def test_lookalike_domain_list_with_detected_at(self, blox_client, requests_mock):
         lookalike_request_mock = requests_mock.get(

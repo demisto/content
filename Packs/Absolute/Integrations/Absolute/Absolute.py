@@ -403,7 +403,7 @@ def validate_absolute_api_url(base_url: str) -> str:
     """
     if base_url not in ABSOLUTE_URL_TO_API_URL:
         raise_demisto_exception(
-            f"The Absolute server url {base_url} in not a valid url. " f"Possible options: {list(ABSOLUTE_URL_TO_API_URL.keys())}"
+            f"The Absolute server url {base_url} in not a valid url. Possible options: {list(ABSOLUTE_URL_TO_API_URL.keys())}"
         )
     return ABSOLUTE_URL_TO_API_URL[base_url]
 
@@ -425,7 +425,7 @@ def parse_device_field_list_response(response: dict, device_id: str, limit: Opti
     """Parse the device field list response"""
     parsed_data = {"DeviceUID": device_id, "CDFValues": []}  # type: ignore
     for cdf_item in response:
-        parsed_data["CDFValues"].append(
+        parsed_data["CDFValues"].append(    # type: ignore[attr-defined]
             {  # type: ignore
                 "CDFUID": cdf_item.get("cdfUid"),
                 "FieldKey": cdf_item.get("cdfFieldKey"),
@@ -515,7 +515,7 @@ def validate_device_freeze_type_scheduled(scheduled_freeze_date: str) -> str:
     """Validate the scheduled type arg"""
     if not scheduled_freeze_date:
         raise_demisto_exception(
-            "When setting device_freeze_type to be Scheduled, you must specify the scheduled_" "freeze_date arg."
+            "When setting device_freeze_type to be Scheduled, you must specify the scheduled_freeze_date arg."
         )
     return scheduled_freeze_date
 

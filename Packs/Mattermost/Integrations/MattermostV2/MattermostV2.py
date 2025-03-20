@@ -94,21 +94,19 @@ class WebSocketClient:  # pragma: no cover
 
         while True:
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.ws_connect(
-                        uri,
-                        ssl=SSL_CONTEXT,  # type: ignore[arg-type]
-                        proxy=PROXY_URL,
-                    ) as websocket:
-                        demisto.debug("MM: starting to authenticate")
-                        await self.authenticate(websocket, event_handler)
-                        while self.alive:
-                            try:
-                                await self.start_loop(websocket, event_handler)
-                            except aiohttp.ClientError:
-                                break
-                        if (not self.options["keepalive"]) or (not self.alive):
+                async with aiohttp.ClientSession() as session, session.ws_connect(uri,
+                                                                                  ssl=SSL_CONTEXT,  # type: ignore[arg-type]
+                                                                                  proxy=PROXY_URL,
+                                                                                  ) as websocket:
+                    demisto.debug("MM: starting to authenticate")
+                    await self.authenticate(websocket, event_handler)
+                    while self.alive:
+                        try:
+                            await self.start_loop(websocket, event_handler)
+                        except aiohttp.ClientError:
                             break
+                    if (not self.options["keepalive"]) or (not self.alive):
+                        break
             except Exception as e:
                 demisto.info(f"MM: Failed to establish websocket connection: {type(e)} thrown - {e!s}")
                 await asyncio.sleep(float("inf"))
@@ -637,7 +635,7 @@ def fetch_context(force_refresh: bool = False) -> dict:
     now = int(datetime.now(timezone.utc).timestamp())
     if (now >= CACHE_EXPIRY) or force_refresh:
         demisto.debug(
-            f"Cached context has expired or forced refresh. forced refresh value is {force_refresh}. " "Fetching new context"
+            f"Cached context has expired or forced refresh. forced refresh value is {force_refresh}. Fetching new context"
         )
         CACHE_EXPIRY = next_expiry_time()
         CACHED_INTEGRATION_CONTEXT = get_integration_context()
@@ -1521,7 +1519,7 @@ def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
         server_links = demisto.demistoUrls()
         server_link = server_links.get("server")
         incident_url = get_war_room_url(f"{server_link}#/WarRoom/{investigation_id}", investigation_id)
-        message_to_send = f"This channel was created to mirror incident {investigation_id}." f" \n View it on: {incident_url}"
+        message_to_send = f"This channel was created to mirror incident {investigation_id}. \n View it on: {incident_url}"
 
         client.send_notification_request(channel_id, message_to_send)
     if kick_admin:
@@ -1587,7 +1585,7 @@ def send_notification(client: HTTPClient, **args):
             channel_name = client.notification_channel
         else:
             demisto.debug(
-                "MM: No notification channel was configured, " f"will send notification to {INCIDENT_NOTIFICATION_CHANNEL}"
+                f"MM: No notification channel was configured, will send notification to {INCIDENT_NOTIFICATION_CHANNEL}"
             )
 
     if not ignore_add_url:

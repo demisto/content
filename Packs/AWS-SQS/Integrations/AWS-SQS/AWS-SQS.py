@@ -177,7 +177,7 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
                 WaitTimeSeconds=5,
             )
 
-            if "Messages" not in messages.keys():
+            if "Messages" not in messages:
                 if incidents_created == 0:
                     if demisto.command() == "fetch-incidents":
                         demisto.incidents([])

@@ -8,7 +8,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def to_string(value: Any) -> Optional[str]:
-    if isinstance(value, (list, dict)) or value is None:
+    if isinstance(value, list | dict) or value is None:
         return None
     try:
         return str(value)
@@ -91,7 +91,7 @@ class EntryFilter:
                     yield from iterate_value(v)
 
             elif isinstance(value, dict):
-                for k, v in value.items():
+                for _k, v in value.items():
                     yield from iterate_value(v)
             else:
                 yield value
@@ -211,7 +211,7 @@ def main():
                 "ID": entry.entry["ID"],
                 "Tags": entry.entry["Tags"] or [],
             }
-            if "verbose" == output_option and entry.match:
+            if output_option == "verbose" and entry.match:
                 rent["Where"] = entry.match[0][:128]
                 rent["Text"] = entry.value_matched
             ents.append(rent)
@@ -233,7 +233,7 @@ def main():
         if action == "add":
             tags = argToList(args.get("tags", []))
             for ent in ents:
-                ent["Modified"] = True if set(tags) - set(ent["Tags"]) else False
+                ent["Modified"] = bool(set(tags) - set(ent["Tags"]))
                 ent["Tags"] = ",".join(list(set(tags + ent["Tags"])))
 
             if not dry_run:
@@ -266,8 +266,8 @@ def main():
                 ID="Entry ID",
                 Tags="Tags",
                 Modified="Modified",
-                Where="Where" if "verbose" == output_option else None,
-                Text="Text" if "verbose" == output_option else None,
+                Where="Where" if output_option == "verbose" else None,
+                Text="Text" if output_option == "verbose" else None,
             )
             md += "\n" + tblToMd("", ents, headers=header.keys(), headerTransform=lambda h: header.get(h, ""))
         return_outputs(md)

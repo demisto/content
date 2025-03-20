@@ -9,7 +9,7 @@ PRODUCT = "Threat Defense"
 
 class BloxOneTDEventCollectorClient(BaseClient):
     def __init__(self, api_key: str, verify=True, proxy=False):
-        super(BloxOneTDEventCollectorClient, self).__init__(
+        super().__init__(
             headers={"Authorization": f"Token {api_key}"}, base_url="https://csp.infoblox.com", verify=verify, proxy=proxy
         )
 
@@ -95,7 +95,7 @@ def main():
         if results:
             return_results(results)
     except Exception as e:
-        auth_error = isinstance(e, DemistoException) and getattr(e, "res") is not None and e.res.status_code == 401  # pylint: disable=E1101
+        auth_error = isinstance(e, DemistoException) and e.res is not None and e.res.status_code == 401  # pylint: disable=E1101
         if auth_error:
             error_msg = "authentication error please check your API key and try again."
         else:

@@ -158,7 +158,7 @@ def get_user_command(client, args, mapper_in, mapper_out):
                 username=github_user.get("Username"),
                 action=IAMActions.GET_USER,
                 details=github_user,
-                active=True if github_user.get("IsActive") == "true" else False,
+                active=github_user.get("IsActive") == "true",
             )
 
         return iam_user_profile

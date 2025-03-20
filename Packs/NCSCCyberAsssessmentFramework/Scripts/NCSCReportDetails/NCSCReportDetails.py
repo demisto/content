@@ -62,7 +62,7 @@ def main():
 
     else:
         md = ""
-    demisto.results(md)
+    demisto.results(md)  # noqa: RET503
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:

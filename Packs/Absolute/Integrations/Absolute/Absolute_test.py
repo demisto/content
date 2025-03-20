@@ -204,7 +204,7 @@ def test_get_custom_device_field_list_command(mocker, absolute_client_v3):
     [
         (
             {"device_freeze_type": "Scheduled"},
-            "When setting device_freeze_type to be Scheduled, you must specify the" " scheduled_freeze_date arg.",
+            "When setting device_freeze_type to be Scheduled, you must specify the scheduled_freeze_date arg.",
         ),  # type is Scheduled and 'scheduled_freeze_date' is missing
         (
             {"device_freeze_type": "OffLine", "offline_time_seconds": "1"},
@@ -549,7 +549,7 @@ def test_add_value_to_filter_string(field_name, value, query, expected_query):
         (
             {"agent_status": "Active", "device_names": "name1, name2"},
             True,
-            "$filter=substringof('name1',systemName) or substringof('name2',systemName) " "or agentStatus eq 'A'",
+            "$filter=substringof('name1',systemName) or substringof('name2',systemName) or agentStatus eq 'A'",
         ),
     ],
 )
@@ -564,7 +564,7 @@ def test_create_filter_query_from_args(args, change_device_name_to_system, expec
     [
         ("", "", ""),
         ("", "$filter=accountUid eq '1'", "$filter=accountUid eq '1'"),
-        ("accountUid", "$filter=accountUid eq '1'", "$filter=accountUid eq" " '1'&$select=accountUid"),
+        ("accountUid", "$filter=accountUid eq '1'", "$filter=accountUid eq '1'&$select=accountUid"),
         ("deviceUid", "$filter=accountUid eq '1'", "$filter=accountUid eq '1'&$select=deviceUid"),
         ("deviceUid,accountUid", "$filter=accountUid eq '1'", "$filter=accountUid eq '1'&$select=deviceUid,accountUid"),
         ("deviceUid,accountUid", "", "$select=deviceUid,accountUid"),
@@ -684,7 +684,7 @@ def test_fetch_events_with_last_run_object_and_handle_deduplication(mocker, abso
     mock_response = util_load_json("test_data/siem_events.json")
     Absolute.SEIM_EVENTS_PAGE_SIZE = 8
     first_mock_response = mock_response.get("data")[: Absolute.SEIM_EVENTS_PAGE_SIZE]
-    second_mock_response = mock_response.get("data")[Absolute.SEIM_EVENTS_PAGE_SIZE - 1 :]
+    second_mock_response = mock_response.get("data")[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:]
     mocker.patch.object(ClientV3, "fetch_events_between_dates", return_value=first_mock_response)
     events_first_batch, last_run_object = fetch_events(absolute_client_v3, Absolute.SEIM_EVENTS_PAGE_SIZE, {})
     mocker.patch.object(ClientV3, "fetch_events_between_dates", return_value=second_mock_response)
@@ -750,7 +750,7 @@ def test_fetch_events_between_dates_multiple_fetches(mocker, absolute_client_v3)
                 "metadata": {"pagination": {"nextPage": "next_token"}},
             }
         else:
-            return {"data": mock_response.get("data")[Absolute.SEIM_EVENTS_PAGE_SIZE :], "metadata": {"pagination": {}}}
+            return {"data": mock_response.get("data")[Absolute.SEIM_EVENTS_PAGE_SIZE:], "metadata": {"pagination": {}}}
 
     fetch_events_side_effect.call_count = 1
     mocker.patch.object(absolute_client_v3, "send_request_to_api", side_effect=fetch_events_side_effect)

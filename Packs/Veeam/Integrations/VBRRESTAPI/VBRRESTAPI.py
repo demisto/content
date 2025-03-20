@@ -1098,24 +1098,23 @@ def get_configuration_backup_incident(
 
     incident: dict = {}
     last_backup_datetime = parser.isoparse(last_time_backup)
-    if difference is None or difference >= backup_older_then_days:
-        if not last_successful_backup_date or (
-            last_successful_backup_datetime is not None and last_backup_datetime > last_successful_backup_datetime
-        ):
-            time_ = NOT_APPLICABLE if last_time_backup == EARLIEST_TIME else last_time_backup
-            details = f"Last successful backup: {time_}"
-            integration_instance = demisto.callingContext.get("context", {}).get("IntegrationInstance", "")
-            incident_name = f"Veeam - {integration_instance} has no configuration backups"
-            response["details"] = details
-            response["incident_type"] = CONFIGURATION_BACKUP_INCIDENT_TYPE
-            incident = {
-                "name": incident_name,
-                "occurred": last_fetch_time,
-                "rawJSON": json.dumps(response),
-                "severity": IncidentSeverity.MEDIUM,
-            }
+    if difference is None or difference >= backup_older_then_days and (not last_successful_backup_date or (
+        last_successful_backup_datetime is not None and last_backup_datetime > last_successful_backup_datetime
+    )):
+        time_ = NOT_APPLICABLE if last_time_backup == EARLIEST_TIME else last_time_backup
+        details = f"Last successful backup: {time_}"
+        integration_instance = demisto.callingContext.get("context", {}).get("IntegrationInstance", "")
+        incident_name = f"Veeam - {integration_instance} has no configuration backups"
+        response["details"] = details
+        response["incident_type"] = CONFIGURATION_BACKUP_INCIDENT_TYPE
+        incident = {
+            "name": incident_name,
+            "occurred": last_fetch_time,
+            "rawJSON": json.dumps(response),
+            "severity": IncidentSeverity.MEDIUM,
+        }
 
-            last_successful_backup_date = last_time_backup
+        last_successful_backup_date = last_time_backup
     return incident, last_successful_backup_date
 
 

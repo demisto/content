@@ -54,7 +54,7 @@ def SetMetricColors(wstats: list, metrictype: str) -> list:
         return wstats
 
     i = 0
-    for w in wstats:
+    for _w in wstats:
         wstats[i]["color"] = colors[i % len(colors)]
         i += 1
 
@@ -70,16 +70,15 @@ def MetricWidget(wstats: list, name: str, data: list) -> list:
 def LoadList(listname: str) -> dict:
     results = demisto.executeCommand("getList", {"listName": listname})[0]["Contents"]
     fields = {}
-    if "Item not found" not in results and (results is not None or results != ""):
-        if results != "":
-            fields = json.loads(results)
+    if "Item not found" not in results and (results is not None or results != "") and results != "":
+        fields = json.loads(results)
     return fields
 
 
 def BuildIncidentTotal(incidents) -> dict:
     table = {}
     for inctype, v in incidents.items():
-        for month, cnt in v.items():
+        for _month, cnt in v.items():
             if inctype not in table:
                 table[inctype] = 0
             table[inctype] += int(cnt)
@@ -90,7 +89,7 @@ def BuildIncidentAvg(incidents) -> dict:
     table = {}
     count = {}
     for inctype, v in incidents.items():
-        for month, cnt in v.items():
+        for _month, cnt in v.items():
             if inctype not in table:
                 table[inctype] = 0
                 count[inctype] = 0
@@ -98,7 +97,7 @@ def BuildIncidentAvg(incidents) -> dict:
             if int(cnt) != 0:
                 count[inctype] += 1
 
-    for inctype, v in table.items():
+    for inctype, _v in table.items():
         if count[inctype] > 0:
             table[inctype] = int(table[inctype] / count[inctype] / 60)
 
@@ -111,7 +110,7 @@ def BuildEffortReductionAvg(incidents, efforts) -> dict:
     totalreduction = 0
 
     for inctype, v in incidents.items():
-        for month, val in v.items():
+        for _month, val in v.items():
             ival = int(val)
             if inctype in efforts:
                 manualeffort = int(ival * efforts[inctype][0])
@@ -127,7 +126,7 @@ def BuildEffortReductionAvg(incidents, efforts) -> dict:
                 count[inctype] += 1
                 totalreduction += reduction
 
-    for inctype, v in table.items():
+    for inctype, _v in table.items():
         if totalreduction > 0:
             table[inctype] = int((table[inctype] / totalreduction) * 100)
         else:
@@ -145,7 +144,7 @@ def BuildEffortTotal(incidents, efforts) -> dict:
     }
 
     for inctype, v in incidents.items():
-        for month, val in v.items():
+        for _month, val in v.items():
             if inctype in efforts:
                 table["Manual Incident Effort"] += int((int(val) * efforts[inctype][0]) / 60)
                 table["Automated Incident Effort"] += int((int(val) * efforts[inctype][1]) / 60)

@@ -344,7 +344,7 @@ def test_query_ecrime_intelligence_database_command(mocker):
                 "author": "fb_official2",
                 "date": "2018-12-10",
                 "forum": "bcbm4y7yusdxthg3.onion",
-                "post": b"PG1hcms+TkVURkxJWDwvbWFyaz4gVE9EQVkKCkFDQ09VTlQ6ICBleGFtcGxlQGdtYWlsLmNvbQpQQVNTOiBUSEVkb25ib" b"25l",
+                "post": b"PG1hcms+TkVURkxJWDwvbWFyaz4gVE9EQVkKCkFDQ09VTlQ6ICBleGFtcGxlQGdtYWlsLmNvbQpQQVNTOiBUSEVkb25ib25l",
                 "thread_url": "http://bcbm4y7yusdxthg3.onion/showthread.php?t=28120",
                 "title": b"RlJFRSA8bWFyaz5ORVRGTElYPC9tYXJrPiBBQ0NPVU5UIERBSUxZLi4=",
             }
@@ -597,7 +597,7 @@ def test_usage_info_command(mocker):
 
     expected_content = [{"Number of queries allowed": 2, "Number of queries left": 1}]
 
-    expected_readable_output = "### Usage Info\n|Number of queries allowed|Number of queries left|\n|---|---|\n|" " 2 | 1 |\n"
+    expected_readable_output = "### Usage Info\n|Number of queries allowed|Number of queries left|\n|---|---|\n| 2 | 1 |\n"
 
     mocker.patch("InfoArmorVigilanteATI.usage_info", return_value=mock_response)
     mocker.patch.object(demisto, "results")

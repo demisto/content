@@ -829,7 +829,7 @@ GENERATE_VARS_NAMES_MSSQL = (
     "Microsoft SQL Server",
     (
         {"bind_variable_1": 1, "bind_variable_2": 123},
-        "SELECT * FROM TABLE WHERE ID = :bind_variable_1" " and EMPLOYEE = :bind_variable_2",
+        "SELECT * FROM TABLE WHERE ID = :bind_variable_1 and EMPLOYEE = :bind_variable_2",
     ),
 )
 GENERATE_VARS_NAMES_MYSQL = (
@@ -838,7 +838,7 @@ GENERATE_VARS_NAMES_MYSQL = (
     "MySQL",
     (
         {"bind_variable_1": 1, "bind_variable_2": 123},
-        "SELECT * FROM TABLE WHERE ID = :bind_variable_1" " and EMPLOYEE = :bind_variable_2",
+        "SELECT * FROM TABLE WHERE ID = :bind_variable_1 and EMPLOYEE = :bind_variable_2",
     ),
 )
 GENERATE_VARS_NAMES_POSTGRES = (

@@ -39,7 +39,7 @@ class Client(Zoom_Client):
         if res and (not res.get("users")):
             user_app_data = res
             user_id = user_app_data.get("id")
-            is_active = True if user_app_data.get("status") == "active" else False
+            is_active = user_app_data.get("status") == "active"
             email = user_app_data.get("email")
             # the API does not provide user name
             username = ""
@@ -75,7 +75,7 @@ class Client(Zoom_Client):
         user_app_data: dict = {}
         # if we wanted to disable the user and request succeeded,
         # we get to this line and know the user's status
-        is_active = True if user_data.get("action", "") == "activate" else False
+        is_active = user_data.get("action", "") == "activate"
         username = ""
 
         return IAMUserAppData(user_id, username, is_active, user_app_data)

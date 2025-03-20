@@ -1870,7 +1870,7 @@ async def test_translate_create(mocker):
     type_message = "create incident type= Phishing"
 
     success_message = (
-        "Successfully created incident New Incident.\n" " View it on: https://www.eizelulz.com:8443#/WarRoom/new_incident"
+        "Successfully created incident New Incident.\n View it on: https://www.eizelulz.com:8443#/WarRoom/new_incident"
     )
 
     # Arrange
@@ -1941,7 +1941,7 @@ async def test_translate_create_newline_json(mocker):
         }"""
 
     success_message = (
-        "Successfully created incident New Incident.\n" " View it on: https://www.eizelulz.com:8443#/WarRoom/new_incident"
+        "Successfully created incident New Incident.\n View it on: https://www.eizelulz.com:8443#/WarRoom/new_incident"
     )
 
     # Arrange
@@ -2423,7 +2423,7 @@ def test_send_request_caching_disabled(mocker, capfd):
     err_msg_1 = return_error_mock.call_args[0][0]
 
     assert (
-        err_msg_1 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by" " channel_id"
+        err_msg_1 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by channel_id"
     )
 
     with capfd.disabled(), pytest.raises(InterruptedError):
@@ -2431,7 +2431,7 @@ def test_send_request_caching_disabled(mocker, capfd):
     err_msg_2 = return_error_mock.call_args[0][0]
 
     assert (
-        err_msg_2 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by" " channel_id"
+        err_msg_2 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by channel_id"
     )
 
     channel_id_text_args = SlackV3.send_message.call_args[0]
@@ -4438,7 +4438,7 @@ def test_edit_message_not_valid_thread_id(mocker):
     api_call = SlackApiError("The request to the Slack API failed.", err_response)
 
     expected_body = (
-        "The request to the Slack API failed.\n" "The server responded with: {'ok': False, 'error': 'message_not_found'}"
+        "The request to the Slack API failed.\nThe server responded with: {'ok': False, 'error': 'message_not_found'}"
     )
     link = "https://www.eizelulz.com:8443/#/WarRoom/727"
     mocker.patch.object(demisto, "investigation", return_value={"type": 1})
@@ -4519,7 +4519,7 @@ def test_pin_message_invalid_thread_id(mocker):
     api_call = SlackApiError("The request to the Slack API failed.", err_response)
 
     expected_body = (
-        "The request to the Slack API failed.\n" "The server responded with: {'ok': False, 'error': 'message_not_found'}"
+        "The request to the Slack API failed.\nThe server responded with: {'ok': False, 'error': 'message_not_found'}"
     )
 
     mocker.patch.object(demisto, "investigation", return_value={"type": 1})

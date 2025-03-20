@@ -162,8 +162,8 @@ class Client:
             host=self.host,
             port=arg_to_number(self.port),
             database=self.dbname,
-            query=self.connect_parameters,
-        )  # type: ignore[arg-type]
+            query=self.connect_parameters,  # type: ignore[arg-type]
+        )
 
     def _create_engine_and_connect(self) -> sqlalchemy.engine.base.Connection:
         """
@@ -350,7 +350,7 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
                 msg += "Fetch Limit value should be between 1 and 50. "
 
         if params.get("fetch_parameters") == "ID and timestamp" and not (params.get("column_name") and params.get("id_column")):
-            msg += "Missing Fetch Column or ID Column name (when ID and timestamp are chosen," " fill in both). "
+            msg += "Missing Fetch Column or ID Column name (when ID and timestamp are chosen, fill in both). "
 
         if params.get("fetch_parameters") in ["Unique ascending", "Unique timestamp"]:
             if not params.get("column_name"):
@@ -440,7 +440,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
         result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit)
 
         table = result_to_list_of_dicts(result)
-        table = table[skip : skip + limit]
+        table = table[skip: skip + limit]
 
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers, removeNull=True)
         context = {
@@ -509,7 +509,7 @@ def create_sql_query(last_run: dict, query: str, column_name: str, max_fetch: st
 
     # case of runStoreProcedure MSSQL
     if query.lower().startswith("exec"):
-        sql_query = f"SET ROWCOUNT {max_fetch};" f"{query} @{column_name} = '{last_timestamp_or_id}';" f"SET ROWCOUNT 0"
+        sql_query = f"SET ROWCOUNT {max_fetch};{query} @{column_name} = '{last_timestamp_or_id}';SET ROWCOUNT 0"
 
     # case of runStoreProcedure MySQL
     elif query.lower().startswith("call"):
@@ -647,7 +647,7 @@ def fetch_incidents(client: Client, params: dict):
     demisto.debug(f"GenericSQL - Number of incidents after filtering: {len(incidents)}")
     demisto.debug(f"GenericSQL - Number of incidents skipped: {(len(result) - len(incidents))}")
 
-    demisto.info(f"last record now is: {last_run}, " f"number of incidents fetched is {len(incidents)}")
+    demisto.info(f"last record now is: {last_run}, number of incidents fetched is {len(incidents)}")
 
     return incidents, last_run
 

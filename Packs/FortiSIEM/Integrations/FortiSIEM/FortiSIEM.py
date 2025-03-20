@@ -81,7 +81,7 @@ def login():
     # get the VIEW_STATE from the xml returned in the UI login page.
     p = re.compile('(value=".{1046}==")')
     viewState = p.findall(response.text.encode("utf-8"))  # type: ignore[arg-type, call-overload]
-    VIEW_STATE = viewState[0][len('value="') :][:-1]
+    VIEW_STATE = viewState[0][len('value="'):][:-1]
 
     data = {
         "loginHtml": "loginHtml",
@@ -203,7 +203,7 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
         eventKeys = res["headerData"]["columnNames"]
     except (ValueError, KeyError):
         return_error(
-            "Got wrong response format when getting report results. " "Expected a json object but got:\n" + response.text
+            "Got wrong response format when getting report results. Expected a json object but got:\n" + response.text
         )
 
     # reformat results
@@ -526,8 +526,7 @@ def flatten_resources(raw_resources):
     for r in raw_resources:
         yield r
         # possible stackoverflow
-        for sub_resource in flatten_resources(r["children"]):
-            yield sub_resource
+        yield from flatten_resources(r["children"])
 
 
 def add_item_to_resource_list_command():
