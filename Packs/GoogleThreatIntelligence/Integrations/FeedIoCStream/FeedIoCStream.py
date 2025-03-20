@@ -33,16 +33,27 @@ class Client(BaseClient):
 
     def get_api_indicators(self,
                            filter_query: str = None,
-                           limit: int = 10):
+                           limit: int = 10) -> list:
         """Get indicators from GTI API."""
-        return self._http_request(
-            'GET',
-            'ioc_stream',
-            params=assign_params(
-                filter=filter_query,
-                limit=min(limit, 40),
+        stop = False
+        iocs = []
+        cursor = None
+        while not stop:
+            response = self._http_request(
+                'GET',
+                'ioc_stream',
+                params=assign_params(
+                    filter=filter_query,
+                    limit=min(limit, 40),
+                    cursor=cursor,
+                )
             )
-        )
+            cursor = response.get('meta', {}).get('cursor')
+            current_iocs = response.get('data', [])
+            limit -= len(current_iocs)
+            iocs.extend(current_iocs)
+            stop = not (limit and cursor)
+        return iocs
 
     def fetch_indicators(self,
                          limit: int = 10,
@@ -58,12 +69,12 @@ class Client(BaseClient):
             if last_run := self.get_last_run():
                 filter_query += f' {last_run}'
 
-        response = self.get_api_indicators(filter_query.strip(), limit)
+        iocs = self.get_api_indicators(filter_query.strip(), limit)
 
         if fetch_command:
             self.set_last_run()
 
-        return response.get('data', [])
+        return iocs
 
     @staticmethod
     def set_last_run():
