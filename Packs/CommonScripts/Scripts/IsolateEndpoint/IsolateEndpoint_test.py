@@ -125,19 +125,19 @@ def test_check_which_args_missing_in_output(mock_create_message):
         - It should not call `create_message_to_context_and_hr` when an agent is found.
     """
     valid_args = [
-        {'agent_id': '123', 'agent_ip': '192.168.1.1', 'agent_hostname': 'host1'},
-        {'agent_id': '789', 'agent_ip': '192.168.1.3', 'agent_hostname': 'host3'}
+        {'agent_id': '123', 'agent_ip': '192', 'agent_hostname': 'host1'},
+        {'agent_id': '789', 'agent_ip': '193', 'agent_hostname': 'host3'}
     ]
     outputs = []
     human_readable_outputs = []
     verbose = True
     zipped_args = [
-        {'agent_id': '', 'agent_ip': '192.168.1.5', 'agent_hostname': 'host4'},
-        {'agent_id': '555', 'agent_ip': '192.168.1.6', 'agent_hostname': ''},
+        {'agent_id': '', 'agent_ip': '194', 'agent_hostname': 'host4'},
+        {'agent_id': '555', 'agent_ip': '195', 'agent_hostname': ''},
         {'agent_id': '123', 'agent_ip': '', 'agent_hostname': ''},
-        {'agent_id': '', 'agent_ip': '192.168.1.1', 'agent_hostname': ''},
+        {'agent_id': '', 'agent_ip': '192', 'agent_hostname': ''},
         {'agent_id': '', 'agent_ip': '', 'agent_hostname': 'host1'},
-        {'agent_id': '', 'agent_ip': '192.168.1.1', 'agent_hostname': 'host1'},
+        {'agent_id': '', 'agent_ip': '192', 'agent_hostname': 'host1'},
         {'agent_id': '456', 'agent_ip': '', 'agent_hostname': 'host2'}
     ]
     check_which_args_missing_in_output(
