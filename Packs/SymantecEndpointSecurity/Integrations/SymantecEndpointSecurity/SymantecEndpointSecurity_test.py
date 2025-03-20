@@ -2,6 +2,7 @@ import pytest
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from pytest_mock import MockerFixture
 from SymantecEndpointSecurity import (
+    EventCounter,
     extract_events_suspected_duplicates,
     calculate_next_fetch,
     filter_duplicate_events,
@@ -160,7 +161,7 @@ def test_filter_duplicate_events(
     Then:
         - Ensure that a list of the events that are not duplicates is returned
     """
-    filtered_events = filter_duplicate_events(events, integration_context)
+    filtered_events = filter_duplicate_events(events, integration_context, EventCounter())
     assert filtered_events == expected_filtered_events
 
 
