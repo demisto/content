@@ -1,4 +1,4 @@
-This Playbook creates a privacy Incident on the BreachRx platform, and pulls in all tasks from that created privacy Incident into the Cortex XSOAR Incident.
+This Playbook creates an Incident on the BreachRx platform, and pulls in all tasks from that created Incident into the Cortex XSOAR Incident.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

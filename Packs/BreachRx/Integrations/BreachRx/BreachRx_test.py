@@ -260,7 +260,7 @@ def test_get_incident_actions_command_no_incident_context():
             get_incident_actions_command(client)
 
     assert str(error.value) == (
-        "Error: No BreachRx privacy Incident associated with this Incident,"
+        "Error: No BreachRx Incident associated with this Incident,"
         " and no Incident search terms provided."
     )
 
@@ -562,7 +562,7 @@ def test_import_incident_command_no_incident():
         assert incident_name == create_incident_request.json()['variables']['name']
         assert incident_identifier == create_incident_request.json()['variables']['identifier']
 
-    assert str(error.value) == "Error: No BreachRx privacy Incident found using the search terms provided."
+    assert str(error.value) == "Error: No BreachRx Incident found using the search terms provided."
 
 
 def test_get_incident_command():
