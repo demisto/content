@@ -261,7 +261,18 @@
                                 "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            }
+                            },
+                            {
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "keepplaceholdersinfiles",
+								"height": 53,
+								"id": "ae93194e-ff9a-44cf-b2d3-8f539a9a03f2",
+								"index": 6,
+								"listId": "caseinfoid-field-changed-caseinfoid-6cfc7250-efdc-11ec-ad08-d9ee2c4fe212",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
                         ],
                         "maxW": 3,
                         "minH": 1,

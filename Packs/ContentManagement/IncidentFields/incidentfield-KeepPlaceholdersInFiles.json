@@ -1,6 +1,7 @@
 {
 	"id": "incident_keepplaceholdersinfiles",
-	"version": 1,
+	"version": -1,
+    "fromVersion": "6.0.0",
 	"cacheVersn": 0,
 	"modified": "2025-03-12T10:25:51.337991628Z",
 	"sizeInBytes": 0,
@@ -18,6 +19,9 @@
 	"name": "keep_placeholders_in_files",
 	"prevName": "",
 	"ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
 	"placeholder": "",
 	"template": "",
 	"description": "",
@@ -39,7 +43,7 @@
 	"useAsKpi": false,
 	"locked": false,
 	"system": false,
-	"content": false,
+	"content": true,
 	"group": 0,
 	"mergeStrategy": "",
 	"hidden": false,
@@ -50,7 +54,7 @@
 	"systemAssociatedTypes": null,
 	"associatedToAll": false,
 	"unmapped": false,
-	"unsearchable": false,
+	"unsearchable": true,
 	"caseInsensitive": true,
 	"columns": null,
 	"defaultRows": null,
