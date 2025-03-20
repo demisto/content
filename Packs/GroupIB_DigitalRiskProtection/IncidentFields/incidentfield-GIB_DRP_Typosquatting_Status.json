@@ -1,10 +1,10 @@
 {
-    "id": "incident_gibdrpdownloadedbytyposquatting",
+    "id": "incident_gibdrptyposquattingstatus",
     "version": -1,
     "modified": "2025-03-17T06:30:45.160113284-04:00",
-    "name": "GIB DRP Downloaded by TypoSquatting",
+    "name": "GIB DRP Typosquatting Status",
     "ownerOnly": false,
-    "cliName": "gibdrpdownloadedbytyposquatting",
+    "cliName": "gibdrptyposquattingstatus",
     "type": "boolean",
     "closeForm": true,
     "editForm": true,

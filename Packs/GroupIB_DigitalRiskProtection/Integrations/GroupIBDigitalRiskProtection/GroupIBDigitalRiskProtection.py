@@ -60,7 +60,7 @@ COMMON_VIOLATION_MAPPING = {
     "violation_type": "violation.violationSubtype",  # GIB DRP Type
     "tags": "violation.tags.name",  # GIB DRP Tags
     "link": "link",  # GIB DRP Link
-    "downloaded_by_typoSquatting": "*downloaded_by_typoSquatting",  # GIB DRO Downloaded by TypoSquatting
+    "typosquatting_status": "*typosquatting_status",  # GIB DRO Downloaded by TypoSquatting
     # End Information From Group-IB DRP
     # Start Group-IB Dates
     "detected": "violation.detected",  # GIB DRP Detected
@@ -184,7 +184,7 @@ class Client(BaseClient):
                 section=section,
                 brands=brands,
                 sequpdate=sequpdate,
-                # use_typo_squatting=only_typosquatting,
+                use_typo_squatting=only_typosquatting,
             )
         except ConnectionException as e:
             raise ConnectionException(
@@ -545,8 +545,8 @@ class CommonHelpers:
 
     @staticmethod
     def set_tag_downloaded_by_typoSquatting(violation: dict[str, Any], only_typosquatting: bool) -> dict[str, Any]:
-        if violation.get("downloaded_by_typoSquatting", None) and only_typosquatting:
-            violation["downloaded_by_typoSquatting"] = True
+        if violation.get("typosquatting_status", None) and only_typosquatting:
+            violation["typosquatting_status"] = True
         return violation
 
 
