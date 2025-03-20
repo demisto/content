@@ -70,7 +70,7 @@ How to find your Zone and Account IDs
 # Where to find your Auth API key
 
 1. Log into the  [Cloudflare Dashboard](https://dash.cloudflare.com/).
-2. Go to`User Profile` -> `API Tokens` or simply [click here](https://dash.cloudflare.com/profile/api-tokens).
+2. Go to `User Profile` -> `API Tokens` or simply [click here](https://dash.cloudflare.com/profile/api-tokens).
 3. API Keys -> Global API Key -> View.
 4. Copy the API key and store it securely.
 

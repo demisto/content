@@ -99,16 +99,18 @@ Include all zones and accounts needed.
 Update firewall rule by the specified rule ID. Can update rule action, paused, description, priority, products and ref. Can not update or delete rule filter, ONLY add a new filter.
 
 
-#### Base Command
-
-`cloudflare-waf-firewall-rule-update`
-
 ### Permissions
 
 Permissions required for the API token:
 Account: Account Firewall Access Rules:Edit
 Zone: Firewall Services:Edit
 Include all zones and accounts needed.
+
+
+#### Base Command
+
+`cloudflare-waf-firewall-rule-update`
+
 
 #### Input
 
@@ -128,14 +130,10 @@ Include all zones and accounts needed.
 #### Context Output
 
 There is no context output for this command.
+
 ### cloudflare-waf-firewall-rule-delete
 ***
 Delete firewall rule by the specified rule ID.
-
-
-#### Base Command
-
-`cloudflare-waf-firewall-rule-delete`
 
 ### Permissions
 
@@ -143,6 +141,11 @@ Permissions required for the API token:
 Account: Account Firewall Access Rules:Edit
 Zone: Firewall Services:Edit
 Include all zones and accounts needed.
+
+#### Base Command
+
+`cloudflare-waf-firewall-rule-delete`
+
 
 #### Input
 
