@@ -1,18 +1,18 @@
 This playbook is designed to handle the following alerts:
-- Execution of an uncommon process at an early startup stage with suspicious characteristics
-- Execution of an uncommon process with a local/domain user SID at an early startup stage with suspicious characteristics
+- Execution of an uncommon process at an early startup stage with suspicious characteristics.
+- Execution of an uncommon process with a local/domain user SID at an early startup stage with suspicious characteristics.
 
 Playbook Stages:
 
 Analysis:
 
-- Checks the processes reputation.
+- Checks the process's reputation.
 
 Investigation:
 
-- Searches for related XSIAM alerts to identify potential attack patterns with persistence mechanisms.
+- Searches for related Cortex XSIAM alerts to identify potential attack patterns with persistence mechanisms.
 - Checks for any suspicious parameters in the command line (if the command line risk score is medium or higher).
-- Checks the Action process prevalent.
+- Checks the Action process prevalence.
 
 Verdict:
 
@@ -32,7 +32,7 @@ Remediation:
 - Terminate the malicious process.
 - Quarantine the malicious process (Requires analyst approval)
 - Add the malicious process hash to the block list (Requires analyst approval)
-- Automatically Close the alert.
+- Automatically close the alert.
 
 ## Dependencies
 
@@ -40,7 +40,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Quarantine File
+Quarantine File
 
 ### Integrations
 

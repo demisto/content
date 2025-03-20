@@ -6,20 +6,20 @@ name: silent-Execution of an uncommon process at an early startup stage
 issilent: true
 description: |-
   This playbook is designed to handle the following alerts:
-  - Execution of an uncommon process at an early startup stage with suspicious characteristics
-  - Execution of an uncommon process with a local/domain user SID at an early startup stage with suspicious characteristics
+  - Execution of an uncommon process at an early startup stage with suspicious characteristics.
+  - Execution of an uncommon process with a local/domain user SID at an early startup stage with suspicious characteristics.
 
   Playbook Stages:
 
   Analysis:
 
-  - Checks the processes reputation.
+  - Checks the process's reputation.
 
   Investigation:
 
-  - Searches for related XSIAM alerts to identify potential attack patterns with persistence mechanisms.
+  - Searches for related Cortex XSIAM alerts to identify potential attack patterns with persistence mechanisms.
   - Checks for any suspicious parameters in the command line (if the command line risk score is medium or higher).
-  - Checks the Action process prevalent.
+  - Checks the Action process prevalence.
 
   Verdict:
 
@@ -37,8 +37,8 @@ description: |-
   Remediation:
 
   - Terminate the malicious process.
-  - Quarantine the malicious process (Requires analyst approval)
-  - Add the malicious process hash to the block list (Requires analyst approval)
+  - Quarantine the malicious process. (Requires analyst approval.)
+  - Add the malicious process hash to the block list. (Requires analyst approval.)
   - Automatically Close the alert.
 tags:
 - TA0003 - Persistence
@@ -253,7 +253,7 @@ tasks:
       version: -1
       name: Get Alert related alerts
       description: |
-        This task searches for Cortex XSIAM related alerts to the current incident.
+        This task searches for Cortex XSIAM alerts related to the current incident.
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -488,7 +488,7 @@ tasks:
       id: 258e085a-a277-446d-9ca7-14339a0d287b
       version: -1
       name: Terminate Causality Process
-      description: Terminate a process tree by its causality ID. Available only from XSIAM 2.4.
+      description: Terminate a process tree by its causality ID. Available only from Cortex XSIAM 2.4.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
@@ -1308,7 +1308,7 @@ tasks:
       id: 132fd4e8-d1c1-4b5d-8b99-92092546f605
       version: -1
       name: Set malicious CGO process
-      description: Set multiple keys/values  related to the malicious CGO process to the context.
+      description: Set multiple keys/values related to the malicious CGO process to the context.
       scriptName: SetMultipleValues
       type: regular
       iscommand: false
@@ -1436,7 +1436,7 @@ tasks:
       id: 5daba966-a3c8-4476-89de-b848610ae58f
       version: -1
       name: Set malicious Actor process
-      description: Set multiple keys/values  related to the malicious Actor process to the context.
+      description: Set multiple keys/values related to the malicious Actor process to the context.
       scriptName: SetMultipleValues
       type: regular
       iscommand: false
@@ -1506,7 +1506,7 @@ tasks:
       id: b1d3e780-bc7e-4196-906a-f49843e32a61
       version: -1
       name: Set malicious Action process
-      description: Set multiple keys/values  related to the malicious Action process to the context.
+      description: Set multiple keys/values related to the malicious Action process to the context.
       scriptName: SetMultipleValues
       type: regular
       iscommand: false
