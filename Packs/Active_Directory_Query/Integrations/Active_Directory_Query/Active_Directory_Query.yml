@@ -285,8 +285,9 @@ script:
     arguments:
     - name: username
       required: true
-      description: "The username of the account to disable (sAMAccountName)."
+      description: "The username whose password will be changed."
     - name: password
+      secret: true
       required: true
       description: "The password to set for the user."
     - name: base-dn
@@ -796,7 +797,7 @@ script:
     outputs:
     - contextPath: ActiveDirectory.ValidCredentials
       description: List of usernames that successfully logged in.
-  dockerimage: demisto/ldap:2.9.1.117493
+  dockerimage: demisto/ldap:2.9.1.2033379
   ismappable: true
   isremotesyncout: true
   runonce: false
