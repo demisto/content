@@ -24,7 +24,18 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
     ],
-    "defaultDataSource": "ServiceNow v2"
+    "defaultDataSource": "ServiceNow v2",
+    "supportedModules": [
+        "identity_threat",
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
