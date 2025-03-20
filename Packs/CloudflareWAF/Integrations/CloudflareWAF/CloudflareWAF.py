@@ -4,6 +4,7 @@ import copy
 from CommonServerUserPython import *
 from typing import Any
 from collections.abc import Callable
+import json
 
 MIN_PAGE_SIZE = 5
 MAX_PAGE_SIZE = 100
@@ -15,7 +16,7 @@ class Client(BaseClient):
     def __init__(self, credentials: str, account_id: str, proxy: bool, insecure: bool, base_url: str, zone_id: str = None):
         self.account_id = account_id
         self.zone_id = zone_id
-        super().__init__(base_url=base_url, headers=credentials, proxy=proxy, verify=insecure)
+        super().__init__(base_url=base_url, headers=json.loads(credentials), proxy=proxy, verify=insecure)
 
     def cloudflare_waf_firewall_rule_create_request(self, action: str, zone_id: str, description: str = None,
                                                     products: List[str] = None, paused: bool = None, priority: int = None,
@@ -420,13 +421,11 @@ def validate_pagination_arguments(page: int = None, page_size: int = None, limit
     if page_size and not MIN_PAGE_SIZE <= page_size <= MAX_PAGE_SIZE:
         raise ValueError(f'page size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}.')
 
-    if page:
-        if page < 1:
-            raise ValueError('page argument must be greater than 0.')
+    if page and page < 1:
+        raise ValueError('page argument must be greater than 0.')
 
-    if limit:
-        if limit < 5 or limit > 100:
-            raise ValueError('limit argument must be greater than 5.')
+    if limit and (limit < 5 or limit > 100):
+        raise ValueError('limit argument must be between 5 and 100.')
 
 
 def pagination(request_command: Callable, args: dict[str, Any], pagination_args: dict[str, Any]) -> tuple:
@@ -1227,19 +1226,18 @@ def run_polling_command(client: Client, cmd: str, command_function: Callable, ar
     return command_results
 
 
-def get_headers(params: dict) -> dict:
-    """
-    Configures HTTP headers for Cloudflare API authentication based on the selected method.
-
+def get_headers(params: dict) -> str:
+    """ Configures HTTP headers for Cloudflare API authentication based on the selected method.
     Supports two authentication methods:
     1. API Token: Uses a bearer token for authentication.
     2. Global API Key: Uses an email and global API key for authentication.
+
 
     Args:
         params (dict): A dictionary containing authentication parameters.
 
     Returns:
-        dict: A dictionary containing the configured HTTP headers.
+        str: A JSON string containing the configured HTTP headers.
 
     Raises:
         ValueError: If required authentication parameters are missing.
@@ -1262,7 +1260,10 @@ def get_headers(params: dict) -> dict:
             email = params.get('email')
 
             if not global_api_key or not email:
-                raise ValueError('Both Global API Key and Email must be provided when using Global API Key authentication method.')
+                raise ValueError(
+                    'Both Global API Key and Email must be provided when using '
+                    'Global API Key authentication method.'
+                )
 
             headers = {
                 'X-Auth-Email': email,
@@ -1274,9 +1275,9 @@ def get_headers(params: dict) -> dict:
             raise ValueError('Invalid authentication method selected.')
 
     except Exception as e:
-        return_error(f'Error: {str(e)}')
+        return json.dumps({'error': str(e)})
 
-    return headers
+    return json.dumps(headers)
 
 
 def main() -> None:
