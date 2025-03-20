@@ -29,7 +29,7 @@ def load_oob_model():
                                                    'modelName': OUT_OF_THE_BOX_MODEL_NAME,
                                                    'modelLabels': ['Malicious', 'Non-Malicious'],
                                                    'modelOverride': 'true',
-                                                   'modelType': 'torch',
+                                                   'modelType': demisto_ml.ModelType.Torch.value,
                                                    'modelExtraInfo': {'threshold': THRESHOLD,
                                                                       OOB_VERSION_INFO_KEY: SCRIPT_MODEL_VERSION
                                                                       }
