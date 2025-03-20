@@ -1,13 +1,16 @@
 import pytest
 
 
-@pytest.mark.parametrize("value, expected", [
-    ("DE", "Germany"),
-    ("de", "Germany"),
-    ("De", "Germany"),
-    ("ZZ", "ZZ"),
-    ("Zz", "Zz"),
-])
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("DE", "Germany"),
+        ("de", "Germany"),
+        ("De", "Germany"),
+        ("ZZ", "ZZ"),
+        ("Zz", "Zz"),
+    ],
+)
 def test_lookup(value, expected):
     """
     Given: Different arg input
@@ -19,13 +22,16 @@ def test_lookup(value, expected):
     assert lookup({"value": value}) == expected
 
 
-@pytest.mark.parametrize("args", [
-    {},
-    {"value": None},
-    {"value": ""},
-    {"value": 9},
-    {"value": []},
-])
+@pytest.mark.parametrize(
+    "args",
+    [
+        {},
+        {"value": None},
+        {"value": ""},
+        {"value": 9},
+        {"value": []},
+    ],
+)
 def test_lookup_error(args):
     """
     Given: Different arg input
