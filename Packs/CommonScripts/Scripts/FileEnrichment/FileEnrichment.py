@@ -540,17 +540,25 @@ def summarize_command_results(
     """
     demisto.debug("Starting to summarize results from all executed commands.")
 
-    file_found_count = len([value for value in per_command_context.values() if value])
-    are_all_results_errors = (
-        bool(verbose_command_results)
-        and all(result.entry_type == EntryType.ERROR for result in verbose_command_results)
-    )
+    summary = {"File": file_hash}
 
-    summary = {
-        "File": file_hash,
-        "Status": "Done" if file_found_count > 0 else "Not Found",
-        "Result": "Failed" if are_all_results_errors else "Success",
-    }
+    # Write summary Result
+    errors_count = len([result for result in verbose_command_results if result.entry_type == EntryType.ERROR])
+    demisto.debug(f"Found {errors_count} errors in command results.")
+    if errors_count:
+        if errors_count == len(verbose_command_results):
+            summary["Result"] = "Failed"  # All results are errors
+        else:
+            summary["Result"] = "Partial Success"  # Some results are errors
+    else:
+        summary["Result"] = "Success"  # No errors
+
+    # Write summary Status
+    file_found_count = len([value for value in per_command_context.values() if value])
+    demisto.debug(f"Found information on file {file_hash} from {file_found_count} sources.")
+    summary["Status"] = "Done" if file_found_count > 0 else "Not Found"
+
+    # Write summary Message
     if file_found_count > 0:
         summary["Message"] = f"Found data on file from {file_found_count} sources."
     else:
