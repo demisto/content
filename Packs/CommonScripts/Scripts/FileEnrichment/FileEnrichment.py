@@ -316,6 +316,10 @@ def execute_file_reputation(command: Command) -> tuple[dict, list[CommandResults
     demisto.debug(f"Starting to execute file reputation command with args: {command.args}.")
     entry_context, readable_command_results = command.execute()
 
+    demisto.debug(
+        "Extracting File and DBotScore from file reputation entry context. "
+        f"Command returned {len(entry_context)} items in entry context and {len(readable_command_results)} command results."
+    )
     context_output: dict[str, Any] = {"DBotScore": []}
 
     for context_item in entry_context:
@@ -345,6 +349,10 @@ def execute_wildfire_verdict(command: Command) -> tuple[dict, list[CommandResult
     demisto.debug(f"Starting to execute Wildfire verdict command with args: {command.args}.")
     entry_context, readable_command_results = command.execute()
 
+    demisto.debug(
+        "Extracting DBotScore and Verdict from Wildfire verdict entry context. "
+        f"Command returned {len(entry_context)} items in entry context and {len(readable_command_results)} command results."
+    )
     context_output: dict[str, Any] = {"DBotScore": []}
 
     for context_item in entry_context:
@@ -373,6 +381,10 @@ def execute_ir_hash_analytics(command: Command) -> tuple[dict, list[CommandResul
     demisto.debug(f"Starting to execute IR hash analytics command with args: {command.args}.")
     entry_context, readable_command_results = command.execute()
 
+    demisto.debug(
+        "Extracting AnalyticsPrevalence from IR hash analytics entry context. "
+        f"Command returned {len(entry_context)} items in entry context and {len(readable_command_results)} command results."
+    )
     context_output: dict[str, Any] = {}  # No DBotScore in entry context
 
     # Add brand fields to context
