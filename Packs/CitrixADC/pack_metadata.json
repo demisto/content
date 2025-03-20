@@ -9,10 +9,17 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network",
+        "Pcap"
+
+    ],
     "useCases": [],
     "keywords": [
-        "NetScaler"
+        "NetScaler",
+        "citrix",
+        "adc"
     ],
     "marketplaces": [
         "marketplacev2"
