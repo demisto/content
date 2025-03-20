@@ -320,3 +320,20 @@ def test_handle_raw_response_results():
             human_readable_outputs=human_readable_outputs,
             verbose=verbose
         )
+
+
+def test_initialize_commands():
+    commands = initialize_commands()
+    expected_command_names = {
+        'core-isolate-endpoint',
+        'xdr-endpoint-isolate',
+        'cs-falcon-contain-host',
+        'fireeye-hx-host-containment',
+        'cb-edr-quarantine-device',
+        'microsoft-atp-isolate-machine',
+    }
+
+    actual_command_names = {cmd.name for cmd in commands}
+
+    assert actual_command_names == expected_command_names, f"Missing or unexpected commands: {actual_command_names}"
+
