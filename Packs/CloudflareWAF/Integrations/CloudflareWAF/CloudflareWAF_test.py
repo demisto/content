@@ -5,7 +5,7 @@ from CloudflareWAF import Client
 
 
 '''MOCK PARAMETERS '''
-CREDENTIALS = "credentials"
+CREDENTIALS = '{"Authorization": "Bearer YOUR_TOKEN"}'
 ACCOUNT_ID = "account_id"
 ZONE_ID = "zone_id"
 
@@ -22,7 +22,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
 
-    with open(os.path.join('test_data', file_name), mode='r', encoding='utf-8') as mock_file:
+    with open(os.path.join('test_data', file_name), encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
 
