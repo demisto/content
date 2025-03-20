@@ -269,21 +269,25 @@ def merge_context_outputs(per_command_context: dict[str, Any]) -> dict[str, Any]
     def recursive_merge(target: dict, source: dict):
         for key, value in source.items():
             if isinstance(value, dict) and "Value" in value and "Source" in value:
+                demisto.debug(f"Key: {key} has 'Value' and 'Source' fields. Appending to list.")
                 if key not in target:
                     target[key] = []
                 target[key].append(value)
 
             elif isinstance(value, dict):
+                demisto.debug(f"Key: {key} is of type dictionary. Recursively calling function on its value.")
                 if key not in target:
                     target[key] = {}
                 recursive_merge(target[key], value)
 
             elif key == "DBotScore":
+                demisto.debug(f"Key: {key} is of type list. Extending list.")
                 if key not in target:
                     target[key] = []
                 target[key].extend(value)
 
             else:
+                demisto.debug(f"Key: {key} has value: {value}. Writing to merged dictionary.")
                 target[key] = value
 
     merged_context_output: dict[str, Any] = {}
