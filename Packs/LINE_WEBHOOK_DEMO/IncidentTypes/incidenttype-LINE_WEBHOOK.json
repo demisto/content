@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#FF979A",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "LINE_WEBHOOK",
+    "layout": "LINE_WEBHOOK_LAYOUT",
+    "locked": false,
+    "name": "LINE_WEBHOOK",
+    "onChangeRepAlg": 0,
+    "playbookId": "LINE_REPLY_DEMO",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

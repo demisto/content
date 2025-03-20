@@ -1,0 +1,206 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: LINE_REPLY_DEMO
+inputs: []
+name: LINE_REPLY_DEMO
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "66"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7c031729-d5bf-42cf-8900-46f4e2ed2163
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7c031729-d5bf-42cf-8900-46f4e2ed2163
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "62":
+    continueonerrortype: ""
+    id: "62"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6a772b82-8e02-4c97-8339-e0bd4d5a74ca
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+      description: ''
+    taskid: 6a772b82-8e02-4c97-8339-e0bd4d5a74ca
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "64":
+    continueonerrortype: ""
+    id: "64"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "62"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: |-
+          機器人己收到您的問題.
+
+          您的問題:${incident.linemessagetext}
+          您的USERID:${incident.linesourceuserid}
+          您的GROUPID:${incident.linesourcegroupid}
+          您的回覆如下:
+          ${OpenAiChatGPTV3.Conversation.[0].assistant}
+      replytoken:
+        simple: ${incident.linereplytoken}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: LineMessageAPI
+      id: f8b44408-4d91-48d8-86d1-b9f35c6d6eee
+      iscommand: true
+      name: LINE 通知 _新版
+      script: LineMessageAPI|||line-reply-message
+      type: regular
+      version: -1
+    taskid: f8b44408-4d91-48d8-86d1-b9f35c6d6eee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "65":
+    continueonerrortype: ""
+    id: "65"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "64"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: ${incident.linemessagetext}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: OpenAi ChatGPT v3
+      description: Send a plain message to the selected GPT model and receive the generated response.
+      id: 2802ffbc-afa2-4bf7-8393-f4df4c592c64
+      iscommand: true
+      name: gpt-send-message
+      script: OpenAi ChatGPT v3|||gpt-send-message
+      type: regular
+      version: -1
+    taskid: 2802ffbc-afa2-4bf7-8393-f4df4c592c64
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "66":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: incident.linemessagetext
+          operator: startWith
+          right:
+            value:
+              simple: 'AI:'
+      label: "yes"
+    continueonerrortype: ""
+    id: "66"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "65"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ddb11a27-f5b2-4507-8e60-1e0a71b2c649
+      iscommand: false
+      name: 'CHECK TEXT START WITH AI:'
+      type: condition
+      version: -1
+    taskid: ddb11a27-f5b2-4507-8e60-1e0a71b2c649
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
