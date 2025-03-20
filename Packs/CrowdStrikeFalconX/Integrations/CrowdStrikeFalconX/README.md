@@ -157,21 +157,21 @@ Notice that the file identifiers, SHA and ID are not the same.
 `cs-fx-submit-uploaded-file`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| sha256 | SHA256 ID of the sample, which is a SHA256 hash value. Find the sample ID from the response when uploading a malware sample or search with the cs-fx-upload-file command. | Optional | 
-| environment_id | Sandbox environment used for analysis. Possible values are: 300: Linux Ubuntu 16.04, 64-bit, 200: Android (static analysis), 160: Windows 10, 64-bit, 110: Windows 7, 64-bit, 100: Windows 7, 32-bit. | Optional | 
-| action_script | Runtime script for sandbox analysis. Possible values are: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie. | Optional | 
-| command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters. | Optional | 
-| document_password | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. | Optional | 
-| enable_tor | Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Possible values are: true, false. | Optional | 
-| submit_name | Name of the malware sample that’s used for file type detection. and analysis. | Optional | 
-| system_date | Set a custom date for the sandbox environment in the format yyyy-MM-dd. | Optional | 
-| polling | Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota. Possible values are: true, false. | Optional | 
-| extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional | 
-| ids | This ia an internal argument used for the polling process, not to be used by the user. | Optional | 
-| interval_in_seconds | Interval in seconds between each poll. Default is 600. | Optional | 
-| system_time | Sets a custom time for the sandbox environment in the format HH:mm. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                    | **Required** |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| sha256 | SHA256 ID of the sample, which is a SHA256 hash value. Find the sample ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.                          | Optional | 
+| environment_id | Sandbox environment used for analysis. Possible values are: 310: Linux Ubuntu 20, 64-bit, 200: Android (static analysis), 160: Windows 10, 64-bit, 110: Windows 7, 64-bit, 100: Windows 7, 32-bit. | Optional | 
+| action_script | Runtime script for sandbox analysis. Possible values are: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie.                                               | Optional | 
+| command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters.                                                                                                          | Optional | 
+| document_password | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.                                                                                                       | Optional | 
+| enable_tor | Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Possible values are: true, false.                 | Optional | 
+| submit_name | Name of the malware sample that’s used for file type detection. and analysis.                                                                                                                      | Optional | 
+| system_date | Set a custom date for the sandbox environment in the format yyyy-MM-dd.                                                                                                                            | Optional | 
+| polling | Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota. Possible values are: true, false.                  | Optional | 
+| extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false.                                   | Optional | 
+| ids | This ia an internal argument used for the polling process, not to be used by the user.                                                                                                             | Optional | 
+| interval_in_seconds | Interval in seconds between each poll. Default is 600.                                                                                                                                             | Optional | 
+| system_time | Sets a custom time for the sandbox environment in the format HH:mm.                                                                                                                                | Optional | 
 
 
 #### Context Output
@@ -1894,7 +1894,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | A web page or file URL. It can be HTTP(S) or FTP.<br/>For example: “https://url.com”,“ftp://ftp.com”. | Optional | 
-| environment_id | Sandbox environment used for analysis. Possible values are: 300: Linux Ubuntu 16.04, 64-bit, 200: Android (static analysis), 160: Windows 10, 64-bit, 110: Windows 7, 64-bit, 100: Windows 7, 32-bit. | Optional | 
+| environment_id | Sandbox environment used for analysis. Possible values are: 310: Linux Ubuntu 20, 64-bit, 200: Android (static analysis), 160: Windows 10, 64-bit, 110: Windows 7, 64-bit, 100: Windows 7, 32-bit. | Optional | 
 | action_script | Runtime script for sandbox analysis. Values:<br/>default<br/>default_maxantievasion<br/>default_randomfiles<br/>default_randomtheme<br/>default_openie. | Optional | 
 | command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters. | Optional | 
 | document_password | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. | Optional | 
