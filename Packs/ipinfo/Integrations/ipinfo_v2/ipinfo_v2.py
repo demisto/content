@@ -11,6 +11,7 @@ class Client(BaseClient):
     def __init__(self, api_key: str, base_url: str, verify_certificate: bool, proxy: bool, reliability: str):
         """
         Client to use in the IPinfo integration. Uses BaseClient
+    
         """
         super().__init__(base_url=base_url, proxy=proxy, verify=verify_certificate)
         time_sensitive = is_time_sensitive()
@@ -22,6 +23,8 @@ class Client(BaseClient):
 
     def ipinfo_ip(self, ip: str) -> dict[str, Any]:
         return self.http_request(ip)
+
+
 
     def http_request(self, ip: str) -> dict[str, Any]:
         """ constructs url with token (if existent), then returns request """
