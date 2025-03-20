@@ -33,7 +33,7 @@ class Client(BaseClient):
 
     def get_api_indicators(self,
                            filter_query: str = None,
-                           limit: int = 10) -> list:
+                           limit: int = 200) -> list:
         """Get indicators from GTI API."""
         stop = False
         iocs = []
@@ -56,7 +56,7 @@ class Client(BaseClient):
         return iocs
 
     def fetch_indicators(self,
-                         limit: int = 10,
+                         limit: int = 200,
                          filter_query: str = None,
                          fetch_command: bool = False) -> list:
         """Retrieves all entries from the feed.
@@ -326,7 +326,7 @@ def _create_indicator(item: dict) -> dict:
 def fetch_indicators_command(client: Client,
                              tlp_color: str = None,
                              feed_tags: list = [],
-                             limit: int = 10,
+                             limit: int = 200,
                              filter_query: str = None,
                              minimum_score: int = 0,
                              fetch_command: bool = False) -> list[dict]:
@@ -386,7 +386,7 @@ def get_indicators_command(client: Client,
     """
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
-    limit = int(args.get('limit', 10))
+    limit = int(args.get('limit', 200))
     filter_query = args.get('filter')
     minimum_score = int(params.get('feedMinimumGTIScore', 80))
 
@@ -434,7 +434,7 @@ def main():
 
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
-    limit = int(params.get('limit', 10))
+    limit = int(params.get('limit', 200))
     filter_query = params.get('filter')
     minimum_score = int(params.get('feedMinimumGTIScore', 80))
 
