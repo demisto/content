@@ -45,7 +45,7 @@ def mock_client() -> Client:
                 {"uuid": "789", "log_time": "2024-10-09T12:34:56.789578Z"},
             ],
             (["456", "789"], "2024-10-09T12:34:56.78957832Z"),
-        )
+        ),
     ],
 )
 def test_extract_events_suspected_duplicates(
@@ -92,7 +92,7 @@ def test_extract_events_suspected_duplicates(
                     "uuid": "456",
                     "log_time": "2024-10-09T12:34:56.789Z",
                     "time": "2024-10-09T12:34:56.789Z",
-                    "_time": "2024-10-09T12:34:56.789Z"
+                    "_time": "2024-10-09T12:34:56.789Z",
                 }
             ],
             id="Event time is equal to or less than last_event_time",
@@ -161,7 +161,9 @@ def test_filter_duplicate_events(
     Then:
         - Ensure that a list of the events that are not duplicates is returned
     """
-    filtered_events = filter_duplicate_events(events, integration_context, EventCounter())
+    filtered_events = filter_duplicate_events(
+        events, integration_context, EventCounter()
+    )
     assert filtered_events == expected_filtered_events
 
 
@@ -257,7 +259,7 @@ def test_perform_long_running_loop_next_pointing_not_available(mocker: MockerFix
     mocker.patch("SymantecEndpointSecurity.sleep_if_necessary")
     with pytest.raises(DemistoException, match="Failed to fetch logs from API"):
         perform_long_running_loop(mock_client())
-    assert mock_integration_context == {'fetch_failure_count': 1}
+    assert mock_integration_context == {"fetch_failure_count": 1}
 
 
 def test_test_module(mocker: MockerFixture):
@@ -314,9 +316,11 @@ def test_get_events_command_with_raises(
     [
         pytest.param(10, 20, 1, id="The sleep function should be called once"),
         pytest.param(10, 70, 0, id="The sleep function should not be called"),
-    ]
+    ],
 )
-def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int, call_count: int):
+def test_sleep_if_necessary(
+    mocker: MockerFixture, start_run: int, end_run: int, call_count: int
+):
     """
     Given:
         - Mocked time passed duration
