@@ -1,4 +1,5 @@
 import json
+from unittest.mock import Mock
 import pytest
 import demistomock as demisto
 
@@ -562,3 +563,23 @@ def test_build_indicators_from_galaxies_attack_type():
     assert galaxy_indicators['type'] == 'Attack Pattern'
     assert galaxy_indicators['service'] == 'MISP'
     assert galaxy_indicators['Reputation'] == 'High'
+
+
+def test_build_indicators_with_hostname():
+    """
+    Given:
+        - A response from the API which contains an indicator of type hostname.
+    When:
+        - build_indicators executed.
+    Then:
+        - Successfully creates indicator and relationship.
+    """
+    from FeedMISP import build_indicators
+    client = Mock()
+    response = {'response': {'Attribute': [{'type': 'hostname',
+                                            'value': {'value': 'www.test.com'},
+                                            'Tag': [{'name': 'misp-galaxy:mitre-attack-pattern="T1111"'}]}]}}
+    result = build_indicators(client, response, ['hostname'], 'color', 'url', 'reputation', ['feed_tags'])
+    assert result[0].get('Relationships', [])[0].get('entityAType') == 'Domain'
+    assert result[0].get('Relationships', [])[0].get('entityBType') == 'Attack Pattern'
+    assert result[0].get('Relationships', [])[0].get('entityB') == 'T1111'
