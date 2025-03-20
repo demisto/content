@@ -703,5 +703,6 @@ marketplaces:
 - xsoar
 - marketplacev2
 - xpanse
+- platform
 tests:
 - Test - AWS_Organizations
