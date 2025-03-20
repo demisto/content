@@ -52,11 +52,11 @@ With the above variable, the `demisto.params()` function will give you the curre
 1. Create a file `/content/Packs/Doppel/Integrations/Doppel/.args_command.json`
 2. Decide which command you want to debug and initialize the file.
      For example if you want to debug the `get-alert` command with input argument for `id` equals to `TST-31`, you should have the following content in the file:
-   `{
-    "cmd": "get-alert",
-    "id": "TST-31"
-   }`
-4. Click the debug button for *Python: Debug Integration locally*. The breakpoint will hit and you will get the correct parameters, commands, and arguments while debugging.
+      `{
+      "cmd": "get-alert",
+      "id": "TST-31"
+      }`
+3. Click the debug button for *Python: Debug Integration locally*. The breakpoint will hit and you will get the correct parameters, commands, and arguments while debugging.
 
 
 ## Test the pack on XSOAR tenant

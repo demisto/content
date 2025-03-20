@@ -520,8 +520,32 @@ There is no context output for this command.
 
 ### Incident Mirroring
 
-You can enable incident mirroring between Cortex XSOAR incidents and Doppel corresponding events (available from Cortex XSOAR version 6.0.0).
-To set up the mirroring:
+#### Mirroring In (Doppel → XSOAR)
+
+When incidents are mirrored into XSOAR from Doppel:
+1. Any changes in Doppel alerts (mirroring incoming fields) will be reflected in Cortex XSOAR incidents.
+
+**Supported Fields**
+
+The following fields are mirrored:
+1. Doppel Queue State
+2. Doppel Entity State
+3. Audit Log History
+
+
+#### Mirroring Out (XSOAR → Doppel)
+
+When incidents are mirrored out from XSOAR to Doppel:
+
+**Supported Fields**
+
+The following fields are mirrored:
+1. Doppel Queue State
+2. Comments
+
+#### Configuration Steps
+
+To enable incident mirroring between Cortex XSOAR incidents and Doppel alerts:
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
