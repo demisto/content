@@ -243,8 +243,7 @@ inputs:
 - key: Timeout
   value: {}
   required: true
-  description: Amount of time to poll before declaring a timeout and resuming the
-    playbook (in minutes).
+  description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
   playbookInputQuery:
 - key: InstanceName
   value: {}
@@ -256,12 +255,14 @@ inputs:
 - key: AdditionalPollingCommandName
   value: {}
   required: false
-  description: "Additional polling commands are relevant when using StatePolling,\
-    \ and there is more than one Jira instance. It will specify the polling command\
-    \ to use a specific instance to run on. \nWhen implemented, add \"Using\" to the value.\
-    \ \nThe polling command will then take the instance name as the instance to use. "
+  description: "Additional polling commands are relevant when using StatePolling, and there is more than one Jira instance. It will specify the polling command to use a specific instance to run on. \nWhen implemented, add \"Using\" to the value. \nThe polling command will then take the instance name as the instance to use. "
   playbookInputQuery:
 outputs: []
 tests:
 - No test.
 fromversion: 6.0.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
