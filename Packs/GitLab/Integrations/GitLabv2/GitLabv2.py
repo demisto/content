@@ -401,7 +401,7 @@ def validate_pagination_values(limit: int, page_number: int) -> tuple[int, int, 
 def response_according_pagination(client_function: Any, limit: int, page_number: int,
                                   params: dict, suffix_id: str | None):
     '''
-    This function gets results according to the pagination values.
+    This function gets results according to the pagination values test.
     input: 1. parameters for the client function
            2. suffix_id- if the suffix contain id(issue id for example) suffix_id would contain it,
             otherwise None.

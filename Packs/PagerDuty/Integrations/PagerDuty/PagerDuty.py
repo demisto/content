@@ -129,7 +129,7 @@ def translate_severity(sev: str) -> int:
 
 
 def unicode_to_str_recur(obj):
-    """Converts unicode elements of obj (incl. dictionary and list) to string recursively"""
+    """Converts unicode elements of obj (incl. dictionary and list) to string recursively test"""
     if IS_PY3:
         return obj
     if isinstance(obj, dict):

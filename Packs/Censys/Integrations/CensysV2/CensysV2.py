@@ -149,7 +149,7 @@ def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
 def censys_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
-    Returns previews of hosts matching a specified search query or a list of certificates that match the given query.
+    Returns previews of hosts matching a specified search query or a list of certificates that match the given test query.
     """
     index = args.get('index')
     query = args.get('query', '')

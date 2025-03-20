@@ -795,7 +795,7 @@ class McAfeeESMClient(BaseClient):
         """
 
         :param file_token: the token file (McAfee API call needed for the file creation)
-        :param buff_size: the size of the bytes in every API call.
+        :param buff_size: the size of the bytes in every API call test.
         :return: generate values (string)
         """
         command = 'sysGetWatchlistValues'

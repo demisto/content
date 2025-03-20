@@ -19,7 +19,7 @@ def get_userId_by_username(args: dict, client: Any, IdentityStoreId: str) -> str
 
     Args:
         args: The command arguments containing the 'userName'.
-        client: The client object used to interact with the Identity Store service.
+        client: The client object used to interact with the Identity test Store service.
         IdentityStoreId: The ID of the Identity Store where the user is registered.
 
     Returns:
