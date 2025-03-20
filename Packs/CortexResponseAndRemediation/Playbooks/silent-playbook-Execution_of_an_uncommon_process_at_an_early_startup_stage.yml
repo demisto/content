@@ -113,7 +113,7 @@ tasks:
     task:
       id: 0aa114c6-fadc-4aa2-a71c-776a1d0ae7ac
       version: -1
-      name: Check if the process has a malicious reputation or found related alerts indicating a malicious activity
+      name: Check if the process has a suspicious or malicious reputation
       description: Determines the appropriate verdict based on the reputation of the processes.
       type: condition
       iscommand: false
@@ -961,7 +961,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: "#### Processes execution tree:\n- CGO Process Name: ${alert.cgoname.[0]}\n- Actor Process Name: ${alert.initiatedby.[0]}\n- Action Process Name: ${alert.targetprocessname.[0]}\n\n---\n\n#### Action Process execution information:\n- Execution time from boot (seconds): \n`${Core.OriginalAlert.event.event_time_delta_from_agent_host_boot_time_seconds}`\n- Is action process elevated? `${Core.OriginalAlert.event.is_action_process_elevated}`\n- Is action process image created recently? `${Core.OriginalAlert.event.is_action_process_image_created_recently}`\n- Is vendor highly rare? `${Core.OriginalAlert.event.is_vendor_highly_rare}`\n- Is low entropy? `${Core.OriginalAlert.event.is_low_entropy}`\n- Is action process image extension non exe? \n`${Core.OriginalAlert.event.is_action_process_image_extension_non_exe}`\n- Is action process path not program files? `${Core.OriginalAlert.event.is_action_process_path_not_program_files}`\n- Is high entropy? `${Core.OriginalAlert.event.is_high_entropy}`\n- Is action process signature invalid? `${Core.OriginalAlert.event.is_action_signature_invalid}`\n- Is action process sha256 globally prevalent? \n  `${Core.AnalyticsPrevalence.Hash.[0].value}`\n\n---\n\n### Decision Required:\nPlease choose the action you want to perform:\n\n- **False Positive** - Close the alert as a false positive.\n- **True Positive** - Handle the alert as a true positive by terminating, blocking, and quarantining the malicious processes.  *(Note: During the remediation stage, you will need to approve actions that affect malicious processes.)*\n"
+          simple: "#### Processes execution tree:\n- CGO Process Name: ${alert.cgoname.[0]}\n- Actor Process Name: ${alert.initiatedby.[0]}\n- Action Process Name: ${alert.targetprocessname.[0]}\n\n---\n\n#### Action Process execution information:\n- Execution time from boot (seconds): \n`${Core.OriginalAlert.event.event_time_delta_from_agent_host_boot_time_seconds}`\n- Is action process elevated: `${Core.OriginalAlert.event.is_action_process_elevated}`\n- Is action process image created recently: `${Core.OriginalAlert.event.is_action_process_image_created_recently}`\n- Is vendor highly rare: `${Core.OriginalAlert.event.is_vendor_highly_rare}`\n- Is low entropy: `${Core.OriginalAlert.event.is_low_entropy}`\n- Is action process image extension non exe: \n`${Core.OriginalAlert.event.is_action_process_image_extension_non_exe}`\n- Is action process path not program files: `${Core.OriginalAlert.event.is_action_process_path_not_program_files}`\n- Is high entropy: `${Core.OriginalAlert.event.is_high_entropy}`\n- Is action process signature invalid: `${Core.OriginalAlert.event.is_action_signature_invalid}`\n- Is action process sha256 globally prevalent: \n  `${Core.AnalyticsPrevalence.Hash.[0].value}`\n\n---\n\n### Decision Required:\nPlease choose the action you want to perform:\n\n- **False Positive** - Close the alert as a false positive.\n- **True Positive** - Handle the alert as a true positive by terminating, blocking, and quarantining the malicious processes.  *(Note: During the remediation stage, you will need to approve actions that affect malicious processes.)*\n"
         required: false
         gridcolumns: []
         defaultrows: []
@@ -990,7 +990,7 @@ tasks:
     task:
       id: 72effdb6-340c-4271-9edf-950edb966220
       version: -1
-      name: Evaluate Analyst Decision
+      name: Check Analyst Decision
       description: Evaluate the analyst's decision on whether to proceed with remediation actions or close the alert as a false positive.
       type: condition
       iscommand: false
@@ -1544,7 +1544,7 @@ tasks:
     task:
       id: 232f803f-6566-4be2-9bb3-16a53e96bb60
       version: -1
-      name: Evaluate Analyst Decision for Next Response Actions
+      name: Check Analyst Decision for Next Response Actions
       description: Evaluate the analyst's decision for the following response actions.
       type: condition
       iscommand: false
