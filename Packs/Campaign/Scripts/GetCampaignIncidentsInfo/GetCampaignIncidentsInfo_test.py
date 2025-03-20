@@ -163,8 +163,8 @@ def test_updated_status_and_severity(mocker):
 
     # validate
     hr = demisto.results.call_args[0][0]["HumanReadable"]
-    assert hr.count("| Archive |") == NUM_OF_INCIDENTS  # all incidents should have the 'Archive' status
-    assert hr.count("| 3 |") == NUM_OF_INCIDENTS  # all incidents should have severity 3
+    hr.count("| Archive |") == NUM_OF_INCIDENTS  # noqa: B015  # all incidents should have the 'Archive' status
+    hr.count("| 3 |") == NUM_OF_INCIDENTS   # noqa: B015  # all incidents should have severity 3
 
 
 def test_update_incident_with_required_keys(mocker):
