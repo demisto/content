@@ -7,8 +7,7 @@
     "url": "www.anomali.com",
     "email": "support@anomali.com",
     "categories": [
-        "Analytics & SIEM",
-        "Case Management"
+        "Analytics & SIEM"
     ],      
     "tags": [
         "Alerts",
@@ -18,8 +17,7 @@
     ],      
     "created": "2025-03-14T00:00:00Z",
     "useCases": [
-        "Incident Response",
-        "Case Management"
+        "Incident Response"
     ],
     "keywords": [
         "Analytics & SIEM"

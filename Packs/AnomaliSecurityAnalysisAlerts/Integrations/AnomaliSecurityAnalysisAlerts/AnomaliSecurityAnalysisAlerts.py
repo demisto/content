@@ -5,6 +5,9 @@ Anomali Security Analysis Alerts Integration
 from typing import Dict, List
 from datetime import datetime
 import urllib3
+import demistomock as demisto
+from CommonServerPython import * 
+from CommonServerUserPython import * 
 
 # Disable insecure warnings
 urllib3.disable_warnings()

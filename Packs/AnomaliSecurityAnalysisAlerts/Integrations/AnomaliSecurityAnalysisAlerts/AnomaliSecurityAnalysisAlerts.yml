@@ -1,0 +1,87 @@
+category: Analytics & SIEM
+commonfields:
+  id: AnomaliSecurityAnalysisAlerts
+  version: -1
+configuration:
+- defaultvalue: https://optic.threatstream.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  additionalinfo: The API Key to use for the connection
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'The Anomali Security Analytics pack enables users to interact with Anomali ThreatStream's XDR API to manage security alerts. It supports creating search jobs, monitoring their status, retrieving results, and updating alert statuses or comments, streamlining integration with Palo Alto XSOAR.'
+display: AnomaliSecurityAnalysisAlerts
+name: AnomaliSecurityAnalysisAlerts
+script:
+  commands:
+  - name: security-analytics-search-job-create
+    description: 'Create a new search job'
+    arguments:
+    - name: query
+      required: true
+    - name: source
+      required: true
+    - name: from
+      required: true
+    - name: to
+      required: false
+    - name: timezone
+      required: false
+    execution: false
+    outputs: []
+  - name: security-analytics-search-job-status
+    description: 'Query a search job status'
+    arguments:
+    - name: job_id
+      required: true
+    execution: false
+    outputs: []
+  - name: security-analytics-search-job-results
+    description: 'Get search job results'
+    arguments:
+    - name: job_id
+      required: true
+    execution: false
+    outputs: []
+  - name: security-analytics-update-alert-status
+    description: 'Update alert status'
+    arguments:
+    - name: status
+      required: true
+    - name: uuid
+      required: true
+    execution: false
+    outputs: []
+  - name: security-analytics-update-alert-comment
+    description: 'Update alert comment'
+    arguments:
+    - name: comment
+      required: true
+    - name: uuid
+      required: true
+    execution: false
+    outputs: []
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)

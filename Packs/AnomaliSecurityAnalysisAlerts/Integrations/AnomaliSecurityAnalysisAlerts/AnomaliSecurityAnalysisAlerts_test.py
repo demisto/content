@@ -1,6 +1,8 @@
 import pytest
-from Anomali_Security_Analysis_Alerts import *
+from AnomaliSecurityAnalysisAlerts import *
 import demistomock as demisto
+from CommonServerPython import * 
+from CommonServerUserPython import * 
 
 VENDOR_NAME = 'Anomali Security Analysis Alerts'
 
