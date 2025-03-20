@@ -1,9 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """DataminrPulseTransformExtractedIndicatorsToList Script for Cortex XSOAR (aka Demisto)."""
 
 
-''' STANDALONE FUNCTION '''
+""" STANDALONE FUNCTION """
 
 
 def flat_indicators(extracted_indicators: Dict) -> List:
@@ -23,7 +24,7 @@ def flat_indicators(extracted_indicators: Dict) -> List:
     return flatten_indicators
 
 
-''' COMMAND FUNCTION '''
+""" COMMAND FUNCTION """
 
 
 def transform_extracted_indicators_command(args: Dict[str, Any]) -> CommandResults:
@@ -36,31 +37,29 @@ def transform_extracted_indicators_command(args: Dict[str, Any]) -> CommandResul
     :return: Standard command result.
     """
 
-    extracted_indicators: Optional[str] = args.get('ExtractedIndicators', {})
+    extracted_indicators: Optional[str] = args.get("ExtractedIndicators", {})
 
     if not extracted_indicators:
-        raise ValueError('ExtractedIndicators not specified')
+        raise ValueError("ExtractedIndicators not specified")
 
     try:
         extracted_indicators = json.loads(extracted_indicators)
     except json.decoder.JSONDecodeError:
-        raise DemistoException('Not able to parse the given parameter ExtractedIndicators')
+        raise DemistoException("Not able to parse the given parameter ExtractedIndicators")
 
     flatten_indicators: List = flat_indicators(extracted_indicators)  # type: ignore
 
-    output = {'indicatorList': flatten_indicators}
-    readable_output = 'List of indicators\n\n{}'.format(
-        ', '.join([str(flatten_indicator) for flatten_indicator in flatten_indicators]))
+    output = {"indicatorList": flatten_indicators}
+    readable_output = "List of indicators\n\n{}".format(
+        ", ".join([str(flatten_indicator) for flatten_indicator in flatten_indicators])
+    )
 
     return CommandResults(
-        outputs_prefix='TransformedIndicators',
-        outputs_key_field='indicatorList',
-        outputs=output,
-        readable_output=readable_output
+        outputs_prefix="TransformedIndicators", outputs_key_field="indicatorList", outputs=output, readable_output=readable_output
     )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
@@ -68,11 +67,11 @@ def main():
         return_results(transform_extracted_indicators_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute TransformExtractedIndicatorsToList-DataminrPulse. Error: {str(ex)}')
+        return_error(f"Failed to execute TransformExtractedIndicatorsToList-DataminrPulse. Error: {str(ex)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
