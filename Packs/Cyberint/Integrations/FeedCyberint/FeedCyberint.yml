@@ -338,7 +338,7 @@ script:
     - contextPath: Cyberint.ipv4.suspicious_domains
       description: Suspicious domains.
       type: String
-    - contextPath: Cyberint.domain.benign
+    - contextPath: Cyberint.ipv4.benign
       description: Benign.
       type: String
     description: Gets IPv4 enrichment from the feed.
