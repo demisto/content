@@ -1,17 +1,16 @@
 import json
 from unittest.mock import patch
 
-import pytest
 import demistomock as demisto  # noqa: F401
+import pytest
 from CommonServerPython import *  # noqa: F401
-
 from CreatePrismaCloudComputeResourceComplianceReportButton import (
     filter_resources,
     filter_severities,
-    transform_html_for_resource,
+    main,
     send_html_email,
     send_xlsx_email,
-    main
+    transform_html_for_resource,
 )
 
 # Test transformation functions
@@ -33,7 +32,7 @@ def test_filter_resources_no_desired_resources():
         Assert the returned output matches the given hosts table.
     """
     # Test with no desired resources
-    filtered_data = filter_resources(test_table_data, 'host', [])
+    filtered_data = filter_resources(test_table_data, "host", [])
     # Assert that the filtered data matches the input data
     assert filtered_data == test_table_data
 
@@ -51,7 +50,7 @@ def test_filter_resources_with_desired_resources():
     """
     desired_resource = "VM001-MYRESOURCEGROUPNAT-abc123-def456-ghi789-jkl012"
     # Test with a desired resource
-    filtered_data = filter_resources(test_table_data, 'host', [desired_resource])
+    filtered_data = filter_resources(test_table_data, "host", [desired_resource])
     # Assert that the filtered data contains only the desired resource
     assert filtered_data == [test_table_data[0]]
 
@@ -85,9 +84,9 @@ def test_filter_severities_with_critical_severity():
         Assert the returned output matches filtered hosts table based on the given desired severity.
     """
     # Test with critical severity only
-    filtered_data = filter_severities(test_table_data, ['critical'])
+    filtered_data = filter_severities(test_table_data, ["critical"])
     # Assert that the filtered data contains only entries with critical severity
-    expected_data = [entry for entry in test_table_data if 'critical' in entry['complianceissues'].lower()]
+    expected_data = [entry for entry in test_table_data if "critical" in entry["complianceissues"].lower()]
     assert filtered_data == expected_data
 
 
@@ -177,11 +176,7 @@ def html_content():
 
 @pytest.fixture
 def email_data():
-    return {
-        "html": "<html><body><h1>Hello, World!</h1></body></html>",
-        "resource_type": "vm",
-        "to_email": "example@example.com"
-    }
+    return {"html": "<html><body><h1>Hello, World!</h1></body></html>", "resource_type": "vm", "to_email": "example@example.com"}
 
 
 @patch("CreatePrismaCloudComputeResourceComplianceReportButton.demisto.executeCommand")
@@ -196,9 +191,9 @@ def test_send_html_email(mock_executeCommand, html_content, email_data):
     Then:
         Assert the mocked send command with the expected body and output.
     """
-    mock_executeCommand.return_value = [{'Type': EntryType.NOTE, "Contents": "Email sent successfully"}]
+    mock_executeCommand.return_value = [{"Type": EntryType.NOTE, "Contents": "Email sent successfully"}]
     send_html_email(**email_data)
-    expected_html_body = email_data['html'].strip()
+    expected_html_body = email_data["html"].strip()
     mock_executeCommand.assert_called_once_with(
         "send-mail",
         {
@@ -210,8 +205,8 @@ def test_send_html_email(mock_executeCommand, html_content, email_data):
     Please see below the details for the compliance report from Prisma Cloud Compute
 
     {expected_html_body}
-    """
-        }
+    """,
+        },
     )
 
 
@@ -251,7 +246,7 @@ def test_send_xlsx_email(mock_executeCommand, email_xlsx_data):
     )
 
 
-RETURN_ERROR_TARGET = 'CreatePrismaCloudComputeResourceComplianceReportButton.return_error'
+RETURN_ERROR_TARGET = "CreatePrismaCloudComputeResourceComplianceReportButton.return_error"
 
 
 def test_main_function_with_error(mocker):
@@ -266,8 +261,11 @@ def test_main_function_with_error(mocker):
         Assert the returned error matches the expected error.
     """
     # Mock the necessary components
-    mocker.patch.object(demisto, 'args', return_value={'table': test_table_data, 'to': 'example@example.com',
-                                                       'output_type': 'invalid', 'resource_type': 'host'})
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"table": test_table_data, "to": "example@example.com", "output_type": "invalid", "resource_type": "host"},
+    )
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     main()
     err_msg = return_error_mock.call_args_list[0][0][0]
