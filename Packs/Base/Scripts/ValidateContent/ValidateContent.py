@@ -106,17 +106,16 @@ class ValidationResult:
         return asdict(self)
 
 
+def cleanup(path):
+    # Cleanup: Remove the directory if exists.
+    if os.path.exists(path):
+        shutil.rmtree(path)
+        demisto.debug(f"Temporary directory {path} cleaned up.")
+
+
 @contextmanager
 def ConstantTemporaryDirectory(path):
     """ Creates a temporary directory with a constant name. """
-
-    def cleanup():
-        # Cleanup: Remove the directory if exists.
-        if os.path.exists(path):
-            shutil.rmtree(path)
-            demisto.debug(f"Temporary directory {path} cleaned up.")
-
-    cleanup()
     os.makedirs(path, exist_ok=True)
     yield path
 
@@ -597,7 +596,7 @@ def read_pre_commit_results(pre_commit_dir: Path):
                 # 'check-ast' details value has to be treated individually as regex does not capture it properly.
                 if hook_id == 'check-ast':
                     result['details'] = stdout.splitlines()[5:]  # Trimming error metadata info (5 lines of it).
-                details = result['details'] if 'details' in result else ''
+                details = result.get("details", "")
                 results.append(
                     ValidationResult(
                         filePath=file_path,
@@ -780,6 +779,7 @@ def main():
         data: bytes | str = args.get('data', b'')
         entry_id: str = args.get('entry_id', '')
 
+        cleanup(CONTENT_DIR_PATH)
         with ConstantTemporaryDirectory(CONTENT_DIR_PATH) as tmp_dir:
             demisto.info('Setting up content validation environment.')
             demisto.debug(f"created {tmp_dir=}")
@@ -826,6 +826,7 @@ def main():
         return_error(f'Failed to execute ValidateContent. Error: {str(e)}')
     finally:
         os.chdir(cwd)
+        cleanup(CONTENT_DIR_PATH)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
