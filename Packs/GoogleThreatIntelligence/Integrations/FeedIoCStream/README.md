@@ -10,6 +10,7 @@ Use the Google Threat Intelligence IoC Stream Feed integration to fetch indicato
 | --- | --- | --- |
 | feed | The fetch indicators. | False |
 | credentials | API Key. | True |
+| limit | The maximum number of indicators to fetch from IoC Stream. The default value is 200. | False |
 | filter | Exact name of the rule or ruleset you want to filter on. Leave empty to receive all. | False |
 | feedReputation | The indicator reputation. | False |
 | feedReliability | The source's reliability. | True |
@@ -40,7 +41,7 @@ Gets the indicators from Google Threat Intelligence IoC Stream.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. The default value is 10 and max 40. | Optional |
+| limit | The maximum number of results to return. The default value is 200. | Optional |
 | filter | Filter your IoC Stream (e.g., "source_type:hunting_ruleset" for LiveHunt, "source_type:retrohunt_job" for RetroHunt). Leave empty to receive all. | Optional |
 
 
