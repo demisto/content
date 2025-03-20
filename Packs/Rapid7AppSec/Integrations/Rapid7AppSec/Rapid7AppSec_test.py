@@ -6,12 +6,23 @@ from urllib.parse import urljoin
 
 import pytest
 from CommonServerPython import *
-from Rapid7AppSec import (API_LIMIT, ATTACK, DEFAULT_OUTPUT_KEY_FIELD,
-                          INTEGRATION_COMMAND_PREFIX,
-                          INTEGRATION_OUTPUT_PREFIX, SCAN, SCAN_ACTION,
-                          VULNERABILITY, VULNERABILITY_COMMENT, Client,
-                          OutputPrefix, ReadableOutputs, RequestAction,
-                          UrlPrefix, generate_readable_output_message)
+from Rapid7AppSec import (
+    API_LIMIT,
+    ATTACK,
+    DEFAULT_OUTPUT_KEY_FIELD,
+    INTEGRATION_COMMAND_PREFIX,
+    INTEGRATION_OUTPUT_PREFIX,
+    SCAN,
+    SCAN_ACTION,
+    VULNERABILITY,
+    VULNERABILITY_COMMENT,
+    Client,
+    OutputPrefix,
+    ReadableOutputs,
+    RequestAction,
+    UrlPrefix,
+    generate_readable_output_message,
+)
 
 EXAMPLE_ID = "1111"
 
@@ -74,9 +85,7 @@ def mock_client() -> Client:
             f"{UrlPrefix.VULNERABILITY}/{EXAMPLE_ID}/comments/{EXAMPLE_ID}",
             RequestAction.PUT,
             generate_readable_output_message(
-                object_type=ReadableOutputs.VULNERABILITY_COMMENT.value,
-                action=ReadableOutputs.UPDATED,
-                object_id=EXAMPLE_ID
+                object_type=ReadableOutputs.VULNERABILITY_COMMENT.value, action=ReadableOutputs.UPDATED, object_id=EXAMPLE_ID
             ),
         ),
         (
@@ -85,9 +94,7 @@ def mock_client() -> Client:
             f"{UrlPrefix.VULNERABILITY}/{EXAMPLE_ID}/comments/{EXAMPLE_ID}",
             RequestAction.DELETE,
             generate_readable_output_message(
-                object_type=ReadableOutputs.VULNERABILITY_COMMENT.value,
-                action=ReadableOutputs.DELETED,
-                object_id=EXAMPLE_ID
+                object_type=ReadableOutputs.VULNERABILITY_COMMENT.value, action=ReadableOutputs.DELETED, object_id=EXAMPLE_ID
             ),
         ),
         (
@@ -95,17 +102,16 @@ def mock_client() -> Client:
             f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-submit",
             UrlPrefix.SCAN,
             RequestAction.POST,
-            generate_readable_output_message(object_type=ReadableOutputs.SCAN,
-                                             action=ReadableOutputs.SUBMITTED),
+            generate_readable_output_message(object_type=ReadableOutputs.SCAN, action=ReadableOutputs.SUBMITTED),
         ),
         (
             {"scan_id": EXAMPLE_ID},
             f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-delete",
             f"{UrlPrefix.SCAN}/{EXAMPLE_ID}",
             RequestAction.DELETE,
-            generate_readable_output_message(object_type=ReadableOutputs.SCAN,
-                                             action=ReadableOutputs.DELETED,
-                                             object_id=EXAMPLE_ID)
+            generate_readable_output_message(
+                object_type=ReadableOutputs.SCAN, action=ReadableOutputs.DELETED, object_id=EXAMPLE_ID
+            ),
         ),
     ),
 )
@@ -137,12 +143,15 @@ def test_no_content_commands(
     Then:
      - Ensure that readable outputs is correct.
     """
-    from Rapid7AppSec import (create_vulnerability_comment_command,
-                              delete_scan_command,
-                              delete_vulnerability_comment_command,
-                              submit_scan_command,
-                              update_vulnerability_command,
-                              update_vulnerability_comment_command)
+    from Rapid7AppSec import (
+        create_vulnerability_comment_command,
+        delete_scan_command,
+        delete_vulnerability_comment_command,
+        submit_scan_command,
+        update_vulnerability_command,
+        update_vulnerability_comment_command,
+    )
+
     commands: Dict[str, Callable] = {
         f"{INTEGRATION_COMMAND_PREFIX}-{VULNERABILITY}-update": update_vulnerability_command,
         f"{INTEGRATION_COMMAND_PREFIX}-{VULNERABILITY_COMMENT}-create": create_vulnerability_comment_command,
@@ -181,26 +190,17 @@ def test_pooling_commands(
 
     from Rapid7AppSec import submit_scan_action_command
 
-    excepted_output = generate_readable_output_message(object_type=ReadableOutputs.SCAN_ACTION,
-                                                       action=ReadableOutputs.CHANGED.value.format("Resume"),
-                                                       object_id=EXAMPLE_ID)
-
-    url = urljoin(
-        mock_client._base_url,
-        f"{UrlPrefix.SCAN}/{EXAMPLE_ID}/action"
+    excepted_output = generate_readable_output_message(
+        object_type=ReadableOutputs.SCAN_ACTION, action=ReadableOutputs.CHANGED.value.format("Resume"), object_id=EXAMPLE_ID
     )
+
+    url = urljoin(mock_client._base_url, f"{UrlPrefix.SCAN}/{EXAMPLE_ID}/action")
     requests_mock.get(url=url, status_code=http.HTTPStatus.NO_CONTENT)
 
-    url = urljoin(
-        mock_client._base_url,
-        f"{UrlPrefix.SCAN}/{EXAMPLE_ID}/action"
-    )
+    url = urljoin(mock_client._base_url, f"{UrlPrefix.SCAN}/{EXAMPLE_ID}/action")
     requests_mock.put(url=url)
 
-    with patch.object(demisto, 'demistoVersion', return_value={
-        'version': '6.5.0',
-        'buildNumber': '12345'
-    }):
+    with patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0", "buildNumber": "12345"}):
         result = submit_scan_action_command(client=mock_client, args={"scan_id": EXAMPLE_ID, "action": "Resume"})
         assert result.readable_output == excepted_output
 
@@ -475,19 +475,25 @@ def test_list_commands(
      - Ensure that raw_response id is correct.
     """
 
-    from Rapid7AppSec import (get_attack_command,
-                              get_attack_documentation_command,
-                              get_scan_action_command,
-                              get_scan_execution_detail_command,
-                              list_app_command, list_attack_template_command,
-                              list_engine_command, list_engine_group_command,
-                              list_module_command, list_scan_command,
-                              list_scan_config_command,
-                              list_scan_engine_events_command,
-                              list_scan_platform_events_command,
-                              list_vulnerability_command,
-                              list_vulnerability_comment_command,
-                              list_vulnerability_history_command)
+    from Rapid7AppSec import (
+        get_attack_command,
+        get_attack_documentation_command,
+        get_scan_action_command,
+        get_scan_execution_detail_command,
+        list_app_command,
+        list_attack_template_command,
+        list_engine_command,
+        list_engine_group_command,
+        list_module_command,
+        list_scan_command,
+        list_scan_config_command,
+        list_scan_engine_events_command,
+        list_scan_platform_events_command,
+        list_vulnerability_command,
+        list_vulnerability_comment_command,
+        list_vulnerability_history_command,
+    )
+
     commands: Dict[str, Callable] = {
         f"{INTEGRATION_COMMAND_PREFIX}-{VULNERABILITY}-list": list_vulnerability_command,
         f"{INTEGRATION_COMMAND_PREFIX}-{VULNERABILITY}-history-list": list_vulnerability_history_command,
@@ -506,10 +512,7 @@ def test_list_commands(
         f"{INTEGRATION_COMMAND_PREFIX}-engine-list": list_engine_command,
         f"{INTEGRATION_COMMAND_PREFIX}-module-list": list_module_command,
     }
-    url = urljoin(
-        mock_client._base_url,
-        endpoint
-    )
+    url = urljoin(mock_client._base_url, endpoint)
     json_response = load_mock_response(response)
     requests_mock.get(url=url, json=json_response)
     args = args | {"page": None, "page_size": None, "limit": 1}
@@ -585,10 +588,7 @@ def test_pagination(
 
     for endpoint, json_path in endpoints:
         json_response = load_mock_response(file_name=json_path)
-        url = urljoin(
-            mock_client._base_url,
-            endpoint
-        )
+        url = urljoin(mock_client._base_url, endpoint)
         requests_mock.get(url=url, json=json_response)
 
     result = list_vulnerability_command(mock_client, args)
