@@ -7347,24 +7347,24 @@ Run this command to get the vulnerabilities from a specific machine.
  
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.PublicVulnerability.id | String | The vulnerability ID. |
-| MicrosoftATP.PublicVulnerability.name | String | The vulnerability name. |
-| MicrosoftATP.PublicVulnerability.cveSupportability | String | The CVE supportability. |
-| MicrosoftATP.PublicVulnerability.cvssV3 | Number | The CVSS V3. |
-| MicrosoftATP.PublicVulnerability.cvssVector | String | The CVSS vector. |
-| MicrosoftATP.PublicVulnerability.description | String | A description of this vulnerability. |
-| MicrosoftATP.PublicVulnerability.epss | Number | The EPSS. |
-| MicrosoftATP.PublicVulnerability.exploitInKit | Boolean | Is this vulnerability in an exploit kit? |
-| MicrosoftATP.PublicVulnerability.exploitTypes | String | The type(s) of exploit(s). |
-| MicrosoftATP.PublicVulnerability.exploitUris | String | The exploit URIs. |
-| MicrosoftATP.PublicVulnerability.exploitVerified | Boolean | Is this exploit verified? |
-| MicrosoftATP.PublicVulnerability.exposedMachines | Number | The amount of machines exposed to this vulnerability. |
-| MicrosoftATP.PublicVulnerability.firstDetected | String | The date and time when this vulnerability was first detected. |
-| MicrosoftATP.PublicVulnerability.publicExploit | Boolean | Does this vulnerability have a public exploit? |
-| MicrosoftATP.PublicVulnerability.publishedOn | String | The date and time when this vulnerability was published. |
-| MicrosoftATP.PublicVulnerability.severity | String | The severity of this vulnerability. |
-| MicrosoftATP.PublicVulnerability.tags | String | The tags associated with this vulnerability. |
-| MicrosoftATP.PublicVulnerability.updatedOn | String | The date and time when this vulnerability was last updated. |
+| MicrosoftATP.PublicVulnerability.ID | String | The vulnerability ID. |
+| MicrosoftATP.PublicVulnerability.Name | String | The vulnerability name. |
+| MicrosoftATP.PublicVulnerability.CVESupportability | String | The CVE supportability. |
+| MicrosoftATP.PublicVulnerability.CVSSV3 | Number | The CVSS V3. |
+| MicrosoftATP.PublicVulnerability.CVSSVector | String | The CVSS vector. |
+| MicrosoftATP.PublicVulnerability.Description | String | A description of this vulnerability. |
+| MicrosoftATP.PublicVulnerability.EPSS | Number | The EPSS. |
+| MicrosoftATP.PublicVulnerability.ExploitInKit | Boolean | Is this vulnerability in an exploit kit? |
+| MicrosoftATP.PublicVulnerability.ExploitTypes | String | The type(s) of exploit(s). |
+| MicrosoftATP.PublicVulnerability.ExploitUris | String | The exploit URIs. |
+| MicrosoftATP.PublicVulnerability.ExploitVerified | Boolean | Is this exploit verified? |
+| MicrosoftATP.PublicVulnerability.ExposedMachines | Number | The amount of machines exposed to this vulnerability. |
+| MicrosoftATP.PublicVulnerability.FirstDetected | String | The date and time when this vulnerability was first detected. |
+| MicrosoftATP.PublicVulnerability.PublicExploit | Boolean | Does this vulnerability have a public exploit? |
+| MicrosoftATP.PublicVulnerability.PublishedOn | String | The date and time when this vulnerability was published. |
+| MicrosoftATP.PublicVulnerability.Severity | String | The severity of this vulnerability. |
+| MicrosoftATP.PublicVulnerability.Tags | String | The tags associated with this vulnerability. |
+| MicrosoftATP.PublicVulnerability.UpdatedOn | String | The date and time when this vulnerability was last updated. |
 
 
 #### Command example
@@ -7406,7 +7406,7 @@ Run this command to get the vulnerabilities from a specific machine.
 #### Human Readable Output
 
 >### Microsoft Defender ATP Vulnerability:
->| id | name | cveSupportability | cvssV3 | cvssVector | description | epss | exploitInKit | exploitTypes | exploitVerified | exposedMachines | firstDetected | publicExploit | publishedOn | severity | updatedOn |
+>| ID | Name | CVESupportability | CVSSV3 | CVSSVector | Description | EPSS | ExploitInKit | ExploitTypes | ExploitVerified | ExposedMachines | FirstDetected | PublicExploit | PublishedOn | Severity | UpdatedOn |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| CVE-20XX-1234 | CVE-20XX-1234 | Supported | 3.7 | CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L/E:F/RL:O/RC:C | Summary: Foo is vulnerable to a denial of service due to improper server configuration validation. | 0 | false | Remote | false | 1 | 20XX
 
@@ -7429,18 +7429,18 @@ Run this command to get the sofware installed on a specific machine.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Software.id | String | The Software ID. |
-| MicrosoftATP.Software.name | String | The software name. |
-| MicrosoftATP.Software.vendor | String | The software vendor name. |
-| MicrosoftATP.Software.weaknesses | Number | The amount of weaknesses present in the software. |
-| MicrosoftATP.Software.publicExploit | Boolean | Does this software have a public exploit? |
-| MicrosoftATP.Software.activeAlert | Boolean | Does this software have an active alert? |
-| MicrosoftATP.Software.exposedMachines | Number | The amount of machines exposed to this software. |
-| MicrosoftATP.Software.installedMachines | Number | The amount of machines with this software installed. |
-| MicrosoftATP.Software.impactScore | Number | The impact score of the software. |
-| MicrosoftATP.Software.isNormalized | Number | Is the software value normalized? |
-| MicrosoftATP.Software.category | String | The software category. |
-| MicrosoftATP.Software.distributions | String | The distributions on which this software is present. |
+| MicrosoftATP.Software.ID | String | The Software ID. |
+| MicrosoftATP.Software.Name | String | The software name. |
+| MicrosoftATP.Software.Vendor | String | The software vendor name. |
+| MicrosoftATP.Software.Weaknesses | Number | The amount of weaknesses present in the software. |
+| MicrosoftATP.Software.PublicExploit | Boolean | Does this software have a public exploit? |
+| MicrosoftATP.Software.ActiveAlert | Boolean | Does this software have an active alert? |
+| MicrosoftATP.Software.ExposedMachines | Number | The amount of machines exposed to this software. |
+| MicrosoftATP.Software.InstalledMachines | Number | The amount of machines with this software installed. |
+| MicrosoftATP.Software.ImpactScore | Number | The impact score of the software. |
+| MicrosoftATP.Software.IsNormalized | Number | Is the software value normalized? |
+| MicrosoftATP.Software.Category | String | The software category. |
+| MicrosoftATP.Software.Distributions | String | The distributions on which this software is present. |
 
 #### Command example
 ```!microsoft-atp-get-machine-software machine_id="12342c13fef```
@@ -7472,7 +7472,7 @@ Run this command to get the sofware installed on a specific machine.
 
 #### Human Readable Output
 >### Microsoft Defender ATP Software:
->| id         | name         | vendor         | publicExploit | activeAlert | exposedMachines | installedMachines | impactScore | isNormalized |
+>| ID         | Name         | Vendor         | PublicExploit | ActiveAlert | ExposedMachines | InstalledMachines | ImpactScore | IsNormalized |
 >|------------|--------------|----------------|---------------|-------------|-----------------|-------------------|-------------|--------------|
 >| some_id    | some_name    | some_vendor    | false         | false       | 0               | 1                 | 0           | false        |
 >| another_id | another_name | another_vendor | true          | true        | 0               | 1                 | 0           | false        |
@@ -7496,13 +7496,13 @@ Run this command to get the missing security updates (KBs) from a specific machi
  
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.PublicProductFix.id | String | Software ID. |
-| MicrosoftATP.PublicProductFix.name | String | Software name. |
-| MicrosoftATP.PublicProductFix.productsNames | String | The product names. |
-| MicrosoftATP.PublicProductFix.url | String | URL. |
-| MicrosoftATP.PublicProductFix.machineMissedOn | Number | Machine missed on. |
-| MicrosoftATP.PublicProductFix.cveAddressed | Number | CVE addressed. |
-| MicrosoftATP.PublicProductFix.osBuild | String | The OS Build version. |
+| MicrosoftATP.PublicProductFix.ID | String | Software ID. |
+| MicrosoftATP.PublicProductFix.Name | String | Software name. |
+| MicrosoftATP.PublicProductFix.ProductsNames | String | The product names. |
+| MicrosoftATP.PublicProductFix.URL | String | URL. |
+| MicrosoftATP.PublicProductFix.MachineMissedOn | Number | Machine missed on. |
+| MicrosoftATP.PublicProductFix.CVEAddressed | Number | CVE addressed. |
+| MicrosoftATP.PublicProductFix.OSBuild | String | The OS Build version. |
 
 #### Command example
 ```!microsoft-atp-get-machine-missing-kbs machine_id="12342c13fef,12342c13fef8f06606```
