@@ -36,6 +36,9 @@
                 "GIB DRP First Detected": {
                     "simple": "first_detected"
                 },
+                "GIB DRP Downloaded by TypoSquatting": {
+					"simple": "downloaded_by_typoSquatting"
+				},
                 "GIB DRP First Solved": {
                     "simple": "first_solved"
                 },
