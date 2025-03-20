@@ -1163,5 +1163,6 @@ outputs: []
 dirtyInputs: true
 fromversion: 5.0.0
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
+- platform
