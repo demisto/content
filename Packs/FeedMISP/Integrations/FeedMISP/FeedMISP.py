@@ -101,7 +101,7 @@ ATTRIBUTE_TO_INDICATOR_MAP = {
     'campaign-name': ThreatIntel.ObjectsNames.CAMPAIGN,
     'campaign-id': ThreatIntel.ObjectsNames.CAMPAIGN,
     'malware-type': ThreatIntel.ObjectsNames.MALWARE,
-    'hostname': FeedIndicatorType.Host,
+    'hostname': FeedIndicatorType.Domain
 }
 
 GALAXY_MAP = {

@@ -11,7 +11,7 @@ def test_main(mocker):
     Then:
         - Ensure the MAC address is caught as invalid IPv4 and returns empty string
     """
-    mocker.patch.object(demisto, 'args', return_value={'input': '8.8.8.343'})
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "args", return_value={"input": "8.8.8.343"})
+    mocker.patch.object(demisto, "results")
     main()
-    demisto.results.assert_called_with('')
+    demisto.results.assert_called_with("")

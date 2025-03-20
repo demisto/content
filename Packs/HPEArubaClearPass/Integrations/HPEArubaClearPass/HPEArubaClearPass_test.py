@@ -1,5 +1,4 @@
 import json
-import io
 import HPEArubaClearPass
 from HPEArubaClearPass import *
 from freezegun import freeze_time
@@ -28,7 +27,7 @@ TEST_LOGIN_LIST = \
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -241,7 +240,7 @@ def test_disconnect_active_session_command(mocker):
     client = create_client(mocker)
     mock_sessions_response = util_load_json("test_data/disconnect_active_session_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_sessions_response)
-    results = disconnect_active_session_command(client, {'session_id': 1})
+    results = disconnect_active_session_command(client, {'session_id': "1234"})
     assert results.outputs_prefix == "HPEArubaClearPass.Sessions"
     assert results.outputs_key_field == "id"
     assert results.outputs['Error_code'] == 0
@@ -267,3 +266,56 @@ def test_check_api_limitation_on_specific_data_types(args):
     """
     with raises(SystemExit):
         check_api_limitation_on_specific_data_types(args)
+
+
+@pytest.mark.parametrize(
+    "session_id, expected_encoded_id",
+    [
+        ("session123", "session123"),
+        ("session/123", "session%2F123"),
+        ("session 123", "session%20123"),
+        ("session+123", "session%2B123"),
+        ("session@#%", "session%40%23%25"),
+    ],
+    ids=[
+        "No special characters",
+        "Slash in session ID",
+        "Space in session ID",
+        "Plus sign in session ID",
+        "Special characters in session ID",
+    ]
+)
+def test_disconnect_active_session_command_encoding(mocker, session_id, expected_encoded_id):
+    """
+    Given:
+        - A session ID containing special characters.
+    When:
+        - Calling the `disconnect_active_session_command` function.
+    Then:
+        - Ensure the session ID and buddy.get("id") are properly URL-encoded in the request.
+    """
+    from HPEArubaClearPass import disconnect_active_session_command
+    # Mock client
+    client = create_client(mocker)
+
+    mock_response = {"error": None, "message": "Session disconnected successfully"}
+    mocker.patch.object(client, 'prepare_request', return_value=mock_response)
+
+    args = {"session_id": session_id}
+    result = disconnect_active_session_command(client, args)
+
+    # Extract body argument from the mocked function call
+    _, kwargs = client.prepare_request.call_args
+    body = kwargs["body"]
+
+    client.prepare_request.assert_called_once_with(
+        method='POST',
+        params={},
+        url_suffix=f"/session/{expected_encoded_id}/disconnect",
+        body={"id": session_id, "confirm_disconnect": True}
+    )
+
+    assert body["id"] == session_id
+    assert urllib.parse.quote(body["id"], safe='') == expected_encoded_id
+
+    assert result.outputs == {"Error_code": None, "Response_message": "Session disconnected successfully"}

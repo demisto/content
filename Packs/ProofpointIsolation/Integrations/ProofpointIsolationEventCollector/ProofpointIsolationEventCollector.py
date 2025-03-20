@@ -43,6 +43,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/api/v2/reporting/usage-data?key={self.api_key}&pageSize={ITEMS_PER_PAGE}"
                        f"&from={start_date}&to={end_date}",
+            retries=3
         )
         return results
 
@@ -115,6 +116,7 @@ def remove_duplicate_events(start_date, ids: set, events: list) -> None:
             break
         hashed_id = hash_user_name_and_url(event)
         if hashed_id in ids:
+            demisto.debug(f'Removing duplicated event with hash_id {hashed_id}')
             events.remove(event)
 
 
@@ -132,6 +134,7 @@ def get_and_reorganize_events(client: Client, start: str, end: str, ids: set) ->
         list: A list of sorted and deduplicated events.
     """
     events: list = client.get_events(start, end).get('data', [])
+    demisto.debug(f'Raw events from Proofpoint Isolation api: {events}')
     events = sort_events_by_date(events)
     remove_duplicate_events(start, ids, events)
     return events
@@ -177,11 +180,14 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         ids = set(last_run.get('ids', []))
 
     current_start_date = event_date
+    demisto.debug(f'Fetching events from {current_start_date=} to {end=}')
     while True:
         events = get_and_reorganize_events(client, event_date, end, ids)
         if not events:
+            demisto.debug(f'No more events found, breaking with {len(output)} events in total.')
             break
 
+        demisto.debug(f'Iterates over {len(events)=} events.')
         for event in events:
             event['_TIME'] = event.get('date')
             output.append(event)
@@ -194,6 +200,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             ids.add(hashed_id)
 
             if len(output) >= fetch_limit:
+                demisto.debug(f'Reached fetch limit, sending {len(output)} events in total.')
                 new_last_run = {'start_date': event_date, 'ids': list(ids)}
                 return output, new_last_run
 
