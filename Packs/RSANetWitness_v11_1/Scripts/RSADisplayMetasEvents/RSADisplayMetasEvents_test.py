@@ -9,14 +9,12 @@ def test_CamelCaseToDotCase():
 @pytest.mark.parametrize(
     "alerts_incident, expected_results",
     [
-        ({"CustomFields": {"rsametasevents": [{"ip": "ip", "host": "host"}]}},
-         {'Contents': '|ip|host|\n|---|---|\n| ip | host |\n', 'ContentsFormat': 'markdown', 'Type': 1}),
+        (
+            {"CustomFields": {"rsametasevents": [{"ip": "ip", "host": "host"}]}},
+            {"Contents": "|ip|host|\n|---|---|\n| ip | host |\n", "ContentsFormat": "markdown", "Type": 1},
+        ),
     ],
 )
-def test_display_metas(
-    mocker, alerts_incident, expected_results
-):
-    mocker.patch(
-        "RSADisplayMetasEvents.demisto.incident", return_value=alerts_incident
-    )
+def test_display_metas(mocker, alerts_incident, expected_results):
+    mocker.patch("RSADisplayMetasEvents.demisto.incident", return_value=alerts_incident)
     assert display_metas() == expected_results

@@ -1,9 +1,9 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import json
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-''' STANDALONE FUNCTION '''
+""" STANDALONE FUNCTION """
 
 
 class RSAError(Exception):
@@ -47,7 +47,7 @@ def get_raw_log(event_source_id: str, concentrator_ip: str, concentrator_port: s
         "concentratorIP": concentrator_ip,
         "concentratorPort": concentrator_port,
         "render": "application/json",
-        "renderToContext": "true"
+        "renderToContext": "true",
     }
     res = demisto.executeCommand("netwitness-packets", params)
 
@@ -64,7 +64,7 @@ def get_metas_log(event_source_id: str, concentrator_ip: str, concentrator_port:
     params = {
         "query": f"select * where sessionid={event_source_id}",
         "concentratorIP": concentrator_ip,
-        "concentratorPort": concentrator_port
+        "concentratorPort": concentrator_port,
     }
     res = demisto.executeCommand("netwitness-query", params)
 
@@ -82,7 +82,7 @@ def create_id_set(list_metas):
     return id_found
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
@@ -119,12 +119,9 @@ def main():
             try:
                 raw_log = get_raw_log(session, concentrator_ip, concentrator_port)
                 if raw_log and len(raw_log) >= 1:
-                    rsa_rawlogs.append({
-                        "date": alert["created"],
-                        "id": alert["id"],
-                        "name": raw_log[0]["log"],
-                        "type": "Raw event"
-                    })
+                    rsa_rawlogs.append(
+                        {"date": alert["created"], "id": alert["id"], "name": raw_log[0]["log"], "type": "Raw event"}
+                    )
             except RSAError as e:
                 return_error(f"Error: {e}")
             except ValueError as e:
@@ -146,12 +143,12 @@ def main():
             except ValueError as e:
                 return_results(f"Warning: {e}")
 
-    demisto.executeCommand("setIncident", {'customFields': {"rsarawlogslist": rsa_rawlogs, "rsametasevents": rsa_metas}})
+    demisto.executeCommand("setIncident", {"customFields": {"rsarawlogslist": rsa_rawlogs, "rsametasevents": rsa_metas}})
     return_results(CommandResults(readable_output=f"{change} raw log inserts !"))
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
