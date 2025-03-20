@@ -1,8 +1,6 @@
-import uuid
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Any
 
 from sseclient import SSEClient
 
@@ -29,14 +27,14 @@ class Client(BaseClient):
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
+
     def __init__(self, base_url: str, verify: bool, proxy: bool, event_type_query: str, app_key: str):
-        
+
         self.event_type_query = event_type_query
         self.app_key = app_key
         self.base_url = base_url
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
 
-        
     def refresh_token_request(self):
         """request a new access token"""
         data = {'grant_type': 'client_credentials'}
@@ -47,7 +45,6 @@ class Client(BaseClient):
     def stream_events(self):
         pass
 
-
     def get_token(self) -> str:
         """Returns the token, or refreshes it if the time of it was exceeded
         """
@@ -56,21 +53,22 @@ class Client(BaseClient):
             return self.refresh_token()
 
         return integration_context.get('access_token', '')
-            
+
     def refresh_token(self) -> str:
         """Refreshes the token and updated the integration context
         """
         demisto.debug("MES: refreshing the token")
         response = self.refresh_token_request()
-        
+
         access_token = response.get('access_token')
         token_expiration = response.get('expires_at')
-        
+
         set_the_context('access_token', access_token)
         set_the_context('token_expiration', token_expiration)
 
         demisto.debug("MES: Updated integration context with new token")
         return access_token
+
 
 def set_the_context(key: str, val):  # pragma: no cover
     """Adds a key-value pair to the integration context dictionary.
@@ -80,14 +78,14 @@ def set_the_context(key: str, val):  # pragma: no cover
     cnx[key] = val
     demisto.setIntegrationContext(cnx)
 
-def fetch_events(sse_client: SSEClient, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
+
+def stream_events(sse_client: SSEClient, fetch_interval: int) -> list[dict]:
     """
     This function fetches events from the given connection, for the given fetch interval
 
     Args:
-        connection (EventConnection): the connection to the event type
+        sse_client (SSEClient): the sse client to stream events
         fetch_interval (int): Total time to keep fetching before stopping
-        recv_timeout (int): The timeout for the receive function in the socket connection
 
     Returns:
         list[dict]: A list of events
@@ -111,16 +109,17 @@ def fetch_events(sse_client: SSEClient, fetch_interval: int, recv_timeout: int =
 
         events.append(event)
         event_ids.add(event_id)
-        
+
         if is_interval_passed(fetch_start_time, fetch_interval):
             handle_fetched_events(events, event_ids, event_created_time)
 
     set_the_context("last_run_results",
-                                f"Got from connection {len(events)} events starting\
+                    f"Got from connection {len(events)} events starting\
                                     at {str(fetch_start_time)} until {datetime.now().astimezone(timezone.utc)}")
     return events
 
-def handle_fetched_events(events: list,event_ids: set, last_fetch_time: str):
+
+def handle_fetched_events(events: list, event_ids: set, last_fetch_time: str):
     demisto.debug(f"Fetched {len(events)} events")
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
     # Send the events to the XSIAM.
@@ -130,11 +129,10 @@ def handle_fetched_events(events: list,event_ids: set, last_fetch_time: str):
         set_the_context('last_fetch_time', last_fetch_time)
     except DemistoException:
         demisto.error(f"Failed to send events to XSIAM. Error: {traceback.format_exc()}")
-    
-    
 
 
 ''' MAIN FUNCTION '''
+
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:  # pragma: no cover
     """Checks if the specified interval has passed since the given start time.
@@ -151,7 +149,10 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
     demisto.debug(f"returning {is_interval_passed=}")
     return is_interval_passed
 
+
 def get_start_time_for_stream() -> str:
+    """Gets the start stream time from the context if exists. If not,returns current time
+    """
     integration_context = demisto.getIntegrationContext()
     last_fetch_time = integration_context.get('last_fetch_time', '')
     if not last_fetch_time:
@@ -160,7 +161,7 @@ def get_start_time_for_stream() -> str:
     urlencoded_time = urllib.parse.quote(last_fetch_time)
 
     return urlencoded_time
-    
+
 
 def perform_long_running_loop(client: Client, fetch_interval: int):
     """
@@ -176,11 +177,11 @@ def perform_long_running_loop(client: Client, fetch_interval: int):
     headers = {'Accept': 'text/event-stream', 'Authorization': token_for_stream}
     params = {'types': client.event_type_query, 'start_time': start_time_for_stream}
     remove_nulls_from_dictionary(params)
-    
+
     response = requests.get(client.base_url + 'mra/stream/v2/events', stream=True, headers=headers, params=params)
     sse_client = SSEClient(response)
     demisto.debug(f"starting to fetch events from {start_time_for_stream}")
-    fetch_events(sse_client, fetch_interval)
+    stream_events(sse_client, fetch_interval)
 
 
 def long_running_execution_command(client: Client, fetch_interval: int):
@@ -196,13 +197,15 @@ def long_running_execution_command(client: Client, fetch_interval: int):
         try:
             perform_long_running_loop(client, fetch_interval)
             # sleep for a bit to not throttle the CPU
-        except Exception as e:
+        except Exception:
             pass
         time.sleep(FETCH_SLEEP)
+
 
 def test_module(client):  # pragma: no cover
     client.refresh_token()
     return 'ok'
+
 
 def main():  # pragma: no cover
     command = demisto.command()
@@ -212,7 +215,7 @@ def main():  # pragma: no cover
     verify = not params.get("insecure", False)
     event_types = params.get('event_types', [])
     fetch_interval = int(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
-    
+
     if 'All' in event_types:
         event_type_query = ''
     else:
@@ -231,10 +234,4 @@ def main():  # pragma: no cover
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    main()
-
-
-''' ENTRY POINT '''
-
-if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
