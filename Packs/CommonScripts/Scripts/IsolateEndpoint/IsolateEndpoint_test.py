@@ -257,37 +257,20 @@ def test_is_endpoint_isolatable():
         - Return the correct boolean value and message based on the conditions.
     """
     endpoint_data = {
-        "OSVersion": {"Value": "Windows Server 2016"},
         "IsIsolated": {"Value": "No"},
         "Status": {"Value": "Online"}
     }
-    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=[], args={}, outputs=[], human_readable_outputs=[],
-                                  verbose=False) is False
 
-    assert is_endpoint_isolatable(endpoint_data, force=True, server_os_list=[], args={}, outputs=[], human_readable_outputs=[],
+    assert is_endpoint_isolatable(endpoint_data, args={}, outputs=[], human_readable_outputs=[],
                                   verbose=False) is True
 
-    endpoint_data["OSVersion"]["Value"] = "example"
     endpoint_data["IsIsolated"]["Value"] = "Yes"
-    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=[], args={}, outputs=[], human_readable_outputs=[],
+    assert is_endpoint_isolatable(endpoint_data, args={}, outputs=[], human_readable_outputs=[],
                                   verbose=False) is False
 
-    endpoint_data["IsIsolated"]["Value"] = "No"
     endpoint_data["Status"]["Value"] = "Offline"
-    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=[], args={}, outputs=[], human_readable_outputs=[],
+    assert is_endpoint_isolatable(endpoint_data, args={}, outputs=[], human_readable_outputs=[],
                                   verbose=False) is False
-
-    endpoint_data = {
-        "OSVersion": {"Value": "Windows 10"},
-        "IsIsolated": {"Value": "No"},
-        "Status": {"Value": "Online"}
-    }
-    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=[], args={}, outputs=[], human_readable_outputs=[],
-                                  verbose=False) is True
-
-    endpoint_data["OSVersion"]["Value"] = "Ubuntu Server"
-    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=["Ubuntu Server"], args={}, outputs=[],
-                                  human_readable_outputs=[], verbose=False) is False
 
 
 def test_handle_raw_response_results():

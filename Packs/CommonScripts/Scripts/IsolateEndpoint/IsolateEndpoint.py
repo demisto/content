@@ -15,6 +15,15 @@ class Command:
         hard_coded_args: dict = None,
         pre_command_check: Callable = None
     ):
+        """
+        Args:
+            brand (str): The brand associated with the command.
+            name (str): The name of the command.
+            arg_mapping (dict): A dictionary containing the command arguments. The commands in this script must include at
+             least one argument from this dictionary.
+            hard_coded_args (dict): Additional arguments to add for the command, arguments with hard-coded values.
+            pre_command_check (Callable): The function used to check the command before it is executed.
+        """
         self.brand = brand
         self.name = name
         self.arg_mapping = arg_mapping
@@ -175,7 +184,6 @@ def check_conditions_cybereason_isolate_machine(verbose: bool, outputs: list, hu
 
 def check_conditions_microsoft_atp_isolate_machine(verbose: bool, outputs: list, human_readable_outputs: list, args: dict,
                                                    endpoint_data: dict) -> bool:
-    demisto.debug(f'This is the endpoint data from Microsoft {endpoint_data=}')
     status = endpoint_data.get('Status')
     agent_id = endpoint_data.get('ID', {}).get('Value', '')
     if status == 'Offline' or not agent_id:
