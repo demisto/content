@@ -1,0 +1,30 @@
+args:
+- auto: PREDEFINED
+  name: org_type
+  predefined:
+  - non_pt_org
+  - pt_org
+  required: true
+comment: The purpose of this automation is to classify the incident according to the ENISA Taxonomy and return a RSIT code that can be ingested by MISP.
+commonfields:
+  id: misp_set_classification
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+engineinfo: {}
+name: misp_set_classification
+outputs:
+- contextPath: MispRSIT
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

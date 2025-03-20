@@ -1,0 +1,103 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: 697f8e56-e615-42f7-8e9a-e8811531eba4
+    packName: MISP - Indicator Sharing
+    prevname: ''
+    propagationLabels:
+    - all
+    toServerVersion: ''
+description: 'This playbook helps organizations categorize the incidents according to the ENISA Incident Classification Taxonomy, enabling standardized communication and sharing of threat intelligence on a global scale.  '
+id: ENISA - Incident Classification
+inputs: []
+name: ENISA - Incident Classification
+outputs: []
+quiet: true
+starttaskid: '0'
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 170ead0c-2d11-4f73-89ca-5d7133840dad
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 170ead0c-2d11-4f73-89ca-5d7133840dad
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '2':
+    continueonerrortype: ''
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: f652a23a-ebab-493d-8f3f-672359ac8441
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: f652a23a-ebab-493d-8f3f-672359ac8441
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '3':
+    continueonerrortype: ''
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      builtincondition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Exit
+          operator: isTrue
+          right:
+            value: {}
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: f08b0427-bc03-4102-8e95-7a2f304d4e1c
+      iscommand: false
+      name: ENISA - Create Incident Classification
+      playbookId: ENISA - Create Incident Classification
+      type: playbook
+      version: -1
+    taskid: f08b0427-bc03-4102-8e95-7a2f304d4e1c
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 385,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
