@@ -352,9 +352,9 @@ class HTTPClient(BaseClient):
 
         return response
 
-    def list_group_members_request(self, group_id: str) -> dict[str, Any]:
+    def list_group_members_request(self, group_id: str, params: dict[str, Any]) -> dict[str, Any]:
         """list group members based on group id"""
-        response = self._http_request(method='GET', url_suffix=f'/api/v4/groups/{group_id}/members')
+        response = self._http_request(method='GET', url_suffix=f'/api/v4/groups/{group_id}/members', params=params)
 
         return response
 
@@ -1722,9 +1722,12 @@ def list_groups_command(client: HTTPClient, args: dict[str, Any]) -> CommandResu
 def list_group_members_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
     """ List the members of a group """
     group_id = args.get('group_id', '')
+    page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE))
     member_details = {}
 
-    member_details = client.list_group_members_request(group_id)
+    params = {'page': page, 'per_page': page_size}
+    member_details = client.list_group_members_request(group_id, params)
     member_details['id'] = group_id
 
     hr = tableToMarkdown('Group members:', member_details.get("members"), headers=['username', 'email', 'id'])
@@ -1783,14 +1786,15 @@ def set_channel_role_command(client: HTTPClient, args: dict[str, Any]) -> Comman
     user_id = args.get('user_id', '')
     channel_role = "channel_user" + (" channel_admin" if args.get("role", "member").lower() == "admin" else "")
 
-    client.set_channel_role_request(channel_id, user_id, channel_role)
+    raw_response = client.set_channel_role_request(channel_id, user_id, channel_role)
 
     user_details = client.get_user_request(user_id)
     hr = f'Set channel role for {user_details.get("username", user_id)} successfully to ' \
          f'{"Admin" if args.get("role", "admin").lower() == "admin" else "Member"}.'
 
     return CommandResults(
-        readable_output=hr
+        readable_output=hr,
+        raw_response=raw_response
     )
 
 
