@@ -79,8 +79,8 @@ repos:
     language: node
     files: "^(.*/)?README\\.md$"
     additional_dependencies:
-      - "@mdx-js/mdx@1.6.22"  #match package-lock of content docs
-      - "fs-extra"
+      - "@mdx-js/mdx@1.6.22"  #The correct version is the one in the `package-lock.json` of content-docs, all instances should match it.
+      - "fs-extra@11.3.0"
   - id: xsoar-lint
     name: xsoar-lint
     description: Run xsoar-linter on the code in content packs
