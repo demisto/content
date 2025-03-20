@@ -2,7 +2,7 @@
     "name": "Google Maps",
     "description": "Use the Google Maps Geocoding API",
     "support": "xsoar",
-    "currentVersion": "1.0.16",
+    "currentVersion": "1.0.17",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
