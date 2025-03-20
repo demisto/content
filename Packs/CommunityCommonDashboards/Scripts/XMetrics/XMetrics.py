@@ -1,25 +1,64 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
-MONTHLABELS = ["01_Jan", "02_Feb", "03_Mar", "04_Apr", "05_May", "06_Jun",
-               "07_Jul", "08_Aug", "09_Sep", "10_Oct", "11_Nov", "12_Dec"]
+MONTHLABELS = [
+    "01_Jan",
+    "02_Feb",
+    "03_Mar",
+    "04_Apr",
+    "05_May",
+    "06_Jun",
+    "07_Jul",
+    "08_Aug",
+    "09_Sep",
+    "10_Oct",
+    "11_Nov",
+    "12_Dec",
+]
 
 EFFORTCOLORS = ["RoyalBlue", "SkyBlue", "ForestGreen", "LimeGreen"]
-SLACOLORS = ["Thistle", "Violet", "Orchid", "Magenta", "MediumOrchid",
-             "MediumPurple", "BlueViolet", "Purple", "Indigo", "DarkSlateBlue"]
-INCCOLORS = ["PaleGreen", "Bisque", "LightGreen", "Wheat", "DarkSeaGreen",
-             "Tan", "MediumSeaGreen", "SandyBrown", "SeaGreen", "GoldenRod",
-             "ForestGreen", "DarkGoldenRod", "Green", "Chocolate", "DarkGreen",
-             "Sienna", "DarkOliveGreen", "Brown", "Teal", "Maroon"]
+SLACOLORS = [
+    "Thistle",
+    "Violet",
+    "Orchid",
+    "Magenta",
+    "MediumOrchid",
+    "MediumPurple",
+    "BlueViolet",
+    "Purple",
+    "Indigo",
+    "DarkSlateBlue",
+]
+INCCOLORS = [
+    "PaleGreen",
+    "Bisque",
+    "LightGreen",
+    "Wheat",
+    "DarkSeaGreen",
+    "Tan",
+    "MediumSeaGreen",
+    "SandyBrown",
+    "SeaGreen",
+    "GoldenRod",
+    "ForestGreen",
+    "DarkGoldenRod",
+    "Green",
+    "Chocolate",
+    "DarkGreen",
+    "Sienna",
+    "DarkOliveGreen",
+    "Brown",
+    "Teal",
+    "Maroon",
+]
 
 METRICCOLORS = {
-    'Incident Effort': EFFORTCOLORS,
-    'SLA Metrics': SLACOLORS,
-    'Incidents': INCCOLORS,
-    'Closed Incidents': INCCOLORS,
+    "Incident Effort": EFFORTCOLORS,
+    "SLA Metrics": SLACOLORS,
+    "Incidents": INCCOLORS,
+    "Closed Incidents": INCCOLORS,
     "Incident Open Duration": INCCOLORS,
-    "Effort Reduction": INCCOLORS
+    "Effort Reduction": INCCOLORS,
 }
 
 
@@ -27,34 +66,34 @@ def SetMetricColors(wstats: list, metrictype: str) -> list:
     if metrictype in METRICCOLORS:
         colors = METRICCOLORS[metrictype]
     else:
-        return (wstats)
+        return wstats
 
     for stat in wstats:
         i = 0
-        for g in stat['groups']:
-            stat['groups'][i]['color'] = colors[i % len(colors)]
+        for g in stat["groups"]:
+            stat["groups"][i]["color"] = colors[i % len(colors)]
             i += 1
 
-    return (wstats)
+    return wstats
 
 
 def StackedBars(group: list, key: str, val: list, index: int) -> list:
-    group.append({'name': key, 'data': [val[index]], 'color': ""})
-    return (group)
+    group.append({"name": key, "data": [val[index]], "color": ""})
+    return group
 
 
 def TaskWidgetGroup(wstats: list, name: str, groups: list) -> list:
-    wstats.append({'name': name, 'groups': groups, 'data': [], 'label': "", 'color': ""})
-    return (wstats)
+    wstats.append({"name": name, "groups": groups, "data": [], "label": "", "color": ""})
+    return wstats
 
 
 def LoadList(listname: str) -> dict:
-    results = demisto.executeCommand("getList", {'listName': listname})[0]['Contents']
+    results = demisto.executeCommand("getList", {"listName": listname})[0]["Contents"]
     fields = {}
     if "Item not found" not in results and (results is not None or results != ""):
         if results != "":
             fields = json.loads(results)
-    return (fields)
+    return fields
 
 
 def BuildIncidentTable(incidents, metrictype: str) -> dict:
@@ -71,7 +110,7 @@ def BuildIncidentTable(incidents, metrictype: str) -> dict:
             table[inctype][monthindex] = int(int(cnt) / divisor)
             monthindex += 1
 
-    return (table)
+    return table
 
 
 def BuildEffortReductionTable(incidents, efforts) -> dict:
@@ -100,7 +139,7 @@ def BuildEffortReductionTable(incidents, efforts) -> dict:
                 table[inctype][monthindex] = int((table[inctype][monthindex] / total[monthindex]) * 100.0)
             monthindex += 1
 
-    return (table)
+    return table
 
 
 def BuildEffortTable(incidents, efforts) -> dict:
@@ -108,7 +147,7 @@ def BuildEffortTable(incidents, efforts) -> dict:
         "Manual Incident Effort": [0] * 12,
         "Manual Indicator Effort": [0] * 12,
         "Automated Incident Effort": [0] * 12,
-        "Automated Indicator Effort": [0] * 12
+        "Automated Indicator Effort": [0] * 12,
     }
 
     for inctype, v in incidents.items():
@@ -120,7 +159,7 @@ def BuildEffortTable(incidents, efforts) -> dict:
                 table["Automated Incident Effort"][monthindex] += int((int(val) * efforts[inctype][1]) / 60)
             monthindex += 1
 
-    return (table)
+    return table
 
 
 def main():
@@ -164,8 +203,8 @@ def main():
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"XMetrics - exception failed to execute. Error: {str(ex)}")
+        return_error(f"XMetrics - exception failed to execute. Error: {ex!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
