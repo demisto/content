@@ -7,5 +7,11 @@
     "heading-increment" : false,
     "line_length" : false,
     "no-duplicate-heading" : false,
-    "ol-prefix" : false
+    "ol-prefix" : false,
+    "MD033": false,
+    "MD040": false,
+    "MD034": false,
+    "MD055" : false,
+    "MD056" :  false,
+    "MD036": false
 }
