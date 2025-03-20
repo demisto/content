@@ -27,8 +27,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": -480
+          "x": -40,
+          "y": -369
         }
       }
     note: false
@@ -55,8 +55,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 1360
+          "x": -254,
+          "y": 1026
         }
       }
     note: false
@@ -116,8 +116,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": -120
+          "x": 453,
+          "y": -83
         }
       }
     note: false
@@ -141,8 +141,6 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#error#':
-      - "25"
       '#none#':
       - "15"
     scriptarguments:
@@ -198,12 +196,12 @@ tasks:
         simple: "120"
     separatecontext: false
     continueonerror: true
-    continueonerrortype: errorPath
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 240
+          "x": 453,
+          "y": 184
         }
       }
     note: false
@@ -241,8 +239,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 1150
+          "x": 453,
+          "y": 887
         }
       }
     note: false
@@ -266,7 +264,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "26"
       "yes":
       - "8"
     separatecontext: false
@@ -308,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 40
+          "x": 453,
+          "y": 42
         }
       }
     note: false
@@ -362,8 +360,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 790
+          "x": 227,
+          "y": 631
         }
       }
     note: false
@@ -401,8 +399,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 960
+          "x": 453,
+          "y": 767
         }
       }
     note: false
@@ -497,8 +495,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": -340
+          "x": -40,
+          "y": -251
         }
       }
     note: false
@@ -550,7 +548,7 @@ tasks:
       {
         "position": {
           "x": -40,
-          "y": 240
+          "y": 184
         }
       }
     note: false
@@ -617,7 +615,7 @@ tasks:
       {
         "position": {
           "x": -40,
-          "y": 410
+          "y": 329
         }
       }
     note: false
@@ -641,8 +639,6 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#error#':
-      - "25"
       '#none#':
       - "15"
     scriptarguments:
@@ -670,12 +666,12 @@ tasks:
         simple: "120"
     separatecontext: false
     continueonerror: true
-    continueonerrortype: errorPath
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -40,
-          "y": 600
+          "y": 497
         }
       }
     note: false
@@ -739,7 +735,7 @@ tasks:
       {
         "position": {
           "x": -40,
-          "y": -109
+          "y": -85
         }
       }
     note: false
@@ -832,8 +828,36 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -40,
-          "y": 960
+          "x": -37,
+          "y": 767
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 3480aab3-067b-4479-839e-72f46bc551b1
+    type: title
+    task:
+      id: 3480aab3-067b-4479-839e-72f46bc551b1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 901,
+          "y": 189
         }
       }
     note: false
@@ -847,18 +871,20 @@ system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "13_2_#default#": 0.1,
+      "13_26_#default#": 0.54,
+      "13_8_yes": 0.41,
       "15_16_yes": 0.6,
-      "17_2_#default#": 0.1,
+      "17_23_Manual": 0.42,
+      "17_2_#default#": 0.12,
       "19_20_yes": 0.44,
       "19_2_#default#": 0.15
     },
     "paper": {
       "dimensions": {
-        "height": 1900,
-        "width": 1211,
-        "x": -260,
-        "y": -480
+        "height": 1455,
+        "width": 1536,
+        "x": -254,
+        "y": -369
       }
     }
   }
