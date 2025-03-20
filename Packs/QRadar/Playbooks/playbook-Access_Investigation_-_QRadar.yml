@@ -541,5 +541,10 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No test
+- No test
 deprecated: true
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
