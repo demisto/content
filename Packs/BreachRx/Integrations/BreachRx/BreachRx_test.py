@@ -98,8 +98,8 @@ def test_create_incident_command_no_description():
 
         create_incident_request = m.request_history[-1]
         assert incident_name == create_incident_request.json()["variables"]["name"]
-        assert (create_incident_request.json()["variables"]["description"] ==
-                """An Incident copied from the Palo Alto Networks XSOAR platform.
+        assert (create_incident_request.json()["variables"]["description"]
+                == """An Incident copied from the Palo Alto Networks XSOAR platform.
             <br>
             <br>
             XSOAR Incident Name: 1""")
