@@ -3666,8 +3666,8 @@ script:
       required: true
       prettyname: Run action on
       prettypredefined:
-        Initiator host: ${alert.placeholder_1}
-        Remote host: ${alert.placeholder_2}
+        Initiator host: ${alert.hostname}
+        Remote host: ${alert.remotehost}
     - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
       name: script_uid
       required: true
