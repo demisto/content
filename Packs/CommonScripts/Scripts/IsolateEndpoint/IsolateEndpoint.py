@@ -2,28 +2,6 @@ from CommonServerPython import *
 from collections.abc import Callable
 from itertools import zip_longest
 
-SERVERS_RELEASES = ["Windows Server 2019",
-                    "Windows Server 2016",
-                    "Windows Server 2012 R2",
-                    "Windows Server 2008 R2",
-                    "Ubuntu Server",
-                    "CentOS",
-                    "Red Hat Enterprise Linux (RHEL)",
-                    "Fedora Server",
-                    "Debian",
-                    "SUSE Linux Enterprise Server (SLES)",
-                    "Oracle Linux",
-                    "IBM AIX",
-                    "HP-UX",
-                    "Solaris",
-                    "FreeBSD",
-                    "OpenBSD",
-                    "NetBSD",
-                    "VMware ESXi",
-                    "Proxmox VE",
-                    "OpenVMS",
-                    "ZOS"
-                    ]
 
 """ COMMAND CLASS """
 
@@ -61,7 +39,8 @@ def initialize_commands() -> list:
         #     arg_mapping={'machine': 'agent_hostname'},
         #     pre_command_check=check_conditions_cybereason_isolate_machine
         # ),
-        Command(  # Can be used only on XSOAR
+        Command(
+            # Can be used only on XSOAR
             brand='Cortex XDR - IR',
             name='xdr-endpoint-isolate',
             arg_mapping={'endpoint_id': 'agent_id'},
@@ -255,15 +234,12 @@ def check_module_and_args_for_command(module_manager: ModuleManager, verbose: bo
     return True
 
 
-def is_endpoint_isolatable(endpoint_data: dict, force: bool, server_os_list: list, args: dict, outputs: list,
-                           human_readable_outputs: list, verbose: bool) -> bool:
+def is_endpoint_isolatable(endpoint_data: dict, args: dict, outputs: list, human_readable_outputs: list, verbose: bool) -> bool:
     """
     Determines whether an endpoint can be isolated based on its OS type, current isolation status, and connectivity.
 
     Args:
         endpoint_data (dict): A dictionary containing endpoint details, including OS version, isolation status, and online status.
-        force (bool): If True, overrides server OS restrictions and allows isolation.
-        server_os_list (list): A list of server OS versions that should not be isolated unless force is True.
         args (dict): The arguments used in the command execution.
         outputs (list): A list to store structured output results.
         human_readable_outputs (list): A list to store human-readable messages.
@@ -272,18 +248,13 @@ def is_endpoint_isolatable(endpoint_data: dict, force: bool, server_os_list: lis
     Returns:
         bool: True if the endpoint is eligible for isolation, False otherwise.
     """
-    server = endpoint_data.get('OSVersion', {}).get('Value')
     is_isolated = endpoint_data.get('IsIsolated', {}).get('Value', 'No')
     server_status = endpoint_data.get('Status', {}).get('Value', 'Online')
 
     is_isolation_possible = True
     message = ''
 
-    demisto.debug(f'Checking if endpoint is isolatable with {server_status=}, {is_isolated=}, {server=}, {force=}')
-
-    if server and (server in SERVERS_RELEASES or server in server_os_list) and not force:
-        message += 'The endpoint is a server, therefore aborting isolation.'
-        is_isolation_possible = False
+    demisto.debug(f'Checking if endpoint is isolatable with {server_status=}, {is_isolated=}')
 
     if is_isolated == 'Yes':
         message += 'The endpoint is already isolated.'
@@ -501,10 +472,8 @@ def main():
         agent_ids = argToList(args.get("agent_id", []))
         agent_ips = argToList(args.get("agent_ip", []))
         agent_hostnames = argToList(args.get("agent_hostname", []))
-        force = argToBoolean(args.get("force", False))
         verbose = argToBoolean(args.get("verbose", False))
         brands_to_run = argToList(args.get('brands', []))
-        server_os_list = argToList(args.get('server_os', []))
         module_manager = ModuleManager(demisto.getModules(), brands_to_run)
         commands = initialize_commands()
         zipped_args = map_zipped_args(agent_ids, agent_ips, agent_hostnames)
@@ -521,8 +490,7 @@ def main():
         for endpoint_data in endpoint_data_results:
             args = get_args_from_endpoint_data(endpoint_data)
             args_from_endpoint_data.append(args)
-            if not is_endpoint_isolatable(endpoint_data, force, server_os_list, args, outputs,
-                                          human_readable_outputs, verbose):
+            if not is_endpoint_isolatable(endpoint_data, args, outputs, human_readable_outputs, verbose):
                 continue
             for command in commands:
                 if command.brand != args.get('agent_brand'):

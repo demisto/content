@@ -8,8 +8,6 @@ args:
 - description: List of agent hostnames of the endpoint to isolate.
   name: agent_hostname
   isArray: true
-- description: Should the isolate be force.
-  name: force
 - description: |-
     Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'Cortex Core - IR, CrowdstrikeFalcon, FireEyeHX v2'.
   name: brands
@@ -28,9 +26,6 @@ args:
   predefined:
   - 'true'
   - 'false'
-- description: List of servers to isolate, in addition to the predefined list.
-  name: server_os
-  isArray: true
 comment: This script isolates endpoints using multiple integrations and returns a success or failure message.
 commonfields:
   id: isolate-endpoint
