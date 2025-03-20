@@ -486,8 +486,7 @@ def main():
         commands = initialize_commands()
         zipped_args = map_zipped_args(agent_ids, agent_ips, agent_hostnames)
 
-        # todo to change name back
-        endpoint_data_results = structure_endpoints_data(execute_command(command="get-endpoint-data-modified", args=args))
+        endpoint_data_results = structure_endpoints_data(execute_command(command="get-endpoint-data", args=args))
 
         demisto.debug(f'These are the results from get_endpoint_data_results execute_command {endpoint_data_results}')
 
