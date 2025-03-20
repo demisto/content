@@ -617,7 +617,7 @@ class ProofPointFormatter(object):
     v3_pattern = re.compile(r'v3/__(?P<url>.+?)__;(?P<enc_bytes>.*?)!')
     v3_token_pattern = re.compile(r"\*(\*.)?")
     v3_single_slash = re.compile(r"^([a-z0-9+.-]+:/)([^/].+)", re.IGNORECASE)
-    v3_run_mapping = {}
+    v3_run_mapping: dict[Any, Any] = {}
 
     def __init__(self, url):
         self.url = url
