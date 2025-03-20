@@ -1,0 +1,934 @@
+description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed\
+  \ to address and respond to alerts indicating suspicious activities related to remote\
+  \ PsExec-like LOLBIN command execution from an unsigned non-standard source. \n\
+  The playbook aims to efficiently:\n\n- Check if the execution is blocked. If not\
+  \ will terminate the process (Manually by default).\n- Enrich any entities and indicators\
+  \ from the alert and find any related campaigns.\n- Perform command analysis to\
+  \ provide insights and verdict for the executed command.\n- Perform further endpoint\
+  \ investigation using XDR.\n- Checks for any malicious verdict found to raise the\
+  \ severity of the alert.\n- Perform Automatic/Manual remediation response by blocking\
+  \ any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook\
+  \ in \u2018Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling\u2019\
+  .\nIt depends on the data from the parent playbooks and can not be used as a standalone\
+  \ version."
+fromversion: 6.10.0
+id: silent-Remote PsExec with LOLBIN command execution alert
+inputs:
+- description: The ID's of the relevant alerts
+  key: alerts_ids
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: ${alert.id}
+- description: Whether remediation will be run automatically or manually. If set to
+    "True" - remediation will be automatic.
+  key: AutoRemediation
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: 'false'
+- description: LOLBAS Feed results limit
+  key: LOLBASFeedLimit
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: '100'
+- description: The IDs of the victim endpoint
+  key: EndpointIDs
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: ${alert.hostip}
+issilent: true
+marketplaces:
+- marketplacev2
+name: silent-Remote PsExec with LOLBIN command execution alert
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: f123daa4-a999-4747-84df-d8d1ca3b6fcd
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: f123daa4-a999-4747-84df-d8d1ca3b6fcd
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -620\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '38'
+      - '40'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 736269a0-79d7-4b4c-8acd-acbfa32952d5
+      iscommand: false
+      name: Enrichment
+      type: title
+      version: -1
+    taskid: 736269a0-79d7-4b4c-8acd-acbfa32952d5
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '10':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: action
+                root: alert
+                transformers:
+                - operator: uniq
+          operator: containsString
+          right:
+            value:
+              simple: Prevented
+      label: 'Yes'
+    continueonerrortype: ''
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '11'
+      'Yes':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if the command execution was blocked.
+      id: 60eed42f-939e-49a4-838e-36146b780d18
+      iscommand: false
+      name: Is it blocked?
+      type: condition
+      version: -1
+    taskid: 60eed42f-939e-49a4-838e-36146b780d18
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -450\n  }\n}"
+  '11':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.AutoRemediation
+          operator: isEqualString
+          right:
+            value:
+              simple: 'True'
+      label: 'yes'
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '1'
+      'yes':
+      - '41'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if auto remediation is set to True.
+      id: d2fb1cef-fe7a-4bbf-8f01-1d8a7cefc32b
+      iscommand: false
+      name: Should auto terminate process?
+      type: condition
+      version: -1
+    taskid: d2fb1cef-fe7a-4bbf-8f01-1d8a7cefc32b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 770,\n    \"y\": -280\n  }\n}"
+  '13':
+    continueonerrortype: ''
+    id: '13'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '37'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Commandline:
+        complex:
+          accessor: targetprocesscmd
+          root: alert
+          transformers:
+          - operator: uniq
+      StringSimilarityThreshold:
+        simple: '0.5'
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "This playbook takes a command line from the alert and performs\
+        \ the following actions:\n- Checks for base64 string and decodes if exists\n\
+        - Extracts and enriches indicators from the command line\n- Checks specific\
+        \ arguments for malicious usage \n\nAt the end of the playbook, it sets a\
+        \ possible verdict for the command line, based on the finding:\n1. Indicators\
+        \ found in the command line\n2. Found AMSI techniques\n3. Found suspicious\
+        \ parameters\n4. Usage of malicious tools\n5. Indication of network activity\n\
+        6. Indication of suspicious LOLBIN execution\n\nNote: In case you are wishing\
+        \ to run this playbook with a list of command lines, set this playbook to\
+        \ be running in a loop. To do so, navigate to the 'Loop'  and check \"For\
+        \ Each Input\"."
+      id: f3f9974c-9fde-4505-86e3-9cdb784d53b2
+      iscommand: false
+      name: Command-Line Analysis
+      playbookName: Command-Line Analysis
+      type: playbook
+      version: -1
+    taskid: f3f9974c-9fde-4505-86e3-9cdb784d53b2
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 180,\n    \"y\": 690\n  }\n}"
+  '15':
+    continueonerrortype: ''
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      severity:
+        simple: High
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: c46d7663-a26c-43a4-8256-081df3a9e92a
+      iscommand: true
+      name: Raise incident severity
+      script: Builtin|||setAlert
+      type: regular
+      version: -1
+    taskid: c46d7663-a26c-43a4-8256-081df3a9e92a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 1200\n  }\n}"
+  '16':
+    continueonerrortype: ''
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '17'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 30d51313-90b0-4191-813d-cd41bba866de
+      iscommand: false
+      name: Remediation
+      type: title
+      version: -1
+    taskid: 30d51313-90b0-4191-813d-cd41bba866de
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 1360\n  }\n}"
+  '17':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.AutoRemediation
+          operator: isEqualString
+          right:
+            value:
+              simple: 'true'
+      label: 'yes'
+    continueonerrortype: ''
+    id: '17'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '36'
+      'yes':
+      - '28'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if auto remediation is enabled.
+      id: 3f4a0d5a-cf7d-4b48-806b-762e2d81fb42
+      iscommand: false
+      name: Should auto block indicators?
+      type: condition
+      version: -1
+    taskid: 3f4a0d5a-cf7d-4b48-806b-762e2d81fb42
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 1500\n  }\n}"
+  '22':
+    continueonerrortype: ''
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 149f64f6-f6a8-4a72-8ab1-7f90e642b778
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 149f64f6-f6a8-4a72-8ab1-7f90e642b778
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1840\n  }\n}"
+  '23':
+    continueonerrortype: ''
+    id: '23'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '13'
+      - '42'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: ec109fc1-abef-4b6a-80e8-9c0021c97731
+      iscommand: false
+      name: Investigation & Analysis
+      type: title
+      version: -1
+    taskid: ec109fc1-abef-4b6a-80e8-9c0021c97731
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 550\n  }\n}"
+  '28':
+    continueonerrortype: ''
+    id: '28'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoBlockIndicators:
+        simple: 'True'
+      AutoCommit:
+        simple: 'No'
+      CustomBlockRule:
+        simple: 'True'
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      IP:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ip
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: greaterThanOrEqual
+              right:
+                value:
+                  simple: '3'
+          root: DBotScore
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: 'False'
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
+      URL:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: url
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: greaterThanOrEqual
+              right:
+                value:
+                  simple: '3'
+          root: DBotScore
+          transformers:
+          - operator: uniq
+      UserVerification:
+        simple: 'True'
+      Username:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: username
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: greaterThanOrEqual
+              right:
+                value:
+                  simple: '3'
+          root: DBotScore
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: 'This playbook blocks malicious indicators using all integrations
+        that are enabled, using the following sub-playbooks:
+
+
+        - Block URL - Generic v2
+
+        - Block Account - Generic v2
+
+        - Block IP - Generic v3
+
+        - Block File - Generic v2
+
+        - Block Email - Generic v2
+
+        - Block Domain - Generic v2
+
+
+        '
+      id: 28ac1eb1-0de2-4c79-8238-504f5a28a1aa
+      iscommand: false
+      name: Block Indicators - Generic v3
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      version: -1
+    taskid: 28ac1eb1-0de2-4c79-8238-504f5a28a1aa
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 680,\n    \"y\": 1670\n  }\n}"
+  '29':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: CommandlineVerdict
+          operator: isExists
+          right:
+            value: {}
+      label: Malicious
+    continueonerrortype: ''
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '22'
+      Malicious:
+      - '15'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if any malicious verdict is found.
+      id: 78f3d476-e332-48b8-8dd5-669a3a8ec36e
+      iscommand: false
+      name: Found additional alerts or suspicious command line?
+      type: condition
+      version: -1
+    taskid: 78f3d476-e332-48b8-8dd5-669a3a8ec36e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1030\n  }\n}"
+  '33':
+    continueonerrortype: ''
+    id: '33'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      IPAddress:
+        complex:
+          accessor: IP
+          root: ExtractedIndicators
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          accessor: MD5
+          root: File
+          transformers:
+          - operator: uniq
+      QRadarTimeFrame:
+        simple: LAST 7 DAYS
+      SHA1:
+        complex:
+          accessor: SHA1
+          root: File
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          accessor: SHA256
+          root: File
+          transformers:
+          - operator: uniq
+      SplunkEarliestTime:
+        simple: -7d@d
+      SplunkLatestTime:
+        simple: now
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "This playbook enables threat hunting for IOCs in your enterprise.\
+        \ It currently supports the following integrations: \n- Splunk\n- Qradar\n\
+        - Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      id: 19e960f5-0b99-40b7-82ae-6ff603dc2b03
+      iscommand: false
+      name: Threat Hunting - Generic
+      playbookName: Threat Hunting - Generic
+      type: playbook
+      version: -1
+    taskid: 19e960f5-0b99-40b7-82ae-6ff603dc2b03
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 860\n  }\n}"
+  '35':
+    continueonerrortype: ''
+    id: '35'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      commands:
+        complex:
+          accessor: initiatorpid
+          root: alert
+          transformers:
+          - args:
+              ctx_data: {}
+              ctx_inc: {}
+              ctx_inputs: {}
+              keep_symbol_to_null: {}
+              prefix:
+                value:
+                  simple: 'taskkill /F /PID '
+              suffix: {}
+              variable_markers: {}
+            operator: ConcatFormat
+      endpoint_ids:
+        simple: ${Core.Endpoint.endpoint_id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Initiate a new endpoint script execution of shell commands.
+      id: 19081ef3-2615-4e32-8b77-f1c36dbea137
+      iscommand: true
+      name: Terminate suspicious process
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      version: -1
+    taskid: 19081ef3-2615-4e32-8b77-f1c36dbea137
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 770,\n    \"y\": 60\n  }\n}"
+  '36':
+    continueonerrortype: ''
+    id: '36'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Containment and Eradication:
+
+
+        1. Identify all affected systems and user accounts that were involved in the
+        incident.
+
+        2. Disable or suspend compromised accounts and reset passwords where necessary.
+
+        3. Thoroughly investigate the extent of the compromise across the network.
+
+        '
+      id: ad7cad0d-f975-43b7-8149-584e8104bdc1
+      iscommand: false
+      name: Waiting for manual remediation
+      type: regular
+      version: -1
+    taskid: ad7cad0d-f975-43b7-8149-584e8104bdc1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1110,\n    \"y\": 1670\n  }\n}"
+  '37':
+    continueonerrortype: ''
+    id: '37'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      commandline:
+        complex:
+          accessor: original
+          root: commandline
+      commandlineverdict:
+        simple: ${CommandlineVerdict}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 4ba2e064-ac6c-4024-8637-5f4fe58998d3
+      iscommand: true
+      name: Set Command-Line Verdict to Layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 4ba2e064-ac6c-4024-8637-5f4fe58998d3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 180,\n    \"y\": 860\n  }\n}"
+  '38':
+    continueonerrortype: ''
+    id: '38'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '23'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      CloseReason:
+        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved -
+          Known Issue
+      CommandLine:
+        simple: ${alert.cgocmd}
+      Domain:
+        complex:
+          accessor: domainname
+          root: alert
+      FileSHA256:
+        complex:
+          accessor: initiatorsha256
+          root: alert
+      IP:
+        complex:
+          accessor: hostip
+          root: alert
+      URL:
+        complex:
+          accessor: url
+          root: alert
+      UseReputationCommand:
+        simple: 'True'
+      User:
+        complex:
+          accessor: username
+          root: alert
+      query:
+        simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and
+          sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
+      threshold:
+        simple: '2'
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: This playbook checks prior alert closing reasons and performs enrichment
+        and prevalence checks on different IOC types. It then  returns the information
+        needed to establish the alert's verdict.
+      id: 4314c7ec-ffad-4498-82f4-cd9cc9c3c1c7
+      iscommand: false
+      name: Enrichment for Verdict
+      playbookName: Enrichment for Verdict
+      type: playbook
+      version: -1
+    taskid: 4314c7ec-ffad-4498-82f4-cd9cc9c3c1c7
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 180,\n    \"y\": 380\n  }\n}"
+  '40':
+    continueonerrortype: ''
+    id: '40'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '23'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      EntityID:
+        complex:
+          root: inputs.EndpointIDs
+          transformers:
+          - operator: uniq
+      EntityType:
+        simple: IP
+      HuntCnCTechniques:
+        simple: 'False'
+      HuntCollectionTechniques:
+        simple: 'True'
+      HuntCredentialAccessTechniques:
+        simple: 'False'
+      HuntDefenseEvasionTechniques:
+        simple: 'False'
+      HuntDiscoveryTechniques:
+        simple: 'False'
+      HuntExecutionTechniques:
+        simple: 'False'
+      HuntImpactTechniques:
+        simple: 'False'
+      HuntInitialAccessTechniques:
+        simple: 'False'
+      HuntLateralMovementTechniques:
+        simple: 'False'
+      HuntPersistenceTechniques:
+        simple: 'False'
+      HuntPrivilegeEscalationTechniques:
+        simple: 'True'
+      HuntReconnaissanceTechniques:
+        simple: 'False'
+      RunAll:
+        simple: 'False'
+      timeRange:
+        simple: 6 hours
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: 'This playbook searches XDR alerts related to specific entities
+        , on a given timeframe, based on MITRE tactics.
+
+        Note: The playbook''s inputs enable manipulating the execution flow. Read
+        the input descriptions for details.'
+      id: e7a95b47-b732-4ede-88bb-693bf96d273d
+      iscommand: false
+      name: Get entity alerts by MITRE tactics
+      playbookName: Get entity alerts by MITRE tactics
+      type: playbook
+      version: -1
+    taskid: e7a95b47-b732-4ede-88bb-693bf96d273d
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 380\n  }\n}"
+  '41':
+    continueonerrortype: ''
+    id: '41'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '35'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip_list:
+        complex:
+          accessor: hostip
+          root: alert
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
+      id: 8ece8239-b854-4e28-86d8-e832d08e09e3
+      iscommand: true
+      name: Get endpoint ID
+      script: '|||core-get-endpoints'
+      type: regular
+      version: -1
+    taskid: 8ece8239-b854-4e28-86d8-e832d08e09e3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 770,\n    \"y\": -110\n  }\n}"
+  '42':
+    continueonerrortype: ''
+    id: '42'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '33'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      text:
+        simple: ${alert.details}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: c136bf29-105d-4456-8efd-25ac39c064d6
+      iscommand: true
+      name: Extract source IP address indicator
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: c136bf29-105d-4456-8efd-25ac39c064d6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 690\n  }\n}"
+tests:
+- No tests
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"10_1_Yes\": 0.29,\n    \"17_28_yes\"\
+  : 0.52,\n    \"17_36_#default#\": 0.57,\n    \"29_15_Malicious\": 0.54,\n    \"\
+  29_22_#default#\": 0.18\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\"\
+  : 2525,\n      \"width\": 1310,\n      \"x\": 180,\n      \"y\": -620\n    }\n \
+  \ }\n}"
