@@ -7,7 +7,7 @@ def get_netstat_file_name(command_files):
     if command_files and isinstance(command_files, dict):   # noqa: RET503
         netstat_files = command_files.get(COMMAND_NAME, [])
         if netstat_files:   # noqa: RET503
-            if isinstance(netstat_files, list): # noqa: RET503
+            if isinstance(netstat_files, list):  # noqa: RET503
                 # we want to get the last file name
                 return netstat_files[len(netstat_files) - 1].get("Filename")
             elif isinstance(netstat_files, dict):

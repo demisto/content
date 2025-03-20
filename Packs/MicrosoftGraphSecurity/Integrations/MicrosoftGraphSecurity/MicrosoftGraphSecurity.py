@@ -1673,14 +1673,14 @@ def update_incident_command(client: MsGraphClient, args: dict) -> CommandResults
     custom_tags = argToList(args.get("custom_tags"))
     timeout = arg_to_number(args["timeout"])  # default value is defined
     updated_incident = client.update_incident_request(
-        incident_id=incident_id,
+        incident_id=incident_id,  # type:ignore[arg-type]
         status=status,  # type:ignore[arg-type]
         assigned_to=assigned_to,
         classification=classification,
         determination=determination,
         custom_tags=custom_tags,
-        timeout=timeout,
-    )  # type:ignore[arg-type]
+        timeout=timeout,  # type:ignore[arg-type]
+    )
 
     if updated_incident.get("@odata.context"):
         del updated_incident["@odata.context"]

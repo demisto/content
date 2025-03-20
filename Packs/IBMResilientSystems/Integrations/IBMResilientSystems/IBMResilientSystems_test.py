@@ -384,10 +384,10 @@ def test_update_incident(_mocker):
     [
         (
             "1000",
-            "### IBM QRadar SOAR incident ID 1000\n|Id|Name|Description|NistAttackVectors|Phase|Resolution|ResolutionSummary|Owner" # noqa: E501
+            "### IBM QRadar SOAR incident ID 1000\n|Id|Name|Description|NistAttackVectors|Phase|Resolution|ResolutionSummary|Owner"  # noqa: E501
             "|CreatedDate|DateOccurred|DiscoveredDate|DueDate|NegativePr|Confirmed|ExposureType|Severity|Reporter|\n"
             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1000 | incident_name | 1111 2222 3333 | "
-            "E-mail<br>Attrition<br> |  | Not an Issue | This is a test incident. |  | 2024-07-29T11:32:36Z |  | 2024-07-29T11:31:57Z " # noqa: E501
+            "E-mail<br>Attrition<br> |  | Not an Issue | This is a test incident. |  | 2024-07-29T11:32:36Z |  | 2024-07-29T11:31:57Z "  # noqa: E501
             "|  | true | true | ExternalParty | 6 |  |",
         ),
     ],

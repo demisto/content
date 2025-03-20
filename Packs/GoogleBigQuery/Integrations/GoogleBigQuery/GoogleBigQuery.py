@@ -19,7 +19,7 @@ urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 
-TEST_QUERY = 'SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013` WHERE state = "TX" ' "LIMIT 10"
+TEST_QUERY = 'SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013` WHERE state = "TX" LIMIT 10'
 
 
 """ HELPER FUNCTIONS """

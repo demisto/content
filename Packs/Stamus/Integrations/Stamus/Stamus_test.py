@@ -102,7 +102,7 @@ def test_fetch_events(requests_mock):
         result["method"] = result.get("alert", {}).get("signature", "algorithmic detection")
         result["info"] = ""
         if result.get("hostname_info"):
-            result["info"] = f"Hostname: {result.get("hostname_info", {}).get("host", "unknown")}"
+            result["info"] = f"Hostname: {result.get('hostname_info', {}).get('host', 'unknown')}"
         result["asset"] = result.get("stamus", {}).get("asset", "unknown")
         result["offender"] = result.get("stamus", {}).get("source", "unknown")
         result["killchain"] = result.get("stamus", {}).get("kill_chain", "unknown")

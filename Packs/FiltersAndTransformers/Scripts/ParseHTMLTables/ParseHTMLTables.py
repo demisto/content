@@ -108,7 +108,8 @@ class Table:
         tbl_rows = self.__rows
         headers = self.__headers
 
-        if default_header_line and default_header_line != "none" and (not headers and not any(labels for labels, cols in tbl_rows)):
+        if (default_header_line and default_header_line != "none"
+                and (not headers and not any(labels for labels, cols in tbl_rows))):
             if default_header_line in ("first_column", "first_row"):
                 # The first column or row is considered as header
                 if default_header_line == "first_column":

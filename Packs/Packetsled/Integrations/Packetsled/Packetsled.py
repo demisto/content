@@ -357,9 +357,9 @@ def main():
             entitys = list(set(entitys))
 
         if demisto.command() == "fetch-incidents":
-            incidents += [ {
-                        "id": x + "-" + str(tmin) + "-" + str(tnow),
-                        "name": "SOURCE: Packetsled SENSOR: " + sensor["label"] + " ENTITY: " + x,
+            incidents += [{
+                "id": x + "-" + str(tmin) + "-" + str(tnow),
+                "name": "SOURCE: Packetsled SENSOR: " + sensor["label"] + " ENTITY: " + x,
                         "labels": [{"Provider": "packetsled"}, {"Sensor": sensor["label"]}, {"Entity": x}],
                         "rawJSON": json.dumps(
                             {
@@ -371,19 +371,19 @@ def main():
                                 "envid": sensor["envid"],
                                 "probe": sensor["probe"],
                             }
-                        ),} for x in entitys]
+                ), } for x in entitys]
             demisto.incidents(incidents)
         else:
             incidents += [{
-                        "id": x + "-" + str(tmin) + "-" + str(tnow),
-                        "log": ["intel", "notice", "psfile_analytics"],
-                        "entity": x,
-                        "start_time": tmin,
-                        "stop_time": tnow,
-                        "envid": sensor["envid"],
-                        "probe": sensor["probe"],
-                    } for x in entitys
-                ]
+                "id": x + "-" + str(tmin) + "-" + str(tnow),
+                "log": ["intel", "notice", "psfile_analytics"],
+                "entity": x,
+                "start_time": tmin,
+                "stop_time": tnow,
+                "envid": sensor["envid"],
+                "probe": sensor["probe"],
+            } for x in entitys
+            ]
             demisto.results(
                 {
                     "HumanReadable": humanReadable("Incidents", incidents),
@@ -500,7 +500,7 @@ def main():
         if "entity" in dargs:
             entity = coalesceToArray(dargs["entity"])
             if len(entity) > 1:
-                query = query + " and (" + " or ".join(list(map(lambda x: "host " + x, entity))) + ")"
+                query = query + " and (" + " or ".join(["host " + x for x in entity]) + ")"
             else:
                 query = query + " and host " + entity[0]
 

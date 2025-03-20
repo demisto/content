@@ -132,7 +132,7 @@ def test_some_error(mocker):
     # run
     try:
         main()
-        assert False, "SystemExit should occurred"  # noqa: PT015
+        assert False, "SystemExit should occurred"  # noqa: B011, PT015
 
     except SystemExit:
         assert demisto.results.call_args[0][0]["Contents"] == SOME_ERROR

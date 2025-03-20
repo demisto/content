@@ -278,7 +278,7 @@ class UpdatedTickets(TicketEvents):
         def filter_created_ticket(ticket: dict):
             return ticket["created_at"] != ticket["updated_at"]
 
-        yield from filter(filter_created_ticket, super().tickets()):
+        yield from filter(filter_created_ticket, super().tickets())
 
 
 class ZendeskClient(BaseClient):
@@ -301,7 +301,7 @@ class ZendeskClient(BaseClient):
             raise DemistoException(f"Error occurred in Zendesk API: {res.text}")
         res.raise_for_status()
 
-    def _http_request(
+    def _http_request(  # type: ignore[override]
         self,
         method: str,
         url_suffix: str = "",
@@ -573,7 +573,7 @@ class ZendeskClient(BaseClient):
 
     @staticmethod
     def __ticket_context(ticket: dict[str, Any]):
-        return CACHE.replace_ids_change(
+        return CACHE.replace_ids_change(      # type: ignore
             ticket,
             organization_fields=["organization_id"],  # type: ignore
             user_fields=["assignee_id", "collaborator_ids", "email_cc_ids", "follower_ids", "requester_id", "submitter_id"],

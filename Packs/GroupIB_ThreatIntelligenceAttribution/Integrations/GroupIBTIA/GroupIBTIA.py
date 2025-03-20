@@ -623,8 +623,8 @@ class Client(BaseClient):
         #     return self._create_legacy_generator(action="domain", max_requests=max_requests, last=last_fetch)
         else:
             return self._create_update_generator(
-                collection_name=collection_name, max_requests=max_requests, date_from=date_from, seq_update=last_fetch
-            )  # type: ignore
+                collection_name=collection_name, max_requests=max_requests, date_from=date_from, seq_update=last_fetch  # type: ignore
+            )
 
     def create_manual_generator(
         self, collection_name: str, date_from: str = None, date_to: str = None, query: str = None

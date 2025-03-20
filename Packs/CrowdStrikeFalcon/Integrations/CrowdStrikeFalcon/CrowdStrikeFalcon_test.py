@@ -7280,7 +7280,7 @@ def test_get_detection___url_and_params(mocker, Legacy_version, url_suffix, expe
             False,
             "test_tag",
             "/alerts/entities/alerts/v3",
-            '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_uuid", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}, {"name": "add_tag", "value": "test_tag"}], "composite_ids": ["123"]}', # noqa: E501
+            '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_uuid", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}, {"name": "add_tag", "value": "test_tag"}], "composite_ids": ["123"]}',  # noqa: E501
         ),
         (
             True,
