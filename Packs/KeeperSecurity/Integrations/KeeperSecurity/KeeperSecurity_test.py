@@ -1,10 +1,11 @@
 import json
-import pytest
-from pytest_mock import MockerFixture
-from CommonServerPython import DemistoException
-from KeeperSecurity import Client, KeeperParams
-from freezegun import freeze_time
+
 import demistomock as demisto
+import pytest
+from CommonServerPython import DemistoException
+from freezegun import freeze_time
+from KeeperSecurity import Client, KeeperParams
+from pytest_mock import MockerFixture
 
 
 def util_load_json(path):
@@ -177,7 +178,7 @@ def test_start_registering_device_already_registered(mocker: MockerFixture, clie
     Then
         - The function should raise a DemistoException with a message indicating the device is already registered.
     """
-    from KeeperSecurity import APIRequest_pb2, DEVICE_ALREADY_REGISTERED
+    from KeeperSecurity import DEVICE_ALREADY_REGISTERED, APIRequest_pb2
 
     mocker.patch(
         "KeeperSecurity.LoginV3API.get_device_id",
@@ -248,16 +249,12 @@ def test_validate_device_registration_requires_auth_hash(mocker: MockerFixture, 
     correct_salt_resp = mocker.Mock()
     correct_salt_resp.salt = [b"correct_salt"]
 
-    mock_start_login = mocker.patch(
-        "KeeperSecurity.LoginV3API.startLoginMessage", return_value=start_login_resp
-    )
+    mock_start_login = mocker.patch("KeeperSecurity.LoginV3API.startLoginMessage", return_value=start_login_resp)
     mock_get_salt = mocker.patch("KeeperSecurity.api.get_correct_salt", return_value=correct_salt_resp)
     mock_verify_password = mocker.patch.object(
         client_class.PasswordStep, "verify_password", return_value=verify_password_response
     )
-    mock_post_login_processing = mocker.patch(
-        "KeeperSecurity.LoginV3Flow.post_login_processing", return_value=None
-    )
+    mock_post_login_processing = mocker.patch("KeeperSecurity.LoginV3Flow.post_login_processing", return_value=None)
 
     # Act
     client_class.validate_device_registration(encrypted_device_token, encrypted_login_token)
@@ -402,9 +399,7 @@ def test_finish_registering_device_with_code(mocker: MockerFixture, client_class
     encrypted_login_token = b"encrypted_login_token"
     code = "123456"
 
-    mock_base64_url_decode = mocker.patch(
-        "KeeperSecurity.utils.base64_url_decode", return_value=b"encrypted_device_token"
-    )
+    mock_base64_url_decode = mocker.patch("KeeperSecurity.utils.base64_url_decode", return_value=b"encrypted_device_token")
     mock_send_code = mocker.patch.object(device_approval, "send_code")
     mock_validate_device_registration = mocker.patch.object(client_class, "validate_device_registration")
 
@@ -443,9 +438,7 @@ def test_finish_registering_device_without_code(mocker: MockerFixture, client_cl
     encrypted_login_token = b"encrypted_login_token"
     code = ""
 
-    mock_base64_url_decode = mocker.patch(
-        "KeeperSecurity.utils.base64_url_decode", return_value=b"encrypted_device_token"
-    )
+    mock_base64_url_decode = mocker.patch("KeeperSecurity.utils.base64_url_decode", return_value=b"encrypted_device_token")
     mock_send_code = mocker.patch.object(device_approval, "send_code")
     mock_validate_device_registration = mocker.patch.object(client_class, "validate_device_registration")
 
@@ -638,9 +631,7 @@ def test_refresh_session_token_if_needed_refresh_needed(mocker: MockerFixture, c
 
     mocker.patch("KeeperSecurity.get_integration_context", return_value=integration_context_mock)
     mocker.patch("KeeperSecurity.get_current_time_in_seconds", return_value=current_time)
-    mock_get_device_id = mocker.patch(
-        "KeeperSecurity.LoginV3API.get_device_id", return_value=b"encrypted_device_token"
-    )
+    mock_get_device_id = mocker.patch("KeeperSecurity.LoginV3API.get_device_id", return_value=b"encrypted_device_token")
     mock_save_device_tokens = mocker.patch.object(
         client_class, "save_device_tokens", return_value=mocker.Mock(encryptedLoginToken=b"encrypted_login_token")
     )
@@ -806,8 +797,9 @@ def test_get_audit_logs_res_count_reaches_max_fetch_limit(mocker: MockerFixture)
         - The client.query_audit_logs should be called twice, with the correct limits for each call.
         - The demisto.setLastRun should be called with the correct last fetch time and IDs.
     """
-    from KeeperSecurity import get_audit_logs
     from unittest.mock import call
+
+    from KeeperSecurity import get_audit_logs
 
     # Arrange
     client_mock = mocker.Mock()
@@ -981,8 +973,9 @@ def test_get_audit_logs_successful_fetching(mocker: MockerFixture):
         - The add_time_to_events should be called twice, once for each batch of events.
     """
 
-    from KeeperSecurity import get_audit_logs
     from unittest.mock import call
+
+    from KeeperSecurity import get_audit_logs
 
     # Arrange
     client_mock = mocker.Mock()
