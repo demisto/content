@@ -1,19 +1,21 @@
+import threading
+import traceback
+from contextlib import contextmanager
+
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *  # noqa
 import urllib3
+from CommonServerPython import *  # noqa: F401
 from websockets import Data
 from websockets.sync.client import connect
 from websockets.sync.connection import Connection
-import traceback
-import threading
-from contextlib import contextmanager
+
+from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 VENDOR = "Retarus"
 PRODUCT = "Secure Email Gateway"
 FETCH_INTERVAL_IN_SECONDS = 60
@@ -23,12 +25,13 @@ DEFAULT_CHANNEL = "default"
 LOG_PREFIX = "Retarus-logs"
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class EventConnection:
-    def __init__(self, connection: Connection, fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
-                 idle_timeout: int = SERVER_IDLE_TIMEOUT):  # pragma: no cover
+    def __init__(
+        self, connection: Connection, fetch_interval: int = FETCH_INTERVAL_IN_SECONDS, idle_timeout: int = SERVER_IDLE_TIMEOUT
+    ):  # pragma: no cover
         self.connection = connection
         self.lock = threading.Lock()
         self.idle_timeout = idle_timeout
@@ -62,7 +65,7 @@ class EventConnection:
             time.sleep(self.idle_timeout)
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def push_events(events: list[dict]):  # pragma: no cover
@@ -96,26 +99,25 @@ def websocket_connection(url: str, token_id: str, fetch_interval: int, channel: 
         ssl_context.verify_mode = ssl.CERT_NONE
 
     try:
-        with connect("wss://" + url + f"/email/siem/v1/websocket?channel={channel}",
-                     additional_headers=extra_headers,
-                     ssl=ssl_context) as ws:
-            connection = EventConnection(
-                connection=ws,
-                fetch_interval=fetch_interval
-            )
+        with connect(
+            "wss://" + url + f"/email/siem/v1/websocket?channel={channel}", additional_headers=extra_headers, ssl=ssl_context
+        ) as ws:
+            connection = EventConnection(connection=ws, fetch_interval=fetch_interval)
             set_the_integration_context(
-                "last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(timezone.utc)}")
+                "last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(timezone.utc)}"
+            )
             yield connection
 
     except Exception as e:
-        set_the_integration_context("last_run_results",
-                                    f"{str(e)} \n This error happened at {datetime.now().astimezone(timezone.utc)}")
-        raise DemistoException(f"{str(e)}\n")
+        set_the_integration_context(
+            "last_run_results", f"{e!s} \n This error happened at {datetime.now().astimezone(timezone.utc)}"
+        )
+        raise DemistoException(f"{e!s}\n")
 
 
 def set_the_integration_context(key: str, val):  # pragma: no cover
     """Adds a key-value pair to the integration context dictionary.
-        If the key already exists in the integration context, the function will overwrite the existing value with the new one.
+    If the key already exists in the integration context, the function will overwrite the existing value with the new one.
     """
     cnx = demisto.getIntegrationContext()
     cnx[key] = val
@@ -148,7 +150,7 @@ def perform_long_running_loop(connection: EventConnection, fetch_interval: int):
     """
     demisto.debug(f"{LOG_PREFIX} starting to fetch events")
     events = fetch_events(connection, fetch_interval)
-    demisto.debug(f'{LOG_PREFIX} Adding {len(events)} Events to XSIAM')
+    demisto.debug(f"{LOG_PREFIX} Adding {len(events)} Events to XSIAM")
 
     # Send the events to the XSIAM.
     try:
@@ -158,7 +160,7 @@ def perform_long_running_loop(connection: EventConnection, fetch_interval: int):
         demisto.error(f"Failed to send events to XSIAM. Error: {traceback.format_exc()}")
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def long_running_execution_command(url, token_id, fetch_interval, channel, verify_ssl):
@@ -193,7 +195,8 @@ def long_running_execution_command(url, token_id, fetch_interval, channel, verif
 def test_module():  # pragma: no cover
     raise DemistoException(
         "No test option is available due to API limitations.\
-        To verify the configuration, run the retarus-get-last-run-results command and ensure it returns no errors.")
+        To verify the configuration, run the retarus-get-last-run-results command and ensure it returns no errors."
+    )
 
 
 def get_last_run_results_command():
@@ -201,8 +204,10 @@ def get_last_run_results_command():
     if last_run_results:
         return CommandResults(readable_output=last_run_results)
     else:
-        return CommandResults(readable_output="No results from the last run yet. Ensure that a Retarus instance \
-            is configured and enabled. If it is, please wait one minute and try running the command again.")
+        return CommandResults(
+            readable_output="No results from the last run yet. Ensure that a Retarus instance \
+            is configured and enabled. If it is, please wait one minute and try running the command again."
+        )
 
 
 def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
@@ -220,7 +225,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     events: list[dict] = []
     event_ids = set()
     fetch_start_time = datetime.now().astimezone(timezone.utc)
-    demisto.debug(f'{LOG_PREFIX} Starting to fetch events at {fetch_start_time}')
+    demisto.debug(f"{LOG_PREFIX} Starting to fetch events at {fetch_start_time}")
 
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
@@ -228,8 +233,9 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
         except TimeoutError:
             continue
         except Exception as e:
-            set_the_integration_context("last_run_results",
-                                        f"{str(e)} \n This error happened at {datetime.now().astimezone(timezone.utc)}")
+            set_the_integration_context(
+                "last_run_results", f"{e!s} \n This error happened at {datetime.now().astimezone(timezone.utc)}"
+            )
             raise DemistoException(str(e))
 
         event_id = event.get("rmxId")
@@ -255,13 +261,15 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     demisto.debug(f"{LOG_PREFIX} Fetched {num_events} events")
     demisto.debug(f"{LOG_PREFIX} The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
 
-    set_the_integration_context("last_run_results",
-                                f"Got from connection {num_events} events starting\
-                                    at {str(fetch_start_time)} untill {datetime.now().astimezone(timezone.utc)}")
+    set_the_integration_context(
+        "last_run_results",
+        f"Got from connection {num_events} events starting\
+                                    at {fetch_start_time!s} untill {datetime.now().astimezone(timezone.utc)}",
+    )
     return events
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():  # pragma: no cover
@@ -285,8 +293,8 @@ def main():  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception:
-        return_error(f'Failed to execute {command} command.\nError:\n{traceback.format_exc()}')
+        return_error(f"Failed to execute {command} command.\nError:\n{traceback.format_exc()}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
