@@ -14,7 +14,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: "The username and password is required in XSOAR 8.5 and above. Using the `_header:` feature without using an engine will not work. Headers should only use ASCII characters, and their size may have a limit depending on the server or framework. Certain characters are restricted. For additional information on restrictions, please refer to the integration documentation."
+- additionalinfo: "The username and password is required in XSOAR 8.5 and above. Using the `_header:` feature without using an engine will not work. The value should only use ASCII characters, and the length may have a limit depending on the server or framework. For additional information on restrictions, please refer to the integration documentation."
   display: Username
   name: credentials
   type: 9
