@@ -52,6 +52,7 @@ class EventSender:
         self.client.disconnect()
 
     def push_ip(self, ip, trust_level, topic):
+        # test
         if not is_ip_valid(ip):
             raise ValueError(f'argument ip {ip} is not a valid IP')
 

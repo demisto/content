@@ -85,6 +85,7 @@ class Client(BaseClient):
         return formated_xml
 
     def get_config_file_request(self):
+        # test comment
         headers = {'Content-Type': 'application/xml'}
         params = assign_params(type='config', action='show', key=self._api_key)
         try:

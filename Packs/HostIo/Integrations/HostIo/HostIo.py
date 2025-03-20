@@ -45,7 +45,7 @@ class Client(BaseClient):
 
 
 def test_module_command(client: Client) -> str:
-    """Tests API connectivity and authentication'
+    """Tests API connectivity and authentication test'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
