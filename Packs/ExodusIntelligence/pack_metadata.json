@@ -20,7 +20,8 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "an-hel"
@@ -33,5 +34,11 @@
     },
     "displayedImages": [
         "CommonTypes"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
