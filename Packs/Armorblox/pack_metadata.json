@@ -2,7 +2,7 @@
     "name": "Armorblox",
     "description": "Armorblox is an API-based platform that stops targeted email attacks, protects sensitive data, and automates incident response.",
     "support": "partner",
-    "currentVersion": "1.0.36",
+    "currentVersion": "1.0.37",
     "author": "Armorblox",
     "url": "https://www.armorblox.com/",
     "email": "support@armorblox.com",
