@@ -60,7 +60,7 @@ COMMON_VIOLATION_MAPPING = {
     "violation_type": "violation.violationSubtype",  # GIB DRP Type
     "tags": "violation.tags.name",  # GIB DRP Tags
     "link": "link",  # GIB DRP Link
-    "typosquatting_status": "*typosquatting_status",  # GIB DRO Downloaded by TypoSquatting
+    "typosquatting_status": "*typosquatting_status",  # GIB DRP Typosquatting Status
     # End Information From Group-IB DRP
     # Start Group-IB Dates
     "detected": "violation.detected",  # GIB DRP Detected
@@ -151,6 +151,15 @@ class Client(BaseClient):
         demisto.debug(f"generate_seq_update sequpdate {sequpdate}")
         return sequpdate
 
+    def _get_violation_section_number(self, name: str) -> int:
+        normalized_name = name.upper()
+        normalized_name = normalized_name.replace(" ", "_")
+
+        try:
+            return ViolationTypeMapping[normalized_name].value
+        except KeyError:
+            raise ValueError(f"Unknown violation type: {name}")
+    
     def create_generator(
         self,
         first_fetch_time: str,
@@ -168,7 +177,7 @@ class Client(BaseClient):
             sequpdate = self.generate_seq_update(first_fetch_time)
 
         if section:
-            section = section.strip()
+            section = self._get_violation_section_number(section.strip())
 
         if brands:
             brands = brands.strip(",")
@@ -650,6 +659,8 @@ class IncidentBuilder:
 
                     if len(updated_images) > 0:
                         incident["images"] = "<br/>".join(updated_images)
+                    else:
+                        incident.pop("images")
                 else:
                     incident.pop("images")
 

@@ -48,9 +48,9 @@ configuration:
   - "Web"
   - "Marketplace"
   - "Advertising"
-  - "Mobile_apps"
-  - "Social_networks"
-  - "Instant_messengers"
+  - "Mobile Apps"
+  - "Social Networks"
+  - "Instant Messengers"
 - display: Brands to filter the received Violation
   name: brands
   type: 0
