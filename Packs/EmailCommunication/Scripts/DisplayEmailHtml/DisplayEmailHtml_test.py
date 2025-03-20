@@ -79,39 +79,41 @@ p
 
 @pytest.mark.parametrize(
     "email_html,entry_id_list,expected",
-    [(EMAIL_HTML, [('image_1.png', '37@119'), ('image_2.png', '38@120')], EXPECTED_RESULT_1),
-     (EMAIL_HTML_NO_ALT, [('image_1.png', '37@119'), ('image_2.png', '38@120')], EXPECTED_RESULT_NO_ALT),
-     ]
+    [
+        (EMAIL_HTML, [("image_1.png", "37@119"), ("image_2.png", "38@120")], EXPECTED_RESULT_1),
+        (EMAIL_HTML_NO_ALT, [("image_1.png", "37@119"), ("image_2.png", "38@120")], EXPECTED_RESULT_NO_ALT),
+    ],
 )
 def test_create_email_html(email_html, entry_id_list, expected):
     """
-        Given
-        - The email's Html representation
-        When
-        3. All images were uploaded to the server
-        Then
-        - The images' src attribute would be replaced as expected
+    Given
+    - The email's Html representation
+    When
+    3. All images were uploaded to the server
+    Then
+    - The images' src attribute would be replaced as expected
     """
     from DisplayEmailHtml import create_email_html
+
     result = create_email_html(email_html, entry_id_list)
     assert result == expected
 
 
 @pytest.mark.parametrize(
-    "email_html,entry_id_list,expected",
-    [(EMAIL_HTML, [('image_1.png', '37@119'), ('image_2.png', '38@120')], EXPECTED_RESULT_2)]
+    "email_html,entry_id_list,expected", [(EMAIL_HTML, [("image_1.png", "37@119"), ("image_2.png", "38@120")], EXPECTED_RESULT_2)]
 )
 def test_create_email_html_mt(mocker, email_html, entry_id_list, expected):
     """
-        Given
-        - The email's Html representation with multi tenant environment
-        When
-        - All images were uploaded to the server
-        Then
-        - The images' src attribute would be replaced as expected with account tenant name
+    Given
+    - The email's Html representation with multi tenant environment
+    When
+    - All images were uploaded to the server
+    Then
+    - The images' src attribute would be replaced as expected with account tenant name
     """
     from DisplayEmailHtml import create_email_html
-    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'https://localhost:8443:/acc_test_tenant'})
+
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://localhost:8443:/acc_test_tenant"})
 
     result = create_email_html(email_html, entry_id_list)
     assert result == expected

@@ -1,24 +1,24 @@
-from CommonServerPython import *
 import pytest
+from CommonServerPython import *
 
 
 def util_open_file(path):
-    with open(path, mode='r') as f:
+    with open(path) as f:
         return f.read()
 
 
 def util_load_json(path):
-    with open(path, mode='r') as f:
+    with open(path) as f:
         return json.loads(f.read())
 
 
 @pytest.mark.parametrize(
     "email_threads, expected_result",
     [
-        (util_load_json('test_data/email_threads.json'), util_load_json('test_data/email_threads.json')),
-        (util_load_json('test_data/email_threads.json')[0], [util_load_json('test_data/email_threads.json')[0]]),
-        ('', None)
-    ]
+        (util_load_json("test_data/email_threads.json"), util_load_json("test_data/email_threads.json")),
+        (util_load_json("test_data/email_threads.json")[0], [util_load_json("test_data/email_threads.json")[0]]),
+        ("", None),
+    ],
 )
 def test_fetch_email_threads(email_threads, expected_result, mocker):
     """
@@ -44,11 +44,12 @@ def test_fetch_email_threads(email_threads, expected_result, mocker):
         Then
         - Validate that function returns None
     """
-    from SummarizeEmailThreads import fetch_email_threads
     import SummarizeEmailThreads
-    mocker.patch.object(demisto, 'executeCommand')
-    mocker.patch.object(SummarizeEmailThreads, 'dict_safe_get', return_value=email_threads)
-    result = fetch_email_threads('1')
+    from SummarizeEmailThreads import fetch_email_threads
+
+    mocker.patch.object(demisto, "executeCommand")
+    mocker.patch.object(SummarizeEmailThreads, "dict_safe_get", return_value=email_threads)
+    result = fetch_email_threads("1")
     assert result == expected_result
 
 
@@ -62,11 +63,12 @@ def test_format_threads(mocker):
     Then
     - Validate that function calls tableToMarkdown with correct table contents
     """
-    from SummarizeEmailThreads import format_threads
     import SummarizeEmailThreads
-    tableToMarkdown_mocker = mocker.patch.object(SummarizeEmailThreads, 'tableToMarkdown', return_value=True)
-    format_threads(util_load_json('test_data/email_threads.json'))
+    from SummarizeEmailThreads import format_threads
+
+    tableToMarkdown_mocker = mocker.patch.object(SummarizeEmailThreads, "tableToMarkdown", return_value=True)
+    format_threads(util_load_json("test_data/email_threads.json"))
     tableToMarkdown_call_args = tableToMarkdown_mocker.call_args
-    expected = util_load_json('test_data/valid_table_data.txt')
-    actual = tableToMarkdown_call_args.kwargs['t']
+    expected = util_load_json("test_data/valid_table_data.txt")
+    actual = tableToMarkdown_call_args.kwargs["t"]
     assert actual == expected
