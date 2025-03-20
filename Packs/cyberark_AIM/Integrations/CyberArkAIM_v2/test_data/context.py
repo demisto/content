@@ -35,7 +35,7 @@ LIST_CREDENTIALS_CONTEXT = {
             "Safe": "Windows Domain Admins",
             "SequenceID": "1",
             "Tags": "DAdmin",
-            "UserName": "username1"
+            "UserName": "username1",
         },
         {
             "AccountCategory": "True",
@@ -72,7 +72,7 @@ LIST_CREDENTIALS_CONTEXT = {
             "Safe": "Windows Domain Admins",
             "SequenceID": "2",
             "Tags": "DAdmin",
-            "UserName": "username2"
-        }
+            "UserName": "username2",
+        },
     ]
 }
