@@ -872,7 +872,7 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         with pytest.raises(
             DemistoException,
-            match="When using the argument `issue_json`, additional arguments cannot be used.ֿֿֿ\n see the argument description"
+            match="When using the argument `issue_json`, additional arguments should be placed within the `fields` in the json."
         ):
             create_issue_command(
                 client=client,

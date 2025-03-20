@@ -1,0 +1,255 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: GenericAPIEventCollector
+  version: -1
+configuration:
+  - name: base_url
+    section: Connect
+    display: Server URL
+    type: 0
+    required: true
+  - name: endpoint
+    section: Connect
+    display: Endpoint
+    type: 0
+    required: true
+    additionalinfo: Add the endpoint you want to collect data from (Alert/Events, etc.).
+  - name: authentication
+    section: Connect
+    display: Authentication Type
+    type: 15
+    required: true
+    options:
+      - Basic
+      - Token
+      - Bearer
+      - Api-Key
+      - RawToken
+      - No Authorization
+    additionalinfo: Select the authentication method.
+  - name: http_method
+    section: Connect
+    display: 'HTTP Method'
+    defaultvalue: GET
+    type: 15
+    required: true
+    additionalinfo: The HTTP method of the request to the API.
+    options:
+      - GET
+      - POST
+  - name: token
+    type: 9
+    displaypassword: API Token
+    hiddenusername: true
+    required: false
+    additionalinfo: "API Key to access the service REST API."
+    section: Connect
+  - name: credentials
+    display: Username
+    type: 9
+    required: false
+    section: Connect
+    displaypassword: Password
+    additionalinfo: Username & Password to use for basic authentication.
+  - name: add_fields_to_header
+    section: Connect
+    display: Add Fields To header
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If the additional header is required,
+     add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - name: proxy
+    section: Connect
+    display: Use system proxy settings
+    defaultvalue: 'false'
+    type: 8
+    required: false
+    advanced: true
+  - name: insecure
+    section: Connect
+    display: Trust any certificate (not secure)
+    type: 8
+    required: false
+    advanced: true
+  - name: vendor
+    section: Collect
+    display: Vendor
+    type: 0
+    required: true
+    additionalinfo: Enter vendor name for dataset.
+  - name: product
+    section: Collect
+    display: Product
+    type: 0
+    required: true
+    additionalinfo: Enter product name for dataset.
+  - name: request_data
+    section: Collect
+    display: Request data
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If required to pass DATA when calling the API to collect data, 
+    add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - name: initial_request_data
+    section: Collect
+    display: Initial request data
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If the product requires a different initial DATA, add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - name: request_json
+    section: Collect
+    display: Request JSON parameters
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If required to pass JSON data when calling the API to collect data, add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - name: initial_request_json
+    section: Collect
+    display: Initial request JSON parameters
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If the product requires a different initial request JSON, add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - name: query_params
+    section: Collect
+    display: Query parameters
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If required to filter the results using query parameters
+   please add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - name: initial_query_params
+    section: Collect
+    display: Initial query parameters
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If the product requires a different initial query parameters for the first fetch call,
+   add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - name: pagination_needed
+    section: Collect
+    display: Is pagination needed
+    type: 8
+    additionalinfo: 'If the API JSON response supports events pagination.'
+  - name: pagination_field_name
+    section: Collect
+    display: Pagination field name
+    type: 0
+    required: false
+    additionalinfo: 'Next page field in JSON response, e.g., "cursor", "next_page"'
+  - name: pagination_flag
+    section: Collect
+    display: Pagination flag
+    type: 0
+    required: false
+    additionalinfo: 'Next page existence in JSON response e.g., "has_more", "next"'
+  - name: timestamp_format
+    section: Collect
+    display: 'Timestamp format of the event creation time or "epoch".'
+    type: 0
+    required: false
+    additionalinfo: 'Python compatible datetime formatting (e.g., "%Y-%m-%dT%H:%M:%S.%fZ" or "%Y.%m.%d %H:%M:%S") or "epoch" to use UNIX epoch time.'
+  - name: timestamp_field_name
+    section: Collect
+    display: Timestamp field
+    type: 0
+    required: true
+    additionalinfo: 'The name of the event creation time in the response data, e.g., "timestamp" or "created_at".'
+  - name: events_keys
+    section: Collect
+    display: 'Events lookup path in the response JSON, dot-separated, e.g. ,"data.items".'
+    type: 0
+    required: false
+    additionalinfo: 'Where within the response object to find the events list.'
+  - name: id_keys
+    section: Collect
+    display: 'Event ID lookup path in the event response JSON, dot-separated, e.g., "id".'
+    type: 0
+    required: false
+    additionalinfo: 'Where within the event object to find the event ID.'
+  - name: id_type
+    section: Collect
+    display: 'The type of ID field, either "integer" or "string"'
+    options:
+      - integer
+      - string
+    type: 15
+    required: false
+    additionalinfo: 'ID field of type integer are comparable and when last fetched ID is the 
+    maximum ID between the fetched events, when the type is string, the last fetched ID is the last event returned from the API.'
+  - name: ok_codes
+    section: Collect
+    display: 'Allowed HTTP status codes for successful response from the API'
+    type: 0
+    required: false
+    defaultvalue: '200'
+    additionalinfo: 'OK codes is a comma-separated list (e.g., "200,201,202"). Default is "200".'
+  - name: limit
+    display: Number of incidents to fetch per fetch.
+    type: 0
+    defaultvalue: 1000
+    section: Collect
+    required: false
+  - name: isFetchEvents
+    section: Collect
+    display: Fetch Events
+    advanced: true
+    type: 8
+    required: false
+  - name: eventFetchInterval
+    section: Collect
+    display: Events Fetch Interval
+    advanced: true
+    defaultvalue: "1"
+    type: 19
+    required: false
+description: Collect logs from 3rd party vendors using API.
+display: Generic API Event Collector (Beta)
+name: GenericAPIEventCollector
+beta: true
+script:
+  commands:
+    - name: generic-api-event-collector-get-events
+      description: Gets events from 3rd party vendor.
+      arguments:
+        - name: should_push_events
+          auto: PREDEFINED
+          defaultValue: 'false'
+          description: If true, the command will create events, otherwise it will only display them.
+          predefined:
+            - 'true'
+            - 'false'
+          required: true
+        - name: limit
+          description: Maximum number of results to return.
+  runonce: false
+  isfetchevents: true
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 6.8.0
+marketplaces:
+  - marketplacev2
+tests:
+  - No tests (auto formatted)

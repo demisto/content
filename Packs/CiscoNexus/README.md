@@ -16,14 +16,9 @@ To configure a remote logging server on a Cisco Nexus switch, follow these steps
  # logging server <server-ip-address>
 ```
 *Note:
-The logs will receive the correct timezone only when the UTC timezone is set; otherwise, the logs will display the "insert time" as the timestamp.*
+The logs will receive the correct timestamp only when the timezone is set to UTC; otherwise, the logs will display the "insert time" as the timestamp.*
 
-To send logs to a remote server with UTC timezone, use the following command:
-```bash
- # logging server <server-ip-address> timezone <timezone>
-
-```
-Replace \<server-ip-address\> with the IP address of the BrokerVM and \<timezone\> with UTC.
+To send logs to a remote server with UTC timezone, follow the official Cisco [documentation](https://www.cisco.com/c/en/us/td/docs/dcn/nx-os/nexus9000/105x/configuration/fundamentals/cisco-nexus-9000-series-nx-os-fundamentals-configuration-guide-release-105x/m-basic-device-management.html#task_1231769).
 
 5. To confirm these settings, show the remote syslog server configuration:
 ```bash

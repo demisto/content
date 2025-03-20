@@ -2,7 +2,7 @@
     "name": "Azure Network Security Groups",
     "description": "Azure Network Security Groups are used to filter network traffic to and from Azure resources in an Azure virtual network",
     "support": "xsoar",
-    "currentVersion": "1.2.36",
+    "currentVersion": "1.2.37",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

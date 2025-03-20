@@ -1,0 +1,72 @@
+category: Authentication & Identity Management
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: DuoAuth
+  version: -1
+configuration:
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- display: API Hostname
+  name: api_hostname
+  required: true
+  type: 0
+  section: Connect
+- display: ''
+  displaypassword: Integration Key
+  hiddenusername: true
+  name: integration_key
+  required: true
+  type: 9
+  section: Connect
+- display: ''
+  displaypassword: Secret Key
+  hiddenusername: true
+  name: secret_key
+  required: true
+  type: 9
+  section: Connect
+description: The Duo Auth API lets developers integrate with Duo Security's platform at a low level.
+display: DuoAuth
+name: DuoAuth
+script:
+  commands:
+  - arguments:
+    - description: Insert username.
+      name: username
+      required: true
+    - description: "A set of URL-encoded key/value pairs with additional contextual information associated with this authentication attempt. The Duo Mobile app will display this information to the user. For example: from=login%20portal&domain=example.com, The URL-encoded string's total length must be less than 20,000 bytes."
+      defaultValue: "From=XSOAR&Confirm=Write%20your%20message%20here..."
+      name: pushinfo
+    - defaultValue: "Activities"
+      description: This string is displayed in the Duo Mobile app push notification and UI.
+      name: type
+    description: Send push message to Duo user.
+    name: duoauth-push-notification
+    outputs:
+    - contextPath: DuoAuth.PushNotification.Status
+      description: Status of a Push message.
+      type: String
+    - contextPath: DuoAuth.PushNotification.Message
+      description: E.g. if approved, "Success. Logging you in…".
+      type: String
+    - contextPath: DuoAuth.PushNotification.User
+      description: Username receiving Push message.
+      type: String
+  dockerimage: demisto/python3:3.12.8.1983910
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

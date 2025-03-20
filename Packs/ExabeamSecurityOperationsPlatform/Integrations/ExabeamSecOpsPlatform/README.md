@@ -39,7 +39,7 @@ Get events from Exabeam Security Operations Platform.
 | --- | --- | --- |
 | start_time | The starting date for the search range. | Required | 
 | end_time | The ending date for the search range. | Required | 
-| query | Query, using Lucene syntax, filters log data for precise analysis. | Optional | 
+| query | Query, using Lucene syntax, filters log data for precise analysis, without escaping and with values unquoted. e.g., query="product: Correlation Rule AND rule_severity: High". | Optional | 
 | fields | Comma-separated list of fields to be returned from the search. | Optional | 
 | group_by | Comma-separated list of fields by which to group the results. | Optional | 
 | limit | The maximal number of results to return. Maximum value is 3000. | Optional | 
@@ -55,7 +55,7 @@ Get events from Exabeam Security Operations Platform.
 | ExabeamPlatform.Event.rawLogs | String | The raw logs associated with the event. | 
 
 #### Command example
-```!exabeam-platform-event-search end_time="today" start_time="7 days ago" limit=2```
+```!exabeam-platform-event-search end_time="today" start_time="7 days ago" limit=2 query="product: Correlation Rule AND rule_severity: High"```
 #### Context Example
 ```json
 {

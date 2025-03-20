@@ -2,7 +2,7 @@
     "name": "Microsoft Exchange Online",
     "description": "Exchange Online and Office 365 (mail)",
     "support": "xsoar",
-    "currentVersion": "1.6.3",
+    "currentVersion": "1.6.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -20,6 +20,7 @@ from WorkdaySignOnEventCollector import (
     main,
     VENDOR,
     PRODUCT,
+    get_api_version,
 )
 
 
@@ -266,14 +267,14 @@ def test_generate_workday_account_signons_body() -> None:
     """
 
     # Given: Initialize a Client object with sample data
-    client = Client(
-        base_url="",
-        verify_certificate=True,
-        proxy=False,
-        tenant_name="test_tenant",
-        username="test_user",
-        password="test_pass",
-    )
+    mock_params = {
+        "tenant_name": "TestTenant",
+        "max_fetch": "10000",
+        "base_url": "https://testurl.com",
+        "credentials": {"identifier": "test_user", "password": "test_pass"},
+        "insecure": True,
+    }
+    client = Client(params=mock_params)
 
     # When: Generate the SOAP request body
     body = client.generate_workday_account_signons_body(
@@ -310,14 +311,14 @@ def test_generate_test_payload() -> None:
     """
 
     # Given: Initialize a Client object with sample data
-    client = Client(
-        base_url="",
-        verify_certificate=True,
-        proxy=False,
-        tenant_name="test_tenant",
-        username="test_user",
-        password="test_pass",
-    )
+    mock_params = {
+        "tenant_name": "TestTenant",
+        "max_fetch": "10000",
+        "base_url": "https://testurl.com",
+        "credentials": {"identifier": "test_user", "password": "test_pass"},
+        "insecure": True,
+    }
+    client = Client(params=mock_params)
 
     # When: Generate the SOAP request payload for testing
     payload = client.generate_test_payload(
@@ -332,6 +333,69 @@ def test_generate_test_payload() -> None:
     assert "<wsse:Username>test_user</wsse:Username>" in payload
     assert (
         '<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">test_pass</wsse:Password>'  # noqa:E501
+        in payload
+    )
+
+
+@pytest.mark.parametrize("api_version, from_time, to_time, expected_version", [
+    # Given valid api_version and time range
+    ("v42.1", "2021-09-01T11:00:00Z", "2021-09-01T12:00:00Z", "v42.1"),
+
+    # Given default api_version and time range
+    ("v40.0", "2021-09-01T11:00:00Z", "2021-09-01T12:00:00Z", "v40.0"),
+
+    # Given valid api_version and different time range
+    ("v50.0", "2021-10-01T11:00:00Z", "2021-10-01T12:00:00Z", "v50.0"),
+
+    # Given invalid api_version should fallback to default
+    ("invalid", "2021-09-01T11:00:00Z", "2021-09-01T12:00:00Z", "v40.0"),
+])
+def test_generate_test_payload_with_version(api_version, from_time, to_time, expected_version) -> None:
+    """
+    Given:
+        - A Client object initialized with a base URL, verification settings, a tenant name, login credentials, and an API version
+        - Parameters specifying the time range for fetching Workday sign-on events for the test payload.
+
+    When:
+        - Calling the 'generate_test_payload' method on the Client object to generate a SOAP request payload for testing.
+
+    Then:
+        - The returned SOAP request payload should contain all the specified parameters, including the correct API version.
+        - The payload should also contain the username and password for authentication.
+    """
+
+    # Given: Initialize a Client object with sample data
+    mock_params = {
+        "base_url": "https://something.test",
+        "verify_certificate": True,
+        "proxy": False,
+        "tenant_name": "test_tenant",
+        "credentials": {
+            "identifier": "test_user",
+            "password": "test_pass",
+        },
+        "api_version": api_version,
+    }
+    client = Client(
+        params=mock_params
+    )
+
+    # When: Generate the SOAP request payload for testing
+    payload = client.generate_test_payload(from_time=from_time, to_time=to_time)
+
+    # Then: Verify that the SOAP request payload contains all the specified parameters
+    assert "<bsvc:Page>1</bsvc:Page>" in payload
+    assert "<bsvc:Count>1</bsvc:Count>" in payload
+    assert f"<bsvc:From_DateTime>{from_time}</bsvc:From_DateTime>" in payload
+    assert f"<bsvc:To_DateTime>{to_time}</bsvc:To_DateTime>" in payload
+    assert "<wsse:Username>test_user</wsse:Username>" in payload
+    assert (
+        '<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">test_pass</wsse:Password>'  # noqa:E501
+        in payload
+    )
+    # Verify that the SOAP request payload contains the correct API version
+    assert (
+        f'<bsvc:Get_Workday_Account_Signons_Request xmlns:bsvc="urn:com.workday/bsvc" bsvc:version="{expected_version}">'
         in payload
     )
 
@@ -404,14 +468,14 @@ class TestFetchSignOnLogs(unittest.TestCase):
         Then:
             - The Client object should be initialized and ready for testing.
         """
-        self.client = Client(
-            "mock_url",
-            False,
-            False,
-            "mock_tenant",
-            "mock_user",
-            "mock_pass",
-        )
+        mock_params = {
+            "tenant_name": "TestTenant",
+            "max_fetch": "10000",
+            "base_url": "https://testurl.com",
+            "credentials": {"identifier": "mock_user", "password": "mock_pass"},
+            "insecure": True,
+        }
+        self.client = Client(params=mock_params)
 
     @patch.object(Client, "retrieve_events")
     def test_fetch_sign_on_logs_single_page(self, mock_retrieve_events) -> None:
@@ -476,6 +540,13 @@ class TestGetSignOnEventsCommand(unittest.TestCase):
         """
 
         # Given: Sample data to be returned by the mock
+        mock_params = {
+            "tenant_name": "TestTenant",
+            "max_fetch": "10000",
+            "base_url": "https://testurl.com",
+            "credentials": {"identifier": "mock_user", "password": "mock_pass"},
+            "insecure": True,
+        }
         mock_events = [
             {
                 "Signon_DateTime": "2023-09-04T07:47:57.460-07:00",
@@ -490,14 +561,7 @@ class TestGetSignOnEventsCommand(unittest.TestCase):
         with patch(
             "WorkdaySignOnEventCollector.fetch_sign_on_logs", return_value=mock_events
         ):
-            client = Client(
-                "mock_url",
-                False,
-                False,
-                "mock_tenant",
-                "mock_user",
-                "mock_pass",
-            )
+            client = Client(params=mock_params)
 
             # When: Calling the get_sign_on_events_command
             events, results = get_sign_on_events_command(
@@ -532,6 +596,13 @@ def test_fetch_sign_on_events_command_single_page() -> None:
     """
 
     # Given: Sample data to be returned by the mock
+    mock_params = {
+        "tenant_name": "TestTenant",
+        "max_fetch": "10000",
+        "base_url": "https://testurl.com",
+        "credentials": {"identifier": "mock_user", "password": "mock_pass"},
+        "insecure": True,
+    }
     mock_events = [
         {
             "Signon_DateTime": "2023-09-04T07:47:57.460-07:00",
@@ -553,14 +624,7 @@ def test_fetch_sign_on_events_command_single_page() -> None:
     with patch.object(
         Client, "retrieve_events", return_value=mock_retrieve_response
     ), patch("demistomock.getLastRun", return_value=mock_last_run):
-        client = Client(
-            "mock_url",
-            False,
-            False,
-            "mock_tenant",
-            "mock_user",
-            "mock_pass",
-        )
+        client = Client(params=mock_params)
         events, new_last_run = fetch_sign_on_events_command(client, 10, mock_last_run)
 
     # Then: Validate the function's return value
@@ -651,13 +715,45 @@ def test_escaping_user_name(username, escaped_username, password, escaped_passwo
     Then:
         Check that the credentials are escaped correctly.
     """
-    client = Client(
-        "mock_url",
-        False,
-        False,
-        "mock_tenant",
-        username,
-        password,
-    )
+    mock_params = {
+        "tenant_name": "TestTenant",
+        "max_fetch": "10000",
+        "base_url": "https://testurl.com",
+        "credentials": {"identifier": username, "password": password},
+        "insecure": True,
+    }
+    client = Client(params=mock_params
+                    )
     assert client.username == escaped_username
     assert client.password == escaped_password
+
+
+@pytest.mark.parametrize("params, default, expected", [
+    # Given valid api_version, when get_api_version is called, then it returns the valid api_version
+    ({"api_version": "v42.1"}, "v40.0", "v42.1"),
+
+    # Given invalid api_version, when get_api_version is called, then it returns the default value
+    ({"api_version": "42.1"}, "v40.0", "v40.0"),
+
+    # Given missing api_version, when get_api_version is called, then it returns the default value
+    ({}, "v40.0", "v40.0"),
+
+    # Given invalid api_version with custom default, when get_api_version is called, then it returns the custom default value
+    ({"api_version": "invalid_format"}, "v50.0", "v50.0"),
+
+    # Given another valid api_version, when get_api_version is called, then it returns the valid api_version
+    ({"api_version": "v50.0"}, "v40.0", "v50.0")
+])
+def test_get_api_version(params, default, expected):
+    """
+    Test get_api_version with various inputs using parameterization.
+
+    Given: Different sets of params and default values.
+    When: get_api_version is called with these params.
+    Then: It should return the expected result.
+    """
+    # When
+    result = get_api_version(params, default)
+
+    # Then
+    assert result == expected

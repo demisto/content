@@ -2,7 +2,7 @@
     "name": "Azure Enrichment and Remediation",
     "description": "Playbooks using multiple Azure content packs for enrichment and remediation purposes",
     "support": "xsoar",
-    "currentVersion": "1.1.22",
+    "currentVersion": "1.1.23",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

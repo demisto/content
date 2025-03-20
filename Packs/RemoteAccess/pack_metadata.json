@@ -2,7 +2,7 @@
     "name": "Remote Access",
     "description": "Transfer files and execute commands via SSH on remote machines.",
     "support": "xsoar",
-    "currentVersion": "1.0.36",
+    "currentVersion": "1.0.37",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

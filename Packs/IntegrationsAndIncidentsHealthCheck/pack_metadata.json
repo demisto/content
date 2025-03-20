@@ -2,7 +2,7 @@
     "name": "Integrations & Incidents Health Check",
     "description": "Do you know which of your integrations or open incidents failed? With this content, you can view your failed integrations and open incidents",
     "support": "xsoar",
-    "currentVersion": "1.3.29",
+    "currentVersion": "1.3.30",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

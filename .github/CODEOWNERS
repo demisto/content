@@ -1,10 +1,10 @@
 # Marketplace Related - Marketplace PMs only
-/Config/approved_tags.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Config/approved_usecases.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Tests/Marketplace/landingPage_sections.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Config/approved_categories.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Config/core_packs_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Config/core_packs_mpv2_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/approved_tags.json @yaakovpraisler @bakatzir @demisto/content-leaders
+/Config/approved_usecases.json @yaakovpraisler @bakatzir @demisto/content-leaders
+/Tests/Marketplace/landingPage_sections.json @yaakovpraisler @bakatzir @demisto/content-leaders
+/Config/approved_categories.json @yaakovpraisler @bakatzir @demisto/content-leaders
+/Config/core_packs_list.json @yaakovpraisler @bakatzir @demisto/content-leaders
+/Config/core_packs_mpv2_list.json @yaakovpraisler @bakatzir @demisto/content-leaders
 /Config/corepacks_override.json @yaakovpraisler
 
 # Docker native image
@@ -83,7 +83,6 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/Base/Scripts/DrawRelatedIncidentsCanvas@jlevypaloalto
 /Packs/Campaign/Scripts/FindEmailCampaign/ @jlevypaloalto
 /Packs/CortexXDR/Scripts/DBotGroupXDRIncidents/ @jlevypaloalto
-/Packs/CommonScripts/Scripts/DBotUpdateLogoURLPhishing/ @jlevypaloalto
 /Packs/Base/Scripts/FindSimilarIncidentsByText/ @jlevypaloalto
 /Packs/Base/Scripts/DBotTrainTextClassifierV2/ @jlevypaloalto
 /Packs/Base/Scripts/DBotShowClusteringModelInfo/ @jlevypaloalto

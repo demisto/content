@@ -1,1 +1,583 @@
-{"close":{"sections":[{"description":"","fields":[{"fieldId":"incident_closereason","isVisible":true},{"fieldId":"incident_closenotes","isVisible":true}],"isVisible":true,"name":"Basic Information","query":null,"queryType":"","readOnly":false,"type":""},{"description":"","isVisible":true,"name":"Custom Fields","query":null,"queryType":"","readOnly":false,"type":""}]},"definitionId":"","description":"Playground to test concepts and data engineering and prompt engineering using LLM and Retrieval Augmented Generation (RAG) in the development of use cases","detailsV2":{"tabs":[{"id":"summary","name":"Legacy Summary","type":"summary"},{"hidden":false,"id":"emoz7dgron","name":"AI Playground","sections":[{"displayType":"ROW","h":8,"hideName":false,"i":"emoz7dgron-0fda6f40-4a99-11ef-944c-f1c433e7c245","items":[{"args":{},"buttonClass":"warning","dropEffect":"move","endCol":1,"fieldId":"","height":44,"id":"c19526d0-7212-11ef-ad75-11253a7d0f9a","index":0,"listId":"emoz7dgron-0fda6f40-4a99-11ef-944c-f1c433e7c245","name":"New Question","scriptId":"AnyLlmQuestion","sectionItemType":"button","startCol":0},{"args":{},"buttonClass":"warning","dropEffect":"move","endCol":1,"fieldId":"","height":44,"id":"8ab72ec0-4a98-11ef-944c-f1c433e7c245","index":1,"listId":"emoz7dgron-0fda6f40-4a99-11ef-944c-f1c433e7c245","name":"Clear Conversation","scriptId":"AnyLlmClearConvo","sectionItemType":"button","startCol":0},{"endCol":4,"fieldId":"anythingllmconversation","height":44,"id":"7abc8100-d77e-11ef-a195-cfbf921bdc63","index":2,"sectionItemType":"field","startCol":0},{"args":{"text":{"simple":"${incident.anythingllmconversation}"}},"buttonClass":"success","dropEffect":"move","endCol":2,"fieldId":"","height":44,"id":"77b48b60-4a98-11ef-944c-f1c433e7c245","index":0,"listId":"emoz7dgron-0fda6f40-4a99-11ef-944c-f1c433e7c245","name":"Extract Indicators  from Conversation","scriptId":"Builtin|||extractIndicators","sectionItemType":"button","startCol":1},{"args":{},"buttonClass":"success","endCol":2,"fieldId":"","height":44,"id":"6fc85a70-960c-11ef-ad28-2f6523067ae8","index":1,"name":"Save Conversation to the War Room","scriptId":"AnyLlmSaveConvo","sectionItemType":"button","startCol":1}],"maxW":3,"minH":1,"moved":false,"name":"Conversation","static":false,"w":2,"x":1,"y":0},{"displayType":"ROW","h":8,"hideName":false,"i":"emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d","items":[{"args":{},"buttonClass":"warning","dropEffect":"move","endCol":1,"fieldId":"","height":44,"id":"b2940080-6195-11ef-a1d6-37741eaab5ce","index":0,"listId":"emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d","name":"Text Search LLM Document","scriptId":"AnyLlmSearchDocument","sectionItemType":"button","startCol":0},{"args":{},"buttonClass":"warning","dropEffect":"move","endCol":1,"fieldId":"","height":44,"id":"057ac840-63c3-11ef-a2f3-41f6cd71f9d6","index":1,"listId":"emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d","name":"Add Search Results to Conversation","scriptId":"AnyLlmAddResultsConvo","sectionItemType":"button","startCol":0},{"args":{},"buttonClass":"warning","dropEffect":"move","endCol":1,"fieldId":"","height":44,"id":"74ca8cb0-66e5-11ef-bfe6-a56bcce2b945","index":2,"listId":"emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d","name":"Clear Search Results","scriptId":"AnyLlmClearResults","sectionItemType":"button","startCol":0},{"args":{},"buttonClass":"success","dropEffect":"move","endCol":2,"fieldId":"","height":44,"id":"93403fa0-66e5-11ef-bfe6-a56bcce2b945","index":3,"listId":"emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d","name":"Text Search XSOAR Incident War Room","scriptId":"AnyLlmSearchXsoarEntries","sectionItemType":"button","startCol":0},{"dropEffect":"move","endCol":2,"fieldId":"anythingllmworkspace","height":22,"id":"72692800-d77e-11ef-a195-cfbf921bdc63","index":4,"listId":"emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d","sectionItemType":"field","startCol":0},{"endCol":2,"fieldId":"anythingllmsearchresults","height":44,"id":"6e831430-d77e-11ef-a195-cfbf921bdc63","index":5,"sectionItemType":"field","startCol":0},{"args":{},"buttonClass":"success","dropEffect":"move","endCol":2,"fieldId":"","height":44,"id":"415f0210-5f07-11ef-a83b-2b9945e1341d","index":0,"listId":"emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d","name":"Text Search XSOAR Incident Fields","scriptId":"AnyLlmSearchXsoarIncident","sectionItemType":"button","startCol":1},{"args":{},"buttonClass":"success","dropEffect":"move","endCol":2,"fieldId":"","height":44,"id":"dd9e2120-916f-11ef-b385-7b30fbe52bd8","index":1,"listId":"emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d","name":"Text Search XSOAR Incident Context","scriptId":"AnyLlmSearchXsoarContext","sectionItemType":"button","startCol":1},{"args":{},"buttonClass":"success","dropEffect":"move","endCol":2,"fieldId":"","height":44,"id":"f7359a00-6640-11ef-ac67-dfc210d44c5d","index":2,"listId":"emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d","name":"Text Search XSOAR Indicators","scriptId":"AnyLlmSearchXsoarIndicators","sectionItemType":"button","startCol":1}],"maxW":3,"minH":1,"moved":false,"name":"Search for Additional Text for Conversation","static":false,"w":1,"x":0,"y":0}],"type":"custom"},{"hidden":false,"id":"h6kfxmusqj","name":"Workspace and Document Management","sections":[{"displayType":"ROW","h":12,"hideName":false,"i":"h6kfxmusqj-28fc8260-4a9e-11ef-944c-f1c433e7c245","items":[{"endCol":4,"fieldId":"anythingllmdocuments","height":106,"id":"405491b0-d77e-11ef-a195-cfbf921bdc63","index":0,"sectionItemType":"field","startCol":0}],"maxH":null,"maxW":3,"minH":1,"moved":false,"name":"Documents","static":false,"w":2,"x":1,"y":0},{"displayType":"ROW","h":3,"hideName":false,"i":"h6kfxmusqj-e015b690-720f-11ef-ad75-11253a7d0f9a","items":[{"endCol":2,"fieldId":"anythingllmworkspace","height":22,"id":"1fb40f80-d77e-11ef-a195-cfbf921bdc63","index":0,"sectionItemType":"field","startCol":0},{"endCol":2,"fieldId":"anythingllmembeddings","height":106,"id":"34c93f30-d77e-11ef-a195-cfbf921bdc63","index":1,"sectionItemType":"field","startCol":0}],"maxH":null,"maxW":3,"minH":1,"moved":false,"name":"Workspace Embeddings","static":false,"w":1,"x":0,"y":2},{"displayType":"ROW","h":2,"hideName":false,"i":"h6kfxmusqj-7ac97bd0-880a-11ef-98f9-f58bce660987","items":[{"args":{},"buttonClass":"warning","dropEffect":"move","endCol":1,"fieldId":"","height":44,"id":"6f554250-45f4-11ef-83c1-a1b6567c9209","index":0,"listId":"h6kfxmusqj-c861a7a0-45f2-11ef-83c1-a1b6567c9209","name":"Process Web Link for Upload","scriptId":"AnyLlmUploadWebLink","sectionItemType":"button","startCol":0},{"args":{},"buttonClass":"warning","dropEffect":"move","endCol":1,"fieldId":"","height":44,"id":"f37fb5d0-45f2-11ef-83c1-a1b6567c9209","index":1,"listId":"h6kfxmusqj-c861a7a0-45f2-11ef-83c1-a1b6567c9209","name":"Process Text for Upload","scriptId":"AnyLlmUploadText","sectionItemType":"button","startCol":0},{"args":{},"buttonClass":"warning","dropEffect":"move","endCol":1,"fieldId":"","height":44,"id":"0d5a2460-96f5-11ef-b5c6-a547b1cc1c8c","index":2,"listId":"h6kfxmusqj-7ac97bd0-880a-11ef-98f9-f58bce660987","name":"Process War Room Text File Entry for Upload","scriptId":"AnyLlmUploadFileEntry","sectionItemType":"button","startCol":0},{"args":{},"buttonClass":"warning","endCol":1,"fieldId":"","height":44,"id":"56a47aa0-8b27-11ef-8e7b-e992a03f5fe7","index":3,"name":"Process Search Results for Upload","scriptId":"AnyLlmUploadResults","sectionItemType":"button","startCol":0},{"args":{},"buttonClass":"primary","dropEffect":"move","endCol":2,"fieldId":"","height":44,"id":"2eef8b90-95fd-11ef-ad28-2f6523067ae8","index":0,"listId":"h6kfxmusqj-7ac97bd0-880a-11ef-98f9-f58bce660987","name":"List LLM Workspaces","scriptId":"AnyLlmWorkspaces","sectionItemType":"button","startCol":1},{"args":{},"buttonClass":"primary","dropEffect":"move","endCol":2,"fieldId":"","height":44,"id":"4cec16e0-95fd-11ef-ad28-2f6523067ae8","index":1,"listId":"h6kfxmusqj-7ac97bd0-880a-11ef-98f9-f58bce660987","name":"List LLM Documents","scriptId":"AnyLlmDocuments","sectionItemType":"button","startCol":1},{"args":{"workspace":{"simple":"${incident.llmworkspace}"}},"buttonClass":"primary","dropEffect":"move","endCol":2,"fieldId":"","height":44,"id":"c54a19c0-9d5a-11ef-a80e-29433f872ce4","index":2,"listId":"h6kfxmusqj-7ac97bd0-880a-11ef-98f9-f58bce660987","name":"List LLM Embedded Documents","scriptId":"AnyLlmWorkspaceEmbeddings","sectionItemType":"button","startCol":1},{"args":{},"buttonClass":"primary","dropEffect":"move","endCol":2,"fieldId":"","height":44,"id":"16805ba0-829a-11ef-a41f-cb153a8ba833","index":3,"listId":"h6kfxmusqj-7ac97bd0-880a-11ef-98f9-f58bce660987","name":"Upload Processed Information as LLM Document","scriptId":"AnyLlmUploadDocument","sectionItemType":"button","startCol":1}],"maxH":null,"maxW":3,"minH":1,"moved":false,"name":"Actions","static":false,"w":1,"x":0,"y":0},{"displayType":"ROW","h":7,"hideName":false,"i":"h6kfxmusqj-ec9dfba0-a691-11ef-a690-d3e6c9fe8824","items":[{"endCol":2,"fieldId":"anythingllmworkspacelist","height":22,"id":"3a5c8dd0-d77e-11ef-a195-cfbf921bdc63","index":0,"sectionItemType":"field","startCol":0}],"maxH":null,"maxW":3,"minH":1,"moved":false,"name":"Workspaces","static":false,"w":1,"x":0,"y":5}],"type":"custom"},{"id":"warRoom","name":"War Room","type":"warRoom"},{"hidden":true,"id":"workPlan","name":"Work Plan","type":"workPlan"},{"hidden":true,"id":"canvas","name":"Canvas","type":"canvas"}]},"group":"incident","id":"AI Playground","name":"AI Playground","system":false, "fromVersion" :  "6.0.0","version":-1}
+{
+  "close": {
+    "sections": [
+      {
+        "description": "",
+        "fields": [
+          {
+            "fieldId": "incident_closereason",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_closenotes",
+            "isVisible": true
+          }
+        ],
+        "isVisible": true,
+        "name": "Basic Information",
+        "query": null,
+        "queryType": "",
+        "readOnly": false,
+        "type": ""
+      },
+      {
+        "description": "",
+        "isVisible": true,
+        "name": "Custom Fields",
+        "query": null,
+        "queryType": "",
+        "readOnly": false,
+        "type": ""
+      }
+    ]
+  },
+  "definitionId": "",
+  "description": "Playground to test concepts and data engineering and prompt engineering using LLM and Retrieval Augmented Generation (RAG) in the development of use cases",
+  "detailsV2": {
+    "tabs": [
+      {
+        "id": "summary",
+        "name": "Legacy Summary",
+        "type": "summary"
+      },
+      {
+        "hidden": false,
+        "id": "emoz7dgron",
+        "name": "AI Playground",
+        "sections": [
+          {
+            "displayType": "ROW",
+            "h": 8,
+            "hideName": false,
+            "i": "emoz7dgron-0fda6f40-4a99-11ef-944c-f1c433e7c245",
+            "items": [
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "warning",
+                "dropEffect": "move",
+                "endCol": 1,
+                "fieldId": "",
+                "height": 44,
+                "id": "c19526d0-7212-11ef-ad75-11253a7d0f9a",
+                "index": 0,
+                "listId": "emoz7dgron-0fda6f40-4a99-11ef-944c-f1c433e7c245",
+                "name": "New Question",
+                "scriptId": "AnyLlmQuestion",
+                "sectionItemType": "button",
+                "startCol": 0
+              },
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "warning",
+                "dropEffect": "move",
+                "endCol": 1,
+                "fieldId": "",
+                "height": 44,
+                "id": "8ab72ec0-4a98-11ef-944c-f1c433e7c245",
+                "index": 1,
+                "listId": "emoz7dgron-0fda6f40-4a99-11ef-944c-f1c433e7c245",
+                "name": "Clear Conversation",
+                "scriptId": "AnyLlmClearConvo",
+                "sectionItemType": "button",
+                "startCol": 0
+              },
+              {
+                "endCol": 4,
+                "fieldId": "anythingllmconversation",
+                "height": 44,
+                "id": "7abc8100-d77e-11ef-a195-cfbf921bdc63",
+                "index": 2,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "args": {
+                  "text": {
+                    "simple": "${incident.anythingllmconversation}"
+                  }
+                },
+                "buttonClass": "success",
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "",
+                "height": 44,
+                "id": "77b48b60-4a98-11ef-944c-f1c433e7c245",
+                "index": 0,
+                "listId": "emoz7dgron-0fda6f40-4a99-11ef-944c-f1c433e7c245",
+                "name": "Extract Indicators  from Conversation",
+                "scriptId": "Builtin|||extractIndicators",
+                "sectionItemType": "button",
+                "startCol": 1
+              },
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "success",
+                "endCol": 2,
+                "fieldId": "",
+                "height": 44,
+                "id": "6fc85a70-960c-11ef-ad28-2f6523067ae8",
+                "index": 1,
+                "name": "Save Conversation to the War Room",
+                "scriptId": "AnyLlmSaveConvo",
+                "sectionItemType": "button",
+                "startCol": 1
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "moved": false,
+            "name": "Conversation",
+            "static": false,
+            "w": 2,
+            "x": 1,
+            "y": 0
+          },
+          {
+            "displayType": "ROW",
+            "h": 8,
+            "hideName": false,
+            "i": "emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d",
+            "items": [
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "warning",
+                "dropEffect": "move",
+                "endCol": 1,
+                "fieldId": "",
+                "height": 44,
+                "id": "b2940080-6195-11ef-a1d6-37741eaab5ce",
+                "index": 0,
+                "listId": "emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d",
+                "name": "Text Search LLM Document",
+                "scriptId": "AnyLlmSearchDocument",
+                "sectionItemType": "button",
+                "startCol": 0
+              },
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "warning",
+                "dropEffect": "move",
+                "endCol": 1,
+                "fieldId": "",
+                "height": 44,
+                "id": "057ac840-63c3-11ef-a2f3-41f6cd71f9d6",
+                "index": 1,
+                "listId": "emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d",
+                "name": "Add Search Results to Conversation",
+                "scriptId": "AnyLlmAddResultsConvo",
+                "sectionItemType": "button",
+                "startCol": 0
+              },
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "warning",
+                "dropEffect": "move",
+                "endCol": 1,
+                "fieldId": "",
+                "height": 44,
+                "id": "74ca8cb0-66e5-11ef-bfe6-a56bcce2b945",
+                "index": 2,
+                "listId": "emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d",
+                "name": "Clear Search Results",
+                "scriptId": "AnyLlmClearResults",
+                "sectionItemType": "button",
+                "startCol": 0
+              },
+              {
+                "args": {
+                  "categories": {
+                    "simple": "",
+                    "userMarkedRequired": true
+                  },
+                  "maxcontensize": {
+                    "simple": "",
+                    "userMarkedRequired": true
+                  },
+                  "tags": {
+                    "simple": "",
+                    "userMarkedRequired": true
+                  }
+                },
+                "buttonClass": "success",
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "",
+                "height": 44,
+                "id": "93403fa0-66e5-11ef-bfe6-a56bcce2b945",
+                "index": 3,
+                "listId": "emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d",
+                "name": "Text Search XSOAR Incident War Room",
+                "scriptId": "AnyLlmSearchXsoarEntries",
+                "sectionItemType": "button",
+                "startCol": 0
+              },
+              {
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "anythingllmworkspace",
+                "height": 22,
+                "id": "72692800-d77e-11ef-a195-cfbf921bdc63",
+                "index": 4,
+                "listId": "emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d",
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "anythingllmsearchresults",
+                "height": 44,
+                "id": "6e831430-d77e-11ef-a195-cfbf921bdc63",
+                "index": 5,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "success",
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "",
+                "height": 44,
+                "id": "415f0210-5f07-11ef-a83b-2b9945e1341d",
+                "index": 0,
+                "listId": "emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d",
+                "name": "Text Search XSOAR Incident Fields",
+                "scriptId": "AnyLlmSearchXsoarIncident",
+                "sectionItemType": "button",
+                "startCol": 1
+              },
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "success",
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "",
+                "height": 44,
+                "id": "dd9e2120-916f-11ef-b385-7b30fbe52bd8",
+                "index": 1,
+                "listId": "emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d",
+                "name": "Text Search XSOAR Incident Context",
+                "scriptId": "AnyLlmSearchXsoarContext",
+                "sectionItemType": "button",
+                "startCol": 1
+              },
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "success",
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "",
+                "height": 44,
+                "id": "f7359a00-6640-11ef-ac67-dfc210d44c5d",
+                "index": 2,
+                "listId": "emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d",
+                "name": "Text Search XSOAR Indicators",
+                "scriptId": "AnyLlmSearchXsoarIndicators",
+                "sectionItemType": "button",
+                "startCol": 1
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "moved": false,
+            "name": "Search for Additional Text for Conversation",
+            "static": false,
+            "w": 1,
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "type": "custom"
+      },
+      {
+        "hidden": false,
+        "id": "h6kfxmusqj",
+        "name": "Workspace and Document Management",
+        "sections": [
+          {
+            "displayType": "ROW",
+            "h": 12,
+            "hideName": false,
+            "i": "h6kfxmusqj-28fc8260-4a9e-11ef-944c-f1c433e7c245",
+            "items": [
+              {
+                "endCol": 4,
+                "fieldId": "anythingllmdocuments",
+                "height": 106,
+                "id": "405491b0-d77e-11ef-a195-cfbf921bdc63",
+                "index": 0,
+                "sectionItemType": "field",
+                "startCol": 0
+              }
+            ],
+            "maxH": null,
+            "maxW": 3,
+            "minH": 1,
+            "moved": false,
+            "name": "Documents",
+            "static": false,
+            "w": 2,
+            "x": 1,
+            "y": 0
+          },
+          {
+            "displayType": "ROW",
+            "h": 3,
+            "hideName": false,
+            "i": "h6kfxmusqj-e015b690-720f-11ef-ad75-11253a7d0f9a",
+            "items": [
+              {
+                "endCol": 2,
+                "fieldId": "anythingllmworkspace",
+                "height": 22,
+                "id": "1fb40f80-d77e-11ef-a195-cfbf921bdc63",
+                "index": 0,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "anythingllmembeddings",
+                "height": 106,
+                "id": "34c93f30-d77e-11ef-a195-cfbf921bdc63",
+                "index": 1,
+                "sectionItemType": "field",
+                "startCol": 0
+              }
+            ],
+            "maxH": null,
+            "maxW": 3,
+            "minH": 1,
+            "moved": false,
+            "name": "Workspace Embeddings",
+            "static": false,
+            "w": 1,
+            "x": 0,
+            "y": 2
+          },
+          {
+            "displayType": "ROW",
+            "h": 2,
+            "hideName": false,
+            "i": "h6kfxmusqj-7ac97bd0-880a-11ef-98f9-f58bce660987",
+            "items": [
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "warning",
+                "dropEffect": "move",
+                "endCol": 1,
+                "fieldId": "",
+                "height": 44,
+                "id": "6f554250-45f4-11ef-83c1-a1b6567c9209",
+                "index": 0,
+                "listId": "h6kfxmusqj-c861a7a0-45f2-11ef-83c1-a1b6567c9209",
+                "name": "Process Web Link for Upload",
+                "scriptId": "AnyLlmUploadWebLink",
+                "sectionItemType": "button",
+                "startCol": 0
+              },
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "warning",
+                "dropEffect": "move",
+                "endCol": 1,
+                "fieldId": "",
+                "height": 44,
+                "id": "f37fb5d0-45f2-11ef-83c1-a1b6567c9209",
+                "index": 1,
+                "listId": "h6kfxmusqj-c861a7a0-45f2-11ef-83c1-a1b6567c9209",
+                "name": "Process Text for Upload",
+                "scriptId": "AnyLlmUploadText",
+                "sectionItemType": "button",
+                "startCol": 0
+              },
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "warning",
+                "dropEffect": "move",
+                "endCol": 1,
+                "fieldId": "",
+                "height": 44,
+                "id": "0d5a2460-96f5-11ef-b5c6-a547b1cc1c8c",
+                "index": 2,
+                "listId": "h6kfxmusqj-7ac97bd0-880a-11ef-98f9-f58bce660987",
+                "name": "Process War Room Text File Entry for Upload",
+                "scriptId": "AnyLlmUploadFileEntry",
+                "sectionItemType": "button",
+                "startCol": 0
+              },
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "warning",
+                "endCol": 1,
+                "fieldId": "",
+                "height": 44,
+                "id": "56a47aa0-8b27-11ef-8e7b-e992a03f5fe7",
+                "index": 3,
+                "name": "Process Search Results for Upload",
+                "scriptId": "AnyLlmUploadResults",
+                "sectionItemType": "button",
+                "startCol": 0
+              },
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "primary",
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "",
+                "height": 44,
+                "id": "2eef8b90-95fd-11ef-ad28-2f6523067ae8",
+                "index": 0,
+                "listId": "h6kfxmusqj-7ac97bd0-880a-11ef-98f9-f58bce660987",
+                "name": "List LLM Workspaces",
+                "scriptId": "AnyLlmWorkspaces",
+                "sectionItemType": "button",
+                "startCol": 1
+              },
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "primary",
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "",
+                "height": 44,
+                "id": "4cec16e0-95fd-11ef-ad28-2f6523067ae8",
+                "index": 1,
+                "listId": "h6kfxmusqj-7ac97bd0-880a-11ef-98f9-f58bce660987",
+                "name": "List LLM Documents",
+                "scriptId": "AnyLlmDocuments",
+                "sectionItemType": "button",
+                "startCol": 1
+              },
+              {
+                "args": {
+                  "workspace": {
+                    "simple": "${incident.llmworkspace}"
+                  }
+                },
+                "buttonClass": "primary",
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "",
+                "height": 44,
+                "id": "c54a19c0-9d5a-11ef-a80e-29433f872ce4",
+                "index": 2,
+                "listId": "h6kfxmusqj-7ac97bd0-880a-11ef-98f9-f58bce660987",
+                "name": "List LLM Embedded Documents",
+                "scriptId": "AnyLlmWorkspaceEmbeddings",
+                "sectionItemType": "button",
+                "startCol": 1
+              },
+              {
+                "args": {
+                  
+                },
+                "buttonClass": "primary",
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "",
+                "height": 44,
+                "id": "16805ba0-829a-11ef-a41f-cb153a8ba833",
+                "index": 3,
+                "listId": "h6kfxmusqj-7ac97bd0-880a-11ef-98f9-f58bce660987",
+                "name": "Upload Processed Information as LLM Document",
+                "scriptId": "AnyLlmUploadDocument",
+                "sectionItemType": "button",
+                "startCol": 1
+              }
+            ],
+            "maxH": null,
+            "maxW": 3,
+            "minH": 1,
+            "moved": false,
+            "name": "Actions",
+            "static": false,
+            "w": 1,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "displayType": "ROW",
+            "h": 7,
+            "hideName": false,
+            "i": "h6kfxmusqj-ec9dfba0-a691-11ef-a690-d3e6c9fe8824",
+            "items": [
+              {
+                "endCol": 2,
+                "fieldId": "anythingllmworkspacelist",
+                "height": 22,
+                "id": "3a5c8dd0-d77e-11ef-a195-cfbf921bdc63",
+                "index": 0,
+                "sectionItemType": "field",
+                "startCol": 0
+              }
+            ],
+            "maxH": null,
+            "maxW": 3,
+            "minH": 1,
+            "moved": false,
+            "name": "Workspaces",
+            "static": false,
+            "w": 1,
+            "x": 0,
+            "y": 5
+          }
+        ],
+        "type": "custom"
+      },
+      {
+        "id": "warRoom",
+        "name": "War Room",
+        "type": "warRoom"
+      },
+      {
+        "hidden": true,
+        "id": "workPlan",
+        "name": "Work Plan",
+        "type": "workPlan"
+      },
+      {
+        "hidden": true,
+        "id": "canvas",
+        "name": "Canvas",
+        "type": "canvas"
+      }
+    ]
+  },
+  "group": "incident",
+  "id": "AI Playground",
+  "name": "AI Playground",
+  "system": false,
+  "fromVersion": "6.0.0",
+  "version": -1
+}

@@ -1,0 +1,26 @@
+[MODEL:dataset="bloodhound_enterprise_raw"]
+    /*-----------------------------------------
+  ------------ MODELING RULES -------------
+  ----------------------------------------- */
+  alter
+    event_type = "Audit Events",
+    external_source_ipv4 = arraycreate(arrayindex(regextract(source_ip_address, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)),
+    internal_source_ipv4 = arraycreate(arrayindex(regextract(source_ip_address, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),1)),
+    temp_username_field = `fields` -> username
+| alter 
+    source_username = if(actor_name not in ("", null), actor_name, temp_username_field not in ("", null), temp_username_field, null)
+| alter 
+    xdm.source.user.identifier = actor_id,
+    xdm.source.user.username = source_username,
+    xdm.source.user.upn = actor_email,
+    xdm.event.type = event_type,
+    xdm.event.operation = action,
+    xdm.source.host.ipv4_addresses = internal_source_ipv4,
+    xdm.source.host.ipv4_public_addresses = external_source_ipv4,
+    xdm.event.outcome = if(status = "success", XDM_CONST.OUTCOME_SUCCESS, status = "failure", XDM_CONST.OUTCOME_FAILED, status),
+    xdm.target.user.identifier = `fields` -> target_user_id,
+    xdm.target.user.username = `fields` -> principal_name,
+    xdm.target.user.first_name = `fields` -> first_name,
+    xdm.target.user.last_name = `fields` -> last_name,
+    xdm.target.user.upn = `fields` -> email_address,
+    xdm.auth.auth_method = `fields` -> auth_type;

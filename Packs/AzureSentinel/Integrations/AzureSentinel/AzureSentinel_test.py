@@ -21,7 +21,7 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE, list_alert_rule_command, \
     list_alert_rule_template_command, delete_alert_rule_command, validate_required_arguments_for_alert_rule, \
     create_data_for_alert_rule, create_and_update_alert_rule_command, COMMENT_HEADERS, update_incident_command, \
-    extract_classification_reason
+    extract_classification_reason, create_incident_command
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -2094,6 +2094,28 @@ def test_update_incident_command_table_to_markdown(mocker):
     result = update_incident_command(client, args)
     expected_output = '### Updated incidents 123 details\n**No entries.**'
     assert result.readable_output.strip() == expected_output
+
+
+def test_create_incident_command(mocker):
+    """
+    Given:
+    - Valid incident data.
+
+    When:
+    - Calling create_incident_command function.
+
+    Then:
+    - The command function returns the expected raw response from the API.
+    """
+    test_data = {'id': '123', 'title': 'test', 'severity': 'High',
+                 'description': 'test description', 'labels': [{'LabelName': 'value'}]}
+
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', return_value=test_data)
+
+    result = create_incident_command(client, test_data)
+
+    assert result.raw_response == test_data
 
 
 def test_update_incident_with_client_changed_etag(mocker):

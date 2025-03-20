@@ -242,13 +242,14 @@ def main() -> None:  # pragma: no cover
         private_api_token = params.get('private_creds', {}).get('password', '')
         max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_FETCH
         first_fetch_time_timestamp = convert_to_timestamp(arg_to_datetime(params.get('first_fetch', DEFAULT_FIRST_FETCH)))
+        proxy = argToBoolean(params.get('proxy', False))
 
         demisto.debug(f'Command being called is {demisto.command()}')
 
         client = Client(
             base_url=params.get('base_url'),
             verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False),
+            proxy=proxy,
             auth=(public_api_token, private_api_token)
         )
 
@@ -261,7 +262,7 @@ def main() -> None:  # pragma: no cover
                                                  first_fetch_time_timestamp=first_fetch_time_timestamp)
             return_results(results)
             if argToBoolean(args.get("should_push_events")):
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, add_proxy_to_request=proxy)  # type: ignore
         elif demisto.command() == 'fetch-events':
             last_run = demisto.getLastRun()
             events, new_last_run = fetch_events(client=client,
@@ -271,7 +272,7 @@ def main() -> None:  # pragma: no cover
                                                 last_run=last_run)
             if events:
                 add_time_field(events)
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, add_proxy_to_request=proxy)  # type: ignore
                 if new_last_run:
                     demisto.setLastRun(new_last_run)
 
