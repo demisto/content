@@ -1472,3 +1472,4 @@ tests:
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
+- platform
