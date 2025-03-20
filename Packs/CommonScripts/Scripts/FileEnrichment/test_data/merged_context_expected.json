@@ -2,11 +2,11 @@
     "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": {
         "Extension": "zip",
         "Type": "application/zip",
-        "MD5": "4e76823c05048e92a4c0122d61000edf",
-        "SHA1": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9",
-        "SHA256": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+        "MD5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
+        "SHA1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
+        "SHA256": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
         "Size": 262291,
-        "SSDeep": "6144:WWEH6pcEypX3dNGGkfxlLrnR8mfhAd2HNRg/U/:WWs6pcVlHtkDR8/Ad23z",
+        "SSDeep": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm",
         "Tags": [
             "jar",
             "checks-cpu-name",
@@ -17,7 +17,7 @@
         "DBotScore": [
             {
                 "Indicator": {
-                    "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                    "Value": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
                     "Source": "VirusTotal (API v3)"
                 },
                 "Reliability": {
@@ -39,7 +39,7 @@
             },
             {
                 "Indicator": {
-                    "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                    "Value": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
                     "Source": "WildFire-v2"
                 },
                 "Reliability": {
@@ -63,24 +63,24 @@
         "Hashes": [
             {
                 "type": "MD5",
-                "value": "4e76823c05048e92a4c0122d61000edf"
+                "value": "md5md5md5md5md5md5md5md5md5md5md5md5md5m"
             },
             {
                 "type": "SHA1",
-                "value": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9"
+                "value": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1"
             },
             {
                 "type": "SHA256",
-                "value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0"
+                "value": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2"
             },
             {
                 "type": "SSDeep",
-                "value": "6144:WWEH6pcEypX3dNGGkfxlLrnR8mfhAd2HNRg/U/:WWs6pcVlHtkDR8/Ad23z"
+                "value": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm"
             }
         ],
         "Relationships": [
             {
-                "EntityA": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                "EntityA": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
                 "EntityAType": "File",
                 "EntityB": "jmcoru.alcatelupd.xyz",
                 "EntityBType": "Domain",
@@ -119,13 +119,13 @@
             ],
             "MD5": [
                 {
-                    "Value": "4e76823c05048e92a4c0122d61000edf",
+                    "Value": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
                     "Source": "WildFire-v2"
                 }
             ],
             "SHA1": [
                 {
-                    "Value": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9",
+                    "Value": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
                     "Source": "WildFire-v2"
                 }
             ]

@@ -6,7 +6,7 @@ from FileEnrichment import Brands, Command, CommandResults, ContextPaths, EntryT
 
 """ TEST CONSTANTS """
 
-SHA_256_HASH = "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0"
+SHA_256_HASH = "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2"
 
 
 def util_load_json(path: str):
@@ -124,15 +124,15 @@ def test_get_file_from_ioc_custom_fields():
     ioc_custom_fields = {
         "fileextension": "ZIP",
         "filetype": "application/zip",
-        "md5": "4E76823C05048E92A4C0122D61000EDF",
-        "sha1": "D8B426700C3C10413ABB8ACDCFECCAAEC8F06CD9",
-        "sha256": "7AA15BD505A240A8BF62735A5389A530322945EEC6CE9D7B6AD299CA33B2B1B0",
+        "md5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
+        "sha1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
+        "sha256": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
         "size": 262291,
-        "ssdeep": "6144:WWEH6PCEYPX3DNGG+KFXLLRNR8M+FHAD2HNRG/U/:WWS6PCVLHT+KDR8/AD23Z",
+        "ssdeep": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm",
         "tags": ["checks-cpu-name", "checks-hostname"],
         "stixid": None,  # expect to be removed (empty value)
-        "associatedfilenames": ["VS Code", "Visual Studio Code Setup (x64)"],
-        "signatureauthentihash": "7AA15BD505A240A8BF62735A5389A530322945EEC6CE9D7B6AD299CA33B2B1B0",
+        "associatedfilenames": ["Test Application.zip", "test_installer_x64.zip"],
+        "signatureauthentihash": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
     }
     file_indicator_context = get_file_from_ioc_custom_fields(ioc_custom_fields)
 

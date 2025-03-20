@@ -1,11 +1,11 @@
 [
     {
         "Type": 1,
-        "HumanReadable": "### Results of file hash 7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0\n|Sha1|Sha256|Md5|MeaningfulName|TypeExtension|Last Modified|Reputation|Positives|\n|—|—|—|—|—|—|—|—|\n| d8b426700c3c10413abb8acdcfeccaaec8f06cd9 | 7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0 | 4e76823c05048e92a4c0122d61000edf | 未確認 639898.crdownload | jar | 2025-02-02 12:54:47Z | -208 | 43/76 |\n",
+        "HumanReadable": "### Results of file hash sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2\n|Sha1|Sha256|Md5|MeaningfulName|TypeExtension|Last Modified|Reputation|Positives|\n|—|—|—|—|—|—|—|—|\n| sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1 | sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2 | md5md5md5md5md5md5md5md5md5md5md5md5md5m | 未確認 639898.crdownload | jar | 2025-02-02 12:54:47Z | -208 | 43/76 |\n",
         "EntryContext": {
             "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
                 {
-                    "Indicator": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                    "Indicator": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
                     "Reliability": "C - Fairly reliable",
                     "Score": 3,
                     "Type": "file",
@@ -18,34 +18,34 @@
                     "Hashes": [
                         {
                             "type": "MD5",
-                            "value": "4e76823c05048e92a4c0122d61000edf"
+                            "value": "md5md5md5md5md5md5md5md5md5md5md5md5md5m"
                         },
                         {
                             "type": "SHA1",
-                            "value": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9"
+                            "value": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1"
                         },
                         {
                             "type": "SHA256",
-                            "value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0"
+                            "value": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2"
                         },
                         {
                             "type": "SSDeep",
-                            "value": "6144:WWEH6pcEypX3dNGGkfxlLrnR8mfhAd2HNRg/U/:WWs6pcVlHtkDR8/Ad23z"
+                            "value": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm"
                         }
                     ],
-                    "MD5": "4e76823c05048e92a4c0122d61000edf",
+                    "MD5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
                     "Relationships": [
                         {
-                            "EntityA": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                            "EntityA": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
                             "EntityAType": "File",
                             "EntityB": "jmcoru.alcatelupd.xyz",
                             "EntityBType": "Domain",
                             "Relationship": "communicates-with"
                         }
                     ],
-                    "SHA1": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9",
-                    "SHA256": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
-                    "SSDeep": "6144:WWEH6pcEypX3dNGGkfxlLrnR8mfhAd2HNRg/U/:WWs6pcVlHtkDR8/Ad23z",
+                    "SHA1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
+                    "SHA256": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                    "SSDeep": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm",
                     "Size": 262291,
                     "Tags": [
                         "jar",
