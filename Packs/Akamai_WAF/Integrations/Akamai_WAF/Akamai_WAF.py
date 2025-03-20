@@ -2695,7 +2695,7 @@ def new_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
     human_readable = []
     if raw_response:
         propertylink = raw_response.get('propertyLink', '')
-        regex_match = re.search('prp_\d+', propertylink)
+        regex_match = re.search(r'prp_\d+', propertylink)
         entry_context.append(assign_params(**{
             "PropertyLink": propertylink,
             "PropertyId": regex_match.group(0) if regex_match else '',
@@ -2751,7 +2751,7 @@ def clone_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         propertylink = raw_response.get('propertyLink', '')
         property_name = raw_response.get('propertyName')
-        regex_match = re.search('prp_\d+', propertylink)
+        regex_match = re.search(r'prp_\d+', propertylink)
         entry_context.append(assign_params(**{
             "PropertyLink": propertylink,
             "PropertyName": property_name,
