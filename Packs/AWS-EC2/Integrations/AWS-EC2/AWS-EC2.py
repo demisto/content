@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import date
 from AWSApiModule import *  # noqa: E402
-from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor
 
 """CONSTANTS"""
 
@@ -111,59 +109,6 @@ def build_client(args: dict):
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
     )
-
-
-def run_on_all_accounts(func: Callable[[dict], CommandResults]):
-    """Decorator that runs the given command function on all AWS accounts configured in the params.
-
-    Args:
-        func (callable): The command function to run on each account.
-            Must accept the args dict and an AWSClient as arguments.
-            Must return a CommandResults object.
-
-    Returns:
-        callable: If a role name is configured in the params, returns a function
-        that handles running on all accounts.
-        If no role exists, returns the passed in func unchanged.
-
-    This decorator handles setting up the proper roleArn, roleSessionName,
-    roleSessionDuration for accessing each account before calling the function
-    and adds the account details to the result.
-    """
-
-    def account_runner(args: dict) -> list[CommandResults]:
-
-        role_name = ROLE_NAME.removeprefix('role/')
-        accounts = argToList(PARAMS.get('accounts_to_access'))
-
-        def run_command(account_id: str) -> CommandResults:
-            new_args = args | {
-                #  the role ARN must be of the format: arn:aws:iam::<account_id>:role/<role_name>
-                'roleArn': f'arn:aws:iam::{account_id}:role/{role_name}',
-                'roleSessionName': args.get('roleSessionName', f'account_{account_id}'),
-                'roleSessionDuration': args.get('roleSessionDuration', 900),
-            }
-            try:
-                result = func(new_args)
-                result.readable_output = f'#### Result for account `{account_id}`:\n{result.readable_output}'
-                if isinstance(result.outputs, list):
-                    for obj in result.outputs:
-                        obj['AccountId'] = account_id
-                elif isinstance(result.outputs, dict):
-                    result.outputs['AccountId'] = account_id
-                return result
-            except Exception as e:  # catch any errors raised from "func" to be tagged with the account ID and displayed
-                return CommandResults(
-                    readable_output=f'#### Error in command call for account `{account_id}`\n{e}',
-                    entry_type=EntryType.ERROR,
-                    content_format=EntryFormat.MARKDOWN,
-                )
-
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            results = executor.map(run_command, accounts)
-        return list(results)
-
-    return account_runner if (ROLE_NAME and not IS_ARN_PROVIDED) else func
 
 
 """MAIN FUNCTIONS"""
