@@ -10,8 +10,8 @@ import traceback
 
 import requests
 import urllib3  # type: ignore
-from greynoise import GreyNoise, util  # type: ignore
-from greynoise.exceptions import RateLimitError, RequestFailure  # type: ignore
+from greynoise import GreyNoise, util  # type: ignore   # pylint: disable=E0401
+from greynoise.exceptions import RateLimitError, RequestFailure  # type: ignore # pylint: disable=E0401
 
 # Disable insecure warnings
 urllib3.disable_warnings()

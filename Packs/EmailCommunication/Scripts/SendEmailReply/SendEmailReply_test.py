@@ -64,11 +64,11 @@ def test_append_email_signature_fails(mocker):
     "email_cc, email_bcc, expected_result",
     [
         ("", "", "Mail sent successfully. To: test1@gmail.com,test2@gmail.com"),
-        ("cc_user@company.com", "", "Mail sent successfully. To: test1@gmail.com,test2@gmail.com " "Cc: cc_user@company.com"),
+        ("cc_user@company.com", "", "Mail sent successfully. To: test1@gmail.com,test2@gmail.com Cc: cc_user@company.com"),
         (
             "cc_user@company.com",
             "bcc_user@company.com",
-            "Mail sent successfully. " "To: test1@gmail.com,test2@gmail.com Cc: " "cc_user@company.com Bcc: bcc_user@company.com",
+            "Mail sent successfully. To: test1@gmail.com,test2@gmail.com Cc: cc_user@company.com Bcc: bcc_user@company.com",
         ),
     ],
 )
@@ -430,7 +430,7 @@ def test_create_file_data_json():
         (
             "test1@gmail.com, test2@gmail.com",
             "test3@gmail.com,test4@gmail.com",
-            "test1@gmail.com,test2@gmail.com," "test3@gmail.com,test4@gmail.com",
+            "test1@gmail.com,test2@gmail.com,test3@gmail.com,test4@gmail.com",
         ),
         ("test1@gmail.com", "", "test1@gmail.com"),
         ("", "", ""),
@@ -782,7 +782,7 @@ def test_resend_first_contact(email_selected_thread, email_thread, expected_resu
         )
     if expected_result == "fail":
         assert return_error_args.args[0] == (
-            "The selected Thread Number to respond to (42) does not exist.  " "Please choose a valid Thread Number and re-try."
+            "The selected Thread Number to respond to (42) does not exist.  Please choose a valid Thread Number and re-try."
         )
 
 

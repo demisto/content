@@ -103,7 +103,7 @@ class TAXII2Server:
             self._auth = (identifier, password)
         self.version = version
         if version not in [TAXII_VER_2_0, TAXII_VER_2_1]:
-            raise Exception(f"Wrong TAXII 2 Server version: {version}. " f"Possible values: {TAXII_VER_2_0}, {TAXII_VER_2_1}.")
+            raise Exception(f"Wrong TAXII 2 Server version: {version}. Possible values: {TAXII_VER_2_0}, {TAXII_VER_2_1}.")
         self._collections_resource: list = []
         self.collections_by_id: dict = {}
         self.namespace_uuid = uuid.uuid5(PAWN_UUID, demisto.getLicenseID())
@@ -261,7 +261,7 @@ class TAXII2Server:
 
         first_added = None
         last_added = None
-        objects = iocs[offset : offset + limit]
+        objects = iocs[offset: offset + limit]
         if iocs and not objects:
             raise RequestedRangeNotSatisfiable
 
@@ -298,7 +298,7 @@ class TAXII2Server:
         last_added = None
         limited_extensions = None
 
-        limited_iocs = iocs[offset : offset + limit]
+        limited_iocs = iocs[offset: offset + limit]
         if iocs and not limited_iocs:
             raise RequestedRangeNotSatisfiable
 
@@ -444,7 +444,7 @@ def taxii_validate_url_param(f: Callable) -> Callable:
                 HTTP_404_NOT_FOUND,
                 {
                     "title": "Unknown API Root",
-                    "description": f"Unknown API Root {api_root}. Check possible API Roots using " f"'{SERVER.discovery_route}'",
+                    "description": f"Unknown API Root {api_root}. Check possible API Roots using '{SERVER.discovery_route}'",
                 },
             )
 
@@ -780,7 +780,7 @@ def taxii2_status(api_root: str, status_id: str) -> Response:  # noqa: F841
         HTTP_404_NOT_FOUND,
         {
             "title": "Get Status not allowed.",
-            "description": "Status ID is not found, or the client does not have " "access to the resource",
+            "description": "Status ID is not found, or the client does not have access to the resource",
         },
     )
 

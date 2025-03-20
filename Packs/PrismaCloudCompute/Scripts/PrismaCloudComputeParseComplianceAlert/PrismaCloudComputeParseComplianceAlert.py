@@ -14,7 +14,7 @@ def parse_compliance(raw_json):
 
     # remove unneeded fields from human readable results
     headers: list = []
-    for field in data.keys():
+    for field in data:
         if field not in ["_id", "kind", "compliance"]:
             headers.append(field)
     headers.sort()

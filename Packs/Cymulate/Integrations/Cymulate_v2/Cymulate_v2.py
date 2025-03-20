@@ -465,7 +465,7 @@ def extract_event_name(event: dict, module_name: str) -> str:
         event_name = f"{event_name}{event.get('User')}"
 
     elif module_name == "lateral-movement":
-        event_name = f"{event_name}" f"{event.get('Source_Hostname')}-{event.get('Destination_Hostname')}"
+        event_name = f"{event_name}{event.get('Source_Hostname')}-{event.get('Destination_Hostname')}"
 
     return event_name
 
@@ -1432,7 +1432,7 @@ def list_attack_simulations_command(client: Client, module: str, from_date: str,
     """
     outputs = []
     if not validate_timestamp(from_date) or (to_date and not validate_timestamp(to_date)):
-        raise ValueError("Wrong date format. Year-Month-Day, for example: March 1st 2021 should be" " written: 2021-03-01.")
+        raise ValueError("Wrong date format. Year-Month-Day, for example: March 1st 2021 should be written: 2021-03-01.")
     raw_response = client.list_attack_ids_by_date(ENDPOINT_DICT.get(module), from_date, to_date)
     num_simulations_to_display = min(MAX_EVENTS_TO_DISPLAY, len(raw_response))
 
@@ -1443,7 +1443,7 @@ def list_attack_simulations_command(client: Client, module: str, from_date: str,
             outputs.append(data)
 
     readable_output = tableToMarkdown(
-        f"Displaying {num_simulations_to_display}/{len(raw_response)}" f" Attack IDs:", outputs[:num_simulations_to_display]
+        f"Displaying {num_simulations_to_display}/{len(raw_response)} Attack IDs:", outputs[:num_simulations_to_display]
     )
 
     command_results = CommandResults(
@@ -1481,7 +1481,7 @@ def list_simulations_command(client: Client, module: str, attack_id: str):
             simulation["Id"] = attack_id
 
     readable_output = tableToMarkdown(
-        f"Displaying {num_simulations_to_display}/{len(raw_response)}" f" simulations:",
+        f"Displaying {num_simulations_to_display}/{len(raw_response)} simulations:",
         outputs[:num_simulations_to_display],
         removeNull=True,
     )
@@ -1739,7 +1739,7 @@ def main() -> None:
                 f"entered the correct assessment id.\n\nFull error message:\n{error!s}"
             )
 
-        return_error(f"Failed to execute {command} command.\n\n" f"Full error message:\n{error!s}")
+        return_error(f"Failed to execute {command} command.\n\nFull error message:\n{error!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

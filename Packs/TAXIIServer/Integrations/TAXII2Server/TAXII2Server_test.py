@@ -469,7 +469,7 @@ def test_taxii21_objects(mocker, taxii2_server_v21, demisto_iocs_file, res_file,
     mocker.patch.object(demisto, "params", return_value={"res_size": "100"})
     with APP.test_client() as test_client:
         response = test_client.get(
-            "/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/" f"objects/?match[type]={query_type}&limit=2&next=1",
+            f"/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/objects/?match[type]={query_type}&limit=2&next=1",
             headers=HEADERS,
         )
         assert response.status_code == 200
@@ -493,7 +493,7 @@ def test_taxii21_bad_request(mocker, taxii2_server_v21, api_request):
     mocker.patch.object(demisto, "updateModuleHealth")
     with APP.test_client() as test_client:
         response = test_client.get(
-            f"/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/" f"{api_request}/?match[version]=3", headers=HEADERS
+            f"/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/{api_request}/?match[version]=3", headers=HEADERS
         )
         assert response.status_code == 404
         assert response.content_type == "application/taxii+json;version=2.1"
@@ -516,7 +516,7 @@ def test_taxii20_bad_content_range(mocker, taxii2_server_v20, api_request):
     headers["Content-Range"] = "items 8-2/10"
     with APP.test_client() as test_client:
         response = test_client.get(
-            f"/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/" f"{api_request}/", headers=headers
+            f"/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/{api_request}/", headers=headers
         )
         assert response.status_code == 416
 
@@ -544,7 +544,7 @@ def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fi
     mocker.patch.object(demisto, "params", return_value={"res_size": "7"})
     with APP.test_client() as test_client:
         response = test_client.get(
-            "/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/" "objects/?match[type]=file", headers=HEADERS
+            "/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/objects/?match[type]=file", headers=HEADERS
         )
         assert response.status_code == 200
         assert response.content_type == "application/taxii+json;version=2.1"

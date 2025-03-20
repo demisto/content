@@ -276,7 +276,7 @@ def test_cyren_feed_relationship_with_search_response_other_columns(mocker, indi
     mocker.patch.object(demisto, "searchIndicators", return_value=SEARCH_INDICATORS_RESPONSE)
     result = cyren_feed_relationship(args)
 
-    assert result.readable_output == ("|Relationship Type|Indicator Type|\n" "|---|---|\n" "| downloaded from | SHA-256 |\n")
+    assert result.readable_output == ("|Relationship Type|Indicator Type|\n|---|---|\n| downloaded from | SHA-256 |\n")
 
 
 @pytest.mark.parametrize(
@@ -407,7 +407,7 @@ RELATED_INDICATOR_OBJECTS_PACK = [
 
 
 @pytest.mark.parametrize(
-    ("value, relationship_type, indicator_type, " "timestamp, entity_category, reputation, expected_output"),
+    ("value, relationship_type, indicator_type, timestamp, entity_category, reputation, expected_output"),
     RELATED_INDICATOR_OBJECTS_PACK,
 )
 def test_create_related_indicator_object(

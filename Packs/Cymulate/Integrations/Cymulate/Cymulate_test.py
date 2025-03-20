@@ -56,7 +56,7 @@ CYMULATE_GET_INCIDENT_INFO_TEST = {
         {
             "Module": "Immediate Threats Intelligence",
             "Penetration_Vector": "-",
-            "Attack_Payload": "2019-07-08-Ursnif-binary-retrieved-by-Word-macro_" "2b999360-a3f9-11e9-980e-633d1efd31f3.exe",
+            "Attack_Payload": "2019-07-08-Ursnif-binary-retrieved-by-Word-macro_2b999360-a3f9-11e9-980e-633d1efd31f3.exe",
             "Name": " Ursnif infection with Dridex and Powershell Empire",
             "Timestamp": "03/11/2019 05:45:47",
             "Sha1": "ff57bfaed6db3379bbf69a19404a6e21668a7a52",

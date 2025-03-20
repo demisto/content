@@ -223,7 +223,7 @@ def update_output_obj_with_issues(compliance_obj: ComplianceObject, input_obj_id
     non_duplicated_issues = [issue for issue in issues if issue not in previous_issues]
     if non_duplicated_issues:
         demisto.debug(
-            f"Updating {compliance_obj.object_type.value} in id {input_obj_id} with new issues: " f"{non_duplicated_issues}"
+            f"Updating {compliance_obj.object_type.value} in id {input_obj_id} with new issues: {non_duplicated_issues}"
         )
         new_issues_list = previous_issues + non_duplicated_issues
         output_obj.update({"ComplianceIssues": new_issues_list})
@@ -234,7 +234,7 @@ def update_output_obj_with_issues(compliance_obj: ComplianceObject, input_obj_id
                 "ContentsFormat": formats["json"],
                 "Contents": output_obj,
                 "HumanReadable": tableToMarkdown(
-                    f"Updating {compliance_obj.object_type.value} ({input_obj_id}) with new " f"compliance issues",
+                    f"Updating {compliance_obj.object_type.value} ({input_obj_id}) with new compliance issues",
                     non_duplicated_issues,
                     "Compliance Issue",
                 ),

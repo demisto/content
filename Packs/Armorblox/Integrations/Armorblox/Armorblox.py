@@ -5,7 +5,7 @@ from typing import Any
 import dateparser
 import demistomock as demisto  # noqa: F401
 import urllib3
-from armorblox.client import Client as AbxBaseClient
+from armorblox.client import Client as AbxBaseClient  # pylint: disable=E0401,E0611
 from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
@@ -93,11 +93,11 @@ def get_incident_message_ids(client, incident_id):
     detail_response = client.get_incident_details(incident_id)
     message_ids = []
     # loop through all the events of this incident and collect the message ids
-    if "events" in detail_response.keys():
+    if "events" in detail_response:
         for event in detail_response["events"]:
             message_ids.append(event["message_id"])
 
-    if "abuse_events" in detail_response.keys():
+    if "abuse_events" in detail_response:
         for event in detail_response["abuse_events"]:
             message_ids.append(event["message_id"])
     return message_ids
@@ -110,7 +110,7 @@ def get_remediation_action(client, incident_id):
 
     detail_response = client.get_incident_details(incident_id)
     remediation_actions = None
-    if "remediation_actions" in detail_response.keys():
+    if "remediation_actions" in detail_response:
         remediation_actions = detail_response["remediation_actions"][0]
     else:
         remediation_actions = None
@@ -129,7 +129,7 @@ def fetch_incidents_command(client):
     # pageToken fetched from demisto lastRun
     pageToken = 0
     incidents = []
-    if "start_time" not in last_run.keys():
+    if "start_time" not in last_run:
         pageToken = -1
         response, next_page_token = client.get_incidents(pageSize=1, pageToken=pageToken, first_fetch=FIRST_FETCH)
         if response:
@@ -141,10 +141,10 @@ def fetch_incidents_command(client):
             curr_incident = {"rawJSON": json.dumps(response), "details": json.dumps(response)}
             incidents.append(curr_incident)
 
-    if last_run and "pageToken" in last_run.keys():
+    if last_run and "pageToken" in last_run:
         pageToken = last_run.get("pageToken")
 
-    if last_run and "start_time" in last_run.keys():
+    if last_run and "start_time" in last_run:
         start_time = dateparser.parse(last_run.get("start_time"))
 
     start_time = start_time.timestamp()

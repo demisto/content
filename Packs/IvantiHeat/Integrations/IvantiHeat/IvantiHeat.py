@@ -57,7 +57,7 @@ class Client(BaseClient):
             return_empty_response=True,
         )
 
-        if isinstance(res, (dict, list)) or resp_type == "other":
+        if isinstance(res, dict | list) or resp_type == "other":
             return res
         return {}
 
@@ -153,8 +153,8 @@ def get_attachment_command(client, args):
     filename_header = raw_res.headers.get("content-disposition")
 
     f_attr = "filename="
-    if filename_header and f_attr in filename_header:
-        filename = filename_header[filename_header.index(f_attr) + len(f_attr) :]
+    if filename_header and f_attr in filename_header:   # noqa: RET503
+        filename = filename_header[filename_header.index(f_attr) + len(f_attr):]
         return fileResult(filename, raw_res.content)
 
 
@@ -206,7 +206,7 @@ def create_object_command(client, args):
     except Exception:
         raise Exception(f"Failed to parse additional-fields as JSON data, received object:\n{fields}")
 
-    for key in fields.keys():
+    for key in fields:
         body[key] = fields[key]
 
     raw_res = client.do_request("POST", f"odata/businessobject/{object_type}", json_data=body)

@@ -177,7 +177,7 @@ def test_fetch_incidents(requests_mock):
             "compliance": [
                 {"description": "(CIS_Docker_CE_v1.1.0 - 5.28) Use PIDs cgroup limit", "id": "528", "type": "container"},
                 {
-                    "description": "(CIS_Docker_CE_v1.1.0 - 5.25) Restrict container from acquiring additional " "privileges",
+                    "description": "(CIS_Docker_CE_v1.1.0 - 5.25) Restrict container from acquiring additional privileges",
                     "id": "525",
                     "type": "container",
                 },

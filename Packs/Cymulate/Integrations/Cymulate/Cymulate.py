@@ -319,7 +319,8 @@ def main():
 
     LOG(f"Command being called is: {demisto.command()}")
     demisto.debug(
-        f"MAIN CALL , PARAMS session_token:{session_token} module_type:{module_type} only_penatrated:{only_penatrated} use_proxy:{use_proxy} insecure:{insecure}"
+        f"MAIN CALL , PARAMS session_token:{session_token} module_type:{module_type} "
+        f"only_penatrated:{only_penatrated} use_proxy:{use_proxy} insecure:{insecure}"
         f" is_fetch:{is_fetch}"
     )
 

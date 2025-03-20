@@ -405,13 +405,11 @@ def validate_pagination_arguments(page: int = None, page_size: int = None, limit
     if page_size and not MIN_PAGE_SIZE <= page_size <= MAX_PAGE_SIZE:
         raise ValueError(f"page size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}.")
 
-    if page:
-        if page < 1:
-            raise ValueError("page argument must be greater than 0.")
+    if page and page < 1:
+        raise ValueError("page argument must be greater than 0.")
 
-    if limit:
-        if limit < 5 or limit > 100:
-            raise ValueError("limit argument must be greater than 5.")
+    if limit and (limit < 5 or limit > 100):
+        raise ValueError("limit argument must be greater than 5.")
 
 
 def pagination(request_command: Callable, args: dict[str, Any], pagination_args: dict[str, Any]) -> tuple:
@@ -474,7 +472,7 @@ def ip_list_pagination(response: Union[list, dict], page: int = None, page_size:
     if page and page_size:
         if page_size < len(response):
             first_item = page_size * (page - 1)
-            output = response[first_item : first_item + page_size]
+            output = response[first_item: first_item + page_size]
         else:
             output = response[:page_size]
         pagination_message = f"Showing page {page} out of others that may exist. \n Current page size: {page_size}"
@@ -586,9 +584,9 @@ def cloudflare_waf_firewall_rule_update_command(client: Client, args: dict[str, 
 
     response = client.cloudflare_waf_firewall_rule_update_request(
         rule_id,
-        filter_id,
+        filter_id,  # type: ignore
         zone_id,
-        action,
+        action,  # type: ignore
         description=description,  # type: ignore
         products=products,
         paused=paused,
@@ -797,7 +795,7 @@ def cloudflare_waf_filter_update_command(client: Client, args: dict[str, Any]) -
 
     response = client.cloudflare_waf_filter_update_request(
         filter_id,
-        expression,
+        expression,  # type: ignore
         zone_id,
         description=description,  # type: ignore
         paused=paused,

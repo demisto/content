@@ -55,19 +55,19 @@ def main(incident):
         elif args.get("new") and stage == "In Development":  # checks if the stage was set to in development
             demisto.executeCommand("startTimer", {"timerField": "usecasedevelopmenttimer"})
             stop_all_timers_except_development()
-            demisto.results("The use case is in development" " timer has been started.")
+            demisto.results("The use case is in development timer has been started.")
         elif args.get("new") and stage == "Testing":  # checks if the stage was set to testing
             demisto.executeCommand("startTimer", {"timerField": "usecasetestingtimer"})
             stop_all_timers_except_testing()
-            demisto.results("The use case has been moved to the testing stages" " timer has been started.")
+            demisto.results("The use case has been moved to the testing stages timer has been started.")
         elif args.get("new") and stage == "Pre-Production":  # checks if the stage was set to pre-production
             demisto.executeCommand("startTimer", {"timerField": "usecasepreproductiontimer"})
             stop_all_timers_except_preproduction()
-            demisto.results("The use case has been moved to the pre-production stages" " timer has been started.")
+            demisto.results("The use case has been moved to the pre-production stages timer has been started.")
         else:
             demisto.executeCommand("startTimer", {"timerField": "usecasebacklogtimer"})
             stop_all_timers_except_backlog()
-            demisto.results("The use case has been moved to backlog" " timer has been started.")
+            demisto.results("The use case has been moved to backlog timer has been started.")
 
     except Exception as e:  # error handling
         err_msg = f"Encountered an error while running the script: [{e}]"

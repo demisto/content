@@ -297,7 +297,7 @@ def update_latest_message_field(incident_id, item_id):
             raise DemistoException(f"Failed to setIncident. Reason: {get_error(res)}")
     except Exception:
         demisto.debug(
-            f"SetIncident Failed." f'"emaillatestmessage" field was not updated with {item_id} value for incident: {incident_id}'
+            f'SetIncident Failed."emaillatestmessage" field was not updated with {item_id} value for incident: {incident_id}'
         )
 
 
@@ -307,7 +307,7 @@ def get_email_related_incident_id(email_related_incident_code, email_original_su
     email code and original subject.
     """
 
-    query = f"(emailgeneratedcode:{email_related_incident_code}) " f"or (emailgeneratedcodes:*{email_related_incident_code}*)"
+    query = f"(emailgeneratedcode:{email_related_incident_code}) or (emailgeneratedcodes:*{email_related_incident_code}*)"
 
     incidents_details = get_incident_by_query(query)
 
@@ -497,7 +497,7 @@ def main():
         if incident_details["type"] == "Email Communication":
             # Add new email message as Entry if type is 'Email Communication'
             demisto.debug(
-                "Incoming email related to Email Communication Incident" f" {email_related_incident}. Appending a message there."
+                f"Incoming email related to Email Communication Incident {email_related_incident}. Appending a message there."
             )
             email_reply = set_email_reply(email_from, email_to, email_cc, html_body, attachments)
             add_entries(email_reply, email_related_incident, reputation_calc_async)

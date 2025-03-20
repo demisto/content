@@ -14,11 +14,11 @@ def parse_cloud_discovery(raw_json):
 
     data_fields: list = []
     entities_fields: list = []
-    for field in data.keys():
+    for field in data:
         if field not in ["entities", "_id", "kind"]:
             data_fields.append(field)
     for entity in data.get("entities"):
-        for field in entity.keys():
+        for field in entity:
             if field not in entities_fields:
                 entities_fields.append(field)
 

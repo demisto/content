@@ -34,7 +34,7 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, em
     )
 
     single_reply += (
-        f'\n{html_body}\n<hr style="width:98%;text-align:center;height:3px;border-width:0;' f'background-color:#cccccc">\n\n'
+        f'\n{html_body}\n<hr style="width:98%;text-align:center;height:3px;border-width:0;background-color:#cccccc">\n\n'
     )
 
     return single_reply

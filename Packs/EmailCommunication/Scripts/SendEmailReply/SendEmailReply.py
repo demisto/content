@@ -53,7 +53,7 @@ def append_email_signature(html_body):
 
     if is_error(email_signature):
         demisto.debug(
-            "Error occurred while trying to load the `XSOAR - Email Communication Signature` list. No " "signature added to email"
+            "Error occurred while trying to load the `XSOAR - Email Communication Signature` list. No signature added to email"
         )
     else:
         # Find the position of the closing </html> tag and insert the signature there
@@ -994,7 +994,7 @@ def multi_thread_new(
             missing_fields.append("New Email Recipients")
         if not new_email_body:
             missing_fields.append("New Email Body")
-        return_error(f"The following required fields have not been set. Please set them and try again. " f"{missing_fields}")
+        return_error(f"The following required fields have not been set. Please set them and try again. {missing_fields}")
 
     thread_code = get_unique_code(incident_id)
 

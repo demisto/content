@@ -22,8 +22,8 @@ def convert_pcap(pcap_type: str, pcap_bytes: bytes) -> bytes | None:
                 break
 
             POS_FIRST_PACKET = 0x24
-            packet_time_be32 = pcap_bytes[16 : 16 + 4]
-            packet_size_be16 = pcap_bytes[2 : 2 + 2]
+            packet_time_be32 = pcap_bytes[16: 16 + 4]
+            packet_size_be16 = pcap_bytes[2: 2 + 2]
             packet_size = int.from_bytes(packet_size_be16, byteorder="big")
             if len(pcap_bytes) < packet_size + POS_FIRST_PACKET:
                 if pcap_type != "auto":
@@ -46,7 +46,7 @@ def convert_pcap(pcap_type: str, pcap_bytes: bytes) -> bytes | None:
             pcap += b"\x00\x00" + packet_size_be16  # .len: length this packet (off wire)
 
             # packet payload
-            pcap += pcap_bytes[POS_FIRST_PACKET : POS_FIRST_PACKET + packet_size]
+            pcap += pcap_bytes[POS_FIRST_PACKET: POS_FIRST_PACKET + packet_size]
             return pcap
     else:
         raise ValueError(f"Unknown pcap type: {pcap_type}")
@@ -154,7 +154,7 @@ class MainProcess:
         :param node: The pcap(s) node.
         :return: The pcap(s) converted.
         """
-        pcaps = [v for v in self.__convert_pcap(node)]
+        pcaps = list(self.__convert_pcap(node))
         if isinstance(node, list) or len(pcaps) != 1:
             return pcaps
         else:

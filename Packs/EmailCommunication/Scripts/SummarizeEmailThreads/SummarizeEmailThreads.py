@@ -86,7 +86,7 @@ def format_threads(email_threads):
                 thread_summary_rows[thread_number] = table_row
 
         # Convert dict of dict into list of dicts for MD formatting
-        thread_summary_table = [entry for entry in thread_summary_rows.values()]
+        thread_summary_table = list(thread_summary_rows.values())
 
         table_name = "Email Thread List"
         table_headers = ["Thread Number", "Subject", "Recipients", "CC", "BCC"]
@@ -106,7 +106,7 @@ def main():
         thread_summary_rows = format_threads(email_threads)
     else:
         return_results({"ContentsFormat": EntryFormat.HTML, "Type": EntryType.NOTE, "Contents": no_entries_message})
-        return None
+        return
 
     demisto.results(
         {

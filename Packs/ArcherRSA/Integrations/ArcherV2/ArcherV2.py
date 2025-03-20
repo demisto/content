@@ -405,7 +405,7 @@ SOAP_COMMANDS = {
         "soapAction": "http://archer-tech.com/webservices/ExecuteStatisticSearchByReport",
         "urlSuffix": "ws/search.asmx",
         "soapBody": get_statistic_search_report_soap_request,
-        "outputPath": "Envelope.Body.ExecuteStatisticSearchByReportResponse.ExecuteStatistic" "SearchByReportResult",
+        "outputPath": "Envelope.Body.ExecuteStatisticSearchByReportResponse.ExecuteStatisticSearchByReportResult",
     },
     "archer-get-search-options-by-guid": {
         "soapAction": "http://archer-tech.com/webservices/GetSearchOptionsByGuid",

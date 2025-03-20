@@ -69,12 +69,12 @@ class PrismaCloudComputeClient(BaseClient):
             super().__init__(base_url, True, proxy, ok_codes, headers, auth)
             self._verify = verify
 
-    def _http_request(
+    def _http_request(  # type: ignore[override]
         self,
         method,
         url_suffix,
         full_url=None,
-        headers=None,  # type: ignore[override]
+        headers=None,
         auth=None,
         json_data=None,
         params=None,
@@ -2036,9 +2036,9 @@ def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: 
         image_name=image_name,
         from_time=f"{from_time.isoformat()}Z",
         to_time=f"{now.isoformat()}Z",
-        limit=limit,
-        audit_type=audit_type,
-    )  # type: ignore
+        limit=limit,  # type: ignore
+        audit_type=audit_type,  # type: ignore
+    )
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.Audits",
@@ -2740,7 +2740,7 @@ def get_container_policy_list_command(client: PrismaCloudComputeClient, args: di
     if runtime_container_policy_events := client.get_runtime_container_policy():
         runtime_rules = runtime_container_policy_events.get("rules") or []
         if len(runtime_rules) > limit and not all_results:
-            runtime_rules = runtime_rules[offset * limit : offset * limit + limit]
+            runtime_rules = runtime_rules[offset * limit: offset * limit + limit]
 
         table = tableToMarkdown(
             name="Runtime Container Policy Events Information",

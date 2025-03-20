@@ -653,7 +653,7 @@ class Client(BaseClient):
         code = 0
         try:
             status = response[: response.index(":")].split(" ")[0]
-            result = response[response.index(":") + 1 :].strip()
+            result = response[response.index(":") + 1:].strip()
             if status == "Error":
                 code = int(response[: response.index(":")].split(" ")[1])
             else:
@@ -665,7 +665,7 @@ class Client(BaseClient):
             res = {"status": "Error", "code": code, "result": "Unable to parse the server's response"}
             err_msg = "Error in API call [{}] - {}".format(demisto.command, res["result"])
             demisto.error(err_msg)
-            raise DemistoException(f"Error occurred. Status: ({res['status']}) Code: ({res['code']}) Result: " f"{res['result']}")
+            raise DemistoException(f"Error occurred. Status: ({res['status']}) Code: ({res['code']}) Result: {res['result']}")
 
         if res["status"] == "OK":
             try:
@@ -674,7 +674,7 @@ class Client(BaseClient):
                 json_response = res["result"]
             return json_response, json_response
         elif res["status"] == "Error":
-            raise DemistoException(f"Error occurred. Status: ({res['status']}) Code: ({res['code']}) Result: " f"{res['result']}")
+            raise DemistoException(f"Error occurred. Status: ({res['status']}) Code: ({res['code']}) Result: {res['result']}")
         else:
             raise DemistoException(f"Unknown error occurred.  Status: {res['status']} Result: {res['result']}")
 

@@ -329,7 +329,7 @@ GET_RESPONSE_NOT_SUCCESSFUL_JSON = {
         {
             "Reason": "Validation",
             "Severity": 3,
-            "MessageKey": "ValidationMessageTemplates" ":LoginNotValid",
+            "MessageKey": "ValidationMessageTemplates:LoginNotValid",
             "Description": "",
             "Location": -1,
             "ErroredValue": None,

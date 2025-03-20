@@ -130,7 +130,7 @@ class Client(BaseClient):
                 "filter_monitored": "no",
                 "offset": offset,
                 "pagelength": pagelength,
-                "stime": "%sZ" % datetime.utcfromtimestamp(int(time.time()) - 2592000).isoformat(),
+                "stime": f"{datetime.utcfromtimestamp(int(time.time()) - 2592000).isoformat()}Z",
                 "detail": "true",
                 "sortfield": "MAC",
                 "sortdirection": "asc",
@@ -437,7 +437,7 @@ def fetch_incidents(client, last_run, is_test=False):
                 "type": "IoT Alert",
                 "occurred": alert["date"],
                 "rawJSON": json.dumps(alert),
-                "details": alert["description"] if "description" in alert else "",
+                "details": alert.get("description", ""),
                 "CustomFields": {"iotincidenturl": f'{demisto.params()["url"]}/guardian/policies/alert?id={alert_id}'},
             }
             incidents.append(incident)

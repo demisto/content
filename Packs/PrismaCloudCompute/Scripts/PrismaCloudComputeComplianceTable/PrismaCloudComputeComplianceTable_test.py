@@ -240,7 +240,7 @@ def merge_input_and_output_context(input_context, output_context, object_type):
 
 
 @pytest.mark.parametrize(
-    "input_context, input_context_in_path, object_type, already_present_output, expected_context, " "expected_context_path",
+    "input_context, input_context_in_path, object_type, already_present_output, expected_context, expected_context_path",
     [
         (
             HOST_UPDATE_INPUT,

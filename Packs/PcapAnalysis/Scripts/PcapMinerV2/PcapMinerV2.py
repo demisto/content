@@ -9,7 +9,7 @@ from CommonServerPython import *
 """GLOBAL VARS"""
 BAD_CHARS = ["[", "]", ">", "<", "'", " Layer", " ", "{", "}"]
 EMAIL_REGEX = r"\b[A-Za-z0-9._%=+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"
-IP_REGEX = r"\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.)" r"{3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b"
+IP_REGEX = r"\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b"
 URL_REGEX = r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
 PRAGMA_REGEX = r"Pragma: ([^\\]+)"
 TYPE_REGEX = r"Type: (.+)"
@@ -59,21 +59,21 @@ class PCAP:
         self.max_time = -float("inf")
         self.conversations: dict[tuple, Any] = {}
         self.flows: dict[tuple, Any] = {}
-        self.unique_source_ip: set = set([])
-        self.unique_dest_ip: set = set([])
-        self.ips_extracted: set = set([])
-        self.urls_extracted: set = set([])
-        self.emails_extracted: set = set([])
-        self.homemade_extracted: set = set([])
-        self.last_layer: set = set([])
-        self.irc_data: list = list()
-        self.protocol_data: dict[str, Any] = dict()
+        self.unique_source_ip: set = set()
+        self.unique_dest_ip: set = set()
+        self.ips_extracted: set = set()
+        self.urls_extracted: set = set()
+        self.emails_extracted: set = set()
+        self.homemade_extracted: set = set()
+        self.last_layer: set = set()
+        self.irc_data: list = []
+        self.protocol_data: dict[str, Any] = {}
         self.entry_id = entry_id
         self.extracted_protocols = extracted_protocols
         self.homemade_regex = homemade_regex
         self.unique_ips = unique_ips
         for protocol in extracted_protocols:
-            self.protocol_data[protocol] = dict()
+            self.protocol_data[protocol] = {}
 
         # Regex compilation
         if "LLMNR" in extracted_protocols:
@@ -99,7 +99,7 @@ class PCAP:
             self.reg_cmd = re.compile(COMMAND_REGEX)
         if "KERBEROS" in extracted_protocols:
             self.reg_sname = re.compile(SNAME_REGEX)
-            self.kerb_data: list = list()
+            self.kerb_data: list = []
         if "SSH" in extracted_protocols:
             self.ssh_data = {
                 "EntryID": entry_id,
@@ -146,7 +146,7 @@ class PCAP:
         telnet_layer = packet.telnet
         for message in telnet_layer._get_all_field_lines():
             if "Data:" in message:
-                self.telnet_data.add(message.lstrip("Data: "))
+                self.telnet_data.add(message.lstrip("Data: "))  # noqa: B005
                 continue
             if ":" not in message:
                 self.telnet_commands.add(message.lstrip("\t").rstrip("\n"))
@@ -254,10 +254,8 @@ class PCAP:
         if protocol and ssh_layer.get("direction") == 0:
             # direction is client to server
             self.ssh_data["ClientProtocols"].add(protocol)  # type: ignore[attr-defined]
-        if message_code_results:
-            if message_code_results:
-                self.ssh_data["KeyExchangeMessageCode"].add(message_code_results[0])  # type: ignore[attr-defined]
-        return
+        if message_code_results and message_code_results:
+            self.ssh_data["KeyExchangeMessageCode"].add(message_code_results[0])  # type: ignore[attr-defined]
 
     @logger
     def extract_irc(self, packet):
@@ -362,11 +360,11 @@ class PCAP:
         if "FTP" in self.extracted_protocols and "FTP" in layers:
             return self.extract_ftp(packet)
 
-        if "SMTP" in self.extracted_protocols:
+        if "SMTP" in self.extracted_protocols:  # noqa: RET503
             if "IMF" in layers:
                 return self.extract_imf(packet)
 
-            if "SMTP" in layers:
+            if "SMTP" in layers:    # noqa: RET503
                 return self.extract_smtp(packet)
 
     @logger
@@ -527,7 +525,7 @@ class PCAP:
                     if is_flows:
                         if "src_port" not in locals():
                             continue
-                        if (b, dest_port, a, src_port) in self.flows.keys():
+                        if (b, dest_port, a, src_port) in self.flows:
                             b, a, src_port, dest_port = a, b, dest_port, src_port
                         flow = (a, src_port, b, dest_port)
                         flow_data = self.flows.get(
@@ -583,7 +581,7 @@ class PCAP:
                                     }
                                 )
                             add_to_data(self.protocol_data["HTTP"], temp_http)
-                    if (b, a) in self.conversations.keys():
+                    if (b, a) in self.conversations:
                         a, b = b, a
                     hosts = (a, b)
                     self.conversations[hosts] = self.conversations.get(hosts, 0) + 1
@@ -635,7 +633,7 @@ def hierarchy_to_md(hierarchy: dict) -> str:
     """
     final_dict: dict[str, Any] = {}
     num_of_all_packets = 0
-    for k in hierarchy.keys():
+    for k in hierarchy:
         layer_heir = ""
         for layer in k.split(","):
             layer_heir += " -> " + layer
@@ -699,7 +697,7 @@ def flows_to_ec(flows: dict) -> list:
         flows data in ec format.
     """
     flows_ec = []
-    for flow in flows.keys():
+    for flow in flows:
         flow_data = flows[flow]
         flow_ec = {
             "SourceIP": flow[0],

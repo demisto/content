@@ -281,7 +281,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
             raise ValueError(f"Invalid date: {arg_name}")
 
         return int(date.timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
@@ -393,10 +393,7 @@ def fetch_incidents(
             incident_created_time = alert.get("created")
 
             # If no name is present it will throw an exception
-            if "name" in alert:
-                incident_name = alert["name"]
-            else:
-                incident_name = "No Message Subject"
+            incident_name = alert.get("name", "No Message Subject")
 
             datetimeformat = "%Y-%m-%dT%H:%M:%S.000Z"
 
@@ -422,9 +419,8 @@ def fetch_incidents(
 
             demisto.info("MS - incident_created_time: " + str(last_fetch))
             # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-            if last_fetch:
-                if incident_created_time <= last_fetch:
-                    continue
+            if last_fetch and incident_created_time <= last_fetch:
+                continue
 
             details = ""
 

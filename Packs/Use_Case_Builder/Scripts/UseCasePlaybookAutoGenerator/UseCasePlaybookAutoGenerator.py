@@ -45,8 +45,8 @@ class Playbook:
                 "type": taskType,
                 "task": {"name": taskName, "type": taskType, "playbookId": automationName},
                 "nextTasks": {"#none#": [str(self.currentTaskId + 1)]},
-                "separateContext": True,
-            }  # type: ignore
+                "separateContext": True,  # type: ignore
+            }
         elif taskType == "command":
             self.playbookTasks[str(self.currentTaskId)] = {
                 "id": str(self.currentTaskId),
@@ -122,9 +122,9 @@ class Playbook:
                 {"action": "start", "fieldName": "containmentsla"},  # type: ignore
                 {"action": "start", "fieldName": "remediationsla"},  # type: ignore
                 {"action": "start", "fieldName": "triagesla"},  # type: ignore
-                {"action": "start", "fieldName": "timetoassignment"},
+                {"action": "start", "fieldName": "timetoassignment"},  # type: ignore
             ],
-        }  # type: ignore
+        }
         self.currentTaskId += 1  # Adds 1 to current task ID
 
 

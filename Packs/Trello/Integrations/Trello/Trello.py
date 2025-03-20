@@ -34,7 +34,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, key, token, **kwargs):
-        super(Client, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self.params = {"key": key, "token": token}
 
@@ -223,7 +223,7 @@ def select_outputs(result, output_keys):
 
     Capitlizes the result
     """
-    if type(result) is dict:
+    if type(result) is dict:    # noqa: RET503
         output = {capitalize(k): result[k] for k in output_keys}
         # output = camelize(output)
         return output
@@ -243,7 +243,7 @@ def select_outputs_camelize(result, output_keys):
     Camelizes any result.
     """
     special_keys = ["card_id", "list_id", "board_id"]
-    if type(result) is dict:
+    if type(result) is dict:    # noqa: RET503
         output = {k: result[k] for k in output_keys}
         output = camelize(output, "_")
         return output
@@ -476,12 +476,11 @@ def fetch_incidents(client, last_run: dict, board_id: str, list_id_filter: str):
         elif action.get("type") == "updateCard":
             card_id = action.get("card_id")
             # Only support moved (updated) card actions when a list filter is given
-            if list_id_filter:
-                if action.get("listAfter_id") == list_id_filter:
-                    for card in cards:
-                        if card_id == card.get("id"):
-                            card["create_action"] = action
-                            new_cards.append(card)
+            if list_id_filter and action.get("listAfter_id") == list_id_filter:
+                for card in cards:
+                    if card_id == card.get("id"):
+                        card["create_action"] = action
+                        new_cards.append(card)
 
     for card in new_cards:
         incident_created_time = dateparser.parse(card.get("create_action").get("date"))

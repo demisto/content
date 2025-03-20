@@ -142,7 +142,7 @@ def test_create_random_hunt_incident(mocker, args, expected_incident):
 
     demisto.executeCommand.assert_any_call("createNewIncident", expected_incident)
     assert result.readable_output == (
-        "Successfully created incident Cyren Threat InDepth Threat Hunt.\n" "Click here to investigate: [1234](#/incident/1234)."
+        "Successfully created incident Cyren Threat InDepth Threat Hunt.\nClick here to investigate: [1234](#/incident/1234)."
     )
 
 
@@ -185,7 +185,7 @@ def test_create_random_hunt_incident_get_current_user_error(mocker):
     result = create_random_hunt_incident({})
 
     assert result.readable_output == (
-        "Successfully created incident Cyren Threat InDepth Threat Hunt.\n" "Click here to investigate: [1234](#/incident/1234)."
+        "Successfully created incident Cyren Threat InDepth Threat Hunt.\nClick here to investigate: [1234](#/incident/1234)."
     )
 
 

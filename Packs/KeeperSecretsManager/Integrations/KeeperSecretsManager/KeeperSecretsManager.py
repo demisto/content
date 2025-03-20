@@ -88,7 +88,7 @@ metadata_collector = YMLMetadataCollector(
         ConfKey(
             name="credential_names",
             display="A comma-separated list of credential names to fetch.",
-            additional_info="Partial names are not supported. If left empty," " all credentials will be fetched.",
+            additional_info="Partial names are not supported. If left empty, all credentials will be fetched.",
             required=False,
             key_type=ParameterTypes.TEXT_AREA,
         ),
@@ -107,7 +107,7 @@ class Client:
 
     def __init__(self, credentials: str, insecure: bool):
         self.credentials = credentials
-        self.verify_ssl_certs = False if insecure else True
+        self.verify_ssl_certs = not insecure
         try:
             config = InMemoryKeyValueStorage(credentials)
         except Exception:
@@ -232,7 +232,7 @@ def fetch_credentials(client: Client):
 
     if concat_username_to_cred_name:
         for i in range(len(credentials)):
-            credentials[i]["name"] = "{0}_{1}".format(credentials[i].get("name", ""), credentials[i].get("user", ""))
+            credentials[i]["name"] = f"{credentials[i].get('name', '')}_{credentials[i].get('user', '')}"
 
     if credentials_name:
         credentials = list(filter(lambda c: c.get("name", "") == credentials_name, credentials))
@@ -259,7 +259,7 @@ LIST_CREDENTIALS_OUTPUTS = [
     outputs_prefix="KeeperSecretsManager.Creds",
     outputs_list=LIST_CREDENTIALS_OUTPUTS,
     restore=True,
-    description="Use this command to list all credentials in your Keeper Vault" " that are shared to the KSM application.",
+    description="Use this command to list all credentials in your Keeper Vault that are shared to the KSM application.",
 )
 def list_credentials_command(client: Client, args: dict[str, Any], **kwargs) -> CommandResults:
     """Lists all credentials available to the KSM application.
@@ -328,7 +328,7 @@ GET_RECORDS_OUTPUTS = [
     outputs_prefix="KeeperSecretsManager.Records",
     outputs_list=GET_RECORDS_OUTPUTS,
     restore=True,
-    description="Use this command to list all records from your Keeper Vault" " that are shared to the application.",
+    description="Use this command to list all records from your Keeper Vault that are shared to the application.",
 )
 def list_records_command(client: Client, args: dict[str, Any], **kwargs) -> CommandResults:
     """List records command - returns list of record info.
@@ -384,7 +384,7 @@ def find_records_command(client: Client, args: dict[str, Any], **kwargs) -> Comm
 
     title = args.get("title") or ""
     partial_match = args.get("partial_match", None)
-    partial_match = True if partial_match else False
+    partial_match = bool(partial_match)
     demisto.debug(f"Find records with title={title} and partial_match={partial_match}")
 
     records = client.ksm_find_records(title, partial_match)
@@ -480,7 +480,7 @@ def find_files_command(client: Client, args: dict[str, Any], **kwargs) -> Comman
 
     file_name = args.get("file_name") or ""
     partial_match = args.get("partial_match", None)
-    partial_match = True if partial_match else False
+    partial_match = bool(partial_match)
     demisto.debug(f"Find records with file_name={file_name} and partial_match={partial_match}")
 
     records = client.ksm_find_files(file_name, partial_match)
@@ -501,7 +501,7 @@ def find_files_command(client: Client, args: dict[str, Any], **kwargs) -> Comman
             name="record_uid",
             required=False,
             default="",
-            description="Record UID to search for files." " Search all records if empty.",
+            description="Record UID to search for files. Search all records if empty.",
         ),
     ],
     description="Use this command to fetch the file attachment as a File.",
@@ -544,7 +544,7 @@ def get_file_command(client: Client, args: dict[str, Any], **kwargs) -> dict | N
             name="record_uid",
             required=False,
             default="",
-            description="Record UID to search for files." " Search all records if empty.",
+            description="Record UID to search for files. Search all records if empty.",
         ),
     ],
     description="Use this command to fetch the file attachment as an Info File.",

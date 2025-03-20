@@ -382,7 +382,7 @@ class Client(BaseClient):
             page_number -= 1
 
         # bring the last 'fetch_limit' items, as order is reversed
-        total_items = total_items[len(total_items) - fetch_limit :]
+        total_items = total_items[len(total_items) - fetch_limit:]
         return total_items, last_fetched_ids, timestamp
 
 
@@ -665,9 +665,9 @@ def snapshot_details_get_command(client: Client, args: dict[str, Any]) -> Comman
 
     response = client.snapshot_details_get_request(agent_id, snapshot_timestamp, service_id, categories)
 
-    results = response[offset : offset + limit]
+    results = response[offset: offset + limit]
     humanReadable = tableToMarkdown(
-        f"Snapshot details for agent id {agent_id}-" f" \nshowing {len(results)} results out of {len(response)}",
+        f"Snapshot details for agent id {agent_id}- \nshowing {len(results)} results out of {len(response)}",
         results,
         ["hostName", "agentId", "scanStartTime", "directory", "fileName"],
     )
@@ -1264,7 +1264,7 @@ def update_remote_system_command(client: Client, args: dict, params: dict) -> st
         demisto.debug(json.dumps(response))
     else:
         demisto.debug(
-            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is " f"not new nor changed."
+            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is not new nor changed."
         )
 
     return new_incident_id
@@ -1360,7 +1360,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
             save_alert_count = intCont.get(inc.get("id"), {}).get("alertCount")
             save_event_count = intCont.get(inc.get("id"), {}).get("eventCount")
             demisto.debug(
-                f"Last run incident {inc.get('id')} => " f"Alert count: {save_alert_count} " f"Event count: {save_event_count}"
+                f"Last run incident {inc.get('id')} => Alert count: {save_alert_count} Event count: {save_event_count}"
             )
             if save_alert_count != inc.get("alertCount") or save_event_count != inc.get("eventCount"):
                 # compare the save nb of alert to see if we need to pull the alert or not

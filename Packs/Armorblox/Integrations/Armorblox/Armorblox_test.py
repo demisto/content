@@ -111,5 +111,5 @@ def test_fetch_incidents_command(requests_mock):
     requests_mock.get(url + "/6484", json=mock_response_for_incident_id)
     client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
     response = fetch_incidents_command(client)
-    assert ("rawJSON" in response[0].keys()) is True
-    assert ("details" in response[0].keys()) is True
+    assert ("rawJSON" in response[0]) is True
+    assert ("details" in response[0]) is True

@@ -9,7 +9,7 @@ def main(incident):
     try:
         if args.get("new") and inprod == "Production":  # checks if the stage was set to production:
             demisto.executeCommand("stopTimer", {"timerField": "usecasebuilderdevelopmentdeadline"})
-            demisto.results("The use case development stage has been set to Production!" " timer has been stopped.")
+            demisto.results("The use case development stage has been set to Production! timer has been stopped.")
     except Exception as e:  # erro handling
         err_msg = f"Encountered an error while running the script: [{e}]"
         return_error(err_msg, error=e)

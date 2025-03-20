@@ -73,7 +73,7 @@ def create_random_hunt_incident(args):
 
     created_incident = res[0]
     id = created_incident.get("EntryContext", {}).get("CreatedIncidentID")
-    data = f"Successfully created incident {incident['name']}.\n" f"Click here to investigate: [{id}](#/incident/{id})."
+    data = f"Successfully created incident {incident['name']}.\nClick here to investigate: [{id}](#/incident/{id})."
     res = demisto.executeCommand("investigate", {"id": id})
     if isError(res[0]):
         data = data + "\n(An investigation has not been started.)"

@@ -24,7 +24,7 @@ def main():
         """
 
         res = demisto.executeCommand(
-            "send-mail", {"to": args.get("to"), "subject": "IMPORTANT: Prisma Cloud " "Compute Compliance", "body": body}
+            "send-mail", {"to": args.get("to"), "subject": "IMPORTANT: Prisma Cloud Compute Compliance", "body": body}
         )
 
         if is_error(res):
