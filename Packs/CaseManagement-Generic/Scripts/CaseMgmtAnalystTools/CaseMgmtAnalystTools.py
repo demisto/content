@@ -1,11 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 # requires an XSOAR list that contains a markdown table with links to important Analyst Tools (wikis, google, etc)
 
 # get the Case Management Analyst Tools list
-tools = demisto.executeCommand("getList", {"listName": "Case Management Analyst Tools"})[0]['Contents']
+tools = demisto.executeCommand("getList", {"listName": "Case Management Analyst Tools"})[0]["Contents"]
 
 # default tools, if the above list does not exist.
 default_tools = """
