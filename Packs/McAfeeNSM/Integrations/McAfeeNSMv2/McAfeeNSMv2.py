@@ -48,7 +48,7 @@ class Client(BaseClient):
         super().__init__(base_url=url, verify=verify, proxy=proxy, auth=auth, headers=headers)
 
     def get_session_request(self, encoded_str: str) -> dict:
-        """ Gets a session from the API.
+        """ Gets a session from the API test.
             Args:
                 encoded_str: str - The string that contains username:password in base64.
             Returns:
