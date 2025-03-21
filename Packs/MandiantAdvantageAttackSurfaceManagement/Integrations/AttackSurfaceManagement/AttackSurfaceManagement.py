@@ -62,7 +62,7 @@ class Client(BaseClient):
         response = self._http_request("GET", endpoint, headers=self.get_headers(include_project=False))
 
         if not isinstance(response, dict) or not response.get("success"):
-            raise DemistoException("The ASM API was unable to return" "a list of projects")
+            raise DemistoException("The ASM API was unable to returna list of projects")
 
         return response.get("result") or []
 
@@ -72,7 +72,7 @@ class Client(BaseClient):
         response = self._http_request("GET", endpoint, headers=self.get_headers(project_id=project_id))
 
         if not isinstance(response, dict) or not response.get("success"):
-            raise DemistoException("The ASM API was unable to return" "a list of collections")
+            raise DemistoException("The ASM API was unable to returna list of collections")
 
         return response.get("result") or []
 
@@ -116,7 +116,7 @@ class Client(BaseClient):
 
         if not isinstance(response, dict) or not response.get("success"):
             raise DemistoException(
-                "The ASM API was unable to return details for" f"issue {issue_id} in project {self.project_id}"
+                f"The ASM API was unable to return details forissue {issue_id} in project {self.project_id}"
             )
 
         return response.get("result") or {}
@@ -128,7 +128,7 @@ class Client(BaseClient):
 
         if not isinstance(response, dict) or not response.get("success"):
             raise DemistoException(
-                "The ASM API was unable to return notes for" f"{resource_type} {resource_id} in project {self.project_id}"
+                f"The ASM API was unable to return notes for{resource_type} {resource_id} in project {self.project_id}"
             )
 
         return response.get("result") or []
@@ -140,7 +140,7 @@ class Client(BaseClient):
         response = self._http_request("POST", endpoint, json_data=request_body, headers=self.get_headers())
 
         if not isinstance(response, dict) or not response.get("success"):
-            raise DemistoException("The ASM API was unable to update" "the status of the issue")
+            raise DemistoException("The ASM API was unable to updatethe status of the issue")
 
         return response.get("result") or False
 
@@ -333,7 +333,7 @@ def get_remote_data_command(client: Client, args: dict):
             if timestamp.timestamp() > last_updated.timestamp():
                 new_note = {
                     "Type": EntryType.NOTE,
-                    "Contents": f"{note['note']}\n" f"{note['created_by_user']['printable_name']}",
+                    "Contents": f"{note['note']}\n{note['created_by_user']['printable_name']}",
                     "ContentsFormat": EntryFormat.MARKDOWN,
                     "Note": True,
                     "Tags": ["note_from_ma_asm"],

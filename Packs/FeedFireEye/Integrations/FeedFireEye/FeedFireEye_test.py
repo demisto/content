@@ -74,7 +74,7 @@ def test_parse_access_token_expiration_time():
         - Returns the expiration time of the newly fetched token
 
     """
-    for i in range(5):
+    for _i in range(5):
         random_value = random.randint(0, 1000)
         # 740314800 is the epoch converted time of 1993-06-17 11:00:00
         assert Client.parse_access_token_expiration_time(random_value) - 740314800 == random_value
@@ -145,7 +145,7 @@ def test_fetch_indicators_from_api(mocker, url, status_code, json_data, expected
                 client.fetch_all_indicators_from_api(-1)
 
             if not e:
-                assert False
+                pytest.fail()
 
 
 FETCH_REPORTS_PACKAGE = [
@@ -196,23 +196,23 @@ def test_fetch_reports_from_api(mocker, url, status_code, json_data, expected_re
                 client.fetch_all_reports_from_api(-1)
 
             if not e:
-                assert False
+                pytest.fail()
 
 
 PROCESS_INDICATOR_VALUE_PACKAGE = [
     (
-        "[file:hashes.MD5='1234' OR " "file:hashes.'SHA-1'='12345' OR " "file:hashes.'SHA-256'='123456']",
+        "[file:hashes.MD5='1234' OR file:hashes.'SHA-1'='12345' OR file:hashes.'SHA-256'='123456']",
         (["file"], ["1234"], {"MD5": "1234", "SHA-1": "12345", "SHA-256": "123456"}),
     ),
     (
-        "[file:hashes.'SHA-1'='12345' OR " "file:hashes.'SHA-256'='123456']",
+        "[file:hashes.'SHA-1'='12345' OR file:hashes.'SHA-256'='123456']",
         (["file"], ["12345"], {"SHA-1": "12345", "SHA-256": "123456"}),
     ),
     (
-        "[file:hashes.'ssdeep'='12345' OR " "file:hashes.'SHA-256'='123456']",
+        "[file:hashes.'ssdeep'='12345' OR file:hashes.'SHA-256'='123456']",
         (["file"], ["123456"], {"ssdeep": "12345", "SHA-256": "123456"}),
     ),
-    ("[file:'fake'='12345' OR " "file:hashes.'SHA-1'='123456']", (["file"], ["123456"], {"SHA-1": "123456"})),
+    ("[file:'fake'='12345' OR file:hashes.'SHA-1'='123456']", (["file"], ["123456"], {"SHA-1": "123456"})),
     ("[domain-name:value='1234.com']", (["domain-name"], ["1234.com"], {})),
     (
         "[domain-name:value='1234.com' AND url:value='www.abc.1245.com']",

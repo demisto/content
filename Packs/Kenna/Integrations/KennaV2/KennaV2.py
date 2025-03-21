@@ -60,9 +60,9 @@ class Client(BaseClient):
                 verify=self._verify,
             )
         except requests.exceptions.SSLError as err:
-            raise DemistoException(f"Connection error in the API call to Kenna.\n" f"Check your not secure parameter.\n\n{err}")
+            raise DemistoException(f"Connection error in the API call to Kenna.\nCheck your not secure parameter.\n\n{err}")
         except requests.ConnectionError as err:
-            raise DemistoException(f"Connection error in the API call to Kenna.\n" f"Check your Server URL parameter.\n\n{err}")
+            raise DemistoException(f"Connection error in the API call to Kenna.\nCheck your Server URL parameter.\n\n{err}")
         try:
             response_dict = response.json() if response.text else {}
             if not response.ok:

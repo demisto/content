@@ -99,15 +99,15 @@ def remove_context_entries(context, context_entries_to_keep):
 
 def apply_os_cut(query, os):
     if "WHERE" not in query:
-        query = "%s WHERE" % query
+        query = f"{query} WHERE"
     else:
-        query = "%s AND" % query
+        query = f"{query} AND"
 
     op_systems = os.split("/")
     for index in range(len(op_systems)):
         query = f"{query} os LIKE '%{op_systems[index]}%'"
         if index < len(op_systems) - 1:
-            query = "%s OR" % query
+            query = f"{query} OR"
 
     return query
 
@@ -117,15 +117,15 @@ def apply_equals_cuts(query, cuts):
         return query
     else:
         if "WHERE" not in query:
-            query = "%s WHERE" % query
+            query = f"{query} WHERE"
         else:
-            query = "%s AND" % query
+            query = f"{query} AND"
 
         use_and = False
         for key in cuts:
             if cuts.get(key) is not None:
                 if use_and:
-                    query = "%s AND" % query
+                    query = f"{query} AND"
                 if "time" in key:
                     query = f"{query} {key}=CAST('{cuts.get(key)}' AS TIMESTAMP)"
                     use_and = True
@@ -144,16 +144,16 @@ def apply_like_cuts(query, cuts):
         return query
     else:
         if "WHERE" not in query:
-            query = "%s WHERE" % query
+            query = f"{query} WHERE"
         else:
-            query = "%s AND" % query
+            query = f"{query} AND"
         i = 0
         for key in cuts:
             i = i + 1
             if cuts.get(key) is not None:
                 query = f"{query} {key} LIKE '%{cuts.get(key)}%'"
                 if i < len(cuts):
-                    query = "%s AND" % query
+                    query = f"{query} AND"
 
         return query
 
@@ -163,9 +163,9 @@ def apply_datetime_cuts(query, name, start, finish):
         return query
 
     if "WHERE" not in query:
-        query = "%s WHERE" % query
+        query = f"{query} WHERE"
     else:
-        query = "%s AND" % query
+        query = f"{query} AND"
 
     if finish is None:
         query = f"{query} {name} AFTER CAST('{start}' AS TIMESTAMP)"
@@ -286,7 +286,7 @@ def uptycs_get_assets():
     if os:
         query = apply_os_cut(query, os)
 
-    query = "%s ORDER BY last_activity_at DESC" % query
+    query = f"{query} ORDER BY last_activity_at DESC"
 
     if limit != -1 and limit is not None:
         query = f"{query} LIMIT {limit}"
@@ -371,7 +371,7 @@ a.upt_asset_id=u.id"
             begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
             query = apply_datetime_cuts(query, "alert_time", begin, end)
 
-        query = "%s ORDER BY a.alert_time DESC" % query
+        query = f"{query} ORDER BY a.alert_time DESC"
 
         if limit != -1 and limit is not None:
             query = f"{query} LIMIT {limit}"
@@ -414,8 +414,7 @@ def uptycs_get_alerts_command():
                 if metadata.get(key):
                     context[index]["pid"] = metadata.get(key)
                     break
-                else:
-                    context[index]["pid"] = "Not applicable or unknown"
+                context[index]["pid"] = "Not applicable or unknown"
             if bool(json.loads(context[index].get("metadata")).get("indicatorId")):
                 context[index]["threat_indicator_id"] = json.loads(context[index].get("metadata")).get("indicatorId")
                 context[index]["threat_source_name"] = (
@@ -482,7 +481,7 @@ a.upt_asset_id=u.id"
         begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
         query = apply_datetime_cuts(query, "event_time", begin, end)
 
-    query = "%s ORDER BY a.event_time DESC" % query
+    query = f"{query} ORDER BY a.event_time DESC"
 
     if limit != -1 and limit is not None:
         query = f"{query} LIMIT {limit}"
@@ -633,7 +632,7 @@ def uptycs_get_process_open_files():
         begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
         query = apply_datetime_cuts(query, "upt_time", begin, end)
 
-    query = "%s ORDER BY upt_time DESC" % query
+    query = f"{query} ORDER BY upt_time DESC"
 
     if limit != -1 and limit is not None:
         query = f"{query} LIMIT {limit}"
@@ -706,7 +705,7 @@ def uptycs_get_process_open_sockets():
         begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
         query = apply_datetime_cuts(query, "upt_time", begin, end)
 
-    query = "%s ORDER BY upt_time DESC" % query
+    query = f"{query} ORDER BY upt_time DESC"
 
     if limit != -1 and limit is not None:
         query = f"{query} LIMIT {limit}"
@@ -796,7 +795,7 @@ def uptycs_get_socket_events():
         begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
         query = apply_datetime_cuts(query, "upt_time", begin, end)
 
-    query = "%s ORDER BY upt_time DESC" % query
+    query = f"{query} ORDER BY upt_time DESC"
 
     if limit != -1 and limit is not None:
         query = f"{query} LIMIT {limit}"
@@ -957,7 +956,7 @@ def uptycs_get_processes():
         begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
         query = apply_datetime_cuts(query, "upt_time", begin, end)
 
-    query = "%s ORDER BY upt_time DESC" % query
+    query = f"{query} ORDER BY upt_time DESC"
 
     if limit != -1 and limit is not None:
         query = f"{query} LIMIT {limit}"
@@ -1041,7 +1040,7 @@ def uptycs_get_process_events():
         begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
         query = apply_datetime_cuts(query, "upt_time", begin, end)
 
-    query = "%s ORDER BY upt_time DESC" % query
+    query = f"{query} ORDER BY upt_time DESC"
 
     if limit != -1 and limit is not None:
         query = f"{query} LIMIT {limit}"
@@ -1111,7 +1110,7 @@ CAST('{}' AS TIMESTAMP) BETWEEN upt_add_time AND upt_remove_time".format(demisto
 
     query = apply_equals_cuts(query, equal_cuts)
 
-    query = "%s ORDER BY upt_add_time DESC LIMIT 1" % query
+    query = f"{query} ORDER BY upt_add_time DESC LIMIT 1"
 
     query_type = "global"
     post_data = {"query": query, "queryType": query_type}
@@ -1160,7 +1159,7 @@ upt_time<=CAST('{}' AS TIMESTAMP)".format(uptday, demisto.args().get("pid"), tim
 
     query = apply_equals_cuts(query, equal_cuts)
 
-    query = "%s ORDER BY upt_time DESC LIMIT 1" % query
+    query = f"{query} ORDER BY upt_time DESC LIMIT 1"
 
     query_type = "global"
     post_data = {"query": query, "queryType": query_type}
@@ -1236,7 +1235,7 @@ upt_day <= {}".format(demisto.args().get("parent"), child_add_time, uptday)
 
     query = apply_equals_cuts(query, equal_cuts)
 
-    query = "%s ORDER BY upt_add_time DESC LIMIT 1" % query
+    query = f"{query} ORDER BY upt_add_time DESC LIMIT 1"
 
     query_type = "global"
     post_data = {"query": query, "queryType": query_type}
@@ -1282,7 +1281,7 @@ def uptycs_get_parent_event_information():
 
     query = ""
     if child_ancestor_list is not None:
-        child_ancestor_list = child_ancestor_list[2 : len(child_ancestor_list) - 2].split("}, {")
+        child_ancestor_list = child_ancestor_list[2: len(child_ancestor_list) - 2].split("}, {")
         ancestors = []
         for ancestor in child_ancestor_list:
             ancestors.append(json.loads("{" + ancestor + "}"))
@@ -1299,7 +1298,7 @@ AND upt_time<=CAST('{child_add_time}' AS TIMESTAMP)"
 
     query = apply_equals_cuts(query, equal_cuts)
 
-    query = "%s ORDER BY upt_time DESC LIMIT 1" % query
+    query = f"{query} ORDER BY upt_time DESC LIMIT 1"
 
     query_type = "global"
     post_data = {"query": query, "queryType": query_type}
@@ -1409,7 +1408,7 @@ def uptycs_get_process_child_processes_command():
 def uptycs_set_alert_status():
     """set the status of an alert"""
     http_method = "put"
-    api_call = "/alerts/%s" % demisto.args().get("alert_id")
+    api_call = f"/alerts/{demisto.args().get('alert_id')}"
 
     post_data = {"status": demisto.args().get("status")}
 
@@ -1443,7 +1442,7 @@ def uptycs_set_alert_status_command():
 def uptycs_get_asset():
     """set a tag on an asset"""
     http_method = "get"
-    api_call = "/assets/%s" % demisto.args().get("asset_id")
+    api_call = f"/assets/{demisto.args().get('asset_id')}"
     return restcall(http_method, api_call)
 
 
@@ -1477,7 +1476,7 @@ def uptycs_get_asset_id_command():
     ]
 
     human_readable = tableToMarkdown(
-        "Uptycs Asset Tags for asset id: %s" % demisto.args().get("asset_id"), query_results, context_entries_to_keep
+        f"Uptycs Asset Tags for asset id: {demisto.args().get('asset_id')}", query_results, context_entries_to_keep
     )
     context = query_results
     if context is not None:
@@ -1502,13 +1501,13 @@ def uptycs_get_asset_id_command():
 def uptycs_get_asset_tags():
     """set a tag on an asset"""
     http_method = "get"
-    api_call = "/assets/%s" % demisto.args().get("asset_id")
+    api_call = f"/assets/{demisto.args().get('asset_id')}"
     return restcall(http_method, api_call).get("tags")
 
 
 def uptycs_get_asset_tags_command():
     query_results = uptycs_get_asset_tags()
-    human_readable = tableToMarkdown("Uptycs Asset Tags for asset id: %s" % demisto.args().get("asset_id"), query_results, "Tags")
+    human_readable = tableToMarkdown(f"Uptycs Asset Tags for asset id: {demisto.args().get('asset_id')}", query_results, "Tags")
     context = query_results
 
     entry = {
@@ -1525,7 +1524,7 @@ def uptycs_get_asset_tags_command():
 def uptycs_set_asset_tag():
     """set a tag on an asset"""
     http_method = "get"
-    api_call = "/assets/%s" % demisto.args().get("asset_id")
+    api_call = f"/assets/{demisto.args().get('asset_id')}"
     tags = restcall(http_method, api_call).get("tags")
 
     tag_set = False
@@ -1611,7 +1610,7 @@ def uptycs_get_users_command():
 def uptycs_get_user_information():
     """return information about a specfic Uptycs user"""
     http_method = "get"
-    api_call = "/users/%s" % demisto.args().get("user_id")
+    api_call = f"/users/{demisto.args().get('user_id')}"
 
     return restcall(http_method, api_call)
 
@@ -1654,7 +1653,7 @@ def uptycs_get_user_asset_groups():
     users_in_group = {}
     for user_id in user_ids:
         http_method = "get"
-        api_call = "/users/%s" % user_id
+        api_call = f"/users/{user_id}"
         user_info = restcall(http_method, api_call)
         obj_groups = user_info.get("userObjectGroups")
         for obj_group in obj_groups:
@@ -1759,7 +1758,7 @@ def uptycs_get_threat_indicators_command():
 def uptycs_get_threat_indicator():
     """return information about a particular threat indicator"""
     http_method = "get"
-    api_call = "/threatIndicators/%s" % demisto.args().get("indicator_id")
+    api_call = f"/threatIndicators/{demisto.args().get('indicator_id')}"
 
     return restcall(http_method, api_call)
 
@@ -2119,7 +2118,7 @@ def uptycs_get_carves_link_command():
 
 def get_carve_headers(url):
     headers = {}
-    headers["Origin"] = "https://%s" % DOMAIN
+    headers["Origin"] = f"https://{DOMAIN}"
     headers["x-amz-server-side-encryption-customer-algorithm"] = "AES256"
     headers["x-requested-with"] = "uptycs"
     headers["Access-Control-Request-Method"] = "GET"
@@ -2170,7 +2169,7 @@ def uptycs_get_carves():
 
     path = demisto.args().get("path")
     if path is not None:
-        api_call = '%s?filters={"path":{"iLike":"' % api_call
+        api_call = f'{api_call}?filters={{"path":{{"iLike":"'
         api_call += "%" + path + "%" + '"}}'
 
     return restcall(http_method, api_call)
@@ -2830,7 +2829,7 @@ def main():
                 else:
                     demisto.results("Test failed")
             except Exception as ex:
-                demisto.results("Test failed - %s" % str(ex))
+                demisto.results(f"Test failed - {str(ex)}")
 
         if demisto.command() == "fetch-incidents":
             demisto.incidents(uptycs_fetch_incidents())

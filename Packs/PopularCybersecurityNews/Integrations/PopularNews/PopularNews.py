@@ -95,7 +95,7 @@ def main():
         aggregate(thn, "The Hacker News")
         aggregate(tp, "Threatpost")
     else:
-        raise NotImplementedError("Command %s was not implemented." % demisto.command())
+        raise NotImplementedError(f"Command {demisto.command()} was not implemented.")
 
     result = {
         "ContentsFormat": formats["table"],

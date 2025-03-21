@@ -802,8 +802,8 @@ def detonate_sample_command():
         if hasattr(e, "response_object"):
             return_error(
                 f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
-                f"message: {e.response_object.text}"
-            )  # type: ignore[attr-defined]
+                f"message: {e.response_object.text}"  # type: ignore[attr-defined]
+            )
 
         return_error(str(e))
 
@@ -844,8 +844,8 @@ def sample_dynamic_analysis_results_command():
         if hasattr(e, "response_object"):
             return_error(
                 f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
-                f"message: {e.response_object.text}"
-            )  # type: ignore[attr-defined]
+                f"message: {e.response_object.text}"  # type: ignore[attr-defined]
+            )
 
         return_error(str(e))
 
@@ -909,8 +909,8 @@ def detonate_url_command():
         if hasattr(e, "response_object"):
             return_error(
                 f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
-                f"message: {e.response_object.text}"
-            )  # type: ignore[attr-defined]
+                f"message: {e.response_object.text}"  # type: ignore[attr-defined]
+            )
 
         return_error(str(e))
 
@@ -957,8 +957,8 @@ def url_dynamic_analysis_results_command():
         if hasattr(e, "response_object"):
             return_error(
                 f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
-                f"message: {e.response_object.text}"
-            )  # type: ignore[attr-defined]
+                f"message: {e.response_object.text}"  # type: ignore[attr-defined]
+            )
 
         return_error(str(e))
 

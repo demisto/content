@@ -1764,11 +1764,11 @@ def test_search_threat_model_command(mocker):
     [
         (
             {"ids": [2222, 3333], "success": True},
-            "The Attack Pattern entities with ids 2222, 3333" " were associated successfully to entity id: 11111.",
+            "The Attack Pattern entities with ids 2222, 3333 were associated successfully to entity id: 11111.",
         ),
         (
             {"ids": [3333], "success": True},
-            "Part of the Attack Pattern entities with ids 3333 " "were associated successfully to entity id: 11111.",
+            "Part of the Attack Pattern entities with ids 3333 were associated successfully to entity id: 11111.",
         ),
     ],
 )

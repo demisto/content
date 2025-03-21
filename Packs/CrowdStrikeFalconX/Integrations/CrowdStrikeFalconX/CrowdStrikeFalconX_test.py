@@ -698,7 +698,7 @@ def test_parse_indicator():
                 },
             ],
         },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && " "val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
             "Indicator": "sha256",
             "Type": "file",
             "Vendor": "",
@@ -715,7 +715,7 @@ def test_parse_indicator():
     (
         (
             "file",
-            "https://api.crowdstrike.com/falconx/queries/reports" "/v1?filter=sandbox.sha256%3A%22file%22",
+            "https://api.crowdstrike.com/falconx/queries/reports/v1?filter=sandbox.sha256%3A%22file%22",
             {"resources": ["id_1"]},
         ),
         (

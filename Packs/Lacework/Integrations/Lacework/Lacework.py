@@ -393,24 +393,22 @@ def fetch_incidents():
         # Get the numeric value for severity
         alert_severity = get_alert_severity_int(alert["severity"])
 
-        # If the alert is severe enough, continue
-        if alert_severity <= alert_severity_threshold:
-            # If the Alert ID is newer than we've imported, then add it
-            if alert_id > max_alert_id:
-                # Store our new max Alert ID
-                if alert_id > temp_max_alert_id:
-                    temp_max_alert_id = alert_id
+        # If the alert is severe enough, and If the Alert ID is newer than we've imported, then add it
+        if alert_severity <= alert_severity_threshold and alert_id > max_alert_id:
+            # Store our new max Alert ID
+            if alert_id > temp_max_alert_id:
+                temp_max_alert_id = alert_id
 
-                # Get the event details from Lacework
-                alert_details = lw_client.alerts.get_details(alert["alertId"], "Details")
+            # Get the event details from Lacework
+            alert_details = lw_client.alerts.get_details(alert["alertId"], "Details")
 
-                incident = {
-                    "name": "Lacework Event: " + alert["alertType"],
-                    "occurred": alert["startTime"],
-                    "rawJSON": json.dumps(alert_details["data"]),
-                }
+            incident = {
+                "name": "Lacework Event: " + alert["alertType"],
+                "occurred": alert["startTime"],
+                "rawJSON": json.dumps(alert_details["data"]),
+            }
 
-                new_incidents.append(incident)
+            new_incidents.append(incident)
 
     max_alert_id = temp_max_alert_id
 
@@ -431,7 +429,7 @@ try:
             response = lw_client.user_profile.get()
             demisto.debug(response)
 
-            keys = set(["username", "url", "accounts"])
+            keys = {"username", "url", "accounts"}
             if keys.issubset(response["data"][0].keys()):
                 demisto.results("ok")
         except Exception as error:

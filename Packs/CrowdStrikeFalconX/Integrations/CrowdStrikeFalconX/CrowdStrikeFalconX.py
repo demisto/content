@@ -232,7 +232,7 @@ class Client:
         except requests.exceptions.ConnectionError as exception:
             # Get originating Exception in Exception chain
             error_class = str(exception.__class__)
-            err_type = "<" + error_class[error_class.find("'") + 1 : error_class.rfind("'")] + ">"
+            err_type = "<" + error_class[error_class.find("'") + 1: error_class.rfind("'")] + ">"
             err_msg = (
                 f"\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n"
                 "Verify that the server URL parameter"
@@ -288,7 +288,7 @@ class Client:
         file_path = get_file_path_res["path"]
         file_name = quote(file_name or get_file_path_res.get("name", ""))
 
-        url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}" f"&comment={comment}"
+        url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}&comment={comment}"
         self._headers["Content-Type"] = "application/octet-stream"
         file_data = open(file_path, "rb")
         res = self._http_request("POST", url_suffix, data=file_data)
@@ -1576,7 +1576,7 @@ def validate_command_args(command: str, args: dict) -> None:
             raise Exception("file_name argument is a mandatory for cs-fx-upload-file command")
         if "polling" in args and args.get("submit_file") != "yes":
             raise Exception(
-                "The command cs-fx-upload-file support the polling option " "just when the submit_file argument is yes."
+                "The command cs-fx-upload-file support the polling option just when the submit_file argument is yes."
             )
 
     elif command == "cs-fx-submit-uploaded-file":

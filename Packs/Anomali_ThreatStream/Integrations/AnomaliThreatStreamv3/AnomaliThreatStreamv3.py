@@ -1414,7 +1414,7 @@ def add_investigation_element_command(
                 )
             else:
                 readable_output = (
-                    'The following elements with IDs were successfully added:' f' {", ".join(map(str, successful_ids))}.'
+                    f'The following elements with IDs were successfully added: {", ".join(map(str, successful_ids))}.'
                 )
     else:
         readable_output = f"All The elements was added successfully to investigation ID: {investigation_id}"
@@ -1682,7 +1682,7 @@ def validate_values_search_threat_model(model_type: str = None, publication_stat
             invalid_model_type.append(model_type_item)
     if raise_exception_model_type:
         raise DemistoException(
-            f'The model_type argument contains the following invalid values: ' f'{", ".join(map(str, invalid_model_type))}'
+            f'The model_type argument contains the following invalid values: {", ".join(map(str, invalid_model_type))}'
         )
     for publication_status_item in publication_status_list:
         if publication_status_item.lower() not in PUBLICATION_STATUS_LIST:
@@ -1699,7 +1699,7 @@ def validate_values_search_threat_model(model_type: str = None, publication_stat
             invalid_signature_type.append(signature_type_item)
     if raise_exception_signature_type:
         raise DemistoException(
-            'The signature_type argument contains the following invalid values: ' f'{", ".join(map(str, invalid_signature_type))}'
+            f'The signature_type argument contains the following invalid values: {", ".join(map(str, invalid_signature_type))}'
         )
 
 
@@ -2748,7 +2748,7 @@ def add_indicator_tag_command(client: Client, **kwargs) -> CommandResults:
     client.add_indicator_tag(indicator_ids, tags)
 
     return CommandResults(
-        readable_output=f"The tags have been successfully added" f" for the following ids:\n `{', '.join(indicator_ids)}`"
+        readable_output=f"The tags have been successfully added for the following ids:\n `{', '.join(indicator_ids)}`"
     )
 
 
@@ -2759,7 +2759,7 @@ def remove_indicator_tag_command(client: Client, **kwargs) -> CommandResults:
     client.remove_indicator_tag(indicator_ids, tags)
 
     return CommandResults(
-        readable_output=f"The tags were successfully deleted" f" for the following ids:\n `{', '.join(indicator_ids)}`"
+        readable_output=f"The tags were successfully deleted for the following ids:\n `{', '.join(indicator_ids)}`"
     )
 
 

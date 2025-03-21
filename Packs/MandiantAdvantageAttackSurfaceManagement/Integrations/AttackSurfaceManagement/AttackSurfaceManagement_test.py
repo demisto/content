@@ -454,7 +454,7 @@ def test_get_remote_data(client: AttackSurfaceManagement.Client, requests_mock, 
     assert issue_data["severity"] == 5
 
     assert notes_data["Type"] == 1
-    assert notes_data["Contents"] == "- testing a note that supports markdown\n" "- and has some neat new features\n" "test_user"
+    assert notes_data["Contents"] == "- testing a note that supports markdown\n- and has some neat new features\ntest_user"
     assert notes_data["Note"] is True
     assert notes_data["Tags"] == ["note_from_ma_asm"]
 

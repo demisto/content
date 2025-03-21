@@ -24,12 +24,12 @@ def search_indicators(args):
     size = int(args.get("size", DEFAULT_SIZE))
 
     indicators = demisto.executeCommand("findIndicators", {"query": query, "size": size})
-    outputs = list()
+    outputs = []
     if not isinstance(indicators, list) or len(indicators) < 1 or "Contents" not in indicators[0]:
         raise ValueError("No content")
     for i in indicators[0]["Contents"]:
-        oi = dict()
-        for k in i.keys():
+        oi = {}
+        for k in i:
             if k in keys:
                 oi[k] = i[k]
         outputs.append(oi)

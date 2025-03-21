@@ -49,7 +49,7 @@ class STIX21Processor:
         FE_CONFIDENCE_TO_REPUTATION[Common.DBotScore.BAD] = malicious_threshold
 
     def process_indicators(self) -> list:
-        processed_indicators = list()  # type: List
+        processed_indicators = []  # type: List
 
         for raw_data in self.raw_indicators:
             processed_indicator = self.process_indicator(raw_data)
@@ -76,7 +76,7 @@ class STIX21Processor:
 
         if indicator_pattern_value.startswith("file"):
             hash_values = indicator_pattern_value.split(" OR ")
-            hashes_dict = dict()  # type: Dict
+            hashes_dict = {}  # type: Dict
 
             for h in hash_values:
                 try:
@@ -100,8 +100,8 @@ class STIX21Processor:
                 return [], [], {}
 
         try:
-            indicator_types = list()  # type: List
-            values = list()  # type: List
+            indicator_types = []  # type: List
+            values = []  # type: List
             for indicator_value in indicator_pattern_value.split("AND"):
                 if indicator_value.startswith("email-message"):
                     key, value = indicator_value.split(":from_ref.value=")
@@ -140,22 +140,22 @@ class STIX21Processor:
         sorted_reputation_map = sorted(FE_CONFIDENCE_TO_REPUTATION.items(), reverse=True)
 
         if current_date - published_date < timedelta(days=reputation_interval):
-            for score, threshold in sorted_reputation_map:
+            for score, threshold in sorted_reputation_map:  # noqa: RET503
                 if confidence > threshold:
                     return score
 
         else:
-            for score, threshold in sorted_reputation_map:
+            for score, threshold in sorted_reputation_map:  # noqa: RET503
                 if confidence > threshold:
                     return min(score, Common.DBotScore.SUSPICIOUS)
 
     def process_indicator(self, raw_data: dict) -> list:
-        indicators = list()
+        indicators = []
 
         _, values, hashes = self.process_indicator_value(raw_data["pattern"])
 
         for value in values:
-            indicator = dict()
+            indicator = {}
             indicator["type"] = auto_detect_indicator_type(value)
             if indicator["type"]:
                 indicator["value"] = value
@@ -191,9 +191,9 @@ class STIX21Processor:
         return indicators
 
     def process_stix_entities(self) -> list:
-        processed_entities = list()  # type: List
+        processed_entities = []  # type: List
 
-        for entity_type, value in self.entities.items():
+        for _entity_type, value in self.entities.items():
             if value.get("type") in self.type_to_processor:
                 processed_entity = self.type_to_processor[value.get("type")](value)
                 if processed_entity:
@@ -202,7 +202,7 @@ class STIX21Processor:
         return processed_entities
 
     def process_reports(self) -> list:
-        processed_reports = list()  # type: List
+        processed_reports = []  # type: List
 
         for raw_data in self.reports:
             processed_report = self.process_report(raw_data)
@@ -213,7 +213,7 @@ class STIX21Processor:
 
     @staticmethod
     def process_malware(raw_data: dict) -> dict:
-        entity = dict()  # type: Dict[str, Any]
+        entity = {}  # type: Dict[str, Any]
 
         entity["type"] = "STIX Malware"
         entity["value"] = raw_data.get("name")
@@ -241,7 +241,7 @@ class STIX21Processor:
 
     @staticmethod
     def process_threat_actor(raw_data: dict) -> dict:
-        entity = dict()  # type: Dict[str, Any]
+        entity = {}  # type: Dict[str, Any]
 
         entity["type"] = "STIX Threat Actor"
         entity["value"] = raw_data.get("name")
@@ -274,7 +274,7 @@ class STIX21Processor:
 
     @staticmethod
     def process_report(raw_data: dict) -> dict:
-        report = dict()  # type: Dict[str, Any]
+        report = {}  # type: Dict[str, Any]
 
         report["type"] = "STIX Report"
         report["value"] = raw_data.get("name")
@@ -464,9 +464,9 @@ class Client(BaseClient):
                 stix_entities - Dict of `id: STIX 2.1 entity object`.
                 last_indicators_fetch_time - string of last fetch timestamp.
         """
-        raw_indicators = list()  # type: List
-        relationships = dict()  # type: Dict
-        stix_entities = dict()  # type: Dict
+        raw_indicators = []  # type: List
+        relationships = {}  # type: Dict
+        stix_entities = {}  # type: Dict
 
         headers = {
             "Accept": "application/vnd.oasis.stix+json; version=2.1",
@@ -543,7 +543,7 @@ class Client(BaseClient):
                 last_indicators_fetch_time - string of last fetch timestamp.
 
         """
-        raw_reports = list()  # type: List
+        raw_reports = []  # type: List
 
         headers = {
             "Accept": "application/vnd.oasis.stix+json; version=2.1",
@@ -714,10 +714,10 @@ def reset_fetch_command():
 
 def verify_threshold_reputation_interval_types(threshold: str, reputation_interval: str):
     if not str.isdigit(threshold):
-        return_error(f"{INTEGRATION_NAME} wrong parameter value - " f'Parameter "Malicious Threshold" has to be a number')
+        return_error(f'{INTEGRATION_NAME} wrong parameter value - Parameter "Malicious Threshold" has to be a number')
 
     if not str.isdigit(reputation_interval):
-        return_error(f"{INTEGRATION_NAME} wrong parameter value - " f'Parameter "Reputation Interval" has to be a number')
+        return_error(f'{INTEGRATION_NAME} wrong parameter value - Parameter "Reputation Interval" has to be a number')
 
 
 def main():

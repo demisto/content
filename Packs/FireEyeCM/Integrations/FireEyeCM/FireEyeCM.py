@@ -297,7 +297,7 @@ def get_reports(client: Client, args: Dict[str, Any]):
     if report_type == "alertDetailsReport":  # validate arguments
         # can use either alert_id, or infection_type and infection_id
         err_str = (
-            "The alertDetailsReport can be retrieved using alert_id argument alone, " "or by infection_type and infection_id"
+            "The alertDetailsReport can be retrieved using alert_id argument alone, or by infection_type and infection_id"
         )
         if alert_id:
             if infection_id or infection_type:

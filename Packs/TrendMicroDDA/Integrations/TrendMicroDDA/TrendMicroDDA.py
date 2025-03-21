@@ -100,7 +100,7 @@ def http_request(uri, method, headers, body={}, params={}, files={}):
 def file_uploaded_to_incident(file, file_sha1):
     """Converts an uploaded file to a Demisto incident"""
     incident = {}  # type: Dict[str, Any]
-    incident["name"] = "Incident: %s " % (file_sha1)
+    incident["name"] = f"Incident: {file_sha1} "
     incident["occurred"] = str(CURRENT_TIME)
     incident["rawJSON"] = "TODO"
 
@@ -281,7 +281,7 @@ def get_sample_command():
     sha1 = demisto.args()["sha1"]
     archive_type = demisto.args()["type"]
     archive_encrypted = demisto.args()["encrypted"]
-    archive_name = demisto.args()["archive_name"] if "archive_name" in demisto.args() else sha1
+    archive_name = demisto.args().get("archive_name", sha1)
     archive_name += f".{archive_type}"
     res, file = get_sample(sha1, archive_type, archive_encrypted, archive_name)
 
@@ -446,7 +446,7 @@ def build_report(res, threshold, status, verbose):
         hr = copy.deepcopy(reports["FILE_ANALYZE_REPORT"])
         for item in hr:
             item["File Name"] = item["OrigFileName"]  # type: ignore
-            item["Detection Name"] = item["VirusName"]["#text"] if "#text" in item["VirusName"] else None  # type: ignore
+            item["Detection Name"] = item["VirusName"].get("#text", None)  # type: ignore
             item["Malware Source IP"] = item["MalwareSourceIP"]  # type: ignore
             item["Malware Source Host"] = item["MalwareSourceHost"]  # type: ignore
             if verbose == "true":
@@ -476,7 +476,7 @@ def build_report(res, threshold, status, verbose):
                 "SHA1": file_analyzed["FileSHA1"],
                 "SHA256": file_analyzed["FileSHA256"],
                 "MD5": file_analyzed["FileMD5"],
-                "Name": file_analyzed["VirusName"]["#text"] if "#text" in file_analyzed["VirusName"] else "",
+                "Name": file_analyzed["VirusName"].get("#text", ""),
                 "VirusDetected": binary_to_boolean(file_analyzed["VirusDetected"]),
             }
             if file_analyzed["TrueFileType"] == "URL":
@@ -488,7 +488,7 @@ def build_report(res, threshold, status, verbose):
                     "SHA1": file_analyzed["FileSHA1"],
                     "SHA256": file_analyzed["FileSHA256"],
                     "Size": file_analyzed["FileSize"],
-                    "Name": file_analyzed["VirusName"]["#text"] if "#text" in file_analyzed["VirusName"] else "",
+                    "Name": file_analyzed["VirusName"].get("#text", ""),
                     # add score of some sort from virusdetected? ask michal.------------------ TODO --------------------
                 }
             file_analyzed_list.append(file_analyzed_dict)
@@ -512,9 +512,7 @@ def build_report(res, threshold, status, verbose):
                 "SHA1": main_file_analyze_report["FileSHA1"],
                 "SHA256": main_file_analyze_report["FileSHA256"],
                 "Size": main_file_analyze_report["FileSize"],
-                "Name": main_file_analyze_report["VirusName"]["#text"]
-                if "#text" in main_file_analyze_report["VirusName"]
-                else "",
+                "Name": main_file_analyze_report["VirusName"].get("#text", ""),
             }
         # add data regarding the submission to the context if it is malicious
         if reports["OVERALL_RISK_LEVEL"] >= threshold:

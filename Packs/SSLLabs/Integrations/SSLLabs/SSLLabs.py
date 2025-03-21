@@ -267,7 +267,7 @@ def analyze_command(
 
     is_url = client.is_valid(host)
     if is_url is False:
-        raise Exception(f"Input is not a valid URL.\n" f"http://example.com OR https://example.com \n" f"Input provided {host}")
+        raise Exception(f"Input is not a valid URL.\nhttp://example.com OR https://example.com \nInput provided {host}")
 
     res = client.analyze(host, publish, start_new, from_cache, max_age, all_endpoints, ignore_mismatch)
     return res

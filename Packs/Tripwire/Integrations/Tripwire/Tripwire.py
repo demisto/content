@@ -103,14 +103,14 @@ def prepare_time_range(start: str, end: str = ""):
             start = parse_date_range(start, date_format=DATE_FORMAT)[0]
         except Exception:
             raise DemistoException(
-                f"Please insert start time in relative format e.g. '1 day', '2 days' or in " f"date format {DATE_FORMAT}"
+                f"Please insert start time in relative format e.g. '1 day', '2 days' or in date format {DATE_FORMAT}"
             )
     if not re.search(DATE_REG, end):
         try:
             end = parse_date_range(end, date_format=DATE_FORMAT)[0]
         except Exception:
             raise DemistoException(
-                f"Please insert end time in relative format e.g. '1 day', '2 days' or in " f"date format {DATE_FORMAT}"
+                f"Please insert end time in relative format e.g. '1 day', '2 days' or in date format {DATE_FORMAT}"
             )
 
     return start, end

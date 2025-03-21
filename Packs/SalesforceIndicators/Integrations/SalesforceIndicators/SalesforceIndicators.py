@@ -98,8 +98,8 @@ class Client(BaseClient):
 
 
 def fetch_indicators_command(client: Client, manual_run: bool = False):
-    indicators_unparsed: List[Dict] = list()
-    indicators = list()
+    indicators_unparsed: List[Dict] = []
+    indicators = []
     now = datetime.utcnow()
     history_date = dateparser.parse(f"{client.history} days ago", settings={"RELATIVE_BASE": now})
     assert history_date is not None, f"could not parse {client.history} days ago"
@@ -145,7 +145,7 @@ def fetch_indicators_command(client: Client, manual_run: bool = False):
     if indicators_raw.get("totalSize", 0) > 0:
         for indicator in indicators_raw.get("records", []):
             indicators_unparsed.append({k: v for k, v in indicator.items() if k != "attributes"})
-        more_records = True if indicators_raw.get("nextRecordsUrl", None) else False
+        more_records = bool(indicators_raw.get("nextRecordsUrl"))
 
         while more_records:
             next_records = "/".join(indicators_raw.get("nextRecordsUrl").split("/")[-2:])
@@ -153,13 +153,13 @@ def fetch_indicators_command(client: Client, manual_run: bool = False):
             for indicator in indicators_raw.get("records", []):
                 indicators_unparsed.append({k: v for k, v in indicator.items() if k != "attributes"})
 
-            more_records = True if indicators_raw.get("nextRecordsUrl", None) else False
+            more_records = bool(indicators_raw.get("nextRecordsUrl"))
     if indicators_unparsed and len(indicators_unparsed) > 0:
         mod_date = sorted([x.get(client.date_field) for x in indicators_unparsed], reverse=True)[0]  # type: ignore
         latest_mod_date = dateparser.parse(mod_date)  # type: ignore
     for item in indicators_unparsed:
         try:
-            value = item[client.key_field] if client.key_field in item else None
+            value = item.get(client.key_field, None)
             if value:
                 item["object_name"] = client.object_name
                 indicator = {"value": value, "type": client.object_name, "rawJSON": item, "score": client.score}

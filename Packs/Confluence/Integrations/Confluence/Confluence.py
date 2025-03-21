@@ -401,7 +401,7 @@ CODE EXECUTION STARTS HERE
 
 demisto.command() returns the name of the command which executed now
 """
-LOG("Confluence integration is executing the command %s" % (demisto.command(),))
+LOG(f"Confluence integration is executing the command {demisto.command()}")
 try:
     handle_proxy()
     if demisto.command() == "test-module":

@@ -396,7 +396,7 @@ def parse_hacking_discussions_markdown_table(items: list[dict[str, Any]], aggr: 
     aggr_tags = aggr.get("tags", [])
     if not isinstance(aggr_media, list) or not isinstance(aggr_tags, list):
         raise Exception("RaDark Error: Response is missing!")
-    aggr_tags = list(map(lambda t: t.lower(), aggr_tags))
+    aggr_tags = [t.lower() for t in aggr_tags]
     # Image items handler
     for media_item in aggr_media:
         if not isinstance(media_item, dict):
