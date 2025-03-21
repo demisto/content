@@ -522,26 +522,25 @@ There is no context output for this command.
 
 #### Mirroring In (Doppel → XSOAR)
 
-When incidents are mirrored into XSOAR from Doppel:
+When incidents are mirrored into Cortex XSOAR from Doppel:
 1. Any changes in Doppel alerts (mirroring incoming fields) will be reflected in Cortex XSOAR incidents.
 
 **Supported Fields**
 
 The following fields are mirrored:
-1. Doppel Queue State
-2. Doppel Entity State
-3. Audit Log History
+1. Doppel Queue State – Indicates the queue where the alert is currently assigned.
+2. Doppel Entity State – Represents the status of the alert.
+3. Audit Log History – A record of all changes made to the alert. 
 
 
 #### Mirroring Out (XSOAR → Doppel)
 
-When incidents are mirrored out from XSOAR to Doppel:
+When incidents are mirrored out from Cortex XSOAR to Doppel:
 
 **Supported Fields**
 
 The following fields are mirrored:
-1. Doppel Queue State
-2. Comments
+1. Doppel Queue State – Indicates the queue where the alert is currently assigned.
 
 #### Configuration Steps
 
@@ -553,7 +552,7 @@ To enable incident mirroring between Cortex XSOAR incidents and Doppel alerts:
     | --- | --- |
     | None | Turns off incident mirroring. |
     | Incoming | Any changes in Doppel alerts (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
-    | Outgoing | Mirroring out will only update queue state and comments in Doppel alerts (outgoing mirrored fields). |
+    | Outgoing | Mirroring out will only update queue state in Doppel alerts (outgoing mirrored fields). |
     | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Doppel alerts will be reflected in both directions. |
 
 
