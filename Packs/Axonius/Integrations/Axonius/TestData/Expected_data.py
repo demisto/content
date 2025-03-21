@@ -124,28 +124,14 @@ EXPECTED_DEVICE = {
         "epo_adapter",
         "esx_adapter",
         "sccm_adapter",
-        "tenable_security_center_adapter"
+        "tenable_security_center_adapter",
     ],
     "internal_axon_id": "98d57c96f73fbcb1edd63110f4f15613",
-    "labels": [
-        "Count Meraki",
-        "JB-Windows",
-        "Windows Workstation"
-    ],
-    "aggregated_hostname": [
-        "DESKTOP-DUMMY.DEMO.LOCAL"
-    ],
+    "labels": ["Count Meraki", "JB-Windows", "Windows Workstation"],
+    "aggregated_hostname": ["DESKTOP-DUMMY.DEMO.LOCAL"],
     "aggregated_last_seen": "Tue, 05 Apr 2022 22:58:14 GMT",
-    "aggregated.name": [
-        "DESKTOP-DUMMY"
-    ],
-    "aggregated_network_interfaces_ips": [
-        "1.1.1.1"
-    ],
-    "aggregated_network_interfaces_mac": [
-        "52-84-D4-D0-79-04"
-    ],
-    "aggregated_os_type": [
-        "Windows"
-    ]
+    "aggregated.name": ["DESKTOP-DUMMY"],
+    "aggregated_network_interfaces_ips": ["1.1.1.1"],
+    "aggregated_network_interfaces_mac": ["52-84-D4-D0-79-04"],
+    "aggregated_os_type": ["Windows"],
 }
