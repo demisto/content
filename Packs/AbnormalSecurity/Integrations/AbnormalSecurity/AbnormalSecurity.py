@@ -865,12 +865,9 @@ def generate_threat_incidents(client, threats, max_page_number, start_datetime, 
                 break
 
         received_time = ""
-        # In case there is no message within the given time range, we use non-filtered list of messages
-        if all_messages and not all_filtered_messages:
-            all_filtered_messages = all_messages
-        if all_filtered_messages:
-            received_time = all_filtered_messages[0].get("receivedTime")
-        threat_details["messages"] = all_filtered_messages
+        threat_details["messages"] = all_messages or all_filtered_messages
+        if threat_details["messages"]:
+            received_time = threat_details["messages"][0].get("receivedTime")
 
         incident = {
             "dbotMirrorId": str(threat["threatId"]),
