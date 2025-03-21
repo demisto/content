@@ -1,8 +1,8 @@
 import json
-import pytest
-
-from GSuiteSecurityAlertCenter import MESSAGES, GSuiteClient, DemistoException
 from unittest.mock import patch
+
+import pytest
+from GSuiteSecurityAlertCenter import MESSAGES, DemistoException, GSuiteClient
 
 
 def get_data_from_file(filepath):
@@ -15,19 +15,14 @@ def get_data_from_file(filepath):
         return f.read()
 
 
-TEST_JSON = get_data_from_file('test_data/service_account_json.json')
-MOCKER_HTTP_METHOD = 'GSuiteApiModule.GSuiteClient.http_request'
-PARAMS = {
-    'user_service_account_json': TEST_JSON,
-    'admin_email': 'user@test.io'
-}
+TEST_JSON = get_data_from_file("test_data/service_account_json.json")
+MOCKER_HTTP_METHOD = "GSuiteApiModule.GSuiteClient.http_request"
+PARAMS = {"user_service_account_json": TEST_JSON, "admin_email": "user@test.io"}
 
 
 @pytest.fixture
 def gsuite_client():
-    headers = {
-        'Content-Type': 'application/json'
-    }
+    headers = {"Content-Type": "application/json"}
     return GSuiteClient(GSuiteClient.safe_load_non_strict_json(TEST_JSON), verify=False, proxy=False, headers=headers)
 
 
@@ -44,12 +39,13 @@ def test_test_function(mocker, gsuite_client):
     Then:
     - Ensure 'ok' should be return.
     """
-    from GSuiteSecurityAlertCenter import test_module, GSuiteClient, service_account
-    mocker.patch.object(GSuiteClient, 'set_authorized_http')
-    mocker.patch.object(GSuiteClient, 'http_request')
-    mocker.patch.object(service_account.Credentials, 'refresh')
+    from GSuiteSecurityAlertCenter import GSuiteClient, service_account, test_module
+
+    mocker.patch.object(GSuiteClient, "set_authorized_http")
+    mocker.patch.object(GSuiteClient, "http_request")
+    mocker.patch.object(service_account.Credentials, "refresh")
     gsuite_client.credentials.token = True
-    assert test_module(gsuite_client, {}, {}) == 'ok'
+    assert test_module(gsuite_client, {}, {}) == "ok"
 
 
 def test_test_function_error(mocker, gsuite_client):
@@ -65,12 +61,13 @@ def test_test_function_error(mocker, gsuite_client):
     Then:
     - Ensure message should be as expected.
     """
-    from GSuiteSecurityAlertCenter import test_module, GSuiteClient, service_account
-    mocker.patch.object(GSuiteClient, 'set_authorized_http')
-    mocker.patch.object(GSuiteClient, 'http_request')
-    mocker.patch.object(service_account.Credentials, 'refresh')
+    from GSuiteSecurityAlertCenter import GSuiteClient, service_account, test_module
+
+    mocker.patch.object(GSuiteClient, "set_authorized_http")
+    mocker.patch.object(GSuiteClient, "http_request")
+    mocker.patch.object(service_account.Credentials, "refresh")
     gsuite_client.credentials.token = None
-    with pytest.raises(DemistoException, match=MESSAGES['TEST_CONNECTIVITY_FAILED_ERROR']):
+    with pytest.raises(DemistoException, match=MESSAGES["TEST_CONNECTIVITY_FAILED_ERROR"]):
         test_module(gsuite_client, {}, {})
 
 
@@ -88,13 +85,14 @@ def test_validate_params_for_fetch_incidents_error():
     - Ensure parameters validation.
     """
     from GSuiteSecurityAlertCenter import validate_params_for_fetch_incidents
+
     params = {
-        'isFetch': True,
-        'max_fetch': 'abc',
-        'admin_email': 'hello',
+        "isFetch": True,
+        "max_fetch": "abc",
+        "admin_email": "hello",
     }
 
-    with pytest.raises(ValueError, match=MESSAGES['MAX_INCIDENT_ERROR']):
+    with pytest.raises(ValueError, match=MESSAGES["MAX_INCIDENT_ERROR"]):
         validate_params_for_fetch_incidents(params, {})
 
 
@@ -105,16 +103,14 @@ def test_prepare_args_for_invalid_args():
     Should raise exception for invalid argument.
     """
     from GSuiteSecurityAlertCenter import validate_params_for_list_alerts
-    args = {
-        'page_size': -1,
-        'filter': "createTime >= '2020-10-28T20:43:34.381Z' AND type='Suspicious login'"
-    }
-    with pytest.raises(Exception, match=MESSAGES['INTEGER_ERROR'].format('page_size')):
+
+    args = {"page_size": -1, "filter": "createTime >= '2020-10-28T20:43:34.381Z' AND type='Suspicious login'"}
+    with pytest.raises(Exception, match=MESSAGES["INTEGER_ERROR"].format("page_size")):
         validate_params_for_list_alerts(args)
 
-    args.pop('page_size')
+    args.pop("page_size")
     params = validate_params_for_list_alerts(args)
-    assert params['filter'] == 'createTime >= "2020-10-28T20:43:34.381Z" AND type="Suspicious login"'
+    assert params["filter"] == 'createTime >= "2020-10-28T20:43:34.381Z" AND type="Suspicious login"'
 
 
 def test_create_custom_context_for_batch_command():
@@ -124,30 +120,14 @@ def test_create_custom_context_for_batch_command():
     Should return proper custom context response.
     """
     from GSuiteSecurityAlertCenter import create_custom_context_for_batch_command
+
     input_data = {
-        "successAlertIds": [
-            "dummy_alertId1"
-        ],
-        "failedAlertStatus": {
-            "dummy_alertId2": {
-                "code": 5,
-                "message": "NOT_FOUND"
-            }
-        }
+        "successAlertIds": ["dummy_alertId1"],
+        "failedAlertStatus": {"dummy_alertId2": {"code": 5, "message": "NOT_FOUND"}},
     }
 
-    expected_data_success = [
-        {
-            "id": "dummy_alertId1"
-        }
-    ],
-    expected_data_failed = [
-        {
-            "id": "dummy_alertId2",
-            "code": 5,
-            "message": "NOT_FOUND"
-        }
-    ]
+    expected_data_success = ([{"id": "dummy_alertId1"}],)
+    expected_data_failed = [{"id": "dummy_alertId2", "code": 5, "message": "NOT_FOUND"}]
 
     output_data = create_custom_context_for_batch_command(input_data)
     assert expected_data_success, expected_data_failed == output_data
@@ -160,23 +140,19 @@ def test_prepare_hr_for_batch_command():
     Should return proper hr response.
     """
     from GSuiteSecurityAlertCenter import prepare_hr_for_batch_command
+
     input_data = {
-        "successAlertIds": [
-            "dummy_alertId1"
-        ],
-        "failedAlertStatus": {
-            "dummy_alertId2": {
-                "code": 5,
-                "message": "NOT_FOUND"
-            }
-        }
+        "successAlertIds": ["dummy_alertId1"],
+        "failedAlertStatus": {"dummy_alertId2": {"code": 5, "message": "NOT_FOUND"}},
     }
 
-    expected_data = "### Delete Alerts\n" \
-                    "|Alert ID|Status|\n|---|---|" \
-                    "\n| dummy_alertId1 | Success |\n| dummy_alertId2 | Fail (NOT_FOUND) |\n"
+    expected_data = (
+        "### Delete Alerts\n"
+        "|Alert ID|Status|\n|---|---|"
+        "\n| dummy_alertId1 | Success |\n| dummy_alertId2 | Fail (NOT_FOUND) |\n"
+    )
 
-    output_data = prepare_hr_for_batch_command(input_data, 'Delete Alerts')
+    output_data = prepare_hr_for_batch_command(input_data, "Delete Alerts")
     assert expected_data == output_data
 
 
@@ -196,17 +172,17 @@ def test_gsac_list_alerts_command_success(mocker_http_request, gsuite_client):
     """
     from GSuiteSecurityAlertCenter import gsac_list_alerts_command
 
-    with open('test_data/list_alert_response.json') as data:
+    with open("test_data/list_alert_response.json") as data:
         mock_response = json.load(data)
 
-    with open('test_data/list_alert_context.json') as data:
+    with open("test_data/list_alert_context.json") as data:
         expected_res = json.load(data)
 
-    with open('test_data/list_alert.md') as data:
+    with open("test_data/list_alert.md") as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
-    args = {'admin_email': 'user@test.com'}
+    args = {"admin_email": "user@test.com"}
 
     result = gsac_list_alerts_command(gsuite_client, args)
 
@@ -232,11 +208,11 @@ def test_gsac_list_alerts_command_with_empty_response(mocker_http_request, gsuit
     from GSuiteSecurityAlertCenter import gsac_list_alerts_command
 
     mocker_http_request.return_value = {}
-    args = {'admin_email': 'user@test.com'}
+    args = {"admin_email": "user@test.com"}
 
     result = gsac_list_alerts_command(gsuite_client, args)
 
-    assert result.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('alert(s)')
+    assert result.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("alert(s)")
 
 
 @patch(MOCKER_HTTP_METHOD)
@@ -254,9 +230,10 @@ def test_gsac_list_alerts_command_wrong_argument(mocker_http_request, gsuite_cli
     - Ensure command should raise Exception as expected.
     """
     from GSuiteSecurityAlertCenter import gsac_list_alerts_command
+
     message = "message"
     mocker_http_request.side_effect = Exception(message)
-    args = {'page_token': '1', 'admin_email': 'user@test.comm'}
+    args = {"page_token": "1", "admin_email": "user@test.comm"}
     with pytest.raises(Exception, match=message):
         gsac_list_alerts_command(gsuite_client, args)
 
@@ -277,17 +254,17 @@ def test_gsac_get_alert_command_success(mocker_http_request, gsuite_client):
     """
     from GSuiteSecurityAlertCenter import gsac_get_alert_command
 
-    with open('test_data/get_alert_response.json') as data:
+    with open("test_data/get_alert_response.json") as data:
         mock_response = json.load(data)
 
-    with open('test_data/get_alert_context.json') as data:
+    with open("test_data/get_alert_context.json") as data:
         expected_res = json.load(data)
 
-    with open('test_data/get_alert.md') as data:
+    with open("test_data/get_alert.md") as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
-    args = {'alert_id': 'demoId'}
+    args = {"alert_id": "demoId"}
 
     result = gsac_get_alert_command(gsuite_client, args)
 
@@ -313,11 +290,11 @@ def test_gsac_get_alert_command_with_empty_response(mocker_http_request, gsuite_
     from GSuiteSecurityAlertCenter import gsac_get_alert_command
 
     mocker_http_request.return_value = {}
-    args = {'alert_id': 'demoId'}
+    args = {"alert_id": "demoId"}
 
     result = gsac_get_alert_command(gsuite_client, args)
 
-    assert result.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('alert')
+    assert result.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("alert")
 
 
 def test_gsac_get_alert_command_wrong_argument(gsuite_client):
@@ -334,7 +311,8 @@ def test_gsac_get_alert_command_wrong_argument(gsuite_client):
     - Ensure command should raise Exception as expected.
     """
     from GSuiteSecurityAlertCenter import gsac_get_alert_command
-    args = {'alert_id': 'demo_id'}
+
+    args = {"alert_id": "demo_id"}
     with pytest.raises(Exception):
         gsac_get_alert_command(gsuite_client, args)
 
@@ -355,17 +333,17 @@ def test_gsac_create_alert_feedback_command_success(mocker_http_request, gsuite_
     """
     from GSuiteSecurityAlertCenter import gsac_create_alert_feedback_command
 
-    with open('test_data/create_alert_feedback_response.json') as data:
+    with open("test_data/create_alert_feedback_response.json") as data:
         mock_response = json.load(data)
 
-    with open('test_data/create_alert_feedback_response.json') as data:
+    with open("test_data/create_alert_feedback_response.json") as data:
         expected_res = json.load(data)
 
-    with open('test_data/create_alert_feedback.md') as data:
+    with open("test_data/create_alert_feedback.md") as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
-    args = {'feedback_type': 'NOT_USEFUL', 'alert_id': 'dummy_alertId'}
+    args = {"feedback_type": "NOT_USEFUL", "alert_id": "dummy_alertId"}
 
     result = gsac_create_alert_feedback_command(gsuite_client, args)
 
@@ -389,9 +367,10 @@ def test_gsac_create_alert_feedback_command_wrong_argument(mocker_http_request, 
     - Ensure command should raise Exception as expected.
     """
     from GSuiteSecurityAlertCenter import gsac_create_alert_feedback_command
-    message = MESSAGES['INVALID_FEEDBACK_TYPE_ERROR']
+
+    message = MESSAGES["INVALID_FEEDBACK_TYPE_ERROR"]
     mocker_http_request.side_effect = Exception(message)
-    args = {'feedback_type': 'dummy', 'alert_id': 'dummy alertId'}
+    args = {"feedback_type": "dummy", "alert_id": "dummy alertId"}
     with pytest.raises(Exception, match=message):
         gsac_create_alert_feedback_command(gsuite_client, args)
 
@@ -412,17 +391,17 @@ def test_gsac_batch_delete_alerts_command_success(mocker_http_request, gsuite_cl
     """
     from GSuiteSecurityAlertCenter import gsac_batch_delete_alerts_command
 
-    with open('test_data/batch_delete_alerts_raw_response.json') as data:
+    with open("test_data/batch_delete_alerts_raw_response.json") as data:
         mock_response = json.load(data)
 
-    with open('test_data/batch_delete_alerts_context.json') as data:
+    with open("test_data/batch_delete_alerts_context.json") as data:
         expected_res = json.load(data)
 
-    with open('test_data/batch_delete_alerts.md') as data:
+    with open("test_data/batch_delete_alerts.md") as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
-    args = {'alert_id': 'dummy_alertId1,dummy_alertId2'}
+    args = {"alert_id": "dummy_alertId1,dummy_alertId2"}
 
     result = gsac_batch_delete_alerts_command(gsuite_client, args)
 
@@ -447,17 +426,17 @@ def test_gsac_batch_recover_alerts_command_success(mocker_http_request, gsuite_c
     """
     from GSuiteSecurityAlertCenter import gsac_batch_recover_alerts_command
 
-    with open('test_data/batch_recover_alerts_raw_response.json') as data:
+    with open("test_data/batch_recover_alerts_raw_response.json") as data:
         mock_response = json.load(data)
 
-    with open('test_data/batch_recover_alerts_context.json') as data:
+    with open("test_data/batch_recover_alerts_context.json") as data:
         expected_res = json.load(data)
 
-    with open('test_data/batch_recover_alerts.md') as data:
+    with open("test_data/batch_recover_alerts.md") as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
-    args = {'alert_id': 'dummy_alertId1,dummy_alertId2'}
+    args = {"alert_id": "dummy_alertId1,dummy_alertId2"}
 
     result = gsac_batch_recover_alerts_command(gsuite_client, args)
 
@@ -482,17 +461,17 @@ def test_gsac_list_alert_feedback_command_success(mocker_http_request, gsuite_cl
     """
     from GSuiteSecurityAlertCenter import gsac_list_alert_feedback_command
 
-    with open('test_data/list_alert_feedback_response.json') as data:
+    with open("test_data/list_alert_feedback_response.json") as data:
         mock_response = json.load(data)
 
-    with open('test_data/list_alert_feedback_context.json') as data:
+    with open("test_data/list_alert_feedback_context.json") as data:
         expected_res = json.load(data)
 
-    with open('test_data/list_alert_feedback.md') as data:
+    with open("test_data/list_alert_feedback.md") as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
-    args = {'alert_id': 'dummy_alertId_1'}
+    args = {"alert_id": "dummy_alertId_1"}
 
     result = gsac_list_alert_feedback_command(gsuite_client, args)
 
@@ -518,11 +497,11 @@ def test_gsac_list_alert_feedback_command_with_empty_response(mocker_http_reques
     from GSuiteSecurityAlertCenter import gsac_list_alert_feedback_command
 
     mocker_http_request.return_value = {}
-    args = {'alert_id': 'demoId'}
+    args = {"alert_id": "demoId"}
 
     result = gsac_list_alert_feedback_command(gsuite_client, args)
 
-    assert result.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('feedback(s)')
+    assert result.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("feedback(s)")
 
 
 def test_validate_params_for_fetch_incidents():
@@ -540,13 +519,9 @@ def test_validate_params_for_fetch_incidents():
     """
     from GSuiteSecurityAlertCenter import validate_params_for_fetch_incidents
 
-    input = {
-        'alert_type': ['Suspicious login', 'User spam spike'],
-        'first_fetch': '3 days',
-        'max_fetch': '1'
-    }
+    input = {"alert_type": ["Suspicious login", "User spam spike"], "first_fetch": "3 days", "max_fetch": "1"}
     response, _ = validate_params_for_fetch_incidents(input, {})
-    filter = response['filter'].split('AND')
+    filter = response["filter"].split("AND")
     assert filter[1] == ' (type="Suspicious login" OR type="User spam spike")'
 
 
@@ -564,24 +539,25 @@ def test_fetch_incidents(gsuite_client, mocker):
     - Ensure successful execution of fetch_incidents.
     """
     from GSuiteSecurityAlertCenter import fetch_incidents
+
     params = {
-        'filter': "type='Suspicious login'",
-        'alert_type': 'Suspicious login',
-        'first_fetch': '3 days',
-        'max_fetch': '1',
-        'admin_email': 'dummy'
+        "filter": "type='Suspicious login'",
+        "alert_type": "Suspicious login",
+        "first_fetch": "3 days",
+        "max_fetch": "1",
+        "admin_email": "dummy",
     }
-    with open('test_data/fetch_incidents_alert_response.json') as file:
+    with open("test_data/fetch_incidents_alert_response.json") as file:
         fetch_incidents_response = json.load(file)
 
-    with open('test_data/fetch_incidents_output.json') as file:
+    with open("test_data/fetch_incidents_output.json") as file:
         fetch_incidents_output = json.load(file)
 
     mocker.patch("demistomock.info", return_value=True)
     mocker.patch(MOCKER_HTTP_METHOD, return_value=fetch_incidents_response)
     fetch_incident = fetch_incidents(gsuite_client, {}, params)
 
-    assert fetch_incident[0] == fetch_incidents_output['incidents']
+    assert fetch_incident[0] == fetch_incidents_output["incidents"]
 
 
 def test_main_fetch_incidents(mocker):
@@ -593,19 +569,30 @@ def test_main_fetch_incidents(mocker):
     :param args: Mocker objects.
     :return: None
     """
-    from GSuiteSecurityAlertCenter import main, demisto
-    with open('test_data/fetch_incidents_output.json') as file:
+    from GSuiteSecurityAlertCenter import demisto, main
+
+    with open("test_data/fetch_incidents_output.json") as file:
         fetch_incidents_output = json.load(file)
-    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
-    mocker.patch.object(demisto, 'incidents')
-    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, "command", return_value="fetch-incidents")
+    mocker.patch.object(demisto, "incidents")
+    mocker.patch.object(demisto, "setLastRun")
     mocker.patch("demistomock.info", return_value=True)
-    mocker.patch.object(demisto, 'params',
-                        return_value={'user_service_account_json': TEST_JSON, 'max_incidents': 1,
-                                      'first_fetch': '10 minutes', 'isFetch': True, 'user_id': 'hellod'})
-    mocker.patch('GSuiteSecurityAlertCenter.fetch_incidents',
-                 return_value=(fetch_incidents_output['incidents'], fetch_incidents_output['last_fetch']))
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "user_service_account_json": TEST_JSON,
+            "max_incidents": 1,
+            "first_fetch": "10 minutes",
+            "isFetch": True,
+            "user_id": "hellod",
+        },
+    )
+    mocker.patch(
+        "GSuiteSecurityAlertCenter.fetch_incidents",
+        return_value=(fetch_incidents_output["incidents"], fetch_incidents_output["last_fetch"]),
+    )
     main()
 
-    demisto.incidents.assert_called_once_with(fetch_incidents_output['incidents'])
-    demisto.setLastRun.assert_called_once_with(fetch_incidents_output['last_fetch'])
+    demisto.incidents.assert_called_once_with(fetch_incidents_output["incidents"])
+    demisto.setLastRun.assert_called_once_with(fetch_incidents_output["last_fetch"])
