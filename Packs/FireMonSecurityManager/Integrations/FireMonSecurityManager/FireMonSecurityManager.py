@@ -1,9 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 """ IMPORTS """
-from typing import Any, Dict
+from typing import Any
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -97,7 +96,6 @@ class Client(BaseClient):
         return api_response
 
     def get_workflow_id_by_workflow_name(self, domain_id, workflow_name, auth_token, parameters):
-
         list_of_workflow = self.get_list_of_workflow(auth_token, domain_id, parameters)
         count_of_workflow = list_of_workflow.get("total")
 
@@ -106,17 +104,13 @@ class Client(BaseClient):
             list_of_workflow = self.get_list_of_workflow(auth_token, domain_id, parameters)
 
         for workflow in list_of_workflow.get("results"):
-            if (workflow["workflow"]["pluginArtifactId"] == "access-request") and (
-                workflow["workflow"]["name"] == workflow_name
-            ):
+            if (workflow["workflow"]["pluginArtifactId"] == "access-request") and (workflow["workflow"]["name"] == workflow_name):
                 workflow_id = workflow["workflow"]["id"]
                 return workflow_id
 
     def create_pp_ticket(self, auth_token, payload):
         parameters = {"includeDisabled": False, "pageSize": 10}
-        workflow_id = self.get_workflow_id_by_workflow_name(
-            payload["domainId"], payload["workflowName"], auth_token, parameters
-        )
+        workflow_id = self.get_workflow_id_by_workflow_name(payload["domainId"], payload["workflowName"], auth_token, parameters)
         headers = {"Accept": "application/json", "Content-Type": "application/json", "X-FM-Auth-Token": auth_token}
         data = get_create_pp_ticket_payload()
         data["variables"]["priority"] = payload["priority"]
@@ -132,9 +126,7 @@ class Client(BaseClient):
             data["policyPlanRequirements"].append(dict(input_data))
 
         create_pp_ticket_url = CREATE_PP_TICKET_URL.format(payload["domainId"], workflow_id)
-        api_response = self._http_request(
-            method="POST", url_suffix=create_pp_ticket_url, headers=headers, json_data=data
-        )
+        api_response = self._http_request(method="POST", url_suffix=create_pp_ticket_url, headers=headers, json_data=data)
         return api_response
 
     def validate_pca_change(self, payload_pca, pca_url_suffix, headers):
@@ -201,7 +193,7 @@ class Client(BaseClient):
         )
         return rule_rec_api_response
 
-    def get_paged_search_secrule(self, auth_token: str, payload: Dict[str, Any]):
+    def get_paged_search_secrule(self, auth_token: str, payload: dict[str, Any]):
         """Calling siql paged search api for searching security rules
         using `SIQL` language query
 
@@ -209,7 +201,7 @@ class Client(BaseClient):
             auth_token (str): authentication token
             payload (Dict[str, Any]): payload to be used for making request
         """
-        parameters: Dict[str, Any] = {
+        parameters: dict[str, Any] = {
             "q": payload["q"],
             "pageSize": payload["pageSize"],
             "page": payload["page"],
@@ -227,14 +219,14 @@ class Client(BaseClient):
         )
         return secrule_page_search_response
 
-    def get_paged_all_collectors(self, auth_token: str, payload: Dict[str, Any]):
+    def get_paged_all_collectors(self, auth_token: str, payload: dict[str, Any]):
         """Calling get paged search api for collector
 
         Args:
             auth_token (str): authentication token
             payload (Dict[str, Any]): payload to be used for making request
         """
-        parameters: Dict[str, Any] = {
+        parameters: dict[str, Any] = {
             "pageSize": payload["pageSize"],
             "page": payload["page"],
         }
@@ -260,7 +252,7 @@ class Client(BaseClient):
         """
         collector_status_response = self._http_request(
             method="GET",
-            url_suffix=f'{COLLECTOR_URL}/status/{collector_id}',
+            url_suffix=f"{COLLECTOR_URL}/status/{collector_id}",
             headers={
                 "Content-Type": "application/json",
                 "Accept": "application/json",
@@ -351,9 +343,7 @@ def pca_command(client, args):
         if filtered_rules is None:
             return "No Rules Needs to be changed!"
 
-        result[i] = client.validate_pca_change(
-            filtered_rules, PCA_URL_SUFFIX.format(args.get("domain_id"), device_id), headers
-        )
+        result[i] = client.validate_pca_change(filtered_rules, PCA_URL_SUFFIX.format(args.get("domain_id"), device_id), headers)
         if "requestId" in result[i]:
             del result[i]["requestId"]
         if "pcaResult" in result[i]:
@@ -399,7 +389,7 @@ def pca_command(client, args):
     )
 
 
-def get_paged_search_secrule(client: Client, auth_token: str, payload: Dict[str, Any]) -> List:
+def get_paged_search_secrule(client: Client, auth_token: str, payload: dict[str, Any]) -> List:
     """Make subsequent requests using client and other arguments
 
     Args:
@@ -424,7 +414,7 @@ def get_paged_search_secrule(client: Client, auth_token: str, payload: Dict[str,
     return result
 
 
-def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
+def secmgr_secrule_search_command(client: Client, args: dict[str, Any]):
     """Searches for security rules using the SIQL language query
 
     Args:
@@ -435,7 +425,7 @@ def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
     auth_token = auth_token_cmd_result.outputs
 
     # page size can't be less than 1
-    page_size = 1 if int(args.get("pageSize", 10)) < 1 else int(args.get("pageSize", 10))
+    page_size = max(int(args.get("pageSize", 10)), 1)
     payload = dict(
         q=str(args.get("q")),
         pageSize=page_size,
@@ -457,7 +447,7 @@ def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_paged_all_collectors(client: Client, auth_token: str, payload: Dict[str, Any]) -> List:
+def get_paged_all_collectors(client: Client, auth_token: str, payload: dict[str, Any]) -> List:
     """Make subsequent requests using client and other arguments
 
     Args:
@@ -482,7 +472,7 @@ def get_paged_all_collectors(client: Client, auth_token: str, payload: Dict[str,
     return result
 
 
-def collector_get_all_command(client: Client, args: Dict[str, Any]):
+def collector_get_all_command(client: Client, args: dict[str, Any]):
     """List all the collectors in the inventory
 
     Args:
@@ -492,7 +482,7 @@ def collector_get_all_command(client: Client, args: Dict[str, Any]):
     auth_token_cmd_result = authenticate_command(client)
     auth_token = auth_token_cmd_result.outputs
 
-    page_size = 1 if int(args.get("pageSize", 10)) < 1 else int(args.get("pageSize", 10))
+    page_size = max(int(args.get("pageSize", 10)), 1)
     payload = dict(
         pageSize=page_size,
         page=int(args.get("page", 0)),
@@ -513,7 +503,7 @@ def collector_get_all_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def collector_get_status_byid_command(client: Client, args: Dict[str, Any]):
+def collector_get_status_byid_command(client: Client, args: dict[str, Any]):
     """Get collector status by ID
 
     Args:
@@ -547,9 +537,7 @@ def main():
     base_url = urljoin(demisto.params()["url"])
     proxy = demisto.params().get("proxy", False)
     try:
-        client = Client(
-            base_url=base_url, verify=verify_certificate, proxy=proxy, username=username, password=password
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, username=username, password=password)
         if demisto.command() == "test-module":
             result = test_module(client)
             demisto.results(result)
@@ -566,7 +554,7 @@ def main():
         elif demisto.command() == "firemon-collector-get-status-byid":
             return_results(collector_get_status_byid_command(client, demisto.args()))
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
+        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
