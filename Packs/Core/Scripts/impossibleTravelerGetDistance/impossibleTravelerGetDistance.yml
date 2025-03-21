@@ -11,17 +11,17 @@ enabled: true
 args:
 - name: src_coords
   required: true
-  description: Latitude and Longitude coordinates for the first location.  Required format 1.23,4.56
+  description: Latitude and Longitude coordinates for the first location.  Required format 1.23,4.56.
   isArray: true
 - name: dest_coords
-  description: Latitude and Longitude coordinates for the second location.  Required format 1.23,4.56
+  description: Latitude and Longitude coordinates for the second location.  Required format 1.23,4.56.
   isArray: true
 outputs:
 - contextPath: GeoEvents
-  description: The calculated events for each input
+  description: The calculated events for each input.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/py3-tools:1.0.0.114656
+dockerimage: demisto/py3-tools:1.0.0.2072021
 runas: DBotWeakRole
 fromversion: 6.6.0
 tests:
@@ -29,3 +29,4 @@ tests:
 marketplaces:
 - marketplacev2
 - xpanse
+- platform
