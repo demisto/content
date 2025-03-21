@@ -2,7 +2,7 @@
     "name": "ARIAPacketIntelligence",
     "description": "Manage Packet Intelligence rules in response to incidents. Instantly block conversations, redirect packets, generate alerts, or perform other actions.",
     "support": "partner",
-    "currentVersion": "2.0.16",
+    "currentVersion": "2.0.17",
     "author": "ARIA Cybersecurity Solutions",
     "url": "https://www.ariacybersecurity.com/cybersecurity-products/aria-packet-intelligence",
     "email": "ARIA_support@ariacybersecurity.com",
