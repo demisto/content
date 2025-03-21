@@ -549,7 +549,8 @@ def get_details_of_an_abnormal_case_command(client, args):
         'severity',
         'affectedEmployee',
         'firstObserved',
-        'threatIds'
+        'threatIds',
+        'genai_summary'
     ]
     markdown = tableToMarkdown(
         f"Details of Case {response.get('caseId', '')}", response, headers=headers, removeNull=True)
@@ -849,10 +850,11 @@ def generate_threat_incidents(client, threats, max_page_number, start_datetime, 
     incidents = []
     for threat in threats:
         page_number = 1
-        all_filtered_messages = []
+        all_messages, all_filtered_messages = [], []
         while page_number is not None:
             threat_details = client.get_details_of_a_threat_request(threat["threatId"], page_number=page_number)
             for message in threat_details["messages"]:
+                all_messages.append(message)
                 remediation_datetime = try_str_to_datetime(message.get("remediationTimestamp"))
                 if remediation_datetime and start_datetime <= remediation_datetime <= end_datetime:
                     all_filtered_messages.append(message)
@@ -862,13 +864,14 @@ def generate_threat_incidents(client, threats, max_page_number, start_datetime, 
             if page_number is not None and page_number > max_page_number:
                 break
 
-        threat_details["messages"] = all_filtered_messages
+        received_time = ""
+        # In case there is no message within the given time range, we use non-filtered list of messages
+        if all_messages and not all_filtered_messages:
+            all_filtered_messages = all_messages
         if all_filtered_messages:
             received_time = all_filtered_messages[0].get("receivedTime")
-        elif threat_details.get("messages", []):
-            received_time = threat_details.get("messages", [])[0].get("receivedTime")
-        else:
-            received_time = ""
+        threat_details["messages"] = all_filtered_messages
+
         incident = {
             "dbotMirrorId": str(threat["threatId"]),
             "name": "Threat",
@@ -957,7 +960,7 @@ def fetch_incidents(
         current_pending_incidents_to_fetch = max_incidents_to_fetch
         threat_incidents, abuse_campaign_incidents, account_takeover_cases_incidents = [], [], []
 
-        if fetch_threats:
+        if fetch_threats and current_pending_incidents_to_fetch > 0:
             threats_filter = f"latestTimeRemediated gte {start_timestamp} and latestTimeRemediated lte {end_timestamp}"
             threats_response = client.get_paginated_threats_list(
                 filter_=threats_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
@@ -966,14 +969,14 @@ def fetch_incidents(
             )
         current_pending_incidents_to_fetch -= len(threat_incidents)
 
-        if fetch_abuse_campaigns:
+        if fetch_abuse_campaigns and current_pending_incidents_to_fetch > 0:
             abuse_campaigns_filter = f"lastReportedTime gte {start_timestamp}"
             abuse_campaigns_response = client.get_paginated_abusecampaigns_list(
                 filter_=abuse_campaigns_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
             abuse_campaign_incidents = generate_abuse_campaign_incidents(client, abuse_campaigns_response.get('campaigns', []))
         current_pending_incidents_to_fetch -= len(abuse_campaign_incidents)
 
-        if fetch_account_takeover_cases:
+        if fetch_account_takeover_cases and current_pending_incidents_to_fetch > 0:
             account_takeover_cases_filter = f"lastModifiedTime gte {start_timestamp}"
             account_takeover_cases_response = client.get_paginated_cases_list(
                 filter_=account_takeover_cases_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)

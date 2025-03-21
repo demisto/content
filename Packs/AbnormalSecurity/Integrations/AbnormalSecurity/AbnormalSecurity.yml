@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Abnormal Security
   version: -1
@@ -63,7 +66,7 @@ configuration:
   type: 0
   required: false
   additionalinfo: Time in minutes to subtract from polling time window for data consistency
-- display: Maximum number of pages to fetch for incidents
+- display: Maximum incidents pages to fetch
   name: max_page_number
   defaultvalue: "8"
   type: 0
@@ -133,6 +136,10 @@ script:
       name: mock-data
     - description: Subtenant of the user (if applicable).
       name: subtenant
+    - description: Number of threats that on in each page. Each page of data will have at most page_size threats. Has no effect if filter is not specified.
+      name: page_size
+    - description: 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.
+      name: page_number
     description: Get details of a threat.
     name: abnormal-security-get-threat
     outputs:
