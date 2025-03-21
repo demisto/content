@@ -17,7 +17,7 @@ def main():
     domains_to_check = argToList(args.get("Domains", ()))
 
     # Get the list of internal domains from the XSOAR list:
-    internal_domains = demisto.executeCommand("getList", {"listName": internal_domains_list_name})[0]['Contents']
+    internal_domains = demisto.executeCommand("getList", {"listName": internal_domains_list_name})[0]["Contents"]
     if "Item not found" in internal_domains:
         return_error(f"The list name {internal_domains_list_name} does not exist.")
 
@@ -28,30 +28,23 @@ def main():
         except Exception as ex:
             return_error(
                 f"Could not parse the internal domains list. Please make sure that the list contains domain names,"
-                f" separated by new lines.\nThe exact error is: {ex}")
+                f" separated by new lines.\nThe exact error is: {ex}"
+            )
     else:
         return_results(f"No internal domains were found under {internal_domains_list_name}.")
         return
 
     # Create list of domain names with internal property
-    domain_list = [{"Name": domain, "Internal": is_domain_internal(domain, internal_domains)} for domain in
-                   domains_to_check]
+    domain_list = [{"Name": domain, "Internal": is_domain_internal(domain, internal_domains)} for domain in domains_to_check]
 
     for domain in domain_list:
-
-        args_exists_check = {
-            "indicator": domain.get("Name")
-        }
+        args_exists_check = {"indicator": domain.get("Name")}
 
         # Check if indicator exists:
         is_exist_res = demisto.executeCommand("CheckIndicatorValue", args_exists_check)
         indicator_exists = is_exist_res[0]["Contents"][0]["Exists"]
 
-        args_create_or_set_indicator = {
-            "value": domain.get("Name"),
-            "type": "Domain",
-            "internal": domain.get("Internal")
-        }
+        args_create_or_set_indicator = {"value": domain.get("Name"), "type": "Domain", "internal": domain.get("Internal")}
 
         # If indicator doesn't exist, create it and continuously poll for its creation (which happens asynchronously):
         if indicator_exists:
@@ -67,20 +60,21 @@ def main():
 
     # Create entry context and human-readable results
     entry_context = {"Domain(val.Name == obj.Name)": domain_list}
-    md_table = tableToMarkdown(name="Domain Names", t=sorted(domain_list, key=lambda x: not x['Internal']),
-                               headers=["Name", "Internal"])
+    md_table = tableToMarkdown(
+        name="Domain Names", t=sorted(domain_list, key=lambda x: not x["Internal"]), headers=["Name", "Internal"]
+    )
     entry_to_return = {
-        "Type": entryTypes['note'],
+        "Type": entryTypes["note"],
         "Contents": domain_list,
         "ContentsFormat": "text",
         "HumanReadable": md_table,
         "EntryContext": entry_context,
-        "Tags": ['Internal_Domain_Check_Results']
+        "Tags": ["Internal_Domain_Check_Results"],
     }
 
     # Return results
     return_results(entry_to_return)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

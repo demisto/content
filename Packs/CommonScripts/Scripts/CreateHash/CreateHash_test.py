@@ -1,7 +1,7 @@
 import pytest
 
 
-@pytest.mark.parametrize("hash_method", ['sha512', 'sha256', 'sha1', 'md5', ''])
+@pytest.mark.parametrize("hash_method", ["sha512", "sha256", "sha1", "md5", ""])
 def test_create_hash(hash_method):
     """
     Given:
@@ -12,7 +12,8 @@ def test_create_hash(hash_method):
         - Ensure the expected hash is returned
     """
     from CreateHash import create_hash
-    context = create_hash('test', hash_method)
+
+    context = create_hash("test", hash_method)
 
     assert isinstance(context, dict)
-    assert isinstance(context.get('CreateHash'), str)
+    assert isinstance(context.get("CreateHash"), str)

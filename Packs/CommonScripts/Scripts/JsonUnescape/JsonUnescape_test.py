@@ -8,8 +8,9 @@ def test_hook():
     - Ensure the string value is converted to json
     """
     from JsonUnescape import hook
+
     assert hook({"key": "value"}) == {"key": "value"}
-    assert hook({"key": "{'key': 'value'}"}) == {'key': "{'key': 'value'}"}
+    assert hook({"key": "{'key': 'value'}"}) == {"key": "{'key': 'value'}"}
 
 
 def test_unescape():
@@ -22,5 +23,6 @@ def test_unescape():
     - Ensure the string value is converted to json
     """
     from JsonUnescape import unescape
-    assert unescape({"value": "value"}) == 'value'
+
+    assert unescape({"value": "value"}) == "value"
     assert unescape({"value": "{'key': 'value'}"}) == "{'key': 'value'}"
