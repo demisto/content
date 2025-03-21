@@ -237,7 +237,7 @@ def main() -> None:
             return_results(commands[command](client, demisto.args()))
 
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. " f"Error: {e!s}")
+        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

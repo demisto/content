@@ -135,9 +135,9 @@ class Client(BaseClient):
             except Exception:
                 # type: ignore
                 raise DemistoException(
-                    f"Error: Got status code {res.status_code!s} with {url=} \
-                    with body {res.content} with headers {res.headers!s}"
-                )  # type: ignore
+                    f"Error: Got status code {res.status_code!s} with {url=} with"  # type: ignore
+                    f" body {res.content} with headers {res.headers!s}"
+                )
 
             raise DemistoException(f"Error: Got an error from TenableSC, code: {error['error_code']}, \
                         details: {error['error_msg']}")  # type: ignore
@@ -2187,7 +2187,7 @@ def list_alerts_command(client: Client, args: dict[str, Any]):
         CommandResults: command results object with the response, human readable section, and the context entries to add.
     """
     res = client.get_alerts(
-        fields="id,name,description,didTriggerLastEvaluation,lastTriggered," "action,lastEvaluated,ownerGroup,owner"
+        fields="id,name,description,didTriggerLastEvaluation,lastTriggered,action,lastEvaluated,ownerGroup,owner"
     )
     manageable = args.get("manageable", "false").lower()
 
@@ -2255,7 +2255,7 @@ def get_alert_command(client: Client, args: dict[str, Any]):
         "State": "Triggered" if alert["didTriggerLastEvaluation"] == "true" else "Not Triggered",
         "Behavior": "Execute on every trigger "
         if alert["executeOnEveryTrigger"] == "true"
-        else "Execute only on" " first trigger",
+        else "Execute only on first trigger",
     }
 
     mapped_condition = {
@@ -2478,7 +2478,7 @@ def get_all_scan_results_command(client: Client, args: dict[str, Any]):
             "RepositoryName": elem["repository"].get("name"),
             "ImportStatus": elem.get("importStatus", ""),
         }
-        for elem in elements[page : page + limit]
+        for elem in elements[page: page + limit]
     ]
 
     readable_title = f"Tenable.sc Scan results - {page}-{page + limit - 1}"
