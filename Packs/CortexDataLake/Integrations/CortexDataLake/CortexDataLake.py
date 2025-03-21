@@ -876,7 +876,8 @@ def build_where_clause(args: dict) -> str:
         'public_ipv4': 'public_ip.value',
         'public_ipv6': 'public_ipv6.value',
         'event_status': 'status.value',
-        'portal': 'portal'
+        'portal': 'portal',
+        'stage': 'stage',
     }
     if args.get("ip") and (args.get("source_ip") or args.get("dest_ip")):
         raise DemistoException('Error: "ip" argument cannot appear with either "source_ip" nor "dest_ip"')

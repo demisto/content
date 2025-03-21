@@ -2090,6 +2090,9 @@ script:
       name: event_status
     - description: GlobalProtect portal for which to search.
       name: portal
+    - description: Name of the stage in the GlobalProtect connection workflow for
+        which to search.
+      name: stage
     description: Searches the GlobalProtect VPN log table.
     name: cdl-query-gp-logs
     outputs:
