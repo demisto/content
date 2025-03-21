@@ -10,4 +10,4 @@ def main():
 
 
 if __name__ == "builtins":
-    main()
+    main()  # pragma: no cover

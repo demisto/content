@@ -30,4 +30,4 @@ def main():
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
-    main()
+    main()  # pragma: no cover
