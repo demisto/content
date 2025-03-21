@@ -1,6 +1,7 @@
 import json
-import pytest
+
 import demistomock as demisto
+import pytest
 from AzureSQLManagement import Client
 
 
@@ -236,8 +237,8 @@ def test_test_module_command(mocker, params, expected_results):
         - Case 1: Should throw an exception related to Device-code-flow config and return True.
         - Case 2: Should throw an exception related to User-Auth-flow config and return True.
     """
-    from AzureSQLManagement import test_module
     import AzureSQLManagement as sql_management
+    from AzureSQLManagement import test_module
 
     mocker.patch.object(sql_management, "test_connection", side_effect=Exception("mocked error"))
     mocker.patch.object(demisto, "params", return_value=params)
@@ -257,8 +258,8 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
         - Ensure the output are as expected.
     """
 
-    from AzureSQLManagement import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
     import AzureSQLManagement
+    from AzureSQLManagement import MANAGED_IDENTITIES_TOKEN_URL, Resources, main
 
     mock_token = {"access_token": "test_token", "expires_in": "86400"}
     get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
@@ -274,7 +275,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     assert "ok" in AzureSQLManagement.return_results.call_args[0][0]
     qs = get_mock.last_request.qs
     assert qs["resource"] == [Resources.management_azure]
-    assert client_id and qs["client_id"] == [client_id] or "client_id" not in qs
+    assert (client_id and qs["client_id"] == [client_id]) or "client_id" not in qs
 
 
 def test_generate_login_url(mocker):
@@ -287,9 +288,9 @@ def test_generate_login_url(mocker):
         - Ensure the generated url are as expected.
     """
     # prepare
+    import AzureSQLManagement
     import demistomock as demisto
     from AzureSQLManagement import main
-    import AzureSQLManagement
 
     redirect_uri = "redirect_uri"
     tenant_id = "tenant_id"
