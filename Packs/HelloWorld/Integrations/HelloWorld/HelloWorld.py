@@ -236,17 +236,17 @@ import dateparser
 from CommonServerUserPython import *
 
 
-''' CONSTANTS '''
-LOG_LINE = 'HelloWorldDebugLog: '  # Make sure to use a line easily to search and read in logs.
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+""" CONSTANTS """
+LOG_LINE = "HelloWorldDebugLog: "  # Make sure to use a line easily to search and read in logs.
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_ALERTS_TO_FETCH = 50
 DEFAULT_INDICATORS_THRESHOLD = 65
-HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
+HELLOWORLD_SEVERITIES = ["Low", "Medium", "High", "Critical"]
 LIMIT = 10
 DEFAULT_PAGE_SIZE = 5
-DUMMY_API_KEY = 'dummy-key'
+DUMMY_API_KEY = "dummy-key"
 ITEM_TEMPLATE = '"id": {id}, "name": "XSOAR Test Alert #{id}", "severity": "{severity}", "date": "{date}", "status": "{status}"'
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -271,11 +271,8 @@ class Client(BaseClient):
         # 4. If the URL parameters are complex (filters, etc.) -
         #   it is possible to pass them using the ``params`` argument.
 
-        url = f'/api/endpoint/{param1}/{param2}'
-        response = self._http_request(
-            method='GET',
-            url=url
-        )
+        url = f"/api/endpoint/{param1}/{param2}"
+        response = self._http_request(method="GET", url=url)
 
         return response
 
@@ -296,29 +293,18 @@ class Client(BaseClient):
                 "continent": "NA",
                 "country": "US",
                 "jarm": ":jarm:",
-                "last_analysis_stats": {
-                    "harmless": 72,
-                    "malicious": 5,
-                    "suspicious": 2,
-                    "timeout": 0,
-                    "undetected": 8
-                },
+                "last_analysis_stats": {"harmless": 72, "malicious": 5, "suspicious": 2, "timeout": 0, "undetected": 8},
                 "last_modification_date": 1613300914,
                 "network": ":cidr:",
                 "regional_internet_registry": "ARIN",
                 "reputation": -4,
                 "tags": [],
-                "total_votes": {
-                    "harmless": 0,
-                    "malicious": 1
-                },
-                "whois_date": 1611870274
+                "total_votes": {"harmless": 0, "malicious": 1},
+                "whois_date": 1611870274,
             },
             "id": "x.x.x.x",
-            "links": {
-                "self": "https://www.virustotal.com/api/v3/ip_addresses/x.x.x.x"
-            },
-            "type": "ip_address"
+            "links": {"self": "https://www.virustotal.com/api/v3/ip_addresses/x.x.x.x"},
+            "type": "ip_address",
         }
 
         return mocked_response
@@ -334,7 +320,7 @@ class Client(BaseClient):
             str: string containing 'Hello {name}'
         """
 
-        return f'Hello {name}'
+        return f"Hello {name}"
 
     def get_alert_list(self, limit: int, severity: str = None, last_id: int = 0) -> list[dict]:
         """For developing walkthrough purposes, this is a dummy response.
@@ -349,10 +335,12 @@ class Client(BaseClient):
         """
         mock_response: list[dict] = []
         for i in range(limit):
-            item = ITEM_TEMPLATE.format(id=last_id + i + 1,
-                                        severity=severity if severity else '',
-                                        date=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
-                                        status='Testing')
+            item = ITEM_TEMPLATE.format(
+                id=last_id + i + 1,
+                severity=severity if severity else "",
+                date=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
+                status="Testing",
+            )
             dict_item = json.loads("{" + item + "}")
             mock_response.append(dict_item)
 
@@ -368,10 +356,9 @@ class Client(BaseClient):
         Returns:
             dict: Dummy data of alert as it would return from API.
         """
-        item = ITEM_TEMPLATE.format(id=alert_id,
-                                    severity='low',
-                                    date=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
-                                    status='Testing')
+        item = ITEM_TEMPLATE.format(
+            id=alert_id, severity="low", date=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(), status="Testing"
+        )
         return json.loads("{" + item + "}")
 
     def create_note(self, alert_id: int, comment: str) -> dict:
@@ -387,11 +374,9 @@ class Client(BaseClient):
             dict: The summary of the newly created note from the API response.
         """
 
-        return {'status': 'success',
-                'msg': f'Note was created for alert #{alert_id} successfully with {comment=}'}
+        return {"status": "success", "msg": f"Note was created for alert #{alert_id} successfully with {comment=}"}
 
-    def get_alert_list_for_fetch(self, limit, start_time: datetime, last_id: int = 0,
-                                 severity: str = 'low') -> list[dict]:
+    def get_alert_list_for_fetch(self, limit, start_time: datetime, last_id: int = 0, severity: str = "low") -> list[dict]:
         """This function return dummy events for fetch.
 
         Args:
@@ -399,9 +384,10 @@ class Client(BaseClient):
             start_time (str, optional): The time to start fetch alerts from. Defaults to None.
             severity (str, optional): The severity of the alerts fetched. Defaults to None.
         """
+
         def mock_time(item):
-            item['id'] = last_id + 1
-            item['date'] = datetime.strftime(start_time + timedelta(minutes=1), DATE_FORMAT)
+            item["id"] = last_id + 1
+            item["date"] = datetime.strftime(start_time + timedelta(minutes=1), DATE_FORMAT)
 
         incidents = self.get_alert_list(limit=limit, severity=severity, last_id=last_id)
         demisto.debug("Setting alerts time to now.")
@@ -411,7 +397,7 @@ class Client(BaseClient):
         return incidents
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def validate_api_key(api_key: str) -> None:
@@ -428,7 +414,7 @@ def validate_api_key(api_key: str) -> None:
         DemistoException: Exception with a nicer error when credential are invalid.
     """
     if api_key != DUMMY_API_KEY:
-        raise DemistoException('Invalid Credentials. Please Verify your Connection parameters.')
+        raise DemistoException("Invalid Credentials. Please Verify your Connection parameters.")
 
 
 def convert_to_demisto_severity(severity: str) -> int:
@@ -449,16 +435,16 @@ def convert_to_demisto_severity(severity: str) -> int:
     # might be required in your integration, so a dedicated function is
     # recommended. This mapping should also be documented.
     return {
-        'low': IncidentSeverity.LOW,
-        'medium': IncidentSeverity.MEDIUM,
-        'high': IncidentSeverity.HIGH,
-        'critical': IncidentSeverity.CRITICAL,
-        'unknown': IncidentSeverity.UNKNOWN
+        "low": IncidentSeverity.LOW,
+        "medium": IncidentSeverity.MEDIUM,
+        "high": IncidentSeverity.HIGH,
+        "critical": IncidentSeverity.CRITICAL,
+        "unknown": IncidentSeverity.UNKNOWN,
     }[severity]
 
 
 def dedup_by_ids(alerts: list[dict], ids_to_compare: list[int]) -> tuple[list[dict], int]:
-    """ Gets a list of new IDs and a list of existing IDs,
+    """Gets a list of new IDs and a list of existing IDs,
     and returns a list with only alerts with id not found in ids_to_compare.
     For example, if alerts=[{'a':2},{'b': 3}] and ids_to_compare=[1,2], [3] is returned.
 
@@ -480,7 +466,7 @@ def dedup_by_ids(alerts: list[dict], ids_to_compare: list[int]) -> tuple[list[di
     return dedup, len(dups)
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client, params: dict[str, Any]) -> str:
@@ -509,27 +495,21 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
     # Cortex XSOAR will print everything you return different than 'ok' as
     # an error
     try:
-        time = dateparser.parse('1 minute')
+        time = dateparser.parse("1 minute")
         assert time
-        severity = params.get('severity', None)
-        if params.get('isFetch'):  # Tests fetch alert:
-            fetch_incidents(
-                client=client,
-                max_results=1,
-                last_run={},
-                first_fetch_time=time.isoformat(),
-                severity=severity
-            )
+        severity = params.get("severity", None)
+        if params.get("isFetch"):  # Tests fetch alert:
+            fetch_incidents(client=client, max_results=1, last_run={}, first_fetch_time=time.isoformat(), severity=severity)
         else:
-            client.get_alert_list(limit=1, severity=params.get('severity'))
+            client.get_alert_list(limit=1, severity=params.get("severity"))
 
     except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(e):
+            return "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
 
-    return 'ok'
+    return "ok"
 
 
 def say_hello_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -550,9 +530,9 @@ def say_hello_command(client: Client, args: dict[str, Any]) -> CommandResults:
     # so the null check here as XSOAR will always check it before your code is called.
     # Although it's not mandatory to check, you are welcome to do so.
 
-    name = args.get('name', None)
+    name = args.get("name", None)
     if not name:
-        raise ValueError('name not specified')
+        raise ValueError("name not specified")
 
     # Call the Client function and get the raw response
     result = client.say_hello(name)
@@ -561,7 +541,7 @@ def say_hello_command(client: Client, args: dict[str, Any]) -> CommandResults:
     # It will  be in markdown format - https://www.markdownguide.org/basic-syntax/
     # More complex output can be formatted using ``tableToMarkDown()`` defined
     # in ``CommonServerPython.py``
-    readable_output = f'## {result}'
+    readable_output = f"## {result}"
 
     # More information about Context:
     # https://xsoar.pan.dev/docs/integrations/context-and-outputs
@@ -569,16 +549,17 @@ def say_hello_command(client: Client, args: dict[str, Any]) -> CommandResults:
     # markdown here, so the argument ``readable_output`` is explicit. If not
     # passed, ``CommandResults``` will do a ``tableToMarkdown()`` do the data
     # to generate the readable output.
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='hello',
-        outputs_key_field='',
-        outputs=result
-    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="hello", outputs_key_field="", outputs=result)
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: str,
-                    severity: str = 'low', _page_size: int = DEFAULT_PAGE_SIZE) -> tuple[dict, list[dict]]:
+def fetch_incidents(
+    client: Client,
+    max_results: int,
+    last_run: dict,
+    first_fetch_time: str,
+    severity: str = "low",
+    _page_size: int = DEFAULT_PAGE_SIZE,
+) -> tuple[dict, list[dict]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
     It has to implement the logic of making sure that alerts are fetched only once and no alerts are missed.
@@ -609,8 +590,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     # Make sure to use demisto.debug() to avoid flooding the general log.
 
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch', None)
-    last_ids: list[int] = last_run.get('last_ids', []) or []
+    last_fetch = last_run.get("last_fetch", None)
+    last_ids: list[int] = last_run.get("last_ids", []) or []
 
     # Handle first fetch time
     if last_fetch is None:
@@ -625,16 +606,18 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     # Initialize an empty list of alerts to return. Incidents are processed alerts.
     incidents: list[dict[str, Any]] = []
     last_dummy_id = max(last_ids) if last_ids else 0
-    demisto.debug(f'Running API query with {last_fetch=}, {severity=}')
+    demisto.debug(f"Running API query with {last_fetch=}, {severity=}")
 
     # Calling the relevant client method. Note that sometimes pagination is in order.
     # For pagination related information, see:
     # https://xsoar.pan.dev/docs/integrations/code-conventions#pagination-in-integration-commands.
-    alerts = client.get_alert_list_for_fetch(limit=max_results,
-                                             start_time=dateparser.parse(last_fetch),  # type: ignore
-                                             severity=severity,
-                                             last_id=last_dummy_id)
-    demisto.debug(f'Received {len(alerts)} alerts from server.')
+    alerts = client.get_alert_list_for_fetch(
+        limit=max_results,
+        start_time=dateparser.parse(last_fetch),  # type: ignore
+        severity=severity,
+        last_id=last_dummy_id,
+    )
+    demisto.debug(f"Received {len(alerts)} alerts from server.")
 
     # INTEGRATION DEVELOPER TIP
     # alerts might be duplicated in some cases:
@@ -644,14 +627,14 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     #   (Mostly happens when API does not support milliseconds).
 
     alerts, number_of_dups = dedup_by_ids(alerts, last_ids)
-    demisto.debug(f'recieved {number_of_dups} duplicates alerts to skip.')
+    demisto.debug(f"recieved {number_of_dups} duplicates alerts to skip.")
 
     # Get the last alert time.
     # We assume asc order so we can get all the alerts fetched with the exact same time and avoid it in the next run.
     # If no results returned from API, we use the last alert fetched from last_run.
-    last_fetched_time = alerts[-1]['date'] if alerts else last_fetch
+    last_fetched_time = alerts[-1]["date"] if alerts else last_fetch
     last_ids = []
-    demisto.debug(f'{alerts=}')
+    demisto.debug(f"{alerts=}")
     for alert in alerts:
         # To prevent duplicates, we are only adding alerts with creation_time > last_fetched.
         # When we cannot assume alerts order in the response, we can use this code:
@@ -665,11 +648,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         #     latest_created_time = alert_created_time
 
         # Otherwise, we might need to add the alert ID to the last_ids so it will be avoided in the next run.
-        if alert['date'] == last_fetched_time:
-            last_ids.append(alert['id'])
+        if alert["date"] == last_fetched_time:
+            last_ids.append(alert["id"])
 
         # Formatting the alerts as needed (Adding fields, Removing sensitive ones, etc.)
-        alert['name'] = alert.get('name') or 'Hello World Alert'
+        alert["name"] = alert.get("name") or "Hello World Alert"
 
         # INTEGRATION DEVELOPER TIP
         # The incident dict is initialized with a few mandatory fields:
@@ -686,12 +669,12 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         # code, or they can be handled in the classification and mapping phase (Most Recommended).
         # In either case customers can override them. We leave the values commented out here, but you can use them if you want.
         incident = {
-            'name': alert['name'],
+            "name": alert["name"],
             # 'details': alert['name'],
-            'occurred': alert['date'],
-            'rawJSON': json.dumps(alert),
+            "occurred": alert["date"],
+            "rawJSON": json.dumps(alert),
             # 'type': 'Hello World Alert',  # Map to a specific XSOAR alert Type
-            'severity': convert_to_demisto_severity(alert.get('severity', 'low')),
+            "severity": convert_to_demisto_severity(alert.get("severity", "low")),
             # 'CustomFields': {  # Map specific XSOAR Custom Fields
             #     'helloworldid': alert.get('id'),
             #     'helloworldstatus': alert.get('status'),
@@ -705,12 +688,13 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     # When we reached the limit but there are still alerts to get from this run,
     # the leftovers will be returned in the next run by time.
     demisto.debug(f"setting next run- {last_fetched_time=}")
-    next_run = {'last_fetch': last_fetched_time, 'last_ids': last_ids}
+    next_run = {"last_fetch": last_fetched_time, "last_ids": last_ids}
     return next_run, incidents
 
 
-def ip_reputation_command(client: Client, args: dict[str, Any], default_threshold: int,
-                          reliability: DBotScoreReliability | str) -> list[CommandResults]:
+def ip_reputation_command(
+    client: Client, args: dict[str, Any], default_threshold: int, reliability: DBotScoreReliability | str
+) -> list[CommandResults]:
     """
     ip command: Returns IP reputation for a list of IPs
 
@@ -734,15 +718,15 @@ def ip_reputation_command(client: Client, args: dict[str, Any], default_threshol
     # We use argToList(), implemented in CommonServerPython.py to automatically
     # return a list of a single element even if the provided input is a scalar.
 
-    ips = argToList(args.get('ip'))
+    ips = argToList(args.get("ip"))
     if not ips:
-        raise ValueError('IP(s) not specified')
+        raise ValueError("IP(s) not specified")
 
     # It's a good practice to document the threshold you use to determine
     # if a score is malicious in your integration documentation.
     # Thresholds should also be possible to override, as in this case,
     # where threshold is an actual argument of the command.
-    threshold = int(args.get('threshold', default_threshold))
+    threshold = int(args.get("threshold", default_threshold))
 
     # Initialize an empty list of CommandResults to return
     # each CommandResult will contain context standard for IP
@@ -752,7 +736,7 @@ def ip_reputation_command(client: Client, args: dict[str, Any], default_threshol
         if not is_ip_valid(ip, accept_v6_ips=True):  # check IP's validity
             raise ValueError(f'IP "{ip}" is not valid')
         ip_data = client.get_ip_reputation(ip)
-        ip_data['ip'] = ip
+        ip_data["ip"] = ip
 
         # This is an example of creating relationships in reputation commands.
         # We will create relationships between indicators only in case that the API returns information about
@@ -760,18 +744,21 @@ def ip_reputation_command(client: Client, args: dict[str, Any], default_threshol
         # See https://xsoar.pan.dev/docs/integrations/generic-commands-reputation#relationships
 
         relationships_list = []
-        links = ip_data.get('links', {}).get('self', '')
+        links = ip_data.get("links", {}).get("self", "")
         for link in links:
-            relationships_list.append(EntityRelationship(
-                entity_a=ip,
-                entity_a_type=FeedIndicatorType.IP,
-                name='related-to',
-                entity_b=link,
-                entity_b_type=FeedIndicatorType.URL,
-                brand='HelloWorld'))
+            relationships_list.append(
+                EntityRelationship(
+                    entity_a=ip,
+                    entity_a_type=FeedIndicatorType.IP,
+                    name="related-to",
+                    entity_b=link,
+                    entity_b_type=FeedIndicatorType.URL,
+                    brand="HelloWorld",
+                )
+            )
 
         # We can use demisto.get to get nested values from dict.
-        reputation = int(demisto.get(ip_data, 'attributes.reputation', defaultParam=0))
+        reputation = int(demisto.get(ip_data, "attributes.reputation", defaultParam=0))
 
         # HelloWorld score to XSOAR reputation mapping
         # See: https://xsoar.pan.dev/docs/integrations/dbot
@@ -800,20 +787,15 @@ def ip_reputation_command(client: Client, args: dict[str, Any], default_threshol
         dbot_score = Common.DBotScore(
             indicator=ip,
             indicator_type=DBotScoreType.IP,
-            integration_name='HelloWorld',
+            integration_name="HelloWorld",
             score=score,
-            malicious_description=f'Hello World returned reputation {reputation}',
-            reliability=reliability
+            malicious_description=f"Hello World returned reputation {reputation}",
+            reliability=reliability,
         )
 
         # Create the IP Standard Context structure using Common.IP and add
         # dbot_score to it.
-        ip_standard_context = Common.IP(
-            ip=ip,
-            asn=ip_data.get('asn'),
-            dbot_score=dbot_score,
-            relationships=relationships_list
-        )
+        ip_standard_context = Common.IP(ip=ip, asn=ip_data.get("asn"), dbot_score=dbot_score, relationships=relationships_list)
 
         # INTEGRATION DEVELOPER TIP
         # In the integration specific Context output (HelloWorld.IP) in this
@@ -830,34 +812,35 @@ def ip_reputation_command(client: Client, args: dict[str, Any], default_threshol
 
         # Define which fields we want to exclude from the context output as they are too verbose.
         # We will use attributes key separately. Just make sure to keep the whole response somewhere.
-        ip_context_excluded_fields = ['whois', 'attributes']
+        ip_context_excluded_fields = ["whois", "attributes"]
         ip_data_outputs = {k: ip_data[k] for k in ip_data if k not in ip_context_excluded_fields}
 
         # In this case we want to use an custom markdown to specify the table title,
         # but otherwise ``CommandResults()`` will call ``tableToMarkdown()``
         #  automatically.
 
-        readable_attributes = tableToMarkdown('Attributes', ip_data['attributes'], is_auto_json_transform=True)
-        readable_output = tableToMarkdown('IP (Sample Data)', ip_data_outputs)
+        readable_attributes = tableToMarkdown("Attributes", ip_data["attributes"], is_auto_json_transform=True)
+        readable_output = tableToMarkdown("IP (Sample Data)", ip_data_outputs)
         readable_output += readable_attributes
 
         # INTEGRATION DEVELOPER TIP
         # The output key will be ``HelloWorld.IP``, using ``ip`` as the key field.
         # ``indicator`` is used to provide the context standard (IP)
-        command_results.append(CommandResults(
-            readable_output=readable_output,
-            raw_response=ip_data,
-            outputs_prefix='HelloWorld.IP',
-            outputs_key_field='ip',
-            outputs=ip_data_outputs,
-            indicator=ip_standard_context,
-            relationships=relationships_list
-        ))
+        command_results.append(
+            CommandResults(
+                readable_output=readable_output,
+                raw_response=ip_data,
+                outputs_prefix="HelloWorld.IP",
+                outputs_key_field="ip",
+                outputs=ip_data_outputs,
+                indicator=ip_standard_context,
+                relationships=relationships_list,
+            )
+        )
     return command_results
 
 
 def alert_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
-
     alert_id = arg_to_number(args.get("alert_id"))
     severity = args.get("severity")
     if not severity and not alert_id:
@@ -874,18 +857,15 @@ def alert_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     else:
         full_res = client.get_alert_list(limit=limit, severity=severity)
 
-    readable_output = tableToMarkdown('Items List (Sample Data)', full_res)
+    readable_output = tableToMarkdown("Items List (Sample Data)", full_res)
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='HelloWorld.Alert',
-        outputs_key_field='id',
-        outputs=full_res
+        readable_output=readable_output, outputs_prefix="HelloWorld.Alert", outputs_key_field="id", outputs=full_res
     )
 
 
 def alert_note_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     alert_id = arg_to_number(args["alert_id"], required=True)
-    note = args['note_text']
+    note = args["note_text"]
 
     if not alert_id:
         raise DemistoException("Please provide alert id.")
@@ -894,13 +874,13 @@ def alert_note_create_command(client: Client, args: dict[str, Any]) -> CommandRe
 
     return CommandResults(
         readable_output="Note was created successfully.",
-        outputs_prefix='HelloWorld.Note',
-        outputs_key_field='id',
-        outputs=res_data
+        outputs_prefix="HelloWorld.Note",
+        outputs_key_field="id",
+        outputs=res_data,
     )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
@@ -912,31 +892,27 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
-    api_key = params.get('credentials', {}).get('password')
+    api_key = params.get("credentials", {}).get("password")
 
     validate_api_key(api_key)
 
     # get the service API url
-    base_url = params.get('url')
+    base_url = params.get("url")
 
     # If your Client class inherits from BaseClient, SSL verification is handled out-of-the-box by it.
     # Just pass ``verify_certificate`` to the Client constructor
-    verify_certificate = not params.get('insecure', False)
+    verify_certificate = not params.get("insecure", False)
 
     # How much time before the first fetch to retrieve alerts
-    first_fetch_time = arg_to_datetime(
-        arg=params.get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
-    )
+    first_fetch_time = arg_to_datetime(arg=params.get("first_fetch", "3 days"), arg_name="First fetch time", required=True)
     assert first_fetch_time
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = params.get('proxy', False)
+    proxy = params.get("proxy", False)
 
     # Integration that implements reputation commands (e.g. url, ip, domain,..., etc) must have
     # a reliability score of the source providing the intelligence data.
-    reliability = params.get('integrationReliability') or DBotScoreReliability.C
+    reliability = params.get("integrationReliability") or DBotScoreReliability.C
 
     # INTEGRATION DEVELOPER TIP
     # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
@@ -944,36 +920,26 @@ def main() -> None:  # pragma: no cover
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
-        headers = {
-            'Authorization': f'Token {api_key}'
-        }
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        headers = {"Authorization": f"Token {api_key}"}
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client, params)
             return_results(result)
 
-        elif command == 'ip':
-            default_threshold_ip = arg_to_number(params.get('threshold_ip')) or DEFAULT_INDICATORS_THRESHOLD
+        elif command == "ip":
+            default_threshold_ip = arg_to_number(params.get("threshold_ip")) or DEFAULT_INDICATORS_THRESHOLD
             return_results(ip_reputation_command(client, args, default_threshold_ip, reliability))
 
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             # Set and define the fetch incidents command to run after activated via integration settings.
-            severity = params.get('severity', 'low')
+            severity = params.get("severity", "low")
 
             # Convert the argument to an int using helper function or set to MAX_ALERTS_TO_FETCH
-            max_results = arg_to_number(
-                arg=params.get('max_fetch'),
-                arg_name='max_fetch',
-                required=False
-            )
+            max_results = arg_to_number(arg=params.get("max_fetch"), arg_name="max_fetch", required=False)
             if not max_results or max_results > MAX_ALERTS_TO_FETCH:
                 max_results = MAX_ALERTS_TO_FETCH
 
@@ -982,7 +948,7 @@ def main() -> None:  # pragma: no cover
                 max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=datetime.strftime(first_fetch_time, DATE_FORMAT),
-                severity=severity
+                severity=severity,
             )
 
             # saves next_run for the time fetch-incidents is invoked
@@ -991,24 +957,24 @@ def main() -> None:  # pragma: no cover
             # of incidents to create
             demisto.incidents(incidents)
 
-        elif command == 'helloworld-alert-list':
+        elif command == "helloworld-alert-list":
             return_results(alert_list_command(client, args))
 
-        elif command == 'helloworld-alert-note-create':
+        elif command == "helloworld-alert-note-create":
             return_results(alert_note_create_command(client, args))
 
-        elif command == 'helloworld-say-hello':
+        elif command == "helloworld-say-hello":
             return_results(say_hello_command(client, args))
 
         else:
-            raise NotImplementedError(f'Command {command} is not implemented')
+            raise NotImplementedError(f"Command {command} is not implemented")
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
