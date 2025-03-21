@@ -1,16 +1,27 @@
 import os
 import unittest
-
-from AnsibleApiModule import dict2md, rec_ansible_key_strip, generate_ansible_inventory, generic_ansible, \
-    clean_ansi_codes
-from test_data.markdown import MOCK_SINGLE_LEVEL_LIST, EXPECTED_MD_LIST, MOCK_SINGLE_LEVEL_DICT, EXPECTED_MD_DICT
-from test_data.markdown import MOCK_MULTI_LEVEL_DICT, EXPECTED_MD_MULTI_DICT, MOCK_MULTI_LEVEL_LIST
-from test_data.markdown import EXPECTED_MD_MULTI_LIST, MOCK_MULTI_LEVEL_LIST_ID_NAMES, EXPECTED_MD_MULTI_LIST_ID_NAMES
-from test_data.ansible_keys import MOCK_ANSIBLE_DICT, EXPECTED_ANSIBLE_DICT, MOCK_ANSIBLELESS_DICT, \
-    EXPECTED_ANSIBLELESS_DICT
-from test_data.ansible_inventory import ANSIBLE_INVENTORY_HOSTS_LIST, ANSIBLE_INVENTORY_HOSTS_CSV_LIST
-from test_data.ansible_inventory import ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS
 from unittest.mock import patch
+
+from AnsibleApiModule import clean_ansi_codes, dict2md, generate_ansible_inventory, generic_ansible, rec_ansible_key_strip
+from test_data.ansible_inventory import (
+    ANSIBLE_INVENTORY_HOSTS_CSV_LIST,
+    ANSIBLE_INVENTORY_HOSTS_LIST,
+    ANSIBLE_INVENTORY_INT_PARAMS,
+    ANSIBLE_INVENTORY_HOST_w_PORT,
+)
+from test_data.ansible_keys import EXPECTED_ANSIBLE_DICT, EXPECTED_ANSIBLELESS_DICT, MOCK_ANSIBLE_DICT, MOCK_ANSIBLELESS_DICT
+from test_data.markdown import (
+    EXPECTED_MD_DICT,
+    EXPECTED_MD_LIST,
+    EXPECTED_MD_MULTI_DICT,
+    EXPECTED_MD_MULTI_LIST,
+    EXPECTED_MD_MULTI_LIST_ID_NAMES,
+    MOCK_MULTI_LEVEL_DICT,
+    MOCK_MULTI_LEVEL_LIST,
+    MOCK_MULTI_LEVEL_LIST_ID_NAMES,
+    MOCK_SINGLE_LEVEL_DICT,
+    MOCK_SINGLE_LEVEL_LIST,
+)
 
 fixture_path = os.path.join(os.path.dirname(__file__), "fixtures", "network")
 
@@ -50,7 +61,7 @@ def test_dict2md_complex_lists():
     Then:
     - Validate that the returned text is converted to a markdown correctly
 
-        """
+    """
     markdown_multi_dict = dict2md(MOCK_MULTI_LEVEL_DICT)
     markdown_multi_list = dict2md(MOCK_MULTI_LEVEL_LIST)
     markdown_multi_list_id_name = dict2md(MOCK_MULTI_LEVEL_LIST_ID_NAMES)
@@ -103,26 +114,23 @@ def test_generate_ansible_inventory_hosts():
     """
 
     # A
-    list_inv, _ = generate_ansible_inventory(ANSIBLE_INVENTORY_HOSTS_LIST, ANSIBLE_INVENTORY_INT_PARAMS,
-                                             host_type="ssh")
-    assert len(list_inv.get('all').get('hosts')) == 3
+    list_inv, _ = generate_ansible_inventory(ANSIBLE_INVENTORY_HOSTS_LIST, ANSIBLE_INVENTORY_INT_PARAMS, host_type="ssh")
+    assert len(list_inv.get("all").get("hosts")) == 3
 
     # B
-    comma_inv, _ = generate_ansible_inventory(ANSIBLE_INVENTORY_HOSTS_CSV_LIST, ANSIBLE_INVENTORY_INT_PARAMS,
-                                              host_type="ssh")
-    assert len(comma_inv.get('all').get('hosts')) == 2
+    comma_inv, _ = generate_ansible_inventory(ANSIBLE_INVENTORY_HOSTS_CSV_LIST, ANSIBLE_INVENTORY_INT_PARAMS, host_type="ssh")
+    assert len(comma_inv.get("all").get("hosts")) == 2
 
     # C
     port_override_inv, _ = generate_ansible_inventory(
-        ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS, host_type="ssh")
-    assert port_override_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_port') == '45678'
-    assert port_override_inv.get('all').get('hosts').get('123.123.123.123:45678').get(
-        'ansible_host') == '123.123.123.123'
+        ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS, host_type="ssh"
+    )
+    assert port_override_inv.get("all").get("hosts").get("123.123.123.123:45678").get("ansible_port") == "45678"
+    assert port_override_inv.get("all").get("hosts").get("123.123.123.123:45678").get("ansible_host") == "123.123.123.123"
 
     # D
-    local_inv, _ = generate_ansible_inventory(ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS,
-                                              host_type="local")
-    assert local_inv == {'all': {'hosts': {'localhost': {'ansible_connection': 'local'}}}}
+    local_inv, _ = generate_ansible_inventory(ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS, host_type="local")
+    assert local_inv == {"all": {"hosts": {"localhost": {"ansible_connection": "local"}}}}
 
 
 def test_generate_ansible_inventory_creds():
@@ -143,29 +151,30 @@ def test_generate_ansible_inventory_creds():
 
     # A
     nxos_inv, nxos_sshkey = generate_ansible_inventory(
-        ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS, host_type="nxos")
-    assert nxos_sshkey == 'aaaaaaaaaaaaaa'
-    assert nxos_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_network_os') == 'nxos'
-    assert nxos_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_become_method') == 'enable'
-    assert nxos_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_user') == 'joe'
+        ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS, host_type="nxos"
+    )
+    assert nxos_sshkey == "aaaaaaaaaaaaaa"
+    assert nxos_inv.get("all").get("hosts").get("123.123.123.123:45678").get("ansible_network_os") == "nxos"
+    assert nxos_inv.get("all").get("hosts").get("123.123.123.123:45678").get("ansible_become_method") == "enable"
+    assert nxos_inv.get("all").get("hosts").get("123.123.123.123:45678").get("ansible_user") == "joe"
 
     # B
-    ssh_inv, ssh_sshkey = generate_ansible_inventory(ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS,
-                                                     host_type="ssh")
-    assert ssh_sshkey == 'aaaaaaaaaaaaaa'
-    assert ssh_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_network_os') is None
-    assert ssh_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_user') == 'joe'
+    ssh_inv, ssh_sshkey = generate_ansible_inventory(ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS, host_type="ssh")
+    assert ssh_sshkey == "aaaaaaaaaaaaaa"
+    assert ssh_inv.get("all").get("hosts").get("123.123.123.123:45678").get("ansible_network_os") is None
+    assert ssh_inv.get("all").get("hosts").get("123.123.123.123:45678").get("ansible_user") == "joe"
 
     # C
     winrm_inv, winrm_sshkey = generate_ansible_inventory(
-        ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS, host_type="winrm")
-    assert winrm_sshkey == ''
-    assert winrm_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_user') == 'joe'
-    assert winrm_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_winrm_transport') == 'ntlm'
-    assert winrm_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_connection') == 'winrm'
+        ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS, host_type="winrm"
+    )
+    assert winrm_sshkey == ""
+    assert winrm_inv.get("all").get("hosts").get("123.123.123.123:45678").get("ansible_user") == "joe"
+    assert winrm_inv.get("all").get("hosts").get("123.123.123.123:45678").get("ansible_winrm_transport") == "ntlm"
+    assert winrm_inv.get("all").get("hosts").get("123.123.123.123:45678").get("ansible_connection") == "winrm"
 
 
-class Object(object):
+class Object:
     pass
 
 
@@ -187,41 +196,65 @@ def test_generic_ansible():
     """
 
     # Inputs
-    args = {'host': "123.123.123.123", 'subcategory': 'File System', 'audit_type': 'failure'}
-    int_params = {'port': 5985, 'creds': {'identifier': 'bill', 'password': 'xyz321', 'credentials': {}}}
+    args = {"host": "123.123.123.123", "subcategory": "File System", "audit_type": "failure"}
+    int_params = {"port": 5985, "creds": {"identifier": "bill", "password": "xyz321", "credentials": {}}}
     host_type = "winrm"
 
     # Mock results from Ansible run
     mock_ansible_results = Object()
-    mock_ansible_results.events = [{'uuid': 'cf26f7c4-6eca-48b2-8294-4bd263cfb2e0', 'counter': 1, 'stdout': '',
-                                    'start_line': 0, 'end_line': 0,
-                                    'runner_ident': 'd5a00f7c-7fb6-424a-a8f9-83556bdb2360',
-                                    'event': 'playbook_on_start', 'pid': 674619,
-                                    'created': '2021-06-01T15:57:37.638813',
-                                    'event_data': {}},
-                                   {'uuid': 'cc29d328-9d35-4193-ba18-e82e98eaf0c6', 'counter': 2, 'stdout': '',
-                                    'start_line': 0, 'end_line': 0,
-                                    'runner_ident': 'd5a00f7c-7fb6-424a-a8f9-83556bdb2360',
-                                    'event': 'runner_on_start', 'pid': 674619, 'created': '2021-06-01T15:57:37.668136',
-                                    'parent_uuid': 'a736a224-f5d0-0add-444b-000000000009', 'event_data': {}},
-                                   {'uuid': '4770effd-5088-430c-aee2-621bee4f3f00', 'counter': 3,
-                                    'stdout': '123.123.123.123 | SUCCESS => {\r\n    "changed": false,\r\n\
+    mock_ansible_results.events = [
+        {
+            "uuid": "cf26f7c4-6eca-48b2-8294-4bd263cfb2e0",
+            "counter": 1,
+            "stdout": "",
+            "start_line": 0,
+            "end_line": 0,
+            "runner_ident": "d5a00f7c-7fb6-424a-a8f9-83556bdb2360",
+            "event": "playbook_on_start",
+            "pid": 674619,
+            "created": "2021-06-01T15:57:37.638813",
+            "event_data": {},
+        },
+        {
+            "uuid": "cc29d328-9d35-4193-ba18-e82e98eaf0c6",
+            "counter": 2,
+            "stdout": "",
+            "start_line": 0,
+            "end_line": 0,
+            "runner_ident": "d5a00f7c-7fb6-424a-a8f9-83556bdb2360",
+            "event": "runner_on_start",
+            "pid": 674619,
+            "created": "2021-06-01T15:57:37.668136",
+            "parent_uuid": "a736a224-f5d0-0add-444b-000000000009",
+            "event_data": {},
+        },
+        {
+            "uuid": "4770effd-5088-430c-aee2-621bee4f3f00",
+            "counter": 3,
+            "stdout": '123.123.123.123 | SUCCESS => {\r\n    "changed": false,\r\n\
                                             "current_audit_policy": {\r\n        "file system": "failure"\r\n    }\r\n}',
-                                    'start_line': 0, 'end_line': 6,
-                                    'runner_ident': 'd5a00f7c-7fb6-424a-a8f9-83556bdb2360', 'event': 'runner_on_ok',
-                                    'pid': 674619, 'created': '2021-06-01T15:57:40.592040',
-                                    'parent_uuid': 'a736a224-f5d0-0add-444b-000000000009', 'event_data': {}}]
+            "start_line": 0,
+            "end_line": 6,
+            "runner_ident": "d5a00f7c-7fb6-424a-a8f9-83556bdb2360",
+            "event": "runner_on_ok",
+            "pid": 674619,
+            "created": "2021-06-01T15:57:40.592040",
+            "parent_uuid": "a736a224-f5d0-0add-444b-000000000009",
+            "event_data": {},
+        },
+    ]
 
     # Expected results
     expected_readable = """# 123.123.123.123 -  SUCCESS \n  * changed: False
   * ## Current_Audit_Policy
     * file system: failure
 """
-    expected_outputs = [{'changed': False, 'current_audit_policy': {
-        'file system': 'failure'}, 'host': '123.123.123.123', 'status': 'SUCCESS'}]
+    expected_outputs = [
+        {"changed": False, "current_audit_policy": {"file system": "failure"}, "host": "123.123.123.123", "status": "SUCCESS"}
+    ]
 
-    with patch('ansible_runner.run', return_value=mock_ansible_results):
-        CommandResults = generic_ansible('microsoftwindows', 'win_audit_policy_system', args, int_params, host_type)
+    with patch("ansible_runner.run", return_value=mock_ansible_results):
+        CommandResults = generic_ansible("microsoftwindows", "win_audit_policy_system", args, int_params, host_type)
 
         assert CommandResults.readable_output == expected_readable
         assert CommandResults.outputs == expected_outputs
@@ -245,45 +278,67 @@ def test_generic_ansible_with_problematic_stdout():
     """
 
     # Inputs
-    args = {'host': "123.123.123.123", 'subcategory': 'File System', 'audit_type': 'failure'}
-    int_params = {'port': 5985, 'creds': {'identifier': 'bill', 'password': 'xyz321', 'credentials': {}}}
+    args = {"host": "123.123.123.123", "subcategory": "File System", "audit_type": "failure"}
+    int_params = {"port": 5985, "creds": {"identifier": "bill", "password": "xyz321", "credentials": {}}}
     host_type = "winrm"
 
     # Mock results from Ansible run
     mock_ansible_results = Object()
 
-    with open(os.path.join(os.path.join("test_data", "stdout.txt")), encoding='unicode_escape') as f:
+    with open(os.path.join(os.path.join("test_data", "stdout.txt")), encoding="unicode_escape") as f:
         stdout = f.read()
 
-    mock_ansible_results.events = [{'uuid': 'cf26f7c4-6eca-48b2-8294-4bd263cfb2e0', 'counter': 1, 'stdout': '',
-                                    'start_line': 0, 'end_line': 0,
-                                    'runner_ident': 'd5a00f7c-7fb6-424a-a8f9-83556bdb2360',
-                                    'event': 'playbook_on_start', 'pid': 674619,
-                                    'created': '2021-06-01T15:57:37.638813',
-                                    'event_data': {}},
-                                   {'uuid': 'cc29d328-9d35-4193-ba18-e82e98eaf0c6', 'counter': 2, 'stdout': '',
-                                    'start_line': 0, 'end_line': 0,
-                                    'runner_ident': 'd5a00f7c-7fb6-424a-a8f9-83556bdb2360',
-                                    'event': 'runner_on_start', 'pid': 674619,
-                                    'created': '2021-06-01T15:57:37.668136',
-                                    'parent_uuid': 'a736a224-f5d0-0add-444b-000000000009', 'event_data': {}},
-                                   {'uuid': '4770effd-5088-430c-aee2-621bee4f3f00', 'counter': 3,
-                                    'stdout': stdout,
-                                    'start_line': 0, 'end_line': 6,
-                                    'runner_ident': 'd5a00f7c-7fb6-424a-a8f9-83556bdb2360',
-                                    'event': 'runner_on_ok',
-                                    'pid': 674619, 'created': '2021-06-01T15:57:40.592040',
-                                    'parent_uuid': 'a736a224-f5d0-0add-444b-000000000009', 'event_data': {}}]
+    mock_ansible_results.events = [
+        {
+            "uuid": "cf26f7c4-6eca-48b2-8294-4bd263cfb2e0",
+            "counter": 1,
+            "stdout": "",
+            "start_line": 0,
+            "end_line": 0,
+            "runner_ident": "d5a00f7c-7fb6-424a-a8f9-83556bdb2360",
+            "event": "playbook_on_start",
+            "pid": 674619,
+            "created": "2021-06-01T15:57:37.638813",
+            "event_data": {},
+        },
+        {
+            "uuid": "cc29d328-9d35-4193-ba18-e82e98eaf0c6",
+            "counter": 2,
+            "stdout": "",
+            "start_line": 0,
+            "end_line": 0,
+            "runner_ident": "d5a00f7c-7fb6-424a-a8f9-83556bdb2360",
+            "event": "runner_on_start",
+            "pid": 674619,
+            "created": "2021-06-01T15:57:37.668136",
+            "parent_uuid": "a736a224-f5d0-0add-444b-000000000009",
+            "event_data": {},
+        },
+        {
+            "uuid": "4770effd-5088-430c-aee2-621bee4f3f00",
+            "counter": 3,
+            "stdout": stdout,
+            "start_line": 0,
+            "end_line": 6,
+            "runner_ident": "d5a00f7c-7fb6-424a-a8f9-83556bdb2360",
+            "event": "runner_on_ok",
+            "pid": 674619,
+            "created": "2021-06-01T15:57:40.592040",
+            "parent_uuid": "a736a224-f5d0-0add-444b-000000000009",
+            "event_data": {},
+        },
+    ]
 
     # Expected results
     expected_readable = """# \x1b[0;32m10.2.25.44 -  SUCCESS \n  * changed: False\n  * ## Deprecations
   * ## Warnings\n"""
 
     expected_outputs = [
-        {'changed': False, 'deprecations': [], 'warnings': [], 'host': '\x1b[0;32m10.2.25.44', 'status': 'SUCCESS'}]
+        {"changed": False, "deprecations": [], "warnings": [], "host": "\x1b[0;32m10.2.25.44", "status": "SUCCESS"}
+    ]
 
-    with patch('ansible_runner.run', return_value=mock_ansible_results):
-        CommandResults = generic_ansible('microsoftwindows', 'win_audit_policy_system', args, int_params, host_type)
+    with patch("ansible_runner.run", return_value=mock_ansible_results):
+        CommandResults = generic_ansible("microsoftwindows", "win_audit_policy_system", args, int_params, host_type)
 
         assert CommandResults.readable_output == expected_readable
         assert CommandResults.outputs == expected_outputs

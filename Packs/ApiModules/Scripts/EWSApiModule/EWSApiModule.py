@@ -1,15 +1,13 @@
-from enum import Enum
 import uuid
+from enum import Enum
 from urllib.parse import urlparse
 
 from CommonServerPython import *  # noqa: F401
-
-from MicrosoftApiModule import *
 from exchangelib import (
-    OAUTH2,
     BASIC,
-    NTLM,
     DIGEST,
+    NTLM,
+    OAUTH2,
     Account,
     Build,
     Configuration,
@@ -20,22 +18,20 @@ from exchangelib import (
     Identity,
     Version,
 )
+from exchangelib.credentials import BaseCredentials, OAuth2AuthorizationCodeCredentials
 from exchangelib.errors import (
+    AutoDiscoverFailed,
     ErrorInvalidIdMalformed,
     ErrorItemNotFound,
-    AutoDiscoverFailed,
-    ResponseMessageError,
     ErrorNameResolutionNoResults,
+    ResponseMessageError,
 )
+from exchangelib.folders.base import BaseFolder
 from exchangelib.items import Item, Message
 from exchangelib.protocol import BaseProtocol, FaultTolerance, Protocol
-from exchangelib.folders.base import BaseFolder
-from exchangelib.credentials import BaseCredentials, OAuth2AuthorizationCodeCredentials
-from exchangelib.services.common import EWSService, EWSAccountService
-from exchangelib.util import MNS, TNS, create_element, add_xml_child
-from oauthlib.oauth2 import OAuth2Token
+from exchangelib.services.common import EWSAccountService, EWSService
+from exchangelib.util import MNS, TNS, add_xml_child, create_element
 from exchangelib.version import (
-    EXCHANGE_O365,
     EXCHANGE_2007,
     EXCHANGE_2010,
     EXCHANGE_2010_SP2,
@@ -43,62 +39,68 @@ from exchangelib.version import (
     EXCHANGE_2013_SP1,
     EXCHANGE_2016,
     EXCHANGE_2019,
+    EXCHANGE_O365,
 )
+from MicrosoftApiModule import *
+from oauthlib.oauth2 import OAuth2Token
 
 """ Constants """
 INTEGRATION_NAME = get_integration_name()
 FOLDER_ID_LEN = 120
 
 SUPPORTED_ON_PREM_BUILDS = {
-    '2007': EXCHANGE_2007,
-    '2010': EXCHANGE_2010,
-    '2010_SP2': EXCHANGE_2010_SP2,
-    '2013': EXCHANGE_2013,
-    '2013_SP1': EXCHANGE_2013_SP1,
-    '2016': EXCHANGE_2016,
-    '2019': EXCHANGE_2019,
+    "2007": EXCHANGE_2007,
+    "2010": EXCHANGE_2010,
+    "2010_SP2": EXCHANGE_2010_SP2,
+    "2013": EXCHANGE_2013,
+    "2013_SP1": EXCHANGE_2013_SP1,
+    "2016": EXCHANGE_2016,
+    "2019": EXCHANGE_2019,
 }
 
 """ Context Keys """
-ATTACHMENT_ID = 'attachmentId'
-ACTION = 'action'
-MAILBOX = 'mailbox'
-MAILBOX_ID = 'mailboxId'
-MOVED_TO_MAILBOX = 'movedToMailbox'
-MOVED_TO_FOLDER = 'movedToFolder'
-NEW_ITEM_ID = 'newItemId'
-MESSAGE_ID = 'messageId'
-ITEM_ID = 'itemId'
-TARGET_MAILBOX = 'receivedBy'
-FOLDER_ID = 'id'
+ATTACHMENT_ID = "attachmentId"
+ACTION = "action"
+MAILBOX = "mailbox"
+MAILBOX_ID = "mailboxId"
+MOVED_TO_MAILBOX = "movedToMailbox"
+MOVED_TO_FOLDER = "movedToFolder"
+NEW_ITEM_ID = "newItemId"
+MESSAGE_ID = "messageId"
+ITEM_ID = "itemId"
+TARGET_MAILBOX = "receivedBy"
+FOLDER_ID = "id"
 
 """ Context Paths """
-CONTEXT_UPDATE_ITEM_ATTACHMENT = f'.ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})'
-CONTEXT_UPDATE_FILE_ATTACHMENT = f'.FileAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})'
-CONTEXT_UPDATE_FOLDER = f'EWS.Folders(val.{FOLDER_ID} == obj.{FOLDER_ID})'
-CONTEXT_UPDATE_EWS_ITEM = f'EWS.Items((val.{ITEM_ID} === obj.{ITEM_ID} || ' \
-    f'(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))' \
-    f' && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})'
+CONTEXT_UPDATE_ITEM_ATTACHMENT = f".ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
+CONTEXT_UPDATE_FILE_ATTACHMENT = f".FileAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
+CONTEXT_UPDATE_FOLDER = f"EWS.Folders(val.{FOLDER_ID} == obj.{FOLDER_ID})"
+CONTEXT_UPDATE_EWS_ITEM = (
+    f"EWS.Items((val.{ITEM_ID} === obj.{ITEM_ID} || "
+    f"(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))"
+    f" && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})"
+)
 
 
 class IncidentFilter(str, Enum):
-    MODIFIED_FILTER = 'modified-time'
-    RECEIVED_FILTER = 'received-time'
+    MODIFIED_FILTER = "modified-time"
+    RECEIVED_FILTER = "received-time"
 
 
 class CustomDomainOAuth2Credentials(OAuth2AuthorizationCodeCredentials):
     def __init__(self, azure_cloud: AzureCloud, **kwargs):
-        self.ad_base_url = azure_cloud.endpoints.active_directory or 'https://login.microsoftonline.com'
-        self.exchange_online_scope = azure_cloud.endpoints.exchange_online or 'https://outlook.office365.com'
-        demisto.debug(f'Initializing {self.__class__}: '
-                      f'{azure_cloud.abbreviation=} | {self.ad_base_url=} | {self.exchange_online_scope}')
+        self.ad_base_url = azure_cloud.endpoints.active_directory or "https://login.microsoftonline.com"
+        self.exchange_online_scope = azure_cloud.endpoints.exchange_online or "https://outlook.office365.com"
+        demisto.debug(
+            f"Initializing {self.__class__}: " f"{azure_cloud.abbreviation=} | {self.ad_base_url=} | {self.exchange_online_scope}"
+        )
         super().__init__(**kwargs)
 
     @property
     def token_url(self):
         """
-            The URL to request tokens from.
-            Overrides the token_url property to specify custom token retrieval endpoints for different authority's cloud env.
+        The URL to request tokens from.
+        Overrides the token_url property to specify custom token retrieval endpoints for different authority's cloud env.
         """
         # We may not know (or need) the Microsoft tenant ID. If not, use common/ to let Microsoft select the appropriate
         # tenant for the provided authorization code or refresh token.
@@ -107,10 +109,10 @@ class CustomDomainOAuth2Credentials(OAuth2AuthorizationCodeCredentials):
     @property
     def scope(self):
         """
-            The scope we ask for the token to have
-            Overrides the scope property to specify custom token retrieval endpoints for different authority's cloud env.
+        The scope we ask for the token to have
+        Overrides the scope property to specify custom token retrieval endpoints for different authority's cloud env.
         """
-        return [f'{self.exchange_online_scope}/.default']
+        return [f"{self.exchange_online_scope}/.default"]
 
 
 class ProxyAdapter(HTTPAdapter):
@@ -119,7 +121,7 @@ class ProxyAdapter(HTTPAdapter):
     """
 
     def send(self, *args, **kwargs):
-        kwargs['proxies'] = handle_proxy()
+        kwargs["proxies"] = handle_proxy()
         return super().send(*args, **kwargs)
 
 
@@ -130,7 +132,7 @@ class InsecureSSLAdapter(SSLAdapter):
 
     def __init__(self, *args, **kwargs):
         # Processing before init call
-        kwargs.pop('verify', None)
+        kwargs.pop("verify", None)
         super().__init__(verify=False, **kwargs)
 
     def cert_verify(self, conn, url, verify, cert):
@@ -145,7 +147,7 @@ class InsecureProxyAdapter(InsecureSSLAdapter):
     """
 
     def send(self, *args, **kwargs):
-        kwargs['proxies'] = handle_proxy()
+        kwargs["proxies"] = handle_proxy()
         return super().send(*args, **kwargs)
 
 
@@ -153,32 +155,36 @@ class GetSearchableMailboxes(EWSService):
     """
     EWSAccountService class used for getting Searchable Mailboxes
     """
-    SERVICE_NAME = 'GetSearchableMailboxes'
-    element_container_name = f'{{{MNS}}}SearchableMailboxes'
+
+    SERVICE_NAME = "GetSearchableMailboxes"
+    element_container_name = f"{{{MNS}}}SearchableMailboxes"
 
     @staticmethod
     def parse_element(element):
         return {
-            MAILBOX: element.find(f'{{{TNS}}}PrimarySmtpAddress').text
-            if element.find(f'{{{TNS}}}PrimarySmtpAddress') is not None else None,
-            MAILBOX_ID: element.find(f'{{{TNS}}}ReferenceId').text
-            if element.find(f'{{{TNS}}}ReferenceId') is not None else None,
-            'displayName': element.find(f'{{{TNS}}}DisplayName').text
-            if element.find(f'{{{TNS}}}DisplayName') is not None else None,
-            'isExternal': element.find(f'{{{TNS}}}IsExternalMailbox').text
-            if element.find(f'{{{TNS}}}IsExternalMailbox') is not None else None,
-            'externalEmailAddress': element.find(f'{{{TNS}}}ExternalEmailAddress').text
-            if element.find(f'{{{TNS}}}ExternalEmailAddress') is not None else None,
+            MAILBOX: element.find(f"{{{TNS}}}PrimarySmtpAddress").text
+            if element.find(f"{{{TNS}}}PrimarySmtpAddress") is not None
+            else None,
+            MAILBOX_ID: element.find(f"{{{TNS}}}ReferenceId").text if element.find(f"{{{TNS}}}ReferenceId") is not None else None,
+            "displayName": element.find(f"{{{TNS}}}DisplayName").text
+            if element.find(f"{{{TNS}}}DisplayName") is not None
+            else None,
+            "isExternal": element.find(f"{{{TNS}}}IsExternalMailbox").text
+            if element.find(f"{{{TNS}}}IsExternalMailbox") is not None
+            else None,
+            "externalEmailAddress": element.find(f"{{{TNS}}}ExternalEmailAddress").text
+            if element.find(f"{{{TNS}}}ExternalEmailAddress") is not None
+            else None,
         }
 
     def call(self):
         if self.protocol.version.build < EXCHANGE_2013:
-            raise NotImplementedError(f'{self.SERVICE_NAME} is only supported for Exchange 2013 servers and later')
+            raise NotImplementedError(f"{self.SERVICE_NAME} is only supported for Exchange 2013 servers and later")
         elements = self._get_elements(payload=self.get_payload())
         return [self.parse_element(e) for e in elements if e.find(f"{{{TNS}}}ReferenceId").text]
 
     def get_payload(self):
-        element = create_element(f'm:{self.SERVICE_NAME}')
+        element = create_element(f"m:{self.SERVICE_NAME}")
         return element
 
 
@@ -186,22 +192,21 @@ class MarkAsJunk(EWSAccountService):
     """
     EWSAccountService class used for marking items as junk
     """
-    SERVICE_NAME = 'MarkAsJunk'
+
+    SERVICE_NAME = "MarkAsJunk"
 
     def call(self, item_id, move_item):
         elements = list(self._get_elements(payload=self.get_payload(item_id=item_id, move_item=move_item)))
         for element in elements:
             if isinstance(element, ResponseMessageError):
                 return str(element)
-        return 'Success'
+        return "Success"
 
     def get_payload(self, item_id, move_item):
-        junk = create_element(f'm:{self.SERVICE_NAME}',
-                              {'IsJunk': 'true',
-                               'MoveItem': 'true' if move_item else 'false'})
+        junk = create_element(f"m:{self.SERVICE_NAME}", {"IsJunk": "true", "MoveItem": "true" if move_item else "false"})
 
-        items_list = create_element('m:ItemIds')
-        item_element = create_element('t:ItemId', {'Id': item_id})
+        items_list = create_element("m:ItemIds")
+        item_element = create_element("t:ItemId", {"Id": item_id})
         items_list.append(item_element)
         junk.append(items_list)
 
@@ -212,28 +217,25 @@ class ExpandGroup(EWSService):
     """
     EWSAccountService class used for expanding groups
     """
-    SERVICE_NAME = 'ExpandDL'
-    element_container_name = f'{{{MNS}}}DLExpansion'
+
+    SERVICE_NAME = "ExpandDL"
+    element_container_name = f"{{{MNS}}}DLExpansion"
 
     @staticmethod
     def parse_element(element):
         return {
-            MAILBOX: element.find(f'{{{TNS}}}EmailAddress').text
-            if element.find(f'{{{TNS}}}EmailAddress') is not None
-            else None,
-            'displayName': element.find(f'{{{TNS}}}Name').text
-            if element.find(f'{{{TNS}}}Name') is not None
-            else None,
-            'mailboxType': element.find(f'{{{TNS}}}MailboxType').text
-            if element.find(f'{{{TNS}}}MailboxType') is not None
+            MAILBOX: element.find(f"{{{TNS}}}EmailAddress").text if element.find(f"{{{TNS}}}EmailAddress") is not None else None,
+            "displayName": element.find(f"{{{TNS}}}Name").text if element.find(f"{{{TNS}}}Name") is not None else None,
+            "mailboxType": element.find(f"{{{TNS}}}MailboxType").text
+            if element.find(f"{{{TNS}}}MailboxType") is not None
             else None,
         }
 
     def call(self, email_address, recursive_expansion=False):
         if self.protocol.version.build < EXCHANGE_2010:
-            raise NotImplementedError(f'{self.SERVICE_NAME} is only supported for Exchange 2010 servers and later')
+            raise NotImplementedError(f"{self.SERVICE_NAME} is only supported for Exchange 2010 servers and later")
         try:
-            if recursive_expansion == 'True':
+            if recursive_expansion == "True":
                 group_members: dict = {}
                 self.expand_group_recursive(email_address, group_members)
                 return list(group_members.values())
@@ -241,13 +243,13 @@ class ExpandGroup(EWSService):
                 return self.expand_group(email_address)
 
         except ErrorNameResolutionNoResults:
-            demisto.results('No results were found.')
+            demisto.results("No results were found.")
             sys.exit()
 
     def get_payload(self, email_address):
-        element = create_element(f'm:{self.SERVICE_NAME}')
-        mailbox_element = create_element('m:Mailbox')
-        add_xml_child(mailbox_element, 't:EmailAddress', email_address)
+        element = create_element(f"m:{self.SERVICE_NAME}")
+        mailbox_element = create_element("m:Mailbox")
+        add_xml_child(mailbox_element, "t:EmailAddress", email_address)
         element.append(mailbox_element)
         return element
 
@@ -277,11 +279,11 @@ class ExpandGroup(EWSService):
         dl_emails.add(email_address)
 
         for member in self.expand_group(email_address):
-            if (member['mailboxType'] == 'PublicDL' or member['mailboxType'] == 'PrivateDL'):
-                self.expand_group_recursive(member.get('mailbox'), non_dl_emails, dl_emails)
+            if member["mailboxType"] == "PublicDL" or member["mailboxType"] == "PrivateDL":
+                self.expand_group_recursive(member.get("mailbox"), non_dl_emails, dl_emails)
             else:
-                if member['mailbox'] not in non_dl_emails:
-                    non_dl_emails[member['mailbox']] = member
+                if member["mailbox"] not in non_dl_emails:
+                    non_dl_emails[member["mailbox"]] = member
 
 
 class EWSClient:
@@ -292,19 +294,19 @@ class EWSClient:
         access_type: str,
         default_target_mailbox: str,
         max_fetch: int,
-        ews_server: str = '',
-        auth_type: str = '',
-        version: str = '',
-        folder: str = 'Inbox',
+        ews_server: str = "",
+        auth_type: str = "",
+        version: str = "",
+        folder: str = "Inbox",
         is_public_folder: bool = False,
         request_timeout: int = 120,
         mark_as_read: bool = False,
         incident_filter: IncidentFilter = IncidentFilter.RECEIVED_FILTER,
         azure_cloud: Optional[AzureCloud] = None,
-        tenant_id: str = '',
+        tenant_id: str = "",
         self_deployed: bool = True,
         log_memory: bool = False,
-        app_name: str = 'EWS',
+        app_name: str = "EWS",
         insecure: bool = True,
         proxy: bool = False,
     ):
@@ -333,10 +335,10 @@ class EWSClient:
         :param proxy: Whether to use a proxy for the connection
         """
         if auth_type and auth_type not in (OAUTH2, BASIC, NTLM, DIGEST):
-            raise ValueError(f'Invalid auth_type: {auth_type}')
+            raise ValueError(f"Invalid auth_type: {auth_type}")
 
         if ews_server and not version:
-            raise ValueError('Version must be provided if EWS Server is specified.')
+            raise ValueError("Version must be provided if EWS Server is specified.")
 
         BaseProtocol.TIMEOUT = request_timeout  # type: ignore
         self.client_id = client_id
@@ -380,11 +382,11 @@ class EWSClient:
 
         :return: OAuth 2 Configuration and Credentials
         """
-        if self.version != 'O365':
-            raise ValueError('Error, only the O365 version is supported for OAuth2 authentication.')
+        if self.version != "O365":
+            raise ValueError("Error, only the O365 version is supported for OAuth2 authentication.")
 
         if not self.azure_cloud:
-            raise ValueError('Error, failed to get Azure cloud object required for OAuth2 authentication.')
+            raise ValueError("Error, failed to get Azure cloud object required for OAuth2 authentication.")
 
         BaseProtocol.HTTP_ADAPTER_CLS = InsecureProxyAdapter if self.insecure else ProxyAdapter
 
@@ -397,13 +399,13 @@ class EWSClient:
             verify=not self.insecure,
             proxy=self.proxy,
             self_deployed=self.self_deployed,
-            scope=f'{self.azure_cloud.endpoints.exchange_online}/.default',
-            command_prefix='ews',
-            azure_cloud=self.azure_cloud
+            scope=f"{self.azure_cloud.endpoints.exchange_online}/.default",
+            command_prefix="ews",
+            azure_cloud=self.azure_cloud,
         )
 
         access_token = ms_client.get_access_token()
-        oauth2_token = OAuth2Token({'access_token': access_token})
+        oauth2_token = OAuth2Token({"access_token": access_token})
         credentials = CustomDomainOAuth2Credentials(
             azure_cloud=self.azure_cloud,
             client_id=self.client_id,
@@ -416,7 +418,7 @@ class EWSClient:
             credentials=credentials,
             auth_type=OAUTH2,
             version=Version(EXCHANGE_O365),
-            service_endpoint=f'{self.azure_cloud.endpoints.exchange_online}/EWS/Exchange.asmx',
+            service_endpoint=f"{self.azure_cloud.endpoints.exchange_online}/EWS/Exchange.asmx",
         )
         return config, credentials, EXCHANGE_O365
 
@@ -437,28 +439,24 @@ class EWSClient:
             return None, credentials, server_build
 
         # Check params and set defaults where necessary
-        if urlparse(self.ews_server.lower()).hostname == 'outlook.office365.com':  # Legacy O365 logic
+        if urlparse(self.ews_server.lower()).hostname == "outlook.office365.com":  # Legacy O365 logic
             if not self.auth_type:
                 self.auth_type = BASIC
-            self.version = '2016'
+            self.version = "2016"
 
         if not self.auth_type:
             self.auth_type = NTLM
 
         if not self.version:
-            raise DemistoException('Exchange Server Version is required for on-premise Exchange Servers.')
+            raise DemistoException("Exchange Server Version is required for on-premise Exchange Servers.")
 
         # Configure the on-prem Exchange Server connection
         credentials = Credentials(username=self.client_id, password=self.client_secret)
-        config_args = {
-            'credentials': credentials,
-            'auth_type': self.auth_type,
-            'version': get_on_prem_version(self.version)
-        }
-        if 'http' in self.ews_server.lower():
-            config_args['service_endpoint'] = self.ews_server
+        config_args = {"credentials": credentials, "auth_type": self.auth_type, "version": get_on_prem_version(self.version)}
+        if "http" in self.ews_server.lower():
+            config_args["service_endpoint"] = self.ews_server
         else:
-            config_args['server'] = self.ews_server
+            config_args["server"] = self.ews_server
 
         return (
             Configuration(**config_args, retry_policy=FaultTolerance(max_wait=60)),
@@ -482,14 +480,16 @@ class EWSClient:
         else:
             try:
                 account = Account(
-                    primary_smtp_address=self.account_email, autodiscover=True,
-                    access_type=self.access_type, credentials=credentials,
+                    primary_smtp_address=self.account_email,
+                    autodiscover=True,
+                    access_type=self.access_type,
+                    credentials=credentials,
                 )
                 ews_server = account.protocol.service_endpoint
                 server_build = account.protocol.version.build
                 demisto.setIntegrationContext(cache_autodiscover_results(context_dict, account))
             except AutoDiscoverFailed:
-                raise DemistoException('Auto discovery failed. Check credentials or configure manually')
+                raise DemistoException("Auto discovery failed. Check credentials or configure manually")
 
         return ews_server, server_build
 
@@ -546,7 +546,7 @@ class EWSClient:
                     autodiscover=False,
                     config=Configuration(**config_args),
                     access_type=self.access_type,
-                    default_timezone=time_zone
+                    default_timezone=time_zone,
                 )
                 account.root.effective_rights.read  # noqa: B018 pylint: disable=E1101
                 return account
@@ -562,7 +562,7 @@ class EWSClient:
                 access_type=self.access_type,
             )
         except AutoDiscoverFailed:
-            raise DemistoException('Auto discovery failed. Check credentials or configure manually')
+            raise DemistoException("Auto discovery failed. Check credentials or configure manually")
 
         new_context = cache_autodiscover_results(context_dict, account)
         if new_context == context_dict and original_exc:
@@ -596,7 +596,7 @@ class EWSClient:
         if len(result) != len(item_ids):
             result_ids = {item.id for item in result}
             missing_ids = set(item_ids) - result_ids
-            raise Exception(f'One or more items were not found/malformed. Could not find the following IDs: {missing_ids}')
+            raise Exception(f"One or more items were not found/malformed. Could not find the following IDs: {missing_ids}")
         return result
 
     def get_item_from_mailbox(self, account: Optional[Union[Account, str]], item_id) -> Item:
@@ -623,7 +623,7 @@ class EWSClient:
         """
         item = self.get_item_from_mailbox(account, item_id)
         if not item:
-            raise DemistoException(f'Message item not found: {item_id}')
+            raise DemistoException(f"Message item not found: {item_id}")
 
         attachments = []
         for attachment in item.attachments or []:
@@ -636,7 +636,7 @@ class EWSClient:
         if attachment_ids and len(attachments) < len(attachment_ids):
             found_ids = {attachment.attachment_id.id for attachment in attachments}
             missing_ids = set(attachment_ids) - found_ids
-            raise DemistoException(f'Some attachment ids were not found for the given message id: {missing_ids}')
+            raise DemistoException(f"Some attachment ids were not found for the given message id: {missing_ids}")
 
         return attachments
 
@@ -659,8 +659,7 @@ class EWSClient:
 
         return False
 
-    def get_folder_by_path(self, path: str, account: Optional[Account] = None, is_public: bool = False
-                           ) -> BaseFolder:
+    def get_folder_by_path(self, path: str, account: Optional[Account] = None, is_public: bool = False) -> BaseFolder:
         """
         Retrieve folder by path
 
@@ -680,22 +679,22 @@ class EWSClient:
 
         if is_public:
             folder = account.public_folders_root
-        elif self.version == 'O365' and path == 'AllItems':
+        elif self.version == "O365" and path == "AllItems":
             # AllItems is only available on Office365, directly under root
             folder = account.root
         else:
             # Default, contains all of the standard folders (Inbox, Calendar, trash, etc.)
             folder = account.root.tois
 
-        path = path.replace('/', '\\')
-        path_parts = path.split('\\')
+        path = path.replace("/", "\\")
+        path_parts = path.split("\\")
         for part in path_parts:
             try:
-                demisto.debug(f'resolving {part=} {path_parts=}')
+                demisto.debug(f"resolving {part=} {path_parts=}")
                 folder = folder // part
             except Exception as e:
-                demisto.debug(f'got error {e}')
-                raise ValueError(f'No such folder {path_parts}')
+                demisto.debug(f"got error {e}")
+                raise ValueError(f"No such folder {path_parts}")
         return folder
 
     def send_email(self, message: Message):
@@ -708,9 +707,19 @@ class EWSClient:
         message.account = account
         message.send_and_save()
 
-    def reply_email(self, inReplyTo: str, to: list[str], body: str, subject: str, bcc: list[str], cc: list[str],
-                    htmlBody: Optional[str], attachments: list, from_mailbox: Optional[str] = None,
-                    account: Optional[Account] = None) -> Message:
+    def reply_email(
+        self,
+        inReplyTo: str,
+        to: list[str],
+        body: str,
+        subject: str,
+        bcc: list[str],
+        cc: list[str],
+        htmlBody: Optional[str],
+        attachments: list,
+        from_mailbox: Optional[str] = None,
+        account: Optional[Account] = None,
+    ) -> Message:
         """
         Send a reply email using the EWS account associated with this client or the provided account,
         based on the provided parameters.
@@ -737,19 +746,29 @@ class EWSClient:
         subject = subject or item_to_reply_to.subject
         htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else (None, [])
         message_body = HTMLBody(htmlBody) if htmlBody else body
-        reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
-                                              cc_recipients=cc, bcc_recipients=bcc, author=from_mailbox)
+        reply = item_to_reply_to.create_reply(
+            subject="Re: " + subject,
+            body=message_body,
+            to_recipients=to,
+            cc_recipients=cc,
+            bcc_recipients=bcc,
+            author=from_mailbox,
+        )
         reply = reply.save(account.drafts)
         m = account.inbox.get(id=reply.id)  # pylint: disable=E1101
 
         attachments += htmlAttachments
         for attachment in attachments:
             if not isinstance(attachment, FileAttachment):
-                if not attachment.get('cid'):
-                    attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
+                if not attachment.get("cid"):
+                    attachment = FileAttachment(name=attachment.get("name"), content=attachment.get("data"))
                 else:
-                    attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
-                                                is_inline=True, content_id=attachment.get('cid'))
+                    attachment = FileAttachment(
+                        name=attachment.get("name"),
+                        content=attachment.get("data"),
+                        is_inline=True,
+                        content_id=attachment.get("cid"),
+                    )
             m.attach(attachment)
         m.send()
 
@@ -767,21 +786,18 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
     :return: clean_body, attachments: cleaned HTML body and a list of the extracted attachments.
     """
     attachments = []
-    clean_body = ''
+    clean_body = ""
     last_index = 0
-    for i, m in enumerate(
-            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
-        name = f'image{i}'
-        cid = (f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
-        attachment = {
-            'data': base64.b64decode(m.group(3)),
-            'name': name
-        }
-        attachment['cid'] = cid
-        clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
+    for i, m in enumerate(re.finditer(r"<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"", html_body, re.I)):
+        name = f"image{i}"
+        cid = f"{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}"
+        attachment = {"data": base64.b64decode(m.group(3)), "name": name}
+        attachment["cid"] = cid
+        clean_body += html_body[last_index : m.start(1)] + "cid:" + attachment["cid"]
         last_index = m.end() - 1
-        new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
-                                        content_id=attachment.get('cid'), is_inline=True)
+        new_attachment = FileAttachment(
+            name=attachment.get("name"), content=attachment.get("data"), content_id=attachment.get("cid"), is_inline=True
+        )
         attachments.append(new_attachment)
 
     clean_body += html_body[last_index:]
@@ -797,17 +813,12 @@ def get_config_args_from_context(context: dict, credentials: BaseCredentials) ->
 
     :return: config: a configuration object for the previously discovered connection params
     """
-    auth_type = context['auth_type']
-    api_version = context['api_version']
+    auth_type = context["auth_type"]
+    api_version = context["api_version"]
     version = Version(get_build_from_context(context), api_version)
-    service_endpoint = context['service_endpoint']
+    service_endpoint = context["service_endpoint"]
 
-    config_args = {
-        'credentials': credentials,
-        'auth_type': auth_type,
-        'version': version,
-        'service_endpoint': service_endpoint
-    }
+    config_args = {"credentials": credentials, "auth_type": auth_type, "version": version, "service_endpoint": service_endpoint}
     return config_args
 
 
@@ -819,7 +830,7 @@ def get_build_from_context(context: dict) -> Build:
 
     :return: build: a Build object for the previously discovered connection params
     """
-    build_params = context['build'].split('.')
+    build_params = context["build"].split(".")
     build_params = [int(i) for i in build_params]
     return Build(*build_params)
 
@@ -832,7 +843,7 @@ def get_endpoint_from_context(context_dict: dict) -> str:
 
     :return: endpoint: The endpoint from the previously discovered connection params
     """
-    return context_dict['service_endpoint']
+    return context_dict["service_endpoint"]
 
 
 def cache_autodiscover_results(context: dict, account: Account) -> dict:
@@ -844,10 +855,10 @@ def cache_autodiscover_results(context: dict, account: Account) -> dict:
 
     :return: the updated context
     """
-    context['auth_type'] = account.protocol.auth_type
-    context['service_endpoint'] = account.protocol.service_endpoint
-    context['build'] = str(account.protocol.version.build)
-    context['api_version'] = account.protocol.version.api_version
+    context["auth_type"] = account.protocol.auth_type
+    context["service_endpoint"] = account.protocol.service_endpoint
+    context["build"] = str(account.protocol.version.build)
+    context["api_version"] = account.protocol.version.api_version
 
     return context
 
@@ -861,8 +872,8 @@ def get_on_prem_build(version: str) -> Build:
     :return: A Build object representing the on-premises Exchange Server build
     """
     if version not in SUPPORTED_ON_PREM_BUILDS:
-        supported_versions = '\\'.join(list(SUPPORTED_ON_PREM_BUILDS.keys()))
-        raise ValueError(f'{version} is not a supported version. Choose one of: {supported_versions}.')
+        supported_versions = "\\".join(list(SUPPORTED_ON_PREM_BUILDS.keys()))
+        raise ValueError(f"{version} is not a supported version. Choose one of: {supported_versions}.")
 
     return SUPPORTED_ON_PREM_BUILDS[version]
 
@@ -876,6 +887,7 @@ def get_on_prem_version(version: str) -> Version:
     :return: A Version object representing the on-premises Exchange Server version
     """
     return Version(get_on_prem_build(version))
+
 
 # Command functions and helpers
 
@@ -916,8 +928,9 @@ def switch_hr_headers(obj, hr_header_changes: dict):
     return obj_copy
 
 
-def get_entry_for_object(title: str, context_key: str, obj, headers: Optional[list] = None,
-                         hr_header_changes: dict = {}, filter_null_values=True) -> CommandResults:
+def get_entry_for_object(
+    title: str, context_key: str, obj, headers: Optional[list] = None, hr_header_changes: dict = {}, filter_null_values=True
+) -> CommandResults:
     """
     Create an entry for a given object
     :param title: Title of the human readable
@@ -929,7 +942,7 @@ def get_entry_for_object(title: str, context_key: str, obj, headers: Optional[li
     :return: Entry object to be used with demisto.results()
     """
     if is_empty_object(obj):
-        return CommandResults(readable_output='There is no output results')
+        return CommandResults(readable_output="There is no output results")
 
     if filter_null_values:
         obj = filter_dict_null(obj)
@@ -950,8 +963,9 @@ def get_entry_for_object(title: str, context_key: str, obj, headers: Optional[li
     )
 
 
-def delete_attachments_for_message(client: EWSClient, item_id: str, target_mailbox: Optional[str] = None,
-                                   attachment_ids=None) -> list[CommandResults]:
+def delete_attachments_for_message(
+    client: EWSClient, item_id: str, target_mailbox: Optional[str] = None, attachment_ids=None
+) -> list[CommandResults]:
     """
     Deletes attachments for a given message
     :param client: EWS Client
@@ -978,17 +992,21 @@ def delete_attachments_for_message(client: EWSClient, item_id: str, target_mailb
 
     entries = []
     if len(deleted_file_attachments) > 0:
-        entry = get_entry_for_object("Deleted file attachments",
-                                     "EWS.Items" + CONTEXT_UPDATE_FILE_ATTACHMENT,
-                                     deleted_file_attachments,
-                                     filter_null_values=(client.version != 'O365'))
+        entry = get_entry_for_object(
+            "Deleted file attachments",
+            "EWS.Items" + CONTEXT_UPDATE_FILE_ATTACHMENT,
+            deleted_file_attachments,
+            filter_null_values=(client.version != "O365"),
+        )
         entries.append(entry)
 
     if len(deleted_item_attachments) > 0:
-        entry = get_entry_for_object("Deleted item attachments",
-                                     "EWS.Items" + CONTEXT_UPDATE_ITEM_ATTACHMENT,
-                                     deleted_item_attachments,
-                                     filter_null_values=(client.version != 'O365'))
+        entry = get_entry_for_object(
+            "Deleted item attachments",
+            "EWS.Items" + CONTEXT_UPDATE_ITEM_ATTACHMENT,
+            deleted_item_attachments,
+            filter_null_values=(client.version != "O365"),
+        )
         entries.append(entry)
 
     return entries
@@ -1001,14 +1019,24 @@ def get_searchable_mailboxes(client: EWSClient) -> CommandResults:
     :return: Context entry containing searchable mailboxes
     """
     searchable_mailboxes = GetSearchableMailboxes(protocol=client.get_protocol()).call()
-    return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes',
-                                searchable_mailboxes, ['displayName', 'mailbox'],
-                                filter_null_values=(client.version != 'O365'))
+    return get_entry_for_object(
+        "Searchable mailboxes",
+        "EWS.Mailboxes",
+        searchable_mailboxes,
+        ["displayName", "mailbox"],
+        filter_null_values=(client.version != "O365"),
+    )
 
 
-def move_item_between_mailboxes(src_client: EWSClient, item_id, destination_mailbox: str, destination_folder_path: str,
-                                dest_client: Optional[EWSClient] = None, source_mailbox: Optional[str] = None,
-                                is_public: Optional[bool] = None) -> CommandResults:
+def move_item_between_mailboxes(
+    src_client: EWSClient,
+    item_id,
+    destination_mailbox: str,
+    destination_folder_path: str,
+    dest_client: Optional[EWSClient] = None,
+    source_mailbox: Optional[str] = None,
+    is_public: Optional[bool] = None,
+) -> CommandResults:
     """
     Moves item between mailboxes
     :param src_client: EWS Client for the source mailbox
@@ -1040,15 +1068,20 @@ def move_item_between_mailboxes(src_client: EWSClient, item_id, destination_mail
 
     return CommandResults(
         outputs=move_result,
-        outputs_prefix='EWS.Items',
-        outputs_key_field='itemId',
-        raw_response='Item was moved successfully.',
-        readable_output=f'Item was moved successfully to mailbox: {destination_mailbox}, folder: {destination_folder_path}.'
+        outputs_prefix="EWS.Items",
+        outputs_key_field="itemId",
+        raw_response="Item was moved successfully.",
+        readable_output=f"Item was moved successfully to mailbox: {destination_mailbox}, folder: {destination_folder_path}.",
     )
 
 
-def move_item(client: EWSClient, item_id: str, target_folder_path: str, target_mailbox: Optional[str] = None,
-              is_public: Optional[bool] = None) -> CommandResults:
+def move_item(
+    client: EWSClient,
+    item_id: str,
+    target_folder_path: str,
+    target_mailbox: Optional[str] = None,
+    is_public: Optional[bool] = None,
+) -> CommandResults:
     """
     Moves an item within the same mailbox
     :param client: EWS Client
@@ -1063,18 +1096,19 @@ def move_item(client: EWSClient, item_id: str, target_folder_path: str, target_m
     target_folder = client.get_folder_by_path(target_folder_path, is_public=is_public)
     item = client.get_item_from_mailbox(account, item_id)
     if isinstance(item, ErrorInvalidIdMalformed):
-        raise Exception('Item not found')
+        raise Exception("Item not found")
 
     item.move(target_folder)
     move_result = {
         NEW_ITEM_ID: item.id,
         ITEM_ID: item_id,
         MESSAGE_ID: item.message_id,
-        ACTION: 'moved',
+        ACTION: "moved",
     }
 
-    return get_entry_for_object('Moved items', CONTEXT_UPDATE_EWS_ITEM, move_result,
-                                filter_null_values=(client.version != 'O365'))
+    return get_entry_for_object(
+        "Moved items", CONTEXT_UPDATE_EWS_ITEM, move_result, filter_null_values=(client.version != "O365")
+    )
 
 
 def delete_items(client: EWSClient, item_ids, delete_type: str, target_mailbox: Optional[str] = None) -> CommandResults:
@@ -1093,24 +1127,29 @@ def delete_items(client: EWSClient, item_ids, delete_type: str, target_mailbox: 
 
     for item in items:
         item_id = item.id
-        if delete_type == 'trash':
+        if delete_type == "trash":
             item.move_to_trash()
-        elif delete_type == 'soft':
+        elif delete_type == "soft":
             item.soft_delete()
-        elif delete_type == 'hard':
+        elif delete_type == "hard":
             item.delete()
         else:
             raise Exception(f'invalid delete type: {delete_type}. Use "trash" \\ "soft" \\ "hard"')
 
-        deleted_items.append({
-            ITEM_ID: item_id,
-            MESSAGE_ID: item.message_id,
-            ACTION: f'{delete_type}-deleted',
-        }
+        deleted_items.append(
+            {
+                ITEM_ID: item_id,
+                MESSAGE_ID: item.message_id,
+                ACTION: f"{delete_type}-deleted",
+            }
         )
 
-    return get_entry_for_object(f'Deleted items ({delete_type} delete type)', CONTEXT_UPDATE_EWS_ITEM, deleted_items,
-                                filter_null_values=(client.version != 'O365'))
+    return get_entry_for_object(
+        f"Deleted items ({delete_type} delete type)",
+        CONTEXT_UPDATE_EWS_ITEM,
+        deleted_items,
+        filter_null_values=(client.version != "O365"),
+    )
 
 
 def get_out_of_office_state(client: EWSClient, target_mailbox: Optional[str] = None) -> CommandResults:
@@ -1123,26 +1162,33 @@ def get_out_of_office_state(client: EWSClient, target_mailbox: Optional[str] = N
     account = client.get_account(target_mailbox)
     oof = account.oof_settings
     if not oof:
-        raise DemistoException(f'Failed to get out of office state for {target_mailbox or client.account_email}')
+        raise DemistoException(f"Failed to get out of office state for {target_mailbox or client.account_email}")
 
     oof_dict = {
-        'state': oof.state,
-        'externalAudience': getattr(oof, 'external_audience', None),
-        'start': oof.start.ewsformat() if oof.start else None,
-        'end': oof.end.ewsformat() if oof.end else None,
-        'internalReply': getattr(oof, 'internal_reply', None),
-        'externalReply': getattr(oof, 'external_reply', None),
+        "state": oof.state,
+        "externalAudience": getattr(oof, "external_audience", None),
+        "start": oof.start.ewsformat() if oof.start else None,
+        "end": oof.end.ewsformat() if oof.end else None,
+        "internalReply": getattr(oof, "internal_reply", None),
+        "externalReply": getattr(oof, "external_reply", None),
         MAILBOX: account.primary_smtp_address,
     }
 
-    return get_entry_for_object(f'Out of office state for {account.primary_smtp_address}',
-                                f'Account.Email(val.Address == obj.{MAILBOX}).OutOfOffice',
-                                oof_dict,
-                                filter_null_values=(client.version != 'O365'))
+    return get_entry_for_object(
+        f"Out of office state for {account.primary_smtp_address}",
+        f"Account.Email(val.Address == obj.{MAILBOX}).OutOfOffice",
+        oof_dict,
+        filter_null_values=(client.version != "O365"),
+    )
 
 
-def recover_soft_delete_item(client: EWSClient, message_ids, target_folder_path: str = 'Inbox',
-                             target_mailbox: Optional[str] = None, is_public: Optional[bool] = None) -> CommandResults:
+def recover_soft_delete_item(
+    client: EWSClient,
+    message_ids,
+    target_folder_path: str = "Inbox",
+    target_mailbox: Optional[str] = None,
+    is_public: Optional[bool] = None,
+) -> CommandResults:
     """
     Recovers soft deleted items
     :param client: EWS Client
@@ -1166,18 +1212,18 @@ def recover_soft_delete_item(client: EWSClient, message_ids, target_folder_path:
 
     if len(recovered_items) != len(message_ids):
         missing_items = set(message_ids).difference(recovered_items)
-        raise Exception(f'Some message ids are missing in recoverable items directory: {missing_items}')
+        raise Exception(f"Some message ids are missing in recoverable items directory: {missing_items}")
 
     for item in recovered_items:
         item.move(target_folder)
-        recovered_messages.append({ITEM_ID: item.id, MESSAGE_ID: item.message_id, ACTION: 'recovered'})
+        recovered_messages.append({ITEM_ID: item.id, MESSAGE_ID: item.message_id, ACTION: "recovered"})
 
-    return get_entry_for_object('Recovered messages', CONTEXT_UPDATE_EWS_ITEM, recovered_messages,
-                                filter_null_values=(client.version != 'O365'))
+    return get_entry_for_object(
+        "Recovered messages", CONTEXT_UPDATE_EWS_ITEM, recovered_messages, filter_null_values=(client.version != "O365")
+    )
 
 
-def create_folder(client: EWSClient, new_folder_name: str, folder_path: str,
-                  target_mailbox: Optional[str] = None) -> str:
+def create_folder(client: EWSClient, new_folder_name: str, folder_path: str, target_mailbox: Optional[str] = None) -> str:
     """
     Creates a folder in the target mailbox or the client mailbox
     :param client: EWS Client
@@ -1189,20 +1235,20 @@ def create_folder(client: EWSClient, new_folder_name: str, folder_path: str,
     account = client.get_account(target_mailbox)
     full_path = os.path.join(folder_path, new_folder_name)
     try:
-        demisto.debug('Checking if folder exists')
+        demisto.debug("Checking if folder exists")
         if client.get_folder_by_path(full_path, account):
-            return f'Folder {full_path} already exists'
+            return f"Folder {full_path} already exists"
     except Exception:
         pass
-    demisto.debug('Folder doesnt already exist. Getting path to add folder')
+    demisto.debug("Folder doesnt already exist. Getting path to add folder")
     parent_folder = client.get_folder_by_path(folder_path, account)
 
-    demisto.debug('Saving folder')
+    demisto.debug("Saving folder")
     f = Folder(parent=parent_folder, name=new_folder_name)
     f.save()
-    demisto.debug('Verifying folder was saved')
+    demisto.debug("Verifying folder was saved")
     client.get_folder_by_path(full_path, account)
-    return f'Folder {full_path} created successfully'
+    return f"Folder {full_path} created successfully"
 
 
 def mark_item_as_junk(client: EWSClient, item_id, move_items: str, target_mailbox: Optional[str] = None) -> CommandResults:
@@ -1215,18 +1261,19 @@ def mark_item_as_junk(client: EWSClient, item_id, move_items: str, target_mailbo
     :return: Results object
     """
     account = client.get_account(target_mailbox)
-    move_to_junk: bool = (move_items.lower() == 'yes')
+    move_to_junk: bool = move_items.lower() == "yes"
     ews_result = MarkAsJunk(account=account).call(item_id=item_id, move_item=move_to_junk)
     mark_as_junk_result = {
         ITEM_ID: item_id,
     }
-    if ews_result == 'Success':
-        mark_as_junk_result[ACTION] = 'marked-as-junk'
+    if ews_result == "Success":
+        mark_as_junk_result[ACTION] = "marked-as-junk"
     else:
-        raise Exception(f'Failed mark-item-as-junk with error: {ews_result}')
+        raise Exception(f"Failed mark-item-as-junk with error: {ews_result}")
 
-    return get_entry_for_object('Mark item as junk', CONTEXT_UPDATE_EWS_ITEM, mark_as_junk_result,
-                                filter_null_values=(client.version != 'O365'))
+    return get_entry_for_object(
+        "Mark item as junk", CONTEXT_UPDATE_EWS_ITEM, mark_as_junk_result, filter_null_values=(client.version != "O365")
+    )
 
 
 def folder_to_context_entry(f) -> dict:
@@ -1237,33 +1284,34 @@ def folder_to_context_entry(f) -> dict:
     """
     try:
         f_entry = {
-            'name': f.name,
-            'totalCount': f.total_count,
-            'id': f.id,
-            'childrenFolderCount': f.child_folder_count,
-            'changeKey': f.changekey,
+            "name": f.name,
+            "totalCount": f.total_count,
+            "id": f.id,
+            "childrenFolderCount": f.child_folder_count,
+            "changeKey": f.changekey,
         }
 
-        if 'unread_count' in [x.name for x in Folder.FIELDS]:
-            f_entry['unreadCount'] = f.unread_count
+        if "unread_count" in [x.name for x in Folder.FIELDS]:
+            f_entry["unreadCount"] = f.unread_count
         return f_entry
 
     except AttributeError:
         if isinstance(f, dict):
             return {
-                'name': f.get('name'),
-                'totalCount': f.get('total_count'),
-                'id': f.get('id'),
-                'childrenFolderCount': f.get('child_folder_count'),
-                'changeKey': f.get('changekey'),
-                'unreadCount': f.get('unread_count'),
+                "name": f.get("name"),
+                "totalCount": f.get("total_count"),
+                "id": f.get("id"),
+                "childrenFolderCount": f.get("child_folder_count"),
+                "changeKey": f.get("changekey"),
+                "unreadCount": f.get("unread_count"),
             }
 
     return {}
 
 
-def get_folder(client: EWSClient, folder_path: str, target_mailbox:
-               Optional[str] = None, is_public: Optional[bool] = None) -> CommandResults:
+def get_folder(
+    client: EWSClient, folder_path: str, target_mailbox: Optional[str] = None, is_public: Optional[bool] = None
+) -> CommandResults:
     """
     Retrieve a folder from the target mailbox or client mailbox
     :param client: EWS Client
@@ -1274,12 +1322,11 @@ def get_folder(client: EWSClient, folder_path: str, target_mailbox:
     """
     account = client.get_account(target_mailbox)
     is_public = client.is_default_folder(folder_path, is_public)
-    folder = folder_to_context_entry(
-        client.get_folder_by_path(folder_path, account=account, is_public=is_public)
-    )
+    folder = folder_to_context_entry(client.get_folder_by_path(folder_path, account=account, is_public=is_public))
 
-    return get_entry_for_object(f'Folder {folder_path}', CONTEXT_UPDATE_FOLDER, folder,
-                                filter_null_values=(client.version != 'O365'))
+    return get_entry_for_object(
+        f"Folder {folder_path}", CONTEXT_UPDATE_FOLDER, folder, filter_null_values=(client.version != "O365")
+    )
 
 
 def get_expanded_group(client: EWSClient, email_address, recursive_expansion: bool = False) -> CommandResults:
@@ -1291,18 +1338,17 @@ def get_expanded_group(client: EWSClient, email_address, recursive_expansion: bo
     :return: Results object containing expanded groups
     """
     group_members = ExpandGroup(protocol=client.get_protocol()).call(email_address, recursive_expansion)
-    group_details = {
-        'name': email_address,
-        'members': group_members
-    }
-    entry_for_object = get_entry_for_object('Expanded group', 'EWS.ExpandGroup', group_details,
-                                            filter_null_values=(client.version != 'O365'))
-    entry_for_object.readable_output = tableToMarkdown('Group Members', group_members)
+    group_details = {"name": email_address, "members": group_members}
+    entry_for_object = get_entry_for_object(
+        "Expanded group", "EWS.ExpandGroup", group_details, filter_null_values=(client.version != "O365")
+    )
+    entry_for_object.readable_output = tableToMarkdown("Group Members", group_members)
     return entry_for_object
 
 
-def mark_item_as_read(client: EWSClient, item_ids, operation: str = 'read',
-                      target_mailbox: Optional[str] = None) -> CommandResults:
+def mark_item_as_read(
+    client: EWSClient, item_ids, operation: str = "read", target_mailbox: Optional[str] = None
+) -> CommandResults:
     """
     Marks item as read
     :param client: EWS Client
@@ -1317,14 +1363,20 @@ def mark_item_as_read(client: EWSClient, item_ids, operation: str = 'read',
     items = [x for x in items if isinstance(x, Message)]
 
     for item in items:
-        item.is_read = (operation == 'read')
+        item.is_read = operation == "read"
         item.save()
 
-        marked_items.append({
-            ITEM_ID: item.id,
-            MESSAGE_ID: item.message_id,
-            ACTION: f'marked-as-{operation}',
-        })
+        marked_items.append(
+            {
+                ITEM_ID: item.id,
+                MESSAGE_ID: item.message_id,
+                ACTION: f"marked-as-{operation}",
+            }
+        )
 
-    return get_entry_for_object(f'Marked items ({operation} marked operation)', CONTEXT_UPDATE_EWS_ITEM, marked_items,
-                                filter_null_values=(client.version != 'O365'))
+    return get_entry_for_object(
+        f"Marked items ({operation} marked operation)",
+        CONTEXT_UPDATE_EWS_ITEM,
+        marked_items,
+        filter_null_values=(client.version != "O365"),
+    )

@@ -1,28 +1,32 @@
-from CommonServerPython import *
-from CommonServerUserPython import *
 from datetime import timedelta
+
 import dateparser
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 TOKEN_LIFE_TIME = timedelta(minutes=28)
 
 
 class CrowdStrikeClient(BaseClient):
-
     def __init__(self, params):
         """
         CrowdStrike Client class that implements OAuth2 authentication.
         Args:
             params: Demisto params
         """
-        credentials = params.get('credentials', {})
-        self._client_id = credentials.get('identifier')
-        self._client_secret = credentials.get('password')
-        super().__init__(base_url=params.get('server_url', 'https://api.crowdstrike.com/'),
-                         verify=not params.get('insecure', False), ok_codes=tuple(),
-                         proxy=params.get('proxy', False))  # type: ignore[misc]
-        self.timeout = float(params.get('timeout', '10'))
+        credentials = params.get("credentials", {})
+        self._client_id = credentials.get("identifier")
+        self._client_secret = credentials.get("password")
+        super().__init__(
+            base_url=params.get("server_url", "https://api.crowdstrike.com/"),
+            verify=not params.get("insecure", False),
+            ok_codes=tuple(),
+            proxy=params.get("proxy", False),
+        )  # type: ignore[misc]
+        self.timeout = float(params.get("timeout", "10"))
         self._token = self._get_token()
-        self._headers = {'Authorization': 'bearer ' + self._token}
+        self._headers = {"Authorization": "bearer " + self._token}
 
     @staticmethod
     def _error_handler(res: requests.Response):
@@ -31,28 +35,43 @@ class CrowdStrikeClient(BaseClient):
         :param res: the request's response
         :return: None
         """
-        err_msg = 'Error in API call [{}] - {}\n'.format(res.status_code, res.reason)
+        err_msg = f"Error in API call [{res.status_code}] - {res.reason}\n"
         try:
             # Try to parse json error response
             error_entry = res.json()
-            errors = error_entry.get('errors', [])
-            err_msg += '\n'.join(f"{error.get('code')}: {error.get('message')}" for  # pylint: disable=no-member
-                                 error in errors)
-            if 'Failed to issue access token - Not Authorized' in err_msg:
-                err_msg = err_msg.replace('Failed to issue access token - Not Authorized',
-                                          'Client Secret is invalid.')
-            elif 'Failed to generate access token for clientID' in err_msg:
-                err_msg = err_msg.replace('Failed to generate access token for clientID=', 'Client ID (')
-                if err_msg.endswith('.'):
+            errors = error_entry.get("errors", [])
+            err_msg += "\n".join(
+                f"{error.get('code')}: {error.get('message')}"
+                for error in errors  # pylint: disable=no-member
+            )
+            if "Failed to issue access token - Not Authorized" in err_msg:
+                err_msg = err_msg.replace("Failed to issue access token - Not Authorized", "Client Secret is invalid.")
+            elif "Failed to generate access token for clientID" in err_msg:
+                err_msg = err_msg.replace("Failed to generate access token for clientID=", "Client ID (")
+                if err_msg.endswith("."):
                     err_msg = err_msg[:-1]
-                err_msg += ') is invalid.'
+                err_msg += ") is invalid."
             raise DemistoException(err_msg)
         except ValueError:
-            err_msg += '\n{}'.format(res.text)
+            err_msg += f"\n{res.text}"
             raise DemistoException(err_msg)
 
-    def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
-                     files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None, resp_type='json'):
+    def http_request(
+        self,
+        method,
+        url_suffix,
+        full_url=None,
+        headers=None,
+        json_data=None,
+        params=None,
+        data=None,
+        files=None,
+        timeout=10,
+        ok_codes=None,
+        return_empty_response=False,
+        auth=None,
+        resp_type="json",
+    ):
         """A wrapper for requests lib to send our requests and handle requests and responses better.
 
         :type method: ``str``
@@ -104,39 +123,51 @@ class CrowdStrikeClient(BaseClient):
         if self.timeout:
             req_timeout = self.timeout
 
-        return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
-                                     json_data=json_data, params=params, data=data, files=files, timeout=req_timeout,
-                                     ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth,
-                                     error_handler=self._error_handler, resp_type=resp_type)
+        return super()._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            full_url=full_url,
+            headers=headers,
+            json_data=json_data,
+            params=params,
+            data=data,
+            files=files,
+            timeout=req_timeout,
+            ok_codes=ok_codes,
+            return_empty_response=return_empty_response,
+            auth=auth,
+            error_handler=self._error_handler,
+            resp_type=resp_type,
+        )
 
     def _get_token(self, force_gen_new_token=False):
         """
-            Retrieves the token from the server if it's expired and updates the global HEADERS to include it
+        Retrieves the token from the server if it's expired and updates the global HEADERS to include it
 
-            :param force_gen_new_token: If set to True will generate a new token regardless of time passed
+        :param force_gen_new_token: If set to True will generate a new token regardless of time passed
 
-            :rtype: ``str``
-            :return: Token
+        :rtype: ``str``
+        :return: Token
         """
         now = datetime.now()
         ctx = get_integration_context()
-        if not ctx or not ctx.get('generation_time', force_gen_new_token):
+        if not ctx or not ctx.get("generation_time", force_gen_new_token):
             # new token is needed
             auth_token = self._generate_token()
         else:
-            generation_time = dateparser.parse(ctx.get('generation_time'))
+            generation_time = dateparser.parse(ctx.get("generation_time"))
             if generation_time and now:
                 time_passed = now - generation_time
             else:
                 time_passed = TOKEN_LIFE_TIME
             if time_passed < TOKEN_LIFE_TIME:
                 # token hasn't expired
-                return ctx.get('auth_token')
+                return ctx.get("auth_token")
             else:
                 # token expired
                 auth_token = self._generate_token()
 
-        ctx.update({'auth_token': auth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")})
+        ctx.update({"auth_token": auth_token, "generation_time": now.strftime("%Y-%m-%dT%H:%M:%S")})
         set_integration_context(ctx)
         return auth_token
 
@@ -144,16 +175,13 @@ class CrowdStrikeClient(BaseClient):
         """Generate an Access token using the user name and password
         :return: valid token
         """
-        body = {
-            'client_id': self._client_id,
-            'client_secret': self._client_secret
-        }
-        token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id, self._client_secret))
-        return token_res.get('access_token')
+        body = {"client_id": self._client_id, "client_secret": self._client_secret}
+        token_res = self.http_request("POST", "/oauth2/token", data=body, auth=(self._client_id, self._client_secret))
+        return token_res.get("access_token")
 
     def check_quota_status(self) -> dict:
         """Checking the status of the quota
         :return: http response
         """
         url_suffix = "/falconx/entities/submissions/v1?ids="
-        return self.http_request('GET', url_suffix)
+        return self.http_request("GET", url_suffix)

@@ -1,29 +1,27 @@
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-# pylint: disable=E9010, E9011
-
-from typing import Optional, Tuple
-from requests.sessions import merge_setting, CaseInsensitiveDict
-from requests.exceptions import HTTPError
-import re
 import copy
 import logging
+import re
+import tempfile
 import traceback
 import types
+import uuid
+
+# pylint: disable=E9010, E9011
+import demistomock as demisto  # noqa: F401
 import urllib3
+from CommonServerPython import *  # noqa: F401
+from requests.exceptions import HTTPError
+from requests.sessions import CaseInsensitiveDict, merge_setting
+from stix2patterns.pattern import Pattern
 from taxii2client import v20, v21
 from taxii2client.common import TokenAuth, _HTTPConnection
 from taxii2client.exceptions import InvalidJSONError
-import tempfile
-import uuid
-from stix2patterns.pattern import Pattern
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
 
-class XsoarSuppressWarningFilter(logging.Filter):    # pragma: no cover
+class XsoarSuppressWarningFilter(logging.Filter):  # pragma: no cover
     def filter(self, record):
         # Suppress all logger records, but send the important ones to demisto logger
         if record.levelno == logging.WARNING:
@@ -35,12 +33,12 @@ class XsoarSuppressWarningFilter(logging.Filter):    # pragma: no cover
 
 # Make sure we have only one XsoarSuppressWarningFilter
 v21_logger = logging.getLogger("taxii2client.v21")
-demisto.debug(f'Logging Filters before cleaning: {v21_logger.filters=}')
-for current_filter in list(v21_logger.filters):    # pragma: no cover
-    if 'XsoarSuppressWarningFilter' in type(current_filter).__name__:
+demisto.debug(f"Logging Filters before cleaning: {v21_logger.filters=}")
+for current_filter in list(v21_logger.filters):  # pragma: no cover
+    if "XsoarSuppressWarningFilter" in type(current_filter).__name__:
         v21_logger.removeFilter(current_filter)
 v21_logger.addFilter(XsoarSuppressWarningFilter())
-demisto.debug(f'Logging Filters: {v21_logger.filters=}')
+demisto.debug(f"Logging Filters: {v21_logger.filters=}")
 
 # CONSTANTS
 TAXII_VER_2_0 = "2.0"
@@ -54,23 +52,15 @@ ERR_NO_COLL = "No collection is available for this user, please make sure you en
 
 # Pattern Regexes - used to extract indicator type and value
 INDICATOR_OPERATOR_VAL_FORMAT_PATTERN = r"(\w.*?{value}{operator})'(.*?)'"
-INDICATOR_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
-    value="value", operator="="
-)
-CIDR_ISSUBSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
-    value="value", operator="ISSUBSET"
-)
-CIDR_ISUPPERSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
-    value="value", operator="ISUPPERSET"
-)
-HASHES_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
-    value=r"hashes\..*?", operator="="
-)
+INDICATOR_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value="value", operator="=")
+CIDR_ISSUBSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value="value", operator="ISSUBSET")
+CIDR_ISUPPERSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value="value", operator="ISUPPERSET")
+HASHES_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value=r"hashes\..*?", operator="=")
 
 TAXII_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 TAXII_TIME_FORMAT_NO_MS = "%Y-%m-%dT%H:%M:%SZ"
 
-STIX_2_TYPES_TO_CORTEX_TYPES = {       # pragma: no cover
+STIX_2_TYPES_TO_CORTEX_TYPES = {  # pragma: no cover
     "mutex": FeedIndicatorType.MUTEX,
     "windows-registry-key": FeedIndicatorType.Registry,
     "user-account": FeedIndicatorType.Account,
@@ -102,202 +92,410 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {       # pragma: no cover
     "x509-certificate": FeedIndicatorType.X509,
 }
 STIX_SUPPORTED_TYPES = {
-    'url': ('value',),
-    'ip': ('value',),
-    'domain-name': ('value',),
-    'email-addr': ('value',),
-    'ipv4-addr': ('value',),
-    'ipv6-addr': ('value',),
-    'attack-pattern': ('name',),
-    'campaign': ('name',),
-    'identity': ('name',),
-    'infrastructure': ('name',),
-    'intrusion-set': ('name',),
-    'malware': ('name',),
-    'report': ('name',),
-    'threat-actor': ('name',),
-    'tool': ('name',),
-    'vulnerability': ('name',),
-    'mutex': ('name',),
-    'software': ('name',),
-    'autonomous-system': ('number',),
-    'file': ('hashes',),
-    'user-account': ('user_id',),
-    'location': ('name', 'country'),
-    'x509-certificate': ('serial_number', 'issuer'),
-    'windows-registry-key': ('key', 'values')
+    "url": ("value",),
+    "ip": ("value",),
+    "domain-name": ("value",),
+    "email-addr": ("value",),
+    "ipv4-addr": ("value",),
+    "ipv6-addr": ("value",),
+    "attack-pattern": ("name",),
+    "campaign": ("name",),
+    "identity": ("name",),
+    "infrastructure": ("name",),
+    "intrusion-set": ("name",),
+    "malware": ("name",),
+    "report": ("name",),
+    "threat-actor": ("name",),
+    "tool": ("name",),
+    "vulnerability": ("name",),
+    "mutex": ("name",),
+    "software": ("name",),
+    "autonomous-system": ("number",),
+    "file": ("hashes",),
+    "user-account": ("user_id",),
+    "location": ("name", "country"),
+    "x509-certificate": ("serial_number", "issuer"),
+    "windows-registry-key": ("key", "values"),
 }
-MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {       # pragma: no cover
-    'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
-    'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
-    'adversary-opsec': ThreatIntel.KillChainPhases.ADVERSARY_OPSEC,
-    'credential-access': ThreatIntel.KillChainPhases.CREDENTIAL_ACCESS,
-    'exfiltration': ThreatIntel.KillChainPhases.EXFILTRATION,
-    'lateral-movement': ThreatIntel.KillChainPhases.LATERAL_MOVEMENT,
-    'defense-evasion': ThreatIntel.KillChainPhases.DEFENSE_EVASION,
-    'persistence': ThreatIntel.KillChainPhases.PERSISTENCE,
-    'collection': ThreatIntel.KillChainPhases.COLLECTION,
-    'impact': ThreatIntel.KillChainPhases.IMPACT,
-    'initial-access': ThreatIntel.KillChainPhases.INITIAL_ACCESS,
-    'discovery': ThreatIntel.KillChainPhases.DISCOVERY,
-    'execution': ThreatIntel.KillChainPhases.EXECUTION,
-    'installation': ThreatIntel.KillChainPhases.INSTALLATION,
-    'delivery': ThreatIntel.KillChainPhases.DELIVERY,
-    'weaponization': ThreatIntel.KillChainPhases.WEAPONIZATION,
-    'act-on-objectives': ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
-    'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL,
+MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {  # pragma: no cover
+    "build-capabilities": ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
+    "privilege-escalation": ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
+    "adversary-opsec": ThreatIntel.KillChainPhases.ADVERSARY_OPSEC,
+    "credential-access": ThreatIntel.KillChainPhases.CREDENTIAL_ACCESS,
+    "exfiltration": ThreatIntel.KillChainPhases.EXFILTRATION,
+    "lateral-movement": ThreatIntel.KillChainPhases.LATERAL_MOVEMENT,
+    "defense-evasion": ThreatIntel.KillChainPhases.DEFENSE_EVASION,
+    "persistence": ThreatIntel.KillChainPhases.PERSISTENCE,
+    "collection": ThreatIntel.KillChainPhases.COLLECTION,
+    "impact": ThreatIntel.KillChainPhases.IMPACT,
+    "initial-access": ThreatIntel.KillChainPhases.INITIAL_ACCESS,
+    "discovery": ThreatIntel.KillChainPhases.DISCOVERY,
+    "execution": ThreatIntel.KillChainPhases.EXECUTION,
+    "installation": ThreatIntel.KillChainPhases.INSTALLATION,
+    "delivery": ThreatIntel.KillChainPhases.DELIVERY,
+    "weaponization": ThreatIntel.KillChainPhases.WEAPONIZATION,
+    "act-on-objectives": ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
+    "command-and-control": ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL,
 }
 
-STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {          # pragma: no cover
+STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {  # pragma: no cover
     "ipv4-addr": FeedIndicatorType.CIDR,
     "ipv6-addr": FeedIndicatorType.IPv6CIDR,
 }
 
-THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {         # pragma: no cover
-    'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
-    'attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-    'report': ThreatIntel.ObjectsNames.REPORT,
-    'malware': ThreatIntel.ObjectsNames.MALWARE,
-    'course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
-    'intrusion-set': ThreatIntel.ObjectsNames.INTRUSION_SET,
-    'tool': ThreatIntel.ObjectsNames.TOOL,
-    'threat-actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
-    'infrastructure': ThreatIntel.ObjectsNames.INFRASTRUCTURE,
+THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {  # pragma: no cover
+    "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
+    "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "report": ThreatIntel.ObjectsNames.REPORT,
+    "malware": ThreatIntel.ObjectsNames.MALWARE,
+    "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+    "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
+    "tool": ThreatIntel.ObjectsNames.TOOL,
+    "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "infrastructure": ThreatIntel.ObjectsNames.INFRASTRUCTURE,
 }
 
 # marking definitions of TLPs are constant (marking definitions of statements can vary)
-MARKING_DEFINITION_TO_TLP = {'marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9': 'WHITE',
-                             'marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da': 'GREEN',
-                             'marking-definition--f88d31f6-486f-44da-b317-01333bde0b82': 'AMBER',
-                             'marking-definition--5e57c739-391a-4eb3-b6be-7d15ca92d5ed': 'RED'}
+MARKING_DEFINITION_TO_TLP = {
+    "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9": "WHITE",
+    "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da": "GREEN",
+    "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82": "AMBER",
+    "marking-definition--5e57c739-391a-4eb3-b6be-7d15ca92d5ed": "RED",
+}
 
 # country codes are in ISO-2 format
-COUNTRY_CODES_TO_NAMES = {'AD': 'Andorra', 'AE': 'United Arab Emirates',        # pragma: no cover
-                          'AF': 'Afghanistan', 'AG': 'Antigua and Barbuda',
-                          'AI': 'Anguilla', 'AL': 'Albania', 'AM': 'Armenia', 'AO': 'Angola', 'AQ': 'Antarctica',
-                          'AR': 'Argentina', 'AS': 'American Samoa', 'AT': 'Austria', 'AU': 'Australia', 'AW': 'Aruba',
-                          'AX': 'Aland Islands', 'AZ': 'Azerbaijan', 'BA': 'Bosnia and Herzegovina', 'BB': 'Barbados',
-                          'BD': 'Bangladesh', 'BE': 'Belgium', 'BF': 'Burkina Faso', 'BG': 'Bulgaria', 'BH': 'Bahrain',
-                          'BI': 'Burundi', 'BJ': 'Benin', 'BL': 'Saint Barthelemy', 'BM': 'Bermuda', 'BN': 'Brunei',
-                          'BO': 'Bolivia', 'BQ': 'Bonaire, Saint Eustatius and Saba ', 'BR': 'Brazil', 'BS': 'Bahamas',
-                          'BT': 'Bhutan', 'BV': 'Bouvet Island', 'BW': 'Botswana', 'BY': 'Belarus', 'BZ': 'Belize',
-                          'CA': 'Canada', 'CC': 'Cocos Islands', 'CD': 'Democratic Republic of the Congo',
-                          'CF': 'Central African Republic', 'CG': 'Republic of the Congo', 'CH': 'Switzerland',
-                          'CI': 'Ivory Coast', 'CK': 'Cook Islands', 'CL': 'Chile', 'CM': 'Cameroon', 'CN': 'China',
-                          'CO': 'Colombia', 'CR': 'Costa Rica', 'CU': 'Cuba', 'CV': 'Cape Verde', 'CW': 'Curacao',
-                          'CX': 'Christmas Island', 'CY': 'Cyprus', 'CZ': 'Czech Republic', 'DE': 'Germany', 'DJ': 'Djibouti',
-                          'DK': 'Denmark', 'DM': 'Dominica', 'DO': 'Dominican Republic', 'DZ': 'Algeria', 'EC': 'Ecuador',
-                          'EE': 'Estonia', 'EG': 'Egypt', 'EH': 'Western Sahara', 'ER': 'Eritrea', 'ES': 'Spain',
-                          'ET': 'Ethiopia', 'FI': 'Finland', 'FJ': 'Fiji', 'FK': 'Falkland Islands', 'FM': 'Micronesia',
-                          'FO': 'Faroe Islands', 'FR': 'France', 'GA': 'Gabon', 'GB': 'United Kingdom', 'GD': 'Grenada',
-                          'GE': 'Georgia', 'GF': 'French Guiana', 'GG': 'Guernsey', 'GH': 'Ghana', 'GI': 'Gibraltar',
-                          'GL': 'Greenland', 'GM': 'Gambia', 'GN': 'Guinea', 'GP': 'Guadeloupe', 'GQ': 'Equatorial Guinea',
-                          'GR': 'Greece', 'GS': 'South Georgia and the South Sandwich Islands', 'GT': 'Guatemala', 'GU': 'Guam',
-                          'GW': 'Guinea-Bissau', 'GY': 'Guyana', 'HK': 'Hong Kong', 'HM': 'Heard Island and McDonald Islands',
-                          'HN': 'Honduras', 'HR': 'Croatia', 'HT': 'Haiti', 'HU': 'Hungary', 'ID': 'Indonesia', 'IE': 'Ireland',
-                          'IL': 'Israel', 'IM': 'Isle of Man', 'IN': 'India', 'IO': 'British Indian Ocean Territory',
-                          'IQ': 'Iraq', 'IR': 'Iran', 'IS': 'Iceland', 'IT': 'Italy', 'JE': 'Jersey', 'JM': 'Jamaica',
-                          'JO': 'Jordan', 'JP': 'Japan', 'KE': 'Kenya', 'KG': 'Kyrgyzstan', 'KH': 'Cambodia', 'KI': 'Kiribati',
-                          'KM': 'Comoros', 'KN': 'Saint Kitts and Nevis', 'KP': 'North Korea', 'KR': 'South Korea',
-                          'KW': 'Kuwait', 'KY': 'Cayman Islands', 'KZ': 'Kazakhstan', 'LA': 'Laos', 'LB': 'Lebanon',
-                          'LC': 'Saint Lucia', 'LI': 'Liechtenstein', 'LK': 'Sri Lanka', 'LR': 'Liberia', 'LS': 'Lesotho',
-                          'LT': 'Lithuania', 'LU': 'Luxembourg', 'LV': 'Latvia', 'LY': 'Libya', 'MA': 'Morocco', 'MC': 'Monaco',
-                          'MD': 'Moldova', 'ME': 'Montenegro', 'MF': 'Saint Martin', 'MG': 'Madagascar', 'MH': 'Marshall Islands',
-                          'MK': 'Macedonia', 'ML': 'Mali', 'MM': 'Myanmar', 'MN': 'Mongolia', 'MO': 'Macao',
-                          'MP': 'Northern Mariana Islands', 'MQ': 'Martinique', 'MR': 'Mauritania', 'MS': 'Montserrat',
-                          'MT': 'Malta', 'MU': 'Mauritius', 'MV': 'Maldives', 'MW': 'Malawi', 'MX': 'Mexico', 'MY': 'Malaysia',
-                          'MZ': 'Mozambique', 'NA': 'Namibia', 'NC': 'New Caledonia', 'NE': 'Niger', 'NF': 'Norfolk Island',
-                          'NG': 'Nigeria', 'NI': 'Nicaragua', 'NL': 'Netherlands', 'NO': 'Norway', 'NP': 'Nepal', 'NR': 'Nauru',
-                          'NU': 'Niue', 'NZ': 'New Zealand', 'OM': 'Oman', 'PA': 'Panama', 'PE': 'Peru', 'PF': 'French Polynesia',
-                          'PG': 'Papua New Guinea', 'PH': 'Philippines', 'PK': 'Pakistan', 'PL': 'Poland',
-                          'PM': 'Saint Pierre and Miquelon', 'PN': 'Pitcairn', 'PR': 'Puerto Rico', 'PS': 'Palestinian Territory',
-                          'PT': 'Portugal', 'PW': 'Palau', 'PY': 'Paraguay', 'QA': 'Qatar', 'RE': 'Reunion', 'RO': 'Romania',
-                          'RS': 'Serbia', 'RU': 'Russia', 'RW': 'Rwanda', 'SA': 'Saudi Arabia', 'SB': 'Solomon Islands',
-                          'SC': 'Seychelles', 'SD': 'Sudan', 'SE': 'Sweden', 'SG': 'Singapore', 'SH': 'Saint Helena',
-                          'SI': 'Slovenia', 'SJ': 'Svalbard and Jan Mayen', 'SK': 'Slovakia', 'SL': 'Sierra Leone',
-                          'SM': 'San Marino', 'SN': 'Senegal', 'SO': 'Somalia', 'SR': 'Suriname', 'SS': 'South Sudan',
-                          'ST': 'Sao Tome and Principe', 'SV': 'El Salvador', 'SX': 'Sint Maarten', 'SY': 'Syria',
-                          'SZ': 'Swaziland', 'TC': 'Turks and Caicos Islands', 'TD': 'Chad', 'TF': 'French Southern Territories',
-                          'TG': 'Togo', 'TH': 'Thailand', 'TJ': 'Tajikistan', 'TK': 'Tokelau', 'TL': 'East Timor',
-                          'TM': 'Turkmenistan', 'TN': 'Tunisia', 'TO': 'Tonga', 'TR': 'Turkey', 'TT': 'Trinidad and Tobago',
-                          'TV': 'Tuvalu', 'TW': 'Taiwan', 'TZ': 'Tanzania', 'UA': 'Ukraine', 'UG': 'Uganda',
-                          'UM': 'United States Minor Outlying Islands', 'US': 'United States', 'UY': 'Uruguay',
-                          'UZ': 'Uzbekistan', 'VA': 'Vatican', 'VC': 'Saint Vincent and the Grenadines', 'VE': 'Venezuela',
-                          'VG': 'British Virgin Islands', 'VI': 'U.S. Virgin Islands', 'VN': 'Vietnam', 'VU': 'Vanuatu',
-                          'WF': 'Wallis and Futuna', 'WS': 'Samoa', 'XK': 'Kosovo', 'YE': 'Yemen', 'YT': 'Mayotte',
-                          'ZA': 'South Africa', 'ZM': 'Zambia', 'ZW': 'Zimbabwe'}
-
-
-STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {        # pragma: no cover
-    'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
-    'attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-    'report': ThreatIntel.ObjectsNames.REPORT,
-    'malware': ThreatIntel.ObjectsNames.MALWARE,
-    'course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
-    'intrusion-set': ThreatIntel.ObjectsNames.INTRUSION_SET,
-    'tool': ThreatIntel.ObjectsNames.TOOL,
-    'threat-actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
-    'infrastructure': ThreatIntel.ObjectsNames.INFRASTRUCTURE,
-    'vulnerability': FeedIndicatorType.CVE,
-    'ipv4-addr': FeedIndicatorType.IP,
-    'ipv6-addr': FeedIndicatorType.IPv6,
-    'domain-name': (FeedIndicatorType.DomainGlob, FeedIndicatorType.Domain),
-    'user-account': FeedIndicatorType.Account,
-    'email-addr': FeedIndicatorType.Email,
-    'url': FeedIndicatorType.URL,
-    'file': FeedIndicatorType.File,
-    'windows-registry-key': FeedIndicatorType.Registry,
-    'indicator': (FeedIndicatorType.IP, FeedIndicatorType.IPv6, FeedIndicatorType.DomainGlob,
-                  FeedIndicatorType.Domain, FeedIndicatorType.Account, FeedIndicatorType.Email,
-                  FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry),
-    'software': FeedIndicatorType.Software,
-    'autonomous-system': FeedIndicatorType.AS,
-    'x509-certificate': FeedIndicatorType.X509,
+COUNTRY_CODES_TO_NAMES = {
+    "AD": "Andorra",
+    "AE": "United Arab Emirates",  # pragma: no cover
+    "AF": "Afghanistan",
+    "AG": "Antigua and Barbuda",
+    "AI": "Anguilla",
+    "AL": "Albania",
+    "AM": "Armenia",
+    "AO": "Angola",
+    "AQ": "Antarctica",
+    "AR": "Argentina",
+    "AS": "American Samoa",
+    "AT": "Austria",
+    "AU": "Australia",
+    "AW": "Aruba",
+    "AX": "Aland Islands",
+    "AZ": "Azerbaijan",
+    "BA": "Bosnia and Herzegovina",
+    "BB": "Barbados",
+    "BD": "Bangladesh",
+    "BE": "Belgium",
+    "BF": "Burkina Faso",
+    "BG": "Bulgaria",
+    "BH": "Bahrain",
+    "BI": "Burundi",
+    "BJ": "Benin",
+    "BL": "Saint Barthelemy",
+    "BM": "Bermuda",
+    "BN": "Brunei",
+    "BO": "Bolivia",
+    "BQ": "Bonaire, Saint Eustatius and Saba ",
+    "BR": "Brazil",
+    "BS": "Bahamas",
+    "BT": "Bhutan",
+    "BV": "Bouvet Island",
+    "BW": "Botswana",
+    "BY": "Belarus",
+    "BZ": "Belize",
+    "CA": "Canada",
+    "CC": "Cocos Islands",
+    "CD": "Democratic Republic of the Congo",
+    "CF": "Central African Republic",
+    "CG": "Republic of the Congo",
+    "CH": "Switzerland",
+    "CI": "Ivory Coast",
+    "CK": "Cook Islands",
+    "CL": "Chile",
+    "CM": "Cameroon",
+    "CN": "China",
+    "CO": "Colombia",
+    "CR": "Costa Rica",
+    "CU": "Cuba",
+    "CV": "Cape Verde",
+    "CW": "Curacao",
+    "CX": "Christmas Island",
+    "CY": "Cyprus",
+    "CZ": "Czech Republic",
+    "DE": "Germany",
+    "DJ": "Djibouti",
+    "DK": "Denmark",
+    "DM": "Dominica",
+    "DO": "Dominican Republic",
+    "DZ": "Algeria",
+    "EC": "Ecuador",
+    "EE": "Estonia",
+    "EG": "Egypt",
+    "EH": "Western Sahara",
+    "ER": "Eritrea",
+    "ES": "Spain",
+    "ET": "Ethiopia",
+    "FI": "Finland",
+    "FJ": "Fiji",
+    "FK": "Falkland Islands",
+    "FM": "Micronesia",
+    "FO": "Faroe Islands",
+    "FR": "France",
+    "GA": "Gabon",
+    "GB": "United Kingdom",
+    "GD": "Grenada",
+    "GE": "Georgia",
+    "GF": "French Guiana",
+    "GG": "Guernsey",
+    "GH": "Ghana",
+    "GI": "Gibraltar",
+    "GL": "Greenland",
+    "GM": "Gambia",
+    "GN": "Guinea",
+    "GP": "Guadeloupe",
+    "GQ": "Equatorial Guinea",
+    "GR": "Greece",
+    "GS": "South Georgia and the South Sandwich Islands",
+    "GT": "Guatemala",
+    "GU": "Guam",
+    "GW": "Guinea-Bissau",
+    "GY": "Guyana",
+    "HK": "Hong Kong",
+    "HM": "Heard Island and McDonald Islands",
+    "HN": "Honduras",
+    "HR": "Croatia",
+    "HT": "Haiti",
+    "HU": "Hungary",
+    "ID": "Indonesia",
+    "IE": "Ireland",
+    "IL": "Israel",
+    "IM": "Isle of Man",
+    "IN": "India",
+    "IO": "British Indian Ocean Territory",
+    "IQ": "Iraq",
+    "IR": "Iran",
+    "IS": "Iceland",
+    "IT": "Italy",
+    "JE": "Jersey",
+    "JM": "Jamaica",
+    "JO": "Jordan",
+    "JP": "Japan",
+    "KE": "Kenya",
+    "KG": "Kyrgyzstan",
+    "KH": "Cambodia",
+    "KI": "Kiribati",
+    "KM": "Comoros",
+    "KN": "Saint Kitts and Nevis",
+    "KP": "North Korea",
+    "KR": "South Korea",
+    "KW": "Kuwait",
+    "KY": "Cayman Islands",
+    "KZ": "Kazakhstan",
+    "LA": "Laos",
+    "LB": "Lebanon",
+    "LC": "Saint Lucia",
+    "LI": "Liechtenstein",
+    "LK": "Sri Lanka",
+    "LR": "Liberia",
+    "LS": "Lesotho",
+    "LT": "Lithuania",
+    "LU": "Luxembourg",
+    "LV": "Latvia",
+    "LY": "Libya",
+    "MA": "Morocco",
+    "MC": "Monaco",
+    "MD": "Moldova",
+    "ME": "Montenegro",
+    "MF": "Saint Martin",
+    "MG": "Madagascar",
+    "MH": "Marshall Islands",
+    "MK": "Macedonia",
+    "ML": "Mali",
+    "MM": "Myanmar",
+    "MN": "Mongolia",
+    "MO": "Macao",
+    "MP": "Northern Mariana Islands",
+    "MQ": "Martinique",
+    "MR": "Mauritania",
+    "MS": "Montserrat",
+    "MT": "Malta",
+    "MU": "Mauritius",
+    "MV": "Maldives",
+    "MW": "Malawi",
+    "MX": "Mexico",
+    "MY": "Malaysia",
+    "MZ": "Mozambique",
+    "NA": "Namibia",
+    "NC": "New Caledonia",
+    "NE": "Niger",
+    "NF": "Norfolk Island",
+    "NG": "Nigeria",
+    "NI": "Nicaragua",
+    "NL": "Netherlands",
+    "NO": "Norway",
+    "NP": "Nepal",
+    "NR": "Nauru",
+    "NU": "Niue",
+    "NZ": "New Zealand",
+    "OM": "Oman",
+    "PA": "Panama",
+    "PE": "Peru",
+    "PF": "French Polynesia",
+    "PG": "Papua New Guinea",
+    "PH": "Philippines",
+    "PK": "Pakistan",
+    "PL": "Poland",
+    "PM": "Saint Pierre and Miquelon",
+    "PN": "Pitcairn",
+    "PR": "Puerto Rico",
+    "PS": "Palestinian Territory",
+    "PT": "Portugal",
+    "PW": "Palau",
+    "PY": "Paraguay",
+    "QA": "Qatar",
+    "RE": "Reunion",
+    "RO": "Romania",
+    "RS": "Serbia",
+    "RU": "Russia",
+    "RW": "Rwanda",
+    "SA": "Saudi Arabia",
+    "SB": "Solomon Islands",
+    "SC": "Seychelles",
+    "SD": "Sudan",
+    "SE": "Sweden",
+    "SG": "Singapore",
+    "SH": "Saint Helena",
+    "SI": "Slovenia",
+    "SJ": "Svalbard and Jan Mayen",
+    "SK": "Slovakia",
+    "SL": "Sierra Leone",
+    "SM": "San Marino",
+    "SN": "Senegal",
+    "SO": "Somalia",
+    "SR": "Suriname",
+    "SS": "South Sudan",
+    "ST": "Sao Tome and Principe",
+    "SV": "El Salvador",
+    "SX": "Sint Maarten",
+    "SY": "Syria",
+    "SZ": "Swaziland",
+    "TC": "Turks and Caicos Islands",
+    "TD": "Chad",
+    "TF": "French Southern Territories",
+    "TG": "Togo",
+    "TH": "Thailand",
+    "TJ": "Tajikistan",
+    "TK": "Tokelau",
+    "TL": "East Timor",
+    "TM": "Turkmenistan",
+    "TN": "Tunisia",
+    "TO": "Tonga",
+    "TR": "Turkey",
+    "TT": "Trinidad and Tobago",
+    "TV": "Tuvalu",
+    "TW": "Taiwan",
+    "TZ": "Tanzania",
+    "UA": "Ukraine",
+    "UG": "Uganda",
+    "UM": "United States Minor Outlying Islands",
+    "US": "United States",
+    "UY": "Uruguay",
+    "UZ": "Uzbekistan",
+    "VA": "Vatican",
+    "VC": "Saint Vincent and the Grenadines",
+    "VE": "Venezuela",
+    "VG": "British Virgin Islands",
+    "VI": "U.S. Virgin Islands",
+    "VN": "Vietnam",
+    "VU": "Vanuatu",
+    "WF": "Wallis and Futuna",
+    "WS": "Samoa",
+    "XK": "Kosovo",
+    "YE": "Yemen",
+    "YT": "Mayotte",
+    "ZA": "South Africa",
+    "ZM": "Zambia",
+    "ZW": "Zimbabwe",
 }
 
 
-PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
-XSOAR_TYPES_TO_STIX_SDO = {        # pragma: no cover
-    ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'attack-pattern',
-    ThreatIntel.ObjectsNames.CAMPAIGN: 'campaign',
-    ThreatIntel.ObjectsNames.COURSE_OF_ACTION: 'course-of-action',
-    ThreatIntel.ObjectsNames.INFRASTRUCTURE: 'infrastructure',
-    ThreatIntel.ObjectsNames.INTRUSION_SET: 'intrusion-set',
-    ThreatIntel.ObjectsNames.REPORT: 'report',
-    ThreatIntel.ObjectsNames.THREAT_ACTOR: 'threat-actor',
-    ThreatIntel.ObjectsNames.TOOL: 'tool',
-    ThreatIntel.ObjectsNames.MALWARE: 'malware',
-    FeedIndicatorType.CVE: 'vulnerability',
-    FeedIndicatorType.Identity: 'identity',
-    FeedIndicatorType.Location: 'location'
+STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {  # pragma: no cover
+    "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
+    "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "report": ThreatIntel.ObjectsNames.REPORT,
+    "malware": ThreatIntel.ObjectsNames.MALWARE,
+    "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+    "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
+    "tool": ThreatIntel.ObjectsNames.TOOL,
+    "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "infrastructure": ThreatIntel.ObjectsNames.INFRASTRUCTURE,
+    "vulnerability": FeedIndicatorType.CVE,
+    "ipv4-addr": FeedIndicatorType.IP,
+    "ipv6-addr": FeedIndicatorType.IPv6,
+    "domain-name": (FeedIndicatorType.DomainGlob, FeedIndicatorType.Domain),
+    "user-account": FeedIndicatorType.Account,
+    "email-addr": FeedIndicatorType.Email,
+    "url": FeedIndicatorType.URL,
+    "file": FeedIndicatorType.File,
+    "windows-registry-key": FeedIndicatorType.Registry,
+    "indicator": (
+        FeedIndicatorType.IP,
+        FeedIndicatorType.IPv6,
+        FeedIndicatorType.DomainGlob,
+        FeedIndicatorType.Domain,
+        FeedIndicatorType.Account,
+        FeedIndicatorType.Email,
+        FeedIndicatorType.URL,
+        FeedIndicatorType.File,
+        FeedIndicatorType.Registry,
+    ),
+    "software": FeedIndicatorType.Software,
+    "autonomous-system": FeedIndicatorType.AS,
+    "x509-certificate": FeedIndicatorType.X509,
 }
 
-XSOAR_TYPES_TO_STIX_SCO = {         # pragma: no cover
-    FeedIndicatorType.CIDR: 'ipv4-addr',
-    FeedIndicatorType.DomainGlob: 'domain-name',
-    FeedIndicatorType.IPv6: 'ipv6-addr',
-    FeedIndicatorType.IPv6CIDR: 'ipv6-addr',
-    FeedIndicatorType.Account: 'user-account',
-    FeedIndicatorType.Domain: 'domain-name',
-    FeedIndicatorType.Email: 'email-addr',
-    FeedIndicatorType.IP: 'ipv4-addr',
-    FeedIndicatorType.Registry: 'windows-registry-key',
-    FeedIndicatorType.File: 'file',
-    FeedIndicatorType.URL: 'url',
-    FeedIndicatorType.Software: 'software',
-    FeedIndicatorType.AS: 'autonomous-system',
-    FeedIndicatorType.X509: 'x509-certificate',
+
+PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, "https://www.paloaltonetworks.com")
+XSOAR_TYPES_TO_STIX_SDO = {  # pragma: no cover
+    ThreatIntel.ObjectsNames.ATTACK_PATTERN: "attack-pattern",
+    ThreatIntel.ObjectsNames.CAMPAIGN: "campaign",
+    ThreatIntel.ObjectsNames.COURSE_OF_ACTION: "course-of-action",
+    ThreatIntel.ObjectsNames.INFRASTRUCTURE: "infrastructure",
+    ThreatIntel.ObjectsNames.INTRUSION_SET: "intrusion-set",
+    ThreatIntel.ObjectsNames.REPORT: "report",
+    ThreatIntel.ObjectsNames.THREAT_ACTOR: "threat-actor",
+    ThreatIntel.ObjectsNames.TOOL: "tool",
+    ThreatIntel.ObjectsNames.MALWARE: "malware",
+    FeedIndicatorType.CVE: "vulnerability",
+    FeedIndicatorType.Identity: "identity",
+    FeedIndicatorType.Location: "location",
 }
 
-HASH_TYPE_TO_STIX_HASH_TYPE = {         # pragma: no cover
-    'md5': 'MD5',
-    'sha1': 'SHA-1',
-    'sha256': 'SHA-256',
-    'sha512': 'SHA-512',
+XSOAR_TYPES_TO_STIX_SCO = {  # pragma: no cover
+    FeedIndicatorType.CIDR: "ipv4-addr",
+    FeedIndicatorType.DomainGlob: "domain-name",
+    FeedIndicatorType.IPv6: "ipv6-addr",
+    FeedIndicatorType.IPv6CIDR: "ipv6-addr",
+    FeedIndicatorType.Account: "user-account",
+    FeedIndicatorType.Domain: "domain-name",
+    FeedIndicatorType.Email: "email-addr",
+    FeedIndicatorType.IP: "ipv4-addr",
+    FeedIndicatorType.Registry: "windows-registry-key",
+    FeedIndicatorType.File: "file",
+    FeedIndicatorType.URL: "url",
+    FeedIndicatorType.Software: "software",
+    FeedIndicatorType.AS: "autonomous-system",
+    FeedIndicatorType.X509: "x509-certificate",
 }
 
-STIX_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
-SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
+HASH_TYPE_TO_STIX_HASH_TYPE = {  # pragma: no cover
+    "md5": "MD5",
+    "sha1": "SHA-1",
+    "sha256": "SHA-256",
+    "sha512": "SHA-512",
+}
+
+STIX_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+SCO_DET_ID_NAMESPACE = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7")
 
 
 def reached_limit(limit: int, element_count: int):
@@ -308,16 +506,15 @@ PatternComparisons = dict[str, list[tuple[list[str], str, str]]]
 
 
 class XSOAR2STIXParser:
-
-    def __init__(self, namespace_uuid, fields_to_present,
-                 types_for_indicator_sdo, server_version=TAXII_VER_2_1):
+    def __init__(self, namespace_uuid, fields_to_present, types_for_indicator_sdo, server_version=TAXII_VER_2_1):
         self.server_version = server_version
         if server_version not in ALLOWED_VERSIONS:
-            raise Exception(f'Wrong TAXII 2 Server version: {server_version}. '
-                            f'Possible values: {", ".join(ALLOWED_VERSIONS)}.')
+            raise Exception(
+                f'Wrong TAXII 2 Server version: {server_version}. ' f'Possible values: {", ".join(ALLOWED_VERSIONS)}.'
+            )
         self.namespace_uuid = namespace_uuid
         self.fields_to_present = fields_to_present
-        self.has_extension = fields_to_present != {'name', 'type'}
+        self.has_extension = fields_to_present != {"name", "type"}
         self.types_for_indicator_sdo = types_for_indicator_sdo or []
 
     def create_indicators(self, indicator_searcher: IndicatorsSearcher, is_manifest: bool):
@@ -333,20 +530,20 @@ class XSOAR2STIXParser:
         iocs = []
         extensions = []
         for ioc in indicator_searcher:
-            found_indicators = ioc.get('iocs') or []
-            total = ioc.get('total')
+            found_indicators = ioc.get("iocs") or []
+            total = ioc.get("total")
             for xsoar_indicator in found_indicators:
-                xsoar_type = xsoar_indicator.get('indicator_type')
+                xsoar_type = xsoar_indicator.get("indicator_type")
                 if is_manifest:
                     manifest_entry = self.create_manifest_entry(xsoar_indicator, xsoar_type)
                     if manifest_entry:
                         iocs.append(manifest_entry)
                 else:
-                    stix_ioc, extension_definition, extensions_dict = \
-                        self.create_stix_object(xsoar_indicator, xsoar_type, extensions_dict)
+                    stix_ioc, extension_definition, extensions_dict = self.create_stix_object(
+                        xsoar_indicator, xsoar_type, extensions_dict
+                    )
                     if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in self.types_for_indicator_sdo:
-                        stix_ioc = self.convert_sco_to_indicator_sdo(
-                            stix_ioc, xsoar_indicator)
+                        stix_ioc = self.convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
                     demisto.debug(f"T2API: create_indicators {stix_ioc=}")
                     if self.has_extension and stix_ioc:
                         iocs.append(stix_ioc)
@@ -354,12 +551,15 @@ class XSOAR2STIXParser:
                             extensions.append(extension_definition)
                     elif stix_ioc:
                         iocs.append(stix_ioc)
-        if not is_manifest and iocs \
-                and is_demisto_version_ge('6.6.0') and \
-                (relationships := self.create_relationships_objects(iocs, extensions)):
+        if (
+            not is_manifest
+            and iocs
+            and is_demisto_version_ge("6.6.0")
+            and (relationships := self.create_relationships_objects(iocs, extensions))
+        ):
             total += len(relationships)
             iocs.extend(relationships)
-            iocs = sorted(iocs, key=lambda k: k['modified'])
+            iocs = sorted(iocs, key=lambda k: k["modified"])
         return iocs, extensions, total
 
     def create_manifest_entry(self, xsoar_indicator: dict, xsoar_type: str) -> dict:
@@ -377,17 +577,17 @@ class XSOAR2STIXParser:
         elif stix_type := XSOAR_TYPES_TO_STIX_SDO.get(xsoar_type):
             stix_id = self.create_sdo_stix_uuid(xsoar_indicator, stix_type, self.namespace_uuid)
         else:
-            demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
+            demisto.debug(f"No such indicator type: {xsoar_type} in stix format.")
             return {}
-        date_added = arg_to_datetime(xsoar_indicator.get('timestamp'))
-        version = arg_to_datetime(xsoar_indicator.get('modified'))
+        date_added = arg_to_datetime(xsoar_indicator.get("timestamp"))
+        version = arg_to_datetime(xsoar_indicator.get("modified"))
         demisto.debug(f"T2API: create_manifest_entry {xsoar_indicator.get('timestamp')=} {xsoar_indicator.get('modified')=}")
         entry = {
-            'id': stix_id,
-            'date_added': date_added.strftime(STIX_DATE_FORMAT) if date_added else '',
+            "id": stix_id,
+            "date_added": date_added.strftime(STIX_DATE_FORMAT) if date_added else "",
         }
         if self.server_version == TAXII_VER_2_1:
-            entry['version'] = version.strftime(STIX_DATE_FORMAT) if version else ''
+            entry["version"] = version.strftime(STIX_DATE_FORMAT) if version else ""
         demisto.debug(f"T2API: create_manifest_entry {entry=}")
         return entry
 
@@ -412,7 +612,7 @@ class XSOAR2STIXParser:
             object_type = stix_type
             is_sdo = True
         else:
-            demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
+            demisto.debug(f"No such indicator type: {xsoar_type} in stix format.")
             return {}, {}, {}
 
         indicator_value = xsoar_indicator.get("value")
@@ -421,30 +621,31 @@ class XSOAR2STIXParser:
             return {}, {}, {}
 
         demisto.debug(f"T2API: {xsoar_indicator=}")
-        timestamp_datetime = arg_to_datetime(xsoar_indicator.get('timestamp', ''))
-        created_parsed = timestamp_datetime.strftime(STIX_DATE_FORMAT) if timestamp_datetime else ''
+        timestamp_datetime = arg_to_datetime(xsoar_indicator.get("timestamp", ""))
+        created_parsed = timestamp_datetime.strftime(STIX_DATE_FORMAT) if timestamp_datetime else ""
         demisto.debug(f"T2API: {created_parsed=}")
 
         try:
-            modified_datetime = arg_to_datetime(xsoar_indicator.get('modified', ''))
-            modified_parsed = modified_datetime.strftime(STIX_DATE_FORMAT) if modified_datetime else ''
+            modified_datetime = arg_to_datetime(xsoar_indicator.get("modified", ""))
+            modified_parsed = modified_datetime.strftime(STIX_DATE_FORMAT) if modified_datetime else ""
             demisto.debug(f"T2API: {modified_parsed=}")
         except Exception:
-            modified_parsed = ''
+            modified_parsed = ""
         # Properties required for STIX objects in all versions: id, type, created, modified.
         stix_object: Dict[str, Any] = {
-            'id': stix_id,
-            'type': object_type,
-            'spec_version': self.server_version,
-            'created': created_parsed,
-            'modified': modified_parsed,
+            "id": stix_id,
+            "type": object_type,
+            "spec_version": self.server_version,
+            "created": created_parsed,
+            "modified": modified_parsed,
         }
         demisto.debug(f"T2API: {stix_object=}")
         if xsoar_type == ThreatIntel.ObjectsNames.REPORT:
-            stix_object['object_refs'] = [ref['objectstixid']
-                                          for ref in xsoar_indicator['CustomFields'].get('reportobjectreferences', [])]
+            stix_object["object_refs"] = [
+                ref["objectstixid"] for ref in xsoar_indicator["CustomFields"].get("reportobjectreferences", [])
+            ]
         if is_sdo:
-            stix_object['name'] = indicator_value
+            stix_object["name"] = indicator_value
             stix_object = self.add_sdo_required_field_2_1(stix_object, xsoar_indicator)
             stix_object = self.add_sdo_required_field_2_0(stix_object, xsoar_indicator)
         else:
@@ -458,20 +659,19 @@ class XSOAR2STIXParser:
             for field in self.fields_to_present:
                 value = xsoar_indicator.get(field)
                 if not value:
-                    value = (xsoar_indicator.get('CustomFields') or {}).get(field)
+                    value = (xsoar_indicator.get("CustomFields") or {}).get(field)
                 xsoar_indicator_to_return[field] = value
         else:
             xsoar_indicator_to_return = xsoar_indicator
         extension_definition = {}
 
         if self.has_extension and object_type not in self.types_for_indicator_sdo:
-            stix_object, extension_definition, extensions_dict = \
-                self.create_extension_definition(object_type, extensions_dict, xsoar_type,
-                                                 created_parsed, modified_parsed,
-                                                 stix_object, xsoar_indicator_to_return)
+            stix_object, extension_definition, extensions_dict = self.create_extension_definition(
+                object_type, extensions_dict, xsoar_type, created_parsed, modified_parsed, stix_object, xsoar_indicator_to_return
+            )
 
         if is_sdo:
-            stix_object['description'] = (xsoar_indicator.get('CustomFields') or {}).get('description', "")
+            stix_object["description"] = (xsoar_indicator.get("CustomFields") or {}).get("description", "")
         demisto.debug(f"T2API: at the end of the function create_stix_object {stix_object=}")
         return stix_object, extension_definition, extensions_dict
 
@@ -482,38 +682,32 @@ class XSOAR2STIXParser:
             relationships (list[dict[str, Any]]): the created relationships list.
             stix_iocs (list[dict[str, Any]]): the ioc objects.
         """
-        id_to_report_objects = {
-            stix_ioc.get('id'): stix_ioc
-            for stix_ioc in stix_iocs
-            if stix_ioc.get('type') == 'report'}
+        id_to_report_objects = {stix_ioc.get("id"): stix_ioc for stix_ioc in stix_iocs if stix_ioc.get("type") == "report"}
         for relationship in relationships:
-            if source_report := id_to_report_objects.get(relationship.get('source_ref')):
-                object_refs = source_report.get('object_refs', [])
-                object_refs.extend(
-                    [relationship.get('target_ref'), relationship.get('id')]
-                )
-                source_report['object_refs'] = sorted(object_refs)
-            if target_report := id_to_report_objects.get(relationship.get('target_ref')):
-                object_refs = target_report.get('object_refs', [])
-                object_refs.extend(
-                    [relationship.get('source_ref'), relationship.get('id')]
-                )
-                target_report['object_refs'] = sorted(object_refs)
+            if source_report := id_to_report_objects.get(relationship.get("source_ref")):
+                object_refs = source_report.get("object_refs", [])
+                object_refs.extend([relationship.get("target_ref"), relationship.get("id")])
+                source_report["object_refs"] = sorted(object_refs)
+            if target_report := id_to_report_objects.get(relationship.get("target_ref")):
+                object_refs = target_report.get("object_refs", [])
+                object_refs.extend([relationship.get("source_ref"), relationship.get("id")])
+                target_report["object_refs"] = sorted(object_refs)
 
     @staticmethod
     def get_stix_object_value(stix_ioc):
-        demisto.debug(f'{stix_ioc=}')
-        if stix_ioc.get('type') == "file":
+        demisto.debug(f"{stix_ioc=}")
+        if stix_ioc.get("type") == "file":
             for hash_type in ["SHA-256", "MD5", "SHA-1", "SHA-512"]:
                 if hash_value := stix_ioc.get("hashes", {}).get(hash_type):
                     return hash_value
             return None
 
         else:
-            return stix_ioc.get('value') or stix_ioc.get('name')
+            return stix_ioc.get("value") or stix_ioc.get("name")
 
-    def create_extension_definition(self, object_type, extensions_dict, xsoar_type,
-                                    created_parsed, modified_parsed, stix_object, xsoar_indicator_to_return):
+    def create_extension_definition(
+        self, object_type, extensions_dict, xsoar_type, created_parsed, modified_parsed, stix_object, xsoar_indicator_to_return
+    ):
         """
         Args:
             object_type: the type of the stix_object.
@@ -530,28 +724,25 @@ class XSOAR2STIXParser:
             the updated Stix object, its extension and updated extensions_dict.
         """
         extension_definition = {}
-        xsoar_indicator_to_return['extension_type'] = 'property_extension'
-        extension_id = f'extension-definition--{uuid.uuid4()}'
+        xsoar_indicator_to_return["extension_type"] = "property_extension"
+        extension_id = f"extension-definition--{uuid.uuid4()}"
         if object_type not in extensions_dict:
             extension_definition = {
-                'id': extension_id,
-                'type': 'extension-definition',
-                'spec_version': self.server_version,
-                'name': f'Cortex XSOAR TIM {xsoar_type}',
-                'description': 'This schema adds TIM data to the object',
-                'created': created_parsed,
-                'modified': modified_parsed,
-                'created_by_ref': f'identity--{str(PAWN_UUID)}',
-                'schema':
-                    'https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/'
-                    'Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json',
-                'version': '1.0',
-                'extension_types': ['property-extension']
+                "id": extension_id,
+                "type": "extension-definition",
+                "spec_version": self.server_version,
+                "name": f"Cortex XSOAR TIM {xsoar_type}",
+                "description": "This schema adds TIM data to the object",
+                "created": created_parsed,
+                "modified": modified_parsed,
+                "created_by_ref": f"identity--{PAWN_UUID!s}",
+                "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/"
+                "Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+                "version": "1.0",
+                "extension_types": ["property-extension"],
             }
             extensions_dict[object_type] = True
-        stix_object['extensions'] = {
-            extension_id: xsoar_indicator_to_return
-        }
+        stix_object["extensions"] = {extension_id: xsoar_indicator_to_return}
         return stix_object, extension_definition, extensions_dict
 
     def convert_sco_to_indicator_sdo(self, stix_object: dict, xsoar_indicator: dict) -> dict:
@@ -568,46 +759,46 @@ class XSOAR2STIXParser:
         """
         try:
             demisto.debug(f"T2API: convert_sco_to_indicator_sdo {xsoar_indicator.get('expiration')=}")
-            expiration_datetime = arg_to_datetime(xsoar_indicator.get('expiration'))
-            expiration_parsed = expiration_datetime.strftime(STIX_DATE_FORMAT) if expiration_datetime else ''
+            expiration_datetime = arg_to_datetime(xsoar_indicator.get("expiration"))
+            expiration_parsed = expiration_datetime.strftime(STIX_DATE_FORMAT) if expiration_datetime else ""
             demisto.debug(f"T2API: convert_sco_to_indicator_sdo {expiration_parsed=}")
         except Exception:
-            expiration_parsed = ''
+            expiration_parsed = ""
 
-        indicator_value = xsoar_indicator.get('value')
+        indicator_value = xsoar_indicator.get("value")
         if isinstance(indicator_value, str):
             indicator_pattern_value: Any = indicator_value.replace("'", "\\'")
         else:
             indicator_pattern_value = json.dumps(indicator_value)
 
-        object_type = stix_object['type']
-        stix_type = 'indicator'
+        object_type = stix_object["type"]
+        stix_type = "indicator"
 
-        pattern = ''
-        if object_type == 'file':
-            hash_type = HASH_TYPE_TO_STIX_HASH_TYPE.get(get_hash_type(indicator_value), 'Unknown')
+        pattern = ""
+        if object_type == "file":
+            hash_type = HASH_TYPE_TO_STIX_HASH_TYPE.get(get_hash_type(indicator_value), "Unknown")
             pattern = f"[file:hashes.'{hash_type}' = '{indicator_pattern_value}']"
         else:
             pattern = f"[{object_type}:value = '{indicator_pattern_value}']"
 
-        labels = self.get_labels_for_indicator(xsoar_indicator.get('score'))
+        labels = self.get_labels_for_indicator(xsoar_indicator.get("score"))
 
         stix_domain_object: Dict[str, Any] = assign_params(
             type=stix_type,
             id=self.create_sdo_stix_uuid(xsoar_indicator, stix_type, self.namespace_uuid),
             pattern=pattern,
-            valid_from=stix_object['created'],
+            valid_from=stix_object["created"],
             valid_until=expiration_parsed,
-            description=(xsoar_indicator.get('CustomFields') or {}).get('description', ''),
-            pattern_type='stix',
-            labels=labels
+            description=(xsoar_indicator.get("CustomFields") or {}).get("description", ""),
+            pattern_type="stix",
+            labels=labels,
         )
-        return dict({k: v for k, v in stix_object.items()
-                    if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
+        return dict({k: v for k, v in stix_object.items() if k in ("spec_version", "created", "modified")}, **stix_domain_object)
 
     @staticmethod
-    def create_sdo_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str],
-                             uuid_value: uuid.UUID, value: Optional[str] = None) -> str:
+    def create_sdo_stix_uuid(
+        xsoar_indicator: dict, stix_type: str | None, uuid_value: uuid.UUID, value: str | None = None
+    ) -> str:
         """
         Create uuid for SDO objects.
         Args:
@@ -617,50 +808,51 @@ class XSOAR2STIXParser:
         Returns:
             The uuid that represents the indicator according to STIX.
         """
-        if stixid := xsoar_indicator.get('CustomFields', {}).get('stixid'):
+        if stixid := xsoar_indicator.get("CustomFields", {}).get("stixid"):
             return stixid
-        value = value if value else xsoar_indicator.get('value')
-        if stix_type == 'attack-pattern':
-            if mitre_id := xsoar_indicator.get('CustomFields', {}).get('mitreid'):
-                unique_id = uuid.uuid5(uuid_value, f'{stix_type}:{mitre_id}')
+        value = value if value else xsoar_indicator.get("value")
+        if stix_type == "attack-pattern":
+            if mitre_id := xsoar_indicator.get("CustomFields", {}).get("mitreid"):
+                unique_id = uuid.uuid5(uuid_value, f"{stix_type}:{mitre_id}")
             else:
-                unique_id = uuid.uuid5(uuid_value, f'{stix_type}:{value}')
+                unique_id = uuid.uuid5(uuid_value, f"{stix_type}:{value}")
         else:
-            unique_id = uuid.uuid5(uuid_value, f'{stix_type}:{value}')
+            unique_id = uuid.uuid5(uuid_value, f"{stix_type}:{value}")
 
-        return f'{stix_type}--{unique_id}'
+        return f"{stix_type}--{unique_id}"
 
     @staticmethod
-    def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str], value: Optional[str] = None) -> str:
+    def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: str | None, value: str | None = None) -> str:
         """
         Create uuid for sco objects.
         """
-        if stixid := (xsoar_indicator.get('CustomFields') or {}).get('stixid'):
+        if stixid := (xsoar_indicator.get("CustomFields") or {}).get("stixid"):
             return stixid
         if not value:
-            value = xsoar_indicator.get('value')
-        if stix_type == 'user-account':
-            account_type = (xsoar_indicator.get('CustomFields') or {}).get('accounttype')
-            user_id = (xsoar_indicator.get('CustomFields') or {}).get('userid')
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE,
-                                   f'{{"account_login":"{value}","account_type":"{account_type}","user_id":"{user_id}"}}')
-        elif stix_type == 'windows-registry-key':
+            value = xsoar_indicator.get("value")
+        if stix_type == "user-account":
+            account_type = (xsoar_indicator.get("CustomFields") or {}).get("accounttype")
+            user_id = (xsoar_indicator.get("CustomFields") or {}).get("userid")
+            unique_id = uuid.uuid5(
+                SCO_DET_ID_NAMESPACE, f'{{"account_login":"{value}","account_type":"{account_type}","user_id":"{user_id}"}}'
+            )
+        elif stix_type == "windows-registry-key":
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"key":"{value}"}}')
-        elif stix_type == 'file':
-            if get_hash_type(value) == 'md5':
+        elif stix_type == "file":
+            if get_hash_type(value) == "md5":
                 unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"MD5":"{value}"}}}}')
-            elif get_hash_type(value) == 'sha1':
+            elif get_hash_type(value) == "sha1":
                 unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-1":"{value}"}}}}')
-            elif get_hash_type(value) == 'sha256':
+            elif get_hash_type(value) == "sha256":
                 unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-256":"{value}"}}}}')
-            elif get_hash_type(value) == 'sha512':
+            elif get_hash_type(value) == "sha512":
                 unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-512":"{value}"}}}}')
             else:
                 unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
         else:
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
 
-        stix_id = f'{stix_type}--{unique_id}'
+        stix_id = f"{stix_type}--{unique_id}"
         return stix_id
 
     def create_entity_b_stix_objects(self, relationships: list[dict[str, Any]], iocs_value_to_id: dict, extensions: list) -> list:
@@ -675,28 +867,29 @@ class XSOAR2STIXParser:
         entity_b_values = ""
         for relationship in relationships:
             if relationship:
-                if (relationship.get('CustomFields') or {}).get('revoked', False):
+                if (relationship.get("CustomFields") or {}).get("revoked", False):
                     continue
-                if (entity_b_value := relationship.get('entityB')) and entity_b_value not in iocs_value_to_id:
+                if (entity_b_value := relationship.get("entityB")) and entity_b_value not in iocs_value_to_id:
                     iocs_value_to_id[entity_b_value] = ""
-                    entity_b_values += f'\"{entity_b_value}\" '
+                    entity_b_values += f'"{entity_b_value}" '
             else:
-                demisto.debug(f'relationship is empty {relationship=}')
+                demisto.debug(f"relationship is empty {relationship=}")
         if not entity_b_values:
             return entity_b_objects
 
         try:
-            found_indicators = demisto.searchIndicators(query=f'value:({entity_b_values})').get('iocs') or []
+            found_indicators = demisto.searchIndicators(query=f"value:({entity_b_values})").get("iocs") or []
         except AttributeError:
-            demisto.debug(f'Could not find indicators from using query value:({entity_b_values})')
+            demisto.debug(f"Could not find indicators from using query value:({entity_b_values})")
             found_indicators = []
 
         extensions_dict: dict = {}
         for xsoar_indicator in found_indicators:
             if xsoar_indicator:
-                xsoar_type = xsoar_indicator.get('indicator_type')
+                xsoar_type = xsoar_indicator.get("indicator_type")
                 stix_ioc, extension_definition, extensions_dict = self.create_stix_object(
-                    xsoar_indicator, xsoar_type, extensions_dict)
+                    xsoar_indicator, xsoar_type, extensions_dict
+                )
                 if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in self.types_for_indicator_sdo:
                     stix_ioc = self.convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
                 demisto.debug(f"T2API: create_entity_b_stix_objects {stix_ioc=}")
@@ -709,7 +902,7 @@ class XSOAR2STIXParser:
             else:
                 demisto.debug(f"{xsoar_indicator=} is emtpy")
 
-                iocs_value_to_id[(self.get_stix_object_value(stix_ioc))] = stix_ioc.get('id') if stix_ioc else None
+                iocs_value_to_id[(self.get_stix_object_value(stix_ioc))] = stix_ioc.get("id") if stix_ioc else None
         demisto.debug(f"Generated {len(entity_b_objects)} STIX objects for 'entityB' values.")
         return entity_b_objects
 
@@ -721,48 +914,49 @@ class XSOAR2STIXParser:
         :return: A list of dictionaries representing the relationships objects, including entityBs objects
         """
         relationships_list: list[dict[str, Any]] = []
-        iocs_value_to_id = {self.get_stix_object_value(stix_ioc): stix_ioc.get('id') for stix_ioc in stix_iocs}
-        search_relationships = demisto.searchRelationships({'entities': list(iocs_value_to_id.keys())}).get('data') or []
+        iocs_value_to_id = {self.get_stix_object_value(stix_ioc): stix_ioc.get("id") for stix_ioc in stix_iocs}
+        search_relationships = demisto.searchRelationships({"entities": list(iocs_value_to_id.keys())}).get("data") or []
         demisto.debug(f"Found {len(search_relationships)} relationships for {len(iocs_value_to_id)} Stix IOC values.")
 
         relationships_list.extend(self.create_entity_b_stix_objects(search_relationships, iocs_value_to_id, extensions))
 
         for relationship in search_relationships:
-
-            if demisto.get(relationship, 'CustomFields.revoked'):
+            if demisto.get(relationship, "CustomFields.revoked"):
                 continue
 
-            if not iocs_value_to_id.get(relationship.get('entityB')):
+            if not iocs_value_to_id.get(relationship.get("entityB")):
                 demisto.debug(f'TAXII: {iocs_value_to_id=} When {relationship.get("entityB")=}')
-                demisto.debug(f"WARNING: Invalid entity B - Relationships will not be created to entity A:"
-                              f" {relationship.get('entityA')} with relationship name {relationship.get('name')}")
+                demisto.debug(
+                    f"WARNING: Invalid entity B - Relationships will not be created to entity A:"
+                    f" {relationship.get('entityA')} with relationship name {relationship.get('name')}"
+                )
                 continue
             try:
                 demisto.debug(f"T2API: in create_relationships_objects {relationship=}")
-                created_datetime = arg_to_datetime(relationship.get('createdInSystem'))
-                modified_datetime = arg_to_datetime(relationship.get('modified'))
-                created_parsed = created_datetime.strftime(STIX_DATE_FORMAT) if created_datetime else ''
-                modified_parsed = modified_datetime.strftime(STIX_DATE_FORMAT) if modified_datetime else ''
+                created_datetime = arg_to_datetime(relationship.get("createdInSystem"))
+                modified_datetime = arg_to_datetime(relationship.get("modified"))
+                created_parsed = created_datetime.strftime(STIX_DATE_FORMAT) if created_datetime else ""
+                modified_parsed = modified_datetime.strftime(STIX_DATE_FORMAT) if modified_datetime else ""
                 demisto.debug(f"T2API: {created_parsed=} {modified_parsed=}")
             except Exception as e:
-                created_parsed, modified_parsed = '', ''
+                created_parsed, modified_parsed = "", ""
                 demisto.debug(f"Error parsing dates for relationship {relationship.get('id')}: {e}")
 
             relationship_unique_id = uuid.uuid5(self.namespace_uuid, f'relationship:{relationship.get("id")}')
-            relationship_stix_id = f'relationship--{relationship_unique_id}'
+            relationship_stix_id = f"relationship--{relationship_unique_id}"
 
             relationship_object: dict[str, Any] = {
-                'type': "relationship",
-                'spec_version': self.server_version,
-                'id': relationship_stix_id,
-                'created': created_parsed,
-                'modified': modified_parsed,
-                "relationship_type": relationship.get('name'),
-                'source_ref': iocs_value_to_id.get(relationship.get('entityA')),
-                'target_ref': iocs_value_to_id.get(relationship.get('entityB')),
+                "type": "relationship",
+                "spec_version": self.server_version,
+                "id": relationship_stix_id,
+                "created": created_parsed,
+                "modified": modified_parsed,
+                "relationship_type": relationship.get("name"),
+                "source_ref": iocs_value_to_id.get(relationship.get("entityA")),
+                "target_ref": iocs_value_to_id.get(relationship.get("entityB")),
             }
-            if description := demisto.get(relationship, 'CustomFields.description'):
-                relationship_object['Description'] = description
+            if description := demisto.get(relationship, "CustomFields.description"):
+                relationship_object["Description"] = description
 
             relationships_list.append(relationship_object)
         self.handle_report_relationships(relationships_list, stix_iocs)
@@ -778,11 +972,11 @@ class XSOAR2STIXParser:
         """
         if self.server_version == TAXII_VER_2_1:
             custom_fields = xsoar_indicator.get("CustomFields", {})
-            stix_type = stix_object['type']
-            if stix_type == 'malware':
-                stix_object['is_family'] = custom_fields.get('ismalwarefamily', False)
-            elif stix_type == 'report' and (published := custom_fields.get('published')):
-                stix_object['published'] = published
+            stix_type = stix_object["type"]
+            if stix_type == "malware":
+                stix_object["is_family"] = custom_fields.get("ismalwarefamily", False)
+            elif stix_type == "report" and (published := custom_fields.get("published")):
+                stix_object["published"] = published
         return stix_object
 
     def add_sdo_required_field_2_0(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
@@ -795,12 +989,12 @@ class XSOAR2STIXParser:
         """
         if self.server_version == TAXII_VER_2_0:
             custom_fields = xsoar_indicator.get("CustomFields", {}) or {}
-            stix_type = stix_object['type']
+            stix_type = stix_object["type"]
             if stix_type in {"indicator", "malware", "report", "threat-actor", "tool"}:
-                tags = custom_fields.get('tags', []) if custom_fields.get('tags', []) != [] else [stix_object['type']]
-                stix_object['labels'] = [x.lower().replace(" ", "-") for x in tags]
-            if stix_type == 'identity' and (identity_class := custom_fields.get('identityclass', 'unknown')):
-                stix_object['identity_class'] = identity_class
+                tags = custom_fields.get("tags", []) if custom_fields.get("tags", []) != [] else [stix_object["type"]]
+                stix_object["labels"] = [x.lower().replace(" ", "-") for x in tags]
+            if stix_type == "identity" and (identity_class := custom_fields.get("identityclass", "unknown")):
+                stix_object["identity_class"] = identity_class
         return stix_object
 
     def create_x509_certificate_subject_issuer(self, list_dict_values: list) -> str:
@@ -821,7 +1015,7 @@ class XSOAR2STIXParser:
                     string_to_return += f"{title}={data}, "
             string_to_return = string_to_return.rstrip(", ")
             return string_to_return
-        return ''
+        return ""
 
     def create_x509_certificate_object(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> dict:
         """
@@ -834,12 +1028,12 @@ class XSOAR2STIXParser:
         Returns:
             Dict[str, Any]: A JSON object of a STIX indicator.
         """
-        custom_fields = xsoar_indicator.get('CustomFields') or {}
-        stix_object['validity_not_before'] = custom_fields.get('validitynotbefore')
-        stix_object['validity_not_after'] = custom_fields.get('validitynotafter')
-        stix_object['serial_number'] = xsoar_indicator.get('value')
-        stix_object['subject'] = self.create_x509_certificate_subject_issuer(custom_fields.get('subject', []))
-        stix_object['issuer'] = self.create_x509_certificate_subject_issuer(custom_fields.get('issuer', []))
+        custom_fields = xsoar_indicator.get("CustomFields") or {}
+        stix_object["validity_not_before"] = custom_fields.get("validitynotbefore")
+        stix_object["validity_not_after"] = custom_fields.get("validitynotafter")
+        stix_object["serial_number"] = xsoar_indicator.get("value")
+        stix_object["subject"] = self.create_x509_certificate_subject_issuer(custom_fields.get("subject", []))
+        stix_object["issuer"] = self.create_x509_certificate_subject_issuer(custom_fields.get("issuer", []))
         remove_nulls_from_dictionary(stix_object)
         return stix_object
 
@@ -854,72 +1048,71 @@ class XSOAR2STIXParser:
         Returns:
             Dict[str, Any]: A JSON object of a STIX indicator
         """
-        custom_fields = xsoar_indicator.get('CustomFields') or {}
+        custom_fields = xsoar_indicator.get("CustomFields") or {}
 
-        if stix_object['type'] == 'autonomous-system':
+        if stix_object["type"] == "autonomous-system":
             # number is the only required field for autonomous-system
-            stix_object['number'] = xsoar_indicator.get('value', '')
-            stix_object['name'] = custom_fields.get('name', '')
+            stix_object["number"] = xsoar_indicator.get("value", "")
+            stix_object["name"] = custom_fields.get("name", "")
 
-        elif stix_object['type'] == 'file':
+        elif stix_object["type"] == "file":
             # hashes is the only required field for file
-            value = xsoar_indicator.get('value')
-            stix_object['hashes'] = {HASH_TYPE_TO_STIX_HASH_TYPE[get_hash_type(value)]: value}
-            for hash_type in ('md5', 'sha1', 'sha256', 'sha512'):
+            value = xsoar_indicator.get("value")
+            stix_object["hashes"] = {HASH_TYPE_TO_STIX_HASH_TYPE[get_hash_type(value)]: value}
+            for hash_type in ("md5", "sha1", "sha256", "sha512"):
                 try:
-                    stix_object['hashes'][HASH_TYPE_TO_STIX_HASH_TYPE[hash_type]] = custom_fields[hash_type]
+                    stix_object["hashes"][HASH_TYPE_TO_STIX_HASH_TYPE[hash_type]] = custom_fields[hash_type]
 
                 except KeyError:
                     pass
 
-        elif stix_object['type'] == 'windows-registry-key':
+        elif stix_object["type"] == "windows-registry-key":
             # key is the only required field for windows-registry-key
-            stix_object['key'] = xsoar_indicator.get('value')
-            stix_object['values'] = []
-            for keyvalue in custom_fields['keyvalue']:
+            stix_object["key"] = xsoar_indicator.get("value")
+            stix_object["values"] = []
+            for keyvalue in custom_fields["keyvalue"]:
                 if keyvalue:
-                    stix_object['values'].append(keyvalue)
-                    stix_object['values'][-1]['data_type'] = stix_object['values'][-1]['type']
-                    del stix_object['values'][-1]['type']
+                    stix_object["values"].append(keyvalue)
+                    stix_object["values"][-1]["data_type"] = stix_object["values"][-1]["type"]
+                    del stix_object["values"][-1]["type"]
                 else:
                     pass
-        elif stix_object['type'] in ('mutex', 'software'):
-            stix_object['name'] = xsoar_indicator.get('value')
+        elif stix_object["type"] in ("mutex", "software"):
+            stix_object["name"] = xsoar_indicator.get("value")
         # user_id is the only required field for user-account
-        elif stix_object['type'] == 'user-account':
-            user_id = (xsoar_indicator.get('CustomFields') or {}).get('userid')
+        elif stix_object["type"] == "user-account":
+            user_id = (xsoar_indicator.get("CustomFields") or {}).get("userid")
             if user_id:
-                stix_object['user_id'] = user_id
-        elif stix_object['type'] == 'x509-certificate':
+                stix_object["user_id"] = user_id
+        elif stix_object["type"] == "x509-certificate":
             self.create_x509_certificate_object(stix_object, xsoar_indicator)
         # ipv4-addr or ipv6-addr or URL
         else:
-            stix_object['value'] = xsoar_indicator.get('value')
+            stix_object["value"] = xsoar_indicator.get("value")
 
         return stix_object
 
     @staticmethod
     def get_labels_for_indicator(score):
         """Get indicator label based on the DBot score"""
-        return {
-            0: [''],
-            1: ['benign'],
-            2: ['anomalous-activity'],
-            3: ['malicious-activity']
-        }.get(int(score))
+        return {0: [""], 1: ["benign"], 2: ["anomalous-activity"], 3: ["malicious-activity"]}.get(int(score))
 
 
 class STIX2XSOARParser(BaseClient):
-
-    def __init__(self, id_to_object: dict[str, Any], verify: bool = True,
-                 base_url: Optional[str] = None, proxy: bool = False,
-                 tlp_color: Optional[str] = None,
-                 field_map: Optional[dict] = None, skip_complex_mode: bool = False,
-                 tags: Optional[list] = None, update_custom_fields: bool = False,
-                 enrichment_excluded: bool = False):
-
-        super().__init__(base_url=base_url, verify=verify,
-                         proxy=proxy)
+    def __init__(
+        self,
+        id_to_object: dict[str, Any],
+        verify: bool = True,
+        base_url: str | None = None,
+        proxy: bool = False,
+        tlp_color: str | None = None,
+        field_map: dict | None = None,
+        skip_complex_mode: bool = False,
+        tags: list | None = None,
+        update_custom_fields: bool = False,
+        enrichment_excluded: bool = False,
+    ):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.skip_complex_mode = skip_complex_mode
         self.indicator_regexes = [
             re.compile(INDICATOR_EQUALS_VAL_PATTERN),
@@ -938,7 +1131,7 @@ class STIX2XSOARParser(BaseClient):
         self.enrichment_excluded = enrichment_excluded
 
     @staticmethod
-    def get_pattern_comparisons(pattern: str, supported_only: bool = True) -> Optional[PatternComparisons]:
+    def get_pattern_comparisons(pattern: str, supported_only: bool = True) -> PatternComparisons | None:
         """
         Parses a pattern and comparison and extracts the comparisons as a dictionary.
         If the pattern is invalid, the return value will be "None".
@@ -966,12 +1159,9 @@ class STIX2XSOARParser(BaseClient):
         """
         try:
             comparisons = cast(PatternComparisons, Pattern(pattern).inspect().comparisons)
-            return (
-                STIX2XSOARParser.get_supported_pattern_comparisons(comparisons)
-                if supported_only else comparisons
-            )
+            return STIX2XSOARParser.get_supported_pattern_comparisons(comparisons) if supported_only else comparisons
         except Exception as error:
-            demisto.debug(f'Unable to parse {pattern=}, {error=}')
+            demisto.debug(f"Unable to parse {pattern=}, {error=}")
         return None
 
     @staticmethod
@@ -985,16 +1175,16 @@ class STIX2XSOARParser(BaseClient):
         Returns:
             PatternComparisons. the value in the pattern.
         """
+
         def get_comparison_field(comparison: tuple[list[str], str, str]) -> str:
-            '''retrieves the field of a STIX comparison.'''
+            """retrieves the field of a STIX comparison."""
             return cast(str, dict_safe_get(comparison, [0, 0]))
 
         supported_comparisons: PatternComparisons = {}
         for indicator_type, comps in comparisons.items():
             if indicator_type in STIX_SUPPORTED_TYPES:
                 field_comparisons = [
-                    comp for comp in comps
-                    if (get_comparison_field(comp) in STIX_SUPPORTED_TYPES[indicator_type])
+                    comp for comp in comps if (get_comparison_field(comp) in STIX_SUPPORTED_TYPES[indicator_type])
                 ]
                 if field_comparisons:
                     supported_comparisons[indicator_type] = field_comparisons
@@ -1013,46 +1203,48 @@ class STIX2XSOARParser(BaseClient):
             list. publications grid field
         """
         publications = []
-        for external_reference in indicator.get('external_references', []):
-            if ignore_external_id and external_reference.get('external_id'):
+        for external_reference in indicator.get("external_references", []):
+            if ignore_external_id and external_reference.get("external_id"):
                 continue
-            url = external_reference.get('url', '')
-            description = external_reference.get('description', '')
-            source_name = external_reference.get('source_name', '')
-            publications.append({'link': url, 'title': description, 'source': source_name})
+            url = external_reference.get("url", "")
+            description = external_reference.get("description", "")
+            source_name = external_reference.get("source_name", "")
+            publications.append({"link": url, "title": description, "source": source_name})
         return publications
 
     @staticmethod
     def change_attack_pattern_to_stix_attack_pattern(indicator: dict[str, Any]):
-        indicator['type'] = f'STIX {indicator["type"]}'
-        indicator['fields']['stixkillchainphases'] = indicator['fields'].pop('killchainphases', None)
-        indicator['fields']['stixdescription'] = indicator['fields'].pop('description', None)
+        indicator["type"] = f'STIX {indicator["type"]}'
+        indicator["fields"]["stixkillchainphases"] = indicator["fields"].pop("killchainphases", None)
+        indicator["fields"]["stixdescription"] = indicator["fields"].pop("description", None)
 
         return indicator
 
     @staticmethod
-    def get_entity_b_type_and_value(related_obj: str, id_to_object: dict[str, dict[str, Any]],
-                                    is_unit42_report: bool = False) -> tuple:
+    def get_entity_b_type_and_value(
+        related_obj: str, id_to_object: dict[str, dict[str, Any]], is_unit42_report: bool = False
+    ) -> tuple:
         """
-       Gets the type and value of the indicator in entity_b.
+        Gets the type and value of the indicator in entity_b.
 
-        Args:
-            related_obj: the indicator to get information on.
-            id_to_object: a dict in the form of - id: stix_object.
-            is_unit42_report: represents whether unit42 report or not.
+         Args:
+             related_obj: the indicator to get information on.
+             id_to_object: a dict in the form of - id: stix_object.
+             is_unit42_report: represents whether unit42 report or not.
 
-        Returns:
-            tuple. the indicator type and value.
+         Returns:
+             tuple. the indicator type and value.
         """
         indicator_obj = id_to_object.get(related_obj, {})
-        entity_b_value = indicator_obj.get('name', '')
+        entity_b_value = indicator_obj.get("name", "")
         entity_b_obj_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(
-            indicator_obj.get('type', ''), STIX2XSOARParser.get_ioc_type(related_obj, id_to_object))
-        if indicator_obj.get('type') == "indicator":
-            entity_b_value = STIX2XSOARParser.get_single_pattern_value(id_to_object.get(related_obj, {}).get('pattern', ''))
-        elif indicator_obj.get('type') == "attack-pattern" and is_unit42_report:
+            indicator_obj.get("type", ""), STIX2XSOARParser.get_ioc_type(related_obj, id_to_object)
+        )
+        if indicator_obj.get("type") == "indicator":
+            entity_b_value = STIX2XSOARParser.get_single_pattern_value(id_to_object.get(related_obj, {}).get("pattern", ""))
+        elif indicator_obj.get("type") == "attack-pattern" and is_unit42_report:
             _, entity_b_value = STIX2XSOARParser.get_mitre_attack_id_and_value_from_name(indicator_obj)
-        elif indicator_obj.get('type') == "report" and is_unit42_report:
+        elif indicator_obj.get("type") == "report" and is_unit42_report:
             entity_b_value = f"[Unit42 ATOM] {indicator_obj.get('name')}"
         return entity_b_obj_type, entity_b_value
 
@@ -1062,8 +1254,8 @@ class STIX2XSOARParser(BaseClient):
         Split indicator name into MITRE ID and indicator value: 'T1108: Redundant Access' -> MITRE ID = T1108,
         indicator value = 'Redundant Access'.
         """
-        ind_name = attack_indicator.get('name')
-        separator = ':'
+        ind_name = attack_indicator.get("name")
+        separator = ":"
         try:
             partition_result = ind_name.partition(separator)
             if partition_result[1] != separator:
@@ -1073,41 +1265,43 @@ class STIX2XSOARParser(BaseClient):
         ind_id = partition_result[0]
         value = partition_result[2].strip()
 
-        if attack_indicator.get('x_mitre_is_subtechnique'):
-            value = attack_indicator.get('x_panw_parent_technique_subtechnique')
+        if attack_indicator.get("x_mitre_is_subtechnique"):
+            value = attack_indicator.get("x_panw_parent_technique_subtechnique")
 
         return ind_id, value
 
     @staticmethod
-    def parse_report_relationships(report_obj: dict[str, Any],
-                                   id_to_object: dict[str, dict[str, Any]],
-                                   relationships_prefix: str = '',
-                                   ignore_reports_relationships: bool = False,
-                                   is_unit42_report: bool = False) \
-            -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-        obj_refs = report_obj.get('object_refs', [])
+    def parse_report_relationships(
+        report_obj: dict[str, Any],
+        id_to_object: dict[str, dict[str, Any]],
+        relationships_prefix: str = "",
+        ignore_reports_relationships: bool = False,
+        is_unit42_report: bool = False,
+    ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+        obj_refs = report_obj.get("object_refs", [])
         relationships: list[dict[str, Any]] = []
         obj_refs_excluding_relationships_prefix = []
 
         for related_obj in obj_refs:
             # relationship-- objects ref handled in parse_relationships
-            if not related_obj.startswith('relationship--'):
-                if ignore_reports_relationships and related_obj.startswith('report--'):
+            if not related_obj.startswith("relationship--"):
+                if ignore_reports_relationships and related_obj.startswith("report--"):
                     continue
                 obj_refs_excluding_relationships_prefix.append(related_obj)
                 if id_to_object.get(related_obj):
-                    entity_b_obj_type, entity_b_value = STIX2XSOARParser.get_entity_b_type_and_value(related_obj, id_to_object,
-                                                                                                     is_unit42_report)
+                    entity_b_obj_type, entity_b_value = STIX2XSOARParser.get_entity_b_type_and_value(
+                        related_obj, id_to_object, is_unit42_report
+                    )
                     if not entity_b_obj_type:
                         demisto.debug(f"Could not find the type of {related_obj} skipping.")
                         continue
                     relationships.append(
                         EntityRelationship(
-                            name='related-to',
+                            name="related-to",
                             entity_a=f"{relationships_prefix}{report_obj.get('name')}",
                             entity_a_type=ThreatIntel.ObjectsNames.REPORT,
                             entity_b=entity_b_value,
-                            entity_b_type=entity_b_obj_type
+                            entity_b_type=entity_b_obj_type,
                         ).to_indicator()
                     )
         return relationships, obj_refs_excluding_relationships_prefix
@@ -1124,13 +1318,13 @@ class STIX2XSOARParser(BaseClient):
         Returns:
             str. the IOC type.
         """
-        ioc_type = ''
+        ioc_type = ""
         indicator_obj = id_to_object.get(indicator, {})
-        pattern = indicator_obj.get('pattern', '')
+        pattern = indicator_obj.get("pattern", "")
         for stix_type in STIX_2_TYPES_TO_CORTEX_TYPES:
-            if pattern.startswith(f'[{stix_type}'):
+            if pattern.startswith(f"[{stix_type}"):
                 if STIX2XSOARParser.is_supported_iocs_type(pattern):
-                    ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(stix_type, '')  # type: ignore
+                    ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(stix_type, "")  # type: ignore
                     break
                 demisto.debug(f"Indicator {indicator_obj.get('id')} is not supported indicator.")
         return ioc_type
@@ -1147,17 +1341,13 @@ class STIX2XSOARParser(BaseClient):
             bool.
         """
         return any(
-            any(
-                pattern.startswith(f"[{key}:{field}")
-                for field in STIX_SUPPORTED_TYPES[key]
-            )
-            for key in STIX_SUPPORTED_TYPES
+            any(pattern.startswith(f"[{key}:{field}") for field in STIX_SUPPORTED_TYPES[key]) for key in STIX_SUPPORTED_TYPES
         )
 
     @staticmethod
     def get_tlp(indicator_json: dict) -> str:
-        object_marking_definition_list = indicator_json.get('object_marking_refs', '')
-        tlp_color: str = ''
+        object_marking_definition_list = indicator_json.get("object_marking_refs", "")
+        tlp_color: str = ""
         for object_marking_definition in object_marking_definition_list:
             if tlp := MARKING_DEFINITION_TO_TLP.get(object_marking_definition):
                 tlp_color = tlp
@@ -1166,23 +1356,23 @@ class STIX2XSOARParser(BaseClient):
 
     def set_default_fields(self, obj_to_parse):
         fields = {
-            'stixid': obj_to_parse.get('id', ''),
-            'firstseenbysource': obj_to_parse.get('created', ''),
-            'modified': obj_to_parse.get('modified', ''),
-            'description': obj_to_parse.get('description', ''),
+            "stixid": obj_to_parse.get("id", ""),
+            "firstseenbysource": obj_to_parse.get("created", ""),
+            "modified": obj_to_parse.get("modified", ""),
+            "description": obj_to_parse.get("description", ""),
         }
 
         tlp_from_marking_refs = self.get_tlp(obj_to_parse)
         tlp_color = tlp_from_marking_refs if tlp_from_marking_refs else self.tlp_color
 
-        if obj_to_parse.get('confidence', ''):
-            fields['confidence'] = obj_to_parse.get('confidence', '')
+        if obj_to_parse.get("confidence", ""):
+            fields["confidence"] = obj_to_parse.get("confidence", "")
 
-        if obj_to_parse.get('lang', ''):
-            fields['languages'] = obj_to_parse.get('lang', '')
+        if obj_to_parse.get("lang", ""):
+            fields["languages"] = obj_to_parse.get("lang", "")
 
         if tlp_color:
-            fields['trafficlightprotocol'] = tlp_color
+            fields["trafficlightprotocol"] = tlp_color
 
         return fields
 
@@ -1191,11 +1381,11 @@ class STIX2XSOARParser(BaseClient):
         custom_fields = {}
         score = None
         for key, value in extensions.items():
-            if key.startswith('extension-definition--'):
-                custom_fields = value.get('CustomFields', {})
+            if key.startswith("extension-definition--"):
+                custom_fields = value.get("CustomFields", {})
                 if not custom_fields:
                     custom_fields = value
-                score = value.get('score', None)
+                score = value.get("score", None)
                 break
         return custom_fields, score
 
@@ -1218,7 +1408,7 @@ class STIX2XSOARParser(BaseClient):
         """
         comparisons = STIX2XSOARParser.get_pattern_comparisons(pattern) or {}
         if comparisons:
-            return dict_safe_get(tuple(comparisons.values()), [0, 0, -1], '', str).strip("'") or None
+            return dict_safe_get(tuple(comparisons.values()), [0, 0, -1], "", str).strip("'") or None
         return None
 
     def parse_indicator(self, indicator_obj: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1235,9 +1425,7 @@ class STIX2XSOARParser(BaseClient):
             # supported indicators have no spaces, so this action shouldn't affect extracted values
             trimmed_pattern = pattern.replace(" ", "")
 
-            indicator_groups = self.extract_indicator_groups_from_pattern(
-                trimmed_pattern, self.indicator_regexes
-            )
+            indicator_groups = self.extract_indicator_groups_from_pattern(trimmed_pattern, self.indicator_regexes)
 
             indicators.extend(
                 self.get_indicators_from_indicator_groups(
@@ -1248,9 +1436,7 @@ class STIX2XSOARParser(BaseClient):
                 )
             )
 
-            cidr_groups = self.extract_indicator_groups_from_pattern(
-                trimmed_pattern, self.cidr_regexes
-            )
+            cidr_groups = self.extract_indicator_groups_from_pattern(trimmed_pattern, self.cidr_regexes)
             indicators.extend(
                 self.get_indicators_from_indicator_groups(
                     cidr_groups,
@@ -1270,37 +1456,39 @@ class STIX2XSOARParser(BaseClient):
         """
         publications = self.get_indicator_publication(attack_pattern_obj, ignore_external_id)
 
-        kill_chain_mitre = [chain.get('phase_name', '') for chain in attack_pattern_obj.get('kill_chain_phases', [])]
+        kill_chain_mitre = [chain.get("phase_name", "") for chain in attack_pattern_obj.get("kill_chain_phases", [])]
         kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
 
         attack_pattern = {
-            "value": attack_pattern_obj.get('name'),
+            "value": attack_pattern_obj.get("name"),
             "type": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
             "score": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
             "rawJSON": attack_pattern_obj,
         }
 
         fields = self.set_default_fields(attack_pattern_obj)
-        fields.update({
-            "killchainphases": kill_chain_phases,
-            'operatingsystemrefs': attack_pattern_obj.get('x_mitre_platforms'),
-            "publications": publications,
-        })
+        fields.update(
+            {
+                "killchainphases": kill_chain_phases,
+                "operatingsystemrefs": attack_pattern_obj.get("x_mitre_platforms"),
+                "publications": publications,
+            }
+        )
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(attack_pattern_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(attack_pattern_obj.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                attack_pattern['score'] = score
-        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+                attack_pattern["score"] = score
+        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
 
         attack_pattern["fields"] = fields
 
-        if not is_demisto_version_ge('6.2.0'):
+        if not is_demisto_version_ge("6.2.0"):
             # For versions less than 6.2 - that only support STIX and not the newer types - Malware, Tool, etc.
             attack_pattern = self.change_attack_pattern_to_stix_attack_pattern(attack_pattern)
 
         if self.enrichment_excluded:
-            attack_pattern['enrichmentExcluded'] = self.enrichment_excluded
+            attack_pattern["enrichmentExcluded"] = self.enrichment_excluded
 
         return [attack_pattern]
 
@@ -1317,13 +1505,16 @@ class STIX2XSOARParser(BaseClient):
         omitted_object_number = len(obj_refs_list) - len(obj_refs_list_without_dup)
         demisto.debug(f"Omitting {omitted_object_number} object ref form the report")
         if obj_refs_list:
-            obj_refs_list_result.extend([{'objectstixid': object} for object in obj_refs_list_without_dup])
+            obj_refs_list_result.extend([{"objectstixid": object} for object in obj_refs_list_without_dup])
         return obj_refs_list_result
 
-    def parse_report(self, report_obj: dict[str, Any],
-                     relationships_prefix: str = '',
-                     ignore_reports_relationships: bool = False,
-                     is_unit42_report: bool = False) -> list[dict[str, Any]]:
+    def parse_report(
+        self,
+        report_obj: dict[str, Any],
+        relationships_prefix: str = "",
+        ignore_reports_relationships: bool = False,
+        is_unit42_report: bool = False,
+    ) -> list[dict[str, Any]]:
         """
         Parses a single report object
         :param report_obj: report object
@@ -1331,37 +1522,38 @@ class STIX2XSOARParser(BaseClient):
         """
         report = {
             "type": ThreatIntel.ObjectsNames.REPORT,
-            "value": report_obj.get('name'),
+            "value": report_obj.get("name"),
             "score": ThreatIntel.ObjectsScore.REPORT,
             "rawJSON": report_obj,
         }
 
         fields = self.set_default_fields(report_obj)
-        fields.update({
-            'published': report_obj.get('published'),
-            "report_types": report_obj.get('report_types', []),
-        })
+        fields.update(
+            {
+                "published": report_obj.get("published"),
+                "report_types": report_obj.get("report_types", []),
+            }
+        )
 
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(report_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(report_obj.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                report['score'] = score
+                report["score"] = score
 
-        tags = list((set(report_obj.get('labels', []))).union(set(self.tags)))
-        fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
+        tags = list((set(report_obj.get("labels", []))).union(set(self.tags)))
+        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
 
-        relationships, obj_refs_excluding_relationships_prefix = self.parse_report_relationships(report_obj, self.id_to_object,
-                                                                                                 relationships_prefix,
-                                                                                                 ignore_reports_relationships,
-                                                                                                 is_unit42_report)
-        report['relationships'] = relationships
+        relationships, obj_refs_excluding_relationships_prefix = self.parse_report_relationships(
+            report_obj, self.id_to_object, relationships_prefix, ignore_reports_relationships, is_unit42_report
+        )
+        report["relationships"] = relationships
         if obj_refs_excluding_relationships_prefix:
-            fields['Report Object References'] = self.create_obj_refs_list(obj_refs_excluding_relationships_prefix)
+            fields["Report Object References"] = self.create_obj_refs_list(obj_refs_excluding_relationships_prefix)
         report["fields"] = fields
 
         if self.enrichment_excluded:
-            report['enrichmentExcluded'] = self.enrichment_excluded
+            report["enrichmentExcluded"] = self.enrichment_excluded
 
         return [report]
 
@@ -1373,36 +1565,38 @@ class STIX2XSOARParser(BaseClient):
         """
 
         threat_actor = {
-            "value": threat_actor_obj.get('name'),
+            "value": threat_actor_obj.get("name"),
             "type": ThreatIntel.ObjectsNames.THREAT_ACTOR,
             "score": ThreatIntel.ObjectsScore.THREAT_ACTOR,
-            "rawJSON": threat_actor_obj
+            "rawJSON": threat_actor_obj,
         }
 
         fields = self.set_default_fields(threat_actor_obj)
-        fields.update({
-            'aliases': threat_actor_obj.get("aliases", []),
-            "threat_actor_types": threat_actor_obj.get('threat_actor_types', []),
-            'roles': threat_actor_obj.get("roles", []),
-            'goals': threat_actor_obj.get("goals", []),
-            'sophistication': threat_actor_obj.get("sophistication", ''),
-            "resource_level": threat_actor_obj.get('resource_level', ''),
-            "primary_motivation": threat_actor_obj.get('primary_motivation', ''),
-            "secondary_motivations": threat_actor_obj.get('secondary_motivations', []),
-        })
+        fields.update(
+            {
+                "aliases": threat_actor_obj.get("aliases", []),
+                "threat_actor_types": threat_actor_obj.get("threat_actor_types", []),
+                "roles": threat_actor_obj.get("roles", []),
+                "goals": threat_actor_obj.get("goals", []),
+                "sophistication": threat_actor_obj.get("sophistication", ""),
+                "resource_level": threat_actor_obj.get("resource_level", ""),
+                "primary_motivation": threat_actor_obj.get("primary_motivation", ""),
+                "secondary_motivations": threat_actor_obj.get("secondary_motivations", []),
+            }
+        )
 
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(threat_actor_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(threat_actor_obj.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                threat_actor['score'] = score
+                threat_actor["score"] = score
 
-        tags = list((set(threat_actor_obj.get('labels', []))).union(set(self.tags)))
-        fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
+        tags = list((set(threat_actor_obj.get("labels", []))).union(set(self.tags)))
+        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
         threat_actor["fields"] = fields
 
         if self.enrichment_excluded:
-            threat_actor['enrichmentExcluded'] = self.enrichment_excluded
+            threat_actor["enrichmentExcluded"] = self.enrichment_excluded
 
         return [threat_actor]
 
@@ -1412,36 +1606,37 @@ class STIX2XSOARParser(BaseClient):
         :param infrastructure_obj: infrastructure object
         :return: infrastructure extracted from the infrastructure object in cortex format
         """
-        kill_chain_mitre = [chain.get('phase_name', '') for chain in infrastructure_obj.get('kill_chain_phases', [])]
+        kill_chain_mitre = [chain.get("phase_name", "") for chain in infrastructure_obj.get("kill_chain_phases", [])]
         kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
 
         infrastructure = {
-            "value": infrastructure_obj.get('name'),
+            "value": infrastructure_obj.get("name"),
             "type": ThreatIntel.ObjectsNames.INFRASTRUCTURE,
             "score": ThreatIntel.ObjectsScore.INFRASTRUCTURE,
-            "rawJSON": infrastructure_obj
-
+            "rawJSON": infrastructure_obj,
         }
 
         fields = self.set_default_fields(infrastructure_obj)
-        fields.update({
-            "infrastructure_types": infrastructure_obj.get("infrastructure_types", []),
-            "aliases": infrastructure_obj.get('aliases', []),
-            "kill_chain_phases": kill_chain_phases,
-        })
+        fields.update(
+            {
+                "infrastructure_types": infrastructure_obj.get("infrastructure_types", []),
+                "aliases": infrastructure_obj.get("aliases", []),
+                "kill_chain_phases": kill_chain_phases,
+            }
+        )
 
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(infrastructure_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(infrastructure_obj.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                infrastructure['score'] = score
+                infrastructure["score"] = score
 
-        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
 
         infrastructure["fields"] = fields
 
         if self.enrichment_excluded:
-            infrastructure['enrichmentExcluded'] = self.enrichment_excluded
+            infrastructure["enrichmentExcluded"] = self.enrichment_excluded
 
         return [infrastructure]
 
@@ -1452,41 +1647,43 @@ class STIX2XSOARParser(BaseClient):
         :return: malware extracted from the malware object in cortex format
         """
 
-        kill_chain_mitre = [chain.get('phase_name', '') for chain in malware_obj.get('kill_chain_phases', [])]
+        kill_chain_mitre = [chain.get("phase_name", "") for chain in malware_obj.get("kill_chain_phases", [])]
         kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
 
         malware = {
-            "value": malware_obj.get('name'),
+            "value": malware_obj.get("name"),
             "type": ThreatIntel.ObjectsNames.MALWARE,
             "score": ThreatIntel.ObjectsScore.MALWARE,
-            "rawJSON": malware_obj
+            "rawJSON": malware_obj,
         }
 
         fields = self.set_default_fields(malware_obj)
-        fields.update({
-            "malware_types": malware_obj.get('malware_types', []),
-            "ismalwarefamily": malware_obj.get('is_family', False),
-            "aliases": malware_obj.get('aliases', []),
-            "kill_chain_phases": kill_chain_phases,
-            "os_execution_envs": malware_obj.get('os_execution_envs', []),
-            "architecture": malware_obj.get('architecture_execution_envs', []),
-            "capabilities": malware_obj.get('capabilities', []),
-            "samples": malware_obj.get('sample_refs', [])
-        })
+        fields.update(
+            {
+                "malware_types": malware_obj.get("malware_types", []),
+                "ismalwarefamily": malware_obj.get("is_family", False),
+                "aliases": malware_obj.get("aliases", []),
+                "kill_chain_phases": kill_chain_phases,
+                "os_execution_envs": malware_obj.get("os_execution_envs", []),
+                "architecture": malware_obj.get("architecture_execution_envs", []),
+                "capabilities": malware_obj.get("capabilities", []),
+                "samples": malware_obj.get("sample_refs", []),
+            }
+        )
 
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(malware_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(malware_obj.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                malware['score'] = score
+                malware["score"] = score
 
-        tags = list((set(malware_obj.get('labels', []))).union(set(self.tags)))
-        fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
+        tags = list((set(malware_obj.get("labels", []))).union(set(self.tags)))
+        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
 
         malware["fields"] = fields
 
         if self.enrichment_excluded:
-            malware['enrichmentExcluded'] = self.enrichment_excluded
+            malware["enrichmentExcluded"] = self.enrichment_excluded
 
         return [malware]
 
@@ -1496,35 +1693,37 @@ class STIX2XSOARParser(BaseClient):
         :param tool_obj: tool object
         :return: tool extracted from the tool object in cortex format
         """
-        kill_chain_mitre = [chain.get('phase_name', '') for chain in tool_obj.get('kill_chain_phases', [])]
+        kill_chain_mitre = [chain.get("phase_name", "") for chain in tool_obj.get("kill_chain_phases", [])]
         kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
 
         tool = {
-            "value": tool_obj.get('name'),
+            "value": tool_obj.get("name"),
             "type": ThreatIntel.ObjectsNames.TOOL,
             "score": ThreatIntel.ObjectsScore.TOOL,
-            "rawJSON": tool_obj
+            "rawJSON": tool_obj,
         }
 
         fields = self.set_default_fields(tool_obj)
-        fields.update({
-            "killchainphases": kill_chain_phases,
-            "tool_types": tool_obj.get("tool_types", []),
-            "aliases": tool_obj.get('aliases', []),
-            "tool_version": tool_obj.get('tool_version', '')
-        })
+        fields.update(
+            {
+                "killchainphases": kill_chain_phases,
+                "tool_types": tool_obj.get("tool_types", []),
+                "aliases": tool_obj.get("aliases", []),
+                "tool_version": tool_obj.get("tool_version", ""),
+            }
+        )
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(tool_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(tool_obj.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                tool['score'] = score
+                tool["score"] = score
 
-        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
 
         tool["fields"] = fields
 
         if self.enrichment_excluded:
-            tool['enrichmentExcluded'] = self.enrichment_excluded
+            tool["enrichmentExcluded"] = self.enrichment_excluded
 
         return [tool]
 
@@ -1537,30 +1736,32 @@ class STIX2XSOARParser(BaseClient):
         publications = self.get_indicator_publication(coa_obj, ignore_external_id)
 
         course_of_action = {
-            "value": coa_obj.get('name'),
+            "value": coa_obj.get("name"),
             "type": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
             "score": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
             "rawJSON": coa_obj,
         }
 
         fields = self.set_default_fields(coa_obj)
-        fields.update({
-            "action_type": coa_obj.get('action_type', ''),
-            "publications": publications,
-        })
+        fields.update(
+            {
+                "action_type": coa_obj.get("action_type", ""),
+                "publications": publications,
+            }
+        )
 
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(coa_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(coa_obj.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                course_of_action['score'] = score
+                course_of_action["score"] = score
 
-        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
 
         course_of_action["fields"] = fields
 
         if self.enrichment_excluded:
-            course_of_action['enrichmentExcluded'] = self.enrichment_excluded
+            course_of_action["enrichmentExcluded"] = self.enrichment_excluded
 
         return [course_of_action]
 
@@ -1571,27 +1772,29 @@ class STIX2XSOARParser(BaseClient):
         :return: campaign extracted from the campaign object in cortex format
         """
         campaign = {
-            "value": campaign_obj.get('name'),
+            "value": campaign_obj.get("name"),
             "type": ThreatIntel.ObjectsNames.CAMPAIGN,
             "score": ThreatIntel.ObjectsScore.CAMPAIGN,
-            "rawJSON": campaign_obj
+            "rawJSON": campaign_obj,
         }
 
         fields = self.set_default_fields(campaign_obj)
-        fields.update({
-            "aliases": campaign_obj.get('aliases', []),
-            "objective": campaign_obj.get('objective', ''),
-        })
+        fields.update(
+            {
+                "aliases": campaign_obj.get("aliases", []),
+                "objective": campaign_obj.get("objective", ""),
+            }
+        )
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(campaign_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(campaign_obj.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                campaign['score'] = score
-        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+                campaign["score"] = score
+        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
         campaign["fields"] = fields
 
         if self.enrichment_excluded:
-            campaign['enrichmentExcluded'] = self.enrichment_excluded
+            campaign["enrichmentExcluded"] = self.enrichment_excluded
 
         return [campaign]
 
@@ -1604,39 +1807,39 @@ class STIX2XSOARParser(BaseClient):
         publications = self.get_indicator_publication(intrusion_set_obj, ignore_external_id)
 
         intrusion_set = {
-            "value": intrusion_set_obj.get('name'),
+            "value": intrusion_set_obj.get("name"),
             "type": ThreatIntel.ObjectsNames.INTRUSION_SET,
             "score": ThreatIntel.ObjectsScore.INTRUSION_SET,
-            "rawJSON": intrusion_set_obj
+            "rawJSON": intrusion_set_obj,
         }
 
         fields = self.set_default_fields(intrusion_set_obj)
-        fields.update({
-            "aliases": intrusion_set_obj.get('aliases', []),
-            "goals": intrusion_set_obj.get('goals', []),
-            "resource_level": intrusion_set_obj.get('resource_level', ''),
-            "primary_motivation": intrusion_set_obj.get('primary_motivation', ''),
-            "secondary_motivations": intrusion_set_obj.get('secondary_motivations', []),
-            "publications": publications,
-        })
+        fields.update(
+            {
+                "aliases": intrusion_set_obj.get("aliases", []),
+                "goals": intrusion_set_obj.get("goals", []),
+                "resource_level": intrusion_set_obj.get("resource_level", ""),
+                "primary_motivation": intrusion_set_obj.get("primary_motivation", ""),
+                "secondary_motivations": intrusion_set_obj.get("secondary_motivations", []),
+                "publications": publications,
+            }
+        )
 
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(intrusion_set_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(intrusion_set_obj.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                intrusion_set['score'] = score
-        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+                intrusion_set["score"] = score
+        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
 
         if self.enrichment_excluded:
-            intrusion_set['enrichmentExcluded'] = self.enrichment_excluded
+            intrusion_set["enrichmentExcluded"] = self.enrichment_excluded
 
         intrusion_set["fields"] = fields
 
         return [intrusion_set]
 
-    def parse_general_sco_indicator(
-        self, sco_object: dict[str, Any], value_mapping: str = 'value'
-    ) -> list[dict[str, Any]]:
+    def parse_general_sco_indicator(self, sco_object: dict[str, Any], value_mapping: str = "value") -> list[dict[str, Any]]:
         """
         Parses a single SCO indicator.
 
@@ -1645,25 +1848,25 @@ class STIX2XSOARParser(BaseClient):
             value_mapping (str): the key that extracts the value from the indicator response.
         """
         sco_indicator = {
-            'value': sco_object.get(value_mapping),
-            'score': Common.DBotScore.NONE,
-            'rawJSON': sco_object,
-            'type': STIX_2_TYPES_TO_CORTEX_TYPES.get(sco_object.get('type'))  # type: ignore[arg-type]
+            "value": sco_object.get(value_mapping),
+            "score": Common.DBotScore.NONE,
+            "rawJSON": sco_object,
+            "type": STIX_2_TYPES_TO_CORTEX_TYPES.get(sco_object.get("type")),  # type: ignore[arg-type]
         }
 
         fields = self.set_default_fields(sco_object)
 
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(sco_object.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(sco_object.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                sco_indicator['score'] = score
-        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+                sco_indicator["score"] = score
+        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
 
-        sco_indicator['fields'] = fields
+        sco_indicator["fields"] = fields
 
         if self.enrichment_excluded:
-            sco_indicator['enrichmentExcluded'] = self.enrichment_excluded
+            sco_indicator["enrichmentExcluded"] = self.enrichment_excluded
 
         return [sco_indicator]
 
@@ -1674,10 +1877,10 @@ class STIX2XSOARParser(BaseClient):
         Args:
             autonomous_system_obj (dict): indicator as an observable object of type autonomous-system.
         """
-        if isinstance(autonomous_system_obj, dict) and 'number' in autonomous_system_obj:
-            autonomous_system_obj['number'] = str(autonomous_system_obj.get('number', ''))
-        autonomous_system_indicator = self.parse_general_sco_indicator(autonomous_system_obj, value_mapping='number')
-        autonomous_system_indicator[0]['fields']['name'] = autonomous_system_obj.get('name')
+        if isinstance(autonomous_system_obj, dict) and "number" in autonomous_system_obj:
+            autonomous_system_obj["number"] = str(autonomous_system_obj.get("number", ""))
+        autonomous_system_indicator = self.parse_general_sco_indicator(autonomous_system_obj, value_mapping="number")
+        autonomous_system_indicator[0]["fields"]["name"] = autonomous_system_obj.get("name")
 
         return autonomous_system_indicator
 
@@ -1688,22 +1891,22 @@ class STIX2XSOARParser(BaseClient):
         Args:
             file_obj (dict): indicator as an observable object of file type.
         """
-        file_hashes = file_obj.get('hashes', {})
-        value = file_hashes.get('SHA-256') or file_hashes.get('SHA-1') or file_hashes.get('MD5')
+        file_hashes = file_obj.get("hashes", {})
+        value = file_hashes.get("SHA-256") or file_hashes.get("SHA-1") or file_hashes.get("MD5")
         if not value:
             return []
 
-        file_obj['value'] = value
+        file_obj["value"] = value
 
         file_indicator = self.parse_general_sco_indicator(file_obj)
-        file_indicator[0]['fields'].update(
+        file_indicator[0]["fields"].update(
             {
-                'associatedfilenames': file_obj.get('name'),
-                'size': file_obj.get('size'),
-                'path': file_obj.get('parent_directory_ref'),
-                'md5': file_hashes.get('MD5'),
-                'sha1': file_hashes.get('SHA-1'),
-                'sha256': file_hashes.get('SHA-256')
+                "associatedfilenames": file_obj.get("name"),
+                "size": file_obj.get("size"),
+                "path": file_obj.get("parent_directory_ref"),
+                "md5": file_hashes.get("MD5"),
+                "sha1": file_hashes.get("SHA-1"),
+                "sha256": file_hashes.get("SHA-256"),
             }
         )
 
@@ -1716,7 +1919,7 @@ class STIX2XSOARParser(BaseClient):
         Args:
             mutex_obj (dict): indicator as an observable object of mutex type.
         """
-        return self.parse_general_sco_indicator(sco_object=mutex_obj, value_mapping='name')
+        return self.parse_general_sco_indicator(sco_object=mutex_obj, value_mapping="name")
 
     def parse_sco_account_indicator(self, account_obj: dict[str, Any]) -> list[dict[str, Any]]:
         """
@@ -1725,12 +1928,9 @@ class STIX2XSOARParser(BaseClient):
         Args:
             account_obj (dict): indicator as an observable object of account type.
         """
-        account_indicator = self.parse_general_sco_indicator(account_obj, value_mapping='user_id')
-        account_indicator[0]['fields'].update(
-            {
-                'displayname': account_obj.get('user_id'),
-                'accounttype': account_obj.get('account_type')
-            }
+        account_indicator = self.parse_general_sco_indicator(account_obj, value_mapping="user_id")
+        account_indicator[0]["fields"].update(
+            {"displayname": account_obj.get("user_id"), "accounttype": account_obj.get("account_type")}
         )
         return account_indicator
 
@@ -1746,9 +1946,13 @@ class STIX2XSOARParser(BaseClient):
         """
         returned_grid = []
         for stix_values_entry in registry_key_obj_values:
-            returned_grid.append({"name": stix_values_entry.get("name", ''),
-                                  "type": stix_values_entry.get("data_type"),
-                                  "data": stix_values_entry.get("data")})
+            returned_grid.append(
+                {
+                    "name": stix_values_entry.get("name", ""),
+                    "type": stix_values_entry.get("data_type"),
+                    "data": stix_values_entry.get("data"),
+                }
+            )
         return returned_grid
 
     def parse_sco_windows_registry_key_indicator(self, registry_key_obj: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1758,12 +1962,10 @@ class STIX2XSOARParser(BaseClient):
         Args:
             registry_key_obj (dict): indicator as an observable object of registry_key type.
         """
-        registry_key_indicator = self.parse_general_sco_indicator(registry_key_obj, value_mapping='key')
+        registry_key_indicator = self.parse_general_sco_indicator(registry_key_obj, value_mapping="key")
         registry_key_indicator[0]["fields"].update(
             {
-                "keyvalue": self.create_keyvalue_dict(
-                    registry_key_obj.get("values", [])
-                ),
+                "keyvalue": self.create_keyvalue_dict(registry_key_obj.get("values", [])),
                 "modified_time": registry_key_obj.get("modified_time"),
                 "numberofsubkeys": registry_key_obj.get("number_of_subkeys"),
             }
@@ -1777,30 +1979,29 @@ class STIX2XSOARParser(BaseClient):
         :return: identity extracted from the identity object in cortex format
         """
         identity = {
-            'value': identity_obj.get('name'),
-            'type': FeedIndicatorType.Identity,
-            'score': Common.DBotScore.NONE,
-            'rawJSON': identity_obj
+            "value": identity_obj.get("name"),
+            "type": FeedIndicatorType.Identity,
+            "score": Common.DBotScore.NONE,
+            "rawJSON": identity_obj,
         }
         fields = self.set_default_fields(identity_obj)
-        fields.update({
-            'identityclass': identity_obj.get('identity_class', ''),
-            'industrysectors': identity_obj.get('sectors', [])
-        })
+        fields.update(
+            {"identityclass": identity_obj.get("identity_class", ""), "industrysectors": identity_obj.get("sectors", [])}
+        )
 
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(identity_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(identity_obj.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                identity['score'] = score
+                identity["score"] = score
 
-        tags = list((set(identity_obj.get('labels', []))).union(set(self.tags)))
-        fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
+        tags = list((set(identity_obj.get("labels", []))).union(set(self.tags)))
+        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
 
-        identity['fields'] = fields
+        identity["fields"] = fields
 
         if self.enrichment_excluded:
-            identity['enrichmentExcluded'] = self.enrichment_excluded
+            identity["enrichmentExcluded"] = self.enrichment_excluded
 
         return [identity]
 
@@ -1810,33 +2011,35 @@ class STIX2XSOARParser(BaseClient):
         :param location_obj: location object
         :return: location extracted from the location object in cortex format
         """
-        country_name = COUNTRY_CODES_TO_NAMES.get(str(location_obj.get('country', '')).upper(), '')
+        country_name = COUNTRY_CODES_TO_NAMES.get(str(location_obj.get("country", "")).upper(), "")
 
         location = {
-            'value': location_obj.get('name') or country_name,
-            'type': FeedIndicatorType.Location,
-            'score': Common.DBotScore.NONE,
-            'rawJSON': location_obj
+            "value": location_obj.get("name") or country_name,
+            "type": FeedIndicatorType.Location,
+            "score": Common.DBotScore.NONE,
+            "rawJSON": location_obj,
         }
 
         fields = self.set_default_fields(location_obj)
-        fields.update({
-            'countrycode': location_obj.get('country', ''),
-        })
+        fields.update(
+            {
+                "countrycode": location_obj.get("country", ""),
+            }
+        )
 
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(location_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(location_obj.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                location['score'] = score
+                location["score"] = score
 
-        tags = list((set(location_obj.get('labels', []))).union(set(self.tags)))
-        fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
+        tags = list((set(location_obj.get("labels", []))).union(set(self.tags)))
+        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
 
-        location['fields'] = fields
+        location["fields"] = fields
 
         if self.enrichment_excluded:
-            location['enrichmentExcluded'] = self.enrichment_excluded
+            location["enrichmentExcluded"] = self.enrichment_excluded
 
         return [location]
 
@@ -1846,38 +2049,33 @@ class STIX2XSOARParser(BaseClient):
         :param vulnerability_obj: vulnerability object
         :return: vulnerability extracted from the vulnerability object in cortex format
         """
-        name = ''
-        for external_reference in vulnerability_obj.get('external_references', []):
-            if external_reference.get('source_name') == 'cve':
-                name = external_reference.get('external_id')
+        name = ""
+        for external_reference in vulnerability_obj.get("external_references", []):
+            if external_reference.get("source_name") == "cve":
+                name = external_reference.get("external_id")
                 break
 
-        cve = {
-            'value': name,
-            'type': FeedIndicatorType.CVE,
-            'score': Common.DBotScore.NONE,
-            'rawJSON': vulnerability_obj
-        }
+        cve = {"value": name, "type": FeedIndicatorType.CVE, "score": Common.DBotScore.NONE, "rawJSON": vulnerability_obj}
 
         fields = self.set_default_fields(vulnerability_obj)
 
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(vulnerability_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(vulnerability_obj.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                cve['score'] = score
+                cve["score"] = score
 
-        tags = list((set(vulnerability_obj.get('labels', []))).union(set(self.tags), {name} if name else {}))
-        fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
+        tags = list((set(vulnerability_obj.get("labels", []))).union(set(self.tags), {name} if name else {}))
+        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
 
-        cve['fields'] = fields
+        cve["fields"] = fields
 
         if self.enrichment_excluded:
-            cve['enrichmentExcluded'] = self.enrichment_excluded
+            cve["enrichmentExcluded"] = self.enrichment_excluded
 
         return [cve]
 
-    def create_x509_certificate_grids(self, string_object: Optional[str]) -> list:
+    def create_x509_certificate_grids(self, string_object: str | None) -> list:
         """
         Creates a grid field related to the subject and issuer field of the x509 certificate object.
 
@@ -1889,12 +2087,12 @@ class STIX2XSOARParser(BaseClient):
         """
         result_grid_list = []
         if string_object:
-            key_value_pairs = string_object.split(', ')
+            key_value_pairs = string_object.split(", ")
             for pair in key_value_pairs:
                 result_grid = {}
-                key, value = pair.split('=', 1)
-                result_grid['title'] = key
-                result_grid['data'] = value
+                key, value = pair.split("=", 1)
+                result_grid["title"] = key
+                result_grid["data"] = value
                 result_grid_list.append(result_grid)
         return result_grid_list
 
@@ -1904,29 +2102,30 @@ class STIX2XSOARParser(BaseClient):
         :param x509_certificate_obj: x509_certificate object
         :return: x509_certificate extracted from the x509_certificate object in cortex format.
         """
-        if x509_certificate_obj.get('serial_number'):
+        if x509_certificate_obj.get("serial_number"):
             x509_certificate = {
-                "value": x509_certificate_obj.get('serial_number'),
-                'type': FeedIndicatorType.X509,
-                'score': Common.DBotScore.NONE,
+                "value": x509_certificate_obj.get("serial_number"),
+                "type": FeedIndicatorType.X509,
+                "score": Common.DBotScore.NONE,
                 "rawJSON": x509_certificate_obj,
-
             }
-            fields = {"stixid": x509_certificate_obj.get('id', ''),
-                      "validitynotbefore": x509_certificate_obj.get('validity_not_before'),
-                      "validitynotafter": x509_certificate_obj.get('validity_not_after'),
-                      "subject": self.create_x509_certificate_grids(x509_certificate_obj.get('subject')),
-                      "issuer": self.create_x509_certificate_grids(x509_certificate_obj.get('issuer'))}
+            fields = {
+                "stixid": x509_certificate_obj.get("id", ""),
+                "validitynotbefore": x509_certificate_obj.get("validity_not_before"),
+                "validitynotafter": x509_certificate_obj.get("validity_not_after"),
+                "subject": self.create_x509_certificate_grids(x509_certificate_obj.get("subject")),
+                "issuer": self.create_x509_certificate_grids(x509_certificate_obj.get("issuer")),
+            }
             if self.update_custom_fields:
-                custom_fields, score = self.parse_custom_fields(x509_certificate.get('extensions', {}))
+                custom_fields, score = self.parse_custom_fields(x509_certificate.get("extensions", {}))
                 fields.update(assign_params(**custom_fields))
                 if score:
-                    x509_certificate['score'] = score
-            fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+                    x509_certificate["score"] = score
+            fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
             x509_certificate["fields"] = fields
 
             if self.enrichment_excluded:
-                x509_certificate['enrichmentExcluded'] = self.enrichment_excluded
+                x509_certificate["enrichmentExcluded"] = self.enrichment_excluded
 
             return [x509_certificate]
         return []
@@ -1939,50 +2138,51 @@ class STIX2XSOARParser(BaseClient):
         """
         relationships_list = []
         for relationships_object in relationships_lst:
-            relationship_type = relationships_object.get('relationship_type')
+            relationship_type = relationships_object.get("relationship_type")
             if relationship_type not in EntityRelationship.Relationships.RELATIONSHIPS_NAMES:
-                if relationship_type == 'indicates':
-                    relationship_type = 'indicated-by'
+                if relationship_type == "indicates":
+                    relationship_type = "indicated-by"
                 else:
                     demisto.debug(f"Invalid relation type: {relationship_type}")
                     continue
 
-            a_threat_intel_type = relationships_object.get('source_ref', '').split('--')[0]
-            a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(
-                a_threat_intel_type, '') or STIX_2_TYPES_TO_CORTEX_TYPES.get(a_threat_intel_type, '')  # type: ignore
-            if a_threat_intel_type == 'indicator':
-                id = relationships_object.get('source_ref', '')
+            a_threat_intel_type = relationships_object.get("source_ref", "").split("--")[0]
+            a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type, "") or STIX_2_TYPES_TO_CORTEX_TYPES.get(
+                a_threat_intel_type, ""
+            )  # type: ignore
+            if a_threat_intel_type == "indicator":
+                id = relationships_object.get("source_ref", "")
                 a_type = self.get_ioc_type(id, self.id_to_object)
 
-            b_threat_intel_type = relationships_object.get('target_ref', '').split('--')[0]
-            b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(
-                b_threat_intel_type, '') or STIX_2_TYPES_TO_CORTEX_TYPES.get(b_threat_intel_type, '')  # type: ignore
-            if b_threat_intel_type == 'indicator':
-                b_type = self.get_ioc_type(relationships_object.get('target_ref', ''), self.id_to_object)
+            b_threat_intel_type = relationships_object.get("target_ref", "").split("--")[0]
+            b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type, "") or STIX_2_TYPES_TO_CORTEX_TYPES.get(
+                b_threat_intel_type, ""
+            )  # type: ignore
+            if b_threat_intel_type == "indicator":
+                b_type = self.get_ioc_type(relationships_object.get("target_ref", ""), self.id_to_object)
 
             if not a_type or not b_type:
                 continue
 
             mapping_fields = {
-                'lastseenbysource': relationships_object.get('modified'),
-                'firstseenbysource': relationships_object.get('created'),
+                "lastseenbysource": relationships_object.get("modified"),
+                "firstseenbysource": relationships_object.get("created"),
             }
 
-            entity_a = self.get_ioc_value(relationships_object.get('source_ref'), self.id_to_object)
-            entity_b = self.get_ioc_value(relationships_object.get('target_ref'), self.id_to_object)
+            entity_a = self.get_ioc_value(relationships_object.get("source_ref"), self.id_to_object)
+            entity_b = self.get_ioc_value(relationships_object.get("target_ref"), self.id_to_object)
 
-            entity_relation = EntityRelationship(name=relationship_type,
-                                                 entity_a=entity_a,
-                                                 entity_a_type=a_type,
-                                                 entity_b=entity_b,
-                                                 entity_b_type=b_type,
-                                                 fields=mapping_fields)
+            entity_relation = EntityRelationship(
+                name=relationship_type,
+                entity_a=entity_a,
+                entity_a_type=a_type,
+                entity_b=entity_b,
+                entity_b_type=b_type,
+                fields=mapping_fields,
+            )
             relationships_list.append(entity_relation.to_indicator())
 
-        dummy_indicator = {
-            "value": "$$DummyIndicator$$",
-            "relationships": relationships_list
-        }
+        dummy_indicator = {"value": "$$DummyIndicator$$", "relationships": relationships_list}
         return [dummy_indicator] if dummy_indicator else []
 
     @staticmethod
@@ -1994,11 +2194,11 @@ class STIX2XSOARParser(BaseClient):
         :param stix_objs: taxii objects
         :return: indicators in json format
         """
-        extracted_objs = [
-            item for item in stix_objs if item.get("type") in required_objects
-        ]  # retrieve only required type
-        demisto.debug(f'Extracted {len(list(extracted_objs))} out of {len(list(stix_objs))} Stix objects with the types: '
-                      f'{required_objects}')
+        extracted_objs = [item for item in stix_objs if item.get("type") in required_objects]  # retrieve only required type
+        demisto.debug(
+            f"Extracted {len(list(extracted_objs))} out of {len(list(stix_objs))} Stix objects with the types: "
+            f"{required_objects}"
+        )
 
         return extracted_objs
 
@@ -2025,9 +2225,7 @@ class STIX2XSOARParser(BaseClient):
                     if len(term) == 2 and taxii_type in term[0]:
                         type_ = indicator_types[taxii_type]
                         value = term[1]
-                        indicator = self.create_indicator(
-                            indicator_obj, type_, value, field_map
-                        )
+                        indicator = self.create_indicator(indicator_obj, type_, value, field_map)
                         indicators.append(indicator)
                         break
         if self.skip_complex_mode and len(indicators) > 1:
@@ -2067,15 +2265,15 @@ class STIX2XSOARParser(BaseClient):
             if field_path in ioc_obj_copy:
                 fields[field_name] = ioc_obj_copy.get(field_path)
 
-        if not fields.get('trafficlightprotocol'):
+        if not fields.get("trafficlightprotocol"):
             tlp_from_marking_refs = self.get_tlp(ioc_obj_copy)
             fields["trafficlightprotocol"] = tlp_from_marking_refs if tlp_from_marking_refs else self.tlp_color
 
         if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(ioc_obj_copy.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(ioc_obj_copy.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
             if score:
-                indicator['score'] = score
+                indicator["score"] = score
 
         # union of tags and labels
         if "tags" in fields:
@@ -2091,14 +2289,12 @@ class STIX2XSOARParser(BaseClient):
         fields["publications"] = self.get_indicator_publication(indicator_obj)
 
         if self.enrichment_excluded:
-            indicator['enrichmentExcluded'] = self.enrichment_excluded
+            indicator["enrichmentExcluded"] = self.enrichment_excluded
 
         return indicator
 
     @staticmethod
-    def extract_indicator_groups_from_pattern(
-        pattern: str, regexes: list
-    ) -> list[tuple[str, str]]:
+    def extract_indicator_groups_from_pattern(pattern: str, regexes: list) -> list[tuple[str, str]]:
         """
         Extracts indicator [`type`, `indicator`] groups from pattern
         :param pattern: stix pattern
@@ -2139,11 +2335,12 @@ class STIX2XSOARParser(BaseClient):
         """
         ioc_obj = id_to_obj.get(ioc)
         if ioc_obj:
-            for key in ('name', 'value', 'pattern'):
-                if ("file:hashes.'SHA-256' = '" in ioc_obj.get(key, '')) and \
-                        (ioc_value := Taxii2FeedClient.extract_ioc_value(ioc_obj, key)):
+            for key in ("name", "value", "pattern"):
+                if ("file:hashes.'SHA-256' = '" in ioc_obj.get(key, "")) and (
+                    ioc_value := Taxii2FeedClient.extract_ioc_value(ioc_obj, key)
+                ):
                     return ioc_value
-            return ioc_obj.get('name') or ioc_obj.get('value')
+            return ioc_obj.get("name") or ioc_obj.get("value")
         return None
 
     @staticmethod
@@ -2152,10 +2349,9 @@ class STIX2XSOARParser(BaseClient):
         Extract SHA-256 from specific key, default key is name.
         "([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
         """
-        ioc_value = ioc_obj.get(key, '')
+        ioc_value = ioc_obj.get(key, "")
         comps = STIX2XSOARParser.get_pattern_comparisons(ioc_value) or {}
-        return next(
-            (comp[-1].strip("'") for comp in comps.get('file', []) if ['hashes', 'SHA-256'] in comp), None)
+        return next((comp[-1].strip("'") for comp in comps.get("file", []) if ["hashes", "SHA-256"] in comp), None)
 
     def update_last_modified_indicator_date(self, indicator_modified_str: str):
         if not indicator_modified_str:
@@ -2163,17 +2359,12 @@ class STIX2XSOARParser(BaseClient):
         if self.last_fetched_indicator__modified is None:
             self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
         else:
-            last_datetime = self.stix_time_to_datetime(
-                self.last_fetched_indicator__modified
-            )
-            indicator_created_datetime = self.stix_time_to_datetime(
-                indicator_modified_str
-            )
+            last_datetime = self.stix_time_to_datetime(self.last_fetched_indicator__modified)
+            indicator_created_datetime = self.stix_time_to_datetime(indicator_modified_str)
             if indicator_created_datetime > last_datetime:
                 self.last_fetched_indicator__modified = indicator_modified_str
 
     def load_stix_objects_from_envelope(self, envelopes: types.GeneratorType, limit: int = -1):
-
         parse_stix_2_objects = {
             "indicator": self.parse_indicator,
             "attack-pattern": self.parse_attack_pattern,
@@ -2204,9 +2395,7 @@ class STIX2XSOARParser(BaseClient):
         indicators, relationships_lst = self.parse_generator_type_envelope(envelopes, parse_stix_2_objects, limit)
         if relationships_lst:
             indicators.extend(self.parse_relationships(relationships_lst))
-        demisto.debug(
-            f"TAXII 2 Feed has extracted {len(list(indicators))} indicators"
-        )
+        demisto.debug(f"TAXII 2 Feed has extracted {len(list(indicators))} indicators")
 
         return indicators
 
@@ -2223,47 +2412,48 @@ class STIX2XSOARParser(BaseClient):
         parsed_objects_counter: Dict[str, int] = {}
         try:
             for envelope in envelopes:
-                self.increase_count(parsed_objects_counter, 'envelope')
+                self.increase_count(parsed_objects_counter, "envelope")
                 try:
                     stix_objects = envelope.get("objects")
                     if not stix_objects:
                         # no fetched objects
-                        self.increase_count(parsed_objects_counter, 'not-parsed-envelope-not-stix')
+                        self.increase_count(parsed_objects_counter, "not-parsed-envelope-not-stix")
                         break
                 except Exception as e:
                     demisto.info(f"Exception trying to get envelope objects: {e}, {traceback.format_exc()}")
-                    self.increase_count(parsed_objects_counter, 'exception-envelope-get-objects')
+                    self.increase_count(parsed_objects_counter, "exception-envelope-get-objects")
                     continue
 
                 # we should build the id_to_object dict before iteration as some object reference each other
                 self.id_to_object.update(
                     {
-                        obj.get('id'): obj for obj in stix_objects
-                        if obj.get('type') not in ['extension-definition', 'relationship']
+                        obj.get("id"): obj
+                        for obj in stix_objects
+                        if obj.get("type") not in ["extension-definition", "relationship"]
                     }
                 )
                 # now we have a list of objects, go over each obj, save id with obj, parse the obj
                 for obj in stix_objects:
                     try:
-                        obj_type = obj.get('type')
+                        obj_type = obj.get("type")
                     except Exception as e:
                         demisto.info(f"Exception trying to get stix_object-type: {e}, {traceback.format_exc()}")
-                        self.increase_count(parsed_objects_counter, 'exception-stix-object-type')
+                        self.increase_count(parsed_objects_counter, "exception-stix-object-type")
                         continue
 
                     # we currently don't support extension object
-                    if obj_type == 'extension-definition':
+                    if obj_type == "extension-definition":
                         demisto.debug(f'There is no parsing function for object type "extension-definition", for object {obj}.')
-                        self.increase_count(parsed_objects_counter, 'not-parsed-extension-definition')
+                        self.increase_count(parsed_objects_counter, "not-parsed-extension-definition")
                         continue
-                    elif obj_type == 'relationship':
+                    elif obj_type == "relationship":
                         relationships_lst.append(obj)
-                        self.increase_count(parsed_objects_counter, 'not-parsed-relationship')
+                        self.increase_count(parsed_objects_counter, "not-parsed-relationship")
                         continue
 
                     if not parse_objects_func.get(obj_type):
-                        demisto.debug(f'There is no parsing function for object type {obj_type}, for object {obj}.')
-                        self.increase_count(parsed_objects_counter, f'not-parsed-{obj_type}')
+                        demisto.debug(f"There is no parsing function for object type {obj_type}, for object {obj}.")
+                        self.increase_count(parsed_objects_counter, f"not-parsed-{obj_type}")
                         continue
                     try:
                         if result := parse_objects_func[obj_type](obj):
@@ -2271,14 +2461,16 @@ class STIX2XSOARParser(BaseClient):
                             self.update_last_modified_indicator_date(obj.get("modified"))
                     except Exception as e:
                         demisto.info(f"Exception parsing stix_object-type {obj_type}: {e}, {traceback.format_exc()}")
-                        self.increase_count(parsed_objects_counter, f'exception-parsing-{obj_type}')
+                        self.increase_count(parsed_objects_counter, f"exception-parsing-{obj_type}")
                         continue
-                    self.increase_count(parsed_objects_counter, f'parsed-{obj_type}')
+                    self.increase_count(parsed_objects_counter, f"parsed-{obj_type}")
 
                     if reached_limit(limit, len(indicators)):
-                        demisto.debug(f"Reached the limit ({limit}) of indicators to fetch. Indicators len: {len(indicators)}."
-                                      f' Got {len(indicators)} indicators and {len(list(relationships_lst))} relationships.'
-                                      f' Objects counters: {parsed_objects_counter}')
+                        demisto.debug(
+                            f"Reached the limit ({limit}) of indicators to fetch. Indicators len: {len(indicators)}."
+                            f" Got {len(indicators)} indicators and {len(list(relationships_lst))} relationships."
+                            f" Objects counters: {parsed_objects_counter}"
+                        )
 
                         return indicators, relationships_lst
         except Exception as e:
@@ -2287,8 +2479,10 @@ class STIX2XSOARParser(BaseClient):
                 demisto.debug("No Indicator were parsed")
                 raise e
             demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
-        demisto.debug(f'Finished parsing all objects. Got {len(list(indicators))} indicators '
-                      f'and {len(list(relationships_lst))} relationships. Objects counters: {parsed_objects_counter}')
+        demisto.debug(
+            f"Finished parsing all objects. Got {len(list(indicators))} indicators "
+            f"and {len(list(relationships_lst))} relationships. Objects counters: {parsed_objects_counter}"
+        )
         return indicators, relationships_lst
 
 
@@ -2301,11 +2495,11 @@ class Taxii2FeedClient(STIX2XSOARParser):
         verify: bool,
         objects_to_fetch: list[str],
         skip_complex_mode: bool = False,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        field_map: Optional[dict] = None,
-        tags: Optional[list] = None,
-        tlp_color: Optional[str] = None,
+        username: str | None = None,
+        password: str | None = None,
+        field_map: dict | None = None,
+        tags: list | None = None,
+        tlp_color: str | None = None,
         limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
         certificate: str = None,
         key: str = None,
@@ -2372,7 +2566,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
                 self.auth = requests.auth.HTTPBasicAuth(username, password)
 
         if (certificate and not key) or (not certificate and key):
-            raise DemistoException('Both certificate and key should be provided or neither should be.')
+            raise DemistoException("Both certificate and key should be provided or neither should be.")
         if certificate and key:
             self.crt = (self.build_certificate(certificate), self.build_certificate(key))
 
@@ -2385,22 +2579,28 @@ class Taxii2FeedClient(STIX2XSOARParser):
         :param version: taxii version key (either 2.0 or 2.1)
         """
         server_url = urljoin(self.base_url)
-        self._conn = _HTTPConnection(
-            verify=self.verify, proxies=self.proxies, version=version, auth=self.auth, cert=self.crt
-        )
+        self._conn = _HTTPConnection(verify=self.verify, proxies=self.proxies, version=version, auth=self.auth, cert=self.crt)
         if self.auth_header:
             # add auth_header to the session object
-            self._conn.session.headers = merge_setting(self._conn.session.headers,  # type: ignore[attr-defined]
-                                                       {self.auth_header: self.auth_key},
-                                                       dict_class=CaseInsensitiveDict)
+            self._conn.session.headers = merge_setting(
+                self._conn.session.headers,  # type: ignore[attr-defined]
+                {self.auth_header: self.auth_key},
+                dict_class=CaseInsensitiveDict,
+            )
 
         if version is TAXII_VER_2_0:
             self.server = v20.Server(
-                server_url, verify=self.verify, proxies=self.proxies, conn=self._conn,
+                server_url,
+                verify=self.verify,
+                proxies=self.proxies,
+                conn=self._conn,
             )
         else:
             self.server = v21.Server(
-                server_url, verify=self.verify, proxies=self.proxies, conn=self._conn,
+                server_url,
+                verify=self.verify,
+                proxies=self.proxies,
+                conn=self._conn,
             )
 
     def init_roots(self):
@@ -2436,15 +2636,17 @@ class Taxii2FeedClient(STIX2XSOARParser):
         for api_root in self.server.api_roots:  # type: ignore[attr-defined]
             # ApiRoots are initialized with wrong _conn because we are not providing auth or cert to Server
             # closing wrong unused connections
-            api_root_name = str(api_root.url).split('/')[-2]
-            demisto.debug(f'closing api_root._conn for {api_root_name}')
+            api_root_name = str(api_root.url).split("/")[-2]
+            demisto.debug(f"closing api_root._conn for {api_root_name}")
             api_root._conn.close()
             roots_to_api[api_root_name] = api_root
 
         if self.default_api_root:
             if not roots_to_api.get(self.default_api_root):
-                raise DemistoException(f'The given default API root {self.default_api_root} doesn\'t exist. '
-                                       f'Available API roots are {list(roots_to_api.keys())}.')
+                raise DemistoException(
+                    f"The given default API root {self.default_api_root} doesn't exist. "
+                    f"Available API roots are {list(roots_to_api.keys())}."
+                )
             self.api_root = roots_to_api.get(self.default_api_root)
 
         elif server_default := self.server.default:  # type: ignore[attr-defined]
@@ -2492,10 +2694,9 @@ class Taxii2FeedClient(STIX2XSOARParser):
 
     @staticmethod
     def build_certificate(cert_var):
-        var_list = cert_var.split('-----')
+        var_list = cert_var.split("-----")
         # replace spaces with newline characters
-        certificate_fixed = '-----'.join(
-            var_list[:2] + [var_list[2].replace(' ', '\n')] + var_list[3:])
+        certificate_fixed = "-----".join(var_list[:2] + [var_list[2].replace(" ", "\n")] + var_list[3:])
         cf = tempfile.NamedTemporaryFile(delete=False)
         cf.write(certificate_fixed.encode())
         cf.flush()
@@ -2508,10 +2709,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
         :return: Cortex indicators list
         """
         if not isinstance(self.collection_to_fetch, (v20.Collection, v21.Collection)):
-            raise DemistoException(
-                "Could not find a collection to fetch from. "
-                "Please make sure you provided a collection."
-            )
+            raise DemistoException("Could not find a collection to fetch from. " "Please make sure you provided a collection.")
         if limit is None:
             limit = -1
 
@@ -2524,29 +2722,28 @@ class Taxii2FeedClient(STIX2XSOARParser):
             envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
             indicators = self.load_stix_objects_from_envelope(envelopes, limit)
         except InvalidJSONError as e:
-            demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}, {traceback.format_exc()}')
+            demisto.debug(f"Excepted InvalidJSONError, continuing with empty result.\nError: {e}, {traceback.format_exc()}")
             # raised when the response is empty, because {} is parsed into '筽'
             indicators = []
 
         return indicators
 
-    def poll_collection(
-        self, page_size: int, **kwargs
-    ) -> types.GeneratorType:
+    def poll_collection(self, page_size: int, **kwargs) -> types.GeneratorType:
         """
         Polls a taxii collection
         :param page_size: size of the request page
         """
         get_objects = self.collection_to_fetch.get_objects
         if self.objects_to_fetch:
-            if 'relationship' not in self.objects_to_fetch and \
-                    len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
-                self.objects_to_fetch.append('relationship')
-            kwargs['type'] = self.objects_to_fetch
+            if (
+                "relationship" not in self.objects_to_fetch and len(self.objects_to_fetch) > 1
+            ):  # when fetching one type no need to fetch relationship
+                self.objects_to_fetch.append("relationship")
+            kwargs["type"] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
-            demisto.debug(f'Collection is a v20 type collction, {self.collection_to_fetch}')
+            demisto.debug(f"Collection is a v20 type collction, {self.collection_to_fetch}")
             return v20.as_pages(get_objects, per_request=page_size, **kwargs)
-        demisto.debug(f'Collection is a v21 type collction, {self.collection_to_fetch}')
+        demisto.debug(f"Collection is a v21 type collction, {self.collection_to_fetch}")
         return v21.as_pages(get_objects, per_request=page_size, **kwargs)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
@@ -2556,8 +2753,4 @@ class Taxii2FeedClient(STIX2XSOARParser):
         :param cur_limit: max amount of entries allowed in a page
         :return: page size
         """
-        return (
-            min(self.limit_per_request, cur_limit)
-            if max_limit > -1
-            else self.limit_per_request
-        )
+        return min(self.limit_per_request, cur_limit) if max_limit > -1 else self.limit_per_request
