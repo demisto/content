@@ -2,7 +2,7 @@
     "name": "OpenPhish",
     "description": "OpenPhish uses proprietary Artificial Intelligence algorithms to automatically identify zero-day phishing sites and provide comprehensive, actionable, real-time threat intelligence.",
     "support": "xsoar",
-    "currentVersion": "2.0.19",
+    "currentVersion": "2.0.20",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
