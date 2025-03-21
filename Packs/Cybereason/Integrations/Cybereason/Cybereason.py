@@ -1685,6 +1685,8 @@ def fetch_incidents(client: Client):
     else:
         demisto.info("Fetch Incidents: EPP Malop Polling not enabled, hence skipping the processing of EPP Malops")
 
+    # Adding one microsecond delay to avoid ingesting duplicates
+    max_update_time += 1
     demisto.setLastRun({
         'creation_time': max_update_time
     })
@@ -1695,12 +1697,12 @@ def fetch_incidents(client: Client):
         offset += malop_count_per_poll
         demisto.debug(
             f"Fetch Incidents: Total malop fetched: {total_malops_fetched} is less than total malops available: {total_malops_available}. Updaring offset to {offset}")   
-        start_time = ""
-        end_time = ""
-        total_malops_fetched = ""
     else:
         offset = 0
         demisto.debug(f"Fetch Incidents: All Malops polled, no new Malops available in next page. Current stats: Total Malops Available: {total_malops_available} Total Malops Fetched: {total_malops_fetched}")
+        start_time = ""
+        end_time = ""
+        total_malops_fetched = ""
 
     integration_context['total_malops_fetched'] = total_malops_fetched
     integration_context['start_time'] = str(start_time)
