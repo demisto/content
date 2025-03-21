@@ -7,7 +7,7 @@ ABOVE_THE_THRESHOLD_ITEMS_CONTEXT_PATH = "incidents"
 
 def save_to_context(
     items: list, context_path: str, delete_existing: bool = False, is_sub_playbook: str = "auto", table_header="Incidents Result"
-):
+):   # pragma: no cover
     if delete_existing:
         res = demisto.executeCommand("DeleteContext", {"key": context_path, "subplaybook": is_sub_playbook})
         if is_error(res):
@@ -41,7 +41,7 @@ def filter_by_threshold(context: list, threshold: float) -> tuple[list, list]:
     return low, high
 
 
-def main():
+def main():  # pragma: no cover
     input_args = demisto.args()
     # If user did not provide a lower threshold then split is not needed.
     threshold = input_args.get("similarity_threshold")
