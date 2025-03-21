@@ -387,6 +387,7 @@ def search_response_policy_by_domain(client: Client, domain: str):
 
 
 def main():
+    # test
     params = demisto.params()
     url = params.get('url')
     username = params.get('credentials').get('identifier')

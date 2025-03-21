@@ -144,7 +144,7 @@ class ClientV3(BaseClient):
 
     def prepare_request(self, method: str, url_suffix: str, query_string: str, payload: dict = {}) -> str:
         """
-        Prepares the signed HTTP request data for making an API call.
+        Prepares the signed HTTP request data for making an API call test.
         Args:
             method (str): The HTTP method to be used for the request.
             url_suffix (str): The endpoint URL suffix for the API call.

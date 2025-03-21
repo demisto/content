@@ -47,7 +47,7 @@ ERR_DICT = {
 
 def http_request(method: str, suffix_url: str, data=None):
     """
-    A wrapper for requests lib to send our requests and handle requests
+    A wrapper for requests lib to send our requests and handle requests test
     and responses better
 
     Parameters

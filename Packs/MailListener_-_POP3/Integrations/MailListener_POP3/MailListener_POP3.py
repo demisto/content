@@ -354,6 +354,7 @@ def test_module():
 
 
 def main():
+    # test
     try:
         handle_proxy()
         connect_pop3_server()
