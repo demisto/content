@@ -107,7 +107,7 @@ class KafkaCommunicator:
         )
 
         if offset not in SUPPORTED_GENERAL_OFFSETS:
-            raise DemistoException(f"General offset {offset} not found in supported offsets: " f"{SUPPORTED_GENERAL_OFFSETS}")
+            raise DemistoException(f"General offset {offset} not found in supported offsets: {SUPPORTED_GENERAL_OFFSETS}")
 
         # Set consumer conf dict
         self.conf_consumer = {
@@ -273,7 +273,7 @@ class KafkaCommunicator:
         try:
             consumer = self.get_kafka_consumer()
             consumer_topics = consumer.list_topics(timeout=self.REQUESTS_TIMEOUT)
-            consumer_topics.topics
+            consumer_topics.topics  # noqa: B018
 
         except Exception as e:
             error_msg = f"Error connecting to kafka using consumer: {e!s}\n{traceback.format_exc()}"
@@ -294,7 +294,7 @@ class KafkaCommunicator:
         try:
             producer = self.get_kafka_producer()
             producer_topics = producer.list_topics(timeout=self.REQUESTS_TIMEOUT)
-            producer_topics.topics
+            producer_topics.topics  # noqa: B018
 
         except Exception as e:
             error_msg = f"Error connecting to kafka using producer: {e!s}\n{traceback.format_exc()}"
@@ -329,7 +329,7 @@ class KafkaCommunicator:
             demisto.debug(f"Kafka v3 - Message {msg} delivery failed: {err}")
             raise DemistoException(f"Message delivery failed: {err}")
         else:
-            return_results(f"Message was successfully produced to " f"topic '{msg.topic()}', partition {msg.partition()}")
+            return_results(f"Message was successfully produced to topic '{msg.topic()}', partition {msg.partition()}")
 
     def get_topics(self, consumer: bool = True) -> dict:
         """Get Kafka topics
@@ -398,7 +398,7 @@ class KafkaCommunicator:
                 registered_schema = kafka_schema_registry_client.get_latest_version(subject_name=value_schema_subject_name)
                 if registered_schema.schema.schema_type != value_schema_type:
                     raise DemistoException(
-                        f"Unsupported schema type '{registered_schema.schema.schema_type}'. " f"Expected '{value_schema_type}'."
+                        f"Unsupported schema type '{registered_schema.schema.schema_type}'. Expected '{value_schema_type}'."
                     )
                 resolved_schema_str = registered_schema.schema.schema_str
 
@@ -839,7 +839,7 @@ def check_params(
         for partition in partitions:
             if int(partition) not in available_partitions_ids:
                 raise DemistoException(
-                    f"Partition {partition} is not assigned to kafka topic {topic} available " f"{available_partitions_ids}."
+                    f"Partition {partition} is not assigned to kafka topic {topic} available {available_partitions_ids}."
                 )
             if check_offset and checkable_offset:
                 earliest_offset, oldest_offset = kafka.get_partition_offsets(topic=topic, partition=int(partition))
@@ -912,7 +912,7 @@ def get_fetch_topic_partitions(
         for topic_partition in all_topic_partitions:
             if topic_partition.partition == int(partition):
                 demisto.debug(
-                    f"Updating topic {topic} and partition {partition} to fetch from " f"previous offset {specific_offset}"
+                    f"Updating topic {topic} and partition {partition} to fetch from previous offset {specific_offset}"
                 )
                 all_topic_partitions.remove(topic_partition)
 

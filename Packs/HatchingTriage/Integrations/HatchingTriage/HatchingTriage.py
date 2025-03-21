@@ -26,7 +26,7 @@ class Client(BaseClient):
         try:
             kwarg.setdefault("headers", {})["User-Agent"] = _version_header()
         except Exception as e:
-            demisto.debug(f"Error creating version header: {e}. " f"{traceback.format_exc(limit=10)}")
+            demisto.debug(f"Error creating version header: {e}. {traceback.format_exc(limit=10)}")
         super().__init__(base_url, *args, **kwarg)
 
 
@@ -34,7 +34,7 @@ def _get_behavioral_task_id(value):
     if str(value).startswith("behavioral"):
         return value
 
-    raise IncorrectUsageError("Task ID must be 'behavioral' followed by a number. " "E.G: 'behavioral1'")
+    raise IncorrectUsageError("Task ID must be 'behavioral' followed by a number. E.G: 'behavioral1'")
 
 
 def test_module(client: Client) -> str:
@@ -102,7 +102,7 @@ def submit_sample(client: Client, **args) -> CommandResults:
             r = client._http_request("POST", "samples", data={"_json": json.dumps(data)}, files=files)
     else:
         raise IncorrectUsageError(
-            f'Type of submission needs to be selected, either "file", "url", ' f'or fetch. The selected type was: {data["kind"]}'
+            f'Type of submission needs to be selected, either "file", "url", or fetch. The selected type was: {data["kind"]}'
         )
 
     return CommandResults(outputs_prefix="Triage.submissions", outputs_key_field="id", outputs=r)

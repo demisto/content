@@ -54,7 +54,7 @@ def main():
     demisto.info("Executing Xsoar_Utils, detected demisto as environment")
     command = demisto.command()
     command_args = demisto.args()
-    if "inv_id" not in command_args.keys():
+    if "inv_id" not in command_args:
         command_args["inv_id"] = obj.playground
     if command == "test-module":
         send_request(obj, path="/engines", method="get", test=True)

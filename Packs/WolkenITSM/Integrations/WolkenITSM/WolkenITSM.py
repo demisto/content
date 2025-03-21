@@ -220,7 +220,7 @@ class Client(BaseClient):
 
             except Exception as e:
                 return_error(
-                    f"Error occurred while creating an access token. Please check the instance configuration." f"\n\n{e.args[0]}"
+                    f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}"
                 )
 
     def get_parameters(self):

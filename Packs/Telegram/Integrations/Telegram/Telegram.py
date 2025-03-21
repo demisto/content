@@ -22,7 +22,7 @@ BASE_URL = f"https://api.telegram.org/bot{TOKEN}/"
 def http_request(method, url_suffix, params=None, data=None):
     result = requests.request(method, BASE_URL + url_suffix, verify=False, params=params, data=data)
     if result.status_code not in {200}:
-        return_error("Error in API call to Telegram Integration [%d] - %s" % (result.status_code, result.reason))
+        return_error(f"Error in API call to Telegram Integration [{result.status_code}] - {result.reason}")
 
     return result.json()
 
@@ -118,7 +118,7 @@ def get_user_id(username):
     if username in users:
         return users[username]
     else:
-        return
+        return None
 
 
 """ COMMANDS MANAGER / SWITCH PANEL """

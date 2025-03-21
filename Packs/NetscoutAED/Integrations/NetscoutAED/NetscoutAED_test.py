@@ -45,7 +45,7 @@ def test_objects_time_to_readable_time():
         {"country_name": "country", "created_time": "2021-03-15T20:02:26.000Z"},
     ]
     assert len(list_of_objects) == len(expected_output)
-    assert all([x == y for x, y in zip(list_of_objects, expected_output)])
+    assert all(x == y for x, y in zip(list_of_objects, expected_output))
 
 
 def test_objects_time_to_readable_time_key_mismatch():
@@ -124,7 +124,7 @@ def test_deserialize_protection_groups():
     ]
     deserialize_protection_groups(protection_groups_list)
     assert len(protection_groups_list) == len(expected_output)
-    assert all([x == y for x, y in zip(protection_groups_list, expected_output)])
+    assert all(x == y for x, y in zip(protection_groups_list, expected_output))
 
 
 def test_country_code_list_command(mocker):
@@ -255,7 +255,7 @@ def test_handle_country_addition_commands(mocker, country, func_mock, raw_respon
     result = handle_country_addition_commands(client, {"country": country}, direction_color)
     assert "Test" in result.readable_output
     assert "| BS | 2021-03-14T12:18:05.000Z |" in result.readable_output
-    assert all([x == y for x, y in zip(expected_output, result.outputs)])
+    assert all(x == y for x, y in zip(expected_output, result.outputs))
 
 
 def test_handle_country_addition_commands_no_country_given():
@@ -390,7 +390,8 @@ def test_handle_host_list_commands(mocker, direction_color, func_mock, raw_respo
     outbound_blacklisted_hosts_raw_response = util_load_json(f"test_data/hosts/{raw_respond}")
     mocker.patch.object(client, func_mock, return_value=outbound_blacklisted_hosts_raw_response)
     result = handle_host_list_commands(client, {}, direction_color)
-    assert direction_color["direction"] and direction_color["list_color"] in result.readable_output
+    assert direction_color["direction"]
+    assert direction_color["list_color"] in result.readable_output
     assert "2021-03-15T13:16:11.000Z" in result.readable_output
     assert expected_output[0] == result.outputs[0]
 
@@ -533,7 +534,7 @@ def test_handle_host_addition_commands(mocker, host, func_mock, raw_respond, dir
     mocker.patch.object(client, func_mock, return_value=hosts_raw)
     result = handle_host_addition_and_replacement_commands(client, {"host_address": host}, direction_color)
     assert "Hosts were successfully" in result.readable_output
-    assert all([x == y for x, y in zip(expected_output, result.outputs)])
+    assert all(x == y for x, y in zip(expected_output, result.outputs))
 
 
 def test_handle_host_addition_commands_no_host_given():
@@ -740,13 +741,13 @@ def test_handle_domain_list_commands(mocker):
     result = handle_domain_list_commands(client, {})
     assert "google.com" in result.readable_output
     assert "2021-03-18T16:49:50.000Z" in result.readable_output
-    assert {
+    assert result.outputs[0] == {
         "annotation": [],
         "cid": [-1],
         "domain": "google.com",
         "pgid": [-1],
         "update_time": "2021-03-18T16:49:26.000Z",
-    } == result.outputs[0]
+    }
 
 
 domain_addition_params = [
@@ -791,7 +792,7 @@ def test_handle_domain_addition_commands(mocker, domain, expected_output):
     result = handle_domain_addition_commands(client, {"domain": domain})
     assert "Domains were successfully added to the inbound blacklisted list" in result.readable_output
     assert "google.com" in result.readable_output
-    assert all([x == y for x, y in zip(expected_output, result.outputs)])
+    assert all(x == y for x, y in zip(expected_output, result.outputs))
 
 
 def test_handle_domain_addition_commands_no_domain_given():
@@ -875,13 +876,13 @@ def test_handle_url_list_commands(mocker):
     result = handle_url_list_commands(client, {})
     assert "google.com" in result.readable_output
     assert "2021-03-18T16:52:26.000Z" in result.readable_output
-    assert {
+    assert result.outputs[0] == {
         "annotation": [],
         "cid": [-1],
         "pgid": [-1],
         "url": "google.com",
         "update_time": "2021-03-18T16:52:26.000Z",
-    } == result.outputs[0]
+    }
 
 
 url_addition_params = [
@@ -946,7 +947,7 @@ def test_handle_url_addition_commands(mocker, url, expected_output):
     result = handle_url_addition_commands(client, {"url": url})
     assert "Urls were successfully added to the inbound blacklisted list" in result.readable_output
     assert "maps.google.com" in result.readable_output
-    assert all([x == y for x, y in zip(expected_output, result.outputs)])
+    assert all(x == y for x, y in zip(expected_output, result.outputs))
 
 
 def test_handle_url_addition_commands_no_url_given():

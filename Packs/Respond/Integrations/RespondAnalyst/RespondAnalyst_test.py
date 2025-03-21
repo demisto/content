@@ -144,7 +144,7 @@ def test_remove_user(mocker, requests_mock):
 
     args = {"tenant_id": "Tenant 1", "incident_id": 5, "username": "qa-user2@respond-software.com"}
     res = remove_user_command(rest_client, args)
-    assert res == "user with email: qa-user2@respond-software.com removed from incident with id 5 " "" "on tenant Tenant 1"
+    assert res == "user with email: qa-user2@respond-software.com removed from incident with id 5 on tenant Tenant 1"
 
 
 def test_assign_user(mocker, requests_mock):
@@ -176,7 +176,7 @@ def test_assign_user(mocker, requests_mock):
         "username": "qa-user2@respond-software.com",
     }
     res = assign_user_command(rest_client, args)
-    assert res == "user with email: qa-user2@respond-software.com added to incident with id 5 on " "tenant Tenant 1"
+    assert res == "user with email: qa-user2@respond-software.com added to incident with id 5 on tenant Tenant 1"
 
     # no tenant id provided
     args = {
@@ -184,7 +184,7 @@ def test_assign_user(mocker, requests_mock):
         "username": "qa-user3@respond-software.com",
     }
     res = assign_user_command(rest_client, args)
-    assert res == "user with email: qa-user3@respond-software.com added to incident with id 5 on " "tenant Tenant 1"
+    assert res == "user with email: qa-user3@respond-software.com added to incident with id 5 on tenant Tenant 1"
 
 
 def test_close_incident(mocker, requests_mock):
@@ -363,7 +363,7 @@ def test_get_remote_data_command(requests_mock):
             "lastEventTime": "2020-06-05T08:20:17Z",
             "URL": "https://localhost:6078/secure/incidents/6?tenantId=dev1",
             "closeURL": "https://localhost:6078/secure/incidents/feedback/6?tenantId=dev1",
-            "title": "Virus Infections, Suspicious Repeated Connections and Int - Int Network IPS " "Activity",
+            "title": "Virus Infections, Suspicious Repeated Connections and Int - Int Network IPS Activity",
             "description": "description of the incident",
             "status": "Closed",
             "severity": "Critical",
@@ -494,5 +494,5 @@ def test_get_escalations_throws_exception(requests_mock, mocker):
         get_escalations_command(rest_client, args)
     assert debug_spy.call_count == 1
     debug_spy.assert_called_with(
-        "Error while getting escalation data in Respond incoming mirror for incident 1 Error " "message: Unauthorized"
+        "Error while getting escalation data in Respond incoming mirror for incident 1 Error message: Unauthorized"
     )

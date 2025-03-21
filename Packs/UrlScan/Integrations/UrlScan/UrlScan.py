@@ -115,7 +115,7 @@ def http_request(client, method, url_suffix, json=None, retries=0):
 
     if rate_limit_remaining < 10:
         return_warning(
-            "Your available rate limit remaining is {} and is about to be exhausted. " "The rate limit will reset at {}".format(
+            "Your available rate limit remaining is {} and is about to be exhausted. The rate limit will reset at {}".format(
                 str(rate_limit_remaining), r.headers.get("X-Rate-Limit-Reset")
             )
         )
@@ -134,11 +134,7 @@ def http_request(client, method, url_suffix, json=None, retries=0):
             return response_json, ErrorTypes.GENERAL_ERROR, None
 
         response_json["is_error"] = True
-        response_json["error_string"] = "Error in API call to URLScan.io [%d] - %s: %s" % (
-            r.status_code,
-            r.reason,
-            error_description,
-        )
+        response_json["error_string"] = f"Error in API call to URLScan.io [{r.status_code}] - {r.reason}: {error_description}"
         return response_json, ErrorTypes.GENERAL_ERROR, None
     return r.json(), None, None
 

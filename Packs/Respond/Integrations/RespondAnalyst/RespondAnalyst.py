@@ -205,7 +205,7 @@ class RestClient(BaseClient):
 
     def construct_and_send_get_incident_ids_query(self, tenant_id, from_time_str):
         if from_time_str == "":
-            query = {"query": "query { incidents( statusFilters: [ { incidentStatus: Open } " " ] ){ id dateCreated } }"}
+            query = {"query": "query { incidents( statusFilters: [ { incidentStatus: Open }  ] ){ id dateCreated } }"}
         else:
             query = {"query": 'query { incidents( createdAfter:"' + from_time_str + '" ){ id dateCreated } }'}
         res = self.send_graphql_request(tenant_id, query)
@@ -815,7 +815,7 @@ def close_incident_command(rest_client, args):
 def get_incident_command(rest_client, args):
     formatted_incident = get_formatted_incident(rest_client, args)
     readable_output = tableToMarkdown(
-        f'Mandiant Automated Defense Alert, ' f'{formatted_incident["tenantId"]} : {formatted_incident["incidentId"]}',
+        f'Mandiant Automated Defense Alert, {formatted_incident["tenantId"]} : {formatted_incident["incidentId"]}',
         formatted_incident,
     )
     # return readable_output
@@ -876,17 +876,17 @@ def get_remote_data_command(rest_client, args):
     full_id = args.get("id")
     last_index = full_id.rfind(":")
     args["respond_tenant_id"] = full_id[0:last_index]
-    args["incident_id"] = full_id[last_index + 1 :]
+    args["incident_id"] = full_id[last_index + 1:]
     entries = []
     try:
         updated_incident = get_formatted_incident(rest_client, args)
         updated_incident["id"] = args.get("id")
         demisto.debug(
-            f"Respond incident {args.get('id')}\n" f"update time:   {arg_to_timestamp(args.get('last_update'), 'last_update')}"
+            f"Respond incident {args.get('id')}\nupdate time:   {arg_to_timestamp(args.get('last_update'), 'last_update')}"
         )
     except Exception as e:
         demisto.debug(
-            f'Error while getting incident data in Respond incoming mirror for incident {args["id"]} \n' f'Error message: {e!s}'
+            f'Error while getting incident data in Respond incoming mirror for incident {args["id"]} \nError message: {e!s}'
         )
         raise e
 

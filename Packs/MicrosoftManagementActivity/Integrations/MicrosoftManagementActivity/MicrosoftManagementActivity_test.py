@@ -385,7 +385,7 @@ def create_client(timeout: int = 15):
 
 
 @pytest.mark.parametrize(
-    "last_run, first_fetch_delta, expected_start_time_" "in_hours_from_now, expected_end_time_in_hours_from_now",
+    "last_run, first_fetch_delta, expected_start_time_in_hours_from_now, expected_end_time_in_hours_from_now",
     FETCH_TIMES_TEST_DATA,
 )
 def test_fetch_times_range(
@@ -516,12 +516,12 @@ def mock_get_access_token(requests_mock, access_token_resp):
 
 
 def mock_start_subscription(requests_mock, client, start_subscription_resp):
-    start_subscription_endpoint = f"https://manage.office.com/api/v1.0/{client.tenant_id}/activity/feed/subscriptions/" "start"
+    start_subscription_endpoint = f"https://manage.office.com/api/v1.0/{client.tenant_id}/activity/feed/subscriptions/start"
     requests_mock.post(start_subscription_endpoint, json=start_subscription_resp)
 
 
 def mock_stop_subscription(requests_mock, client):
-    stop_subscription_endpoint = f"https://manage.office.com/api/v1.0/{client.tenant_id}/activity/feed/subscriptions/" "stop"
+    stop_subscription_endpoint = f"https://manage.office.com/api/v1.0/{client.tenant_id}/activity/feed/subscriptions/stop"
     requests_mock.post(stop_subscription_endpoint, json={})
 
 
@@ -532,11 +532,11 @@ def mock_list_subscriptions(requests_mock, client, list_subscriptions_resp):
 
 def mock_list_content(requests_mock):
     list_audit_general_content_endpoint = (
-        "https://manage.office.com/api/v1.0/test/activity/feed/subscriptions" "/content?contentType=audit.general"
+        "https://manage.office.com/api/v1.0/test/activity/feed/subscriptions/content?contentType=audit.general"
     )
     requests_mock.get(list_audit_general_content_endpoint, json=LIST_CONTENT_AUDIT_GENERAL_RESPONSE)
     list_audit_general_content_endpoint = (
-        "https://manage.office.com/api/v1.0/test/activity/feed/subscriptions" "/content?contentType=audit.AzureActiveDirectory"
+        "https://manage.office.com/api/v1.0/test/activity/feed/subscriptions/content?contentType=audit.AzureActiveDirectory"
     )
     requests_mock.get(list_audit_general_content_endpoint, json=LIST_CONTENT_AZUREACTIVE_RESPONSE)
 

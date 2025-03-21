@@ -191,8 +191,8 @@ SALESFORCE_QUERIES: dict[str, str] = {
     "where IsDeleted=false and BMCServiceDesk__inactive__c = false ",
     "GET_URGENCY_DETAILS": "select id,name from BMCServiceDesk__Urgency__c where IsDeleted=false "
     "and BMCServiceDesk__inactive__c = false ",
-    "FILTER_ASSET_CLASSES": " and (BMCServiceDesk__InstanceType__c='Asset' or" " BMCServiceDesk__InstanceType__c='CI / Asset')",
-    "FILTER_CI_CLASSES": " and (BMCServiceDesk__InstanceType__c='CI' or " "BMCServiceDesk__InstanceType__c='CI / Asset')",
+    "FILTER_ASSET_CLASSES": " and (BMCServiceDesk__InstanceType__c='Asset' or BMCServiceDesk__InstanceType__c='CI / Asset')",
+    "FILTER_CI_CLASSES": " and (BMCServiceDesk__InstanceType__c='CI' or BMCServiceDesk__InstanceType__c='CI / Asset')",
     "FILTER_WITH_NAME": " and name ='{}'",
     "ORDER_BY_NAME": " ORDER by name",
     "GET_ACCOUNT_DETAILS": "select id,name from Account where BMCServiceDesk__inactive__c=false "
@@ -426,7 +426,7 @@ class Client(BaseClient):
             else:
                 return resp.json()
         else:
-            handle_error_response(resp)
+            handle_error_response(resp)     # noqa: RET503
 
     def get_session_id(self):
         """
@@ -753,7 +753,7 @@ def prepare_incident_for_fetch_incidents(record: dict[str, Any], params: dict[st
 
     name = record.get("Name", "")
     if record.get("BMCServiceDesk__Type__c", ""):
-        name = "{0}{1}".format(INCIDENT_PREFIX.get(record["BMCServiceDesk__Type__c"], ""), record.get("Name", ""))
+        name = f"{INCIDENT_PREFIX.get(record['BMCServiceDesk__Type__c'], '')}{record.get('Name', '')}"
 
     prepare_date_or_markdown_fields_for_fetch_incidents(record)
 
@@ -775,11 +775,11 @@ def prepare_outputs_for_categories(
     :param records: List containing records of categories from rest API.
     :return: Tuple containing human-readable and context-ouputs.
     """
-    outputs = list()
-    hr_output = list()
+    outputs = []
+    hr_output = []
     for each_record in records:
-        temp = dict()
-        temp1 = dict()
+        temp = {}
+        temp1 = {}
         temp["Id"] = temp1["Id"] = each_record.get("Id")
         temp["Name"] = temp1["Name"] = each_record.get("Name")
         temp["Children Count"] = temp1["ChildrenCount"] = each_record.get("BMCServiceDesk__children__c")
@@ -1073,8 +1073,8 @@ def get_valid_arguments(data: str, field: str) -> tuple[Any, list[str]]:
 
     :raises ValueError: If format of data is invalid.
     """
-    excluded_fields = list()
-    temp = dict()
+    excluded_fields = []
+    temp = {}
     regex_to_validate_json = re.compile(rf"{VALIDATE_JSON}")
     if data:
         if regex_to_validate_json.fullmatch(data):
@@ -1406,7 +1406,7 @@ def get_update_incident_payload(args: dict[str, str]) -> tuple[dict[str, Any], l
     additional_fields = get_valid_arguments(args.get("additional_fields", ""), "additional_fields")[0]
 
     additional_fields_body = {
-        (MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS[key] if key in MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS else key): value
+        (MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS.get(key, key)): value
         for (key, value) in additional_fields.items()
     }
 
@@ -1875,7 +1875,7 @@ def bmc_remedy_update_service_request_command(client: Client, args: dict[str, st
     additional_fields, excluded_fields = get_valid_arguments(args.get("additional_fields", ""), "additional_fields")
     if additional_fields:
         if isinstance(safe_load_json(additional_fields), dict):
-            invalid_fields = list()
+            invalid_fields = []
             for each_field in additional_fields:
                 if each_field in AVAILABLE_FIELD_LIST:
                     invalid_fields.append(each_field)
@@ -1908,7 +1908,7 @@ def bmc_remedy_create_service_request_command(client: Client, args: dict[str, st
                         service_request_definition_params argument.
     """
     args = remove_extra_space_from_args(args)
-    answers_list = list()
+    answers_list = []
     service_request_definition = is_parameter_blank(
         args.get("service_request_definition_id", ""), "service_request_definition_id"
     )
@@ -1918,8 +1918,8 @@ def bmc_remedy_create_service_request_command(client: Client, args: dict[str, st
     additional_fields, excluded_fields = get_valid_arguments(args.get("additional_fields", ""), "additional_fields")
     if answers and isinstance(safe_load_json(answers), dict):
         for each_answer in answers:
-            temp: dict[str, Any] = dict()
-            temp["Values"] = list()
+            temp: dict[str, Any] = {}
+            temp["Values"] = []
             temp["QuestionId"] = each_answer
             temp["Values"].append(answers[each_answer])
             answers_list.append(temp)
@@ -1930,7 +1930,7 @@ def bmc_remedy_create_service_request_command(client: Client, args: dict[str, st
             )
         )
     if additional_fields and isinstance(safe_load_json(additional_fields), dict):
-        invalid_fields = list()
+        invalid_fields = []
         for each_field in additional_fields:
             if each_field in AVAILABLE_FIELD_LIST:
                 invalid_fields.append(each_field)
@@ -2323,9 +2323,9 @@ def bmc_remedy_impact_details_get_command(client: Client, args: dict[str, str]) 
 
     records = api_response.get("records")
     if records:
-        outputs = list()
+        outputs = []
         for each_record in records:
-            temp = dict()
+            temp = {}
             temp["Id"] = each_record.get("Id")
             temp["Name"] = each_record.get("Name")
             outputs.append(temp)

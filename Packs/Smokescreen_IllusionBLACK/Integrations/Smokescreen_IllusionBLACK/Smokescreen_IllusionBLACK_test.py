@@ -50,7 +50,7 @@ EVENTS = {
                 "Identify the process running on the system that initiated this network connection.",
                 "If it is an authorized process, either create a whitelist, or check for and correct any "
                 "misconfigurations that may be causing it to connect to the decoy.",
-                "If not, triage the system for indications of malicious activity by obtaining a memory dump of the " "machine. ",
+                "If not, triage the system for indications of malicious activity by obtaining a memory dump of the machine. ",
             ],
         },
     ],

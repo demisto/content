@@ -319,7 +319,7 @@ class HTTPSessionObject:
 
     @staticmethod
     def decode(props, **kwargs):
-        if "http_request_response" in props.keys():
+        if "http_request_response" in props:
             tmp = props["http_request_response"]
 
             if len(tmp) == 1:
@@ -482,7 +482,7 @@ class Client:
 
         else:
             if collection is None or collection == "":
-                return_error(f"No collection set. Here is a list of all accessible collections: " f"{self.get_all_collections()}")
+                return_error(f"No collection set. Here is a list of all accessible collections: {self.get_all_collections()}")
 
             self.collections = collection.split(",")
 

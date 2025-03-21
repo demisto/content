@@ -54,12 +54,7 @@ class MimecastClient(IntegrationEventsClient):
         request_id = str(uuid.uuid4())
         request_date = self.get_hdr_date()
 
-        unsigned_auth_header = "{date}:{req_id}:{uri}:{app_key}".format(
-            date=request_date,
-            req_id=request_id,
-            uri=uri,
-            app_key=self.options.app_key,  # type: ignore[attr-defined]
-        )
+        unsigned_auth_header = f"{request_date}:{request_id}:{uri}:{self.options.app_key}"  # type: ignore[attr-defined]
         hmac_sha1 = hmac.new(
             base64.b64decode(self.options.secret_key),  # type: ignore[attr-defined]
             unsigned_auth_header.encode(),

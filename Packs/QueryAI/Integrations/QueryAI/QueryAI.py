@@ -19,7 +19,7 @@ class Client(BaseClient):  # type: ignore
         base_url,
         verify=True,
         proxy=False,
-        ok_codes=tuple(),
+        ok_codes=(),
         headers=None,
         auth=None,
         api_token=None,

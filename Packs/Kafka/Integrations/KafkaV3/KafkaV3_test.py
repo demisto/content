@@ -539,7 +539,7 @@ def test_produce_message(mocker, partition_number):
     )
     flush_mock.assert_called_once()
     return_results_mock.assert_called_once_with(
-        f"Message was successfully produced to topic 'some-topic', " f"partition {partition_number}"
+        f"Message was successfully produced to topic 'some-topic', partition {partition_number}"
     )
 
 
@@ -547,7 +547,7 @@ avro_schema_str = '{ "type": "record", "name": "Mensaje", "fields": [ {"name": "
 
 
 @pytest.mark.parametrize(
-    "value, value_schema_type, " "value_schema_str, value_schema_subject_name",
+    "value, value_schema_type, value_schema_str, value_schema_subject_name",
     [
         ('{"value": "test"}', "AVRO", avro_schema_str, None),
         ('{"value": "test"}', "AVRO", None, "value_schema_subject_name"),
@@ -605,7 +605,7 @@ def test_produce_message_with_Schema(mocker, value, value_schema_type, value_sch
             subject_name=value_schema_subject_name
         )
     flush_mock.assert_called_once()
-    return_results_mock.assert_called_once_with("Message was successfully produced to topic 'some-topic', " "partition 0")
+    return_results_mock.assert_called_once_with("Message was successfully produced to topic 'some-topic', partition 0")
 
 
 def test_produce_error_message(mocker):
@@ -729,7 +729,7 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:0 offset:0",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 0, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 0, "Message": "polled_msg"}',
                 }
             ],
             {"last_fetched_offsets": {"0": 0}, "last_topic": "some-topic"},
@@ -746,7 +746,7 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:0 offset:1",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, "Message": "polled_msg"}',
                 }
             ],
             {"last_fetched_offsets": {"0": 1}, "last_topic": "some-topic"},
@@ -763,12 +763,12 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:0 offset:1",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, "Message": "polled_msg"}',
                 },
                 {
                     "name": "Kafka some-topic partition:0 offset:2",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 2, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 2, "Message": "polled_msg"}',
                 },
             ],
             {"last_fetched_offsets": {"0": 2}, "last_topic": "some-topic"},
@@ -788,12 +788,12 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:0 offset:1",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, "Message": "polled_msg"}',
                 },
                 {
                     "name": "Kafka some-topic partition:0 offset:2",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 2, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 2, "Message": "polled_msg"}',
                 },
             ],
             {"last_fetched_offsets": {"0": 2}, "last_topic": "some-topic"},
@@ -819,7 +819,7 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:0 offset:0",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 0, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 0, "Message": "polled_msg"}',
                 }
             ],
             {"last_fetched_offsets": {"0": 0}, "last_topic": "some-topic"},
@@ -855,12 +855,12 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:0 offset:1",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, "Message": "polled_msg"}',
                 },
                 {
                     "name": "Kafka some-topic partition:1 offset:0",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 1, "Offset": 0, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 1, "Offset": 0, "Message": "polled_msg"}',
                 },
             ],
             {"last_fetched_offsets": {"0": 1, "1": 0}, "last_topic": "some-topic"},
@@ -880,7 +880,7 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:0 offset:3",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 3, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 3, "Message": "polled_msg"}',
                 }
             ],
             {"last_fetched_offsets": {"0": 3}, "last_topic": "some-topic"},
@@ -898,7 +898,7 @@ def test_produce_schema_registry_none_error(mocker):
                     "name": "Kafka some-topic partition:0 offset:0",
                     "occurred": "2021-11-15T10:31:08.000Z",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 0, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 0, "Message": "polled_msg"}',
                 }
             ],
             {"last_fetched_offsets": {"0": 0}, "last_topic": "some-topic"},
@@ -915,7 +915,7 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:0 offset:1",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, "Message": "polled_msg"}',
                 }
             ],
             {"last_fetched_offsets": {"0": 1}, "last_topic": "some-topic"},
@@ -932,7 +932,7 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:0 offset:2",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 2, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 2, "Message": "polled_msg"}',
                 }
             ],
             {"last_fetched_offsets": {"0": 2}, "last_topic": "some-topic"},
@@ -952,7 +952,7 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:0 offset:1",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, "Message": "polled_msg"}',
                 }
             ],
             {"last_fetched_offsets": {"0": 1}, "last_topic": "some-topic"},
@@ -972,7 +972,7 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:0 offset:2",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 2, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 2, "Message": "polled_msg"}',
                 }
             ],
             {"last_fetched_offsets": {"0": 2}, "last_topic": "some-topic"},
@@ -989,7 +989,7 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:1 offset:2",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 1, "Offset": 2, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 1, "Offset": 2, "Message": "polled_msg"}',
                 }
             ],
             {"last_fetched_offsets": {"1": 2}, "last_topic": "some-topic"},
@@ -1009,7 +1009,7 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:1 offset:2",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 1, "Offset": 2, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 1, "Offset": 2, "Message": "polled_msg"}',
                 }
             ],
             {"last_fetched_offsets": {"1": 2}, "last_topic": "some-topic"},
@@ -1026,7 +1026,7 @@ def test_produce_schema_registry_none_error(mocker):
                 {
                     "name": "Kafka some-topic partition:0 offset:1",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, "Message": "polled_msg"}',
                 }
             ],
             {"last_fetched_offsets": {"0": 1}, "last_topic": "some-topic"},
@@ -1097,7 +1097,7 @@ def test_fetch_incidents(
                 {
                     "name": "Kafka some-topic partition:0 offset:1",
                     "details": "polled_msg",
-                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, ' '"Message": "polled_msg"}',
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, "Message": "polled_msg"}',
                 }
             ],
             {"last_fetched_offsets": {"0": 1}, "last_topic": "some-topic"},

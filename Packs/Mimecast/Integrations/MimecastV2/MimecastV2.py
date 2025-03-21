@@ -132,13 +132,13 @@ def request_with_pagination(
             break
         pagination = {
             "page_size": page_size,  # type: ignore
-            "pageToken": next_page,
-        }  # type: ignore
+            "pageToken": next_page,  # type: ignore
+        }
         payload["meta"]["pagination"] = pagination
         response = http_request("POST", api_endpoint, payload, headers=headers)
         next_page = str(response.get("meta", {}).get("pagination", {}).get("next", ""))
     if page and page_size:
-        return results[(-1 * page_size) :], page_size
+        return results[(-1 * page_size):], page_size
 
     return results, len_of_results
 
@@ -165,7 +165,8 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
         headers = {"x-mc-app-id": APP_ID, "Content-Type": "application/json", "Authorization": auth_header}
 
     LOG(
-        f"running {method} request with url={url}\tparams={json.dumps(params)}\tdata={json.dumps(payload)}\tis user auth={is_user_auth}"
+        f"running {method} request with url={url}\tparams={json.dumps(params)}\tdata={json.dumps(payload)}\tis user"
+        f" auth={is_user_auth}"
     )
     try:
         res = requests.request(method, url, verify=USE_SSL, params=params, headers=headers, json=payload, data=data)
@@ -509,7 +510,7 @@ def parse_query_args(args):
         sent_to = args.get("sentTo")
     if sent_from and sent_to:
         query_xml = query_xml.replace(
-            "<sent></sent>", f'<sent select="from" >{sent_from}</sent>' f'<sent select="to" >{sent_to}</sent>'
+            "<sent></sent>", f'<sent select="from" >{sent_from}</sent><sent select="to" >{sent_to}</sent>'
         )
     elif sent_from:
         query_xml = query_xml.replace("<sent></sent>", '<sent select="from" >' + sent_from + "</sent>")
@@ -3231,7 +3232,7 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
         api_endpoint,
         [data],
         response_param="logs",
-        limit=limit,
+        limit=limit,  # type: ignore
         page=page,
         page_size=page_size,  # type: ignore
     )
@@ -3252,8 +3253,8 @@ def get_search_logs_command(args: dict) -> CommandResults:
 
     api_endpoint = "/api/archive/get-archive-search-logs"
     result_list, _ = request_with_pagination(
-        api_endpoint, [data], response_param="logs", limit=limit, page=page, page_size=page_size
-    )  # type: ignore
+        api_endpoint, [data], response_param="logs", limit=limit, page=page, page_size=page_size  # type: ignore
+    )
 
     return CommandResults(outputs_prefix="Mimecast.SearchLog", outputs=result_list[0])
 
@@ -3272,7 +3273,7 @@ def get_view_logs_command(args: dict) -> CommandResults:
     response = request_with_pagination(
         "/api/archive/get-view-logs",
         [data],
-        limit=limit,
+        limit=limit,  # type: ignore
         page=page,
         page_size=page_size,  # type: ignore
     )
@@ -3298,7 +3299,7 @@ def list_account_command(args: dict) -> CommandResults:
     response = request_with_pagination(
         "/api/account/get-account",
         [data],
-        limit=limit,
+        limit=limit,  # type: ignore
         page=page,
         page_size=page_size,  # type: ignore
     )

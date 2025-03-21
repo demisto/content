@@ -496,7 +496,7 @@ def test_list_held_messages_command(mocker):
 REJECT_HOLD_MESSAGE = [
     (
         {"meta": {"status": 200}, "data": [{"id": "1234", "reject": True}, {"id": "1233", "reject": True}], "fail": []},
-        "Held message with id 1234 was rejected successfully.\n" "Held message with id 1233 was rejected successfully.\n",
+        "Held message with id 1234 was rejected successfully.\nHeld message with id 1233 was rejected successfully.\n",
         False,
     ),
     ({"meta": {"status": 200}, "data": [{"id": "1234", "reject": False}, {"id": "1233", "reject": True}], "fail": []}, "", True),

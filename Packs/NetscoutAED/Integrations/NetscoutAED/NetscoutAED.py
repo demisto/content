@@ -332,7 +332,7 @@ def deserialize_protection_groups(list_of_protection_groups: list) -> None:
         if active is None:
             continue
 
-        item["active"] = True if active == 1 else False
+        item["active"] = active == 1
         protection_level = item.get("protectionLevel")
         if protection_level:
             if protection_level == 1:

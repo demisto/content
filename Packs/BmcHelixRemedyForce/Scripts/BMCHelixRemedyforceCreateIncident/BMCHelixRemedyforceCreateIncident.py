@@ -48,7 +48,7 @@ def remove_null_fields_and_convert_additional_fields_in_string_to_create_inciden
     :rtype: ``str``
     """
     additional_fields_for_incidents = remove_empty_elements(additional_fields_for_incidents)
-    field_list_for_incident = list()
+    field_list_for_incident = []
     for each_field in additional_fields_for_incidents:
         field_list_for_incident.append(f"{each_field}={additional_fields_for_incidents[each_field]}")
     return ";".join(field_list_for_incident)
@@ -131,14 +131,14 @@ def process_field_id(command, command_args):
         show_incident_result("error", ERROR_MESSAGES + json.dumps(field_results))
     if isinstance(field_data, dict):
         all_fields = demisto.get(field_data, "records")
-        if all_fields:
+        if all_fields:  # noqa: RET503
             return demisto.get(all_fields[0], "Id")
     elif isinstance(field_data, list):
         final_field = demisto.get(field_data[0], "Id")
-        if final_field:
+        if final_field:  # noqa: RET503
             return final_field
     else:
-        show_incident_result(message_type, field_data)
+        show_incident_result(message_type, field_data)  # noqa: RET503
 
 
 def get_field_id(field_id, field, command, command_args, using_argument):
@@ -164,7 +164,7 @@ def get_field_id(field_id, field, command, command_args, using_argument):
     :return: field_id
     :rtype: ``str``
     """
-    if field_id:
+    if field_id:    # noqa: RET503
         return field_id
     elif field:
         if using_argument:

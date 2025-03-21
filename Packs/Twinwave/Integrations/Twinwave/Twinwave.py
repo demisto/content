@@ -329,8 +329,7 @@ def list_recent_jobs(client, args):
             # if last fetch time is lower, will fetch the incidents
             if int(date_to_timestamp(job.get("CreatedAt"), date_format=DATE_FORMAT)) <= int(last_run.get("last_created_at")):
                 break
-            else:
-                jobs.append(job)
+            jobs.append(job)
 
     for job in jobs:
         incident = {"name": job.get("ID"), "occurred": job["CreatedAt"], "rawJSON": json.dumps(job)}

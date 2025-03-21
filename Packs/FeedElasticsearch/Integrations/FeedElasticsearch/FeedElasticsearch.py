@@ -163,7 +163,7 @@ def extract_api_from_username_password(username, password):
     Creates (API ID, API Key) tuple from the username/password
     :return: (API ID, API Key)
     """
-    return (username[len(API_KEY_PREFIX) :], password) if username and username.startswith(API_KEY_PREFIX) else (None, None)
+    return (username[len(API_KEY_PREFIX):], password) if username and username.startswith(API_KEY_PREFIX) else (None, None)
 
 
 """ ###################### COMMANDS ###################### """
@@ -223,7 +223,7 @@ def test_command(
             except requests.exceptions.HTTPError as e:
                 if HTTP_ERRORS.get(res.status_code) is not None:
                     # if it is a known http error - get the message form the preset messages
-                    return_error("Failed to connect. " f"The following error occurred: {HTTP_ERRORS.get(res.status_code)}")
+                    return_error(f"Failed to connect. The following error occurred: {HTTP_ERRORS.get(res.status_code)}")
 
                 else:
                     # if it is unknown error - get the message from the error itself

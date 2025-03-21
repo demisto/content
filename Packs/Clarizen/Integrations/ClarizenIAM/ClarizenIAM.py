@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 USER_FIELDS = (
-    "Name,Email,Region,Location,JobTitle,DirectManager,MobilePhone,TimeZone,username,profile,firstname," "lastname,state"
+    "Name,Email,Region,Location,JobTitle,DirectManager,MobilePhone,TimeZone,username,profile,firstname,lastname,state"
 )
 ERROR_CODES_TO_SKIP = [404]
 EMAIL_ATTRIBUTE = "Email"
@@ -94,7 +94,7 @@ class Client(BaseClient):
             user_name = user_app_data.get("username")
             active = user_app_data.get("state", {}).get("id").replace("/State/", "")
             email = user_app_data.get("Email")
-            is_active = False if active == "Disabled" else True
+            is_active = active != "Disabled"
 
             return IAMUserAppData(user_id, user_name, is_active, user_app_data, email=email)
         return None
@@ -146,7 +146,7 @@ class Client(BaseClient):
 
         user_name = user_app_data.get("username")
         active = user_app_data.get("state", {}).get("id").replace("/State/", "")
-        is_active = False if active == "Disabled" else True
+        is_active = active != "Disabled"
 
         return IAMUserAppData(user_id, user_name, is_active, user_app_data)
 

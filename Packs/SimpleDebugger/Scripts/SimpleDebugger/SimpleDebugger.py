@@ -161,7 +161,7 @@ class SimpleDebugger:
 
     def SdbgCodeMd(self):
         markdown = ""
-        for key, val in self.code.items():
+        for _key, val in self.code.items():
             markdown += f"{val}\n"
         return markdown
 
@@ -250,7 +250,7 @@ class SimpleDebugger:
         else:
             self.code[frame.f_lineno] = c
         if self.prevlineno != 0:
-            self.code[self.prevlineno] = self.code[self.prevlineno].lstrip("**").rstrip("**")
+            self.code[self.prevlineno] = self.code[self.prevlineno].lstrip("**").rstrip("**")   # noqa: B005
         self.prevlineno = frame.f_lineno
         return newcode
 
@@ -297,9 +297,7 @@ class SimpleDebugger:
         if event == "call" and frame.f_code.co_name in self.funcbreak:
             self.SdbgLog(f"Breakpoint at function > {frame.f_code.co_name}")
             return True
-        if self.stepmode:
-            return True
-        return False
+        return bool(self.stepmode)
 
     def SdbgExclude(self, frame: FrameType, event: str) -> bool:
         if frame.f_code.co_name in self.silent and event == "line":
@@ -310,9 +308,7 @@ class SimpleDebugger:
             return True
         if frame.f_code.co_name.startswith("<"):
             return True
-        if frame.f_code.co_name.startswith("Sdbg"):
-            return True
-        return False
+        return bool(frame.f_code.co_name.startswith("Sdbg"))
 
     def SdbgTrace(self, frame: FrameType, event: str, _arg: Any):
         if event == "exception":

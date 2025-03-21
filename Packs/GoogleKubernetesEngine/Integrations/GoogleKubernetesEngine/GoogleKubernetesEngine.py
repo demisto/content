@@ -705,7 +705,7 @@ def gcloud_node_pool_describe_command(
     # Human readable
     human_readable: str = tableToMarkdown(
         t=parse_node_pool_table(node_pools_ec),
-        name=f"Node-pools (Project={project}, Zone={zone}," f" Cluster={cluster}, Node pool={node_pool})",
+        name=f"Node-pools (Project={project}, Zone={zone}, Cluster={cluster}, Node pool={node_pool})",
     )
 
     return human_readable, entry_context, raw_response_dict
@@ -871,7 +871,8 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-muster-auth": gcloud_clusters_set_master_auth,
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-addons": gcloud_clusters_set_addons_command,
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-legacy-auth": gcloud_clusters_set_legacy_auth_command,
-        f"{INTEGRATION_COMMAND_NAME}-clusters-set-master-authorized-network": gcloud_clusters_set_master_authorized_network_command,
+        f"{INTEGRATION_COMMAND_NAME}-clusters-set-master-authorized-network":
+            gcloud_clusters_set_master_authorized_network_command,
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-k8s-stackdriver": gcloud_clusters_set_k8s_stackdriver_command,
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-binary-auth": gcloud_clusters_set_binary_auth,
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-intra-node-visibility": gcloud_clusters_set_intra_node_visibility,

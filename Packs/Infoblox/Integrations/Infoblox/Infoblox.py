@@ -962,7 +962,8 @@ def search_related_objects_by_ip_command(client: InfoBloxNIOSClient, args: dict)
 
     title = f"{INTEGRATION_NAME} - IP: {ip} search results."
     context = {
-        f"{INTEGRATION_CONTEXT_NAME}.IPRelatedObjects(val.ReferenceID && val.ReferenceID === obj.ReferenceID)": fixed_keys_obj_list
+        f"{INTEGRATION_CONTEXT_NAME}.IPRelatedObjects(val.ReferenceID && val.ReferenceID === obj.ReferenceID)":
+            fixed_keys_obj_list
     }
     human_readable = tableToMarkdown(title, fixed_keys_obj_list, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
@@ -1075,7 +1076,7 @@ def delete_response_policy_zone_command(client: InfoBloxNIOSClient, args: dict) 
     ref_id = args.get("reference_id")
     raw_response = client.delete_response_policy_zone(ref_id)
     deleted_rule_ref_id = raw_response.get("result", {})
-    human_readable = f"{INTEGRATION_NAME} - Response Policy Zone with the following id was deleted: \n " f"{deleted_rule_ref_id}"
+    human_readable = f"{INTEGRATION_NAME} - Response Policy Zone with the following id was deleted: \n {deleted_rule_ref_id}"
     return human_readable, {}, raw_response
 
 

@@ -329,7 +329,7 @@ def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
     verbose = args.get("verbose", "false") == "true"
 
     if not policy_name or not managed_rules or not location:
-        raise Exception("In order to add/ update policy, " "please provide policy_name, location and managed_rules. ")
+        raise Exception("In order to add/ update policy, please provide policy_name, location and managed_rules. ")
 
     body: dict[str, Any] = {}
 
@@ -367,7 +367,7 @@ def policy_delete_command(client: AzureWAFClient, **args):
 
     for resource_group_name in resource_group_names:
         # policy_path is unique and used as unique id in the product.
-        policy_id = f"/subscriptions/{subscription_id}/" f"resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}"
+        policy_id = f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}"
         status = client.delete_policy(policy_name, resource_group_name)
         md = ""
         context: dict = {}
@@ -414,7 +414,7 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
         except KeyError:
             demisto.debug("Policy has no 'properties' section")
             raise Exception(
-                "Policy does not have 'properties' section, " "therefore has invalid structure, please contact a developer."
+                "Policy does not have 'properties' section, therefore has invalid structure, please contact a developer."
             )
 
     def policy_to_short_markdown(policy_data: dict):
@@ -433,7 +433,7 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
         except KeyError:
             demisto.debug("Policy has no 'properties' section")
             raise Exception(
-                "Policy does not have 'properties' section, " "therefore has invalid structure, please contact a developer."
+                "Policy does not have 'properties' section, therefore has invalid structure, please contact a developer."
             )
         return short_md
 

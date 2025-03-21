@@ -44,7 +44,7 @@ def remove_null_fields_and_convert_additional_fields_in_string(additional_fields
     """
 
     additional_fields = remove_empty_elements(additional_fields)
-    field_list = list()
+    field_list = []
     for each_field in additional_fields:
         field_list.append(f"{each_field}={additional_fields[each_field]}")
     return ";".join(field_list)
@@ -113,7 +113,7 @@ def get_service_request_definition_id(
     :return: service_request_definition_id
     :rtype: ``str``
     """
-    if service_request_definition_id:
+    if service_request_definition_id:   # noqa: RET503
         return service_request_definition_id
     elif service_request_definition:
         if using_argument:
@@ -130,10 +130,10 @@ def get_service_request_definition_id(
             show_service_request_result("error", ERROR_MESSAGES + json.dumps(service_request_definition_results))
         if isinstance(service_request_definition_data, dict):
             service_request_definitions = demisto.get(service_request_definition_data, "Result")
-            if service_request_definitions:
+            if service_request_definitions:  # noqa: RET503
                 return demisto.get(service_request_definitions, "Id")
         else:
-            show_service_request_result(message_type, service_request_definition_data)
+            show_service_request_result(message_type, service_request_definition_data)  # noqa: RET503
 
 
 def show_service_request_result(message_type, message):
@@ -178,14 +178,14 @@ def process_field_id(command, command_args):
         show_service_request_result("error", ERROR_MESSAGES + json.dumps(field_results))
     if isinstance(field_data, dict):
         all_fields = demisto.get(field_data, "records")
-        if all_fields:
+        if all_fields:  # noqa: RET503
             return demisto.get(all_fields[0], "Id")
     elif isinstance(field_data, list):
         final_field = demisto.get(field_data[0], "Id")
-        if final_field:
+        if final_field:  # noqa: RET503
             return final_field
     else:
-        show_service_request_result(message_type, field_data)
+        show_service_request_result(message_type, field_data)   # noqa: RET503
 
 
 def get_field_id(field_id, field, command, command_args, using_argument):
@@ -211,7 +211,7 @@ def get_field_id(field_id, field, command, command_args, using_argument):
     :return: field_id
     :rtype: ``str``
     """
-    if field_id:
+    if field_id:    # noqa: RET503
         return field_id
     elif field:
         if using_argument:
