@@ -1,12 +1,26 @@
 import json
 from datetime import datetime, timedelta
-import ServiceNowEventCollector
+
 import pytest
-from ServiceNowEventCollector import (
-    Client, LOGS_DATE_FORMAT, get_events_command, fetch_events_command, process_and_filter_events, get_limit,
-    SYSLOG_TRANSACTIONS, AUDIT, add_time_field, DATE_FORMAT, initialize_from_date, update_last_run, handle_log_types,
-    LAST_FETCH_TIME, PREVIOUS_RUN_IDS)
+import ServiceNowEventCollector
 from CommonServerPython import DemistoException
+from ServiceNowEventCollector import (
+    AUDIT,
+    DATE_FORMAT,
+    LAST_FETCH_TIME,
+    LOGS_DATE_FORMAT,
+    PREVIOUS_RUN_IDS,
+    SYSLOG_TRANSACTIONS,
+    Client,
+    add_time_field,
+    fetch_events_command,
+    get_events_command,
+    get_limit,
+    handle_log_types,
+    initialize_from_date,
+    process_and_filter_events,
+    update_last_run,
+)
 
 
 def util_load_json(path):
@@ -28,7 +42,7 @@ class TestFetchActivity:
             proxy=False,
             api_server_url=f"{self.base_url}/api/now",
             fetch_limit_audit=10,
-            fetch_limit_syslog=10
+            fetch_limit_syslog=10,
         )
 
     @staticmethod
@@ -84,11 +98,7 @@ class TestFetchActivity:
         log_type = AUDIT
         mock_logs = [{"event_id": 1, "timestamp": "2023-01-01 01:00:00"}]
 
-        http_responses = mocker.patch.object(
-            Client,
-            "search_events",
-            return_value=mock_logs
-        )
+        http_responses = mocker.patch.object(Client, "search_events", return_value=mock_logs)
 
         mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
         all_events, command_results = get_events_command(self.client, args, log_type, last_run)
@@ -167,16 +177,11 @@ class TestFetchActivity:
         log_type = AUDIT
         mock_logs = [{"event_id": 2, "timestamp": "2023-01-01 02:00:00"}]
 
-        http_responses = mocker.patch.object(
-            Client,
-            "search_events",
-            return_value=mock_logs
-        )
+        http_responses = mocker.patch.object(Client, "search_events", return_value=mock_logs)
 
         mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
         mock_initialize_from_date = mocker.patch(
-            "ServiceNowEventCollector.initialize_from_date",
-            wraps=ServiceNowEventCollector.initialize_from_date
+            "ServiceNowEventCollector.initialize_from_date", wraps=ServiceNowEventCollector.initialize_from_date
         )
 
         all_events, command_results = get_events_command(self.client, args, log_type, last_run)
@@ -211,15 +216,19 @@ class TestFetchActivity:
         mocker.patch("ServiceNowEventCollector.initialize_from_date", return_value="2023-01-01T00:00:00Z")
         mocker.patch.object(self.client, "search_events", return_value=mock_events)
         mock_process_and_filter = mocker.patch(
-            "ServiceNowEventCollector.process_and_filter_events", return_value=(mock_events, {"1"}))
-        mocker.patch("ServiceNowEventCollector.update_last_run", return_value={
-                     "audit": {"previous_run_ids": ["1"], "last_fetch_time": "2023-01-01 01:00:00"}})
+            "ServiceNowEventCollector.process_and_filter_events", return_value=(mock_events, {"1"})
+        )
+        mocker.patch(
+            "ServiceNowEventCollector.update_last_run",
+            return_value={"audit": {"previous_run_ids": ["1"], "last_fetch_time": "2023-01-01 01:00:00"}},
+        )
 
         collected_events, updated_last_run = fetch_events_command(self.client, last_run, log_types)
 
         assert collected_events == mock_events
         mock_process_and_filter.assert_called_once_with(
-            events=mock_events, previous_run_ids=set(), from_date="2023-01-01T00:00:00Z", log_type="audit")
+            events=mock_events, previous_run_ids=set(), from_date="2023-01-01T00:00:00Z", log_type="audit"
+        )
         assert updated_last_run["audit"]["last_fetch_time"] == "2023-01-01 01:00:00"
 
     def test_fetch_events_command_no_new_events(self, mocker):
@@ -263,11 +272,14 @@ class TestFetchActivity:
         mock_audit_events = [{"event_id": 1, "sys_created_on": "2023-01-01 01:00:00"}]
         mock_syslog_events = [{"event_id": 2, "sys_created_on": "2023-01-01T02:00:00Z"}]
 
-        mocker.patch("ServiceNowEventCollector.initialize_from_date",
-                     side_effect=["2023-01-01T00:00:00Z", "2023-01-01T00:00:00Z"])
+        mocker.patch(
+            "ServiceNowEventCollector.initialize_from_date", side_effect=["2023-01-01T00:00:00Z", "2023-01-01T00:00:00Z"]
+        )
         mocker.patch.object(self.client, "search_events", side_effect=[mock_audit_events, mock_syslog_events])
-        mocker.patch("ServiceNowEventCollector.process_and_filter_events",
-                     side_effect=[(mock_audit_events, {"1"}), (mock_syslog_events, {"2"})])
+        mocker.patch(
+            "ServiceNowEventCollector.process_and_filter_events",
+            side_effect=[(mock_audit_events, {"1"}), (mock_syslog_events, {"2"})],
+        )
 
         collected_events, updated_last_run = fetch_events_command(self.client, last_run, log_types)
 
@@ -306,10 +318,7 @@ def test_process_and_filter_events_standard_case():
         - Validates that all events are added to unique_events, and previous_run_ids are updated.
     """
 
-    events = [
-        {"sys_id": "1", "sys_created_on": "2023-01-01 01:00:00"},
-        {"sys_id": "2", "sys_created_on": "2023-01-01 02:00:00"}
-    ]
+    events = [{"sys_id": "1", "sys_created_on": "2023-01-01 01:00:00"}, {"sys_id": "2", "sys_created_on": "2023-01-01 02:00:00"}]
     from_date = "2023-01-01 00:00:00"
     log_type = "audit"
 
@@ -331,10 +340,7 @@ def test_process_and_filter_events_duplicate_event():
     Then:
         - Validates that duplicate events are excluded from unique_events and not added to previous_run_ids.
     """
-    events = [
-        {"sys_id": "1", "sys_created_on": "2023-01-01 01:00:00"},
-        {"sys_id": "1", "sys_created_on": "2023-01-01 01:30:00"}
-    ]
+    events = [{"sys_id": "1", "sys_created_on": "2023-01-01 01:00:00"}, {"sys_id": "1", "sys_created_on": "2023-01-01 01:30:00"}]
     previous_run_ids = {"1"}
     from_date = "2023-01-01 00:00:00"
     log_type = "audit"
@@ -356,10 +362,7 @@ def test_process_and_filter_events_with_same_time():
     Then:
         - Validates that all events are added to previous_run_ids, but only one copy is in unique_events.
     """
-    events = [
-        {"sys_id": "1", "sys_created_on": "2023-01-01 01:00:00"},
-        {"sys_id": "2", "sys_created_on": "2023-01-01 01:00:00"}
-    ]
+    events = [{"sys_id": "1", "sys_created_on": "2023-01-01 01:00:00"}, {"sys_id": "2", "sys_created_on": "2023-01-01 01:00:00"}]
     from_date = "2023-01-01 01:00:00"
     log_type = "audit"
 
@@ -380,10 +383,7 @@ def test_process_and_filter_events_after_from_date():
     Then:
         - Validates that all events are added to unique_events and previous_run_ids is reset after finding new events.
     """
-    events = [
-        {"sys_id": "3", "sys_created_on": "2023-01-01 02:00:00"},
-        {"sys_id": "4", "sys_created_on": "2023-01-01 02:00:00"}
-    ]
+    events = [{"sys_id": "3", "sys_created_on": "2023-01-01 02:00:00"}, {"sys_id": "4", "sys_created_on": "2023-01-01 02:00:00"}]
     from_date = "2023-01-01 01:00:00"
     log_type = "audit"
 
@@ -426,10 +426,7 @@ def test_process_and_filter_events_log_type_assignment():
     Then:
         - Validates that each event has the correct 'source_log_type' value.
     """
-    events = [
-        {"sys_id": "5", "sys_created_on": "2023-01-01 02:00:00"},
-        {"sys_id": "6", "sys_created_on": "2023-01-01 03:00:00"}
-    ]
+    events = [{"sys_id": "5", "sys_created_on": "2023-01-01 02:00:00"}, {"sys_id": "6", "sys_created_on": "2023-01-01 03:00:00"}]
     from_date = "2023-01-01 00:00:00"
     log_type = "audit"
 
@@ -449,9 +446,7 @@ def test_process_and_filter_events_handles_event_time_formatting():
     Then:
         - Validates that each event has a correctly formatted '_time' field.
     """
-    events = [
-        {"sys_id": "7", "sys_created_on": "2023-01-01 02:00:00"}
-    ]
+    events = [{"sys_id": "7", "sys_created_on": "2023-01-01 02:00:00"}]
     from_date = "2023-01-01 00:00:00"
     log_type = "audit"
     expected_time_format = "2023-01-01T02:00:00Z"
@@ -484,7 +479,7 @@ def test_get_limit_with_args():
         proxy=False,
         api_server_url="https://test.com/api/now",
         fetch_limit_audit=300,
-        fetch_limit_syslog=400
+        fetch_limit_syslog=400,
     )
 
     limit = get_limit(args, client)
@@ -517,7 +512,7 @@ def test_get_limit_with_client_default():
         proxy=False,
         api_server_url="https://test.com/api/now",
         fetch_limit_audit=300,
-        fetch_limit_syslog=400
+        fetch_limit_syslog=400,
     )
     limit = get_limit(args, client)
 
@@ -549,7 +544,7 @@ def test_get_limit_with_no_args_or_client_default():
         proxy=False,
         api_server_url="https://test.com/api/now",
         fetch_limit_audit=None,
-        fetch_limit_syslog=400
+        fetch_limit_syslog=400,
     )
     limit = get_limit(args, client)
 
@@ -568,10 +563,7 @@ def test_add_time_field_standard_case():
         - Ensures each event has a correctly formatted '_time' field.
         - Ensures each event has the specified 'source_log_type'.
     """
-    events = [
-        {"sys_created_on": "2023-01-01 12:00:00", "sys_id": "1"},
-        {"sys_created_on": "2023-01-02 15:30:00", "sys_id": "2"}
-    ]
+    events = [{"sys_created_on": "2023-01-01 12:00:00", "sys_id": "1"}, {"sys_created_on": "2023-01-02 15:30:00", "sys_id": "2"}]
     log_type = "audit"
 
     result = add_time_field(events, log_type)
@@ -633,7 +625,7 @@ def test_add_time_field_partial_valid_dates():
     """
     events = [
         {"sys_created_on": "2023-01-01T12:00:00Z", "sys_id": "1"},
-        {"sys_created_on": "2023/01/02 15:30:00", "sys_id": "2"}  # incorrect format
+        {"sys_created_on": "2023/01/02 15:30:00", "sys_id": "2"},  # incorrect format
     ]
     log_type = "audit"
 
@@ -652,9 +644,7 @@ def test_add_time_field_no_sys_created_on_field():
     Then:
         - Expects a KeyError as 'sys_created_on' is missing in the event.
     """
-    events = [
-        {"sys_id": "1"}
-    ]
+    events = [{"sys_id": "1"}]
     log_type = "audit"
 
     with pytest.raises(KeyError):
@@ -672,10 +662,7 @@ def test_initialize_from_date_with_existing_timestamp():
     Then:
         - Returns the existing last_fetch_time for the log_type.
     """
-    last_run = {
-        "last_fetch_time": "2023-01-01T00:00:00Z",
-        "last_fetch_time_syslog": "2023-01-02T00:00:00Z"
-    }
+    last_run = {"last_fetch_time": "2023-01-01T00:00:00Z", "last_fetch_time_syslog": "2023-01-02T00:00:00Z"}
     log_type = "audit"
 
     result = initialize_from_date(last_run, log_type)
@@ -699,8 +686,9 @@ def test_initialize_from_date_without_existing_timestamp():
     result = initialize_from_date(last_run, log_type)
     expected_time = (datetime.utcnow() - timedelta(minutes=1)).strftime(LOGS_DATE_FORMAT)
 
-    assert abs(datetime.strptime(result, LOGS_DATE_FORMAT)
-               - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(seconds=5)
+    assert abs(datetime.strptime(result, LOGS_DATE_FORMAT) - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(
+        seconds=5
+    )
 
 
 def test_initialize_from_date_with_different_log_type():
@@ -714,15 +702,14 @@ def test_initialize_from_date_with_different_log_type():
     Then:
         - Returns a default timestamp set to one minute before the current UTC time.
     """
-    last_run = {
-        "syslog transactions": {"last_fetch_time": "2023-01-02T00:00:00Z"}
-    }
+    last_run = {"syslog transactions": {"last_fetch_time": "2023-01-02T00:00:00Z"}}
     log_type = "audit"
 
     result = initialize_from_date(last_run, log_type)
     expected_time = (datetime.utcnow() - timedelta(minutes=1)).strftime(LOGS_DATE_FORMAT)
-    assert abs(datetime.strptime(result, LOGS_DATE_FORMAT)
-               - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(seconds=5)
+    assert abs(datetime.strptime(result, LOGS_DATE_FORMAT) - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(
+        seconds=5
+    )
 
 
 def test_initialize_from_date_missing_last_fetch_key():
@@ -736,16 +723,15 @@ def test_initialize_from_date_missing_last_fetch_key():
     Then:
         - Returns a default timestamp set to one minute before the current UTC time.
     """
-    last_run = {
-        "audit": {"some_other_field": "some_value"}
-    }
+    last_run = {"audit": {"some_other_field": "some_value"}}
     log_type = "audit"
 
     result = initialize_from_date(last_run, log_type)
     expected_time = (datetime.utcnow() - timedelta(minutes=1)).strftime(LOGS_DATE_FORMAT)
 
-    assert abs(datetime.strptime(result, LOGS_DATE_FORMAT)
-               - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(seconds=5)
+    assert abs(datetime.strptime(result, LOGS_DATE_FORMAT) - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(
+        seconds=5
+    )
 
 
 def test_update_existing_log_type():
@@ -759,9 +745,7 @@ def test_update_existing_log_type():
     Then:
         - Updates the existing log type entry with new last fetch time and previous run IDs.
     """
-    last_run = {
-        "last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"]
-    }
+    last_run = {"last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"]}
     log_type = "audit"
     last_event_time = "2023-01-02T00:00:00Z"
     previous_run_ids = ["id3", "id4"]
@@ -783,9 +767,7 @@ def test_update_new_log_type():
     Then:
         - Adds the new log type entry with the specified last fetch time and previous run IDs.
     """
-    last_run = {
-        "last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"]
-    }
+    last_run = {"last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"]}
     log_type = "syslog transactions"
     last_event_time = "2023-01-02T00:00:00Z"
     previous_run_ids = ["id5", "id6"]
@@ -808,9 +790,7 @@ def test_update_empty_previous_run_ids():
     Then:
         - Updates the log type entry in last_run with an empty previous_run_ids list.
     """
-    last_run = {
-        "last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"]
-    }
+    last_run = {"last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"]}
     log_type = "audit"
     last_event_time = "2023-01-02T00:00:00Z"
     previous_run_ids = []
@@ -855,8 +835,10 @@ def test_update_multiple_log_types():
         - Correctly updates each log type entry with its respective last fetch time and previous run IDs.
     """
     last_run = {
-        "last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"],
-        "last_fetch_time_syslog": "2023-01-01T00:00:00Z", "previous_run_ids_syslog": ["id3", "id4"]
+        "last_fetch_time": "2023-01-01T00:00:00Z",
+        "previous_run_ids": ["id1", "id2"],
+        "last_fetch_time_syslog": "2023-01-01T00:00:00Z",
+        "previous_run_ids_syslog": ["id3", "id4"],
     }
 
     # Update audit logs
