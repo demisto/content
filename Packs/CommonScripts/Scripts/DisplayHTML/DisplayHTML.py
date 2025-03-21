@@ -9,14 +9,9 @@ def main():
 
     note = True if note and note.lower() == "true" else False
     if header:
-        html = "<h1>{0}</h1></br>{1}".format(header, html)
+        html = f"<h1>{header}</h1></br>{html}"
 
-    demisto.results({
-        'ContentsFormat': formats['html'],
-        'Type': entryTypes['note'],
-        'Contents': html,
-        'Note': note
-    })
+    demisto.results({"ContentsFormat": formats["html"], "Type": entryTypes["note"], "Contents": html, "Note": note})
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
