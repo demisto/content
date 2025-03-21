@@ -99,7 +99,7 @@ class Client(BaseClient):
 
     def send_request_username_and_password_auth(self, path, method='GET', body=None, params=None, headers=None, try_number=1):
         """
-        Send the requests for username & password authentication method.
+        Send the requests for username & password authentication method test.
         Args:
             path (str): The url suffix.
             method (str): The request method.
