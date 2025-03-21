@@ -1,19 +1,19 @@
 import demistomock as demisto
-from CommonServerPython import *
-import urllib3
 import pytz
+import urllib3
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-VENDOR = 'Okta'
-PRODUCT = 'ASA'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+VENDOR = "Okta"
+PRODUCT = "ASA"
 INTEGRATION_NAME = "Okta ASA"
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class OktaASAClient(BaseClient):
@@ -40,13 +40,11 @@ class OktaASAClient(BaseClient):
         Returns:
             dict: The refresh token response.
         """
-        body = {
-            'key_id': self.key_id,
-            'key_secret': self.key_secret
-        }
+        body = {"key_id": self.key_id, "key_secret": self.key_secret}
         # response expires_at time is UTC time.
-        token_response: dict = self._http_request('POST', '/service_token', json_data=body,
-                                                  headers={"Content-Type": "application/json"})
+        token_response: dict = self._http_request(
+            "POST", "/service_token", json_data=body, headers={"Content-Type": "application/json"}
+        )
         # We don't need to save the team name
         token_response.pop("team_name", None)
         return token_response
@@ -61,12 +59,13 @@ class OktaASAClient(BaseClient):
         Returns:
             list: A list of events.
         """
-        events_response: list = self._http_request('GET', '/auditsV2', params=params).get("list", [])
+        events_response: list = self._http_request("GET", "/auditsV2", params=params).get("list", [])
 
         return events_response
 
-    def execute_audit_events_request(self, offset: Optional[str], count: Optional[int],
-                                     descending: Optional[bool], prev: Optional[bool]) -> list:
+    def execute_audit_events_request(
+        self, offset: Optional[str], count: Optional[int], descending: Optional[bool], prev: Optional[bool]
+    ) -> list:
         """Gets audit events request.
 
         Args:
@@ -88,11 +87,11 @@ class OktaASAClient(BaseClient):
     def generate_token_if_required(self, hard: bool = False) -> None:
         """Checks if token refresh required and return the token.
 
-            Args:
-                self (OktaASAClient): Okta ASA Client.
-                hard (bool): Refresh the token regardless of the expiration time.
-            Returns:
-                Dict: The response.
+        Args:
+            self (OktaASAClient): Okta ASA Client.
+            hard (bool): Refresh the token regardless of the expiration time.
+        Returns:
+            Dict: The response.
         """
         integration_context: dict = demisto.getIntegrationContext()
         token_response: dict = {}
@@ -103,15 +102,14 @@ class OktaASAClient(BaseClient):
             is_token_expired_bool = is_token_expired(expires_at_token) or hard
             demisto.debug(
                 f"{INTEGRATION_NAME}: is_token_expired {is_token_expired_bool=},"
-                f"{current_time.strftime(DATE_FORMAT)=}, {expires_at_token=}")
-            token_response = (self.get_token_request()
-                              if is_token_expired_bool
-                              else integration_context)
+                f"{current_time.strftime(DATE_FORMAT)=}, {expires_at_token=}"
+            )
+            token_response = self.get_token_request() if is_token_expired_bool else integration_context
         else:
             token_response = self.get_token_request()
         demisto.setIntegrationContext(token_response)
         token = token_response.get("bearer_token", "")
-        self._headers = {'Authorization': f'Bearer {token}'}
+        self._headers = {"Authorization": f"Bearer {token}"}
 
     def search_events(
         self, limit: Optional[int] = 10000, offset: str | None = None
@@ -135,9 +133,7 @@ class OktaASAClient(BaseClient):
         count = min(limit, 1000) if limit else 1000
         while limit and len(results) < limit:
             descending = bool(not offset)
-            events = self.execute_audit_events_request(
-                offset=offset, count=count, descending=descending, prev=None
-            )
+            events = self.execute_audit_events_request(offset=offset, count=count, descending=descending, prev=None)
             if not events:
                 break
             event_offset = events[0] if descending else events[len(events) - 1]
@@ -150,20 +146,20 @@ class OktaASAClient(BaseClient):
         return results, offset, returned_timestamp
 
 
-'''HELPER FUNCTIONS'''
+"""HELPER FUNCTIONS"""
 
 
 def is_token_expired(expires_date: str) -> bool:
     """Checks if token is expired.
 
-        Args:
-            self (OktaASAClient): Okta ASA Client.
-            expires_date (str): The expiration date.
-        Returns:
-            bool: is the token expired.
+    Args:
+        self (OktaASAClient): Okta ASA Client.
+        expires_date (str): The expiration date.
+    Returns:
+        bool: is the token expired.
     """
     current_utc_time = datetime.now(pytz.utc)
-    expires_datetime_date = dateparser.parse(expires_date, settings={'TIMEZONE': 'UTC'}) or current_utc_time
+    expires_datetime_date = dateparser.parse(expires_date, settings={"TIMEZONE": "UTC"}) or current_utc_time
     # Note: True life time of token is actually 60 mins - we take minutes of 57 minutes.
     expires_datetime_date = expires_datetime_date - timedelta(hours=0, minutes=3)
     return current_utc_time > expires_datetime_date
@@ -178,11 +174,11 @@ def add_time_to_events(events: List[Dict]):
         list: The events with the _time key.
     """
     for event in events:
-        create_time = arg_to_datetime(arg=event.get('timestamp'))
-        event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+        create_time = arg_to_datetime(arg=event.get("timestamp"))
+        event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
-'''COMMAND FUNCTIONS'''
+"""COMMAND FUNCTIONS"""
 
 
 def test_module(client: OktaASAClient) -> str:
@@ -199,44 +195,42 @@ def test_module(client: OktaASAClient) -> str:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     try:
-        get_events_command(
-            client=client
-        )
+        get_events_command(client=client)
 
     except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(e):
+            return "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
 
-    return 'ok'
+    return "ok"
 
 
 def get_events_command(client: OktaASAClient, args: dict = {}) -> tuple[List[Dict], CommandResults]:
     """
-        Gets audit events from Audits Events endpoint.
+    Gets audit events from Audits Events endpoint.
 
-        Args:
-            self (OktaASAClient): Okta ASA Client.
-            args (dict): A dictionary containing the command arguments.
+    Args:
+        self (OktaASAClient): Okta ASA Client.
+        args (dict): A dictionary containing the command arguments.
 
-        Returns:
-            List[Dict]: list of events.
-            CommandResults: command results containing Audits Events.
+    Returns:
+        List[Dict]: list of events.
+        CommandResults: command results containing Audits Events.
     """
 
-    limit = arg_to_number(args.get('limit')) or 50
-    events, _, _ = client.search_events(
-        limit=limit
-    )
-    hr = tableToMarkdown(name='Audits Events', t=events)
+    limit = arg_to_number(args.get("limit")) or 50
+    events, _, _ = client.search_events(limit=limit)
+    hr = tableToMarkdown(name="Audits Events", t=events)
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events_command(client: OktaASAClient, last_run: dict[str, str],
-                         team_name: str,
-                         max_audit_events_per_fetch: Optional[int],
-                         ) -> tuple[dict[str, str], List[Dict]]:
+def fetch_events_command(
+    client: OktaASAClient,
+    last_run: dict[str, str],
+    team_name: str,
+    max_audit_events_per_fetch: Optional[int],
+) -> tuple[dict[str, str], List[Dict]]:
     """
     Args:
         client (OktaASAClient): OktaASAClient client to use.
@@ -248,7 +242,7 @@ def fetch_events_command(client: OktaASAClient, last_run: dict[str, str],
         list: List of events that will be created in XSIAM.
     """
     if last_run and last_run.get("team_name") != team_name:
-        demisto.debug(f'{INTEGRATION_NAME}: Reset last run the name of the group has changed.')
+        demisto.debug(f"{INTEGRATION_NAME}: Reset last run the name of the group has changed.")
     events, offset, timestamp = client.search_events(
         limit=max_audit_events_per_fetch,
         offset=last_run.get("offset") if last_run and last_run.get("team_name") == team_name else None,
@@ -256,11 +250,11 @@ def fetch_events_command(client: OktaASAClient, last_run: dict[str, str],
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run: dict = {"offset": offset, "timestamp": timestamp, "team_name": team_name} if offset else last_run
 
-    demisto.debug(f'{INTEGRATION_NAME}: Setting next run {next_run}.')
+    demisto.debug(f"{INTEGRATION_NAME}: Setting next run {next_run}.")
     return next_run, events
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
@@ -272,62 +266,48 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
-    api_key_id = params.get('credentials', {}).get('identifier')
-    api_key_secret = params.get('credentials', {}).get('password')
-    team_name = params.get('team_name', "").lower()
-    base_url = urljoin(params.get('url'), f'/v1/teams/{team_name}')
-    verify_certificate = not params.get('insecure', False)
-    max_audit_events_per_fetch = arg_to_number(params.get('max_audit_events_per_fetch', "10000"))
-    proxy = params.get('proxy', False)
+    api_key_id = params.get("credentials", {}).get("identifier")
+    api_key_secret = params.get("credentials", {}).get("password")
+    team_name = params.get("team_name", "").lower()
+    base_url = urljoin(params.get("url"), f"/v1/teams/{team_name}")
+    verify_certificate = not params.get("insecure", False)
+    max_audit_events_per_fetch = arg_to_number(params.get("max_audit_events_per_fetch", "10000"))
+    proxy = params.get("proxy", False)
 
-    demisto.debug(f'{INTEGRATION_NAME}: Command being called is {command}')
+    demisto.debug(f"{INTEGRATION_NAME}: Command being called is {command}")
     try:
         client = OktaASAClient(
-            key_id=api_key_id,
-            key_secret=api_key_secret,
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy)
+            key_id=api_key_id, key_secret=api_key_secret, base_url=base_url, verify=verify_certificate, proxy=proxy
+        )
 
-        if command == 'test-module':
+        if command == "test-module":
             result = test_module(client)
             return_results(result)
 
-        elif command == 'okta-asa-get-events':
-            should_push_events = argToBoolean(args.pop('should_push_events'))
+        elif command == "okta-asa-get-events":
+            should_push_events = argToBoolean(args.pop("should_push_events"))
             events, results = get_events_command(client, demisto.args())
             return_results(results)
             if should_push_events:
                 add_time_to_events(events)
-                send_events_to_xsiam(
-                    events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             last_run = demisto.getLastRun()
             next_run, events = fetch_events_command(
-                client=client,
-                last_run=last_run,
-                max_audit_events_per_fetch=max_audit_events_per_fetch,
-                team_name=team_name
+                client=client, last_run=last_run, max_audit_events_per_fetch=max_audit_events_per_fetch, team_name=team_name
             )
 
             add_time_to_events(events)
-            send_events_to_xsiam(
-                events,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
