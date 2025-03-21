@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Cortex Data Lake
+  id: Cortex Data Lake_20250320
   version: -1
 configuration:
 - display: Token
@@ -171,7 +171,7 @@ configuration:
   section: Collect
 description: Palo Alto Networks Strata Logging Service XSOAR Connector provides cloud-based, centralized log storage and aggregation for your organization on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
 display: Strata Logging Service XSOAR Connector
-name: Cortex Data Lake
+name: Cortex Data Lake_20250320
 script:
   commands:
   - arguments:
@@ -2097,8 +2097,6 @@ script:
       description: All gateways that were available and attempted for the client location.
     - contextPath: CDL.Logging.GlobalProtect.AuthMethod
       description: Authentication method used for the GlobalProtect connection.
-    - contextPath: CDL.Logging.GlobalProtect.ConnectMethod
-      description: Identifies how the GlobalProtect app connected to the the Gateway.
     - contextPath: CDL.Logging.GlobalProtect.ConnectionErrorID
       description: Enumeration integer assigned to the connection_error field value.
     - contextPath: CDL.Logging.GlobalProtect.ConnectionErrorValue
@@ -2115,8 +2113,6 @@ script:
       description: OS type of the endpoint on which the GlobalProtect client is deployed.
     - contextPath: CDL.Logging.GlobalProtect.EndpointOSVersion
       description: OS version of the endpoint on which the GlobalProtect client is deployed.
-    - contextPath: CDL.Logging.GlobalProtect.EndpointSN
-      description: ID that uniquely identifies the endpoint on which the GlobalProtect client is deployed.
     - contextPath: CDL.Logging.GlobalProtect.EventID
       description: The name of the event.
     - contextPath: CDL.Logging.GlobalProtect.Gateway
@@ -2125,8 +2121,6 @@ script:
       description: Priority of gateway.
     - contextPath: CDL.Logging.GlobalProtect.GatewaySelectionType
       description: Gateway Selection Method i.e automatic, preferred or manual.
-    - contextPath: CDL.Logging.GlobalProtect.GPGatewayLocation
-      description: Location of the Global Protect Gateway.
     - contextPath: CDL.Logging.GlobalProtect.HostID
       description: Unique identifier GlobalProtect has assigned to the host.
     - contextPath: CDL.Logging.GlobalProtect.IsDuplicateLog
@@ -2153,8 +2147,6 @@ script:
       description: Duration for which the connected user was logged on.
     - contextPath: CDL.Logging.GlobalProtect.Opaque
       description: Additional information regarding the event.
-    - contextPath: CDL.Logging.GlobalProtect.PanoramaSN
-      description: Panorama Serial associated with CDL.
     - contextPath: CDL.Logging.GlobalProtect.PlatformType
       description: The platform type.
     - contextPath: CDL.Logging.GlobalProtect.Portal
@@ -2181,8 +2173,6 @@ script:
       description: Domain to which the Source User belongs.
     - contextPath: CDL.Logging.GlobalProtect.SourceUserName
       description: The Source User username.
-    - contextPath: CDL.Logging.GlobalProtect.SourceUserUUID
-      description: Unique identifier assigned to the Source User.
     - contextPath: CDL.Logging.GlobalProtect.SSLResponseTime
       description: SSL Response Time in milliseconds.
     - contextPath: CDL.Logging.GlobalProtect.Stage

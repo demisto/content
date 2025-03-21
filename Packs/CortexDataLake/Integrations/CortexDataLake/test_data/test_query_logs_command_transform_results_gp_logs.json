@@ -2,7 +2,6 @@
     {
         "attempted_gateways": "gateway1,500,1;",
         "auth_method": "SAML",
-        "connect_method": "user-logon",
         "connection_error": {"id": "", "value": ""},
         "count_of_repeats": 1,
         "customer_id": "117270019",
@@ -10,12 +9,10 @@
         "endpoint_gp_version": "328198",
         "endpoint_os_type": "Windows",
         "endpoint_os_version": "",
-        "endpoint_serial_number": "12345",
         "event_id": {"value": "gateway-auth"},
         "gateway": "gateway1",
         "gateway_priority": {"value": "1"},
         "gateway_selection_type": "automatic",
-        "gpg_location": "",
         "host_id": "12341234-1234-1234-1234-123412341234",
         "is_dup_log": false,
         "is_exported": false,
@@ -29,7 +26,6 @@
         "log_type": {"value": "globalprotect"},
         "login_duration": 1000,
         "opaque": "",
-        "panorama_serial": "12345",
         "platform_type": "",
         "portal": "portal1",
         "private_ip": {"value": "10.0.0.1"},
@@ -43,8 +39,7 @@
         "source_user": "user1",
         "source_user_info": {
             "domain": "domain1",
-            "name": "user1",
-            "uuid": "12341234-1234-1234-1234-123412341234"
+            "name": "user1"
         },
         "ssl_response_time": 500,
         "stage": "login",

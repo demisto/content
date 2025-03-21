@@ -685,7 +685,6 @@ def gp_context_transformer(row_content: dict) -> dict:
     return {
         'AttemptedGateways': row_content.get('attempted_gateways'),
         'AuthMethod': row_content.get('auth_method'),
-        'ConnectMethod': row_content.get('connect_method'),
         'ConnectionErrorID': row_content.get('connection_error', {}).get('id'),
         'ConnectionErrorValue': row_content.get('connection_error', {}).get('value'),
         'CountOfRepeats': row_content.get('count_of_repeats'),
@@ -694,12 +693,10 @@ def gp_context_transformer(row_content: dict) -> dict:
         'EndpointGPVersion': row_content.get('endpoint_gp_version'),
         'EndpointOSType': row_content.get('endpoint_os_type'),
         'EndpointOSVersion': row_content.get('endpoint_os_version'),
-        'EndpointSN': row_content.get('endpoint_serial_number'),
         'EventID': row_content.get('event_id', {}).get('value'),
         'Gateway': row_content.get('gateway'),
         'GatewayPriority': row_content.get('gateway_priority', {}).get('value'),
         'GatewaySelectionType': row_content.get('gateway_selection_type'),
-        'GPGatewayLocation': row_content.get('gpg_location'),
         'HostID': row_content.get('host_id'),
         'IsDuplicateLog': row_content.get('is_dup_log'),
         'IsExported': row_content.get('is_exported'),
@@ -713,7 +710,6 @@ def gp_context_transformer(row_content: dict) -> dict:
         'LogType': row_content.get('log_type', {}).get('value'),
         'LoginDuration': row_content.get('login_duration'),
         'Opaque': row_content.get('opaque'),
-        'PanoramaSN': row_content.get('panorama_serial'),
         'PlatformType': row_content.get('platform_type'),
         'Portal': row_content.get('portal'),
         'PrivateIPv4': row_content.get('private_ip', {}).get('value'),
@@ -727,7 +723,6 @@ def gp_context_transformer(row_content: dict) -> dict:
         'SourceUser': row_content.get('source_user'),
         'SourceUserDomain': row_content.get('source_user_info', {}).get('domain'),
         'SourceUserName': row_content.get('source_user_info', {}).get('name'),
-        'SourceUserUUID': row_content.get('source_user_info', {}).get('uuid'),
         'SSLResponseTime': row_content.get('ssl_response_time'),
         'Stage': row_content.get('stage'),
         'EventStatus': row_content.get('status', {}).get('value'),
@@ -759,14 +754,25 @@ def records_to_human_readable_output(fields: str, table_name: str, results: list
         for result in results:
             filtered_result = {
                 'Source Address': result.get('source_ip', {}).get('value'),
+                'Public IP': result.get('public_ip', {}).get('value'),
+                'Public IPv6': result.get('public_ipv6', {}).get('value'),
                 'Destination Address': result.get('dest_ip', {}).get('value'),
+                'Private IP': result.get('private_ip', {}).get('value'),
+                'Private IPv6': result.get('private_ipv6', {}).get('value'),
                 'Application': result.get('app'),
                 'Action': result.get('action', {}).get('value'),
+                'Stage': result.get('stage'),
+                'Status': result.get('status', {}).get('value'),
+                'Connection Error': result.get('connection_error').get('value'),
                 'RuleMatched': result.get('rule_matched'),
                 'TimeGenerated': human_readable_time_from_epoch_time(result.get('time_generated')),
                 'FileID': result.get('file_id'),
                 'FileName': result.get('file_name'),
-                'FileType': result.get('file_type')
+                'FileType': result.get('file_type'),
+                'Source User': result.get('source_user'),
+                'Source Region': result.get('source_region'),
+                'Gateway': result.get('gateway'),
+                'Portal': result.get('portal'),
             }
             filtered_results.append(filtered_result)
     else:
