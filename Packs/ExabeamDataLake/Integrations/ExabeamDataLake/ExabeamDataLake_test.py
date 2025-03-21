@@ -1,8 +1,16 @@
 import json
+
 import pytest
 from CommonServerPython import DemistoException
-from ExabeamDataLake import Client, query_data_lake_command, get_limit, get_date, dates_in_range, calculate_page_parameters, \
-    _parse_entry
+from ExabeamDataLake import (
+    Client,
+    _parse_entry,
+    calculate_page_parameters,
+    dates_in_range,
+    get_date,
+    get_limit,
+    query_data_lake_command,
+)
 
 
 class MockClient(Client):
@@ -24,22 +32,21 @@ def test_query_data_lake_command(mocker):
     THEN:
         it should query the data lake, return log entries, and format them into readable output.
     """
-    args = {
-        'page': 1,
-        'page_size': 50,
-        'start_time': '2024-05-01T00:00:00',
-        'end_time': '2024-05-08T00:00:00',
-        'query': '*'
-    }
+    args = {"page": 1, "page_size": 50, "start_time": "2024-05-01T00:00:00", "end_time": "2024-05-08T00:00:00", "query": "*"}
     mock_response = {
         "responses": [
             {
                 "hits": {
                     "hits": [
-                        {"_id": "FIRST_ID", "_source": {"@timestamp": "2024-05-01T12:00:00",
-                                                        "message": "example message 1"}},
-                        {"_id": "SECOND_ID", "_source": {"@timestamp": "2024-05-02T12:00:00",
-                                                         "message": "example message 2", "only_hr": "nothing"}}
+                        {"_id": "FIRST_ID", "_source": {"@timestamp": "2024-05-01T12:00:00", "message": "example message 1"}},
+                        {
+                            "_id": "SECOND_ID",
+                            "_source": {
+                                "@timestamp": "2024-05-02T12:00:00",
+                                "message": "example message 2",
+                                "only_hr": "nothing",
+                            },
+                        },
                     ]
                 }
             }
@@ -52,11 +59,13 @@ def test_query_data_lake_command(mocker):
 
     response = query_data_lake_command(client, args, cluster_name="local")
 
-    result = response.to_context().get('EntryContext', {}).get('ExabeamDataLake.Event', [])
+    result = response.to_context().get("EntryContext", {}).get("ExabeamDataLake.Event", [])
 
-    assert {'_id': 'FIRST_ID', '_source': {'@timestamp': '2024-05-01T12:00:00', 'message': 'example message 1'}} in result
-    assert {'_id': 'SECOND_ID', '_source': {'@timestamp': '2024-05-02T12:00:00', 'message': 'example message 2',
-                                            'only_hr': 'nothing'}} in result
+    assert {"_id": "FIRST_ID", "_source": {"@timestamp": "2024-05-01T12:00:00", "message": "example message 1"}} in result
+    assert {
+        "_id": "SECOND_ID",
+        "_source": {"@timestamp": "2024-05-02T12:00:00", "message": "example message 2", "only_hr": "nothing"},
+    } in result
     expected_result = (
         "### Logs\n"
         "|Id|Vendor|Product|Created_at|Message|\n"
@@ -77,19 +86,13 @@ def test_query_data_lake_command_no_response(mocker):
         it should return a readable output indicating no results found.
 
     """
-    args = {
-        'page': 1,
-        'page_size': 50,
-        'start_time': '2024-05-01T00:00:00',
-        'end_time': '2024-05-08T00:00:00',
-        'query': '*'
-    }
+    args = {"page": 1, "page_size": 50, "start_time": "2024-05-01T00:00:00", "end_time": "2024-05-08T00:00:00", "query": "*"}
 
     mocker.patch.object(Client, "query_datalake_request", return_value={})
 
     response = query_data_lake_command(MockClient("", "", "", False, False), args, "local")
 
-    assert response.readable_output == '### Logs\n**No entries.**\n'
+    assert response.readable_output == "### Logs\n**No entries.**\n"
 
 
 def test_get_date(mocker):
@@ -103,8 +106,8 @@ def test_get_date(mocker):
     THEN:
         it should return the date part of the provided time string in the 'YYYY-MM-DD' format.
     """
-    time = '2024.05.01T14:00:00'
-    expected_result = '2024-05-01'
+    time = "2024.05.01T14:00:00"
+    expected_result = "2024-05-01"
 
     with mocker.patch("CommonServerPython.arg_to_datetime", return_value=time):
         result = get_date(time, "start_time")
@@ -112,22 +115,28 @@ def test_get_date(mocker):
     assert result == expected_result
 
 
-@pytest.mark.parametrize('start_time_str, end_time_str, expected_output', [
-    (
-        "2024-05-01",
-        "2024-05-10",
-        [
-            '2024.05.01', '2024.05.02', '2024.05.03',
-            '2024.05.04', '2024.05.05', '2024.05.06',
-            '2024.05.07', '2024.05.08', '2024.05.09', '2024.05.10'
-        ]
-    ),
-    (
-        "2024-05-01",
-        "2024-05-05",
-        ['2024.05.01', '2024.05.02', '2024.05.03', '2024.05.04', '2024.05.05']
-    )
-])
+@pytest.mark.parametrize(
+    "start_time_str, end_time_str, expected_output",
+    [
+        (
+            "2024-05-01",
+            "2024-05-10",
+            [
+                "2024.05.01",
+                "2024.05.02",
+                "2024.05.03",
+                "2024.05.04",
+                "2024.05.05",
+                "2024.05.06",
+                "2024.05.07",
+                "2024.05.08",
+                "2024.05.09",
+                "2024.05.10",
+            ],
+        ),
+        ("2024-05-01", "2024-05-05", ["2024.05.01", "2024.05.02", "2024.05.03", "2024.05.04", "2024.05.05"]),
+    ],
+)
 def test_dates_in_range_valid(start_time_str, end_time_str, expected_output):
     """
     GIVEN:
@@ -143,18 +152,13 @@ def test_dates_in_range_valid(start_time_str, end_time_str, expected_output):
     assert result == expected_output
 
 
-@pytest.mark.parametrize('start_time_str, end_time_str, expected_output', [
-    (
-        "2024-05-10",
-        "2024-05-01",
-        "Start time must be before end time"
-    ),
-    (
-        "2024-05-01",
-        "2024-05-15",
-        "Difference between start time and end time must be less than or equal to 10 days"
-    )
-])
+@pytest.mark.parametrize(
+    "start_time_str, end_time_str, expected_output",
+    [
+        ("2024-05-10", "2024-05-01", "Start time must be before end time"),
+        ("2024-05-01", "2024-05-15", "Difference between start time and end time must be less than or equal to 10 days"),
+    ],
+)
 def test_dates_in_range_invalid(start_time_str, end_time_str, expected_output):
     """
     GIVEN:
@@ -170,10 +174,10 @@ def test_dates_in_range_invalid(start_time_str, end_time_str, expected_output):
         dates_in_range(start_time_str, end_time_str)
 
 
-@pytest.mark.parametrize('args, from_param_expected, size_param_expected', [
-    ({'page': '1', 'page_size': '50', 'limit': None}, 0, 50),
-    ({'page': None, 'page_size': None, 'limit': '100'}, 0, 100)
-])
+@pytest.mark.parametrize(
+    "args, from_param_expected, size_param_expected",
+    [({"page": "1", "page_size": "50", "limit": None}, 0, 50), ({"page": None, "page_size": None, "limit": "100"}, 0, 100)],
+)
 def test_calculate_page_parameters_valid(args, from_param_expected, size_param_expected):
     """
     GIVEN:
@@ -191,11 +195,14 @@ def test_calculate_page_parameters_valid(args, from_param_expected, size_param_e
     assert size_param == size_param_expected
 
 
-@pytest.mark.parametrize('args', [
-    ({'page': '1', 'page_size': None, 'limit': '100'}),
-    ({'page': '1', 'page_size': '25', 'limit': '100'}),
-    ({'page': None, 'page_size': '25', 'limit': None})
-])
+@pytest.mark.parametrize(
+    "args",
+    [
+        ({"page": "1", "page_size": None, "limit": "100"}),
+        ({"page": "1", "page_size": "25", "limit": "100"}),
+        ({"page": None, "page_size": "25", "limit": None}),
+    ],
+)
 def test_calculate_page_parameters_invalid(mocker, args):
     """
     GIVEN:
@@ -229,8 +236,8 @@ def test_parse_entry():
             "Vendor": "VendorName",
             "@timestamp": "2024-05-09T12:00:00Z",
             "Product": "ProductA",
-            "message": "Some message here"
-        }
+            "message": "Some message here",
+        },
     }
 
     parsed_entry = _parse_entry(entry)
@@ -254,8 +261,8 @@ def test_query_datalake_request(mocker):
         it should send a POST request to the data lake API with the search query,
         using the correct base URL and headers including 'kbn-version' and 'Content-Type'.
     """
-    mock_login = mocker.patch('ExabeamDataLake.Client._login')
-    mock_http_request = mocker.patch('ExabeamDataLake.Client._http_request')
+    mock_login = mocker.patch("ExabeamDataLake.Client._login")
+    mock_http_request = mocker.patch("ExabeamDataLake.Client._http_request")
 
     base_url = "http://example.com"
     username = "user123"
@@ -267,15 +274,14 @@ def test_query_datalake_request(mocker):
     cluster_name = "example_cluster"
     dates_in_format = ["index1", "index2"]
 
-    instance = Client(base_url=base_url, username=username, password=password,
-                      verify=False, proxy=proxy)
+    instance = Client(base_url=base_url, username=username, password=password, verify=False, proxy=proxy)
 
     expected_search_query = {
         "sortBy": [{"field": "@timestamp", "order": "desc", "unmappedType": "date"}],
         "query": "*",
         "from": 0,
         "size": 10,
-        "clusterWithIndices": [{"clusterName": "example_cluster", "indices": ["index1", "index2"]}]
+        "clusterWithIndices": [{"clusterName": "example_cluster", "indices": ["index1", "index2"]}],
     }
 
     instance.query_datalake_request(args, from_param, size_param, cluster_name, dates_in_format)
@@ -284,17 +290,15 @@ def test_query_datalake_request(mocker):
         "POST",
         full_url="http://example.com/dl/api/es/search",
         data=json.dumps(expected_search_query),
-        headers={'Content-Type': 'application/json', 'Csrf-Token': 'nocheck'}
+        headers={"Content-Type": "application/json", "Csrf-Token": "nocheck"},
     )
     mock_login.assert_called_once()
 
 
-@pytest.mark.parametrize('args, arg_name, expected_output', [
-    ({}, 'limit', 50),
-    ({'limit': None}, 'limit', 50),
-    ({'limit': 1000}, 'limit', 1000),
-    ({'limit': 5000}, 'limit', 3000)
-])
+@pytest.mark.parametrize(
+    "args, arg_name, expected_output",
+    [({}, "limit", 50), ({"limit": None}, "limit", 50), ({"limit": 1000}, "limit", 1000), ({"limit": 5000}, "limit", 3000)],
+)
 def test_get_limit(args, arg_name, expected_output):
     """
     GIVEN:
