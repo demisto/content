@@ -1,8 +1,9 @@
 import ipaddress
-import tldextract
 import urllib.parse
-from CommonServerPython import *
 from re import Match
+
+import tldextract
+from CommonServerPython import *
 
 
 class URLError(Exception):
@@ -16,33 +17,35 @@ class URLType:
 
     def __init__(self, raw_url: str):
         self.raw = raw_url
-        self.scheme = ''
-        self.user_info = ''
-        self.hostname = ''
-        self.port = ''
-        self.path = ''
-        self.query = ''
-        self.fragment = ''
+        self.scheme = ""
+        self.user_info = ""
+        self.hostname = ""
+        self.port = ""
+        self.path = ""
+        self.query = ""
+        self.fragment = ""
 
     def __str__(self):
         return (
-            f'Scheme = {self.scheme}\nUser_info = {self.user_info}\nHostname = {self.hostname}\nPort = {self.port}\n'
-            f'Path = {self.path}\nQuery = {self.query}\nFragment = {self.fragment}')
+            f"Scheme = {self.scheme}\nUser_info = {self.user_info}\nHostname = {self.hostname}\nPort = {self.port}\n"
+            f"Path = {self.path}\nQuery = {self.query}\nFragment = {self.fragment}"
+        )
 
 
 class URLCheck:
     """
     This class will build and validate a URL based on "URL Living Standard" (https://url.spec.whatwg.org)
     """
+
     sub_delims = ("!", "$", "&", "'", "(", ")", "*", "+", ",", ";", "=")
-    brackets = ("\"", "'", "[", "]", "{", "}", "(", ")")
+    brackets = ('"', "'", "[", "]", "{", "}", "(", ")")
 
     bracket_pairs = {
-        '{': '}',
-        '(': ')',
-        '[': ']',
+        "{": "}",
+        "(": ")",
+        "[": "]",
         '"': '"',
-        '\'': '\'',
+        "'": "'",
     }
 
     no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=(), cache_dir=None)
@@ -69,10 +72,10 @@ class URLCheck:
         self.original_url = original_url
         self.url = URLType(original_url)
         self.base = 0  # This attribute increases as the url is being parsed
-        self.output = ''
+        self.output = ""
 
         self.inside_brackets = 0
-        self.opening_bracket = ''
+        self.opening_bracket = ""
         self.port = False
         self.query = False
         self.fragment = False
@@ -94,7 +97,7 @@ class URLCheck:
 
         for char in special_chars:
             try:
-                host_end_position = self.modified_url[self.base:].index(char)
+                host_end_position = self.modified_url[self.base :].index(char)
                 break  # index for the end of the part found, breaking loop
             except ValueError:
                 continue  # no reserved char found, URL has no path, query or fragment parts.
@@ -123,7 +126,7 @@ class URLCheck:
         if not self.done and self.fragment:
             self.fragment_check()
 
-        while '%' in self.output:
+        while "%" in self.output:
             unquoted = urllib.parse.unquote(self.output)
             if unquoted != self.output:
                 self.output = unquoted
@@ -142,10 +145,9 @@ class URLCheck:
         """
 
         index = self.base
-        scheme = ''
+        scheme = ""
 
         while self.modified_url[index].isascii() or self.modified_url[index] in ("+", "-", "."):
-
             char = self.modified_url[index]
             if char in self.sub_delims:
                 raise URLError(f"Invalid character {char} at position {index}")
@@ -156,7 +158,7 @@ class URLCheck:
                 if char == "%":
                     # If % is present in the scheme it must be followed by "3A" to represent a colon (":")
 
-                    if self.modified_url[index + 1:index + 3].upper() != "3A":
+                    if self.modified_url[index + 1 : index + 3].upper() != "3A":
                         raise URLError(f"Invalid character {char} at position {index}")
 
                     else:
@@ -168,14 +170,14 @@ class URLCheck:
                     self.output += char
                     index += 1
 
-                if self.modified_url[index:index + 2] != "//":
+                if self.modified_url[index : index + 2] != "//":
                     # If URL has ascii chars and ':' with no '//' it is invalid
 
                     raise URLError(f"Invalid character {char} at position {index}")
 
                 else:
                     self.url.scheme = scheme
-                    self.output += self.modified_url[index:index + 2]
+                    self.output += self.modified_url[index : index + 2]
                     self.base = index + 2
 
                     if self.base == len(self.modified_url):
@@ -186,7 +188,7 @@ class URLCheck:
             elif index == len(self.modified_url) - 1:
                 # Reached end of url and no ":" found (like "foo//")
 
-                raise URLError('Invalid scheme')
+                raise URLError("Invalid scheme")
 
             else:
                 # base is not incremented as it was incremented by 2 before
@@ -206,12 +208,12 @@ class URLCheck:
             raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
         else:
-            while self.modified_url[index] not in ('@', '/', '?', '#', '[', ']'):
+            while self.modified_url[index] not in ("@", "/", "?", "#", "[", "]"):
                 self.output += self.modified_url[index]
                 user_info += self.modified_url[index]
                 index += 1
 
-            if self.modified_url[index] == '@':
+            if self.modified_url[index] == "@":
                 self.output += self.modified_url[index]
                 self.url.user_info = user_info
                 self.base = index + 1
@@ -227,12 +229,11 @@ class URLCheck:
         """
 
         index = self.base
-        host: Any = ''
+        host: Any = ""
         is_ip = False
         numerical_ip = False
 
-        while index < len(self.modified_url) and self.modified_url[index] not in ('/', '?', '#'):
-
+        while index < len(self.modified_url) and self.modified_url[index] not in ("/", "?", "#"):
             if self.modified_url[index] in self.sub_delims:
                 if self.modified_url[index] in self.brackets:
                     # Just a small trick to stop the parsing if a bracket is found
@@ -274,7 +275,6 @@ class URLCheck:
                     raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
             elif self.modified_url[index] == "]":
-
                 if self.inside_brackets == 0:
                     if self.check_domain(host) and all(char in self.brackets for char in self.modified_url[index:]):
                         # Domain is valid with trailing "]" and brackets, the formatter will remove the extra chars
@@ -316,7 +316,7 @@ class URLCheck:
             try:
                 ip = ipaddress.ip_address(host)
 
-                if ip.version == 6 and not self.output.endswith(']'):
+                if ip.version == 6 and not self.output.endswith("]"):
                     self.output = f"{self.output}]"  # Adding a closing square bracket for IPv6
 
             except ValueError:
@@ -336,7 +336,7 @@ class URLCheck:
         index = self.base
         port = ""
 
-        while index < len(self.modified_url) and self.modified_url[index] not in ('/', '?', '#'):
+        while index < len(self.modified_url) and self.modified_url[index] not in ("/", "?", "#"):
             if self.modified_url[index].isdigit():
                 self.output += self.modified_url[index]
                 port += self.modified_url[index]
@@ -356,7 +356,7 @@ class URLCheck:
         index = self.base
         path = ""
 
-        while index < len(self.modified_url) and self.modified_url[index] not in ('?', '#'):
+        while index < len(self.modified_url) and self.modified_url[index] not in ("?", "#"):
             index, char = self.check_valid_character(index)
             path += char
 
@@ -382,9 +382,9 @@ class URLCheck:
         Parses and validates the query part of the URL. The query starts after a "?".
         """
         index = self.base
-        query = ''
+        query = ""
 
-        while index < len(self.modified_url) and self.modified_url[index] != '#':
+        while index < len(self.modified_url) and self.modified_url[index] != "#":
             index, char = self.check_valid_character(index)
             query += char
 
@@ -445,7 +445,7 @@ class URLCheck:
                 # Edge case of a bracket or quote at the end of the URL but not part of it
                 return len(self.modified_url), part
 
-            elif self.inside_brackets != 0 and char == self.bracket_pairs.get(self.opening_bracket, ''):
+            elif self.inside_brackets != 0 and char == self.bracket_pairs.get(self.opening_bracket, ""):
                 # If the char is a closing bracket check that it matches the opening one.
                 self.inside_brackets -= 1
                 part += char
@@ -462,7 +462,7 @@ class URLCheck:
                 # The char is a closing bracket but there was no opening one.
                 return len(self.modified_url), part
 
-        elif char == '\\':
+        elif char == "\\":
             # Edge case of the url ending with an escape char
             return len(self.modified_url), part
 
@@ -487,11 +487,10 @@ class URLCheck:
         Returns:
             bool: Is the character a valid code point.
         """
-        url_code_points = ("!", "$", "&", "\"", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "=", "?", "@",
-                           "_", "~")
-        unicode_code_points = {"start": "\u00A0", "end": "\U0010FFFD"}
-        surrogate_characters = {"start": "\uD800", "end": "\uDFFF"}
-        non_characters = {"start": "\uFDD0", "end": "\uFDEF"}
+        url_code_points = ("!", "$", "&", '"', "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "=", "?", "@", "_", "~")
+        unicode_code_points = {"start": "\u00a0", "end": "\U0010fffd"}
+        surrogate_characters = {"start": "\ud800", "end": "\udfff"}
+        non_characters = {"start": "\ufdd0", "end": "\ufdef"}
 
         if surrogate_characters["start"] <= char <= surrogate_characters["end"]:
             return False
@@ -502,7 +501,7 @@ class URLCheck:
         elif char in url_code_points:
             return True
 
-        return unicode_code_points['start'] <= char <= unicode_code_points['end']
+        return unicode_code_points["start"] <= char <= unicode_code_points["end"]
 
     def check_domain(self, host: str) -> bool:
         """
@@ -548,7 +547,7 @@ class URLCheck:
         """
 
         try:
-            int(self.modified_url[index + 1:index + 3], 16)
+            int(self.modified_url[index + 1 : index + 3], 16)
             return True
 
         except ValueError:
@@ -607,18 +606,21 @@ class URLCheck:
             self.modified_url = self.modified_url[beginning:]
 
         else:
-            self.modified_url = self.modified_url[beginning:end + 1]
+            self.modified_url = self.modified_url[beginning : end + 1]
 
 
 class URLFormatter:
-
     # URL Security Wrappers
-    ATP_regex = re.compile('.*?[.]safelinks[.]protection[.](?:outlook|office365)[.](?:com|us)/.*?[?]url=(.*?)&', re.I)
-    fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)', re.I)
-    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.+?)(?:&amp|&d|$)|'
-                                  'https?(?::|%3A)//urldefense[.]\w{2,3}/v3/__(.+?)(?:__;|$))')
-    trendmicro_regex = re.compile('.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&',  # disable-secrets-detection
-                                  re.I)
+    ATP_regex = re.compile(".*?[.]safelinks[.]protection[.](?:outlook|office365)[.](?:com|us)/.*?[?]url=(.*?)&", re.I)
+    fireeye_regex = re.compile(".*?fireeye[.]com.*?&u=(.*)", re.I)
+    proofpoint_regex = re.compile(
+        "(?i)(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.+?)(?:&amp|&d|$)|"
+        "https?(?::|%3A)//urldefense[.]\w{2,3}/v3/__(.+?)(?:__;|$))"
+    )
+    trendmicro_regex = re.compile(
+        ".*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&",  # disable-secrets-detection
+        re.I,
+    )
 
     # Scheme slash fixer
     scheme_fix = re.compile("https?(:[/|\\\]*)")
@@ -635,7 +637,7 @@ class URLFormatter:
         """
 
         self.original_url = original_url
-        self.output = ''
+        self.output = ""
 
         url = self.correct_and_refang_url(self.original_url)
         url = self.strip_wrappers(url)
@@ -727,7 +729,7 @@ class URLFormatter:
         url = url.replace("[.]", ".")
         url = url.replace("[:]", ":")
         lower_url = url.lower()
-        if lower_url.startswith(('hxxp', 'meow')):
+        if lower_url.startswith(("hxxp", "meow")):
             url = re.sub(schemas, "http", url, count=1)
 
         def fix_scheme(match: Match) -> str:
@@ -760,11 +762,11 @@ def format_urls(raw_urls: list[str]) -> list[str]:
     formatted_urls: List[str] = []
 
     for url in raw_urls:
-        formatted_url = ''
+        formatted_url = ""
 
         if _is_valid_cidr(url):
             # If input is a valid CIDR formatter will ignore it to let it become a CIDR
-            formatted_urls.append('')
+            formatted_urls.append("")
             continue
 
         try:
