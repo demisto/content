@@ -3,7 +3,7 @@
     "description": "Deprecated. Use Microsoft Graph Identity and Access instead.",
     "support": "xsoar",
     "hidden": true,
-    "currentVersion": "1.3.27",
+    "currentVersion": "1.3.28",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
