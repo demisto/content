@@ -2,16 +2,18 @@ import pytest
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from pytest_mock import MockerFixture
 from SymantecEndpointSecurity import (
-    extract_events_suspected_duplicates,
-    calculate_next_fetch,
-    filter_duplicate_events,
-    perform_long_running_loop,
-    UnauthorizedToken,
-    NextPointingNotAvailable,
     Client,
-    test_module as _test_module,
+    NextPointingNotAvailable,
+    UnauthorizedToken,
+    calculate_next_fetch,
+    extract_events_suspected_duplicates,
+    filter_duplicate_events,
     get_events_command,
+    perform_long_running_loop,
     sleep_if_necessary,
+)
+from SymantecEndpointSecurity import (
+    test_module as _test_module,
 )
 
 
@@ -44,12 +46,10 @@ def mock_client() -> Client:
                 {"uuid": "789", "log_time": "2024-10-09T12:34:56.789578Z"},
             ],
             (["456", "789"], "2024-10-09T12:34:56.78957832Z"),
-        )
+        ),
     ],
 )
-def test_extract_events_suspected_duplicates(
-    events: list[dict], expected_results: tuple[list[str]]
-):
+def test_extract_events_suspected_duplicates(events: list[dict], expected_results: tuple[list[str]]):
     """
     Given
         - A list of events with timestamps
@@ -91,7 +91,7 @@ def test_extract_events_suspected_duplicates(
                     "uuid": "456",
                     "log_time": "2024-10-09T12:34:56.789Z",
                     "time": "2024-10-09T12:34:56.789Z",
-                    "_time": "2024-10-09T12:34:56.789Z"
+                    "_time": "2024-10-09T12:34:56.789Z",
                 }
             ],
             id="Event time is equal to or less than last_event_time",
@@ -207,9 +207,7 @@ def test_calculate_next_fetch_last_latest_event_time_are_equal(
         - Ensure that updated the 'integration_context' with new events in addition to the old ones, and the next hash
     """
 
-    integration_context = calculate_next_fetch(
-        filtered_events, next_hash, include_last_fetch_events, last_integration_context
-    )
+    integration_context = calculate_next_fetch(filtered_events, next_hash, include_last_fetch_events, last_integration_context)
 
     assert integration_context == expected_integration_context
 
@@ -256,7 +254,7 @@ def test_perform_long_running_loop_next_pointing_not_available(mocker: MockerFix
     mocker.patch("SymantecEndpointSecurity.sleep_if_necessary")
     with pytest.raises(DemistoException, match="Failed to fetch logs from API"):
         perform_long_running_loop(mock_client())
-    assert mock_integration_context == {'fetch_failure_count': 1}
+    assert mock_integration_context == {"fetch_failure_count": 1}
 
 
 def test_test_module(mocker: MockerFixture):
@@ -300,9 +298,7 @@ def test_get_events_command_with_raises(
         status_code = mock_status_code
 
     mocker.patch.object(Client, "_update_access_token_in_headers")
-    mocker.patch.object(
-        Client, "get_events", side_effect=DemistoException("Test", res=MockException())
-    )
+    mocker.patch.object(Client, "get_events", side_effect=DemistoException("Test", res=MockException()))
 
     with pytest.raises(exception_type):
         get_events_command(mock_client(), {"next_fetch": {"next": "test"}})
@@ -313,7 +309,7 @@ def test_get_events_command_with_raises(
     [
         pytest.param(10, 20, 1, id="The sleep function should be called once"),
         pytest.param(10, 70, 0, id="The sleep function should not be called"),
-    ]
+    ],
 )
 def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int, call_count: int):
     """

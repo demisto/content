@@ -2,35 +2,56 @@
 
 This is an integration with Stamus Security Platform.
 """
-# mocks: is removed by xsoar server
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-#
 
-import urllib3
-from datetime import datetime
+# mocks: is removed by xsoar server
 from collections.abc import Iterable
+from datetime import datetime
 from typing import Any
+
+import demistomock as demisto
+
+#
+import urllib3
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+
+from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f%z'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 PAGE_SIZE = 200  # https://xsoar.pan.dev/docs/integrations/fetching-incidents#fetch-limit
-ARRAY_ITEMS = ['client_service', 'hostname', 'username', 'http.user_agent', 'tls.ja3', 'ssh.client', 'roles']
-ITEM_KEY = {'client_service': 'name', 'hostname': 'host', 'username': 'user', 'http.user_agent': 'agent',
-            'tls.ja3': 'hash', 'ssh.client': 'software_version', 'roles': 'name', 'services': 'app_proto'}
-FIELDS_SUBSTITUTION = (['http.user_agent', 'http_user_agent'], ['http.user_agent_count', 'http_user_agent_count'],
-                       ['tls.ja3', 'tls_ja3'], ['tls.ja3_count', 'tls_ja3_count'], ['ssh.client', 'ssh_client'],
-                       ['ssh.client_count', 'ssh_client_count'])
-FIELDS_SUBSTITUTION_DICT = {'http.user_agent': 'http_user_agent', 'http.user_agent_count': 'http_user_agent_count',
-                            'tls.ja3': 'tls_ja3', 'tls.ja3_count': 'tls_ja3_count', 'ssh.client': 'ssh_client',
-                            'ssh.client_count': 'ssh_client_count'}
+ARRAY_ITEMS = ["client_service", "hostname", "username", "http.user_agent", "tls.ja3", "ssh.client", "roles"]
+ITEM_KEY = {
+    "client_service": "name",
+    "hostname": "host",
+    "username": "user",
+    "http.user_agent": "agent",
+    "tls.ja3": "hash",
+    "ssh.client": "software_version",
+    "roles": "name",
+    "services": "app_proto",
+}
+FIELDS_SUBSTITUTION = (
+    ["http.user_agent", "http_user_agent"],
+    ["http.user_agent_count", "http_user_agent_count"],
+    ["tls.ja3", "tls_ja3"],
+    ["tls.ja3_count", "tls_ja3_count"],
+    ["ssh.client", "ssh_client"],
+    ["ssh.client_count", "ssh_client_count"],
+)
+FIELDS_SUBSTITUTION_DICT = {
+    "http.user_agent": "http_user_agent",
+    "http.user_agent_count": "http_user_agent_count",
+    "tls.ja3": "tls_ja3",
+    "tls.ja3_count": "tls_ja3_count",
+    "ssh.client": "ssh_client",
+    "ssh.client_count": "ssh_client_count",
+}
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -44,10 +65,7 @@ class Client(BaseClient):
     """
 
     def test_connection(self):
-        self._http_request(
-            method='GET',
-            params={},
-            url_suffix='/rest/')
+        self._http_request(method="GET", params={}, url_suffix="/rest/")
 
     def get_events(self, _id: str) -> dict[str, Any]:
         """Get all related events with _id that comes from incidents (dbotMirrorId)
@@ -59,9 +77,8 @@ class Client(BaseClient):
             dict: dict containing all related events
         """
         return self._http_request(
-            method='GET',
-            params={},
-            url_suffix=f'/rest/appliances/threat_history_incident/{_id}/get_events')
+            method="GET", params={}, url_suffix=f"/rest/appliances/threat_history_incident/{_id}/get_events"
+        )
 
     def get_by_ioc(self, key, value):
         """Get events from Stamus Central Server
@@ -73,9 +90,8 @@ class Client(BaseClient):
             dict: dict containing Host ID informations
         """
         return self._http_request(
-            method='GET',
-            params={'qfilter': f'{key}:{escape(value)}'},
-            url_suffix='/rest/rules/es/events_tail/')
+            method="GET", params={"qfilter": f"{key}:{escape(value)}"}, url_suffix="/rest/rules/es/events_tail/"
+        )
 
     def get_host_id(self, ip: str) -> dict[str, Any]:
         """Get host id from Stamus Central Server
@@ -86,10 +102,7 @@ class Client(BaseClient):
         Returns:
             dict: dict containing Host ID informations
         """
-        return self._http_request(
-            method='GET',
-            params={},
-            url_suffix=f'/rest/appliances/host_id/{ip}')
+        return self._http_request(method="GET", params={}, url_suffix=f"/rest/appliances/host_id/{ip}")
 
     def get_incidents(self, timestamp: int) -> Iterable:
         """Get incidents from Stamus Central Server
@@ -100,42 +113,40 @@ class Client(BaseClient):
         Returns:
             list: list of kill chains changes
         """
-        params = {'timestamp': str(timestamp), 'page_size': PAGE_SIZE}
+        params = {"timestamp": str(timestamp), "page_size": PAGE_SIZE}
 
-        response = self._http_request(
-            method='GET',
-            params=params,
-            url_suffix='/rest/appliances/threat_history_incident/')
+        response = self._http_request(method="GET", params=params, url_suffix="/rest/appliances/threat_history_incident/")
 
-        yield from response.get('results', [])
+        yield from response.get("results", [])
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def escape(string):
-    '''
+    """
     Escape other elasticsearch reserved characters
-    '''
-    return string. \
-        replace('=', r'\='). \
-        replace('+', r'\+'). \
-        replace('-', r'\-'). \
-        replace('&', r'\&'). \
-        replace('|', r'\|'). \
-        replace('!', r'\!'). \
-        replace('(', r'\('). \
-        replace(')', r'\)'). \
-        replace('{', r'\{'). \
-        replace('}', r'\}'). \
-        replace('[', r'\['). \
-        replace(']', r'\]'). \
-        replace('^', r'\^'). \
-        replace('"', r'\"'). \
-        replace('~', r'\~'). \
-        replace(':', r'\:'). \
-        replace('/', r'\/'). \
-        replace('\\', r'\\')
+    """
+    return (
+        string.replace("=", r"\=")
+        .replace("+", r"\+")
+        .replace("-", r"\-")
+        .replace("&", r"\&")
+        .replace("|", r"\|")
+        .replace("!", r"\!")
+        .replace("(", r"\(")
+        .replace(")", r"\)")
+        .replace("{", r"\{")
+        .replace("}", r"\}")
+        .replace("[", r"\[")
+        .replace("]", r"\]")
+        .replace("^", r"\^")
+        .replace('"', r"\"")
+        .replace("~", r"\~")
+        .replace(":", r"\:")
+        .replace("/", r"\/")
+        .replace("\\", r"\\")
+    )
 
 
 def convert_to_demisto_severity(severity: int) -> int:
@@ -160,41 +171,36 @@ def convert_to_demisto_severity(severity: int) -> int:
 
 
 def get_command_results(data: dict[str, Any], table: str, context: str) -> CommandResults:
-    return CommandResults(
-        readable_output=table,
-        outputs_prefix=f'StamusIntegration.{context}',
-        outputs=data
-    )
+    return CommandResults(readable_output=table, outputs_prefix=f"StamusIntegration.{context}", outputs=data)
+
 
 # TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def fetch_by_ioc(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Fetch events from indicator of compromise
-    """
-    results = client.get_by_ioc(args['indicator_key'], args['indicator_value']).get('results', [])
-    table = tableToMarkdown('IOC Matches', results, headers=['timestamp', 'src_ip', 'dest_ip', 'event_type'])
-    return get_command_results(results, table, 'IOC')
+    """Fetch events from indicator of compromise"""
+    results = client.get_by_ioc(args["indicator_key"], args["indicator_value"]).get("results", [])
+    table = tableToMarkdown("IOC Matches", results, headers=["timestamp", "src_ip", "dest_ip", "event_type"])
+    return get_command_results(results, table, "IOC")
 
 
 def fetch_events(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Fetch events from an incident ID
-    """
-    results = client.get_events(str(args.get('id'))).get('results', [])
+    """Fetch events from an incident ID"""
+    results = client.get_events(str(args.get("id"))).get("results", [])
     for result in results:
-        result['method'] = result.get('alert', {}).get('signature', 'algorithmic detection')
-        result['info'] = ""
+        result["method"] = result.get("alert", {}).get("signature", "algorithmic detection")
+        result["info"] = ""
         if result.get("hostname_info"):
-            result['info'] = 'Hostname: %s' % (result.get('hostname_info', {}).get('host', 'unknown'))
-        result['asset'] = result.get('stamus', {}).get('asset', 'unknown')
-        result['offender'] = result.get('stamus', {}).get('source', 'unknown')
-        result['killchain'] = result.get('stamus', {}).get('kill_chain', 'unknown')
-    headers = ['timestamp', 'asset', 'offender', 'killchain', 'method', 'info', 'src_ip', 'dest_ip', 'app_proto']
-    table = tableToMarkdown('Individual Events List', results, headers=headers)
-    return get_command_results(results, table, 'RelatedEvents')
+            result["info"] = f"Hostname: {result.get('hostname_info', {}).get('host', 'unknown')}"
+        result["asset"] = result.get("stamus", {}).get("asset", "unknown")
+        result["offender"] = result.get("stamus", {}).get("source", "unknown")
+        result["killchain"] = result.get("stamus", {}).get("kill_chain", "unknown")
+    headers = ["timestamp", "asset", "offender", "killchain", "method", "info", "src_ip", "dest_ip", "app_proto"]
+    table = tableToMarkdown("Individual Events List", results, headers=headers)
+    return get_command_results(results, table, "RelatedEvents")
 
 
 def linearize_host_id(host: dict) -> list:
@@ -202,41 +208,41 @@ def linearize_host_id(host: dict) -> list:
     a suite of events.
     """
     host_info = []
-    host_data = host['host_id']
-    item_data = {'ip': host['ip']}
-    item_data['event_type'] = 'discovery'
-    item_data['first_seen'] = host_data['first_seen']
-    if 'last_seen' in host_data:
-        item_data['last_seen'] = host_data['last_seen']
-    if 'net_info' in host_data:
-        item_data['net_info'] = host_data['net_info']
-    host_services = host_data.get('services')
+    host_data = host["host_id"]
+    item_data = {"ip": host["ip"]}
+    item_data["event_type"] = "discovery"
+    item_data["first_seen"] = host_data["first_seen"]
+    if "last_seen" in host_data:
+        item_data["last_seen"] = host_data["last_seen"]
+    if "net_info" in host_data:
+        item_data["net_info"] = host_data["net_info"]
+    host_services = host_data.get("services")
     if host_services is not None:
-        item_data['type'] = 'service'
+        item_data["type"] = "service"
         for service in host_services:
-            for value in service['values']:
-                item_data['service'] = value
-                item_data['service']['proto'] = service['proto']
-                item_data['service']['port'] = service['port']
-                item_data['value'] = value['app_proto']
-                if '+' in value['first_seen'] and value['first_seen'][-3] != ':':
-                    item_data['timestamp'] = value['first_seen'][:-2] + ':' + value['first_seen'][-2:]
+            for value in service["values"]:
+                item_data["service"] = value
+                item_data["service"]["proto"] = service["proto"]
+                item_data["service"]["port"] = service["port"]
+                item_data["value"] = value["app_proto"]
+                if "+" in value["first_seen"] and value["first_seen"][-3] != ":":
+                    item_data["timestamp"] = value["first_seen"][:-2] + ":" + value["first_seen"][-2:]
                 else:
-                    item_data['timestamp'] = value['first_seen']
+                    item_data["timestamp"] = value["first_seen"]
                 host_info.append(item_data.copy())
-        item_data.pop('service')
+        item_data.pop("service")
     for key in ARRAY_ITEMS:
         if key in host_data:
-            item_data['type'] = FIELDS_SUBSTITUTION_DICT.get(key, key)
+            item_data["type"] = FIELDS_SUBSTITUTION_DICT.get(key, key)
             for item in host_data[key]:
                 if key in FIELDS_SUBSTITUTION_DICT:
                     item_data[FIELDS_SUBSTITUTION_DICT[key]] = item
                 else:
                     item_data[key] = item
-                item_data['value'] = item[ITEM_KEY[key]]
-                item_data['timestamp'] = item['first_seen']
+                item_data["value"] = item[ITEM_KEY[key]]
+                item_data["timestamp"] = item["first_seen"]
                 host_info.append(item_data.copy())
-            item_data.pop('timestamp')
+            item_data.pop("timestamp")
             if key in FIELDS_SUBSTITUTION_DICT:
                 item_data.pop(FIELDS_SUBSTITUTION_DICT[key])
             else:
@@ -245,38 +251,36 @@ def linearize_host_id(host: dict) -> list:
 
 
 def fetch_host_id(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Fetch host_id info from an IP
-    """
-    result = client.get_host_id(str(args.get('ip')))
+    """Fetch host_id info from an IP"""
+    result = client.get_host_id(str(args.get("ip")))
     host_info = linearize_host_id(result)
 
-    table = tableToMarkdown('Host Insight', host_info, headers=['timestamp', 'ip', 'type', 'value'])
+    table = tableToMarkdown("Host Insight", host_info, headers=["timestamp", "ip", "type", "value"])
 
-    return get_command_results(result, table, 'HostInsights')
+    return get_command_results(result, table, "HostInsights")
 
 
 def fetch_incidents(client: Client, timestamp: int) -> tuple[dict[str, int], list[dict]]:
-    """Fetch last alerts and build new incident structs
-    """
+    """Fetch last alerts and build new incident structs"""
 
     incidents: list[dict] = []
-    next_run = {'timestamp': timestamp}
+    next_run = {"timestamp": timestamp}
 
     for idx, alert in enumerate(client.get_incidents(timestamp)):
         incident = {
-            'name': f'{alert.get("target")}_incident_{idx}',
+            "name": f'{alert.get("target")}_incident_{idx}',
             # Stamus ID used to get related events
-            'dbotMirrorId': str(alert.get('id')),
-            'details': alert.get('threat_description'),
-            'occurred': alert.get('timestamp'),
-            'rawJSON': json.dumps(alert),
-            'type': alert.get('target_type'),
+            "dbotMirrorId": str(alert.get("id")),
+            "details": alert.get("threat_description"),
+            "occurred": alert.get("timestamp"),
+            "rawJSON": json.dumps(alert),
+            "type": alert.get("target_type"),
         }
         incidents.append(incident)
 
-        timestamp = int(datetime.strptime(alert['timestamp'], DATE_FORMAT).timestamp())
-        if timestamp > next_run['timestamp']:
-            next_run['timestamp'] = timestamp + 1
+        timestamp = int(datetime.strptime(alert["timestamp"], DATE_FORMAT).timestamp())
+        if timestamp > next_run["timestamp"]:
+            next_run["timestamp"] = timestamp + 1
 
     return next_run, incidents
 
@@ -296,13 +300,13 @@ def test_module(client: Client) -> str:
     """
 
     client.test_connection()
-    return 'ok'
+    return "ok"
 
 
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -314,38 +318,32 @@ def main() -> None:
 
     params = demisto.params()
     args = demisto.args()
-    api_token = params.get('credentials', {}).get('password')
-    server_url = params.get('url')
-    proxy = params.get('proxy', False)
-    verify_certificate = not params.get('insecure', False)
+    api_token = params.get("credentials", {}).get("password")
+    server_url = params.get("url")
+    proxy = params.get("proxy", False)
+    verify_certificate = not params.get("insecure", False)
 
-    headers = {'Authorization': f'Token {api_token}'}
+    headers = {"Authorization": f"Token {api_token}"}
 
     try:
-        client = Client(
-            base_url=server_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        client = Client(base_url=server_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
-        demisto.debug(f'Command being called is {demisto.command()}')
+        demisto.debug(f"Command being called is {demisto.command()}")
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'fetch-incidents':
+        elif demisto.command() == "fetch-incidents":
             first_fetch_time = arg_to_datetime(
-                arg=params.get('first_fetch', '3 days'),
-                arg_name='First fetch time',
-                required=True
+                arg=params.get("first_fetch", "3 days"), arg_name="First fetch time", required=True
             )
             if first_fetch_time is None:
-                raise Exception('Invalid first fetch time')
+                raise Exception("Invalid first fetch time")
 
             timestamp = int(first_fetch_time.timestamp())
-            last_fetch = demisto.getLastRun().get('timestamp', None)
+            last_fetch = demisto.getLastRun().get("timestamp", None)
             timestamp = timestamp if last_fetch is None else int(last_fetch)
 
             next_run, incidents = fetch_incidents(
@@ -356,21 +354,21 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'stamus-get-host-insight':
+        elif demisto.command() == "stamus-get-host-insight":
             return_results(fetch_host_id(client, args))
 
-        elif demisto.command() == 'stamus-get-doc-events':
+        elif demisto.command() == "stamus-get-doc-events":
             return_results(fetch_events(client, args))
 
-        elif demisto.command() == 'stamus-check-ioc':
+        elif demisto.command() == "stamus-check-ioc":
             return_results(fetch_by_ioc(client, args))
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

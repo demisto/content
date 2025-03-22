@@ -4,8 +4,8 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     try:
-        listName = demisto.args()['list']
-        results = demisto.executeCommand("getList", {'listName': listName})[0]['Contents']
+        listName = demisto.args()["list"]
+        results = demisto.executeCommand("getList", {"listName": listName})[0]["Contents"]
         if "Item not found" not in results:
             fields = json.loads(results)
             # Set context
@@ -17,5 +17,5 @@ def main():
         raise ex
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

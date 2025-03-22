@@ -1,32 +1,43 @@
+import json
 
+import pytest
 from CommonServerPython import *  # noqa: F401
 from freezegun import freeze_time
+from NetQuestOMX import (
+    DATE_FORMAT_FOR_TOKEN,
+    TOKEN_TTL_S,
+    Client,
+    StatType,
+    address_list_create_command,
+    address_list_delete_command,
+    address_list_optimize_command,
+    address_list_rename_command,
+    address_list_upload_command,
+    demisto,
+    fetch_events,
+    get_events,
+)
 from pytest_mock import MockerFixture
-from NetQuestOMX import Client, TOKEN_TTL_S, DATE_FORMAT_FOR_TOKEN, demisto, fetch_events, get_events, \
-    address_list_upload_command, address_list_optimize_command, address_list_create_command, address_list_rename_command, \
-    address_list_delete_command, StatType
-import json
-import pytest
 
 BASE_URL = "https://www.example.com/api/"
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 # ----------------------------------------- COMMAND FUNCTIONS TESTS ---------------------------
 @pytest.fixture
 def net_quest_omx_client(requests_mock):
-    credentials = {"identifier": 'UserName', "password": 'Password'}
+    credentials = {"identifier": "UserName", "password": "Password"}
 
-    requests_mock.post(f'{BASE_URL}SessionService/Sessions', status_code=200, headers={"X-Auth-Token": "TEST"})
+    requests_mock.post(f"{BASE_URL}SessionService/Sessions", status_code=200, headers={"X-Auth-Token": "TEST"})
 
-    return Client(base_url='https://www.example.com', credentials=credentials, verify=True, proxy=False)
+    return Client(base_url="https://www.example.com", credentials=credentials, verify=True, proxy=False)
 
 
-@freeze_time('2020-06-03T02:00:00Z')
+@freeze_time("2020-06-03T02:00:00Z")
 def test_new_token_login_client(requests_mock):
     """
     Given:
@@ -36,18 +47,19 @@ def test_new_token_login_client(requests_mock):
     Then:
         - Ensure the expiration time of the new token is calculated as expected in the integration context
     """
-    credentials = {"identifier": 'UserName', "password": 'Password'}
+    credentials = {"identifier": "UserName", "password": "Password"}
 
-    requests_mock.post(f'{BASE_URL}SessionService/Sessions', status_code=200, headers={"X-Auth-Token": "TEST"})
+    requests_mock.post(f"{BASE_URL}SessionService/Sessions", status_code=200, headers={"X-Auth-Token": "TEST"})
 
-    Client(base_url='https://www.example.com', credentials=credentials, verify=True, proxy=False)
+    Client(base_url="https://www.example.com", credentials=credentials, verify=True, proxy=False)
     integration_context = get_integration_context()
 
-    assert integration_context["expiration_time"] == \
-        (datetime.utcnow() + timedelta(seconds=TOKEN_TTL_S)).strftime(DATE_FORMAT_FOR_TOKEN)
+    assert integration_context["expiration_time"] == (datetime.utcnow() + timedelta(seconds=TOKEN_TTL_S)).strftime(
+        DATE_FORMAT_FOR_TOKEN
+    )
 
 
-@freeze_time('2020-06-03T02:00:00Z')
+@freeze_time("2020-06-03T02:00:00Z")
 def test_old_token_login_client(mocker: MockerFixture):
     """
     Given:
@@ -57,17 +69,17 @@ def test_old_token_login_client(mocker: MockerFixture):
     Then:
         - Ensure that no new token is generated (since the existing token is not expired)
     """
-    credentials = {"identifier": 'UserName', "password": 'Password'}
+    credentials = {"identifier": "UserName", "password": "Password"}
     context = {
         "Token": "TEST",
-        "expiration_time": (datetime.utcnow() + timedelta(seconds=TOKEN_TTL_S)).strftime(DATE_FORMAT_FOR_TOKEN)
+        "expiration_time": (datetime.utcnow() + timedelta(seconds=TOKEN_TTL_S)).strftime(DATE_FORMAT_FOR_TOKEN),
     }
 
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value=context)
-    mocker.patch.object(demisto, 'setIntegrationContext')
-    mock_refresh_access_token = mocker.patch.object(Client, '_refresh_access_token')
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=context)
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mock_refresh_access_token = mocker.patch.object(Client, "_refresh_access_token")
 
-    Client(base_url='https://www.example.com', credentials=credentials, verify=True, proxy=False)
+    Client(base_url="https://www.example.com", credentials=credentials, verify=True, proxy=False)
 
     mock_refresh_access_token.assert_not_called()  # ensuring _refresh_access_token was not called
 
@@ -85,18 +97,22 @@ def test_fetch_events(requests_mock, net_quest_omx_client):
 
     slot_number, port_number = "1", "1"
 
-    requests_mock.get(f'{BASE_URL}Systems/Slot/{slot_number}/Ipfix/Status/Metering',
-                      json=util_load_json('test_data/MeteringStas.json'))
+    requests_mock.get(
+        f"{BASE_URL}Systems/Slot/{slot_number}/Ipfix/Status/Metering", json=util_load_json("test_data/MeteringStas.json")
+    )
 
-    requests_mock.get(f'{BASE_URL}Systems/Slot/{slot_number}/Ipfix/Status/Export',
-                      json=util_load_json('test_data/ExportStats.json'))
+    requests_mock.get(
+        f"{BASE_URL}Systems/Slot/{slot_number}/Ipfix/Status/Export", json=util_load_json("test_data/ExportStats.json")
+    )
 
-    requests_mock.get(f'{BASE_URL}Systems/Slot/{slot_number}/Ipfix/Status/ExportHwm',
-                      json=util_load_json('test_data/ExportPeakFPS.json'))
+    requests_mock.get(
+        f"{BASE_URL}Systems/Slot/{slot_number}/Ipfix/Status/ExportHwm", json=util_load_json("test_data/ExportPeakFPS.json")
+    )
 
-    requests_mock.get(f'{BASE_URL}Systems/Slot/{slot_number}/Port/{port_number}/'
-                      f'EthernetInterfaces/Status/EthRxTx',
-                      json=util_load_json('test_data/OptimizationStats.json'))
+    requests_mock.get(
+        f"{BASE_URL}Systems/Slot/{slot_number}/Port/{port_number}/EthernetInterfaces/Status/EthRxTx",
+        json=util_load_json("test_data/OptimizationStats.json"),
+    )
 
     statistic_types_to_fetch = ["Metering Stats", "Export Stats", "Export Peaks FPS", "Optimization Stats"]
 
@@ -104,16 +120,13 @@ def test_fetch_events(requests_mock, net_quest_omx_client):
         client=net_quest_omx_client,
         slot_number=slot_number,
         port_number=port_number,
-        statistic_types_to_fetch=statistic_types_to_fetch
+        statistic_types_to_fetch=statistic_types_to_fetch,
     )
 
     assert len(events) == len(statistic_types_to_fetch)
 
     for event in events:
-        assert event['STAT_TYPE'] in [
-            statistic_type.replace(" ", "")
-            for statistic_type in statistic_types_to_fetch
-        ]
+        assert event["STAT_TYPE"] in [statistic_type.replace(" ", "") for statistic_type in statistic_types_to_fetch]
 
 
 def test_get_events(requests_mock, net_quest_omx_client):
@@ -129,11 +142,13 @@ def test_get_events(requests_mock, net_quest_omx_client):
     params = {"slot": "1", "port": "1"}
     args = {"statistic_types_to_fetch": "Metering Stats,Export Stats"}
 
-    requests_mock.get(f'{BASE_URL}Systems/Slot/{params["slot"]}/Ipfix/Status/Metering',
-                      json=util_load_json('test_data/MeteringStas.json'))
+    requests_mock.get(
+        f'{BASE_URL}Systems/Slot/{params["slot"]}/Ipfix/Status/Metering', json=util_load_json("test_data/MeteringStas.json")
+    )
 
-    requests_mock.get(f'{BASE_URL}Systems/Slot/{params["slot"]}/Ipfix/Status/Export',
-                      json=util_load_json('test_data/ExportStats.json'))
+    requests_mock.get(
+        f'{BASE_URL}Systems/Slot/{params["slot"]}/Ipfix/Status/Export', json=util_load_json("test_data/ExportStats.json")
+    )
 
     events = get_events(net_quest_omx_client, params, args)
 
@@ -168,8 +183,8 @@ def test_address_list_upload_command(mocker, requests_mock, net_quest_omx_client
     Then:
         - Ensure command is not failed and the readable_output as expected
     """
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/test_file.txt', 'name': 'test_file'})
-    requests_post = requests_mock.post(f'{BASE_URL}v1/UpdateService/ImportList/Config', json={})
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/test_file.txt", "name": "test_file"})
+    requests_post = requests_mock.post(f"{BASE_URL}v1/UpdateService/ImportList/Config", json={})
     result = address_list_upload_command(client=net_quest_omx_client, args={"entry_id": "AAAAAAaaaa"})
     assert result.readable_output == "Address list was successfully uploaded"
     assert requests_post.called
@@ -184,7 +199,7 @@ def test_address_list_optimize_command(requests_mock, net_quest_omx_client):
     Then:
         - Ensure command is not failed and the outputs_prefix as expected
     """
-    requests_mock.get(f'{BASE_URL}Systems/Filters/Address/Status/Optimization', json={})
+    requests_mock.get(f"{BASE_URL}Systems/Filters/Address/Status/Optimization", json={})
     result = address_list_optimize_command(client=net_quest_omx_client)
     assert result.outputs_prefix == "NetQuest.AddressList"
 
@@ -200,7 +215,7 @@ def test_address_list_create_command(requests_mock, net_quest_omx_client):
         - Ensure command is not failed and the readable_output as expected
     """
     name, value = "TEST", "0.0.0.0/24"
-    requests_mock.post(f'{BASE_URL}Systems/Filters/ListImport/Config/Install', json={})
+    requests_mock.post(f"{BASE_URL}Systems/Filters/ListImport/Config/Install", json={})
     result = address_list_create_command(client=net_quest_omx_client, args={"name": name, "value": value})
     assert result.readable_output == f"Successfully created a new instance of {name}"
 
@@ -217,9 +232,10 @@ def test_address_list_rename_command(requests_mock, net_quest_omx_client):
         - Ensure command is not failed and the readable_output as expected
     """
     new_name, new_value, existing_name = "NEW_TEST", "0.0.0.0/24", "TEST"
-    requests_mock.put(f'{BASE_URL}Systems/Filters/ListImport/ListName/{existing_name}/Config/Install', json={})
-    result = address_list_rename_command(client=net_quest_omx_client,
-                                         args={"new_name": new_name, "new_value": new_value, "existing_name": existing_name})
+    requests_mock.put(f"{BASE_URL}Systems/Filters/ListImport/ListName/{existing_name}/Config/Install", json={})
+    result = address_list_rename_command(
+        client=net_quest_omx_client, args={"new_name": new_name, "new_value": new_value, "existing_name": existing_name}
+    )
     assert result.readable_output == f"Successfully renamed {existing_name} to {new_name}"
 
 
@@ -235,6 +251,6 @@ def test_address_list_delete_command(requests_mock, net_quest_omx_client):
         - Ensure command is not failed and the readable_output as expected
     """
     name = "TEST"
-    requests_mock.delete(f'{BASE_URL}Systems/Filters/Address/ListName/{name}/Config/List', json={})
+    requests_mock.delete(f"{BASE_URL}Systems/Filters/Address/ListName/{name}/Config/List", json={})
     result = address_list_delete_command(client=net_quest_omx_client, args={"name": name})
     assert result.readable_output == f"Successfully deleted {name} list"

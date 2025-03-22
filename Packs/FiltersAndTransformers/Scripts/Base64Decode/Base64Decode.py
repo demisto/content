@@ -1,6 +1,7 @@
+import base64
+
 import demistomock as demisto
 from CommonServerPython import *
-import base64
 
 MULTIPLIER = 4
 PADDING_CHAR = "="
@@ -38,7 +39,7 @@ def main():  # pragma: no cover
     try:
         return_results(decode(value))
     except Exception as e:
-        return_error(f"Failed to execute command." f"\nError:\n{str(e)}")
+        return_error(f"Failed to execute command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "builtins", "__builtin__"):

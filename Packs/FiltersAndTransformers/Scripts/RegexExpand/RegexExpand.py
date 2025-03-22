@@ -1,10 +1,10 @@
+import re
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import re
-from typing import List
 
 
-def concat_values(item1: Any, item2: Any) -> List[Any]:
+def concat_values(item1: Any, item2: Any) -> list[Any]:
     """
     Concatinate item1 and item2 into a list
 
@@ -32,7 +32,7 @@ def expand_template(match: re.Match, template: Any) -> Any:
     if template is None:
         return match.group(0)
     elif isinstance(template, str):
-        return match.expand(template.replace(r'\0', r'\g<0>'))
+        return match.expand(template.replace(r"\0", r"\g<0>"))
     elif isinstance(template, list):
         return [expand_template(match, t) for t in template]
     elif isinstance(template, dict):
@@ -44,42 +44,42 @@ def expand_template(match: re.Match, template: Any) -> Any:
 def main():
     args = demisto.args()
     try:
-        template = args.get('template')
-        template_type = args.get('template_type') or ''
-        if template_type == 'text':
+        template = args.get("template")
+        template_type = args.get("template_type") or ""
+        if template_type == "text":
             pass
-        elif template_type == 'json':
+        elif template_type == "json":
             template = json.loads(template)
-        elif template_type == 'list':
+        elif template_type == "list":
             template = argToList(template)
         else:
-            raise ValueError(f'Unknown template type: {template_type}')
+            raise ValueError(f"Unknown template type: {template_type}")
 
         regex_flags = 0
-        for flag in argToList(args.get('flags')):
-            if flag in ('dotall', 's'):
+        for flag in argToList(args.get("flags")):
+            if flag in ("dotall", "s"):
                 regex_flags |= re.DOTALL
-            elif flag in ('multiline', 'm'):
+            elif flag in ("multiline", "m"):
                 regex_flags |= re.MULTILINE
-            elif flag in ('ignorecase', 'i'):
+            elif flag in ("ignorecase", "i"):
                 regex_flags |= re.IGNORECASE
-            elif flag in ('unicode', 'u'):
+            elif flag in ("unicode", "u"):
                 regex_flags |= re.UNICODE
             else:
-                raise ValueError(f'Unknown flag: {flag}')
+                raise ValueError(f"Unknown flag: {flag}")
 
-        search_limit = int(args.get('search_limit') or 0)
+        search_limit = int(args.get("search_limit") or 0)
         if search_limit < 0:
-            raise ValueError(f'Bad search limit: {search_limit}')
+            raise ValueError(f"Bad search limit: {search_limit}")
 
-        results: List[Any] = []
-        value_takes = args.get('value_takes') or 'text'
-        if value_takes == 'text':
+        results: list[Any] = []
+        value_takes = args.get("value_takes") or "text"
+        if value_takes == "text":
             # Pattern matching for each text in the input order
-            regex_list = concat_values(args.get('regex'), [])
-            text_list = concat_values(args.get('value'), args.get('text'))
+            regex_list = concat_values(args.get("regex"), [])
+            text_list = concat_values(args.get("value"), args.get("text"))
 
-            regexes = [re.compile(str(r), flags=regex_flags) for r in regex_list if isinstance(r, (str, int))]
+            regexes = [re.compile(str(r), flags=regex_flags) for r in regex_list if isinstance(r, str | int)]
             for text in text_list:
                 for regex in regexes:
                     for i, match in enumerate(re.finditer(regex, str(text)), start=1):
@@ -87,13 +87,13 @@ def main():
                         if search_limit != 0 and search_limit <= i:
                             break
 
-        elif value_takes == 'regex':
+        elif value_takes == "regex":
             # Pattern matching for each regex in the input order
-            regex_list = concat_values(args.get('value'), args.get('regex'))
-            text_list = concat_values(args.get('text'), [])
+            regex_list = concat_values(args.get("value"), args.get("regex"))
+            text_list = concat_values(args.get("text"), [])
 
             for regex_pattern in regex_list:
-                if isinstance(regex_pattern, (str, int)):
+                if isinstance(regex_pattern, str | int):
                     regex = re.compile(str(regex_pattern), flags=regex_flags)
                     for text in text_list:
                         for i, match in enumerate(re.finditer(regex, str(text)), start=1):
@@ -101,7 +101,7 @@ def main():
                             if search_limit != 0 and search_limit <= i:
                                 break
         else:
-            raise ValueError(f'Unknown value_takes: {value_takes}')
+            raise ValueError(f"Unknown value_takes: {value_takes}")
 
         return_results(results)
     except Exception as err:
@@ -109,5 +109,5 @@ def main():
         raise DemistoException(str(err))
 
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

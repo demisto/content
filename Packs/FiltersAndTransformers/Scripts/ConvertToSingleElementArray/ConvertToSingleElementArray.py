@@ -12,5 +12,5 @@ def main():
         demisto.results([])
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
