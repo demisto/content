@@ -2,7 +2,7 @@
     "name": "Fortanix DSM",
     "description": "Manage Secrets and Protect Confidential Data using Fortanix Data Security Manager (Fortanix DSM)",
     "support": "partner",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.6",
     "author": "Fortanix",
     "url": "https://support.fortanix.com",
     "email": "info@fortanix.com",

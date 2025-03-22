@@ -3,7 +3,7 @@
     "description": "Find, prioritize, and fix vulnerabilities. Use this integration to fetch Assets, CVE, and Security issues from Cyberwatch.",
     "support": "partner",
     "created": "2024-07-01T10:00:00Z",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Cyberwatch",
     "url": "https://cyberwatch.fr",
     "email": "support@cyberwatch.fr",
