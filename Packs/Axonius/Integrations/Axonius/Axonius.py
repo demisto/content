@@ -1,10 +1,12 @@
 """Demisto Integration for Axonius."""
+
+import requests
 from axonius_api_client.api.assets.devices import Devices
 from axonius_api_client.api.assets.users import Users
 from axonius_api_client.connect import Connect
 from axonius_api_client.tools import dt_parse, strip_left
 from CommonServerPython import *
-import requests
+
 # Added ignore RemovedInMarshmallow4Warning in Axonius_test file.
 
 
@@ -32,9 +34,7 @@ def get_int_arg(
     try:
         return int(value)
     except Exception:
-        raise ValueError(
-            f"Supplied value {value!r} for argument {key!r} is not an integer."
-        )
+        raise ValueError(f"Supplied value {value!r} for argument {key!r} is not an integer.")
 
 
 def get_csv_arg(
@@ -83,16 +83,10 @@ def parse_key(key: str) -> str:
 
 def parse_asset(asset: dict) -> dict:
     """Initiate field format correction on assets."""
-    return {
-        parse_key(key=k): parse_kv(key=k, value=v)
-        for k, v in asset.items()
-        if k not in SKIPS
-    }
+    return {parse_key(key=k): parse_kv(key=k, value=v) for k, v in asset.items() if k not in SKIPS}
 
 
-def get_saved_queries(
-    client: Connect, args: dict
-) -> CommandResults:  # noqa: F821, F405
+def get_saved_queries(client: Connect, args: dict) -> CommandResults:  # noqa: F821, F405
     """Get assets with their defined fields returned by a saved query."""
     api_obj = client.devices if args["type"] == "devices" else client.users
     saved_queries = api_obj.saved_query.get()
@@ -110,15 +104,15 @@ def make_api_call(
     payload: dict = None,
 ) -> requests.Response | None:
     params: dict = demisto.params()
-    url: str | None = params.get('ax_url')
-    key: str = params.get('credentials', {}).get('identifier')
-    secret: str = params.get('credentials', {}).get('password')
-    certverify: bool = not params.get('insecure', False)
+    url: str | None = params.get("ax_url")
+    key: str = params.get("credentials", {}).get("identifier")
+    secret: str = params.get("credentials", {}).get("password")
+    certverify: bool = not params.get("insecure", False)
 
     if not url:
         return None
 
-    url = url + '/' if url[-1] != '/' else url
+    url = url + "/" if url[-1] != "/" else url
     url = url + endpoint
 
     headers: dict = {
@@ -131,10 +125,7 @@ def make_api_call(
     return requests.post(url, json=payload, headers=headers, verify=certverify)
 
 
-def add_note(
-    client: Connect,
-    args: dict
-) -> CommandResults:
+def add_note(client: Connect, args: dict) -> CommandResults:
     """Add notes to assets."""
     note: str = args["note"]
     asset_type: str = args["type"]
@@ -149,12 +140,12 @@ def add_note(
             "attributes": {
                 "note": note,
             },
-            "type": "notes_schema"
+            "type": "notes_schema",
         },
     }
 
     for id in internal_axon_id_arr:
-        response = make_api_call(endpoint=f'api/{asset_type}/{id}/notes', payload=payload)
+        response = make_api_call(endpoint=f"api/{asset_type}/{id}/notes", payload=payload)
         if response and response.status_code == 200:
             success_count += 1
 
@@ -179,9 +170,7 @@ def get_tags(client: Connect, args: dict) -> CommandResults:  # noqa: F821, F405
     )
 
 
-def update_tags(
-    client: Connect, args: dict, method_name: str
-) -> CommandResults:  # noqa: F821, F405
+def update_tags(client: Connect, args: dict, method_name: str) -> CommandResults:  # noqa: F821, F405
     tag_name: str = args["tag_name"]
     internal_axon_id_arr: list = args["ids"]
     if isinstance(internal_axon_id_arr, str):
@@ -204,9 +193,7 @@ def update_tags(
     )
 
 
-def get_by_sq(
-    api_obj: Union[Users, Devices], args: dict
-) -> CommandResults:  # noqa: F821, F405
+def get_by_sq(api_obj: Union[Users, Devices], args: dict) -> CommandResults:  # noqa: F821, F405
     """Get assets with their defined fields returned by a saved query."""
     name: str = args["saved_query_name"]
     fields: List[str] = get_csv_arg(key="fields", required=False)
@@ -292,7 +279,6 @@ def parse_assets(
 
 
 def run_command(client: Connect, args: dict, command: str):
-
     results: Union[CommandResults, str, None] = None
 
     if command == "test-module":
@@ -314,45 +300,31 @@ def run_command(client: Connect, args: dict, command: str):
         results = get_by_value(api_obj=client.users, args=args, method_name="mail")
 
     elif command == "axonius-get-users-by-mail-regex":
-        results = get_by_value(
-            api_obj=client.users, args=args, method_name="mail_regex"
-        )
+        results = get_by_value(api_obj=client.users, args=args, method_name="mail_regex")
 
     elif command == "axonius-get-users-by-username":
-        results = get_by_value(
-            api_obj=client.users, args=args, method_name="username"
-        )
+        results = get_by_value(api_obj=client.users, args=args, method_name="username")
 
     elif command == "axonius-get-users-by-username-regex":
-        results = get_by_value(
-            api_obj=client.users, args=args, method_name="username_regex"
-        )
+        results = get_by_value(api_obj=client.users, args=args, method_name="username_regex")
 
     elif command == "axonius-get-devices-by-hostname":
-        results = get_by_value(
-            api_obj=client.devices, args=args, method_name="hostname"
-        )
+        results = get_by_value(api_obj=client.devices, args=args, method_name="hostname")
 
     elif command == "axonius-get-devices-by-hostname-regex":
-        results = get_by_value(
-            api_obj=client.devices, args=args, method_name="hostname_regex"
-        )
+        results = get_by_value(api_obj=client.devices, args=args, method_name="hostname_regex")
 
     elif command == "axonius-get-devices-by-ip":
         results = get_by_value(api_obj=client.devices, args=args, method_name="ip")
 
     elif command == "axonius-get-devices-by-ip-regex":
-        results = get_by_value(
-            api_obj=client.devices, args=args, method_name="ip_regex"
-        )
+        results = get_by_value(api_obj=client.devices, args=args, method_name="ip_regex")
 
     elif command == "axonius-get-devices-by-mac":
         results = get_by_value(api_obj=client.devices, args=args, method_name="mac")
 
     elif command == "axonius-get-devices-by-mac-regex":
-        results = get_by_value(
-            api_obj=client.devices, args=args, method_name="mac_regex"
-        )
+        results = get_by_value(api_obj=client.devices, args=args, method_name="mac_regex")
 
     elif command == "axonius-get-saved-queries":
         results = get_saved_queries(client=client, args=args)
@@ -378,8 +350,8 @@ def main():
     command: str = demisto.command()
 
     url: str = params["ax_url"]
-    key: str = params.get('credentials', {}).get('identifier')
-    secret: str = params.get('credentials', {}).get('password')
+    key: str = params.get("credentials", {}).get("identifier")
+    secret: str = params.get("credentials", {}).get("password")
     certverify: bool = not params.get("insecure", False)
 
     proxies: dict = handle_proxy()  # noqa: F821, F405
