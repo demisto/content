@@ -9,10 +9,30 @@ urllib3.disable_warnings()
 
 VENDOR = "workday"
 PRODUCT = "signon"
-API_VERSION = "v40.0"
 REQUEST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # Old format for making requests
 EVENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"  # New format for processing events
 TIMEDELTA = 1
+VERSION_PATTERN = re.compile(r"^v\d+\.\d+$")
+
+# To preserve the XML template, we are ignoring the long line ruff validation
+# ruff: noqa: E501
+
+
+def get_api_version(params, default="v40.0"):
+    """
+    Retrieve and validate the API version from the parameters dictionary.
+
+    Parameters:
+        params (dict): Dictionary containing parameters, potentially including 'api_version'.
+        default (str): The default API version to use if 'api_version' is not provided or invalid.
+
+    Returns:
+        str: The validated API version.
+    """
+    api_version = params.get("api_version", default)
+    if VERSION_PATTERN.match(api_version):
+        return api_version
+    return default
 
 
 def get_from_time(seconds_ago: int) -> str:
@@ -80,26 +100,32 @@ def generate_pseudo_id(event: dict) -> str:
 
 class Client(BaseClient):
     """
-    Client will implement the service API, and should not contain any Demisto logic.
+    Client will implement the service API and should not contain any Demisto logic.
     Should only do requests and return data.
     """
 
-    def __init__(
-        self,
-        base_url: str,
-        verify_certificate: bool,
-        proxy: bool,
-        tenant_name: str,
-        username: str,
-        password: str,
-    ):
+    def __init__(self, params: dict):
+        base_url = params.get("base_url", "invalid")
+        tenant_name = params.get("tenant_name")
+        api_version = get_api_version(params)
+        username = params.get("credentials", {}).get("identifier")
+        password = params.get("credentials", {}).get("password")
+        verify_certificate = not params.get("insecure", False)
+        proxy = params.get("proxy", False)
+
+        if not base_url.startswith("https://"):
+            raise ValueError("Invalid base URL. Should begin with https://")
+
+        base_api_url = f"{base_url}/ccx/service/{tenant_name}/Identity_Management/{api_version}"
+
         headers = {"content-type": "text/xml;charset=UTF-8"}
 
-        super().__init__(base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers)
+        super().__init__(base_url=base_api_url, verify=verify_certificate, proxy=proxy, headers=headers)
 
         self.tenant_name = tenant_name
         self.username = escape(username)
         self.password = escape(password)
+        self.api_version = api_version
 
     def generate_workday_account_signons_body(
         self,
@@ -131,15 +157,14 @@ class Client(BaseClient):
             <soapenv:Envelope xmlns:bsvc="urn:com.workday/bsvc" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
                 <soapenv:Header>
                     <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
-                        <wsse:UsernameToken wsu:Id="UsernameToken-BF23D830F28697AA1614674076904673">
+                        <wsse:UsernameToken>
                             <wsse:Username>{self.username}</wsse:Username>
                             <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{self.password}</wsse:Password>
                         </wsse:UsernameToken>
                     </wsse:Security>
                 </soapenv:Header>
                 <soapenv:Body>
-                    <bsvc:Get_Workday_Account_Signons_Request xmlns:bsvc="urn:com.workday/bsvc" bsvc:version="v37.0">
-                        <!-- Optional: -->
+                    <bsvc:Get_Workday_Account_Signons_Request xmlns:bsvc="urn:com.workday/bsvc" bsvc:version="{self.api_version}">
                         <bsvc:Request_Criteria>
                             <!-- Optional: -->
                             <bsvc:From_DateTime>{from_time}</bsvc:From_DateTime>
@@ -156,7 +181,6 @@ class Client(BaseClient):
                     </bsvc:Get_Workday_Account_Signons_Request>
                 </soapenv:Body>
             </soapenv:Envelope>
-
             """  # noqa:E501
 
     def generate_test_payload(self, from_time: str, to_time: str) -> str:
@@ -171,8 +195,7 @@ class Client(BaseClient):
                     </wsse:Security>
                 </soapenv:Header>
                 <soapenv:Body>
-                    <bsvc:Get_Workday_Account_Signons_Request xmlns:bsvc="urn:com.workday/bsvc" bsvc:version="v37.0">
-                        <!-- Optional: -->
+                    <bsvc:Get_Workday_Account_Signons_Request xmlns:bsvc="urn:com.workday/bsvc" bsvc:version="{self.api_version}">
                         <bsvc:Request_Criteria>
                             <!-- Optional: -->
                             <bsvc:From_DateTime>{from_time}</bsvc:From_DateTime>
@@ -478,30 +501,12 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     params = demisto.params()
 
-    tenant_name = params.get("tenant_name")
-    base_url = params.get("base_url")
-
-    if not base_url.startswith("https://"):
-        raise ValueError("Invalid base URL. Should begin with https://")
-    url = f"{base_url}/ccx/service/{tenant_name}/Identity_Management/{API_VERSION}"
-
-    username = params.get("credentials", {}).get("identifier")
-    password = params.get("credentials", {}).get("password")
-
-    verify_certificate = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
     max_fetch = arg_to_number(params.get("max_fetch")) or 10000
 
     demisto.debug(f"Command being called is {command}")
     try:
-        client = Client(
-            base_url=url,
-            tenant_name=tenant_name,
-            username=username,
-            password=password,
-            verify_certificate=verify_certificate,
-            proxy=proxy,
-        )
+        client = Client(params=params
+                        )
 
         if command == "test-module":
             return_results(module_of_testing(client))
@@ -539,7 +544,11 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
+        return_error(
+            f"Failed to execute {demisto.command()} command.\n"
+            f"Error:\n{str(e)}\n"
+            f"Traceback:\n{traceback.format_exc()}"
+        )
 
 
 """ ENTRY POINT """
