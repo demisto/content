@@ -1,5 +1,5 @@
-from typing import Any
 from datetime import datetime
+from typing import Any
 
 
 class Data:
@@ -150,9 +150,7 @@ class account_list(Data):
                 "Name": "name_1",
                 "Status": "status_1",
                 "JoinedMethod": "joined_method_1",
-                "JoinedTimestamp": datetime(
-                    year=2022, month=10, day=15, hour=12, minute=30, second=45
-                ),
+                "JoinedTimestamp": datetime(year=2022, month=10, day=15, hour=12, minute=30, second=45),
             },
             {
                 "Id": "id_2",
@@ -161,9 +159,7 @@ class account_list(Data):
                 "Name": "name_2",
                 "Status": "status_2",
                 "JoinedMethod": "joined_method_2",
-                "JoinedTimestamp": datetime(
-                    year=2022, month=10, day=16, hour=12, minute=30, second=45
-                ),
+                "JoinedTimestamp": datetime(year=2022, month=10, day=16, hour=12, minute=30, second=45),
             },
         ],
         "next_token",
@@ -210,9 +206,7 @@ class account_get(Data):
             "Name": "name",
             "Status": "SUSPENDED",
             "JoinedMethod": "joined_method",
-            "JoinedTimestamp": datetime(
-                year=2022, month=10, day=15, hour=12, minute=30, second=45
-            ),
+            "JoinedTimestamp": datetime(year=2022, month=10, day=15, hour=12, minute=30, second=45),
         },
         "ResponseMetadata": ...,
     }
@@ -279,7 +273,7 @@ class organization_get(Data):
 class account_remove(Data):
     command_args = {"account_id": "account_id"}
     client_func_kwargs = {"AccountId": "account_id"}
-    readable_output = 'AWS account *account_id* removed successfully.'
+    readable_output = "AWS account *account_id* removed successfully."
 
 
 class account_move(Data):
@@ -293,7 +287,7 @@ class account_move(Data):
         "SourceParentId": "source_parent_id",
         "DestinationParentId": "destination_parent_id",
     }
-    readable_output = 'AWS account *account_id* moved successfully.'
+    readable_output = "AWS account *account_id* moved successfully."
 
 
 class account_create_initial_call(Data):
@@ -305,25 +299,25 @@ class account_create_initial_call(Data):
         "tags": "key1=value1,key2=value2",
     }
     client_func_kwargs = {
-        'Email': 'email',
-        'AccountName': 'account_name',
-        'RoleName': 'role_name',
-        'IamUserAccessToBilling': 'ALLOW',
-        'Tags': [
+        "Email": "email",
+        "AccountName": "account_name",
+        "RoleName": "role_name",
+        "IamUserAccessToBilling": "ALLOW",
+        "Tags": [
             {"Key": "key1", "Value": "value1"},
             {"Key": "key2", "Value": "value2"},
-        ]
+        ],
     }
     client_func_return = {
-        'CreateAccountStatus': {
-            'Id': 'id',
-            'AccountName': 'account_name',
-            'State': 'IN_PROGRESS',
-            'RequestedTimestamp': datetime(2015, 1, 1),
-            'CompletedTimestamp': datetime(2015, 1, 1),
-            'AccountId': 'account_id',
-            'GovCloudAccountId': 'gov_id',
-            'FailureReason': 'none'
+        "CreateAccountStatus": {
+            "Id": "id",
+            "AccountName": "account_name",
+            "State": "IN_PROGRESS",
+            "RequestedTimestamp": datetime(2015, 1, 1),
+            "CompletedTimestamp": datetime(2015, 1, 1),
+            "AccountId": "account_id",
+            "GovCloudAccountId": "gov_id",
+            "FailureReason": "none",
         }
     }
 
@@ -332,15 +326,15 @@ class account_create_final_call(Data):
     command_args = {"request_id": "request_id"}
     client_func_kwargs = {"CreateAccountRequestId": "request_id"}
     client_func_return = {
-        'CreateAccountStatus': {
-            'Id': 'id',
-            'AccountName': 'account_name',
-            'State': 'SUCCEEDED',
-            'RequestedTimestamp': datetime(2015, 1, 1),
-            'CompletedTimestamp': datetime(2015, 1, 1),
-            'AccountId': 'account_id',
-            'GovCloudAccountId': 'gov_id',
-            'FailureReason': 'none'
+        "CreateAccountStatus": {
+            "Id": "id",
+            "AccountName": "account_name",
+            "State": "SUCCEEDED",
+            "RequestedTimestamp": datetime(2015, 1, 1),
+            "CompletedTimestamp": datetime(2015, 1, 1),
+            "AccountId": "account_id",
+            "GovCloudAccountId": "gov_id",
+            "FailureReason": "none",
         }
     }
     context_outputs = account_get.context_outputs
@@ -348,14 +342,9 @@ class account_create_final_call(Data):
 
 
 class account_close(Data):
-    command_args = {
-        "account_id": "account_id",
-        "is_closed": False
-    }
-    client_func_kwargs = {
-        "AccountId": "account_id"
-    }
-    readable_output = 'AWS account *account_id* closed successfully.'
+    command_args = {"account_id": "account_id", "is_closed": False}
+    client_func_kwargs = {"AccountId": "account_id"}
+    readable_output = "AWS account *account_id* closed successfully."
 
 
 class organization_unit_create(Data):
@@ -372,9 +361,7 @@ class organization_unit_create(Data):
             {"Key": "key2", "Value": "value2"},
         ],
     }
-    client_func_return = {
-        "OrganizationalUnit": {"Id": "id", "Arn": "arn", "Name": "name"}
-    }
+    client_func_return = {"OrganizationalUnit": {"Id": "id", "Arn": "arn", "Name": "name"}}
     context_outputs = {"Id": "id", "Arn": "arn", "Name": "name"}
     readable_output = """### AWS Organization Unit
 |Id|Name|Arn|
@@ -386,7 +373,7 @@ class organization_unit_create(Data):
 class organization_unit_delete(Data):
     command_args = {"organizational_unit_id": "organizational_unit_id"}
     client_func_kwargs = {"OrganizationalUnitId": "organizational_unit_id"}
-    readable_output = 'AWS organizational unit *organizational_unit_id* deleted successfully.'
+    readable_output = "AWS organizational unit *organizational_unit_id* deleted successfully."
 
 
 class organization_unit_rename(Data):
@@ -395,7 +382,7 @@ class organization_unit_rename(Data):
         "OrganizationalUnitId": "organizational_unit_id",
         "Name": "name",
     }
-    readable_output = 'AWS organization unit *organizational_unit_id* successfully renamed to *name*.'
+    readable_output = "AWS organization unit *organizational_unit_id* successfully renamed to *name*."
 
 
 class policy_list(Data):
@@ -484,7 +471,7 @@ class target_policy_list(Data):
                 "Description": "desc1",
                 "Type": "type1",
                 "AwsManaged": True,
-                "TargetId": "target_id"
+                "TargetId": "target_id",
             },
             {
                 "Id": "id2",
@@ -493,7 +480,7 @@ class target_policy_list(Data):
                 "Description": "desc2",
                 "Type": "type2",
                 "AwsManaged": False,
-                "TargetId": "target_id"
+                "TargetId": "target_id",
             },
         ],
         {"TargetPolicyNextToken": "next_token"},
@@ -540,13 +527,13 @@ class policy_get(Data):
 class policy_delete(Data):
     command_args = {"policy_id": "policy_id"}
     client_func_kwargs = {"PolicyId": "policy_id"}
-    readable_output = 'AWS Organizations policy *policy_id* successfully deleted.'
+    readable_output = "AWS Organizations policy *policy_id* successfully deleted."
 
 
 class policy_attach(Data):
     command_args = {"policy_id": "policy_id", "target_id": "target_id"}
     client_func_kwargs = {"PolicyId": "policy_id", "TargetId": "target_id"}
-    readable_output = 'AWS Organizations policy *policy_id* successfully attached.'
+    readable_output = "AWS Organizations policy *policy_id* successfully attached."
 
 
 class policy_target_list(Data):
