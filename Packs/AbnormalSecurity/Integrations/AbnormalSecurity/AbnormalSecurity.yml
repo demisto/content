@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Abnormal Security
   version: -1
@@ -57,6 +60,18 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+- display: Polling Lag Time (in minutes)
+  name: polling_lag
+  defaultvalue: "0"
+  type: 0
+  required: false
+  additionalinfo: Time in minutes to subtract from polling time window for data consistency
+- display: Maximum incidents pages to fetch
+  name: max_page_number
+  defaultvalue: "8"
+  type: 0
+  required: false
+  additionalinfo: Maximum number of pages to fetch for incidents
 description: Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies.
 display: Abnormal Security
 name: Abnormal Security
@@ -121,6 +136,10 @@ script:
       name: mock-data
     - description: Subtenant of the user (if applicable).
       name: subtenant
+    - description: Number of threats that on in each page. Each page of data will have at most page_size threats. Has no effect if filter is not specified.
+      name: page_size
+    - description: 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.
+      name: page_number
     description: Get details of a threat.
     name: abnormal-security-get-threat
     outputs:
@@ -759,7 +778,7 @@ script:
     description: Get the latest threat intel feed.
     name: abnormal-security-get-latest-threat-intel-feed
     deprecated: true
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   script: ""
   subtype: python3
   type: python
