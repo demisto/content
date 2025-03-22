@@ -1,15 +1,17 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-HIGHLIGHT_WORD_STYLE_TEMPLATE = '**%s**'
+HIGHLIGHT_WORD_STYLE_TEMPLATE = "**%s**"
 
 
 def main():
-    TERMS = demisto.args()['terms'].split(",")
-    WORDS, SENTENCES = [t.strip().lower() for t in TERMS if " " not in t.strip()], [t.strip().lower() for t in TERMS if
-                                                                                    " " in t.strip()]
+    TERMS = demisto.args()["terms"].split(",")
+    WORDS, SENTENCES = (
+        [t.strip().lower() for t in TERMS if " " not in t.strip()],
+        [t.strip().lower() for t in TERMS if " " in t.strip()],
+    )
     WORDS.sort(reverse=True, key=lambda x: len(x))
-    INIT_TEXT = demisto.args().get('text', '').lower()
+    INIT_TEXT = demisto.args().get("text", "").lower()
     if not INIT_TEXT:
         return_error("The input text is empty")
 
@@ -42,16 +44,16 @@ def main():
 
     if found:
         entry = {
-            'Type': entryTypes['note'],
-            'Contents': marked_text,
-            'ContentsFormat': formats['text'],
-            'HumanReadable': marked_text,
-            'ReadableContentsFormat': formats['markdown']
+            "Type": entryTypes["note"],
+            "Contents": marked_text,
+            "ContentsFormat": formats["text"],
+            "HumanReadable": marked_text,
+            "ReadableContentsFormat": formats["markdown"],
         }
         demisto.results(entry)
     else:
         demisto.results("The text does not contains any of the input words")
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     main()
