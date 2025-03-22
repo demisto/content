@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 list1_name = demisto.args().get("list1_name")
 list2_name = demisto.args().get("list2_name")
 
