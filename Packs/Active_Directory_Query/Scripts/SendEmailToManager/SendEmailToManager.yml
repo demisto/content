@@ -42,4 +42,4 @@ dependson:
 timeout: 0s
 tests:
 - No test
-dockerimage: demisto/python3:3.11.10.116949
+dockerimage: demisto/python3:3.12.8.1983910
