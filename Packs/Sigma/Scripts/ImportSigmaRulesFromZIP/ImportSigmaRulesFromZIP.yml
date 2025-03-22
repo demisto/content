@@ -5,7 +5,7 @@ name: ImportSigmaRulesFromZIP
 script: ''
 type: python
 tags: []
-comment: This script extracts and processes Sigma rules from a zip file. It reads each relevant file within the zip archive and creates Sigma rule indicators.
+comment: Deprecated - use CreateSigmaRuleIndicator.
 args:
 - name: entry_id
   required: true
@@ -18,5 +18,6 @@ dockerimage: demisto/python3:3.12.8.1983910
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0
+deprecated: true
 tests:
 - No tests (auto formatted)
