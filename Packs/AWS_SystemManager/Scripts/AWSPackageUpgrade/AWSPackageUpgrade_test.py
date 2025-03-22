@@ -9,12 +9,7 @@ def test_upgrade_package_on_instance_invalid_asmruleid(mocker):
     """
     from AWSPackageUpgrade import upgrade_package_on_instance
 
-    args = {
-        "instance_id": "ou-2222-22222222",
-        "asm_rule_id": "fake",
-        "region": "region",
-        "assume_role_arn": "None"
-    }
+    args = {"instance_id": "ou-2222-22222222", "asm_rule_id": "fake", "region": "region", "assume_role_arn": "None"}
     result = upgrade_package_on_instance(**args)
     assert result == {
         "run_command_flag": False,
@@ -36,12 +31,7 @@ def test_upgrade_package_on_instance_invalid_instanceid(mocker):
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    args = {
-        "instance_id": "ou-2222-22222222",
-        "asm_rule_id": "InsecureOpenSSH",
-        "region": "region",
-        "assume_role_arn": "None"
-    }
+    args = {"instance_id": "ou-2222-22222222", "asm_rule_id": "InsecureOpenSSH", "region": "region", "assume_role_arn": "None"}
     result = upgrade_package_on_instance(**args)
     assert result == {
         "run_command_flag": False,
@@ -62,12 +52,7 @@ def test_upgrade_package_on_instance_no_instance(mocker):
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    args = {
-        "instance_id": "ou-2222-22222222",
-        "asm_rule_id": "InsecureOpenSSH",
-        "region": "region",
-        "assume_role_arn": "None"
-    }
+    args = {"instance_id": "ou-2222-22222222", "asm_rule_id": "InsecureOpenSSH", "region": "region", "assume_role_arn": "None"}
     result = upgrade_package_on_instance(**args)
     assert result == {
         "run_command_flag": False,
@@ -88,12 +73,7 @@ def test_upgrade_package_on_instance_inactive(mocker):
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    args = {
-        "instance_id": "ou-2222-22222222",
-        "asm_rule_id": "InsecureOpenSSH",
-        "region": "region",
-        "assume_role_arn": "None"
-    }
+    args = {"instance_id": "ou-2222-22222222", "asm_rule_id": "InsecureOpenSSH", "region": "region", "assume_role_arn": "None"}
     result = upgrade_package_on_instance(**args)
     assert result == {
         "run_command_flag": False,
@@ -126,12 +106,7 @@ def test_upgrade_package_on_instance_no_package(mocker):
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    args = {
-        "instance_id": "ou-2222-22222222",
-        "asm_rule_id": "InsecureOpenSSH",
-        "region": "region",
-        "assume_role_arn": "None"
-    }
+    args = {"instance_id": "ou-2222-22222222", "asm_rule_id": "InsecureOpenSSH", "region": "region", "assume_role_arn": "None"}
     result = upgrade_package_on_instance(**args)
     assert result == {
         "run_command_flag": False,
@@ -166,17 +141,12 @@ def test_upgrade_package_on_instance_package(mocker):
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    args = {
-        "instance_id": "ou-2222-22222222",
-        "asm_rule_id": "InsecureOpenSSH",
-        "region": "region",
-        "assume_role_arn": "None"
-    }
+    args = {"instance_id": "ou-2222-22222222", "asm_rule_id": "InsecureOpenSSH", "region": "region", "assume_role_arn": "None"}
     result = upgrade_package_on_instance(**args)
     assert result == {
         "run_command_flag": True,
         "run_command_output": "AWS SSM Command run initiated successfully.",
-        "run_command_id": "123"
+        "run_command_id": "123",
     }
 
 
@@ -189,13 +159,9 @@ def test_aws_package_upgrade(mocker):
 
     mock_dict = {"run_command_flag": True, "run_command_output": "123"}
 
-    mocker.patch(
-        "AWSPackageUpgrade.upgrade_package_on_instance", return_value=mock_dict
-    )
+    mocker.patch("AWSPackageUpgrade.upgrade_package_on_instance", return_value=mock_dict)
 
-    command_results = aws_package_upgrade(
-        {"instance_id": "123", "asm_rule_id": "InsecureOpenSSH", "region": "us-east"}
-    )
+    command_results = aws_package_upgrade({"instance_id": "123", "asm_rule_id": "InsecureOpenSSH", "region": "us-east"})
 
     assert command_results.outputs_prefix == "awspackageupgrade"
     assert command_results.outputs == {
