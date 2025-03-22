@@ -2,22 +2,16 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: This is a generic playbook to be executed for the Splunk Notable Generic
-  incident type. The playbook performs all the common parts of the investigation,
-  including notifying the SOC, enriching the data for indicators and users, calculating
-  the severity, assigning the incident, notifying the SIEM admin for false positives
-  and more.
+description: This is a generic playbook to be executed for the Splunk Notable Generic incident type. The playbook performs all the common parts of the investigation, including notifying the SOC, enriching the data for indicators and users, calculating the severity, assigning the incident, notifying the SIEM admin for false positives and more.
 id: Splunk Generic
 inputs:
-- description: Determines whether to enrich all indicators in the incident. Default
-    is True.
+- description: Determines whether to enrich all indicators in the incident. Default is True.
   key: Enrich
   playbookInputQuery:
   required: false
   value:
     simple: "true"
-- description: Set to true to assign only the user that is currently on shift. Default
-    is False. Requires Cortex XSOAR v5.5 or later.
+- description: Set to true to assign only the user that is currently on shift. Default is False. Requires Cortex XSOAR v5.5 or later.
   key: OnCall
   playbookInputQuery:
   required: false
@@ -39,9 +33,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: Determines whether to use the Calculate Severity playbook to calculate
-    the incident severity. Default is True. If the playbook isn't used, the severity
-    is determined by the Splunk severity value.
+- description: Determines whether to use the Calculate Severity playbook to calculate the incident severity. Default is True. If the playbook isn't used, the severity is determined by the Splunk severity value.
   key: UseCalculateSeverity
   playbookInputQuery:
   required: false
@@ -298,8 +290,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Extracts all indicators from the incident and enriches the indicators
-        by using the reputation command defined for each indicator type.
+      description: Extracts all indicators from the incident and enriches the indicators by using the reputation command defined for each indicator type.
       id: 354e53b0-0132-44d6-895e-0f6e0a248cd9
       iscommand: true
       name: Extract indicators from incident
@@ -747,8 +738,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Provide data to adjust the rule in order to avoid similar false
-        positives in the future.
+      description: Provide data to adjust the rule in order to avoid similar false positives in the future.
       id: 4dfa75fe-917f-4eed-894a-3f2dfda362fc
       iscommand: false
       name: Provide data for rule adjustment
@@ -1023,4 +1013,5 @@ tests:
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 fromversion: 6.0.0
