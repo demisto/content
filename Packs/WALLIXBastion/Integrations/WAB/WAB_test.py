@@ -1,9 +1,10 @@
-from WAB import main, Client
-import demistomock as demisto
-from CommonServerPython import *
-from typing import Any
-import yaml
 from os import path
+from typing import Any
+
+import demistomock as demisto
+import yaml
+from CommonServerPython import *
+from WAB import Client, main
 
 
 class Settable:
@@ -33,9 +34,7 @@ def test_timeout(mocker):
     mocker.patch.object(
         demisto,
         "params",
-        return_value={
-            "timeout": "0"
-        },
+        return_value={"timeout": "0"},
     )
     try:
         main()
@@ -58,8 +57,8 @@ def test_test_module(mocker):
             "verify_certificate": False,
             "api_version": "v3.12",
             "auth_key": "key",
-            "auth_user": "user"
-        }
+            "auth_user": "user",
+        },
     )
 
     def mock_http_request(*args, **kwargs):
@@ -87,19 +86,9 @@ def test_login(mocker):
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "results")
 
-    params = {
-        "url": "1.1.1.1",
-        "verify_certificate": False,
-        "api_version": "v3.12",
-        "auth_key": "key",
-        "auth_user": "user"
-    }
+    params = {"url": "1.1.1.1", "verify_certificate": False, "api_version": "v3.12", "auth_key": "key", "auth_user": "user"}
 
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value=params
-    )
+    mocker.patch.object(demisto, "params", return_value=params)
 
     integration_context = {}
 
@@ -181,7 +170,7 @@ def test_wab_get_device(mocker):
             "api_version": "v3.12",
             "auth_key": "key",
             "auth_user": "user",
-            "timeout": "50"
+            "timeout": "50",
         },
     )
     mocker.patch.object(demisto, "results")
@@ -225,9 +214,13 @@ def test_wab_get_device(mocker):
 
 def test_commands(mocker):
     """test that all commands names match an existing method."""
-    mocker.patch.object(demisto, "args", return_value={
-        "session_account_type": "account"  # required for add_session_target_to_target_group
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "session_account_type": "account"  # required for add_session_target_to_target_group
+        },
+    )
     mocker.patch.object(
         demisto,
         "params",
@@ -237,7 +230,7 @@ def test_commands(mocker):
             "api_version": "v3.12",
             "auth_key": "key",
             "auth_user": "user",
-            "timeout": "50"
+            "timeout": "50",
         },
     )
 
