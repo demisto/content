@@ -1227,11 +1227,12 @@ def run_polling_command(client: Client, cmd: str, command_function: Callable, ar
 
 
 def get_headers(params: dict) -> str:
-    """ Configures HTTP headers for Cloudflare API authentication based on the selected method.
+    """
+    Configures HTTP headers for Cloudflare API authentication by inferring the authentication method.
+
     Supports two authentication methods:
     1. API Token: Uses a bearer token for authentication.
     2. Global API Key: Uses an email and global API key for authentication.
-
 
     Args:
         params (dict): A dictionary containing authentication parameters.
@@ -1243,37 +1244,25 @@ def get_headers(params: dict) -> str:
         ValueError: If required authentication parameters are missing.
     """
     headers = {}
-    auth_method = params.get('auth_method')
+
+    api_token = params.get('api_token', {}).get('password') or params.get('api_token')
+    global_api_key = params.get('global_api_key', {}).get('password') or params.get('global_api_key')
+    email = params.get('email')
 
     try:
-        if auth_method == 'API Token':
-            api_token = params.get('credentials', {}).get('password') or params.get('credentials')
-            if not api_token:
-                raise ValueError('API Token must be provided when using API Token authentication method.')
+        if api_token:
             headers = {
                 'Authorization': f'Bearer {api_token}',
                 'Content-Type': 'application/json'
             }
-
-        elif auth_method == 'Global API Key':
-            global_api_key = params.get('global_api_key', {}).get('password') or params.get('global_api_key')
-            email = params.get('email')
-
-            if not global_api_key or not email:
-                raise ValueError(
-                    'Both Global API Key and Email must be provided when using '
-                    'Global API Key authentication method.'
-                )
-
+        elif global_api_key and email:
             headers = {
                 'X-Auth-Email': email,
                 'X-Auth-Key': global_api_key,
                 'Content-Type': 'application/json'
             }
-
         else:
-            raise ValueError('Invalid authentication method selected.')
-
+            raise ValueError('Missing authentication parameters. Provide either API Token or Global API Key with Email.')
     except Exception as e:
         return json.dumps({'error': str(e)})
 

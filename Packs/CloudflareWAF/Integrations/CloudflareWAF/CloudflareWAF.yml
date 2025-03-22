@@ -12,15 +12,6 @@ configuration:
   type: 0
   required: false
   section: Connect
-- name: auth_method
-  display: Authentication Method
-  type: 15
-  options:
-    - API Token
-    - Global API Key
-  defaultvalue: API Token
-  required: true
-  section: Connect
 - name: credentials
   display: API Token
   type: 9
