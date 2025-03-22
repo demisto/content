@@ -1,11 +1,12 @@
 import copy
+from collections import defaultdict
 from contextlib import suppress
-from typing import Any
 from urllib.parse import parse_qs
 
 from CommonServerPython import *  # noqa: F401
 
 FEEDLY_BASE_URL = "https://api.feedly.com"
+
 
 # Constants copied from the command StixParser
 DFLT_LIMIT_PER_REQUEST = 100
@@ -116,9 +117,7 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
 
 
 class Client(BaseClient):
-    def fetch_indicators_from_stream(
-        self, stream_id: str, newer_than: float, *, limit: int | None = None, ingest_reports: bool = True
-    ) -> tuple[list, float | None]:
+    def fetch_incidents_from_stream(self, stream_id: str, newer_than: float) -> list[dict]:
         params = {
             "streamId": stream_id,
             "count": 20,
@@ -140,16 +139,11 @@ class Client(BaseClient):
 
         demisto.debug(f"Fetched {len(objects)} objects from stream {stream_id}")
 
-        indicators = STIX2Parser(ingest_reports=ingest_reports).parse_stix2_objects(objects)
+        indicators = STIX2Parser().parse_stix2_objects(objects)
 
-        if limit:
-            indicators = indicators[:limit]
+        incidents = create_incidents_from_indicators(indicators)
 
-        for indicator in indicators:
-            indicator["type"] = indicator.get("indicator_type", "")
-            indicator["fields"] = indicator.get("customFields", {})
-
-        return indicators, extract_next_newer_than(objects)
+        return incidents
 
 
 class STIX2Parser:
@@ -183,7 +177,7 @@ class STIX2Parser:
         "vulnerability",
     ]
 
-    def __init__(self, ingest_reports: bool):
+    def __init__(self):
         self.indicator_regexes = [
             re.compile(INDICATOR_EQUALS_VAL_PATTERN),
             re.compile(INDICATOR_IN_VAL_PATTERN),
@@ -196,8 +190,6 @@ class STIX2Parser:
         ]
         self.id_to_object: dict[str, Any] = {}
         self.parsed_object_id_to_object: dict[str, Any] = {}
-
-        self.ingest_reports = ingest_reports
 
     @staticmethod
     def get_indicator_publication(indicator: dict[str, Any]):
@@ -305,14 +297,13 @@ class STIX2Parser:
 
         return [attack_pattern]
 
-    def parse_report(self, report_obj: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    @staticmethod
+    def parse_report(report_obj: dict[str, Any]):
         """
         Parses a single report object
         :param report_obj: report object
         :return: report extracted from the report object in cortex format
         """
-        if not self.ingest_reports:
-            return [], []
         object_refs = report_obj.get("object_refs", [])
         new_relationships = []
         for obj_id in object_refs:
@@ -945,63 +936,61 @@ class STIX2Parser:
                 indicator["relationships"] = relationships
 
 
-def test_module(client: Client, params: dict) -> str:  # pragma: no cover
-    """Builds the iterator to check that the feed is accessible.
-    Args:
-        client: Client object.
-        params: demisto.params()
-    Returns:
-        Outputs.
-    """
-    try:
-        client.fetch_indicators_from_stream(params["feedly_stream_id"], newer_than=time.time() - 3600)
-        return "ok"
-    except DemistoException as e:
-        return e.message
-    except Exception as e:
-        return str(e)
+def create_incidents_from_indicators(indicators: list[dict]) -> list[dict]:
+    return [
+        create_incident_from_report_indicator(indicator)
+        for indicator in indicators
+        if indicator.get("indicator_type") == "Feedly Report"
+    ]
 
 
-def get_indicators_command(
-    client: Client, params: dict[str, Any], args: dict[str, Any]
-) -> CommandResults:  # pragma: no cover
-    """Wrapper for retrieving indicators from the feed to the war-room.
-    Args:
-        client: Client object with request
-        params: demisto.params()
-        args: demisto.args()
-    Returns:
-        Outputs.
-    """
-    indicators, _ = client.fetch_indicators_from_stream(
-        params["feedly_stream_id"],
-        newer_than=time.time() - 24 * 3600,
-        limit=int(args.get("limit", "10")),
-        ingest_reports=args.get("ingest_articles_as_indicators", True),
-    )
-    demisto.createIndicators(indicators)  # type: ignore
-    return CommandResults(readable_output=f"Created {len(indicators)} indicators.")
+def create_incident_from_report_indicator(indicator: dict) -> dict:
+    references = indicator["rawJSON"].get("external_references", [])
+
+    feedly_url = references[0]["url"]
+    entry_id = feedly_url.removeprefix("https://feedly.com/i/entry/")
+
+    indicator_type2relationships = defaultdict(list)
+    for relationship in indicator.get("relationships", []):
+        if relationship["entityBFamily"] == "Indicator":
+            indicator_type2relationships[relationship["entityBType"]].append(relationship["entityB"])
+
+    indicator_type2relationships["TTP"] = [
+        tag for tag in indicator["customFields"].get("tags", []) if tag.startswith("T") and tag[1:].isdigit()
+    ]
+
+    event = {
+        "name": indicator["value"],
+        "create_time": indicator["rawJSON"].get("published"),
+        "event_id": entry_id,
+        "feedly_url": feedly_url,
+        "tags": indicator["rawJSON"].get("labels", []),
+        "content": indicator["customFields"].get("description", ""),
+        "indicators": indicator_type2relationships,
+    }
+
+    if len(references) > 1:
+        event["source"] = {
+            "name": references[1]["source_name"],
+            "url": references[1]["url"],
+        }
+
+    return {
+        "name": event["name"],
+        "occured": event["create_time"],
+        "dbotMirrorId": entry_id,
+        "rawJSON": json.dumps(event),
+    }
 
 
-def fetch_indicators_command(
-    client: Client, params: dict[str, str], context: dict[str, str]
-) -> tuple[list, float | None]:  # pragma: no cover
-    """Wrapper for fetching indicators from the feed to the Indicators tab.
-    Args:
-        client: Client object with request
-        params: demisto.params()
-        context: demisto.getIntegrationContext()
-    Returns:
-        Indicators.
-    """
-    return client.fetch_indicators_from_stream(
+def fetch_incidents(client: Client, params: dict[str, str], context: dict[str, str]) -> list[dict]:
+    return client.fetch_incidents_from_stream(
         params["feedly_stream_id"],
         newer_than=get_newer_than_timestamp(params, context),
-        ingest_reports=params.get("ingest_articles_as_indicators", True),  # type: ignore
     )
 
 
-def get_newer_than_timestamp(params: dict[str, str], context: dict[str, str]) -> float:  # pragma: no cover
+def get_newer_than_timestamp(params: dict[str, str], context: dict[str, str]) -> float:
     stream_id = params["feedly_stream_id"]
     if "/tag/" in stream_id:
         saved_timestamp = context.get("last_run")
@@ -1011,25 +1000,34 @@ def get_newer_than_timestamp(params: dict[str, str], context: dict[str, str]) ->
     return float(saved_timestamp or (time.time() - int(params.get("days_to_backfill", 7)) * 24 * 3600))
 
 
-def extract_next_newer_than(stix_objects: list[dict[str, str]]) -> float | None:
-    if not stix_objects:
-        return None
-    return datetime.fromisoformat(
-        max(stix_object["created"] for stix_object in stix_objects if stix_object.get("type") == "report")
-    ).timestamp()
+def set_next_newer_than(incidents: list[dict], now: float) -> None:
+    if not incidents:
+        return
+    last_fetched_article_time = datetime.fromisoformat(max(incident["occured"] for incident in incidents)).timestamp()
+    demisto.setLastRun({"last_fetched_article_crawled_time": last_fetched_article_time, "last_run": now})
 
 
-def set_next_newer_than(last_article_time: float, now: float) -> None:  # pragma: no cover
-    demisto.setLastRun({"last_fetched_article_crawled_time": last_article_time, "last_run": now})
+def test_module(client: Client, params: dict) -> str:  # pragma: no cover
+    """Builds the iterator to check that the feed is accessible.
+    Args:
+        client: Client object.
+        params: demisto.params()
+    Returns:
+        Outputs.
+    """
+    try:
+        client.fetch_incidents_from_stream(params["feedly_stream_id"], newer_than=time.time() - 3600)
+        return "ok"
+    except DemistoException as e:
+        return e.message
+    except Exception as e:
+        return str(e)
 
 
-def main():  # pragma: no cover
+def main() -> None:
     params = demisto.params()
 
     command = demisto.command()
-    args = demisto.args()
-
-    demisto.debug(f"Command being called is {command}")
 
     try:
         client = Client(
@@ -1039,27 +1037,19 @@ def main():  # pragma: no cover
             headers={"Authorization": f"Bearer {params['credentials']['password']}"},
         )
 
-        if command == "test-module":
-            return_results(test_module(client, params))
-
-        elif command == "feedly-get-indicators":
-            return_results(get_indicators_command(client, params, args))
-
-        elif command == "fetch-indicators":
+        if command == "fetch-incidents":
             now = time.time()
-            indicators, last_fetched_article_time = fetch_indicators_command(client, params, demisto.getLastRun())
-            for indicators_batch in batch(indicators, batch_size=2000):
-                demisto.createIndicators(indicators_batch)  # type: ignore
-            if indicators:
-                set_next_newer_than(last_fetched_article_time, now)  # type: ignore
+            incidents = fetch_incidents(client, params, demisto.getLastRun())
+            demisto.incidents(incidents)
+            set_next_newer_than(incidents, now)
+        elif command == "test-module":
+            return_results(test_module(client, params))
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
-
-    # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # Print the traceback stack
         return_error(f"Failed to execute {command} command.\nError:\n{repr(e)}")
 
 
-if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

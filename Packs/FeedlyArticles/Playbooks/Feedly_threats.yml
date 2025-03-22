@@ -1,0 +1,464 @@
+id: Feedly threats
+version: -1
+name: Feedly threats
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c1841fcb-b6ec-40b6-89e9-3a68f6c62b43
+    type: start
+    task:
+      id: c1841fcb-b6ec-40b6-89e9-3a68f6c62b43
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5933c19b-36f8-4f1b-8410-e0d0b2a5631a
+    type: regular
+    task:
+      id: 5933c19b-36f8-4f1b-8410-e0d0b2a5631a
+      version: -1
+      name: Search TTP Indicators
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      add_fields_to_context:
+        simple: mitreid
+      query:
+        complex:
+          root: incident
+          accessor: mitretechniqueid
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: mitreid:(
+              suffix:
+                value:
+                  simple: )
+      size:
+        simple: "100"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4033a0ca-5137-475a-82d4-628041ce1942
+    type: regular
+    task:
+      id: 4033a0ca-5137-475a-82d4-628041ce1942
+      version: -1
+      name: Search Malware indicators
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      query:
+        complex:
+          root: incident
+          accessor: feedlymalwarenames
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '" or "'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: type:Malware value:("
+              suffix:
+                value:
+                  simple: '")'
+      size:
+        simple: "100"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d581f385-d714-4ae1-8a8d-ca4ae527a944
+    type: regular
+    task:
+      id: d581f385-d714-4ae1-8a8d-ca4ae527a944
+      version: -1
+      name: Associate Indicators
+      description: commands.local.cmd.associate.indicators
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      indicatorsIDs:
+        simple: ${foundIndicators.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 456dd4a5-485f-44fe-8085-e19f70c9ac3a
+    type: regular
+    task:
+      id: 456dd4a5-485f-44fe-8085-e19f70c9ac3a
+      version: -1
+      name: Search Threat Actor Indicators
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      query:
+        complex:
+          root: incident
+          accessor: feedlythreatactornames
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '" or "'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: type:"Intrusion Set" value:("
+              suffix:
+                value:
+                  simple: '")'
+      size:
+        simple: "100"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 01655832-29fb-49c9-8a70-ec842e7a70b8
+    type: condition
+    task:
+      id: 01655832-29fb-49c9-8a70-ec842e7a70b8
+      version: -1
+      name: Has Threat Actor
+      description: Check that there is any Threat Actor in the report
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.feedlythreatactornames
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b7da2121-66c7-4e88-810a-07c72ddbe66c
+    type: condition
+    task:
+      id: b7da2121-66c7-4e88-810a-07c72ddbe66c
+      version: -1
+      name: Has Malware
+      description: Check that there is any Malware in the report
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.feedlymalwarenames
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3d8f39e0-5b3c-4061-8177-0581cc817866
+    type: condition
+    task:
+      id: 3d8f39e0-5b3c-4061-8177-0581cc817866
+      version: -1
+      name: Has TTP
+      description: Check that there is any TTP in the report
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.mitretechniqueid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 25a65fcd-958c-45bc-8abb-da56870f1082
+    type: condition
+    task:
+      id: 25a65fcd-958c-45bc-8abb-da56870f1082
+      version: -1
+      name: Found indicatiors
+      description: Check if any indicators was found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${foundIndicators.id}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 519bf625-0d92-4e67-822b-054207b6b233
+    type: title
+    task:
+      id: 519bf625-0d92-4e67-822b-054207b6b233
+      version: -1
+      name: DONE
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1395,
+        "width": 1340,
+        "x": 140,
+        "y": -410
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+description: Links threat indicators to the report incident
