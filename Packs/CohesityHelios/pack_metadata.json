@@ -2,7 +2,7 @@
     "name": "Cohesity Helios",
     "description": "This integration interacts with Cohesity Helios and performs actions based on alerts raised.",
     "support": "partner",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.3",
     "author": "Cohesity Inc.",
     "url": "https://www.cohesity.com",
     "email": "support@cohesity.com",

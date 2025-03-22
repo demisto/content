@@ -1,12 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+
 from CommonServerUserPython import *  # noqa
 
 """ IMPORTS """
 
 import urllib
-import urllib3
 from typing import Any
+
+import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -15,8 +17,7 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-    """
+    """Client class to interact with the service API"""
 
     def __init__(self, username, password, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -31,8 +32,7 @@ class Client(BaseClient):
         self.close()
 
     def connect(self):
-        """User login
-        """
+        """User login"""
         self._http_request(
             method="POST",
             url_suffix=f"/login?{urllib.parse.urlencode({'userName':self.username,'pass':self.password})}",
@@ -40,14 +40,11 @@ class Client(BaseClient):
         )
 
     def close(self):
-        """User logout
-        """
+        """User logout"""
         self._http_request(method="POST", url_suffix="/logout", resp_type="text")
 
     def get_lists(self, list_name: str | None = None, list_type: str | None = None) -> str:
-        """Gets all available lists using the '/list' API endpoint
-
-        """
+        """Gets all available lists using the '/list' API endpoint"""
         url_suffix = "/list"
         list_filter = []
         if list_name:
@@ -59,9 +56,7 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=url_suffix, resp_type="text")
 
     def get_list(self, list_id: str):
-        return self._http_request(
-            method="GET", url_suffix=f"/list/{list_id}", resp_type="text"
-        )
+        return self._http_request(method="GET", url_suffix=f"/list/{list_id}", resp_type="text")
 
     def get_list_entry(self, list_id: str, entry_pos: str):
         return self._http_request(
@@ -75,9 +70,7 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix="/commit", resp_type="text")
 
     def put_list(self, list_id: str, config: bytes):
-        return self._http_request(
-            method="PUT", url_suffix=f"/list/{list_id}", data=config, resp_type="text"
-        )
+        return self._http_request(method="PUT", url_suffix=f"/list/{list_id}", data=config, resp_type="text")
 
     def insert_entry(self, list_id: str, entry_pos: str, data: str):
         return self._http_request(
@@ -95,19 +88,10 @@ class Client(BaseClient):
         )
 
     def create_list(self, data: str):
-        return self._http_request(
-            method="POST",
-            url_suffix="/list",
-            resp_type="text",
-            data=data
-        )
+        return self._http_request(method="POST", url_suffix="/list", resp_type="text", data=data)
 
     def delete_list(self, list_id: str):
-        return self._http_request(
-            method="Delete",
-            url_suffix=f"/list/{list_id}",
-            resp_type="text"
-        )
+        return self._http_request(method="Delete", url_suffix=f"/list/{list_id}", resp_type="text")
 
 
 """ COMMAND FUNCTIONS """
@@ -128,7 +112,7 @@ def test_module(client: Client, args: dict[str, Any]) -> str:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     client.get_lists()
-    return 'ok'
+    return "ok"
 
 
 def get_lists_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -167,7 +151,7 @@ def get_lists_command(client: Client, args: dict[str, Any]) -> CommandResults:
         outputs_prefix="SWG.List",
         outputs_key_field="ID",
         outputs=res,
-        raw_response=result
+        raw_response=result,
     )
 
 
@@ -214,20 +198,15 @@ def get_list_command(client: Client, args: dict[str, Any]) -> CommandResults | s
             }
         )
 
-    hr = tableToMarkdown(
-        "List Properties", res, headers=["Title", "ID", "Description", "Type"]
-    )
+    hr = tableToMarkdown("List Properties", res, headers=["Title", "ID", "Description", "Type"])
     res["ListEntries"] = resEntries
 
     return CommandResults(
-        readable_output=hr
-        + tableToMarkdown(
-            title, resEntries, headers=["Position", "Name", "Description"]
-        ),
+        readable_output=hr + tableToMarkdown(title, resEntries, headers=["Position", "Name", "Description"]),
         outputs_prefix="SWG.List",
         outputs_key_field=["ID"],
         outputs=res,
-        raw_response=config
+        raw_response=config,
     )
 
 
@@ -265,17 +244,15 @@ def get_list_entry_command(client: Client, args: dict[str, Any]) -> CommandResul
                 "Name": entry.get("entry", ""),
                 "Description": description,
             }
-        ]
+        ],
     }
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            title, res["ListEntries"], headers=["ListID", "Position", "Name", "Description"]
-        ),
+        readable_output=tableToMarkdown(title, res["ListEntries"], headers=["ListID", "Position", "Name", "Description"]),
         outputs_prefix="SWG.List",
         outputs_key_field=["ID"],
         outputs=res,
-        raw_response=result
+        raw_response=result,
     )
 
 
@@ -330,20 +307,15 @@ def modify_list_command(client: Client, args: dict[str, Any]) -> CommandResults 
             }
         )
 
-    hr = tableToMarkdown(
-        'List Properties', res, headers=["Title", "ID", "Description", "Type"]
-    )
+    hr = tableToMarkdown("List Properties", res, headers=["Title", "ID", "Description", "Type"])
     res["ListEntries"] = resEntries
 
     return CommandResults(
-        readable_output=hr
-        + tableToMarkdown(
-            title, resEntries, headers=["Position", "Name", "Description"]
-        ),
+        readable_output=hr + tableToMarkdown(title, resEntries, headers=["Position", "Name", "Description"]),
         outputs_prefix="SWG.List",
         outputs_key_field=["ID"],
         outputs=res,
-        raw_response=config
+        raw_response=config,
     )
 
 
@@ -394,21 +366,16 @@ def insert_entry_command(client: Client, args: dict[str, Any]) -> CommandResults
         outputs_key_field = "Name"
         res = list_entry
     else:
-        outputs_prefix = 'SWG.List'
+        outputs_prefix = "SWG.List"
         outputs_key_field = "ID"
-        res = {
-            "ID": list_id,
-            "ListEntries": [list_entry]
-        }
+        res = {"ID": list_id, "ListEntries": [list_entry]}
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            title, list_entry, headers=["ListID", "Position", "Name", "Description"]
-        ),
+        readable_output=tableToMarkdown(title, list_entry, headers=["ListID", "Position", "Name", "Description"]),
         outputs_prefix=outputs_prefix,
         outputs_key_field=outputs_key_field,
         outputs=res,
-        raw_response=result
+        raw_response=result,
     )
 
 
@@ -447,14 +414,12 @@ def delete_entry_command(client: Client, args: dict[str, Any]) -> CommandResults
                 "Name": entry.get("entry", ""),
                 "Description": description,
             }
-        ]
+        ],
     }
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            title, res["ListEntries"], headers=["ListID", "Position", "Name", "Description"]
-        ),
-        raw_response=result
+        readable_output=tableToMarkdown(title, res["ListEntries"], headers=["ListID", "Position", "Name", "Description"]),
+        raw_response=result,
     )
 
 
@@ -474,8 +439,10 @@ def create_list_command(client: Client, args: dict[str, Any]) -> CommandResults 
     list_name: str = args.get("name", "")
     list_type: str = args.get("type", "")
 
-    list_data = f'<list name="{list_name}" typeId="com.scur.type.{list_type}" classifier="Other" systemList="false" ' \
-                + 'structuralList="false" defaultRights="2"><description /><content /></list>'
+    list_data = (
+        f'<list name="{list_name}" typeId="com.scur.type.{list_type}" classifier="Other" systemList="false" '
+        + 'structuralList="false" defaultRights="2"><description /><content /></list>'
+    )
 
     result = client.create_list(list_data)
     client.commit()
@@ -493,16 +460,10 @@ def create_list_command(client: Client, args: dict[str, Any]) -> CommandResults 
         "Type": demisto.get(data, "entry.listType"),
         "Description": description,
     }
-    hr = tableToMarkdown(
-        "Created List Properties", res, headers=["Title", "ID", "Description", "Type"]
-    )
+    hr = tableToMarkdown("Created List Properties", res, headers=["Title", "ID", "Description", "Type"])
 
     return CommandResults(
-        readable_output=hr,
-        outputs_prefix="SWG.List",
-        outputs_key_field=["ID"],
-        outputs=res,
-        raw_response=config
+        readable_output=hr, outputs_prefix="SWG.List", outputs_key_field=["ID"], outputs=res, raw_response=config
     )
 
 
@@ -535,14 +496,9 @@ def delete_list_command(client: Client, args: dict[str, Any]) -> CommandResults 
         "Type": demisto.get(data, "entry.listType"),
         "Description": description,
     }
-    hr = tableToMarkdown(
-        "Deleted List Properties", res, headers=["Title", "ID", "Description", "Type"]
-    )
+    hr = tableToMarkdown("Deleted List Properties", res, headers=["Title", "ID", "Description", "Type"])
 
-    return CommandResults(
-        readable_output=hr,
-        raw_response=result
-    )
+    return CommandResults(readable_output=hr, raw_response=result)
 
 
 """ MAIN FUNCTION """
@@ -586,10 +542,10 @@ def main() -> None:
                 "swg-delete-list": delete_list_command,
             }
             if command not in commands:
-                raise NotImplementedError(f'Command {command} was not implemented.')
+                raise NotImplementedError(f"Command {command} was not implemented.")
             return_results(commands[command](client, demisto.args()))
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

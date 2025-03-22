@@ -1,13 +1,13 @@
+import json
+
+import demistomock as demisto  # noqa: F401
+import pytest
+from CommonServerPython import *  # noqa: F401
 from PCComputeHostComplianceIssuesButton import (
-    run_prisma_cloud_compute_hosts_scan_list,
     filter_compliance_issues,
     process_and_output_compliance_issues,
+    run_prisma_cloud_compute_hosts_scan_list,
 )
-import pytest
-import json
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
 
 # Import the script you want to test
 
@@ -41,7 +41,7 @@ PROCESSED_TEST_CASES = [
                 "Severity": "high",
                 "Title": "(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured",
                 "Description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand "
-                               "some applications.",
+                "some applications.",
             }
         ],
     ),
@@ -61,7 +61,7 @@ PROCESSED_TEST_CASES = [
                 "Severity": "high",
                 "Title": "(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured",
                 "Description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand "
-                               "some "
+                "some "
                 "applications.",
             },
             {
@@ -89,7 +89,7 @@ PROCESSED_TEST_CASES = [
                 "Severity": "high",
                 "Title": "(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured",
                 "Description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand "
-                               "some applications.",
+                "some applications.",
             },
             {
                 "ComplianceID": "6116",
@@ -157,9 +157,7 @@ def test_run_prisma_cloud_compute_hosts_scan_list(mocker):
 
     # Run the function
     mocker.patch.object(demisto, "results")
-    returned_compliance_issues = run_prisma_cloud_compute_hosts_scan_list(
-        "test-hostname"
-    )
+    returned_compliance_issues = run_prisma_cloud_compute_hosts_scan_list("test-hostname")
 
     assert returned_compliance_issues == compliance_issues
 
@@ -176,9 +174,7 @@ def test_filter_compliance_issues(args, expected):
     Then:
         Assert the returned output matches the filtered results, based on the "FILTERED_TEST_CASES" object.
     """
-    filtered_results = filter_compliance_issues(
-        args.get("compliance_issues"), args.get("compliance_ids")
-    )
+    filtered_results = filter_compliance_issues(args.get("compliance_issues"), args.get("compliance_ids"))
     assert filtered_results == expected
 
 
@@ -194,7 +190,5 @@ def test_process_and_output_compliance_issues(args, expected):
     Then:
         Assert the returned output matches the processed results, based on the "PROCESSED_TEST_CASES" object.
     """
-    processed_results = process_and_output_compliance_issues(
-        args.get("compliance_issues"), args.get("hostname")
-    )
+    processed_results = process_and_output_compliance_issues(args.get("compliance_issues"), args.get("hostname"))
     assert processed_results.outputs["compliance_issues"] == expected

@@ -7,35 +7,39 @@ from requests import Response
 
 # flake8: noqa
 
+
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with io.open(path, mode="r", encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 def test_getAccessToken(mocker):
     from Picus import getAccessToken
+
     params_mock = mocker.patch("Picus.demisto")
     params_mock.params.return_value.get.return_value = "picus_server"
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.text = json.dumps({'data': {'access_token': 'test'}})
+    mock_response.text = json.dumps({"data": {"access_token": "test"}})
 
     requests_mock = mocker.patch("Picus.requests")
     requests_mock.Session.return_value.post.return_value = mock_response
     res = getAccessToken()
-    assert res == 'test'
+    assert res == "test"
 
 
 def test_generateEndpointURL(mocker):
     from Picus import generateEndpointURL
+
     params_mock = mocker.patch("Picus.demisto")
     params_mock.params.return_value.get.return_value = "picus_server"
     res = generateEndpointURL("test", "test")
-    assert res == ('picus_servertest', {'X-Api-Token': 'Bearer test', 'Content-Type': 'application/json'})
+    assert res == ("picus_servertest", {"X-Api-Token": "Bearer test", "Content-Type": "application/json"})
 
 
 def test_filterInsecureAttacks(mocker):
     from Picus import filterInsecureAttacks
+
     threatinfo_mock = mocker.patch("Picus.demisto")
     threatinfo_mock.args.return_value.get.return_value = "111=Insecure,222=Secure,333=Insecure"
     result = filterInsecureAttacks().outputs
@@ -44,6 +48,7 @@ def test_filterInsecureAttacks(mocker):
 
 def test_getMitigationList(mocker):
     from Picus import getMitigationList
+
     mocker.patch("Picus.getAccessToken", return_value="test")
     mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
     args_mock = mocker.patch("Picus.demisto")
@@ -59,6 +64,7 @@ def test_getMitigationList(mocker):
 
 def test_getAttackResults(mocker):
     from Picus import getAttackResults
+
     mocker.patch("Picus.getAccessToken", return_value="test")
     mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
     args_mock = mocker.patch("Picus.demisto")
@@ -71,17 +77,19 @@ def test_getAttackResults(mocker):
     mock_secure_response.status_code = "200"
     mock_insecure_response.status_code = "200"
     mock_secure_response._content = json.dumps(util_load_json("test_data/get_secureAttackResults.json")).encode("ascii")
-    mock_insecure_response._content = json.dumps(util_load_json("test_data/get_insecureAttackResults.json")).encode(
-        "ascii")
+    mock_insecure_response._content = json.dumps(util_load_json("test_data/get_insecureAttackResults.json")).encode("ascii")
 
     mocker.patch("Picus.requests.post", side_effect=[mock_secure_response, mock_insecure_response])
     result = getAttackResults().outputs
-    assert result["results"][0][
-        "threat_ids"] == "351578,674267,850468,773109,428692,768048,826183,692856,476996,587400,376491,723488"
+    assert (
+        result["results"][0]["threat_ids"]
+        == "351578,674267,850468,773109,428692,768048,826183,692856,476996,587400,376491,723488"
+    )
 
 
 def test_getThreatResults(mocker):
     from Picus import getThreatResults
+
     mocker.patch("Picus.getAccessToken", return_value="test")
     mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
     demisto_mock = mocker.patch("Picus.demisto")
@@ -98,6 +106,7 @@ def test_getThreatResults(mocker):
 
 def test_getPicusVersion(mocker):
     from Picus import getPicusVersion
+
     mocker.patch("Picus.getAccessToken", return_value="test")
     mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
 
@@ -112,6 +121,7 @@ def test_getPicusVersion(mocker):
 
 def test_getPeerList(mocker):
     from Picus import getPeerList
+
     mocker.patch("Picus.getAccessToken", return_value="test")
     mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
 
@@ -126,6 +136,7 @@ def test_getPeerList(mocker):
 
 def test_getVectorList(mocker):
     from Picus import getVectorList
+
     mocker.patch("Picus.getAccessToken", return_value="test")
     mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
 
@@ -140,6 +151,7 @@ def test_getVectorList(mocker):
 
 def test_runAttacks(mocker):
     from Picus import runAttacks
+
     mocker.patch("Picus.getAccessToken", return_value="test")
     mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
     demisto_mock = mocker.patch("Picus.demisto")
@@ -156,6 +168,7 @@ def test_runAttacks(mocker):
 
 def test_triggerUpdate(mocker):
     from Picus import triggerUpdate
+
     mocker.patch("Picus.getAccessToken", return_value="test")
     mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
 
@@ -170,6 +183,7 @@ def test_triggerUpdate(mocker):
 
 def test_getVectorCompare(mocker):
     from Picus import getVectorCompare
+
     mocker.patch("Picus.getAccessToken", return_value="test")
     mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
     demisto_mock = mocker.patch("Picus.demisto")

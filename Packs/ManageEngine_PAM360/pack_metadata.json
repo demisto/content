@@ -2,7 +2,7 @@
     "name": "ManageEngine_PAM360",
     "description": "PAM360 integrates with Cortex XSOAR that fetches passwords directly from the PAM360 vault to use in their tasks.",
     "support": "partner",
-    "currentVersion": "1.0.16",
+    "currentVersion": "1.0.17",
     "author": "ManageEngine PAM360",
     "url": "https://www.manageengine.com/privileged-access-management/support.html",
     "email": "pam360-support@manageengine.com",

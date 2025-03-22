@@ -2,7 +2,7 @@
     "name": "Forward XSOAR Audit Logs to Splunk HEC",
     "description": "This automation script takes a timeframe as input fetches the audit logs for the defined period. Then it pushes them to Splunk HEC. ",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Harri Ruuttila",
     "url": "",
     "email": "",

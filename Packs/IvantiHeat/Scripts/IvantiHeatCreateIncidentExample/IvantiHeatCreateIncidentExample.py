@@ -1,7 +1,7 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import json
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 """
 Use the IvantiHeatCreateIncidentExample script to create a incident object (JSON) in Ivanti Heat.
@@ -18,13 +18,13 @@ Then add the new field argument to the script. See the Ivanti documentation for 
 
 
 def main():
-    category = demisto.args().get('category')
-    service = demisto.args().get('service')
-    owner = demisto.args().get('owner')
-    team = demisto.args().get('team')
-    summary = demisto.args().get('summary')
-    description = demisto.args().get('description')
-    customer = demisto.args().get('customer')
+    category = demisto.args().get("category")
+    service = demisto.args().get("service")
+    owner = demisto.args().get("owner")
+    team = demisto.args().get("team")
+    summary = demisto.args().get("summary")
+    description = demisto.args().get("description")
+    customer = demisto.args().get("customer")
 
     data = {
         "Category": category,
@@ -33,9 +33,9 @@ def main():
         "OwnerTeam": team,
         "Subject": summary,
         "Symptom": description,
-        "ProfileLink": customer
+        "ProfileLink": customer,
     }
-    return_outputs(json.dumps(data, indent=4), {'IvantiHeat.CreateIncidentJSON': json.dumps(data)}, data)
+    return_outputs(json.dumps(data, indent=4), {"IvantiHeat.CreateIncidentJSON": json.dumps(data)}, data)
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
