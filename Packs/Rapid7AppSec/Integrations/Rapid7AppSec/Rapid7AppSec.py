@@ -20,7 +20,7 @@ ATTACK = "attack"
 SCAN = "scan"
 SCAN_ACTION = "scan-action"
 RESPONSE_TYPE = "response"
-CLEAN_HTML_TAGS = re.compile('<.*?>')
+CLEAN_HTML_TAGS = re.compile("<.*?>")
 API_LIMIT = 1000
 REGULAR_SCAN_TYPE = "Regular"
 STOP_SCAN_ACTION = "Stop"
@@ -32,12 +32,13 @@ class IndexPagination:
     """
     This class contains the arguments for pagination with page and page size.
     """
+
     index: int
     size: int
     page_token: str | None
 
 
-class Pagination():
+class Pagination:
     """
     This class contains the arguments for pagination.
     """
@@ -62,6 +63,7 @@ class AddToOutput:
     For example: The scan history is: {scan_history_id: "1234", ...}, we would like to add the scan_id,
     the output will be: {scan_id: "2345", scan_history_id: "1234", ...}
     """
+
     data_to_add: dict
 
 
@@ -73,6 +75,7 @@ class PrefixToResponse(AddToOutput):
     the scan_id to the response and put the response under the Event prefix.
     The output will be: {XsoarArgKey.SCAN: "..." ,"Event": [{"time": "...","event": "..."}]}
     """
+
     prefix: str
     id_key: str
 
@@ -110,35 +113,27 @@ class Headers(list, Enum):  # type: ignore[misc]
         "vulnerability_score",
     ]
     VULNERABILITY_COMMENT = [
-        'content',
-        'id',
-        'vulnerability_id',
-        'author_id',
-        'create_time',
-        'update_time',
+        "content",
+        "id",
+        "vulnerability_id",
+        "author_id",
+        "create_time",
+        "update_time",
     ]
     SCAN = [
-        'id',
-        'status',
-        'failure_reason',
-        'scan_type',
-        'submit_time',
-        'completion_time',
-        'app_id',
-        'scan_config_id',
-        'submitter_id',
-        'validation_parent_scan_id'
+        "id",
+        "status",
+        "failure_reason",
+        "scan_type",
+        "submit_time",
+        "completion_time",
+        "app_id",
+        "scan_config_id",
+        "submitter_id",
+        "validation_parent_scan_id",
     ]
 
-    SCAN_CONFIG = [
-        'id',
-        'name',
-        'app_id',
-        'incremental',
-        'attack_template_id',
-        'assignment_type',
-        'assignment_environment'
-    ]
+    SCAN_CONFIG = ["id", "name", "app_id", "incremental", "attack_template_id", "assignment_type", "assignment_environment"]
 
 
 class UrlPrefix(StrEnum):
@@ -206,7 +201,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from AppSec API.
         """
-        kwargs["error_handler"] = partial(self.error_handler, error_message=kwargs.pop('error_message', None))
+        kwargs["error_handler"] = partial(self.error_handler, error_message=kwargs.pop("error_message", None))
         return super()._http_request(*args, **kwargs)
 
     def error_handler(self, res: Response, error_message: str | None):
@@ -220,17 +215,13 @@ class Client(BaseClient):
             DemistoException: No content.
             DemistoException: Error from AppSec API.
         """
-        message = error_message or ''
+        message = error_message or ""
         if res.status_code == HTTPStatus.NO_CONTENT:
-            raise DemistoException(
-                f"No content to show. {message}"
-            )
+            raise DemistoException(f"No content to show. {message}")
         else:
             raise DemistoException(message=f"{res.text} {message}", res=res)
 
-    def update_vulnerability(
-        self, vulnerability_id: str, severity: str | None, status: str | None
-    ) -> dict[str, Any]:
+    def update_vulnerability(self, vulnerability_id: str, severity: str | None, status: str | None) -> dict[str, Any]:
         """
         Update the severity/ status of the vulnerability.
 
@@ -296,12 +287,9 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from AppSec API.
         """
-        return self._http_request(method=RequestAction.GET,
-                                  url_suffix=f"{UrlPrefix.VULNERABILITY}/{obj_id}/history")
+        return self._http_request(method=RequestAction.GET, url_suffix=f"{UrlPrefix.VULNERABILITY}/{obj_id}/history")
 
-    def create_vulnerability_comment(
-        self, vulnerability_id: str, comment_content: str
-    ) -> dict[str, Any]:
+    def create_vulnerability_comment(self, vulnerability_id: str, comment_content: str) -> dict[str, Any]:
         """
         Create a comment to vulnerability.
 
@@ -316,12 +304,10 @@ class Client(BaseClient):
             method=RequestAction.POST,
             url_suffix=f"{UrlPrefix.VULNERABILITY}/{vulnerability_id}/comments",
             json_data={"content": comment_content},
-            resp_type=RESPONSE_TYPE
+            resp_type=RESPONSE_TYPE,
         )
 
-    def update_vulnerability_comment(
-        self, vulnerability_id: str, comment_id: str, comment_content: str
-    ) -> dict[str, Any]:
+    def update_vulnerability_comment(self, vulnerability_id: str, comment_id: str, comment_content: str) -> dict[str, Any]:
         """
         Update the severity/ status of the vulnerability.
 
@@ -337,12 +323,10 @@ class Client(BaseClient):
             method=RequestAction.PUT,
             url_suffix=f"{UrlPrefix.VULNERABILITY}/{vulnerability_id}/comments/{comment_id}",
             json_data={"content": comment_content},
-            resp_type=RESPONSE_TYPE
+            resp_type=RESPONSE_TYPE,
         )
 
-    def delete_vulnerability_comment(
-        self, vulnerability_id: str, comment_id: str
-    ) -> dict[str, Any]:
+    def delete_vulnerability_comment(self, vulnerability_id: str, comment_id: str) -> dict[str, Any]:
         """
         Delete vulnerability comment.
 
@@ -356,12 +340,10 @@ class Client(BaseClient):
         return self._http_request(
             method=RequestAction.DELETE,
             url_suffix=f"{UrlPrefix.VULNERABILITY}/{vulnerability_id}/comments/{comment_id}",
-            resp_type=RESPONSE_TYPE
+            resp_type=RESPONSE_TYPE,
         )
 
-    def list_vulnerability_comment(self,
-                                   vulnerability_id: str,
-                                   obj_id: str | None = None) -> dict[str, Any]:
+    def list_vulnerability_comment(self, vulnerability_id: str, obj_id: str | None = None) -> dict[str, Any]:
         """
         List vulnerability comments.
 
@@ -373,12 +355,9 @@ class Client(BaseClient):
             dict[str, Any]: API response from AppSec API.
         """
         url_suffix = generate_api_endpoint(f"{UrlPrefix.VULNERABILITY}/{vulnerability_id}/comments", obj_id)
-        return self._http_request(method=RequestAction.GET,
-                                  url_suffix=url_suffix)
+        return self._http_request(method=RequestAction.GET, url_suffix=url_suffix)
 
-    def get_attack(
-        self, module_id: str, obj_id: str
-    ) -> dict[str, Any]:
+    def get_attack(self, module_id: str, obj_id: str) -> dict[str, Any]:
         """
         Get attack.
 
@@ -389,12 +368,9 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from AppSec API.
         """
-        return self._http_request(method=RequestAction.GET,
-                                  url_suffix=f"{UrlPrefix.MODULE}/{module_id}/attacks/{obj_id}")
+        return self._http_request(method=RequestAction.GET, url_suffix=f"{UrlPrefix.MODULE}/{module_id}/attacks/{obj_id}")
 
-    def get_attack_documentation(
-        self, module_id: str, obj_id: str
-    ) -> dict[str, Any]:
+    def get_attack_documentation(self, module_id: str, obj_id: str) -> dict[str, Any]:
         """
         Get attack documentation.
 
@@ -405,8 +381,9 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from AppSec API.
         """
-        return self._http_request(method=RequestAction.GET,
-                                  url_suffix=f"{UrlPrefix.MODULE}/{module_id}/attacks/{obj_id}/documentation")
+        return self._http_request(
+            method=RequestAction.GET, url_suffix=f"{UrlPrefix.MODULE}/{module_id}/attacks/{obj_id}/documentation"
+        )
 
     def list_attack_template(
         self,
@@ -439,9 +416,7 @@ class Client(BaseClient):
             ),
         )
 
-    def submit_scan(
-        self, scan_config_id: str, scan_type: str, parent_scan_id: str | None
-    ) -> dict[str, Any]:
+    def submit_scan(self, scan_config_id: str, scan_type: str, parent_scan_id: str | None) -> dict[str, Any]:
         """
         Submit a new scan.
 
@@ -461,7 +436,10 @@ class Client(BaseClient):
             }
         )
         return self._http_request(
-            method=RequestAction.POST, url_suffix=UrlPrefix.SCAN, json_data=data, resp_type=RESPONSE_TYPE,
+            method=RequestAction.POST,
+            url_suffix=UrlPrefix.SCAN,
+            json_data=data,
+            resp_type=RESPONSE_TYPE,
         )
 
     def get_scan_action(self, obj_id: str) -> dict[str, Any]:
@@ -497,7 +475,7 @@ class Client(BaseClient):
             method=RequestAction.PUT,
             url_suffix=f"{UrlPrefix.SCAN}/{scan_id}/action",
             json_data={"action": action},
-            resp_type=RESPONSE_TYPE
+            resp_type=RESPONSE_TYPE,
         )
 
     def delete_scan(self, scan_id: str) -> dict[str, Any]:
@@ -510,16 +488,10 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from AppSec API.
         """
-        return self._http_request(
-            method=RequestAction.DELETE, url_suffix=f"{UrlPrefix.SCAN}/{scan_id}", resp_type=RESPONSE_TYPE
-        )
+        return self._http_request(method=RequestAction.DELETE, url_suffix=f"{UrlPrefix.SCAN}/{scan_id}", resp_type=RESPONSE_TYPE)
 
     def list_scan(
-        self,
-        index: int | None = None,
-        size: int | None = None,
-        page_token: str | None = None,
-        obj_id: str | None = None
+        self, index: int | None = None, size: int | None = None, page_token: str | None = None, obj_id: str | None = None
     ) -> dict[str, Any]:
         """
         List scans.
@@ -555,9 +527,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from AppSec API.
         """
-        return self._http_request(
-            method=RequestAction.GET, url_suffix=f"{UrlPrefix.SCAN}/{obj_id}/engine-events"
-        )
+        return self._http_request(method=RequestAction.GET, url_suffix=f"{UrlPrefix.SCAN}/{obj_id}/engine-events")
 
     def list_scan_platform_event(self, obj_id: str) -> dict[str, Any]:
         """
@@ -569,9 +539,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from AppSec API.
         """
-        return self._http_request(
-            method=RequestAction.GET, url_suffix=f"{UrlPrefix.SCAN}/{obj_id}/platform-events"
-        )
+        return self._http_request(method=RequestAction.GET, url_suffix=f"{UrlPrefix.SCAN}/{obj_id}/platform-events")
 
     def get_scan_execution_details(self, obj_id: str) -> dict[str, Any]:
         """
@@ -583,16 +551,10 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from AppSec API.
         """
-        return self._http_request(
-            method=RequestAction.GET, url_suffix=f"{UrlPrefix.SCAN}/{obj_id}/execution-details"
-        )
+        return self._http_request(method=RequestAction.GET, url_suffix=f"{UrlPrefix.SCAN}/{obj_id}/execution-details")
 
     def list_scan_config(
-        self,
-        index: int | None = None,
-        size: int | None = None,
-        page_token: str | None = None,
-        obj_id: str | None = None
+        self, index: int | None = None, size: int | None = None, page_token: str | None = None, obj_id: str | None = None
     ) -> dict[str, Any]:
         """
         List scan config.
@@ -619,11 +581,7 @@ class Client(BaseClient):
         )
 
     def list_app(
-        self,
-        index: int | None = None,
-        size: int | None = None,
-        page_token: str | None = None,
-        obj_id: str | None = None
+        self, index: int | None = None, size: int | None = None, page_token: str | None = None, obj_id: str | None = None
     ) -> dict[str, Any]:
         """
         List apps.
@@ -650,11 +608,7 @@ class Client(BaseClient):
         )
 
     def list_engine_group(
-        self,
-        index: int | None = None,
-        size: int | None = None,
-        page_token: str | None = None,
-        obj_id: str | None = None
+        self, index: int | None = None, size: int | None = None, page_token: str | None = None, obj_id: str | None = None
     ) -> dict[str, Any]:
         """
         List engine groups.
@@ -681,11 +635,7 @@ class Client(BaseClient):
         )
 
     def list_engine(
-        self,
-        index: int | None = None,
-        size: int | None = None,
-        page_token: str | None = None,
-        obj_id: str | None = None
+        self, index: int | None = None, size: int | None = None, page_token: str | None = None, obj_id: str | None = None
     ) -> dict[str, Any]:
         """
         List engine.
@@ -711,10 +661,7 @@ class Client(BaseClient):
             ),
         )
 
-    def list_module(
-        self,
-        obj_id: str | None = None
-    ) -> dict[str, Any]:
+    def list_module(self, obj_id: str | None = None) -> dict[str, Any]:
         """
         List modules.
 
@@ -731,9 +678,7 @@ class Client(BaseClient):
 
 
 @logger
-def update_vulnerability_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def update_vulnerability_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Update the severity/ status of the vulnerability..
 
@@ -749,7 +694,8 @@ def update_vulnerability_command(
     client.update_vulnerability(
         vulnerability_id=vulnerability_id,
         severity=args.get("severity") and args.get("severity", "").upper(),
-        status=args.get("status") and args.get("status", "").upper().replace(" ", "_"),)
+        status=args.get("status") and args.get("status", "").upper().replace(" ", "_"),
+    )
     return CommandResults(
         readable_output=generate_readable_output_message(
             object_type=ReadableOutputs.VULNERABILITY.value,
@@ -772,9 +718,9 @@ def list_vulnerability_command(client: Client, args: dict[str, Any]) -> CommandR
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     return list_handler(
-        pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
-                              page_size=args.get(XsoarArgKey.PAGE_SIZE),
-                              limit=args.get(XsoarArgKey.LIMIT, "50")),
+        pagination=Pagination(
+            page=args.get(XsoarArgKey.PAGE), page_size=args.get(XsoarArgKey.PAGE_SIZE), limit=args.get(XsoarArgKey.LIMIT, "50")
+        ),
         obj_id=args.get(XsoarArgKey.VULNERABILITY),
         obj_type=OutputPrefix.VULNERABILITY,
         request_command=client.list_vulnerability,
@@ -783,9 +729,7 @@ def list_vulnerability_command(client: Client, args: dict[str, Any]) -> CommandR
 
 
 @logger
-def list_vulnerability_history_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def list_vulnerability_history_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List vulnerability history.
 
@@ -805,9 +749,7 @@ def list_vulnerability_history_command(
 
 
 @logger
-def create_vulnerability_comment_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def create_vulnerability_comment_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Create vulnerability comment.
 
@@ -819,7 +761,11 @@ def create_vulnerability_comment_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     client.create_vulnerability_comment(
-        vulnerability_id=args.get(XsoarArgKey.VULNERABILITY, ""), comment_content=args.get("comment_content", "",)
+        vulnerability_id=args.get(XsoarArgKey.VULNERABILITY, ""),
+        comment_content=args.get(
+            "comment_content",
+            "",
+        ),
     )
     return CommandResults(
         readable_output=generate_readable_output_message(
@@ -830,9 +776,7 @@ def create_vulnerability_comment_command(
 
 
 @logger
-def update_vulnerability_comment_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def update_vulnerability_comment_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Update vulnerability comment.
 
@@ -858,9 +802,7 @@ def update_vulnerability_comment_command(
 
 
 @logger
-def delete_vulnerability_comment_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def delete_vulnerability_comment_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Delete vulnerability comment.
 
@@ -884,9 +826,7 @@ def delete_vulnerability_comment_command(
 
 
 @logger
-def list_vulnerability_comment_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def list_vulnerability_comment_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List vulnerability comments.
 
@@ -920,9 +860,9 @@ def list_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     return list_handler(
-        pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
-                              page_size=args.get(XsoarArgKey.PAGE_SIZE),
-                              limit=args.get(XsoarArgKey.LIMIT, 50)),
+        pagination=Pagination(
+            page=args.get(XsoarArgKey.PAGE), page_size=args.get(XsoarArgKey.PAGE_SIZE), limit=args.get(XsoarArgKey.LIMIT, 50)
+        ),
         headers=Headers.SCAN,
         obj_id=args.get(XsoarArgKey.SCAN),
         obj_type=OutputPrefix.SCAN,
@@ -954,8 +894,9 @@ def submit_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
         scan_type=scan_type.upper(),
         parent_scan_id=parent_scan_id,
     )
-    return CommandResults(readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN,
-                                                                           action=ReadableOutputs.SUBMITTED))
+    return CommandResults(
+        readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN, action=ReadableOutputs.SUBMITTED)
+    )
 
 
 def delete_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -971,17 +912,15 @@ def delete_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     return delete_handler(
         obj_id=args.get(XsoarArgKey.SCAN, ""),
-        readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN,
-                                                         object_id=args.get(XsoarArgKey.SCAN, ""),
-                                                         action=ReadableOutputs.DELETED),
+        readable_output=generate_readable_output_message(
+            object_type=ReadableOutputs.SCAN, object_id=args.get(XsoarArgKey.SCAN, ""), action=ReadableOutputs.DELETED
+        ),
         request_command=client.delete_scan,
     )
 
 
 @logger
-def list_scan_engine_events_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def list_scan_engine_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List scan engine events.
 
@@ -996,15 +935,12 @@ def list_scan_engine_events_command(
         obj_id=args.get(XsoarArgKey.SCAN, ""),
         request_command=client.list_scan_engine_event,
         obj_type=OutputPrefix.ENGINE_EVENT,
-        add_to_output=PrefixToResponse(data_to_add={"scan_id": args.get(XsoarArgKey.SCAN, "")},
-                                       prefix="Event", id_key="scan_id")
+        add_to_output=PrefixToResponse(data_to_add={"scan_id": args.get(XsoarArgKey.SCAN, "")}, prefix="Event", id_key="scan_id"),
     )
 
 
 @logger
-def list_scan_platform_events_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def list_scan_platform_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List scan platform events.
 
@@ -1019,15 +955,12 @@ def list_scan_platform_events_command(
         obj_id=args.get(XsoarArgKey.SCAN, ""),
         request_command=client.list_scan_platform_event,
         obj_type=OutputPrefix.PLATFORM_EVENT,
-        add_to_output=PrefixToResponse(
-            data_to_add={"scan_id": args.get(XsoarArgKey.SCAN, "")}, prefix="Event", id_key="scan_id")
+        add_to_output=PrefixToResponse(data_to_add={"scan_id": args.get(XsoarArgKey.SCAN, "")}, prefix="Event", id_key="scan_id"),
     )
 
 
 @logger
-def get_scan_execution_detail_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def get_scan_execution_detail_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get scan execution details.
 
@@ -1042,7 +975,7 @@ def get_scan_execution_detail_command(
         obj_id=args.get(XsoarArgKey.SCAN, ""),
         request_command=client.get_scan_execution_details,
         obj_type=OutputPrefix.EXECUTION_DETAIL,
-        add_to_output=AddToOutput(data_to_add={"id": args.get(XsoarArgKey.SCAN, "")})
+        add_to_output=AddToOutput(data_to_add={"id": args.get(XsoarArgKey.SCAN, "")}),
     )
 
 
@@ -1062,7 +995,7 @@ def get_scan_action_command(client: Client, args: dict[str, Any]) -> CommandResu
         obj_id=args.get(XsoarArgKey.SCAN, ""),
         request_command=client.get_scan_action,
         obj_type=OutputPrefix.SCAN,
-        add_to_output=AddToOutput(data_to_add={"id": args.get(XsoarArgKey.SCAN, "")})
+        add_to_output=AddToOutput(data_to_add={"id": args.get(XsoarArgKey.SCAN, "")}),
     )
 
 
@@ -1091,34 +1024,33 @@ def submit_scan_action_command(args: dict[str, Any], client: Client) -> PollResu
     if args.get("first_run", "") == "0":
         scan_data = client.list_scan(obj_id=scan_id)
         validate_submit_scan_action(action=action, scan_data=scan_data)
-        args['first_run'] = "1"
+        args["first_run"] = "1"
         client.submit_scan_action(
             scan_id=scan_id,
             action=action.upper(),
         )
         partial_result = CommandResults(
-            readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN_ACTION,
-                                                             action=ReadableOutputs.SUBMITTED.value,
-                                                             object_id=args.get(XsoarArgKey.SCAN, "")))
+            readable_output=generate_readable_output_message(
+                object_type=ReadableOutputs.SCAN_ACTION,
+                action=ReadableOutputs.SUBMITTED.value,
+                object_id=args.get(XsoarArgKey.SCAN, ""),
+            )
+        )
 
     get_response = client.get_scan_action(obj_id=scan_id)
     if isinstance(get_response, requests.Response) and get_response.status_code == HTTPStatus.OK:
-        return PollResult(
-            response={},
-            continue_to_poll=True,
-            args_for_next_run=args,
-            partial_result=partial_result
-        )
+        return PollResult(response={}, continue_to_poll=True, args_for_next_run=args, partial_result=partial_result)
 
     return PollResult(
         response=CommandResults(
-            readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN_ACTION,
-                                                             action=ReadableOutputs.CHANGED.value.format(
-                                                                 args.get("action", "")),
-                                                             object_id=args.get(XsoarArgKey.SCAN, ""))
+            readable_output=generate_readable_output_message(
+                object_type=ReadableOutputs.SCAN_ACTION,
+                action=ReadableOutputs.CHANGED.value.format(args.get("action", "")),
+                object_id=args.get(XsoarArgKey.SCAN, ""),
+            )
         ),
         continue_to_poll=False,
-        partial_result=partial_result
+        partial_result=partial_result,
     )
 
 
@@ -1140,15 +1072,12 @@ def get_attack_command(client: Client, args: dict[str, Any]) -> CommandResults:
         title="Attack metadata",
         headers=Headers.ATTACK.value,
         obj_type=OutputPrefix.ATTACK,
-        add_to_output=AddToOutput(
-            data_to_add={"module_id": args.get(XsoarArgKey.MODULE)}),
+        add_to_output=AddToOutput(data_to_add={"module_id": args.get(XsoarArgKey.MODULE)}),
     )
 
 
 @logger
-def get_attack_documentation_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def get_attack_documentation_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get attack documentation.
 
@@ -1161,14 +1090,10 @@ def get_attack_documentation_command(
     """
     return list_handler(
         obj_id=args.get(XsoarArgKey.ATTACK),
-        request_command=partial(
-            client.get_attack_documentation, args.get(XsoarArgKey.MODULE)),  # type: ignore[arg-type]
+        request_command=partial(client.get_attack_documentation, args.get(XsoarArgKey.MODULE)),  # type: ignore[arg-type]
         obj_type=OutputPrefix.ATTACK_DOCUMENTATION,
         use_flatten_dict=False,
-        add_to_output=AddToOutput(
-            data_to_add={
-                "module_id": args.get(XsoarArgKey.MODULE), "id": args.get(XsoarArgKey.ATTACK)}
-        ),
+        add_to_output=AddToOutput(data_to_add={"module_id": args.get(XsoarArgKey.MODULE), "id": args.get(XsoarArgKey.ATTACK)}),
     )
 
 
@@ -1185,9 +1110,9 @@ def list_scan_config_command(client: Client, args: dict[str, Any]) -> CommandRes
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     return list_handler(
-        pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
-                              page_size=args.get(XsoarArgKey.PAGE_SIZE),
-                              limit=args.get(XsoarArgKey.LIMIT, "50")),
+        pagination=Pagination(
+            page=args.get(XsoarArgKey.PAGE), page_size=args.get(XsoarArgKey.PAGE_SIZE), limit=args.get(XsoarArgKey.LIMIT, "50")
+        ),
         headers=Headers.SCAN_CONFIG,
         obj_id=args.get("scan_config_id"),
         obj_type=OutputPrefix.SCAN_CONFIG,
@@ -1209,9 +1134,9 @@ def list_app_command(client: Client, args: dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     return list_handler(
-        pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
-                              page_size=args.get(XsoarArgKey.PAGE_SIZE),
-                              limit=args.get(XsoarArgKey.LIMIT, "50")),
+        pagination=Pagination(
+            page=args.get(XsoarArgKey.PAGE), page_size=args.get(XsoarArgKey.PAGE_SIZE), limit=args.get(XsoarArgKey.LIMIT, "50")
+        ),
         obj_id=args.get("app_id"),
         title="App list",
         obj_type=OutputPrefix.APP,
@@ -1220,9 +1145,7 @@ def list_app_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 @logger
-def list_attack_template_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def list_attack_template_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List attack templates.
 
@@ -1234,9 +1157,9 @@ def list_attack_template_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     return list_handler(
-        pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
-                              page_size=args.get(XsoarArgKey.PAGE_SIZE),
-                              limit=args.get(XsoarArgKey.LIMIT, "50")),
+        pagination=Pagination(
+            page=args.get(XsoarArgKey.PAGE), page_size=args.get(XsoarArgKey.PAGE_SIZE), limit=args.get(XsoarArgKey.LIMIT, "50")
+        ),
         obj_id=args.get("attack_template_id"),
         title="Attack Template list",
         obj_type=OutputPrefix.ATTACK_TEMPLATE,
@@ -1257,9 +1180,9 @@ def list_engine_group_command(client: Client, args: dict[str, Any]) -> CommandRe
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     return list_handler(
-        pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
-                              page_size=args.get(XsoarArgKey.PAGE_SIZE),
-                              limit=args.get(XsoarArgKey.LIMIT, "50")),
+        pagination=Pagination(
+            page=args.get(XsoarArgKey.PAGE), page_size=args.get(XsoarArgKey.PAGE_SIZE), limit=args.get(XsoarArgKey.LIMIT, "50")
+        ),
         obj_id=args.get("engine_group_id"),
         obj_type=OutputPrefix.ENGINE_GROUP,
         request_command=client.list_engine_group,
@@ -1279,9 +1202,9 @@ def list_engine_command(client: Client, args: dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     return list_handler(
-        pagination=Pagination(page=args.get(XsoarArgKey.PAGE),
-                              page_size=args.get(XsoarArgKey.PAGE_SIZE),
-                              limit=args.get(XsoarArgKey.LIMIT, "50")),
+        pagination=Pagination(
+            page=args.get(XsoarArgKey.PAGE), page_size=args.get(XsoarArgKey.PAGE_SIZE), limit=args.get(XsoarArgKey.LIMIT, "50")
+        ),
         obj_id=args.get("engine_id"),
         obj_type=OutputPrefix.ENGINE,
         request_command=client.list_engine,
@@ -1366,9 +1289,7 @@ def list_handler(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    response = handle_list_request(pagination=pagination,
-                                   obj_id=obj_id,
-                                   request_command=request_command)
+    response = handle_list_request(pagination=pagination, obj_id=obj_id, request_command=request_command)
     if isinstance(response, requests.Response):
         response = response.json()
 
@@ -1388,7 +1309,7 @@ def list_handler(
         title=title,
         headers=headers,
         readable_parser=readable_parser,
-        edit_outputs_settings=add_to_output
+        edit_outputs_settings=add_to_output,
     )
 
 
@@ -1412,14 +1333,15 @@ def get_appsec_response(response: dict[str, Any] | list[dict[str, Any]]) -> dict
 
 
 @logger
-def create_list_command_results(data: list,
-                                obj_type: str,
-                                response: dict[str, Any] | list[dict[str, Any]],
-                                title: str | None = None,
-                                headers: list | None = None,
-                                readable_parser: Callable | None = None,
-                                edit_outputs_settings: AddToOutput | None = None,
-                                ) -> CommandResults:
+def create_list_command_results(
+    data: list,
+    obj_type: str,
+    response: dict[str, Any] | list[dict[str, Any]],
+    title: str | None = None,
+    headers: list | None = None,
+    readable_parser: Callable | None = None,
+    edit_outputs_settings: AddToOutput | None = None,
+) -> CommandResults:
     """
     Create a CommandResult for list commands.
 
@@ -1452,7 +1374,7 @@ def create_list_command_results(data: list,
         obj_type=obj_type,
         title=title,
         headers=headers,
-        readable_parser=readable_parser
+        readable_parser=readable_parser,
     )
     return CommandResults(
         readable_output=readable_output,
@@ -1464,9 +1386,11 @@ def create_list_command_results(data: list,
 
 
 @logger
-def handle_list_request(request_command: Callable,
-                        pagination: Pagination | None = None,
-                        obj_id: str | None = None,) -> dict[str, Any] | list[dict[str, Any]]:
+def handle_list_request(
+    request_command: Callable,
+    pagination: Pagination | None = None,
+    obj_id: str | None = None,
+) -> dict[str, Any] | list[dict[str, Any]]:
     """
     Handle list requests.
 
@@ -1484,8 +1408,7 @@ def handle_list_request(request_command: Callable,
     if pagination:
         if pagination.page and pagination.page_size:
             # Using pagination with page and page size.
-            return request_command(size=pagination.page_size,
-                                   index=pagination.page - 1)
+            return request_command(size=pagination.page_size, index=pagination.page - 1)
 
             # # Using pagination with limit.
         return handle_request_with_limit(
@@ -1497,9 +1420,7 @@ def handle_list_request(request_command: Callable,
 
 
 @logger
-def handle_request_with_limit(request_command: Callable,
-                              limit: int,
-                              page_token: str | None = None) -> dict:
+def handle_request_with_limit(request_command: Callable, limit: int, page_token: str | None = None) -> dict:
     """
     Handle list request with large limit (above the API limit).
 
@@ -1516,7 +1437,6 @@ def handle_request_with_limit(request_command: Callable,
     total_data = API_LIMIT
 
     while limit > 0 and total_data > 0:
-
         size_to_get = min(limit, total_data, API_LIMIT)
 
         response = request_command(size=size_to_get, page_token=page_token)
@@ -1532,10 +1452,9 @@ def handle_request_with_limit(request_command: Callable,
 
 
 @logger
-def parse_list_response(data: list[dict[str, Any]],
-                        use_flatten_dict: bool,
-                        remove_html_tags: bool,
-                        parser_command: Callable | None = None) -> list:
+def parse_list_response(
+    data: list[dict[str, Any]], use_flatten_dict: bool, remove_html_tags: bool, parser_command: Callable | None = None
+) -> list:
     """
     Parse list outputs response.
 
@@ -1554,19 +1473,19 @@ def parse_list_response(data: list[dict[str, Any]],
             obj.pop("links", None)
             if remove_html_tags:
                 obj = copy.deepcopy(clean_html_tags(obj))
-            parsed_response.append(parser_command(obj) if parser_command else flatten_dict(obj)
-                                   if use_flatten_dict else obj)
+            parsed_response.append(parser_command(obj) if parser_command else flatten_dict(obj) if use_flatten_dict else obj)
 
     return parsed_response
 
 
 @logger
 def create_list_readable_output(
-        data: list[dict[str, Any]],
-        obj_type: str,
-        title: str | None = None,
-        headers: list[str] | None = None,
-        readable_parser: Callable | None = None) -> Any:
+    data: list[dict[str, Any]],
+    obj_type: str,
+    title: str | None = None,
+    headers: list[str] | None = None,
+    readable_parser: Callable | None = None,
+) -> Any:
     """
     Create a readable output.
 
@@ -1587,7 +1506,7 @@ def create_list_readable_output(
         t=readable_table,
         headers=headers or list(data[0].keys() if len(data) > 0 else []),
         headerTransform=string_to_table_header,
-        removeNull=True
+        removeNull=True,
     )
 
 
@@ -1661,11 +1580,7 @@ def generate_readable_output_message(
     Returns:
         str: Readable output message.
     """
-    return (
-        f'{object_type} "{object_id}" was successfully {action}.'
-        if object_id
-        else f"{object_type} was successfully {action}."
-    )
+    return f'{object_type} "{object_id}" was successfully {action}.' if object_id else f"{object_type} was successfully {action}."
 
 
 @logger
@@ -1680,7 +1595,7 @@ def clean_html_tags(to_clean: dict[str, Any]) -> dict[str, Any]:
         dict[str, Any]: Cleaned string.
     """
     if isinstance(to_clean, str):
-        return re.sub(CLEAN_HTML_TAGS, '', to_clean)
+        return re.sub(CLEAN_HTML_TAGS, "", to_clean)
     elif isinstance(to_clean, dict):
         return {key: clean_html_tags(value) for key, value in to_clean.items()}
     elif isinstance(to_clean, list):
@@ -1763,7 +1678,6 @@ def main() -> None:
             f"{INTEGRATION_COMMAND_PREFIX}-engine-group-list": list_engine_group_command,
             f"{INTEGRATION_COMMAND_PREFIX}-engine-list": list_engine_command,
             f"{INTEGRATION_COMMAND_PREFIX}-module-list": list_module_command,
-
         }
         if command == "test-module":
             return_results(test_module(client))
