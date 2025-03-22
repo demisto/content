@@ -1,10 +1,11 @@
-from OktaASA import OktaASAClient
-import demistomock as demisto
-from freezegun import freeze_time
-from CommonServerPython import DemistoException
-import pytest
 import json
 from datetime import datetime, timedelta
+
+import demistomock as demisto
+import pytest
+from CommonServerPython import DemistoException
+from freezegun import freeze_time
+from OktaASA import OktaASAClient
 
 """ CONSTANTS """
 MOCK_SERVER_URL = "https://server_url/"
@@ -78,9 +79,7 @@ def test_test_module_command(mocker):
     """
     from OktaASA import OktaASAClient, test_module
 
-    search_events_command_mocker = mocker.patch.object(
-        OktaASAClient, "search_events", return_value=(None, None, None)
-    )
+    search_events_command_mocker = mocker.patch.object(OktaASAClient, "search_events", return_value=(None, None, None))
     client = get_mock_client()
     res = test_module(client=client)
     assert res == "ok"
@@ -107,9 +106,7 @@ def test_test_module_arguments(mocker):
     result = test_module(client=client)
     assert result == "ok"
     assert get_events_command_mocker.call_count == 1
-    get_events_command_mocker.assert_called_with(
-        client=client
-    )
+    get_events_command_mocker.assert_called_with(client=client)
 
 
 def test_generate_token_if_required_hard_is_false_and_integration_context_is_empty(
@@ -129,9 +126,7 @@ def test_generate_token_if_required_hard_is_false_and_integration_context_is_emp
     from OktaASA import OktaASAClient
 
     client = get_mock_client()
-    getIntegrationContext_mocker = mocker.patch.object(
-        demisto, "getIntegrationContext", return_value={}
-    )
+    getIntegrationContext_mocker = mocker.patch.object(demisto, "getIntegrationContext", return_value={})
     setIntegrationContext_mocker = mocker.patch.object(demisto, "setIntegrationContext")
     get_token_request_mocker = mocker.patch.object(
         OktaASAClient,
@@ -307,16 +302,10 @@ def test_execute_audit_events_request_exception(
     get_audit_events_request_mocker = mocker.patch.object(
         OktaASAClient,
         "get_audit_events_request",
-        side_effect=[
-            DemistoException(
-                "Authentication token expired", res=MockException(500, text="")
-            )
-        ],
+        side_effect=[DemistoException("Authentication token expired", res=MockException(500, text=""))],
     )
     with pytest.raises(DemistoException):
-        client.execute_audit_events_request(
-            offset=None, count=None, descending=None, prev=None
-        )
+        client.execute_audit_events_request(offset=None, count=None, descending=None, prev=None)
     assert get_audit_events_request_mocker.call_count == 1
     assert generate_token_if_required_mocker.call_count == 1
 
@@ -404,9 +393,7 @@ def test_search_events_limit_higher_then_1000_without_offset(mocker):
         OktaASAClient,
         "get_audit_events_request",
         side_effect=[
-            generate_results(
-                True, datetime.now(), range_number_start=0, range_number_end=1000
-            ),
+            generate_results(True, datetime.now(), range_number_start=0, range_number_end=1000),
             generate_results(
                 False,
                 datetime.now() + timedelta(seconds=1000),
@@ -424,22 +411,11 @@ def test_search_events_limit_higher_then_1000_without_offset(mocker):
     results, id, _ = client.search_events(limit=2999, offset=None)
     assert generate_token_if_required_mocker.call_count == 3
     assert get_audit_events_request_mocker.call_count == 3
-    assert (
-        get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") is None
-    )
-    assert (
-        get_audit_events_request_mocker.call_args_list[1].args[0].get("offset") == "999"
-    )
-    assert (
-        get_audit_events_request_mocker.call_args_list[2].args[0].get("offset")
-        == "1999"
-    )
-    assert (
-        get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 1000
-    )
-    assert (
-        get_audit_events_request_mocker.call_args_list[1].args[0].get("count") == 1000
-    )
+    assert get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") is None
+    assert get_audit_events_request_mocker.call_args_list[1].args[0].get("offset") == "999"
+    assert get_audit_events_request_mocker.call_args_list[2].args[0].get("offset") == "1999"
+    assert get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 1000
+    assert get_audit_events_request_mocker.call_args_list[1].args[0].get("count") == 1000
     assert get_audit_events_request_mocker.call_args_list[2].args[0].get("count") == 999
     assert len(results) == 2999
     assert id == "2998"
@@ -468,9 +444,7 @@ def test_search_events_limit_higher_then_1000_with_offset(mocker):
         OktaASAClient,
         "get_audit_events_request",
         side_effect=[
-            generate_results(
-                False, datetime.now(), range_number_start=0, range_number_end=1000
-            ),
+            generate_results(False, datetime.now(), range_number_start=0, range_number_end=1000),
             generate_results(
                 False,
                 datetime.now() + timedelta(seconds=1000),
@@ -488,23 +462,11 @@ def test_search_events_limit_higher_then_1000_with_offset(mocker):
     results, id, _ = client.search_events(limit=2999, offset="5000")
     assert generate_token_if_required_mocker.call_count == 3
     assert get_audit_events_request_mocker.call_count == 3
-    assert (
-        get_audit_events_request_mocker.call_args_list[0].args[0].get("offset")
-        == "5000"
-    )
-    assert (
-        get_audit_events_request_mocker.call_args_list[1].args[0].get("offset") == "999"
-    )
-    assert (
-        get_audit_events_request_mocker.call_args_list[2].args[0].get("offset")
-        == "1999"
-    )
-    assert (
-        get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 1000
-    )
-    assert (
-        get_audit_events_request_mocker.call_args_list[1].args[0].get("count") == 1000
-    )
+    assert get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") == "5000"
+    assert get_audit_events_request_mocker.call_args_list[1].args[0].get("offset") == "999"
+    assert get_audit_events_request_mocker.call_args_list[2].args[0].get("offset") == "1999"
+    assert get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 1000
+    assert get_audit_events_request_mocker.call_args_list[1].args[0].get("count") == 1000
     assert get_audit_events_request_mocker.call_args_list[2].args[0].get("count") == 999
     assert len(results) == 2999
     assert id == "2998"
@@ -532,21 +494,13 @@ def test_search_events_limit_1000_without_offset(mocker):
     get_audit_events_request_mocker = mocker.patch.object(
         OktaASAClient,
         "get_audit_events_request",
-        side_effect=[
-            generate_results(
-                False, datetime.now(), range_number_start=0, range_number_end=1000
-            )
-        ],
+        side_effect=[generate_results(False, datetime.now(), range_number_start=0, range_number_end=1000)],
     )
     results, id, _ = client.search_events(limit=1000, offset=None)
     assert generate_token_if_required_mocker.call_count == 1
     assert get_audit_events_request_mocker.call_count == 1
-    assert (
-        get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") is None
-    )
-    assert (
-        get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 1000
-    )
+    assert get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") is None
+    assert get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 1000
     assert len(results) == 1000
     assert id == "0"
 
@@ -574,21 +528,15 @@ def test_search_events_limit_1001_second_page_is_empty(mocker):
         OktaASAClient,
         "get_audit_events_request",
         side_effect=[
-            generate_results(
-                False, datetime.now(), range_number_start=0, range_number_end=1000
-            ),
+            generate_results(False, datetime.now(), range_number_start=0, range_number_end=1000),
             [],
         ],
     )
     results, id, _ = client.search_events(limit=1001, offset=None)
     assert generate_token_if_required_mocker.call_count == 2
     assert get_audit_events_request_mocker.call_count == 2
-    assert (
-        get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") is None
-    )
-    assert (
-        get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 1000
-    )
+    assert get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") is None
+    assert get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 1000
     assert len(results) == 1000
     assert id == "0"
 
@@ -611,18 +559,12 @@ def test_search_events_first_page_is_empty_without_offset(mocker):
         OktaASAClient,
         "generate_token_if_required",
     )
-    get_audit_events_request_mocker = mocker.patch.object(
-        OktaASAClient, "get_audit_events_request", side_effect=[[]]
-    )
+    get_audit_events_request_mocker = mocker.patch.object(OktaASAClient, "get_audit_events_request", side_effect=[[]])
     results, id, timestamp = client.search_events(limit=1000, offset=None)
     assert generate_token_if_required_mocker.call_count == 1
     assert get_audit_events_request_mocker.call_count == 1
-    assert (
-        get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") is None
-    )
-    assert (
-        get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 1000
-    )
+    assert get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") is None
+    assert get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 1000
     assert len(results) == 0
     assert id is None
     assert timestamp is None
@@ -646,19 +588,12 @@ def test_search_events_first_page_is_empty_with_offset(mocker):
         OktaASAClient,
         "generate_token_if_required",
     )
-    get_audit_events_request_mocker = mocker.patch.object(
-        OktaASAClient, "get_audit_events_request", side_effect=[[]]
-    )
+    get_audit_events_request_mocker = mocker.patch.object(OktaASAClient, "get_audit_events_request", side_effect=[[]])
     results, id, timestamp = client.search_events(limit=1000, offset="offset")
     assert generate_token_if_required_mocker.call_count == 1
     assert get_audit_events_request_mocker.call_count == 1
-    assert (
-        get_audit_events_request_mocker.call_args_list[0].args[0].get("offset")
-        == "offset"
-    )
-    assert (
-        get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 1000
-    )
+    assert get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") == "offset"
+    assert get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 1000
     assert len(results) == 0
     assert id == "offset"
     assert timestamp is None
