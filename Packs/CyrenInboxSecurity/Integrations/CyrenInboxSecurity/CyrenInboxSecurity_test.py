@@ -1,14 +1,11 @@
-"""Cyren Inbox Security Integration for Cortex XSOAR - Unit Tests file
+"""Cyren Inbox Security Integration for Cortex XSOAR - Unit Tests file"""
 
-"""
-
-import json
-import io
 import datetime
+import json
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -18,8 +15,7 @@ def test_simulate_fetch():
     # fetch
     incidents = simulate_fetch()
 
-    assert incidents[0]["name"] ==\
-        'Cyren Inbox Security Sample - phishing (admin@sample.com)'
+    assert incidents[0]["name"] == "Cyren Inbox Security Sample - phishing (admin@sample.com)"
 
 
 def test_test_module(requests_mock):
@@ -27,15 +23,9 @@ def test_test_module(requests_mock):
 
     from CyrenInboxSecurity import Client, test_module
 
-    requests_mock.post(
-        'https://test.com/v1/token',
-        json="ok"
-    )
+    requests_mock.post("https://test.com/v1/token", json="ok")
 
-    client = Client(
-        base_url='https://test.com/',
-        verify=False
-    )
+    client = Client(base_url="https://test.com/", verify=False)
 
     # test
     results = test_module(
@@ -44,36 +34,26 @@ def test_test_module(requests_mock):
         client_secret="sample",
     )
 
-    assert results == 'ok'
+    assert results == "ok"
 
 
 def test_resolve_and_remediate_command(requests_mock):
-    """Tests the cyren-resolve-and-remediate command function.
-    """
+    """Tests the cyren-resolve-and-remediate command function."""
     from CyrenInboxSecurity import Client, resolve_and_remediate_command
 
-    requests_mock.patch(
-        'https://test.com/v1/cases',
-        json={"data": {"status": "ok"}}
-    )
+    requests_mock.patch("https://test.com/v1/cases", json={"data": {"status": "ok"}})
 
-    requests_mock.post(
-        'https://test.com/v1/token',
-        json={"data": {"access_token": "sample"}}
-    )
+    requests_mock.post("https://test.com/v1/token", json={"data": {"access_token": "sample"}})
 
-    client = Client(
-        base_url='https://test.com/',
-        verify=False
-    )
+    client = Client(base_url="https://test.com/", verify=False)
 
     # resolve and remediate
     cmd_results = resolve_and_remediate_command(
         client=client,
         args={
-            "case_id": '123',
-            "resolution": 'phishing',
-            "resolution_reason_text": '',
+            "case_id": "123",
+            "resolution": "phishing",
+            "resolution_reason_text": "",
             "actions": [],
         },
         client_id="sample",
@@ -81,7 +61,7 @@ def test_resolve_and_remediate_command(requests_mock):
     )
 
     attrs = vars(cmd_results)
-    assert attrs["raw_response"]["data"]["status"] == 'ok'
+    assert attrs["raw_response"]["data"]["status"] == "ok"
 
 
 def test_fetch_incidents(requests_mock):
@@ -93,25 +73,15 @@ def test_fetch_incidents(requests_mock):
     """
     from CyrenInboxSecurity import Client, fetch_incidents
 
-    mock_response = util_load_json('test_data/sample-incidents.json')
+    mock_response = util_load_json("test_data/sample-incidents.json")
 
-    requests_mock.get(
-        'https://test.com/v1/incidents',
-        json=mock_response
-    )
+    requests_mock.get("https://test.com/v1/incidents", json=mock_response)
 
-    requests_mock.post(
-        'https://test.com/v1/token',
-        json={"data": {"access_token": "sample"}}
-    )
+    requests_mock.post("https://test.com/v1/token", json={"data": {"access_token": "sample"}})
 
-    client = Client(
-        base_url='https://test.com/',
-        verify=False
-    )
+    client = Client(base_url="https://test.com/", verify=False)
 
-    last_run = {
-    }
+    last_run = {}
 
     # fetch
     incidents = fetch_incidents(
@@ -123,5 +93,4 @@ def test_fetch_incidents(requests_mock):
         max_fetch=10,
     )
 
-    assert incidents[0]["name"] ==\
-        'Cyren Inbox Security - phishing (System)'
+    assert incidents[0]["name"] == "Cyren Inbox Security - phishing (System)"
