@@ -1,9 +1,11 @@
-from enum import Enum
-import demistomock as demisto
-from urllib3 import disable_warnings
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 import base64
+from enum import Enum
+
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from urllib3 import disable_warnings
+
+from CommonServerUserPython import *  # noqa
 
 disable_warnings()
 
@@ -78,9 +80,7 @@ class Client(BaseClient):
     :param proxy (bool): specifies if to use XSOAR proxy settings.
     """
 
-    def __init__(
-        self, base_url: str, username: str, api_key: str, verify: bool, proxy: bool
-    ):
+    def __init__(self, base_url: str, username: str, api_key: str, verify: bool, proxy: bool):
         authorization_encoded = self._encode_authorization(username, api_key)
         headers = {"Authorization": f"Basic {authorization_encoded}"}
 
@@ -148,9 +148,7 @@ class Deduplicate:
             self.is_fetch_time_advanced = True
             self.new_event_ids_suspected = []
 
-    def get_events_with_duplication_risk(
-        self, events: list[dict], latest_time: str
-    ) -> list[dict]:
+    def get_events_with_duplication_risk(self, events: list[dict], latest_time: str) -> list[dict]:
         """
         Returns all events whose genTime is equal to the latest time
         from the list of events returned from the API
@@ -171,19 +169,13 @@ class Deduplicate:
         else:
             return event["mailID"]
 
-    def get_event_ids_with_duplication_risk(
-        self, events: list[dict], latest_time: str
-    ) -> list[str]:
+    def get_event_ids_with_duplication_risk(self, events: list[dict], latest_time: str) -> list[str]:
         """
         Generate IDs for each of the events that are at risk as a duplicate
         to save it in the last_run object
         """
-        events_with_duplication_risk = self.get_events_with_duplication_risk(
-            events, latest_time
-        )
-        return [
-            self.generate_id_for_event(event) for event in events_with_duplication_risk
-        ]
+        events_with_duplication_risk = self.get_events_with_duplication_risk(events, latest_time)
+        return [self.generate_id_for_event(event) for event in events_with_duplication_risk]
 
     def is_duplicate(self, event: dict, time_from: str) -> bool:
         """
@@ -223,16 +215,14 @@ def calculate_last_run(
         if deduplicate.is_fetch_time_advanced:
             latest_time = deduplicate.get_last_time_event(events)
             last_run[f"time_{event_type.value}_from"] = latest_time
-            last_run[
-                f"fetched_event_ids_of_{event_type.value}"
-            ] = deduplicate.get_event_ids_with_duplication_risk(events, latest_time)
+            last_run[f"fetched_event_ids_of_{event_type.value}"] = deduplicate.get_event_ids_with_duplication_risk(
+                events, latest_time
+            )
 
         # All returned events have a time equal to `start`
         else:
             last_run[f"time_{event_type.value}_from"] = start
-            last_run[
-                f"fetched_event_ids_of_{event_type.value}"
-            ] = deduplicate.new_event_ids_suspected
+            last_run[f"fetched_event_ids_of_{event_type.value}"] = deduplicate.new_event_ids_suspected
         demisto.debug(f"Events found, {last_run=}")
 
     return last_run
@@ -298,9 +288,7 @@ def fetch_by_event_type(
             res = client.get_logs(event_type, params)
         except NoContentException:
             next_token = None
-            demisto.debug(
-                f"No {event_type.value} content returned from api, {start=}, {end=}"
-            )
+            demisto.debug(f"No {event_type.value} content returned from api, {start=}, {end=}")
             break
 
         if res.get("logs"):
@@ -308,22 +296,15 @@ def fetch_by_event_type(
             for event in res["logs"]:
                 # Maintains a uniform format for all events
                 # used to check duplicates and save the `genTime` in the `last_run`
-                event["genTime"] = convert_datetime_to_without_milliseconds(
-                    event["genTime"]
-                )
-                deduplicate_management.update_suspected_duplicate_events_list(
-                    event, start
-                )
+                event["genTime"] = convert_datetime_to_without_milliseconds(event["genTime"])
+                deduplicate_management.update_suspected_duplicate_events_list(event, start)
                 if (
                     # The event is only collected if it has not been collected before
                     # Checks whether there is a list of suspected duplicate events,
                     # If there is, then checks that the current event is not in the list of suspicious duplicate events.
-                    not deduplicate_management.last_event_ids_suspected
-                    or not deduplicate_management.is_duplicate(event, start)
+                    not deduplicate_management.last_event_ids_suspected or not deduplicate_management.is_duplicate(event, start)
                 ):
-                    event.update(
-                        {"_time": event.get("timestamp"), "logType": event_type.value}
-                    )
+                    event.update({"_time": event.get("timestamp"), "logType": event_type.value})
                     if hide_sensitive:
                         remove_sensitive_from_events(event)
 
@@ -407,9 +388,7 @@ def fetch_events_command(
     new_last_run: dict[str, str] = {}
     for event_type in EventType:
         time_from = last_run.get(f"time_{event_type.value}_from") or first_fetch
-        ids_fetched_by_type = last_run.get(
-            f"fetched_event_ids_of_{event_type.value}", []
-        )
+        ids_fetched_by_type = last_run.get(f"fetched_event_ids_of_{event_type.value}", [])
 
         events_by_type, deduplicate_management = fetch_by_event_type(
             client=client,
@@ -471,17 +450,13 @@ def main() -> None:  # pragma: no cover
             # By default return as an md table
             # when the argument `should_push_events` is set to true
             # will also be returned as events
-            return_results(
-                CommandResults(readable_output=tableToMarkdown("Events:", events))
-            )
+            return_results(CommandResults(readable_output=tableToMarkdown("Events:", events)))
 
         elif command == "fetch-events":
             should_push_events = True
             should_update_last_run = True
             last_run = demisto.getLastRun()
-            events, last_run = fetch_events_command(
-                client, params, first_fetch, last_run=last_run
-            )
+            events, last_run = fetch_events_command(client, params, first_fetch, last_run=last_run)
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
@@ -495,9 +470,7 @@ def main() -> None:  # pragma: no cover
                 demisto.debug(f"set {last_run=}")
 
     except Exception as e:
-        return_error(
-            f"Failed to execute {command} command. Error in TrendMicro EmailSecurity Event Collector Integration [{e}]."
-        )
+        return_error(f"Failed to execute {command} command. Error in TrendMicro EmailSecurity Event Collector Integration [{e}].")
 
 
 """ ENTRY POINT """
