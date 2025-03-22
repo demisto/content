@@ -1,6 +1,5 @@
-import GoogleDocs
 import demistomock as demisto
-
+import GoogleDocs
 
 document = {
     "title": "'test'",
@@ -171,9 +170,7 @@ document = {
             {
                 "namedStyleType": "HEADING_4",
                 "textStyle": {
-                    "foregroundColor": {
-                        "color": {"rgbColor": {"red": 0.4, "green": 0.4, "blue": 0.4}}
-                    },
+                    "foregroundColor": {"color": {"rgbColor": {"red": 0.4, "green": 0.4, "blue": 0.4}}},
                     "fontSize": {"magnitude": 12, "unit": "PT"},
                 },
                 "paragraphStyle": {
@@ -189,9 +186,7 @@ document = {
             {
                 "namedStyleType": "HEADING_5",
                 "textStyle": {
-                    "foregroundColor": {
-                        "color": {"rgbColor": {"red": 0.4, "green": 0.4, "blue": 0.4}}
-                    },
+                    "foregroundColor": {"color": {"rgbColor": {"red": 0.4, "green": 0.4, "blue": 0.4}}},
                     "fontSize": {"magnitude": 11, "unit": "PT"},
                 },
                 "paragraphStyle": {
@@ -208,9 +203,7 @@ document = {
                 "namedStyleType": "HEADING_6",
                 "textStyle": {
                     "italic": True,
-                    "foregroundColor": {
-                        "color": {"rgbColor": {"red": 0.4, "green": 0.4, "blue": 0.4}}
-                    },
+                    "foregroundColor": {"color": {"rgbColor": {"red": 0.4, "green": 0.4, "blue": 0.4}}},
                     "fontSize": {"magnitude": 11, "unit": "PT"},
                 },
                 "paragraphStyle": {
@@ -240,9 +233,7 @@ document = {
                 "namedStyleType": "SUBTITLE",
                 "textStyle": {
                     "italic": False,
-                    "foregroundColor": {
-                        "color": {"rgbColor": {"red": 0.4, "green": 0.4, "blue": 0.4}}
-                    },
+                    "foregroundColor": {"color": {"rgbColor": {"red": 0.4, "green": 0.4, "blue": 0.4}}},
                     "fontSize": {"magnitude": 15, "unit": "PT"},
                     "weightedFontFamily": {"fontFamily": "Arial", "weight": 400},
                 },
