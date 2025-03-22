@@ -626,7 +626,7 @@ class Client:
     def list_project_teams(self, project_args: Project):
         params = {"api-version": 7.0}
 
-        full_url = f"https://dev.azure.com/{project_args.organization}/_apis/projects/" f"{project_args.project}/teams"
+        full_url = f"https://dev.azure.com/{project_args.organization}/_apis/projects/{project_args.project}/teams"
 
         return self.ms_client.http_request(method="GET", full_url=full_url, params=params, resp_type="json")
 
@@ -1073,7 +1073,7 @@ def pull_requests_list_command(
 
     response = client.pull_requests_list_request(project, repository, offset, limit)
 
-    readable_message = f"Pull Request List:\n Current page size: {limit}\n Showing page {page} out of " f"others that may exist."
+    readable_message = f"Pull Request List:\n Current page size: {limit}\n Showing page {page} out of others that may exist."
 
     outputs = copy.deepcopy(response.get("value", []))
     for pr in outputs:
@@ -1530,12 +1530,12 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], repositor
 
         else:
             demisto.debug(
-                f"Skipping updating remote incident fields [{remote_args.remote_incident_id}] " f"as it is not new nor changed"
+                f"Skipping updating remote incident fields [{remote_args.remote_incident_id}] as it is not new nor changed"
             )
 
     except Exception as e:
         demisto.info(
-            f"Error in Azure DevOps outgoing mirror for incident {remote_args.remote_incident_id} \n" f"Error message: {e!s}"
+            f"Error in Azure DevOps outgoing mirror for incident {remote_args.remote_incident_id} \nError message: {e!s}"
         )
 
     finally:

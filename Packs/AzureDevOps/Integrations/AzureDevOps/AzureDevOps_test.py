@@ -960,7 +960,7 @@ def test_azure_devops_pull_request_reviewer_add_command_pr_does_not_exist(
         "$id": "1",
         "innerException": "",
         "message": "TF401180: The requested pull request was not found.",
-        "typeName": "Microsoft.TeamFoundation.Git.Server.GitPullRequestNotFoundException," " Microsoft.TeamFoundation.Git.Server",
+        "typeName": "Microsoft.TeamFoundation.Git.Server.GitPullRequestNotFoundException, Microsoft.TeamFoundation.Git.Server",
         "typeKey": "GitPullRequestNotFoundException",
         "errorCode": 0,
         "eventId": 3000,

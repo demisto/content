@@ -58,11 +58,11 @@ CREATE_CORP_LIST_TITLE = "Signal Sciences - creating a new corp list \n\n List {
 DELETE_CORP_LIST_TITLE = "### Signal Sciences - deleting corp list \n\n List {0} has been successfully removed"
 EXPIRE_EVENT_TITLE = "### Signal Sciences - expiring event \n\n Event {0} has been successfully expired"
 WHITELIST_REMOVE_IP_TITLE = (
-    "### Signal Sciences - Removing an IP from Whitelist \n\n " "The IP {0} has been successfully removed from Whitelist."
+    "### Signal Sciences - Removing an IP from Whitelist \n\n The IP {0} has been successfully removed from Whitelist."
 )
 DELETE_SITE_LIST_TITLE = "### Signal Sciences - deleting site list \n\n The list has been succesfully removed"
 BLACKLIST_REMOVE_IP_TITLE = (
-    "### Signal Sciences - Removing an IP from Blacklist \n\n " "The IP {0} has been successfully removed from Blacklist."
+    "### Signal Sciences - Removing an IP from Blacklist \n\n The IP {0} has been successfully removed from Blacklist."
 )
 IP_ADDED_TO_WHITELIST_TITLE = "The IP {0} has been successfully added to whitelist."
 IP_ADDED_TO_BLACKLIST_TITLE = "The IP {0} has been successfully added to blacklist."
@@ -180,15 +180,11 @@ def has_api_call_failed(res):
     """
     Note: In SigSci, if an API call fails it returns a json with only 'message' in it.
     """
-    if "message" in res:
-        return True
-    return False
+    return "message" in res
 
 
 def is_error_status(status):
-    if int(status) >= 400:
-        return True
-    return False
+    return int(status) >= 400
 
 
 def return_error_message(results_json):
@@ -250,15 +246,12 @@ def is_legal_interval_for_alert(interval):
     if not represents_int(interval):
         return False
     interval_int = int(interval)
-    if not (interval_int == 1 or interval_int == 10 or interval_int == 60):
-        return False
-    return True
+    return (interval_int == 1 or interval_int == 10 or interval_int == 60)
 
 
 def validate_list_description_length(description):
-    if description is not None:
-        if len(description) > 140:
-            return_error("Error: Description given is too long. Description must be 140 characters or shorter")
+    if description is not None and len(description) > 140:
+        return_error("Error: Description given is too long. Description must be 140 characters or shorter")
 
 
 def validate_update_list_args(method, description):
@@ -269,7 +262,7 @@ def validate_update_list_args(method, description):
 
 def validate_create_list_args(list_type, description):
     if not is_legal_list_type(list_type):
-        return_error(f"Error: {list_type} is not a legal type for a list. Legal types are IP, String, " "Country or Wildcard")
+        return_error(f"Error: {list_type} is not a legal type for a list. Legal types are IP, String, Country or Wildcard")
     validate_list_description_length(description)
 
 
