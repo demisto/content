@@ -50,6 +50,6 @@ def test_invalid_base64_file_in_list(mocker):
 
     try:
         Base64ListToFile.base64_list_to_file(args)
-        assert False
+        assert False    # noqa: PT015, B011
     except Exception:
         assert True

@@ -71,7 +71,7 @@ class MockIntegrationContext:
         return equals_object(MockIntegrationContext.decode_values(self.__ctx), MockIntegrationContext.decode_values(ctx))
 
     def print(self) -> None:
-        print(json.dumps(MockIntegrationContext.decode_values(self.__ctx), indent=2))
+        print(json.dumps(MockIntegrationContext.decode_values(self.__ctx), indent=2))   # noqa: T201
 
 
 class MockUUID:
@@ -502,7 +502,7 @@ def test_process_root_get_html_main(mocker):
 
 
 @pytest.mark.parametrize(
-    argnames="integration_context_filename, " "storage_protection, " "user_permission, " "request_permission, " "ok",
+    argnames="integration_context_filename, storage_protection, user_permission, request_permission, ok",
     argvalues=[
         (
             "./test_data/integration_ctx_common.json",
@@ -618,7 +618,7 @@ def test_process_root_post_health(
 
 
 @pytest.mark.parametrize(
-    argnames="integration_context_filename, " "storage_protection",
+    argnames="integration_context_filename, storage_protection",
     argvalues=[
         ("./test_data/integration_ctx_common.json", "read/write"),
         ("./test_data/integration_ctx_common.json", "sandbox"),
@@ -687,7 +687,7 @@ def test_process_root_post_cleanup(mocker, integration_context_filename, storage
 
 
 @pytest.mark.parametrize(
-    argnames="integration_context_filename_before, " "integration_context_filename_after, " "storage_protection",
+    argnames="integration_context_filename_before, integration_context_filename_after, storage_protection",
     argvalues=[
         (
             "./test_data/integration_ctx_common.json",
@@ -821,7 +821,7 @@ def test_process_root_post_reset_in_read_only(mocker):
 
 
 @pytest.mark.parametrize(
-    argnames="integration_context_filename_before, " "path_list, " "integration_context_filename_after",
+    argnames="integration_context_filename_before, path_list, integration_context_filename_after",
     argvalues=[
         (
             "./test_data/integration_ctx_common.json",
@@ -1215,7 +1215,7 @@ def test_process_root_post_upload_chunk(
 
 @freezegun.freeze_time("2022-01-23 12:34:56")
 @pytest.mark.parametrize(
-    argnames="storage_limit, " "sandbox_limit, " "storage_protection",
+    argnames="storage_limit, sandbox_limit, storage_protection",
     argvalues=[
         ("10", "20", "read/write"),
         ("10", "20", "sandbox"),
@@ -1468,7 +1468,7 @@ def test_command_reset(mocker):
 
 
 @pytest.mark.parametrize(
-    argnames="file_name, " "input_data, " "encoding, " "file_data",
+    argnames="file_name, input_data, encoding, file_data",
     argvalues=[
         ("test.txt", "aaaa", "utf-8", b"aaaa"),
         ("test.txt", None, "utf-8", b""),
@@ -1582,7 +1582,7 @@ def test_command_upload_as_file(mocker, file_name, input_data, encoding, file_da
 
 
 @pytest.mark.parametrize(
-    argnames="entry_id, " "name",
+    argnames="entry_id, name",
     argvalues=[
         ("0000", None),
         ("0000", "name"),
@@ -1671,7 +1671,7 @@ def test_command_upload_files(mocker, entry_ids):
 
 
 @pytest.mark.parametrize(
-    argnames="directory, " "recursive, " "response_filename, " "results_filename",
+    argnames="directory, recursive, response_filename, results_filename",
     argvalues=[
         ("/", False, "test_data/list_files_svrresp_01.json", "test_data/list_files_results_01.json"),
         ("/", True, "test_data/list_files_svrresp_02.json", "test_data/list_files_results_02.json"),
@@ -1767,7 +1767,7 @@ def test_command_remove_files(mocker, paths):
 
 
 @pytest.mark.parametrize(
-    argnames="path, " "save_as, " "content_filename",
+    argnames="path, save_as, content_filename",
     argvalues=[
         ("/test.dat", "aaa.dat", "test_data/download_file.dat"),
         ("/あいうえお.dat", None, "test_data/download_file.dat"),
@@ -1821,7 +1821,7 @@ def test_command_download_file(mocker, path, save_as, content_filename):
 
 
 @pytest.mark.parametrize(
-    argnames="path, " "encoding, " "content, " "results_filename",
+    argnames="path, encoding, content, results_filename",
     argvalues=[
         ("/test.dat", None, "Hello!", "test_data/download_as_text_01.json"),
         ("/test.dat", "utf-8", "Hello!", "test_data/download_as_text_01.json"),
@@ -1875,7 +1875,7 @@ def test_command_download_as_text(mocker, path, encoding, content, results_filen
 
 
 @pytest.mark.parametrize(
-    argnames="save_as, " "content_filename",
+    argnames="save_as, content_filename",
     argvalues=[
         ("aaa.dat", "test_data/download_file.dat"),
         (None, "test_data/download_file.dat"),
@@ -1929,7 +1929,7 @@ def test_command_archive_zip(mocker, save_as, content_filename):
 
 
 @pytest.mark.parametrize(
-    argnames="mimetypes_input_filename, " "mimetypes_output_filename, " "merge_mime_types",
+    argnames="mimetypes_input_filename, mimetypes_output_filename, merge_mime_types",
     argvalues=[
         (
             "./test_data/mime_types_style_01.json",
@@ -1999,7 +1999,7 @@ def test_parse_mime_types(mocker, mimetypes_input_filename, mimetypes_output_fil
 
 
 @pytest.mark.parametrize(
-    argnames="attachment_exts_input, " "attachment_exts_output",
+    argnames="attachment_exts_input, attachment_exts_output",
     argvalues=[
         (
             "exe, bat, dat, zip, 7z",

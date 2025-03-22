@@ -30,7 +30,7 @@ def parse_regex_flags(raw_flags: str = "gim"):
         if c in LETTER_TO_REGEX_FLAGS:
             flags |= LETTER_TO_REGEX_FLAGS[c]
         else:
-            raise ValueError(f'Invalid regex flag "{c}".\n' f'Supported flags are {", ".join(LETTER_TO_REGEX_FLAGS.keys())}')
+            raise ValueError(f'Invalid regex flag "{c}".\nSupported flags are {", ".join(LETTER_TO_REGEX_FLAGS.keys())}')
 
     return flags, multiple_matches
 

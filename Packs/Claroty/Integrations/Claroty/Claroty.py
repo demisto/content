@@ -95,10 +95,10 @@ DEFAULT_ASSET_FIELD_LIST = [
     "resource_id",
 ]
 WINDOWS_CVE_BASE_URL = (
-    "ranger/insight_details/Windows%20CVEs?&format=asset_page&sort=-Score%20(CVSS)" "&per_page=1000&page=1&id__exact="
+    "ranger/insight_details/Windows%20CVEs?&format=asset_page&sort=-Score%20(CVSS)&per_page=1000&page=1&id__exact="
 )
 FULL_MATCH_BASE_URL = (
-    "ranger/insight_details/Full%20Match%20CVEs?&format=asset_page&sort=-Score%20(CVSS)" "&per_page=1000&page=1&id__exact="
+    "ranger/insight_details/Full%20Match%20CVEs?&format=asset_page&sort=-Score%20(CVSS)&per_page=1000&page=1&id__exact="
 )
 DEFAULT_RESOLVE_ALERT_COMMENT = "Resolved by Demisto"
 # MAX_ASSET_LIMIT = 75

@@ -68,7 +68,7 @@ def _open_json_file(path):
         (
             threat_search_command,
             {"cve": "test", "release-date": "2000-09-09", "release-version": "test"},
-            ("There can only be one argument from the following list in the command: " "release-date, release-version"),
+            ("There can only be one argument from the following list in the command: release-date, release-version"),
         ),
         (
             threat_search_command,

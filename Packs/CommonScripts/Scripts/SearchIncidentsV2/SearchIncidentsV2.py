@@ -53,7 +53,7 @@ def is_valid_args(args: Dict):
                 else:
                     _ = bytes(value, "utf-8").decode("unicode_escape")
             except UnicodeDecodeError as ex:
-                error_msg.append(f'Error while parsing the argument: "{_key}" ' f'\nError:\n- "{ex!s}"')
+                error_msg.append(f'Error while parsing the argument: "{_key}" \nError:\n- "{ex!s}"')
 
     if len(error_msg) != 0:
         raise DemistoException("\n".join(error_msg))

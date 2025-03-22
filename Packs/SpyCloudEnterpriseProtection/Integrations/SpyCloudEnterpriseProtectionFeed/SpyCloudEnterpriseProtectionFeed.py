@@ -12,7 +12,7 @@ disable_warnings()  # pylint: disable=no-member
 
 INTEGRATION_CONTEXT_NAME = "SpyCloud"
 INVALID_CREDENTIALS_ERROR_MSG = (
-    "Authorization Error: The provided API Key " "for SpyCloud is invalid. Please provide a " "valid API Key."
+    "Authorization Error: The provided API Key for SpyCloud is invalid. Please provide a valid API Key."
 )
 MAX_RETRIES = 5
 BACK_OFF_TIME = 0.1
@@ -113,7 +113,7 @@ class Client(BaseClient):
         elif response.status_code == 403:
             if INVALID_IP in response_headers.get(SPYCLOUD_ERROR, ""):
                 raise DemistoException(
-                    f'{response_headers.get(SPYCLOUD_ERROR, "")}. ' f"" f"{INVALID_IP_MSG}",
+                    f'{response_headers.get(SPYCLOUD_ERROR, "")}. {INVALID_IP_MSG}',
                     res=response,
                 )
             elif INVALID_API_KEY in response_headers.get(SPYCLOUD_ERROR, ""):

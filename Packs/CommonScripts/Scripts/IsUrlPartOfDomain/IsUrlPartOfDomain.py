@@ -17,7 +17,7 @@ def main(domains: str, urls: str) -> CommandResults:
     urls = argToList(urls)
     domains = set(argToList(domains))
 
-    outputs: list[dict] = list()
+    outputs: list[dict] = []
     for url in urls:
         results = demisto.executeCommand("ExtractDomainFromUrlAndEmail", {"input": url.lower()})
         if is_error(results):

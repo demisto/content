@@ -11,7 +11,7 @@ def is_ip_internal(ip: str, ranges: List[str]) -> bool:
         return any(IPv4Address(ip) in IPv4Network(cidr.split(DELIMITER)[0] if DELIMITER in cidr else cidr) for cidr in ranges)
     except ValueError as ve:
         return return_error(
-            f"One or more IP ranges or IPs are invalid. Please make sure the list is in the correct structure." f"Error: {ve}"
+            f"One or more IP ranges or IPs are invalid. Please make sure the list is in the correct structure.Error: {ve}"
         )
 
 

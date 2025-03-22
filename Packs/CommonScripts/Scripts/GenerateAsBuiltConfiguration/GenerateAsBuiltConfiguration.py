@@ -573,7 +573,7 @@ def get_playbook_integration(playbook: dict, filter_int: list) -> dict:
                                             if items is not None:
                                                 for j in items:
                                                     if (j.get("fieldId") in (a.get("cliName"), a.get("name"))) and (
-                                                        j.get("fieldId") not in field_type.keys()
+                                                        j.get("fieldId") not in field_type
                                                     ):
                                                         field_type[j.get("fieldId")] = a.get("type")
                                             if columns is not None:

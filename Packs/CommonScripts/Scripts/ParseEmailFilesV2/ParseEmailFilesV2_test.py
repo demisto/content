@@ -498,7 +498,7 @@ def test_smime_without_to_from_subject(mocker):
         side_effect=exec_command_for_file(
             "smime_without_fields.p7m",
             info="ascii text",
-            file_type="multipart/signed; " 'protocol="application/pkcs7-signature";, ASCII text',
+            file_type='multipart/signed; protocol="application/pkcs7-signature";, ASCII text',
         ),
     )
     mocker.patch.object(demisto, "results")

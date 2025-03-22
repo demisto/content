@@ -7,7 +7,7 @@ def get_exif_tags(file_entry_id):
     res = demisto.getFilePath(file_entry_id)
     f = open(res["path"], "rb")
 
-    tags = exifread.process_file(f)
+    tags = exifread.process_file(f)  # pylint: disable=E1101
     arr = []
     for tag in tags:
         arr.append({"tag": str(tag), "value": str(tags[tag])})

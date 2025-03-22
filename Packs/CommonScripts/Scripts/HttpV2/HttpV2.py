@@ -69,7 +69,7 @@ class Client(BaseClient):
 
         if status_code == 403:
             raise DemistoException(
-                f"Invalid permissions. Status code: {status_code}. " f"Origin response from server: {res.text}"
+                f"Invalid permissions. Status code: {status_code}. Origin response from server: {res.text}"
             )
 
         if status_code == 404:
@@ -79,7 +79,7 @@ class Client(BaseClient):
             )
         if status_code == 500:
             raise DemistoException(
-                f"Internal server error. Status code: {status_code}." f" Origin response from server: {res.text}"
+                f"Internal server error. Status code: {status_code}. Origin response from server: {res.text}"
             )
 
         if status_code == 502:
@@ -97,9 +97,9 @@ def create_headers(headers: dict, request_content_type_header: str, response_con
     Returns:
         A dictionary of headers to send in the request.
     """
-    if request_content_type_header in CONTENT_TYPE_MAPPER.keys():
+    if request_content_type_header in CONTENT_TYPE_MAPPER:
         request_content_type_header = CONTENT_TYPE_MAPPER[request_content_type_header]
-    if response_content_type_header in CONTENT_TYPE_MAPPER.keys():
+    if response_content_type_header in CONTENT_TYPE_MAPPER:
         response_content_type_header = CONTENT_TYPE_MAPPER[response_content_type_header]
     if request_content_type_header and not headers.get("Content-Type"):
         headers["Content-Type"] = request_content_type_header
@@ -211,7 +211,7 @@ def main():
         }
 
         retry_on_status = args.get("retry_on_status", None)
-        raise_on_status = True if retry_on_status else False
+        raise_on_status = bool(retry_on_status)
         retry_status_list = format_status_list(argToList(retry_on_status))
 
         if raise_on_status:

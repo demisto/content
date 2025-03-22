@@ -60,7 +60,7 @@ def test_valid_response_history(params, expected_results):
 
     url = params["url"]
     use_head = params["useHead"]
-    request_using_head = True if use_head == "true" else False
+    request_using_head = use_head == "true"
 
     adapter = requests_mock.Adapter()
     adapter.add_matcher(custom_matcher)

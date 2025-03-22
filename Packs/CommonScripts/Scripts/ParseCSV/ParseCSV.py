@@ -119,8 +119,8 @@ def main():
     hash_list = []
     d_args = demisto.args()
 
-    entry_id = d_args["entryID"] if "entryID" in d_args else None
-    file_name = d_args["file"] if "file" in d_args else None  # file arg deprecated
+    entry_id = d_args.get("entryID", None)
+    file_name = d_args.get("file", None)  # file arg deprecated
     parse_ip = int(d_args["ips"]) if "ips" in d_args else -1
     parse_domain = int(d_args["domains"]) if "domains" in d_args else -1
     parse_hash = int(d_args["hashes"]) if "hashes" in d_args else -1

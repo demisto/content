@@ -7,7 +7,7 @@ from CommonServerUserPython import *
 
 
 def get_by_incident_id(incident_id, get_key, set_key=""):
-    set_key = get_key if not set_key else set_key
+    set_key = set_key if set_key else get_key
     keys = get_key.split(".")
 
     try:

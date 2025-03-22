@@ -12,7 +12,7 @@ def main():
     try:
         if not args.get("old") and args.get("new"):  # If owner was no-one and is now someone:
             demisto.executeCommand("stopTimer", {"timerField": "timetoassignment"})
-            demisto.results("Assignment of the incident was successful and so the Time To Assignment" " timer has been stopped.")
+            demisto.results("Assignment of the incident was successful and so the Time To Assignment timer has been stopped.")
     except Exception as e:  # pragma: no cover
         err_msg = f"Encountered an error while running the script: [{e}]"
         return_error(err_msg, error=e)

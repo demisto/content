@@ -7,7 +7,7 @@ from CommonServerPython import *
 def main(args):
     value = args["value"]
     replace_with = args["replace_with"]
-    output = list()
+    output = []
     start = 0
 
     try:

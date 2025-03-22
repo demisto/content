@@ -390,7 +390,7 @@ def lookup_events(args: dict) -> CommandResults:
     if args.get("startTime") is not None:
         kwargs.update(
             {
-                "StartTime": datetime.strptime(
+                "StartTime": datetime.strptime(  # type: ignore
                     args.get("startTime"),  # type:ignore
                     "%Y-%m-%dT%H:%M:%S",
                 )

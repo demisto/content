@@ -5,11 +5,9 @@ from DisableUserWrapper import disable_user
 
 def commands_are_equal(command1: CommandRunner.Command, command2: CommandRunner.Command) -> bool:
     """Return True if command and args_lst of the commands are equal, False otherwise."""
-    if not command1.commands == command2.commands:
+    if command1.commands != command2.commands:
         return False
-    if not command1.args_lst == command2.args_lst:
-        return False
-    return True
+    return command1.args_lst == command2.args_lst
 
 
 def test_disable_user(mocker):

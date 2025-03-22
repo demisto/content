@@ -191,7 +191,7 @@ def detect_type(indicator):
         # the suffix_list_urls=None is used to not make http calls using the extraction - avoiding SSL errors
         if (
             tldextract.TLDExtract(
-                cache_dir="https://raw.githubusercontent.com/publicsuffix" "/list/master/public_suffix_list.dat",
+                cache_dir="https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat",
                 suffix_list_urls=(),
             )
             .__call__(indicator)

@@ -213,7 +213,7 @@ def validate_entry_context(context_path: str, entry_context: Any, unpack_nested_
 
     if not isinstance(entry_context, list | dict):
         raise ValueError(
-            f"The context object {context_path} should be of type dict or list.\n" f"Received type: {type(entry_context)}"
+            f"The context object {context_path} should be of type dict or list.\nReceived type: {type(entry_context)}"
         )
 
     data_type = "dict"

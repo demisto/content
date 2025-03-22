@@ -13,7 +13,7 @@ disable_warnings()  # pylint: disable=no-member
 
 INTEGRATION_CONTEXT_NAME = "SpyCloud"
 INVALID_CREDENTIALS_ERROR_MSG = (
-    "Authorization Error: The provided API Key " "for SpyCloud is invalid. Please provide a " "valid API Key."
+    "Authorization Error: The provided API Key for SpyCloud is invalid. Please provide a valid API Key."
 )
 DEFAULT_PAGE_SIZE = 50
 MAX_RETRIES = 5
@@ -147,7 +147,7 @@ def pagination(page: int | None, page_size: int | None, limit: int | None):
 
 
 def get_paginated_results(results: list, offset: int, limit: int) -> list:
-    return results[offset : offset + limit]
+    return results[offset: offset + limit]
 
 
 def test_module(client: Client) -> str:
@@ -191,7 +191,7 @@ def create_spycloud_args(args: dict) -> dict:
     severity_list = argToList(args.get("severity", []))
     for severity in severity_list:
         if severity not in ["2", "5", "25", "20"]:
-            raise DemistoException("Invalid input Error: supported values for " "severity are: 2, 5, 20, 25")
+            raise DemistoException("Invalid input Error: supported values for severity are: 2, 5, 20, 25")
     spycloud_args["since"] = since
     spycloud_args["until"] = until
     spycloud_args["type"] = args.get("type", "")
@@ -326,7 +326,7 @@ def command_helper_function(client: Client, args: dict[str, Any], command: str):
                 cursor, results = res.get("cursor"), results + res.get("results", [])
         else:
             return CommandResults(
-                readable_output=f"No data available for page {page}. Total " f"are {ceil(total_records / page_size)}"
+                readable_output=f"No data available for page {page}. Total are {ceil(total_records / page_size)}"
             )
         results = get_paginated_results(results, offset, updated_limit)
     breach_command = ["spycloud-breach-catalog-list", "spycloud-breach-catalog-get"]
@@ -355,7 +355,7 @@ def get_command_title_string(sub_context: str, page: int | None, page_size: int 
     """
     if page and page_size and (page > 0 and page_size > 0):
         total_page = ceil(hits / page_size) if hits and hits > 0 else 1
-        return f"{sub_context} \nCurrent page size: {page_size}\n" f"Showing page {page} out of {total_page}"
+        return f"{sub_context} \nCurrent page size: {page_size}\nShowing page {page} out of {total_page}"
 
     return f"{sub_context}"
 

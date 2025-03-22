@@ -6,7 +6,7 @@ class ResponseMock:
         self.status_code = 404
         self._json = _json
         self.headers = {"Content-Type": "text\html"}
-        self.text = "<div>" "<html> some text </html>" "</div>"
+        self.text = "<div><html> some text </html></div>"
         self.ResponseStatus = ResponseStatus(_json)
 
     def json(self):

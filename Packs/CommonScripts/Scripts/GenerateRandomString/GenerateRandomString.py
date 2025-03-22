@@ -27,7 +27,7 @@ def set_characters(characters: str, digits: bool, lowercase: bool, punctuation: 
 
 def create_password(characters, length):
     password = ""
-    for x in range(length):
+    for _x in range(length):
         password += random.SystemRandom(random.seed(time.time())).choice(characters)  # type: ignore
 
     entry_context = {"RandomString": password}

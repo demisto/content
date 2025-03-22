@@ -13,7 +13,7 @@ def test_generate_unique_values_from_objects():
         {"key": "value3", "value": "value6"},
     ]
     values = generate_unique_values_from_objects(objects, "key", False)
-    assert set(values) == set(["value1", "value2", "value3"])
+    assert set(values) == {"value1", "value2", "value3"}
 
 
 def test_generate_unique_values_from_objects_with_none():
@@ -28,7 +28,7 @@ def test_generate_unique_values_from_objects_with_none():
         {"key": "None_value", "value": None},
     ]
     values = generate_unique_values_from_objects(objects, "key", True)
-    assert set(values) == set(["None_value", "value1", "value2", "value3"])
+    assert set(values) == {"None_value", "value1", "value2", "value3"}
 
 
 def test_generate_unique_values_from_objects_fail():

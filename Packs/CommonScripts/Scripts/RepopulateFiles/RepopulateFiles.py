@@ -64,7 +64,7 @@ def find_attachment_entry(file_ents: list[dict[str, Any]], attachment_ent: dict[
         for alg in ["SHA512", "SHA256", "SHA1", "MD5"]:
             with open(file["path"], "rb") as f:
                 hobj = hashlib.new(alg)
-                for chunk in iter(lambda: f.read(hobj.block_size * 4096), b""):
+                for chunk in iter(lambda: f.read(hobj.block_size * 4096), b""):  # noqa: B023
                     hobj.update(chunk)
                 hash_table[alg] = hobj.hexdigest().lower()
     except Exception as e:

@@ -45,7 +45,7 @@ ACCESS_LIMITATION_API_ERROR = {
 }
 EXPECTED_ERROR_MSG_FOR_404_ERROR = "Error in API call [404].\nNOT_FOUND : Unable to find the requested object."
 EXPECTED_ERROR_MSG_FOR_ACCESS_LIMITATION_ERROR = (
-    "Error in API call [401].\nunauthorized : Full authentication is " "required to access this resource."
+    "Error in API call [401].\nunauthorized : Full authentication is required to access this resource."
 )
 TEST_FILE_NAME = "attachment.txt"
 TEST_DAY_DATA = "10 days"
@@ -176,7 +176,7 @@ def test_cofense_message_get_command_when_invalid_token(mock_client, requests_mo
     requests_mock.get(mock_get_message_endpoint, json=mock_response, status_code=400)
 
     expected_err_msg = (
-        "Error in API call [400].\n" "BAD_REQUEST : Download token is either missing or has already been used: invalid_token."
+        "Error in API call [400].\nBAD_REQUEST : Download token is either missing or has already been used: invalid_token."
     )
 
     with pytest.raises(DemistoException) as err:
@@ -653,7 +653,7 @@ def test_cofense_quarantine_job_create_command_when_invalid_data_given(mock_clie
     }
     requests_mock.post(mock_create_quarantine_job_endpoint, json=mock_response, status_code=404)
 
-    expected_err_msg = "Error in API call [404].\n" "BAD_REQUEST : Invalid request."
+    expected_err_msg = "Error in API call [404].\nBAD_REQUEST : Invalid request."
 
     params = {"quarantine_emails": "<test_id>:dummy@xyz.com"}
 

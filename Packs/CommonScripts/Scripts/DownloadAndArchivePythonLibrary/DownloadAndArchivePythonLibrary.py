@@ -20,7 +20,7 @@ def installLibrary(dir_path: Path, library_name: str) -> str:
 
     # Create a zip file with maximum compression level
     zip_path = dir_path / (library_name + ".zip")
-    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zip_file:
+    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zip_file:  # pylint: disable=E1101
         for root, _dirs, files in os.walk(dir_path):
             for file in files:
                 demisto.debug(f"{root=}, {file=}")

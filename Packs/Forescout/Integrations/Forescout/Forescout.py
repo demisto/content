@@ -22,16 +22,16 @@ urllib3.disable_warnings()
 
 PARAMS = demisto.params()
 WEB_API_CREDENTIALS = PARAMS.get("web_api_credentials")
-WEB_API_CREDENTIALS = {} if not WEB_API_CREDENTIALS else WEB_API_CREDENTIALS
+WEB_API_CREDENTIALS = WEB_API_CREDENTIALS if WEB_API_CREDENTIALS else {}
 WEB_API_USERNAME = WEB_API_CREDENTIALS.get("identifier", "")
 WEB_API_PASSWORD = WEB_API_CREDENTIALS.get("password", "")
 
 DEX_CREDENTIALS = PARAMS.get("dex_credentials")
-DEX_CREDENTIALS = {} if not DEX_CREDENTIALS else DEX_CREDENTIALS
+DEX_CREDENTIALS = DEX_CREDENTIALS if DEX_CREDENTIALS else {}
 DEX_USERNAME = DEX_CREDENTIALS.get("identifier", "")
 DEX_PASSWORD = DEX_CREDENTIALS.get("password", "")
 DEX_ACCOUNT = PARAMS.get("dex_account", "")
-DEX_ACCOUNT = "" if not DEX_ACCOUNT else DEX_ACCOUNT
+DEX_ACCOUNT = DEX_ACCOUNT if DEX_ACCOUNT else ""
 
 # Remove trailing slash to prevent wrong URL path to service
 BASE_URL = PARAMS.get("url", "").strip().rstrip("/")
@@ -281,11 +281,11 @@ def filter_hostfields_data(args: dict, data: dict) -> list:
                     filtered_hostfields.append(host_field)
             return filtered_hostfields
     case_sensitive = args.get("case_sensitive", "false")
-    case_sensitive = False if case_sensitive.casefold() == "false" else True
+    case_sensitive = case_sensitive.casefold() != "false"
     if not case_sensitive:
         search_term = search_term.casefold()
     match_exactly = args.get("match_exactly", "False")
-    match_exactly = False if match_exactly.casefold() == "false" else True
+    match_exactly = match_exactly.casefold() != "false"
     if host_field_type != "all_types":
         host_field_type = argToList(host_field_type)
     search_in = args.get("search_in", "name")
@@ -293,9 +293,8 @@ def filter_hostfields_data(args: dict, data: dict) -> list:
 
     filtered_hostfields = []
     for host_field in host_fields:
-        if isinstance(host_field_type, list):
-            if host_field.get("type") not in host_field_type:
-                continue
+        if isinstance(host_field_type, list) and host_field.get("type") not in host_field_type:
+            continue
         vals_to_search = [host_field.get(part) for part in search_in]
         vals_to_search = ["" if val is None else val for val in vals_to_search]
         for val in vals_to_search:
@@ -306,8 +305,7 @@ def filter_hostfields_data(args: dict, data: dict) -> list:
                 if search_term == val_to_search:
                     filtered_hostfields.append(host_field)
                     break
-                else:
-                    continue
+                continue
             else:
                 if search_term in val_to_search:
                     filtered_hostfields.append(host_field)
@@ -508,11 +506,11 @@ def http_request(
         return_error(err_msg)
     except requests.exceptions.SSLError:
         err_msg = (
-            "SSL Certificate Verification Failed - try selecting 'Trust any certificate' in" " the integration configuration."
+            "SSL Certificate Verification Failed - try selecting 'Trust any certificate' in the integration configuration."
         )
         return_error(err_msg)
     except requests.exceptions.ProxyError:
-        err_msg = "Proxy Error - if 'Use system proxy' in the integration configuration has been" " selected, try deselecting it."
+        err_msg = "Proxy Error - if 'Use system proxy' in the integration configuration has been selected, try deselecting it."
         return_error(err_msg)
     except requests.exceptions.ConnectionError as e:
         # Get originating Exception in Exception chain
@@ -520,7 +518,7 @@ def http_request(
             e = cast(Any, e.__context__)
 
         error_class = str(e.__class__)
-        err_type = "<" + error_class[error_class.find("'") + 1 : error_class.rfind("'")] + ">"
+        err_type = "<" + error_class[error_class.find("'") + 1: error_class.rfind("'")] + ">"
         err_msg = (
             f"\nERRTYPE: {err_type}\nERRNO: [{e.errno}]\nMESSAGE: {e.strerror}\n"
             f"ADVICE: Check that the Server URL parameter is correct and that you"
@@ -551,7 +549,7 @@ def get_host(args):
     url_suffix = "/api/hosts/"
     if not (ip or mac or id):
         err_msg = (
-            "One of the command arguments, 'ip', 'mac' or 'id' must be entered in order to identify the " "endpoint to retrieve. "
+            "One of the command arguments, 'ip', 'mac' or 'id' must be entered in order to identify the endpoint to retrieve. "
         )
         return_error(err_msg)
 
@@ -598,7 +596,7 @@ def get_host_command():
 
     included_fields_readable = {}
     for key, val in included_fields.items():
-        included_fields_readable[key] = dict_to_formatted_string(val) if isinstance(val, (dict, list)) else val
+        included_fields_readable[key] = dict_to_formatted_string(val) if isinstance(val, dict | list) else val
 
     content = {"ID": str(host.get("id")), "IPAddress": host.get("ip", ""), "MACAddress": host.get("mac", ""), **included_fields}
 
@@ -841,7 +839,7 @@ def main():
         cmd_name = demisto.command()
         LOG(f"Command being called is {cmd_name}")
 
-        if cmd_name in COMMANDS.keys():
+        if cmd_name in COMMANDS:
             COMMANDS[cmd_name]()
 
     except Exception as e:

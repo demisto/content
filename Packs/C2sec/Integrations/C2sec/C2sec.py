@@ -44,7 +44,7 @@ def add_domain(domain, newscan):
             "EntryContext": {"C2sec.Domain(val.Name && val.Name == obj.Name)": result_dictionary},
         }
     else:
-        return "Error searching domain - status code: [%d] - reason: %s" % (call.status_code, call.text)
+        return f"Error searching domain - status code: [{call.status_code}] - reason: {call.text}"
 
 
 def get_scan_status(workitemid):
@@ -62,7 +62,7 @@ def get_scan_status(workitemid):
             "EntryContext": {"C2sec.Domain.Scan(val.workitemid && val.workitemid == obj.workitemid)": resp["apistatus"]},
         }
     else:
-        return "Error getting scan results [%d] - reason: %s" % (call.status_code, call.text)
+        return f"Error getting scan results [{call.status_code}] - reason: {call.text}"
 
 
 def get_domain_issues(domain, severity=None):
@@ -99,7 +99,7 @@ def get_domain_issues(domain, severity=None):
             "EntryContext": {"C2sec.Domain(val.Name && val.Name == obj.Name)": {"Name": domain, "Issue": contexts}},
         }
     else:
-        return "Error getting issues [%d] - reason: %s" % (call.status_code, call.text)
+        return f"Error getting issues [{call.status_code}] - reason: {call.text}"
 
 
 def rescan_domain(domain):
@@ -118,7 +118,7 @@ def rescan_domain(domain):
             "EntryContext": {"C2sec.Domain.Scan(val.workitemid && val.workitemid == obj.workitemid)": context},
         }
     else:
-        return "Error rescanning the domain [%d] - reason: %s" % (call.status_code, call.text)
+        return f"Error rescanning the domain [{call.status_code}] - reason: {call.text}"
 
 
 def get_scan_results(domain, component):
@@ -141,7 +141,7 @@ def get_scan_results(domain, component):
             "EntryContext": {f"C2sec.Domain.{component}(val.Domain && val.Domain == obj.Domain)": resp},
         }
     else:
-        return_error(f"Error getting the scan results [{call.status_code}] - reason: {call.text}")
+        return_error(f"Error getting the scan results [{call.status_code}] - reason: {call.text}")  # noqa: RET503
 
 
 LOG(f"Command being called is {demisto.command()}")

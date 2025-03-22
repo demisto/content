@@ -15,7 +15,7 @@ def get_indicator_result(indicator):
     res = demisto.executeCommand("maliciousRatio", {"value": indicator["value"]})
 
     mr_score = res[0]["Contents"][0]["maliciousRatio"]
-    if mr_score > float(demisto.args()["threshold"]):
+    if mr_score > float(demisto.args()["threshold"]):   # noqa: RET503
         ec = {}
         ec["DBotScore"] = {
             "Type": indicator["indicator_type"].lower(),
@@ -28,7 +28,7 @@ def get_indicator_result(indicator):
             "EntryContext": ec,
             "Contents": ec["DBotScore"]["Score"],
             "ContentsFormat": formats["text"],
-            "HumanReadable": "Malicious ratio for %s is %.2f" % (indicator["value"], mr_score),
+            "HumanReadable": f"Malicious ratio for {indicator['value']} is {mr_score}",
             "ReadableContentsFormat": formats["markdown"],
         }
         return entry

@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 def prepare_arg_dict(ids_arg_name, ids, additional_arg_names, additional_arg_values, using_instance=""):
     if not isinstance(ids, list):
         ids = [ids]
-    for i, val in enumerate(ids):
+    for i, _val in enumerate(ids):
         ids[i] = str(ids[i])
 
     args_names = [str(name).strip() for name in argToList(additional_arg_names)]

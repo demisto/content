@@ -69,7 +69,7 @@ def main():
     version = args.get("version")
     values_map = values_map_options[version]
 
-    value_list = list()
+    value_list = []
     for k, v in args.items():
         if v != "X" and k != "version":
             value_list.append(f"{k}:{v}")
@@ -88,8 +88,8 @@ def main():
     modified_availability = args.get("MA", "X")
     modified_availability = availability if modified_availability == "X" else values_map["CIA"][modified_availability]
     exploit_code_maturity = values_map["E"].get(args.get("E"), "X")
-    scope_changed = True if args.get("S") == "C" else False
-    modified_scope_changed = True if args.get("MS") == "C" else False
+    scope_changed = args.get("S") == "C"
+    modified_scope_changed = args.get("MS") == "C"
     atack_vector = values_map["AV"].get(args.get("AV"), 0)
 
     modified_attack_vector = args.get("MAV", "X")

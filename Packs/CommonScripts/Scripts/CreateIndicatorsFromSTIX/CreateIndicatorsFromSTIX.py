@@ -22,7 +22,7 @@ def parse_indicators_using_stix_parser(entry_id):
 def create_relationships_from_entity(indicator_relationships):
     if not indicator_relationships:
         return None
-    entity_relationships = list()
+    entity_relationships = []
     for relationship in indicator_relationships:
         relationship_object = EntityRelationship(
             name=relationship.get("name"),
@@ -43,8 +43,8 @@ def create_indicators_loop(args, indicators):
     :param indicators: parsed indicators
     :return: errors if exist
     """
-    relationships_objects = list()
-    errors = list()
+    relationships_objects = []
+    errors = []
     context_data = []
     add_context = argToBoolean(args.get("add_context", False))
     tags = argToList(args.get("tags"))
@@ -55,10 +55,8 @@ def create_indicators_loop(args, indicators):
         if relationship_object:
             relationships_objects.extend(relationship_object)
 
-        if len(tags) > 0:
-            if "customFields" in indicator:
-                if "tags" in indicator.get("customFields"):
-                    [indicator["customFields"]["tags"].append(ntag) for ntag in tags]
+        if len(tags) > 0 and "customFields" in indicator and "tags" in indicator.get("customFields"):
+            [indicator["customFields"]["tags"].append(ntag) for ntag in tags]
 
         context = {"value": indicator["value"], "type": indicator["type"]}
         if "tags" in indicator.get("customFields"):

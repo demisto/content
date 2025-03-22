@@ -7,7 +7,7 @@ def main():
     note = demisto.args().get("markAsNote")
     header = demisto.args().get("header")
 
-    note = True if note and note.lower() == "true" else False
+    note = bool(note and note.lower() == "true")
     if header:
         html = f"<h1>{header}</h1></br>{html}"
 

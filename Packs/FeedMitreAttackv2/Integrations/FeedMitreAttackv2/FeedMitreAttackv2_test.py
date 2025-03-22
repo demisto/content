@@ -23,7 +23,7 @@ from test_data.mitre_test_data import (
     TOOL,
 )
 
-ENTERPRISE_COLLECTION_ID = "	x-mitre-collection–1f5f1533-f617-4ca8-9ab4-6a02367fa019"
+ENTERPRISE_COLLECTION_ID = "	x-mitre-collection–1f5f1533-f617-4ca8-9ab4-6a02367fa019"    # noqa: RUF001
 NON_ENTERPRISE_COLLECTION_ID = "101010101010101010101010101010101"
 
 

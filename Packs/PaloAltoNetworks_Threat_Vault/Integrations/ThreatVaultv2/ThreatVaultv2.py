@@ -199,7 +199,7 @@ def validate_arguments_search_command(
 
     if release_date and release_version:
         raise ValueError(
-            "There can only be one argument from the following list in the command: " "release-date, release-version"
+            "There can only be one argument from the following list in the command: release-date, release-version"
         )
 
     if (from_release_date or from_release_version) and (release_date or release_version):
@@ -253,7 +253,7 @@ def pagination(page: Optional[int], page_size: Optional[int], limit: Optional[in
     if not page and not page_size:
         return 0, limit
 
-    raise ValueError("When using a pagination, it must be used with the following two arguments -> " "[page, page_size]")
+    raise ValueError("When using a pagination, it must be used with the following two arguments -> [page, page_size]")
 
 
 def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:

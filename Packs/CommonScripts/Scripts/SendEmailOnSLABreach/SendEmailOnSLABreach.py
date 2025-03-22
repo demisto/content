@@ -23,9 +23,9 @@ def get_owner_email():
             Error: {ex}",
                 }
             )
-            return
+            return None
     else:
-        demisto.results(
+        demisto.results(    # noqa: RET503
             {
                 "Type": entryTypes["error"],
                 "ContentsFormat": formats["text"],

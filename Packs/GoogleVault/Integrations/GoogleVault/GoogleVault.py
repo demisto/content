@@ -52,7 +52,7 @@ def get_credentials(additional_scopes=None, delegated_user=ADMIN_EMAIL):
         delegated_creds = cred.create_delegated(delegated_user)
     except Exception as e:
         LOG("An error occurred in the 'get_credentials' function.")
-        err_msg = "An error occurred while trying to construct an OAuth2 " f"ServiceAccountCredentials object - {e!s}"
+        err_msg = f"An error occurred while trying to construct an OAuth2 ServiceAccountCredentials object - {e!s}"
         return_error(err_msg)
     return delegated_creds
 
@@ -77,9 +77,7 @@ def is_matter_exist(service, matter_name):  # Not needed at the moment
     :return: True if exists, False otherwise.
     """
     existing_matters = get_open_matters(service)
-    if any(matter_name == matter["name"] for matter in existing_matters):
-        return True
-    return False
+    return any(matter_name == matter["name"] for matter in existing_matters)
 
 
 def get_open_matters(service):
@@ -481,7 +479,7 @@ def get_storage_credentials():
         crads = google_service_account.Credentials.from_service_account_info(privateKeyJson, scopes=SCOPES, subject=ADMIN_EMAIL)
     except Exception as e:
         LOG("An error occurred in the 'get_storage_credentials' function.")
-        err_msg = "An error occurred while trying to construct an OAuth2 " f"Storage Credentials object - {e!s}"
+        err_msg = f"An error occurred while trying to construct an OAuth2 Storage Credentials object - {e!s}"
         return_error(err_msg)
     return crads
 
@@ -685,7 +683,7 @@ def update_matter_state_command():
             if wanted_state == "CLOSE":
                 if current_state == "DELETED":
                     result_of_update = (
-                        "Matter is deleted and so it cannot be closed. It is possible to re-open it " "and then close."
+                        "Matter is deleted and so it cannot be closed. It is possible to re-open it and then close."
                     )
                 elif current_state == "CLOSED":
                     demisto.results("Matter is already closed.")

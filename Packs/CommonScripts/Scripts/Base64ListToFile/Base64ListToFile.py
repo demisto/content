@@ -16,7 +16,7 @@ def base64_list_to_file(args):
     res = demisto.executeCommand("getList", {"listName": args["listname"]})
     res = res[0]
     if is_error(res):
-        raise DemistoException("error reading list %s from demisto" % args["listname"])
+        raise DemistoException(f"error reading list {args['listname']} from demisto")
 
     # convert base64 file to binary file
     bin_file = base64.decodebytes(bytes(res["Contents"], "utf-8"))

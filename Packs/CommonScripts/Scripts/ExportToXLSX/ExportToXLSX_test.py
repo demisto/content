@@ -40,7 +40,7 @@ def test_parse_data_single_item_with_error():
     """
     try:
         parse_data(data=DATA_INPUT_SINGLE_DICT, sheets=["sheet1", "sheets2"])
-        assert False
+        pytest.fail()
     except ValueError as err:
         assert "Number of sheet names should be equal to the number of data items." in err.args[0]
 
@@ -78,7 +78,7 @@ def test_parse_data_multiple_items_with_error():
     """
     try:
         parse_data(data=DATA_INPUT_MULTIPLE_DICTS, sheets=["sheet1"])
-        assert False
+        pytest.fail()
     except ValueError as err:
         assert "Number of sheet names should be equal to the number of data items." in err.args[0]
 

@@ -347,7 +347,7 @@ def unshorten_url(
     )
 
     service_class = URLUnshortingService.find_matching_service(service_name=service_name)
-    service_instance = service_class(
+    service_instance = service_class(   # pylint: disable=E0110
         redirect_limit=redirect_limit,  # pylint: disable=E0110
         proxy=use_system_proxy,
         verify=session_verify,

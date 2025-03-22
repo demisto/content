@@ -648,7 +648,7 @@ def attack_pattern_reputation_command(client, args):
         custom_fields = attack_obj or {}
         score = INDICATOR_TYPE_TO_SCORE.get("Attack Pattern")
         md = (
-            f"## MITRE ATTACK \n ## Name: {value} - ID: " f"{attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
+            f"## MITRE ATTACK \n ## Name: {value} - ID: {attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
         )
         command_results.append(build_command_result(value, score, md, attack_obj))
 
@@ -801,7 +801,7 @@ def main():
     except requests.exceptions.ConnectionError as exception:
         # Get originating Exception in Exception chain
         error_class = str(exception.__class__)
-        err_type = "<" + error_class[error_class.find("'") + 1 : error_class.rfind("'")] + ">"
+        err_type = "<" + error_class[error_class.find("'") + 1: error_class.rfind("'")] + ">"
         err_msg = (
             "Verify that you have access to the server from your host."
             f"\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n"

@@ -5,7 +5,7 @@ from ExtractIndicatorsFromTextFile import *
 def execute_command(command, args):
     if command == "getFilePath":
         return [{"Contents": {"path": "./test_data/test_file.txt"}}]
-    if command == "extractIndicators":
+    if command == "extractIndicators":  # noqa: RET503
         return [{"Contents": '{"IP": ["1.1.1.1"]}'}]
 
 
@@ -23,13 +23,13 @@ def test_extract_indicators(mocker):
     mocker.patch.object(demisto, "executeCommand", side_effect=execute_command)
     args: Dict[str, str] = {}
     results = extract_indicators_from_file(args)
-    assert {
+    assert results == {
         "Contents": '{"IP": ["1.1.1.1"]}',
         "ContentsFormat": "text",
         "EntryContext": {"IP": ["1.1.1.1"]},
         "HumanReadable": "### IP\n- 1.1.1.1\n",
         "Type": 1,
-    } == results
+    }
 
 
 def test_extract_indicators_no_file():
@@ -47,7 +47,7 @@ def test_extract_indicators_no_file():
     with pytest.raises(FileNotFoundError) as e:
         extract_indicators_from_file(args)
         if not e:
-            assert False
+            pytest.fail()
 
 
 @pytest.mark.parametrize("params", [('{"IP": ["1.1.1.1"]}', "### IP\n- 1.1.1.1\n"), ("a", 'JSON Decode failed on "a"')])

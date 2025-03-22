@@ -43,7 +43,7 @@ API_KEY_PREFIX = "_api_key_id:"
 SERVER = demisto.params().get("url", "").rstrip("/")
 USERNAME: str = demisto.params().get("credentials", {}).get("identifier")
 PASSWORD: str = demisto.params().get("credentials", {}).get("password")
-API_KEY_ID = USERNAME[len(API_KEY_PREFIX) :] if USERNAME and USERNAME.startswith(API_KEY_PREFIX) else None
+API_KEY_ID = USERNAME[len(API_KEY_PREFIX):] if USERNAME and USERNAME.startswith(API_KEY_PREFIX) else None
 if API_KEY_ID:
     USERNAME = ""
     API_KEY = (API_KEY_ID, PASSWORD)
@@ -192,12 +192,11 @@ def elasticsearch_builder(proxies):
 
     es = Elasticsearch(**connection_args)  # type: ignore[arg-type]
     # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
-    if API_KEY_ID and hasattr(es, "transport"):
-        # In some versions of the ES library, the transport object does not have a get_session func
-        if hasattr(es.transport, "get_connection"):
-            es.transport.get_connection().session.headers["authorization"] = get_api_key_header_val(  # type: ignore[attr-defined]
-                API_KEY
-            )
+    # In some versions of the ES library, the transport object does not have a get_session func
+    if API_KEY_ID and hasattr(es, "transport") and hasattr(es.transport, "get_connection"):
+        es.transport.get_connection().session.headers["authorization"] = get_api_key_header_val(  # type: ignore[attr-defined]
+            API_KEY
+        )
 
     return es
 
@@ -335,7 +334,7 @@ def search_command(proxies):
 
     else:
         que = QueryString(query=query)
-        search = Search(using=es, index=index).query(que)[base_page : base_page + size]
+        search = Search(using=es, index=index).query(que)[base_page: base_page + size]
         if explain:
             # if 'explain parameter is set to 'true' - adds explanation section to search results
             search = search.extra(explain=True)
@@ -555,7 +554,7 @@ def test_connectivity_auth(proxies):
             except requests.exceptions.HTTPError as e:
                 if HTTP_ERRORS.get(res.status_code) is not None:
                     # if it is a known http error - get the message form the preset messages
-                    return_error("Failed to connect. " f"The following error occurred: {HTTP_ERRORS.get(res.status_code)}")
+                    return_error(f"Failed to connect. The following error occurred: {HTTP_ERRORS.get(res.status_code)}")
 
                 else:
                     # if it is unknown error - get the message from the error itself
@@ -862,7 +861,7 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8]:
         search = Search(using=es, index=requested_index).query(body.get("query"))
         if size and isinstance(page, int):
-            search = search[page : page + size]
+            search = search[page: page + size]
         response = search.execute().to_dict()
 
     else:  # Elasticsearch v7 and below or OpenSearch

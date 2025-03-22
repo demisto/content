@@ -14,7 +14,7 @@ import urllib.request
 import uuid
 import zipfile
 from collections.abc import Callable, Iterator
-from datetime import timezone
+from datetime import timezone, UTC
 from email import parser as email_parser
 from enum import Enum
 from tempfile import NamedTemporaryFile
@@ -3530,7 +3530,7 @@ class AttrsRepository:
         ents = {}
         for path, eattrs in self.repo.items():
             if path.startswith(sub_path):
-                comps = self.__split_path_components(path[len(abs_path) :])
+                comps = self.__split_path_components(path[len(abs_path):])
                 if len(comps) >= 1 and comps[0] not in ents:
                     if recursive or len(comps) == 1:
                         attrs = json.loads(eattrs)
@@ -3793,14 +3793,14 @@ class FullRepository(AttrsRepository):
                                     for chunk in FullRepository.new_reader(data_type, data_id):
                                         tf.write(chunk)
                                     tf.flush()
-                                    z.write(tf.name, path[len(os.sep) :])
+                                    z.write(tf.name, path[len(os.sep):])
                             elif data := repo.get(data_id):
                                 # Add a file to the zip
                                 with NamedTemporaryFile() as tf:
                                     for chunk in FullRepository.new_decoder(data_type, data):
                                         tf.write(chunk)
                                     tf.flush()
-                                    z.write(tf.name, path[len(os.sep) :])
+                                    z.write(tf.name, path[len(os.sep):])
 
             ztmp.flush()
             ztmp.seek(0)
@@ -4383,7 +4383,7 @@ def command_list_files(args: dict[str, str], settings: Settings) -> CommandResul
         "size": __MappingValue(lambda x: pretty_size(x or 0), lambda x: x or 0),
         "last-modified": __MappingValue(
             lambda x: datetime.fromtimestamp(int(x or 0), timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),  # noqa: UP017
-            lambda x: datetime.fromtimestamp(int(x or 0), timezone.utc).isoformat(),
+            lambda x: datetime.fromtimestamp(int(x or 0), UTC).isoformat(),
         ),  # noqa: UP017
     }
     outputs = [{camelize_string(k, "-"): v.context_value(ent[k]) for k, v in mapping.items()} for ent in file_ents]
@@ -4464,7 +4464,7 @@ def command_download_as_text(args: dict[str, str], settings: Settings) -> Comman
     outputs = {camelize_string(k, "-"): v for k, v in raw_response.items()}
 
     if encoding not in ("base64"):
-        readable_output = f"### {os.path.basename(path)}\n" "```\n" f"{text}\n" "```\n"
+        readable_output = f"### {os.path.basename(path)}\n```\n{text}\n```\n"
     else:
         readable_output = tblToMd(os.path.basename(path), {"Path": raw_response["path"], "Size": pretty_size(len(resp.content))})
 

@@ -270,7 +270,7 @@ def get_password(args):
     sensitive_password = args.get("password")
     nonsensitive_password = args.get("nonsensitive_password")
     if sensitive_password and nonsensitive_password and sensitive_password != nonsensitive_password:
-        raise ValueError("Please use either the password argument or the non_sensitive_password argument, " "and not both.")
+        raise ValueError("Please use either the password argument or the non_sensitive_password argument, and not both.")
 
     return sensitive_password or nonsensitive_password
 

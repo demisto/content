@@ -22,7 +22,7 @@ def is_valid_args(args: dict):
         if _key in array_args:
             try:
                 if _key == "id":
-                    if not isinstance(value, (int, str, list)):
+                    if not isinstance(value, int | str | list):
                         error_msg.append(
                             f"Error while parsing the incident id with the value: {value}. The given type: "
                             f"{type(value)} is not a valid type for an ID. The supported id types are: int, list and str"
@@ -32,7 +32,7 @@ def is_valid_args(args: dict):
                 else:
                     _ = bytes(value, "utf-8").decode("unicode_escape")
             except UnicodeDecodeError as ex:
-                error_msg.append(f'Error while parsing the argument: "{_key}" ' f'\nError:\n- "{ex!s}"')
+                error_msg.append(f'Error while parsing the argument: "{_key}" \nError:\n- "{ex!s}"')
 
     if len(error_msg) != 0:
         raise DemistoException("\n".join(error_msg))
@@ -72,7 +72,7 @@ def add_incidents_link(data: list):
 
 def search_incidents(args: dict):  # pragma: no cover
     if not is_valid_args(args):
-        return
+        return None
 
     if fromdate := arg_to_datetime(args.get("fromdate")):
         from_date = fromdate.isoformat()

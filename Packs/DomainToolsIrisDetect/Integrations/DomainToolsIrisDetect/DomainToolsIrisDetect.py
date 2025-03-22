@@ -318,7 +318,7 @@ class Client(BaseClient):
                 microsecond=0
             )
             incident = {
-                "name": f"{incident_name} " f"{last_run_dt_without_ms or first_run_dt_without_ms}",
+                "name": f"{incident_name} {last_run_dt_without_ms or first_run_dt_without_ms}",
                 "details": json.dumps(domains_list),
                 "rawJSON": json.dumps({"incidents": domains_list}),
                 "type": INCIDENT_TYPE[incident_name],
@@ -842,7 +842,7 @@ def get_command_title_string(sub_context: str, page: Optional[int], page_size: O
     """
     if page and page_size and hits is not None and (page > 0 and page_size > 0):
         total_page = ceil(hits / page_size) if hits > 0 else 1
-        return f"{sub_context} \nCurrent page size: {page_size}\n" f"Showing page {page} out of {total_page}"
+        return f"{sub_context} \nCurrent page size: {page_size}\nShowing page {page} out of {total_page}"
 
     return f"{sub_context}"
 

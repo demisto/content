@@ -19,9 +19,7 @@ def is_offset_error(item) -> bool:
     """error msg: 'Offset: 1' will not be displayed to Users
     This method is temporary and will be removed
     once XSUP-18208 issue is fixed."""
-    if item["Contents"] and "Offset" in item["Contents"]:
-        return True
-    return False
+    return item["Contents"] and "Offset" in item["Contents"]
 
 
 def main():

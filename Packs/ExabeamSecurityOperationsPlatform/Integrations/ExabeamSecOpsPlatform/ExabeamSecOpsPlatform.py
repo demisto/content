@@ -395,7 +395,7 @@ def error_fixes(error: str):
     new_error = ""
     if "not enough values to unpack" in error:
         new_error = (
-            "Recommendation:\nValidate the query argument " "against the syntax documentation in the integration description."
+            "Recommendation:\nValidate the query argument against the syntax documentation in the integration description."
         )
 
     return new_error

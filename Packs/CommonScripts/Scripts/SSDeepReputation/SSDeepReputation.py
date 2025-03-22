@@ -21,7 +21,7 @@ def get_ssdeep_related_indicators(ssdeep_indicator):
         try:
             res = demisto.executeCommand("getContext", {"id": inv_id})
             context = res[0]["Contents"]["context"]
-            file_obj = demisto.dt(context, "File(val.SSDeep == '%s')" % ssdeep_indicator["value"])
+            file_obj = demisto.dt(context, f"File(val.SSDeep == '{ssdeep_indicator['value']}')")
             if file_obj is None:
                 file_obj = {}
             elif type(file_obj) is list:
@@ -68,8 +68,8 @@ def main():
     if max_score > ssdeep_indicator.get("score", 0) and max_score > 1:
         entry = {
             "Type": entryTypes["note"],
-            "HumanReadable": "Similarity to %s %s:%s"
-            % (REPUTATIONS[max_score_indicator["score"]], max_score_indicator["indicator_type"], max_score_indicator["value"]),
+            "HumanReadable": f"Similarity to {REPUTATIONS[max_score_indicator['score']]}"
+                             f" {max_score_indicator['indicator_type']}:{max_score_indicator['value']}",
             "ReadableContentsFormat": formats["markdown"],
             "Contents": max_score,
             "ContentsFormat": formats["text"],

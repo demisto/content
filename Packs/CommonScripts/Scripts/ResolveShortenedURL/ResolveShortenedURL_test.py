@@ -55,8 +55,7 @@ class TestLongurlInService:
         mock_data.append(mock_data[-1])
 
         def redirect_side_effect() -> dict:
-            for d in mock_data:
-                yield d
+            yield from mock_data
 
         mocker.patch.object(BaseClient, "_http_request", side_effect=redirect_side_effect())
 
@@ -116,8 +115,7 @@ class TestUnshortenMeService:
         mock_data.append(mock_data[-1])
 
         def redirect_side_effect() -> dict:
-            for d in mock_data:
-                yield d
+            yield from mock_data
 
         mocker.patch.object(BaseClient, "_http_request", side_effect=redirect_side_effect())
 
@@ -205,8 +203,7 @@ class TestBuiltInService:
         """
 
         def redirect_side_effect() -> Response:
-            for response in responses:
-                yield response
+            yield from responses
 
         mocker.patch.object(BaseClient, "_http_request", side_effect=redirect_side_effect())
 

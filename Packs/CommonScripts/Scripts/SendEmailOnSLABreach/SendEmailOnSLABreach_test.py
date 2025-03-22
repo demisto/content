@@ -43,7 +43,7 @@ def test_get_no_email_owner(mocker):
     assert results == {
         "Type": 4,
         "ContentsFormat": "text",
-        "Contents": "An email can't be sent to the owner of the incident," " because no owner was assigned.",
+        "Contents": "An email can't be sent to the owner of the incident, because no owner was assigned.",
     }
 
 

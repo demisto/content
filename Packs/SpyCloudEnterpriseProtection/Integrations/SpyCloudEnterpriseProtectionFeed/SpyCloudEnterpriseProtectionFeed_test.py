@@ -48,7 +48,7 @@ def test_spy_cloud_error_handler():
 
     # test case for 403 Invalid API Key
     response = MockResponse(status_code=403, headers={"SpyCloud-Error": "Invalid API key"})
-    err_msg = "Authorization Error:" " The provided API Key for SpyCloud is invalid." " Please provide a valid API Key."
+    err_msg = "Authorization Error: The provided API Key for SpyCloud is invalid. Please provide a valid API Key."
     with pytest.raises(DemistoException, match=err_msg):
         client.spy_cloud_error_handler(response)
 

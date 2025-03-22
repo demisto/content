@@ -764,7 +764,7 @@ def escape_special_characters(hr_dict: dict) -> dict:
         elif isinstance(value, list):
             hr_output[key] = []  # type: ignore
             for element in value:
-                hr_output[key].append(
+                hr_output[key].append(  # type: ignore[attr-defined]
                     "".join(  # type: ignore
                         ["\\" + str(char) if char in SPECIAL_CHARACTERS_MARKDOWN else str(char) for char in element]
                     )
@@ -790,7 +790,8 @@ def prepare_hr_for_message_metadata_get(message: dict[str, Any]) -> str:
             RECEIVED_ON: None
             if not message.get("receivedOn")
             else arg_to_datetime(message.get("receivedOn")).strftime(HR_DATE_FORMAT),  # type: ignore
-            SENT_ON: None if not message.get("sentOn") else arg_to_datetime(message.get("sentOn")).strftime(HR_DATE_FORMAT),  # type: ignore
+            SENT_ON: None if not message.get("sentOn") else
+            arg_to_datetime(message.get("sentOn")).strftime(HR_DATE_FORMAT),    # type: ignore
             "Delivered On": None
             if not message.get("deliveredOn")
             else arg_to_datetime(message.get("deliveredOn")).strftime(HR_DATE_FORMAT),  # type: ignore
@@ -930,13 +931,13 @@ def prepare_hr_for_message_searches_list(response: dict[str, Any]) -> str:
         received_before_date = (
             None
             if not response.get("receivedBeforeDate")
-            else arg_to_datetime(response.get("receivedBeforeDate")).strftime(HR_DATE_FORMAT)
-        )  # type: ignore
+            else arg_to_datetime(response.get("receivedBeforeDate")).strftime(HR_DATE_FORMAT)   # type: ignore
+        )
         received_after_date = (
             None
             if not response.get("receivedAfterDate")
-            else arg_to_datetime(response.get("receivedAfterDate")).strftime(HR_DATE_FORMAT)
-        )  # type: ignore
+            else arg_to_datetime(response.get("receivedAfterDate")).strftime(HR_DATE_FORMAT)    # type: ignore
+        )
 
         date_range = ""
         if received_after_date:
@@ -1069,9 +1070,9 @@ def prepare_hr_for_quarantine_jobs_list(response: dict[str, Any]) -> str:
                     "Status": quarantine_job.get("quarantineJobRuns", [])[-1].get("status"),
                     COMPLETED_DATE: None
                     if not quarantine_job.get("quarantineJobRuns", [])[-1].get("completedDate")
-                    else arg_to_datetime(quarantine_job.get("quarantineJobRuns", [])[-1].get("completedDate")).strftime(
+                    else arg_to_datetime(quarantine_job.get("quarantineJobRuns", [])[-1].get("completedDate")).strftime(    # type: ignore
                         HR_DATE_FORMAT
-                    ),  # type: ignore
+                    ),
                     "Messages": quarantine_job.get("emailCount"),
                     MATCHING_IOCS: quarantine_job.get("matchingIOCs"),
                     MATCHING_SOURCES: quarantine_job.get("matchingSources"),
@@ -1209,13 +1210,13 @@ def prepare_hr_for_message_search_get(response: dict[str, Any]) -> str:
     received_before_date = (
         None
         if not response.get("receivedBeforeDate")
-        else arg_to_datetime(response.get("receivedBeforeDate")).strftime(HR_DATE_FORMAT)
-    )  # type: ignore
+        else arg_to_datetime(response.get("receivedBeforeDate")).strftime(HR_DATE_FORMAT)  # type: ignore
+    )
     received_after_date = (
         None
         if not response.get("receivedAfterDate")
-        else arg_to_datetime(response.get("receivedAfterDate")).strftime(HR_DATE_FORMAT)
-    )  # type: ignore
+        else arg_to_datetime(response.get("receivedAfterDate")).strftime(HR_DATE_FORMAT)    # type: ignore
+    )
 
     date_range = ""
     if received_after_date:
@@ -1304,7 +1305,8 @@ def prepare_hr_for_quarantine_job_get(response: dict[str, Any]) -> str:
             "Status": response.get("quarantineJobRuns", [])[-1].get("status"),
             COMPLETED_DATE: None
             if not response.get("quarantineJobRuns", [])[-1].get("completedDate")
-            else arg_to_datetime(response.get("quarantineJobRuns", [])[-1].get("completedDate")).strftime(HR_DATE_FORMAT),  # type: ignore
+            else arg_to_datetime(response.get("quarantineJobRuns", [])[-1].get(
+                "completedDate")).strftime(HR_DATE_FORMAT), # type: ignore
             "Messages": response.get("emailCount"),
             MATCHING_IOCS: response.get("matchingIOCs"),
             MATCHING_SOURCES: response.get("matchingSources"),
@@ -1370,14 +1372,15 @@ def prepare_hr_for_message_search_results_get_command(response: dict[str, Any]) 
         attachments = []
         for attachment in message.get("attachments", []):
             attachments.append(
-                f"File Name: {attachment.get('filename')}\n" f"MD5: {attachment.get('md5')}\nSHA256: {attachment.get('sha256')}"
+                f"File Name: {attachment.get('filename')}\nMD5: {attachment.get('md5')}\nSHA256: {attachment.get('sha256')}"
             )
         hr_output_results = escape_special_characters(
             {
                 "Database ID": message.get("id"),
                 INTERNET_MESSAGE_ID: message.get("internetMessageId"),
                 "Subject": message.get("subject"),
-                SENT_ON: None if not message.get("sentOn") else arg_to_datetime(message.get("sentOn")).strftime(HR_DATE_FORMAT),  # type: ignore
+                SENT_ON: None if not message.get("sentOn") else
+                arg_to_datetime(message.get("sentOn")).strftime(HR_DATE_FORMAT),    # type: ignore
                 RECEIVED_ON: None
                 if not message.get("receivedOn")
                 else arg_to_datetime(message.get("receivedOn")).strftime(HR_DATE_FORMAT),  # type: ignore
@@ -1594,13 +1597,13 @@ def prepare_hr_for_message_search_create_command(response: dict[str, Any]) -> st
     received_before_date = (
         None
         if not response.get("receivedBeforeDate")
-        else arg_to_datetime(response.get("receivedBeforeDate")).strftime(HR_DATE_FORMAT)
-    )  # type: ignore
+        else arg_to_datetime(response.get("receivedBeforeDate")).strftime(HR_DATE_FORMAT)   # type: ignore
+    )
     received_after_date = (
         None
         if not response.get("receivedAfterDate")
-        else arg_to_datetime(response.get("receivedAfterDate")).strftime(HR_DATE_FORMAT)
-    )  # type: ignore
+        else arg_to_datetime(response.get("receivedAfterDate")).strftime(HR_DATE_FORMAT)    # type: ignore
+    )
 
     date_range = ""
     if received_after_date:
@@ -1814,11 +1817,13 @@ def prepare_hr_for_update_iocs(response: dict) -> str:
             THREAT_LEVEL: threat_level,
             CREATED_AT: None
             if not response.get("metadata", {}).get("source", {}).get("created_at")
-            else arg_to_datetime(response.get("metadata", {}).get("source", {}).get("created_at")).strftime(HR_DATE_FORMAT),  # type: ignore
+            else arg_to_datetime(response.get("metadata",
+                                              {}).get("source", {}).get("created_at")).strftime(HR_DATE_FORMAT),    # type: ignore
             UPDATED_AT: None
             if not response.get("metadata", {}).get("source", {}).get("updated_at")
-            else arg_to_datetime(response.get("metadata", {}).get("source", {}).get("updated_at")).strftime(HR_DATE_FORMAT),  # type: ignore
-            "Requested Expiration": arg_to_datetime(
+            else arg_to_datetime(response.get("metadata", {}).get(  # type: ignore
+                "source", {}).get("updated_at")).strftime(HR_DATE_FORMAT),
+            "Requested Expiration": arg_to_datetime(    # type: ignore
                 response.get("metadata", {}).get("source", {}).get("requested_expiration")
             ).strftime(HR_DATE_FORMAT),  # type: ignore
         }
@@ -1849,10 +1854,13 @@ def prepare_hr_for_update_ioc(response: dict[str, Any]) -> str:
             THREAT_VALUE: threat_value,
             CREATED_AT: None
             if not response.get("metadata", {}).get("quarantine", {}).get("created_at")
-            else arg_to_datetime(response.get("metadata", {}).get("quarantine", {}).get("created_at")).strftime(HR_DATE_FORMAT),  # type: ignore
+            else arg_to_datetime(response.get("metadata", {}).get(  # type: ignore
+                "quarantine", {}).get("created_at")).strftime(HR_DATE_FORMAT),  # type: ignore
             EXPIRES_AT: None
             if not response.get("metadata", {}).get("quarantine", {}).get("expires_at")
-            else arg_to_datetime(response.get("metadata", {}).get("quarantine", {}).get("expires_at")).strftime(HR_DATE_FORMAT),  # type: ignore
+
+            else arg_to_datetime(response.get("metadata", {}).get("quarantine", {}).get(
+                "expires_at")).strftime(HR_DATE_FORMAT),    # type: ignore
         }
     )
 
@@ -1878,10 +1886,12 @@ def prepare_hr_for_get_ioc(response: dict[str, Any]) -> str:
             THREAT_VALUE: threat_value,
             CREATED_AT: None
             if not response.get("metadata", {}).get("quarantine", {}).get("created_at")
-            else arg_to_datetime(response.get("metadata", {}).get("quarantine", {}).get("created_at")).strftime(HR_DATE_FORMAT),  # type: ignore
+            else arg_to_datetime(response.get("metadata", {}).get("quarantine", {}).get(
+                "created_at")).strftime(HR_DATE_FORMAT),    # type: ignore
             EXPIRES_AT: None
             if not response.get("metadata", {}).get("quarantine", {}).get("expires_at")
-            else arg_to_datetime(response.get("metadata", {}).get("quarantine", {}).get("expires_at")).strftime(HR_DATE_FORMAT),  # type: ignore
+            else arg_to_datetime(response.get("metadata", {}).get(
+                "quarantine", {}).get("expires_at")).strftime(HR_DATE_FORMAT),  # type: ignore
         }
     )
 
@@ -2696,8 +2706,8 @@ def cofense_iocs_list_command(client: VisionClient, args: dict[str, Any]) -> Lis
 
     response = client.list_iocs(
         source=source,
-        page=page,
-        size=size,
+        page=page,  # type: ignore
+        size=size,  # type: ignore
         since=since,  # type: ignore
         include_expired=include_expired,
         sort_string=sort,

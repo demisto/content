@@ -13,11 +13,11 @@ def replace_context(args: dict) -> tuple:
     if not context:
         return "The context key you've entered is empty. Nothing has happened.", {}, {}
 
-    if not isinstance(context, (list, dict)):
+    if not isinstance(context, list | dict):
         return "The context key you've entered is at the lowest level and cannot be changed.", {}, {}
 
     def replace_func(key):
-        if key in replace_dict.keys():
+        if key in replace_dict:
             return replace_dict.get(key)
         else:
             if capitalize:

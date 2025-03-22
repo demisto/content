@@ -447,7 +447,7 @@ def test_context_creation_es7(params, mocker):
 
     assert str(search_context) == MOCK_ES7_SEARCH_CONTEXT
     assert (
-        str(meta_headers) == "['Query', 'took', 'timed_out', 'total', 'max_score', " "'Server', 'Page', 'Size', 'aggregations']"
+        str(meta_headers) == "['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size', 'aggregations']"
     )
     assert str(hit_tables) == MOCK_ES7_HIT_CONTEXT
     assert str(hit_headers) == "['_id', '_index', '_type', '_score', 'Date']"
@@ -470,7 +470,7 @@ def test_context_creation_es6(params, mocker):
 
     assert str(search_context) == MOCK_ES6_SEARCH_CONTEXT
     assert (
-        str(meta_headers) == "['Query', 'took', 'timed_out', 'total', " "'max_score', 'Server', 'Page', 'Size', 'aggregations']"
+        str(meta_headers) == "['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size', 'aggregations']"
     )
     assert str(hit_tables) == MOCK_ES6_HIT_CONTEXT
     assert str(hit_headers) == "['_id', '_index', '_type', '_score', 'Date']"
@@ -881,7 +881,7 @@ def test_index_document_command(mocker):
         "result": MOCK_INDEX_RESPONSE.get("result", ""),
     }
     expected_human_readable = (
-        "### Indexed document\n" "|ID|Index name|Version|Result|\n" "|---|---|---|---|\n" "| 1 | test-index | 1 | created |\n"
+        "### Indexed document\n|ID|Index name|Version|Result|\n|---|---|---|---|\n| 1 | test-index | 1 | created |\n"
     )
 
     assert command_result.outputs == expected_index_context

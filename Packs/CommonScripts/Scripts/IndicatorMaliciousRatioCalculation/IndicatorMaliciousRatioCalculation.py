@@ -98,7 +98,7 @@ def indicator_malicious_ratio_calculation(args):
         non_resolved_incidents = []
         if non_resolved_id:
             res = demisto.executeCommand(
-                "SearchIncidentsV2", {"query": " or ".join(["id:%s" % x for x in non_resolved_id]), "size": max_incidents}
+                "SearchIncidentsV2", {"query": " or ".join([f"id:{x}" for x in non_resolved_id]), "size": max_incidents}
             )
             if res[0].get("Contents") and res[0].get("Contents", [{}])[0].get("Contents"):
                 non_resolved_incidents = res[0].get("Contents", [{}])[0].get("Contents", {}).get("data")

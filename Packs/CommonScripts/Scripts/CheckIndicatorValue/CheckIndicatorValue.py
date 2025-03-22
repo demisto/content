@@ -7,10 +7,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 def exists_indicator(indicator: str) -> bool:
-    if contents := execute_command("getIndicator", {"value": indicator}):
-        if len(contents) > 0 and contents[0].get("value") in [indicator]:
-            return True
-    return False
+    return ((contents := execute_command("getIndicator", {"value": indicator}))
+            and len(contents) > 0 and contents[0].get("value") in [indicator])
 
 
 def decode_indicator(indicator: str, encoding: str | None) -> str:

@@ -12,12 +12,12 @@ def ads(html, termlist):
     for item in termlist.split("\n"):
         if not item.strip():
             continue
-        if item.startswith("!") or item.startswith("[Adbl") or item.startswith("@@"):
+        if item.startswith(("!", "[Adbl", "@@")):
             continue
         if item.startswith("###"):
             item = item[3:]
         if item.startswith("||"):
-            item = item[2 : item.find("^$")]
+            item = item[2: item.find("^$")]
         for t in tags:
             if item in t:
                 results[item] = (results[item] + 1) if item in results else 1
@@ -28,7 +28,7 @@ def main():  # pragma: no cover
     u = demisto.args()["url"]
     r = requests.get(u)
     reasy = requests.get(
-        demisto.args()["easylist"] if "easylist" in demisto.args() else "https://easylist.github.io/easylist/easylist.txt"
+        demisto.args().get("easylist", "https://easylist.github.io/easylist/easylist.txt")
     )
     res = ads(r.text, reasy.text)
     nicerRes = [{"URL": k, "Count": res[k]} for k in res]

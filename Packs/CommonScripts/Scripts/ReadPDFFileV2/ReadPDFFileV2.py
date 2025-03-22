@@ -128,9 +128,9 @@ def run_shell_command(command: str, *args) -> bytes:
             raise PdfInvalidCredentialsException("Incorrect password. Please provide the correct password.")
         elif "Copying of text from this document is not allowed" in error_string:
             raise PdfCopyingProtectedException("Copying is not permitted")
-        raise ShellException(f"Failed with the following error code: {exit_codes}.\n" f" Error: {error_string}")
+        raise ShellException(f"Failed with the following error code: {exit_codes}.\n Error: {error_string}")
     elif error_string:
-        demisto.debug(f"ReadPDFFilev2: exec of [{cmd}] completed with warnings: " f"{error_string}")
+        demisto.debug(f"ReadPDFFilev2: exec of [{cmd}] completed with warnings: {error_string}")
     return completed_process.stdout
 
 
