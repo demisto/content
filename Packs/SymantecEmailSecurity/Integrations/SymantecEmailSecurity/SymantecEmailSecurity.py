@@ -7,8 +7,9 @@ import copy
 import dataclasses
 import functools
 import http
+from collections.abc import Callable
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 
 """ Global Variables """
 
@@ -269,9 +270,7 @@ def pagination(items_key: str) -> Callable:
 
                 # API exhausted, no items returned or number of items returned is lower than requested.
                 if not items or received_items < page_size:
-                    demisto.debug(
-                        "Ending automatic pagination, no items were returned or received less than requested."
-                    )
+                    demisto.debug("Ending automatic pagination, no items were returned or received less than requested.")
                     break
 
                 # Calculate the start_index and limit for the next run.
@@ -1859,7 +1858,8 @@ def main() -> None:
                     arg=params.get("max_fetch"),
                     arg_name="max_fetch",
                     required=False,
-                ) or MAX_INCIDENTS_TO_FETCH,
+                )
+                or MAX_INCIDENTS_TO_FETCH,
                 MAX_INCIDENTS_TO_FETCH,
             )
             last_run = demisto.getLastRun()
