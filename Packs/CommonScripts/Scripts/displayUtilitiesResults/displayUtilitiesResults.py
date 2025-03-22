@@ -15,7 +15,7 @@ def get_data_from_context(incident_context, objects):
     result = {}
     found = False
     for var in objects:
-        data = get_dict(incident_context[0], ['Contents', 'context', var])
+        data = get_dict(incident_context[0], ["Contents", "context", var])
         if data is not None:
             result[var] = data
             found = True
@@ -70,10 +70,9 @@ def format_data_to_table(items):
 
 
 def main():
-
     incident = demisto.incident()
 
-    incident_context = demisto.executeCommand("getContext", {'id': incident.get("id")})
+    incident_context = demisto.executeCommand("getContext", {"id": incident.get("id")})
 
     objects = ["Base64", "digresults", "EntropyResult", "ResolveShortenedURL", "Endpoint"]
 
@@ -88,11 +87,13 @@ def main():
     # Format the data into a dynamic width HTML table
     table = format_data_to_table(fixed_items)
 
-    return_results({
-        'ContentsFormat': EntryFormat.HTML,
-        'Type': EntryType.NOTE,
-        'Contents': table,
-    })
+    return_results(
+        {
+            "ContentsFormat": EntryFormat.HTML,
+            "Type": EntryType.NOTE,
+            "Contents": table,
+        }
+    )
 
 
 if __name__ in ("builtins", "__builtin__", "__main__"):

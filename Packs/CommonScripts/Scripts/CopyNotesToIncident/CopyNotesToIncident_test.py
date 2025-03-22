@@ -1,10 +1,11 @@
-from CopyNotesToIncident import copy_notes_to_target_incident
-import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
-from typing import Any
 import json
+from typing import Any
 
-MOCK_TARGET_INCIDENT_ID = '99'
-MOCK_TAG = 'Tag1'
+import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
+from CopyNotesToIncident import copy_notes_to_target_incident
+
+MOCK_TARGET_INCIDENT_ID = "99"
+MOCK_TAG = "Tag1"
 
 
 def load_test_data(json_path):
@@ -28,23 +29,20 @@ def test_copy_no_note_entries(mocker):
     mock_target_entries = mock_source_entries
 
     def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
-        if name == 'getEntries':
+        if name == "getEntries":
             return mock_target_entries
-        elif name == 'addEntries':
-            if 'id' not in args:
-                raise ValueError('id must be provided to addEntries')
-            if 'entries' not in args or not isinstance(args['entries'], list):
-                raise ValueError('a list of entries must be provided to addEntries')
+        elif name == "addEntries":
+            if "id" not in args:
+                raise ValueError("id must be provided to addEntries")
+            if "entries" not in args or not isinstance(args["entries"], list):
+                raise ValueError("a list of entries must be provided to addEntries")
             return [{"OK": "OK"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = copy_notes_to_target_incident({
-        'target_incident': MOCK_TARGET_INCIDENT_ID,
-        'tags': []
-    })
+    result = copy_notes_to_target_incident({"target_incident": MOCK_TARGET_INCIDENT_ID, "tags": []})
 
     assert result.readable_output == "## No notes found"
     assert len(mocked_ec.call_args_list) == 1
@@ -63,31 +61,28 @@ def test_copy_all_note_entries(mocker):
     """
     mock_source_entries = load_test_data("test_data/entries.json")
 
-    mock_target_entries = [e for e in mock_source_entries if isinstance(e, dict) and 'Note' in e and e['Note'] is True]
+    mock_target_entries = [e for e in mock_source_entries if isinstance(e, dict) and "Note" in e and e["Note"] is True]
 
     def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
-        if name == 'getEntries':
+        if name == "getEntries":
             return mock_target_entries
-        elif name == 'addEntries':
-            if 'id' not in args:
-                raise ValueError('id must be provided to addEntries')
-            if 'entries' not in args or not isinstance(args['entries'], list):
-                raise ValueError('a list of entries must be provided to addEntries')
+        elif name == "addEntries":
+            if "id" not in args:
+                raise ValueError("id must be provided to addEntries")
+            if "entries" not in args or not isinstance(args["entries"], list):
+                raise ValueError("a list of entries must be provided to addEntries")
             return [{"OK": "OK"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = copy_notes_to_target_incident({
-        'target_incident': MOCK_TARGET_INCIDENT_ID,
-        'tags': []
-    })
+    result = copy_notes_to_target_incident({"target_incident": MOCK_TARGET_INCIDENT_ID, "tags": []})
 
     assert result.readable_output == f"## {len(mock_target_entries)} notes copied"
     assert len(mocked_ec.call_args_list) == 2
-    assert mocked_ec.call_args_list[1][0][0] == 'addEntries'
-    assert mocked_ec.call_args_list[1][0][1]['entries'] == mock_target_entries
+    assert mocked_ec.call_args_list[1][0][0] == "addEntries"
+    assert mocked_ec.call_args_list[1][0][1]["entries"] == mock_target_entries
 
 
 def test_copy_tagged_note_entries(mocker):
@@ -104,39 +99,38 @@ def test_copy_tagged_note_entries(mocker):
     mock_source_entries = load_test_data("test_data/entries.json")
 
     mock_target_entries = [
-        e for e in mock_source_entries if (
+        e
+        for e in mock_source_entries
+        if (
             isinstance(e, dict)
-            and 'Note' in e
-            and e['Note'] is True
-            and 'Tags' in e
-            and isinstance(e['Tags'], list)
-            and MOCK_TAG in e['Tags']
+            and "Note" in e
+            and e["Note"] is True
+            and "Tags" in e
+            and isinstance(e["Tags"], list)
+            and MOCK_TAG in e["Tags"]
         )
     ]
 
     def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
-        if name == 'getEntries':
+        if name == "getEntries":
             return mock_target_entries
-        elif name == 'addEntries':
-            if 'id' not in args:
-                raise ValueError('id must be provided to addEntries')
-            if 'entries' not in args or not isinstance(args['entries'], list):
-                raise ValueError('a list of entries must be provided to addEntries')
+        elif name == "addEntries":
+            if "id" not in args:
+                raise ValueError("id must be provided to addEntries")
+            if "entries" not in args or not isinstance(args["entries"], list):
+                raise ValueError("a list of entries must be provided to addEntries")
             return [{"OK": "OK"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = copy_notes_to_target_incident({
-        'target_incident': MOCK_TARGET_INCIDENT_ID,
-        'tags': [MOCK_TAG]
-    })
+    result = copy_notes_to_target_incident({"target_incident": MOCK_TARGET_INCIDENT_ID, "tags": [MOCK_TAG]})
 
     assert result.readable_output == f"## {len(mock_target_entries)} notes copied"
     assert len(mocked_ec.call_args_list) == 2
-    assert mocked_ec.call_args_list[1][0][0] == 'addEntries'
-    assert mocked_ec.call_args_list[1][0][1]['entries'] == mock_target_entries
+    assert mocked_ec.call_args_list[1][0][0] == "addEntries"
+    assert mocked_ec.call_args_list[1][0][1]["entries"] == mock_target_entries
 
 
 def test_copy_note_entries_disable_auto_extract(mocker):
@@ -151,28 +145,24 @@ def test_copy_note_entries_disable_auto_extract(mocker):
     """
     mock_source_entries = load_test_data("test_data/entries.json")
 
-    mock_target_entries = [e for e in mock_source_entries if isinstance(e, dict) and 'Note' in e and e['Note'] is True]
+    mock_target_entries = [e for e in mock_source_entries if isinstance(e, dict) and "Note" in e and e["Note"] is True]
 
     def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
-        if name == 'getEntries':
+        if name == "getEntries":
             return mock_target_entries
-        elif name == 'addEntries':
-            if 'id' not in args:
-                raise ValueError('id must be provided to addEntries')
-            if 'entries' not in args or not isinstance(args['entries'], list):
-                raise ValueError('a list of entries must be provided to addEntries')
+        elif name == "addEntries":
+            if "id" not in args:
+                raise ValueError("id must be provided to addEntries")
+            if "entries" not in args or not isinstance(args["entries"], list):
+                raise ValueError("a list of entries must be provided to addEntries")
             return [{"OK": "OK"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    copy_notes_to_target_incident({
-        'target_incident': MOCK_TARGET_INCIDENT_ID,
-        'auto_extract': False,
-        'tags': []
-    })
+    copy_notes_to_target_incident({"target_incident": MOCK_TARGET_INCIDENT_ID, "auto_extract": False, "tags": []})
 
-    entries = mocked_ec.call_args_list[1][0][1]['entries']
+    entries = mocked_ec.call_args_list[1][0][1]["entries"]
     for entry in entries:
-        assert entry.get('IgnoreAutoExtract')
+        assert entry.get("IgnoreAutoExtract")

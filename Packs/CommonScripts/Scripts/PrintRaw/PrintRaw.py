@@ -2,7 +2,7 @@ import demistomock as demisto
 
 
 def main():
-    value = demisto.args().get('value')
+    value = demisto.args().get("value")
     demisto.results(repr(value))
 
 

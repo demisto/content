@@ -1,5 +1,5 @@
-from ExtractFQDNFromUrlAndEmail import extract_fqdn
 import pytest
+from ExtractFQDNFromUrlAndEmail import extract_fqdn
 
 
 @pytest.mark.parametrize(

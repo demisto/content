@@ -11,21 +11,21 @@ def group_by_type(indicators):
     """
 
     grouped = {}
-    if indicators and 'Contents' in indicators[0]:
-        indicators_res: dict = indicators[0]['Contents']
+    if indicators and "Contents" in indicators[0]:
+        indicators_res: dict = indicators[0]["Contents"]
     else:
         indicators_res = {}
 
     for indicator in indicators_res:
-        if indicator['indicator_type'] not in grouped:
-            grouped[indicator['indicator_type']] = [indicator['value']]
+        if indicator["indicator_type"] not in grouped:
+            grouped[indicator["indicator_type"]] = [indicator["value"]]
         else:
-            grouped[indicator['indicator_type']].append(indicator['value'])
+            grouped[indicator["indicator_type"]].append(indicator["value"])
     result = []
     for indicator_header, indicator_values in grouped.items():
         result.append("--- " + indicator_header + " ---")
         result.extend(indicator_values)
-        result.append('')
+        result.append("")
     return result
 
 
@@ -34,9 +34,9 @@ def get_indicators_from_incident():
     Returns:
         List of the indicators from the incident.
     """
-    incident_id = demisto.incident()['id']
+    incident_id = demisto.incident()["id"]
     indicators_query = "investigationIDs:" + str(incident_id)
-    all_indicator_data = demisto.executeCommand('findIndicators', {'query': indicators_query, 'size': 200})
+    all_indicator_data = demisto.executeCommand("findIndicators", {"query": indicators_query, "size": 200})
     return {"hidden": False, "options": group_by_type(all_indicator_data)}
 
 

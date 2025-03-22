@@ -1,6 +1,7 @@
+import statistics
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import statistics
 
 
 def calculate_interval_differences(timestamps):
@@ -15,7 +16,7 @@ def calculate_interval_differences(timestamps):
 
 
 def check_high_frequency(timestamps, max_intervals_per_window, time_window=60):
-    """ Check if there is a high number of intervals within a short time window (in seconds). """
+    """Check if there is a high number of intervals within a short time window (in seconds)."""
     timestamps.sort()
     count_exceeds_threshold = False
 
@@ -44,10 +45,7 @@ def calculate_statistics(intervals):
 def analyze_intervals(timestamps, verbose, max_intervals_per_window=30, interval_consistency_threshold=0.15):
     intervals = calculate_interval_differences(timestamps)
 
-    result = {
-        "TimestampCount": len(timestamps),
-        "IsPatternLikelyAutomated": False
-    }
+    result = {"TimestampCount": len(timestamps), "IsPatternLikelyAutomated": False}
 
     # Check for high frequency of intervals
     high_frequency = check_high_frequency(timestamps, max_intervals_per_window)
@@ -58,13 +56,15 @@ def analyze_intervals(timestamps, verbose, max_intervals_per_window=30, interval
     # Check for consistent intervals
     consistent_intervals = std_deviation < interval_consistency_threshold
 
-    result.update({
-        "MeanIntervalInSeconds": mean_interval,
-        "MedianIntervalInSeconds": median_interval,
-        "StandardDeviationInSeconds": std_deviation,
-        "HighFrequencyDetected": high_frequency,
-        "ConsistentIntervalsDetected": consistent_intervals
-    })
+    result.update(
+        {
+            "MeanIntervalInSeconds": mean_interval,
+            "MedianIntervalInSeconds": median_interval,
+            "StandardDeviationInSeconds": std_deviation,
+            "HighFrequencyDetected": high_frequency,
+            "ConsistentIntervalsDetected": consistent_intervals,
+        }
+    )
 
     if verbose:
         result["IntervalsInSeconds"] = intervals
@@ -99,15 +99,15 @@ def create_human_readable(result, verbose):
 
 def main():  # pragma: no cover
     try:
-        timestamps = argToList(demisto.args()['timestamps'], transform=int)
-        verbose = argToBoolean(demisto.args().get('verbose') or False)
+        timestamps = argToList(demisto.args()["timestamps"], transform=int)
+        verbose = argToBoolean(demisto.args().get("verbose") or False)
 
         if len(timestamps) < 2:
             raise ValueError(f"The number of timestamps should exceed 2. The number of timestamps given was {len(timestamps)}.")
 
         # Get thresholds from arguments
-        max_intervals_per_window = int(demisto.args().get('max_intervals_per_window', 30))
-        interval_consistency_threshold = float(demisto.args().get('interval_consistency_threshold', 0.1))
+        max_intervals_per_window = int(demisto.args().get("max_intervals_per_window", 30))
+        interval_consistency_threshold = float(demisto.args().get("interval_consistency_threshold", 0.1))
 
         result = analyze_intervals(timestamps, verbose, max_intervals_per_window, interval_consistency_threshold)
 
@@ -116,19 +116,19 @@ def main():  # pragma: no cover
 
         # Prepare the CommandResults object
         command_results = CommandResults(
-            outputs_prefix='IntervalAnalysis',
-            outputs_key_field='TimestampCount',
+            outputs_prefix="IntervalAnalysis",
+            outputs_key_field="TimestampCount",
             outputs=result,
             readable_output=human_readable,
-            raw_response=result
+            raw_response=result,
         )
 
         # Return results
         return_results(command_results)
 
     except Exception as e:
-        return_error(f"An error occurred: {str(e)}")
+        return_error(f"An error occurred: {e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

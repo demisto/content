@@ -1,14 +1,14 @@
-from CommonServerPython import *
-
 import json
+
+from CommonServerPython import *
 
 
 def replace_context(args: dict) -> tuple:
-    context = args.get('input', '')
-    output_key = args.get('output_key', '')
-    inplace = args.get('inplace', 'True') == 'True'
-    capitalize = args.get('capitalize') == 'True'
-    replace_dict = json.loads(args.get('replace_dict', "{}"))
+    context = args.get("input", "")
+    output_key = args.get("output_key", "")
+    inplace = args.get("inplace", "True") == "True"
+    capitalize = args.get("capitalize") == "True"
+    replace_dict = json.loads(args.get("replace_dict", "{}"))
 
     if not context:
         return "The context key you've entered is empty. Nothing has happened.", {}, {}
@@ -27,7 +27,7 @@ def replace_context(args: dict) -> tuple:
     new_context = createContext(context, keyTransform=replace_func)
 
     if inplace:
-        demisto.executeCommand("Set", {'key': output_key, 'value': new_context})
+        demisto.executeCommand("Set", {"key": output_key, "value": new_context})
         return f"Changed {output_key} successfully", {}, {}
     else:
         return f"Appended {output_key} successfully", {output_key: new_context}, {}
@@ -38,5 +38,5 @@ def main():
     return_outputs(hr, ec, raw)
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

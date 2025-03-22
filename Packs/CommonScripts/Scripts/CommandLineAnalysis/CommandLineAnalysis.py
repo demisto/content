@@ -1,10 +1,11 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import base64
-import re
 import ipaddress
 import json
+import re
 from typing import Any
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # -----------------------------------------------------------------------------
 # 1) BASE64 & RELATED UTILITY FUNCTIONS
@@ -19,10 +20,10 @@ def is_base64(possible_base64: str | bytes) -> bool:
     """
     try:
         if isinstance(possible_base64, str):
-            possible_base64 = possible_base64.encode('ascii')
+            possible_base64 = possible_base64.encode("ascii")
 
         # Check for valid Base64 characters and correct padding
-        if not re.fullmatch(b'[A-Za-z0-9+/]*={0,2}', possible_base64):
+        if not re.fullmatch(b"[A-Za-z0-9+/]*={0,2}", possible_base64):
             return False
 
         # Ensure length is a multiple of 4
@@ -30,7 +31,7 @@ def is_base64(possible_base64: str | bytes) -> bool:
             return False
 
         # Apply heuristic for short strings: must contain '=' if <= 20
-        if len(possible_base64) <= 20 and b'=' not in possible_base64:
+        if len(possible_base64) <= 20 and b"=" not in possible_base64:
             return False
 
         # Attempt strict decoding
@@ -46,7 +47,7 @@ def clean_non_base64_chars(encoded_str: str) -> str:
     Adds proper padding if necessary.
     """
     # Remove all invalid Base64 characters
-    cleaned_str = re.sub(r'[^A-Za-z0-9+/=]', '', encoded_str)
+    cleaned_str = re.sub(r"[^A-Za-z0-9+/=]", "", encoded_str)
 
     # Fix padding only if the string length is reasonable for Base64
     if len(cleaned_str) % 4 != 0:
@@ -71,7 +72,7 @@ def decode_base64(encoded_str: str, max_recursions: int = 5, force_utf16_le: boo
     result = encoded_str
 
     while recursion_depth < max_recursions:
-        base64_pattern = re.compile(r'([A-Za-z0-9+/]{4,}(?:={0,2}))')
+        base64_pattern = re.compile(r"([A-Za-z0-9+/]{4,}(?:={0,2}))")
         matches = base64_pattern.findall(result)
 
         if not matches:
@@ -83,9 +84,9 @@ def decode_base64(encoded_str: str, max_recursions: int = 5, force_utf16_le: boo
                 try:
                     decoded_bytes = base64.b64decode(match, validate=True)
                     decoded_str = (
-                        decoded_bytes.decode('utf-16-le', errors='strict')
-                        if force_utf16_le else
-                        decoded_bytes.decode('utf-8', errors='strict')
+                        decoded_bytes.decode("utf-16-le", errors="strict")
+                        if force_utf16_le
+                        else decoded_bytes.decode("utf-8", errors="strict")
                     )
 
                     # If decoded string differs from the original match, replace
@@ -101,7 +102,7 @@ def decode_base64(encoded_str: str, max_recursions: int = 5, force_utf16_le: boo
 
         recursion_depth += 1
 
-    double_encoded_detected = (recursion_depth > 1)
+    double_encoded_detected = recursion_depth > 1
     return result, double_encoded_detected
 
 
@@ -120,7 +121,7 @@ def identify_and_decode_base64(command_line: str) -> tuple[str, bool]:
 
     if not matches:
         # Fallback to general Base64 detection
-        base64_pattern = re.compile(r'([A-Za-z0-9+/]{4,}(?:={0,2}))')
+        base64_pattern = re.compile(r"([A-Za-z0-9+/]{4,}(?:={0,2}))")
         matches = base64_pattern.findall(command_line)
         if matches:
             demisto.debug(f"Detected general Base64 matches: {matches}")
@@ -159,6 +160,7 @@ def reverse_command(command_line: str) -> tuple[str, bool]:
 # 2) PATTERN-CHECKING FUNCTIONS
 # -----------------------------------------------------------------------------
 
+
 def check_suspicious_macos_applescript_commands(command_line: str) -> Dict[str, List[List[str]]]:
     """
     Checks for suspicious macOS/AppleScript commands by grouping multiple sets
@@ -174,13 +176,13 @@ def check_suspicious_macos_applescript_commands(command_line: str) -> Dict[str, 
             ["to set visible", "false"],
             ["chflags hidden"],
             ["osascript -e", "system_profiler", "hidden answer"],
-            ["tell application finder", "duplicate"]
+            ["tell application finder", "duplicate"],
         ],
         "possible_exfiltration": [
             ["display dialog", "curl -"],
             ["osascript -e", "curl -x", "system_profiler"],
-            ["osascript -e", "curl -"]
-        ]
+            ["osascript -e", "curl -"],
+        ],
     }
 
     results: Dict[str, List[List[str]]] = {}
@@ -199,51 +201,51 @@ def check_suspicious_macos_applescript_commands(command_line: str) -> Dict[str, 
 
 def check_malicious_commands(command_line: str) -> List[str]:
     patterns = [
-        r'\bmimikatz\b',
-        r'\bLaZagne\.exe\b',
-        r'\bprocdump\.exe\b',
-        r'\bcobaltstrike_beacon\.exe\b',
-        r'\bbloodhound\.exe\b',
-        r'\bsharphound\.exe\b',
-        r'\bcme\.exe\b',
-        r'\bresponder\.py\b',
-        r'\bsmbexec\.py\b',
-        r'\bInvoke\-PSRemoting\b',
-        r'\bInvoke\-TheHash\b',
-        r'\bGetUserSPNs\.py\b',
-        r'\beternalblue\.exe\b',
-        r'\beternalromance\.exe\b',
-        r'\bmeterpreter\.exe\b',
-        r'\bmsfconsole\b',
-        r'\bsharpview\.exe\b',
-        r'\bInvoke\-SMBExec\b',
-        r'\bInvoke\-Obfuscation\b',
-        r'\bInvoke\-CradleCrafter\b',
-        r'\bcovenant\.exe\b',
-        r'\bkoadic\b',
-        r'\bquasar\.exe\b',
-        r'\bnjRAT\.exe\b',
-        r'\bdarkcomet\.exe\b',
-        r'\bnanocore\.exe\b',
-        r'\bpowercat\.ps1\b',
-        r'\brubeus\.exe\b',
-        r'\bc99\.php\b',
-        r'\bchopper\.php\b',
-        r'\bwso\.php\b',
-        r'\bb374k\.php\b',
-        r'\bbeacon\.exe\b',
-        r'\bwinrm\.vbs\b',
-        r'\bmsfvenom\b',
-        r'\bPowGoop\.ps1\b',
-        r'\bimpacket\-scripts\b',
-        r'\bPowerUp\.ps1\b',
-        r'\bseatbelt\.exe\b',
-        r'\blsassdump\.py\b',
-        r'\bInvoke\-ReflectivePEInjection\b',
-        r'\bInvoke\-Shellcode\b',
-        r'\bInvoke\-Expression\b',
-        r'\bInvoke\-WmiMethod\b',
-        r'\bInvoke\-KickoffAtomicRunner\b'
+        r"\bmimikatz\b",
+        r"\bLaZagne\.exe\b",
+        r"\bprocdump\.exe\b",
+        r"\bcobaltstrike_beacon\.exe\b",
+        r"\bbloodhound\.exe\b",
+        r"\bsharphound\.exe\b",
+        r"\bcme\.exe\b",
+        r"\bresponder\.py\b",
+        r"\bsmbexec\.py\b",
+        r"\bInvoke\-PSRemoting\b",
+        r"\bInvoke\-TheHash\b",
+        r"\bGetUserSPNs\.py\b",
+        r"\beternalblue\.exe\b",
+        r"\beternalromance\.exe\b",
+        r"\bmeterpreter\.exe\b",
+        r"\bmsfconsole\b",
+        r"\bsharpview\.exe\b",
+        r"\bInvoke\-SMBExec\b",
+        r"\bInvoke\-Obfuscation\b",
+        r"\bInvoke\-CradleCrafter\b",
+        r"\bcovenant\.exe\b",
+        r"\bkoadic\b",
+        r"\bquasar\.exe\b",
+        r"\bnjRAT\.exe\b",
+        r"\bdarkcomet\.exe\b",
+        r"\bnanocore\.exe\b",
+        r"\bpowercat\.ps1\b",
+        r"\brubeus\.exe\b",
+        r"\bc99\.php\b",
+        r"\bchopper\.php\b",
+        r"\bwso\.php\b",
+        r"\bb374k\.php\b",
+        r"\bbeacon\.exe\b",
+        r"\bwinrm\.vbs\b",
+        r"\bmsfvenom\b",
+        r"\bPowGoop\.ps1\b",
+        r"\bimpacket\-scripts\b",
+        r"\bPowerUp\.ps1\b",
+        r"\bseatbelt\.exe\b",
+        r"\blsassdump\.py\b",
+        r"\bInvoke\-ReflectivePEInjection\b",
+        r"\bInvoke\-Shellcode\b",
+        r"\bInvoke\-Expression\b",
+        r"\bInvoke\-WmiMethod\b",
+        r"\bInvoke\-KickoffAtomicRunner\b",
     ]
 
     matches: List[str] = []
@@ -255,29 +257,29 @@ def check_malicious_commands(command_line: str) -> List[str]:
 
 def check_reconnaissance_temp(command_line: str) -> List[str]:
     patterns = [
-        r'\bipconfig\b',
-        r'\bnetstat\b',
-        r'\bnslookup\b',
-        r'\barp\b',
-        r'\broute\s+print\b',
-        r'\bhostname\b',
-        r'\bping\b',
-        r'\btracert\b',
-        r'\bwhoami\b',
-        r'\bnet\s+user\b',
-        r'\bnet\s+group\b',
-        r'\bnet\s+localgroup\b',
-        r'\bquery\s+user\b',
-        r'\bsysteminfo\b',
-        r'\btasklist\b',
-        r'\bsc\s+query\b',
-        r'\bwmic\s+process\s+list\b',
-        r'\bfsutil\b',
-        r'\bdir\b',
-        r'\battrib\b',
-        r'\btree\b',
-        r'\bnetstat\s+\-ano\b',
-        r'\breg\s+query\b'
+        r"\bipconfig\b",
+        r"\bnetstat\b",
+        r"\bnslookup\b",
+        r"\barp\b",
+        r"\broute\s+print\b",
+        r"\bhostname\b",
+        r"\bping\b",
+        r"\btracert\b",
+        r"\bwhoami\b",
+        r"\bnet\s+user\b",
+        r"\bnet\s+group\b",
+        r"\bnet\s+localgroup\b",
+        r"\bquery\s+user\b",
+        r"\bsysteminfo\b",
+        r"\btasklist\b",
+        r"\bsc\s+query\b",
+        r"\bwmic\s+process\s+list\b",
+        r"\bfsutil\b",
+        r"\bdir\b",
+        r"\battrib\b",
+        r"\btree\b",
+        r"\bnetstat\s+\-ano\b",
+        r"\breg\s+query\b",
     ]
 
     matches: List[str] = []
@@ -292,17 +294,17 @@ def check_windows_temp_paths(command_line: str) -> List[str]:
     Identifies all occurrences of temporary paths in the given command line.
     """
     patterns = [
-        r'\bC:\\Temp\b',
-        r'\bC:\\Windows\\System32\\Temp\b',
-        r'%TEMP%',
-        r'%TMP%',
-        r'\\Users\\Public\\Public\s+Downloads\b',
-        r'\\AppData\\Local\\Temp\b',
-        r'\\ProgramData\\Microsoft\\Windows\\Caches\b',
-        r'\\Windows\\System32\\spool\b',
-        r'\\Windows\\Tasks\b',
-        r'\\Windows\\debug\b',
-        r'\\Windows\\Temp\b'
+        r"\bC:\\Temp\b",
+        r"\bC:\\Windows\\System32\\Temp\b",
+        r"%TEMP%",
+        r"%TMP%",
+        r"\\Users\\Public\\Public\s+Downloads\b",
+        r"\\AppData\\Local\\Temp\b",
+        r"\\ProgramData\\Microsoft\\Windows\\Caches\b",
+        r"\\Windows\\System32\\spool\b",
+        r"\\Windows\\Tasks\b",
+        r"\\Windows\\debug\b",
+        r"\\Windows\\Temp\b",
     ]
 
     matches: List[str] = []
@@ -314,30 +316,30 @@ def check_windows_temp_paths(command_line: str) -> List[str]:
 
 def check_suspicious_content(command_line: str) -> List[str]:
     patterns = [
-        r'\-w\s+hidden\b',
-        r'\-WindowStyle\s+Hidden\b',
-        r'\-window\s+hidden\b',
-        r'\-noni\b',
-        r'\-enc\b',
-        r'\-NonInteractive\b',
-        r'\-nop\b',
-        r'\-noprofile\b',
-        r'\-ExecutionPolicy\s+Bypass\b',
-        r'\bBypass\b',
-        r'\bClipboardContents\b',
-        r'\bGet\-GPPPassword\b',
-        r'\bGet\-LSASecret\b',
-        r'\bnet\s+user\s+\/\s+add\b',
-        r'\btaskkill\b',
-        r'\brundll32\b',
-        r'\blsass\b',
-        r'\breg\s+add\b',
-        r'\bbcedit\b',
-        r'\bschtasks\b',
-        r'\bnetsh\s+firewall\s+set\b',
-        r'\s*\<NUL\b',
-        r'\bcertutil.*\-encodehex\b',
-        r'wevtutil\s+cl\b'
+        r"\-w\s+hidden\b",
+        r"\-WindowStyle\s+Hidden\b",
+        r"\-window\s+hidden\b",
+        r"\-noni\b",
+        r"\-enc\b",
+        r"\-NonInteractive\b",
+        r"\-nop\b",
+        r"\-noprofile\b",
+        r"\-ExecutionPolicy\s+Bypass\b",
+        r"\bBypass\b",
+        r"\bClipboardContents\b",
+        r"\bGet\-GPPPassword\b",
+        r"\bGet\-LSASecret\b",
+        r"\bnet\s+user\s+\/\s+add\b",
+        r"\btaskkill\b",
+        r"\brundll32\b",
+        r"\blsass\b",
+        r"\breg\s+add\b",
+        r"\bbcedit\b",
+        r"\bschtasks\b",
+        r"\bnetsh\s+firewall\s+set\b",
+        r"\s*\<NUL\b",
+        r"\bcertutil.*\-encodehex\b",
+        r"wevtutil\s+cl\b",
     ]
 
     matches: List[str] = []
@@ -349,10 +351,10 @@ def check_suspicious_content(command_line: str) -> List[str]:
 
 def check_amsi(command_line: str) -> List[str]:
     patterns = [
-        r'\bSystem\.Management\.Automation\.AmsiUtils\b',
-        r'\bamsiInitFailed\b',
-        r'\bLoadLibrary\(\"amsi\.dll\"\)\b',
-        r'\bAmsiScanBuffer\(\)\b'
+        r"\bSystem\.Management\.Automation\.AmsiUtils\b",
+        r"\bamsiInitFailed\b",
+        r"\bLoadLibrary\(\"amsi\.dll\"\)\b",
+        r"\bAmsiScanBuffer\(\)\b",
     ]
 
     matches: List[str] = []
@@ -363,16 +365,11 @@ def check_amsi(command_line: str) -> List[str]:
 
 
 def check_mixed_case_powershell(command_line: str) -> List[str]:
-    mixed_case_powershell_regex = re.compile(
-        r'\b(?=.*[a-z])(?=.*[A-Z])[pP][oO][wW][eE][rR][sS][hH][eE][lL]{2}(\.exe)?\b'
-    )
+    mixed_case_powershell_regex = re.compile(r"\b(?=.*[a-z])(?=.*[A-Z])[pP][oO][wW][eE][rR][sS][hH][eE][lL]{2}(\.exe)?\b")
 
     exclusions = {"Powershell", "PowerShell", "powershell", "Powershell.exe", "PowerShell.exe", "powershell.exe"}
 
-    return [
-        match.group() for match in mixed_case_powershell_regex.finditer(command_line)
-        if match.group() not in exclusions
-    ]
+    return [match.group() for match in mixed_case_powershell_regex.finditer(command_line) if match.group() not in exclusions]
 
 
 def check_powershell_suspicious_patterns(command_line: str) -> List[str]:
@@ -381,29 +378,29 @@ def check_powershell_suspicious_patterns(command_line: str) -> List[str]:
     implemented using PowerShell.
     """
     patterns = [
-        r'\bNew\-Object\s+Net\.Sockets\.(?:TcpClient|UdpClient)\b',
-        r'\bSystem\.Net\.Sockets\.Tcp(?:Client|Listener)\b',
-        r'\.Connect\(',
-        r'\.AcceptTcpClient\(',
-        r'\.Receive\(',
-        r'\.Send\(',
-        r'\bpowershell.*IEX.*\(New\-Object\s+Net\.WebClient\)\b',
-        r'\bInvoke\-WebRequest.*-Uri\b',
-        r'\bInvoke\-RestMethod.*-Uri\b',
-        r'\bNew\-Object\s+System\.Net\.WebClient\b',
-        r'\bNew\-Object\s+Net\.WebClient\b',
-        r'\bDownloadString\b',
-        r'\bUploadString\b',
-        r'\bSystem\.Net\.WebSockets\.ClientWebSocket\b',
-        r'\.ConnectAsync\(',
-        r'\[char\[\]\]\s*\([\d,\s]+\)|-join\s*\(\s*\[char\[\]\][^\)]+\)',
-        r'\$(env:[a-zA-Z]+)\[\d+\]\s*\+\s*\$env:[a-zA-Z]+\[\d+\]',
-        r'%\w+:~\d+,\d+%',
-        r'(cmd\.exe.*\/V:ON|setlocal.*EnableDelayedExpansion)',
-        r'if\s+%?\w+%?\s+geq\s+\d+\s+call\s+%?\w+%?:~\d+%?',
-        r'(\[char\[[^\]]+\]\]){3,}',
-        r'for\s+%?\w+%?\s+in\s*\([^)]{50,}\)',
-        r'powershell.*?\b(iex.*?2>&1)\b'
+        r"\bNew\-Object\s+Net\.Sockets\.(?:TcpClient|UdpClient)\b",
+        r"\bSystem\.Net\.Sockets\.Tcp(?:Client|Listener)\b",
+        r"\.Connect\(",
+        r"\.AcceptTcpClient\(",
+        r"\.Receive\(",
+        r"\.Send\(",
+        r"\bpowershell.*IEX.*\(New\-Object\s+Net\.WebClient\)\b",
+        r"\bInvoke\-WebRequest.*-Uri\b",
+        r"\bInvoke\-RestMethod.*-Uri\b",
+        r"\bNew\-Object\s+System\.Net\.WebClient\b",
+        r"\bNew\-Object\s+Net\.WebClient\b",
+        r"\bDownloadString\b",
+        r"\bUploadString\b",
+        r"\bSystem\.Net\.WebSockets\.ClientWebSocket\b",
+        r"\.ConnectAsync\(",
+        r"\[char\[\]\]\s*\([\d,\s]+\)|-join\s*\(\s*\[char\[\]\][^\)]+\)",
+        r"\$(env:[a-zA-Z]+)\[\d+\]\s*\+\s*\$env:[a-zA-Z]+\[\d+\]",
+        r"%\w+:~\d+,\d+%",
+        r"(cmd\.exe.*\/V:ON|setlocal.*EnableDelayedExpansion)",
+        r"if\s+%?\w+%?\s+geq\s+\d+\s+call\s+%?\w+%?:~\d+%?",
+        r"(\[char\[[^\]]+\]\]){3,}",
+        r"for\s+%?\w+%?\s+in\s*\([^)]{50,}\)",
+        r"powershell.*?\b(iex.*?2>&1)\b",
     ]
 
     matches: List[str] = []
@@ -418,27 +415,27 @@ def check_credential_dumping(command_line: str) -> List[str]:
     Detects credential dumping techniques.
     """
     patterns = [
-        r'\brundll32.*comsvcs\.dll\b',
-        r'\bprocdump.*lsass\b',
-        r'\bwmic\s+process\s+call\s+create.*lsass\b',
-        r'\bInvoke\-Mimikatz\b',
-        r'\btasklist.*lsass\b',
-        r'\bProcessHacker\b',
-        r'\bMiniDumpWriteDump\b',
-        r'\bGet\-Credential\b',
-        r'\blsass\.dmp\b',
-        r'\bntds\.dit\b',
-        r'\bntdsutil\.exe.*ntds.*create\b',
-        r'\bsekurlsa\:\:',
-        r'\bprocdump(\.exe)?\s+-ma\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp',
-        r'\brundll32(\.exe)?\s+comsvcs\.dll,\s+MiniDump\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp.*',
+        r"\brundll32.*comsvcs\.dll\b",
+        r"\bprocdump.*lsass\b",
+        r"\bwmic\s+process\s+call\s+create.*lsass\b",
+        r"\bInvoke\-Mimikatz\b",
+        r"\btasklist.*lsass\b",
+        r"\bProcessHacker\b",
+        r"\bMiniDumpWriteDump\b",
+        r"\bGet\-Credential\b",
+        r"\blsass\.dmp\b",
+        r"\bntds\.dit\b",
+        r"\bntdsutil\.exe.*ntds.*create\b",
+        r"\bsekurlsa\:\:",
+        r"\bprocdump(\.exe)?\s+-ma\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp",
+        r"\brundll32(\.exe)?\s+comsvcs\.dll,\s+MiniDump\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp.*",
         r'\bwmic\s+process\s+call\s+create\s+".*mimikatz.*"',
-        r'\btaskmgr(\.exe)?\s+/create\s+/PID:\d+\s+/DumpFile:[a-zA-Z0-9_.-]+\.dmp',
+        r"\btaskmgr(\.exe)?\s+/create\s+/PID:\d+\s+/DumpFile:[a-zA-Z0-9_.-]+\.dmp",
         r'\bntdsutil(\.exe)?\s+".*ac i ntds.*" "ifm" "create full\s+[a-zA-Z]:\\.*"',
-        r'\bsecretsdump(\.py)?\s+.*domain/.*:.*@.*',
-        r'\breg\s+save\s+hklm\\(sam|system)\s+[a-zA-Z0-9_.-]+\.hive',
-        r'\bwce(\.exe)?\s+-o',
-        r'\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*'
+        r"\bsecretsdump(\.py)?\s+.*domain/.*:.*@.*",
+        r"\breg\s+save\s+hklm\\(sam|system)\s+[a-zA-Z0-9_.-]+\.hive",
+        r"\bwce(\.exe)?\s+-o",
+        r"\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*",
     ]
 
     matches: List[str] = []
@@ -453,24 +450,24 @@ def check_lateral_movement(command_line: str) -> List[str]:
     Detects potential lateral movement techniques from a given command line.
     """
     patterns = [
-        r'\b(?:cmd(?:\.exe)?)\s+(?=.*\/q)(?=.*\/c).*?((?:1>\s?.*?)?\s*2>&1)\b',
-        r'\bpsexec(\.exe)?',
-        r'\bpsexesvc\.exe\b',
-        r'\bpsexesvc\.log\b',
-        r'\bwmic\s+/node:\s*[a-zA-Z0-9_.-]+',
-        r'\bmstsc(\.exe)?',
-        r'\\\\[a-zA-Z0-9_.-]+\\C\$\b',
-        r'\bnet use \\\\.*\\IPC\$\b',
-        r'\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\b',
-        r'\bEnter-PSSession\b',
-        r'\bpowershell.*Enter-PSSession\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-Credential\b',
+        r"\b(?:cmd(?:\.exe)?)\s+(?=.*\/q)(?=.*\/c).*?((?:1>\s?.*?)?\s*2>&1)\b",
+        r"\bpsexec(\.exe)?",
+        r"\bpsexesvc\.exe\b",
+        r"\bpsexesvc\.log\b",
+        r"\bwmic\s+/node:\s*[a-zA-Z0-9_.-]+",
+        r"\bmstsc(\.exe)?",
+        r"\\\\[a-zA-Z0-9_.-]+\\C\$\b",
+        r"\bnet use \\\\.*\\IPC\$\b",
+        r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\b",
+        r"\bEnter-PSSession\b",
+        r"\bpowershell.*Enter-PSSession\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-Credential\b",
         r'\bschtasks\s+/create\s+/tn\s+[a-zA-Z0-9_.-]+\s+/tr\s+".*"\s+/sc\s+[a-zA-Z]+\b',
-        r'\bpowershell.*Invoke\-Command\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-ScriptBlock\b',
-        r'\bmstsc(\.exe)?\s+/v\s+[a-zA-Z0-9_.-]+\b',
+        r"\bpowershell.*Invoke\-Command\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-ScriptBlock\b",
+        r"\bmstsc(\.exe)?\s+/v\s+[a-zA-Z0-9_.-]+\b",
         r'\bwmiexec\.py\s+[a-zA-Z0-9_.-]+\s+".*"\b',
-        r'\bssh.*?-o.*?StrictHostKeyChecking=no\b',
-        r'\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\\.*\s+[a-zA-Z]:\\.*\b',
-        r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+".*"\b'
+        r"\bssh.*?-o.*?StrictHostKeyChecking=no\b",
+        r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\\.*\s+[a-zA-Z]:\\.*\b",
+        r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+".*"\b',
     ]
 
     matches: List[str] = []
@@ -485,16 +482,16 @@ def check_data_exfiltration(command_line: str) -> List[str]:
     Detects potential data exfiltration techniques from a given command line.
     """
     patterns = [
-        r'\bcurl\s+-X\s+(POST|PUT)\s+-d\s+@[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b',
-        r'\bwget\s+--post-file=[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b',
-        r'\bscp\s+-i\s+[a-zA-Z0-9_.-]+\.pem\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b',
-        r'\bftp\s+-n\s+[a-zA-Z0-9_.-]+\s+<<END_SCRIPT.*put\s+.*END_SCRIPT\b',
-        r'\bnc\s+[a-zA-Z0-9_.-]+\s+\d+\s+<\s+[a-zA-Z0-9_.-]+\b',
-        r'\baws\s+s3\s+cp\s+[a-zA-Z0-9_.-]+\s+s3://[a-zA-Z0-9_.-]+/.*\b',
-        r'\bgsutil\s+cp\s+[a-zA-Z0-9_.-]+\s+gs://[a-zA-Z0-9_.-]+/.*\b',
-        r'\baz\s+storage\s+blob\s+upload\s+-f\s+[a-zA-Z0-9_.-]+\s+-c\s+[a-zA-Z0-9_.-]+.*\b',
-        r'\bpowershell.*System\.Net\.WebClient.*UploadFile.*https?://[a-zA-Z0-9_.-]+/.*\b',
-        r'\brsync\s+-avz\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b'
+        r"\bcurl\s+-X\s+(POST|PUT)\s+-d\s+@[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b",
+        r"\bwget\s+--post-file=[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b",
+        r"\bscp\s+-i\s+[a-zA-Z0-9_.-]+\.pem\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b",
+        r"\bftp\s+-n\s+[a-zA-Z0-9_.-]+\s+<<END_SCRIPT.*put\s+.*END_SCRIPT\b",
+        r"\bnc\s+[a-zA-Z0-9_.-]+\s+\d+\s+<\s+[a-zA-Z0-9_.-]+\b",
+        r"\baws\s+s3\s+cp\s+[a-zA-Z0-9_.-]+\s+s3://[a-zA-Z0-9_.-]+/.*\b",
+        r"\bgsutil\s+cp\s+[a-zA-Z0-9_.-]+\s+gs://[a-zA-Z0-9_.-]+/.*\b",
+        r"\baz\s+storage\s+blob\s+upload\s+-f\s+[a-zA-Z0-9_.-]+\s+-c\s+[a-zA-Z0-9_.-]+.*\b",
+        r"\bpowershell.*System\.Net\.WebClient.*UploadFile.*https?://[a-zA-Z0-9_.-]+/.*\b",
+        r"\brsync\s+-avz\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b",
     ]
 
     matches: List[str] = []
@@ -519,16 +516,11 @@ def check_custom_patterns(command_line: str, custom_patterns: List[str] | None =
 # 3) IP & INDICATOR EXTRACTION
 # -----------------------------------------------------------------------------
 
+
 def is_reserved_ip(ip_str: str) -> bool:
     try:
         ip_obj = ipaddress.ip_address(ip_str)
-        return (
-            ip_obj.is_private
-            or ip_obj.is_loopback
-            or ip_obj.is_reserved
-            or ip_obj.is_multicast
-            or ip_obj.is_link_local
-        )
+        return ip_obj.is_private or ip_obj.is_loopback or ip_obj.is_reserved or ip_obj.is_multicast or ip_obj.is_link_local
     except ValueError:
         return False
 
@@ -543,7 +535,7 @@ def extract_indicators(command_line: str) -> Dict[str, List[str]]:
         indicators = demisto.executeCommand("extractIndicators", {"text": command_line})
 
         if indicators and isinstance(indicators, list):
-            contents = indicators[0].get('Contents', {})
+            contents = indicators[0].get("Contents", {})
 
             if isinstance(contents, str):
                 try:
@@ -565,7 +557,7 @@ def extract_indicators(command_line: str) -> Dict[str, List[str]]:
                             extracted_by_type[indicator_type].append(value)
 
     except Exception as e:
-        demisto.debug(f"Failed to extract indicators: {str(e)}")
+        demisto.debug(f"Failed to extract indicators: {e!s}")
 
     return extracted_by_type
 
@@ -573,6 +565,7 @@ def extract_indicators(command_line: str) -> Dict[str, List[str]]:
 # -----------------------------------------------------------------------------
 # 4) SCORING FUNCTION
 # -----------------------------------------------------------------------------
+
 
 def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -605,15 +598,26 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
 
     # Define risk groups and bonus scores
     high_risk_keys = {
-        "mixed_case_powershell", "double_encoding", "amsi_techniques",
-        "malicious_commands", "powershell_suspicious_patterns",
-        "credential_dumping", "reversed_command", "suspicious_macos_applescript_commands", "custom_patterns"
+        "mixed_case_powershell",
+        "double_encoding",
+        "amsi_techniques",
+        "malicious_commands",
+        "powershell_suspicious_patterns",
+        "credential_dumping",
+        "reversed_command",
+        "suspicious_macos_applescript_commands",
+        "custom_patterns",
     }
     medium_risk_keys = {
-        "data_exfiltration", "lateral_movement", "indicators",
+        "data_exfiltration",
+        "lateral_movement",
+        "indicators",
     }
     low_risk_keys = {
-        "suspicious_parameters", "windows_temp_path", "reconnaissance", "base64_encoding",
+        "suspicious_parameters",
+        "windows_temp_path",
+        "reconnaissance",
+        "base64_encoding",
     }
 
     risk_bonuses: Dict[str, int] = {
@@ -697,6 +701,7 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
 # 5) ANALYZER FUNCTION
 # -----------------------------------------------------------------------------
 
+
 def analyze_command_line(command_line: str, custom_patterns: List[str] | None = None) -> Dict[str, Any]:
     """
     Analyzes the given command line for suspicious patterns, indicators, and encodings.
@@ -713,10 +718,7 @@ def analyze_command_line(command_line: str, custom_patterns: List[str] | None = 
 
     decoded_command_line, double_encoded = identify_and_decode_base64(command_line)
 
-    results: Dict[str, Any] = {
-        "original_command": command_line,
-        "analysis": {"original": {}}
-    }
+    results: Dict[str, Any] = {"original_command": command_line, "analysis": {"original": {}}}
 
     # Perform checks on the original command line
     original_analysis = {
@@ -742,7 +744,7 @@ def analyze_command_line(command_line: str, custom_patterns: List[str] | None = 
         original_analysis["reversed_command"] = ["reversed_command"]
 
     # Handle macOS
-    if 'osascript' in command_line.lower():
+    if "osascript" in command_line.lower():
         original_analysis["macOS_suspicious_commands"] = check_suspicious_macos_applescript_commands(command_line)
 
     results["analysis"]["original"] = original_analysis
@@ -762,7 +764,7 @@ def analyze_command_line(command_line: str, custom_patterns: List[str] | None = 
             "lateral_movement": check_lateral_movement(decoded_command_line),
             "data_exfiltration": check_data_exfiltration(decoded_command_line),
             "amsi_techniques": check_amsi(decoded_command_line),
-            "indicators": extract_indicators(decoded_command_line)
+            "indicators": extract_indicators(decoded_command_line),
         }
         results["Double Encoding Detected"] = double_encoded
 
@@ -791,22 +793,26 @@ def main():
     results = [analyze_command_line(cmd, custom_patterns) for cmd in command_lines]
 
     # Prepare readable output for the results
-    readable_output = "\n\n".join([
-        f"Command Line: {result['original_command']}\n"
-        f"Risk: {result['risk']}\n"
-        f"Score: {result['score']}\n"
-        f"Findings (Original): {', '.join(result['findings']['original'])}\n"
-        f"Findings (Decoded): {', '.join(result['findings'].get('decoded', []))}\n"
-        for result in results
-    ])
+    readable_output = "\n\n".join(
+        [
+            f"Command Line: {result['original_command']}\n"
+            f"Risk: {result['risk']}\n"
+            f"Score: {result['score']}\n"
+            f"Findings (Original): {', '.join(result['findings']['original'])}\n"
+            f"Findings (Decoded): {', '.join(result['findings'].get('decoded', []))}\n"
+            for result in results
+        ]
+    )
 
     # Return results
-    return_results(CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="CommandLineAnalysis",
-        outputs_key_field="original_command",
-        outputs=results
-    ))
+    return_results(
+        CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="CommandLineAnalysis",
+            outputs_key_field="original_command",
+            outputs=results,
+        )
+    )
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):
