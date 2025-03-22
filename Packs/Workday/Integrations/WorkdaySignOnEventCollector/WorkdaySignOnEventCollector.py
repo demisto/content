@@ -1,9 +1,8 @@
-
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from xml.sax.saxutils import escape
 
+import demistomock as demisto
 import urllib3
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -182,7 +181,7 @@ class Client(BaseClient):
                     </bsvc:Get_Workday_Account_Signons_Request>
                 </soapenv:Body>
             </soapenv:Envelope>
-        """
+            """  # noqa:E501
 
     def generate_test_payload(self, from_time: str, to_time: str) -> str:
         return f"""
