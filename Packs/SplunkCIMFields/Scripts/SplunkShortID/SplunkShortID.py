@@ -1,17 +1,18 @@
+import base64
+import hashlib
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import hashlib
-import base64
 
 inc = demisto.incident()
-notable_eventid = demisto.args()['event_id']
+notable_eventid = demisto.args()["event_id"]
 
 if notable_eventid:
-    notable_eventid = notable_eventid.encode('UTF-8')
-    sha1_object = hashlib.sha1(notable_eventid)     # nosec
+    notable_eventid = notable_eventid.encode("UTF-8")
+    sha1_object = hashlib.sha1(notable_eventid)  # nosec
     sha1 = sha1_object.digest()
     base64_object = base64.b64encode(sha1)
-    base64_string = base64_object.decode('UTF-8')
+    base64_string = base64_object.decode("UTF-8")
     xref_id = base64_string[:6]
     notable_eventid = notable_eventid.decode()
 
