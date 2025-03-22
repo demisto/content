@@ -5741,7 +5741,7 @@
         {
             "integrations": [
                 "LOLBAS Feed",
-                "Demisto REST API"
+                "Core REST API"
             ],
             "playbookID": "FeedLOLBas_test"
         },
@@ -6036,7 +6036,11 @@
         "TAXII2 Server Performance Test": "CIAC-9768",
         "BoxV2_TestPlaybook": "CRTX-145174",
         "Mail Sender (New) Test": "Creds not working CRTX-160174",
-        "Mail-Listener Test Playbook": "Creds not working CRTX-160174"
+        "Mail-Listener Test Playbook": "Creds not working CRTX-160174",
+        "PaloAltoNetworksAIOps-Test": "API issue DIT-52386",
+        "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175"
+
+
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
