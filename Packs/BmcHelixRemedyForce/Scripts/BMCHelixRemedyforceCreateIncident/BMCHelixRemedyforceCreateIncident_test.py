@@ -1,9 +1,8 @@
 import json
 from unittest.mock import patch
 
+from BMCHelixRemedyforceCreateIncident import ERROR_MESSAGES, get_field_id, main, remove_extra_space_from_args
 from CommonServerPython import *
-from BMCHelixRemedyforceCreateIncident import remove_extra_space_from_args, main, \
-    ERROR_MESSAGES, get_field_id
 
 DUMMY_COMMAND_RESPONSE = [{"Contents": {}}]
 
@@ -15,7 +14,7 @@ def fetch_dummy_incidents():
     :return: dummy incident response
     :rtype: ``dict``
     """
-    with open('./TestData/Incident.json', encoding='utf-8') as f:
+    with open("./TestData/Incident.json", encoding="utf-8") as f:
         data = json.load(f)
     return data
 
@@ -30,7 +29,7 @@ def test_get_field_id_with_id():
     assert actual_result == "id"
 
 
-@patch('demistomock.executeCommand')
+@patch("demistomock.executeCommand")
 def test_get_field_id_positive_scenario(mocker_execute_command):
     """
     When field_id is not passed and field_name passed as argument
@@ -44,8 +43,8 @@ def test_get_field_id_positive_scenario(mocker_execute_command):
     assert actual_result == "abc"
 
 
-@patch('BMCHelixRemedyforceCreateIncident.return_error')
-@patch('demistomock.executeCommand')
+@patch("BMCHelixRemedyforceCreateIncident.return_error")
+@patch("demistomock.executeCommand")
 def test_get_field_id_null_results(mocker_execute_command, mocker_return_error):
     """
     When field_id is not passed and field_id not found on given name
@@ -63,7 +62,7 @@ def test_get_field_id_null_results(mocker_execute_command, mocker_return_error):
         assert args[0] == ERROR_MESSAGES + json.dumps(DUMMY_COMMAND_RESPONSE)
 
 
-@patch('demistomock.executeCommand')
+@patch("demistomock.executeCommand")
 def test_get_field_id_records_as_list(mocker_execute_command):
     """
     Get field id from name when api response will be a list.
@@ -76,9 +75,9 @@ def test_get_field_id_records_as_list(mocker_execute_command):
     assert actual_result == "abc"
 
 
-@patch('demistomock.results')
-@patch('sys.exit')
-@patch('demistomock.executeCommand')
+@patch("demistomock.results")
+@patch("sys.exit")
+@patch("demistomock.executeCommand")
 def test_get_field_id_no_records_found(mocker_execute_command, mocker_exit, mocker_results):
     """
     When field_id could not be found for mentioned name in args then verfying demisto.results and
@@ -112,9 +111,9 @@ def test_remove_extra_space_from_args():
     assert sanitized_args == remove_extra_space_from_args(sample_args)
 
 
-@patch('BMCHelixRemedyforceCreateIncident.return_error')
-@patch('demistomock.executeCommand')
-@patch('demistomock.args')
+@patch("BMCHelixRemedyforceCreateIncident.return_error")
+@patch("demistomock.executeCommand")
+@patch("demistomock.args")
 def test_main_fail(demisto_args, mocker_execute_command, mocker_return_error):
     """
     Testcase of main method in failure scenarios.
@@ -124,19 +123,19 @@ def test_main_fail(demisto_args, mocker_execute_command, mocker_return_error):
     :param mocker_return_error: mocker object for return_error
     :return: None
     """
-    args = fetch_dummy_incidents()['args']
+    args = fetch_dummy_incidents()["args"]
     demisto_args.return_value = args
-    mocker_execute_command.return_value = [{"Contents": "No records found.", "Type": entryTypes['error']}]
+    mocker_execute_command.return_value = [{"Contents": "No records found.", "Type": entryTypes["error"]}]
     main()
     assert mocker_return_error.called
     for call in mocker_return_error.call_args_list:
         args, _ = call
-        assert args[0] == 'No records found.'
+        assert args[0] == "No records found."
 
 
-@patch('BMCHelixRemedyforceCreateIncident.return_error')
-@patch('demistomock.executeCommand')
-@patch('demistomock.args')
+@patch("BMCHelixRemedyforceCreateIncident.return_error")
+@patch("demistomock.executeCommand")
+@patch("demistomock.args")
 def test_main_exception(demisto_args, mocker_execute_command, mocker_return_error):
     """
     Testcase of main method while any exception will be raised.
@@ -148,7 +147,7 @@ def test_main_exception(demisto_args, mocker_execute_command, mocker_return_erro
     """
     args = fetch_dummy_incidents()["args"]
     demisto_args.return_value = args
-    mocker_execute_command.return_value = [{"Type": entryTypes['error']}]
+    mocker_execute_command.return_value = [{"Type": entryTypes["error"]}]
     main()
     assert mocker_return_error.called
     for call in mocker_return_error.call_args_list:
@@ -156,9 +155,9 @@ def test_main_exception(demisto_args, mocker_execute_command, mocker_return_erro
         assert args[0] == "'Contents'"
 
 
-@patch('BMCHelixRemedyforceCreateIncident.return_error')
-@patch('demistomock.executeCommand')
-@patch('demistomock.args')
+@patch("BMCHelixRemedyforceCreateIncident.return_error")
+@patch("demistomock.executeCommand")
+@patch("demistomock.args")
 def test_main_fail_to_execute_command(demisto_args, mocker_execute_command, mocker_return_error):
     """
     Testcase of main method when command: 'bmc-remedy-incident-create' will be failed to execute.
@@ -178,9 +177,9 @@ def test_main_fail_to_execute_command(demisto_args, mocker_execute_command, mock
         assert args[0] == ERROR_MESSAGES + '{"Contents": [], "Type": "abc"}'
 
 
-@patch('demistomock.results')
-@patch('demistomock.executeCommand')
-@patch('demistomock.args')
+@patch("demistomock.results")
+@patch("demistomock.executeCommand")
+@patch("demistomock.args")
 def test_main_success(demisto_args, mocker_execute_command, mocker_results):
     """
     Testcase of main method in positive scenario.
@@ -193,14 +192,13 @@ def test_main_success(demisto_args, mocker_execute_command, mocker_results):
     args = fetch_dummy_incidents()["args"]
     demisto_args.return_value = args
     expected_args = fetch_dummy_incidents()["expected_args"]
-    command_name = 'bmc-remedy-incident-create'
-    mocker_execute_command.return_value = [
-        {"Contents": {"Result": {"Number": 123}}, "Type": "abc", "HumanReadable": "abc"}]
+    command_name = "bmc-remedy-incident-create"
+    mocker_execute_command.return_value = [{"Contents": {"Result": {"Number": 123}}, "Type": "abc", "HumanReadable": "abc"}]
     main()
     assert mocker_results.called
     for call in mocker_results.call_args_list:
         args, _ = call
-        assert args[0]['HumanReadable'] == 'abc'
+        assert args[0]["HumanReadable"] == "abc"
     for call in mocker_execute_command.call_args_list:
         command_args, _ = call
         assert command_args[0] == command_name
