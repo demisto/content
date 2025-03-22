@@ -13,9 +13,10 @@ def test_set_time(mocker):
         - Validating the outputs as expected.
     """
     from SetTime import set_time
-    mocker.patch.object(demisto, 'args', return_value={'fieldName': 'field'})
-    mocker.patch.object(demisto, 'setContext')
-    execute_mock = mocker.patch.object(demisto, 'executeCommand')
-    mocker.patch.object(demisto, 'results')
+
+    mocker.patch.object(demisto, "args", return_value={"fieldName": "field"})
+    mocker.patch.object(demisto, "setContext")
+    execute_mock = mocker.patch.object(demisto, "executeCommand")
+    mocker.patch.object(demisto, "results")
     set_time()
     assert execute_mock.call_count == 1

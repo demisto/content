@@ -1,28 +1,30 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
-CONTEXT_PATH = 'DBotScore'
-DEFAULT_SOURCE = 'Cortex XSOAR'
+CONTEXT_PATH = "DBotScore"
+DEFAULT_SOURCE = "Cortex XSOAR"
 INDICATOR_TYPES = {
-    'IP': DBotScoreType.IP,
-    'File SHA1': DBotScoreType.FILE,
-    'File SHA-1': DBotScoreType.FILE,
-    'File MD5': DBotScoreType.FILE,
-    'File SHA256': DBotScoreType.FILE,
-    'File SHA-256': DBotScoreType.FILE,
-    'Email': DBotScoreType.EMAIL,
-    'URL': DBotScoreType.URL,
-    'IPv6': DBotScoreType.IP,
-    'Account': DBotScoreType.ACCOUNT,
-    'CIDR': DBotScoreType.CIDR,
-    'DomainGlob': DBotScoreType.DOMAINGLOB,
+    "IP": DBotScoreType.IP,
+    "File SHA1": DBotScoreType.FILE,
+    "File SHA-1": DBotScoreType.FILE,
+    "File MD5": DBotScoreType.FILE,
+    "File SHA256": DBotScoreType.FILE,
+    "File SHA-256": DBotScoreType.FILE,
+    "Email": DBotScoreType.EMAIL,
+    "URL": DBotScoreType.URL,
+    "IPv6": DBotScoreType.IP,
+    "Account": DBotScoreType.ACCOUNT,
+    "CIDR": DBotScoreType.CIDR,
+    "DomainGlob": DBotScoreType.DOMAINGLOB,
 }
 
 
 def get_dbot_score_data(indicator, indicator_type, source, score):
-    db_score = Common.DBotScore(indicator=indicator, indicator_type=indicator_type,
-                                integration_name=source, score=score).to_context()
+    db_score = Common.DBotScore(
+        indicator=indicator, indicator_type=indicator_type, integration_name=source, score=score
+    ).to_context()
     # we are using Common.DBotScore.CONTEXT_PATH for 5.5.0+ and CONTEXT_PATH for 5.0.0
     return db_score.get(Common.DBotScore.CONTEXT_PATH, db_score.get(CONTEXT_PATH, db_score))
 
@@ -30,29 +32,28 @@ def get_dbot_score_data(indicator, indicator_type, source, score):
 def iterate_indicator_entry(indicator, entry):
     indicator_type = entry["indicator_type"]
     indicator_type = INDICATOR_TYPES.get(indicator_type, DBotScoreType.CUSTOM)
-    sources = entry.get('moduleToFeedMap', {})
-    if entry.get('manualScore'):
-        sources[entry.get('setBy')] = {}
+    sources = entry.get("moduleToFeedMap", {})
+    if entry.get("manualScore"):
+        sources[entry.get("setBy")] = {}
     elif not sources:
         sources[None] = {}
     for source, data in sources.items():
         if not source:
             source = DEFAULT_SOURCE
-        dbot_score = get_dbot_score_data(indicator, indicator_type, source, data.get('score', entry["score"]))
+        dbot_score = get_dbot_score_data(indicator, indicator_type, source, data.get("score", entry["score"]))
         command_results = CommandResults(
-            readable_output=tableToMarkdown('Indicator DBot Score: {}'.format(indicator), dbot_score),
-            outputs={CONTEXT_PATH: dbot_score}
+            readable_output=tableToMarkdown(f"Indicator DBot Score: {indicator}", dbot_score), outputs={CONTEXT_PATH: dbot_score}
         ).to_context()
-        context_entry_results = command_results.pop('EntryContext')[CONTEXT_PATH]
+        context_entry_results = command_results.pop("EntryContext")[CONTEXT_PATH]
         yield context_entry_results, command_results
 
 
 def main():
     try:
         # To prevent the split from succeeding.
-        indicators = argToList(demisto.args()['indicator'], separator='NoSeparatorWillBeFound')
+        indicators = argToList(demisto.args()["indicator"], separator="NoSeparatorWillBeFound")
         for indicator in indicators:
-            resp = demisto.executeCommand("getIndicator", {'value': indicator})
+            resp = demisto.executeCommand("getIndicator", {"value": indicator})
 
             if isError(resp) or not resp:
                 demisto.results(resp)
@@ -61,7 +62,7 @@ def main():
             data = resp[0].get("Contents")
 
             if not data:
-                demisto.results("No results found for indicator {} .".format(indicator))
+                demisto.results(f"No results found for indicator {indicator} .")
                 continue
 
             dbot_scores = []
@@ -77,5 +78,5 @@ def main():
         return_error(str(error), error)
 
 
-if __name__ in ('builtins', '__builtin__', '__main__'):
+if __name__ in ("builtins", "__builtin__", "__main__"):
     main()

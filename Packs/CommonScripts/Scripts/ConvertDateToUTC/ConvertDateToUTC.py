@@ -1,16 +1,15 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import pytz
+from CommonServerPython import *  # noqa: F401
 
-
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
     try:
-        date = demisto.getArg('date')
-        date_format = demisto.getArg('date_format')
-        time_zone = demisto.getArg('timezone')
+        date = demisto.getArg("date")
+        date_format = demisto.getArg("date_format")
+        time_zone = demisto.getArg("timezone")
 
         time_zone = pytz.timezone(time_zone)
 
@@ -22,27 +21,29 @@ def main():
 
         # Convert to UTC timezone
         utc_converted_date = localized_date.astimezone(pytz.timezone("UTC"))
-        epoch_time = utc_converted_date.strftime('%s')
+        epoch_time = utc_converted_date.strftime("%s")
 
         # Initialize entry context to return
         entry_context = {
-            'UTCDate': utc_converted_date.strftime(date_format),
-            'UTCDateEpoch': epoch_time,
+            "UTCDate": utc_converted_date.strftime(date_format),
+            "UTCDateEpoch": epoch_time,
         }
 
-        return_results({
-            'Contents': json.dumps(entry_context),
-            'ContentsFormat': formats['json'],
-            'EntryContext': entry_context,
-        })
+        return_results(
+            {
+                "Contents": json.dumps(entry_context),
+                "ContentsFormat": formats["json"],
+                "EntryContext": entry_context,
+            }
+        )
 
     except Exception as exc:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute ConvertDateToUTC. Error: {str(exc)}')
+        return_error(f"Failed to execute ConvertDateToUTC. Error: {exc!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

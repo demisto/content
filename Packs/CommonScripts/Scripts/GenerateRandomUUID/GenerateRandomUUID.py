@@ -5,20 +5,18 @@ from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-i
 import uuid
 
 
-''' STANDALONE FUNCTION '''
+""" STANDALONE FUNCTION """
 
 
 def generate_random_uuid() -> str:
     return str(uuid.uuid4())
 
 
-''' COMMAND FUNCTION '''
+""" COMMAND FUNCTION """
 
 
 def generate_random_uuid_command() -> CommandResults:
-    outputs = {
-        'GeneratedUUID': generate_random_uuid()
-    }
+    outputs = {"GeneratedUUID": generate_random_uuid()}
 
     return CommandResults(
         readable_output=f'## Random UUID Generated: {outputs["GeneratedUUID"]}',
@@ -26,7 +24,7 @@ def generate_random_uuid_command() -> CommandResults:
     )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
@@ -34,11 +32,11 @@ def main():
         return_results(generate_random_uuid_command())
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute GenerateRandomUUID. Error: {str(ex)}')
+        return_error(f"Failed to execute GenerateRandomUUID. Error: {ex!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

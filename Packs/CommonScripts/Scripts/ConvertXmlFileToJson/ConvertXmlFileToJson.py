@@ -1,6 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *
 import xmltodict
+from CommonServerPython import *
 
 
 def convert_file(entry_id: str, verbose: bool, context_key: str) -> None:
@@ -12,7 +12,7 @@ def convert_file(entry_id: str, verbose: bool, context_key: str) -> None:
         context_key: The key to insert the json data to.
     """
     xml_file = demisto.getFilePath(entry_id).get("path", "")
-    with open(xml_file, 'rb') as xml:
+    with open(xml_file, "rb") as xml:
         xml_json = xmltodict.parse(xml)
     if verbose:
         return_results(xml_json)
@@ -28,8 +28,8 @@ def main():  # pragma: no cover
     try:
         convert_file(entry_id, verbose, context_key)
     except Exception as e:
-        return_error(f"Convert XML File to Json Failed: Error: {str(e)}")
+        return_error(f"Convert XML File to Json Failed: Error: {e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

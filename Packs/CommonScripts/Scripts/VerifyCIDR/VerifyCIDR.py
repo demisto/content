@@ -1,9 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
 import ipaddress
 
+import demistomock as demisto
+from CommonServerPython import *
 
-''' STANDALONE FUNCTION '''
+""" STANDALONE FUNCTION """
 
 
 def is_valid_cidr(cidr: str) -> bool:
@@ -14,12 +14,12 @@ def is_valid_cidr(cidr: str) -> bool:
         return False
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
     try:
-        input_cidr = demisto.args().get('input')
+        input_cidr = demisto.args().get("input")
         input_cidr = argToList(input_cidr)
 
         valid_cidr = []
@@ -28,19 +28,19 @@ def main():
             if is_valid_cidr(item):
                 valid_cidr.append(item)
             else:
-                valid_cidr.append('')
+                valid_cidr.append("")
 
         if valid_cidr:
             return_results(valid_cidr)
         else:
-            return_results('')
+            return_results("")
 
     except Exception as e:
-        return_error(f'Failed to execute VerifyCIDR. Error: {str(e)}')
+        return_error(f"Failed to execute VerifyCIDR. Error: {e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
