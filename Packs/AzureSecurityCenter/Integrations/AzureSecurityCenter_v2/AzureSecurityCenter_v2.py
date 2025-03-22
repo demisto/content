@@ -179,7 +179,7 @@ class MsClient:
             dict: response body
         """
         cmd_url = f"/resourceGroups/{self.resource_group_name}" if self.resource_group_name else ""
-        cmd_url += f"/providers/Microsoft.Security/locations/{asc_location}/alerts/{alert_id}/" f"{alert_update_action_type}"
+        cmd_url += f"/providers/Microsoft.Security/locations/{asc_location}/alerts/{alert_id}/{alert_update_action_type}"
         params = {"api-version": ALERT_API_VERSION}
         #  Using resp_type=response to avoid parsing error.
         self.ms_client.http_request(method="POST", url_suffix=cmd_url, params=params, resp_type="response")

@@ -40,8 +40,8 @@ MESSAGES = {
     "complete your request.",
     "BAD_REQUEST_ERROR": "An error occurred while fetching the data.",
     "NO_RESPONSE_BODY": "An unexpected error occurred. Failed to parse json object from response.",
-    "SIZE_VALIDATION": "Size argument must be a positive integer. The value of this argument" " should be between 1 and 1000.",
-    "PAGE_VALIDATION": "Page argument must be 0 or a positive integer. The index is zero based so the first page" " is page 0.",
+    "SIZE_VALIDATION": "Size argument must be a positive integer. The value of this argument should be between 1 and 1000.",
+    "PAGE_VALIDATION": "Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.",
     "INVALID_ASSET_TYPE_ERROR": "The given value for type is invalid. Valid Types: Domain, Host, IP Address, IP Block,"
     " ASN, Page, SSL Cert, Contact. This argument supports a single value only.",
     "INVALID_ASSET_TYPE_AND_ASSET_DETAIL_TYPE_ERROR": "The given value for type is invalid. "
@@ -224,7 +224,7 @@ def remove_empty_entities(d):
     def empty(x):
         return x is None or x == {} or x == [] or x == ""
 
-    if not isinstance(d, (dict, list)):
+    if not isinstance(d, dict | list):
         return d
     elif isinstance(d, list):
         return [value for value in (remove_empty_entities(value) for value in d) if not empty(value)]
@@ -444,7 +444,7 @@ def get_asset_connections_outputs(resp: dict[str, Any], total_elements: dict[str
                         raw_response=resp,
                     )
                 )
-            hr += f'### Total {ASSET_TYPE_PLURAL_HR.get(asset_type)}:' f' {resp.get(asset_type, {}).get("totalElements")}\n'
+            hr += f'### Total {ASSET_TYPE_PLURAL_HR.get(asset_type)}: {resp.get(asset_type, {}).get("totalElements")}\n'
             hr += f"### Fetched {ASSET_TYPE_PLURAL_HR.get(asset_type)}: {len(asset_connections_hr)}\n"
     return hr, command_results
 
@@ -569,7 +569,7 @@ def get_asset_changes_summary_outputs(
         for summary in resp:
             asset_changes_summary_hr = get_asset_changes_summary_hr(summary)
             hr += tableToMarkdown(
-                f'Date of the run in which following changes were identified:' f' {summary.get("runDate", "")}',
+                f'Date of the run in which following changes were identified: {summary.get("runDate", "")}',
                 asset_changes_summary_hr,
                 ["Asset Type", "1 Day", "7 Days", "30 Days"],
                 removeNull=True,
@@ -801,13 +801,13 @@ def prepare_deep_link_for_asset_changes(last_run_date: str, asset_type: str, mea
 
     if date_arg and range_arg:
         deep_link = (
-            f'{DEEP_LINK_PREFIX["ASSET_CHANGES"]}/date={date_arg}&measure={measure}&range={range_arg}' f'&type={asset_type}'
+            f'{DEEP_LINK_PREFIX["ASSET_CHANGES"]}/date={date_arg}&measure={measure}&range={range_arg}&type={asset_type}'
         )
     elif date_arg:
         deep_link = f'{DEEP_LINK_PREFIX["ASSET_CHANGES"]}/date={date_arg}&measure={measure}&range=1&type={asset_type}'
     elif range_arg:
         deep_link = (
-            f'{DEEP_LINK_PREFIX["ASSET_CHANGES"]}/date={last_run_date}&measure={measure}&range={range_arg}' f'&type={asset_type}'
+            f'{DEEP_LINK_PREFIX["ASSET_CHANGES"]}/date={last_run_date}&measure={measure}&range={range_arg}&type={asset_type}'
         )
 
     if asset_type in VALID_ASSET_DETAIL_TYPES:
@@ -964,7 +964,7 @@ def validate_and_fetch_get_asset_arguments(args: dict[str, Any]) -> tuple[str, s
     :param args: The command arguments
     :return asset_type: asset_type fetched from the arguments
     """
-    if "uuid" in args.keys() and args.keys() - {"uuid", "global", "recent"} != set():
+    if "uuid" in args and args.keys() - {"uuid", "global", "recent"} != set():
         raise ValueError(MESSAGES["INVALID_ARGUMENTS_GET_ASSET"])
 
     uuid = args.get("uuid", "")
@@ -2155,11 +2155,10 @@ def check_task_status(client: Client, resp: dict[str, Any]) -> dict[str, Any]:
         task_resp = client.http_request(method="GET", url_suffix=url_suffix)
         if task_resp.get("state", "") in COMPLETE_TASK_STATES:
             break
-        else:
-            demisto.debug(f"Fetching the task status. Retry number: {retries}")
-            wait = retries * 30
-            time.sleep(wait)  # pylint: disable=sleep-exists
-            retries += 1
+        demisto.debug(f"Fetching the task status. Retry number: {retries}")
+        wait = retries * 30
+        time.sleep(wait)  # pylint: disable=sleep-exists
+        retries += 1
     return task_resp
 
 
@@ -2171,7 +2170,7 @@ def validate_required_keys_for_add_asset(valid_json: dict[str, Any], required_ke
     :param required_keys: The required keys for creating an asset
     :return: True if the required values are present else false
     """
-    return all(key in valid_json.keys() for key in required_keys)
+    return all(key in valid_json for key in required_keys)
 
 
 def validate_required_keys_for_update_asset(
@@ -2185,8 +2184,8 @@ def validate_required_keys_for_update_asset(
     :param required_keys_for_bulk_update: The required keys for bulk updating assets
     :return: True if the required values are present else false
     """
-    return all(key in valid_json.keys() for key in required_keys) or all(
-        key in valid_json.keys() for key in required_keys_for_bulk_update
+    return all(key in valid_json for key in required_keys) or all(
+        key in valid_json for key in required_keys_for_bulk_update
     )
 
 
@@ -2229,7 +2228,7 @@ def validate_asset_json(args: dict[str, Any], operation: str) -> dict[str, Any]:
         )
 
     asset_required_keys = {"name", "type"}
-    if "assets" in valid_json.keys() and not validate_required_keys_for_assets_key(valid_json["assets"], asset_required_keys):
+    if "assets" in valid_json and not validate_required_keys_for_assets_key(valid_json["assets"], asset_required_keys):
         raise ValueError(MESSAGES["ASSET_PAYLOAD_MISSING_KEYS_ERROR"].format(operation, "['name', 'type'] in assets key"))
 
     return valid_json
@@ -2245,7 +2244,7 @@ def validate_asset_payload(args: dict[str, Any], operation: str) -> dict[str, An
     :return: payload to be passed as request body for adding or updating the requested asset(s).
     """
     # Throw error if both asset_json and other arguments for creating asset manually are specified
-    if "asset_json" in args.keys() and args.keys() - {"asset_json", "fail_on_error"} != set():
+    if "asset_json" in args and args.keys() - {"asset_json", "fail_on_error"} != set():
         raise ValueError(MESSAGES["INVALID_ARGUMENTS_ADD_ASSET"])
 
     asset_json = args.get("asset_json")

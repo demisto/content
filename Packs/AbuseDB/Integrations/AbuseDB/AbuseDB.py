@@ -296,7 +296,7 @@ def check_block_command(reliability, network, limit, days=MAX_AGE, threshold=THR
 
 
 def report_ip_command(ip, categories):
-    params = {"ip": ip, "categories": ",".join([CATEGORIES_ID[c] if c in CATEGORIES_ID else c for c in categories.split()])}
+    params = {"ip": ip, "categories": ",".join([CATEGORIES_ID.get(c, c) for c in categories.split()])}
     analysis = http_request("POST", url_suffix=REPORT_CMD, params=params)
     return analysis
 

@@ -39,12 +39,11 @@ class Client(BaseClient):
             return result
         positive_detections = 0
         detection_engines = 0
-        if "reputation" in cybertotal_result["basic"]:
-            if "avVenders" in cybertotal_result["basic"]["reputation"]:
-                detection_engines = len(cybertotal_result["basic"]["reputation"]["avVenders"])
-                for avVender in cybertotal_result["basic"]["reputation"]["avVenders"]:
-                    if avVender["detected"]:
-                        positive_detections = positive_detections + 1
+        if "reputation" in cybertotal_result["basic"] and "avVenders" in cybertotal_result["basic"]["reputation"]:
+            detection_engines = len(cybertotal_result["basic"]["reputation"]["avVenders"])
+            for avVender in cybertotal_result["basic"]["reputation"]["avVenders"]:
+                if avVender["detected"]:
+                    positive_detections = positive_detections + 1
         result["positive_detections"] = positive_detections
         result["detection_engines"] = detection_engines
         result["detection_ratio"] = str(positive_detections) + "/" + str(detection_engines)
@@ -164,10 +163,9 @@ class Client(BaseClient):
         url_path = urlparse(permalink).path
         (_, _, task_id) = url_path.rpartition("/")
 
-        result = dict()
-        if "whois" in cybertotal_result:
-            if len(cybertotal_result["whois"]) > 0:
-                result = cybertotal_result["whois"].pop(0)
+        result = {}
+        if "whois" in cybertotal_result and len(cybertotal_result["whois"]) > 0:
+            result = cybertotal_result["whois"].pop(0)
         result["permalink"] = (permalink,)
         result["resource"] = (resource,)
         scan_time_date = dateparser.parse(scan_time)

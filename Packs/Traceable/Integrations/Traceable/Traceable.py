@@ -530,7 +530,7 @@ class Client(BaseClient):
             response_obj: dict = json.loads(response.text)
             return (
                 "error" in response_obj,
-                response_obj["error"] if "error" in response_obj else None,
+                response_obj.get("error", None),
             )
         return True, json.dumps(response, indent=2)
 

@@ -152,7 +152,7 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
 def test_enrich_with_url():
     from VaronisDataSecurityPlatform import enrich_with_url
 
-    obj = dict()
+    obj = {}
     baseUrl = "http://test.com"
     id = "1"
     expectedUrl = f"{baseUrl}/#/app/analytics/entity/Alert/{id}"

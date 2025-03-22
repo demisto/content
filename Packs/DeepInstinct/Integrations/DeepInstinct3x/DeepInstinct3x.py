@@ -23,17 +23,17 @@ def http_request(method, url_suffix, json=None):
         r = requests.request(method, base_url + api_suffix + url_suffix, json=json, headers=headers, verify=verify)
 
         if r.status_code == 401:
-            return_error(message="Authentication parameters are invalid, " "Please check your URL address and your API token")
+            return_error(message="Authentication parameters are invalid, Please check your URL address and your API token")
 
         if r.status_code not in (200, 204):
             result = r.json()
-            return_error(message="Error %s occurred with command. Error is: %s" % (r.status_code, str((result)["statusText"])))
+            return_error(message=f"Error {r.status_code} occurred with command. Error is: {str((result)['statusText'])}")
         try:
             return r.json()
         except ValueError:
             return None
     except Exception as e:
-        return_error(message="Error occurred on API call: %s. Error is: %s" % (base_url + api_suffix + url_suffix, str(e)))
+        return_error(message=f"Error occurred on API call: {base_url + api_suffix + url_suffix}. Error is: {str(e)}")
 
 
 def get_specific_device():
@@ -41,7 +41,7 @@ def get_specific_device():
     Get specific device by id
     """
     device_id = demisto.args().get("device_id")
-    result = http_request("GET", "/devices/%s" % str(device_id))
+    result = http_request("GET", f"/devices/{str(device_id)}")
     ec = {"DeepInstinct.Devices(val.id && val.id == obj.id)": result}
 
     return_results(CommandResults(readable_output=tableToMarkdown("Device", result), outputs=ec, raw_response=result))
@@ -90,7 +90,7 @@ def add_hash_to_denylist():
     policy_id = demisto.args().get("policy_id")
     file_hash = demisto.args().get("file_hash")
     comment = demisto.args().get("comment") or ""
-    http_request("POST", "/policies/%s/deny-list/hashes/%s" % (str(policy_id), file_hash), json={"comment": comment})
+    http_request("POST", f"/policies/{str(policy_id)}/deny-list/hashes/{file_hash}", json={"comment": comment})
     return_results("ok")
 
 
@@ -101,7 +101,7 @@ def add_hash_to_allowlist():
     policy_id = demisto.args().get("policy_id")
     file_hash = demisto.args().get("file_hash")
     comment = demisto.args().get("comment") or ""
-    http_request("POST", "/policies/%s/allow-list/hashes/%s" % (str(policy_id), file_hash), json={"comment": comment})
+    http_request("POST", f"/policies/{str(policy_id)}/allow-list/hashes/{file_hash}", json={"comment": comment})
     return_results("ok")
 
 
@@ -114,7 +114,7 @@ def remove_hash_from_denylist():
 
     item_list = [{"item": file_hash}]
 
-    http_request("DELETE", "/policies/%s/deny-list/hashes" % (str(policy_id)), json={"items": item_list})
+    http_request("DELETE", f"/policies/{str(policy_id)}/deny-list/hashes", json={"items": item_list})
     return_results("ok")
 
 
@@ -127,7 +127,7 @@ def remove_hash_from_allowlist():
 
     item_list = [{"item": file_hash}]
 
-    http_request("DELETE", "/policies/%s/allow-list/hashes" % (str(policy_id)), json={"items": item_list})
+    http_request("DELETE", f"/policies/{str(policy_id)}/allow-list/hashes", json={"items": item_list})
     return_results("ok")
 
 
@@ -138,7 +138,7 @@ def add_devices_to_group():
     group_id = demisto.args().get("group_id")
     device_ids_input = demisto.args().get("device_ids")
     device_ids = [int(num) for num in device_ids_input.split(",")]
-    http_request("POST", "/groups/%s/add-devices" % str(group_id), json={"devices": device_ids})
+    http_request("POST", f"/groups/{str(group_id)}/add-devices", json={"devices": device_ids})
     return_results("ok")
 
 
@@ -150,7 +150,7 @@ def remove_devices_from_group():
     device_ids_input = demisto.args().get("device_ids")
     device_ids = [int(num) for num in device_ids_input.split(",")]
 
-    http_request("POST", "/groups/%s/remove-devices" % str(group_id), json={"devices": device_ids})
+    http_request("POST", f"/groups/{str(group_id)}/remove-devices", json={"devices": device_ids})
     return_results("ok")
 
 
@@ -276,7 +276,7 @@ def remote_file_upload():
     Request Remote File Upload by Event ID
     """
     event_id = demisto.args().get("event_id")
-    http_request("POST", "/devices/actions/request-remote-file-upload/%s" % (str(event_id)))
+    http_request("POST", f"/devices/actions/request-remote-file-upload/{str(event_id)}")
     return_results("ok")
 
 
@@ -285,7 +285,7 @@ def disable_device():
     Disable D-client at next Check-In
     """
     device_id = demisto.args().get("device_id")
-    http_request("POST", "/devices/%s/actions/disable" % (str(device_id)))
+    http_request("POST", f"/devices/{str(device_id)}/actions/disable")
     return_results("ok")
 
 
@@ -294,7 +294,7 @@ def enable_device():
     Enable D-Client at next Check-In
     """
     device_id = demisto.args().get("device_id")
-    http_request("POST", "/devices/%s/actions/enable" % (str(device_id)))
+    http_request("POST", f"/devices/{str(device_id)}/actions/enable")
     return_results("ok")
 
 
@@ -303,7 +303,7 @@ def remove_device():
     Uninstall D-Client on device at next Check-In
     """
     device_id = demisto.args().get("device_id")
-    http_request("POST", "/devices/%s/actions/remove" % (str(device_id)))
+    http_request("POST", f"/devices/{str(device_id)}/actions/remove")
     return_results("ok")
 
 
@@ -312,7 +312,7 @@ def upload_logs():
     Upload D-Client Logs at next Check-In
     """
     device_id = demisto.args().get("device_id")
-    http_request("POST", "/devices/%s/actions/upload-logs" % (str(device_id)))
+    http_request("POST", f"/devices/{str(device_id)}/actions/upload-logs")
     return_results("ok")
 
 

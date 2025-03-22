@@ -152,7 +152,7 @@ mock_events = {
 def test_get_device_command(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"device_id": mock_device["id"]})
-    requests_mock.get("{0}/api/v1/devices/{1}".format(params["base_url"], mock_device["id"]), json=mock_device)
+    requests_mock.get(f"{params['base_url']}/api/v1/devices/{mock_device['id']}", json=mock_device)
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.get_specific_device()
     result = demisto.results.call_args[0][0]
@@ -161,7 +161,7 @@ def test_get_device_command(requests_mock, mocker):
 
 def test_get_all_groups(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
-    requests_mock.get("{0}/api/v1/groups".format(params["base_url"]), json=mock_groups)
+    requests_mock.get(f"{params['base_url']}/api/v1/groups", json=mock_groups)
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.get_all_groups()
     result = demisto.results.call_args[0][0]
@@ -170,7 +170,7 @@ def test_get_all_groups(requests_mock, mocker):
 
 def test_get_all_policies(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
-    requests_mock.get("{0}/api/v1/policies".format(params["base_url"]), json=mock_policies)
+    requests_mock.get(f"{params['base_url']}/api/v1/policies", json=mock_policies)
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.get_all_policies()
     result = demisto.results.call_args[0][0]
@@ -191,8 +191,8 @@ def test_fetch_incidents(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"first_fetch": 0})
     mocker.patch.object(demisto, "getLastRun", return_value={"last_id": 0})
-    requests_mock.get("{0}/api/v1/events?after_event_id=0".format(params["base_url"]), json=mock_events)
-    requests_mock.get("{0}/api/v1/events?after_event_id=2".format(params["base_url"]), json={})
+    requests_mock.get(f"{params['base_url']}/api/v1/events?after_event_id=0", json=mock_events)
+    requests_mock.get(f"{params['base_url']}/api/v1/events?after_event_id=2", json={})
     mocker.patch.object(demisto, "incidents")
     DeepInstinct3x.fetch_incidents()
     incidents = demisto.incidents.call_args[0][0]
@@ -204,7 +204,7 @@ def test_fetch_incidents(requests_mock, mocker):
 def test_get_suspicious_events_command(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"first_event_id": 0})
-    requests_mock.get("{0}/api/v1/suspicious-events?after_event_id=0".format(params["base_url"]), json=mock_events)
+    requests_mock.get(f"{params['base_url']}/api/v1/suspicious-events?after_event_id=0", json=mock_events)
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.get_suspicious_events()
     result = demisto.results.call_args[0][0]
@@ -214,7 +214,7 @@ def test_get_suspicious_events_command(requests_mock, mocker):
 def test_add_hash_to_denylist(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"policy_id": 0, "file_hash": "dummyhash", "comment": ""})
-    requests_mock.post("{0}/api/v1/policies/0/deny-list/hashes/dummyhash".format(params["base_url"]))
+    requests_mock.post(f"{params['base_url']}/api/v1/policies/0/deny-list/hashes/dummyhash")
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.add_hash_to_denylist()
     result = demisto.results.call_args[0][0]
@@ -224,7 +224,7 @@ def test_add_hash_to_denylist(requests_mock, mocker):
 def test_add_hash_to_allowlist(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"policy_id": 0, "file_hash": "dummyhash", "comment": ""})
-    requests_mock.post("{0}/api/v1/policies/0/allow-list/hashes/dummyhash".format(params["base_url"]))
+    requests_mock.post(f"{params['base_url']}/api/v1/policies/0/allow-list/hashes/dummyhash")
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.add_hash_to_allowlist()
     result = demisto.results.call_args[0][0]
@@ -234,7 +234,7 @@ def test_add_hash_to_allowlist(requests_mock, mocker):
 def test_remove_hash_from_denylist(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"policy_id": 0, "file_hash": "dummyhash"})
-    requests_mock.delete("{0}/api/v1/policies/0/deny-list/hashes".format(params["base_url"]))
+    requests_mock.delete(f"{params['base_url']}/api/v1/policies/0/deny-list/hashes")
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.remove_hash_from_denylist()
     result = demisto.results.call_args[0][0]
@@ -244,7 +244,7 @@ def test_remove_hash_from_denylist(requests_mock, mocker):
 def test_remove_hash_from_allowlist(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"policy_id": 0, "file_hash": "dummyhash"})
-    requests_mock.delete("{0}/api/v1/policies/0/allow-list/hashes".format(params["base_url"]))
+    requests_mock.delete(f"{params['base_url']}/api/v1/policies/0/allow-list/hashes")
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.remove_hash_from_allowlist()
     result = demisto.results.call_args[0][0]
@@ -254,7 +254,7 @@ def test_remove_hash_from_allowlist(requests_mock, mocker):
 def test_add_devices_to_group(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"group_id": 0, "device_ids": "0,1"})
-    requests_mock.post("{0}/api/v1/groups/0/add-devices".format(params["base_url"]))
+    requests_mock.post(f"{params['base_url']}/api/v1/groups/0/add-devices")
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.add_devices_to_group()
     result = demisto.results.call_args[0][0]
@@ -264,7 +264,7 @@ def test_add_devices_to_group(requests_mock, mocker):
 def test_isolate_from_network(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"device_ids": "0,1"})
-    requests_mock.post("{0}/api/v1/devices/actions/isolate-from-network".format(params["base_url"]))
+    requests_mock.post(f"{params['base_url']}/api/v1/devices/actions/isolate-from-network")
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.isolate_from_network()
     result = demisto.results.call_args[0][0]
@@ -274,7 +274,7 @@ def test_isolate_from_network(requests_mock, mocker):
 def test_release_from_isolation(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"device_ids": "0,1"})
-    requests_mock.post("{0}/api/v1/devices/actions/release-from-isolation".format(params["base_url"]))
+    requests_mock.post(f"{params['base_url']}/api/v1/devices/actions/release-from-isolation")
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.release_from_isolation()
     result = demisto.results.call_args[0][0]
@@ -284,7 +284,7 @@ def test_release_from_isolation(requests_mock, mocker):
 def test_terminate_remote_processes(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"event_ids": "0,1"})
-    requests_mock.post("{0}/api/v1/devices/actions/terminate-remote-process".format(params["base_url"]))
+    requests_mock.post(f"{params['base_url']}/api/v1/devices/actions/terminate-remote-process")
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.terminate_remote_processes()
     result = demisto.results.call_args[0][0]
@@ -294,7 +294,7 @@ def test_terminate_remote_processes(requests_mock, mocker):
 def test_close_events(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"event_ids": "0,1"})
-    requests_mock.post("{0}/api/v1/events/actions/close".format(params["base_url"]))
+    requests_mock.post(f"{params['base_url']}/api/v1/events/actions/close")
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.close_events()
     result = demisto.results.call_args[0][0]
@@ -304,7 +304,7 @@ def test_close_events(requests_mock, mocker):
 def test_upload_logs(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"device_id": 0})
-    requests_mock.post("{0}/api/v1/devices/0/actions/upload-logs".format(params["base_url"]))
+    requests_mock.post(f"{params['base_url']}/api/v1/devices/0/actions/upload-logs")
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.upload_logs()
     result = demisto.results.call_args[0][0]
@@ -314,7 +314,7 @@ def test_upload_logs(requests_mock, mocker):
 def test_enable_device(requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"device_id": 0})
-    requests_mock.post("{0}/api/v1/devices/0/actions/enable".format(params["base_url"]))
+    requests_mock.post(f"{params['base_url']}/api/v1/devices/0/actions/enable")
     mocker.patch.object(demisto, "results")
     DeepInstinct3x.enable_device()
     result = demisto.results.call_args[0][0]

@@ -117,7 +117,7 @@ def fetch_incidents():
     incidents = []
     for artifact_meta in artifacts_meta:
         demisto.debug("\nRequesting data for event: {}\n\n".format(artifact_meta["event_id"]))
-        result_artifact = http_request("GET", "/artifacts/alerts/%s" % artifact_meta["event_id"])
+        result_artifact = http_request("GET", f"/artifacts/alerts/{artifact_meta['event_id']}")
         incidents.append(item_to_incident(result_artifact["alert"]))
 
     demisto.incidents(incidents)
@@ -157,7 +157,7 @@ def poll_blobs():
             )
         else:
             cntext["Status"] = "release"
-            result_blobs = http_request("GET", "/artifacts/blobs/%s" % event_id)
+            result_blobs = http_request("GET", f"/artifacts/blobs/{event_id}")
             if "blobs" in result_blobs and len(result_blobs["blobs"]) > 0:
                 return_results(
                     [
@@ -188,7 +188,7 @@ def fetch_blobs():
     """Download one or more blobs from provided event_id"""
     event_id = demisto.args().get("event_id")
     blob_list = []
-    result_blobs = http_request("GET", "/artifacts/blobs/%s" % event_id)
+    result_blobs = http_request("GET", f"/artifacts/blobs/{event_id}")
     if "blobs" in result_blobs and len(result_blobs["blobs"]) > 0:
         for blob in result_blobs["blobs"]:
             blob_id = blob["blob_id"]
@@ -250,7 +250,7 @@ def test_module():
     if "msg" in result and result["msg"] == "Test OK":
         return_results("ok")
     else:
-        return_results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Errors:\n%s" % repr(result)})
+        return_results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": f"Errors:\n{repr(result)}"})
 
 
 """COMMANDS MANAGER / SWITCH PANEL

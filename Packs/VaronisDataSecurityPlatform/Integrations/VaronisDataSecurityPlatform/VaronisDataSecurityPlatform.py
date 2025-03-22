@@ -367,7 +367,7 @@ def enrich_with_pagination(output: dict[str, Any], page: int, page_size: int) ->
     :return: Enriched command output
     :rtype: ``Dict[str, Any]``
     """
-    output["Pagination"] = dict()
+    output["Pagination"] = {}
     output["Pagination"]["Page"] = page
     output["Pagination"]["PageSize"] = page_size
     return output
@@ -722,7 +722,7 @@ def varonis_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandR
 
     if alert_statuses:
         for status in alert_statuses:
-            if status.lower() not in ALERT_STATUSES.keys():
+            if status.lower() not in ALERT_STATUSES:
                 raise ValueError(f"There is no status {severity}.")
 
     alerts = client.varonis_get_alerts(
@@ -740,7 +740,7 @@ def varonis_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandR
         page,
         descending_order,
     )
-    outputs = dict()
+    outputs = {}
     outputs["Alert"] = alerts
 
     page_size = len(alerts)
@@ -842,7 +842,7 @@ def varonis_get_alerted_events_command(client: Client, args: dict[str, Any]) -> 
 
     events = client.varonis_get_alerted_events(alerts, max_results, page, descending_order)
     page_size = len(events)
-    outputs = dict()
+    outputs = {}
     outputs["Event"] = events
 
     if outputs:

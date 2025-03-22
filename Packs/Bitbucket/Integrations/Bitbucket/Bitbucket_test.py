@@ -77,7 +77,7 @@ create_pull_request_body_params = [
 
 
 @pytest.mark.parametrize(
-    "title, source_branch, destination_branch, reviewer_id, description, " "close_source_branch, expected_body",
+    "title, source_branch, destination_branch, reviewer_id, description, close_source_branch, expected_body",
     create_pull_request_body_params,
 )
 def test_create_pull_request_body(

@@ -434,20 +434,20 @@ def create_pull_request_body(
     Returns:
         A dictionary - a body to the pull request commands.
     """
-    body: dict = {}
+    body = {}
     if title:
         body["title"] = title
     if source_branch:
-        body["source"] = {"branch": {"name": source_branch}}
+        body["source"] = {"branch": {"name": source_branch}}    # type: ignore[assignment]
     if destination_branch:
-        body["destination"] = {"branch": {"name": destination_branch}}
+        body["destination"] = {"branch": {"name": destination_branch}}  # type: ignore[assignment]
     if reviewer_id:
         reviewers_arr = reviewer_id.split(",")
         account_id_list = []
         for id in reviewers_arr:
             dict = {"account_id": id}
             account_id_list.append(dict)
-        body["reviewers"] = account_id_list
+        body["reviewers"] = account_id_list  # type: ignore[assignment]
     if description:
         body["description"] = description
     if close_source_branch:

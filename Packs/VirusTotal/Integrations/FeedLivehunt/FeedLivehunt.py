@@ -47,9 +47,8 @@ class Client(BaseClient):
         if isinstance(filter_tag, str):
             query_filter = f'tag:"{filter_tag}"'
 
-        if fetch_command:
-            if last_run := self.get_last_run():
-                query_filter = f"{query_filter} {last_run}"
+        if fetch_command and (last_run := self.get_last_run()):
+            query_filter = f"{query_filter} {last_run}"
 
         response = self.get_api_indicators(query_filter.strip(), limit)
 
@@ -93,7 +92,7 @@ def test_module(client: Client, args: dict) -> str:
     try:
         client.fetch_indicators()
     except Exception:
-        raise Exception("Could not fetch VT livehunt Feed\n" "\nCheck your API key and your connection to VirusTotal.")
+        raise Exception("Could not fetch VT livehunt Feed\n\nCheck your API key and your connection to VirusTotal.")
     return "ok"
 
 

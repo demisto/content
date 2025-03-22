@@ -22,10 +22,10 @@ def http_request(method, url_suffix, json=None):
         r = requests.request(method, base_url + api_suffix + url_suffix, json=json, headers=headers, verify=False)
 
         if r.status_code == 422:
-            return_error(message="Authentication parameters are invalid, " "Please check your URL address and your API token")
+            return_error(message="Authentication parameters are invalid, Please check your URL address and your API token")
 
         if r.status_code not in (200, 204):
-            return_error(message="The following API call response status code is [%d] - %s " % (r.status_code, r.reason))
+            return_error(message=f"The following API call response status code is [{r.status_code}] - {r.reason} ")
         try:
             return r.json()
         except ValueError:
@@ -39,7 +39,7 @@ def get_specific_device():
     Get specific device by id
     """
     device_id = demisto.args().get("device_id")
-    result = http_request("GET", "/devices/%s" % str(device_id))
+    result = http_request("GET", f"/devices/{str(device_id)}")
     ec = {"DeepInstinct.Devices(val.id && val.id == obj.id)": result}
 
     return_outputs(readable_output=tableToMarkdown("Device", result), outputs=ec, raw_response=result)
@@ -130,7 +130,7 @@ def add_devices_to_group():
     group_id = demisto.args().get("group_id")
     device_ids_input = demisto.args().get("device_ids")
     device_ids = [int(num) for num in device_ids_input.split(",")]
-    http_request("POST", "/groups/%s/add-devices" % str(group_id), json={"devices": device_ids})
+    http_request("POST", f"/groups/{str(group_id)}/add-devices", json={"devices": device_ids})
     demisto.results("ok")
 
 
@@ -142,7 +142,7 @@ def remove_devices_from_group():
     device_ids_input = demisto.args().get("device_ids")
     device_ids = [int(num) for num in device_ids_input.split(",")]
 
-    http_request("POST", "/groups/%s/remove-devices" % str(group_id), json={"devices": device_ids})
+    http_request("POST", f"/groups/{str(group_id)}/remove-devices", json={"devices": device_ids})
     demisto.results("ok")
 
 

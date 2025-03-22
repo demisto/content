@@ -235,7 +235,7 @@ def test_filter_out_previosly_digested_events_no_last_run():
         {"id": "4", "properties": {"startTimeUtc": "2023-01-01T15:35:50.6288854Z"}},
         {"id": "5", "properties": {"startTimeUtc": "2023-01-01T15:33:50.6281114Z"}},
     ]
-    filter_out_previosly_digested_events(events, {}) == events
+    filter_out_previosly_digested_events(events, {}) == events  # noqa: B015
 
 
 def test_filter_out_previosly_digested_events_no_events():

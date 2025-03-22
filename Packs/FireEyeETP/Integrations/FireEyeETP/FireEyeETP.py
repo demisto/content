@@ -282,7 +282,7 @@ def search_messages_request(attributes={}, has_attachments=None, max_message_siz
 
 def search_messages_command():
     args = demisto.args()
-    if "size" in args.keys():
+    if "size" in args:
         # parse to int
         args["size"] = int(args["size"])
     if args.get("has_attachments") is not None:
@@ -446,10 +446,10 @@ def get_alerts_request(legacy_id=None, from_last_modified_on=None, etp_message_i
 def get_alerts_command():
     args = demisto.args()
 
-    if "size" in args.keys():
+    if "size" in args:
         args["size"] = int(args["size"])
 
-    if "legacy_id" in args.keys():
+    if "legacy_id" in args:
         args["legacy_id"] = int(args["legacy_id"])
 
     # get raw data
@@ -650,10 +650,10 @@ def fetch_incidents():
     week_ago = datetime.now() - timedelta(days=7)
     iso_format = "%Y-%m-%dT%H:%M:%S.%f"
 
-    if "last_modified" not in last_run.keys():
+    if "last_modified" not in last_run:
         # parse datetime to iso format string yyy-mm-ddThh:mm:ss.fff
         last_run["last_modified"] = week_ago.strftime(iso_format)[:-3]
-    if "last_created" not in last_run.keys():
+    if "last_created" not in last_run:
         last_run["last_created"] = week_ago.strftime(iso_format)
 
     alerts_raw_response = get_alerts_request(from_last_modified_on=last_run["last_modified"], size=100, raw_response=True)

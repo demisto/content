@@ -419,6 +419,6 @@ def test_quarantine_release_command(mocker):
     result = quarantine_release_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert result.readable_output == (
-        "### Quarantine\n|type|operation|successful_message_ids|\n|---|---|---|\n| some_type " "| some_operation | 1,2,3 |\n"
+        "### Quarantine\n|type|operation|successful_message_ids|\n|---|---|---|\n| some_type | some_operation | 1,2,3 |\n"
     )
     mock_client.quarantine_release.assert_called_once_with("12345")

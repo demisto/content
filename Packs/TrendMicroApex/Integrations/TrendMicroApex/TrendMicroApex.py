@@ -296,7 +296,7 @@ class Client(BaseClient):
         log_type = LOG_NAME_TO_LOG_TYPE.get(log_type)
         if log_type in ["pattern_updated_status", "engine_updated_status"] and page_token != "0":
             raise ValueError(
-                "For 'Pattern Update Status' and 'Engine Update Status' log types, \n" "the value of page_token must be '0'."
+                "For 'Pattern Update Status' and 'Engine Update Status' log types, \nthe value of page_token must be '0'."
             )
         since_time_timestamp = self.verify_format_and_convert_to_timestamp(since_time)
         querystring = f"?output_format=1&page_token={page_token}&since_time={since_time_timestamp}"
@@ -691,7 +691,7 @@ def udso_add_command(client: Client, args):
     expiration = args.get("expiration", "")
     response = client.udso_add(add_type=add_type, content=content, scan_action=scan_action, notes=notes, expiration=expiration)
 
-    readable_output = f'### UDSO "{content}" of type "{add_type}" was added successfully with scan action ' f'"{scan_action}"'
+    readable_output = f'### UDSO "{content}" of type "{add_type}" was added successfully with scan action "{scan_action}"'
     return CommandResults(readable_output=readable_output, raw_response=response)
 
 
@@ -705,7 +705,7 @@ def prodagent_isolate_command(client: Client, args):
 
     if not any([entity_id, ip, mac, host, product]):
         raise ValueError(
-            "At least one of the following arguments must be provided: " "entity_id, ip_address, mac_address, host_name, product"
+            "At least one of the following arguments must be provided: entity_id, ip_address, mac_address, host_name, product"
         )
 
     response = client.prodagent_isolate(
@@ -736,7 +736,7 @@ def prodagent_restore_command(client: Client, args):
 
     if not any([entity_id, ip, mac, host, product]):
         raise ValueError(
-            "At least one of the following arguments must be provided: " "entity_id, ip_address, mac_address, host_name, product"
+            "At least one of the following arguments must be provided: entity_id, ip_address, mac_address, host_name, product"
         )
 
     response = client.prodagent_restore(

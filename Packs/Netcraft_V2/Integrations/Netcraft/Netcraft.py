@@ -465,7 +465,7 @@ def test_module(client: Client) -> str:
     except DemistoException as e:
         demisto.debug(str(e))
         raise DemistoException(
-            f"Unable to connect to the Netcraft {service} service." f" Make sure the {service} URL and API key are correct"
+            f"Unable to connect to the Netcraft {service} service. Make sure the {service} URL and API key are correct"
         )
     return "ok"
 

@@ -144,7 +144,7 @@ def module_test(client, default_bucket):
         except Exception as exc:
             if "does not have storage.buckets.list access" in str(exc):
                 raise DemistoException(
-                    "Either specify a default bucket or add storage.buckets.list access " "to the service account.", exception=exc
+                    "Either specify a default bucket or add storage.buckets.list access to the service account.", exception=exc
                 )
 
             raise
@@ -408,7 +408,7 @@ def gcs_create_bucket_policy(client, default_bucket, args):
     acl = client.get_bucket(bucket_name).acl
     if acl.has_entity(entity):
         raise ValueError(
-            f"Entity {entity} already exists in the ACL of bucket {bucket_name}" " (use gcs-put-bucket-policy to update it)"
+            f"Entity {entity} already exists in the ACL of bucket {bucket_name} (use gcs-put-bucket-policy to update it)"
         )
 
     set_acl_entry(acl, entity, role)
@@ -430,7 +430,7 @@ def gcs_put_bucket_policy(client, default_bucket, args):
     acl = client.get_bucket(bucket_name).acl
     if not acl.has_entity(entity):
         raise ValueError(
-            f"Entity {entity} does not exist in the ACL of bucket {bucket_name}" " (use gcs-create-bucket-policy to create it)"
+            f"Entity {entity} does not exist in the ACL of bucket {bucket_name} (use gcs-create-bucket-policy to create it)"
         )
 
     set_acl_entry(acl, entity, role)
@@ -516,7 +516,7 @@ def gcs_create_bucket_object_policy(client, default_bucket, args):
     acl = get_blob_acl(client, bucket_name, blob_name)
     if acl.has_entity(entity):
         raise ValueError(
-            f"Entity {entity} already exists in the ACL of object {blob_name}" " (use gcs-put-bucket-object-policy to update it)"
+            f"Entity {entity} already exists in the ACL of object {blob_name} (use gcs-put-bucket-object-policy to update it)"
         )
 
     set_acl_entry(acl, entity, role)

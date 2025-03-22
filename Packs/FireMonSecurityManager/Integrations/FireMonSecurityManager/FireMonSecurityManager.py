@@ -103,7 +103,7 @@ class Client(BaseClient):
             parameters = {"includeDisabled": False, "pageSize": count_of_workflow}
             list_of_workflow = self.get_list_of_workflow(auth_token, domain_id, parameters)
 
-        for workflow in list_of_workflow.get("results"):
+        for workflow in list_of_workflow.get("results"):    # noqa: RET503
             if (workflow["workflow"]["pluginArtifactId"] == "access-request") and (workflow["workflow"]["name"] == workflow_name):
                 workflow_id = workflow["workflow"]["id"]
                 return workflow_id
@@ -286,13 +286,14 @@ def authenticate_command(client):
 def create_pp_ticket_command(client, args):
     auth_token_cmd_result = authenticate_command(client)
     auth_token = auth_token_cmd_result.outputs
-    payload = dict(
-        domainId=args.get("domain_id"),
-        workflowName=args.get("workflow_name"),
-        requirements=args.get("requirement"),
-        priority=args.get("priority"),
-        due_date=args.get("due_date"),
-    )
+    payload = {
+        "domainId": args.get("domain_id"),
+        "workflowName": args.get("workflow_name"),
+        "requirements": args.get("requirement"),
+        "priority": args.get("priority"),
+        "due_date": args.get("due_date"),
+    }
+
     response = client.create_pp_ticket(auth_token, payload)
     return CommandResults(
         outputs_prefix="FireMonSecurityManager.CreatePPTicket",
@@ -306,14 +307,15 @@ def create_pp_ticket_command(client, args):
 def pca_command(client, args):
     auth_token_cmd_result = authenticate_command(client)
     auth_token = auth_token_cmd_result.outputs
-    payload = dict(
-        sources=list(args.get("sources").split(",")),
-        destinations=list(args.get("destinations").split(",")),
-        services=list(args.get("services").split(",")),
-        action=args.get("action"),
-        domainId=args.get("domain_id"),
-        deviceGroupId=args.get("device_group_id"),
-    )
+    payload = {
+        "sources": list(args.get("sources").split(",")),
+        "destinations": list(args.get("destinations").split(",")),
+        "services": list(args.get("services").split(",")),
+        "action": args.get("action"),
+        "domainId": args.get("domain_id"),
+        "deviceGroupId": args.get("device_group_id"),
+    }
+
     payload_rule_rec = client.rule_rec_api(auth_token, payload)
     result = {}
     list_of_device_changes = payload_rule_rec["deviceChanges"]
@@ -321,13 +323,13 @@ def pca_command(client, args):
         return CommandResults(
             outputs_prefix="FireMonSecurityManager.PCA",
             outputs_key_field="pca",
-            outputs="No matching rule found for this requirement, " "Please go back and update the requirement",
+            outputs="No matching rule found for this requirement, Please go back and update the requirement",
             readable_output=tableToMarkdown(
                 name="FireMon SecurityManager PCA:",
-                t={"pca": "No matching rule found for this requirement, " "Please go back and update the requirement"},
+                t={"pca": "No matching rule found for this requirement, Please go back and update the requirement"},
                 removeNull=True,
             ),
-            raw_response="No matching rule found for this requirement, " "Please go back and update the requirement",
+            raw_response="No matching rule found for this requirement, Please go back and update the requirement",
         )
 
     for i in range(len(list_of_device_changes)):
@@ -400,16 +402,16 @@ def get_paged_search_secrule(client: Client, auth_token: str, payload: dict[str,
     Returns:
         (List[Dict[str, Any]]): results list
     """
-    result = list()
+    result = []
     response = client.get_paged_search_secrule(auth_token, payload)
     total_pages = response.get("total", 0) // payload.get("pageSize")
 
-    result.extend(response.get("results", list()))
+    result.extend(response.get("results", []))
 
     while payload.get("page") < total_pages:  # NOTE: Check if we can implement async here
         payload["page"] += 1
         response = client.get_paged_search_secrule(auth_token, payload)
-        result.extend(response.get("results", list()))
+        result.extend(response.get("results", []))
 
     return result
 
@@ -426,11 +428,12 @@ def secmgr_secrule_search_command(client: Client, args: dict[str, Any]):
 
     # page size can't be less than 1
     page_size = max(int(args.get("pageSize", 10)), 1)
-    payload = dict(
-        q=str(args.get("q")),
-        pageSize=page_size,
-        page=int(args.get("page", 0)),
-    )
+    payload = {
+        "q": str(args.get("q")),
+        "pageSize": page_size,
+        "page": int(args.get("page", 0)),
+    }
+
     results = get_paged_search_secrule(client, auth_token, payload)
 
     return CommandResults(
@@ -458,16 +461,16 @@ def get_paged_all_collectors(client: Client, auth_token: str, payload: dict[str,
     Returns:
         (List[Dict[str, Any]]): results list
     """
-    result = list()
+    result = []
     response = client.get_paged_all_collectors(auth_token, payload)
     total_pages = response.get("total", 0) // payload.get("pageSize")
 
-    result.extend(response.get("results", list()))
+    result.extend(response.get("results", []))
 
     while payload.get("page") < total_pages:  # NOTE: Check if we can implement async here
         payload["page"] += 1
         response = client.get_paged_all_collectors(auth_token, payload)
-        result.extend(response.get("results", list()))
+        result.extend(response.get("results", []))
 
     return result
 
@@ -483,10 +486,11 @@ def collector_get_all_command(client: Client, args: dict[str, Any]):
     auth_token = auth_token_cmd_result.outputs
 
     page_size = max(int(args.get("pageSize", 10)), 1)
-    payload = dict(
-        pageSize=page_size,
-        page=int(args.get("page", 0)),
-    )
+    payload = {
+        "pageSize": page_size,
+        "page": int(args.get("page", 0)),
+    }
+
     results = get_paged_all_collectors(client, auth_token, payload)
 
     return CommandResults(
