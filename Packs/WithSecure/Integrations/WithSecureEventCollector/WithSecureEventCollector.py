@@ -8,20 +8,19 @@ import urllib3
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 MAX_FETCH_LIMIT = 1000
-VENDOR = 'WithSecure'
-PRODUCT = 'Endpoint Protection'
+VENDOR = "WithSecure"
+PRODUCT = "Endpoint Protection"
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-    """
+    """Client class to interact with the service API"""
 
     def __init__(self, base_url, verify, proxy, client_id, client_secret):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
@@ -37,10 +36,10 @@ class Client(BaseClient):
 
         response = self._http_request(
             method="POST",
-            url_suffix='as/token.oauth2',
+            url_suffix="as/token.oauth2",
             auth=(self.client_id, self.client_secret),
             data={"grant_type": "client_credentials"},
-            error_handler=access_token_error_handler
+            error_handler=access_token_error_handler,
         )
 
         return response.get("access_token"), response.get("expires_in")
@@ -75,22 +74,18 @@ class Client(BaseClient):
         return token
 
     def get_events_api_call(self, fetch_from: str, limit: int, next_anchor: str = None):
-        params = {
-            "serverTimestampStart": fetch_from,
-            "limit": limit,
-            "order": "asc"
-        }
+        params = {"serverTimestampStart": fetch_from, "limit": limit, "order": "asc"}
         if next_anchor:
-            params['anchor'] = next_anchor
+            params["anchor"] = next_anchor
         return self._http_request(
             method="GET",
-            url_suffix='security-events/v1/security-events',
+            url_suffix="security-events/v1/security-events",
             headers={"Authorization": f"Bearer {self.get_access_token()}"},
-            params=params
+            params=params,
         )
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def access_token_error_handler(response: requests.Response):
@@ -102,34 +97,35 @@ def access_token_error_handler(response: requests.Response):
          DemistoException
     """
     if response.status_code == 401:
-        raise DemistoException('Authorization Error: The provided credentials for WithSecure are '
-                               'invalid. Please provide a valid Client ID and Client Secret.')
+        raise DemistoException(
+            "Authorization Error: The provided credentials for WithSecure are "
+            "invalid. Please provide a valid Client ID and Client Secret."
+        )
     elif response.status_code >= 400:
-        raise DemistoException('Error: something went wrong, please try again.')
+        raise DemistoException("Error: something went wrong, please try again.")
 
 
 def parse_date(dt: str) -> str:
-    date_time = dateparser.parse(dt, settings={'TIMEZONE': 'UTC'})
+    date_time = dateparser.parse(dt, settings={"TIMEZONE": "UTC"})
     return date_time.strftime(DATE_FORMAT)  # type: ignore
 
 
 def parse_events(events: list, last_fetch: str, last_event_id: str) -> tuple[str, str, list]:
-
     last_fetch_timestamp = date_to_timestamp(last_fetch, DATE_FORMAT)
     last_event_timestamp = last_fetch_timestamp
     last_event_time = last_fetch
     new_event_id = last_event_id
     parsed_events: list = []
     for event in events:
-        event_time = date_to_timestamp(parse_date(event.get('serverTimestamp')), DATE_FORMAT)
-        ev_id = event.get('id')
+        event_time = date_to_timestamp(parse_date(event.get("serverTimestamp")), DATE_FORMAT)
+        ev_id = event.get("id")
         # the event was already fetched
         if last_fetch_timestamp == event_time and last_event_id == ev_id:
             continue
-        event['_time'] = parse_date(event.get('clientTimestamp'))
+        event["_time"] = parse_date(event.get("clientTimestamp"))
         if last_event_timestamp < event_time:
             last_event_timestamp = event_time
-            last_event_time = event.get('serverTimestamp')
+            last_event_time = event.get("serverTimestamp")
             new_event_id = ev_id
 
         parsed_events.append(event)
@@ -139,12 +135,12 @@ def parse_events(events: list, last_fetch: str, last_event_id: str) -> tuple[str
 
 def get_events(client: Client, fetch_from: str, limit: int) -> list:
     events: list = []
-    next_anchor = 'first'
+    next_anchor = "first"
     while next_anchor and len(events) < limit:
         req_limit = min(MAX_FETCH_LIMIT, limit - len(events))
-        res = client.get_events_api_call(fetch_from, req_limit, next_anchor if next_anchor != 'first' else None)
-        events.extend(res.get('items'))
-        next_anchor = res.get('nextAnchor')
+        res = client.get_events_api_call(fetch_from, req_limit, next_anchor if next_anchor != "first" else None)
+        events.extend(res.get("items"))
+        next_anchor = res.get("nextAnchor")
 
     return events
 
@@ -153,13 +149,13 @@ def fetch_events(client: Client, fetch_from: str, limit: int, next_anchor):
     events: list = []
     req_limit = min(limit, MAX_FETCH_LIMIT)
     res = client.get_events_api_call(fetch_from, req_limit, next_anchor if next_anchor else None)
-    events.extend(res.get('items'))
-    next_anchor = res.get('nextAnchor')
+    events.extend(res.get("items"))
+    next_anchor = res.get("nextAnchor")
 
     return events, next_anchor
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -177,7 +173,7 @@ def test_module(client: Client) -> str:
     """
 
     client.get_access_token()
-    return 'ok'
+    return "ok"
 
 
 def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults]:
@@ -190,12 +186,12 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
         list: A list containing the events
         CommandResults: A CommandResults object that contains the events in a table format.
     """
-    fetch_from = parse_date(args.get('fetch_from') or demisto.params().get('first_fetch', '3 days'))
-    limit = arg_to_number(args.get('limit')) or MAX_FETCH_LIMIT
+    fetch_from = parse_date(args.get("fetch_from") or demisto.params().get("first_fetch", "3 days"))
+    limit = arg_to_number(args.get("limit")) or MAX_FETCH_LIMIT
     events = get_events(client, fetch_from, limit)
 
     events = events[:limit]
-    hr = tableToMarkdown(name='With Secure Events', t=events)
+    hr = tableToMarkdown(name="With Secure Events", t=events)
     return events, CommandResults(readable_output=hr)
 
 
@@ -216,18 +212,18 @@ def fetch_events_command(client: Client, first_fetch: str, limit: int) -> tuple[
         dict: The lastRun object for the next fetch run
     """
     last_run = demisto.getLastRun()
-    fetch_from = last_run.get('fetch_from') or first_fetch
-    next_anchor = last_run.get('next_anchor')
-    event_id = last_run.get('event_id', '')
+    fetch_from = last_run.get("fetch_from") or first_fetch
+    next_anchor = last_run.get("next_anchor")
+    event_id = last_run.get("event_id", "")
     events, next_anchor = fetch_events(client, fetch_from, limit, next_anchor)
 
     last_fetch, event_id, parsed_events = parse_events(events[:limit], fetch_from, event_id)
-    next_run = {'fetch_from': last_fetch, 'next_anchor': next_anchor, 'event_id': event_id}
+    next_run = {"fetch_from": last_fetch, "next_anchor": next_anchor, "event_id": event_id}
 
     return parsed_events, next_run
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -239,40 +235,35 @@ def main() -> None:
 
     params = demisto.params()
     args = demisto.args()
-    base_url = params.get('url')
-    client_id = params.get('credentials', {}).get('identifier')
-    client_secret = params.get('credentials', {}).get('password')
-    first_fetch = parse_date(params.get('first_fetch', '3 months'))
-    limit = arg_to_number(params.get('limit', 1000))
+    base_url = params.get("url")
+    client_id = params.get("credentials", {}).get("identifier")
+    client_secret = params.get("credentials", {}).get("password")
+    first_fetch = parse_date(params.get("first_fetch", "3 months"))
+    limit = arg_to_number(params.get("limit", 1000))
 
-    verify_ssl = not params.get('insecure', False)
+    verify_ssl = not params.get("insecure", False)
 
-    proxy = params.get('proxy', False)
+    proxy = params.get("proxy", False)
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
-        client = Client(
-            base_url=base_url,
-            verify=verify_ssl,
-            client_id=client_id,
-            client_secret=client_secret,
-            proxy=proxy)
+        client = Client(base_url=base_url, verify=verify_ssl, client_id=client_id, client_secret=client_secret, proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             return_results(test_module(client))
 
-        elif command == 'with-secure-get-events':
+        elif command == "with-secure-get-events":
             _, result = get_events_command(client, args)
             return_results(result)
 
-        elif command == 'fetch-events':
-            events, next_run = fetch_events_command(client, first_fetch, limit)   # type: ignore
+        elif command == "fetch-events":
+            events, next_run = fetch_events_command(client, first_fetch, limit)  # type: ignore
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

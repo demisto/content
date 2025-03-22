@@ -582,9 +582,7 @@ class STIX2Parser:
         Args:
             autonomous_system_obj (dict): indicator as an observable object of type autonomous-system.
         """
-        autonomous_system_indicator = STIX2Parser.parse_general_sco_indicator(
-            autonomous_system_obj, value_mapping="number"
-        )
+        autonomous_system_indicator = STIX2Parser.parse_general_sco_indicator(autonomous_system_obj, value_mapping="number")
         autonomous_system_indicator[0]["customFields"]["name"] = autonomous_system_obj.get("name")
 
         return autonomous_system_indicator
@@ -859,9 +857,7 @@ class STIX2Parser:
                         # support added for cases as 'value1','value2','value3' for 3 different indicators
                         for indicator_value in value.split(","):
                             indicator_value = indicator_value.strip("'")
-                            indicator = STIX2Parser.create_indicator(
-                                indicator_obj, type_, indicator_value.strip("'"), field_map
-                            )
+                            indicator = STIX2Parser.create_indicator(indicator_obj, type_, indicator_value.strip("'"), field_map)
                             indicators.append(indicator)
                         break
         return indicators
@@ -956,9 +952,7 @@ def test_module(client: Client, params: dict) -> str:  # pragma: no cover
         return str(e)
 
 
-def get_indicators_command(
-    client: Client, params: dict[str, str], args: dict[str, str]
-) -> CommandResults:  # pragma: no cover
+def get_indicators_command(client: Client, params: dict[str, str], args: dict[str, str]) -> CommandResults:  # pragma: no cover
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
