@@ -1,7 +1,8 @@
-import pytest
 import importlib
 import json
 from pathlib import Path
+
+import pytest
 
 AWSSecurityLake = importlib.import_module("AWSSecurityLake")
 
