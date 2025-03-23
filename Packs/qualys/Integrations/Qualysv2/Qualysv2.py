@@ -2870,7 +2870,7 @@ def truncate_asset_size(asset):
         # For extra debugging in case other/additional keys has oversize data
         for key, val in asset.items():
             if (val_size := get_size_of_object(val)) > ASSET_SIZE_LIMIT:  # 1 MB
-                demisto.debug(f'Data under key "{key}" has size of {val_size}:\n' f"{str(val)[:10000]}...")
+                demisto.debug(f'Data under key "{key}" has size of {val_size}:\n{str(val)[:10000]}...')
 
 
 def get_detections_from_hosts(hosts):
