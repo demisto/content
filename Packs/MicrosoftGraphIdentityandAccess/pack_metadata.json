@@ -2,7 +2,7 @@
     "name": "Microsoft Graph Identity and Access",
     "description": "Use this pack to manage roles and members in Microsoft.",
     "support": "xsoar",
-    "currentVersion": "1.2.57",
+    "currentVersion": "1.2.58",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

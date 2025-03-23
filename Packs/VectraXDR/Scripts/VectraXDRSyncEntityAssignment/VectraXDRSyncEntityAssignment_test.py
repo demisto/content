@@ -1,8 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from VectraXDRSyncEntityAssignment import main  # Import the main function from the script file
-from VectraXDRSyncEntityAssignment import (handle_error,
-                                           map_and_update_entity_assignments)
+from VectraXDRSyncEntityAssignment import handle_error, map_and_update_entity_assignments
 
 
 def test_handle_error_no_error():
@@ -35,11 +34,7 @@ def test_map_and_update_entity_assignments():
     - Assert that the readable output of the CommandResults indicates successful synchronization of assignments.
     """
     # Define your test data
-    data = {
-        "field1": "value1",
-        "field2": "value2",
-        "Assignment Details": "assignment_data"
-    }
+    data = {"field1": "value1", "field2": "value2", "Assignment Details": "assignment_data"}
     mapper = "your_mapper"
     mapper_type = "incident_type"
 
@@ -79,34 +74,32 @@ def test_main(mocker):
     When:
     - Calling the 'main' function of the VectraXDRSyncEntityAssignment script.
     """
-    mocker.patch.object(demisto, 'incident', return_value={
-        'CustomFields': {
-            'vectraxdrentityid': '1',
-            'vectraxdrentitytype': 'host'
-        }
-    })
+    mocker.patch.object(
+        demisto, "incident", return_value={"CustomFields": {"vectraxdrentityid": "1", "vectraxdrentitytype": "host"}}
+    )
 
     # Mock the demisto.executeCommand() function to return the command result.
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{
-        'Type': 'command',
-        'Contents': [{
-            "id": 212,
-            "assigned_by": {
-                "id": 65,
-                "username": "test.user4@mail.com"
-            },
-            "date_assigned": "2023-08-18T06:29:56Z",
-            "events": [
-            ],
-            "account_id": 108,
-            "assigned_to": {
-                "id": 60,
-                "username": "test.user1@mail.com"
-            },
-            "assignment_id": 212
-        }],
-        'HumanReadable': ""
-    }])
+    mocker.patch.object(
+        demisto,
+        "executeCommand",
+        return_value=[
+            {
+                "Type": "command",
+                "Contents": [
+                    {
+                        "id": 212,
+                        "assigned_by": {"id": 65, "username": "test.user4@mail.com"},
+                        "date_assigned": "2023-08-18T06:29:56Z",
+                        "events": [],
+                        "account_id": 108,
+                        "assigned_to": {"id": 60, "username": "test.user1@mail.com"},
+                        "assignment_id": 212,
+                    }
+                ],
+                "HumanReadable": "",
+            }
+        ],
+    )
 
     # Call the main function
     main()
