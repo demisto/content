@@ -6,6 +6,7 @@ import pytest
 import json
 from datetime import datetime, timedelta
 
+
 """ CONSTANTS """
 MOCK_SERVER_URL = "https://server_url/"
 KEY_ID = "key_id"
