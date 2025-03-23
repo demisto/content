@@ -2,7 +2,7 @@
     "name": "Akamai WAF SIEM",
     "description": "Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.",
     "support": "xsoar",
-    "currentVersion": "1.2.3",
+    "currentVersion": "1.2.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

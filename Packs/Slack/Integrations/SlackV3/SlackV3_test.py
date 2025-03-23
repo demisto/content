@@ -2861,7 +2861,7 @@ def test_slack_send_with_mirrored_file(mocker):
             "channel": "channel",
             "entry": "1234",
             "messageType": SlackV3.MIRROR_TYPE,
-            "entryObject": {}
+            "entryObject": {"fileID": "1ac3"},
         }
     )
     slack_send_request = mocker.patch.object(SlackV3, 'slack_send_request', return_value='file-sent')

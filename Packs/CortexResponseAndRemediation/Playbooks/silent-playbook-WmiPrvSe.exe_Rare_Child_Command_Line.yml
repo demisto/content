@@ -97,6 +97,7 @@ tasks:
                   simple: alert.hostip
                 iscontext: true
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {

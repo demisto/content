@@ -35,12 +35,20 @@ def mock_client() -> Client:
                 {"uuid": "456", "log_time": "2024-10-09T12:34:56.789Z"},
                 {"uuid": "789", "log_time": "2024-10-09T12:34:55.789Z"},
             ],
-            ["456"],
+            (["456"], "2024-10-09T12:34:56.789Z"),
+        ),
+        (
+            [
+                {"uuid": "123", "log_time": "2024-10-09T12:34:56Z"},
+                {"uuid": "456", "log_time": "2024-10-09T12:34:56.78957832Z"},
+                {"uuid": "789", "log_time": "2024-10-09T12:34:56.789578Z"},
+            ],
+            (["456", "789"], "2024-10-09T12:34:56.78957832Z"),
         )
     ],
 )
 def test_extract_events_suspected_duplicates(
-    events: list[dict], expected_results: list[str]
+    events: list[dict], expected_results: tuple[list[str]]
 ):
     """
     Given

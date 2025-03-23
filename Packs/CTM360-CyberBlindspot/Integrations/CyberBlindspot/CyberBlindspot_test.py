@@ -410,6 +410,52 @@ def test_to_snake_case(mock_input, mock_assert):
     assert to_snake_case(mock_input) == mock_assert
 
 
+@pytest.mark.parametrize(
+    "mock_response",
+    [
+        {
+            'hits': [{'testkey': 'testval'}],
+            'statusCode': 200
+        },
+        {
+            'statusCode': 200
+        },
+        {
+            'errors': 'Invalid API-KEY',
+            'statusCode': 400
+        },
+        {
+            'statusCode': 500
+        },
+    ]
+)
+def test_test_configuration(mock_response, mock_client, mocker):
+    """
+    Given:
+        - CyberBlindspot Client.
+    When:
+        - test_configuration is called.
+    Then:
+        - The returned value must be a list.
+    """
+
+    mocker.patch.object(
+        mock_client,
+        "_http_request",
+        return_value=mock_response
+    )
+
+    if mock_response.get('statusCode') > 200:
+        # Expecting an exception
+        with pytest.raises(DemistoException) as e:
+            incidents = mock_client.test_configuration({})
+            if type(e) is DemistoException:
+                assert e == mock_response.get("errors", "request was not successful")
+    else:
+        incidents = mock_client.test_configuration({})
+        assert type(incidents) is list
+
+
 """ COMMAND TESTS """
 
 

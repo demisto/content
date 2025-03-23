@@ -1,0 +1,20 @@
+{
+    "name": "DomainTools Feed",
+    "description": "DomainTools Feeds Integration",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "DomainTools",
+    "url": "https://www.domaintools.com/support/",
+    "email": "memberservices@domaintools.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

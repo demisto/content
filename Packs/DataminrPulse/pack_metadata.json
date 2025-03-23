@@ -2,7 +2,7 @@
     "name": "Dataminr Pulse",
     "description": "Dataminr Pulse's AI-powered, real-time intelligence integrates into Cortex XSOAR workflows for faster detection and response.",
     "support": "partner",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.13",
     "author": "Dataminr",
     "url": "https://www.dataminr.com/dataminr-support#support",
     "categories": [

@@ -1,0 +1,96 @@
+{
+    "msft_azure_aks_raw": {
+        "properties": {
+            "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "resourceId": {
+            "type": "string",
+            "is_array": false
+        },
+        "operationName": {
+            "type": "string",
+            "is_array": false
+        },
+        "TenantId": {
+            "type": "string",
+            "is_array": false
+        },
+        "Stream": {
+            "type": "string",
+            "is_array": false
+        },
+        "Category": {
+            "type": "string",
+            "is_array": false
+        },
+        "PodName": {
+            "type": "string",
+            "is_array": false
+        },
+        "kind": {
+            "type": "string",
+            "is_array": false
+        },
+        "Level": {
+            "type": "string",
+            "is_array": false
+        },
+        "RequestObject": {
+            "type": "string",
+            "is_array": false
+        },
+        "ResponseObject": {
+            "type": "string",
+            "is_array": false
+        },
+        "AuditId": {
+            "type": "string",
+            "is_array": false
+        },
+        "Stage": {
+            "type": "string",
+            "is_array": false
+        },
+        "RequestUri": {
+            "type": "string",
+            "is_array": false
+        },
+        "Verb": {
+            "type": "string",
+            "is_array": false
+        },
+        "User": {
+            "type": "string",
+            "is_array": false
+        },
+        "SourceIps": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserAgent": {
+            "type": "string",
+            "is_array": false
+        },
+        "ObjectRef": {
+            "type": "string",
+            "is_array": false
+        },
+        "ResponseStatus": {
+            "type": "string",
+            "is_array": false
+        },
+        "Annotations": {
+            "type": "string",
+            "is_array": false
+        },
+        "Message": {
+            "type": "string",
+            "is_array": false
+        }   
+    }
+}

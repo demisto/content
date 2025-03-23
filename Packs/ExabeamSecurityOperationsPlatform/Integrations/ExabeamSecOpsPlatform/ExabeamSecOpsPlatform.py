@@ -261,6 +261,7 @@ def transform_string(input_str: str) -> str:
     if ':' not in input_str:
         return input_str
     key, value = input_str.split(':', 1)
+    value = value.strip()
     if value.lower() in ['true', 'false']:
         return f'{key}:{value.lower()}'
     else:
