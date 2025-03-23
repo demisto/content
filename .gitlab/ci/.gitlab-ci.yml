@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: Automate-update-docker
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: Automate-update-docker
     project: "${CI_PROJECT_NAMESPACE}/infra"
