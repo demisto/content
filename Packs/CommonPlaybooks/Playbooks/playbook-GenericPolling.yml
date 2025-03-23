@@ -9,6 +9,8 @@ description: |-
   1. Initiate the operation.
   2. Poll to check if the operation completed.
   3. (optional) Get the results of the operation.
+
+  NOTE: This playbook should be run only when the playbook's context is using the "Private to sub-playbook" option.
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
