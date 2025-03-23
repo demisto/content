@@ -1249,22 +1249,21 @@ def get_headers(params: dict) -> str:
     global_api_key = params.get('global_api_key', {}).get('password') or params.get('global_api_key')
     email = params.get('email')
 
-    try:
-        if api_token:
-            headers = {
-                'Authorization': f'Bearer {api_token}',
-                'Content-Type': 'application/json'
-            }
-        elif global_api_key and email:
-            headers = {
-                'X-Auth-Email': email,
-                'X-Auth-Key': global_api_key,
-                'Content-Type': 'application/json'
-            }
-        else:
-            raise ValueError('Missing authentication parameters. Provide either API Token or Global API Key with Email.')
-    except Exception as e:
-        return json.dumps({'error': str(e)})
+    if api_token:
+        headers = {
+            'Authorization': f'Bearer {api_token}',
+            'Content-Type': 'application/json'
+        }
+    elif isinstance(global_api_key, str) and global_api_key and email:
+        headers = {
+            'X-Auth-Email': email,
+            'X-Auth-Key': global_api_key,
+            'Content-Type': 'application/json'
+        }
+    else:
+        raise ValueError('Missing authentication parameters. Provide either API Token or Global API Key with Email.')
+    #except Exception as e:
+    #        raise ValueError('Missing authentication parameters. Provide either API Token or Global API Key with Email.')
 
     return json.dumps(headers)
 
@@ -1273,7 +1272,6 @@ def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
 
-    credentials = get_headers(params)
     base_url = params.get('server')
     account_id = params.get('account_id')
     zone_id = params.get('zone_id')
@@ -1301,6 +1299,7 @@ def main() -> None:
         'cloudflare-waf-ip-list-item-list': cloudflare_waf_ip_list_item_list_command
     }
     try:
+        credentials = get_headers(params)
         client: Client = Client(credentials, account_id, proxy, insecure, base_url, zone_id)  # type: ignore
 
         if command == 'test-module':
