@@ -66,6 +66,7 @@ configuration:
   - failedFetchIncidents
   - mentionNew
   - mentionOld
+  - deprecatedContentInUse
   advanced: true
   additionalinfo: Types of notifications to send (to individual users and to the dedicated Slack channel, if specified).To enable use User (User Name) -> User Preferences -> Notifications
 - display: Type of incidents created in Slack

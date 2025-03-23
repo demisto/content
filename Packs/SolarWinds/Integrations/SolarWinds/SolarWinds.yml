@@ -12,6 +12,13 @@ configuration:
   required: true
   type: 0
   section: Connect
+- additionalinfo: 'Port number with which to connect to the Orion server. Default is 17778.'
+  display: Port
+  name: port
+  defaultvalue: 17778
+  required: false
+  type: 0
+  section: Connect
 - additionalinfo: Admin can create users such as guests from the Orion platform and provide access permission according to need.
   display: Username of the account
   name: credentials
@@ -460,7 +467,7 @@ script:
       Executes a query request.
       Note: The guidelines for composing the query can be found in the 'View Integration Documentation' linked in the integration tips.
     name: swis-query
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: '-'

@@ -389,3 +389,6 @@ outputs: []
 tests:
 - Test - CrowdStrike Falcon
 fromversion: 6.10.0
+marketplaces:
+- xsoar
+# Should not appear in marketplacev2

@@ -77,6 +77,7 @@ configuration:
   hidden: true
 - display: Use a self-deployed Azure Application
   name: self_deployed
+  section: Connect
   required: false
   type: 8
   additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
@@ -167,6 +168,9 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: headers
+      description: 'A comma-separated list of headers to send in the request, for example: ConsistencyLevel:eventual,User-Agent:MyApp/1.0.'
+      isArray: true
     description: Run a Microsoft Graph API query.
     name: msgraph-api-request
   - description: Run this command to start the authorization process and follow the instructions in the command results.
@@ -182,7 +186,7 @@ script:
   - description: Generate the login URL used for Authorization code flow.
     name: msgraph-api-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.2005673
   runonce: false
   script: '-'
   subtype: python3

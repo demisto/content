@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+demisto.debug('pack name = Anything LLM, pack version = 2.0.0')
 
 
 def main():

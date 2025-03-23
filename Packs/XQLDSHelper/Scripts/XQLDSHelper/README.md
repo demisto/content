@@ -30,7 +30,7 @@ The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-
 | retry_interval | The wait time \(in seconds\) between retries \(Default = 10\). |
 | polling_interval | The polling interval \(in seconds\) to wait for results \(Default = 10\). |
 | query_timeout_duration | The maximum duration (in seconds) allowed for an XQL query to complete after it has started \(Default = 60\). |
-| context_data | The custom context data used in place of the current context data. |
+| context_data | The custom context data is merged with the current context data for use. |
 | xql_query_instance | The name of the integration instance to execute xdr-xql-generic-query and xdr-xql-get-query-results. |
 
 
@@ -57,6 +57,9 @@ The data provided to `templates` depends on the parameter specified in `template
 
  - templates_type: `raw`
    * Specifies the list of templates directly. The details will be provided later.
+
+ - templates_type: `base64`
+   * Specifies the list of templates encoded directly in base64. The details will be provided later.
 
  - templates_type: `list`
    * Specifies the name of a list managed in the `Lists` of Cortex XSIAM/XSOAR. The list of templates is retrieved from it.

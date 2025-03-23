@@ -166,6 +166,8 @@ script:
       name: team_member
     - description: The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters.
       name: team
+    - description: ID of the message to send the notification to as a reply when sending to a channel.
+      name: message_id
     - description: The Microsoft Teams adaptive card to send.
       name: adaptive_card
     - description: The team member to which to send the message.
@@ -176,7 +178,15 @@ script:
     description: |-
       Sends a message to the specified teams.
       To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;.
+
+      If sending a reply to a message, the message ID must be provided and the reply will be sent via the Graph API which means
+      the message will appear from the account used to authorize the integration instance and not the bot. Setting the account's name
+      and picture to match the bot will make it appear to be from the same source.
     name: send-notification
+    outputs:
+    - contextPath: MicrosoftTeams.Message.ID
+      description: ID of the message sent.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: true
@@ -559,6 +569,26 @@ script:
     - contextPath: MicrosoftTeams.ChatList.members.visibleHistoryStartDateTime
       description: The timestamp denoting how far back a conversation's history is shared with the conversation member.
       type: String
+  - arguments:
+    - description: ID of the message to update. Also referred to as Activity ID.
+      name: message_id
+      required: true
+    - description: The team in which the specified message exists.
+      name: team
+    - description: The channel in which the specified message exists.
+      name: channel
+    - description: The new message content.
+      name: message
+    - description: The team member the message to be edited was sent to.
+      name: team_member
+    - description: Whether or not an adaptive card is being updated.
+      name: format_as_card
+    outputs:
+    - contextPath: MicrosoftTeams.Message.ID
+      description: ID of the message sent.
+      type: String
+    description: Updates a message.
+    name: microsoft-teams-message-update
   - arguments:
     - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
       name: chat
