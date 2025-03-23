@@ -235,7 +235,7 @@ class PychromeEventHandler:
         if self.start_frame == frameId:
             demisto.debug('PychromeEventHandler.page_frame_stopped_loading, checking URL')
             frame_url = self.tab.Page.getFrameTree()['frameTree']['frame']['url']
-            if frame_url in frame_url:
+            if "chrome-error" in frame_url:
                 demisto.debug(f'Encountered chrome-error {frame_url=}, retrying...')
                 self.retry_loading()
             else:
@@ -244,16 +244,15 @@ class PychromeEventHandler:
 
     def retry_loading(self):
         retry_count = 0
-        max_retries = 3  # Set your max retry count
+        max_retries = DEFAULT_RETRIES_COUNT  # Set your max retry count
         while retry_count < max_retries:
             retry_count += 1
-            demisto.debug(f'Retrying loading... Attempt {retry_count}')
+            demisto.debug(f'Retrying loading URL {self.path} Attempt {retry_count}')
             if self.navigation_timeout > 0:
                 self.tab.Page.navigate(url=self.path, _timeout=self.navigation_timeout)
             else:
                 self.tab.Page.navigate(url=self.path)
-            # self.tab.Page.navigate(url="https://www.w3.org/People/Raggett/book4/ch02.html")
-            time.sleep(2)  # Wait for the page to load
+            time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # Wait for the page to load
             frame_url = self.tab.Page.getFrameTree()['frameTree']['frame']['url']
             if "chrome-error" not in frame_url:
                 demisto.debug('Retry successful.')
@@ -346,7 +345,8 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
             else:
                 demisto.debug(
                     f"Failed to connect to Chrome on port {port} on iteration {i + 1}. ConnectionError, {exp_str=}, {exp=}")
-
+            try:
+                
         # Mild backoff
         time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + i * 2)  # pylint: disable=E9003
 
@@ -390,7 +390,7 @@ def increase_counter_chrome_instances_file(chrome_port: str = ''):
 
 def terminate_port_chrome_instances_file(chrome_port: str = ''):
     """
-    he function will increase the counter of the port "chrome_port"ץ
+    he function will increase the counter of the port "chrome_port"
     If the file "CHROME_INSTANCES_FILE_PATH" exists the function will increase the counter of the port "chrome_port."
 
     :param chrome_port: Port for Chrome instance.
