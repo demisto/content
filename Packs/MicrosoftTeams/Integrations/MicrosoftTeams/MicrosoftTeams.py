@@ -677,7 +677,7 @@ def get_refresh_token_from_auth_code_param() -> str:
     refresh_prefix = "refresh_token:"
     if AUTH_CODE.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
         demisto.debug("Using refresh token set as auth_code")
-        return AUTH_CODE[len(refresh_prefix) :]
+        return AUTH_CODE[len(refresh_prefix):]
     return ""
 
 
@@ -791,12 +791,12 @@ def http_request(method: str, url: str = "", json_: dict = None, api: str = "gra
             raise ValueError(f"Error in API call to Microsoft Teams: {response.text}")
     except requests.exceptions.ConnectTimeout:
         error_message = (
-            "Connection Timeout Error - potential reason may be that Microsoft Teams is not " "accessible from your host."
+            "Connection Timeout Error - potential reason may be that Microsoft Teams is not accessible from your host."
         )
         raise ConnectionError(error_message)
     except requests.exceptions.SSLError:
         error_message = (
-            "SSL Certificate Verification Failed - try selecting 'Trust any certificate' in " "the integration configuration."
+            "SSL Certificate Verification Failed - try selecting 'Trust any certificate' in the integration configuration."
         )
         raise ConnectionError(error_message)
     except requests.exceptions.ProxyError:
@@ -1723,7 +1723,7 @@ def chat_list_command():
             headerTransform=lambda h: CHAT_SPECIAL_MARKDOWN_HEADERS.get(h, pascalToSpace(h)),
         )
         + (
-            f"\nThere are more results than shown. " f"For more data please enter the next_link argument:\n next_link={next_link}"
+            f"\nThere are more results than shown. For more data please enter the next_link argument:\n next_link={next_link}"
             if next_link
             else ""
         ),
@@ -2255,7 +2255,7 @@ def get_channel_id_for_send_notification(team_aad_id: str, channel_name: str, me
         investigation_id = investigation.get("id", "")
     channel_id = get_channel_id(channel_name, team_aad_id, investigation_id)
     if get_channel_type(channel_id, team_aad_id) != "standard":
-        raise ValueError("Posting a message or adaptive card to a private/shared channel is currently " "not supported.")
+        raise ValueError("Posting a message or adaptive card to a private/shared channel is currently not supported.")
     return channel_id
 
 
@@ -2714,7 +2714,7 @@ def ring_user():
     """
     if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
         raise DemistoException(
-            "In order to use the 'microsoft-teams-ring-user' command, you need to use " "the 'Client Credentials flow'."
+            "In order to use the 'microsoft-teams-ring-user' command, you need to use the 'Client Credentials flow'."
         )
 
     bot_id = BOT_ID
@@ -2984,7 +2984,7 @@ def validate_auth_code_flow_params(command: str = ""):
         err = f"In order to use the '{command}' command, "
         if not AUTH_CODE and not REDIRECT_URI and AUTH_TYPE != AUTHORIZATION_CODE_FLOW:
             raise DemistoException(
-                err + "Please set the necessary parameters for the Authorization Code flow in the " "integration configuration."
+                err + "Please set the necessary parameters for the Authorization Code flow in the integration configuration."
             )
         elif AUTH_TYPE != AUTHORIZATION_CODE_FLOW:
             raise DemistoException(

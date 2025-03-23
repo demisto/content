@@ -44,7 +44,8 @@ def main():
             error_msg_in_incident = demisto.args().get("error_msg_in_incident")
             if error_msg_in_incident and error_msg_in_incident in str(contents):
                 return_error(
-                    f"Error message '{error_msg_in_incident}' encountered while fetching incidents from {instance_name}: {contents!s}"
+                    f"Error message '{error_msg_in_incident}' encountered while fetching incidents from"
+                    f" {instance_name}: {contents!s}"
                 )
             if re.match("invalid character '[a-zA-Z]' looking for beginning of value", str(contents), re.IGNORECASE):
                 return_error(f"Error occurred while fetching incidents from {instance_name}: {contents!s}")

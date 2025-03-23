@@ -598,7 +598,7 @@ class Client(BaseClient):
                 try:
                     res = res.json()
                 except ValueError as exception:
-                    raise DemistoException(f"Failed to parse json object from response: {res.text}.\n" f"Error: {exception}")
+                    raise DemistoException(f"Failed to parse json object from response: {res.text}.\nError: {exception}")
 
                 if access_token := res.get("access_token"):
                     expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
@@ -616,7 +616,7 @@ class Client(BaseClient):
 
             except Exception as e:
                 raise DemistoException(
-                    f"Error occurred while creating an access token. Please check the instance" f" configuration.\n\n{e}"
+                    f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e}"
                 )
 
     def access_token_to_headers(self, tsg_id: str | None = None) -> dict:
@@ -821,7 +821,7 @@ def build_recurring_according_to_params(args: dict) -> dict:
     if frequency in ("daily", "weekly", "monthly"):
         frequency_hour = args.get("frequency_hour")
         if not frequency_hour:
-            raise DemistoException("Please provide the frequency_hour argument when using daily, " "weekly or monthly frequency")
+            raise DemistoException("Please provide the frequency_hour argument when using daily, weekly or monthly frequency")
         if not re.match(FREQUENCY_HOUR_REGEX, frequency_hour):
             raise DemistoException("frequency_hour argument should be 00,01,02...-23 only")
         frequency_object[frequency]["at"] = frequency_hour
@@ -861,7 +861,7 @@ def validate_recurring_is_type_compatible(args: dict, original_frequency_obj: di
     if frequency in ("daily", "weekly", "monthly"):
         frequency_hour = args.get("frequency_hour") or original_frequency_obj[original_frequency].get("frequency_hour")
         if not frequency_hour:
-            raise DemistoException("Please provide the frequency_hour argument when using daily, " "weekly or monthly frequency")
+            raise DemistoException("Please provide the frequency_hour argument when using daily, weekly or monthly frequency")
         if not re.match(FREQUENCY_HOUR_REGEX, frequency_hour):
             raise DemistoException("frequency_hour argument should be 00,01,02...-23 only")
         frequency_object[frequency]["at"] = frequency_hour or original_frequency_obj[original_frequency].get("at")
@@ -966,7 +966,8 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
         address_object["tag"] = args.get("tag")
 
     demisto.debug(f"sending address_object to the API. address_object: {address_object}")
-    raw_response = client.create_address_object(address=address_object, query_params=query_params, tsg_id=args.get("tsg_id"))  # type: ignore
+    raw_response = client.create_address_object(
+        address=address_object, query_params=query_params, tsg_id=args.get("tsg_id"))  # type: ignore
 
     outputs = raw_response.copy()
     address_to_xsoar_format(outputs)
@@ -1375,7 +1376,8 @@ def create_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
             if dynamic_filter := args.get("dynamic_filter"):
                 address_group["dynamic"] = {"filter": dynamic_filter}
     demisto.debug(f"Sending address_group to the API. address_group: {address_group}")
-    raw_response = client.create_address_group(query_params=query_params, address_group=address_group, tsg_id=tsg_id)  # type: ignore
+    raw_response = client.create_address_group(
+        query_params=query_params, address_group=address_group, tsg_id=tsg_id)  # type: ignore
 
     outputs = raw_response.copy()
     address_group_to_xsoar_format(outputs)
@@ -1437,7 +1439,8 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
         original_address_group.pop("static") if "static" in original_address_group else None
 
     demisto.debug(f"Sending address_group to the API. address_group: {original_address_group}")
-    raw_response = client.update_address_group(address_group=original_address_group, group_id=group_id, tsg_id=tsg_id)  # type: ignore
+    raw_response = client.update_address_group(address_group=original_address_group,
+                                               group_id=group_id, tsg_id=tsg_id)  # type: ignore
 
     outputs = raw_response.copy()
     address_group_to_xsoar_format(outputs)
@@ -1958,7 +1961,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                 entry_type=EntryType.ERROR,
                 outputs=outputs,
                 outputs_prefix=f"{PA_OUTPUT_PREFIX}CandidateConfig",
-                readable_output=f"Something went wrong while trying to push job id {job_id}. " f"Result: {job_result}",
+                readable_output=f"Something went wrong while trying to push job id {job_id}. Result: {job_result}",
             )
 
         # Parent is the first push. After finishing, sub processes created for each folder.

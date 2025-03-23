@@ -155,7 +155,7 @@ def predict_batch_incidents_light_output(email_subject, email_body, phishing_mod
         if filtered_text_number_of_words == 0:
             incident_res["Error"] = "The model does not contain any of the input text words"
         elif filtered_text_number_of_words < min_text_length:
-            incident_res["Error"] = "The model contains fewer than %d words" % min_text_length
+            incident_res["Error"] = f"The model contains fewer than {min_text_length} words"
         else:
             pred = phishing_model.predict(input_text)
             incident_res["Label"] = pred[0]
@@ -190,7 +190,7 @@ def predict_single_incident_full_output(
     if filtered_text_number_of_words == 0:
         handle_error("The model does not contain any of the input text words", is_return_error)
     if filtered_text_number_of_words < min_text_length:
-        handle_error("The model contains fewer than %d words" % min_text_length, is_return_error)
+        handle_error(f"The model contains fewer than {min_text_length} words", is_return_error)
 
     explain_result = phishing_model.explain_model_words(input_text, 0, word_threshold, top_word_limit)
     explain_result["Probability"] = float(explain_result["Probability"])
@@ -219,8 +219,8 @@ def predict_single_incident_full_output(
     explain_result_hr = {}
     explain_result_hr["TextTokensHighlighted"] = highlighted_text_markdown
     explain_result_hr["Label"] = predicted_label
-    explain_result_hr["Probability"] = "%.2f" % predicted_prob
-    explain_result_hr["Confidence"] = "%.2f" % predicted_prob
+    explain_result_hr["Probability"] = "%.2f" % predicted_prob  # noqa: UP031
+    explain_result_hr["Confidence"] = "%.2f" % predicted_prob   # noqa: UP031
     explain_result_hr["PositiveWords"] = ", ".join([w.lower() for w in positive_words])
     explain_result_hr["NegativeWords"] = ", ".join([w.lower() for w in negative_words])
     incident_context = demisto.incidents()[0]

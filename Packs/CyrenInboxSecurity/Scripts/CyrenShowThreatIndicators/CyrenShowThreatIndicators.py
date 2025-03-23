@@ -37,7 +37,7 @@ def no_indicators():
     return {
         "ContentsFormat": formats["markdown"],
         "Type": entryTypes["note"],
-        "Contents": "No indicators identified by system." " _Refer to user feedback._\n",
+        "Contents": "No indicators identified by system. _Refer to user feedback._\n",
     }
 
 
@@ -52,7 +52,7 @@ def main():
 
         # show threat indicators
         if isinstance(threat_indicators, list):
-            markdown_result += "**Number of" f" indicators:**&nbsp;&nbsp;&nbsp;&nbsp; {len(threat_indicators)}\n\n"
+            markdown_result += f"**Number of indicators:**&nbsp;&nbsp;&nbsp;&nbsp; {len(threat_indicators)}\n\n"
             for x in threat_indicators:
                 markdown_result += stringify_indicators(x)
         else:
@@ -64,7 +64,7 @@ def main():
         return {"ContentsFormat": formats["markdown"], "Type": entryTypes["note"], "Contents": markdown_result}
 
     except Exception as e:
-        return_error(f"Failed to execute" f" CyrenShowThreatIndicators. Error: {e!s}")
+        return_error(f"Failed to execute CyrenShowThreatIndicators. Error: {e!s}")
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:

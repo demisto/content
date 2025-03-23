@@ -21,7 +21,7 @@ class OrcaClient:
     def validate_api_key(self) -> str:
         demisto.info("validate_api_key, enter")
         invalid_token_string = (
-            "Test failed because the Orca API token that was entered is invalid," " please provide a valid API token"
+            "Test failed because the Orca API token that was entered is invalid, please provide a valid API token"
         )
         try:
             response = self.client._http_request(
@@ -34,7 +34,7 @@ class OrcaClient:
             demisto.debug(str(e))
 
             # Try to get error message from response
-            response = getattr(e, "res")
+            response = getattr(e, "res")    # type: ignore[attr-defined]
             message = invalid_token_string
             if isinstance(response, Response):
                 message = response.json().get("error") or invalid_token_string
@@ -218,7 +218,7 @@ def map_orca_score_to_demisto_score(orca_score: str) -> int | float:  # pylint: 
         "informational": demisto_informational,
     }
 
-    return MAPPING[orca_score] if orca_score in MAPPING else 0
+    return MAPPING.get(orca_score, 0)
 
 
 def get_incident_from_alert(alert: dict[str, Any]) -> dict[str, Any]:
@@ -296,7 +296,8 @@ def set_alert_severity(orca_client: OrcaClient, args: dict[str, Any]) -> Command
     alert_id = args.get("alert_id")
     score = args.get("score")
 
-    assert alert_id and score
+    assert alert_id
+    assert score
     demisto.debug(f"Set alert severity {alert_id=} {score=}")
 
     response = orca_client.set_alert_score(alert_id=alert_id, orca_score=score)
@@ -351,7 +352,8 @@ def get_alert_event_log(orca_client: OrcaClient, args: dict[str, Any]) -> Comman
 def set_alert_status(orca_client: OrcaClient, args: dict[str, Any]) -> CommandResults:
     alert_id = cast(str, args.get("alert_id"))
     status = cast(str, args.get("status"))
-    assert alert_id and status
+    assert alert_id
+    assert status
     demisto.debug(f"Set alert status {alert_id=} {status=}")
 
     response = orca_client.set_alert_status(alert_id=alert_id, status=status)
@@ -405,9 +407,8 @@ def main() -> None:
 
         # How much time before the first fetch to retrieve incidents
         first_fetch_time = None
-        if arg := demisto.params().get("first_fetch"):
-            if first_fetch_time_stamp := dateparser.parse(arg):
-                first_fetch_time = first_fetch_time_stamp.isoformat()
+        if (arg := demisto.params().get("first_fetch")) and (first_fetch_time_stamp := dateparser.parse(arg)):
+            first_fetch_time = first_fetch_time_stamp.isoformat()
 
         client = BaseClient(base_url=api_url, verify=True, headers={"Authorization": f"Token {api_token}"}, proxy=True)
 

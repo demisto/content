@@ -47,7 +47,7 @@ class Client(BaseClient):
         self.reliability = reliability
         self.create_relationships = create_relationships
         self.default_threshold = default_threshold
-        self.max_indicator_relationships = 0 if not max_indicator_relationships else max_indicator_relationships
+        self.max_indicator_relationships = max_indicator_relationships if max_indicator_relationships else 0
         self.should_error = should_error
 
     def test_module(self) -> dict:
@@ -240,7 +240,7 @@ def relationships_manager(
             passive_dns_raw_response.get("passive_dns", []), field_for_passive_dns_rs
         )
         passive_dns_raw_response = validate_string_is_not_url(passive_dns_raw_response, field_for_passive_dns_rs)
-        passive_dns_raw_response = passive_dns_raw_response[0 : client.max_indicator_relationships]
+        passive_dns_raw_response = passive_dns_raw_response[0: client.max_indicator_relationships]
         relationships += create_relationships(
             client,
             passive_dns_raw_response,
@@ -722,7 +722,7 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> tuple[s
         title = f"{INTEGRATION_NAME} - Results for Hostname query"
         context_entry: dict = {
             "Endpoint(val.Hostname && val.Hostname === obj.Hostname)": {"Hostname": raw_response.get("indicator")},
-            "AlienVaultOTX.Endpoint(val.Alexa && val.Alexa === obj.Alexa &&" "val.Whois && val.Whois === obj.Whois)": {
+            "AlienVaultOTX.Endpoint(val.Alexa && val.Alexa === obj.Alexa &&val.Whois && val.Whois === obj.Whois)": {
                 "Hostname": raw_response.get("indicator"),
                 "Alexa": raw_response.get("alexa"),
                 "Whois": raw_response.get("whois"),
@@ -738,7 +738,7 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> tuple[s
         human_readable = tableToMarkdown(
             name=title,
             t=context_entry.get(
-                "AlienVaultOTX.Endpoint(val.Alexa && val.Alexa === obj.Alexa &&" "val.Whois && val.Whois === obj.Whois)"
+                "AlienVaultOTX.Endpoint(val.Alexa && val.Alexa === obj.Alexa &&val.Whois && val.Whois === obj.Whois)"
             ),
         )
 
@@ -914,13 +914,13 @@ def alienvault_search_pulses_command(client: Client, page: str) -> tuple[str, di
     if raw_response and raw_response != 404:
         title = f"{INTEGRATION_NAME} - pulse page {page}"
         context_entry: dict = {
-            "AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID && " "val.Modified && val.Modified == obj.Modified)": [
+            "AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID && val.Modified && val.Modified == obj.Modified)": [
                 create_pulse_by_ec(entry) for entry in raw_response.get("results", {})
             ]
         }
         human_readable = tableToMarkdown(
             t=context_entry.get(
-                "AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID && " "val.Modified && val.Modified == obj.Modified)"
+                "AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID && val.Modified && val.Modified == obj.Modified)"
             ),
             name=title,
         )

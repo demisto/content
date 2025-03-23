@@ -431,22 +431,22 @@ def get_content_modules(content_path: str, verify_ssl: bool = True) -> None:
         },
         {
             "file": "conftest.py",
-            "github_url": "https://raw.githubusercontent.com/demisto/content/master/Tests/scripts/dev_envs/pytest" "/conftest.py",
+            "github_url": "https://raw.githubusercontent.com/demisto/content/master/Tests/scripts/dev_envs/pytest/conftest.py",
             "content_path": "Tests/scripts/dev_envs/pytest",
         },
         {
             "file": "approved_usecases.json",
-            "github_url": "https://raw.githubusercontent.com/demisto/content/master/" "Config/approved_usecases.json",
+            "github_url": "https://raw.githubusercontent.com/demisto/content/master/Config/approved_usecases.json",
             "content_path": "Config",
         },
         {
             "file": "approved_tags.json",
-            "github_url": "https://raw.githubusercontent.com/demisto/content/master/" "Config/approved_tags.json",
+            "github_url": "https://raw.githubusercontent.com/demisto/content/master/Config/approved_tags.json",
             "content_path": "Config",
         },
         {
             "file": "approved_categories.json",
-            "github_url": "https://raw.githubusercontent.com/demisto/content/master/" "Config/approved_categories.json",
+            "github_url": "https://raw.githubusercontent.com/demisto/content/master/Config/approved_categories.json",
             "content_path": "Config",
         },
         {
@@ -480,7 +480,7 @@ def get_content_modules(content_path: str, verify_ssl: bool = True) -> None:
             copy(cached_module_path, module_path)
         except Exception as e:
             fallback_path = f'/home/demisto/{module["file"]}'
-            demisto.debug(f'Failed downloading content module {module["github_url"]} - {e}. ' f'Copying from {fallback_path}')
+            demisto.debug(f'Failed downloading content module {module["github_url"]} - {e}. Copying from {fallback_path}')
             copy(fallback_path, module_path)
 
 
@@ -590,7 +590,7 @@ def read_pre_commit_results(pre_commit_dir: Path):
                 # 'check-ast' details value has to be treated individually as regex does not capture it properly.
                 if hook_id == "check-ast":
                     result["details"] = stdout.splitlines()[5:]  # Trimming error metadata info (5 lines of it).
-                details = result["details"] if "details" in result else ""
+                details = result.get("details", "")
                 results.append(
                     ValidationResult(
                         filePath=file_path,
@@ -719,7 +719,7 @@ def setup_content_dir(file_name: str, file_contents: bytes | str, entry_id: str,
     if file_type not in ALLOWED_FILE_TYPES:
         demisto.debug(f"resolved {file_type=}")
         raise DemistoException(
-            f"{file_name} does not define a content item. Files defining content items can be of " f"types: {ALLOWED_FILE_TYPES}"
+            f"{file_name} does not define a content item. Files defining content items can be of types: {ALLOWED_FILE_TYPES}"
         )
 
     if isinstance(file_contents, str):

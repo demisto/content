@@ -74,7 +74,7 @@ cd ..; rm openssh-9.8p1.tar.gz; rm -r openssh-9.8p1"
     if output_run_command_dict.get("run_command_flag"):
         # Check if Package upgrade is supported for the OS
         os = instance_info_dict.get("PlatformType", "") + " " + instance_info_dict.get("PlatformName", "")
-        if os not in asm_rule_package_dict.get(asm_rule_id, {}).keys():
+        if os not in asm_rule_package_dict.get(asm_rule_id, {}):
             output_run_command_dict["run_command_flag"] = False
             output_run_command_dict["run_command_output"] = "Package upgrade is not supported for the OS."
             return output_run_command_dict

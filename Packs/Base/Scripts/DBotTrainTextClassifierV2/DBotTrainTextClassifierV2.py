@@ -9,7 +9,7 @@ from sklearn.model_selection import StratifiedKFold
 
 ALL_LABELS = "*"
 GENERAL_SCORES = {
-    "micro avg": "The metrics is applied globally by counting the total true positives, " "false negatives and false positives",
+    "micro avg": "The metrics is applied globally by counting the total true positives, false negatives and false positives",
     "macro avg": "The metrics is applied for each label, and find their unweighted mean.",
     "weighted avg": "The metrics is applied for each label, and find their average weighted by support "
     "(the number of true instances for each label). This alters macro to account for label imbalance;",
@@ -74,7 +74,7 @@ def read_file(input_data, input_type):
     elif input_type.startswith("pickle"):
         return pd.read_pickle(file_path, compression=None)
     else:
-        return_error("Unsupported file type %s" % input_type)
+        return_error(f"Unsupported file type {input_type}")
         return None
 
 

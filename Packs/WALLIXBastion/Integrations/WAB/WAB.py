@@ -68,7 +68,7 @@ def to_markdown(name: str, t):
     try:
         return tableToMarkdown(name, t)
     except Exception as e:
-        return "Success (failed to format output: %s)" % str(e)
+        return f"Success (failed to format output: {str(e)})"
 
 
 class Client(BaseClient):

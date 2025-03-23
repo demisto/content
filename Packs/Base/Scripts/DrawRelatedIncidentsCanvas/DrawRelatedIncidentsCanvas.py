@@ -35,11 +35,11 @@ def generate_layout(current_incident_id, incident_ids, indicator_ids, connection
         layer = (
             line - int(n_indicators_lines / 2) if line < int(n_indicators_lines / 2) else line - int(n_indicators_lines / 2) + 1
         )
-        G.add_nodes_from(graph_indicators[indicators_per_line * line : indicators_per_line * (line + 1)], layer=layer)
+        G.add_nodes_from(graph_indicators[indicators_per_line * line: indicators_per_line * (line + 1)], layer=layer)
 
     for connection in connections:
-        src = "%s-%s" % (connection["srcEntityType"], connection["srcEntityId"])
-        dest = "%s-%s" % (connection["targetEntityType"], connection["targetEntityId"])
+        src = f"{connection['srcEntityType']}-{connection['srcEntityId']}"
+        dest = f"{connection['targetEntityType']}-{connection['targetEntityId']}"
         G.add_edge(src, dest)
     pos = layout_to_functions.get(LAYOUT)(G)  # type: ignore
     layout = {}
@@ -62,10 +62,10 @@ def get_incident_to_indicator_connection(inc, ioc):
 
 
 def generate_canvas(current_incident_id, incident_ids, indicators):
-    indicator_ids = list(map(lambda x: x["id"], indicators))
+    indicator_ids = [x["id"] for x in indicators]
 
-    incident_nodes = list(map(lambda x: {"type": "incident", "id": x}, incident_ids))
-    indicators_nodes = list(map(lambda x: {"type": "indicator", "id": x}, indicator_ids))
+    incident_nodes = [{"type": "incident", "id": x} for x in incident_ids]
+    indicators_nodes = [{"type": "indicator", "id": x} for x in indicator_ids]
     nodes = incident_nodes + indicators_nodes
 
     incident_to_other_incidents = []

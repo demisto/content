@@ -264,7 +264,7 @@ def read_file(input_data, input_type):
     elif input_type.startswith("pickle"):
         return pd.read_pickle(file_path, compression=None)
     else:
-        return_error("Unsupported file type %s" % input_type)
+        return_error(f"Unsupported file type {input_type}")
         return None
 
 
@@ -364,7 +364,7 @@ def remove_short_text(data, text_field, target_text_field, remove_short_threshol
     after_count = len(data)
     dropped_count = before_count - after_count
     if dropped_count > 0:
-        description += "Dropped %d samples shorter than %d words" % (dropped_count, remove_short_threshold) + "\n"
+        description += f"Dropped {dropped_count} samples shorter than {remove_short_threshold} words\n"
     return data, description
 
 
@@ -378,7 +378,7 @@ def remove_foreign_language(data, text_field, language):
     dropped_count = len(data) - len(filtered_data)
     if dropped_count > 0:
         lang_counter = Counter(inc[LANGUAGE_KEY] for inc in data).most_common()
-        description += "Dropped %d sample(s) that were detected as being in foreign languages. " % dropped_count
+        description += f"Dropped {dropped_count} sample(s) that were detected as being in foreign languages. "
         description += "Found language counts: {}".format(", ".join([f"{lang}:{count}" for lang, count in lang_counter]))
         description += "\n"
     return filtered_data, description
@@ -418,7 +418,7 @@ def remove_duplicate_by_indices(data, duplicate_indices):
     data = [x for i, x in enumerate(data) if i not in duplicate_indices]
     dropped_count = len(duplicate_indices)
     if dropped_count > 0:
-        description += "Dropped %d samples duplicate to other samples" % dropped_count + "\n"
+        description += f"Dropped {dropped_count} samples duplicate to other samples\n"
     return data, description
 
 
@@ -458,7 +458,7 @@ def main():
     data = read_file(input, input_type)
     # concat text fields
     concat_text_fields(data, DBOT_TEXT_FIELD, text_fields)
-    description += "Read initial %d samples" % len(data) + "\n"
+    description += f"Read initial {len(data)} samples\n"
 
     # clean text
     if pre_process_type not in PRE_PROCESS_TYPES:
@@ -493,7 +493,7 @@ def main():
         whitelist_fields.append(DBOT_PROCESSED_TEXT_FIELD)
         data = whitelist_dict_fields(data, whitelist_fields)
 
-    description += "Done processing: %d samples" % len(data) + "\n"
+    description += f"Done processing: {len(data)} samples\n"
     # output
     file_name = str(uuid.uuid4())
     output_format = demisto.args()["outputFormat"]
@@ -503,7 +503,7 @@ def main():
     elif output_format == "json":
         data_encoded = json.dumps(data, default=str)  # type: ignore
     else:
-        return_error("Invalid output format: %s" % output_format)
+        return_error(f"Invalid output format: {output_format}")
     entry = fileResult(file_name, data_encoded)
     entry["Contents"] = data
     entry["HumanReadable"] = description

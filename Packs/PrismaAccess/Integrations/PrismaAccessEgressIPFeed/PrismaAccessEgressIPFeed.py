@@ -56,7 +56,7 @@ class Client(BaseClient):
                 response.raise_for_status()
                 responseData = response.json()
                 prismaStatus = responseData.get("status", "")
-                if "success" == prismaStatus:
+                if prismaStatus == "success":
                     zones = responseData.get("result", [])
                     for z in zones:
                         zoneName = z.get("zone", "")
@@ -77,12 +77,12 @@ class Client(BaseClient):
             except requests.exceptions.SSLError as err:
                 demisto.debug(str(err))
                 raise Exception(
-                    f"SSL error in the API call to {INTEGRATION_NAME}.\n" f"Check your not secure parameter.\n\n{err}"
+                    f"SSL error in the API call to {INTEGRATION_NAME}.\nCheck your not secure parameter.\n\n{err}"
                 )
             except requests.ConnectionError as err:
                 demisto.debug(str(err))
                 raise Exception(
-                    f"Connection error in the API call to {INTEGRATION_NAME}.\n" f"Check your Server URL parameter.\n\n{err}"
+                    f"Connection error in the API call to {INTEGRATION_NAME}.\nCheck your Server URL parameter.\n\n{err}"
                 )
             except requests.exceptions.HTTPError as err:
                 demisto.debug(str(err))

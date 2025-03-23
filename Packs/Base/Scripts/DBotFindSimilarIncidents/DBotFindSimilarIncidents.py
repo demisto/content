@@ -149,7 +149,7 @@ def preprocess_incidents_field(incidents_field: str, prefix_to_remove: list[str]
     incidents_field = incidents_field.strip()
     for prefix in prefix_to_remove:
         if incidents_field.startswith(prefix):
-            incidents_field = incidents_field[len(prefix) :]
+            incidents_field = incidents_field[len(prefix):]
     return incidents_field
 
 
@@ -412,7 +412,7 @@ class Transformer:
         X_vect, incident_vect = self.fit_transform()
         demisto.debug(f"Calculating similarity of field {self.field} with function {scoring_function.__name__}")
         dist = scoring_function(X_vect, incident_vect)
-        self.incidents_df["similarity %s" % self.field] = np.round(dist, 2)
+        self.incidents_df[f"similarity {self.field}"] = np.round(dist, 2)
         return self.incidents_df
 
 
@@ -535,7 +535,7 @@ class Model:
         Compute final score based on average of similarity score for each field transformed
         :return:
         """
-        col = self.incidents_df.loc[:, ["similarity %s" % field for field in self.field_for_command_line + self.field_for_json]]
+        col = self.incidents_df.loc[:, [f"similarity {field}" for field in self.field_for_command_line + self.field_for_json]]
         self.incidents_df[SIMILARITY_COLUNM_NAME] = np.round(col.mean(axis=1), 2)
 
     def prepare_for_display(self):
@@ -545,7 +545,7 @@ class Model:
             + self.field_for_command_line
             + self.field_for_potential_exact_match
             + [
-                "similarity %s" % field
+                f"similarity {field}"
                 for field in self.field_for_command_line + self.field_for_json + self.field_for_potential_exact_match
             ]
         )
@@ -602,7 +602,7 @@ def prepare_incidents_for_display(
     if confidence:
         similar_incidents = similar_incidents[similar_incidents[SIMILARITY_COLUNM_NAME] >= confidence]
     if show_distance == "False":
-        col_to_remove = ["similarity %s" % field for field in fields_used]
+        col_to_remove = [f"similarity {field}" for field in fields_used]
         similar_incidents = similar_incidents.drop(col_to_remove, axis=1)
     if include_indicators_similarity == "True":
         similar_incidents = similar_incidents.sort_values(by=ORDER_SCORE_WITH_INDICATORS, ascending=False)
@@ -623,7 +623,7 @@ def get_incident_by_id(incident_id: str, populate_fields: list[str], from_date: 
     """
     populate_fields_value = " , ".join(populate_fields)
     demisto.debug(
-        f"Calling get_incidents_by_query for {incident_id=} between {from_date=} and {to_date=}," f"{populate_fields_value=}"
+        f"Calling get_incidents_by_query for {incident_id=} between {from_date=} and {to_date=},{populate_fields_value=}"
     )
     incidents = get_incidents_by_query(
         {
@@ -660,25 +660,25 @@ def get_all_incidents_for_time_window_and_exact_match(
     exact_match_fields_list = []
     for exact_match_field in exact_match_fields:
         if exact_match_field not in incident:
-            msg += "%s \n" % MESSAGE_NO_FIELD % exact_match_field
+            msg += f"{MESSAGE_NO_FIELD % exact_match_field} \n"
         else:
             exact_match_fields_list.append(f'{exact_match_field}: "{incident[exact_match_field]}"')
     query = " AND ".join(exact_match_fields_list)
-    query += " AND -id:%s " % incident["id"]
+    query += f" AND -id:{incident['id']} "
     if query_sup:
-        query += " %s" % query_sup
+        query += f" {query_sup}"
 
     populate_fields_value = " , ".join(populate_fields)
-    demisto.debug(f"Calling get_incidents_by_query between {from_date=} and {to_date=}," f"{limit=}, {populate_fields_value=}")
+    demisto.debug(f"Calling get_incidents_by_query between {from_date=} and {to_date=},{limit=}, {populate_fields_value=}")
 
     incidents = get_incidents_by_query(
         {"query": query, "populateFields": populate_fields_value, "fromDate": from_date, "toDate": to_date, "limit": limit}
     )
     if len(incidents) == 0:
-        msg += "%s \n" % MESSAGE_NO_INCIDENT_FETCHED
+        msg += f"{MESSAGE_NO_INCIDENT_FETCHED} \n"
         return None, msg
     if len(incidents) == limit:
-        msg += "%s \n" % MESSAGE_WARNING_TRUNCATED % (str(len(incidents)), str(limit))
+        msg += f"{MESSAGE_WARNING_TRUNCATED % (str(len(incidents)), str(limit))} \n"
         return incidents, msg
     return incidents, msg
 
@@ -696,7 +696,7 @@ def get_field_args(args) -> tuple:
     similar_json_field = ["CustomFields"] if use_all_field else extract_fields_from_args(args.get("similarJsonField"))
 
     demisto.debug(
-        f"{exact_match_fields=}\n" f"{similar_text_field=}\n" f"{similar_categorical_field=}\n" f"{similar_json_field=}"
+        f"{exact_match_fields=}\n{similar_text_field=}\n{similar_categorical_field=}\n{similar_json_field=}"
     )
     return exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field
 
@@ -872,7 +872,7 @@ def find_incorrect_fields(populate_fields: list[str], incidents_df: pd.DataFrame
     """
     incorrect_fields = [i for i in populate_fields if i not in incidents_df.columns.tolist()]
     if incorrect_fields:
-        global_msg += "%s \n" % MESSAGE_INCORRECT_FIELD % " , ".join(incorrect_fields)
+        global_msg += f"{MESSAGE_INCORRECT_FIELD % " , ".join(incorrect_fields)} \n"
     return global_msg, incorrect_fields
 
 
@@ -979,7 +979,7 @@ def main():
 
     incident, incident_id = load_current_incident(incident_id, populate_high_level_fields, from_date, to_date)
     if not incident:
-        return_outputs_error(error_msg="%s \n" % MESSAGE_NO_CURRENT_INCIDENT % incident_id)
+        return_outputs_error(error_msg=f"{MESSAGE_NO_CURRENT_INCIDENT % incident_id} \n")
         return None, global_msg
 
     # load the related incidents
@@ -987,7 +987,7 @@ def main():
     incidents, msg = get_all_incidents_for_time_window_and_exact_match(
         exact_match_fields, populate_high_level_fields, incident, from_date, to_date, query, limit
     )
-    global_msg += "%s \n" % msg
+    global_msg += f"{msg} \n"
 
     if incidents:
         demisto.debug(f"Found {len(incidents)} {INCIDENT_ALIAS}s for {incident_id=}")
@@ -1023,7 +1023,7 @@ def main():
     try:
         similar_incidents, fields_used = model.predict()
     except DemistoException as e:
-        global_msg += "%s \n" % MESSAGE_NO_FIELDS_USED.format(str(e))
+        global_msg += f"{MESSAGE_NO_FIELDS_USED.format(str(e))} \n"
         return_outputs_summary(confidence, number_incident_fetched, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
         return None, global_msg

@@ -18,7 +18,7 @@ def main():
     for word in WORDS:
         for sentence in SENTENCES:
             if word in sentence:
-                return_error('The word "%s" is a substring of the sentance: "%s"' % (word, sentence))
+                return_error(f'The word "{word}" is a substring of the sentance: "{sentence}"')
 
     text_words = INIT_TEXT.lower().split(" ")
     marked_text_words = []

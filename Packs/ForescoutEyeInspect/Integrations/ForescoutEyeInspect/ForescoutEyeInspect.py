@@ -4,7 +4,7 @@ from urllib.parse import urljoin  # type: ignore
 
 import demistomock as demisto  # noqa: F401
 import urllib3
-from CommonServerPython import *  # noqa: F401
+from CommonServerPython import *  # noqa: F401  # type: ignore[misc]
 
 from CommonServerUserPython import *
 

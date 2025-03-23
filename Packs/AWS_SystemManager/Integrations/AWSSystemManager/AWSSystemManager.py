@@ -249,7 +249,6 @@ def validate_args(args: dict[str, Any]) -> None:
             raise DemistoException(
                 validator.error_template.format(**{validator.name: arg_value}),
             )
-    return None
 
 
 def config_aws_session(args: dict[str, str], aws_client: AWSClient) -> "SSMClient":

@@ -12,7 +12,7 @@ METRICS["Precision"] = (
     "model. Precision is calculated by dividing the TPs of the class by the number of incidents that "
     "the model predicted as this class."
 )
-METRICS["TP (true positive)"] = "The number of incidents from the class in the evaluation set that were predicted " "correctly. "
+METRICS["TP (true positive)"] = "The number of incidents from the class in the evaluation set that were predicted correctly. "
 METRICS["FP (false positive)"] = "The number of incidents from other classes that were predicted incorrectly as this class."
 METRICS["Coverage"] = (
     "The number of incidents from the class in the evaluation set for which the confidence level of "
@@ -146,10 +146,13 @@ def output_report(
             "possible precision"
         ]
     human_readable_threshold += [
-        f"- {int(coverage)}/{int(test_set_size)} incidents of the evaluation set were predicted with higher confidence than this threshold.",
-        f"- The remainder, {int(test_set_size - coverage)}/{int(test_set_size)} incidents of the evaluation set, were predicted with lower confidence than this threshold "
+        f"- {int(coverage)}/{int(test_set_size)} incidents of the evaluation set were predicted with higher confidence"
+        f" than this threshold.",
+        f"- The remainder, {int(test_set_size - coverage)}/{int(test_set_size)} incidents of the evaluation set, were"
+        f" predicted with lower confidence than this threshold "
         "(these predictions were ignored).",
-        f"- Expected coverage ratio: The model will attempt to provide a prediction for {float(coverage) / test_set_size * 100:.2f}% of incidents. "
+        f"- Expected coverage ratio: The model will attempt to provide a prediction for"
+        f" {float(coverage) / test_set_size * 100:.2f}% of incidents. "
         f"({int(coverage)}/{int(test_set_size)})",
         "- Evaluation of the model performance using this probability threshold can be found below:",
     ]

@@ -78,7 +78,7 @@ def scenario_three():
 
     urls = argToList(TEST_BANK_SCENARIO_FIVE_ITEMS)
     items_to_schedule = []
-    for idx, url in enumerate(urls):
+    for _idx, url in enumerate(urls):
         items_to_schedule.append(url)
         # All 5 items fail on retry here, and it's expected that all 5 iterations are previously scheduled
         continue

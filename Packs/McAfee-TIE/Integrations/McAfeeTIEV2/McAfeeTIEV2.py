@@ -100,7 +100,7 @@ class GeneralFileReputationParser(abc.ABC):
             demisto.debug(f"Unexpected provider ID returned - {provider}")
             return UnknownReputationHandler()
 
-    @abstractmethod
+    @abstractmethod # noqa: B027
     def parse_attributes(self, attributes: Dict[str, Any]):
         """
         The abstract method that is in charge of parsing the vendor's unique attributes.
@@ -527,7 +527,7 @@ def create_dxl_config(instance_cert: InstanceCertificates) -> DxlClientConfig:
         tempfile.NamedTemporaryFile(mode="w+", dir="./", suffix=".crt") as client_cert_file,
         tempfile.NamedTemporaryFile(mode="w+", dir="./", suffix=".key") as private_key_file,
     ):
-        broker_certs_file.delete
+        broker_certs_file.delete    # noqa: B018
         create_temp_credentials(broker_certs_file, instance_cert.broker_ca_bundle)
         create_temp_credentials(client_cert_file, instance_cert.client_cert)
         create_temp_credentials(private_key_file, instance_cert.private_key)
@@ -644,7 +644,7 @@ def main():  # pragma: no cover
         elif "4065" in exception_des:
             return_error("Invalid value - Client private key")
         else:
-            return_error(f"Failed to execute {command} command." f"\nError:\n{e!s}")
+            return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:

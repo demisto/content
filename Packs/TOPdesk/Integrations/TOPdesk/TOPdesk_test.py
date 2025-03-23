@@ -553,7 +553,7 @@ def test_attachment_list_command(client, requests_mock, command_args, command_ap
 
 
 @pytest.mark.parametrize(
-    "create_func, command_args, command_api_url, mock_response_file," " expected_last_request_body",
+    "create_func, command_args, command_api_url, mock_response_file, expected_last_request_body",
     [
         (
             True,  # Create
@@ -635,7 +635,7 @@ def test_caller_lookup_incident_touch_commands(
 
 
 @pytest.mark.parametrize(
-    "create_func, command_args, command_api_url, mock_response_file," " expected_last_request_body",
+    "create_func, command_args, command_api_url, mock_response_file, expected_last_request_body",
     [
         (
             True,  # Create

@@ -91,7 +91,7 @@ FILE_EC_WITH_ANALYSIS = {
         "Type": "PE32 executable (GUI) Intel 80386 Mono/.Net assembly, for MS Windows",
         "Malicious": {"PulseIDs": []},
     },
-    "DBotScore(val.Indicator && val.Indicator == obj.Indicator &&" " val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
         {
             "Indicator": "6c5360d41bd2b14b1565f5b18e5c203cf512e493",
             "Type": "file",
@@ -112,7 +112,7 @@ FILE_EC_WITHOUT_ANALYSIS = {
             "Hashes": [{"type": "SHA1", "value": "6c5360d41bd2b14b1565f5b18e5c203cf512e493"}],
         }
     ],
-    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&" " val.Type == obj.Type)": [
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
         {
             "Indicator": "6c5360d41bd2b14b1565f5b18e5c203cf512e493",
             "Type": "file",
@@ -162,7 +162,7 @@ URL_EC = {
             ],
         }
     ],
-    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&" " val.Type == obj.Type)": [
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
         {
             "Indicator": {"url": "http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list"},
             "Type": "url",
@@ -299,7 +299,7 @@ IP_EC = {
     "IP(val.Address && val.Address == obj.Address)": [
         {"Address": "8.8.88.8", "ASN": "AS3356 LEVEL3", "Geo": {"Location": "37.751:-97.822", "Country": "US"}}
     ],
-    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&" " val.Type == obj.Type)": [
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
         {"Indicator": "8.8.88.8", "Type": "ip", "Vendor": "AlienVault OTX v2", "Score": 0, "Reliability": "C - Fairly reliable"}
     ],
     "AlienVaultOTX.IP(val.IP && val.IP === obj.IP)": {"IP": {"Reputation": 0, "IP": "8.8.88.8"}},
@@ -1113,7 +1113,7 @@ def test_file_function_return_timeout_warning():
     client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
     result = file_command(client, file="11111111111111111111111111111111")
     assert result[0].readable_output == (
-        "### Results:\n|MD5|Result|\n|---|---|\n| 11111111111111111111111111111111 | Not found " "|\n"
+        "### Results:\n|MD5|Result|\n|---|---|\n| 11111111111111111111111111111111 | Not found |\n"
     )
 
 

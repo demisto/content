@@ -56,9 +56,7 @@ class Client(BaseClient):
             else:
                 raise e
 
-        if rest_api_version >= LooseVersion(FIRST_REST_API_VERSION_WITH_NEW_QUERY):
-            return True
-        return False
+        return rest_api_version >= LooseVersion(FIRST_REST_API_VERSION_WITH_NEW_QUERY)
 
     def get_list_with_query(
         self,
@@ -94,7 +92,7 @@ class Client(BaseClient):
 
         allowed_list_type = ["persons", "operators", "branches", "incidents"]
         if list_type not in allowed_list_type:
-            raise ValueError(f"Cannot get list of type {list_type}.\n " f"Only {allowed_list_type} are allowed.")
+            raise ValueError(f"Cannot get list of type {list_type}.\n Only {allowed_list_type} are allowed.")
 
         url_suffix = f"/{list_type}"
         inline_parameters = False
@@ -579,7 +577,7 @@ def capitalize_for_outputs(outputs: list[dict[str, Any]]) -> list[dict[str, Any]
     for output in outputs:
         capitalized_output: dict[str, Any] = {}
         for field, value in output.items():
-            if isinstance(value, str) or isinstance(value, bool):
+            if isinstance(value, str | bool):
                 capitalized_output[capitalize(field)] = value
             elif isinstance(value, dict):
                 capitalized_output[capitalize(field)] = {}
@@ -659,7 +657,7 @@ def get_incidents_with_pagination(
         page_size = MAX_API_PAGE_SIZE
 
     start = 0
-    for index in range(number_of_requests):
+    for _index in range(number_of_requests):
         incidents += client.get_list_with_query(
             list_type="incidents",
             start=start,
@@ -695,7 +693,7 @@ def get_incidents_list(
     else:
         allowed_statuses = [None, "firstLine", "secondLine", "partial"]
         if args.get("status", None) not in allowed_statuses:
-            raise (ValueError(f"status {args.get('status', None)} id not in " f"the allowed statuses list: {allowed_statuses}"))
+            raise (ValueError(f"status {args.get('status', None)} id not in the allowed statuses list: {allowed_statuses}"))
         else:
             filter_arguments: dict[str, Any] = {
                 "status": "status",
@@ -709,10 +707,9 @@ def get_incidents_list(
             old_query_not_allowed_filters = ["category", "subcategory", "call_type", "entry_type"]
 
             query = args.get("query", None)
-            for filter_arg in filter_arguments.keys():
-                if not client.rest_api_new_query:
-                    if args.get(filter_arg, None) and filter_arg in old_query_not_allowed_filters:
-                        raise KeyError(f"Filtering via {filter_arg} is not supported in older TOPdeskRestApi versions.")
+            for filter_arg in filter_arguments:
+                if not client.rest_api_new_query and (args.get(filter_arg, None) and filter_arg in old_query_not_allowed_filters):
+                    raise KeyError(f"Filtering via {filter_arg} is not supported in older TOPdeskRestApi versions.")
 
                 query = client.add_filter_to_query(
                     query=query,
@@ -1294,7 +1291,7 @@ def fetch_incidents(
             except DemistoException as error:
                 demisto.debug(f"{error=}")
                 # make sure we catch only JSONDecodeError errors, in case it is a different exception, should be raised.
-                if isinstance(error.exception, (json.decoder.JSONDecodeError, requests.exceptions.JSONDecodeError)):
+                if isinstance(error.exception, json.decoder.JSONDecodeError | requests.exceptions.JSONDecodeError):
                     actions = []
                 else:
                     raise error
@@ -1348,7 +1345,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     try:
         demisto.debug(
-            f"Performing get-remote-data command with incident or detection id: {ticket_id} " f"and last_update: {last_update}"
+            f"Performing get-remote-data command with incident or detection id: {ticket_id} and last_update: {last_update}"
         )
         _args = {}
         _args["incident_id"] = ticket_id
@@ -1404,22 +1401,21 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
                         }
                     )
 
-        if ticket.get("closed"):
-            if params.get("close_incident"):
-                demisto.debug(f"ticket is closed: {ticket}")
-                entries.append(
-                    {
-                        "Type": EntryType.NOTE,
-                        "Contents": {"dbotIncidentClose": True, "closeReason": "Closed by TOPdesk"},
-                        "ContentsFormat": EntryFormat.JSON,
-                    }
-                )
+        if ticket.get("closed") and params.get("close_incident"):
+            demisto.debug(f"ticket is closed: {ticket}")
+            entries.append(
+                {
+                    "Type": EntryType.NOTE,
+                    "Contents": {"dbotIncidentClose": True, "closeReason": "Closed by TOPdesk"},
+                    "ContentsFormat": EntryFormat.JSON,
+                }
+            )
 
         demisto.debug(f"Pull result is {ticket}")
         return GetRemoteDataResponse(mirrored_object=ticket, entries=entries)
 
     except Exception as e:
-        demisto.debug(f"Error in TOPdesk incoming mirror for incident or detection: {ticket_id}\n" f"Error message: {e!s}")
+        demisto.debug(f"Error in TOPdesk incoming mirror for incident or detection: {ticket_id}\nError message: {e!s}")
         if not ticket:
             ticket = {"incident_id": ticket_id}
         ticket["in_mirror_error"] = str(e)
@@ -1532,7 +1528,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                     client.update_incident(xargs)
 
     except Exception as e:
-        demisto.error(f"Error in TOPdesk outgoing mirror for incident or detection {ticket_id}. " f"Error message: {e!s}")
+        demisto.error(f"Error in TOPdesk outgoing mirror for incident or detection {ticket_id}. Error message: {e!s}")
     return ticket_id
 
 

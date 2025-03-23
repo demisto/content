@@ -64,7 +64,7 @@ EXPECTED_GMAIL_CONTEXT = {
     "Headers": [
         {
             "Name": "Received",
-            "Value": "from 1041831412594 named " "unknown by gmailapi.google.com with HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400",
+            "Value": "from 1041831412594 named unknown by gmailapi.google.com with HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400",
         },
         {"Name": "Content-Type", "Value": 'mixed; boundary="===============4922146810840031257=="'},
         {"Name": "MIME-Version", "Value": "1.0"},

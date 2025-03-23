@@ -92,7 +92,7 @@ def prisma_access_query():
     sshRes = panos_ssh(cmd)
     jsonStartPos = sshRes.find('{"@status')
     if jsonStartPos < 0:
-        return_outputs("Prisma Access returned non-JSON:\n%s" % (sshRes))
+        return_outputs(f"Prisma Access returned non-JSON:\n{sshRes}")
     else:
         res = json.loads(sshRes[jsonStartPos:])
         if res["@status"] == "success":
@@ -112,7 +112,7 @@ def prisma_access_active_users():
     sshRes = panos_ssh(cmd)
     jsonStartPos = sshRes.find('{"@status')
     if jsonStartPos < 0:
-        return_outputs("Prisma Access returned non-JSON:\n%s" % (sshRes))
+        return_outputs(f"Prisma Access returned non-JSON:\n{sshRes}")
     else:
         res = json.loads(sshRes[jsonStartPos:])
         if res["@status"] == "success":
@@ -248,7 +248,7 @@ def http_request(uri: str, method: str, headers: dict = {}, body: dict = {}, par
             #  catch urlfiltering error and display a meaningful message
             elif str(json_result["response"]["msg"]["line"]).find("test -> url") != -1:
                 raise Exception(
-                    "The URL filtering license is either expired or not active." " Please contact your PAN-OS representative."
+                    "The URL filtering license is either expired or not active. Please contact your PAN-OS representative."
                 )
 
             # catch non valid jobID errors and display a meaningful message
@@ -393,7 +393,7 @@ def device_group_test():
 @logger
 def prisma_access_logout_user(computer: str, domain: str, user: str, tenant: str) -> dict[str, str]:
     if apiConfigured:
-        xmlComputer = "<computer>%s</computer>" % b64encode(computer.encode("utf8")).decode("utf8") if computer else ""
+        xmlComputer = f"<computer>{b64encode(computer.encode('utf8')).decode('utf8')}</computer>" if computer else ""
         b64User = (b64encode(user.encode("utf8"))).decode("utf8")
         cmd = ""
         if domain:

@@ -692,10 +692,10 @@ class STIX2Parser:
         Returns:
             A dict of relationship value to processed relationships as indicator object.
         """
-        a_value_to_relationship: Dict[str, Any] = dict()
+        a_value_to_relationship: Dict[str, Any] = {}
         for relationships_object in relationships_lst:
             relationship_type = relationships_object.get("relationship_type")
-            if relationship_type not in EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys():
+            if relationship_type not in EntityRelationship.Relationships.RELATIONSHIPS_NAMES:
                 if relationship_type == "indicates":
                     relationship_type = "indicated-by"
                 else:
@@ -846,7 +846,7 @@ class STIX2Parser:
         indicators = []
         if indicator_groups:
             for term in indicator_groups:
-                for taxii_type in indicator_types.keys():
+                for taxii_type in indicator_types:
                     # term should be list with 2 argument parsed with regex - [`type`, `indicator`]
                     if len(term) == 2 and taxii_type in term[0]:
                         type_ = indicator_types[taxii_type]
@@ -929,9 +929,8 @@ class STIX2Parser:
         :param indicators: all indicators that were fetched from file.
         """
         for indicator in indicators:
-            if a_value := indicator.get("value"):
-                if relationships := relationships_mapping.get(a_value):
-                    indicator["relationships"] = relationships
+            if (a_value := indicator.get("value")) and (relationships := relationships_mapping.get(a_value)):
+                indicator["relationships"] = relationships
 
     @staticmethod
     def update_obj_if_extensions(xsoar_taxii_server_extensions, obj, result):
@@ -1474,13 +1473,12 @@ class StixDecode:
                             observable_result.append(r)
 
         # extract the Indicator info
-        if indicators := package.find_all("Indicator"):
-            if observables:
-                indicator_ref = observables[0].get("idref")
+        if (indicators := package.find_all("Indicator")) and observables:
+            indicator_ref = observables[0].get("idref")
 
-                if indicator_ref:
-                    indicator_info = indicator_extract_properties(indicators[0])
-                    indicator_result[indicator_ref] = indicator_info
+            if indicator_ref:
+                indicator_info = indicator_extract_properties(indicators[0])
+                indicator_result[indicator_ref] = indicator_info
 
         # extract the TTP info
         if ttp := package.find_all("TTP"):
@@ -1539,9 +1537,8 @@ def build_observables(file_name):
             element.clear()
 
     for observable in observables:
-        if indicator_ref := observable.get("indicator_ref"):
-            if indicator_info := indicators.get(indicator_ref):
-                observable.update(indicator_info)
+        if (indicator_ref := observable.get("indicator_ref")) and (indicator_info := indicators.get(indicator_ref)):
+            observable.update(indicator_info)
 
         ttp_ref = observable.get("ttp_ref", [])
         relationships = []

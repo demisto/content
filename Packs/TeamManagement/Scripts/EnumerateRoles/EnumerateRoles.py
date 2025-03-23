@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 args = demisto.args()
 roles = args.get("roles", "").split(",")
 
-parsed_data = list()
+parsed_data = []
 
 # Get a list of all users in XSOAR
 all_users = demisto.executeCommand("getUsers", {})[0]["Contents"]

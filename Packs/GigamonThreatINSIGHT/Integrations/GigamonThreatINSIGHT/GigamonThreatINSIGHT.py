@@ -317,8 +317,8 @@ def formatEvents(r_json):
     :return The formated response
     :rtype list
     """
-    columns = r_json["columns"] if "columns" in r_json else []
-    data = r_json["data"] if "data" in r_json else []
+    columns = r_json.get("columns", [])
+    data = r_json.get("data", [])
 
     if not data:
         return []
@@ -467,7 +467,7 @@ def commandGetTasks(sensorClient: SensorClient, args):
     """Get a list of all the PCAP tasks."""
     demisto.debug("commandGetTasks has been called.")
 
-    taskid: str = args["task_uuid"] if "task_uuid" in args else ""
+    taskid: str = args.get("task_uuid", "")
     result: Dict[str, Any] = sensorClient.getTasks(taskid)
 
     prefix = "Insight.Tasks"
@@ -750,9 +750,9 @@ def commandGetDetections(detectionClient: DetectionClient, args):
 
     # if there are more detections to be retrieved, pull the
     # remaining detections incrementally
-    if "total_count" in result and int(result["total_count"]) > MAX_DETECTIONS:
-        if "limit" not in args or int(args["limit"]) > MAX_DETECTIONS:
-            result = getDetectionsInc(detectionClient, result, args)
+    if ("total_count" in result and int(result["total_count"]) > MAX_DETECTIONS and
+        ("limit" not in args or int(args["limit"]) > MAX_DETECTIONS)):
+        result = getDetectionsInc(detectionClient, result, args)
 
     # filter out training detections
     result["detections"] = list(filter(lambda detection: (detection["account_uuid"] != TRAINING_ACC), result["detections"]))

@@ -27,7 +27,7 @@ def get_incident_tasks_by_state(incident_id: int, task_states: Optional[list] = 
         args["states"] = ",".join(task_states)
     raw_response = demisto.executeCommand("GetIncidentTasksByState", args=args)
     if is_error(raw_response):
-        raise Exception(f"Failed to execute script: GetIncidentTasksByState. " f"Error: {get_error(raw_response)}")
+        raise Exception(f"Failed to execute script: GetIncidentTasksByState. Error: {get_error(raw_response)}")
     return raw_response[0].get("Contents") if raw_response[0].get("Contents") else []
 
 
@@ -101,12 +101,12 @@ def wait_and_complete_task_command(args: dict[str, Any]) -> CommandResults:
             completed_tasks.append(requested_task.get("name"))
             break
 
-        elif requested_task:
+        if requested_task:
             # just validate that task was found and not complete it
             found_tasks.append(requested_task.get("name"))
             break
 
-        elif not task_name and tasks_by_states and complete_task:
+        if not task_name and tasks_by_states and complete_task:
             # complete all tasks, which state is task_states
             for task in tasks_by_states:
                 complete_res = complete_task_by_id(task.get("id"), task.get("parentPlaybookID"), incident_id, complete_option)
@@ -117,7 +117,7 @@ def wait_and_complete_task_command(args: dict[str, Any]) -> CommandResults:
 
             break
 
-        elif not task_name and tasks_by_states:
+        if not task_name and tasks_by_states:
             # just validate that task was found and not complete it
             found_tasks.extend(task.get("name") for task in tasks_by_states)
             break

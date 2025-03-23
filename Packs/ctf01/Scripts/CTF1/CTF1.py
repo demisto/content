@@ -46,22 +46,22 @@ bad_images = [
     "https://raw.githubusercontent.com/demisto/content/9e0946e3f76ed1862c6e40ea79ab85a9449d7102/Packs/ctf01/doc_files/G5.gif",
 ]
 
-HTML_MESSAGE_1 = """
-<img src="%s" alt="ok" width="350" height="200">
+HTML_MESSAGE_1 = f"""
+<img src="{good_images[random.randint(0, len(good_images) - 1)]}" alt="ok" width="350" height="200">
 <div style='font-size:18px;'>
 Well Done!!!
 </div>
-""" % (good_images[random.randint(0, len(good_images) - 1)])
+"""
 
-HTML_MESSAGE_BAD = """
-<img src="%s" alt="Error" width="350" height="200">
+HTML_MESSAGE_BAD = f"""
+<img src="{bad_images[random.randint(0, len(bad_images) - 1)]}" alt="Error" width="350" height="200">
 <div style='font-size:18px;'>
 Nope!!! Try again.
 Remember to overwrite the "secret" argument when you are re-running the task.
 To re-run this task -> Click on "Complete Task" -> clear the Secret value using
 the trash-can icon -> fill out the Secret value -> click on the 'Run script now' :)
 </div>
-""" % (bad_images[random.randint(0, len(bad_images) - 1)])
+"""
 
 answers = {
     "01": ["5", "five", "05"],

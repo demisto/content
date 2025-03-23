@@ -108,7 +108,7 @@ def main():
             did_not_find_duplicates()
 
     except Exception as e:
-        return_error(f"Failed to execute" f" CyrenFindSimilarIncidents. Error: {e!s}")
+        return_error(f"Failed to execute CyrenFindSimilarIncidents. Error: {e!s}")
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:

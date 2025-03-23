@@ -118,8 +118,8 @@ def test_main_unpopulate(mocker):
     entry = main()
     indicators = entry["Contents"]
     assert len(indicators) == 2
-    assert "testField" not in indicators[0].keys()
-    assert "indicator_type" not in indicators[0].keys()
+    assert "testField" not in indicators[0]
+    assert "indicator_type" not in indicators[0]
     assert "populateFields" not in search_indicators.call_args.kwargs
 
 

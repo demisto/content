@@ -26,7 +26,7 @@ def test_upgrade_package_on_instance_invalid_instanceid(mocker):
     from AWSPackageUpgrade import upgrade_package_on_instance
 
     def executeCommand(name, args):
-        if name == "aws-ssm-inventory-entry-list":
+        if name == "aws-ssm-inventory-entry-list":  # noqa: RET503
             return [{"Contents": "Invalid instance id and Does not exist"}]
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
@@ -47,7 +47,7 @@ def test_upgrade_package_on_instance_no_instance(mocker):
     from AWSPackageUpgrade import upgrade_package_on_instance
 
     def executeCommand(name, args):
-        if name == "aws-ssm-inventory-entry-list":
+        if name == "aws-ssm-inventory-entry-list":  # noqa: RET503
             return [{"Contents": {"Entries": []}}]
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
@@ -68,7 +68,7 @@ def test_upgrade_package_on_instance_inactive(mocker):
     from AWSPackageUpgrade import upgrade_package_on_instance
 
     def executeCommand(name, args):
-        if name == "aws-ssm-inventory-entry-list":
+        if name == "aws-ssm-inventory-entry-list":  # noqa: RET503
             return [{"Contents": {"Entries": [{"InstanceStatus": "Inactive"}]}}]
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
@@ -89,7 +89,7 @@ def test_upgrade_package_on_instance_no_package(mocker):
     from AWSPackageUpgrade import upgrade_package_on_instance
 
     def executeCommand(name, args):
-        if name == "aws-ssm-inventory-entry-list":
+        if name == "aws-ssm-inventory-entry-list":  # noqa: RET503
             return [
                 {
                     "Contents": {
@@ -122,7 +122,7 @@ def test_upgrade_package_on_instance_package(mocker):
     from AWSPackageUpgrade import upgrade_package_on_instance
 
     def executeCommand(name, args):
-        if name == "aws-ssm-inventory-entry-list":
+        if name == "aws-ssm-inventory-entry-list":  # noqa: RET503
             return [
                 {
                     "Contents": {

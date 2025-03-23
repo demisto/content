@@ -10,7 +10,7 @@ import urllib3
 from CommonServerPython import *  # noqa: F401
 from pyVim.connect import Disconnect, SmartConnect
 from pyVmomi import vim, vmodl  # type: ignore
-from vmware.vapi.vsphere.client import create_vsphere_client
+from vmware.vapi.vsphere.client import create_vsphere_client    # noqa: E0401
 
 REDIRECT_STD_OUT = argToBoolean(demisto.params().get("redirect_std_out", "false"))
 real_demisto_info = demisto.info
@@ -247,7 +247,7 @@ def get_vms(si, args):
 
     # Return the correct amount of data
     if is_manual and page_size and len(data) > page_size:
-        data = data[-1 * page_size :]
+        data = data[-1 * page_size:]
 
     ec = {"VMWare(val.UUID && val.UUID === obj.UUID)": data}
     return create_entry(data, ec)
@@ -494,7 +494,7 @@ def get_events(si, args):
         )
     # Return the correct amount of data
     if is_manual and page_size and len(hr) > page_size:
-        hr = hr[-1 * page_size :]
+        hr = hr[-1 * page_size:]
     ec = {"VMWareEvenet(val.UUID && val.UUID === obj.UUID)": hr}
     return {
         "ContentsFormat": formats["json"],

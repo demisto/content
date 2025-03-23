@@ -187,7 +187,7 @@ class EventStream:
         resources = discover_stream_response.get("resources", [])
         if not resources:
             demisto.updateModuleHealth(
-                "Did not discover event stream resources, verify the App ID is not used" " in another integration instance"
+                "Did not discover event stream resources, verify the App ID is not used in another integration instance"
             )
             raise RuntimeError(f"Did not discover event stream resources - {discover_stream_response!s}")
         resource = resources[0]
@@ -214,7 +214,7 @@ class EventStream:
             # Should get here in case we got unexpected status code (e.g. 404) from the refresh stream query
             demisto.updateModuleHealth("Failed refreshing stream session, will try to discover new stream.")
             raise RuntimeError(
-                "Failed refreshing stream session. " "More details about the failure reason should appear in the logs above."
+                "Failed refreshing stream session. More details about the failure reason should appear in the logs above."
             )
         else:
             demisto.debug(f"Refresh stream response: {response}")
@@ -253,7 +253,7 @@ class EventStream:
                     integration_context = get_integration_context()
                     offset = integration_context.get("offset", 0) or initial_offset
                     demisto.debug(
-                        f"Starting to fetch from offset {offset} events of type {event_type} " f"from time {first_fetch_time}"
+                        f"Starting to fetch from offset {offset} events of type {event_type} from time {first_fetch_time}"
                     )
                     async with session.get(
                         self.data_feed_url,

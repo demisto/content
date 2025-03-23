@@ -80,7 +80,7 @@ def get_mock_paginate(kwargs: dict, return_obj):
 
 
 def mock_client_func(MaxResults, **kwargs):
-    from_number = kwargs["NextToken"] if "NextToken" in kwargs else 0
+    from_number = kwargs.get("NextToken", 0)
     to_number = from_number + randint(0, MaxResults)
     return {"Pages": list(range(from_number, to_number)), "NextToken": to_number}
 

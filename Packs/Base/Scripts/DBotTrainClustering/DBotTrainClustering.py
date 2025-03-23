@@ -37,7 +37,7 @@ MESSAGE_CLUSTERING_NOT_VALID = "Clustering cannot be created with this dataset"
 MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched incidents."
 MESSAGE_INVALID_FIELD = "- %s field(s) has/have too many missing values and won't be used in the model."
 MESSAGE_NO_FIELD_NAME_OR_CLUSTERING = (
-    "- Empty or incorrect fieldsForClustering " "for training OR fieldForClusterName is incorrect."
+    "- Empty or incorrect fieldsForClustering for training OR fieldForClusterName is incorrect."
 )
 
 REGEX_DATE_PATTERN = [
@@ -240,7 +240,7 @@ class PostProcessing:
                 dist_total[cluster_number] = {}
                 dist_total[cluster_number]["number_samples"] = sum(
                     self.clustering.raw_data[  # type: ignore
-                        self.clustering.model.labels_ == cluster_number
+                        self.clustering.model.labels_ == cluster_number # type: ignore[union-attr]
                     ].label.isin(  # type: ignore
                         list(chosen.keys())
                     )
@@ -262,7 +262,7 @@ class PostProcessing:
                 dist_total[cluster_number] = {}
                 dist_total[cluster_number]["distribution"] = dist
                 dist_total[cluster_number]["number_samples"] = self.stats[cluster_number]["number_samples"]
-                dist_total[cluster_number]["clusterName"] = "Cluster %s" % str(cluster_number)
+                dist_total[cluster_number]["clusterName"] = f"Cluster {str(cluster_number)}"
         self.stats["number_of_clusterized_sample_after_selection"] = sum(
             dist_total[cluster_number]["number_samples"] for cluster_number in dist_total
         )
@@ -403,7 +403,7 @@ def get_all_incidents_for_time_window_and_type(
     """
     msg = ""
     if query_sup:
-        query = " %s" % query_sup
+        query = f" {query_sup}"
     else:
         query = ""
     res = demisto.executeCommand(
@@ -421,10 +421,10 @@ def get_all_incidents_for_time_window_and_type(
         return_error(res)
     incidents = json.loads(res[0]["Contents"])
     if len(incidents) == 0:
-        msg += "%s \n" % MESSAGE_NO_INCIDENT_FETCHED
+        msg += f"{MESSAGE_NO_INCIDENT_FETCHED} \n"
         return None, msg  # type: ignore
     if len(incidents) == limit:
-        msg += "%s \n" % MESSAGE_WARNING_TRUNCATED % (str(len(incidents)), str(limit))
+        msg += f"%s \n" % MESSAGE_WARNING_TRUNCATED % (str(len(incidents)), str(limit)) # noqa: UP031
         return incidents, msg  # type: ignore
     return incidents, msg  # type: ignore
 
@@ -588,7 +588,7 @@ def create_clusters_json(
     data["data"] = []
     fields_for_clustering_remove_display = [x for x in fields_for_clustering if x not in display_fields]
     for cluster_number, coordinates in clustering.centers_2d.items():
-        if cluster_number not in model_processed.selected_clusters.keys():
+        if cluster_number not in model_processed.selected_clusters:
             continue
         d = {
             "x": float(coordinates[0]),
@@ -599,7 +599,7 @@ def create_clusters_json(
             "pivot": "clusterId:" + str(cluster_number),
             "incidents_ids": list(
                 incidents_df[  # type: ignore
-                    clustering.model.labels_ == cluster_number
+                    clustering.model.labels_ == cluster_number  # type: ignore[union-attr]
                 ].id.values.tolist()
             ),  # type: ignore
             "incidents": incidents_df[clustering.model.labels_ == cluster_number][  # type: ignore
@@ -607,14 +607,14 @@ def create_clusters_json(
             ].to_json(  # type: ignore
                 orient="records"
             ),  # type: ignore
-            "query": "type:%s" % type,  # type: ignore
+            "query": f"type:{type}",  # type: ignore
             "data": [int(model_processed.stats[cluster_number]["number_samples"])],
         }
         data["data"].append(d)
     d_outliers = {
         "incidents_ids": list(
             incidents_df[  # type: ignore
-                clustering.model.labels_ == -1
+                clustering.model.labels_ == -1  # type: ignore[union-attr]
             ].id.values.tolist()
         ),  # type: ignore
         "incidents": incidents_df[clustering.model.labels_ == -1][display_fields].to_json(  # type: ignore
@@ -639,7 +639,7 @@ def find_incorrect_field(populate_fields: list[str], incidents_df: pd.DataFrame,
     """
     incorrect_fields = [i for i in populate_fields if i not in incidents_df.columns.tolist()]
     if incorrect_fields:
-        global_msg += "%s \n" % MESSAGE_INCORRECT_FIELD % " , ".join(incorrect_fields)
+        global_msg += f"{MESSAGE_INCORRECT_FIELD % " , ".join(incorrect_fields)} \n"
     return global_msg, incorrect_fields
 
 
@@ -677,9 +677,12 @@ def create_summary(model_processed: PostProcessing, fields_for_clustering: list[
     percentage_clusterized_samples = round(100 * (number_of_clusterized / number_of_sample), 0)
     summary = {
         "Total number of samples ": str(number_of_sample),
-        "Percentage of clusterized samples after selection (after Phase 1 and Phase 2)": f"{percentage_selected_samples}  ({nb_clusterized_after_selection}/{number_of_sample})",
-        "Percentage of clusterized samples (after Phase 1)": f"{percentage_clusterized_samples}  ({number_of_clusterized}/{number_of_sample})",
-        "Percentage of cluster selected (Number of high quality groups/Total number of groups)": f"{percentage_clusters_selected}  ({number_clusters_selected}/{nb_clusters})",
+        "Percentage of clusterized samples after selection (after Phase 1 and Phase 2)":
+            f"{percentage_selected_samples}  ({nb_clusterized_after_selection}/{number_of_sample})",
+        "Percentage of clusterized samples (after Phase 1)":
+            f"{percentage_clusterized_samples}  ({number_of_clusterized}/{number_of_sample})",
+        "Percentage of cluster selected (Number of high quality groups/Total number of groups)":
+            f"{percentage_clusters_selected}  ({number_clusters_selected}/{nb_clusters})",
         "Fields used for training": " , ".join(fields_for_clustering),
         "Fields used for cluster name": field_for_cluster_name[0] if field_for_cluster_name else "",
         "Training time": str(model_processed.date_training),
@@ -767,7 +770,7 @@ def remove_not_valid_field(
     valid_field = mask[mask].index.tolist()
     invalid_field = mask[~mask].index.tolist()
     if invalid_field:
-        global_msg += "%s \n" % MESSAGE_INVALID_FIELD % " , ".join(invalid_field)
+        global_msg += f"{MESSAGE_INVALID_FIELD % " , ".join(invalid_field)} \n"
     return valid_field, global_msg
 
 
@@ -980,7 +983,7 @@ def main():
 
     # Check is clustering is valid
     if not is_clustering_valid(model.named_steps[CLUSTERING_STEP_PIPELINE]):
-        global_msg += "%s \n" % MESSAGE_CLUSTERING_NOT_VALID
+        global_msg += f"{MESSAGE_CLUSTERING_NOT_VALID} \n"
         return_results(global_msg)
         return None, {}, global_msg
 
