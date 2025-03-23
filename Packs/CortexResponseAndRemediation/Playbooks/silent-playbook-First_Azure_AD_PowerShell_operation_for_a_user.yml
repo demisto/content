@@ -1805,7 +1805,7 @@ tasks:
     task:
       id: a0669caf-c296-4ccc-9009-7c61e46dfdd5
       version: -1
-      name: Set Administrative roles to an array
+      name: Set Administrative roles
       description: Will create an array object in context from given string input.
       scriptName: CreateArray
       type: regular
