@@ -11,27 +11,31 @@ To mitigate the risk associated with this vulnerability, it is crucial for users
 **The playbook includes the following tasks:**
 
 **IoCs Collection**
+
 - Blog IoCs download
 - Yara Rules download
 - Sigma rules download
 
 **Hunting:**
+
 - Cortex XDR XQL exploitation patterns hunting
 - Cortex Xpanse external facing instances hunting
 - Advanced SIEM exploitation patterns hunting
 - Indicators hunting
 
 The hunting queries are searching for the following activities:
-  - ASPX file creation by w3wp.exe
-  - IIS compiling binaries via the csc.exe on behalf of the MOVEit
-  - Detects get requests to specific exploitation related files
+
+- ASPX file creation by w3wp.exe
+- IIS compiling binaries via the csc.exe on behalf of the MOVEit
+- Detects get requests to specific exploitation related files
 
 **Mitigations:**
+
 - Progress official CVE-2023-34362 patch
 - Progress mitigation measures
 - Detection Rules
-    - Yara
-    - Sigma
+  - Yara
+  - Sigma
 
 
 **References:**

@@ -1,6 +1,7 @@
 An automation script to return subnet collision result
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ An automation script to return subnet collision result
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ An automation script to return subnet collision result
 | subnet_two | Second subnet |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -28,9 +31,11 @@ An automation script to return subnet collision result
 
 
 ## Script Example
+
 ```!IPCalcCheckSubnetCollision subnet_one=192.169.20.10/28 subnet_two=192.169.20.11```
 
 ## Context Example
+
 ```json
 {
     "IPCalc": {
@@ -48,6 +53,7 @@ An automation script to return subnet collision result
 ## Human Readable Output
 
 >### Collision Check
+>
 >|collision|subnet1|subnet2|
 >|---|---|---|
 >| true | 192.169.20.0/28 | 192.169.20.11/32 |

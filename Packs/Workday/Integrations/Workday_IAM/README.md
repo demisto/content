@@ -24,9 +24,12 @@ For more information, please refer to the [Identity Lifecycle Management article
 | Source Priority Level | Events will be fetched only for User Profiles with a Source Priority value less than or equal to the value of this parameter. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### workday-iam-get-full-report
+
 ***
 Gets the report entries from Workday.
 
@@ -34,6 +37,7 @@ Gets the report entries from Workday.
 #### Base Command
 
 `workday-iam-get-full-report`
+
 #### Input
 
 There are no input arguments for this command.
@@ -50,10 +54,13 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ``` !workday-iam-get-full-report ```
 
 #### Human Readable Output
+
 ### Results
+
 |city|costcenter|costcentercode|countryname|department|displayname|email|employeeid|employeetype|employmentstatus|givenname|hiredate|jobcode|jobfamily|jobfunction|lastdayofwork|leadership|location|locationregion|manageremailaddress|personalemail|prehireflag|rehiredemployee|sourceoftruth|sourcepriority|state|streetaddress|surname|terminationdate|title|username|zipcode|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Santa Clara | Channel Sales | 120100 | United States Of America | Sales NAM:NAM Channel Sales | Ronny Rahardjo | rrahardjo@test.com | 100122 | Regular |  | Ronny | 03/25/2021 | 2245 | Product Management | Product Management Function | 02/15/2032 | Yes-HQ | Office - USA - CA - Headquarters | Americas | test@test.com | ronnyrahardjo@test.com | True | Yes | Workday IAM | 1 | California | 3000 Tannery Way | Rahardjo | 02/15/2032 | Dir, Product Line Manager | rrahardjo@test.com | 95054 |

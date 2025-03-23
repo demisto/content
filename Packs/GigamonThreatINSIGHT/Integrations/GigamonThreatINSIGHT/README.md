@@ -23,9 +23,12 @@ For more information about the Cortex XSOAR integration visit the Insight help d
 | Incidents Fetch Interval | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### insight-get-sensors
+
 ***
 Get a list of all sensors.
 
@@ -33,6 +36,7 @@ Get a list of all sensors.
 #### Base Command
 
 `insight-get-sensors`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -60,8 +64,11 @@ Get a list of all sensors.
 | Insight.Sensors.pcap_enabled | boolean | If PCAP is enabled on the sensor \(true/false\) | 
 
 #### Command example
+
 ```!insight-get-sensors```
+
 #### Context Example
+
 ```json
 {
     "Insight": {
@@ -108,6 +115,7 @@ Get a list of all sensors.
 #### Human Readable Output
 
 >### Results
+>
 >|account_code|admin|city|country|created|disabled|interfaces|location|pcap_enabled|sensor_id|serial_number|status|subdivision|tags|updated|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| gdm |  |  |  | 2021-12-17T20:40:54.348Z | 2022-03-28T18:18:46.826Z |  |  | false | gdm1 |  |  |  |  | 2021-12-17T20:40:54.348Z |
@@ -115,8 +123,11 @@ Get a list of all sensors.
 
 
 #### Command example
+
 ```!insight-get-sensors account_code=gdm```
+
 #### Context Example
+
 ```json
 {
     "Insight": {
@@ -163,6 +174,7 @@ Get a list of all sensors.
 #### Human Readable Output
 
 >### Results
+>
 >|account_code|admin|city|country|created|disabled|interfaces|location|pcap_enabled|sensor_id|serial_number|status|subdivision|tags|updated|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| gdm |  |  |  | 2021-12-17T20:40:54.348Z | 2022-03-28T18:18:46.826Z |  |  | false | gdm1 |  |  |  |  | 2021-12-17T20:40:54.348Z |
@@ -170,6 +182,7 @@ Get a list of all sensors.
 
 
 ### insight-get-devices
+
 ***
 Get a list of all devices.
 
@@ -177,6 +190,7 @@ Get a list of all devices.
 #### Base Command
 
 `insight-get-devices`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -201,8 +215,11 @@ Get a list of all devices.
 | Insight.Devices.sensor_id | string | ID code of the sensor | 
 
 #### Command example
+
 ```!insight-get-devices cidr=21.5.0.0/16```
+
 #### Context Example
+
 ```json
 {
     "Insight": {
@@ -233,6 +250,7 @@ Get a list of all devices.
 #### Human Readable Output
 
 >### Results
+>
 >|date|external|internal|ip_address|
 >|---|---|---|---|
 >|  | true | true | 21.5.31.1 |
@@ -241,6 +259,7 @@ Get a list of all devices.
 
 
 ### insight-get-tasks
+
 ***
 Get a list of all the PCAP tasks.
 
@@ -248,6 +267,7 @@ Get a list of all the PCAP tasks.
 #### Base Command
 
 `insight-get-tasks`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -280,8 +300,11 @@ Get a list of all the PCAP tasks.
 | Insight.Tasks.files | string | Files captured for this task | 
 
 #### Command example
+
 ```!insight-get-tasks task_uuid=373c9861-16cd-44cb-b768-e53ce3a9fcd4```
+
 #### Context Example
+
 ```json
 {
     "Insight": {
@@ -313,12 +336,14 @@ Get a list of all the PCAP tasks.
 #### Human Readable Output
 
 >### Results
+>
 >|account_code|actual_end_time|actual_start_time|bpf|created|created_email|created_uuid|description|files|has_files|name|requested_end_time|requested_start_time|sensor_ids|status|task_uuid|updated|updated_email|updated_uuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| gdm | 2022-08-26T07:59:00.000Z | 2022-08-25T02:32:00.000Z | dst www.discovery.com | 2022-08-24T17:46:28.457Z | myemail@mycompany.com | 88f034f1-b922-4a41-8e54-9bac90a42517 | Test Description |  | false | test Task1 | 2022-08-26T07:59:00.000Z | 2022-08-25T02:32:00.000Z |  | active | 373c9861-16cd-44cb-b768-e53ce3a9fcd4 | 2022-08-24T17:46:28.457Z |  |  |
 
 
 ### insight-create-task
+
 ***
 Create a new PCAP task.
 
@@ -326,6 +351,7 @@ Create a new PCAP task.
 #### Base Command
 
 `insight-create-task`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -342,7 +368,9 @@ Create a new PCAP task.
 #### Context Output
 
 There is no context output for this command.
+
 ### insight-get-telemetry-events
+
 ***
 Get event telemetry data grouped by time.
 
@@ -350,6 +378,7 @@ Get event telemetry data grouped by time.
 #### Base Command
 
 `insight-get-telemetry-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -374,8 +403,11 @@ Get event telemetry data grouped by time.
 | Insight.Telemetry.Events.event_type | string | Type of event \(if grouped by event_type\) | 
 
 #### Command example
+
 ```!insight-get-telemetry-events start_date=2022-08-22T23:00:00.000Z end_date=2022-08-23T01:00:00.000Z```
+
 #### Context Example
+
 ```json
 {
     "Insight": {
@@ -408,6 +440,7 @@ Get event telemetry data grouped by time.
 #### Human Readable Output
 
 >### Results
+>
 >|event_count|event_type|sensor_id|timestamp|
 >|---|---|---|---|
 >| 70185 |  |  | 2022-08-22T22:00:00.000Z |
@@ -416,6 +449,7 @@ Get event telemetry data grouped by time.
 
 
 ### insight-get-telemetry-packetstats
+
 ***
 Get packetstats telemetry data grouped by time.
 
@@ -423,6 +457,7 @@ Get packetstats telemetry data grouped by time.
 #### Base Command
 
 `insight-get-telemetry-packetstats`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -452,8 +487,11 @@ Get packetstats telemetry data grouped by time.
 | Insight.Telemetry.Packetstats.tx_packets | number | Number of transmit packets | 
 
 #### Command example
+
 ```!insight-get-telemetry-packetstats start_date=2022-08-22T23:00:00.000Z end_date=2022-08-23T01:00:00.000Z```
+
 #### Context Example
+
 ```json
 {
     "Insight": {
@@ -507,6 +545,7 @@ Get packetstats telemetry data grouped by time.
 #### Human Readable Output
 
 >### Results
+>
 >|account_code|interface_name|rx_bits_per_second|rx_bytes|rx_errors|rx_packets|sensor_id|timestamp|tx_bytes|tx_errors|tx_packets|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >|  |  | 0 | 942662863653 | 0 | 1821630132 |  | 2022-08-22T22:00:00.000Z | 59142067827 | 0 | 56381923 |
@@ -515,6 +554,7 @@ Get packetstats telemetry data grouped by time.
 
 
 ### insight-get-telemetry-network
+
 ***
 Get network telemetry data grouped by time
 
@@ -522,6 +562,7 @@ Get network telemetry data grouped by time
 #### Base Command
 
 `insight-get-telemetry-network`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -547,8 +588,11 @@ Get network telemetry data grouped by time
 | Insight.Telemetry.Packetstats.timestamp | date | The date the calculation was performed until. | 
 
 #### Command example
+
 ```!insight-get-telemetry-network start_date=2022-08-21T00:00:00.000Z end_date=2022-08-23T01:00:00.000Z interval=day```
+
 #### Context Example
+
 ```json
 {
     "Insight": {
@@ -584,6 +628,7 @@ Get network telemetry data grouped by time
 #### Human Readable Output
 
 >### Results
+>
 >|account_code|interval|percentile|percentile_bps|timestamp|
 >|---|---|---|---|---|
 >| gdm | day | 95 | 5768519 | 2022-08-23T00:00:00.000000Z |
@@ -592,6 +637,7 @@ Get network telemetry data grouped by time
 
 
 ### insight-get-entity-summary
+
 ***
 Get summary information about an IP or domain.
 
@@ -599,6 +645,7 @@ Get summary information about an IP or domain.
 #### Base Command
 
 `insight-get-entity-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -616,8 +663,11 @@ Get summary information about an IP or domain.
 | Insight.Entity.Summary.prevalence_count_internal | number | Prevalence for this entity within the environment | 
 
 #### Command example
+
 ```!insight-get-entity-summary entity=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "Insight": {
@@ -637,12 +687,14 @@ Get summary information about an IP or domain.
 #### Human Readable Output
 
 >### Results
+>
 >|entity|first_seen|last_seen|prevalence_count_internal|tags|
 >|---|---|---|---|---|
 >| 8.8.8.8 | 2021-12-17T21:30:02.000Z | 2022-08-24T19:19:52.711Z | 1 |  |
 
 
 ### insight-get-entity-pdns
+
 ***
 Get passive DNS information about an IP or domain.
 
@@ -650,6 +702,7 @@ Get passive DNS information about an IP or domain.
 #### Base Command
 
 `insight-get-entity-pdns`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -677,8 +730,11 @@ Get passive DNS information about an IP or domain.
 | Insight.Entity.PDNS.source | string | Source of the DNS record | 
 
 #### Command example
+
 ```!insight-get-entity-pdns entity=google.com limit=3```
+
 #### Context Example
+
 ```json
 {
     "Insight": {
@@ -720,6 +776,7 @@ Get passive DNS information about an IP or domain.
 #### Human Readable Output
 
 >### Results
+>
 >|account_uuid|first_seen|last_seen|record_type|resolved|sensor_id|source|
 >|---|---|---|---|---|---|---|
 >| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-04-06T00:00:00.000Z | 2022-08-24T00:00:00.000Z | a | 132.215.12.206 | gdm2 | icebrg_dns |
@@ -728,6 +785,7 @@ Get passive DNS information about an IP or domain.
 
 
 ### insight-get-entity-dhcp
+
 ***
 Get DHCP information about an IP address.
 
@@ -735,6 +793,7 @@ Get DHCP information about an IP address.
 #### Base Command
 
 `insight-get-entity-dhcp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -759,8 +818,11 @@ Get DHCP information about an IP address.
 | Insight.Entity.DHCP.start_lease_as_long | number | Start Date as a long value | 
 
 #### Command example
+
 ```!insight-get-entity-dhcp entity=21.1.70.100 start_date=2021-01-01T00:00:00.000Z```
+
 #### Context Example
+
 ```json
 {
     "Insight": {
@@ -785,12 +847,14 @@ Get DHCP information about an IP address.
 #### Human Readable Output
 
 >### Results
+>
 >|customer_id|hostnames|ip|lease_end|lease_start|mac|sensor_id|start_lease_as_long|
 >|---|---|---|---|---|---|---|---|
 >| gdm | FinanceWks008 | 21.1.70.100 |  | 2021-12-18T09:02:24.104Z | 00:15:5d:00:04:0e |  | 1639818144104 |
 
 
 ### insight-get-entity-file
+
 ***
 Get information about a file.
 
@@ -798,6 +862,7 @@ Get information about a file.
 #### Base Command
 
 `insight-get-entity-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -823,12 +888,15 @@ Get information about a file.
 | Insight.Entity.File.pe | string | File Portable Executable attributes | 
 
 #### Command example
+
 ```!insight-get-entity-file hash=2b7a609371b2a844181c2f79f1b45cf7```
+
 #### Human Readable Output
 
 >We could not find any result for Get Entity File.
 
 ### insight-get-detections
+
 ***
 Get a list of detections.
 
@@ -836,6 +904,7 @@ Get a list of detections.
 #### Base Command
 
 `insight-get-detections`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -886,8 +955,11 @@ Get a list of detections.
 | Insight.Detections.device_ip | string | IP address of the detection | 
 
 #### Command example
+
 ```!insight-get-detections status=active include=rules created_or_shared_start_date=2022-08-23T22:00:00.000Z created_or_shared_end_date=2022-08-24T22:00:00.000Z```
+
 #### Context Example
+
 ```json
 {
     "Insight": {
@@ -962,6 +1034,7 @@ Get a list of detections.
 #### Human Readable Output
 
 >### Results
+>
 >|account_uuid|created|device_ip|event_count|first_seen|hostname|indicators|last_seen|muted|muted_comment|muted_device_uuid|muted_rule|muted_timestamp|muted_user_uuid|resolution|resolution_comment|resolution_timestamp|resolution_user_uuid|rule_category|rule_confidence|rule_description|rule_name|rule_severity|rule_uuid|sensor_id|status|updated|username|uuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-08-24T21:20:19.801089Z | 156.112.0.100 | 1 | 2022-08-24T08:04:36.535000Z |  |  | 2022-08-24T08:04:36.535000Z | false |  |  | false |  |  |  |  |  |  | Attack:Discovery | moderate | This rule is designed to use the TCP Device Enumeration Observation event generated from a DMZ host that is not a scanner.  This would indicate a potentially compromised DMZ host scanning for other assets within the environment.  <br/> | TCP Device Enumeration from DMZ host | moderate | 2d719a2b-4efb-4ba6-8555-0cd0f9636729 | gdm2 | active | 2022-08-24T21:20:19.801089Z |  | bb65c150-46be-4ba8-870d-b5feee01f06e |
@@ -969,6 +1042,7 @@ Get a list of detections.
 
 
 ### insight-get-detection-rules
+
 ***
 Get a list of detection rules.
 
@@ -976,6 +1050,7 @@ Get a list of detection rules.
 #### Base Command
 
 `insight-get-detection-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1017,8 +1092,11 @@ Get a list of detection rules.
 | Insight.Rules.category | string | Category of the rule | 
 
 #### Command example
+
 ```!insight-get-detection-rules confidence=high category=Attack:Installation```
+
 #### Context Example
+
 ```json
 {
     "Insight": {
@@ -1178,6 +1256,7 @@ Get a list of detection rules.
 #### Human Readable Output
 
 >### Results
+>
 >|account_uuid|auto_resolution_minutes|category|confidence|created|created_user_uuid|critical_updated|description|device_ip_fields|enabled|indicator_fields|name|primary_attack_id|query_signature|rule_accounts|run_account_uuids|secondary_attack_id|severity|shared_account_uuids|source_excludes|specificity|updated|updated_user_uuid|uuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| b1f533b5-6360-494a-9f8b-9d90f1ad0207 | 20160 | Attack:Installation | high | 2019-05-06T13:00:29.165000Z | cd3ea8eb-e014-4f62-905d-78a021c768b2 | 2021-01-16T00:27:43.540000Z | This logic is intended to detect executable binaries and scripts downloaded from a Python SimpleHTTPServer. SimpleHTTPServer is part of Python's standard library and allows users to quickly setup a basic HTTP server. It is typically used for prototyping and not commonly used in production systems.<br/><br/>Gigamon ATR considers this activity moderate severity, as an executable or script is not inherently malicious simply because it is hosted on a Python SimpleHTTPServer, but it is unlikely that a legitimate service would host executable binaries or scripts on a Python SimpleHTTPServer. Gigamon ATR considers this detection high confidence because the server field in the HTTP response header is highly unique to Python SimpleHTTPServer.<br/><br/>## Next Steps<br/>1. Determine if this detection is a true positive by:<br/>    1. Checking that the event is not downloading a benign file from a reputable domain. If the domain is reputable, and the resource name is thematically consistent, the detection could be a false positive or a well concealed attack using a compromised domain.<br/>    2. Verifying that the file is malicious in nature.<br/>2. Quarantine the impacted device.<br/>3. Begin incident response procedures on the impacted device.<br/>4. Block traffic to attacker infrastructure.<br/>5. Search for other impacted devices. | src.ip | true | dst.ip,<br/>http:host,<br/>http:uri.uri,<br/>http:user_agent,<br/>http:files.sha256 | Executable or Script Download From External Python SimpleHTTPServer | T1105 | http:headers.server LIKE "SimpleHTTP/% Python/%"<br/>// Filter for plain executable binary MIME types<br/>AND (<br/>    response_mime LIKE "%executable%"<br/>    OR response_mime LIKE "%application/x-dosexec%"<br/>    OR response_mime LIKE "%application/x-macbinary%"<br/><br/>    // Commonly malicious<br/>    OR response_mime LIKE "%application/x-ms-shortcut%"<br/>    OR response_mime LIKE "%application/vnd.ms-htmlhelp%"<br/><br/>    // System-level scripts<br/>    OR response_mime LIKE "%text/x-msdos-batch%"<br/>    OR response_mime LIKE "%x-shellscript%"<br/>)<br/><br/>// Outbound traffic<br/>AND src.internal = true<br/>AND (<br/>    dst.internal = false<br/>    OR (<br/>        // Not internal IP address<br/>        host.internal != true<br/>        // Proxied traffic<br/>        AND uri.scheme != null<br/>    )<br/>) | {'account_uuid': 'dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8', 'query_filter': None, 'muted': False, 'muted_comment': None, 'muted_user_uuid': None, 'muted_timestamp': None, 'detection_count': 4, 'detection_muted_count': 0, 'detection_resolved_count': 12, 'first_seen': '2022-02-01T09:35:58.269000Z', 'last_seen': '2022-08-23T08:36:02.794000Z'} |  |  | moderate |  | Zscaler | procedure | 2022-04-27T16:26:03.115153Z | cd3ea8eb-e014-4f62-905d-78a021c768b2 | fe4d55b4-7293-425a-b549-43a22472923d |
@@ -1186,6 +1265,7 @@ Get a list of detection rules.
 
 
 ### insight-resolve-detection
+
 ***
 Resolve a specific detection.
 
@@ -1193,6 +1273,7 @@ Resolve a specific detection.
 #### Base Command
 
 `insight-resolve-detection`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1205,7 +1286,9 @@ Resolve a specific detection.
 #### Context Output
 
 There is no context output for this command.
+
 ### insight-get-detection-rule-events
+
 ***
 Get a list of the events that matched on a specific rule.
 
@@ -1213,6 +1296,7 @@ Get a list of the events that matched on a specific rule.
 #### Base Command
 
 `insight-get-detection-rule-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1240,8 +1324,11 @@ Get a list of the events that matched on a specific rule.
 | Insight.Events.uuid | string | Unique ID for the event | 
 
 #### Command example
+
 ```!insight-get-detection-rule-events rule_uuid=aadb155e-712f-481f-9680-482bab5a238d limit=3```
+
 #### Context Example
+
 ```json
 {
     "Insight": {
@@ -1590,6 +1677,7 @@ Get a list of the events that matched on a specific rule.
 #### Human Readable Output
 
 >### Results
+>
 >|customer_id|dst|event_type|files|flow_id|geo_distance|headers|host|info_msg|intel|method|proxied|referrer|request_len|request_mime|request_mimes|response_len|response_mime|response_mimes|sensor_id|source|src|status_code|status_msg|timestamp|trans_depth|uri|user_agent|username|uuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| gdm | ip: 101.25.175.118<br/>port: 80<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false | http | {'name': None, 'md5': '725d4b987107aa0f797f2aad4daaf8cd', 'sha1': '44b8b2a5a79ed223dadb612728661824430fe793', 'sha256': 'c9075805b3d43e3d0231216662068850cbde533bc7f0f4c7486f5a89224c524c', 'bytes': 503808, 'mime_type': None} | C8fsbW3SBCuWYNaUse |  | accept: null<br/>content_md5: null<br/>content_type: image/png<br/>cookie_length: null<br/>location: null<br/>origin: null<br/>proxied_client_ips: null<br/>refresh: null<br/>server: nginx/1.10.3<br/>x_powered_by: null | ip: 101.25.175.118<br/>port: null<br/>ip_bytes: null<br/>pkts: null<br/>geo: {"location": {"lat": 32.9636, "lon": -96.7468}, "country": "US", "subdivision": "TX", "city": "Richardson"}<br/>asn: {"asn": 46562, "org": "Performive", "isp": "Performive", "asn_org": "PERFORMIVE"}<br/>internal: false |  |  | GET |  |  | 0 |  |  | 503808 | application/x-dosexec | application/x-dosexec | gdm2 | Zeek | ip: 21.5.31.5<br/>port: 51520<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | 200 | OK | 2022-08-22T08:09:10.243Z | 2 | uri: /scrimet.png<br/>scheme: null<br/>host: null<br/>port: -1<br/>path: /scrimet.png<br/>query: null<br/>fragment: null | WinHTTP loader/1.0 |  | 343c26aa-21f3-11ed-9d7b-0a1766ad1b93 |
@@ -1598,6 +1686,7 @@ Get a list of the events that matched on a specific rule.
 
 
 ### insight-create-detection-rule
+
 ***
 Create a new detection rule.
 
@@ -1605,6 +1694,7 @@ Create a new detection rule.
 #### Base Command
 
 `insight-create-detection-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -1,14 +1,17 @@
 <~XSIAM>
 
 ### This pack includes:
+
 Log Normalization - XDM mapping for key event types.
 
 ***
 
 ## Data Collection
+
 To configure Dragos Platform to send logs to Cortex XSIAM, follow the below steps.
 
 ### Dragos Platform side
+
 1. Log in to Dragos as an administrator.
 2. Navigate to **Admin** &rarr; **Syslog** or browse to "https://\<your-site-store\>/syslog/".
 3. Go to the **SERVERS** tab and click **+ ADD SERVER**.
@@ -35,9 +38,11 @@ To configure Dragos Platform to send logs to Cortex XSIAM, follow the below step
 For more information contact Dragos support.
 
 ### Cortex XSIAM side
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 ### Broker VM
+
 Follow the below steps to configure the Broker VM to receive Dragos Platform logs.
 
 1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**.

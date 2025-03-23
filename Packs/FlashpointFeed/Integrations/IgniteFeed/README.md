@@ -2,6 +2,7 @@ Flashpoint Ignite Feed Integration allows importing indicators of compromise tha
 This integration was integrated and tested with API v1 of Ignite.
 
 ## Fetch Indicators
+
 Fetching the Ignite indicators. The indicators that are created or updated after the provided "First fetch time" will be fetched in the ascending order.
 
 If you are upgrading from a Flashpoint Feed integration, please refer to the [Migration Guide](#migration-guide) for guidance.
@@ -63,11 +64,15 @@ Retrieves indicators from the Ignite API. It displays the content of the fetch-i
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!flashpoint-ignite-get-indicators limit=2 types=URL updated_since="3 days"```
+
 #### Human Readable Output
 
 >### Indicator(s)
+>
 >|FPID|Indicator Type|Indicator Value|Category|Event Name|Event Tags|Created Timestamp (UTC)|First Observed Date|
 >|---|---|---|---|---|---|---|---|
 >| [dummy_fpid1](https://app.flashpoint.io.com/cti/malware/iocs?query=1000-0000-0000-0000&sort_date=All%20Time) | url | https://dummy_url1.com/attachments/1234/1234/dummy_file1.exe | Payload delivery | Analysis: dummy_event1 "dummy_value1" [2024-04-13 17:10:40] | analysis_id:12345,<br/>event:analysis,<br/>malware:dummy_event1,<br/>misp-galaxy:mitre-enterprise-attack-attack-pattern="Software Packing - T1045",<br/>os:windows | 2024-04-13T18:01:24Z | 2024-04-13T18:02:08+00:00 |

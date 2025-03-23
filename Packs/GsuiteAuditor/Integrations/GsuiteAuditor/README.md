@@ -1,17 +1,21 @@
 G Suite Auditor is an integration that receives audit logs from G Suite's different applications - admin, drive, calendar, and more.
 
 ## Required Permissions:
+
 In order to use the integration you will need:
+
 * Admin email address.
 * Service Account with access to the following scope - https://www.googleapis.com/auth/admin.reports.audit.readonly .
 
 For more information, see the integrations description.
 
 ### For more information about the integration arguments:
+
 * [Command arguments documentation](https://developers.google.com/admin-sdk/reports/reference/rest/v1/activities/list?apix_params=%7B%22userKey%22%3A%22all%22%2C%22applicationName%22%3A%22admin%22%2C%22eventName%22%3A%22DELETE_USER%22%2C%22filters%22%3A%22USER_EMAIL%3D%3Dxsoar11%40demistodev.com%22%7D#query-parameters) in Google's API.
 * [Application to event names table](https://developers.google.com/admin-sdk/reports/reference/rest/v1/activities/list#applicationname) by Google's API.
 
 ## Google's lag time information
+
 This integration relies on Google's audit logs which are prone to some data delays. Some results may be partial if data had not arrived due to lag times. The lag time changes depending on the used audit log (from near real-time up to 3 days).
 For more information - https://support.google.com/a/answer/7061566?hl=en
 
@@ -26,9 +30,12 @@ For more information - https://support.google.com/a/answer/7061566?hl=en
 | Trust any certificate (not secure) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### gsuite-activity-search
+
 ***
 Retrieves a list of activities for a specific customer's account and application.
 
@@ -36,6 +43,7 @@ Retrieves a list of activities for a specific customer's account and application
 #### Base Command
 
 `gsuite-activity-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -77,9 +85,11 @@ Retrieves a list of activities for a specific customer's account and application
 
 
 #### Command Example
+
 ```!gsuite-activity-search application_name=admin max_results=2```
 
 #### Context Example
+
 ```json
 {
     "GSuite": {
@@ -155,7 +165,9 @@ Retrieves a list of activities for a specific customer's account and application
 #### Human Readable Output
 
 >### Next Page Token: A:1627350460585000:-4797090398870165525:207535951991:C02f0zfqw
+>
 >### Total Retrieved Activities: 2
+>
 >|Time|Application Name|Email|ProfileId|IpAddress|Events|
 >|---|---|---|---|---|---|
 >| 2021-07-27T02:47:20.894Z | admin |  |  |  | {'type': 'LICENSES_SETTINGS', 'name': 'USER_LICENSE_REVOKE', 'parameters': [{'name': 'USER_EMAIL', 'value': 'user@email.com'}, {'name': 'PRODUCT_NAME', 'value': 'Google Workspace'}, {'name': 'OLD_VALUE', 'value': 'G Suite Business'}]} |

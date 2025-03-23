@@ -1,5 +1,6 @@
 Integration with Atlassian OpsGenie V2
 This integration was integrated and tested with version 1.0.0 of Opsgeniev2
+
 ## Configure Opsgeniev2 in Cortex
 
 
@@ -11,9 +12,12 @@ This integration was integrated and tested with version 1.0.0 of Opsgeniev2
 | API Token | Must be created from the Teams API Integration section. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### list-alerts
+
 ***
 List the current alerts from OpsGenie.
 
@@ -21,6 +25,7 @@ List the current alerts from OpsGenie.
 #### Base Command
 
 `list-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -63,9 +68,11 @@ List the current alerts from OpsGenie.
 
 
 #### Command Example
+
 ```!list-alerts```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -842,6 +849,7 @@ List the current alerts from OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie Alerts
+>
 >|id|message|createdAt|
 >|---|---|---|
 >| 37816db1-844e-449f-bf61-b28834cad50f-1613353779202 | New message | 2021-02-15T01:49:39.202Z |
@@ -867,6 +875,7 @@ List the current alerts from OpsGenie.
 
 
 ### create-alert
+
 ***
  
 
@@ -874,6 +883,7 @@ List the current alerts from OpsGenie.
 #### Base Command
 
 `create-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -901,9 +911,11 @@ List the current alerts from OpsGenie.
 
 
 #### Command Example
+
 ```!create-alert message="Example Message"```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -925,12 +937,14 @@ List the current alerts from OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie Created Alert
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|requestId|status|success|
 >|---|---|---|---|---|---|---|---|---|
 >| Create | b4b23e8b-4003-453d-9200-7735641a272d-1613353863148 | b4b23e8b-4003-453d-9200-7735641a272d-1613353863148 | 26aaa576-0434-4b17-bc39-602a02fe417c | true | 2021-02-15T01:51:03.198Z | c660d3a0-7827-49f1-989a-98d358cc4ca2 | Created alert | true |
 
 
 ### delete-alert
+
 ***
 Delete an Alert from OpsGenie
 
@@ -938,6 +952,7 @@ Delete an Alert from OpsGenie
 #### Base Command
 
 `delete-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -961,9 +976,11 @@ Delete an Alert from OpsGenie
 
 
 #### Command Example
+
 ```!delete-alert alert-id=37816db1-844e-449f-bf61-b28834cad50f-1613353779202```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -985,12 +1002,14 @@ Delete an Alert from OpsGenie
 #### Human Readable Output
 
 >### OpsGenie Deleted Alert
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|requestId|status|success|
 >|---|---|---|---|---|---|---|---|---|
 >| Delete | 37816db1-844e-449f-bf61-b28834cad50f-1613353779202 | 37816db1-844e-449f-bf61-b28834cad50f-1613353779202 | 26aaa576-0434-4b17-bc39-602a02fe417c | true | 2021-02-15T01:51:22.876Z | 6c0c5320-0849-4726-adf7-0480cf9fc7c4 | Deleted alert | true |
 
 
 ### get-alert
+
 ***
 Delete an Alert from OpsGenie
 
@@ -998,6 +1017,7 @@ Delete an Alert from OpsGenie
 #### Base Command
 
 `get-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1039,9 +1059,11 @@ Delete an Alert from OpsGenie
 
 
 #### Command Example
+
 ```!get-alert alert-id=37816db1-844e-449f-bf61-b28834cad50f-1613353779202```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -1092,12 +1114,14 @@ Delete an Alert from OpsGenie
 #### Human Readable Output
 
 >### OpsGenie Alert
+>
 >|message|acknowledged|seen|owner|count|
 >|---|---|---|---|---|
 >| New message | false | false |  | 1 |
 
 
 ### ack-alert
+
 ***
 Acknowledge an alert in OpsGenie
 
@@ -1105,6 +1129,7 @@ Acknowledge an alert in OpsGenie
 #### Base Command
 
 `ack-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1128,9 +1153,11 @@ Acknowledge an alert in OpsGenie
 
 
 #### Command Example
+
 ```!ack-alert alert-id=37816db1-844e-449f-bf61-b28834cad50f-1613353779202```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -1152,12 +1179,14 @@ Acknowledge an alert in OpsGenie
 #### Human Readable Output
 
 >### OpsGenie Ack Alert
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|requestId|status|success|
 >|---|---|---|---|---|---|---|---|---|
 >| Acknowledge | 37816db1-844e-449f-bf61-b28834cad50f-1613353779202 | 37816db1-844e-449f-bf61-b28834cad50f-1613353779202 | 26aaa576-0434-4b17-bc39-602a02fe417c | true | 2021-02-15T01:51:11.973Z | 204f7523-fce4-489a-9d38-083c8269d339 | Acknowledged alert | true |
 
 
 ### get-schedule
+
 ***
 Retrieve the provided Schedule (by ID) from LR
 
@@ -1165,6 +1194,7 @@ Retrieve the provided Schedule (by ID) from LR
 #### Base Command
 
 `get-schedule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1194,9 +1224,11 @@ Retrieve the provided Schedule (by ID) from LR
 
 
 #### Command Example
+
 ```!get-schedule schedule-id=092748e8-c17d-4e53-99da-e84345f06a90```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -1234,12 +1266,14 @@ Retrieve the provided Schedule (by ID) from LR
 #### Human Readable Output
 
 >### OpsGenie Schedule
+>
 >|id|name|timezone|
 >|---|---|---|
 >| 092748e8-c17d-4e53-99da-e84345f06a90 | Test_schedule | Australia/Sydney |
 
 
 ### list-schedules
+
 ***
 List Schedules
 
@@ -1247,6 +1281,7 @@ List Schedules
 #### Base Command
 
 `list-schedules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1277,9 +1312,11 @@ List Schedules
 
 
 #### Command Example
+
 ```!list-schedules```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -1304,12 +1341,14 @@ List Schedules
 #### Human Readable Output
 
 >### OpsGenie Schedules
+>
 >|description|id|name|timezone|
 >|---|---|---|---|
 >|  | 092748e8-c17d-4e53-99da-e84345f06a90 | Test_schedule | Australia/Sydney |
 
 
 ### get-on-call
+
 ***
 Get the on-call users for the provided schedule
 
@@ -1317,6 +1356,7 @@ Get the on-call users for the provided schedule
 #### Base Command
 
 `get-on-call`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1337,9 +1377,11 @@ Get the on-call users for the provided schedule
 
 
 #### Command Example
+
 ```!get-on-call schedule-id=092748e8-c17d-4e53-99da-e84345f06a90```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -1364,12 +1406,14 @@ Get the on-call users for the provided schedule
 #### Human Readable Output
 
 >### OpsGenie OnCall Participants
+>
 >|id|name|type|
 >|---|---|---|
 >| 7f072844-38a7-4de7-b2ff-2a51ffbabe7b | john@doe.com | user |
 
 
 ### close-alert
+
 ***
 Close an OpsGenie Alert
 
@@ -1377,6 +1421,7 @@ Close an OpsGenie Alert
 #### Base Command
 
 `close-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1400,9 +1445,11 @@ Close an OpsGenie Alert
 
 
 #### Command Example
+
 ```!close-alert alert-id=37816db1-844e-449f-bf61-b28834cad50f-1613353779202```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -1424,6 +1471,7 @@ Close an OpsGenie Alert
 #### Human Readable Output
 
 >### OpsGenie Close Alert
+>
 >**No entries.**
 
 
@@ -1474,6 +1522,7 @@ List the current alerts from OpsGenie.
 | OpsGenieV2.Alerts.report.acknowledgedBy | String | User that Acknolwedged the alert | 
 | OpsGenieV2.Alerts.report.closeTime | Number | Time Alarm closed | 
 | OpsGenieV2.Alerts.report.closedBy | String | Who Closed the alarm | 
+
 ### opsgenie-create-alert
 
 ***
@@ -1506,6 +1555,7 @@ Create an Alert in opsgenie
 | OpsGenieV2.CreatedAlert.requestId | String | The ID of the request | 
 | OpsGenieV2.CreatedAlert.status | String | The human readable result of the request | 
 | OpsGenieV2.CreatedAlert.success | Boolean | Bool, whether the request was a success | 
+
 ### opsgenie-delete-alert
 
 ***
@@ -1534,6 +1584,7 @@ Delete an Alert from OpsGenie
 | OpsGenieV2.DeletedAlert.requestId | String | The ID of the request | 
 | OpsGenieV2.DeletedAlert.status | String | The human readable result of the request | 
 | OpsGenieV2.DeletedAlert.success | Boolean | Bool, whether the request was a success | 
+
 ### opsgenie-get-alert
 
 ***
@@ -1580,6 +1631,7 @@ Delete an Alert from OpsGenie
 | OpsGenieV2.Alert.report.acknowledgedBy | String | User that Acknolwedged the alert | 
 | OpsGenieV2.Alert.report.closeTime | Number | Time Alarm closed | 
 | OpsGenieV2.Alert.report.closedBy | String | Who Closed the alarm | 
+
 ### opsgenie-ack-alert
 
 ***
@@ -1608,6 +1660,7 @@ Acknowledge an alert in OpsGenie
 | OpsGenieV2.AckedAlert.requestId | String | The ID of the request | 
 | OpsGenieV2.AckedAlert.status | String | The human readable result of the request | 
 | OpsGenieV2.AckedAlert.success | Boolean | Bool, whether the request was a success | 
+
 ### opsgenie-get-schedule
 
 ***
@@ -1642,6 +1695,7 @@ Retrieve the provided Schedule (by ID) from LR
 | OpsGenieV2.Schedule.rotations.startDate | Date | Start Date of this Schedule | 
 | OpsGenieV2.Schedule.rotations.type | String | Type of this Rotation | 
 | OpsGenieV2.Schedule.timezone | String | Timezone of this Schedule | 
+
 ### opsgenie-list-schedules
 
 ***
@@ -1677,6 +1731,7 @@ List Schedules
 | OpsGenieV2.Schedules.rotations.startDate | Date | Start Date of this Schedule | 
 | OpsGenieV2.Schedules.rotations.type | String | Type of this Rotation | 
 | OpsGenieV2.Schedules.timezone | String | Timezone of this Schedule | 
+
 ### opsgenie-get-on-call
 
 ***
@@ -1702,6 +1757,7 @@ Get the on-call users for the provided schedule
 | OpsGenieV2.OnCall.onCallParticipants.id | String | ID Of oncall participant | 
 | OpsGenieV2.OnCall.onCallParticipants.name | String | Name of oncall participant | 
 | OpsGenieV2.OnCall.onCallParticipants.type | String | Type of OnCall participant | 
+
 ### opsgenie-close-alert
 
 ***

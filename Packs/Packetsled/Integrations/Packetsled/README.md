@@ -364,6 +364,7 @@ List the sensors attached to the packetsled platform.
 | Packetsled.Sensors.label | unknown | The label of the sensor | 
 | Packetsled.Sensors.envid | unknown | The environment id of the sensor | 
 | Packetsled.Sensors.probe | unknown | The probe number of the sensor | 
+
 ### packetsled-get-events
 
 ***

@@ -1,5 +1,6 @@
 Workday offers enterprise-level software solutions for financial management, human resources, and planning.
 This integration was integrated and tested with version 34.0 of Workday
+
 ## Configure Workday in Cortex
 
 
@@ -14,9 +15,12 @@ This integration was integrated and tested with version 34.0 of Workday
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### workday-list-workers
+
 ***
 List workers command - Returns information for specified workers.
 
@@ -24,6 +28,7 @@ List workers command - Returns information for specified workers.
 #### Base Command
 
 `workday-list-workers`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -106,12 +111,16 @@ List workers command - Returns information for specified workers.
 
 
 #### Command Example
+
 ```!workday-list-workers employee_id=123456```
+
 ##### or
+
 ```!workday-list-workers page=1 count=1 managers=3```
 
 
 #### Context Example
+
 ```
 {
     "Workday": {
@@ -231,6 +240,7 @@ List workers command - Returns information for specified workers.
 #### Human Readable Output
 
 >### Workers
+>
 >|Worker_ID|User_ID|Country|Preferred_First_Name|Preferred_Last_Name|Active|Position_Title|Business_Title|Start_Date|Terminated|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 123456 | test@paloaltonetworks.com | AE | Test_name | Test_last_name | 1 | Regional Sales Manager | Regional Sales Manager | 2020-03-25 | 0 |

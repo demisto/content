@@ -3,9 +3,11 @@ The integration allows Cortex XSOAR users to automatically remediate incidents i
 In addition, users can query Logz.io directly from Cortex XSOAR to investigate open questions or retrieve the logs responsible for triggering security rules.
 
 ##### What does this pack do?
+
 **Logz.io Handle Alert:** used to handle alerts retrieved from Logz.io.
 The playbook will retrieve the related events that generated the alert using the logzio-get-logs-by-event-id command
 **Logzio_Indicator_Hunting:** This playbook queries Logz.io in order to hunt indicators such as 
+
 - File Hashes 
 - IP Addresses 
 - Domains 

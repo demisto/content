@@ -13,9 +13,12 @@ This integration was integrated and tested with version 91.0.6.575 of Netskope (
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### netskopev2-add-url
+
 ***
 Add URLs to the Netskope URL block list
 
@@ -23,6 +26,7 @@ Add URLs to the Netskope URL block list
 #### Base Command
 
 `netskopev2-add-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -47,6 +51,7 @@ Add URLs to the Netskope URL block list
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -54,6 +59,7 @@ Add URLs to the Netskope URL block list
 
 
 ### netskopev2-remove-url
+
 ***
 Remove URLs from the Netskope URL block list
 
@@ -61,6 +67,7 @@ Remove URLs from the Netskope URL block list
 #### Base Command
 
 `netskopev2-remove-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -85,6 +92,7 @@ Remove URLs from the Netskope URL block list
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -92,6 +100,7 @@ Remove URLs from the Netskope URL block list
 
 
 ### netskopev2-get-lists
+
 ***
 Get all applied and pending URL lists
 
@@ -99,6 +108,7 @@ Get all applied and pending URL lists
 #### Base Command
 
 `netskopev2-get-lists`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -121,6 +131,7 @@ Get all applied and pending URL lists
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -128,6 +139,7 @@ Get all applied and pending URL lists
 
 
 ### netskopev2-get-list
+
 ***
 Get URL list by ID
 
@@ -135,6 +147,7 @@ Get URL list by ID
 #### Base Command
 
 `netskopev2-get-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -158,6 +171,7 @@ Get URL list by ID
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

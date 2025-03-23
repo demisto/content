@@ -27,9 +27,12 @@ Mandiant Feed Integration.
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### feed-mandiant-get-indicators
+
 ***
 get mandiant indicators
 
@@ -37,6 +40,7 @@ get mandiant indicators
 #### Base Command
 
 `feed-mandiant-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

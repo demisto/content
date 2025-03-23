@@ -1,4 +1,5 @@
 InsightVM is a Vulnerability Management Tool which Scan your Network, Eliminate Vulnerabilities, Track and Communicate progress.
+
 ## Configure Rapid7 InsightVM Cloud in Cortex
 
 
@@ -11,9 +12,12 @@ InsightVM is a Vulnerability Management Tool which Scan your Network, Eliminate 
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### insightvm-cloud-get-asset
+
 ***
 Returns the assessment and details of an asset (specified by id). Only assets which the caller has access to can be returned.
 
@@ -21,6 +25,7 @@ Returns the assessment and details of an asset (specified by id). Only assets wh
 #### Base Command
 
 `insightvm-cloud-get-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -31,7 +36,9 @@ Returns the assessment and details of an asset (specified by id). Only assets wh
 #### Context Output
 
 There is no context output for this command.
+
 ### insightvm-cloud-get-scan
+
 ***
 Retrieves the scan with the specified identifier.
 
@@ -39,6 +46,7 @@ Retrieves the scan with the specified identifier.
 #### Base Command
 
 `insightvm-cloud-get-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -49,7 +57,9 @@ Retrieves the scan with the specified identifier.
 #### Context Output
 
 There is no context output for this command.
+
 ### insightvm-cloud-get-scan-engines
+
 ***
 Retrieves a page of scan engines.
 
@@ -57,6 +67,7 @@ Retrieves a page of scan engines.
 #### Base Command
 
 `insightvm-cloud-get-scan-engines`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -68,7 +79,9 @@ Retrieves a page of scan engines.
 #### Context Output
 
 There is no context output for this command.
+
 ### insightvm-cloud-get-health-check
+
 ***
 Returns an indicator of the health of the API.
 
@@ -76,6 +89,7 @@ Returns an indicator of the health of the API.
 #### Base Command
 
 `insightvm-cloud-get-health-check`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -85,7 +99,9 @@ Returns an indicator of the health of the API.
 #### Context Output
 
 There is no context output for this command.
+
 ### insightvm-cloud-search-assets
+
 ***
 Returns the inventory, assessment, and summary details for a page of assets.
 
@@ -93,6 +109,7 @@ Returns the inventory, assessment, and summary details for a page of assets.
 #### Base Command
 
 `insightvm-cloud-search-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -105,7 +122,9 @@ Returns the inventory, assessment, and summary details for a page of assets.
 #### Context Output
 
 There is no context output for this command.
+
 ### insightvm-cloud-last-sites
+
 ***
 Returns the details for sites
 
@@ -113,6 +132,7 @@ Returns the details for sites
 #### Base Command
 
 `insightvm-cloud-last-sites`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -124,7 +144,9 @@ Returns the details for sites
 #### Context Output
 
 There is no context output for this command.
+
 ### insightvm-cloud-search-vulnerabilities
+
 ***
 Returns all vulnerabilities that can be assessed.
 
@@ -132,6 +154,7 @@ Returns all vulnerabilities that can be assessed.
 #### Base Command
 
 `insightvm-cloud-search-vulnerabilities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -144,7 +167,9 @@ Returns all vulnerabilities that can be assessed.
 #### Context Output
 
 There is no context output for this command.
+
 ### insightvm-cloud-start-scan
+
 ***
 Starts a scan.
 
@@ -152,6 +177,7 @@ Starts a scan.
 #### Base Command
 
 `insightvm-cloud-start-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -163,7 +189,9 @@ Starts a scan.
 #### Context Output
 
 There is no context output for this command.
+
 ### insightvm-cloud-stop-scan
+
 ***
 Stops the scan with the specified identifier.
 
@@ -171,6 +199,7 @@ Stops the scan with the specified identifier.
 #### Base Command
 
 `insightvm-cloud-stop-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

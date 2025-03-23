@@ -19,9 +19,12 @@ This integration was integrated and tested with version 2 of checkpointdome9
 | Incident type |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### dome9-access-lease-list
+
 ***
 Get a list of all active Access Leases.
 
@@ -29,6 +32,7 @@ Get a list of all active Access Leases.
 #### Base Command
 
 `dome9-access-lease-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -53,8 +57,11 @@ Get a list of all active Access Leases.
 
 
 #### Command example
+
 ```!dome9-access-lease-list```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -84,12 +91,15 @@ Get a list of all active Access Leases.
 #### Human Readable Output
 
 >### Access Lease:
+>
 >Showing 1 rows out of 1.
+>
 >|Id|Name|Ip|User|Region|Length|Created|
 >|---|---|---|---|---|---|---|
 >| id | name | ip | userMail | region | length | created |
 
 ### dome9-access-lease-delete
+
 ***
 Terminate an Access Lease.
 
@@ -97,6 +107,7 @@ Terminate an Access Lease.
 #### Base Command
 
 `dome9-access-lease-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -109,8 +120,11 @@ Terminate an Access Lease.
 There is no context output for this command.
 
 #### Command example
+
 ```!dome9-access-lease-delete lease_id=id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -124,6 +138,7 @@ There is no context output for this command.
 >Access Lease Deleted successfully
 
 ### dome9-access-lease-invitation-list
+
 ***
 Get a lease invitation.
 
@@ -131,6 +146,7 @@ Get a lease invitation.
 #### Base Command
 
 `dome9-access-lease-invitation-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -149,8 +165,11 @@ Get a lease invitation.
 
 
 #### Command example
+
 ```!dome9-access-lease-invitation-list```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -174,14 +193,18 @@ Get a lease invitation.
 ```
 
 #### Human Readable Output
+>
 >### Access Lease invitation
+>
 >Showing 1 rows out of 1.
+>
 >|Id|Issuername|Recipientname|Length|Created|
 >|---|---|---|---|---|
 >| id | userMail | userMail | length | created |
 
 
 ### dome9-access-lease-invitation-delete
+
 ***
 Delete an Access Lease invitation.
 
@@ -189,6 +212,7 @@ Delete an Access Lease invitation.
 #### Base Command
 
 `dome9-access-lease-invitation-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -199,9 +223,13 @@ Delete an Access Lease invitation.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!dome9-access-lease-invitation-delete invitation_id=invitation_id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -217,6 +245,7 @@ There is no context output for this command.
 >Access Lease Invitation Deleted successfully
 
 ### dome9-findings-search
+
 ***
 Search for findings in CloudGuard.
 
@@ -224,6 +253,7 @@ Search for findings in CloudGuard.
 #### Base Command
 
 `dome9-findings-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -248,8 +278,11 @@ Search for findings in CloudGuard.
 
 
 #### Command example
+
 ```!dome9-findings-search```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -307,13 +340,16 @@ Search for findings in CloudGuard.
 #### Human Readable Output
 
 >### Findings:
+>
 >Showing 1 rows out of 48.
+>
 >|Id|Alerttype|Severity|Region|Status|Action|Cloudaccountid|Description|
 >|---|---|---|---|---|---|---|---|
 >| id | alertType | severity | region | status | action | Cloudaccountid | Description |
 
 
 ### dome9-ip-list-create
+
 ***
 Add a new IP list.
 
@@ -321,6 +357,7 @@ Add a new IP list.
 #### Base Command
 
 `dome9-ip-list-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -342,8 +379,11 @@ Add a new IP list.
 
 
 #### Command example
+
 ```!dome9-ip-list-create description=description2022 name=name31072022```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -362,6 +402,7 @@ Add a new IP list.
 >IP list created successfully
 
 ### dome9-ip-list-update
+
 ***
 Update an IP list. This will override the existing IP list.
 
@@ -369,6 +410,7 @@ Update an IP list. This will override the existing IP list.
 #### Base Command
 
 `dome9-ip-list-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -385,8 +427,11 @@ Update an IP list. This will override the existing IP list.
 There is no context output for this command.
 
 #### Command example
+
 ```!dome9-ip-list-update list_id=id description=NEW```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -398,7 +443,9 @@ There is no context output for this command.
 #### Human Readable Output
 
 >IP list updated successfully
+>
 ### dome9-ip-list-get
+
 ***
 Get an IP List by ID.
 
@@ -406,6 +453,7 @@ Get an IP List by ID.
 #### Base Command
 
 `dome9-ip-list-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -423,8 +471,11 @@ Get an IP List by ID.
 | CheckPointDome9.IpList.items | String | The IP list items \(IP addresses\). | 
 
 #### Command example
+
 ```!dome9-ip-list-get```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -448,11 +499,13 @@ Get an IP List by ID.
 #### Human Readable Output
 
 >### IP list
+>
 >|Id|Name|Items|Description|
 >|---|---|---|---|
 >| id | NewList-2 | ip | description |
 
 ### dome9-ip-list-delete
+
 ***
 Delete an IP List by ID.
 
@@ -460,6 +513,7 @@ Delete an IP List by ID.
 #### Base Command
 
 `dome9-ip-list-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -472,8 +526,11 @@ Delete an IP List by ID.
 There is no context output for this command.
 
 #### Command example
+
 ```!dome9-ip-list-delete list_id=id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -487,6 +544,7 @@ There is no context output for this command.
 >IP list deleted successfully
 
 ### dome9-ip-list-metadata-list
+
 ***
 Get all IP addresses metadata.
 
@@ -494,6 +552,7 @@ Get all IP addresses metadata.
 #### Base Command
 
 `dome9-ip-list-metadata-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -514,8 +573,11 @@ Get all IP addresses metadata.
 
 
 #### Command example
+
 ```!dome9-ip-list-metadata-list```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -537,15 +599,20 @@ Get all IP addresses metadata.
 #### Human Readable Output
 
 >### IP List metadata
+>
 >Showing 8 rows out of 8.
+>
 >|Id|Name|Cidr|Classification|
 >|---|---|---|---|
 >| id | name | cidr | classification |
 
 
 #### Command example
+
 ```!dome9-ip-list-metadata-list```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -567,13 +634,16 @@ Get all IP addresses metadata.
 #### Human Readable Output
 
 >### IP List metadata
+>
 >Showing 8 rows out of 8.
+>
 >|Id|Name|Cidr|Classification|
 >|---|---|---|---|
 >| id | name | cidr | classification |
 
 
 ### dome9-ip-list-metadata-create
+
 ***
 Add metadata for a new IP address. An IP address metadata must contain the CIDR, name, and classification. Classification can be External, Unsafe, Dmz, InternalVpc, InternalDc, or NoClassification.
 
@@ -581,6 +651,7 @@ Add metadata for a new IP address. An IP address metadata must contain the CIDR,
 #### Base Command
 
 `dome9-ip-list-metadata-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -601,8 +672,11 @@ Add metadata for a new IP address. An IP address metadata must contain the CIDR,
 
 
 #### Command example
+
 ```!dome9-ip-list-metadata-create cidr=cidr classification=classification name=metadata```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -622,12 +696,14 @@ Add metadata for a new IP address. An IP address metadata must contain the CIDR,
 #### Human Readable Output
 
 >### IP List metadata created successfully
+>
 >|Cidr|Classificaiton|Classification|Id|Name|
 >|---|---|---|---|---|
 >| cidr | classification | classification | id | metadata |
 
 
 ### dome9-ip-list-metadata-update
+
 ***
 Update an existing IP address metadata. Classification can only be External, Unsafe, Dmz, InternalVpc, InternalDc, or NoClassification.
 
@@ -635,6 +711,7 @@ Update an existing IP address metadata. Classification can only be External, Uns
 #### Base Command
 
 `dome9-ip-list-metadata-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -654,8 +731,11 @@ Update an existing IP address metadata. Classification can only be External, Uns
 | CheckPointDome9.IpList.Metadata.classification | String | The IP address classification. |
 
 #### Command example
+
 ```!dome9-ip-list-metadata-update classification=classification list_metadata_id=list_metadata_id name=NewName```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -675,12 +755,14 @@ Update an existing IP address metadata. Classification can only be External, Uns
 #### Human Readable Output
 
 >### IP List metadata updated successfully
+>
 >|Cidr|Classificaiton|Classification|Id|Name|
 >|---|---|---|---|---|
 >| cidr | classification | classification | list_metadata_id | NewName |
 
 
 ### dome9-ip-list-metadata-delete
+
 ***
 Delete an IP address metadata with a specific CIDR.
 
@@ -688,6 +770,7 @@ Delete an IP address metadata with a specific CIDR.
 #### Base Command
 
 `dome9-ip-list-metadata-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -702,8 +785,11 @@ Delete an IP address metadata with a specific CIDR.
 There is no context output for this command.
 
 #### Command example
+
 ```!dome9-ip-list-metadata-delete account_id=account_id address=ip mask=32```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -719,6 +805,7 @@ There is no context output for this command.
 >IP List metadata deleted successfully
 
 ### dome9-compliance-remediation-get
+
 ***
 Get a list of remediations for the account.
 
@@ -726,6 +813,7 @@ Get a list of remediations for the account.
 #### Base Command
 
 `dome9-compliance-remediation-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -746,8 +834,11 @@ Get a list of remediations for the account.
 | CheckPointDome9.ComplianceRemediation.cloudBots | String | Cloud bots execution expressions. | 
 
 #### Command example
+
 ```!dome9-compliance-remediation-get```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -774,6 +865,7 @@ Get a list of remediations for the account.
 #### Human Readable Output
 
 >### Compliance remediation:
+>
 >|Id|Rulelogichash|Rulesetid|Platform|Comment|Cloudbots|
 >|---|---|---|---|---|---|
 >| id | ruleLogicHash | ruleset_id | platform | comment | cloudbots |
@@ -781,6 +873,7 @@ Get a list of remediations for the account.
 
 
 ### dome9-compliance-remediation-create
+
 ***
 Add a new remediation.
 
@@ -788,6 +881,7 @@ Add a new remediation.
 #### Base Command
 
 `dome9-compliance-remediation-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -803,8 +897,11 @@ Add a new remediation.
 There is no context output for this command.
 
 #### Command example
+
 ```!dome9-compliance-remediation-create cloudbots=cloudbots comment=COMMENT rule_logic_hash=rule_logic_hash/k4lIw ruleset_id=rule_id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -829,12 +926,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Remediation created successfully
+>
 >|Cloudbots|Id|Rulelogichash|Rulesetid|Platform|Comment|
 >|---|---|---|---|---|---|
 >| cloudbots | id | ruleLogicHash | ruleset_id | platform | COMMENT |
 
 
 ### dome9-compliance-remediation-update
+
 ***
 Update a remediation.
 
@@ -842,6 +941,7 @@ Update a remediation.
 #### Base Command
 
 `dome9-compliance-remediation-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -858,8 +958,11 @@ Update a remediation.
 There is no context output for this command.
 
 #### Command example
+
 ```!dome9-compliance-remediation-update remediation_id=r_id cloudbots=cloudbots comment=COMMENT rule_logic_hash=ruleLogicHash ruleset_id=ruleset_id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -884,12 +987,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Remediation updated successfully
+>
 >|Cloudbots|Id|Rulelogichash|Rulesetid|Platform|Comment|
 >|---|---|---|---|---|---|
 >| cloudbots | r_id | ruleLogicHash | ruleset_id | platform | COMMENT |
 
 
 ### dome9-compliance-remediation-delete
+
 ***
 Delete a remediation.
 
@@ -897,6 +1002,7 @@ Delete a remediation.
 #### Base Command
 
 `dome9-compliance-remediation-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -909,8 +1015,11 @@ Delete a remediation.
 There is no context output for this command.
 
 #### Command example
+
 ```!dome9-compliance-remediation-delete remediation_id=remediation_id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -922,7 +1031,9 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Remediation deleted successfully
+>
 ### dome9-compliance-ruleset-list
+
 ***
 Get all Rulesets for the account.
 
@@ -930,6 +1041,7 @@ Get all Rulesets for the account.
 #### Base Command
 
 `dome9-compliance-ruleset-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -950,8 +1062,11 @@ Get all Rulesets for the account.
 | CheckPointDome9.ComplianceRuleset.description | String | The Ruleset description. | 
 
 #### Command example
+
 ```!dome9-compliance-ruleset-list```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -986,7 +1101,9 @@ Get all Rulesets for the account.
 #### Human Readable Output
 
 >### Compliance Ruleset:
+>
 >Showing 50 rows out of 136.
+>
 >|Accountid|Id|Name|Description|
 >|---|---|---|---|
 >| account_id | id | name | description |
@@ -994,6 +1111,7 @@ Get all Rulesets for the account.
 
 
 ### dome9-compliance-ruleset-rule-list
+
 ***
 Get rule details. Get the rule logic hash to create a new remediation.
 
@@ -1001,6 +1119,7 @@ Get rule details. Get the rule logic hash to create a new remediation.
 #### Base Command
 
 `dome9-compliance-ruleset-rule-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1022,8 +1141,11 @@ Get rule details. Get the rule logic hash to create a new remediation.
 | CheckPointDome9.ComplianceRuleset.Rule.description | String | The rule description. | 
 
 #### Command example
+
 ```!dome9-compliance-ruleset-rule-list rule_id=-41```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -1055,7 +1177,9 @@ Get rule details. Get the rule logic hash to create a new remediation.
 #### Human Readable Output
 
 >### Compliance Ruleset Rules:
+>
 >Showing 10 rows out of 10.
+>
 >|Name|Severity|Description|Logic|Logichash|
 >|---|---|---|---|---|
 >| name | severity | description | logic | logicHash |
@@ -1063,6 +1187,7 @@ Get rule details. Get the rule logic hash to create a new remediation.
 
 
 ### dome9-security-group-instance-attach
+
 ***
 Attach the security group to an AWS EC2 instance.
 
@@ -1070,6 +1195,7 @@ Attach the security group to an AWS EC2 instance.
 #### Base Command
 
 `dome9-security-group-instance-attach`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1084,8 +1210,11 @@ Attach the security group to an AWS EC2 instance.
 There is no context output for this command.
 
 #### Command example
+
 ```!dome9-security-group-instance-attach instance_id=i-instance_id nic_name=nic_name sg_id=sg_id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -1220,6 +1349,7 @@ There is no context output for this command.
 >Security group attach successfully
 
 ### dome9-security-group-service-delete
+
 ***
 Delete a service from an AWS security group.
 
@@ -1227,6 +1357,7 @@ Delete a service from an AWS security group.
 #### Base Command
 
 `dome9-security-group-service-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1238,9 +1369,13 @@ Delete a service from an AWS security group.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!dome9-security-group-service-delete service_id=6-56 sg_id=sg_id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -1256,6 +1391,7 @@ There is no context output for this command.
 >Service deleted successfully
 
 ### dome9-security-group-tags-update
+
 ***
 Update the list of tags for an AWS security group.
 
@@ -1263,6 +1399,7 @@ Update the list of tags for an AWS security group.
 #### Base Command
 
 `dome9-security-group-tags-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1275,9 +1412,13 @@ Update the list of tags for an AWS security group.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!dome9-security-group-tags-update key=KEYkey value=VALUEvalue sg_id=sg_id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -1295,6 +1436,7 @@ There is no context output for this command.
 >Tag updated successfully
 
 ### dome9-security-group-service-create
+
 ***
 Create a new service (rule) for the security group.
 
@@ -1302,6 +1444,7 @@ Create a new service (rule) for the security group.
 #### Base Command
 
 `dome9-security-group-service-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1334,8 +1477,11 @@ Create a new service (rule) for the security group.
 | CheckPointDome9.SecurityGroup.Service.description | string | The service description. | 
 
 #### Command example
+
 ```!dome9-security-group-service-create name=NewService0107 policy_type=Inbound port=port protocol_type=protocol sg_id=sg_id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -1360,12 +1506,14 @@ Create a new service (rule) for the security group.
 #### Human Readable Output
 
 >### Security group service created successfully
+>
 >|Description|Id|Name|Port|Protocoltype|
 >|---|---|---|---|---|
 >|  | id | NewService0107 | port | protocol |
 
 
 ### dome9-security-group-service-update
+
 ***
 Update a service (rule) for an AWS security group. Can update only the port and name.
 
@@ -1373,6 +1521,7 @@ Update a service (rule) for an AWS security group. Can update only the port and 
 #### Base Command
 
 `dome9-security-group-service-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1405,8 +1554,11 @@ Update a service (rule) for an AWS security group. Can update only the port and 
 | CheckPointDome9.SecurityGroup.Service.description | string | The service description. | 
 
 #### Command example
+
 ```!dome9-security-group-service-update service_name=name policy_type=Inbound port=port protocol_type=protocol sg_id=sg_id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -1431,11 +1583,13 @@ Update a service (rule) for an AWS security group. Can update only the port and 
 #### Human Readable Output
 
 >### Security group service updated successfully
+>
 >|Description|Id|Name|Port|Protocoltype|
 >|---|---|---|---|---|
 >|  | id | name | port | protocol |
 
 ### dome9-security-group-instance-detach
+
 ***
 Detach the security group from an AWS EC2 Instance.
 
@@ -1443,6 +1597,7 @@ Detach the security group from an AWS EC2 Instance.
 #### Base Command
 
 `dome9-security-group-instance-detach`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1455,9 +1610,13 @@ Detach the security group from an AWS EC2 Instance.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!dome9-security-group-instance-detach instance_id=i-instanceID nic_name=eth0 sg_id=sg_id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -1592,6 +1751,7 @@ There is no context output for this command.
 >Security group detach successfully
 
 ### dome9-instance-list
+
 ***
 Fetch an AWS EC2 instance.
 
@@ -1599,6 +1759,7 @@ Fetch an AWS EC2 instance.
 #### Base Command
 
 `dome9-instance-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1616,8 +1777,11 @@ Fetch an AWS EC2 instance.
 | CheckPointDome9.Instance.name | string | The instance name. | 
 
 #### Command example
+
 ```!dome9-instance-list```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -1659,12 +1823,15 @@ Fetch an AWS EC2 instance.
 #### Human Readable Output
 
 >### AWS instances
+>
 >Showing 5 rows out of 5.
+>
 >|Accountid|Cloudaccountid|Externalid|Image|Instancetype|Isbillable|Isrunning|Kernelid|Launchtime|Name|Nics|Platform|Profilearn|Publicdnsname|Region|Rolearns|Ssmagentinstanceinformation|Tags|Vpc|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| account_id | cloudAccountId | i-Externalid | ami | Instancetype | true | true |  | someDate | name | Nics |  |  |  | region | arn|  | Name | vpc |
 
 ### dome9-security-group-protection-mode-update
+
 ***
 Change the protection mode for an AWS security group (FullManage or ReadOnly).
 
@@ -1672,6 +1839,7 @@ Change the protection mode for an AWS security group (FullManage or ReadOnly).
 #### Base Command
 
 `dome9-security-group-protection-mode-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1683,9 +1851,13 @@ Change the protection mode for an AWS security group (FullManage or ReadOnly).
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!dome9-security-group-protection-mode-update protection_mode=FullManage sg_id=sg_id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -1707,11 +1879,13 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### protection mode updated for security group :
+>
 >|Cloud Account Id|Cloud Account Name|Description|Isprotected|Region Id|Security Group External Id|Security Group Id|Security Group Name|Vpc Id|
 >|---|---|---|---|---|---|---|---|---|
 >| cloudAccountId | name | description | true | region | sg_id | sg_id | sg_name | vpc |
 
 ### dome9-cloud-accounts-list
+
 ***
 Get the cloud account list.
 
@@ -1719,6 +1893,7 @@ Get the cloud account list.
 #### Base Command
 
 `dome9-cloud-accounts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1733,9 +1908,13 @@ Get the cloud account list.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!dome9-cloud-accounts-list```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -1782,12 +1961,15 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Cloud accounts:
+>
 >Showing 1 rows out of 1.
+>
 >|Id|Vendor|Externalaccountnumber|Creationdate|Organizationalunitname|
 >|---|---|---|---|---|
 >| cloudAccountId | vendor | number |date | name |
 
 ### dome9-security-group-ip-list-details-get
+
 ***
 Get AWS cloud accounts for a specific security group and region and check if there is an IP list to attach to a security group.
 
@@ -1795,6 +1977,7 @@ Get AWS cloud accounts for a specific security group and region and check if the
 #### Base Command
 
 `dome9-security-group-ip-list-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1812,8 +1995,11 @@ Get AWS cloud accounts for a specific security group and region and check if the
 | CheckPointDome9.SecurityGroup.security_group_id | String | The security group ID. |
 
 #### Command example
+
 ```!dome9-security-group-ip-list-details-get```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -1837,13 +2023,16 @@ Get AWS cloud accounts for a specific security group and region and check if the
 #### Human Readable Output
 
 >### Security Groups:
+>
 >Showing 1 rows out of 24.
+>
 >|Cloud Account Id|Cloud Account Name|Description|Isprotected|Region Id|Security Group External Id|Security Group Id|Security Group Name|Vpc Id|
 >|---|---|---|---|---|---|---|---|---|
 >| cloudAccountId | name | description | true | region | sg_id | sg_id | sg_name | vpc |
 
 
 ### dome9-security-group-list
+
 ***
 Get all security group entities.
 
@@ -1851,6 +2040,7 @@ Get all security group entities.
 #### Base Command
 
 `dome9-security-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1867,8 +2057,11 @@ Get all security group entities.
 | CheckPointDome9.SecurityGroup.security_group_id | String | The security group ID. |
 
 #### Command example
+
 ```!dome9-security-group-list```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -1889,13 +2082,16 @@ Get all security group entities.
 #### Human Readable Output
 
 >### Security Groups:
+>
 >Showing 1 rows out of 107.
+>
 >|Cloud Account Id|Region Id|Security Group Id|Security Group Name|Vpc Id|
 >|---|---|---|---|---|
 >| cloudAccountId | region | sg | name | vpc |
 
 
 ### dome9-global-search-get
+
 ***
 Get top results for each service.
 
@@ -1903,6 +2099,7 @@ Get top results for each service.
 #### Base Command
 
 `dome9-global-search-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1922,8 +2119,11 @@ Get top results for each service.
 
 
 #### Command example
+
 ```!dome9-global-search-get```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -1966,6 +2166,7 @@ Get top results for each service.
 #### Human Readable Output
 
 >### Global Search
+>
 >|Alerttype|Bundleid|Cloudaccountexternalid|Cloudaccountid|Createdtime|Description|Entityname|Id|Remediation|Rulename|Severity|Updatedtime|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Alerttype | Bundleid | Cloudaccountexternalid | Cloudaccountid | date | Description | Entityname | id | Remediation | rule name | Severity | Updatedtime |
@@ -1973,6 +2174,7 @@ Get top results for each service.
 
 
 ### dome9-cloud-trail-get
+
 ***
 Get CloudTrail events for a Dome9 user.
 
@@ -1980,6 +2182,7 @@ Get CloudTrail events for a Dome9 user.
 #### Base Command
 
 `dome9-cloud-trail-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1999,8 +2202,11 @@ Get CloudTrail events for a Dome9 user.
 | CheckPointDome9.CloudTrail.accountId | String | The CloudTrail account ID. |
 
 #### Command example
+
 ```!dome9-cloud-trail-get```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -2034,11 +2240,15 @@ Get CloudTrail events for a Dome9 user.
 #### Human Readable Output
 
 >### Cloud Trail
+>
 >Showing 1 rows out of 1.
+>
 >|Accountid|Cloudaccountid|Cloudtrailstatus|Cloudwatchlogsloggrouparn|Cloudwatchlogsrolearn|Externalid|Homeregion|Id|Includeglobalserviceevents|Ismultiregiontrail|Kmskeyid|Logfilevalidationenabled|Name|Region|S3bucketname|S3keyprefix|Snstopicarn|Snstopicname|Trailarn|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| account_id | cloudAccountId | status |  |  | arn | us-east-1 | id | true | true |  | true | name | region | name |  |  |  | arn |
+>
 ### dome9-organizational-unit-view-get
+
 ***
 Get organizational unit view entities.
 
@@ -2046,6 +2256,7 @@ Get organizational unit view entities.
 #### Base Command
 
 `dome9-organizational-unit-view-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2065,8 +2276,11 @@ Get organizational unit view entities.
 | CheckPointDome9.OrganizationalUnitView.children | String | The organizational unit children. |
 
 #### Command example
+
 ```!dome9-organizational-unit-view-get```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -2083,11 +2297,13 @@ Get organizational unit view entities.
 #### Human Readable Output
 
 >### Organizational Unit View
+>
 >|Children|Id|Name|Path|
 >|---|---|---|---|
 >|  | id | name | name |
 
 ### dome9-organizational-unit-flat-get
+
 ***
 Get flat organizational units.
 
@@ -2095,6 +2311,7 @@ Get flat organizational units.
 #### Base Command
 
 `dome9-organizational-unit-flat-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2115,13 +2332,18 @@ Get flat organizational units.
 
 
 #### Command example
+
 ```!dome9-organizational-unit-flat-get```
+
 #### Human Readable Output
 
 >### Organizational Unit Flat
+>
 >Showing 0 rows out of 0.
 >**No entries.**
+>
 ### dome9-organizational-unit-get
+
 ***
 Get an organizational unit by its ID.
 
@@ -2129,6 +2351,7 @@ Get an organizational unit by its ID.
 #### Base Command
 
 `dome9-organizational-unit-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2149,8 +2372,11 @@ Get an organizational unit by its ID.
 | CheckPointDome9.OrganizationalUnit.parentId | String | The organizational unit parent ID. |
 
 #### Command example
+
 ```!dome9-organizational-unit-get```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -2188,11 +2414,13 @@ Get an organizational unit by its ID.
 #### Human Readable Output
 
 >### Organizational Unit
+>
 >|Accountid|Alibabaaggregatecloudaccountscount|Alibabacloudaccountscount|Awsaggregatedcloudacountscount|Awscloudacountscount|Azureaggregatecloudaccountscount|Azurecloudaccountscount|Containerregistryaccountscount|Containerregistryaggregatecloudaccountscount|Created|Googleaggregatecloudaccountscount|Googlecloudaccountscount|Id|Isparentroot|Isroot|K8saggregatecloudaccountscount|K8scloudaccountscount|Name|Parentid|Path|Pathstr|Shiftleftaggregatecloudaccountscount|Shiftleftcloudaccountscount|Suborganizationalunitscount|Updated|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | date | 0 | 0 | id | true | true | 0 | 0 | name |  |  |  | 0 | 0 | 0 | date |
 
 ### dome9-findings-get
+
 ***
 Get a findings by its ID.
 
@@ -2200,6 +2428,7 @@ Get a findings by its ID.
 #### Base Command
 
 `dome9-findings-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2221,8 +2450,11 @@ Get a findings by its ID.
 
 
 #### Command example
+
 ```!dome9-findings-get finding_id=finding_id```
+
 #### Context Example
+
 ```json
 {
     "CheckPointDome9": {
@@ -2280,7 +2512,9 @@ Get a findings by its ID.
 #### Human Readable Output
 
 >Finding
+>
 ### dome9-findings-bundle-get
+
 ***
 Get the findings for a specific rule in a bundle, for all of the user's accounts.
 
@@ -2288,6 +2522,7 @@ Get the findings for a specific rule in a bundle, for all of the user's accounts
 #### Base Command
 
 `dome9-findings-bundle-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2309,9 +2544,13 @@ Get the findings for a specific rule in a bundle, for all of the user's accounts
 | CheckPointDome9.FindingsBundle.accountId | String | The CloudTrail account ID. |
 | CheckPointDome9.FindingsBundle.description | String | The CloudTrail ARN. |
 | CheckPointDome9.FindingsBundle.region | String | The CloudTrail account ID. |
+
 #### Command example
+
 ```!dome9-findings-bundle-get bundle_id=bundle_id rule_logic_hash=ruleLogicHash```
+
 #### Human Readable Output
 
 >### Findings Bundle
+>
 >**No entries.**

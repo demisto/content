@@ -1,6 +1,7 @@
 Dumps a JSON from the context key input, and returns a JSON object string result.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Dumps a JSON from the context key input, and returns a JSON object string result
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ Dumps a JSON from the context key input, and returns a JSON object string result
 | key | The context path to the JSON object. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

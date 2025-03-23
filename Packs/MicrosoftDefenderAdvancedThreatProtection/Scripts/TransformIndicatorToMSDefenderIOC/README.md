@@ -1,6 +1,7 @@
 Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC. The output (at TransformIndicatorToMSDefenderIOC.JsonOutput) is a json representation of the indicators in MSDE format. This json can be the input for the *microsoft-atp-indicator-batch-update* command.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC. The outp
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** | **Required** |
@@ -20,6 +22,7 @@ Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC. The outp
 | offset | The results offset page. Only change when the number of the results exceed the limit. | Optional | 
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -47,7 +50,9 @@ Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC. The outp
 
 
 ## More info
+
 ---
+
 1. Please read about MSDE Indicator resource type [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/ti-indicator?view=o365-worldwide).
 2. Please read about limitations for creating and updating batch of indicators [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/import-ti-indicators?view=o365-worldwide#limitations).
 3. Please read about the required permissions for creating and updating batch of indicators [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/import-ti-indicators?view=o365-worldwide#permissions). 

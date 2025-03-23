@@ -1,5 +1,6 @@
 TruSTAR is an Intelligence Management Platform that helps you operationalize data across tools and teams, helping you prioritize investigations and accelerate incident response.
 This integration was integrated and tested with version 0.3.31 of TruSTAR v2
+
 ## Configure TruSTAR v2 in Cortex
 
 
@@ -13,9 +14,12 @@ This integration was integrated and tested with version 0.3.31 of TruSTAR v2
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### trustar-search-indicators
+
 ***
 Searches for all indicators that contain the given search term.
 
@@ -23,6 +27,7 @@ Searches for all indicators that contain the given search term.
 #### Base Command
 
 `trustar-search-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -60,9 +65,11 @@ Searches for all indicators that contain the given search term.
 
 
 #### Command Example
+
 ```!trustar-search-indicators```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -397,6 +404,7 @@ Searches for all indicators that contain the given search term.
 #### Human Readable Output
 
 >### Results
+>
 >|indicatorType|value|
 >|---|---|
 >| MD5 | 7aef3cfa5a71fb2010d8b7ffca95ccf0 |
@@ -429,6 +437,7 @@ Searches for all indicators that contain the given search term.
 
 
 ### trustar-get-enclaves
+
 ***
 Returns the list of all enclaves that the user has access to, as well as whether they can read, create, and update reports in that enclave.
 
@@ -436,6 +445,7 @@ Returns the list of all enclaves that the user has access to, as well as whether
 #### Base Command
 
 `trustar-get-enclaves`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -455,9 +465,11 @@ Returns the list of all enclaves that the user has access to, as well as whether
 
 
 #### Command Example
+
 ```!trustar-get-enclaves```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -942,6 +954,7 @@ Returns the list of all enclaves that the user has access to, as well as whether
 #### Human Readable Output
 
 >### TruSTAR Enclaves
+>
 >|create|id|name|read|type|update|
 >|---|---|---|---|---|---|
 >| false | ed35f85a-d6bf-4e74-a0f8-61651abf705e | IBM X-Force | true | CLOSED | false |
@@ -1007,6 +1020,7 @@ Returns the list of all enclaves that the user has access to, as well as whether
 
 
 ### trustar-related-indicators
+
 ***
 Finds all reports that contain any of the given indicators and returns correlated indicators from those reports.
 
@@ -1014,6 +1028,7 @@ Finds all reports that contain any of the given indicators and returns correlate
 #### Base Command
 
 `trustar-related-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1047,9 +1062,11 @@ Finds all reports that contain any of the given indicators and returns correlate
 
 
 #### Command Example
+
 ```!trustar-related-indicators indicators=WANNACRY```
 
 #### Context Example
+
 ```
 {
     "CVE": {
@@ -1395,6 +1412,7 @@ Finds all reports that contain any of the given indicators and returns correlate
 #### Human Readable Output
 
 >### Results
+>
 >|indicatorType|value|
 >|---|---|
 >| SHA256 | ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa |
@@ -1424,6 +1442,7 @@ Finds all reports that contain any of the given indicators and returns correlate
 >| CVE | CVE-2017-0147 |
 
 ### trustar-trending-indicators
+
 ***
 Find indicators that are trending in the community.
 
@@ -1431,6 +1450,7 @@ Find indicators that are trending in the community.
 #### Base Command
 
 `trustar-trending-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1464,9 +1484,11 @@ Find indicators that are trending in the community.
 
 
 #### Command Example
+
 ```!trustar-trending-indicators days_back=1 indicator_type=MALWARE```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -1529,6 +1551,7 @@ Find indicators that are trending in the community.
 #### Human Readable Output
 
 >### Results
+>
 >|correlationCount|indicatorType|value|
 >|---|---|---|
 >| 85 | MALWARE | TRICKBOT |
@@ -1544,6 +1567,7 @@ Find indicators that are trending in the community.
 
 
 ### trustar-indicators-metadata
+
 ***
 Provide metadata associated with a list of indicators, including value, indicatorType, noteCount, sightings, lastSeen, enclaveIds, and tags. The metadata is determined based on the enclaves the user making the request has READ access to.
 
@@ -1551,6 +1575,7 @@ Provide metadata associated with a list of indicators, including value, indicato
 #### Base Command
 
 `trustar-indicators-metadata`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1588,9 +1613,11 @@ Provide metadata associated with a list of indicators, including value, indicato
 
 
 #### Command Example
+
 ```!trustar-indicators-metadata indicators=37.26.41.210```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -1624,12 +1651,14 @@ Provide metadata associated with a list of indicators, including value, indicato
 #### Human Readable Output
 
 >### Results
+>
 >|correlationCount|enclaveIds|firstSeen|indicatorType|lastSeen|notes|tags|value|
 >|---|---|---|---|---|---|---|---|
 >| 0 | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | 2020-07-02 04:59:03 | IP | 2020-07-02 04:59:03 |  |  | 37.26.41.210 |
 
 
 ### trustar-indicator-summaries
+
 ***
 Provides structured summaries about indicators, which are derived from intelligence sources on the TruSTAR Marketplace.
 
@@ -1637,6 +1666,7 @@ Provides structured summaries about indicators, which are derived from intellige
 #### Base Command
 
 `trustar-indicator-summaries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1679,12 +1709,14 @@ Provides structured summaries about indicators, which are derived from intellige
 
 
 #### Command Example
+
 ```!trustar-indicator-summaries values=LOCKY,23.121.54.102```
 
 #### Human Readable Output
 
 
 ### trustar-get-whitelisted-indicators
+
 ***
 Gets a list of indicators that the user’s company has added to allow list.
 
@@ -1692,6 +1724,7 @@ Gets a list of indicators that the user’s company has added to allow list.
 #### Base Command
 
 `trustar-get-whitelisted-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1723,9 +1756,11 @@ Gets a list of indicators that the user’s company has added to allow list.
 
 
 #### Command Example
+
 ```!trustar-get-whitelisted-indicators```
 
 #### Context Example
+
 ```
 {
     "Account": {
@@ -1978,6 +2013,7 @@ Gets a list of indicators that the user’s company has added to allow list.
 #### Human Readable Output
 
 >### Results
+>
 >|indicatorType|value|
 >|---|---|
 >| EMAIL_ADDRESS | htain@trustar.co |
@@ -2002,6 +2038,7 @@ Gets a list of indicators that the user’s company has added to allow list.
 
 
 ### trustar-get-reports
+
 ***
 Returns incident reports matching the specified filters. All parameters are optional: if nothing is specified, the latest 25 reports accessible by the user will be returned (matching the view the user would have by logging into Station).
 
@@ -2009,6 +2046,7 @@ Returns incident reports matching the specified filters. All parameters are opti
 #### Base Command
 
 `trustar-get-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2032,9 +2070,11 @@ Returns incident reports matching the specified filters. All parameters are opti
 
 
 #### Command Example
+
 ```!trustar-get-reports enclave_ids=6ef1078c-a74a-4b42-9344-56c6adea0bda from_time="1 day ago"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2045,6 +2085,7 @@ Returns incident reports matching the specified filters. All parameters are opti
 
 
 ### trustar-get-indicators-for-report
+
 ***
 Return a list of indicators extracted from a report.
 
@@ -2052,6 +2093,7 @@ Return a list of indicators extracted from a report.
 #### Base Command
 
 `trustar-get-indicators-for-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2084,9 +2126,11 @@ Return a list of indicators extracted from a report.
 
 
 #### Command Example
+
 ```!trustar-get-indicators-for-report report_id=6e00a714-379a-4db8-ac0c-812a629c8288```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -2168,6 +2212,7 @@ Return a list of indicators extracted from a report.
 #### Human Readable Output
 
 >### Results
+>
 >|indicatorType|value|
 >|---|---|
 >| SHA1 | c5737f53ea049a88162297604b41c791dd8583b3 |
@@ -2178,6 +2223,7 @@ Return a list of indicators extracted from a report.
 
 
 ### trustar-move-report
+
 ***
 Move a report from one enclave to another.
 
@@ -2185,6 +2231,7 @@ Move a report from one enclave to another.
 #### Base Command
 
 `trustar-move-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2198,9 +2245,11 @@ Move a report from one enclave to another.
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-move-report report_id=20ce2d7f-4a25-4bed-a74e-ec99bf0b46db dest-enclave-id=71001c42-2d05-4491-bf35-ee7c678b92da```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2211,6 +2260,7 @@ There is no context output for this command.
 
 
 ### trustar-copy-report
+
 ***
 Copies a report from one enclave to another.
 
@@ -2218,6 +2268,7 @@ Copies a report from one enclave to another.
 #### Base Command
 
 `trustar-copy-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2231,9 +2282,11 @@ Copies a report from one enclave to another.
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-copy-report report_id=6e00a714-379a-4db8-ac0c-812a629c8288 dest_enclave_id=c879f089-ffbd-4a2f-8144-d3e8bdbd6981```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2245,6 +2298,7 @@ There is no context output for this command.
 
 
 ### trustar-submit-report
+
 ***
 Submit a new incident report, and receive the ID it has been assigned in TruSTAR’s system.
 
@@ -2252,6 +2306,7 @@ Submit a new incident report, and receive the ID it has been assigned in TruSTAR
 #### Base Command
 
 `trustar-submit-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2275,9 +2330,11 @@ Submit a new incident report, and receive the ID it has been assigned in TruSTAR
 
 
 #### Command Example
+
 ```!trustar-submit-report title="foo title" report_body="the report body" enclave_ids=080234eb-d818-4507-a676-dae5c5927d94```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -2293,12 +2350,14 @@ Submit a new incident report, and receive the ID it has been assigned in TruSTAR
 #### Human Readable Output
 
 >### TruSTAR report was successfully created
+>
 >|distributionType|enclaveIds|id|reportBody|reportDeepLink|timeBegan|title|
 >|---|---|---|---|---|---|---|
 >| ENCLAVE | 080234eb-d818-4507-a676-dae5c5927d94 | 5cf979cb-aae6-4270-8295-52a2ed2b36a1 | the report body | https://station.trustar.co/constellation/reports/5cf979cb-aae6-4270-8295-52a2ed2b36a1 | 2020-07-02T20:51:05.817066+00:00 | foo title |
 
 
 ### trustar-delete-report
+
 ***
 Deletes a report as specified by given id (id can be TruSTAR report id or external id).
 
@@ -2306,6 +2365,7 @@ Deletes a report as specified by given id (id can be TruSTAR report id or extern
 #### Base Command
 
 `trustar-delete-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2320,9 +2380,11 @@ There is no context output for this command.
 
 
 #### Command Example
+
 ```!trustar-delete-report report_id=20ce2d7f-4a25-4bed-a74e-ec99bf0b46db```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2333,6 +2395,7 @@ There is no context output for this command.
 
 
 ### trustar-correlated-reports
+
 ***
 Returns a list of all reports that contain any of the provided indicator values.
 
@@ -2340,6 +2403,7 @@ Returns a list of all reports that contain any of the provided indicator values.
 #### Base Command
 
 `trustar-correlated-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2355,9 +2419,11 @@ Returns a list of all reports that contain any of the provided indicator values.
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-correlated-reports indicators=WANNACRY```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2369,6 +2435,7 @@ There is no context output for this command.
 
 
 ### trustar-report-details
+
 ***
 Finds a report by its ID and returns the report details.
 
@@ -2376,6 +2443,7 @@ Finds a report by its ID and returns the report details.
 #### Base Command
 
 `trustar-report-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2395,9 +2463,11 @@ Finds a report by its ID and returns the report details.
 
 
 #### Command Example
+
 ```!trustar-report-details report_id=6e00a714-379a-4db8-ac0c-812a629c8288```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -2413,12 +2483,14 @@ Finds a report by its ID and returns the report details.
 #### Human Readable Output
 
 >### TruSTAR report ID 6e00a714-379a-4db8-ac0c-812a629c8288 details
+>
 >|created|distributionType|enclaveIds|externalTrackingId|id|reportBody|reportDeepLink|timeBegan|title|updated|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2020-06-22 15:25:04 | ENCLAVE | d915e45a-d0c8-4a75-987a-775649020c96 | PGJmMjcyZWJlNDA2MTUyNzYzZGUzMWY1YTIuMGNiYzk1ZTA3Yy4yMDIwMDYxNzEzMTQyNS5kMWZlMDJkOTEwLmNmYjY5Mjg1QG1haWwyMjYuc2VhODEubWNzdi5uZXQ+ | 6e00a714-379a-4db8-ac0c-812a629c8288 | <br/>==================================================<br/> EMAIL THREAD DATE: 2020-06-22 11:22:59<br/>==================================================<br/>Fwd: Looking to hire? | https://station.trustar.co/constellation/reports/6e00a714-379a-4db8-ac0c-812a629c8288 | 2020-06-22 15:25:04 | The new title | 2020-06-22 15:25:04 |
 
 
 ### trustar-update-report
+
 ***
 Update the report with the specified ID. Either the internal TruSTAR report ID or an external tracking ID can be used. Only the fields passed will be updated. All others will be left unchanged.
 
@@ -2426,6 +2498,7 @@ Update the report with the specified ID. Either the internal TruSTAR report ID o
 #### Base Command
 
 `trustar-update-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2450,9 +2523,11 @@ Update the report with the specified ID. Either the internal TruSTAR report ID o
 
 
 #### Command Example
+
 ```!trustar-update-report report_id=6e00a714-379a-4db8-ac0c-812a629c8288 title="The new title"```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -2468,12 +2543,14 @@ Update the report with the specified ID. Either the internal TruSTAR report ID o
 #### Human Readable Output
 
 >### TruSTAR report was successfully updated
+>
 >|created|distributionType|enclaveIds|externalTrackingId|externalUrl|id|reportBody|reportDeepLink|timeBegan|title|updated|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 2020-06-22 15:25:04 | ENCLAVE | d915e45a-d0c8-4a75-987a-775649020c96 | PGJmMjcyZWJlNDA2MTUyNzYzZGUzMWY1YTIuMGNiYzk1ZTA3Yy4yMDIwMDYxNzEzMTQyNS5kMWZlMDJkOTEwLmNmYjY5Mjg1QG1haWwyMjYuc2VhODEubWNzdi5uZXQ+ |  | 6e00a714-379a-4db8-ac0c-812a629c8288 | <br/>==================================================<br/> EMAIL THREAD DATE: 2020-06-22 11:22:59<br/>==================================================<br/>Fwd: Looking to hire? | https://station.trustar.co/constellation/reports/6e00a714-379a-4db8-ac0c-812a629c8288 | 2020-06-22 15:25:04 | The new title | 2020-06-22 15:25:04 |
 
 
 ### trustar-search-reports
+
 ***
 Searches for all reports that contain the given search term.
 
@@ -2481,6 +2558,7 @@ Searches for all reports that contain the given search term.
 #### Base Command
 
 `trustar-search-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2503,9 +2581,11 @@ Searches for all reports that contain the given search term.
 
 
 #### Command Example
+
 ```!trustar-search-reports search_term=WANNACRY```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -2618,6 +2698,7 @@ Searches for all reports that contain the given search term.
 #### Human Readable Output
 
 >### TruSTAR reports that contain the term WANNACRY
+>
 >|created|distributionType|enclaveIds|id|title|updated|
 >|---|---|---|---|---|---|
 >| 2020-07-02 19:14:00 | ENCLAVE | d039cebb-fb2a-411f-bbc8-7e6a80af105f | 319b7fa5-0be0-4ff0-aac8-f4455f7a99ce | URLhaus - http://demo.singhealth.xyz/files/WannaCry/GeneralElectionCandidates.pdf.exe | 2020-07-02 19:14:00 |
@@ -2648,6 +2729,7 @@ Searches for all reports that contain the given search term.
 
 
 ### trustar-add-to-whitelist
+
 ***
 Add to allow list a list of indicator values for the user’s company.
 
@@ -2655,6 +2737,7 @@ Add to allow list a list of indicator values for the user’s company.
 #### Base Command
 
 `trustar-add-to-whitelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2667,9 +2750,11 @@ Add to allow list a list of indicator values for the user’s company.
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-add-to-whitelist indicators=8.8.8.8```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2679,6 +2764,7 @@ There is no context output for this command.
 >['8.8.8.8'] added to the allow list successfully
 
 ### trustar-remove-from-whitelist
+
 ***
 Delete an indicator from the user’s company allow list.
 
@@ -2686,6 +2772,7 @@ Delete an indicator from the user’s company allow list.
 #### Base Command
 
 `trustar-remove-from-whitelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2700,9 +2787,11 @@ There is no context output for this command.
 
 
 #### Command Example
+
 ```!trustar-remove-from-whitelist indicator=8.8.8.8 indicator_type=IP```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2713,6 +2802,7 @@ There is no context output for this command.
 
 
 ### trustar-get-phishing-submissions
+
 ***
 Fetches all phishing submissions that fit the given criteria
 
@@ -2720,6 +2810,7 @@ Fetches all phishing submissions that fit the given criteria
 #### Base Command
 
 `trustar-get-phishing-submissions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2746,9 +2837,11 @@ Fetches all phishing submissions that fit the given criteria
 
 
 #### Command Example
+
 ```!trustar-get-phishing-submissions from_time="7 days ago"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2760,6 +2853,7 @@ Fetches all phishing submissions that fit the given criteria
 
 
 ### trustar-set-triage-status
+
 ***
 Marks a phishing email submission with one of the phishing namespace tags
 
@@ -2767,6 +2861,7 @@ Marks a phishing email submission with one of the phishing namespace tags
 #### Base Command
 
 `trustar-set-triage-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2780,9 +2875,11 @@ Marks a phishing email submission with one of the phishing namespace tags
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-set-triage-status submission_id=6e00a714-379a-4db8-ac0c-812a629c8288 status=CONFIRMED```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2793,6 +2890,7 @@ There is no context output for this command.
 
 
 ### trustar-get-phishing-indicators
+
 ***
 Get phishing indicators that match the given criteria.
 
@@ -2800,6 +2898,7 @@ Get phishing indicators that match the given criteria.
 #### Base Command
 
 `trustar-get-phishing-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2839,9 +2938,11 @@ Get phishing indicators that match the given criteria.
 
 
 #### Command Example
+
 ```!trustar-get-phishing-indicators from_time="7 days ago"```
 
 #### Context Example
+
 ```
 {}
 ```

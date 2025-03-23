@@ -1,5 +1,6 @@
 Ingest indicator feeds from OpenCTI. 
 Compatible with OpenCTI v3 instances. For v4.* and grater OpenCTI versions use the OpenCTI Feed 4.X integration.
+
 ## Configure OpenCTI Feed in Cortex
 
 
@@ -21,6 +22,7 @@ Compatible with OpenCTI v3 instances. For v4.* and grater OpenCTI versions use t
 | proxy | Use system proxy settings | False |
 
 #### Indicator type parameter
+
 Possible values that are supported in XSOAR and will be generated out of the box:
 
 | **Types** |
@@ -64,9 +66,12 @@ The following types are supported in OpenCTI but are not supported out of the bo
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### opencti-get-indicators
+
 ***
 Gets indicators from the feed.
 
@@ -74,6 +79,7 @@ Gets indicators from the feed.
 #### Base Command
 
 `opencti-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -93,9 +99,11 @@ Gets indicators from the feed.
 
 
 #### Command Example
+
 ```!opencti-get-indicators limit=2 indicator_types=domain```
 
 #### Context Example
+
 ```
 {
     "OpenCTI": {
@@ -117,6 +125,7 @@ Gets indicators from the feed.
 #### Human Readable Output
 
 >### Indicators from OpenCTI
+>
 >|type|value|
 >|---|---|
 >| Domain | test.com |
@@ -124,6 +133,7 @@ Gets indicators from the feed.
 
 
 ### opencti-reset-fetch-indicators
+
 ***
 WARNING: This command will reset your fetch history.
 
@@ -131,6 +141,7 @@ WARNING: This command will reset your fetch history.
 #### Base Command
 
 `opencti-reset-fetch-indicators`
+
 #### Input
 
 There are no input arguments for this command.
@@ -140,9 +151,11 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!opencti-reset-fetch-indicators```
 
 #### Context Example
+
 ```
 {}
 ```

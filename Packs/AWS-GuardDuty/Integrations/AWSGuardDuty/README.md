@@ -55,6 +55,7 @@ You can execute these commands from the CLI, as part of an automation, or in a p
 execute a command, a DBot message appears in the War Room with the command details.
 
 ### aws-gd-create-detector
+
 ***
 Create an AWS Guard Duty Detector on the integration instance specified aws account.
 
@@ -66,6 +67,7 @@ Action: _guardduty:CreateDetector_
 #### Base Command
 
 `aws-gd-create-detector`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -92,6 +94,7 @@ Action: _guardduty:CreateDetector_
 ```!aws-gd-create-detector enabled=True region=eu-west-2```
 
 ### aws-gd-delete-detector
+
 ***
 Deletes a Amazon GuardDuty detector specified by the detector ID.
 
@@ -103,6 +106,7 @@ Action: _guardduty:DeleteDetector_
 #### Base Command
 
 `aws-gd-delete-detector`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -123,6 +127,7 @@ There is no context output for this command.
 ```!aws-gd-delete-detector detectorId=38b1235ed3fe245279cd0c8e235db0715ac5561eb```
 
 ### aws-gd-get-detector
+
 ***
 Retrieves an Amazon GuardDuty detector specified by the detectorId.
 
@@ -134,6 +139,7 @@ Action: _guardduty:GetDetector_
 #### Base Command
 
 `aws-gd-get-detector`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -168,6 +174,7 @@ Action: _guardduty:GetDetector_
 ```!aws-gd-get-detector detectorId=38b1ed3fe279fdascd0c8edb071dsf5ac5561eb region=eu-west-2```
 
 ### aws-gd-update-detector
+
 ***
 Updates an Amazon GuardDuty detector specified by the detectorId.
 
@@ -179,6 +186,7 @@ Action: _guardduty:UpdateDetector_
 #### Base Command
 
 `aws-gd-update-detector`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -204,6 +212,7 @@ There is no context output for this command.
 ```aws-gd-update-detector detectorId=38b1ed3fe279fdascd0c8edb071dsf5ac5561eb enable=True```
 
 ### aws-gd-create-ip-set
+
 ***
 A list of trusted IP addresses on allow list for secure communication with AWS infrastructure and applications.
 
@@ -215,6 +224,7 @@ Action: _guardduty:CreateIPSet_
 #### Base Command
 
 `aws-gd-create-ip-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -241,6 +251,7 @@ Action: _guardduty:CreateIPSet_
 ```!aws-gd-create-ip-set format=TXT location=https://s3.eu-central-1.amazonaws.com/test/ipset.txt activate=True detectorId=38b1ed3fe279czvasdd0c8edb0715azdsfc5561eb name=test region=eu-west-2```
 
 ### aws-gd-delete-ip-set
+
 ***
 Deletes the IPSet specified by the IPSet ID.
 
@@ -252,6 +263,7 @@ Action: _guardduty:DeleteIPSet_
 #### Base Command
 
 `aws-gd-delete-ip-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -273,6 +285,7 @@ There is no context output for this command.
 ```!aws-gd-delete-ip-set detectorId=38b1ed3fe279cd0c8edb0715ac5561eb ipSetId=7eb1f440be5931f168280b574a26d44d region=eu-west-2```
 
 ### aws-gd-list-detectors
+
 ***
 Lists detectorIds of all the existing Amazon GuardDuty detector resources.
 
@@ -284,6 +297,7 @@ Action: _guardduty:ListDetectors_
 #### Base Command
 
 `aws-gd-list-detectors`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -308,6 +322,7 @@ Action: _guardduty:ListDetectors_
 ```!aws-gd-list-detectors region=eu-west-2```
 
 ### aws-gd-update-ip-set
+
 ***
 Updates the IPSet specified by the IPSet ID.
 
@@ -319,6 +334,7 @@ Action: _guardduty:UpdateIPSet_
 #### Base Command
 
 `aws-gd-update-ip-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -343,6 +359,7 @@ There is no context output for this command.
 ```!aws-gd-update-ip-set detectorId=38b1ed3fe279cd0c8edb0715ac5561eb ipSetId=7eb1f440be5931f168280b574a26d44d activate=False region=eu-west-2```
 
 ### aws-gd-get-ip-set
+
 ***
 Retrieves the IPSet specified by the IPSet ID.
 
@@ -354,6 +371,7 @@ Action: _guardduty:GetIPSet_
 #### Base Command
 
 `aws-gd-get-ip-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -381,6 +399,7 @@ Action: _guardduty:GetIPSet_
 ```!aws-gd-get-ip-set detectorId=38b1ed3fesdf279cd0c8edbdsf071sdgfac5561eb ipSetId=7eb1sdff440be5931f1682adf80b574a26d44d region=eu-west-2```
 
 ### aws-gd-list-ip-sets
+
 ***
 Lists the IPSets of the GuardDuty service specified by the detector ID.
 
@@ -392,6 +411,7 @@ Action: _guardduty:ListIPSet_
 #### Base Command
 
 `aws-gd-list-ip-sets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -417,6 +437,7 @@ Action: _guardduty:ListIPSet_
 ```!aws-gd-list-ip-sets detectorId=38b1ed3fesdf279cd0c8edbdsf071sdgfac5561eb region=eu-west-2```
 
 ### aws-gd-create-threatintel-set
+
 ***
 Create a new ThreatIntelSet. ThreatIntelSets consist of known malicious IP addresses. GuardDuty generates findings based on
 ThreatIntelSets.
@@ -429,6 +450,7 @@ Action: _guardduty:CreateThreatIntelSet_
 #### Base Command
 
 `aws-gd-create-threatintel-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -455,6 +477,7 @@ Action: _guardduty:CreateThreatIntelSet_
 ```!aws-gd-create-threatintel-set format=TXT location=https://s3.eu-central-1.amazonaws.com/test/threatintel.txt activate=True detectorId=38b1ed3fe279czvasdd0c8edb0715azdsfc5561eb name=test region=eu-west-2```
 
 ### aws-gd-delete-threatintel-set
+
 ***
 Deletes ThreatIntelSet specified by the ThreatIntelSet ID.
 
@@ -466,6 +489,7 @@ Action: _guardduty:DeleteThreatIntelSet_
 #### Base Command
 
 `aws-gd-delete-threatintel-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -487,6 +511,7 @@ There is no context output for this command.
 ```!aws-gd-delete-threatintel-set detectorId=38b1ed3fe279cd0c8edb0715ac5561eb threatIntelSetId=7eb1f440be5931f168280b574a26d44d region=eu-west-2```
 
 ### aws-gd-get-threatintel-set
+
 ***
 Retrieves the ThreatIntelSet that is specified by the ThreatIntelSet ID.
 
@@ -498,6 +523,7 @@ Action: _guardduty:GetThreatIntelSet_
 #### Base Command
 
 `aws-gd-get-threatintel-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -525,6 +551,7 @@ Action: _guardduty:GetThreatIntelSet_
 ```!aws-gd-get-threatintel-set detectorId=38b1ed3fe279cd0c8edb0715ac5561eb threatIntelSetId=7eb1f440be5931f168280b574a26d44d region=eu-west-2```
 
 ### aws-gd-list-threatintel-sets
+
 ***
 Lists the ThreatIntelSets of the GuardDuty service specified by the detector ID.
 
@@ -536,6 +563,7 @@ Action: _guardduty:ListThreatIntelSet_
 #### Base Command
 
 `aws-gd-list-threatintel-sets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -561,6 +589,7 @@ Action: _guardduty:ListThreatIntelSet_
 ```!aws-gd-list-threatintel-sets detectorId=38b1ed3fe279cd0c8edb0715ac5561eb region=eu-west-2```
 
 ### aws-gd-update-threatintel-set
+
 ***
 Updates the ThreatIntelSet specified by ThreatIntelSet ID.
 
@@ -572,6 +601,7 @@ Action: _guardduty:UpdateThreatIntelSet_
 #### Base Command
 
 `aws-gd-update-threatintel-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -596,6 +626,7 @@ There is no context output for this command.
 ```!aws-gd-update-threatintel-set detectorId=38b1ed3fe279cd0c8edb0715ac5561eb threatIntelSetId=7eb1f440be5931f168280b574a26d44d activate=False region=eu-west-2```
 
 ### aws-gd-list-findings
+
 ***
 Lists Amazon GuardDuty findings for the specified detector ID.
 
@@ -607,6 +638,7 @@ Action: _guardduty:ListFindings_
 #### Base Command
 
 `aws-gd-list-findings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -632,6 +664,7 @@ Action: _guardduty:ListFindings_
 ```!aws-gd-list-findings detectorId=38b1ed3fe279cd0c8edb0715ac5561eb region=eu-west-2```
 
 ### aws-gd-get-findings
+
 ***
 Describes Amazon GuardDuty findings specified by finding IDs.
 
@@ -643,6 +676,7 @@ Action: _guardduty:GetFindings_
 #### Base Command
 
 `aws-gd-get-findings`
+
 #### Input
 
 | **Argument Name**   | **Description**                                                                                                                                           | **Required** |
@@ -688,6 +722,7 @@ Action: _guardduty:GetFindings_
 ```!aws-gd-get-findings detectorIds=4f1fc7cd7dsg26sdf4328d8dc813 findingIds=96b1ac608sdf00e5183c3dds115c36aac328b,0ab180f5801sdg954418f3806c2a45282c9```
 
 ### aws-gd-create-sample-findings
+
 ***
 Generates example findings of types specified by the list of finding types. If 'NULL' is specified for findingTypes, the API
 generates example findings of all supported finding types.
@@ -700,6 +735,7 @@ Action: _guardduty:CreateSampleFindings_
 #### Base Command
 
 `aws-gd-create-sample-findings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -721,6 +757,7 @@ There is no context output for this command.
 ```!aws-gd-create-sample-findings detectorId=4f1fc7cd7dsg2adf6sdf4328d8dc813 findingTypes=NULL region=eu-central-1```
 
 ### aws-gd-archive-findings
+
 ***
 Archives Amazon GuardDuty findings specified by the list of finding IDs.
 
@@ -732,6 +769,7 @@ Action: _guardduty:ArchiveFindings_
 #### Base Command
 
 `aws-gd-archive-findings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -753,6 +791,7 @@ There is no context output for this command.
 ```!aws-gd-archive-findings detectorIds=4f1fc7cd7dsg26sdf4328d8dc813 findingIds=96b1ac608sdf00e5183c3dds115c36aac328b,0ab180f5801sdg954418f3806c2a45282c9```
 
 ### aws-gd-unarchive-findings
+
 ***
 Unarchives Amazon GuardDuty findings specified by the list of finding IDs.
 
@@ -764,6 +803,7 @@ Action: _guardduty:UnarchiveFindings_
 #### Base Command
 
 `aws-gd-unarchive-findings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -781,6 +821,7 @@ There is no context output for this command.
 ```!aws-gd-unarchive-findings detectorIds=4f1fc7cd7dsg26sdf4328d8dc813 findingIds=96b1ac608sdf00e5183c3dds115c36aac328b,0ab180f5801sdg954418f3806c2a45282c9```
 
 ### aws-gd-update-findings-feedback
+
 ***
 Marks specified Amazon GuardDuty findings as useful or not useful.
 
@@ -792,6 +833,7 @@ Action: _guardduty:UpdateFindingsFeedback_
 #### Base Command
 
 `aws-gd-update-findings-feedback`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -815,6 +857,7 @@ There is no context output for this command.
 ```!aws-gd-update-findings-feedback detectorIds=4f1fc7cd7dsg26sdf4328d8dc813 findingIds=96b1ac608sdf00e5183c3dds115c36aac328b comments=Good Job feedback=USEFUL```
 
 ### aws-gd-list-members
+
 ***
 Describes Amazon GuardDuty members for the specified detector ID.
 
@@ -826,6 +869,7 @@ Action: _guardduty:ListMembers_
 #### Base Command
 
 `aws-gd-list-members`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -857,6 +901,7 @@ Action: _guardduty:ListMembers_
 ```!aws-gd-list-members detectorIds=4f1fc7cd7dsg26sdf4328d8dc813```
 
 ### aws-gd-get-members
+
 ***
 Describes Amazon GuardDuty members for the specified detector ID & account ID.
 
@@ -868,6 +913,7 @@ Action: _guardduty:GetMembers_
 #### Base Command
 
 `aws-gd-get-members`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -898,12 +944,16 @@ Action: _guardduty:GetMembers_
 
 
 ## Breaking changes from the previous version of this integration - AWS-GuardDuty
+
 The following sections list the changes in this version.
 
 ### Commands
+
 Fetch incidents command - Findings that are fetched are no longer moved automatically to the GuardDuty archive.
+
 ### Parameters
+
 The following parameters were added in this version:
-- *How many incidents to fetch each time*
-- *First fetch timestamp*
-- *Archive findings After Fetch*
+* _How many incidents to fetch each time_
+* _First fetch timestamp_
+* _Archive findings After Fetch_

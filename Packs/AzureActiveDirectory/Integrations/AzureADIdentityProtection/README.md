@@ -2,7 +2,9 @@ Gets information from the Azure Active Directory Identity Protection service.
 This integration was integrated and tested with the beta version of Azure Active Directory Identity Protection API.
 
 ## Required Permissions
+
 To use this integration, the following permissions are required on the Azure app.  
+
 - `IdentityRiskEvent.Read.All` 
 - `IdentityRiskyUser.ReadWrite.All`
 - `User.Read`
@@ -11,6 +13,7 @@ To use this integration, the following permissions are required on the Azure app
 
 ---
 Theres two ways to connect to the Azure Active Directory Identity Protection:
+
 1. Azure app flows:
     - Cortex XSOAR Azure app
     - Self Deployed Azure app
@@ -21,24 +24,31 @@ Theres two ways to connect to the Azure Active Directory Identity Protection:
 ### Azure app flows
 
 ---
+
 #### Cortex XSOAR Azure app
+
 To use the Cortex XSOAR Azure app, use the default application ID `4ffef4a4-601f-4393-a789-432f3f3b8470` and fill in your subscription ID.
 
 #### Self Deployed Azure app 
+
 To use a self-deployed Azure app, add a new Azure App Registration in the Azure Portal
+
 1. The app must allow public client flows (which can be found under the **Authentication** section of the app).
 2. The app must be multi-tenant.
 3. The app should be granted the permissions listed in the [required permissions](#required-permissions) section above. 
 
 ### Client Credentials Flow
+
 ___
 Follow these steps for a self-deployed configuration:
+
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
 2. In the instance configuration, select the ***client-credentials*** checkbox.
 3. Enter your Client/Application ID in the ***Application ID*** parameter. 
 4. Enter your Client Secret in the ***Client Secret*** parameter.
 5. Enter your Tenant ID in the ***Tenant ID*** parameter.
 6. Run the ***azure-ad-auth-start*** command to test the connection and the authorization process. 
+
 ---
 
 ## Configure Azure Active Directory Identity Protection on Cortex XSOAR
@@ -57,6 +67,7 @@ Follow these steps for a self-deployed configuration:
     | Client Secret | Encryption key given by the admin | False |
     | Trust any certificate (not secure) | When selected, certificates are not checked.  | False |
     | Use system proxy settings | When selected, runs the integration instance using a proxy server (https or http) that you defined in the server configuration.  | False |
+
 4. Run the **!azure-ad-auth-start** command to start the connection process.
 5. Follow the instructions shown. The last of them should be running the **!azure-ad-auth-complete** command.
 6. Run the **!azure-ad-auth-test** command to validate the URLs, token, and connection.
@@ -64,6 +75,7 @@ Follow these steps for a self-deployed configuration:
 #### Base Command
 
 `azure-ad-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -73,6 +85,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-ad-auth-test```
 
 #### Human Readable Output
@@ -80,6 +93,7 @@ There is no context output for this command.
 >✅ Success!
 
 ### azure-ad-auth-start
+
 ***
 Run this command to start the authorization process and follow the instructions shown.
 
@@ -87,6 +101,7 @@ Run this command to start the authorization process and follow the instructions 
 #### Base Command
 
 `azure-ad-auth-start`
+
 #### Input
 
 There are no input arguments for this command.
@@ -96,16 +111,19 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-ad-auth-start```
 
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
 >and enter the code **EXAMPLE-CODE** to authenticate.
 >2. Run the **!azure-ad-auth-complete** command in the War Room.
 
 ### azure-ad-auth-complete
+
 ***
 Run this command to complete the authorization process. This should be used after running the azure-ad-auth-start command.
 
@@ -113,6 +131,7 @@ Run this command to complete the authorization process. This should be used afte
 #### Base Command
 
 `azure-ad-auth-complete`
+
 #### Input
 
 There are no input arguments for this command.
@@ -122,15 +141,18 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ``` !azure-ad-auth-complete ```
 
 #### Human Readable Output
+
 ```
 ✅ Authorization completed successfully.
 ```
 
 
 ### azure-ad-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
@@ -138,6 +160,7 @@ Run this command if for some reason you need to rerun the authentication process
 #### Base Command
 
 `azure-ad-auth-reset`
+
 #### Input
 
 There are no input arguments for this command.
@@ -147,6 +170,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-ad-auth-reset```
 
 #### Human Readable Output
@@ -154,15 +178,18 @@ There is no context output for this command.
 >Authorization was reset successfully. Run **!azure-ad-auth-start** to start the authentication process.
 
 ### azure-ad-identity-protection-risks-list
+
 ***
 Retrieve the properties of a collection of riskDetection objects.
 
 #### Required Permissions
+
 `IdentityRiskEvent.Read.All`
 
 #### Base Command
 
 `azure-ad-identity-protection-risks-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -208,9 +235,11 @@ Retrieve the properties of a collection of riskDetection objects.
 
 
 #### Command Example
+
 ```!azure-ad-identity-protection-risks-list```
 
 #### Context Example
+
 ```json
 {
     "AADIdentityProtection": {
@@ -285,6 +314,7 @@ Retrieve the properties of a collection of riskDetection objects.
 #### Human Readable Output
 
 >### Risks (6 results)
+>
 >|User ID|User Principal Name|User Display Name|IP Address|Detected Date Time|Activity|Activity Date Time|Additional Info|Correlation ID|Detection Timing Type|ID|Last Updated Date Time|Location|Request ID|Risk Detail|Risk Event Type|Risk Level|Risk State|Risk Type|Source|Token Issuer Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 | jdoe@example.com | John Doe | 1.1.1.1 | 2021-04-25T09:00:40.7780969Z | signin | 2021-04-25T09:00:40.7780969Z | [{"Key":"userAgent","Value":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36"}] | 271ac223-695b-418e-85b3-7809070ee33e | realtime | 86a45315157fb75c3a6e0936ef854c139df99bdfbde4bd7e7f1bc685c3638908 | 2021-05-23T08:20:41.9161522Z | city: San Jose<br/>state: California<br/>countryOrRegion: US<br/>geoCoordinates: {"latitude": 37.33053, "longitude": -121.8382} | 86b6e4a1-25cb-40c7-af2b-9e79c6106000 | userPerformedSecuredPasswordChange | unfamiliarFeatures | low | remediated | unfamiliarFeatures | IdentityProtection | AzureAD |
@@ -296,15 +326,18 @@ Retrieve the properties of a collection of riskDetection objects.
 
 
 ### azure-ad-identity-protection-risky-user-list
+
 ***
 Retrieves the properties of a collection of riskDetection objects.
 
 #### Required Permissions
+
 `IdentityRiskEvent.Read.All`
 
 #### Base Command
 
 `azure-ad-identity-protection-risky-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -335,9 +368,11 @@ Retrieves the properties of a collection of riskDetection objects.
 
 
 #### Command Example
+
 ```!azure-ad-identity-protection-risky-user-list```
 
 #### Context Example
+
 ```json
 {
     "AADIdentityProtection": {
@@ -361,22 +396,26 @@ Retrieves the properties of a collection of riskDetection objects.
 #### Human Readable Output
 
 >### Risky Users (1 result)
+>
 >|User Principal Name|User Display Name|ID|Is Deleted|Is Processing|Risk Detail|Risk Last Updated Date Time|Risk Level|Risk State|
 >|---|---|---|---|---|---|---|---|---|
 >| jdoe@example.com | John Doe | 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 | false | false | none | 2021-07-21T17:56:28.958147Z | medium | atRisk |
 
 
 ### azure-ad-identity-protection-risky-user-history-list
+
 ***
 Gets the risk history of a riskyUser resource.
 
 #### Required Permissions
+
 `IdentityRiskyUser.Read.All`
 `IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
 `azure-ad-identity-protection-risky-user-history-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -403,9 +442,11 @@ Gets the risk history of a riskyUser resource.
 
 
 #### Command Example
+
 ```!azure-ad-identity-protection-risky-user-history-list user_id="3fa9f28b-eb0e-463a-ba7b-8089fe9991e2"```
 
 #### Context Example
+
 ```json
 {
     "AADIdentityProtection": {
@@ -440,6 +481,7 @@ Gets the risk history of a riskyUser resource.
 #### Human Readable Output
 
 >### Risky User History For 3Fa9F28B-Eb0E-463A-Ba7B-8089Fe9991E2 (12 results)
+>
 >|User ID|User Principal Name|User Display Name|Activity|ID|Initiated By|Is Deleted|Is Processing|Risk Detail|Risk Last Updated Date Time|Risk Level|Risk State|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 | jdoe@example.com | John Doe | eventTypes: unfamiliarFeatures<br/>riskEventTypes: unfamiliarFeatures<br/>detail: null | 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2637571860258849619 |  | false | false | none | 2021-05-21T09:27:05.8849619Z | high | atRisk |
@@ -457,15 +499,18 @@ Gets the risk history of a riskyUser resource.
 
 
 ### azure-ad-identity-protection-risky-user-confirm-compromised
+
 ***
 Confirms one or more riskyUser objects as compromised. This action sets the targeted user's risk level to high.
 
 #### Required Permissions
+
 `IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
 `azure-ad-identity-protection-risky-user-confirm-compromised`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -478,6 +523,7 @@ Confirms one or more riskyUser objects as compromised. This action sets the targ
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-ad-identity-protection-risky-user-confirm-compromised user_ids="3fa9f28b-eb0e-463a-ba7b-8089fe9991e3"```
 
 #### Human Readable Output
@@ -485,15 +531,18 @@ There is no context output for this command.
 >✅ Confirmed successfully.
 
 ### azure-ad-identity-protection-risky-user-dismiss
+
 ***
 Dismisses the risk of one or more riskyUser objects. This action sets the targeted user's risk level to none.
 
 #### Required Permissions
+
 `IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
 `azure-ad-identity-protection-risky-user-dismiss`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -506,6 +555,7 @@ Dismisses the risk of one or more riskyUser objects. This action sets the target
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-ad-identity-protection-risky-user-dismiss user_ids="3fa9f28b-eb0e-463a-ba7b-8089fe9991e2"```
 
 #### Human Readable Output

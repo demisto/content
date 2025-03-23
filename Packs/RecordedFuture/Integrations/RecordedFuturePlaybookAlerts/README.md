@@ -72,6 +72,7 @@ Search playbook alerts based on filters.
 | order_search_by       | The order by which to search for playbook alerts. Possible values are: updated, created.                                                                 | Optional     |
 
 ##### Command Example
+
 ```!recordedfuture-playbook-alerts-search```
 ```!recordedfuture-playbook-alerts-search category=domain_abuse```
 ```!recordedfuture-playbook-alerts-search category=vulnerability```
@@ -117,6 +118,7 @@ Get Playbook alert details by ID.
 | detail_sections   | What evidence sections to include in the fetch. Fetches all available if not specified. Possible values are: status, action, summary, log, whois, dns. | Optional     |
 
 ##### Command Example
+
 ```!recordedfuture-playbook-alerts-details alert_ids="12312312-1231-1231-1231-123123123123" detail_sections="status,log"```
 
 #### Context Output
@@ -273,6 +275,7 @@ Update the status of one or multiple Playbook alerts
 | reopen            | Set the reopen strategy for the alert. Reopen on significant updates or keep the alert Resolved. Default: reopen on significant updates. Can only be used with new_status=resolved. | Optional     |
 
 ##### Command Example
+
 ```!recordedfuture-playbook-alerts-update alert_ids="12312312-1231-1231-1231-123123123123" new_status="New"```
 
 #### Context Output

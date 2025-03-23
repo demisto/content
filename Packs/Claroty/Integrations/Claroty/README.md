@@ -2,6 +2,7 @@ Use the Claroty CTD integration to manage assets and alerts.
 This integration was integrated and tested with version 4.0.1 of Claroty
 
 ## Claroty Playbook
+
 Playbook 1: OT Asset Discovery
 Maintaining an accurate enterprise asset database is extremely difficult,
 but without it effective security is near impossible. This playbook automates the population and maintenance of the 
@@ -23,6 +24,7 @@ In order to scale, enterprises must centralize and automate the processing of al
 
 
 ## Use Cases
+
 Retrieve and resolve alerts related to OT devices (communicating outside of the network,
  policy violations such as active outside working hours, etc.)
 
@@ -30,6 +32,7 @@ Insights: get information about vulnerable assets in the network (retrieve vulne
 divide according to CVE risk and mitigate accordingly (high will have different mitigation steps)
 
 ## Configure Claroty on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -48,28 +51,38 @@ divide according to CVE risk and mitigate accordingly (high will have different 
     * __Fetch by alert type__
     * __Exclude resolved alerts__
 4. Click __Test__ to validate the URLs, token, and connection.
+
 ## Fetched Incidents Data
+
 ---
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. claroty-get-assets
 2. claroty-query-alerts
 3. claroty-resolve-alert
 4. claroty-get-single-alert
+
 ### 1. claroty-get-assets
+
 ---
 Gets all assets from CTD. You can apply one or more filters.
+
 ##### Required Permissions
+
 Admin user.
+
 ##### Base Command
 
 `claroty-get-assets`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | fields | Asset fields to return. The default value is "all". | Optional | 
 | criticality | Returns assets with this criticality. Can be "Low", "Medium", or "High". | Optional | 
@@ -81,7 +94,7 @@ Admin user.
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Claroty.Asset.AssetID | Number | The ID of the asset. | 
 | Claroty.Asset.AssetType | String | The asset type. | 
@@ -114,9 +127,11 @@ Admin user.
 
 
 ##### Command Example
+
 ```!claroty-get-assets asset_limit=1 criticality=High should_enrich_assets=True```
 
 ##### Context Example
+
 ```
 {
     "CVE": [
@@ -200,23 +215,30 @@ Admin user.
 ```
 
 ##### Human Readable Output
+
 ### Claroty Asset List
+
 |AssetID|AssetType|CVE|ClassType|Criticality|FirmwareVersion|HighestCVEScore|IP|InsightName|LastSeen|MAC|Name|ResourceID|RiskLevel|SiteID|SiteName|Vendor|VirtualZone|WasParsed|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 9 | PLC | {'ID': 'RA-470154-1', 'CVSS': '8.8', 'Published': '2012-01-19', 'Modified': '2018-01-11', 'Description': 'Denial of Service by receiving valid CIP message'},<br/>{'ID': 'RA-470154-3', 'CVSS': '8.8', 'Published': '2012-01-19', 'Modified': '2018-01-11', 'Description': 'Denial of Service (reset the product) by receiving valid CIP message'},<br/>{'ID': 'RA-470155-1', 'CVSS': '8.8', 'Published': '2012-01-19', 'Modified': '2018-01-11', 'Description': 'Denial of Service by receiving malformed CIP packet'} | OT | High | V4.003 | 8.8 | 10.1.0.10 | Full Match CVEs,<br/>Open Ports | 2020-02-19T07:42:16+00:00 | E4:90:69:A7:70:0F | 10.1.0.10 | 9-1 | 1 | 1 | site-1 | Rockwell Automation | PLC: Rockwell |  |
 
 
 ### 2. claroty-query-alerts
+
 ---
 Gets alerts from CTD.
+
 ##### Required Permissions
+
 Admin user.
+
 ##### Base Command
 
 `claroty-query-alerts`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | fields | Alert fields to return. | Optional | 
 | sort_by | The field by which to sort the results. The default value is "timestamp".<br/>Default sort order is ascending | Optional | 
@@ -230,7 +252,7 @@ Admin user.
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Claroty.Alert.AlertType | String | The alert type. | 
 | Claroty.Alert.AlertTypeID | Number | The alert type int value | 
@@ -262,9 +284,11 @@ Admin user.
 
 
 ##### Command Example
+
 ```!claroty-query-alerts alert_limit=1 type=`Known Threat Alert````
 
 ##### Context Example
+
 ```
 {
     "Claroty.Alert": [
@@ -392,23 +416,30 @@ Admin user.
 ```
 
 ##### Human Readable Output
+
 ### Claroty Alert List
+
 |AlertType|AlertTypeID|Category|Description|Indicator|NetworkID|RelatedAssets|Resolved|ResourceID|Severity|
 |---|---|---|---|---|---|---|---|---|---|
 | KnownThreatAlert | 23 | Security | Known Threat: Threat ET TROJAN Conficker.b Shellcode was detected from 192.168.0.121 to 192.168.0.100 | Alert ID - 14<br/>Description - Event occurred out of working hours<br/>Points - 10<br/><br/>Alert ID - 14<br/>Description - First time over the past 30 days, this Threat Signature is seen in the network<br/>Points - 100<br/><br/> | 1 | {'AssetID': 15, 'Name': 'GTWB', 'InsightName': None, 'Vendor': 'Advantech Technology', 'Criticality': None, 'AssetType': 'Endpoint', 'LastSeen': None, 'IP': None, 'MAC': ['00:0B:AB:1A:DD:DD'], 'VirtualZone': None, 'ClassType': None, 'SiteName': None, 'SiteID': 1, 'WasParsed': None, 'RiskLevel': None, 'FirmwareVersion': None, 'ResourceID': '15-1'},<br/>{'AssetID': 33, 'Name': 'OISERVM', 'InsightName': None, 'Vendor': 'Advantech Technology', 'Criticality': None, 'AssetType': 'Endpoint', 'LastSeen': None, 'IP': None, 'MAC': ['00:0B:AB:1A:DE:BE', '00:0B:AB:1A:DE:BF'], 'VirtualZone': None, 'ClassType': None, 'SiteName': None, 'SiteID': 1, 'WasParsed': None, 'RiskLevel': None, 'FirmwareVersion': None, 'ResourceID': '33-1'},<br/>{'AssetID': 19, 'Name': 'GTWA', 'InsightName': None, 'Vendor': 'Advantech Technology', 'Criticality': None, 'AssetType': 'Endpoint', 'LastSeen': None, 'IP': None, 'MAC': ['00:0B:AB:1A:DD:F8'], 'VirtualZone': None, 'ClassType': None, 'SiteName': None, 'SiteID': 1, 'WasParsed': None, 'RiskLevel': None, 'FirmwareVersion': None, 'ResourceID': '19-1'},<br/>{'AssetID': 18, 'Name': 'DRWSTN', 'InsightName': None, 'Vendor': 'Advantech Technology', 'Criticality': None, 'AssetType': 'Endpoint', 'LastSeen': None, 'IP': None, 'MAC': ['00:0B:AB:1A:DE:BC'], 'VirtualZone': None, 'ClassType': None, 'SiteName': None, 'SiteID': 1, 'WasParsed': None, 'RiskLevel': None, 'FirmwareVersion': None, 'ResourceID': '18-1'},<br/>{'AssetID': 17, 'Name': 'OISERVR', 'InsightName': None, 'Vendor': 'Dell', 'Criticality': None, 'AssetType': 'Endpoint', 'LastSeen': None, 'IP': None, 'MAC': ['F0:4D:A2:EF:FF:11'], 'VirtualZone': None, 'ClassType': None, 'SiteName': None, 'SiteID': 1, 'WasParsed': None, 'RiskLevel': None, 'FirmwareVersion': None, 'ResourceID': '17-1'} | true | 14-1 | Critical |
 
 
 ### 3. claroty-resolve-alert
+
 ---
 Resolves alerts.
+
 ##### Required Permissions
+
 Admin user.
+
 ##### Base Command
 
 `claroty-resolve-alert`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | selected_alerts | The ResourceId of the Alerts to resolve (in <alert_id>-<site_id> format) | Required | 
 | resolve_as | How to resolve the alert. Can be "archive" or "resolve". The default value is "resolve". | Optional | 
@@ -417,15 +448,17 @@ Admin user.
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Claroty.Resolve_out.success | String | Success output of alert resolving. | 
 
 
 ##### Command Example
+
 ```!claroty-resolve-alert selected_alerts="75-1" resolve_as=archive resolve_comment="Claroty is much wow!"```
 
 ##### Context Example
+
 ```
 {
     "Claroty.Resolve_out": {
@@ -435,19 +468,25 @@ Admin user.
 ```
 
 ##### Human Readable Output
+
 ## Alert was resolved successfully
 
 ### 4. claroty-get-single-alert
+
 ---
 Get a single alert from CTD.
+
 ##### Required Permissions
+
 Admin user.
+
 ##### Base Command
 
 `claroty-get-single-alert`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | fields | Asset fields to return. The default value is "all". | Optional | 
 | alert_rid | Resource ID of the desired alert. Expected value - <alert_id>-<site_id> | Required | 
@@ -455,7 +494,7 @@ Admin user.
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Claroty.Alert.AlertType | String | The alert type. | 
 | Claroty.Alert.AlertTypeID | Number | The alert type int value | 
@@ -469,9 +508,11 @@ Admin user.
 
 
 ##### Command Example
+
 ```!claroty-get-single-alert alert_rid="75-1"```
 
 ##### Context Example
+
 ```
 {
     "Claroty.Alert": {
@@ -533,7 +574,9 @@ Admin user.
 ```
 
 ##### Human Readable Output
+
 ### Claroty Alert List
+
 |AlertType|AlertTypeID|Category|Description|Indicator|NetworkID|RelatedAssets|Resolved|ResourceID|Severity|
 |---|---|---|---|---|---|---|---|---|---|
 | PortScan | 28 | Integrity | UDP Port scan: Asset 192.168.1.10 sent probe packets to 192.168.1.25 IP address on different ports | Alert ID - 75<br/>Description - This Event does not currently support Alert Indicators<br/>Points - 100<br/><br/> | 1 | {'AssetID': 47, 'Name': '192.168.1.10', 'InsightName': None, 'Vendor': 'Hewlett Packard', 'Criticality': 'Low', 'AssetType': 'Endpoint', 'LastSeen': None, 'IP': None, 'MAC': ['00:1A:4B:6A:CE:FE'], 'VirtualZone': 'Endpoint: Other', 'ClassType': 'IT', 'SiteName': 'site-1', 'SiteID': 1, 'WasParsed': None, 'RiskLevel': 0, 'FirmwareVersion': None, 'ResourceID': '47-1'},<br/>{'AssetID': 48, 'Name': '192.168.1.25', 'InsightName': None, 'Vendor': 'VMware', 'Criticality': 'Low', 'AssetType': 'Endpoint', 'LastSeen': None, 'IP': None, 'MAC': ['00:0C:29:86:C8:36'], 'VirtualZone': 'Endpoint: Other', 'ClassType': 'IT', 'SiteName': 'site-1', 'SiteID': 1, 'WasParsed': None, 'RiskLevel': 0, 'FirmwareVersion': None, 'ResourceID': '48-1'} | false | 75-1 | Critical |

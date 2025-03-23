@@ -54,8 +54,11 @@ List the roots that are defined in the current organization.
 | AWS.Organizations.RootNextToken | String | If not null, indicates that more output is available than is included in the current response. Use this value in the next_token argument in a subsequent call of the command to get the next part of the output. | 
 
 #### Command example
+
 ```!aws-org-root-list```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -84,6 +87,7 @@ List the roots that are defined in the current organization.
 #### Human Readable Output
 
 >### AWS Organization Roots
+>
 >|Id|Arn|Name|
 >|---|---|---|
 >| r-ab12 | arn:aws:organizations::111222333444:root/o-abcde12345/r-ab12 | Root |
@@ -121,8 +125,11 @@ List all of the organizational units (OUs) or accounts that are contained in the
 | AWS.Organizations.ChildrenNextToken | String | If not null, indicates that more output is available than is included in the current response. Use this value in the next_token argument in a subsequent call of the command to get the next part of the output. | 
 
 #### Command example
+
 ```!aws-org-children-list parent_id="r-ab12" child_type="OrganizationalUnit"```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -141,6 +148,7 @@ List all of the organizational units (OUs) or accounts that are contained in the
 #### Human Readable Output
 
 >### AWS Account *r-ab12* Children
+>
 >|Id|Type|
 >|---|---|
 >| ou-ab12-abcd1234 | ORGANIZATIONAL_UNIT |
@@ -175,8 +183,11 @@ This command returns only the immediate parents in the hierarchy.
 | AWS.Organizations.Parent.ChildId | String | The unique identifier \(ID\) of the organizational unit or account of the child of the parent entity. | 
 
 #### Command example
+
 ```!aws-org-parent-list child_id="ou-ab12-abcd1234"```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -194,6 +205,7 @@ This command returns only the immediate parents in the hierarchy.
 #### Human Readable Output
 
 >### AWS Account *ou-ab12-abcd1234* Parent
+>
 >|Id|Type|
 >|---|---|
 >| r-ab12 | ROOT |
@@ -228,8 +240,11 @@ This command can be called only from the organization's management account or by
 | AWS.Organizations.OrganizationUnit.Name | String | The friendly name of the organizational unit. | 
 
 #### Command example
+
 ```!aws-org-organization-unit-get organization_unit_id=ou-ab12-abcd1234```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -247,6 +262,7 @@ This command can be called only from the organization's management account or by
 #### Human Readable Output
 
 >### AWS Organization Unit
+>
 >|Id|Arn|Name|
 >|---|---|---|
 >| ou-ab12-abcd1234 | arn:aws:organizations::111222333444:ou/o-abcde12345/ou-ab12-abcd1234 | Name OU |
@@ -287,8 +303,11 @@ Lists all the accounts in the organization or a specific account by ID.
 | AWS.Organizations.AccountNextToken | String | If not null, indicates that more output is available than is included in the current response. Use this value in the next_token argument in a subsequent call of the command to get the next part of the output. | 
 
 #### Command example
+
 ```!aws-org-account-list account_id=111222333444```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -310,14 +329,18 @@ Lists all the accounts in the organization or a specific account by ID.
 #### Human Readable Output
 
 >### AWS Organization Accounts
+>
 >|Id|Arn|Name|Email|JoinedMethod|JoinedTimestamp|Status|
 >|---|---|---|---|---|---|---|
 >| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | Name | user@xsoar.com | CREATED | 2023-09-04 09:17:14.299000+00:00 | ACTIVE |
 
 
 #### Command example
+
 ```!aws-org-account-list```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -351,6 +374,7 @@ Lists all the accounts in the organization or a specific account by ID.
 #### Human Readable Output
 
 >### AWS Organization Accounts
+>
 >|Id|Arn|Name|Email|JoinedMethod|JoinedTimestamp|Status|
 >|---|---|---|---|---|---|---|
 >| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | Name | user@xsoar.com | CREATED | 2023-09-04 09:17:14.299000+00:00 | ACTIVE |
@@ -386,8 +410,11 @@ Retrieves information about the organization that the user's account belongs to.
 | AWS.Organizations.Organization.MasterAccountEmail | String | The email address that is associated with the Amazon Web Services account that is designated as the management account for the organization. | 
 
 #### Command example
+
 ```!aws-org-organization-get```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -414,6 +441,7 @@ Retrieves information about the organization that the user's account belongs to.
 #### Human Readable Output
 
 >### AWS Organization
+>
 >|Id|Arn|FeatureSet|MasterAccountArn|MasterAccountId|MasterAccountEmail|
 >|---|---|---|---|---|---|
 >| o-abcde12345 | arn:aws:organizations::111222333444:organization/o-abcde12345 | ALL | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | 111222333444 | user@xsoar.com |
@@ -447,8 +475,11 @@ Creates an organizational unit (OU) within a root or parent OU. An OU is a conta
 | AWS.Organizations.OrganizationUnit.Name | String | The friendly name of this organizational unit. | 
 
 #### Command example
+
 ```!aws-org-organization-unit-create name=test parent_id=r-12ab tags="new=true,key=value"```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -466,6 +497,7 @@ Creates an organizational unit (OU) within a root or parent OU. An OU is a conta
 #### Human Readable Output
 
 >### AWS Organization Unit
+>
 >|Id|Name|Arn|
 >|---|---|---|
 >| ou-ab12-abcd1234 | test | arn:aws:organizations::111222333444:ou/o-abcde12345/ou-ab12-abcd1234 |
@@ -492,7 +524,9 @@ Renames the specified organizational unit (OU). The ID and ARN don’t change. T
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-org-organization-unit-rename name=new_name organizational_unit_id=ou-ab12-abcd1234```
 
 #### Human Readable Output
@@ -520,7 +554,9 @@ Deletes an organizational unit (OU) from a root or another OU. All accounts and 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-org-organization-unit-delete organizational_unit_id=ou-ab12-abcd1234```
 
 #### Human Readable Output
@@ -561,8 +597,11 @@ Retrieves the list of all policies in an organization of a specified type.
 | AWS.Organizations.PolicyNextToken | String | If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output. | 
 
 #### Command example
+
 ```!aws-org-policy-list policy_type="Service Control Policy"```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -594,6 +633,7 @@ Retrieves the list of all policies in an organization of a specified type.
 #### Human Readable Output
 
 >### AWS Organization Policies
+>
 >|Id|Arn|Name|Description|Type|AwsManaged|
 >|---|---|---|---|---|---|
 >| p-FullAWSAccess | arn:aws:organizations::aws:policy/service_control_policy/p-FullAWSAccess | FullAWSAccess | Allows access to every operation | SERVICE_CONTROL_POLICY | true |
@@ -629,8 +669,11 @@ Retrieves information about a policy.
 | AWS.Organizations.Policy.AwsManaged | Boolean | Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, organizational units, or accounts, but cannot be edited. | 
 
 #### Command example
+
 ```!aws-org-policy-get policy_id=p-1234abcd```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -651,6 +694,7 @@ Retrieves information about a policy.
 #### Human Readable Output
 
 >### AWS Organization Policies
+>
 >|Id|Arn|Name|Description|Type|AwsManaged|
 >|---|---|---|---|---|---|
 >| p-1234abcd | arn:aws:organizations::111222333444:policy/o-abcde12345/service_control_policy/p-1234abcd | Test | Used for test purposes | SERVICE_CONTROL_POLICY | false |
@@ -677,7 +721,9 @@ Attaches a policy to a root, an organizational unit (OU), or an individual accou
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-org-policy-attach policy_id=p-1234abcd target_id=ou-ab12-abcd1234```
 
 #### Human Readable Output
@@ -717,8 +763,11 @@ Lists all the roots, organizational units (OUs), and accounts that the specified
 | AWS.Organizations.PolicyTargetNextToken | String | If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output. | 
 
 #### Command example
+
 ```!aws-org-policy-target-list policy_id=p-1234abcd```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -739,6 +788,7 @@ Lists all the roots, organizational units (OUs), and accounts that the specified
 #### Human Readable Output
 
 >### AWS Organization *p-1234abcd* Targets
+>
 >|TargetId|Arn|Name|Type|
 >|---|---|---|---|
 >| ou-ab12-abcd1234 | arn:aws:organizations::111222333444:ou/o-abcde12345/ou-ab12-abcd1234 | to_add_policy | ORGANIZATIONAL_UNIT |
@@ -779,8 +829,11 @@ Lists the policies that are directly attached to the specified target root, orga
 | AWS.Organizations.TargetPolicyNextToken | String | If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output. | 
 
 #### Command example
+
 ```!aws-org-target-policy-list target_id=ou-ab12-abcd1234 policy_type="Service Control Policy"```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -814,6 +867,7 @@ Lists the policies that are directly attached to the specified target root, orga
 #### Human Readable Output
 
 >### AWS Organization *ou-ab12-abcd1234* Policies
+>
 >|Id|Arn|Name|Description|Type|AwsManaged|
 >|---|---|---|---|---|---|
 >| p-1234abcd | arn:aws:organizations::111222333444:policy/o-abcde12345/service_control_policy/p-1234abcd | Test | Used for test purposes | SERVICE_CONTROL_POLICY | false |
@@ -840,7 +894,9 @@ Deletes the specified policy from the organization. Before performing this opera
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-org-policy-delete policy_id=p-1234abcd```
 
 #### Human Readable Output
@@ -869,7 +925,9 @@ Adds one or more tags to the specified resource.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-org-resource-tag-add resource_id=ou-ab12-abcd1234 tags="test=true,key=value"```
 
 
@@ -906,8 +964,11 @@ Lists tags that are attached to the specified resource.
 | AWS.Organizations.TagNextToken | String | If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output. | 
 
 #### Command example
+
 ```!aws-org-resource-tag-list resource_id=ou-ab12-abcd1234```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -938,6 +999,7 @@ Lists tags that are attached to the specified resource.
 #### Human Readable Output
 
 >### AWS Organization *ou-ab12-abcd1234* Tags
+>
 >|Key|Value|
 >|---|---|
 >| test | true |
@@ -982,8 +1044,11 @@ Creates an AWS Account that is automatically a member of the organization.
 | AWS.Organizations.Account.JoinedTimestamp | Date | The date the account became a part of the organization. | 
 
 #### Command example
+
 ```!aws-org-account-create account_name="New" email="user@xsoar.com" tags="new=true,test=yes" iam_user_access_to_billing=Deny```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1007,6 +1072,7 @@ Creates an AWS Account that is automatically a member of the organization.
 >Creating account:
 
 >### AWS Organization Accounts
+>
 >|Id|Arn|Name|Email|JoinedMethod|JoinedTimestamp|Status|
 >|---|---|---|---|---|---|---|
 >| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | New | user@xsoar.com | CREATED | 2023-09-04 09:17:14.299000+00:00 | ACTIVE |
@@ -1034,7 +1100,9 @@ Moves an account from one parent to another.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-org-account-move source_parent_id=r-12ab account_id=111222333444 destination_parent_id=ou-ab12-abcd1234```
 
 #### Human Readable Output
@@ -1065,6 +1133,7 @@ For more information on this action: https://docs.aws.amazon.com/organizations/l
 There is no context output for this command.
 
 #### Command example
+
 ```!aws-org-account-remove account_id=111222333444```
 
 #### Human Readable Output
@@ -1094,7 +1163,9 @@ Closes an AWS member account within an organization.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-org-account-close account_id=111222333444```
 
 #### Human Readable Output

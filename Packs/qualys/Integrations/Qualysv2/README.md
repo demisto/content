@@ -2,7 +2,9 @@ Qualys VMDR lets you create, run, fetch and manage reports, launch and manage vu
 This integration was integrated and tested with version 2.0 of QualysVulnerabilityManagement
 
 ## Changes compared to V1
+
 # Changes in commands
+
 1. qualys-vm-scan-launch command - Added new parameters and outputs.
 2. qualys-ip-add - Added new parameters and outputs.
 3. qualys-ip-update - Added new parameters and changed existing parameters, added new outputs.
@@ -40,6 +42,7 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
 35. qualys-purge-scan-host-data - New command.
 
 # Playbooks
+
 1. Vulnerability Management - Qualys (Job) - migrated to work with this new version
 2. New playbook - qualys-pc-scan-launch-and-fetch
 3. New playbook - qualys-report-launch-compliance-and-fetch
@@ -91,6 +94,7 @@ You can execute these commands from the CLI, as part of an automation, or in a p
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### qualys-ip-list
+
 ***
 View a list of IP addresses in the user account.
 
@@ -98,6 +102,7 @@ View a list of IP addresses in the user account.
 #### Base Command
 
 `qualys-ip-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -119,9 +124,11 @@ View a list of IP addresses in the user account.
 
 
 #### Command Example
+
 ```!qualys-ip-list ips=1.1.1.1-1.1.1.5 compliance_enabled=1 certview_enabled=1```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -145,6 +152,7 @@ View a list of IP addresses in the user account.
 
 
 ### qualys-report-list
+
 ***
 Get a list of generated reports in the system
 
@@ -152,6 +160,7 @@ Get a list of generated reports in the system
 #### Base Command
 
 `qualys-report-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -182,6 +191,7 @@ Get a list of generated reports in the system
 
 
 #### Command Example
+
 ```!qualys-report-list state=Finished expires_before_datetime=2021-05-01```
 
 #### Human Readable Output
@@ -189,6 +199,7 @@ Get a list of generated reports in the system
 >No items found
 
 ### qualys-vm-scan-list
+
 ***
 Lists vulnerability scans in the user’s account
 
@@ -196,6 +207,7 @@ Lists vulnerability scans in the user’s account
 #### Base Command
 
 `qualys-vm-scan-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -241,9 +253,11 @@ Lists vulnerability scans in the user’s account
 
 
 #### Command Example
+
 ```!qualys-vm-scan-list launched_before_datetime=2021-04-20 type=API processed=1 state=Finished```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -550,6 +564,7 @@ Lists vulnerability scans in the user’s account
 #### Human Readable Output
 
 >### Scan List
+>
 >|REF|TITLE|STATUS|PROCESSED|TYPE|TARGET|PROCESSING_PRIORITY|LAUNCH_DATETIME|DURATION|USER_LOGIN|
 >|---|---|---|---|---|---|---|---|---|---|
 >| scan/1618145659.78157 | N/A | STATE: Finished | 1 | API | 1.1.1.1 | 0 - No Priority | 2021-04-11T12:54:19Z | 00:25:18 | demst2nr |
@@ -576,6 +591,7 @@ Lists vulnerability scans in the user’s account
 
 
 ### qualys-scap-scan-list
+
 ***
 Gives you a list of SCAP scans in your account
 
@@ -583,6 +599,7 @@ Gives you a list of SCAP scans in your account
 #### Base Command
 
 `qualys-scap-scan-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -630,6 +647,7 @@ Gives you a list of SCAP scans in your account
 
 
 #### Command Example
+
 ``` !qualys-scap-scan-list action=list```
 
 #### Human Readable Output
@@ -637,6 +655,7 @@ Gives you a list of SCAP scans in your account
 
 
 ### qualys-pc-scan-list
+
 ***
 Get a list of compliance scans in your account.
 
@@ -644,6 +663,7 @@ Get a list of compliance scans in your account.
 #### Base Command
 
 `qualys-pc-scan-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -689,6 +709,7 @@ Get a list of compliance scans in your account.
 
 
 #### Command Example
+
 ```!qualys-pc-scan-list scan_ref=compliance/1619018638.71779 processed=1 state=Finished```
 
 #### Human Readable Output
@@ -696,6 +717,7 @@ Get a list of compliance scans in your account.
 >No items found
 
 ### qualys-schedule-scan-list
+
 ***
 Shows schedule scans
 
@@ -703,6 +725,7 @@ Shows schedule scans
 #### Base Command
 
 `qualys-schedule-scan-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -754,9 +777,11 @@ Shows schedule scans
 
 
 #### Command Example
+
 ```!qualys-schedule-scan-list active=0 id=130694```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -799,12 +824,14 @@ Shows schedule scans
 #### Human Readable Output
 
 >### Schedule Scan List
+>
 >|ACTIVE|ID|ISCANNER_NAME|OPTION_PROFILE|PROCESSING_PRIORITY|SCHEDULE|TARGET|TITLE|USER_ENTERED_IPS|USER_LOGIN|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 130694 | External Scanner | TITLE: Initial Options<br/>DEFAULT_FLAG: 1 | 0 - No Priority | DAILY: {"@frequency_days": "1"}<br/>START_DATE_UTC: 2017-06-07T22:00:00Z<br/>START_HOUR: 0<br/>START_MINUTE: 0<br/>TIME_ZONE: {"TIME_ZONE_CODE": "BG", "TIME_ZONE_DETAILS": "(GMT+0200) Bulgaria: Europe/Sofia"}<br/>DST_SELECTED: 0 | 23.96.25.100 | MyScan01 | RANGE: {"START": "23.96.25.100", "END": "23.96.25.100"} | demst2nr |
 
 
 ### qualys-host-list
+
 ***
 View a list of scanned hosts in the user account.
 
@@ -812,6 +839,7 @@ View a list of scanned hosts in the user account.
 #### Base Command
 
 `qualys-host-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -860,9 +888,11 @@ View a list of scanned hosts in the user account.
 
 
 #### Command Example
+
 ```!qualys-host-list show_tags=1 vm_scan_since=2021-04-01```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -905,6 +935,7 @@ View a list of scanned hosts in the user account.
 #### Human Readable Output
 
 >### Host List
+>
 >|DNS|DNS_DATA|ID|IP|OS|TAGS|TRACKING_METHOD|
 >|---|---|---|---|---|---|---|
 >| one.one.one.one | HOSTNAME: one<br/>DOMAIN: one.one.one<br/>FQDN: one.one.one.one | 143444841 | 1.1.1.1 | Linux 3.13 | TAG: {"TAG_ID": "31029217", "NAME": "Internet Facing Assets"} | IP |
@@ -912,6 +943,7 @@ View a list of scanned hosts in the user account.
 
 
 ### qualys-virtual-host-list
+
 ***
 View a list of virtual hosts in the user account.
 
@@ -919,6 +951,7 @@ View a list of virtual hosts in the user account.
 #### Base Command
 
 `qualys-virtual-host-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -938,9 +971,11 @@ View a list of virtual hosts in the user account.
 
 
 #### Command Example
+
 ```!qualys-virtual-host-list ip=1.1.1.1 port=1231```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -956,12 +991,14 @@ View a list of virtual hosts in the user account.
 #### Human Readable Output
 
 >### Virtual Host List
+>
 >|FQDN|IP|PORT|
 >|---|---|---|
 >| panw.raz.com | 1.1.1.1 | 1231 |
 
 
 ### qualys-virtual-host-manage
+
 ***
 View a list of virtual hosts in the user account.
 
@@ -969,6 +1006,7 @@ View a list of virtual hosts in the user account.
 #### Base Command
 
 `qualys-virtual-host-manage`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -989,9 +1027,11 @@ View a list of virtual hosts in the user account.
 
 
 #### Command Example
+
 ```!qualys-virtual-host-manage action=create ip=1.1.1.1 port=1291 fqdn=qualys-test.com```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -1011,6 +1051,7 @@ View a list of virtual hosts in the user account.
 
 
 ### qualys-host-excluded-list
+
 ***
 Show the excluded host list for the user's account. Hosts in your excluded host list will not be scanned.
 
@@ -1018,6 +1059,7 @@ Show the excluded host list for the user's account. Hosts in your excluded host 
 #### Base Command
 
 `qualys-host-excluded-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1048,9 +1090,11 @@ Show the excluded host list for the user's account. Hosts in your excluded host 
 
 
 #### Command Example
+
 ```!qualys-host-excluded-list ips=1.1.1.1```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -1076,6 +1120,7 @@ Show the excluded host list for the user's account. Hosts in your excluded host 
 
 
 ### qualys-scheduled-report-list
+
 ***
 Get list of scheduled reports
 
@@ -1083,6 +1128,7 @@ Get list of scheduled reports
 #### Base Command
 
 `qualys-scheduled-report-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1117,9 +1163,11 @@ Get list of scheduled reports
 
 
 #### Command Example
+
 ```!qualys-scheduled-report-list id=8084468 is_active=1```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -1150,12 +1198,14 @@ Get list of scheduled reports
 #### Human Readable Output
 
 >### Scheduled Report List
+>
 >|ACTIVE|ID|OUTPUT_FORMAT|SCHEDULE|TEMPLATE_TITLE|TITLE|
 >|---|---|---|---|---|---|
 >| 1 | 8084468 | PDF | DAILY: {"@frequency_days": "1"}<br/>START_DATE_UTC: 2021-03-15T09:49:00Z<br/>START_HOUR: 11<br/>START_MINUTE: 49<br/>TIME_ZONE: {"TIME_ZONE_CODE": "IL", "TIME_ZONE_DETAILS": "(GMT +02:00) Israel"}<br/>DST_SELECTED: 0 | Executive Report | Test - 20210315 |
 
 
 ### qualys-report-template-list
+
 ***
 get list of report template for user
 
@@ -1163,6 +1213,7 @@ get list of report template for user
 #### Base Command
 
 `qualys-report-template-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1187,9 +1238,11 @@ get list of report template for user
 
 
 #### Command Example
+
 ```!qualys-report-template-list```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -1501,6 +1554,7 @@ get list of report template for user
 #### Human Readable Output
 
 >### Template Report List
+>
 >|GLOBAL|ID|LAST_UPDATE|TEMPLATE_TYPE|TITLE|TYPE|USER|
 >|---|---|---|---|---|---|---|
 >| 1 | 2385938 | 2021-04-08T09:50:45Z | Map | maptemptest | Manual | LOGIN: demst2nr<br/>FIRSTNAME: Neelima<br/>LASTNAME: Rustagi |
@@ -1529,6 +1583,7 @@ get list of report template for user
 
 
 ### qualys-vulnerability-list
+
 ***
 download a list of vulnerabilities from Qualys’ KnowledgeBase
 
@@ -1536,6 +1591,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
 #### Base Command
 
 `qualys-vulnerability-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1590,9 +1646,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
 
 
 #### Command Example
+
 ```!qualys-vulnerability-list published_after=2021-04-01 published_before=2021-04-20 details=Basic is_patchable=1```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -19246,6 +19304,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
 >Return result too large, uploaded as a file
 
 ### qualys-group-list
+
 ***
 Get account asset groups
 
@@ -19253,6 +19312,7 @@ Get account asset groups
 #### Base Command
 
 `qualys-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -19285,9 +19345,11 @@ Get account asset groups
 
 
 #### Command Example
+
 ```!qualys-group-list title=All```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -19328,12 +19390,14 @@ Get account asset groups
 #### Human Readable Output
 
 >### Group List
+>
 >|APPLIANCE_IDS|DEFAULT_APPLIANCE_ID|ID|IP_SET|TITLE|
 >|---|---|---|---|---|
 >|  |  | 492950 | IP: 1.1.1.1,<br/>1.1.2.1,<br/>1.1.2.3,<br/>1.5.2.1,<br/>1.5.6.1,<br/>8.8.8.8,<br/>18.130.16.32,<br/>23.96.25.100,<br/>34.99.231.241,<br/>35.185.27.57,<br/>52.58.204.23,<br/>54.155.52.85,<br/>96.252.18.158,<br/>172.31.10.110,<br/>1.1.1.1,<br/>1.1.1.1<br/>IP_RANGE: 1.1.1.3-1.1.1.9,<br/>1.1.2.8-1.1.2.9,<br/>1.2.2.2-1.2.2.3,<br/>192.168.0.87-192.168.0.92 | All |
 
 
 ### qualys-report-fetch
+
 ***
 Download report
 
@@ -19341,6 +19405,7 @@ Download report
 #### Base Command
 
 `qualys-report-fetch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -19362,9 +19427,11 @@ Download report
 
 
 #### Command Example
+
 ```!qualys-report-fetch id=9470594 file_format=pdf```
 
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -19383,6 +19450,7 @@ Download report
 
 
 ### qualys-vm-scan-fetch
+
 ***
 Download scan results when scan has status Finished, Canceled, Paused or Error
 
@@ -19390,6 +19458,7 @@ Download scan results when scan has status Finished, Canceled, Paused or Error
 #### Base Command
 
 `qualys-vm-scan-fetch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -19414,9 +19483,11 @@ Download scan results when scan has status Finished, Canceled, Paused or Error
 
 
 #### Command Example
+
 ```!qualys-vm-scan-fetch scan_ref=scan/1615886852.37638 ips=1.1.1.1 mode=brief```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -19773,6 +19844,7 @@ Download scan results when scan has status Finished, Canceled, Paused or Error
 #### Human Readable Output
 
 >### VM Scan Fetch
+>
 >|Dns|IP|Instance|Netbios|QID|Result|
 >|---|---|---|---|---|---|
 >| one.one.one.one | 1.1.1.1 |  |  | 82040 | ICMP Reply Type	Triggered By	Additional Information<br/>Echo (type=0 code=0)	Echo Request	Echo Reply |
@@ -19782,6 +19854,7 @@ Download scan results when scan has status Finished, Canceled, Paused or Error
 
 
 ### qualys-pc-scan-fetch
+
 ***
 fetch scan results for a scan
 
@@ -19789,6 +19862,7 @@ fetch scan results for a scan
 #### Base Command
 
 `qualys-pc-scan-fetch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -19816,9 +19890,11 @@ fetch scan results for a scan
 
 
 #### Command Example
+
 ```!qualys-pc-scan-fetch scan_ref=compliance/1619019653.71885```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -19844,12 +19920,14 @@ fetch scan results for a scan
 #### Human Readable Output
 
 >### Policy Compliance Scan
+>
 >|COMPANY|DATE|DURATION|EXCLUDED_TARGET|NBHOST_ALIVE|NBHOST_TOTAL|OPTIONS|REPORT_TYPE|SCAN_HOST|STATUS|TARGET|TITLE|USERNAME|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| SomeCompany | 2021-04-21T15:42:48Z | 00:05:42 | N/A | 1 | 1 | Scanned Ports: Targeted Scan, Hosts to Scan in Parallel - External Scanners: 15, Hosts to Scan in Parallel - Scanner Appliances: 30, Total Processes to Run in Parallel: 10, HTTP Processes to Run in Parallel: 10, Packet (Burst) Delay: Medium, Intensity: Normal, Overall Performance: Normal, ICMP Host Discovery, Ignore RST packets: Off, Ignore firewall-generated SYN-ACK packets: Off, Do not send ACK or SYN-ACK packets during host discovery: Off | API | 64.39.99.101 (Scanner 12.3.51-1, Vulnerability Signatures 2.5.162-3) | FINISHED | 1.1.1.1 | N/A | demst2nr |
 
 
 ### qualys-report-cancel
+
 ***
 Cancel the running report.
 
@@ -19857,6 +19935,7 @@ Cancel the running report.
 #### Base Command
 
 `qualys-report-cancel`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -19874,9 +19953,11 @@ Cancel the running report.
 
 
 #### Command Example
+
 ```!qualys-report-cancel id="9229164"```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -19890,13 +19971,16 @@ Cancel the running report.
 ```
 
 #### Human Readable Output
+>
 >### Canceled report
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:00:02Z | 9229164 | Report cancelled successfully |
 
 
 ### qualys-report-delete
+
 ***
 Delete a saved report in the user’s Report Share.
 
@@ -19904,6 +19988,7 @@ Delete a saved report in the user’s Report Share.
 #### Base Command
 
 `qualys-report-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -19921,9 +20006,11 @@ Delete a saved report in the user’s Report Share.
 
 
 #### Command Example
+
 ```!qualys-report-delete id=9470634```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -19940,11 +20027,13 @@ Delete a saved report in the user’s Report Share.
 
 
 >### Deleted report
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:00:02Z | 9470634 | Report deleted successfully |
 >
 ### qualys-scorecard-launch
+
 ***
 Launch a vulnerability scorecard report.
 
@@ -19952,6 +20041,7 @@ Launch a vulnerability scorecard report.
 #### Base Command
 
 `qualys-scorecard-launch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -19984,9 +20074,11 @@ Launch a vulnerability scorecard report.
 
 
 #### Command Example
+
 ```!qualys-scorecard-launch name="Most Prevalent Vulnerabilities Report" output_format=pdf all_asset_groups=1 source=asset_groups```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20002,12 +20094,14 @@ Launch a vulnerability scorecard report.
 #### Human Readable Output
 
 >### New scorecard launched
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:00:02Z | 10788991 | New scorecard launched |
 
 
 ### qualys-vm-scan-launch
+
 ***
  launch vulnerability scans in the user’s account.
 
@@ -20015,6 +20109,7 @@ Launch a vulnerability scorecard report.
 #### Base Command
 
 `qualys-vm-scan-launch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20063,9 +20158,11 @@ Launch a vulnerability scorecard report.
 
 
 #### Command Example
+
 ```!qualys-vm-scan-launch scan_title=new target_from=assets ip=1.1.1.1 exclude_ip_per_scan=1.1.1.2 priority=4 option_title=Test2```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20090,6 +20187,7 @@ Launch a vulnerability scorecard report.
 #### Human Readable Output
 
 >### New Vulnerability Scan launched
+>
 >|KEY|VALUE|
 >|---|---|
 >| ID | 21840817 |
@@ -20097,6 +20195,7 @@ Launch a vulnerability scorecard report.
 
 
 ### qualys-vm-scan-action
+
 ***
 allows users to take actions on vulnerability scans in their account, like cancel, pause, resume, delete and fetch completed scan results
 
@@ -20104,6 +20203,7 @@ allows users to take actions on vulnerability scans in their account, like cance
 #### Base Command
 
 `qualys-vm-scan-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20117,6 +20217,7 @@ allows users to take actions on vulnerability scans in their account, like cance
 There is no context output for this command.
 
 #### Command Example
+
 ```!qualys-vm-scan-action action=delete scan_ref=scan/1621954927.94968```
 
 #### Human Readable Output
@@ -20124,6 +20225,7 @@ There is no context output for this command.
 >Deleting scan
 
 ### qualys-pc-scan-manage
+
 ***
 Allows users to take actions on compliance scans in their account, like cancel, pause, resume, delete and fetch completed scan results.
 
@@ -20131,6 +20233,7 @@ Allows users to take actions on compliance scans in their account, like cancel, 
 #### Base Command
 
 `qualys-pc-scan-manage`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20148,9 +20251,11 @@ Allows users to take actions on compliance scans in their account, like cancel, 
 
 
 #### Command Example
+
 ```!qualys-pc-scan-manage action=delete scan_ref=compliance/1622106967.13620```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20171,6 +20276,7 @@ Allows users to take actions on compliance scans in their account, like cancel, 
 #### Human Readable Output
 
 >### PC Scan
+>
 >|KEY|VALUE|
 >|---|---|
 >| ID | 21813620 |
@@ -20178,6 +20284,7 @@ Allows users to take actions on compliance scans in their account, like cancel, 
 
 
 ### qualys-pc-scan-launch
+
 ***
 launch compliance scans.
 
@@ -20185,6 +20292,7 @@ launch compliance scans.
 #### Base Command
 
 `qualys-pc-scan-launch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20219,9 +20327,11 @@ launch compliance scans.
 
 
 #### Command Example
+
 ```!qualys-pc-scan-launch ip=1.1.1.1 option_title=test1```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20242,6 +20352,7 @@ launch compliance scans.
 #### Human Readable Output
 
 >### New PC Scan launched
+>
 >|KEY|VALUE|
 >|---|---|
 >| ID | 21840826 |
@@ -20249,6 +20360,7 @@ launch compliance scans.
 
 
 ### qualys-ip-add
+
 ***
 Add IP addresses to the subscription.
 
@@ -20256,6 +20368,7 @@ Add IP addresses to the subscription.
 #### Base Command
 
 `qualys-ip-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20282,9 +20395,11 @@ Add IP addresses to the subscription.
 
 
 #### Command Example
+
 ```!qualys-ip-add ips=1.1.2.3 enable_pc=0 enable_vm=1 comment="Adding a new IP address"```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20303,6 +20418,7 @@ Add IP addresses to the subscription.
 >IPs successfully added to Vulnerability Management
 
 ### qualys-ip-update
+
 ***
 gives you the ability to update IP addresses within the subscription.
 
@@ -20310,6 +20426,7 @@ gives you the ability to update IP addresses within the subscription.
 #### Base Command
 
 `qualys-ip-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20335,9 +20452,11 @@ gives you the ability to update IP addresses within the subscription.
 
 
 #### Command Example
+
 ```!qualys-ip-update ips=1.1.1.1 comment="Updating IP"```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20356,6 +20475,7 @@ gives you the ability to update IP addresses within the subscription.
 >IPs successfully updated
 
 ### qualys-host-excluded-manage
+
 ***
 Manage your excluded IPs list using the Excluded IP. The IPs in your excluded IPs list will not be scanned.
 
@@ -20363,6 +20483,7 @@ Manage your excluded IPs list using the Excluded IP. The IPs in your excluded IP
 #### Base Command
 
 `qualys-host-excluded-manage`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20384,9 +20505,11 @@ Manage your excluded IPs list using the Excluded IP. The IPs in your excluded IP
 
 
 #### Command Example
+
 ```!qualys-host-excluded-manage action=add comment="adding hosts" ips=1.1.1.1,1.1.2.1 expiry_days=2```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20401,6 +20524,7 @@ Manage your excluded IPs list using the Excluded IP. The IPs in your excluded IP
 #### Human Readable Output
 
 >### IPs already in Excluded IPs list.
+>
 >|ip|
 >|---|
 >| 1.1.1.1 |
@@ -20409,6 +20533,7 @@ Manage your excluded IPs list using the Excluded IP. The IPs in your excluded IP
 
 
 ### qualys-scheduled-report-launch
+
 ***
 Launch a scheduled report now.
 
@@ -20416,6 +20541,7 @@ Launch a scheduled report now.
 #### Base Command
 
 `qualys-scheduled-report-launch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20433,9 +20559,11 @@ Launch a scheduled report now.
 
 
 #### Command Example
+
 ```!qualys-scheduled-report-launch id=8084468```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20451,12 +20579,14 @@ Launch a scheduled report now.
 #### Human Readable Output
 
 >### Launch Scheduled Report
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:01:38Z | 10789050 | Report launched successfully. |
 
 
 ### qualys-report-launch-map
+
 ***
 Launches a map report.
 
@@ -20464,6 +20594,7 @@ Launches a map report.
 #### Base Command
 
 `qualys-report-launch-map`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20490,9 +20621,11 @@ Launches a map report.
 
 
 #### Command Example
+
 ```!qualys-report-launch-map domain=qualys-test.com output_format=xml report_refs=map/1618151844.78754 template_id=1528888```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20507,13 +20640,15 @@ Launches a map report.
 
 #### Human Readable Output
 
->###  New report launched
+>### New report launched
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:01:38Z | 9470650 | Report launched successfully. |
 
 
 ### qualys-report-launch-host-based-findings
+
 ***
 Run host based findings report
 
@@ -20521,6 +20656,7 @@ Run host based findings report
 #### Base Command
 
 `qualys-report-launch-host-based-findings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20547,9 +20683,11 @@ Run host based findings report
 
 
 #### Command Example
+
 ```!qualys-report-launch-host-based-findings output_format=pdf template_id=2339987 ips=1.1.1.1```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20565,12 +20703,14 @@ Run host based findings report
 #### Human Readable Output
 
 >### Host Based Findings Report Launch
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:00:52Z | 10789047 | New report launched |
 
 
 ### qualys-report-launch-scan-based-findings
+
 ***
 launches a scan report including scan based findings
 
@@ -20578,6 +20718,7 @@ launches a scan report including scan based findings
 #### Base Command
 
 `qualys-report-launch-scan-based-findings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20601,9 +20742,11 @@ launches a scan report including scan based findings
 
 
 #### Command Example
+
 ```!qualys-report-launch-scan-based-findings output_format=pdf report_refs=scan/1621951157.94402 template_id=2339987```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20619,12 +20762,14 @@ launches a scan report including scan based findings
 #### Human Readable Output
 
 >### Scan Based Findings Report Launch
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:00:52Z | 9470646 | Launch scan based findings successfully |
 
 
 ### qualys-report-launch-patch
+
 ***
 Run patch report
 
@@ -20632,6 +20777,7 @@ Run patch report
 #### Base Command
 
 `qualys-report-launch-patch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20657,9 +20803,11 @@ Run patch report
 
 
 #### Command Example
+
 ```!qualys-report-launch-patch output_format=pdf template_id=1528875 ips=1.1.1.1 report_title="patch report"```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20675,12 +20823,14 @@ Run patch report
 #### Human Readable Output
 
 >### Patch Report Launch
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:00:26Z | 10789038 | New report launched |
 
 
 ### qualys-report-launch-remediation
+
 ***
 Run remediation report
 
@@ -20688,6 +20838,7 @@ Run remediation report
 #### Base Command
 
 `qualys-report-launch-remediation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20714,9 +20865,11 @@ Run remediation report
 
 
 #### Command Example
+
 ```!qualys-report-launch-remediation output_format=pdf template_id=1528884 report_title=remediation ips=1.1.1.1```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20732,12 +20885,14 @@ Run remediation report
 #### Human Readable Output
 
 >### Remediation Report Launch
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:00:23Z | 10789037 | New report launched |
 
 
 ### qualys-report-launch-compliance
+
 ***
 Run compliance report
 
@@ -20745,6 +20900,7 @@ Run compliance report
 #### Base Command
 
 `qualys-report-launch-compliance`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20771,9 +20927,11 @@ Run compliance report
 
 
 #### Command Example
+
 ```!qualys-report-launch-compliance output_format=pdf template_id=1528877 ips=1.1.1.1```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20789,12 +20947,14 @@ Run compliance report
 #### Human Readable Output
 
 >### Compliance Report Launch
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:00:41Z | 10789044 | New report launched |
 
 
 ### qualys-report-launch-compliance-policy
+
 ***
 Run compliance policy report
 
@@ -20802,6 +20962,7 @@ Run compliance policy report
 #### Base Command
 
 `qualys-report-launch-compliance-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20830,9 +20991,11 @@ Run compliance policy report
 
 
 #### Command Example
+
 ```!qualys-report-launch-compliance-policy template_id=1528886 output_format=pdf policy_id=1772919```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20848,12 +21011,14 @@ Run compliance policy report
 #### Human Readable Output
 
 >### Policy Report Launch
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:00:19Z | 10789035 | New report launched |
 
 
 ### qualys-ip-restricted-list
+
 ***
 Get the list of restricted IPs within the user's subscription.
 
@@ -20861,6 +21026,7 @@ Get the list of restricted IPs within the user's subscription.
 #### Base Command
 
 `qualys-ip-restricted-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20877,9 +21043,11 @@ Get the list of restricted IPs within the user's subscription.
 
 
 #### Command Example
+
 ```!qualys-ip-restricted-list```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20893,6 +21061,7 @@ Get the list of restricted IPs within the user's subscription.
 #### Human Readable Output
 
 >### Current Status: disabled
+>
 >|ip|
 >|---|
 >| 1.9.3.6 |
@@ -20900,6 +21069,7 @@ Get the list of restricted IPs within the user's subscription.
 
 
 ### qualys-ip-restricted-manage
+
 ***
 Get the list of restricted IPs within the user's subscription.
 
@@ -20907,6 +21077,7 @@ Get the list of restricted IPs within the user's subscription.
 #### Base Command
 
 `qualys-ip-restricted-manage`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -20926,9 +21097,11 @@ Get the list of restricted IPs within the user's subscription.
 
 
 #### Command Example
+
 ```!qualys-ip-restricted-manage action=add ips=5.2.8.9```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -20953,6 +21126,7 @@ Get the list of restricted IPs within the user's subscription.
 >Successfully added restricted ips
 
 ### qualys-schedule-scan-create
+
 ***
 Create a scan schedule in the user’s account.
 
@@ -20960,6 +21134,7 @@ Create a scan schedule in the user’s account.
 #### Base Command
 
 `qualys-schedule-scan-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21003,9 +21178,11 @@ use_ip_nt_range_tags_exclude | Specify “0” (the default) to select from all 
 
 
 #### Command Example
+
 ```!qualys-schedule-scan-create option_title="Initial Options" scan_title="TestScheduleScan123" start_date=12/15/2023 start_hour=2 start_minute=2 time_zone_code=US-CA asset_group_ids=493238 frequency_days=1 default_scanner=1```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -21021,12 +21198,14 @@ use_ip_nt_range_tags_exclude | Specify “0” (the default) to select from all 
 #### Human Readable Output
 
 >### Schedule Scan Create
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:02:25Z | 783970 | New scan scheduled successfully |
 
 
 ### qualys-schedule-scan-update
+
 ***
 Updates a scan schedule in the user’s account.
 
@@ -21034,6 +21213,7 @@ Updates a scan schedule in the user’s account.
 #### Base Command
 
 `qualys-schedule-scan-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21078,9 +21258,11 @@ use_ip_nt_range_tags_exclude | Specify “0” (the default) to select from all 
 
 
 #### Command Example
+
 ```!qualys-schedule-scan-update id=783969 active=0```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -21096,12 +21278,14 @@ use_ip_nt_range_tags_exclude | Specify “0” (the default) to select from all 
 #### Human Readable Output
 
 >### Schedule Scan Update
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:02:28Z | 783969 | Edit scheduled scan Completed successfully |
 
 
 ### qualys-asset-group-add
+
 ***
 Create a new asset group.
 
@@ -21109,6 +21293,7 @@ Create a new asset group.
 #### Base Command
 
 `qualys-asset-group-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21136,9 +21321,11 @@ Create a new asset group.
 
 
 #### Command Example
+
 ```!qualys-asset-group-add title=Test-Asset-Group123 ips="1.1.1.1"```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -21154,12 +21341,14 @@ Create a new asset group.
 #### Human Readable Output
 
 >### Asset Group Add
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:02:07Z | 2886259 | Asset Group successfully added. |
 
 
 ### qualys-asset-group-edit
+
 ***
 Update an asset group.
 
@@ -21167,6 +21356,7 @@ Update an asset group.
 #### Base Command
 
 `qualys-asset-group-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21204,9 +21394,11 @@ Update an asset group.
 
 
 #### Command Example
+
 ```!qualys-asset-group-edit id=2886258 add_ips="1.1.1.1"```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -21222,12 +21414,14 @@ Update an asset group.
 #### Human Readable Output
 
 >### Asset Group Edit
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:02:13Z | 2886258 | Asset Group Updated Successfully |
 
 
 ### qualys-asset-group-delete
+
 ***
 Delete an asset group.
 
@@ -21235,6 +21429,7 @@ Delete an asset group.
 #### Base Command
 
 `qualys-asset-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21252,9 +21447,11 @@ Delete an asset group.
 
 
 #### Command Example
+
 ```!qualys-asset-group-delete id=2886258```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -21270,12 +21467,14 @@ Delete an asset group.
 #### Human Readable Output
 
 >### Asset Group Delete
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:02:20Z | 2886258 | Asset Group Deleted Successfully |
 
 
 ### qualys-schedule-scan-delete
+
 ***
 Delete a scheduled scan.
 
@@ -21283,6 +21482,7 @@ Delete a scheduled scan.
 #### Base Command
 
 `qualys-schedule-scan-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21300,9 +21500,11 @@ Delete a scheduled scan.
 
 
 #### Command Example
+
 ```!qualys-schedule-scan-delete id=783969```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -21318,12 +21520,14 @@ Delete a scheduled scan.
 #### Human Readable Output
 
 >### Schedule Scan Delete
+>
 >|DATETIME|ID|TEXT|
 >|---|---|---|
 >| 2021-12-20T12:02:31Z | 783969 | Schedule scan deleted successfully |
 
 
 ### qualys-time-zone-code
+
 ***
 Gets a list of the supported time zone codes.
 
@@ -21331,6 +21535,7 @@ Gets a list of the supported time zone codes.
 #### Base Command
 
 `qualys-time-zone-code`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21347,9 +21552,11 @@ Gets a list of the supported time zone codes.
 
 
 #### Command Example
+
 ```!qualys-time-zone-code```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -21452,6 +21659,7 @@ Gets a list of the supported time zone codes.
 
 
 ### qualys-host-list-detection
+
 ***
 Get a list of hosts with the hosts latest vulnerability data. The list is based on the host based scan data available in the user’s account.
 
@@ -21459,6 +21667,7 @@ Get a list of hosts with the hosts latest vulnerability data. The list is based 
 #### Base Command
 
 `qualys-host-list-detection`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21518,8 +21727,11 @@ Get a list of hosts with the hosts latest vulnerability data. The list is based 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS_FACTORS | Object | Factors affecting detection score. |
 
 #### Command example
+
 ```!qualys-host-list-detection truncation_limit=2```
+
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -21679,6 +21891,7 @@ Get a list of hosts with the hosts latest vulnerability data. The list is based 
 >|ID|IP|DNS_DATA|38170|38173|38601|38628|38657|70000|90882|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 123 | 1.1.1.1 | HOSTNAME: xxx | Certificate #0 CN=WIN-2IDQKTU63RC (WIN-2IDQKTU63RC) doesn&apos;t resolve | Certificate #0 CN=WIN-2IDQKTU63RC unable to get local issuer certificate | CIPHER	KEY-EXCHANGE	AUTHENTICATION	MAC	ENCRYPTION(KEY-STRENGTH)	GRADE<br/>TLSv1 WITH RC4 CIPHERS IS SUPPORTED	 	 	 	 	 <br/>RC4-MD5	RSA	RSA	MD5	RC4(128)	MEDIUM<br/>RC4-SHA	RSA	RSA	SHA1	RC4(128)	MEDIUM<br/>TLSv1.1 WITH RC4 CIPHERS IS SUPPORTED	 	 	 	 	 <br/>RC4-MD5	RSA	RSA	MD5	RC4(128)	MEDIUM<br/>RC4-SHA	RSA	RSA	SHA1	RC4(128)	MEDIUM<br/>TLSv1.2 WITH RC4 CIPHERS IS SUPPORTED	 	 	 	 	 <br/>RC4-MD5	RSA	RSA	MD5	RC4(128)	MEDIUM<br/>RC4-SHA	RSA	RSA	SHA1	RC4(128)	MEDIUM | TLSv1.0 is supported | CIPHER	KEY-EXCHANGE	AUTHENTICATION	MAC	ENCRYPTION(KEY-STRENGTH)	GRADE<br/>TLSv1 WITH 64-BIT CBC CIPHERS IS SUPPORTED	 	 	 	 	 <br/>DES-CBC3-SHA	RSA	RSA	SHA1	3DES(168)	MEDIUM<br/>TLSv1.1 WITH 64-BIT CBC CIPHERS IS SUPPORTED	 	 	 	 	 <br/>DES-CBC3-SHA	RSA	RSA	SHA1	3DES(168)	MEDIUM<br/>TLSv1.2 WITH 64-BIT CBC CIPHERS IS SUPPORTED	 	 	 	 	 <br/>DES-CBC3-SHA	RSA	RSA	SHA1	3DES(168)	MEDIUM | WIN-2IDQKTU63RC | RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit) |
+>
 >### Host Detection List
 >
 >|ID| IP      | DNS_DATA      |70000|70001|90882|90883|105500|105501|105632|
@@ -21686,6 +21899,7 @@ Get a list of hosts with the hosts latest vulnerability data. The list is based 
 >| 1234 | 1.1.1.1 | HOSTNAME: xxx | AMAZON-544DB96A | Device Name	Comment	Type<br/>IPC$	Remote IPC	-2147483645<br/>C$	Default share	-2147483648<br/>ADMIN$	Remote Admin	-2147483648 | RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit) | RDP Public key is 512 bits long. | QID: 105500 detected on port 3389 over TCP. | QID: 105501 detected on port 3389 over TCP. | EOL/Obsolete Operating System : Windows Server 2003 R2 Detected |
 
 ### qualys-host-update
+
 ***
 Update host attributes using new update parameters.
 
@@ -21693,6 +21907,7 @@ Update host attributes using new update parameters.
 #### Base Command
 
 `qualys-host-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21719,8 +21934,11 @@ Update host attributes using new update parameters.
 | Qualys.Endpoint.Update.TEXT | String | Qualys response for the host update. | 
 
 #### Command example
+
 ```!qualys-host-update ids=35700896 new_comment=comment```
+
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -21739,6 +21957,7 @@ Update host attributes using new update parameters.
 >Assets successfully updated
 
 ### qualys-update-unix-record
+
 ***
 Update Unix records for authenticated scans of hosts running on Unix
 
@@ -21746,6 +21965,7 @@ Update Unix records for authenticated scans of hosts running on Unix
 #### Base Command
 
 `qualys-update-unix-record`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21759,6 +21979,7 @@ Update Unix records for authenticated scans of hosts running on Unix
 There is no context output for this command.
 
 ### qualys-asset-tag-list
+
 ***
 List asset tags based on a search criteria.
 
@@ -21766,6 +21987,7 @@ List asset tags based on a search criteria.
 #### Base Command
 
 `qualys-asset-tag-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21789,8 +22011,11 @@ List asset tags based on a search criteria.
 | Qualys.AssetTags.tag_name.rule_text | String | Created tag rule text. | 
 
 #### Command example
+
 ```!qualys-asset-tag-list criteria=name operator=EQUALS search_data="example_tag"```
+
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -21819,12 +22044,14 @@ List asset tags based on a search criteria.
 #### Human Readable Output
 
 >### Tags identified by the specified filter
+>
 >|Id|Name|Criticality Score|Rule Text|Child Tags|
 >|---|---|---|---|---|
 >| 0 | example_tag | 3 | example | **-**	***id***: 1<br/>	***name***: child1<br/>**-**	***id***: 2<br/>	***name***: child2 |
 
 
 ### qualys-asset-tag-create
+
 ***
 Create a new asset tag.
 
@@ -21832,6 +22059,7 @@ Create a new asset tag.
 #### Base Command
 
 `qualys-asset-tag-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21856,8 +22084,11 @@ Create a new asset tag.
 | Qualys.AssetTags.tag_name.rule_text | String | Created tag rule text. | 
 
 #### Command example
+
 ```!qualys-asset-tag-create name=example_tag rule_type=STATIC rule_text="example" child_name=child1,child2 criticality_score=3```
+
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -21886,12 +22117,14 @@ Create a new asset tag.
 #### Human Readable Output
 
 >### Asset Tags Created
+>
 >|Id|Name|Criticality Score|Rule Text|Child Tags|
 >|---|---|---|---|---|
 >| 0 | example_tag | 3 | example | **-**	***id***: 1<br/>	***name***: child2<br/>**-**	***id***: 2<br/>	***name***: child1 |
 
 
 ### qualys-asset-tag-update
+
 ***
 Update an existing asset tag.
 
@@ -21899,6 +22132,7 @@ Update an existing asset tag.
 #### Base Command
 
 `qualys-asset-tag-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21914,13 +22148,17 @@ Update an existing asset tag.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!qualys-asset-tag-update name=example_tag_updated rule_type=STATIC rule_text="example" id=12345```
+
 #### Human Readable Output
 
 >Asset tag updated.
 
 ### qualys-asset-tag-delete
+
 ***
 Delete an existing asset tag.
 
@@ -21928,6 +22166,7 @@ Delete an existing asset tag.
 #### Base Command
 
 `qualys-asset-tag-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21938,8 +22177,11 @@ Delete an existing asset tag.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!qualys-asset-tag-delete id=12345```
+
 #### Human Readable Output
 
 >Asset tag deleted.
@@ -21965,6 +22207,7 @@ Update Vmware records for authenticated scans of hosts running on Vmware.
 There is no context output for this command.
 
 #### Command Example
+
 ```!qualys-update-vmware-record ids=123 add_ips=5.2.8.9```
 
 #### Human Readable Output
@@ -21992,6 +22235,7 @@ Update vCenter records for authenticated scans of hosts running on vCenter.
 There is no context output for this command.
 
 #### Command Example
+
 ```!qualys-update-vmware-record ids=123 add_ips=5.2.8.9```
 
 #### Human Readable Output
@@ -22022,9 +22266,11 @@ List VCenter ESXi mapping records.
 | Qualys.VcenterToEsxi.VCENTER_IP | unknown | The IP address of the vCenter. | 
 
 #### Command Example
+
 ```!qualys-vcenter-esxi-mapped-record-list```
 
 #### Context Example
+
 ```json
 {
     "Qualys": {
@@ -22040,6 +22286,7 @@ List VCenter ESXi mapping records.
 #### Human Readable Output
 
 >### Vcenter ESXI IP List
+>
 >|ESXI_IP|MAPPING_DATA_SOURCE|VCENTER_IP|
 >|---|---|---|
 >| 1.1.1.1 | FILE | 1.1.1.3 |
@@ -22064,6 +22311,7 @@ Import vCenter - ESXi mapping records.
 There is no context output for this command.
 
 #### Command Example
+
 ```!qualys-vcenter-esxi-mapped-record-import csv_data=`vCenter IP,ESXi IP 1.1.1.1,1.1.1.2```
 
 #### Human Readable Output
@@ -22090,6 +22338,7 @@ Purge vCenter - ESXi mapping records.
 There is no context output for this command.
 
 #### Command Example
+
 ```!qualys-vcenter-esxi-mapped-record-purge csv_data=`vCenter IP,ESXi IP 1.1.1.1,1.1.1.2```
 
 #### Human Readable Output
@@ -22098,6 +22347,7 @@ There is no context output for this command.
 
 
 ### qualys-get-events
+
 ***
 Manual command to fetch events from Qualys and display them.
 
@@ -22105,6 +22355,7 @@ Manual command to fetch events from Qualys and display them.
 #### Base Command
 
 `qualys-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -22120,6 +22371,7 @@ Manual command to fetch events from Qualys and display them.
 There is no context output for this command.
 
 ### qualys-get-assets
+
 ***
 Manual command to fetch assets from Qualys and display them.
 
@@ -22127,6 +22379,7 @@ Manual command to fetch assets from Qualys and display them.
 #### Base Command
 
 `qualys-get-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

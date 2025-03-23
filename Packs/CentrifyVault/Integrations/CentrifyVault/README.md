@@ -14,9 +14,12 @@ Leverage the Centrify Vault integration to create and manage Secrets.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### centrify-retrieve-secrets
+
 ***
 Retrieves the secret from centrify vault based on folder name, set name or secret name. If folder name is not provided, all the secrets in the parent folder will be fetched recursively. You can filter based on the secret name and folder separately as well as combined. 
 
@@ -24,6 +27,7 @@ Retrieves the secret from centrify vault based on folder name, set name or secre
 #### Base Command
 
 `centrify-retrieve-secrets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -46,6 +50,7 @@ Retrieves the secret from centrify vault based on folder name, set name or secre
 
 
 ### centrify-retrieve-secret-by-secretid
+
 ***
 Retrieves the secret from centrify vault based on secret ID.
 
@@ -53,6 +58,7 @@ Retrieves the secret from centrify vault based on secret ID.
 #### Base Command
 
 `centrify-retrieve-secret-by-secretid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -73,6 +79,7 @@ Retrieves the secret from centrify vault based on secret ID.
 
 
 ### centrify-create-secretfolder
+
 ***
 Creates a folder in Centrify Vault
 
@@ -80,6 +87,7 @@ Creates a folder in Centrify Vault
 #### Base Command
 
 `centrify-create-secretfolder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -100,6 +108,7 @@ Creates a folder in Centrify Vault
 
 
 ### centrify-create-secret
+
 ***
 Creates a secret in Centrify Vault.
 
@@ -107,6 +116,7 @@ Creates a secret in Centrify Vault.
 #### Base Command
 
 `centrify-create-secret`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -135,6 +145,7 @@ Creates a secret in Centrify Vault.
 
 
 ### centrify-create-set
+
 ***
 Creates a set in Centrify Vault
 
@@ -142,6 +153,7 @@ Creates a set in Centrify Vault
 #### Base Command
 
 `centrify-create-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -160,6 +172,7 @@ Creates a set in Centrify Vault
 
 
 ### centrify-retrieve-folders
+
 ***
 Fetch details of all folders in Centrify Vault
 
@@ -167,6 +180,7 @@ Fetch details of all folders in Centrify Vault
 #### Base Command
 
 `centrify-retrieve-folders`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -185,6 +199,7 @@ Fetch details of all folders in Centrify Vault
 
 
 ### centrify-delete-folder
+
 ***
 Delete a folder from the Centrify Vault
 
@@ -192,6 +207,7 @@ Delete a folder from the Centrify Vault
 #### Base Command
 
 `centrify-delete-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -206,6 +222,7 @@ There is no context output for this command.
 
 
 ### centrify-delete-secret
+
 ***
 Delete Secret from the Centrify Vault. Please note:  Enabling "recursiveDelete" to "Yes" will delete all secrets if there multiple secrets with same name in subfolders.
 
@@ -213,6 +230,7 @@ Delete Secret from the Centrify Vault. Please note:  Enabling "recursiveDelete" 
 #### Base Command
 
 `centrify-delete-secret`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -229,6 +247,7 @@ There is no context output for this command.
 
 
 ### centrify-delete-secret-by-secretid
+
 ***
 Delete Secret from the Centrify Vault based on the Secret ID provided
 
@@ -236,6 +255,7 @@ Delete Secret from the Centrify Vault based on the Secret ID provided
 #### Base Command
 
 `centrify-delete-secret-by-secretid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -249,6 +269,7 @@ There is no context output for this command.
 
 
 ### centrify-add-secret-to-set
+
 ***
 Adds/Moves a secret to a set for the provided secretID. Use "centrify-retrieve-secrets" to fetch secret ID's.
 
@@ -256,6 +277,7 @@ Adds/Moves a secret to a set for the provided secretID. Use "centrify-retrieve-s
 #### Base Command
 
 `centrify-add-secret-to-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -271,6 +293,7 @@ There is no context output for this command.
 
 
 ### centrify-retrieve-sets
+
 ***
 Fetches the details of all sets in the Centrify Vault
 
@@ -278,6 +301,7 @@ Fetches the details of all sets in the Centrify Vault
 #### Base Command
 
 `centrify-retrieve-sets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -294,6 +318,7 @@ Fetches the details of all sets in the Centrify Vault
 
 
 ### centrify-delete-set
+
 ***
 Delete set from the Centrify Vault
 
@@ -301,6 +326,7 @@ Delete set from the Centrify Vault
 #### Base Command
 
 `centrify-delete-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -313,6 +339,7 @@ Delete set from the Centrify Vault
 There is no context output for this command.
 
 ## Demo Video
+
 <video controls>
     <source src="https://github.com/demisto/content-assets/raw/58ada3506ba4082dc5aa36044f02bc212af73f96/Assets/CentrifyVault/CentrifyVault_demo.mp4"
             type="video/mp4"/>

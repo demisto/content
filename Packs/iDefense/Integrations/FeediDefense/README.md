@@ -28,9 +28,12 @@ This feed integration was integrated and tested with version v2.61.1 of ACTI.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### idefense-get-indicators
+
 ***
 Gets the feed indicators.
 
@@ -38,6 +41,7 @@ Gets the feed indicators.
 #### Base Command
 
 `idefense-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,12 +54,15 @@ Gets the feed indicators.
 There is no context output for this command.
 
 #### Command Example
+
 ```!idefense-get-indicators limit=10```
 
 #### Context Example
+
 There is no context output for this command.
 
 >#### Indicators
+>
 >|value|type|rawJSON|
 >|---|---|---|
 >| http://example.com | URL | confidence: 50<br/>display_text: http://example.com <br/> index_timestamp: 2020-12-13T23:31:03.848Z<br/>key: http://example.com <br/>last_modified: 2020-12-13T23:29:13.000Z<br/>last_published: 2020-12-07T14:50:44.000Z<br/>last_seen: 2020-12-13T20:08:24.000Z<br/>last_seen_as: MALWARE_DOWNLOAD<br/>malware_family: <br/>replication_id: xxx <br/>severity: 3<br/>threat_types: Cyber Crime<br/>type: url<br/>uuid: xxx |

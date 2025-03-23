@@ -1,4 +1,5 @@
 Use the Cofense Intelligence integration to check the reputation of URLs, IP addresses, file hashes, and email addresses.
+
 ## Configure Cofense Intelligence in Cortex
 
 
@@ -15,9 +16,12 @@ Use the Cofense Intelligence integration to check the reputation of URLs, IP add
 | Email Threshold (None, Minor, Moderate, or Major). Minimum severity to consider the email malicious |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### url
+
 ***
 Checks the reputation of a URL.
 
@@ -25,6 +29,7 @@ Checks the reputation of a URL.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -51,9 +56,11 @@ Checks the reputation of a URL.
 
 
 #### Command Example
+
 ```!url url=example.com using="Cofense Intelligence_instance_1"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -69,9 +76,11 @@ Checks the reputation of a URL.
 #### Human Readable Output
 
 >## Cofense URL Reputation for: example.com
+>
 >No information found for this url
 
 ### file
+
 ***
 Checks the reputation of a file hash.
 
@@ -79,6 +88,7 @@ Checks the reputation of a file hash.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -105,6 +115,7 @@ Checks the reputation of a file hash.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -112,6 +123,7 @@ Checks the reputation of a file hash.
 
 
 ### ip
+
 ***
 Checks the reputation of an IP address.
 
@@ -119,6 +131,7 @@ Checks the reputation of an IP address.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -149,9 +162,11 @@ Checks the reputation of an IP address.
 
 
 #### Command Example
+
 ```!ip ip=1.2.3.4 using="Cofense Intelligence_instance_1"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -167,9 +182,11 @@ Checks the reputation of an IP address.
 #### Human Readable Output
 
 >## Cofense IP Reputation for: x.x.x.x
+>
 >No information found for this ip
 
 ### email
+
 ***
 Checks the reputation of an email address.
 
@@ -177,6 +194,7 @@ Checks the reputation of an email address.
 #### Base Command
 
 `email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -204,9 +222,11 @@ Checks the reputation of an email address.
 
 
 #### Command Example
+
 ```!email email=example@example.com using="Cofense Intelligence_instance_1"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -222,9 +242,11 @@ Checks the reputation of an email address.
 #### Human Readable Output
 
 >## Cofense email Reputation for: example@example.com
+>
 >No infomation found for this email
 
 ### cofense-search
+
 ***
 Searches for extracted strings identified within malware campaigns.
 
@@ -232,6 +254,7 @@ Searches for extracted strings identified within malware campaigns.
 #### Base Command
 
 `cofense-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -249,6 +272,7 @@ Searches for extracted strings identified within malware campaigns.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

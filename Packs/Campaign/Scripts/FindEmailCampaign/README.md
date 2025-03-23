@@ -7,6 +7,7 @@ This script's purpose is to provide you an immediate background for phishing inc
 
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -16,11 +17,14 @@ This script's purpose is to provide you an immediate background for phishing inc
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * Detect & Manage Phishing Campaigns
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -43,6 +47,7 @@ This script is used in the following playbooks and scripts.
 | includeSelf | Include the current incident in EmailCampaign path in context. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

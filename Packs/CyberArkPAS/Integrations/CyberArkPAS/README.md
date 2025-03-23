@@ -16,9 +16,12 @@ Use the CyberArk Privileged Access Security (PAS) solution to manage users, safe
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cyberark-pas-user-add
+
 ***
 Add a new user to the vault.
 
@@ -74,9 +77,11 @@ To run this command, you must have the following permissions:
 
 
 #### Command Example
+
 ```!cyberark-pas-user-add username="TestUser" password="12345Aa" change_password_on_the_next_logon=true description="new user for test" email="usertest@test.com" enable_user=true first_name="user" last_name="test" profession="testing integrations"```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -143,12 +148,14 @@ To run this command, you must have the following permissions:
 #### Human Readable Output
 
 >### Results
+>
 >|authenticationMethod|businessAddress|changePassOnNextLogon|componentUser|description|distinguishedName|enableUser|expiryDate|groupsMembership|id|internet|lastSuccessfulLoginDate|location|passwordNeverExpires|personalDetails|phones|source|suspended|unAuthorizedInterfaces|userType|username|vaultAuthorization|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| AuthTypePass | workStreet: <br/>workCity: <br/>workState: <br/>workZip: <br/>workCountry:  | true | false | new user for test |  | true | -62135578800 |  | 150 | homePage: <br/>homeEmail: <br/>businessEmail: usertest@test.com<br/>otherEmail:  | 1597830302 | \ | false | street: <br/>city: <br/>state: <br/>zip: <br/>country: <br/>title: <br/>organization: <br/>department: <br/>profession: testing integrations<br/>firstName: user<br/>middleName: <br/>lastName: test | homeNumber: <br/>businessNumber: <br/>cellularNumber: <br/>faxNumber: <br/>pagerNumber:  | CyberArk | false |  | EPVUser | TestUser |  |
 
 
 ### cyberark-pas-user-update
+
 ***
 Update an existing vault user.
 
@@ -205,9 +212,11 @@ To run this command, you must have the following permissions:
 
 
 #### Command Example
+
 ```!cyberark-pas-user-update user_id=150 change_password_on_the_next_logon=true description="updated description" email="update@test.com" first_name="test1" last_name="updated-name" username="TestUser1" profession="test1"```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -274,6 +283,7 @@ To run this command, you must have the following permissions:
 #### Human Readable Output
 
 >### Results
+>
 >|authenticationMethod|businessAddress|changePassOnNextLogon|componentUser|description|distinguishedName|enableUser|expiryDate|groupsMembership|id|internet|lastSuccessfulLoginDate|location|passwordNeverExpires|personalDetails|phones|source|suspended|unAuthorizedInterfaces|userType|username|vaultAuthorization|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| AuthTypePass | workStreet: <br/>workCity: <br/>workState: <br/>workZip: <br/>workCountry:  | true | false | updated description |  | true | -62135578800 |  | 150 | homePage: <br/>homeEmail: <br/>businessEmail: update@test.com<br/>otherEmail:  | 1597830302 | \ | false | street: <br/>city: <br/>state: <br/>zip: <br/>country: <br/>title: <br/>organization: <br/>department: <br/>profession: test1<br/>firstName: test1<br/>middleName: <br/>lastName: updated-name | homeNumber: <br/>businessNumber: <br/>cellularNumber: <br/>faxNumber: <br/>pagerNumber:  | CyberArk | false |  | EPVUser | TestUser1 |  |
@@ -281,6 +291,7 @@ To run this command, you must have the following permissions:
 
 
 ### cyberark-pas-user-delete
+
 ***
 Delete a specific user in the vault.
 
@@ -288,6 +299,7 @@ To run this command, you must have *Add Users* or *Update Users* permissions.
 
 
 #### Base Command
+
 `cyberark-pas-user-delete`
 
 #### Input
@@ -305,9 +317,11 @@ To run this command, you must have *Add Users* or *Update Users* permissions.
 
 
 #### Command Example
+
 ```!cyberark-pas-user-delete user_id=150```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -327,6 +341,7 @@ To run this command, you must have *Add Users* or *Update Users* permissions.
 
 
 ### cyberark-pas-users-list
+
 ***
 Return a list of all existing users in the vault that meet the filter and search criteria.
 
@@ -365,9 +380,11 @@ To run this command, you must have *Audit Users* permission.
 
 
 #### Command Example
+
 ```!cyberark-pas-users-list```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -419,6 +436,7 @@ To run this command, you must have *Audit Users* permission.
 #### Human Readable Output
 
 >### There are 2 users
+>
 >|componentUser|id|location|personalDetails|source|userType|username|vaultAuthorization|
 >|---|---|---|---|---|---|---|---|
 >| false | 2 | \ | firstName: <br/>middleName: <br/>lastName:  | CyberArk | Built-InAdmins | Administrator | AddUpdateUsers,<br/>AddSafes,<br/>AddNetworkAreas,<br/>ManageDirectoryMapping,<br/>ManageServerFileCategories,<br/>AuditUsers,<br/>BackupAllSafes,<br/>RestoreAllSafes,<br/>ResetUsersPasswords,<br/>ActivateUsers |
@@ -426,6 +444,7 @@ To run this command, you must have *Audit Users* permission.
 
 
 ### cyberark-pas-user-activate
+
 ***
 Activate an existing vault user who was suspended after entering incorrect credentials multiple times.
 Uses the V1 of the API and may change in the future.
@@ -446,6 +465,7 @@ Uses the V1 of the API and may change in the future.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cyberark-pas-user-activate user_id=150```
 
 
@@ -456,6 +476,7 @@ There is no context output for this command.
 
 
 ### cyberark-pas-safes-list
+
 ***
 Return information about all of the user’s safes in the vault.
 
@@ -483,9 +504,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cyberark-pas-safes-list```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -516,6 +539,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### There are 3 safes
+>
 >|Description|Location|SafeName|SafeUrlId|
 >|---|---|---|---|
 >|  | \ | Internal | Internal |
@@ -524,6 +548,7 @@ There are no input arguments for this command.
 
 
 ### cyberark-pas-safe-get-by-name
+
 ***
 Return information about a specific safe in the vault.
 
@@ -552,9 +577,11 @@ Return information about a specific safe in the vault.
 
 
 #### Command Example
+
 ```!cyberark-pas-safe-get-by-name safe_name=UpdatedName1```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -575,6 +602,7 @@ Return information about a specific safe in the vault.
 #### Human Readable Output
 
 >### Results
+>
 >|AutoPurgeEnabled|Description|Location|ManagingCPM|NumberOfDaysRetention|NumberOfVersionsRetention|OLACEnabled|SafeName|
 >|---|---|---|---|---|---|---|---|
 >| false | UpdatedSafe | \ |  | 150 |  | true | UpdatedName1 |
@@ -582,6 +610,7 @@ Return information about a specific safe in the vault.
 
 
 ### cyberark-pas-safe-add
+
 ***
 Add a new safe to the vault.
 
@@ -618,9 +647,11 @@ To run this command, you must have *Add Safes* permission in the Vault.
 
 
 #### Command Example
+
 ```!cyberark-pas-safe-add safe_name="TestSafe1" description="safe for tests" number_of_days_retention=100```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -641,6 +672,7 @@ To run this command, you must have *Add Safes* permission in the Vault.
 #### Human Readable Output
 
 >### Results
+>
 >|AutoPurgeEnabled|Description|Location|ManagingCPM|NumberOfDaysRetention|NumberOfVersionsRetention|OLACEnabled|SafeName|
 >|---|---|---|---|---|---|---|---|
 >| false | safe for tests | \ |  | 100 |  | true | TestSafe1 |
@@ -648,6 +680,7 @@ To run this command, you must have *Add Safes* permission in the Vault.
 
 
 ### cyberark-pas-safe-update
+
 ***
 Update a single safe in the vault.
 
@@ -685,9 +718,11 @@ To run this command, you must have *Manage Safes* permission in the Vault.
 
 
 #### Command Example
+
 ```!cyberark-pas-safe-update safe_name=TestSafe1 safe_new_name=UpdatedName1 description=UpdatedSafe number_of_days_retention=150```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -708,6 +743,7 @@ To run this command, you must have *Manage Safes* permission in the Vault.
 #### Human Readable Output
 
 >### Results
+>
 >|AutoPurgeEnabled|Description|Location|ManagingCPM|NumberOfDaysRetention|NumberOfVersionsRetention|OLACEnabled|SafeName|
 >|---|---|---|---|---|---|---|---|
 >| false | UpdatedSafe | \ |  | 150 |  | true | UpdatedName1 |
@@ -715,6 +751,7 @@ To run this command, you must have *Manage Safes* permission in the Vault.
 
 
 ### cyberark-pas-safe-delete
+
 ***
 Delete a safe from the vault.
 
@@ -739,9 +776,11 @@ To run this command, you must have *Manage Safes* permission in the Safe.
 | CyberArkPAS.Safes.Deleted | Boolean | Whether the safe was deleted. | 
 
 #### Command Example
+
 ```!cyberark-pas-safe-delete safe_name=UpdatedName1```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -759,6 +798,7 @@ To run this command, you must have *Manage Safes* permission in the Safe.
 
 
 ### cyberark-pas-safe-members-list
+
 ***
 Return a list of the members of the safe.
 
@@ -786,9 +826,11 @@ To run this command, you must have *View Safe Members* permission in the Safe.
 
 
 #### Command Example
+
 ```!cyberark-pas-safe-members-list safe_name=UpdatedName1```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -865,6 +907,7 @@ To run this command, you must have *View Safe Members* permission in the Safe.
 #### Human Readable Output
 
 >### There are 2 safe members for UpdatedName1
+>
 >|IsExpiredMembershipEnable|IsPredefinedUser|MemberName|MemberType|MembershipExpirationDate|Permissions|
 >|---|---|---|---|---|---|
 >| false | true | Administrator | User |  | UseAccounts: true<br/>RetrieveAccounts: true<br/>ListAccounts: true<br/>AddAccounts: true<br/>UpdateAccountContent: true<br/>UpdateAccountProperties: true<br/>InitiateCPMAccountManagementOperations: true<br/>SpecifyNextAccountContent: true<br/>RenameAccounts: true<br/>DeleteAccounts: true<br/>UnlockAccounts: true<br/>ManageSafe: true<br/>ManageSafeMembers: true<br/>BackupSafe: true<br/>ViewAuditLog: true<br/>ViewSafeMembers: true<br/>AccessWithoutConfirmation: true<br/>CreateFolders: true<br/>DeleteFolders: true<br/>MoveAccountsAndFolders: true<br/>RequestsAuthorizationLevel1: true<br/>RequestsAuthorizationLevel2: false |
@@ -872,6 +915,7 @@ To run this command, you must have *View Safe Members* permission in the Safe.
 
 
 ### cyberark-pas-safe-member-add
+
 ***
 Add an existing user as a safe member.
 Uses the V1 of the API and may change in the future.
@@ -905,9 +949,11 @@ To run this command, you must have *Manage Safe Members* permission in the Vault
 
 
 #### Command Example
+
 ```!cyberark-pas-safe-member-add member_name="TestUser1" safe_name="UpdatedName1"```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -1011,12 +1057,14 @@ To run this command, you must have *Manage Safe Members* permission in the Vault
 #### Human Readable Output
 
 >### Results
+>
 >|MemberName|MembershipExpirationDate|Permissions|SearchIn|
 >|---|---|---|---|
 >| TestUser1 |  | {'Key': 'UseAccounts', 'Value': False},<br/>{'Key': 'RetrieveAccounts', 'Value': False},<br/>{'Key': 'ListAccounts', 'Value': False},<br/>{'Key': 'AddAccounts', 'Value': False},<br/>{'Key': 'UpdateAccountContent', 'Value': False},<br/>{'Key': 'UpdateAccountProperties', 'Value': False},<br/>{'Key': 'InitiateCPMAccountManagementOperations', 'Value': False},<br/>{'Key': 'SpecifyNextAccountContent', 'Value': False},<br/>{'Key': 'RenameAccounts', 'Value': False},<br/>{'Key': 'DeleteAccounts', 'Value': False},<br/>{'Key': 'UnlockAccounts', 'Value': False},<br/>{'Key': 'ManageSafe', 'Value': False},<br/>{'Key': 'ManageSafeMembers', 'Value': False},<br/>{'Key': 'BackupSafe', 'Value': False},<br/>{'Key': 'ViewAuditLog', 'Value': False},<br/>{'Key': 'ViewSafeMembers', 'Value': False},<br/>{'Key': 'AccessWithoutConfirmation', 'Value': False},<br/>{'Key': 'CreateFolders', 'Value': False},<br/>{'Key': 'DeleteFolders', 'Value': False},<br/>{'Key': 'MoveAccountsAndFolders', 'Value': False},<br/>{'Key': 'RequestsAuthorizationLevel', 'Value': 0} | vault |
 
 
 ### cyberark-pas-safe-member-update
+
 ***
 Update an existing safe member.
 Uses the V1 of the API and may change in the future.
@@ -1049,9 +1097,11 @@ To run this command, you must have *Manage Safe Members* permission in the Vault
 
 
 #### Command Example
+
 ```!cyberark-pas-safe-member-update member_name="TestUser1" safe_name="UpdatedName1" permissions=UseAccounts```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -1153,6 +1203,7 @@ To run this command, you must have *Manage Safe Members* permission in the Vault
 #### Human Readable Output
 
 >### Results
+>
 >|MembershipExpirationDate|Permissions|
 >|---|---|
 >|  | {'Key': 'UseAccounts', 'Value': True},<br/>{'Key': 'RetrieveAccounts', 'Value': False},<br/>{'Key': 'ListAccounts', 'Value': False},<br/>{'Key': 'AddAccounts', 'Value': False},<br/>{'Key': 'UpdateAccountContent', 'Value': False},<br/>{'Key': 'UpdateAccountProperties', 'Value': False},<br/>{'Key': 'InitiateCPMAccountManagementOperations', 'Value': False},<br/>{'Key': 'SpecifyNextAccountContent', 'Value': False},<br/>{'Key': 'RenameAccounts', 'Value': False},<br/>{'Key': 'DeleteAccounts', 'Value': False},<br/>{'Key': 'UnlockAccounts', 'Value': False},<br/>{'Key': 'ManageSafe', 'Value': False},<br/>{'Key': 'ManageSafeMembers', 'Value': False},<br/>{'Key': 'BackupSafe', 'Value': False},<br/>{'Key': 'ViewAuditLog', 'Value': False},<br/>{'Key': 'ViewSafeMembers', 'Value': False},<br/>{'Key': 'AccessWithoutConfirmation', 'Value': False},<br/>{'Key': 'CreateFolders', 'Value': False},<br/>{'Key': 'DeleteFolders', 'Value': False},<br/>{'Key': 'MoveAccountsAndFolders', 'Value': False},<br/>{'Key': 'RequestsAuthorizationLevel', 'Value': 0} |
@@ -1160,6 +1211,7 @@ To run this command, you must have *Manage Safe Members* permission in the Vault
 
 
 ### cyberark-pas-safe-member-delete
+
 ***
 Remove a specific member from a safe.
 Uses the V1 of the API and may change in the future.
@@ -1186,9 +1238,11 @@ To run this command, you must have *Manage Safe Members* permission in the Safe.
 
 
 #### Command Example
+
 ```!cyberark-pas-safe-member-delete member_name=TestUser1 safe_name=UpdatedName1```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -1209,6 +1263,7 @@ To run this command, you must have *Manage Safe Members* permission in the Safe.
 
 
 ### cyberark-pas-account-add
+
 ***
 Add a new privileged account or SSH key to the vault.
 
@@ -1256,9 +1311,11 @@ To run this command, you must have the following permissions in the Vault:
 
 
 #### Command Example
+
 ```!cyberark-pas-account-add safe_name=TestSafe1 account_name=TestAccount1 address=/ password=12345Aa platform_id=WinServerLocal username=TestUser```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -1284,12 +1341,14 @@ To run this command, you must have the following permissions in the Vault:
 #### Human Readable Output
 
 >### Results
+>
 >|address|categoryModificationTime|createdTime|id|name|platformId|safeName|secretManagement|secretType|userName|
 >|---|---|---|---|---|---|---|---|---|---|
 >| / | 1597863168 | 1597863168 | 89_3 | TestAccount1 | WinServerLocal | TestSafe1 | automaticManagementEnabled: true<br/>lastModifiedTime: 1597848768 | password | TestUser |
 
 
 ### cyberark-pas-account-delete
+
 ***
 Delete a specific account in the vault.
 
@@ -1314,9 +1373,11 @@ To run this command, you must have *Delete Accounts* permission in the Vault.
 
 
 #### Command Example
+
 ```!cyberark-pas-account-delete account_id= 89_3```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -1336,6 +1397,7 @@ To run this command, you must have *Delete Accounts* permission in the Vault.
 
 
 ### cyberark-pas-account-update
+
 ***
 Update the details of an existing account.
 
@@ -1378,9 +1440,11 @@ To run this command, you must have the following permissions in the Safe:
 
 
 #### Command Example
+
 ```!cyberark-pas-account-update account_id= 89_3 account_name=NewName```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -1406,6 +1470,7 @@ To run this command, you must have the following permissions in the Safe:
 #### Human Readable Output
 
 >### Results
+>
 >|address|categoryModificationTime|createdTime|id|name|platformId|safeName|secretManagement|secretType|userName|
 >|---|---|---|---|---|---|---|---|---|---|
 >| / | 1597863168 | 1597863168 | 89_3 | NewName | WinServerLocal | TestSafe1 | automaticManagementEnabled: true<br/>lastModifiedTime: 1597848768 | password | TestUser |
@@ -1415,6 +1480,7 @@ To run this command, you must have the following permissions in the Safe:
 
 
 ### cyberark-pas-accounts-list
+
 ***
 Return a list of all the accounts in the vault.
 
@@ -1452,9 +1518,11 @@ To run this command, you must have *List Accounts* permission in the Safe.
 
 
 #### Command Example
+
 ```!cyberark-pas-accounts-list limit=2```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -1500,6 +1568,7 @@ To run this command, you must have *List Accounts* permission in the Safe.
 #### Human Readable Output
 
 >### There are 2 accounts
+>
 >|address|categoryModificationTime|createdTime|id|name|platformAccountProperties|platformId|safeName|secretManagement|secretType|userName|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| string | 1594569595 | 1594573679 | 2_6 | account1 |  | Oracle | VaultInternal | automaticManagementEnabled: true<br/>lastModifiedTime: 1594559279 | password | string |
@@ -1508,6 +1577,7 @@ To run this command, you must have *List Accounts* permission in the Safe.
 
 
 ### cyberark-pas-account-get-list-activity
+
 ***
 Returns the activities of a specific account that is identified by its account ID.
 
@@ -1538,9 +1608,11 @@ Returns the activities of a specific account that is identified by its account I
 
 
 #### Command Example
+
 ```!cyberark-pas-account-get-list-activity account_id= 89_3```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -1573,6 +1645,7 @@ Returns the activities of a specific account that is identified by its account I
 #### Human Readable Output
 
 >### Results
+>
 >|Action|ActionID|Alert|ClientID|Date|MoreInfo|Reason|User|
 >|---|---|---|---|---|---|---|---|
 >| Rename File | 124 | false | 1 | 1597863265 | NewName |  | Administrator |
@@ -1580,6 +1653,7 @@ Returns the activities of a specific account that is identified by its account I
 
 
 ### cyberark-pas-account-get-details
+
 ***
 Returns information for the specified account, identified by the account ID.
 
@@ -1613,9 +1687,11 @@ To run this command, you must have *List Accounts* permission in the Safe.
 
 
 #### Command Example
+
 ```!cyberark-pas-account-get-details account_id=46_7```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -1647,6 +1723,7 @@ To run this command, you must have *List Accounts* permission in the Safe.
 #### Human Readable Output
 
 >### Results
+>
 >|address|categoryModificationTime|createdTime|id|name|platformAccountProperties|platformId|safeName|secretManagement|secretType|userName|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| address | 1597581174 | 1595431869 | 46_7 | Operating System-UnixSSH | UseSudoOnReconcile: No<br/>Tags: SSH | UnixSSH | Linux Accounts | automaticManagementEnabled: true<br/>status: success<br/>lastModifiedTime: 1595417469<br/>lastReconciledTime: 1576120341 | password | user1 |
@@ -1654,6 +1731,7 @@ To run this command, you must have *List Accounts* permission in the Safe.
 
 
 ### cyberark-pas-credentials-change-in-vault-only
+
 ***
 Enable users to set account credentials and change them in the vault.
 
@@ -1676,6 +1754,7 @@ To run this command, you must have *Update Password Value* credentials in the Sa
 There is no context output for this command.
 
 #### Command Example
+
 ```!cyberark-pas-credentials-change-in-vault-only account_id=89_4 new_credentials=1234Asw```
 
 
@@ -1687,6 +1766,7 @@ There is no context output for this command.
 
 
 ### cyberark-pas-credentials-verify
+
 ***
 Mark an account for verification by the Central Policy Manager (CPM).
 
@@ -1708,6 +1788,7 @@ To run this command, you must have *Initiate CPM password management operations*
 There is no context output for this command.
 
 #### Command Example
+
 ```!cyberark-pas-credentials-verify account_id=89_4```
 
 
@@ -1719,6 +1800,7 @@ There is no context output for this command.
 
 
 ### cyberark-pas-credentials-reconcile
+
 ***
 Mark an account for automatic reconciliation by the Central Policy Manager (CPM).
 
@@ -1740,6 +1822,7 @@ To run this command, you must have *Initiate CPM password management operations*
 There is no context output for this command.
 
 #### Command Example
+
 ```!cyberark-pas-credentials-reconcile account_id=89_4```
 
 
@@ -1751,6 +1834,7 @@ There is no context output for this command.
 
 
 ### cyberark-pas-credentials-change-random-password
+
 ***
 Mark an account for an immediate credentials change by the CPM to a new random value.
 
@@ -1775,6 +1859,7 @@ To run this command, you must have the following permissions in the Safe where t
 There is no context output for this command.
 
 #### Command Example
+
 ```!cyberark-pas-credentials-change-random-password account_id=89_4```
 
 
@@ -1787,6 +1872,7 @@ There is no context output for this command.
 
 
 ### cyberark-pas-credentials-change-set-new-password
+
 ***
 Enable users to set the account's credentials to use for the next Central Policy Manager (CPM) change.
 
@@ -1796,6 +1882,7 @@ To run this command, you must have *Update Password Value* credentials in the Sa
 #### Base Command
 
 `cyberark-pas-credentials-change-set-new-password`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1809,6 +1896,7 @@ To run this command, you must have *Update Password Value* credentials in the Sa
 There is no context output for this command.
 
 #### Command Example
+
 ```!cyberark-pas-credentials-change-set-new-password account_id=89_4```
 
 
@@ -1821,6 +1909,7 @@ There is no context output for this command.
 
 
 ### cyberark-pas-security-events-get
+
 ***
 Return all Privileged Threat Analytics (PTA) security events.
 
@@ -1851,9 +1940,11 @@ Return all Privileged Threat Analytics (PTA) security events.
 
 
 #### Command Example
+
 ```!cyberark-pas-security-events-get start_time="3 days" limit=2```
 
 #### Context Example
+
 ```
 {
     "CyberArkPAS": {
@@ -1932,6 +2023,7 @@ Return all Privileged Threat Analytics (PTA) security events.
 #### Human Readable Output
 
 >### Results
+>
 >|additionalData|audits|createTime|id|lastUpdateTime|mStatus|score|type|
 >|---|---|---|---|---|---|---|---|
 >| station: 1.1.1.1<br/>reason: ip<br/>vault_user: administrator | {'id': '1', 'type': 'VAULT_LOGON', 'sensorType': 'VAULT', 'action': 'Logon', 'createTime': 1597864497000, 'vaultUser': 'Administrator', 'source': {'mOriginalAddress': '1.1.1.1', 'mResolvedAddress': {'mOriginalAddress': '1.1.1.1', 'mAddress': '1.1.1.1', 'mHostName': '1-2-3-4', 'mFqdn': '1-2-3-4'}}, 'cloudData': {}} | 1597864497000 | 1 | 1597864497000 | OPEN | 25.751749103263528 | VaultViaIrregularIp |

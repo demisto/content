@@ -2,10 +2,12 @@ HackerOne integration allows users to fetch reports by using the fetch incidents
 This integration was integrated and tested with API version v1 of HackerOne.
 
 ## Advanced Filter
+
 The`advanced_filter` parameter used both in the `hackerone-report-list` command and in the integration configuration, is used to filter results based on attribute values.
 The general filtering syntax is as follows:
 
 ```{"attribute": "value1, value2"}```
+
 - `attribute` is the name of the attribute that the filter will be applied against.
 - `value` is the value being checked for. You can specify multiple values as a comma-separated list for the attributes that are accepting the multiple values according to the API document.
 - To specify multiple filters, use the comma ( , ) to separate them 
@@ -32,9 +34,12 @@ To get the detailed information regarding the valid attributes for filtering use
 | Fetch incidents |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### hackerone-report-list
+
 ***
 Retrieves all the reports based on program handle and provided arguments.
 
@@ -42,6 +47,7 @@ Retrieves all the reports based on program handle and provided arguments.
 #### Base Command
 
 `hackerone-report-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -188,9 +194,11 @@ Retrieves all the reports based on program handle and provided arguments.
 
 
 #### Command Example
+
 ```!hackerone-report-list program_handle=something_h1b page_size=2```
 
 #### Context Example
+
 ```json
 {
     "HackerOne": {
@@ -401,6 +409,7 @@ Retrieves all the reports based on program handle and provided arguments.
 #### Human Readable Output
 
 >### Report(s)
+>
 >|Report ID|Reporter Username|Title|State|Severity|Created At|Vulnerability Information|
 >|---|---|---|---|---|---|---|
 >| 1297733 | jahnvi_crest | Do not use depreciated function isSecure | new | medium | 2021-08-10T07:17:41.923Z | ## Summary:<br/>The depreciated function isSecure is not compatible with for SSL verification.<br/><br/>## Impact<br/><br/>SSL verification will fail regardless of certificate authenticity. |
@@ -408,6 +417,7 @@ Retrieves all the reports based on program handle and provided arguments.
 
 
 ### hackerone-program-list
+
 ***
 Retrieves information about the programs in which the user is a member.
 
@@ -415,6 +425,7 @@ Retrieves information about the programs in which the user is a member.
 #### Base Command
 
 `hackerone-program-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -437,9 +448,11 @@ Retrieves information about the programs in which the user is a member.
 
 
 #### Command Example
+
 ```!hackerone-program-list page_size=2```
 
 #### Context Example
+
 ```json
 {
     "HackerOne": {
@@ -472,6 +485,7 @@ Retrieves information about the programs in which the user is a member.
 #### Human Readable Output
 
 >### Program(s)
+>
 >|Program ID|Handle|Created At|Updated At|
 >|---|---|---|---|
 >| 53994 | something_h1b | 2021-08-09T13:39:20.342Z | 2021-08-10T09:29:56.853Z |

@@ -689,6 +689,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-mail-list-rules
 
 ***
@@ -718,6 +719,7 @@ List email rules for a user's mailbox using Microsoft Graph API.
 | MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. | 
 | MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. | 
 | MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. | 
+
 ### msgraph-mail-get-rule
 
 ***
@@ -747,6 +749,7 @@ Get details of a specific email rule by ID for a user's mailbox using Microsoft 
 | MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. | 
 | MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. | 
 | MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. | 
+
 ### msgraph-mail-delete-rule
 
 ***

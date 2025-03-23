@@ -1,4 +1,5 @@
 # Symantec Endpoint Protection
+
 This pack includes Cortex XSIAM content.
 <~XSIAM>
 
@@ -17,6 +18,7 @@ For more information, see the following [documentation](https://techdocs.broadco
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
@@ -28,6 +30,7 @@ You can configure the specific vendor and product for this instance.
    - product as product - ep
 
 ### Timestamp Ingestion
+
 Timestamp ingestion from raw logs is supported only for the format: **MMM dd hh:mm:ss.nnn** (e.g., Dec 1 10:00:00).
 The default time zone for the timestamp extraction is in UTC (**+00:00**) time. 
 Any requirement for another time zone, demands altering the time zone used in the default Parsing Rule by changing it in the User Defined section according to your needs.

@@ -30,8 +30,10 @@ Case management that enables visibility across your tools for continual IR impro
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### rs-search-incidents
 
 ***
@@ -85,6 +87,7 @@ Query for incidents
 | Resilient.Incidents.ResolutionSummary | string | Incident resolution summary. | 
 
 ### rs-update-incident
+
 ***
 Updates incidents.
 
@@ -92,6 +95,7 @@ Updates incidents.
 #### Base Command
 
 `rs-update-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -113,6 +117,7 @@ Updates incidents.
 There is no context output for this command.
 
 #### Command Example
+
 ```!rs-update-incident incident-id=1234 severity=High incident-type=Malware```
 
 #### Human Readable Output
@@ -120,6 +125,7 @@ There is no context output for this command.
 >Incident 1234 was updated successfully.
 
 ### rs-incidents-get-members
+
 ***
 Gets members of the incident.
 
@@ -127,6 +133,7 @@ Gets members of the incident.
 #### Base Command
 
 `rs-incidents-get-members`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -146,9 +153,11 @@ Gets members of the incident.
 
 
 #### Command Example
+
 ```!rs-incidents-get-members incident-id=1234```
 
 #### Context Example
+
 ```json
 {
     "Resilient": {
@@ -170,12 +179,14 @@ Gets members of the incident.
 #### Human Readable Output
 
 >### Members of incident 1234
+>
 >|ID|LastName|FirstName|Email|
 >|---|---|---|---|
 >| 1 | example | example | example@example.com |
 
 
 ### rs-get-incident
+
 ***
 Gets an individual incident by ID.
 
@@ -183,6 +194,7 @@ Gets an individual incident by ID.
 #### Base Command
 
 `rs-get-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -261,6 +273,7 @@ Gets an individual incident by ID.
         }
     }
 }
+
 ```
 
 #### Human Readable Output
@@ -366,12 +379,14 @@ Creates an incident.
 #### Human Readable Output
 
 >### Incident IncidentName was created
+>
 >|ID|Name|
 >|---|---|
 >| 1235 | IncidentName |
 
 
 ### rs-incident-artifacts
+
 ***
 Gets incident artifacts.
 
@@ -379,6 +394,7 @@ Gets incident artifacts.
 #### Base Command
 
 `rs-incident-artifacts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -407,9 +423,11 @@ Gets incident artifacts.
 
 
 #### Command Example
+
 ```!rs-incident-artifacts incident-id=1234```
 
 #### Context Example
+
 ```json
 {
     "Resilient": {
@@ -442,6 +460,7 @@ Gets incident artifacts.
 #### Human Readable Output
 
 >### Incident 1234 artifacts
+>
 >|ID|Value|Description|CreatedDate|Creator|
 >|---|---|---|---|---|
 >| 1 | 1.1.1.1 | example | 2000-00-00T00:00:00Z | example example |
@@ -449,6 +468,7 @@ Gets incident artifacts.
 
 
 ### rs-incident-attachments
+
 ***
 Gets incident attachments.
 
@@ -456,6 +476,7 @@ Gets incident attachments.
 #### Base Command
 
 `rs-incident-attachments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -479,9 +500,11 @@ Gets incident attachments.
 
 
 #### Command Example
+
 ```!rs-incident-attachments incident-id=1234```
 
 #### Context Example
+
 ```json
 {
     "Resilient": {
@@ -507,12 +530,14 @@ Gets incident attachments.
 #### Human Readable Output
 
 >### Incident 1234 attachments
+>
 >|ContentType|CreatedDate|Creator|ID|Name|Size|
 >|---|---|---|---|---|---|
 >| example | 2000-00-00T00:00:00Z | example example | 1 | example | 10 |
 
 
 ### rs-related-incidents
+
 ***
 Gets related incidents.
 
@@ -520,6 +545,7 @@ Gets related incidents.
 #### Base Command
 
 `rs-related-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -542,9 +568,11 @@ Gets related incidents.
 
 
 #### Command Example
+
 ```!rs-related-incidents incident-id=1234```
 
 #### Context Example
+
 ```json
 {
     "Resilient": {
@@ -579,12 +607,14 @@ Gets related incidents.
 #### Human Readable Output
 
 >### Incident 1234 related incidents
+>
 >|Artifacts|CreatedDate|ID|Name|Status|
 >|---|---|---|---|---|
 >| ID: 1<br/>Created Date: 2000-00-00T00:00:00Z<br/>Creator: example example<br/>ID: 2<br/>Created Date: 2000-00-00T00:00:00Z<br/>Description: example<br/><br/>Creator: example example<br/> | 2000-00-00T00:00:00Z | 1234 | example | Closed |
 
 
 ### rs-incidents-get-tasks
+
 ***
 Gets tasks of incidents.
 
@@ -592,6 +622,7 @@ Gets tasks of incidents.
 #### Base Command
 
 `rs-incidents-get-tasks`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -616,9 +647,11 @@ Gets tasks of incidents.
 
 
 #### Command Example
+
 ```!rs-incidents-get-tasks incident-id=1234```
 
 #### Context Example
+
 ```json
 {
     "Resilient": {
@@ -644,12 +677,14 @@ Gets tasks of incidents.
 #### Human Readable Output
 
 >### Incident 1234 tasks
+>
 >|ID|Name|Category|Form|Status|DueDate|Instructions|UserNotes|Required|Creator|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 1 | example | Respond | data_compromised, determined_date | Open |  |  |  | true | example example |
 
 
 ### rs-add-note
+
 ***
 Add a note to an incident.
 
@@ -657,6 +692,7 @@ Add a note to an incident.
 #### Base Command
 
 `rs-add-note`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -700,9 +736,11 @@ Add a note to an incident.
 
 
 #### Command Example
+
 ```!rs-add-note incident-id=1234 note="This is a note"```
 
 #### Context Example
+
 ```json
 {
     "Resilient": {
@@ -754,6 +792,7 @@ Add a note to an incident.
 >The note was added successfully to incident 1234
 
 ### rs-add-artifact
+
 ***
 Add an artifact to an incident.
 
@@ -761,6 +800,7 @@ Add an artifact to an incident.
 #### Base Command
 
 `rs-add-artifact`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -818,9 +858,11 @@ Add an artifact to an incident.
 
 
 #### Command Example
+
 ```!rs-add-artifact artifact-type="IP Address" artifact-value=1.1.1.1 incident-id=1234 artifact-description="This is a description"```
 
 #### Context Example
+
 ```json
 {
     "Resilient": {
@@ -886,6 +928,7 @@ Add an artifact to an incident.
 #### Human Readable Output
 
 >The artifact was added successfully to incident 1234
+>
 ### rs-delete-incidents
 
 ***
@@ -904,6 +947,7 @@ Delete multiple incidents.
 #### Context Output
 
 There is no context output for this command.
+
 ### rs-list-incident-notes
 
 ***
@@ -948,6 +992,7 @@ Update an incident's task fields.
 #### Context Output
 
 There is no context output for this command.
+
 ### rs-add-custom-task
 
 ***
@@ -992,6 +1037,7 @@ Delete a task's member. This effectively changes the task from a "private" task 
 #### Context Output
 
 There is no context output for this command.
+
 ### rs-list-tasks
 
 ***
@@ -1138,6 +1184,7 @@ Get the members of a task. Private tasks will have the returned "members" proper
 
 
 ### rs-get-attachment
+
 ***
 Gets incident attachment's name and contents as a file by its ID.
 
@@ -1157,6 +1204,7 @@ Gets incident attachment's name and contents as a file by its ID.
 There is no context output for this command.
 
 ### rs-incidents-update-member
+
 ***
 Updates incident's members.
 

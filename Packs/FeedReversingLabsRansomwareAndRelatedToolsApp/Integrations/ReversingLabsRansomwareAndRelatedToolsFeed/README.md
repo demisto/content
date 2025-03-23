@@ -1,4 +1,5 @@
 ## Overview
+
 ReversingLabs Ransomware and Related Tools Feed includes fresh indicators from not only ransomware but the tools used 
 to gain access and deploy ransomware enabling defenders the opportunity to discover adversaries initial network access 
 and lateral movement before their data is encrypted. Our threat intelligence researchers analyze ransomware attack 
@@ -9,7 +10,9 @@ The user can set the initial fetch time to go historically up to 4 hours back. E
 historical time dynamically by itself so no indicators are missed.
 
 ## Configuring
+
 Upon installing the ReversingLabs Ransomware and Related Tools Feed integration, do the following:
+
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for ReversingLabs Ransomware and Related Tools Feed.
 3. Click __Add instance__ to create and configure a new integration instance.
@@ -38,9 +41,11 @@ Upon installing the ReversingLabs Ransomware and Related Tools Feed integration,
 6. If the test succeeds, click "Done" to finish configuring the instance.
 
 ## Commands
+
 The commands in this feed integration can be executed manually from the Cortex XSOAR CLI, or as a part of an automation or a playbook.
 
 ### Get indicators from the feed
+
 ```reversinglabs-get-indicators```
 
 #### Available arguments
@@ -91,7 +96,9 @@ Hash object
 
 
 #### Context prefix
+
 ```ReversingLabs.indicators```
 
 #### Command example
+
 ```!reversinglabs-get-indicators limit="40" indicator_types="ipv4,hash" hours_back="2"```

@@ -11,9 +11,12 @@ Postmark's spam API, Spamcheck, is a RESTfull interface to the Spam filter tool 
 | Use system proxy settings | Runs the integration instance using the proxy server \(HTTP or HTTPS\) that you defined in the server configuration. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### postmark-spamcheck
+
 ***
 Check the spamscore of your email message
 
@@ -21,6 +24,7 @@ Check the spamscore of your email message
 #### Base Command
 
 `postmark-spamcheck`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -39,8 +43,11 @@ Check the spamscore of your email message
 | Postmark.Spamcheck.report | unknown | Detailed SpamAssassin report | 
 
 #### Command example
+
 ```!postmark-spamcheck entryid="654@731f1b54-bdea-4d4a-860f-328527df0cd7"```
+
 #### Context Example
+
 ```json
 {
     "Postmark": {
@@ -87,6 +94,7 @@ Check the spamscore of your email message
 #### Human Readable Output
 
 >### Postmark - Spamcheck
+>
 >Spamcheck completed
 > 
 >|entryid|report|rules|score|success|
@@ -95,8 +103,11 @@ Check the spamscore of your email message
 
 
 #### Command example
+
 ```!postmark-spamcheck entryid="654@731f1b54-bdea-4d4a-860f-328527df0cd7" short=True```
+
 #### Context Example
+
 ```json
 {
     "Postmark": {
@@ -112,6 +123,7 @@ Check the spamscore of your email message
 #### Human Readable Output
 
 >### Postmark - Spamcheck
+>
 >Spamcheck completed
 > 
 >|entryid|score|success|

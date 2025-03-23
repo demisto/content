@@ -627,6 +627,7 @@ Retrieves contacts for a specified mailbox.
 
 ***
 This operation verifies aliases and matches display names to the correct mailbox user. It handles one ambiguous name at a time. If there are multiple potential matches, all will be returned, but limited to a maximum of 100 candidates.
+
 #### Base Command
 
 `ews-resolve-name`

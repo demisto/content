@@ -2,6 +2,7 @@ XMCO Serenety
 
 
 ## Configure XMCO Serenety in Cortex
+
 To configure an instance of XMCO Serenety integration in Cortex XSOAR:
 
 

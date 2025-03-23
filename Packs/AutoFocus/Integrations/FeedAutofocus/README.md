@@ -29,6 +29,7 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 
 
 #### Custom Feed info:
+
 To connect a custom AutoFocus feed you need to provide the Custom Feed URL.
 
 The Custom Feed URL should be in this form:
@@ -36,7 +37,9 @@ https://autofocus.paloaltonetworks.com/IOCFeed/{Output_Feed_ID}/{Output_Feed_Nam
 
 
 #### Samples Feed info:
+
 To connect a samples AutoFocus feed you need to provide the scope of the samples and the query for the samples.
+
 1. The scope can be either:
     1. public - Samples available for all organizations.
     2. private - Your own samples.
@@ -59,10 +62,12 @@ You can go to AutoFocus UI -> Search -> Sample -> Advanced -> Create your desire
 }`
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get Indicators
+
 ***
 Gets the indicators from AutoFocus.
 
@@ -71,6 +76,7 @@ Note: This command does not create indicators within Cortex XSOAR.
 ##### Base Command
 
 `autofocus-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -84,11 +90,14 @@ Note: This command does not create indicators within Cortex XSOAR.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!autofocus-get-indicators limit=4```
 
 
 ##### Human Readable Output
+
 ### Indicators from AutoFocus:
+
 |Value|Type|
 |---|---|
 | XSOAR\<Span\>.com | Domain |
@@ -101,6 +110,7 @@ To bring the next batch of indicators run:
 
 
 ## Demo Video
+
 <video controls>
     <source src="https://github.com/demisto/content-assets/raw/7fd9e45c4d809dc1a41521c66828733dafe82148/Assets/FeedAutofocus/AutoFocus_Feed_demo.mp4"
             type="video/mp4"/>

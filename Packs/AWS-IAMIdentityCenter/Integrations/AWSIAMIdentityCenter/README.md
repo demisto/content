@@ -63,8 +63,11 @@ Creates a new IAM Identity Center user for your AWS account.
 | AWS.IAMIdentityCenter.User.IdentityStoreId | string | Identity Store ID. | 
 
 #### Command example
+
 ```!aws-iam-identitycenter-create-user displayName="John Doe" familyName=Doe givenName=John userName=johndoe userEmailAddress=johnDoe@gmail.com```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -81,6 +84,7 @@ Creates a new IAM Identity Center user for your AWS account.
 #### Human Readable Output
 
 >### User johndoe has been successfully created with user id 634418e2-20c1-703e-4358-a8312472c85d
+>
 >|IdentityStoreId|UserId|
 >|---|---|
 >| d-9967750fbd | 634418e2-20c1-703e-4358-a8312472c85d |
@@ -146,8 +150,11 @@ Retrieves information about the specified IAM user.
 | AWS.IAMIdentityCenter.User.IdentityStoreId | String | Globally unique identifier for the identity store. | 
 
 #### Command example
+
 ```!aws-iam-identitycenter-get-user userName=johndoe```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -175,6 +182,7 @@ Retrieves information about the specified IAM user.
 #### Human Readable Output
 
 >### AWS IAM Identity Center Users
+>
 >|DisplayName|Emails|UserId|UserName|
 >|---|---|---|---|
 >| John Doe | johnDoe@gmail.com | 634418e2-20c1-703e-4358-a8312472c85d | johndoe |
@@ -242,8 +250,11 @@ Lists the IAM users, returns all users in the AWS account.
 | AWS.IAMIdentityCenter.UserNextToken | String | Pagination token. | 
 
 #### Command example
+
 ```!aws-iam-identitycenter-list-users```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -274,6 +285,7 @@ Lists the IAM users, returns all users in the AWS account.
 #### Human Readable Output
 
 >### AWS IAM Identity Center Users
+>
 >|DisplayName|Emails|UserId|UserName|
 >|---|---|---|---|
 >| johndoe | johnDoe@gmail.com | 8374c852-10e1-70e2-8996-5b0d54bf8ccd | johndoe |
@@ -314,8 +326,11 @@ Lists all the IAM groups in the AWS account.
 | AWS.IAMIdentityCenter.GroupNextToken | String | The pagination token used for the ListUsers and ListGroups API operations. | 
 
 #### Command example
+
 ```!aws-iam-identitycenter-list-groups```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -336,6 +351,7 @@ Lists all the IAM groups in the AWS account.
 #### Human Readable Output
 
 >### AWS IAM Identity Center Groups
+>
 >|DisplayName|GroupId|
 >|---|---|
 >| new | 53142802-e001-7004-9134-9e6e4e1e10c0 |
@@ -373,8 +389,11 @@ Lists the IAM Identity Center groups that the specified IAM user belongs to.
 
 
 #### Command example
+
 ```!aws-iam-identitycenter-list-groups-for-user userName=johndoe```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -397,6 +416,7 @@ Lists the IAM Identity Center groups that the specified IAM user belongs to.
 #### Human Readable Output
 
 >### AWS IAM Identity Center Groups
+>
 >|GroupID|MembershipID|UserID|
 >|---|---|---|
 >| a3948882-5051-7090-524c-c8c850bf1919 | e374b872-9011-7000-c847-55fdcc299204 | c3f438a2-e041-7033-75e8-63eb8c64b0e4 |
@@ -426,8 +446,11 @@ Adds the specified user to the specified group.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-iam-identitycenter-add-user-to-group groupName=NewGroup userName=johndoe```
+
 #### Human Readable Output
 
 >The membership id 4314c862-b0c1-705e-d5da-ccf59fd045f3 has been successfully created.
@@ -464,8 +487,11 @@ Get AWS IAM Identity Center group Information.
 | AWS.IAMIdentityCenter.Group.IdentityStoreId | String | The globally unique identifier for the identity store. | 
 
 #### Command example
+
 ```!aws-iam-identitycenter-get-group displayName=NewGroup```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -484,6 +510,7 @@ Get AWS IAM Identity Center group Information.
 #### Human Readable Output
 
 >### AWS IAM Identity Center Groups
+>
 >|DisplayName|GroupId|
 >|---|---|
 >| NewGroup | f3a478d2-50b1-7078-81a4-c97c703007f3 |
@@ -549,8 +576,11 @@ Retrieves information about the specified IAM user.
 
 
 #### Command example
+
 ```!aws-iam-identitycenter-get-user-by-email emailAddress=johnDoe@gmail.com```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -580,6 +610,7 @@ Retrieves information about the specified IAM user.
 #### Human Readable Output
 
 >### AWS IAM Identity Center Users
+>
 >|DisplayName|Emails|UserId|UserName|
 >|---|---|---|---|
 >| John Doe | johnDoe@gmail.com | 13746842-e011-70fe-14fe-600d496510f0 | johndoe |
@@ -618,8 +649,11 @@ Lists the memberships of the group.
 
 
 #### Command example
+
 ```!aws-iam-identitycenter-list-memberships groupName=NewGroup```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -668,8 +702,11 @@ Removes the specified user from the AWS IAM Identity Center.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-iam-identitycenter-delete-user userName=johndoe```
+
 #### Human Readable Output
 
 >The User 634418e2-20c1-703e-4358-a8312472c85d has been removed.
@@ -697,8 +734,11 @@ Removes the specified group from the IAM Identity Center.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-iam-identitycenter-delete-group groupName=NewGroup```
+
 #### Human Readable Output
 
 >The Group f3a478d2-50b1-7078-81a4-c97c703007f3 has been removed.
@@ -732,8 +772,11 @@ Creates a new IAM Identity Center group for your AWS account.
 | AWS.IAMIdentityCenter.Group.IdentityStoreId | string | Identity store ID. | 
 
 #### Command example
+
 ```!aws-iam-identitycenter-create-group description=New displayName=NewGroup```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -750,6 +793,7 @@ Creates a new IAM Identity Center group for your AWS account.
 #### Human Readable Output
 
 >### Group NewGroup has been successfully created with id f3a478d2-50b1-7078-81a4-c97c703007f3
+>
 >|GroupId|IdentityStoreId|
 >|---|---|
 >| f3a478d2-50b1-7078-81a4-c97c703007f3 | d-9967750fbd |
@@ -779,8 +823,11 @@ Updates an IAM Identity Center group for your AWS account.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-iam-identitycenter-update-group description=changed displayName=NewGroup```
+
 #### Human Readable Output
 
 >Group NewGroup has been successfully updated
@@ -819,6 +866,7 @@ There is no context output for this command.
 
 
 #### Command example
+
 ```!aws-iam-identitycenter-update-user userName=johndoe familyName=changed```
 
 #### Human Readable Output
@@ -849,8 +897,11 @@ Deletes a user from all groups if a username is provided, or deletes multiple me
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-iam-identitycenter-delete-group-membership userName=johndoe```
+
 #### Human Readable Output
 
 >User is not member of any group.

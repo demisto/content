@@ -2,24 +2,28 @@ Security Command Center is a security and risk management platform for Google Cl
 This integration was integrated and tested with version v1 of GoogleCloudSCC.
 
 ## Detailed Description
+
 This integration uses Pub/Sub to fetch the incidents. This integration supports multiple organizations. In order to fetch data from multiple organizations, configure multiple instances for different organizations. To set up the initial parameters of Google SCC in Cortex XSOAR, please follow the below instructions. For more information, refer to this [guide](https://cloud.google.com/security-command-center/docs/how-to-configure-scc-cortex-xsoar) by Google SCC for configuring Cortex XSOAR Integration.
 
 ### Scope
+
 We need to provide the below mentioned OAuth scope to execute the commands: https://www.googleapis.com/auth/cloud-platform.
  
 ### Create a Service Account
+
 1. Go to the [Google documentation](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) and follow the procedure mentioned in the _Creating a Service Account_ section. After you create a service account, a Service Account Private Key file is downloaded. You will need this file when configuring an instance of the integration.
 2. Grant the Security Command Center admin permission to the Service Account to enable the Service Account to perform certain Google Cloud API commands.
-3. For additional information on the types of permissions that can be granted to Service Account, see the ***Permissions*** section below.
+3. For additional information on the types of permissions that can be granted to Service Account, see the _**Permissions**_ section below.
 4. In Cortex XSOAR, configure an instance of the Google Cloud Security Command Center integration. For the Service Account Private Key parameter, add the Service Account Private Key file contents (JSON).
 
 ### Permissions
+
 To set up Security Command Center or change the configuration of your organization, you need both of the following roles at the organization level:
 
 * Organization Admin (roles/resourcemanager.organizationAdmin)
 * Security Center Admin (roles/securitycenter.admin)
 
-If a user doesn't require edit permissions, consider granting them viewer roles. To view all assets and findings in Security Command Center, users need the ***Security Center Admin Viewer*** (roles/securitycenter.adminViewer) role at the organization level. Users who need to edit the findings need the ***Security Center Admin*** (roles/securitycenter.admin) role at the organization level.
+If a user doesn't require edit permissions, consider granting them viewer roles. To view all assets and findings in Security Command Center, users need the _**Security Center Admin Viewer**_ (roles/securitycenter.adminViewer) role at the organization level. Users who need to edit the findings need the _**Security Center Admin**_ (roles/securitycenter.admin) role at the organization level.
 
 To restrict access to individual folders and projects, don't grant all roles at the organization level. Instead, grant the following roles at the folder or project level:
 
@@ -29,42 +33,51 @@ To restrict access to individual folders and projects, don't grant all roles at 
 Refer to [Google Documentation](https://cloud.google.com/security-command-center/docs/access-control) for further information on granting roles to persons and applications, as well as specific permissions.
 
 ### Steps to configure workload identity federation:
+
 1. Follow the [steps](https://cloud.google.com/iam/docs/configuring-workload-identity-federation) to construct a workload identity pool and a workload identity pool provider to leverage workload identity federation.
 2. Navigate to the '[Granting external identities permission to impersonate a service account](https://cloud.google.com/iam/docs/using-workload-identity-federation#impersonate)' section.
 3. Follow the step-1 mentioned in the [Google documentation](https://cloud.google.com/iam/docs/using-workload-identity-federation#generate-automatic) to create a credential file for external identities. The contents of the downloaded file should be given into the 'Service Account Configuration' parameter.
     
-    ### Prerequisite for accessing Google services from AWS:
+   ### Prerequisite for accessing Google services from AWS:
+
     1. [Create an IAM AWS Role.](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html#create-iam-role)
     2. [Attach the IAM role to EC2 instance.](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html#attach-iam-role)
     
-    ### Prerequisite for accessing Google services from Azure:
+   ### Prerequisite for accessing Google services from Azure:
+
     1. [Create an Azure AD application and service principal.](https://docs.microsoft.com/en-au/azure/active-directory/develop/howto-create-service-principal-portal#register-an-application-with-azure-ad-and-create-a-service-principal)
     2. Set an **Application ID URI** for the application.
     3. [Create a managed identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-manage-user-assigned-managed-identities?pivots=identity-mi-methods-azp). Note the Object ID of the managed identity. You need it later when you configure impersonation.
     4. [Assign the managed identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/qs-configure-portal-windows-vm#user-assigned-managed-identity) to a virtual machine or another resource that runs your application.
 
 ### Getting your Organization ID
+
 The Organization ID is a unique identifier for an organization and is automatically created when your organization resource is created.
+
 1. To get the Organization ID for your organization, follow the steps mentioned in Google documentation provided [here](https://cloud.google.com/resource-manager/docs/creating-managing-organization#retrieving_your_organization_id).
-2. To get your Organization ID using the Cloud Console, [Go to the Cloud Console](https://console.cloud.google.com/) and at the top of the page, click the project selection drop-down list and __from the Select__ window that appears, click the organization drop-down list and select the organization you want.
-3. On the right side, click __More__, then click __Settings__. The __Settings__ page displays your organization's ID.
+2. To get your Organization ID using the Cloud Console, [Go to the Cloud Console](https://console.cloud.google.com/) and at the top of the page, click the project selection drop-down list and **from the Select** window that appears, click the organization drop-down list and select the organization you want.
+3. On the right side, click **More**, then click **Settings**. The **Settings** page displays your organization's ID.
 
 ### Getting your Project ID
+
 When we create a new project or for an existing project, Project ID generates for that project. To get the Project ID and the Project number, you can follow the same instructions provided above for getting Organization ID. For more details, You can follow the instructions provided in Google documentation [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects).
 
 ### Getting Subscription ID from Pub/Sub
+
 To fetch incidents using Google Pub/Sub, we need to configure Pub/Sub first. This [Google documentation](https://cloud.google.com/pubsub/docs/quickstart-console) will help setting up Pub/Sub prerequisites for creating a subscription.
-1. To add a subscription, we need to have a topic first. So after you create a topic, go to the menu for the topic and click on __Create subscription__ and it will take you to the _Add new subscription_ page.
-2. Type a name for the subscription and leave the delivery type as __Pull__.
+
+1. To add a subscription, we need to have a topic first. So after you create a topic, go to the menu for the topic and click on **Create subscription** and it will take you to the _Add new subscription_ page.
+2. Type a name for the subscription and leave the delivery type as **Pull**.
 3. Set the Message retention duration to retain unacknowledged messages for a specified duration. If the checkbox of _Retain acknowledged messages_ is enabled, acknowledged messages are retained for the same duration. It is recommended to keep maximum possible value for Message retention so messages can be retained inside subscription until they are pulled.
 4. Set the Acknowledgement deadline for pub/sub to wait for the subscriber to acknowledge receipt before resending the message. Minimum recommended value for Acknowledgement deadline is 300 seconds for this integration.
 5. Apply the other settings as required and click on the CREATE button.
 6. Once the subscription is created, it will take you to the Subscriptions page, where you can see the Subscription ID for the subscription you just created. 
 
 ### Setting up finding notifications
+
 * Enable the Security Command Center API notifications feature. Notifications send information to a Pub/Sub topic to provide findings updates and new findings within minutes. Set up the notifications as per [Google Documentation](https://cloud.google.com/security-command-center/docs/how-to-notifications) available and get SCC data in Cortex XSOAR. 
 * The basic parameters required for setting up pub/sub notifications are ORGANIZATION_ID, PUBSUB_TOPIC, DESCRIPTION and FILTER.
-* Before creating a pub/sub notification, make sure to check the filter parameters using __google-cloud-scc-finding-list__ command provided in this integration. The total size applicable for the filter provided can be checked using _Total retrieved findings_ available inside the command results section. A maximum of 200 findings per minute is recommended.
+* Before creating a pub/sub notification, make sure to check the filter parameters using **google-cloud-scc-finding-list** command provided in this integration. The total size applicable for the filter provided can be checked using _Total retrieved findings_ available inside the command results section. A maximum of 200 findings per minute is recommended.
 
 ## Configure GoogleCloudSCC on Cortex XSOAR
 
@@ -85,10 +98,14 @@ To fetch incidents using Google Pub/Sub, we need to configure Pub/Sub first. Thi
     | Use system proxy settings | Enables system proxy settings. | False |
 
 4. Click **Test** to validate configuration parameter.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### google-cloud-scc-asset-list
+
 ***
 Lists an organization's assets.
 
@@ -96,6 +113,7 @@ Lists an organization's assets.
 #### Base Command
 
 `google-cloud-scc-asset-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -140,9 +158,11 @@ Lists an organization's assets.
 
 
 #### Command Example
+
 ```!google-cloud-scc-asset-list pageSize="3"```
 
 #### Context Example
+
 ```json
 {
     "GoogleCloudSCC": {
@@ -256,6 +276,7 @@ Lists an organization's assets.
 #### Human Readable Output
 
 >### Total retrieved asset(s): 3
+>
 >| Organization ID |Name|Project|Resource Name|Resource Type|Resource Owners|Security Marks|
 >|---|---|---|---|---|---|---|
 >| 595779152576 | [organizations/595779152576/assets/7180457033309348544](https://console.cloud.google.com/security/command-center/assets?organizationId=595779152576&resourceId=organizations/595779152576/assets/7180457033309348544) | organizations/595779152576 | //cloudresourcemanager.googleapis.com/organizations/595779152576 | google.cloud.resourcemanager.Organization |  | compressed: SSH<br/>LastSeen: Yesterday |
@@ -266,6 +287,7 @@ Lists an organization's assets.
 
 
 ### google-cloud-scc-finding-list
+
 ***
 Lists an organization or source's findings.
 
@@ -273,6 +295,7 @@ Lists an organization or source's findings.
 #### Base Command
 
 `google-cloud-scc-finding-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -320,9 +343,11 @@ Lists an organization or source's findings.
 
 
 #### Command Example
+
 ```!google-cloud-scc-finding-list sourceTypeId="-" pageSize="3" state="ACTIVE"```
 
 #### Context Example
+
 ```json
 {
     "GoogleCloudSCC": {
@@ -490,6 +515,7 @@ Lists an organization or source's findings.
 #### Human Readable Output
 
 >### Total retrieved finding(s): 3
+>
 >| Organization ID |Name|Category|Resource Name|Finding Class|Event Time|Create Time|Security Marks|
 >|---|---|---|---|---|---|---|---|
 >| 595779152576 | [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | page | //cloudresourcemanager.googleapis.com/projects/339295427573 | THREAT | February 11, 2021 at 09:33:30 AM | May 15, 2020 at 05:57:46 AM | { "name": "wrench", "count": "3" } |
@@ -500,6 +526,7 @@ Lists an organization or source's findings.
 
 
 ### google-cloud-scc-finding-update
+
 ***
 Update an organization's or source's finding.
 
@@ -507,6 +534,7 @@ Update an organization's or source's finding.
 #### Base Command
 
 `google-cloud-scc-finding-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -538,9 +566,11 @@ Update an organization's or source's finding.
 
 
 #### Command Example
+
 ```!google-cloud-scc-finding-update name="organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d"```
 
 #### Context Example
+
 ```json
 {
     "GoogleCloudSCC": {
@@ -607,12 +637,14 @@ Update an organization's or source's finding.
 #### Human Readable Output
 
 >### The finding has been updated successfully.
+>
 >| Organization ID |Name|State|Category|Event Time|Create Time|External Uri|Resource Name|
 >|---|---|---|---|---|---|---|---|
 >| 595779152576 | [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | ACTIVE | page | February 11, 2021 at 01:52:25 PM | May 15, 2020 at 05:57:46 AM | [http://www.fake-url.com](http://www.fake-url.com) | //cloudresourcemanager.googleapis.com/projects/339295427573 |
 
 
 ### google-cloud-scc-asset-resource-list
+
 ***
 Lists cloud asset's resources.
 
@@ -620,12 +652,13 @@ Lists cloud asset's resources.
 #### Base Command
 
 `google-cloud-scc-asset-resource-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | parent | Name of the organization or project the assets belong to. Organization Id provided in the Integration Configuration will be taken by default, if no value is provided to the parent.<br/><br/>Format: "organizations/[organization-number]" (such as "organizations/123"), "projects/[project-id]" (such as "projects/my-project-id"), or "projects/[project-number]" (such as "projects/12345"). | Optional | 
-| assetTypes | This parameter is used to filter assets by asset types by providing a single value or a comma-separated value of asset types.<br/>For example: "compute.googleapis.com/Disk".<br/><br/>Regular expression is also supported. <br/>For example:<br/>1) "compute.googleapis.com.*" resources whose asset type starts with "compute.googleapis.com".<br/>2) ".*Instance" resources whose asset type ends with "Instance".<br/>3) ".*Instance.*" resources whose asset type contains "Instance". | Optional | 
+| assetTypes | This parameter is used to filter assets by asset types by providing a single value or a comma-separated value of asset types.<br/>For example: "compute.googleapis.com/Disk".<br/><br/>Regular expression is also supported. <br/>For example:<br/>1) "compute.googleapis.com.*" resources whose asset type starts with "compute.googleapis.com".<br/>2) ".*Instance" resources whose asset type ends with "Instance".<br/>3) "._Instance._" resources whose asset type contains "Instance". | Optional | 
 | pageSize | The maximum number of results to return in a single response. The minimum value is 1 and maximum value is 1000. Default is 10. | Optional | 
 | pageToken | The nextPageToken returned from the previous scc-asset-resource-list command response, or unspecified for the first  scc-asset-resource-list command. It is a continuation of a prior scc-asset-resource-list call, and the API should return the next page of assets. | Optional | 
 | readTime | Time used as a reference point when filtering assets. This can only be set to a timestamp between the current time and the current time minus 35 days (inclusive). If not provided, it will take current time. <br/><br/>Format:<br/>(&lt;number&gt; &lt;time unit&gt;, e.g., "12 hours ago", "7 days ago", "1 week", "1 month") or (&lt;date&gt; &lt;time&gt;, e.g. "yyyy-mm-ddTHH-MM-SS") or ( "YYYY-MM-ddTHH:mm:ss.sssZ", e.g. 2020-07-22T07:10:02.782Z) or (&lt;date&gt;, e.g. "2020-07-22"). | Optional | 
@@ -652,9 +685,11 @@ Lists cloud asset's resources.
 
 
 #### Command Example
+
 ```!google-cloud-scc-asset-resource-list pageSize=2```
 
 #### Context Example
+
 ```json
 {
     "GoogleCloudSCC": {
@@ -718,6 +753,7 @@ Lists cloud asset's resources.
 
 
 ### google-cloud-scc-asset-owner-get
+
 ***
 Gets the owner information for the provided projects.
 
@@ -725,6 +761,7 @@ Gets the owner information for the provided projects.
 #### Base Command
 
 `google-cloud-scc-asset-owner-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -754,9 +791,11 @@ Gets the owner information for the provided projects.
 
 
 #### Command Example
+
 ```!google-cloud-scc-asset-owner-get projectName="projects/123456789"```
 
 #### Context Example
+
 ```json
 {
     "GoogleCloudSCC": {
@@ -801,6 +840,7 @@ Gets the owner information for the provided projects.
 
 
 ### google-cloud-scc-finding-state-update
+
 ***
 Update the state of organization's or source's finding.
 
@@ -808,6 +848,7 @@ Update the state of organization's or source's finding.
 #### Base Command
 
 `google-cloud-scc-finding-state-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -835,9 +876,11 @@ Update the state of organization's or source's finding.
 
 
 #### Command Example
+
 ```!google-cloud-scc-finding-state-update name="organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d" state=ACTIVE"```
 
 #### Context Example
+
 ```json
 {
     "GoogleCloudSCC": {
@@ -904,10 +947,12 @@ Update the state of organization's or source's finding.
 #### Human Readable Output
 
 >### The finding has been updated successfully.
+>
 >| Organization ID |Name|State|Severity|Category|Event Time|Create Time|External Uri|Resource Name|
 >|---|---|---|---|---|---|---|---|---|
 >| 595779152576 | [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | ACTIVE | High | page | February 11, 2021 at 01:52:25 PM | May 15, 2020 at 05:57:46 AM | [http://www.fake-url.com](http://www.fake-url.com) | //cloudresourcemanager.googleapis.com/projects/339295427573 |
 
 
 ## Known Limitations
+
 This integration supports only secure connection hence disabling SSL(Trust any certificate) support is not provided.

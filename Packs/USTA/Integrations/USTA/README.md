@@ -11,9 +11,12 @@ USTA is an Cyber Intelligence Platform that responds directly and effectively to
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### usta-get-malicious-urls
+
 ***
 You can get malicious URLs with this command
 
@@ -21,6 +24,7 @@ You can get malicious URLs with this command
 #### Base Command
 
 `usta-get-malicious-urls`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,6 +54,7 @@ You can get malicious URLs with this command
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -57,6 +62,7 @@ You can get malicious URLs with this command
 
 
 ### usta-get-malware-hashs
+
 ***
 You can get malware hashs with this command
 
@@ -64,6 +70,7 @@ You can get malware hashs with this command
 #### Base Command
 
 `usta-get-malware-hashs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -88,6 +95,7 @@ You can get malware hashs with this command
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -95,6 +103,7 @@ You can get malware hashs with this command
 
 
 ### usta-get-phishing-sites
+
 ***
 You can get phishing sites with this command
 
@@ -102,6 +111,7 @@ You can get phishing sites with this command
 #### Base Command
 
 `usta-get-phishing-sites`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -126,6 +136,7 @@ You can get phishing sites with this command
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -133,6 +144,7 @@ You can get phishing sites with this command
 
 
 ### usta-get-identity-leaks
+
 ***
 With the Identity Leak API, you can access the hashed version of the credentials added to the platform.SHA256(MD5(Identity_Number))
 
@@ -140,6 +152,7 @@ With the Identity Leak API, you can access the hashed version of the credentials
 #### Base Command
 
 `usta-get-identity-leaks`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -157,6 +170,7 @@ With the Identity Leak API, you can access the hashed version of the credentials
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -164,6 +178,7 @@ With the Identity Leak API, you can access the hashed version of the credentials
 
 
 ### usta-get-stolen-client-accounts
+
 ***
 You can access stolen customer accounts via Stolen-Client-accounts API.
 
@@ -171,6 +186,7 @@ You can access stolen customer accounts via Stolen-Client-accounts API.
 #### Base Command
 
 `usta-get-stolen-client-accounts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -194,6 +210,7 @@ You can access stolen customer accounts via Stolen-Client-accounts API.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -201,6 +218,7 @@ You can access stolen customer accounts via Stolen-Client-accounts API.
 
 
 ### usta-get-domain
+
 ***
 If you want to get more detailed information about malicious domain names, you can use this command.
 
@@ -208,6 +226,7 @@ If you want to get more detailed information about malicious domain names, you c
 #### Base Command
 
 `usta-get-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -229,6 +248,7 @@ If you want to get more detailed information about malicious domain names, you c
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -236,6 +256,7 @@ If you want to get more detailed information about malicious domain names, you c
 
 
 ### usta-get-ip-address
+
 ***
 If you want to get more detailed information about specific IP Address, you can use this command.
 
@@ -243,6 +264,7 @@ If you want to get more detailed information about specific IP Address, you can 
 #### Base Command
 
 `usta-get-ip-address`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -262,6 +284,7 @@ If you want to get more detailed information about specific IP Address, you can 
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -269,6 +292,7 @@ If you want to get more detailed information about specific IP Address, you can 
 
 
 ### usta-send-referrer-url
+
 ***
 You can search about the accuracy of the urls referring to your company's websites.
 
@@ -276,6 +300,7 @@ You can search about the accuracy of the urls referring to your company's websit
 #### Base Command
 
 `usta-send-referrer-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -291,6 +316,7 @@ You can search about the accuracy of the urls referring to your company's websit
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -298,6 +324,7 @@ You can search about the accuracy of the urls referring to your company's websit
 
 
 ### usta-search-specific-identity-leaks
+
 ***
 With this command, you can search specific identity number that hashed in leaks 
 
@@ -305,6 +332,7 @@ With this command, you can search specific identity number that hashed in leaks
 #### Base Command
 
 `usta-search-specific-identity-leaks`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -321,6 +349,7 @@ With this command, you can search specific identity number that hashed in leaks
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -328,6 +357,7 @@ With this command, you can search specific identity number that hashed in leaks
 
 
 ### usta-close-incident
+
 ***
 You can close the notifications in the status of "In Progress" or "Open", which are currently opened to your institution, via API.
 
@@ -335,6 +365,7 @@ You can close the notifications in the status of "In Progress" or "Open", which 
 #### Base Command
 
 `usta-close-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -350,6 +381,7 @@ You can close the notifications in the status of "In Progress" or "Open", which 
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

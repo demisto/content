@@ -1,4 +1,5 @@
 Cisco Email Security protects against ransomware, business email compromise, spoofing, and phishing
+
 ## Configure Cisco Email Security Appliance (IronPort) in Cortex
 
 
@@ -12,9 +13,12 @@ Cisco Email Security protects against ransomware, business email compromise, spo
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ironport-report
+
 ***
 Retrieve email security appliance statistical reports.
 
@@ -22,6 +26,7 @@ Retrieve email security appliance statistical reports.
 #### Base Command
 
 `ironport-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -39,9 +44,11 @@ Retrieve email security appliance statistical reports.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ironport-report report_type=mail_authentication_summary time_range=1d```
 
 #### Context Example
+
 ```json
 {
     "IronPort": {
@@ -63,6 +70,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### IronPort Report
+>
 > Received Auth| Received Conn Auth Fail| Received Conn Auth Success| Received Conn Cert Fail| Received Conn Cert Success| Received Conn Noauth| Received Conn Total| Received Noauth| Received Total
 >---|---|---|---|---|---|---|---|---
 >0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0

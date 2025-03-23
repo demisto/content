@@ -1,4 +1,5 @@
 # Check Point Threat Emulation (SandBlast)
+
 Threat Emulation performs remote analysis by uploading files to a virtual SandBox. Uploaded files are monitored in multiple OS and microsoft office application versions. Malicious files are saved in the ThreatCloud. Safe files are available for download after inspection.
 
 Upload files using polling, the service supports Microsoft Office files, as well as PDF, SWF, archives and executables. Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Query on existing IOCs, file status, analysis, reports. Download files from the database. Supports both appliance and cloud. Supported Threat Emulation versions are any R80x.
@@ -16,9 +17,12 @@ This integration was integrated and tested with version v1 of CheckPointSandBlas
 | Source Reliability | Reliability of the source providing the intelligence data. | True
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### file
+
 ***
 Runs reputation on files.
 
@@ -26,6 +30,7 @@ Runs reputation on files.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -49,8 +54,11 @@ Runs reputation on files.
 | DBotScore.Score | Number | The actual score. | 
 
 #### Command example
+
 ```!file file=e129988964fa250bc8186bfe6f399f12```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -90,12 +98,14 @@ Runs reputation on files.
 #### Human Readable Output
 
 >### Results of file hash: "e129988964fa250bc8186bfe6f399f12"
+>
 >|MD5|SHA1|SHA256|Malicious|
 >|---|---|---|---|
 >| e129988964fa250bc8186bfe6f399f12 | a5e7aa50b66fdad3ae3b5e9ca66283a263bf7027 | 7e1eeaa9ac04812ce89eabb824d65073a3a37a1600ad1e1b7748ae12e04bb168 | Vendor: CheckPointSandBlast<br/>Description: {"signature_name": "", "malware_family": 0, "malware_type": 0, "severity": 0, "confidence": 0} |
 
 
 ### sandblast-query
+
 ***
 Use the Query API to have a client application look for either the analysis report of a specific file on the Check Point Threat Prevention service databases or the status of a file, uploaded for analysis. It is recommended to add file_name.
 
@@ -103,6 +113,7 @@ Use the Query API to have a client application look for either the analysis repo
 #### Base Command
 
 `sandblast-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -162,8 +173,11 @@ Use the Query API to have a client application look for either the analysis repo
 | SandBlast.Query.ThreatEmulation.Status | String | Status of Threat Emulation on the requested file. | 
 
 #### Command example
+
 ```!sandblast-query file_hash=e129988964fa250bc8186bfe6f399f12 file_name=HelloWorld.pdf```
+
 #### Context Example
+
 ```json
 {
     "SandBlast": {
@@ -260,25 +274,34 @@ Use the Query API to have a client application look for either the analysis repo
 #### Human Readable Output
 
 >Query Results
+>
 >### File Info
+>
 >|Filename|Filetype|Label|Message|Md5|Sha1|Sha256|
 >|---|---|---|---|---|---|---|
 >| HelloWorld.pdf | pdf | FOUND | The request has been fully answered. | e129988964fa250bc8186bfe6f399f12 | a5e7aa50b66fdad3ae3b5e9ca66283a263bf7027 | 7e1eeaa9ac04812ce89eabb824d65073a3a37a1600ad1e1b7748ae12e04bb168 |
+>
 >### Threat Emulation
+>
 >|Combinedverdict|
 >|---|
 >| benign |
+>
 >### Anti-Virus
+>
 >|Malwarefamily|Malwaretype|Confidence|Severity|
 >|---|---|---|---|
 >| 0 | 0 | 0 | 0 |
+>
 >### Threat Extraction
+>
 >|Extractresult|Extractedfiledownloadid|Risk|
 >|---|---|---|
 >| CP_EXTRACT_RESULT_SUCCESS | 11aa4b44-6699-43fe-b73a-d42435551b06 | 0 |
 
 
 ### sandblast-upload
+
 ***
 Use the Upload API to have a client application request that Check Point Threat Prevention modules scan and analyze a file. When you upload a file to the service, the file is encrypted. It is un-encrypted during analysis, and then deleted. This command uses polling with query. The stages of polling are 'UPLOAD_SUCCESS', 'PENDING' and ends with 'FOUND' or 'PARTIALLY_FOUND'. Once the command is done polling it will return analyzed information about the file.
 
@@ -286,6 +309,7 @@ Use the Upload API to have a client application request that Check Point Threat 
 #### Base Command
 
 `sandblast-upload`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -348,8 +372,11 @@ Use the Upload API to have a client application request that Check Point Threat 
 | SandBlast.Upload.ThreatEmulation.Status | String | Status of Threat Emulation on the requested file. | 
 
 #### Command example
+
 ```!sandblast-upload file_id=252@117def34-6ca2-4db3-86eb-c9378ad46e65```
+
 #### Context Example
+
 ```json
 {
     "SandBlast": {
@@ -426,13 +453,16 @@ Use the Upload API to have a client application request that Check Point Threat 
 #### Human Readable Output
 
 >Upload Results
+>
 >### File Info
+>
 >|Filename|Filetype|Label|Message|Md5|Sha1|Sha256|
 >|---|---|---|---|---|---|---|
 >| HelloWorld.pdf | .pdf | UPLOAD_SUCCESS | The file was uploaded successfully. | e129988964fa250bc8186bfe6f399f12 | a5e7aa50b66fdad3ae3b5e9ca66283a263bf7027 | 7e1eeaa9ac04812ce89eabb824d65073a3a37a1600ad1e1b7748ae12e04bb168 |
 
 
 ### sandblast-download
+
 ***
 Use the Download API to download a scanned file from the ThreatCloud according to the file ID.
 
@@ -440,6 +470,7 @@ Use the Download API to download a scanned file from the ThreatCloud according t
 #### Base Command
 
 `sandblast-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -463,8 +494,11 @@ Use the Download API to download a scanned file from the ThreatCloud according t
 | File.Extension | String | The file extension. | 
 
 #### Command example
+
 ```!sandblast-download file_id=9dc066ec-ae77-4c96-b176-8dc88db515a9```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -488,6 +522,7 @@ Use the Download API to download a scanned file from the ThreatCloud according t
 
 
 ### sandblast-quota
+
 ***
 Use the Quote API to have a client application get the current license and quota status of the API Key that you use in the authorization of the other APIs. For cloud services only.
 
@@ -495,6 +530,7 @@ Use the Quote API to have a client application get the current license and quota
 #### Base Command
 
 `sandblast-quota`
+
 #### Input
 
 There are no input arguments for this command.
@@ -523,8 +559,11 @@ There are no input arguments for this command.
 | SandBlast.Quota.Action | String | Quota action. | 
 
 #### Command example
+
 ```!sandblast-quota```
+
 #### Context Example
+
 ```json
 {
     "SandBlast": {
@@ -555,6 +594,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Quota Information
+>
 >|Remainquotahour|Remainquotamonth|Assignedquotahour|Assignedquotamonth|Hourlyquotanextreset|Monthlyquotanextreset|Quotaid|Cloudmonthlyquotaperiodstart|Cloudmonthlyquotausageforthisgw|Cloudhourlyquotausageforthisgw|Cloudmonthlyquotausageforquotaid|Cloudhourlyquotausageforquotaid|Monthlyexceededquota|Hourlyexceededquota|Cloudquotamaxallowtoexceedpercentage|Podtimegmt|Quotaexpiration|Action|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 498 | 9996 | 500 | 10000 | 2022-08-01T15:00:00.000Z | 2022-09-01T00:00:00.000Z | D21T63R | 2022-08-01T00:00:00.000Z | 4 | 2 | 4 | 2 | 0 | 0 | 1000 | 2022-08-01T14:42:44.000Z | 2022-09-22T00:00:00.000Z | ALLOW |

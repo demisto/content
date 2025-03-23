@@ -26,9 +26,12 @@ This integration was integrated and tested with version 4.6 of SymantecEDR
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### symantec-edr-endpoint-isolate
+
 ***
 Isolates or quarantines endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint device IDs.
 
@@ -36,6 +39,7 @@ Isolates or quarantines endpoints by cutting connections that the endpoint(s) ha
 #### Base Command
 
 `symantec-edr-endpoint-isolate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,8 +56,11 @@ Isolates or quarantines endpoints by cutting connections that the endpoint(s) ha
 | SymantecEDR.Command.isolate_endpoint.message | String | Message explaining the error code. | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-isolate device_id=393b8e82-fe40-429f-8e5e-c6b79a0f2b1c```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -71,12 +78,14 @@ Isolates or quarantines endpoints by cutting connections that the endpoint(s) ha
 #### Human Readable Output
 
 >### Command Isolate Endpoint
+>
 >|Message|CommandId|
 >|---|---|
 >| Command isolate_endpoint successfully requested | fd6d14933c7e422685634b613cb7963a-2023-02-15 |
 
 
 ### symantec-edr-domain-file-association-list
+
 ***
 List of domain and file association.
 
@@ -84,6 +93,7 @@ List of domain and file association.
 #### Base Command
 
 `symantec-edr-domain-file-association-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -112,8 +122,11 @@ List of domain and file association.
 | SymantecEDR.DomainFileAssociation.signature_company_name | String | The signer company name of the downloaded file. Example: "Microsoft Windows". | 
 
 #### Command example
+
 ```!symantec-edr-domain-file-association-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -138,12 +151,14 @@ List of domain and file association.
 #### Human Readable Output
 
 >### Domain File Association List
+>
 >|FirstSeen|LastSeen|DataSourceUrl|DataSourceUrlDomain|Sha2|Name|SignatureCompanyName|DeviceUid|DeviceIp|DeviceName|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2022-10-22T11:23:26.561Z | 2022-10-22T11:23:26.561Z | http:<span>//</span>msedge.b.tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/685cae66-5fe2-498e-b4f1-ed26aafa2801?p1=1667042599&p2=404&p3=2&p4=c3swnk6uktun4vjyhudntbuxv8bilxgbgat1s%2flgzbqw4kjyc0zs8ox7mi1oaisl96huewngvdr%2bnfbl7erlxa%3d%3d | msedge.b.tlu.dl.delivery.mp.microsoft.com | 1291d6eb30cd1683544666692a382aecf325dc2624da9ef395047a64642059dc | microsoftedge_x64_106.0.1370.52_106.0.1370.47.exe | Microsoft Corporation | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 172.16.14.42 | win-tfb8l7bi77h |
 
 
 ### symantec-edr-endpoint-domain-association-list
+
 ***
 List of endpoint and domain association.
 
@@ -151,6 +166,7 @@ List of endpoint and domain association.
 #### Base Command
 
 `symantec-edr-endpoint-domain-association-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -176,8 +192,11 @@ List of endpoint and domain association.
 | SymantecEDR.EndpointDomainAssociation.last_seen | String | The timestamp \(in ISO 8601 format\) that specifies the last time detected of the event that resulted in the update of this association. Example: "2018-01-30T04:13:10.669Z." | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-domain-association-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -199,12 +218,14 @@ List of endpoint and domain association.
 #### Human Readable Output
 
 >### Endpoint Domain Association List
+>
 >|FirstSeen|LastSeen|DataSourceUrl|DataSourceUrlDomain|DeviceUid|DeviceIp|DeviceName|
 >|---|---|---|---|---|---|---|
 >| 2022-10-21T19:06:39.998Z | 2022-10-21T19:06:39.998Z | http:<span>//</span>ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/disallowedcertstl.cab?4653cf2caa3508f4 | ctldl.windowsupdate.com | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 172.16.14.42 | WIN-TFB8L7BI77H |
 
 
 ### symantec-edr-endpoint-file-association-list
+
 ***
 List of domain and file association.
 
@@ -212,6 +233,7 @@ List of domain and file association.
 #### Base Command
 
 `symantec-edr-endpoint-file-association-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -238,8 +260,11 @@ List of domain and file association.
 | SymantecEDR.EndpointFileAssociation.sha2 | String | The SHA256 checksum of the file \(hex string\). Example: eaab690ebd8ddf9ae452de1bc03b73c8154264dbd7a292334733b47a668ebf31. | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-file-association-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -262,12 +287,14 @@ List of domain and file association.
 #### Human Readable Output
 
 >### Endpoint File Association List
+>
 >|FirstSeen|LastSeen|Sha2|Name|Folder|DeviceUid|DeviceIp|DeviceName|
 >|---|---|---|---|---|---|---|---|
 >| 2022-10-21T07:00:17.831Z | 2022-12-09T10:03:21.866Z | 1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164 | 3353b940c074fd0c.automaticdestinations-ms | csidl_profile\appdata\roaming\microsoft\windows\recent\automaticdestinations | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 172.16.14.42 | win-tfb8l7bi77h |
 
 
 ### symantec-edr-domain-instance-list
+
 ***
 Get domain instances.
 
@@ -275,6 +302,7 @@ Get domain instances.
 #### Base Command
 
 `symantec-edr-domain-instance-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -297,8 +325,11 @@ Get domain instances.
 | SymantecEDR.DomainInstance.external_ip | String | The IP address \(IPv4 or IPv6\) of the device/machine that accepted the connection. Example: 127.0.0.1. | 
 
 #### Command example
+
 ```!symantec-edr-domain-instance-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -319,12 +350,14 @@ Get domain instances.
 #### Human Readable Output
 
 >### Domain Instances List
+>
 >|DataSourceUrlDomain|FirstSeen|LastSeen|Disposition|
 >|---|---|---|---|
 >| ctldl.windowsupdate.com | 2022-10-21T13:05:38.000Z | 2023-02-14T13:50:42.000Z | Healthy |
 
 
 ### symantec-edr-endpoint-instance-list
+
 ***
 Get endpoint instances.
 
@@ -332,6 +365,7 @@ Get endpoint instances.
 #### Base Command
 
 `symantec-edr-endpoint-instance-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -355,8 +389,11 @@ Get endpoint instances.
 | SymantecEDR.EndpointInstance.ip_addresses | Unknown | Array of all the IP addresses \(IPv4 or IPv6\) associated with the endpoint. Example: \["192.168.0.250"\]. | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-instance-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -375,12 +412,14 @@ Get endpoint instances.
 #### Human Readable Output
 
 >### Endpoint Instances List
+>
 >|DeviceUid|DeviceName|DeviceIp|Time|
 >|---|---|---|---|
 >| c0e1b083-9aba-48c0-9ba1-39c0c37c5851 | 172.16.14.58 | 172.16.14.58 | 2022-11-28T10:29:47.251Z |
 
 
 ### symantec-edr-file-instance-list
+
 ***
 Get File Instances
 
@@ -388,6 +427,7 @@ Get File Instances
 #### Base Command
 
 `symantec-edr-file-instance-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -410,8 +450,11 @@ Get File Instances
 | SymantecEDR.FileInstance.sha2 | String | The SHA256 checksum of the file \(hex string\) Example: eaab690ebd8ddf9ae452de1bc03b73c8154264dbd7a292334733b47a668ebf31. | 
 
 #### Command example
+
 ```!symantec-edr-file-instance-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -429,14 +472,18 @@ Get File Instances
 #### Human Readable Output
 
 >### File Instances List
+>
 >|FirstSeen|LastSeen|Sha2|Name|Folder|
 >|---|---|---|---|---|
 >| 2022-10-21T07:00:17.831Z | 2022-12-09T10:03:21.866Z | 1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164 | 3353b940c074fd0c.automaticdestinations-ms | csidl_profile\appdata\roaming\microsoft\windows\recent\automaticdestinations |
 
 
 #### Command example
+
 ```!symantec-edr-file-instance-list file_sha2=302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -454,6 +501,7 @@ Get File Instances
 #### Human Readable Output
 
 >### File Instances List
+>
 >|FirstSeen|LastSeen|Sha2|Name|Folder|
 >|---|---|---|---|---|
 >| 2022-10-21T07:00:39.964Z | 2023-02-15T11:26:41.104Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | csidl_program_files\google\chrome\application\106.0.5249.119 |
@@ -461,6 +509,7 @@ Get File Instances
 
 
 ### symantec-edr-system-activity-list
+
 ***
 Get system activities or logs.
 
@@ -468,6 +517,7 @@ Get system activities or logs.
 #### Base Command
 
 `symantec-edr-system-activity-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -516,8 +566,11 @@ Get system activities or logs.
 | SymantecEDR.SystemActivity.data_sepm_server_db_name | String | SEPM database name. | 
 
 #### Command example
+
 ```!symantec-edr-system-activity-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -547,12 +600,14 @@ Get system activities or logs.
 #### Human Readable Output
 
 >### System Activities List
+>
 >|Time|TypeId|SeverityId|Message|DeviceIp|AtpNodeRole|StatusId|
 >|---|---|---|---|---|---|---|
 >| 2023-02-15T11:33:54.112Z | 1 | Info | Command submit_to_sandbox with command id 98a42ac7c11c4610b4b977a0371bf0c9-2023-02-15 completed. | 192.168.20.8 | All in One | Success |
 
 
 ### symantec-edr-audit-event-list
+
 ***
 Get Audit Events
 
@@ -560,6 +615,7 @@ Get Audit Events
 #### Base Command
 
 `symantec-edr-audit-event-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -608,8 +664,11 @@ Get Audit Events
 | SymantecEDR.AuditEvent.user_uid | String | Unique ID of the user who originated the event or the user on whose behalf the event occurred. | 
 
 #### Command example
+
 ```!symantec-edr-audit-event-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -647,12 +706,14 @@ Get Audit Events
 #### Human Readable Output
 
 >### Audit Event List
+>
 >|Time|TypeId|FeatureName|Message| UserAgentIp |UserName|Severity|DeviceName|DeviceIp|Uuid|StatusId|
 >|---|---|---|-------------|---|---|---|---|---|---|---|
 >| 2023-02-15T11:34:25.912Z | 21 | Incident | Incident Closed Successfully. | 127.0.0.1 | SEDR API | Info | localhost.localdomain | 192.168.20.8 | b36e1f80-ad24-11ed-e0f5-00000001b4f0 | Success |
 
 
 ### symantec-edr-event-list
+
 ***
 Get events or system alerts from EDR on-premise.
 
@@ -660,6 +721,7 @@ Get events or system alerts from EDR on-premise.
 #### Base Command
 
 `symantec-edr-event-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -732,8 +794,11 @@ Get events or system alerts from EDR on-premise.
 | SymantecEDR.Event.log_name | String | The index of the event. Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for events. | 
 
 #### Command example
+
 ```!symantec-edr-event-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -786,12 +851,14 @@ Get events or system alerts from EDR on-premise.
 #### Human Readable Output
 
 >### Event List
+>
 >|Time|TypeId|Description|DeviceName|SeverityId|DeviceIp|Operation|DeviceDomain|UserName|
 >|---|---|---|---|---|---|---|---|---|
 >| 2023-02-15T11:29:31.248Z | 8001 |  logged:  | WIN-TFB8L7BI77H | Info | 172.16.14.42 | 2 | WORKGROUP | SYSTEM |
 
 
 ### symantec-edr-incident-event-list
+
 ***
 Get events for incidents.
 
@@ -799,6 +866,7 @@ Get events for incidents.
 #### Base Command
 
 `symantec-edr-incident-event-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -879,8 +947,11 @@ Get events for incidents.
 | SymantecEDR.IncidentEvent.log_name | String | The index of the event.  Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for events. | 
 
 #### Command example
+
 ```!symantec-edr-incident-event-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -912,12 +983,14 @@ Get events for incidents.
 #### Human Readable Output
 
 >### Event for Incident List
+>
 >|Time|TypeId|Description|DeviceName|DeviceIp|EventUuid|Incident|UserName|
 >|---|---|---|---|---|---|---|---|
 >| 2023-01-26T18:55:27.296Z | 4117 |  logged:  | WIN-TFB8L7BI77H | 172.16.14.42 | ff61e400-9daa-11ed-dcb5-00000000e61e | ffcc1780-9daa-11ed-e218-000000000001 | Administrator |
 
 
 ### symantec-edr-incident-list
+
 ***
 Get incidents from Symantec EDR on-premise API.
 
@@ -925,6 +998,7 @@ Get incidents from Symantec EDR on-premise API.
 #### Base Command
 
 `symantec-edr-incident-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -962,8 +1036,11 @@ Get incidents from Symantec EDR on-premise API.
 | SymantecEDR.Incident.resolution | Number | The resolution of the closed incident. Possible values are: 0 =INSUFFICIENT_DATA. The incident does not have sufficient information to make a determination. 1 = SECURITY_RISK. The incident indicates a true security threat. 2 = FALSE_POSITIVE. The incident has been incorrectly reported as a security threat. 3 = MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there. 4 = NOT_SET. The incident resolution was not set. 5 = BENIGN. The incident detected the activity as expected but is not a security threat. 6 = TEST. The incident was generated due to internal security testing. | 
 
 #### Command example
+
 ```!symantec-edr-incident-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -991,12 +1068,14 @@ Get incidents from Symantec EDR on-premise API.
 #### Human Readable Output
 
 >### Incident List
+>
 >|IncidentId|Description|IncidentCreated|DetectionType|LastUpdated|Priority|IncidentState|AtpRuleId|RuleName|IncidentUuid|LogName|RecommendedAction|Resolution|FirstSeen|LastSeen|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 100021 | Sandbox detection: eicar_com.zip | 2023-02-03T12:13:37.018Z | Sandboxing | 2023-02-15T11:27:46.747Z | High | Closed | CynicIncident | Critical Cynic Detections | 2fd76da0-a3bc-11ed-d519-000000000002 | epmp_incident-2023-02-03 | You can isolate the endpoint(s), remove the file(s) and/or clean the system(s). | MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there. | 2023-02-03T12:13:36.142Z | 2023-02-07T07:33:43.129Z |
 
 
 ### symantec-edr-incident-comment-get
+
 ***
 Get incident comments based on incident UUID.
 
@@ -1004,6 +1083,7 @@ Get incident comments based on incident UUID.
 #### Base Command
 
 `symantec-edr-incident-comment-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1026,8 +1106,11 @@ Get incident comments based on incident UUID.
 | SymantecEDR.IncidentComment.user_id | String | The ID of the user who registered the comment. Example: 100000. | 
 
 #### Command example
+
 ```!symantec-edr-incident-comment-get incident_id=100022 limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1047,12 +1130,14 @@ Get incident comments based on incident UUID.
 #### Human Readable Output
 
 >### Incident Comment List
+>
 >|IncidentId|Comment|Time|UserId|IncidentResponderName|
 >|---|---|---|---|---|
 >| 100022 | added as part of testing xsoar command examples | 2023-02-15T11:33:54.470Z | 100000 | SEDR API |
 
 
 ### symantec-edr-deny-list-policy-get
+
 ***
 Get deny list policies.
 
@@ -1060,6 +1145,7 @@ Get deny list policies.
 #### Base Command
 
 `symantec-edr-deny-list-policy-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1084,8 +1170,11 @@ Get deny list policies.
 | SymantecEDR.DenyListPolicy.target_value | String | The value of this deny list policy. Example: 1.1.1.1. | 
 
 #### Command example
+
 ```!symantec-edr-deny-list-policy-get limit=10```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1109,6 +1198,7 @@ Get deny list policies.
 #### Human Readable Output
 
 >### Deny List Policy List
+>
 >|Id|TargetType|TargetValue|Comment|
 >|---|---|---|---|
 >| 5 | url | https:<span>//</span>facebook.com | Used for API testing |
@@ -1116,6 +1206,7 @@ Get deny list policies.
 
 
 ### symantec-edr-allow-list-policy-get
+
 ***
 Get allow list policies.
 
@@ -1123,6 +1214,7 @@ Get allow list policies.
 #### Base Command
 
 `symantec-edr-allow-list-policy-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1147,8 +1239,11 @@ Get allow list policies.
 | SymantecEDR.AllowListPolicy.target_value | String | The value of this allow list policy. Example: 1.1.1.1. | 
 
 #### Command example
+
 ```!symantec-edr-allow-list-policy-get limit=10```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1167,12 +1262,14 @@ Get allow list policies.
 #### Human Readable Output
 
 >### Allow List Policy List
+>
 >|Id|TargetType|TargetValue|Comment|
 >|---|---|---|---|
 >| 1 | url | https:<span>//</span>twitter.com/ | Allow List for API testing |
 
 
 ### symantec-edr-incident-update
+
 ***
 Incidents patch command to close an incident, update the resolution of a closed incident, or add comments to the incident.
 
@@ -1180,6 +1277,7 @@ Incidents patch command to close an incident, update the resolution of a closed 
 #### Base Command
 
 `symantec-edr-incident-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1194,37 +1292,48 @@ Incidents patch command to close an incident, update the resolution of a closed 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!symantec-edr-incident-update action_type=add_comment incident_id=100022 value="added as part of testing xsoar command examples"```
+
 #### Human Readable Output
 
 >### Incident Add Comment
+>
 >|incident_id|Message|
 >|---|---|
 >| 100022 | Successfully Updated |
 
 
 #### Command example
+
 ```!symantec-edr-incident-update action_type=update_resolution incident_id=100021 value=3```
+
 #### Human Readable Output
 
 >### Incident Update Status
+>
 >|incident_id|Message|
 >|---|---|
 >| 100021 | Successfully Updated |
 
 
 #### Command example
+
 ```!symantec-edr-incident-update action_type=close_incident incident_id=100022```
+
 #### Human Readable Output
 
 >### Incident Close Incident
+>
 >|incident_id|Message|
 >|---|---|
 >| 100022 | Successfully Updated |
 
 
 ### symantec-edr-endpoint-status
+
 ***
 Get the command status.
 
@@ -1232,6 +1341,7 @@ Get the command status.
 #### Base Command
 
 `symantec-edr-endpoint-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1251,8 +1361,11 @@ Get the command status.
 | SymantecEDR.CommandStatus.status.target | String | The SHA256 of a file. | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-status command_id=b44a351058454c81af41ca98a20d622c-2022-12-18```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1269,12 +1382,14 @@ Get the command status.
 #### Human Readable Output
 
 >### Command Status
+>
 >|State|Command Issuer Name|Message|ErrorCode|
 >|---|---|---|---|
 >| 0 | ATP API | File was not found on endpoint | 301 |
 
 
 ### symantec-edr-endpoint-rejoin
+
 ***
 Rejoins endpoints by re-establishing connections that the endpoint(s) has to internal networks and external networks, based on the endpoint IDs.
 
@@ -1282,6 +1397,7 @@ Rejoins endpoints by re-establishing connections that the endpoint(s) has to int
 #### Base Command
 
 `symantec-edr-endpoint-rejoin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1298,8 +1414,11 @@ Rejoins endpoints by re-establishing connections that the endpoint(s) has to int
 | SymantecEDR.Command.rejoin_endpoint.message | String | Message explaining error code. Values: -1 = Error  0 = Command rejoin_endpoint successfully requested  1 = Command rejoin_endpoint not supported for target command type  2 = Command rejoin_endpoint failed because the target command is already in terminal state  3 = Command rejoin_endpoint is already in progress for the target command | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-rejoin device_id=393b8e82-fe40-429f-8e5e-c6b79a0f2b1c```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1317,12 +1436,14 @@ Rejoins endpoints by re-establishing connections that the endpoint(s) has to int
 #### Human Readable Output
 
 >### Command Rejoin Endpoint
+>
 >|Message|CommandId|
 >|---|---|
 >| Command rejoin_endpoint successfully requested | 1c576eed2f1b4c3dbefa72594f1d3328-2023-02-15 |
 
 
 ### symantec-edr-endpoint-delete-file
+
 ***
 Deletes a file, i.e., deletes all instances of the file, based on the file hash that you have specified from the endpoint using the device ID.
 
@@ -1330,6 +1451,7 @@ Deletes a file, i.e., deletes all instances of the file, based on the file hash 
 #### Base Command
 
 `symantec-edr-endpoint-delete-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1347,8 +1469,11 @@ Deletes a file, i.e., deletes all instances of the file, based on the file hash 
 | SymantecEDR.Command.delete_endpoint_file.message | String | Message explaining error code. Possible Values: -1 = Error  0 = Command delete_endpoint_file successfully requested  1 = Command delete_endpoint_file not supported for target command type  2 = Command delete_endpoint_file failed because the target command is already in terminal state  3 = Command delete_endpoint_file is already in progress for the target command. | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-delete-file device_id=393b8e82-fe40-429f-8e5e-c6b79a0f2b1c sha2=302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1366,12 +1491,14 @@ Deletes a file, i.e., deletes all instances of the file, based on the file hash 
 #### Human Readable Output
 
 >### Command Delete Endpoint
+>
 >|Message|CommandId|
 >|---|---|
 >| Command delete_endpoint_file successfully requested | 1d8cd7cf132746de862cfe208211df7b-2023-02-15 |
 
 
 ### symantec-edr-endpoint-cancel-command
+
 ***
 Cancel a command that is already in progress. Cancel the command execution on all the endpoints where it is still in progress. \nOnly one command can be cancelled at a time.
 
@@ -1379,6 +1506,7 @@ Cancel a command that is already in progress. Cancel the command execution on al
 #### Base Command
 
 `symantec-edr-endpoint-cancel-command`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1395,8 +1523,11 @@ Cancel a command that is already in progress. Cancel the command execution on al
 | SymantecEDR.Command.cancel.message | String | Message explaining error code. Possible Values: -1 = Error  0 = Command cancel successfully requested  1 = Command cancel not supported for target command type  2 = Command cancel failed because the target command is already in terminal state  3 = Command cancel is already in progress for the target command. | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-cancel-command command_id=bee3647b420f4e1bab822ca283fbeb00-2022-12-18```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1414,6 +1545,7 @@ Cancel a command that is already in progress. Cancel the command execution on al
 #### Human Readable Output
 
 >### Command Cancel Endpoint
+>
 >|Message|CommandId|
 >|---|---|
 >| Command cancel_command not supported for target command type. | bee3647b420f4e1bab822ca283fbeb00-2022-12-18 |

@@ -1,6 +1,7 @@
 Detonates a file or URL through FireEye.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,13 +11,16 @@ Detonates a file or URL through FireEye.
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * fe-submit-result
 * fe-submit-status
 * fe-submit
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -27,5 +31,6 @@ This script uses the following commands and scripts.
 | prefetch | Whether to determine the file target based on an internal determination rather than browsing to the target location. Can be, "No" or "Yes". |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

@@ -1,6 +1,7 @@
 Fetches the numbers of ads in the given URL.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Fetches the numbers of ads in the given URL.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Fetches the numbers of ads in the given URL.
 | easylist | The optional easylist to get ads from. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

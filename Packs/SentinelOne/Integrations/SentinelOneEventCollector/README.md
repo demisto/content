@@ -18,9 +18,12 @@ This is the default integration for this content pack when configured by the Dat
 | The maximum number of events per fetch should be between 1-1000 | The limit is per event type. For example, if you choose 3 event types \(ACTIVITIES, THREATS, ALERTS\) with a limit of 100, the actually limit will be 300. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### sentinelone-get-events
+
 ***
 Gets events from SentinelOne.
 
@@ -28,6 +31,7 @@ Gets events from SentinelOne.
 #### Base Command
 
 `sentinelone-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

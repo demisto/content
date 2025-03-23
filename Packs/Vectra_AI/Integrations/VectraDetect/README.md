@@ -89,9 +89,12 @@ To fetch Vectra Account or Vectra Host as a Cortex XSOAR incident:
 - You can also schedule a job with **Close All Duplicate XSOAR Incidents - Vectra Detect** playbook in Cortex XSOAR to clean up incidents periodically. Refer to [this Cortex XSOAR documentation](https://xsoar.pan.dev/docs/incidents/incident-jobs) for more information.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### vectra-search-accounts
+
 ***
 Returns a list of Account objects. All search attributes will be cumulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
 
@@ -99,6 +102,7 @@ Returns a list of Account objects. All search attributes will be cumulative unle
 #### Base Command
 
 `vectra-search-accounts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -138,6 +142,7 @@ Returns a list of Account objects. All search attributes will be cumulative unle
 | Vectra.Account.Name | String | The username of the account | 
 
 ### vectra-search-hosts
+
 ***
 Returns a list of Host objects. All search attributes will be cumulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
 
@@ -145,6 +150,7 @@ Returns a list of Host objects. All search attributes will be cumulative unless 
 #### Base Command
 
 `vectra-search-hosts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -186,6 +192,7 @@ Returns a list of Host objects. All search attributes will be cumulative unless 
 | Vectra.Host.URL | String | Host URL to pivot to Vectra UI | 
 
 ### vectra-search-detections
+
 ***
 Returns a list of Detection objects. All search attributes will be cumulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
 
@@ -193,6 +200,7 @@ Returns a list of Detection objects. All search attributes will be cumulative un
 #### Base Command
 
 `vectra-search-detections`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -238,6 +246,7 @@ Returns a list of Detection objects. All search attributes will be cumulative un
 | Vectra.Detection.URL | String | Detection URL to pivot to Vectra UI | 
 
 ### vectra-search-assignments
+
 ***
 Return a list of assignments. By default already resolved assignment are not returned.
 
@@ -245,6 +254,7 @@ Return a list of assignments. By default already resolved assignment are not ret
 #### Base Command
 
 `vectra-search-assignments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -275,6 +285,7 @@ Return a list of assignments. By default already resolved assignment are not ret
 | Vectra.Assignment.ResolvedDate | string | When this assignment was resolved | 
 
 ### vectra-search-users
+
 ***
 Returns a list of Vectra Users. All search attributes will be cumulative.
 
@@ -282,6 +293,7 @@ Returns a list of Vectra Users. All search attributes will be cumulative.
 #### Base Command
 
 `vectra-search-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -304,6 +316,7 @@ Returns a list of Vectra Users. All search attributes will be cumulative.
 | Vectra.User.LastLoginDate | String | User's last login datetime | 
 
 ### vectra-search-outcomes
+
 ***
 Returns a list of assignment outcomes.
 
@@ -311,6 +324,7 @@ Returns a list of assignment outcomes.
 #### Base Command
 
 `vectra-search-outcomes`
+
 #### Input
 
 There are no input arguments for this command.
@@ -325,6 +339,7 @@ There are no input arguments for this command.
 | Vectra.Outcome.Title | String | Outcome title | 
 
 ### vectra-account-describe
+
 ***
 Returns a single Account details
 
@@ -332,6 +347,7 @@ Returns a single Account details
 #### Base Command
 
 `vectra-account-describe`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -359,6 +375,7 @@ Returns a single Account details
 | Vectra.Account.Name | String | The username of the account | 
 
 ### vectra-account-add-tags
+
 ***
 Add tags to an Account
 
@@ -366,6 +383,7 @@ Add tags to an Account
 #### Base Command
 
 `vectra-account-add-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -377,7 +395,9 @@ Add tags to an Account
 #### Context Output
 
 There is no context output for this command.
+
 ### vectra-account-del-tags
+
 ***
 Delete tags from an Account
 
@@ -385,6 +405,7 @@ Delete tags from an Account
 #### Base Command
 
 `vectra-account-del-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -396,6 +417,7 @@ Delete tags from an Account
 #### Context Output
 
 There is no context output for this command.
+
 ### vectra-account-tag-list
 
 ***
@@ -419,9 +441,11 @@ Returns a list of tags for a specified account.
 | Vectra.Account.Tags | String | Tags associated to the account. | 
 
 #### Command example
+
 ```!vectra-account-tag-list id="2" ```
 
 #### Context Example
+
 ```json
 {
     "Vectra.Account": {
@@ -468,9 +492,11 @@ Add a note to the account.
 | Vectra.Account.Notes.note | String | Content of the note. | 
 
 #### Command example
+
 ```!vectra-account-note-add account_id="2" note="test note" ```
 
 #### Context Example
+
 ```json
 {
     "Vectra.Account.Notes": {
@@ -486,6 +512,7 @@ Add a note to the account.
 #### Human Readable Output
 
 >##### The note has been successfully added to the account.
+>
 >Returned Note ID: **1959**
 
 
@@ -519,9 +546,11 @@ Update a note in the account.
 | Vectra.Account.Notes.note | String | Content of the note. | 
 
 #### Command example
+
 ```!vectra-account-note-update account_id="2" note_id="1959" note="updated test note"```
 
 #### Context Example
+
 ```json
 {
     "Vectra.Account.Notes": {
@@ -562,6 +591,7 @@ Remove a note from the account.
 There is no context output for this command.
 
 #### Command example
+
 ```!vectra-account-note-remove account_id="2" note_id="1959"```
 
 #### Human Readable Output
@@ -597,9 +627,11 @@ List all notes of the specific account.
 | Vectra.Account.Notes.note | String | Content of the note. | 
 
 #### Command example
+
 ```!vectra-account-note-list account_id="2"```
 
 #### Context Example
+
 ```json
 {
     "Vectra.Account.Notes": [
@@ -622,9 +654,11 @@ List all notes of the specific account.
     ]
 }
 ```
+
 #### Human Readable Output
 
 >##### Notes Table
+>
 >|Note ID|Note|Created By|Created Date|Modified By|Modified Date|
 >|---|---|---|---|---|---|
 >| 1959 | updated_note | xsoar | 2024-07-10T05:40:31Z | xsoar | 2024-07-16T12:56:30Z |
@@ -651,13 +685,16 @@ Mark active detections as fixed by providing the ID of the account in the argume
 There is no context output for this command.
 
 #### Command example
+
 ```!vectra-account-markall-detections-asfixed account_id=109```
 
 #### Human Readable Output
+>
 >The active detections of the provided account have been successfully marked as fixed.
 
 
 ### vectra-host-describe
+
 ***
 Returns a single Host details
 
@@ -665,6 +702,7 @@ Returns a single Host details
 #### Base Command
 
 `vectra-host-describe`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -698,6 +736,7 @@ Returns a single Host details
 | Vectra.Host.URL | String | Host URL to pivot to Vectra UI | 
 
 ### vectra-host-add-tags
+
 ***
 Add tags to an Host
 
@@ -705,6 +744,7 @@ Add tags to an Host
 #### Base Command
 
 `vectra-host-add-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -716,7 +756,9 @@ Add tags to an Host
 #### Context Output
 
 There is no context output for this command.
+
 ### vectra-host-del-tags
+
 ***
 Delete tags from an Host
 
@@ -724,6 +766,7 @@ Delete tags from an Host
 #### Base Command
 
 `vectra-host-del-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -735,6 +778,7 @@ Delete tags from an Host
 #### Context Output
 
 There is no context output for this command.
+
 ### vectra-host-tag-list
 
 ***
@@ -758,9 +802,11 @@ Returns a list of tags for a specified host.
 | Vectra.Host.Tags | String | Tags associated to the host. | 
 
 #### Command example
+
 ```!vectra-host-tag-list id="2" ```
 
 #### Context Example
+
 ```json
 {
     "Vectra.Host": {
@@ -807,9 +853,11 @@ Add a note to the host.
 | Vectra.Host.Notes.note | String | Content of the note. | 
 
 #### Command example
+
 ```!vectra-host-note-add host_id="5" note="test note" ```
 
 #### Context Example
+
 ```json
 {
     "Vectra.Host.Notes": {
@@ -825,6 +873,7 @@ Add a note to the host.
 #### Human Readable Output
 
 >##### The note has been successfully added to the host.
+>
 >Returned Note ID: **1960**
 
 ### vectra-host-note-update
@@ -857,9 +906,11 @@ Update a note in the host.
 | Vectra.Host.Notes.note | String | Content of the note. | 
 
 #### Command example
+
 ```!vectra-account-note-update host_id="7" note_id="1960" note="updated test note"```
 
 #### Context Example
+
 ```json
 {
     "Vectra.Host.Notes": {
@@ -900,6 +951,7 @@ Remove a note from the host.
 There is no context output for this command.
 
 #### Command example
+
 ```!vectra-host-note-remove host_id="7" note_id="1960"```
 
 #### Human Readable Output
@@ -935,9 +987,11 @@ List all notes of the specific host.
 | Vectra.Host.Notes.note | String | Content of the note. | 
 
 #### Command example
+
 ```!vectra-host-note-list host_id="7"```
 
 #### Context Example
+
 ```json
 {
     "Vectra.Host.Notes": [
@@ -958,9 +1012,11 @@ List all notes of the specific host.
     ]
 }
 ```
+
 #### Human Readable Output
 
 >##### Notes Table
+>
 >|Note ID|Note|Created By|Created Date|
 >|---|---|---|---|
 >| 1960 | test note | xsoar | 2024-07-11T07:32:31Z |
@@ -987,13 +1043,16 @@ Mark active detections as fixed by providing ID of the host in the argument.
 There is no context output for this command.
 
 #### Command example
+
 ```!vectra-host-markall-detections-asfixed host_id=23176```
 
 #### Human Readable Output
+>
 >The active detections of the provided host have been successfully marked as fixed.
 
 
 ### vectra-detection-describe
+
 ***
 Returns a single detection details
 
@@ -1001,6 +1060,7 @@ Returns a single detection details
 #### Base Command
 
 `vectra-detection-describe`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1038,6 +1098,7 @@ Returns a single detection details
 | Vectra.Detection.URL | String | Detection URL to pivot to Vectra UI | 
 
 ### vectra-detection-get-pcap
+
 ***
 Returns a Detection's PCAP file (if available)
 
@@ -1045,6 +1106,7 @@ Returns a Detection's PCAP file (if available)
 #### Base Command
 
 `vectra-detection-get-pcap`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1055,7 +1117,9 @@ Returns a Detection's PCAP file (if available)
 #### Context Output
 
 There is no context output for this command.
+
 ### vectra-detection-markasfixed
+
 ***
 Marks/Unmarks a Detection as fixed by providing the Detection ID
 
@@ -1063,6 +1127,7 @@ Marks/Unmarks a Detection as fixed by providing the Detection ID
 #### Base Command
 
 `vectra-detection-markasfixed`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1074,7 +1139,9 @@ Marks/Unmarks a Detection as fixed by providing the Detection ID
 #### Context Output
 
 There is no context output for this command.
+
 ### vectra-detection-add-tags
+
 ***
 Add tags to a Detection
 
@@ -1082,6 +1149,7 @@ Add tags to a Detection
 #### Base Command
 
 `vectra-detection-add-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1093,7 +1161,9 @@ Add tags to a Detection
 #### Context Output
 
 There is no context output for this command.
+
 ### vectra-detection-del-tags
+
 ***
 Delete tags from a Detection
 
@@ -1101,6 +1171,7 @@ Delete tags from a Detection
 #### Base Command
 
 `vectra-detection-del-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1112,6 +1183,7 @@ Delete tags from a Detection
 #### Context Output
 
 There is no context output for this command.
+
 ### vectra-detection-tag-list
 
 ***
@@ -1135,9 +1207,11 @@ Returns a list of tags for a specified detection.
 | Vectra.Detection.Tags | String | Tags associated to the detection. | 
 
 #### Command example
+
 ```!vectra-detection-tag-list id="2" ```
 
 #### Context Example
+
 ```json
 {
     "Vectra.Detection": {
@@ -1184,9 +1258,11 @@ Add a note to the detection.
 | Vectra.Detection.Notes.note | String | Content of the note. | 
 
 #### Command example
+
 ```!vectra-detection-note-add detection_id="7" note="test note" ```
 
 #### Context Example
+
 ```json
 {
     "Vectra.Detection.Notes": {
@@ -1202,6 +1278,7 @@ Add a note to the detection.
 #### Human Readable Output
 
 >##### The note has been successfully added to the detection.
+>
 >Returned Note ID: **1961**
 
 
@@ -1235,9 +1312,11 @@ Update a note in the detection.
 | Vectra.Detection.Notes.note | String | Content of the note. | 
 
 #### Command example
+
 ```!vectra-detection-note-update detection_id="9" note_id="1961" note="updated test note"```
 
 #### Context Example
+
 ```json
 {
     "Vectra.Detection.Notes": {
@@ -1278,6 +1357,7 @@ Remove a note from the detection.
 There is no context output for this command.
 
 #### Command example
+
 ```!vectra-detection-note-remove detection_id=97" note_id="1961"```
 
 #### Human Readable Output
@@ -1314,9 +1394,11 @@ List all notes of the specific detection.
 | Vectra.Detection.Notes.note | String | Content of the note. | 
 
 #### Command example
+
 ```!vectra-detection-note-list detection_id="9"```
 
 #### Context Example
+
 ```json
 {
     "Vectra.Detection.Notes": [
@@ -1339,15 +1421,18 @@ List all notes of the specific detection.
     ]
 }
 ```
+
 #### Human Readable Output
 
 >##### Notes Table
+>
 >|Note ID|Note|Created By|Created Date|Modified By|Modified Date|
 >|---|---|---|---|---|---|
 >| 1961 | updated note 2nd | xsoar | 2024-07-12T04:52:20Z | xsoar | 2024-07-12T10:21:03Z |
 >| 1937 | your first test note | xsoar | 2024-07-11T07:32:20Z |  |  |
 
 ### vectra-outcome-describe
+
 ***
 Returns a single outcome details
 
@@ -1355,6 +1440,7 @@ Returns a single outcome details
 #### Base Command
 
 `vectra-outcome-describe`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1372,6 +1458,7 @@ Returns a single outcome details
 | Vectra.Outcome.Title | String | Outcome title | 
 
 ### vectra-outcome-create
+
 ***
 Creates a new assignment outcome
 
@@ -1379,6 +1466,7 @@ Creates a new assignment outcome
 #### Base Command
 
 `vectra-outcome-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1397,6 +1485,7 @@ Creates a new assignment outcome
 | Vectra.Outcome.Title | String | Outcome title | 
 
 ### vectra-assignment-describe
+
 ***
 Returns a single assignment details
 
@@ -1404,6 +1493,7 @@ Returns a single assignment details
 #### Base Command
 
 `vectra-assignment-describe`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1430,6 +1520,7 @@ Returns a single assignment details
 | Vectra.Assignment.ResolvedDate | string | When this assignment was resolved | 
 
 ### vectra-assignment-assign
+
 ***
 Assigns an Account/Host entity to a Vectra User for investigation. If an assignment already exists on this entity, it will be reassigned
 
@@ -1437,6 +1528,7 @@ Assigns an Account/Host entity to a Vectra User for investigation. If an assignm
 #### Base Command
 
 `vectra-assignment-assign`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1466,6 +1558,7 @@ Assigns an Account/Host entity to a Vectra User for investigation. If an assignm
 | Vectra.Assignment.ResolvedDate | string | When this assignment was resolved | 
 
 ### vectra-assignment-resolve
+
 ***
 Resolves an assignment by selecting resolution scheme. Could be 'resolving only' or 'resolving by filtering detections'
 
@@ -1473,6 +1566,7 @@ Resolves an assignment by selecting resolution scheme. Could be 'resolving only'
 #### Base Command
 
 `vectra-assignment-resolve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1504,6 +1598,7 @@ Resolves an assignment by selecting resolution scheme. Could be 'resolving only'
 | Vectra.Assignment.ResolvedDate | string | When this assignment was resolved | 
 
 ### vectra-user-describe
+
 ***
 Returns a single Vectra User details
 
@@ -1511,6 +1606,7 @@ Returns a single Vectra User details
 #### Base Command
 
 `vectra-user-describe`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1576,8 +1672,11 @@ Returns a list of all groups.
 | Vectra.Group.cognito_managed | Boolean | Whether the group is managed by Cognito or not. | 
 
 #### Command example
+
 ```!vectra-group-list group_type=account importance=high```
+
 #### Context Example
+
 ```json
 {
     "Vectra": {
@@ -1621,6 +1720,7 @@ Returns a list of all groups.
 #### Human Readable Output
 
 >### Groups Table
+>
 >|Group ID|Name|Group Type|Members|Last Modified Timestamp|
 >|---|---|---|---|---|
 >| 1 | AccountNoBlock | account | user@lab.test.local, O365:serviceprincipal_00000000-0000-0000-0000-000000000001 | 2024-07-22T06:44:44Z |
@@ -1663,8 +1763,11 @@ Assign members to the specified group.
 | Vectra.Group.rules.description | String | Description of the rule. | 
 
 #### Command example
+
 ```!vectra-group-assign group_id=3557 members="account_4"```
+
 #### Context Example
+
 ```json
 {
     "Vectra": {
@@ -1697,7 +1800,9 @@ Assign members to the specified group.
 #### Human Readable Output
 
 >### Member(s) account_4 have been assigned to the group.
+>
 >### Updated group details:
+>
 >|Group ID|Name|Group Type|Members|Last Modified Timestamp|
 >|---|---|---|---|---|
 >| 3 | xsoar-account-group-2 | account | account_1, account_2, account_3, account_4 | 2023-09-04T09:22:46Z |
@@ -1739,8 +1844,11 @@ Unassign members from the specified group.
 | Vectra.Group.rules.description | String | Description of the rule. | 
 
 #### Command example
+
 ```!vectra-group-unassign group_id=5 members="2126"```
+
 #### Context Example
+
 ```json
 {
     "Vectra": {
@@ -1760,7 +1868,9 @@ Unassign members from the specified group.
 #### Human Readable Output
 
 >### Member(s) 2126 have been unassigned from the group.
+>
 >### Updated group details:
+>
 >|Group ID|Name|Group Type|Description|Last Modified Timestamp|
 >|---|---|---|---|---|
 >| 2 | TEST RENAME | host | TEST RENAME | 2023-09-04T06:27:57Z |

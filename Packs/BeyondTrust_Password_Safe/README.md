@@ -1,4 +1,5 @@
 # BeyondTrust Password Safe
+
 Unified password and session management for seamless accountability and control over privileged accounts.
 
 <~XSIAM>
@@ -12,9 +13,11 @@ In addition, data is normalized to the Cortex Data Model (XDM).
 Follow the configuration sections below for forwarding syslog events from BeyondTrust Password Safe and ingesting them in Cortex XSIAM. 
 
 ### Configuration on BeyondTrust BeyondInsight
+
 This section describes the configuration that needs to be done on the BeyondTrust BeyondInsight platform in order to forward its event logs to Cortex XSIAM Broker VM via syslog.
 
 Follow the steps below:
+
 1. In BeyondInsight, go to *Configuration* &rarr; *General* &rarr; *Connectors*.
 2. From the *Connectors* pane, click **Create New Connector**.
 3. Enter a name for the connector, for e.g., "*Cortex XSIAM*". 
@@ -41,6 +44,7 @@ This section describes the configuration that needs to be done on Cortex XSIAM f
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 #### Broker VM
+
 You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
@@ -49,6 +53,7 @@ You can configure the specific vendor and product for this instance.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the Syslog app already exists, hover over it and click **Configure**.
 3. Click **Add New**.
 3. When configuring the Syslog Collector, set the following parameters:
+
    | Parameter     | Value    
    | :---          | :---                    
    | `Protocol`    | Select the syslog forwarding transmission protocol in correspondence to the [output pipeline](https://www.beyondtrust.com/docs/beyondinsight-password-safe/bi/integrations/third-party/snmp-trap-and-syslog.htm#:~:text=Select%20the%20Available%20Output%20Pipeline%3ATCP%2C%20TCP%2DSSL%2C%20or%20UDP) configured on the BeyondTrust BeyondInsight platform for the Cortex XSIAM connector - **UDP**, **TCP** or **Secure TCP (for TCP-SSL)**.  
@@ -58,18 +63,22 @@ You can configure the specific vendor and product for this instance.
 
 
 ### Sample XQL Queries 
+
 After completing the configurations above, the forwarded event logs are searchable on Cortex XSIAM via an XQL Search on the *beyondtrust_passwordsafe_raw* dataset. 
 
 The following XQL Queries demonstrate the parsing and XDM modeling for the BeyondTrust Password Safe events:
 
 1. **AppAudit Login Events** 
+
     ```javascript
     config  timeframe = 1H
     | datamodel dataset = beyondtrust_passwordsafe_raw 
     | filter xdm.observer.type ~= "AppAudit" and xdm.event.type ~= "Login"
     | fields  xdm.observer.type, xdm.event.id, xdm.event.type, xdm.auth.auth_method, xdm.source.user.username, xdm.source.user.domain, xdm.source.user.groups, xdm.source.ipv4,   xdm.event.description, xdm.event.outcome, xdm.event.outcome_reason
     ```
+
 2. **PowerBroker Password Safe (PBPS) Events** 
+
     ```javascript
     config  timeframe = 1H
     | datamodel dataset = beyondtrust_passwordsafe_raw 
@@ -78,6 +87,7 @@ The following XQL Queries demonstrate the parsing and XDM modeling for the Beyon
      ```
 
 3. **All XDM Mapped Fields** 
+
     ```javascript
     config  timeframe = 1H
     | datamodel dataset = beyondtrust_passwordsafe_raw 

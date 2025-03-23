@@ -20,9 +20,12 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cbp-fileCatalog-search
+
 ***
 Search for file catalogs. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filecatalog
 
@@ -30,6 +33,7 @@ Search for file catalogs. See more: https://developer.carbonblack.com/reference/
 #### Base Command
 
 `cbp-fileCatalog-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -62,6 +66,7 @@ Search for file catalogs. See more: https://developer.carbonblack.com/reference/
 | File.Extension | String | Extension of the file. | 
 
 ### cbp-computer-search
+
 ***
 Search for computers. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#computer
 
@@ -69,6 +74,7 @@ Search for computers. For more information, see the Carbon Black documentation: 
 #### Base Command
 
 `cbp-computer-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -91,6 +97,7 @@ Search for computers. For more information, see the Carbon Black documentation: 
 | Memory | Number | Amount of memory for the endpoint. | 
 
 ### cbp-computer-update
+
 ***
 Updates computer objects. Note that some computer properties can be changed only if specific boolean parameters are set. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#computer
 
@@ -98,6 +105,7 @@ Updates computer objects. Note that some computer properties can be changed only
 #### Base Command
 
 `cbp-computer-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -136,6 +144,7 @@ Updates computer objects. Note that some computer properties can be changed only
 | Endpoint.ID | String | The unique ID within the tool retreiving the endpoint. | 
 
 ### cbp-computer-get
+
 ***
 Returns information for a computer. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#computer
 
@@ -143,6 +152,7 @@ Returns information for a computer. For more information, see the Carbon Black d
 #### Base Command
 
 `cbp-computer-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -165,6 +175,7 @@ Returns information for a computer. For more information, see the Carbon Black d
 | Endpoint.ID | String | The unique ID within the tool retreiving the endpoint. | 
 
 ### cbp-fileInstance-search
+
 ***
 Search for file instances. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#fileinstance
 
@@ -172,6 +183,7 @@ Search for file instances. For more information, see the Carbon Black documentat
 #### Base Command
 
 `cbp-fileInstance-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -196,6 +208,7 @@ Search for file instances. For more information, see the Carbon Black documentat
 | CBP.FileInstance.Path | String | Path on the found hostname. | 
 
 ### cbp-event-search
+
 ***
 Search for events. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#event
 
@@ -203,6 +216,7 @@ Search for events. For more information, see the Carbon Black documentation: htt
 #### Base Command
 
 `cbp-event-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -253,6 +267,7 @@ Search for events. For more information, see the Carbon Black documentation: htt
 | CBP.Event.ProcessPathName | String | Path name of the process. | 
 
 ### cbp-approvalRequest-search
+
 ***
 Search for approval requests. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#approvalrequest
 
@@ -260,6 +275,7 @@ Search for approval requests. For more information, see the Carbon Black documen
 #### Base Command
 
 `cbp-approvalRequest-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -293,6 +309,7 @@ Search for approval requests. For more information, see the Carbon Black documen
 | CBP.ApprovalRequest.Platform | String | Platform of this approval request. | 
 
 ### cbp-fileRule-search
+
 ***
 Search for file rules. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule
 
@@ -300,6 +317,7 @@ Search for file rules. For more information, see the Carbon Black documentation:
 #### Base Command
 
 `cbp-fileRule-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -331,6 +349,7 @@ Search for file rules. For more information, see the Carbon Black documentation:
 | CBP.FileRule.ReportOnly | String | Whether this rule is "reporting only, or also "enforcing". | 
 
 ### cbp-fileRule-get
+
 ***
 Gets the file rule. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule
 
@@ -338,6 +357,7 @@ Gets the file rule. For more information, see the Carbon Black documentation: ht
 #### Base Command
 
 `cbp-fileRule-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -359,6 +379,7 @@ Gets the file rule. For more information, see the Carbon Black documentation: ht
 | CBP.FileRule.ReportOnly | String | Whether this rule is "reporting only, or also "enforcing". | 
 
 ### cbp-fileRule-delete
+
 ***
 Deletes the file rule. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule
 
@@ -366,6 +387,7 @@ Deletes the file rule. For more information, see the Carbon Black documentation:
 #### Base Command
 
 `cbp-fileRule-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -376,7 +398,9 @@ Deletes the file rule. For more information, see the Carbon Black documentation:
 #### Context Output
 
 There is no context output for this command.
+
 ### cbp-policy-search
+
 ***
 Search for policies. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#policy
 
@@ -384,6 +408,7 @@ Search for policies. For more information, see the Carbon Black documentation: h
 #### Base Command
 
 `cbp-policy-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -419,6 +444,7 @@ Search for policies. For more information, see the Carbon Black documentation: h
 | CBP.Policy.DisconnectedEnforcementLevel | String | The level of enforcement of the policy when disconnected. | 
 
 ### cbp-serverConfig-search
+
 ***
 Search in server configurations. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#serverconfig.
 
@@ -426,6 +452,7 @@ Search in server configurations. For more information, see the Carbon Black docu
 #### Base Command
 
 `cbp-serverConfig-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -446,6 +473,7 @@ Search in server configurations. For more information, see the Carbon Black docu
 | CBP.ServerConfig.Value | String | Value of the server configuration. | 
 
 ### cbp-publisher-search
+
 ***
 Search for publishers. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#publisher.
 
@@ -453,6 +481,7 @@ Search for publishers. For more information, see the Carbon Black documentation:
 #### Base Command
 
 `cbp-publisher-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -480,6 +509,7 @@ Search for publishers. For more information, see the Carbon Black documentation:
 | CBP.Publisher.State | String | The state of the publisher. | 
 
 ### cbp-fileAnalysis-get
+
 ***
 Returns the object instance of this class.
 
@@ -487,6 +517,7 @@ Returns the object instance of this class.
 #### Base Command
 
 `cbp-fileAnalysis-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -520,6 +551,7 @@ Returns the object instance of this class.
 | DBotScore.Score | number | The DBot score | 
 
 ### cbp-fileAnalysis-createOrUpdate
+
 ***
 Creates or updates a file analysis request.
 
@@ -527,6 +559,7 @@ Creates or updates a file analysis request.
 #### Base Command
 
 `cbp-fileAnalysis-createOrUpdate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -554,6 +587,7 @@ Creates or updates a file analysis request.
 | CBP.FileAnalysis.CreatedBy | String | User that requested the analysis. | 
 
 ### cbp-fileAnalysis-search
+
 ***
 Returns objects that match the specified criteria.
 
@@ -561,6 +595,7 @@ Returns objects that match the specified criteria.
 #### Base Command
 
 `cbp-fileAnalysis-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -591,6 +626,7 @@ Returns objects that match the specified criteria.
 | CBP.FileAnalysis.CreatedBy | String | User that requested this analysis. | 
 
 ### cbp-fileUpload-get
+
 ***
 Returns the object instance of this class.
 
@@ -598,6 +634,7 @@ Returns the object instance of this class.
 #### Base Command
 
 `cbp-fileUpload-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -623,6 +660,7 @@ Returns the object instance of this class.
 | CBP.FileUpload.CreatedBy | String | User that requested the analysis. | 
 
 ### cbp-fileUpload-download
+
 ***
 Returns the bject instance of this class.
 
@@ -630,6 +668,7 @@ Returns the bject instance of this class.
 #### Base Command
 
 `cbp-fileUpload-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -640,7 +679,9 @@ Returns the bject instance of this class.
 #### Context Output
 
 There is no context output for this command.
+
 ### cbp-fileUpload-createOrUpdate
+
 ***
 Creates or updates a file upload request.
 
@@ -648,6 +689,7 @@ Creates or updates a file upload request.
 #### Base Command
 
 `cbp-fileUpload-createOrUpdate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -677,6 +719,7 @@ Creates or updates a file upload request.
 | CBP.FileUpload.UploadedFileSize | Number | Size of uploaded file. The file size will be 0 unless the uploadStatus is "3" \(Completed\). | 
 
 ### cbp-fileUpload-search
+
 ***
 Returns objects that match the specified criteria.
 
@@ -684,6 +727,7 @@ Returns objects that match the specified criteria.
 #### Base Command
 
 `cbp-fileUpload-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -717,6 +761,7 @@ Returns objects that match the specified criteria.
 | CBP.FileUpload.UploadedFileSize | Number | Size of the uploaded file. The file size will be 0 unless the uploadStatus is "3" \(Completed\). | 
 
 ### cbp-connector-get
+
 ***
 Returns the object instance of this class.
 
@@ -724,6 +769,7 @@ Returns the object instance of this class.
 #### Base Command
 
 `cbp-connector-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -744,6 +790,7 @@ Returns the object instance of this class.
 | CBP.Connector.ID | String | Unique fileAnalysis ID. | 
 
 ### cbp-connector-search
+
 ***
 Returns objects that match the specified criteria.
 
@@ -751,6 +798,7 @@ Returns objects that match the specified criteria.
 #### Base Command
 
 `cbp-connector-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -775,6 +823,7 @@ Returns objects that match the specified criteria.
 | CBP.Connector.ID | String | Unique fileAnalysis ID. | 
 
 ### cbp-approvalRequest-resolve
+
 ***
 Resolves a file approval request.
 
@@ -782,6 +831,7 @@ Resolves a file approval request.
 #### Base Command
 
 `cbp-approvalRequest-resolve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -803,6 +853,7 @@ Resolves a file approval request.
 | CBP.ApprovalRequest.Status | Number | Request status. Can be one of: 1=New, 2=Open, 3=Closed, 4=Escalated | 
 
 ### cbp-fileRule-createOrUpdate
+
 ***
 Creates or updates a file rule. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule
 
@@ -810,6 +861,7 @@ Creates or updates a file rule. For more information, see the Carbon Black docum
 #### Base Command
 
 `cbp-fileRule-createOrUpdate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

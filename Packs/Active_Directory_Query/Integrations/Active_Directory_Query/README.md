@@ -10,29 +10,30 @@ Use Cases
 ##### Query for Active Directory objects
 
 * Use the `!ad-search` command to run a query for Active Directory objects (users, contacts, computers, and so on). This command enables you to determine which data fields should be returned for the objects.
+
 ##### Manage users and contacts
 
 * The integration enables you to create, update, and delete users and contacts in Active Directory using the following commands:
-    + `ad-create-user`
-    + `ad-create-contact`
-    + `ad-update-user`
-    + `ad-update-contact`
-    + `ad-delete-user` (to delete both users and contacts)
+  * `ad-create-user`
+  * `ad-create-contact`
+  * `ad-update-user`
+  * `ad-update-contact`
+  * `ad-delete-user` (to delete both users and contacts)
 
 * Add or remove users from groups using the following commands:
-    + `ad-add-to-group`
-    + `ad-remove-from-group`
+  * `ad-add-to-group`
+  * `ad-remove-from-group`
 
 * Enable or disable a user account using the following commands:
-    + `ad-enable-account`
-    + `ad-disable-user-account`
+  * `ad-enable-account`
+  * `ad-disable-user-account`
 
 ##### Manage Computers
 
 * Modify a computer organizational unit using the ‘ad-modify-computer-ou’ command.
 * Add or remove a computer from a group using the following commands:
-    + `ad-add-to-group`
-    + `ad-remove-from-group`
+  * `ad-add-to-group`
+  * `ad-remove-from-group`
 
 ##### IAM premium pack uses
 
@@ -74,9 +75,12 @@ To allow the integration to access the mapper from within the code, as required 
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ad-expire-password
+
 ***
 Expires the password of an Active Directory user.
 
@@ -86,6 +90,7 @@ Expires the password of an Active Directory user.
 `ad-expire-password`
 
 ##### Required Permissions
+
 Requires `Reset user passwords and force password change at next logon` permissions.
 
 #### Input
@@ -102,6 +107,7 @@ There is no context output for this command.
 
 
 ### ad-modify-password-never-expire
+
 ***
 Modifies the AD account attribute "Password Never Expire".
 
@@ -111,6 +117,7 @@ Modifies the AD account attribute "Password Never Expire".
 `ad-modify-password-never-expire`
 
 ##### Required Permissions
+
 Requires `Read userAccountControl` and `write userAccountControl` permissions.
 
 #### Input
@@ -126,15 +133,19 @@ Requires `Read userAccountControl` and `write userAccountControl` permissions.
 There is no context output for this command.
 
 ##### Command Example
+
 ```
 !ad-modify-password-never-expire username=jack value=true
 ```
+
 ##### Human Readable Output
+
 ```
 AD account jack has set "password never expire" attribute. Value is set to True
 ```
 
 ### ad-create-user
+
 ***
 Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
 
@@ -144,6 +155,7 @@ Creates an Active Directory user. This command requires a secure connection (SSL
 `ad-create-user`
 
 ##### Required Permissions
+
 Requires `Create, delete, and manage user accounts` permissions.
 
 #### Input
@@ -167,15 +179,19 @@ There is no context output for this command.
 
 
 ##### Command Example
+
 ```
 ad-create-user username="jack" password="1q2w3e4r!" user-dn="cn=jack,dc=demisto,dc=int" display-name="Samurai Jack"
 ```
+
 ##### Human Readable Output
+
 ```
 Created user with DN: cn=jack,dc=demisto,dc=int
 ```
 
 ### ad-search
+
 ***
 Runs Active Directory queries.
 
@@ -188,6 +204,7 @@ For more information on LDAP filters, see the [LDAP documentation](https://ldap.
 `ad-search`
 
 ##### Required Permissions
+
 Requires `Read` and `Read and read all properties` permissions in `General` permissions.
 
 #### Input
@@ -213,11 +230,13 @@ Requires `Read` and `Read and read all properties` permissions in `General` perm
 | ActiveDirectory.SearchPageCookie | string | An opaque string received in a paged search, used for requesting subsequent entries. | 
 
 ##### Command Example
+
 ```
 ad-search filter="(&(objectCategory=person)(objectClass=user)(!(cn=andy)))"
 ```
 
 ##### Context Example
+
 ```
 {
     "ActiveDirectory.Search": [
@@ -232,7 +251,9 @@ ad-search filter="(&(objectCategory=person)(objectClass=user)(!(cn=andy)))"
 ```
 
 ##### Human Readable Output
+>
 >### Active Directory Search
+>
 >|dn|
 >|---|
 >| CN=demistoadmin,CN=Users,DC=demisto,DC=int |
@@ -260,14 +281,18 @@ Adds an Active Directory user or computer to a group.
 #### Context Output
 
 There is no context output for this command.
+
 ### ad-remove-from-group
+
 ***
 Removes an Active Directory user or computer from a group.
+
 #### Base Command
 
 `ad-remove-from-group`
 
 ##### Required Permissions
+
 Requires `Create, delete, and manage groups` permissions.
 
 #### Input
@@ -284,16 +309,19 @@ Requires `Create, delete, and manage groups` permissions.
 There is no context output for this command.
 
 ##### Command Example
+
 ```
 ad-remove-from-group username="jack" group-cn="Users"
 ```
 
 ##### Human Readable Output
+
 ```
 Object with dn CN=jack,DC=demisto,DC=int removed from group Users
 ```
 
 ### ad-update-user
+
 ***
 Updates attributes of an existing Active Directory user.
 
@@ -303,6 +331,7 @@ Updates attributes of an existing Active Directory user.
 `ad-update-user`
 
 ##### Required Permissions
+
 Requires `Write All Properties` and `Read All Properties` permission from `User objects`.
 
 #### Input
@@ -320,16 +349,19 @@ Requires `Write All Properties` and `Read All Properties` permission from `User 
 There is no context output for this command.
 
 ##### Command Example
+
 ```
 !ad-update-user attribute-name=description attribute-value=Samurai username=jack
 ```
 
 ##### Human Readable Output
+
 ```
 Updated user's description to Samurai
 ```
 
 ### ad-delete-user
+
 ***
 Deletes an Active Directory user.
 
@@ -338,6 +370,7 @@ Deletes an Active Directory user.
 `ad-delete-user`
 
 ##### Required Permissions
+
 Requires `Create, delete, and manage user accounts` permissions.
 
 #### Input
@@ -351,16 +384,19 @@ Requires `Create, delete, and manage user accounts` permissions.
 There is no context output for this command.
 
 ##### Command Example
+
 ```
 !ad-delete-user user-dn="cn=jack,dc=demisto,dc=int"
 ```
 
 ##### Human Readable Output
+
 ```
 Deleted object with dn cn=jack,dc=demisto,dc=int
 ```
 
 ### ad-create-contact
+
 ***
 Creates an Active Directory contact.
 
@@ -370,6 +406,7 @@ Creates an Active Directory contact.
 `ad-create-contact`
 
 ##### Required Permissions
+
 Requires `full control` permission from `Contact objects`.
 
 #### Input
@@ -390,16 +427,19 @@ Requires `full control` permission from `Contact objects`.
 There is no context output for this command.
 
 ##### Command Example
+
 ```
 !ad-create-contact contact-dn="cn=jack,dc=demisto,dc=int" description="Samurai" email=jack@company.com
 ```
 
 ##### Human Readable Output
+
 ```
 Created contact with DN: cn=jack,dc=demisto,dc=int
 ```
 
 ### ad-update-contact
+
 ***
 Updates attributes of an existing Active Directory contact.
 
@@ -409,6 +449,7 @@ Updates attributes of an existing Active Directory contact.
 `ad-update-contact`
 
 ##### Required Permissions
+
 Requires `Write All Properties` and `Read All Properties` permission from `Contact objects`.
 
 #### Input
@@ -425,16 +466,19 @@ Requires `Write All Properties` and `Read All Properties` permission from `Conta
 There is no context output for this command.
 
 ##### Command Example
+
 ```
 ad-update-contact contact-dn="cn=Jack,dc=demisto,dc=int" attribute-name="displayName" attribute-value="Jack H."
 ```
 
 ##### Human Readable Output
+
 ```
 Updated contact’s displayName to: Jack H.
 ```
 
 ### ad-disable-account
+
 ***
 Disables an Active Directory user account.
 
@@ -444,6 +488,7 @@ Disables an Active Directory user account.
 `ad-disable-account`
 
 ##### Required Permissions
+
 Requires `Read userAccountControl` and `write userAccountControl` permissions.
 
 #### Input
@@ -459,16 +504,19 @@ Requires `Read userAccountControl` and `write userAccountControl` permissions.
 There is no context output for this command.
 
 ##### Command Example
+
 ```
 ad-disable-account username="jack"
 ```
 
 ##### Human Readable Output
+
 ```
 User “CN=jack,DC=demisto,DC=int” has been disabledUser jack was disabled
 ```
 
 ### ad-enable-account
+
 ***
 Enables a previously disabled Active Directory account.
 
@@ -478,6 +526,7 @@ Enables a previously disabled Active Directory account.
 `ad-enable-account`
 
 ##### Required Permissions
+
 Requires `Read userAccountControl` and `write userAccountControl` permissions.
 
 #### Input
@@ -494,16 +543,19 @@ Requires `Read userAccountControl` and `write userAccountControl` permissions.
 There is no context output for this command.
 
 ##### Command Example
+
 ```
 ad-enable-account username="jack"
 ```
 
 ##### Human Readable Output
+
 ```
 User jack was enabledUser “CN=jack,DC=demisto,DC=int” has been enabled
 ```
 
 ### ad-unlock-account
+
 ***
 Unlocks a previously locked Active Directory user account.
 
@@ -513,6 +565,7 @@ Unlocks a previously locked Active Directory user account.
 `ad-unlock-account`
 
 ##### Required Permissions
+
 Requires `Read lockoutTime` and `write lockoutTime` permissions.
 
 #### Input
@@ -528,16 +581,19 @@ Requires `Read lockoutTime` and `write lockoutTime` permissions.
 There is no context output for this command.
 
 ##### Command Example
+
 ```
 !ad-unlock-account username=mooncake
 ```
 
 ##### Human Readable Output
+
 ```
 User "CN=mooncake,CN=Users,DC=demisto,DC=int" has been unlocked
 ```
 
 ### ad-set-new-password
+
 ***
 Sets a new password for an Active Directory user. This command requires a secure connection (SSL,TLS).
 
@@ -546,6 +602,7 @@ Sets a new password for an Active Directory user. This command requires a secure
 `ad-set-new-password`
 
 ##### Required Permissions
+
 Requires `Reset password` permissions.
 
 #### Input
@@ -562,16 +619,19 @@ Requires `Reset password` permissions.
 There is no context output for this command.
 
 ##### Command Example
+
 ```
 !ad-set-new-password username="NoaCo" password="noni1q2w3e!"
 ```
 
 ##### Human Readable Output
+
 ```
 User password successfully set
 ```
 
 ### ad-modify-computer-ou
+
 ***
 Modifies the computer organizational unit within a domain.
 
@@ -580,6 +640,7 @@ Modifies the computer organizational unit within a domain.
 `ad-modify-computer-ou`
 
 ##### Required Permissions
+
 Requires `Write All Properties` permission from `Computer objects`.
 
 #### Input
@@ -595,16 +656,19 @@ Requires `Write All Properties` permission from `Computer objects`.
 There is no context output for this command.
 
 ##### Command Example
+
 ```
 !ad-modify-computer-ou computer-name=mike full-superior-dn=OU=Sarah,DC=demisto,DC=int
 ```
 
 ##### Human Readable Output
+
 ```
 "mike" was successfully moved to "OU=Sarah,DC=demisto,DC=int"
 ```
 
 ### ad-modify-user-ou
+
 ***
 Modifies the user organizational unit within a domain.
 
@@ -613,6 +677,7 @@ Modifies the user organizational unit within a domain.
 `ad-modify-user-ou`
 
 ##### Required Permissions
+
 Requires `Write All Properties` permission from `Computer objects`.
 
 #### Input
@@ -628,16 +693,19 @@ Requires `Write All Properties` permission from `Computer objects`.
 There is no context output for this command.
 
 ##### Command Example
+
 ```
 !ad-modify-user-ou user-name=username full-superior-dn=OU=users,DC=demisto,DC=int
 ```
 
 ##### Human Readable Output
+
 ```
 "username" was successfully moved to "OU=users,DC=demisto,DC=int"
 ```
 
 ### ad-get-user
+
 ***
 Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
 
@@ -646,6 +714,7 @@ Retrieves detailed information about a user account. The user can be specified b
 `ad-get-user`
 
 ##### Required Permissions
+
 Requires `Read all user information` permissions.
 
 #### Input
@@ -710,6 +779,7 @@ Requires `Read all user information` permissions.
 | Account.Email | string | The user email address. | 
 
 ##### Command Example
+
 ```
 !ad-get-user name=*
 ```
@@ -717,12 +787,14 @@ Requires `Read all user information` permissions.
 ##### Human Readable Output
 
 >### Active Directory - Get Users
+>
 >|dn|displayName|mail|manager|memberOf|name|sAMAccountName|userAccountControl|
 >|---|---|---|---|---|---|---|---|
 >| CN=demistoadmin,CN=Users,DC=demisto,DC=int | demistoadmin | demistoadmin@demisto.int |  | CN=Discovery Management,OU=Microsoft Exchange Security Groups,DC=demisto,DC=int,CN=Organization Management,OU=Microsoft Exchange Security Groups,DC=demisto,DC=int,CN=Group Policy Creator Owners,CN=Users,DC=demisto,DC=int,CN=Domain Admins,CN=Users,DC=demisto,DC=int,CN=Enterprise Admins,CN=Users,DC=demisto,DC=int,CN=Schema Admins,CN=Users,DC=demisto,DC=int,CN=Administrators,CN=Builtin,DC=demisto,DC=int | demistoadmin | demistoadmin | 66048 |
 >| CN=Guest,CN=Users,DC=demisto,DC=int |  |  |  | CN=Guests,CN=Builtin,DC=demisto,DC=int | Guest | Guest | 66082 |
 
 ### ad-get-computer
+
 ***
 Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
 
@@ -731,6 +803,7 @@ Retrieves detailed information about a computer account. The computer can be spe
 `ad-get-computer`
 
 ##### Required Permissions
+
 Requires `Read` and `Read and read all properties` permissions from `Computer objects`.
 
 #### Input
@@ -760,11 +833,13 @@ Requires `Read` and `Read and read all properties` permissions from `Computer ob
 
 
 ##### Command Example
+
 ```
 ad-get-computer name=noapc
 ```
 
 ##### Context Example
+
 ```
 {
     "ActiveDirectory.Computers":
@@ -779,12 +854,15 @@ ad-get-computer name=noapc
 ```
 
 ##### Human Readable Output
+>
 >### Active Directory - Get Computers
+>
 >| dn | memberOf| name |
 >|---| ---| ---|
 >| CN=noapc,OU=Shani,DC=demisto,DC=int | CN=Exchange Servers,OU=Microsoft Exchange Security Groups,DC=demisto,DC=int | noapc |
 
 ### ad-get-group-members
+
 ***
 Retrieves the list of users or computers that are members of the specified group.
 
@@ -793,6 +871,7 @@ Retrieves the list of users or computers that are members of the specified group
 `ad-get-group-members`
 
 ##### Required Permissions
+
 Requires `Read members` permissions.
 
 #### Input
@@ -821,11 +900,13 @@ Requires `Read members` permissions.
 
 
 #### Command Example
+
 ```
 !ad-get-group-members group-dn="CN=Group124,OU=DemistoMng,DC=demisto,DC=int"
 ```
 
 ##### Context Example
+
 ```
 { "Account":
          [ { "DisplayName": [ "User 671 User 671" ],
@@ -851,15 +932,17 @@ Requires `Read members` permissions.
 }
 ```
 
- ##### Human Readable Output
+##### Human Readable Output
 
 >###Active Directory - Get Group Members
+>
 >| dn | displayName | mail | manager | memberOf | name | sAMAccountName | userAccountControl
 >|---| ---| ---|---| ---| ---|---| ---|
 >| CN=User 671 User  | User 671  | test@demisto.int | | CN=Group124,OU=DemistoMng,DC=demisto,DC=int | User 671 | User 671User 671 | 514
 >| 671,OU=DemistoMng,DC=demisto,DC=int | User 671  | | | CN=Group2,OU=DemistoMng,DC=demisto,DC=int | User 671 | User 671User 671 | 514
 
 ### ad-create-group
+
 ***
 Creates a new security or distribution Active Directory group.
 
@@ -869,6 +952,7 @@ Creates a new security or distribution Active Directory group.
 `ad-create-group`
 
 ##### Required Permissions
+
 Requires `Create, delete, and manage groups` permissions.
 
 #### Input
@@ -886,6 +970,7 @@ Requires `Create, delete, and manage groups` permissions.
 There is no context output for this command.
 
 ### ad-delete-group
+
 ***
 Deletes an existing Active Directory security or distribution group.
 
@@ -895,6 +980,7 @@ Deletes an existing Active Directory security or distribution group.
 `ad-delete-group`
 
 ##### Required Permissions
+
 Requires `Create, delete, and manage groups` permissions.
 
 #### Input
@@ -909,6 +995,7 @@ Requires `Create, delete, and manage groups` permissions.
 There is no context output for this command.
 
 ### ad-update-group
+
 ***
 Updates attributes of an existing Active Directory group.
 
@@ -918,6 +1005,7 @@ Updates attributes of an existing Active Directory group.
 `ad-update-group`
 
 ##### Required Permissions
+
 Requires `Create, delete, and manage groups` permissions.
 
 #### Input
@@ -935,6 +1023,7 @@ Requires `Create, delete, and manage groups` permissions.
 There is no context output for this command.
 
 ### ad-test-credentials
+
 ***
 Test given credentials.
 
@@ -942,6 +1031,7 @@ Test given credentials.
 #### Base Command
 
 `ad-test-credentials`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -957,6 +1047,7 @@ Test given credentials.
 | ActiveDirectory.ValidCredentials | Unknown | List of usernames that successfully logged in. | 
 
 ### iam-create-user
+
 ***
 Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
 Used in the IAM premium pack.
@@ -966,6 +1057,7 @@ Used in the IAM premium pack.
 `iam-create-user`
 
 ##### Required Permissions
+
 Requires `Create, delete, and manage user accounts` permissions.
 
 #### Input
@@ -998,7 +1090,9 @@ Requires `Create, delete, and manage user accounts` permissions.
 ```
 !iam-create-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"lastname\":\"Test\",\"firstname\":\"Demisto\"}
 ```
+
 #### Human Readable Output
+
 ### Create User Results
 
 |brand|instanceName|success|active|id|username|email|details|
@@ -1006,6 +1100,7 @@ Requires `Create, delete, and manage user accounts` permissions.
 | Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto2@paloaltonetworks.com | status: PROVISIONED<br />created: 2020-10-18T17:54:30.000Z<br />activated: 2020-10-18T17:54:30.000Z<br />statusChanged: 2020-10-18T17:54:30.000Z<br />lastLogin: null<br />lastUpdated: 2020-10-18T17:54:30.000Z<br />passwordChanged: null<br />type: {"id": "oty8zfz6plq7b0r830h7"}<br />profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br />credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
 
 ### iam-get-user
+
 ***
 Retrieves a single user resource.
 Used in the IAM premium pack.
@@ -1015,6 +1110,7 @@ Used in the IAM premium pack.
 `iam-get-user`
 
 ##### Required Permissions
+
 Requires `Read all user information` permissions.
 
 #### Input
@@ -1042,6 +1138,7 @@ Requires `Read all user information` permissions.
 | IAM.Vendor.action | String | The command name. | 
 
 #### Command Example
+
 ```
 !iam-get-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}
 ```
@@ -1049,11 +1146,13 @@ Requires `Read all user information` permissions.
 #### Human Readable Output
 
 ### Get User Results
+
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
 | Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto2@paloaltonetworks.com | status: PROVISIONED<br />created: 2020-10-18T17:54:30.000Z<br />activated: 2020-10-18T17:54:30.000Z<br />statusChanged: 2020-10-18T17:54:30.000Z<br />lastLogin: null<br />lastUpdated: 2020-10-18T17:54:30.000Z<br />passwordChanged: null<br />type: {"id": "oty8zfz6plq7b0r830h7"}<br />profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br />credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
 
 ### iam-update-user
+
 ***
 Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.
 Used in the IAM premium pack.
@@ -1063,6 +1162,7 @@ Used in the IAM premium pack.
 `iam-update-user`
 
 ##### Required Permissions
+
 Requires `Create, delete, and manage user accounts` permissions.
 
 #### Input
@@ -1092,6 +1192,7 @@ Requires `Create, delete, and manage user accounts` permissions.
 
 
 #### Command Example
+
 ```
 !iam-update-user user-profile={\"email\":\"testdemisto22@paloaltonetworks.com\", \"name\":\"testdemisto2\"}
 ```
@@ -1099,11 +1200,13 @@ Requires `Create, delete, and manage user accounts` permissions.
 #### Human Readable Output
 
 ### Update User Results
+
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
 | Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto22@paloaltonetworks.com | status: PROVISIONED<br />created: 2020-10-18T17:54:30.000Z<br />activated: 2020-10-18T17:54:30.000Z<br />statusChanged: 2020-10-18T17:54:30.000Z<br />lastLogin: null<br />lastUpdated: 2020-10-18T17:54:30.000Z<br />passwordChanged: null<br />type: {"id": "oty8zfz6plq7b0r830h7"}<br />profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br />credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
 
 ### iam-disable-user
+
 ***
 Disables a user.
 Used in the IAM premium pack.
@@ -1113,6 +1216,7 @@ Used in the IAM premium pack.
 `iam-disable-user`
 
 ##### Required Permissions
+
 Requires `Read userAccountControl` and `write userAccountControl` permissions.
 
 #### Input
@@ -1167,12 +1271,15 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Active Directory Query v2.
 
 ## Breaking changes from the previous version of this integration - Active Directory Query v2
+
 The following sections list the changes in this version.
 
 ### Arguments
+
 #### The following arguments were added in this version:
 
 In the *ad-get-user* command:
+
 * *attributes-to-exclude*
 
 ### get-mapping-fields

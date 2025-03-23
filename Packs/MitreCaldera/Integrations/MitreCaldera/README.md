@@ -12,9 +12,12 @@ This integration was integrated and tested with version 4.0.0 of MitreCaldera
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### caldera-create-fact
+
 ***
 Create a Fact
 
@@ -22,6 +25,7 @@ Create a Fact
 #### Base Command
 
 `caldera-create-fact`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,6 +56,7 @@ Create a Fact
 | MitreCaldera.Facts.score | Number |  | 
 
 ### caldera-create-fact-source
+
 ***
 Create a Fact Source.
 
@@ -59,6 +64,7 @@ Create a Fact Source.
 #### Base Command
 
 `caldera-create-fact-source`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -98,6 +104,7 @@ Create a Fact Source.
 | MitreCaldera.Sources.plugin | String |  | 
 
 ### caldera-create-adversary
+
 ***
 Create a new adversary
 
@@ -105,6 +112,7 @@ Create a new adversary
 #### Base Command
 
 `caldera-create-adversary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -129,6 +137,7 @@ Create a new adversary
 | MitreCaldera.Adversaries.description | String |  | 
 
 ### caldera-create-agent
+
 ***
 Create a new agent
 
@@ -136,6 +145,7 @@ Create a new agent
 #### Base Command
 
 `caldera-create-agent`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -236,6 +246,7 @@ Create a new agent
 | MitreCaldera.Agents.exe_name | String |  | 
 
 ### caldera-create-operation
+
 ***
 Create a new CALDERA operation record
 
@@ -243,6 +254,7 @@ Create a new CALDERA operation record
 #### Base Command
 
 `caldera-create-operation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -342,6 +354,7 @@ Create a new CALDERA operation record
 | MitreCaldera.Operations.auto_close | Boolean |  | 
 
 ### caldera-create-objective
+
 ***
 Create a new objective
 
@@ -349,6 +362,7 @@ Create a new objective
 #### Base Command
 
 `caldera-create-objective`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -373,6 +387,7 @@ Create a new objective
 | MitreCaldera.Objectives.description | String |  | 
 
 ### caldera-create-relationship
+
 ***
 Create a Relationship
 
@@ -380,6 +395,7 @@ Create a Relationship
 #### Base Command
 
 `caldera-create-relationship`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -414,6 +430,7 @@ Create a Relationship
 | MitreCaldera.Relationship.score | Number |  | 
 
 ### caldera-create-ability
+
 ***
 Creates a new ability.
 
@@ -421,6 +438,7 @@ Creates a new ability.
 #### Base Command
 
 `caldera-create-ability`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -474,6 +492,7 @@ Creates a new ability.
 | MitreCaldera.Abilities.description | String |  | 
 
 ### caldera-create-potential-link
+
 ***
 Creates a potential Link
 
@@ -481,6 +500,7 @@ Creates a potential Link
 #### Base Command
 
 `caldera-create-potential-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -582,6 +602,7 @@ Creates a potential Link
 | MitreCaldera.Links.output | String |  | 
 
 ### caldera-create-schedule
+
 ***
 Create Schedule
 
@@ -589,6 +610,7 @@ Create Schedule
 #### Base Command
 
 `caldera-create-schedule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -622,6 +644,7 @@ Create Schedule
 | MitreCaldera.Schedule.id | String |  | 
 
 ### caldera-delete-agent
+
 ***
 Delete an Agent
 
@@ -629,6 +652,7 @@ Delete an Agent
 #### Base Command
 
 `caldera-delete-agent`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -639,7 +663,9 @@ Delete an Agent
 #### Context Output
 
 There is no context output for this command.
+
 ### caldera-delete-fact-source
+
 ***
 Delete an existing Fact Source.
 
@@ -647,6 +673,7 @@ Delete an existing Fact Source.
 #### Base Command
 
 `caldera-delete-fact-source`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -657,7 +684,9 @@ Delete an existing Fact Source.
 #### Context Output
 
 There is no context output for this command.
+
 ### caldera-delete-operation
+
 ***
 Delete an operation by operation id
 
@@ -665,6 +694,7 @@ Delete an operation by operation id
 #### Base Command
 
 `caldera-delete-operation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -675,7 +705,9 @@ Delete an operation by operation id
 #### Context Output
 
 There is no context output for this command.
+
 ### caldera-delete-facts
+
 ***
 Delete One or More Facts
 
@@ -683,6 +715,7 @@ Delete One or More Facts
 #### Base Command
 
 `caldera-delete-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -716,6 +749,7 @@ Delete One or More Facts
 | MitreCaldera.Facts.score | Number |  | 
 
 ### caldera-delete-relationships
+
 ***
 Delete One or More Relationships
 
@@ -723,6 +757,7 @@ Delete One or More Relationships
 #### Base Command
 
 `caldera-delete-relationships`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -757,6 +792,7 @@ Delete One or More Relationships
 | MitreCaldera.Relationship.score | Number |  | 
 
 ### caldera-delete-ability
+
 ***
 Deletes an ability.
 
@@ -764,6 +800,7 @@ Deletes an ability.
 #### Base Command
 
 `caldera-delete-ability`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -774,7 +811,9 @@ Deletes an ability.
 #### Context Output
 
 There is no context output for this command.
+
 ### caldera-delete-adversary
+
 ***
 Deletes an adversary.
 
@@ -782,6 +821,7 @@ Deletes an adversary.
 #### Base Command
 
 `caldera-delete-adversary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -792,7 +832,9 @@ Deletes an adversary.
 #### Context Output
 
 There is no context output for this command.
+
 ### caldera-delete-schedule
+
 ***
 Delete Schedule
 
@@ -800,6 +842,7 @@ Delete Schedule
 #### Base Command
 
 `caldera-delete-schedule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -810,7 +853,9 @@ Delete Schedule
 #### Context Output
 
 There is no context output for this command.
+
 ### caldera-get-abilities
+
 ***
 Get all Abilities with optional ability ID.
 
@@ -818,6 +863,7 @@ Get all Abilities with optional ability ID.
 #### Base Command
 
 `caldera-get-abilities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -859,6 +905,7 @@ Get all Abilities with optional ability ID.
 | MitreCaldera.Abilities.description | String |  | 
 
 ### caldera-get-adversaries
+
 ***
 Get all Adversaries with optional Adversary ID
 
@@ -866,6 +913,7 @@ Get all Adversaries with optional Adversary ID
 #### Base Command
 
 `caldera-get-adversaries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -888,6 +936,7 @@ Get all Adversaries with optional Adversary ID
 | MitreCaldera.Adversaries.description | String |  | 
 
 ### caldera-get-agents
+
 ***
 Retrieves all agents with optional Agent PAW
 
@@ -895,6 +944,7 @@ Retrieves all agents with optional Agent PAW
 #### Base Command
 
 `caldera-get-agents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -973,6 +1023,7 @@ Retrieves all agents with optional Agent PAW
 | MitreCaldera.Agents.exe_name | String |  | 
 
 ### caldera-get-config
+
 ***
 Retrieve Config
 
@@ -980,6 +1031,7 @@ Retrieve Config
 #### Base Command
 
 `caldera-get-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -995,6 +1047,7 @@ Retrieve Config
 | MitreCaldera.Config | Unknown | Config settings | 
 
 ### caldera-get-contacts
+
 ***
 Retrieve a List of all available Contact reports
 
@@ -1002,6 +1055,7 @@ Retrieve a List of all available Contact reports
 #### Base Command
 
 `caldera-get-contacts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1016,6 +1070,7 @@ Retrieve a List of all available Contact reports
 | MitreCaldera.Contacts | Unknnown | List of contacts | 
 
 ### caldera-get-deploy-commands
+
 ***
 Retrieve deploy commands with optional Ability ID
 
@@ -1023,6 +1078,7 @@ Retrieve deploy commands with optional Ability ID
 #### Base Command
 
 `caldera-get-deploy-commands`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1043,6 +1099,7 @@ Retrieve deploy commands with optional Ability ID
 | MitreCaldera.DeployCommands.variations.description | String | Description | 
 
 ### caldera-get-facts
+
 ***
 Retrieve Facts with optional Operation ID
 
@@ -1050,6 +1107,7 @@ Retrieve Facts with optional Operation ID
 #### Base Command
 
 `caldera-get-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1074,6 +1132,7 @@ Retrieve Facts with optional Operation ID
 | MitreCaldera.Facts.score | Number |  | 
 
 ### caldera-get-health
+
 ***
 Health endpoints returns the status of CALDERA
 
@@ -1081,6 +1140,7 @@ Health endpoints returns the status of CALDERA
 #### Base Command
 
 `caldera-get-health`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1097,6 +1157,7 @@ There are no input arguments for this command.
 | MitreCaldera.CalderaInfo.plugins.address | String |  | 
 
 ### caldera-get-obfuscators
+
 ***
 Retrieve obfuscators with optional name
 
@@ -1104,6 +1165,7 @@ Retrieve obfuscators with optional name
 #### Base Command
 
 `caldera-get-obfuscators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1123,6 +1185,7 @@ Retrieve obfuscators with optional name
 | MitreCaldera.Obfuscators.description | String |  | 
 
 ### caldera-get-objectives
+
 ***
 Retrieve objectives with optional Objective ID
 
@@ -1130,6 +1193,7 @@ Retrieve objectives with optional Objective ID
 #### Base Command
 
 `caldera-get-objectives`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1155,6 +1219,7 @@ Retrieve objectives with optional Objective ID
 | MitreCaldera.Objectives.description | String |  | 
 
 ### caldera-get-operations
+
 ***
 Retrieve operations
 
@@ -1162,6 +1227,7 @@ Retrieve operations
 #### Base Command
 
 `caldera-get-operations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1251,6 +1317,7 @@ Retrieve operations
 | MitreCaldera.Operations.auto_close | Boolean |  | 
 
 ### caldera-get-operation-links
+
 ***
 Get Links from Operation with optional Link ID
 
@@ -1258,6 +1325,7 @@ Get Links from Operation with optional Link ID
 #### Base Command
 
 `caldera-get-operation-links`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1312,6 +1380,7 @@ Get Links from Operation with optional Link ID
 | MitreCaldera.OperationLinks.output | String |  | 
 
 ### caldera-get-operation-links-result
+
 ***
 Retrieve the result of a link
 
@@ -1319,6 +1388,7 @@ Retrieve the result of a link
 #### Base Command
 
 `caldera-get-operation-links-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1372,6 +1442,7 @@ Retrieve the result of a link
 | MitreCaldera.OperationLinks.output | String |  | 
 
 ### caldera-get-operations-potential-links
+
 ***
 Retrieve potential links for an operation with optional PAW.
 
@@ -1379,6 +1450,7 @@ Retrieve potential links for an operation with optional PAW.
 #### Base Command
 
 `caldera-get-operations-potential-links`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1433,6 +1505,7 @@ Retrieve potential links for an operation with optional PAW.
 | MitreCaldera.OperationLinks.output | String |  | 
 
 ### caldera-get-planners
+
 ***
 Retrieve planners with optional Planner ID
 
@@ -1440,6 +1513,7 @@ Retrieve planners with optional Planner ID
 #### Base Command
 
 `caldera-get-planners`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1470,6 +1544,7 @@ Retrieve planners with optional Planner ID
 | MitreCaldera.Planners.description | String |  | 
 
 ### caldera-get-plugins
+
 ***
 Retrieve plugins with optional Name
 
@@ -1477,6 +1552,7 @@ Retrieve plugins with optional Name
 #### Base Command
 
 `caldera-get-plugins`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1499,6 +1575,7 @@ Retrieve plugins with optional Name
 | MitreCaldera.Plugins.description | String |  | 
 
 ### caldera-get-relationships
+
 ***
 Retrieve Relationships with optional Operation ID
 
@@ -1506,6 +1583,7 @@ Retrieve Relationships with optional Operation ID
 #### Base Command
 
 `caldera-get-relationships`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1526,6 +1604,7 @@ Retrieve Relationships with optional Operation ID
 | MitreCaldera.Relationships.score | Number |  | 
 
 ### caldera-get-schedules
+
 ***
 Retrieve Schedules with optional Schedule ID
 
@@ -1533,6 +1612,7 @@ Retrieve Schedules with optional Schedule ID
 #### Base Command
 
 `caldera-get-schedules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1551,6 +1631,7 @@ Retrieve Schedules with optional Schedule ID
 | MitreCaldera.Schedules.id | String |  | 
 
 ### caldera-get-sources
+
 ***
 Retrieve all Fact Sources with optional Fact Source ID
 
@@ -1558,6 +1639,7 @@ Retrieve all Fact Sources with optional Fact Source ID
 #### Base Command
 
 `caldera-get-sources`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1595,6 +1677,7 @@ Retrieve all Fact Sources with optional Fact Source ID
 | MitreCaldera.Sources.plugin | String |  | 
 
 ### caldera-get-operation-event-logs
+
 ***
 Get Operation Event Logs
 
@@ -1602,6 +1685,7 @@ Get Operation Event Logs
 #### Base Command
 
 `caldera-get-operation-event-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1631,6 +1715,7 @@ Get Operation Event Logs
 | MitreCaldera.Operations.EventLogs.delegated_timestamp | String |  | 
 
 ### caldera-get-operation-report
+
 ***
 Get Operation Report
 
@@ -1638,6 +1723,7 @@ Get Operation Report
 #### Base Command
 
 `caldera-get-operation-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1666,6 +1752,7 @@ Get Operation Report
 | MitreCaldera.Operations.OperationReport.objectives | Unknown |  | 
 
 ### caldera-replace-ability
+
 ***
 Replaces an existing ability.
 
@@ -1673,6 +1760,7 @@ Replaces an existing ability.
 #### Base Command
 
 `caldera-replace-ability`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1726,6 +1814,7 @@ Replaces an existing ability.
 | MitreCaldera.Abilities.description | String |  | 
 
 ### caldera-replace-schedule
+
 ***
 Replace Schedule
 
@@ -1733,6 +1822,7 @@ Replace Schedule
 #### Base Command
 
 `caldera-replace-schedule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1766,6 +1856,7 @@ Replace Schedule
 | MitreCaldera.Schedules.id | String |  | 
 
 ### caldera-update-agent-config
+
 ***
 Update Agent Config
 
@@ -1773,6 +1864,7 @@ Update Agent Config
 #### Base Command
 
 `caldera-update-agent-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1798,6 +1890,7 @@ Update Agent Config
 | MitreCaldera.AgentConfig.implant_name | String |  | 
 
 ### caldera-update-adversary
+
 ***
 Update an adversary
 
@@ -1805,6 +1898,7 @@ Update an adversary
 #### Base Command
 
 `caldera-update-adversary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1831,6 +1925,7 @@ Update an adversary
 | MitreCaldera.Adversaries.description | String |  | 
 
 ### caldera-update-agent
+
 ***
 Update an Agent
 
@@ -1838,6 +1933,7 @@ Update an Agent
 #### Base Command
 
 `caldera-update-agent`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1919,6 +2015,7 @@ Update an Agent
 | MitreCaldera.Agents.exe_name | String |  | 
 
 ### caldera-update-fact-source
+
 ***
 Update an existing Fact Source.
 
@@ -1926,6 +2023,7 @@ Update an existing Fact Source.
 #### Base Command
 
 `caldera-update-fact-source`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1967,6 +2065,7 @@ Update an existing Fact Source.
 | MitreCaldera.Sources.plugin | String |  | 
 
 ### caldera-update-objective
+
 ***
 Update an objective
 
@@ -1974,6 +2073,7 @@ Update an objective
 #### Base Command
 
 `caldera-update-objective`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1999,6 +2099,7 @@ Update an objective
 | MitreCaldera.Objectives.description | String |  | 
 
 ### caldera-update-operation-fields
+
 ***
 Update fields within an operation
 
@@ -2006,6 +2107,7 @@ Update fields within an operation
 #### Base Command
 
 `caldera-update-operation-fields`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2095,6 +2197,7 @@ Update fields within an operation
 | MitreCaldera.Operations.auto_close | Boolean |  | 
 
 ### caldera-update-main-config
+
 ***
 Update Main Config
 
@@ -2102,6 +2205,7 @@ Update Main Config
 #### Base Command
 
 `caldera-update-main-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2113,7 +2217,9 @@ Update Main Config
 #### Context Output
 
 There is no context output for this command.
+
 ### caldera-update-facts
+
 ***
 Update One or More Facts
 
@@ -2121,6 +2227,7 @@ Update One or More Facts
 #### Base Command
 
 `caldera-update-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2167,6 +2274,7 @@ Update One or More Facts
 | MitreCaldera.Facts.score | Number |  | 
 
 ### caldera-update-relationships
+
 ***
 Update One or More Relationships
 
@@ -2174,6 +2282,7 @@ Update One or More Relationships
 #### Base Command
 
 `caldera-update-relationships`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2202,6 +2311,7 @@ Update One or More Relationships
 | MitreCaldera.Relationships.score | Number |  | 
 
 ### caldera-update-ability
+
 ***
 Updates an existing ability.
 
@@ -2209,6 +2319,7 @@ Updates an existing ability.
 #### Base Command
 
 `caldera-update-ability`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2259,6 +2370,7 @@ Updates an existing ability.
 | MitreCaldera.Abilities.description | String |  | 
 
 ### caldera-update-schedule
+
 ***
 Update Schedule
 
@@ -2266,6 +2378,7 @@ Update Schedule
 #### Base Command
 
 `caldera-update-schedule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2285,6 +2398,7 @@ Update Schedule
 | MitreCaldera.Schedules.id | String |  | 
 
 ### caldera-update-operation-link
+
 ***
 Update the specified link within an operation
 
@@ -2292,6 +2406,7 @@ Update the specified link within an operation
 #### Base Command
 
 `caldera-update-operation-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

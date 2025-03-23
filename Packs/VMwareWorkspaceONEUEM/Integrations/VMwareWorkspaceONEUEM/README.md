@@ -1,5 +1,6 @@
 VMware Workspace ONE UEM integration allows users to search enrolled corporate or employee-owned devices, provides detailed information about each device such as its serial number, installed OS's, pending OS updates, network details, and much more leveraging Workspace ONE UEM's (formerly AirWatch MDM) API.
 This integration was integrated and tested with version 21.5.0.4 of VMware Workspace ONE UEM (AirWatch MDM)
+
 ## Configure VMware Workspace ONE UEM (AirWatch MDM) in Cortex
 
 
@@ -12,12 +13,17 @@ This integration was integrated and tested with version 21.5.0.4 of VMware Works
 | Use system proxy settings |  | False |
 
 ## API Limitations
+
 - The [OS update](https://as1687.awmdm.com/api/help/#!/apis/10003?!%2FDevicesV2%2FDevicesV2_GetOSUpdatesByUUIDAsync) API returns an empty response for Windows devices even if updates can be seen in the UI.
 - As per the [devices search](https://as1687.awmdm.com/api/help/#!/apis/10003?!%2FDevicesV2%2FDevicesV2_SearchAsync) API, the model parameter doesn't work with values like iPhone 6s (32 GB Silver).
+
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### vmwuem-devices-search
+
 ***
 Searches device(s) using the query information provided.
 
@@ -25,6 +31,7 @@ Searches device(s) using the query information provided.
 #### Base Command
 
 `vmwuem-devices-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -144,9 +151,11 @@ Searches device(s) using the query information provided.
 
 
 #### Command Example
+
 ```!vmwuem-devices-search page_size=2```
 
 #### Context Example
+
 ```json
 {
     "VMwareWorkspaceONEUEM": {
@@ -317,6 +326,7 @@ Searches device(s) using the query information provided.
 #### Human Readable Output
 
 >### Device(s)
+>
 >|Device Friendly Name|UUID|Platform|Model|Ownership|Serial Number|MAC Address|Compliance Status|Compromised Status|User Email Address|Last Seen (In UTC)|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| user123 Inspiron 5567 Windows Desktop 10.0.18363 CYL2 | 12345678-1234-1234-1234-123456789ABC | WinRT | Inspiron 5567 | Undefined | ABC1234 | ABABABABABAB | Compliant | Not Compromised | dummy-email | June 28, 2021 at 04:35:20 AM |
@@ -324,6 +334,7 @@ Searches device(s) using the query information provided.
 
 
 ### vmwuem-device-get
+
 ***
 Get basic information about the device.
 
@@ -331,6 +342,7 @@ Get basic information about the device.
 #### Base Command
 
 `vmwuem-device-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -380,9 +392,11 @@ Get basic information about the device.
 
 
 #### Command Example
+
 ```!vmwuem-device-get uuid=12345678-1234-1234-1234-123456789ABC```
 
 #### Context Example
+
 ```json
 {
     "VMwareWorkspaceONEUEM": {
@@ -435,12 +449,14 @@ Get basic information about the device.
 #### Human Readable Output
 
 >### Device(s)
+>
 >|Device Friendly Name|UUID|Platform|Model|Ownership|Serial Number|MAC Address|Compliance Status|User Email Address|Last Seen (In UTC)|
 >|---|---|---|---|---|---|---|---|---|---|
 >| iPhone iOS 14.4.2 HFLN | 12345678-1234-1234-1234-123456789ABC | Apple | iPhone 6s (32 GB Silver) | CORPORATE | ABCD12345678 | ABABABABABAB | Compliant | dummy-email | June 29, 2021 at 04:08:37 PM |
 
 
 ### vmwuem-device-os-updates-list
+
 ***
 Retrieves a list of all available OS and software updates for the specified device.
 
@@ -448,6 +464,7 @@ Retrieves a list of all available OS and software updates for the specified devi
 #### Base Command
 
 `vmwuem-device-os-updates-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -488,9 +505,11 @@ Retrieves a list of all available OS and software updates for the specified devi
 
 
 #### Command Example
+
 ```!vmwuem-device-os-updates-list uuid=12345678-1234-1234-1234-123456789ABC```
 
 #### Context Example
+
 ```json
 {
     "VMwareWorkspaceONEUEM": {
@@ -560,6 +579,7 @@ Retrieves a list of all available OS and software updates for the specified devi
 #### Human Readable Output
 
 >### OSUpdate(s)
+>
 >|Device UUID|Update Name|Update Version|Critical Update|Restart Required|Release Date|Expiration Date|
 >|---|---|---|---|---|---|---|
 >| 12345678-1234-1234-1234-123456789ABC | iOS | 14.6 | No | No | May 24, 2021 at 12:00:00 AM | October 09, 2021 at 12:00:00 AM |

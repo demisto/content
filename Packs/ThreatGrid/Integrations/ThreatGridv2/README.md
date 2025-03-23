@@ -13,9 +13,12 @@ This integration was integrated and tested with version 2 of Cisco Secure Malwar
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### threat-grid-sample-list
+
 ***
 Search samples on the Threat Grid platform. Input parameters are ANDed together. Only finished samples can be searched (that is, the ones that are having a status of succ or fail.)
 
@@ -23,6 +26,7 @@ Search samples on the Threat Grid platform. Input parameters are ANDed together.
 #### Base Command
 
 `threat-grid-sample-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -62,8 +66,11 @@ Search samples on the Threat Grid platform. Input parameters are ANDed together.
 | InfoFile.Info | String |  Basic information about the file |
 
 #### Command example
+
 ```!threat-grid-sample-list```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -112,6 +119,7 @@ Search samples on the Threat Grid platform. Input parameters are ANDed together.
 #### Human Readable Output
 
 >### Sample details:
+>
 >|Completed At|Filename|Id|Md5|Os|Sha1|Sha256|Started At|State|Status|Submission Id|Submitted At|Tags|Vm|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2022-12-05T04:17:00Z | md5 | id | md5 | os | sha1 | sha256 | 2022-12-05T04:10:44Z | succ | job_done | 1538519424 | 2022-12-05T04:10:44Z |  | win7-x64 |
@@ -120,6 +128,7 @@ Search samples on the Threat Grid platform. Input parameters are ANDed together.
 
 
 ### threat-grid-sample-upload
+
 ***
 Submits a sample to threat grid for analysis. URL or file, not both.
 
@@ -127,6 +136,7 @@ Submits a sample to threat grid for analysis. URL or file, not both.
 #### Base Command
 
 `threat-grid-sample-upload`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -158,12 +168,15 @@ Submits a sample to threat grid for analysis. URL or file, not both.
 | ThreatGrid.Sample.submitted_at | String | The sample submission time |
 
 #### Command example
+
 ```!threat-grid-sample-upload url=http://domain_example:80/ private=True```
+
 #### Human Readable Output
 
 >Upload sample is executing
 
 ### threat-grid-submissions-search
+
 ***
 Search threat grid submissions
 
@@ -171,6 +184,7 @@ Search threat grid submissions
 #### Base Command
 
 `threat-grid-submissions-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -205,8 +219,11 @@ Search threat grid submissions
 | ThreatGrid.Sample.threat_score | Number | The threat score of the sample |
 
 #### Command example
+
 ```!threat-grid-submissions-search```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -241,8 +258,10 @@ Search threat grid submissions
 #### Human Readable Output
 
 >### Samples Submissed :
+>
 > Showing page 1.
 > Current page size: 50
+>
 >|Filename|Md5|Private|Sample|Sha1|Sha256|State|Status|Submitted At|
 >|---|---|---|---|---|---|---|---|---|
 >| md5 | md5 | false | sample | sha1 | sha256 | wait | pending | 2022-12-22T08:40:47Z |
@@ -250,6 +269,7 @@ Search threat grid submissions
 
 
 ### threat-grid-sample-summary-get
+
 ***
 Returns summary analysis information
 
@@ -257,6 +277,7 @@ Returns summary analysis information
 #### Base Command
 
 `threat-grid-sample-summary-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -277,8 +298,11 @@ Returns summary analysis information
 | ThreatGrid.SampleAnalysisSummary.last_seen | Date | The timestamp when the sample was last seen. |
 
 #### Command example
+
 ```!threat-grid-sample-summary-get sample_id=sample_id```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -367,12 +391,14 @@ Returns summary analysis information
 #### Human Readable Output
 
 >### Sample summary:
+>
 >|Artifacts|Filename|First Seen|Iocs|Last Seen|Magic Type|Md5|Registry Count|Run Start|Run Stop|Run Type|Sample|Sha1|Sha256|Stream Count|Tags|Times Seen|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| disk: 6 <br/> memory: 9 <br/> network: 1 | www.domain_example_.url | 2021-12-29T15:43:00Z | {'category': ['static-anomaly'], 'confidence': 100, 'ioc': 'html-small-file-redirect', 'severity': 50, 'tags': ['html', 'redirect'], 'score': 50}, <br/> {'category': ['network-information'], 'confidence': 50, 'ioc': 'http-response-redirect', 'severity': 50, 'tags': ['network', 'http', 'redirect'], 'score': 25}, <br/> {'category': ['domain'], 'confidence': 95, 'ioc': 'network-only-safe-domains-contacted', 'severity': 20, 'tags': ['umbrella', 'dns'], 'score': 19}, <br/> {'category': ['network-information'], 'confidence': 25, 'ioc': 'network-communications-http-get-url', 'severity': 25, 'tags': ['network', 'http', 'get'], 'score': 6} | 2022-12-21T12:09:33Z | MS Windows 95 Internet shortcut text (URL=<http:<span>//</span>www.domain_example>), ASCII text | md5 | 143 | 2022-12-21T12:09:33Z | 2022-12-21T12:16:27Z | url | sample_id | sha1 | sha256 | 44 |  | 85 |
 
 
 ### threat-grid-who-am-i
+
 ***
 Get logged in user
 
@@ -380,6 +406,7 @@ Get logged in user
 #### Base Command
 
 `threat-grid-who-am-i`
+
 #### Input
 
 There are no input arguments for this command.
@@ -392,8 +419,11 @@ There are no input arguments for this command.
 | ThreatGrid.User.login | string | Current user login name. |
 
 #### Command example
+
 ```!threat-grid-who-am-i```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -417,12 +447,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Who am I ?
+>
 >|Active|Api Key|Api Only|Device|Email|Integration Id|Login|Name|Organization Id|Role|Title|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| true | key | false | false | mail | z1ci | login_name | name | id | org-admin |  |
 
 
 ### threat-grid-rate-limit-get
+
 ***
 Get rate limit for a specific user name. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by a user. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.
 
@@ -430,6 +462,7 @@ Get rate limit for a specific user name. ThreatGrid employs a simple rate limiti
 #### Base Command
 
 `threat-grid-rate-limit-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -447,8 +480,11 @@ Get rate limit for a specific user name. ThreatGrid employs a simple rate limiti
 | ThreatGrid.RateLimit.submissions-available | number | The number of submissions available for the specified username |
 
 #### Command example
+
 ```!threat-grid-rate-limit-get login=login_name entity_type=user```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -464,12 +500,14 @@ Get rate limit for a specific user name. ThreatGrid employs a simple rate limiti
 #### Human Readable Output
 
 >### user rate limit :
+>
 >|Submission-rate-limit|Submission-wait-seconds|Submissions-available|
 >|---|---|---|
 >|  | 0 |  |
 
 
 ### threat-grid-feed-specific-get
+
 ***
 Gets a specific threat feed
 
@@ -477,6 +515,7 @@ Gets a specific threat feed
 #### Base Command
 
 `threat-grid-feed-specific-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -495,8 +534,11 @@ Gets a specific threat feed
 | ThreatGrid.Feed.description | String | Feed description. |
 
 #### Command example
+
 ```!threat-grid-feed-specific-get feed_name=doc-net-com-dns```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -538,6 +580,7 @@ Gets a specific threat feed
 #### Human Readable Output
 
 >### Specific feed :
+>
 >|Sample|Description|
 >|---|---|
 >| https:<span>//</span>panacea.threatgrid.com/feeds/doc-net-com-dns/samples/4007c79d4db4af076e67a32b9aa9eae8 | DNS response information from requests made by document samples performing network communications. |
@@ -545,6 +588,7 @@ Gets a specific threat feed
 
 
 ### threat-grid-ip-search
+
 ***
 Search IPs. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
 
@@ -552,6 +596,7 @@ Search IPs. Please provide a single argument (only one) to use this command, as 
 #### Base Command
 
 `threat-grid-ip-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -568,8 +613,11 @@ Search IPs. Please provide a single argument (only one) to use this command, as 
 | ThreatGrid.search.location | string | IP location details. |
 
 #### Command example
+
 ```!threat-grid-ip-search ip=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -604,12 +652,14 @@ Search IPs. Please provide a single argument (only one) to use this command, as 
 #### Human Readable Output
 
 >### ip data:
+>
 >|Asn|Flags|Ip|Location|Rev|Tags|
 >|---|---|---|---|---|---|
 >| org: Google <br/> asn: 15169 | {'created_at': '2013-11-15T18:16:33Z', 'expiration': '2025-01-01T00:00:00Z', 'flag': 1, 'login': 'admin', 'reason': 'Content Delivery Network', 'mine': False}, <br/> {'created_at': '2013-11-15T18:16:34Z', 'expiration': '2025-01-01T00:00:00Z', 'flag': 1, 'login': 'admin', 'reason': 'resolves to google-public-dns-a.domain_example', 'mine': False}, <br/> {'created_at': '2013-07-25T14:08:34Z', 'expiration': '2025-01-01T00:00:00Z', 'flag': 1, 'login': 'dean', 'reason': 'Whitelisted', 'mine': False} | 8.8.8.8 | country: US <br/> region: CA <br/> city: Los Angeles | dns.google |  |
 
 
 ### threat-grid-analysis-annotations-get
+
 ***
 Returns data regarding the annotations of the analysis
 
@@ -617,6 +667,7 @@ Returns data regarding the annotations of the analysis
 #### Base Command
 
 `threat-grid-analysis-annotations-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -631,8 +682,11 @@ Returns data regarding the annotations of the analysis
 | ThreatGrid.SampleAnnotations.network | String | IP address &amp; timestamp in the annotation. |
 
 #### Command example
+
 ```!threat-grid-analysis-annotations-get sample_id=sample_id```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -663,11 +717,13 @@ Returns data regarding the annotations of the analysis
 #### Human Readable Output
 
 >### List of samples analysis:
+>
 >|ip1|ip2|
 >|---|---|
 >| ts: 2022-12-21T12:15:59Z | org: Google <br/> ts: 2022-12-21T12:15:59Z <br/> country: US <br/> city: c <br/> region_name: New York <br/> region: NY <br/> reverse_dns: lga34s32-in-f3.1e100.net <br/> country_name: United States <br/> asn: 15169 | org: Google <br/> ts: 2022-12-21T12:15:59Z <br/> country: US <br/> city: Wantagh <br/> region_name: New York <br/> region: NY <br/> reverse_dns: lga34s34-in-f14.1e100.net <br/> country_name: United States <br/> asn: 15169 | org: Google <br/> ts: 2022-12-21T12:15:59Z <br/> country: US <br/> city: Glen Cove <br/>
 
 ### threat-grid-url-search
+
 ***
 Search urls. Please provide the URL in the format http://example.com:80/ (note that ThreatGrid only support '.com' domains).
 
@@ -675,6 +731,7 @@ Search urls. Please provide the URL in the format http://example.com:80/ (note t
 #### Base Command
 
 `threat-grid-url-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -689,8 +746,11 @@ Search urls. Please provide the URL in the format http://example.com:80/ (note t
 | ThreatGrid.search.url | String | URL item |
 
 #### Command example
+
 ```!threat-grid-url-search url=http://domain_example:80/```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -711,12 +771,14 @@ Search urls. Please provide the URL in the format http://example.com:80/ (note t
 #### Human Readable Output
 
 >### url data:
+>
 >|Host|Path|Port|Protocol|Query|Query-params|Reference|Url|
 >|---|---|---|---|---|---|---|---|
 >| domain_example | / | 80 | http |  |  |  | http:<span>//</span>domain_example:80/ |
 
 
 ### threat-grid-feeds-artifact
+
 ***
 Get artifacts threat feed
 
@@ -724,6 +786,7 @@ Get artifacts threat feed
 #### Base Command
 
 `threat-grid-feeds-artifact`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -757,8 +820,11 @@ Get artifacts threat feed
 | ThreatGrid.Artifact.sample_id | String | Artifact sample ID |
 
 #### Command example
+
 ```!threat-grid-feeds-artifact```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -793,14 +859,17 @@ Get artifacts threat feed
 #### Human Readable Output
 
 >### Feeds IOCs list artifact :
+>
 > Showing page 1.
 > Current page size: 50
+>
 >|Aid|Artifact Md5|Artifact Sha256|Confidence|Ioc|Path|Sample Id|Severity|Timestamp|
 >|---|---|---|---|---|---|---|---|---|
 >| 3 | md5 | sha256 | 90 | antivirus-flagged-artifact | \Users\Administrator\.exe | id | 80 | 2022-12-05T04:10:44Z |
 >| 9 | md5 | sha256 | 90 | antivirus-flagged-artifact | 912-.exe | id | 80 | 2022-12-05T04:10:44Z |
 
 ### threat-grid-feeds-domain
+
 ***
 Get domain threat feed
 
@@ -808,6 +877,7 @@ Get domain threat feed
 #### Base Command
 
 `threat-grid-feeds-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -838,8 +908,11 @@ Get domain threat feed
 | ThreatGrid.Domain.domain | String | The Domain  |
 
 #### Command example
+
 ```!threat-grid-feeds-domain```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -871,8 +944,10 @@ Get domain threat feed
 #### Human Readable Output
 
 >### Feeds IOCs list domain :
+>
 > Showing page 1.
 > Current page size: 50
+>
 >|Confidence|Domain|Ioc|Sample Id|Sample Sha256|Severity|Timestamp|
 >|---|---|---|---|---|---|---|
 >| 95 | hookworm.capitaly.ru | network-snort-pua | sample_id | sample_sha256 | 90 | 2022-12-22T07:46:38Z |
@@ -880,6 +955,7 @@ Get domain threat feed
 
 
 ### threat-grid-feeds-url
+
 ***
 Get url threat feed
 
@@ -887,6 +963,7 @@ Get url threat feed
 #### Base Command
 
 `threat-grid-feeds-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -917,8 +994,11 @@ Get url threat feed
 | ThreatGrid.Url.url | String | The url  |
 
 #### Command example
+
 ```!threat-grid-feeds-url```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -949,14 +1029,17 @@ Get url threat feed
 #### Human Readable Output
 
 >### Feeds IOCs list url :
+>
 > Showing page 1.
 > Current page size: 50
+>
 >|Confidence|url|Ioc|Sample Id|Sample Sha256|Severity|Timestamp|
 >|---|---|---|---|---|---|---|
 >| 95 | hookworm.capitaly.ru | network-snort-pua | sample_id | sample_sha256 | 90 | 2022-12-22T07:46:38Z |
 >| 100 | augustawa.com | suspicious-user-agent | sample_id | sample_sha256 | 80 | 2022-11-28T23:51:27Z |
 
 ### threat-grid-feeds-ip
+
 ***
 Get ips threat feed
 
@@ -964,6 +1047,7 @@ Get ips threat feed
 #### Base Command
 
 `threat-grid-feeds-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -995,8 +1079,11 @@ Get ips threat feed
 | ThreatGrid.Ip.port | Number | The IP port |
 
 #### Command example
+
 ```!threat-grid-feeds-ip```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -1029,8 +1116,10 @@ Get ips threat feed
 #### Human Readable Output
 
 >### Feeds IOCs list ip :
+>
 > Showing page 1.
 > Current page size: 50
+>
 >|Confidence|Ioc|Ip|Port|Sample Id|Sample Sha256|Severity|Timestamp|
 >|---|---|---|---|---|---|---|---|
 >| 95 | network-snort-pua | ip |  | sample_id | sample_sha256 | 90 | 2022-12-22T07:46:38Z |
@@ -1038,6 +1127,7 @@ Get ips threat feed
 
 
 ### threat-grid-feeds-network-stream
+
 ***
 Get network stream threat feed
 
@@ -1045,6 +1135,7 @@ Get network stream threat feed
 #### Base Command
 
 `threat-grid-feeds-network-stream`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1079,8 +1170,11 @@ Get network stream threat feed
 | ThreatGrid.NetworkStreams.dst_port | Number | The Network Streams destination port |
 
 #### Command example
+
 ```!threat-grid-feeds-network-stream```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -1118,8 +1212,10 @@ Get network stream threat feed
 #### Human Readable Output
 
 >### Feeds IOCs list network_stream :
+>
 > Showing page 1.
 > Current page size: 50
+>
 >|Confidence|Dst|Dst Port|Ioc|Sample Id|Sample Sha256|Severity|Src|Src Port|Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 95 | ip | 80 | network-snort-pua | sample_id | sample_sha256 | 90 | ip | 49164 | 2022-12-22T07:46:38Z |
@@ -1127,6 +1223,7 @@ Get network stream threat feed
 
 
 ### threat-grid-feeds-path
+
 ***
 Get path threat feed
 
@@ -1134,6 +1231,7 @@ Get path threat feed
 #### Base Command
 
 `threat-grid-feeds-path`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1163,8 +1261,11 @@ Get path threat feed
 | ThreatGrid.Path.sample_id | String | Path sample ID |
 
 #### Command example
+
 ```!threat-grid-feeds-path```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -1195,8 +1296,10 @@ Get path threat feed
 #### Human Readable Output
 
 >### Feeds IOCs list path :
+>
 > Showing page 1.
 > Current page size: 50
+>
 >|Confidence|Ioc|Path|Sample Id|Sample Sha256|Severity|Timestamp|
 >|---|---|---|---|---|---|---|
 >| 90 | antivirus-flagged-artifact | \Users\Administrator\.exe | id | sha256 | 80 | 2022-12-05T04:10:44Z |
@@ -1204,6 +1307,7 @@ Get path threat feed
 
 
 ### threat-grid-feeds-url
+
 ***
 Get url threat feed
 
@@ -1211,6 +1315,7 @@ Get url threat feed
 #### Base Command
 
 `threat-grid-feeds-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1241,6 +1346,7 @@ Get url threat feed
 | ThreatGrid.Url.url | String | The URL |
 
 ### threat-grid-analysis-artifacts-get
+
 ***
 Returns the sample id artifact with artifact id
 
@@ -1248,6 +1354,7 @@ Returns the sample id artifact with artifact id
 #### Base Command
 
 `threat-grid-analysis-artifacts-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1263,8 +1370,11 @@ Returns the sample id artifact with artifact id
 | ThreatGrid.ArtifactAnalysis.items | Unknown | Analysis files of the sample and the artifact |
 
 #### Command example
+
 ```!threat-grid-analysis-artifacts-get sample_id=sample_id```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -1458,12 +1568,14 @@ Returns the sample id artifact with artifact id
 #### Human Readable Output
 
 >### List of samples analysis:
+>
 >|1|10
 >|---|---|
 >| origin: submitted <br/> executed_from:  <br/> path: www.domain_example_.url <br/> mime-type: text/plain; charset=us-ascii <br/> whitelist: <br/> created-time: 0 <br/> read_by:  <br/> created_by:  <br/> sha256: sha256 <br/> sha1: sha1 <br/> md5: md5 <br/> entropy: x <br/> type: url <br/> size: 45 <br/> modified_by:  <br/> magic-type: MS Windows 95 Internet shortcut text (URL=<http:<span>//</span>www.domain_example>), ASCII text <br/> relation: {"contains": null, "extracted_from": null, "network": null, "process": null} | origin: disk <br/> executed_from:  <br/> path: path <br/> mime-type: application/octet-stream; charset=binary <br/> whitelist:  <br/> created-time: 1671624958 <br/> read_by:  <br/> created_by: 24 <br/> sha256: sha256 <br/> sha1: sha1 <br/> md5: md5 <br/> entropy: 0 <br/> type:  <br/> size: 276959 <br/> modified_by:  <br/> magic-type: data <br/> relation: {"contains": null, "extracted_from": null, "network": null, "process": null} | origin: disk <br/> executed_from:  <br/> path: path <br/> mime-type: application/octet-stream; charset=binary <br/> whitelist:  <br/> created-time: 1671624958 <br/> read_by:  <br/> created_by: 24 <br/> sha256: sha256 <br/> sha1: sha1 <br/> md5: md5 <br/> entropy: 0 <br/> type:  <br/> size: 21700 <br/> modified_by:  <br/> magic-type: data <br/> relation: {"contains": null, "extracted_from": null, "network": null, "process": null} | origin: disk <br/> executed_from:  <br/> path: path <br/> mime-type: application/octet-stream; charset=binary <br/> whitelist:  <br/> created-time: 1671624958 <br/> read_by:  <br/> created_by: 24 <br/> sha256: sha256 <br/> sha1: sha1 <br/> md5: md5 <br/> entropy: 0.006721586530775835 <br/> type:  <br/> size: 262512 <br/> modified_by:  <br/> magic-type: data <br/> relation: {"contains": null, "extracted_from": null, "network": null, "process": null} | origin: disk <br/> executed_from:  <br/> path: /Users/Administrator/AppData/Local/Google/Chrome/User Data/Default/Code Cache/js/1500928ccce7b989_0 <br/> mime-type: application/octet-stream; charset=binary <br/> whitelist:  <br/> created-time: 1671624958 <br/> read_by:  <br/> created_by:  <br/> sha256: sha256 <br/> sha1: sha1 <br/> md5: md5 <br/> entropy: 0.09552689517008506 <br/> type:  <br/> size: 1917 <br/> modified_by:  <br/> magic-type: data <br/> relation: {"contains": null, "extracted_from": null, "network": null, "process": null} |
 
 
 ### threat-grid-analysis-iocs-get
+
 ***
 Returns data regarding the specified Indicator of Compromise
 
@@ -1471,6 +1583,7 @@ Returns data regarding the specified Indicator of Compromise
 #### Base Command
 
 `threat-grid-analysis-iocs-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1492,8 +1605,11 @@ Returns data regarding the specified Indicator of Compromise
 | ThreatGrid.IOCAnalysis.tags | String | The tags of the IOC |
 
 #### Command example
+
 ```!threat-grid-analysis-iocs-get sample_id=sample_id```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -1593,6 +1709,7 @@ Returns data regarding the specified Indicator of Compromise
 #### Human Readable Output
 
 >### List of samples analysis:
+>
 >|Analysis-envs|Category|Confidence|Data|Description|Heuristic Coefficient|Hits|Ioc|Mitre|Mitre-tactics|Mitre-techniques|Orbital-queries|Severity|Suspected-sample-categories|Tags|Title|Truncated|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| win, <br/> mac | network-information | 50 | {'Code': 302, 'Method': 'GET', 'Network_Stream': 11, 'Status': 'Found', 'Trans_ID': 0, 'URL': 'http:<span>//</span>www.domain_example:80/'} | An HTTP message indicating a redirection notice was detected in a network stream. The HTTP response codes are used as a means of conveying the status of the connection with the server to the client. Items within the 300 range indicate a redirection notice. These occur when a page has been temporarily or permanently moved. | -0.0987738978328 | 1 | http-response-redirect |  |  |  |  | 50 |  | network, <br/> http, <br/> redirect | HTTP Redirection Response | false |
@@ -1600,6 +1717,7 @@ Returns data regarding the specified Indicator of Compromise
 
 
 ### threat-grid-analysis-metadata-get
+
 ***
 Returns metadata about the analysis
 
@@ -1607,6 +1725,7 @@ Returns metadata about the analysis
 #### Base Command
 
 `threat-grid-analysis-metadata-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1623,8 +1742,11 @@ Returns metadata about the analysis
 | ThreatGrid.AnalysisMetadata.sandcastle_env | Unknown | The Metadata Analysis Malware Sandcastle ENV |
 
 #### Command example
+
 ```!threat-grid-analysis-metadata-get sample_id=sample_id```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -1666,12 +1788,14 @@ Returns metadata about the analysis
 #### Human Readable Output
 
 >### List of samples analysis:
+>
 >|Filename|Magic|Md5|Sha1|Sha256|Size|Type|
 >|---|---|---|---|---|---|---|
 >| www.domain_example_.url | MS Windows 95 Internet shortcut text (URL=<http:<span>//</span>www.domain_example>), ASCII text | md5 | sha1 | sha256 | 45 | url |
 
 
 ### threat-grid-analysis-network-streams-get
+
 ***
 Returns data regarding a specific network stream
 
@@ -1679,6 +1803,7 @@ Returns data regarding a specific network stream
 #### Base Command
 
 `threat-grid-analysis-network-streams-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1698,8 +1823,11 @@ Returns data regarding a specific network stream
 | ThreatGrid.NetworkAnalysis.server_ip | String | The server IP |
 
 #### Command example
+
 ```!threat-grid-analysis-network-streams-get sample_id=sample_id```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -1778,12 +1906,14 @@ Returns data regarding a specific network stream
 #### Human Readable Output
 
 >### List of samples analysis:
+>
 >|0|1|
 >|---|---|
 >| transport: UDP  <br/> dst: dst <br/> uid: d <br/> bytes_missed: 0 <br/> src: ip1 <br/> ts_end: 1671624615.899945 <br/> dst_port: 67 <br/> packets_orig: 2 <br/> bytes_orig_payload: 601 <br/> bytes: 657 <br/> bytes_orig: 657 <br/> duration: 0.000993 <br/> history: D <br/> bytes_resp_payload: 0 <br/> conn_state: S0 <br/> service: dhcp <br/> session: 0 <br/> bytes_resp: 0 <br/> ts_begin: 1671624615.898952 <br/> packets: 2 <br/> src_port: 68 <br/> bytes_payload: 601 | decoded: {'client_ip': '192.168.1.28', 'client_mac': '00:15:17:22:da:4d', 'dns_servers': ['192.168.1.1'], 'lease_time': 1200, 'netmask': '255.255.255.0', 'routers': ['192.168.1.1'], 'server_ip': '192.168.1.1', 'type': 'DHCP_ACK'} <br/> transport: UDP <br/> protocol: DHCP <br/> dst: 192.168.1.1 <br/> uid: CnmnL8FPcbmixXLv1 <br/> bytes_missed: 0 <br/> src: 192.168.1.28 <br/> packets_resp: 2 <br/> ts_end: 1671624615.900353 <br/> dst_port: 67 <br/> bytes_orig_payload: 0 <br/> bytes: 664 <br/> bytes_orig: 0 <br/> duration: 0.000839 <br/> history: ^d <br/> bytes_resp_payload: 608 <br/> conn_state: SHR <br/> service: dhcp <br/> session: 1 <br/> bytes_resp: 664 <br/> ts_begin: 1671624615.899514 <br/> packets: 2 <br/> src_port: 68 <br/> bytes_payload: 608 | transport: TCP <br/> dst: dst <br/> uid: CG18zQzbcnKMJ9rYh <br/> bytes_missed: 0 <br/> src: 192.168.1.28 <br/> packets_resp: 10 <br/> ts_end: 1671624761.8172178 <br/> dst_port: 443 <br/> packets_orig: 7 <br/> bytes_orig_payload: 581 <br/> bytes: 5965 <br/> bytes_orig: 873 <br/> duration: 26.85108 <br/> history: ShADadfr <br/> bytes_resp_payload: 4680 <br/> conn_state: RSTR <br/> service: ssl <br/> session: 10 <br/> bytes_resp: 5092 <br/> ts_begin: 1671624734.966138 <br/> packets: 17 <br/> src_port: 49670 <br/> bytes_payload: 5261 | decoded: [{'request_path': '/', 'url': 'http:<span>//</span>www.domain_example:80/', 'ts': 1671624747.411076, 'host': 'www.domain_example', 'method': 'GET', 'request_filename': 'http-www.domain_example-80-11-1', 'sha256': 'sha256', 'port': 80, 'type': 'request', 'version': '1.1', 'body_len': 0, 'actual_content_type': 'application/x-empty', 'decoded_url': 'http:<span>//</span>www.domain_example:80/', 'headers': {'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9', 'accept-encoding': 'gzip, deflate', 'accept-language': 'en-US,en;q=0.9', 'connection': 'keep-alive', 'host': 'www.domain_example', 'upgrade-insecure-requests': '1', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36'}}, {'ts': 1671624747.505528, 'sha256': 'sha256', 'status_code': 302, 'status': 'Found', 'type': 'response', 'reported_content_type': 'text/html; charset=UTF-8', 'version': '1.1', 'body_len': 231, 'actual_content_type': 'text/html', 'fuids': ['FwgsLG2izIyrPnv7n4'], 'headers': {'server': 'gws', 'origin-trial': 'ot', 'content-type': 'text/html; charset=UTF-8', 'content-length': '231', 'bfcache-opt-in': 'unload', 'permissions-policy': 'unload=()', 'x-frame-options': 'SAMEORIGIN', 'location': 'https:<span>//</span>www.domain_example/?gws_rd=ssl', 'set-cookie': ['1P_JAR=2022-12-21-12; expires=Fri, 20-Jan-2023 12:12:27 GMT; path=/; domain=.domain_example; Secure; SameSite=none', 'x; expires=Mon, 19-Jun-2023 12:12:27 GMT; path=/; domain=.domain_example; Secure; HttpOnly; SameSite=lax'], 'date': 'Wed, 21 Dec 2022 12:12:27 GMT', 'cross-origin-opener-policy-report-only': 'same-origin-allow-popups; report-to="gws"', 'x-xss-protection': '0', 'report-to': '{"group":"gws","max_age":2592000,"endpoints":[{"url":"https:<span>//</span>csp.withdomain_example/csp/report-to/gws/other"}]}', 'cache-control': 'private'}}] <br/> transport: TCP <br/> protocol: HTTP <br/> dst: dst <br/> uid: C1A2px82MwQLhxvg3 <br/> bytes_missed: 0 <br/> src: 192.168.1.28 <br/> packets_resp: 4 <br/> ts_end: 1671624747.7983232 <br/> dst_port: 80 <br/> packets_orig: 4 <br/> bytes_orig_payload: 433 <br/> bytes: 3345 <br/> bytes_orig: 617 <br/> duration: 6.859333 <br/> history: ShADad <br/> bytes_resp_payload: 1278 <br/> conn_state: S1 <br/> service: http <br/> session: 11 <br/> bytes_resp: 2728 <br/> ts_begin: 1671624740.93899 <br/> packets: 8 <br/> src_port: 49671 <br/> bytes_payload: 1711  |
 
 
 ### threat-grid-analysis-processes-get
+
 ***
 Returns data regarding the specific process id in the analysis
 
@@ -1791,6 +1921,7 @@ Returns data regarding the specific process id in the analysis
 #### Base Command
 
 `threat-grid-analysis-processes-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1807,8 +1938,11 @@ Returns data regarding the specific process id in the analysis
 | ThreatGrid.ProcessAnalysis.process_id | String | The process ID |
 
 #### Command example
+
 ```!threat-grid-analysis-processes-get sample_id=sample_id```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -1942,12 +2076,14 @@ Returns data regarding the specific process id in the analysis
 #### Human Readable Output
 
 >### List of samples analysis:
+>
 >|1|12|
 >|---|---|
 >| threads: {'client_id': "id", 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': "id", 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 39480025973576, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 39480025973576, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 39480025973576, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 39480025973576, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 39480025973576, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 39480025973576, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'} <br/> atoms_added: ImmersiveContextMenuArray_159288160-13, <br/> ImmersiveContextMenuArray_159288160-14, <br/> ImmersiveContextMenuArray_159288448-11, <br/> ImmersiveContextMenuArray_159288448-13, <br/> ImmersiveContextMenuArray_159288448-14, <br/> ImmersiveContextMenuArray_159288448-17, <br/> ImmersiveContextMenuArray_159288736-10, <br/> ImmersiveContextMenuArray_159288736-12, <br/> ImmersiveContextMenuArray_159288736-13, <br/> ImmersiveContextMenuArray_159288736-17, <br/> ImmersiveContextMenuArray_159288832-12, <br/> ImmersiveContextMenuArray_159288832-14, <br/> ImmersiveContextMenuArray_159288832-16, <br/> ImmersiveContextMenuArray_159288832-17, <br/> ImmersiveContextMenuArray_159289024-11, <br/> ImmersiveContextMenuArray_159289024-12, <br/> ImmersiveContextMenuArray_159289600-18, <br/> ImmersiveContextMenuArray_159289696-17, <br/> ImmersiveContextMenuArray_159289696-18, <br/> ImmersiveContextMenuArray_159289888-16, <br/> ImmersiveContextMenuArray_159289888-18, <br/> ImmersiveContextMenuArray_159289984-15, <br/> ImmersiveContextMenuArray_4294967295, <br/> ImmersiveContextMenuArray_60889232-10, <br/> ImmersiveContextMenuArray_60889232-8, <br/> ImmersiveContextMenuArray_60889232-9, <br/> ImmersiveContextMenuArray_60890192-11, <br/> ImmersiveContextMenuArray_60890192-7, <br/> ImmersiveContextMenuArray_60890192-8, <br/> ImmersiveContextMenuArray_60890192-9, <br/> ImmersiveContextMenuArray_60891440-11, <br/> ImmersiveContextMenuArray_60891440-12, <br/> ImmersiveContextMenuArray_60891440-7, <br/> ImmersiveContextMenuArray_60891440-9, <br/> ImmersiveContextMenuArray_60891728-10, <br/> ImmersiveContextMenuArray_60891728-6, <br/> ImmersiveContextMenuArray_60891728-9, <br/> ImmersiveContextMenuArray_60891824-5, <br/> ImmersiveContextMenuArray_60891824-6, <br/> ImmersiveContextMenuArray_60891824-7, <br/> ImmersiveContextMenuArray_60891824-8, <br/> ImmersiveContextMenuArray_60891920-4, <br/> ImmersiveContextMenuArray_60891920-5, <br/> ImmersiveContextMenuArray_60891920-6, <br/> ImmersiveContextMenuArray_60891920-7, <br/> ImmersiveContextMenuArray_61294096-3, <br/> ImmersiveContextMenuArray_61294096-4, <br/> ImmersiveContextMenuArray_61294096-6, <br/> ImmersiveContextMenuArray_61295440-2, <br/> ImmersiveContextMenuArray_61295440-3, <br/> ImmersiveContextMenuArray_61295440-5, <br/> ImmersiveContextMenuArray_61295824-131233, <br/> ImmersiveContextMenuArray_61295824-2, <br/> ImmersiveContextMenuArray_61295824-4, <br/> ImmersiveContextMenuArray_61295824-5, <br/> ImmersiveContextMenuArray_61441088-1, <br/> ImmersiveContextMenuArray_61441088-4001, <br/> ImmersiveContextMenuArray_61441280-4002, <br/> ImmersiveContextMenuArray_61441568-2, <br/> ImmersiveContextMenuArray_61441856-4003, <br/> ImmersiveContextMenuArray_61441952-131233, <br/> ImmersiveContextMenuArray_61442144-4001, <br/> ImmersiveContextMenuArray_61442432-4002, <br/> ImmersiveContextMenuArray_61442528-4000, <br/> ImmersiveContextMenuArray_61442624-4000, <br/> ImmersiveContextMenuArray_61442720-1, <br/> ImmersiveContextMenuArray_61443008-1, <br/> ImmersiveContextMenuArray_61443008-4002, <br/> ImmersiveContextMenuArray_61443296-131233, <br/> ImmersiveContextMenuArray_61443296-4001, <br/> ImmersiveContextMenuArray_61443776-4000, <br/> ImmersiveContextMenuArray_61443968-1, <br/> ImmersiveContextMenuArray_61443968-4003, <br/> ImmersiveContextMenuArray_61444064-4002, <br/> ImmersiveContextMenuArray_61444160-4001, <br/> ImmersiveContextMenuArray_61444256-3, <br/> ImmersiveContextMenuArray_61444256-4000, <br/> ImmersiveContextMenuArray_61444448-2, <br/> ImmersiveContextMenuArray_61444736-131233, <br/> ImmersiveContextMenuArray_61444832-4003, <br/> TrayRaisedWindowProp, <br/> uia <br/> analyzed_because: Process activity after target sample started. <br/> registry_keys_created: {'access': ['CREATE_SUB_KEY', 'READ_CONTROL', 'SET_VALUE'], 'name': 'REGISTRY\\USER\\S-1-5-21-3467368655-986044752-3166994390-500\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\SESSIONINFO\\1\\APPLICATIONVIEWMANAGEMENT\\W32:000000000006013C', 'options': ['REG_OPTION_VOLATILE']} <br/> monitored: true <br/> parent:  <br/> new: false <br/> mutants_created: Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_1280.db!dfMaintainer, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_16.db!dfMaintainer, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_1920.db!dfMaintainer, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_256.db!dfMaintainer, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_2560.db!dfMaintainer, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_32.db!dfMaintainer, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_48.db!dfMaintainer, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_768.db!dfMaintainer, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_96.db!dfMaintainer, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_custom_stream.db!dfMaintainer, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_exif.db!dfMaintainer, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_idx.db!IconCacheInit, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_idx.db!rwReaderRefs, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_idx.db!rwWriterMutex, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_sr.db!dfMaintainer, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_wide.db!dfMaintainer, <br/> Global\C::Users:Administrator:AppData:Local:Microsoft:Windows:Explorer:iconcache_wide_alternate.db!dfMaintainer <br/> pid: 1692 <br/> kpid: uid <br/> ppid: 61 <br/> time: Wed, 21 Dec 2022 12:10:16 UTC <br/> registry_keys_deleted: REGISTRY\USER\S-1-5-21-3467368655-986044752-3166994390-500\SOFTWARE\MICROSOFT\WINDOWS\CURRENTVERSION\EXPLORER\SESSIONINFO\1\APPLICATIONVIEWMANAGEMENT\W32:00000000000A0232, <br/> REGISTRY\USER\S-1-5-21-3467368655-986044752-3166994390-500\SOFTWARE\MICROSOFT\WINDOWS\CURRENTVERSION\EXPLORER\SESSIONINFO\1\APPLICATIONVIEWMANAGEMENT\W32:0000000000100036, <br/> REGISTRY\USER\S-1-5-21-3467368655-986044752-3166994390-500\SOFTWARE\MICROSOFT\WINDOWS\CURRENTVERSION\HOMEGROUP\UISTATUSCACHE <br/> proc: false <br/> process_name: Explorer.EXE <br/> registry_keys_modified: {'data': 'EAAAADAwRFb0BwKtsB1qQ5DP0vmf3UYC', 'data_type': 'BINARY', 'name': 'REGISTRY\\USER\\S-1-5-21-3467368655-986044752-3166994390-500\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\EXPLORER\\SESSIONINFO\\1\\APPLICATIONVIEWMANAGEMENT\\W32:000000000006013C', 'value_name': 'VirtualDesktop'} | files_checked: \Users\Administrator\AppData\Local\Google\Chrome\User Data\CrashpadMetrics-active.pma, <br/> \Users\Administrator\AppData\Local\Google\Chrome\User Data\CrashpadMetrics-spare.pma <br/> files_deleted: \Users\Administrator\AppData\Local\Google\Chrome\User Data\CrashpadMetrics.pma, <br/> \Users\Administrator\AppData\Local\Google\Chrome\User Data\CrashpadMetrics.pma~RF3e02b2be.TMP <br/> threads: {'client_id': 6004801706494351000, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 0, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 18375121096688828000, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 18375121096688828000, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 6071227511780497000, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 6071227511780497000, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'} <br/> analyzed_because: Parent is being analyzed <br/> files_created: \Users\Administrator\AppData\Local\Google\Chrome\User Data\CrashpadMetrics-active.pma, <br/> \Users\Administrator\AppData\Local\Google\Chrome\User Data\CrashpadMetrics.pma~RF3e02b2be.TMP <br/> monitored: true <br/> parent: 0xffffe0014409e680 <br/> new: true <br/> pid: 2680 <br/> kpid: 0xffffe00144f57080 <br/> ppid: 9 <br/> time: Wed, 21 Dec 2022 12:10:41 UTC <br/> proc: false <br/> process_name: chrome.exe | threads: {'client_id': 7820861427712559000, 'create_suspended': '0x1', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 7820861427712559000, 'create_suspended': '0x1', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 7820861427712559000, 'create_suspended': '0x1', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 7820861427712559000, 'create_suspended': '0x1', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 7820861427712559000, 'create_suspended': '0x1', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'} <br/> analyzed_because: Process activity after target sample started. <br/> monitored: true <br/> parent:  <br/> new: false <br/> pid: 840 <br/> kpid: 0xffffe0014497a840 <br/> ppid: 52 <br/> time: Wed, 21 Dec 2022 12:10:42 UTC <br/> proc: false <br/> process_name: svchost.exe | analyzed_because: Process activity after target sample started. <br/> monitored: true <br/> parent:  <br/> new: false <br/> pid: 236 <br/> kpid: 0xffffe001434ea080 <br/> ppid: null <br/> time: Wed, 21 Dec 2022 12:10:47 UTC <br/> proc: false <br/> process_name: svchost.exe | analyzed_because: Process activity after target sample started. <br/> monitored: true <br/> parent:  <br/> new: false <br/> pid: 1284 <br/> kpid: 0xffffe00144a89840 <br/> ppid: 52 <br/> time: Wed, 21 Dec 2022 12:10:48 UTC <br/> proc: false <br/> process_name: svchost.exe | analyzed_because: Process activity after target sample started. <br/> files_created: \Device\NamedPipe\Sessions\1\AppContainerNamedObjects\S-1-15-2-1861897761-1695161497-2927542615-642690995-327840285-2659745135-2630312742 <br/> monitored: true <br/> parent:  <br/> new: false <br/> pid: 580 <br/> kpid: 0xffffe0014486e340 <br/> ppid: 52 <br/> time: Wed, 21 Dec 2022 12:10:48 UTC <br/> proc: false <br/> process_name: svchost.exe | analyzed_because: Process activity after target sample started. <br/> monitored: true <br/> parent:  <br/> new: false <br/> sockets: {'file_handle': '0x954', 'protocol': '0', 'state': 1, 'states': [], 'timestamp': 1671624708.7818744}, <br/> {'file_handle': '0x9c0', 'protocol': '0', 'state': 1, 'states': [], 'timestamp': 1671624708.830168}, <br/> {'file_handle': '0x98c', 'protocol': '0', 'state': 1, 'states': [], 'timestamp': 1671624714.8858435}, <br/> {'file_handle': '0x98c', 'protocol': '0', 'state': 1, 'states': [], 'timestamp': 1671624781.8725078}, <br/> {'file_handle': '0x98c', 'protocol': '0', 'state': 1, 'states': [], 'timestamp': 1671624792.5076175}, <br/> {'file_handle': '0x98c', 'protocol': '0', 'state': 1, 'states': [], 'timestamp': 1671624814.9515114}, <br/> {'file_handle': '0x98c', 'protocol': '0', 'state': 1, 'states': [], 'timestamp': 1671624821.0024314}, <br/> {'file_handle': '0x98c', 'protocol': '0', 'state': 1, 'states': [], 'timestamp': 1671624825.1760237}, <br/> {'file_handle': '0x968', 'protocol': '0', 'state': 1, 'states': [], 'timestamp': 1671624835.1903608}, <br/> {'file_handle': '0x95c', 'protocol': '0', 'state': 1, 'states': [], 'timestamp': 1671624835.7948673}, <br/> {'file_handle': '0x95c', 'protocol': '0', 'state': 1, 'states': [], 'timestamp': 1671624858.605007} <br/> pid: 1100 <br/> kpid: 0xffffe00144cf1080 <br/> ppid: 52 <br/> time: Wed, 21 Dec 2022 12:10:52 UTC <br/> proc: false <br/> process_name: svchost.exe | files_checked: \Program Files\Google\Chrome\Application\88.0.4324.104\SwiftShader.ini <br/> threads: {'client_id': 6004801706494351000, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 6004801706494351000, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 6004801706494351000, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 6004801706494351000, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 6004801706494351000, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 0, 'create_suspended': '0x1', 'process': '0x00000000', 'process_handle': '0x80000b48', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 6004801706494351000, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 6004801706494351000, 'create_suspended': '0x0', 'process': '0x00000000', 'process_handle': '0xffffffff', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 8397322214375721000, 'create_suspended': '0x1', 'process': '0x00000000', 'process_handle': '0x80000984', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 8397322214375721000, 'create_suspended': '0x1', 'process': '0x00000000', 'process_handle': '0x80000b40', 'return': 0, 'thread': '0x00000000'}, <br/> {'client_id': 8397322214375721000, 'create_suspended': '0x1', 'process': '0x00000000', 'process_handle': '0x80000b40', 'return': 0, 'thread': '0x00000000'} <br/> atoms_added: D3D9_IdHot_Ctrl_SnapDesktop <br/> analyzed_because: Parent is being analyzed <br/> monitored: true <br/> parent: 0xffffe0014409e680 <br/> new: true <br/> pid: 2296 <br/> kpid: 0xffffe0014444a840 <br/> ppid: 9 <br/> time: Wed, 21 Dec 2022 12:10:54 UTC <br/> proc: false <br/> process_name: chrome.exe |
 
 
 ### file
+
 ***
 Checks the file reputation of the specified hash.
 
@@ -1955,6 +2091,7 @@ Checks the file reputation of the specified hash.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1987,6 +2124,7 @@ Checks the file reputation of the specified hash.
 | ThreatGrid.File.tgLink | string | ThreatGrid permanent link. |
 
 ### ip
+
 ***
 Checks the reputation of an IP address.
 
@@ -1994,6 +2132,7 @@ Checks the reputation of an IP address.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2023,6 +2162,7 @@ Checks the reputation of an IP address.
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 
 ### url
+
 ***
 Checks the reputation of a URL.
 
@@ -2030,6 +2170,7 @@ Checks the reputation of a URL.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2061,6 +2202,7 @@ Checks the reputation of a URL.
 | ThreatGrid.URL.positive_engines | Number | Number of positive engines |
 
 ### domain
+
 ***
 Checks the reputation of a domain.
 
@@ -2068,6 +2210,7 @@ Checks the reputation of a domain.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2104,6 +2247,7 @@ Checks the reputation of a domain.
 | ThreatGrid.Domain.domain | String | The domain name. |
 
 ### threat-grid-domain-samples-list
+
 ***
 Returns a list of samples associated with a Domain.
 
@@ -2111,6 +2255,7 @@ Returns a list of samples associated with a Domain.
 #### Base Command
 
 `threat-grid-domain-samples-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2131,8 +2276,11 @@ Returns a list of samples associated with a Domain.
 | ThreatGrid.DomainAssociatedSample.samples | string | The associated samples. |
 
 #### Command example
+
 ```!threat-grid-domain-samples-list domain=domain_example```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -2172,8 +2320,10 @@ Returns a list of samples associated with a Domain.
 #### Human Readable Output
 
 >### List of samples associated to the domain - domain_example :
+>
 > Showing page 1.
 > Current page size: 50
+>
 >|Filename|Login|Private|Sample|Sha256|Timestamp|
 >|---|---|---|---|---|---|
 >| domain_example_.url | login_name | false | sample_e | sha256_example | 2022-12-22T08:30:57Z |
@@ -2181,6 +2331,7 @@ Returns a list of samples associated with a Domain.
 
 
 ### threat-grid-ip-samples-list
+
 ***
 Returns a list of samples associated with an IP.
 
@@ -2188,6 +2339,7 @@ Returns a list of samples associated with an IP.
 #### Base Command
 
 `threat-grid-ip-samples-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2208,8 +2360,11 @@ Returns a list of samples associated with an IP.
 | ThreatGrid.IpAssociatedSample.samples | string | The associated samples. |
 
 #### Command example
+
 ```!threat-grid-ip-samples-list ip=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -2276,8 +2431,10 @@ Returns a list of samples associated with an IP.
 #### Human Readable Output
 
 >### List of samples associated to the ip - 8.8.8.8 :
+>
 > Showing page 1.
 > Current page size: 50
+>
 >|Filename|Login|Private|Sample|Sha256|Timestamp|
 >|---|---|---|---|---|---|
 >| filename |  | false | sample_e | sha256_e | 2022-12-22T08:09:30Z |
@@ -2285,6 +2442,7 @@ Returns a list of samples associated with an IP.
 
 
 ### threat-grid-path-samples-list
+
 ***
 Returns a list of samples associated with a Path.
 
@@ -2292,6 +2450,7 @@ Returns a list of samples associated with a Path.
 #### Base Command
 
 `threat-grid-path-samples-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2312,8 +2471,11 @@ Returns a list of samples associated with a Path.
 | ThreatGrid.PathAssociatedSample.samples | string | The associated samples. |
 
 #### Command example
+
 ```!threat-grid-path-samples-list path=user```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -2373,8 +2535,10 @@ Returns a list of samples associated with a Path.
 #### Human Readable Output
 
 >### List of samples associated to the path - user :
+>
 > Showing page 1.
 > Current page size: 50
+>
 >|Filename|Login|Private|Sample|Sha256|Timestamp|
 >|---|---|---|---|---|---|
 >| user |  | false | sample_e | sha256_e | 2022-11-11T08:26:04Z |
@@ -2382,6 +2546,7 @@ Returns a list of samples associated with a Path.
 
 
 ### threat-grid-url-samples-list
+
 ***
 Returns a list of samples associated with an URL.
 
@@ -2389,6 +2554,7 @@ Returns a list of samples associated with an URL.
 #### Base Command
 
 `threat-grid-url-samples-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2409,8 +2575,11 @@ Returns a list of samples associated with an URL.
 | ThreatGrid.UrlAssociatedSample.samples | string | The associated samples. |
 
 #### Command example
+
 ```!threat-grid-url-samples-list url=http://domain_example:80/```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -2465,8 +2634,10 @@ Returns a list of samples associated with an URL.
 #### Human Readable Output
 
 >### List of samples associated to the url - sha256_example :
+>
 > Showing page 1.
 > Current page size: 50
+>
 >|Filename|Login|Private|Sample|Sha256|Timestamp|
 >|---|---|---|---|---|---|
 >| domain_example_.url | login_name | false | sample_id | sha256_example | 2022-12-22T08:36:44Z |
@@ -2476,6 +2647,7 @@ Returns a list of samples associated with an URL.
 
 
 ### threat-grid-registry-key-samples-list
+
 ***
 Returns a list of samples associated with a specified registry key.
 
@@ -2483,6 +2655,7 @@ Returns a list of samples associated with a specified registry key.
 #### Base Command
 
 `threat-grid-registry-key-samples-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2503,8 +2676,11 @@ Returns a list of samples associated with a specified registry key.
 | ThreatGrid.RegistryKeyAssociatedSample.samples | string | The associated samples. |
 
 #### Command example
+
 ```!threat-grid-registry-key-samples-list registry_key=ChangeNotice```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -2519,12 +2695,14 @@ Returns a list of samples associated with a specified registry key.
 #### Human Readable Output
 
 >### List of samples associated to the registry_key - ChangeNotice :
+>
 > Showing page 1.
 > Current page size: 50
 >**No entries.**
 
 
 ### threat-grid-ip-associated-domains
+
 ***
 Returns a list of domains associated with the IP.
 
@@ -2532,6 +2710,7 @@ Returns a list of domains associated with the IP.
 #### Base Command
 
 `threat-grid-ip-associated-domains`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2547,8 +2726,11 @@ Returns a list of domains associated with the IP.
 | ThreatGrid.IpAssociatedDomain.domains | string | The associated Domain. |
 
 #### Command example
+
 ```!threat-grid-ip-associated-domains ip=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -2572,6 +2754,7 @@ Returns a list of domains associated with the IP.
 #### Human Readable Output
 
 >### List of domains associated to the ip - 8.8.8.8 :
+>
 >|Domain|
 >|---|
 >| domain2 |
@@ -2580,6 +2763,7 @@ Returns a list of domains associated with the IP.
 
 
 ### threat-grid-ip-associated-urls
+
 ***
 Returns a list of URLs associated to the IP.
 
@@ -2587,6 +2771,7 @@ Returns a list of URLs associated to the IP.
 #### Base Command
 
 `threat-grid-ip-associated-urls`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2602,8 +2787,11 @@ Returns a list of URLs associated to the IP.
 | ThreatGrid.IpAssociatedUrl.urls | string | The associated URL. |
 
 #### Command example
+
 ```!threat-grid-ip-associated-urls ip=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -2629,6 +2817,7 @@ Returns a list of URLs associated to the IP.
 #### Human Readable Output
 
 >### List of urls associated to the ip - 8.8.8.8 :
+>
 >|Sha256|Url|
 >|---|---|
 >| sha256 | ThreatGrid_IpAssociatedUrl_urls[0]_url |
@@ -2636,6 +2825,7 @@ Returns a list of URLs associated to the IP.
 
 
 ### threat-grid-domain-associated-urls
+
 ***
 Returns a list of URLs associated to the domain.
 
@@ -2643,6 +2833,7 @@ Returns a list of URLs associated to the domain.
 #### Base Command
 
 `threat-grid-domain-associated-urls`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2658,8 +2849,11 @@ Returns a list of URLs associated to the domain.
 | ThreatGrid.DomainAssociatedUrl.urls | string | The associated URL. |
 
 #### Command example
+
 ```!threat-grid-domain-associated-urls domain=domain_example```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -2685,6 +2879,7 @@ Returns a list of URLs associated to the domain.
 #### Human Readable Output
 
 >### List of urls associated to the domain - domain_example :
+>
 >|Sha256|Url|
 >|---|---|
 >| sha256 | some_url |
@@ -2693,6 +2888,7 @@ Returns a list of URLs associated to the domain.
 
 
 ### threat-grid-domain-associated-ips
+
 ***
 Returns a list of IPs associated to the domain.
 
@@ -2700,6 +2896,7 @@ Returns a list of IPs associated to the domain.
 #### Base Command
 
 `threat-grid-domain-associated-ips`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2715,8 +2912,11 @@ Returns a list of IPs associated to the domain.
 | ThreatGrid.DomainAssociatedIp.ips | String | The associated IP. |
 
 #### Command example
+
 ```!threat-grid-domain-associated-ips domain=domain_example```
+
 #### Context Example
+
 ```json
 {
     "ThreatGrid": {
@@ -2739,6 +2939,7 @@ Returns a list of IPs associated to the domain.
 #### Human Readable Output
 
 >### List of ips associated to the domain - domain_example :
+>
 >|Ip|
 >|---|
 >| ip_address |

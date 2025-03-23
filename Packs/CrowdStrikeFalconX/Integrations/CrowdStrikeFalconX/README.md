@@ -16,7 +16,9 @@ This integration was integrated and tested with version 2 of CrowdStrike Falcon 
 
 
 ## Uploading a file to the sandbox
+
 There are 2 ways to upload a file to the sandbox.
+
 1. Using the ***cs-fx-upload-file*** command with **submit_file=yes**.
 2. Using the ***cs-fx-upload-file*** command and afterwards the ***cs-fx-submit-uploaded-file command***, 
 in this option the sha256 identifier from the ***cs-fx-upload-file*** command output is the input to the ***cs-fx-submit-uploaded-file command***.
@@ -24,9 +26,12 @@ in this option the sha256 identifier from the ***cs-fx-upload-file*** command ou
 For more information review the documentation for the commands.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cs-fx-upload-file
+
 ***
 Uploads a file for sandbox analysis.
 Notice that the file identifier (SHA) can be changed as shown in the example below.
@@ -34,6 +39,7 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 #### Base Command
 
 `cs-fx-upload-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -124,9 +130,11 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 
 
 #### Command Example
+
 ```!cs-fx-upload-file file=895@07031695-ae27-49f6-8bb2-41943c7cb80c file_name=test.pdf comment="example" is_confidential="true" submit_file=no```
 
 #### Context Example
+
 ```
 {
     "csfalconx": {
@@ -141,12 +149,14 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 #### Human Readable Output
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
+>
 >|file_name|sha256|
 >|---|---|
 >| test.pdf | c5fdd1fb2c53cd00aba5b01270f91fd5598f315bef99938ddeb92c23667ec2c9 |
 
 
 ### cs-fx-submit-uploaded-file
+
 ***
 Submits a sample SHA256 hash for sandbox analysis.
 Notice that the file identifiers, SHA and ID are not the same.
@@ -155,6 +165,7 @@ Notice that the file identifiers, SHA and ID are not the same.
 #### Base Command
 
 `cs-fx-submit-uploaded-file`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                    | **Required** |
@@ -264,9 +275,11 @@ Notice that the file identifiers, SHA and ID are not the same.
 
 
 #### Command Example
+
 ```!cs-fx-submit-uploaded-file sha256="d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee" environment_id="160: Windows 10" action_script="default" command_line="command" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"```
 
 #### Context Example
+
 ```json
 {
     "csfalconx": {
@@ -285,12 +298,14 @@ Notice that the file identifiers, SHA and ID are not the same.
 #### Human Readable Output
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
+>
 >|created_timestamp|environment_id|sha256|state|submitted_id|file_name|
 >|---|---|---|---|---|
 >| 2022-03-09T08:58:33Z | 160 | d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee | created | 20879a8064904ecfbb62c118a6a19411_5d620c1322444253ad2be284de3756fa | test.pdf |
 
 
 ### cs-fx-get-full-report
+
 ***
 Gets a full version of a sandbox report.
 
@@ -298,6 +313,7 @@ Gets a full version of a sandbox report.
 #### Base Command
 
 `cs-fx-get-full-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -483,9 +499,11 @@ Gets a full version of a sandbox report.
 
 
 #### Command Example
+
 ```!cs-fx-get-full-report ids="20879a8064904ecfbb62c118a6a19411_a71f2c6e06a94e8495615803c66d8730"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1476,12 +1494,14 @@ Gets a full version of a sandbox report.
 #### Human Readable Output
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
+>
 >|sha256|environment_description|environment_id|created_timestamp|id|submission_type|threat_score|verdict|
 >|---|---|---|---|---|---|---|---|
 >| d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee | Windows 7 64 bit | 110 | 2022-02-13T14:20:21Z | 20879a8064904ecfbb62c118a6a19411_a71f2c6e06a94e8495615803c66d8730 | file | 100 | malicious |
 
 
 ### cs-fx-get-report-summary
+
 ***
 Gets a short summary version of a sandbox report.
 
@@ -1489,6 +1509,7 @@ Gets a short summary version of a sandbox report.
 #### Base Command
 
 `cs-fx-get-report-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1524,9 +1545,11 @@ Gets a short summary version of a sandbox report.
 
 
 #### Command Example
+
 ```!cs-fx-get-report-summary ids="20879a8064904ecfbb62c118a6a19411_8cb7c75003264edfaf5a60c33d2846fc"```
 
 #### Context Example
+
 ```json
 {
   "DBotScore(val.Indicator \u0026\u0026 val.Indicator == obj.Indicator \u0026\u0026 val.Vendor == obj.Vendor \u0026\u0026 val.Type == obj.Type)": [
@@ -1567,11 +1590,13 @@ Gets a short summary version of a sandbox report.
 #### Human Readable Output
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
+>
 >|created_timestamp|environment_description|environment_id|id|ioc_report_broad_csv_artifact_id|ioc_report_broad_json_artifact_id|ioc_report_broad_maec_artifact_id|ioc_report_broad_stix_artifact_id|ioc_report_strict_csv_artifact_id|ioc_report_strict_json_artifact_id|ioc_report_strict_maec_artifact_id|ioc_report_strict_stix_artifact_id|sha256|submission_type|submit_url|verdict|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2022-03-03T14:39:19Z | Windows 10 64 bit | 160 | 20879a8064904ecfbb62c118a6a19411_8cb7c75003264edfaf5a60c33d2846fc | 46915810cc20d82d879c81c2b35d20ab720f2dc287fcb3acc5f921f6bd408be6 | e8ac23ff7d0ce989cae5730bfd5df1ba39e16069e772a0496bd681d3b50137f9 | 029a36683578573726f2a39a7ff2ad22da97ff55e84a0a2ca73284283bbbc39a | 9e62387d0f8bb854a932c61ad0f418a8721033f46bfe879877bb0b4f0af2ad86 | 46915810cc20d82d879c81c2b35d20ab720f2dc287fcb3acc5f921f6bd408be6 | e8ac23ff7d0ce989cae5730bfd5df1ba39e16069e772a0496bd681d3b50137f9 | 029a36683578573726f2a39a7ff2ad22da97ff55e84a0a2ca73284283bbbc39a | 9e62387d0f8bb854a932c61ad0f418a8721033f46bfe879877bb0b4f0af2ad86 | 15fea7cc23194aea10dce58cff8fff050c81e1be0d16e4da542f4fedd5a421c3 | page_url | hxxps://www.google.com | no specific threat |
 
 ### cs-fx-get-analysis-status
+
 ***
 Checks the status of a sandbox analysis.
 
@@ -1579,6 +1604,7 @@ Checks the status of a sandbox analysis.
 #### Base Command
 
 `cs-fx-get-analysis-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1612,9 +1638,11 @@ Checks the status of a sandbox analysis.
 
 
 #### Command Example
+
 ```!cs-fx-get-analysis-status ids="05cca3437abcb4057c157ed8b933b07fb198aa0fa0eb7f7c27e97029e9e0ad61"```
 
 #### Context Example
+
 ```json
 {
   "csfalconx.resource(val.id \u0026\u0026 val.id == obj.id)": 
@@ -1631,12 +1659,14 @@ Checks the status of a sandbox analysis.
 #### Human Readable Output
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
+>
 >|created_timestamp|environment_id|id|sha256|state|
 >|---|---|---|---|---|
 >| 2020-05-26T21:24:41Z | 160 | 1c9fe398b2294301aa3080ede8d77356_8cfaaf951fff412090df3d27d4b4193d | 05cca3437abcb4057c157ed8b933b07fb198aa0fa0eb7f7c27e97029e9e0ad61 | success |
 
 
 ### cs-fx-check-quota
+
 ***
 Returns the total quota number and the in use quota number.
 
@@ -1644,6 +1674,7 @@ Returns the total quota number and the in use quota number.
 #### Base Command
 
 `cs-fx-check-quota`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1658,9 +1689,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cs-fx-check-quota```
 
 #### Context Example
+
 ```json
 {
     "csfalconx": {
@@ -1676,12 +1709,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
+>
 >|in_progress|total|used|
 >|---|---|---|
 >| 3 | 500 | 11 |
 
 
 ### cs-fx-find-reports
+
 ***
 Finds sandbox reports by providing an FQL filter and paging details.
 
@@ -1689,6 +1724,7 @@ Finds sandbox reports by providing an FQL filter and paging details.
 #### Base Command
 
 `cs-fx-find-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1710,9 +1746,11 @@ Finds sandbox reports by providing an FQL filter and paging details.
 
 
 #### Command Example
+
 ```!cs-fx-find-reports offset=1 limit=5```
 
 #### Context Example
+
 ```json
 {
     "csfalconx": {
@@ -1732,6 +1770,7 @@ Finds sandbox reports by providing an FQL filter and paging details.
 #### Human Readable Output
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
+>
 >|resources|
 >|---|
 >| 20879a8064904ecfbb62c118a6a19411_944bce16178742c58beccd0e6eb1a000 |
@@ -1742,6 +1781,7 @@ Finds sandbox reports by providing an FQL filter and paging details.
 
 
 ### cs-fx-find-submission-id
+
 ***
 Finds submission IDs for uploaded files by providing an FQL filter and paging details. Returns a set of submission IDs that match the search criteria.
 
@@ -1749,6 +1789,7 @@ Finds submission IDs for uploaded files by providing an FQL filter and paging de
 #### Base Command
 
 `cs-fx-find-submission-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1767,9 +1808,11 @@ Finds submission IDs for uploaded files by providing an FQL filter and paging de
 
 
 #### Command Example
+
 ```!cs-fx-find-submission-id offset=1 limit=5```
 
 #### Context Example
+
 ```json
 {
     "csfalconx": {
@@ -1789,6 +1832,7 @@ Finds submission IDs for uploaded files by providing an FQL filter and paging de
 #### Human Readable Output
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
+>
 >|resources|
 >|---|
 >| 20879a8064904ecfbb62c118a6a19411_5d620c1322444253ad2be284de3756fa |
@@ -1799,6 +1843,7 @@ Finds submission IDs for uploaded files by providing an FQL filter and paging de
 
 
 ### file
+
 ***
 Gets reputation info for one or more files, by their sha256 hash.
 
@@ -1806,6 +1851,7 @@ Gets reputation info for one or more files, by their sha256 hash.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1838,9 +1884,11 @@ Gets reputation info for one or more files, by their sha256 hash.
 
 
 #### Command Example
+
 ```!file d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1874,12 +1922,14 @@ Gets reputation info for one or more files, by their sha256 hash.
 #### Human Readable Output
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
+>
 >|file_size|sha256|threat_score|verdict|
 >|---|---|---|---|
 >| 177195 | d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee | 100 | malicious |
 
 
 ### cs-fx-submit-url
+
 ***
 Submits a URL or FTP for sandbox analysis.
 
@@ -1889,6 +1939,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `cs-fx-submit-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1987,9 +2038,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!cs-fx-submit-url url="https://www.google.com" environment_id="160: Windows 10" action_script="default" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"```
 
 #### Context Example
+
 ```json
 {
     "csfalconx": {
@@ -2007,12 +2060,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
+>
 >|created_timestamp|environment_id|state|submitted_id|url_name|
 >|---|---|---|---|---|
 >| 2020-07-03T06:36:19Z | 160 | created | 1c9fe398b2294301aa3080ede8d77356_472d590fdd4e49639e41f81928df2542 | https://www.google.com |
 
 
 ### cs-fx-download-ioc
+
 ***
 Downloads IOC packs, PCAP files, and other analysis artifacts.
 
@@ -2020,6 +2075,7 @@ Downloads IOC packs, PCAP files, and other analysis artifacts.
 #### Base Command
 
 `cs-fx-download-ioc`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2034,9 +2090,11 @@ Downloads IOC packs, PCAP files, and other analysis artifacts.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cs-fx-download-ioc id="cd1db2f53e8760792a48a2ec544a29e6f876643204598621783f71017f6b4266" name="test" accept_encoding="gzip"```
 
 #### Context Example
+
 ```json
 {
     "csfalconx": {
@@ -3891,4 +3949,5 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
+>
 >**No entries.**

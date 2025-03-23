@@ -1,12 +1,14 @@
 This integration enables you to process alerts from SafeNet Trusted Access (STA) indicating security risks to end user accounts, and apply security remediation actions on SafeNet Trusted Access through security orchestration playbooks. For information about the configuration steps, visit our [Help Documentation](https://thalesdocs.com/sta/operator/security_integrations/cortex_xsoar_palo_alto_networks/index.html).
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 > **_NOTE :_**  Perform create, update and delete operations  using commands only for internal users or groups. Such operations aren't recommended for synchronized users or groups.
 
 ### sta-get-user-list
+
 ***
 Get list of users in the tenant.
 
@@ -14,6 +16,7 @@ Get list of users in the tenant.
 #### Base Command
 
 `sta-get-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -45,9 +48,11 @@ Get list of users in the tenant.
 
 
 #### Command Example
+
 ```!sta-get-user-list```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -78,6 +83,7 @@ Get list of users in the tenant.
 #### Human Readable Output
 
 >### List of users in the tenant :
+>
 >|Id|Schema Version Number|User Name|First Name|Last Name|Email|Is Synchronized|
 >|---|---|---|---|---|---|---|
 >| CNlM6Pyq3nADXA4rWyUAAAAc | 1.0 | demouser | Demo | User | demo.user@demisto.com | false |
@@ -85,6 +91,7 @@ Get list of users in the tenant.
 
 
 ### sta-get-user-info
+
 ***
 Get the profile information for a specific user.
 
@@ -92,6 +99,7 @@ Get the profile information for a specific user.
 #### Base Command
 
 `sta-get-user-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -126,9 +134,11 @@ Get the profile information for a specific user.
 
 
 #### Command Example
+
 ```!sta-get-user-info userName="demouser"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -148,12 +158,14 @@ Get the profile information for a specific user.
 #### Human Readable Output
 
 >### Information for user - demouser :
+>
 >|Id|Schema Version Number|User Name|First Name|Last Name|Email|Is Synchronized|
 >|---|---|---|---|---|---|---|
 >| CNlM6Pyq3nADXA4rWyUAAAAc | 1.0 | demouser | Demo | User | demo.user@demisto.com | false |
 
 
 ### sta-create-user
+
 ***
 Create a new user in the tenant.
 
@@ -161,6 +173,7 @@ Create a new user in the tenant.
 #### Base Command
 
 `sta-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -208,9 +221,11 @@ Create a new user in the tenant.
 
 
 #### Command Example
+
 ```!sta-create-user email="test.user@demisto.com" first_name="User" last_name="Test" userName="usertest123"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -230,12 +245,14 @@ Create a new user in the tenant.
 #### Human Readable Output
 
 >### STA user successfully created :
+>
 >|Id|Schema Version Number|User Name|First Name|Last Name|Email|Is Synchronized|
 >|---|---|---|---|---|---|---|
 >| iNlsjym+x1MLesvCSusAAAAc | 1.0 | usertest123 | User | Test | test.user@demisto.com | false |
 
 
 ### sta-update-user-info
+
 ***
 Update the profile for a specific user.
 
@@ -243,6 +260,7 @@ Update the profile for a specific user.
 #### Base Command
 
 `sta-update-user-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -287,9 +305,11 @@ Update the profile for a specific user.
 
 
 #### Command Example
+
 ```!sta-update-user-info userName="usertest123" userName_new="testuser1" first_name="Demo" last_name="Name"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -309,12 +329,14 @@ Update the profile for a specific user.
 #### Human Readable Output
 
 >### STA user successfully updated:
+>
 >|Id|Schema Version Number|User Name|First Name|Last Name|Email|Is Synchronized|
 >|---|---|---|---|---|---|---|
 >| iNlsjym+x1MLesvCSusAAAAc | 1.0 | testuser1 | Demo | Name | test.user@demisto.com | false |
 
 
 ### sta-delete-user
+
 ***
 Delete a user from the tenant.
 
@@ -322,6 +344,7 @@ Delete a user from the tenant.
 #### Base Command
 
 `sta-delete-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -339,9 +362,11 @@ Delete a user from the tenant.
 
 
 #### Command Example
+
 ```!sta-delete-user userName="testuser1"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -359,6 +384,7 @@ Delete a user from the tenant.
 >## STA user - testuser1 successfully deleted.
 
 ### sta-get-user-groups
+
 ***
 Return all the groups associated with a specific user.
 
@@ -366,6 +392,7 @@ Return all the groups associated with a specific user.
 #### Base Command
 
 `sta-get-user-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -404,9 +431,11 @@ Return all the groups associated with a specific user.
 
 
 #### Command Example
+
 ```!sta-get-user-groups userName="hellouser"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -442,6 +471,7 @@ Return all the groups associated with a specific user.
 #### Human Readable Output
 
 >### Groups associated with user - hellouser : 
+>
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
 >| 50331650 | 1.0 | TestUnusualActivityGroup | Group for testing. | false |
@@ -449,6 +479,7 @@ Return all the groups associated with a specific user.
 
 
 ### sta-get-group-list
+
 ***
 Get list of groups in the tenant.
 
@@ -456,6 +487,7 @@ Get list of groups in the tenant.
 #### Base Command
 
 `sta-get-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -475,9 +507,11 @@ Get list of groups in the tenant.
 
 
 #### Command Example
+
 ```!sta-get-group-list```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -511,6 +545,7 @@ Get list of groups in the tenant.
 #### Human Readable Output
 
 >### STA groups in the tenant : 
+>
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
 >| 50331649 | 1.0 | TestGroup1 | Description has been updated. | false |
@@ -519,6 +554,7 @@ Get list of groups in the tenant.
 
 
 ### sta-get-group-info
+
 ***
 Get information for a specific group.
 
@@ -526,6 +562,7 @@ Get information for a specific group.
 #### Base Command
 
 `sta-get-group-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -545,9 +582,11 @@ Get information for a specific group.
 
 
 #### Command Example
+
 ```!sta-get-group-info groupName="TestGroup1"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -565,12 +604,14 @@ Get information for a specific group.
 #### Human Readable Output
 
 >### Group - TestGroup1 :
+>
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
 >| 50331649 | 1.0 | TestGroup1 | Description has been updated. | false |
 
 
 ### sta-get-group-members
+
 ***
 Get list of users in a specific group.
 
@@ -578,6 +619,7 @@ Get list of users in a specific group.
 #### Base Command
 
 `sta-get-group-members`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -602,9 +644,11 @@ Get list of users in a specific group.
 
 
 #### Command Example
+
 ```!sta-get-group-members groupName="TestGroup0"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -640,6 +684,7 @@ Get list of users in a specific group.
 #### Human Readable Output
 
 >### Members of group - TestGroup0 : 
+>
 >|Id|Name|Type|
 >|---|---|---|
 >| CNlM6Pyq3nADXA4rWyUAAAAc | demouser | User |
@@ -647,6 +692,7 @@ Get list of users in a specific group.
 
 
 ### sta-create-group
+
 ***
 Create a new group in the tenant.
 
@@ -654,6 +700,7 @@ Create a new group in the tenant.
 #### Base Command
 
 `sta-create-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -675,9 +722,11 @@ Create a new group in the tenant.
 
 
 #### Command Example
+
 ```!sta-create-group groupName="TestGroup2" description="Group description." synchronized=False```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -695,12 +744,14 @@ Create a new group in the tenant.
 #### Human Readable Output
 
 >### STA group - TestGroup2 successfully created:
+>
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
 >| 16777228 | 1.0 | TestGroup2 | Group description. | false |
 
 
 ### sta-delete-group
+
 ***
 Delete group from the tenant.
 
@@ -708,6 +759,7 @@ Delete group from the tenant.
 #### Base Command
 
 `sta-delete-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -725,9 +777,11 @@ Delete group from the tenant.
 
 
 #### Command Example
+
 ```!sta-delete-group groupName="TestGroup2"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -745,6 +799,7 @@ Delete group from the tenant.
 >## STA group - TestGroup2 successfully deleted.
 
 ### sta-update-group-info
+
 ***
 Update information for a specific group.
 
@@ -752,6 +807,7 @@ Update information for a specific group.
 #### Base Command
 
 `sta-update-group-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -773,9 +829,11 @@ Update information for a specific group.
 
 
 #### Command Example
+
 ```!sta-update-group-info groupName="TestGroup1" description="Description has been updated."```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -793,12 +851,14 @@ Update information for a specific group.
 #### Human Readable Output
 
 >### STA user successfully updated :
+>
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
 >| 50331649 | 1.0 | TestGroup1 | Description has been updated. | false |
 
 
 ### sta-user-exist-group
+
 ***
 Check if user exists in a specific group.
 
@@ -806,6 +866,7 @@ Check if user exists in a specific group.
 #### Base Command
 
 `sta-user-exist-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -822,9 +883,11 @@ Check if user exists in a specific group.
 
 
 #### Command Example
+
 ```!sta-user-exist-group groupName="TestGroup1" userName="hellouser"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -842,6 +905,7 @@ Check if user exists in a specific group.
 >## Yes, user - hellouser is a member of group - TestGroup1.
 
 ### sta-add-user-group
+
 ***
 Add user to a specific group.
 
@@ -849,6 +913,7 @@ Add user to a specific group.
 #### Base Command
 
 `sta-add-user-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -869,9 +934,11 @@ Add user to a specific group.
 
 
 #### Command Example
+
 ```!sta-add-user-group groupName="TestGroup1" userName="hellouser"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -895,6 +962,7 @@ Add user to a specific group.
 >## User - hellouser successfully added to the group - TestGroup1.
 
 ### sta-remove-user-group
+
 ***
 Remove user from a group.
 
@@ -902,6 +970,7 @@ Remove user from a group.
 #### Base Command
 
 `sta-remove-user-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -922,9 +991,11 @@ Remove user from a group.
 
 
 #### Command Example
+
 ```!sta-remove-user-group groupName="TestGroup1" userName="hellouser"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -948,6 +1019,7 @@ Remove user from a group.
 >## User - hellouser successfully removed from the group - TestGroup1.
 
 ### sta-get-logs
+
 ***
 Get access, authentication, and audit logs.
 
@@ -955,6 +1027,7 @@ Get access, authentication, and audit logs.
 #### Base Command
 
 `sta-get-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -987,9 +1060,11 @@ Get access, authentication, and audit logs.
 
 
 #### Command Example
+
 ```!sta-get-logs userName="demouser" since="2021-07-21T12:22:16.718Z"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -1053,6 +1128,7 @@ Get access, authentication, and audit logs.
 #### Human Readable Output
 
 >### Logs : 
+>
 >|Time Stamp|User Name|Log Type|Credential Type|Action Text|Result Text|Message|State|Serial|Ip|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2021-07-22T08:19:05.5905986Z | demouser | AUTHENTICATION | MobilePASS | AUTH_ATTEMPT | CHALLENGE | Login from SafeNet Authentication Service Console. |  | 1000014514 | 8.8.8.8 |
@@ -1061,6 +1137,7 @@ Get access, authentication, and audit logs.
 
 
 ### sta-validate-tenant
+
 ***
 Checks if you have permission to access the requested tenant.
 
@@ -1068,6 +1145,7 @@ Checks if you have permission to access the requested tenant.
 #### Base Command
 
 `sta-validate-tenant`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1082,9 +1160,11 @@ Checks if you have permission to access the requested tenant.
 
 
 #### Command Example
+
 ```!sta-validate-tenant```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -1100,6 +1180,7 @@ Checks if you have permission to access the requested tenant.
 >## The requested tenant is accessible.
 
 ### sta-get-application-list
+
 ***
 Get the list of the applications in the tenant.
 
@@ -1107,6 +1188,7 @@ Get the list of the applications in the tenant.
 #### Base Command
 
 `sta-get-application-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1124,9 +1206,11 @@ Get the list of the applications in the tenant.
 
 
 #### Command Example
+
 ```!sta-get-application-list```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -1149,6 +1233,7 @@ Get the list of the applications in the tenant.
 #### Human Readable Output
 
 >### List of applications in the tenant :
+>
 >|Id|Name|Status|
 >|---|---|---|
 >| g444faf1-6d7a-44t2-98c1-43572422b409 | Application1 | Active |
@@ -1156,6 +1241,7 @@ Get the list of the applications in the tenant.
 
 
 ### sta-get-application-info
+
 ***
 Get the information for a specific application in the tenant.
 
@@ -1163,6 +1249,7 @@ Get the information for a specific application in the tenant.
 #### Base Command
 
 `sta-get-application-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1185,9 +1272,11 @@ Get the information for a specific application in the tenant.
 
 
 #### Command Example
+
 ```!sta-get-application-info applicationName="Application1"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -1210,12 +1299,14 @@ Get the information for a specific application in the tenant.
 #### Human Readable Output
 
 >### Information of application - Application1 :
+>
 >|Id|Name|Status|Application Type|Template Name|Assignment|Schema Version Number|Last Modified|
 >|---|---|---|---|---|---|---|---|
 >| 9ccbad94-06c2-4af2-bb9b-af9f811ccfdb | Application1 | Active | Saml | Template1 | All | 1.0 | 2021-08-27T12:25:47.998Z |
 
 
 ### sta-get-user-applications
+
 ***
 Get the list of the applications assigned to a specific user.
 
@@ -1223,6 +1314,7 @@ Get the list of the applications assigned to a specific user.
 #### Base Command
 
 `sta-get-user-applications`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1259,9 +1351,11 @@ Get the list of the applications assigned to a specific user.
 
 
 #### Command Example
+
 ```!sta-get-user-applications userName="hellouser"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -1293,6 +1387,7 @@ Get the list of the applications assigned to a specific user.
 #### Human Readable Output
 
 >### Applications associated with user - hellouser : 
+>
 >|Id|Name|Status|
 >|---|---|---|
 >| 9570b825-961e-4ed3-aa51-e53b732b16ec | Application1 | Active |
@@ -1300,6 +1395,7 @@ Get the list of the applications assigned to a specific user.
 
 
 ### sta-get-user-sessions
+
 ***
 Get sessions for a specific user.
 
@@ -1307,6 +1403,7 @@ Get sessions for a specific user.
 #### Base Command
 
 `sta-get-user-sessions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1344,9 +1441,11 @@ Get sessions for a specific user.
 
 
 #### Command Example
+
 ```!sta-get-user-sessions userName="hellouser"```
 
 #### Context Example
+
 ```json
 {
     "STA": {
@@ -1383,12 +1482,14 @@ Get sessions for a specific user.
 #### Human Readable Output
 
 >### Sessions associated with user - hellouser : 
+>
 >|Id|Start|Expiry|Applications|
 >|---|---|---|---|
 >| 86f4593d-fb8a-4f62-byd9-ceb833a8090b | 1633079752 | 1633086960 | Application1, Application2 |
 
 
 ### sta-delete-user-sessions
+
 ***
 Delete all the active SSO sessions for a specific user from STA.
 
@@ -1396,6 +1497,7 @@ Delete all the active SSO sessions for a specific user from STA.
 #### Base Command
 
 `sta-delete-user-sessions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1413,9 +1515,11 @@ Delete all the active SSO sessions for a specific user from STA.
 
 
 #### Command Example
+
 ```!sta-delete-user-sessions userName="hellouser"```
 
 #### Context Example
+
 ```json
 {
     "STA": {

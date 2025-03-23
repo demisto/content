@@ -45,6 +45,7 @@ In this case, the user configured with `Access Key` and `Secret Key` must be abl
 `arn:aws:iam::98765432:role/CrossAccountAccessRole`
 
 #### AwsEC2SyncAccounts Script
+
 The script ***AwsEC2SyncAccounts*** can be used to configure an AWS - EC2 instance with all accounts in an organization.
 
 ## Commands
@@ -162,9 +163,11 @@ Describes one or more of your instances.
 
 
 #### Command Example
+
 ```!aws-ec2-describe-instances```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -292,6 +295,7 @@ Describes one or more of your instances.
 #### Human Readable Output
 
 >### AWS Instances
+>
 >|ImageId|InstanceId|KeyName|LaunchDate|Monitoring|Name|PublicDNSName|PublicIPAddress|Region|State|Type|aws:cloudformation:logical-id|aws:cloudformation:stack-id|aws:cloudformation:stack-name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| ami-1 | i-1 | Aqua | 2020-04-26T15:49:17Z | enabled | Receiver-gs-aqua-receiver |  |  | us-west-2 | stopped | m5.4xlarge | ReceiverInstance | arn1 | name1 |
@@ -331,9 +335,11 @@ Describes your IAM instance profile associations.
 
 
 #### Command Example
+
 ```!aws-ec2-describe-iam-instance-profile-associations```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -456,9 +462,11 @@ Describes one or more regions that are currently available to you.
 
 
 #### Command Example
+
 ```!aws-ec2-describe-regions```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -479,6 +487,7 @@ Describes one or more regions that are currently available to you.
 #### Human Readable Output
 
 >### AWS Regions
+>
 >|Endpoint|RegionName|
 >|---|---|
 >| ec2.eu-north-1.amazonaws.com | eu-north-1 |
@@ -524,9 +533,11 @@ Describes one or more of your Elastic IP addresses.
 | AWS.EC2.ElasticIPs.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 #### Command Example
+
 ```!aws-ec2-describe-addresses```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -559,6 +570,7 @@ Describes one or more of your Elastic IP addresses.
 #### Human Readable Output
 
 >### AWS EC2 ElasticIPs
+>
 >|AllocationId|Domain|PublicIp|Region|
 >|---|---|---|---|
 >| eipalloc-1 | vpc | 1.1.1.1 | us-west-2 |
@@ -566,6 +578,7 @@ Describes one or more of your Elastic IP addresses.
 
 
 ### aws-ec2-describe-snapshots
+
 ***
 Describes one or more of the EBS snapshots available to you.
 
@@ -645,9 +658,11 @@ Describes one or more launch templates.
 | AWS.EC2.LaunchTemplates.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 #### Command Example
+
 ```!aws-ec2-describe-launch-templates```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -669,6 +684,7 @@ Describes one or more launch templates.
 #### Human Readable Output
 
 >### AWS EC2 LaunchTemplates
+>
 >|CreateTime|CreatedBy|DefaultVersionNumber|LatestVersionNumber|LaunchTemplateId|LaunchTemplateName|Region|
 >|---|---|---|---|---|---|---|
 >| 2019-04-21T07:54:50Z | some_user | 1 | 1 | lt-1 | sample_launch_template | us-west-2 |
@@ -706,9 +722,11 @@ Describes one or more of your key pairs.
 ### aws-ec2-describe-volumes
 
 #### Command Example
+
 ```!aws-ec2-describe-key-pairs```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -733,6 +751,7 @@ Describes one or more of your key pairs.
 #### Human Readable Output
 
 >### AWS EC2 Key Pairs
+>
 >|KeyFingerprint|KeyName|Region|
 >|---|---|---|
 >| fp1 | Aqua | us-west-2 |
@@ -740,6 +759,7 @@ Describes one or more of your key pairs.
 
 
 ### aws-ec2-describe-volumes
+
 ***
 Describes the specified EBS volumes.
 
@@ -782,9 +802,11 @@ Describes the specified EBS volumes.
 | AWS.EC2.Volumes.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 #### Command Example
+
 ```!aws-ec2-describe-volumes```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -842,6 +864,7 @@ Describes the specified EBS volumes.
 #### Human Readable Output
 
 >### AWS EC2 Volumes
+>
 >|AvailabilityZone|CreateTime|Encrypted|State|VolumeId|VolumeType|
 >|---|---|---|---|---|---|
 >| us-west-2b | 2019-04-29T13:05:57Z | false | in-use | vol-1 | gp2 |
@@ -891,9 +914,11 @@ Describes one or more of your VPCs.
 | AWS.EC2.Vpcs.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 #### Command Example
+
 ```!aws-ec2-describe-vpcs```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -925,6 +950,7 @@ Describes one or more of your VPCs.
 #### Human Readable Output
 
 >### AWS EC2 Vpcs
+>
 >|CidrBlock|DhcpOptionsId|InstanceTenancy|IsDefault|Region|State|VpcId|
 >|---|---|---|---|---|---|---|
 >| 1.1.1.1/16 | dopt-1 | default | true | us-west-2 | available | vpc-1 |
@@ -972,9 +998,11 @@ Describes one or more of your subnets.
 | AWS.EC2.Subnets.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 #### Command Example
+
 ```!aws-ec2-describe-subnets```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1005,6 +1033,7 @@ Describes one or more of your subnets.
 #### Human Readable Output
 
 >### AWS EC2 Subnets
+>
 >|AvailabilityZone|AvailableIpAddressCount|CidrBlock|DefaultForAz|Region|State|SubnetId|VpcId|
 >|---|---|---|---|---|---|---|---|
 >| us-west-2d | 4091 | 1.1.1.1/20 | true | us-west-2 | available | subnet-1 | vpc-1 |
@@ -1078,9 +1107,11 @@ Describes one or more of your security groups.
 | AWS.EC2.SecurityGroups.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 #### Command Example
+
 ```!aws-ec2-describe-security-groups```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1169,6 +1200,7 @@ Describes one or more of your security groups.
 #### Human Readable Output
 
 >### AWS EC2 SecurityGroups
+>
 >|Description|GroupId|GroupName|OwnerId|Region|VpcId|aws:cloudformation:logical-id|aws:cloudformation:stack-id|aws:cloudformation:stack-name|
 >|---|---|---|---|---|---|---|---|---|
 >| AWS Ground Station receiver instance security group. | sg-1 | gs-name | id | us-west-2 | vpc-1 | InstanceSecurityGroup | arn| gs-aqua-receiver |
@@ -1297,6 +1329,7 @@ Deletes the specified snapshot.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-create-image
 
 ***
@@ -1351,6 +1384,7 @@ Deregisters the specified AMI.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-modify-volume
 
 ***
@@ -1414,6 +1448,7 @@ Adds or overwrites one or more tags for the specified Amazon EC2 resource or res
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-disassociate-address
 
 ***
@@ -1436,6 +1471,7 @@ Disassociates an Elastic IP address from the instance or network interface its a
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-release-address
 
 ***
@@ -1458,6 +1494,7 @@ Releases the specified Elastic IP address.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-start-instances
 
 ***
@@ -1480,6 +1517,7 @@ Starts an Amazon EBS-backed instance that you have previously stopped.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-stop-instances
 
 ***
@@ -1502,6 +1540,7 @@ Stops an Amazon EBS-backed instance.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-terminate-instances
 
 ***
@@ -1524,6 +1563,7 @@ Shuts down one or more instances. This operation is idempotent; if you terminate
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-create-volume
 
 ***
@@ -1657,6 +1697,7 @@ Deletes the specified EBS volume. The volume must be in the available state (not
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-run-instances
 
 ***
@@ -1813,6 +1854,7 @@ A waiter function that runs every 15  seconds until a successful state is reache
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-waiter-instance-status-ok
 
 ***
@@ -1838,6 +1880,7 @@ A waiter function that runs every 15 seconds until a successful state is reached
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-waiter-instance-stopped
 
 ***
@@ -1863,6 +1906,7 @@ A waiter function that runs every 15  seconds until a successful state is reache
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-waiter-instance-terminated
 
 ***
@@ -1888,6 +1932,7 @@ A waiter function that runs every 15 seconds until a successful state is reached
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-waiter-image-available
 
 ***
@@ -1915,6 +1960,7 @@ A waiter function that waits until image is avilable.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-waiter-snapshot_completed
 
 ***
@@ -1942,6 +1988,7 @@ A waiter function that waits until the snapshot is complate.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-get-latest-ami
 
 ***
@@ -2059,6 +2106,7 @@ Deletes a security group.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-authorize-security-group-ingress-rule
 
 ***
@@ -2103,6 +2151,7 @@ Adds ingress rule to a security group.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-authorize-security-group-egress-rule
 
 ***
@@ -2145,6 +2194,7 @@ Adds egress rule to a security group.
 There is no context output for this command.
 
 ### aws-ec2-revoke-security-group-ingress-rule
+
 ***
 Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
 
@@ -2152,6 +2202,7 @@ Removes egress rule from a security group. To remove a rule, the values that you
 #### Base Command
 
 `aws-ec2-revoke-security-group-ingress-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2176,6 +2227,7 @@ There is no context output for this command.
 
 
 ### aws-ec2-revoke-security-group-egress-rule
+
 ***
 (VPC only) Removes the specified egress rules from a security group for EC2-VPC. This action does not apply to security groups for use in EC2-Classic. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
 
@@ -2183,6 +2235,7 @@ There is no context output for this command.
 #### Base Command
 
 `aws-ec2-revoke-security-group-egress-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2214,6 +2267,7 @@ There is no context output for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-copy-image
 
 ***
@@ -2402,6 +2456,7 @@ Requests a reboot of one or more instances. This operation is asynchronous; it o
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-get-password-data
 
 ***
@@ -2456,6 +2511,7 @@ Modifies the specified network interface attribute. You can specify only one att
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-modify-instance-attribute
 
 ***
@@ -2485,6 +2541,7 @@ Modifies the specified attribute of the specified instance. You can specify only
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-create-network-acl
 
 ***
@@ -2562,6 +2619,7 @@ Creates an entry (a rule) in a network ACL with the specified rule number.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-create-fleet
 
 ***
@@ -2833,6 +2891,7 @@ Modifies the specified EC2 Fleet.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-create-launch-template
 
 ***
@@ -2982,6 +3041,7 @@ Modifies the specified attribute of the specified AMI.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-delete-subnet
 
 ***
@@ -3004,6 +3064,7 @@ Deletes the specified subnet. You must terminate all running instances in the su
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-delete-vpc
 
 ***
@@ -3026,6 +3087,7 @@ Deletes the specified VPC. You must detach or delete all gateways and resources 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-delete-internet-gateway
 
 ***
@@ -3048,6 +3110,7 @@ Deletes the specified internet gateway. You must detach the internet gateway fro
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-describe-internet-gateway
 
 ***
@@ -3102,6 +3165,7 @@ Detaches an internet gateway from a VPC, disabling connectivity between the inte
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-create-traffic-mirror-session
 
 ***
@@ -3183,6 +3247,7 @@ Removes egress rule from a security group. To remove a rule, the values that you
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-allocate-hosts
 
 ***
@@ -3218,10 +3283,13 @@ Allocates a Dedicated Host to your account.
 
 
 #### Command Example
+
 ```!aws-ec2-allocate-hosts availability_zone="us-east-1b" quantity=1 instance_type="m5.large" ```
 
 #### Human Readable Output
+>
 >### AWS EC2 Dedicated Host ID
+>
 >|HostId|
 >|---|
 >| h-00548908djdsgfs|
@@ -3251,9 +3319,11 @@ Release on demand dedicated host.
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-ec2-release-hosts host_id="h-00548908djdsgfs" ```
 
 #### Human Readable Output
+>
 >The host was successfully released.
 
 ### aws-ec2-modify-snapshot-permission
@@ -3282,8 +3352,11 @@ Adds or removes permission settings for the specified snapshot.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-ec2-modify-snapshot-permission operationType=remove snapshotId=snap-04b2d21f20d2388f2 userIds=123456789012```
+
 #### Human Readable Output
 
 >Snapshot snap-04b2d21f20d2388f2 permissions was successfully updated.
@@ -3317,8 +3390,11 @@ Describes IPAM resource discoveries. A resource discovery is an IPAM component t
 | AWS.EC2.IpamResourceDiscoveries.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 #### Command example
+
 ```!aws-ec2-describe-ipam-resource-discoveries```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -3393,6 +3469,7 @@ Describes IPAM resource discoveries. A resource discovery is an IPAM component t
 #### Human Readable Output
 
 >### Ipam Resource Discoveries
+>
 >|IpamResourceDiscoveryArn|IpamResourceDiscoveryId|IpamResourceDiscoveryRegion|IsDefault|OperatingRegions|OwnerId|State|Tags|
 >|---|---|---|---|---|---|---|---|
 >| arn:aws:ec2::222222222222:ipam-resource-discovery/ipam-res-disco-11111111111111111 | ipam-res-disco-11111111111111111 | us-east-1 | true | {'RegionName': 'ap-south-1'},<br/>{'RegionName': 'eu-north-1'},<br/>{'RegionName': 'eu-west-3'},<br/>{'RegionName': 'eu-west-2'},<br/>{'RegionName': 'eu-west-1'},<br/>{'RegionName': 'ap-northeast-3'},<br/>{'RegionName': 'ap-northeast-2'},<br/>{'RegionName': 'ap-northeast-1'},<br/>{'RegionName': 'ca-central-1'},<br/>{'RegionName': 'sa-east-1'},<br/>{'RegionName': 'ap-southeast-1'},<br/>{'RegionName': 'ap-southeast-2'},<br/>{'RegionName': 'eu-central-1'},<br/>{'RegionName': 'us-east-1'},<br/>{'RegionName': 'us-east-2'},<br/>{'RegionName': 'us-west-1'},<br/>{'RegionName': 'us-west-2'} | 222222222222 | create-complete |  |
@@ -3427,8 +3504,11 @@ Describes resource discovery association with an Amazon VPC IPAM. An associated 
 | AWS.EC2.IpamResourceDiscoveryAssociations.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 #### Command example
+
 ```!aws-ec2-describe-ipam-resource-discovery-associations```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -3454,6 +3534,7 @@ Describes resource discovery association with an Amazon VPC IPAM. An associated 
 #### Human Readable Output
 
 >### Ipam Resource Discovery Associations
+>
 >|IpamArn|IpamId|IpamRegion|IpamResourceDiscoveryAssociationArn|IpamResourceDiscoveryAssociationId|IpamResourceDiscoveryId|IsDefault|OwnerId|ResourceDiscoveryStatus|State|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| arn:aws:ec2::222222222222:ipam/ipam-11111111111111111 | ipam-11111111111111111 | us-east-1 | arn:aws:ec2::222222222222:ipam-resource-discovery-association/ipam-res-disco-assoc-11111111111111111 | ipam-res-disco-assoc-11111111111111111 | ipam-res-disco-11111111111111111 | true | 222222222222 | active | associate-complete |  |
@@ -3491,8 +3572,11 @@ Gets the public IP addresses that have been discovered by IPAM.
 | AWS.EC2.IpamDiscoveredPublicAddresses.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 #### Command example
+
 ```!aws-ec2-get-ipam-discovered-public-addresses IpamResourceDiscoveryId=ipam-res-disco-11111111111111111 AddressRegion=us-east-1 Filters=Name=address,Values=1.1.1.1```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -3531,6 +3615,7 @@ Gets the public IP addresses that have been discovered by IPAM.
 #### Human Readable Output
 
 >### Ipam Discovered Public Addresses
+>
 >|Address|AddressAllocationId|AddressOwnerId|AddressRegion|AddressType|AssociationStatus|InstanceId|IpamResourceDiscoveryId|NetworkBorderGroup|NetworkInterfaceDescription|NetworkInterfaceId|PublicIpv4PoolId|SampleTime|SecurityGroups|SubnetId|Tags|VpcId|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1.1.1.1 | eipalloc-11111111111111111 | 222222222222 | us-east-1 | amazon-owned-eip | associated | i-11111111111111111 | ipam-res-disco-11111111111111111 | us-east-1 |  | eni-11111111111111111 | amazon | 2023-11-26T02:00:45 | {'GroupName': 'example_sg', 'GroupId': 'sg-11111111111111111'} | subnet-11111111111111111 | EipTags:  | vpc-11111111111111111 |
@@ -3576,8 +3661,11 @@ Creates a VPC endpoint.
 | AWS.EC2.Vpcs.VpcEndpoint.EndpointType | String | The type of the VPC endpoint. | 
 
 #### Command example
+
 ```!aws-ec2-create-vpc-endpoint service-name=test_service_name vpc-id=test_id```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -3600,6 +3688,7 @@ Creates a VPC endpoint.
 #### Human Readable Output
 
 >### VPC Endpoint
+>
 >|Service Name|State|Vpc Endpoint Id|Vpc Endpoint Type|Vpc Id|
 >|---|---|---|---|---|
 >| test_service_name | PendingAcceptance | test_endpoint_id | Interface | test_id |

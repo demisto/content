@@ -14,9 +14,12 @@ Files and Directories management with an SMB server. Supports SMB2 and SMB3 prot
 | Secure Dialect Negotiation | Validate the negotiation info when connecting to a share. More information can be found on https://docs.microsoft.com/en-us/archive/blogs/openspecification/smb3-secure-dialect-negotiation | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### smb-download
+
 ***
 Downloads a file from the server.
 
@@ -24,6 +27,7 @@ Downloads a file from the server.
 #### Base Command
 
 `smb-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,9 +54,11 @@ Downloads a file from the server.
 
 
 #### Command Example
+
 ```!smb-download file_path=Shared/Tests/Test.txt```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -76,6 +82,7 @@ Downloads a file from the server.
 
 
 ### smb-upload
+
 ***
 Uploads a file to the server.
 
@@ -83,6 +90,7 @@ Uploads a file to the server.
 #### Base Command
 
 `smb-upload`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -100,6 +108,7 @@ Uploads a file to the server.
 There is no context output for this command.
 
 #### Command Example
+
 ```!smb-upload file_path=Shared/Tests/Test.txt content="This is a test"```
 
 #### Human Readable Output
@@ -107,6 +116,7 @@ There is no context output for this command.
 >File Test.txt was uploaded successfully
 
 ### smb-directory-list
+
 ***
 Returns a list containing the names of the entries in the directory given by path.
 
@@ -114,6 +124,7 @@ Returns a list containing the names of the entries in the directory given by pat
 #### Base Command
 
 `smb-directory-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -134,9 +145,11 @@ Returns a list containing the names of the entries in the directory given by pat
 
 
 #### Command Example
+
 ```!smb-directory-list path=Shared```
 
 #### Context Example
+
 ```json
 {
     "SMB": {
@@ -157,12 +170,14 @@ Returns a list containing the names of the entries in the directory given by pat
 #### Human Readable Output
 
 >### List Of Entries for 127.0.0.1/Shared
+>
 >|Directories|Files|SharedFolder|
 >|---|---|---|
 >| Tests | 123.txt,<br/>test.jpg | 127.0.0.1/Shared |
 
 
 ### smb-file-remove
+
 ***
 Removes a file from the server.
 
@@ -170,6 +185,7 @@ Removes a file from the server.
 #### Base Command
 
 `smb-file-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -185,6 +201,7 @@ Removes a file from the server.
 There is no context output for this command.
 
 #### Command Example
+
 ```!smb-file-remove file_path=Shared/Tests/Test.txt```
 
 #### Human Readable Output
@@ -192,6 +209,7 @@ There is no context output for this command.
 >File Test.txt was deleted successfully
 
 ### smb-directory-create
+
 ***
 Creates a new directory under the given path.
 
@@ -199,6 +217,7 @@ Creates a new directory under the given path.
 #### Base Command
 
 `smb-directory-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -214,6 +233,7 @@ Creates a new directory under the given path.
 There is no context output for this command.
 
 #### Command Example
+
 ```!smb-directory-create path=Shared/Tests```
 
 #### Human Readable Output
@@ -221,6 +241,7 @@ There is no context output for this command.
 >Directory: 127.0.0.1/Shared/Tests was created successfully
 
 ### smb-directory-remove
+
 ***
 Removes a directory from the given path.
 
@@ -228,6 +249,7 @@ Removes a directory from the given path.
 #### Base Command
 
 `smb-directory-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -243,6 +265,7 @@ Removes a directory from the given path.
 There is no context output for this command.
 
 #### Command Example
+
 ```!smb-directory-remove path=Shared/Tests```
 
 #### Human Readable Output

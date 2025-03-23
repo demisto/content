@@ -1,5 +1,6 @@
 Use the MalQuery Integration to query the contents of clean and malicious binary files, which forms part of Falcon's search engine.
 This integration was integrated and tested with version 1.0 of CrowdStrikeMalquery
+
 ## Configure CrowdStrikeMalquery in Cortex
 
 
@@ -12,9 +13,12 @@ This integration was integrated and tested with version 1.0 of CrowdStrikeMalque
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cs-malquery-exact-search
+
 ***
 Searches Falcon MalQuery for a combination of hex patterns and strings to identify malware samples based upon file content, which returns a request ID. Use the request ID in the cs-malquery-get-request command to   retrieve results. You can filter results based on criteria such as file type, file size and first seen date.
 
@@ -22,6 +26,7 @@ Searches Falcon MalQuery for a combination of hex patterns and strings to identi
 #### Base Command
 
 `cs-malquery-exact-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -46,9 +51,11 @@ Searches Falcon MalQuery for a combination of hex patterns and strings to identi
 
 
 #### Command Example
+
 ```!cs-malquery-exact-search hex=8948208b480833ca33f989502489482889782c8bd7 filter_meta=sha256,type,size limit=5```
 
 #### Context Example
+
 ```
 {
     "Malquery": {
@@ -60,12 +67,14 @@ Searches Falcon MalQuery for a combination of hex patterns and strings to identi
 #### Human Readable Output
 
 >### Search Result
+>
 >|Request_ID|
 >|---|
 >| 08942ddd-373e-493d-54f9-f6e495174913 |
 
 
 ### cs-malquery-hunt
+
 ***
 Schedules a YARA rule-based search for execution, which returns a request ID. Use the request ID in the cs-malquery-get-request command to retrieve results. You can filter based on criteria such as file type, file size and first seen date.
 
@@ -73,6 +82,7 @@ Schedules a YARA rule-based search for execution, which returns a request ID. Us
 #### Base Command
 
 `cs-malquery-hunt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -96,9 +106,11 @@ Schedules a YARA rule-based search for execution, which returns a request ID. Us
 
 
 #### Command Example
+
 ```!cs-malquery-hunt file_type=PE32 filter_meta=sha256,type,size limit=5 yara_rule="rule CrowdStrike_16142_01 : wiper { strings: $ = { 41 61 43 63 64 44 65 46 66 47 68 69 4B 4C 6C 4D 6D 6E 4E 6F 4F 70 50 72 52 73 53 54 74 55 75 56 76 77 57 78 79 5A 7A 33 32 2E 5C 45 62 67 6A 48 49 20 5F 59 51 42 3A 22 2F 40 } condition: all of them and filesize < 800KB }"```
 
 #### Context Example
+
 ```
 {
     "Malquery": {
@@ -110,12 +122,14 @@ Schedules a YARA rule-based search for execution, which returns a request ID. Us
 #### Human Readable Output
 
 >### Search Result
+>
 >|Request_ID|
 >|---|
 >| 503efffd-2d44-4566-7794-8de45568cbbf |
 
 
 ### cs-malquery-fuzzy-search
+
 ***
 Searches Falcon MalQuery quickly. Uses partial matching, but with more potential for false positives. Search for a combination of hex patterns and strings to identify samples based upon file content.
 
@@ -123,6 +137,7 @@ Searches Falcon MalQuery quickly. Uses partial matching, but with more potential
 #### Base Command
 
 `cs-malquery-fuzzy-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -149,9 +164,11 @@ Searches Falcon MalQuery quickly. Uses partial matching, but with more potential
 
 
 #### Command Example
+
 ```!cs-malquery-fuzzy-search hex=8948208b480833ca33f989502489482889782c8bd7 filter_meta=sha256,type,size limit=5```
 
 #### Context Example
+
 ```
 {
     "Malquery": {
@@ -189,6 +206,7 @@ Searches Falcon MalQuery quickly. Uses partial matching, but with more potential
 #### Human Readable Output
 
 >### Fuzzy Search Result
+>
 >|filesize|filetype|sha256|
 >|---|---|---|
 >| 310552 | PE32 | e51f0a8884eb08fc43da0501ebd3776831e2fd4b0a8dd12e69866a8febe41495 |
@@ -199,6 +217,7 @@ Searches Falcon MalQuery quickly. Uses partial matching, but with more potential
 
 
 ### cs-malquery-get-request
+
 ***
 Checks the status and results of an asynchronous request, such as hunt or exact-search.  Supports a single request ID.
 
@@ -206,6 +225,7 @@ Checks the status and results of an asynchronous request, such as hunt or exact-
 #### Base Command
 
 `cs-malquery-get-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -230,9 +250,11 @@ Checks the status and results of an asynchronous request, such as hunt or exact-
 
 
 #### Command Example
+
 ```!cs-malquery-get-request request_id=096f6aa5-f245-4b09-790f-133bc89d4d26```
 
 #### Context Example
+
 ```
 {
     "Malquery": {
@@ -301,6 +323,7 @@ Checks the status and results of an asynchronous request, such as hunt or exact-
 #### Human Readable Output
 
 >### Search Result for request: 096f6aa5-f245-4b09-790f-133bc89d4d26
+>
 >|filesize|filetype|first_seen|label|md5|sha1|sha256|
 >|---|---|---|---|---|---|---|
 >| 151552 | PE32 | 2020/06/09 | unknown | 0b189ab69d40e782fe827c63e1cc6f06 | 85be23059c9abb3370586dc49dbd8f1ced05df8e | d207ccf1eabcc9453288896d963f1a1c558c427abfe9305d7328e3a6fb06f6ee |
@@ -311,6 +334,7 @@ Checks the status and results of an asynchronous request, such as hunt or exact-
 
 
 ### cs-malquery-get-ratelimit
+
 ***
 Returns information about search and download quotas in your environment.
 
@@ -336,9 +360,11 @@ Returns information about search and download quotas in your environment.
 
 
 #### Command Example
+
 ```!cs-malquery-get-ratelimit```
 
 #### Context Example
+
 ```
 {
     "Malquery": {
@@ -371,12 +397,14 @@ Returns information about search and download quotas in your environment.
 #### Human Readable Output
 
 >### Quota Data
+>
 >|hunt_count|download_count|monitor_count|hunt_limit|download_limit|monitor_limit|refresh_time|days_left|
 >|---|---|---|---|---|---|---|---|
 >| 83 | 28 | 0 | 100 | 50 | 10 | 2020-08-01T00:00:00Z | 3 |
 
 
 ### cs-malquery-samples-multidownload
+
 ***
 Schedule samples for download, which returns a request ID. Use the request ID in the cs-malquery-get-request, to check the status of the operation. When the request status is “done”, use the cs-malquery-sample-fetch to download the results as a password-protected archive. The password to extract results from the archive: infected' 
 
@@ -384,6 +412,7 @@ Schedule samples for download, which returns a request ID. Use the request ID in
 #### Base Command
 
 `cs-malquery-samples-multidownload`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -400,9 +429,11 @@ Schedule samples for download, which returns a request ID. Use the request ID in
 
 
 #### Command Example
+
 ```!cs-malquery-samples-multidownload samples=742db9f3ae1b7322dfe8ab81476cd3146f9c0ce086fc4cd38a1072fb6cae8662,accc6794951290467e01b7676e8b4ba177076d54f836589ea7d3298cdf6fc995```
 
 #### Context Example
+
 ```
 {
     "Malquery": {
@@ -414,6 +445,7 @@ Schedule samples for download, which returns a request ID. Use the request ID in
 #### Human Readable Output
 
 >### Samples Multidownload Request
+>
 >|Request_ID|
 >|---|
 >| e2e1aecb-6e34-44f7-5d42-932880276c5e |
@@ -421,6 +453,7 @@ Schedule samples for download, which returns a request ID. Use the request ID in
 
 
 ### cs-malquery-file-download
+
 ***
 Download a file indexed by MalQuery. Specify the file using its SHA256. Only one file is supported.
 
@@ -428,6 +461,7 @@ Download a file indexed by MalQuery. Specify the file using its SHA256. Only one
 #### Base Command
 
 `cs-malquery-file-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -450,9 +484,11 @@ Download a file indexed by MalQuery. Specify the file using its SHA256. Only one
 
 
 #### Command Example
+
 ```!cs-malquery-file-download file_id=d77cf874521ee7d4bb7f54bd8cef3d60ec24d267cf2d502f819880f0819f5766```
 
 #### Context Example
+
 ```
 {
     "File": {
@@ -473,6 +509,7 @@ Download a file indexed by MalQuery. Specify the file using its SHA256. Only one
 
 
 ### cs-malquery-sample-fetch
+
 ***
 Fetches a zip archive file using the password, "infected" containing the samples. Use this after the cs-malquery-samples-multidownload request has finished processing.
 
@@ -480,6 +517,7 @@ Fetches a zip archive file using the password, "infected" containing the samples
 #### Base Command
 
 `cs-malquery-sample-fetch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -502,9 +540,11 @@ Fetches a zip archive file using the password, "infected" containing the samples
 
 
 #### Command Example
+
 ```!cs-malquery-sample-fetch request_id=93b55373-3b69-43cb-6ea1-2870a44e1c1e```
 
 #### Context Example
+
 ```
 {
     "File": {
@@ -527,6 +567,7 @@ Fetches a zip archive file using the password, "infected" containing the samples
 
 
 ### file
+
 ***
 Retrieves indexed files metadata by their hash.
 
@@ -534,6 +575,7 @@ Retrieves indexed files metadata by their hash.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -560,9 +602,11 @@ Retrieves indexed files metadata by their hash.
 
 
 #### Command Example
+
 ```!file file=d77cf874521ee7d4bb7f54bd8cef3d60ec24d267cf2d502f819880f0819f5766```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -591,6 +635,7 @@ Retrieves indexed files metadata by their hash.
 #### Human Readable Output
 
 >### CrowdStrike Malquery File reputation
+>
 >|filesize|filetype|first_seen|label|md5|sha1|sha256|
 >|---|---|---|---|---|---|---|
 >| 1076152 | PE32 | 2014/01/27 | unknown | c6a6a731f341ced1d93b61bc7628721d | 8953cdddbe825e8378c590084dca1e3d76ced233 | d77cf874521ee7d4bb7f54bd8cef3d60ec24d267cf2d502f819880f0819f5766 |

@@ -175,9 +175,9 @@ To setup the mirroring follow these instructions:
     
     Failing to use only available values will result in using default mapping of closure reasons within the mirroring process.
     
-  **Close-reason default mapping XSOAR -> XDR**: _Other=Other, Duplicate=Duplicate Incident, False Positive=False Positive, Resolved=True Positive_
+  **Close-reason default mapping XSOAR -> XDR**: *Other=Other, Duplicate=Duplicate Incident, False Positive=False Positive, Resolved=True Positive*
 
-  **Close-reason default mapping XDR -> XSOAR**: _Known Issue=Other, Duplicate Incident=Duplicate, False Positive=False Positive, True Positive=Resolved, Other=Other, Auto=Resolved_
+  **Close-reason default mapping XDR -> XSOAR**: *Known Issue=Other, Duplicate Incident=Duplicate, False Positive=False Positive, True Positive=Resolved, Other=Other, Auto=Resolved*
 
 8. Optional: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both Cortex XDR and Cortex XSOAR.
 
@@ -3944,7 +3944,9 @@ Update one or more alerts. You can update up to 100 alerts per request. Missing 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!xdr-update-alert alert_ids=35326 severity=low```
 
 #### Human Readable Output

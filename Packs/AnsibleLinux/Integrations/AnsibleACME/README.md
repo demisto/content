@@ -7,33 +7,44 @@ To use this integration, configure an instance of this integration. This will as
 This integration was tested with Let's Encrypt and supports the ACME http-01, dns-01 and tls-alpn-01 challenges.
 
 ## Requirements
+
 This integration requires a linux host to be specified from which the connections to the ACME service will be performed, and where the certificate/key files will be stored.
 
 The Linux host used for ACME interaction requires:
+
 * python >= 2.6
 * either openssl or cryptography >= 1.5
 
 ## Network Requirements
+
 By default, TCP port 22 will be used to initiate a SSH connection to the Linux host.
 
 The connection will be initiated from the XSOAR engine/server specified in the instance settings.
+
 ## Credentials
+
 This integration supports a number of methods of authenticating with the Linux Host:
+
 1. Username & Password entered into the integration
 2. Username & Password credential from the XSOAR credential manager
 3. Username and SSH Key from the XSOAR credential manager
 
 ## Permissions
+
 Normal Linux user privileges are required, a SuperUser account is not required.
 ACME Account management operations require access to the ACME account RSA or Elliptic Curve key file on the Linux host used for management to authenticate with the ACME service.
 
 ## Privilege Escalation
+
 Ansible can use existing privilege escalation systems to allow a user to execute tasks as another. Different from the user that logged into the machine (remote user). This is done using existing privilege escalation tools, which you probably already use or have configured, like sudo, su, or doas. Use the Integration parameters `Escalate Privileges`, `Privilege Escalation Method`, `Privilege Escalation User`, `Privileges Escalation Password` to configure this.
 
 ## Further information
+
 This integration is powered by Ansible 2.9. Further information can be found on that the following locations:
+
 * [The Let’s Encrypt documentation](https://letsencrypt.org/docs/)
 * [Automatic Certificate Management Environment (ACME)](https://tools.ietf.org/html/rfc8555)
+
 ## Configure Ansible ACME in Cortex
 
 | **Parameter** | **Description** | **Required** |
@@ -48,13 +59,17 @@ This integration is powered by Ansible 2.9. Further information can be found on 
 | Privilege Escalation Password | Set the privilege escalation password. | False |
 
 ## Testing
+
 This integration does not support testing from the integration management screen. Instead it is recommended to use the `!acme-inspect`command providing an example `host` as the command argument to connect to a ACME provider like Let's Encrypt. Eg. `!acme-inspect host="123.123.123.123" acme_directory="https://acme-staging-v02.api.letsencrypt.org/directory" acme_version="2" method="directory-only" ` This command will connect to the specified host with the configured credentials in the integration, and if successful output information about the Let's Encrypt ACME directory.
 
 ## Idempotence
+
 The action commands in this integration are idempotent. This means that the result of performing it once is exactly the same as the result of performing it repeatedly without any intervening actions.
 
 ## State Arguement
+
 Some of the commands in this integration take a state argument. These define the desired end state of the object being managed. As a result these commands are able to perform multiple management operations depending on the desired state value. Common state values are:
+
 | **State** | **Result** |
 | --- | --- |
 | present | Object should exist. If not present, the object will be created with the provided parameters. If present but not with correct parameters, it will be modified to met provided parameters. |
@@ -64,13 +79,18 @@ Some of the commands in this integration take a state argument. These define the
 | absent | Object should not exist. If it it exists it will be deleted. |
 
 ## Complex Command Inputs
+
 Some commands may require structured input arguments such as `lists` or `dictionary`, these can be provided in standard JSON notation wrapped in double curly braces. For example a argument called `dns_servers` that accepts a list of server IPs 8.8.8.8 and 8.8.4.4 would be entered as `dns_servers="{{ ['8.8.8.8', '8.8.4.4'] }}"`.
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
+
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### acme-account
+
 ***
 Create, modify or delete ACME accounts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/acme_account_module.html
@@ -78,6 +98,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `acme-account`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -106,9 +127,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!acme-account host="123.123.123.123" "account_key_src"="/etc/letsencrypt/keys/example.com.key" state="present" terms_agreed="True" contact="mailto:user@example.com" acme_version=2 acme_directory=https://acme-staging-v02.api.letsencrypt.org/directory```
 
 #### Context Example
+
 ```json
 {
     "ACME": {
@@ -125,11 +148,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * account_uri: https://acme-staging-v02.api.letsencrypt.org/acme/acct/12345678
->  * changed: False
+>
+> * account_uri: https://acme-staging-v02.api.letsencrypt.org/acme/acct/12345678
+> * changed: False
 
 
 ### acme-account-info
+
 ***
 Retrieves information on ACME accounts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/acme_account_info_module.html
@@ -138,6 +163,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `acme-account-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -164,9 +190,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!acme-account-info host="123.123.123.123" "account_key_src"="/etc/letsencrypt/keys/example.com.key" acme_version=2 acme_directory=https://acme-staging-v02.api.letsencrypt.org/directory```
 
 #### Context Example
+
 ```json
 {
     "ACME": {
@@ -202,26 +230,36 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * account_uri: https://acme-staging-v02.api.letsencrypt.org/acme/acct/12345678
->  * changed: False
->  * exists: True
->  * ## Account
->    * createdAt: 2021-07-10T09:56:36Z
->    * initialIp: 123.123.123.123
->    * status: valid
->    * ### Contact
->      * 0: mailto:user@example.com
->    * ### Key
->      * e: AQAB
->      * kty: RSA
->      * n: pdq0KgKTw2...97AgYk
->    * ### Public_Account_Key
->      * e: AQAB
->      * kty: RSA
->      * n: pdq0KgKTw2ih3...7AgYk
+>
+> * account_uri: https://acme-staging-v02.api.letsencrypt.org/acme/acct/12345678
+> * changed: False
+> * exists: True
+>
+> * ## Account
+>
+>   * createdAt: 2021-07-10T09:56:36Z
+>   * initialIp: 123.123.123.123
+>   * status: valid
+>
+>   * ### Contact
+>
+>     * 0: mailto:user@example.com
+>
+>   * ### Key
+>
+>     * e: AQAB
+>     * kty: RSA
+>     * n: pdq0KgKTw2...97AgYk
+>
+>   * ### Public_Account_Key
+>
+>     * e: AQAB
+>     * kty: RSA
+>     * n: pdq0KgKTw2ih3...7AgYk
 
 
 ### acme-certificate
+
 ***
 Create SSL/TLS certificates with the ACME protocol
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/acme_certificate_module.html
@@ -230,6 +268,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `acme-certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -273,9 +312,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!acme-certificate host="123.123.123.123" "account_key_src"="/etc/letsencrypt/keys/example.com.key" dest=/etc/letsencrypt/certs/test.example.com.crt csr=/etc/letsencrypt/csrs/example.com.csr acme_directory=https://acme-v02.api.letsencrypt.org/directory acme_version=2 challenge="dns-01" terms_agreed=1```
 
 #### Context Example
+
 ```json
 {
     "ACME": {
@@ -349,54 +390,79 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * account_uri: https://acme-v02.api.letsencrypt.org/acme/acct/123456789
->  * cert_days: -1
->  * changed: True
->  * finalize_uri: https://acme-v02.api.letsencrypt.org/acme/finalize/123456789/12345678901
->  * order_uri: https://acme-v02.api.letsencrypt.org/acme/order/123456789/12345678901
->  * ## Authorizations
->    * ### xsoar-example.example.Com
->      * expires: 2021-07-13T10:05:43Z
->      * status: pending
->      * uri: https://acme-v02.api.letsencrypt.org/acme/authz-v3/12345678901
->      * #### Challenges
->      * #### List
->        * status: pending
->        * token: UjnalQ...8OEsJw
->        * type: http-01
->        * url: https://acme-v02.api.letsencrypt.org/acme/chall-v3/12345678901/4cF9Tg
->      * #### List
->        * status: pending
->        * token: UjnalQ...8OEsJw
->        * type: dns-01
->        * url: https://acme-v02.api.letsencrypt.org/acme/chall-v3/12345678901/J6Svyw
->      * #### List
->        * status: pending
->        * token: UjnalQ...8OEsJw
->        * type: tls-alpn-01
->        * url: https://acme-v02.api.letsencrypt.org/acme/chall-v3/12345678901/Phy50Q
->      * #### Identifier
->        * type: dns
->        * value: xsoar-example.example.com
->  * ## Challenge_Data
->    * ### xsoar-example.example.Com
->      * #### Dns-01
->        * record: _acme-challenge.xsoar-example.example.com
->        * resource: _acme-challenge
->        * resource_value: aIt7...MjsnM
->      * #### Http-01
->        * resource: .well-known/acme-challenge/UjnalQ...8OEsJw
->        * resource_value: UjnalQ...8OEsJw.brMgVl5klrL6Hsd4E1YqcpXU5Mn-jVxqb5MtbbzmMjg
->      * #### Tls-Alpn-01
->        * resource: xsoar-example.example.com
->        * resource_original: dns:xsoar-example.example.com
->        * resource_value: aIt7...MjsnM=
->  * ## Challenge_Data_Dns
->    * ### _Acme-Challenge.xsoar-example.example.Com
->      * 0: aIt7...MjsnM
+>
+> * account_uri: https://acme-v02.api.letsencrypt.org/acme/acct/123456789
+> * cert_days: -1
+> * changed: True
+> * finalize_uri: https://acme-v02.api.letsencrypt.org/acme/finalize/123456789/12345678901
+> * order_uri: https://acme-v02.api.letsencrypt.org/acme/order/123456789/12345678901
+>
+> * ## Authorizations
+>
+>   * ### xsoar-example.example.Com
+>
+>     * expires: 2021-07-13T10:05:43Z
+>     * status: pending
+>     * uri: https://acme-v02.api.letsencrypt.org/acme/authz-v3/12345678901
+>
+>     * #### Challenges
+>
+>     * #### List
+>
+>       * status: pending
+>       * token: UjnalQ...8OEsJw
+>       * type: http-01
+>       * url: https://acme-v02.api.letsencrypt.org/acme/chall-v3/12345678901/4cF9Tg
+>
+>     * #### List
+>
+>       * status: pending
+>       * token: UjnalQ...8OEsJw
+>       * type: dns-01
+>       * url: https://acme-v02.api.letsencrypt.org/acme/chall-v3/12345678901/J6Svyw
+>
+>     * #### List
+>
+>       * status: pending
+>       * token: UjnalQ...8OEsJw
+>       * type: tls-alpn-01
+>       * url: https://acme-v02.api.letsencrypt.org/acme/chall-v3/12345678901/Phy50Q
+>
+>     * #### Identifier
+>
+>       * type: dns
+>       * value: xsoar-example.example.com
+>
+> * ## Challenge_Data
+>
+>   * ### xsoar-example.example.Com
+>
+>     * #### Dns-01
+>
+>       * record: _acme-challenge.xsoar-example.example.com
+>       * resource: _acme-challenge
+>       * resource_value: aIt7...MjsnM
+>
+>     * #### Http-01
+>
+>       * resource: .well-known/acme-challenge/UjnalQ...8OEsJw
+>       * resource_value: UjnalQ...8OEsJw.brMgVl5klrL6Hsd4E1YqcpXU5Mn-jVxqb5MtbbzmMjg
+>
+>     * #### Tls-Alpn-01
+>
+>       * resource: xsoar-example.example.com
+>       * resource_original: dns:xsoar-example.example.com
+>       * resource_value: aIt7...MjsnM=
+>
+> * ## Challenge_Data_Dns
+>
+>   * ### _Acme-Challenge.xsoar-example.example.Com
+>
+>     * 0: aIt7...MjsnM
 
 
 ### acme-certificate-revoke
+
 ***
 Revoke certificates with the ACME protocol
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/acme_certificate_revoke_module.html
@@ -405,6 +471,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `acme-certificate-revoke`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -430,6 +497,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### acme-challenge-cert-helper
+
 ***
 Prepare certificates required for ACME challenges such as C(tls-alpn-01)
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/acme_challenge_cert_helper_module.html
@@ -438,6 +506,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `acme-challenge-cert-helper`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -460,6 +529,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | ACME.AcmeChallengeCertHelper.regular_certificate | string | A self-signed certificate for the challenge domain. If no existing certificate exists, can be used to set-up https in the first place if that is needed for providing the challenge. | 
 
 ### acme-inspect
+
 ***
 Send direct requests to an ACME server
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/acme_inspect_module.html
@@ -468,6 +538,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `acme-inspect`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -497,9 +568,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!acme-inspect host="123.123.123.123" acme_directory="https://acme-staging-v02.api.letsencrypt.org/directory" acme_version="2" method="directory-only" ```
 
 #### Context Example
+
 ```json
 {
     "ACME": {
@@ -530,22 +603,30 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ## Directory
->    * d3x8YeEROW0: https://community.letsencrypt.org/t/adding-random-entries-to-the-directory/33417
->    * keyChange: https://acme-staging-v02.api.letsencrypt.org/acme/key-change
->    * newAccount: https://acme-staging-v02.api.letsencrypt.org/acme/new-acct
->    * newNonce: https://acme-staging-v02.api.letsencrypt.org/acme/new-nonce
->    * newOrder: https://acme-staging-v02.api.letsencrypt.org/acme/new-order
->    * revokeCert: https://acme-staging-v02.api.letsencrypt.org/acme/revoke-cert
->    * ### Meta
->      * termsOfService: https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf
->      * website: https://letsencrypt.org/docs/staging-environment/
->      * #### Caaidentities
->        * 0: letsencrypt.org
+>
+> * changed: False
+>
+> * ## Directory
+>
+>   * d3x8YeEROW0: https://community.letsencrypt.org/t/adding-random-entries-to-the-directory/33417
+>   * keyChange: https://acme-staging-v02.api.letsencrypt.org/acme/key-change
+>   * newAccount: https://acme-staging-v02.api.letsencrypt.org/acme/new-acct
+>   * newNonce: https://acme-staging-v02.api.letsencrypt.org/acme/new-nonce
+>   * newOrder: https://acme-staging-v02.api.letsencrypt.org/acme/new-order
+>   * revokeCert: https://acme-staging-v02.api.letsencrypt.org/acme/revoke-cert
+>
+>   * ### Meta
+>
+>     * termsOfService: https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf
+>     * website: https://letsencrypt.org/docs/staging-environment/
+>
+>     * #### Caaidentities
+>
+>       * 0: letsencrypt.org
 
 
 ### Troubleshooting
+
 The Ansible-Runner container is not suitable for running as a non-root user.
 Therefore, the Ansible integrations will fail if you follow the instructions in [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide). 
 

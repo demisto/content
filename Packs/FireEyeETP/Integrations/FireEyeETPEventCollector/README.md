@@ -19,9 +19,11 @@ This is the default integration for this content pack when configured by the Dat
 
 
 ## Access control
+
 All the API requests follow the domain and domain group restrictions of the user. For example, if a user has access to only a few domains in their organization, the response to the APIs will be based on only those domains and domain groups.
 
 ## REST API Limitation
+
 Email Security — Cloud REST APIs have a rate limit of 60 requests per minute per API route (/trace, /alert, and /quarantine) for every customer.
 This means, in 1 minute, a customer can make:
 
@@ -34,9 +36,12 @@ Within the minute, the 61st request to any of these APIs would throw a rate limi
 The rate limit applies to the customer as a whole. This means that if the customer has multiple admin users who have generated API Keys, the rate limit is applicable at the customer level and not per API key. 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fireeye-etp-get-events
+
 ***
 Gets events from FireEye ETP.
 
@@ -44,6 +49,7 @@ Gets events from FireEye ETP.
 #### Base Command
 
 `fireeye-etp-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

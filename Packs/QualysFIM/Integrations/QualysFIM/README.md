@@ -1,7 +1,8 @@
-#Qualys FIM: File Integrity Monitoring
+# Qualys FIM: File Integrity Monitoring
 
 Log and track file changes across global IT systems.
 This integration was integrated and tested with version 2.6.0.0-23 of qualys_fim
+
 ## Configure qualys_fim in Cortex
 
 
@@ -19,9 +20,12 @@ This integration was integrated and tested with version 2.6.0.0-23 of qualys_fim
 | Proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### qualys-fim-events-list
+
 ***
 Retrieve a list of all FIM events from the current user account.
 
@@ -29,6 +33,7 @@ Retrieve a list of all FIM events from the current user account.
 #### Base Command
 
 `qualys-fim-events-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,9 +57,11 @@ Retrieve a list of all FIM events from the current user account.
 
 
 #### Command Example
+
 ```!qualys-fim-events-list limit=12 sort=least_recent filter=severity:4```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1035,6 +1042,7 @@ Retrieve a list of all FIM events from the current user account.
 #### Human Readable Output
 
 >### Listed 12 Events:
+>
 >|id|severity|dateTime|agentId|fullPath|
 >|---|---|---|---|---|
 >| de361739-a082-3240-8459-786b8ed5fa3b | 4 | 2021-01-17 16:16:57 | 12345678 | \Device\HarddiskVolume2\Windows\System32\LogFiles\Sum\Svc.log |
@@ -1052,6 +1060,7 @@ Retrieve a list of all FIM events from the current user account.
 
 
 ### qualys-fim-event-get
+
 ***
 Retrieve information about a given event, by event ID.
 
@@ -1059,6 +1068,7 @@ Retrieve information about a given event, by event ID.
 #### Base Command
 
 `qualys-fim-event-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1081,9 +1091,11 @@ Retrieve information about a given event, by event ID.
 
 
 #### Command Example
+
 ```!qualys-fim-event-get event_id=de361739-a082-3240-8459-786b8ed5fa3b```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1174,12 +1186,14 @@ Retrieve information about a given event, by event ID.
 #### Human Readable Output
 
 >### Found Event:
+>
 >|name|action|id|severity|action|incidentId|profiles|type|dateTime|fullPath|
 >|---|---|---|---|---|---|---|---|---|---|
 >| Svc.log | Content | de361739-a082-3240-8459-786b8ed5fa3b | 4 | Content | 4710aa44-8d69-4c00-8013-737768cb54be | test_01 | File | 2021-01-17 16:16:57 | \Device\HarddiskVolume2\Windows\System32\LogFiles\Sum\Svc.log |
 
 
 ### qualys-fim-incidents-list
+
 ***
 Retrieve a list of all FIM incidents from the current user account.
 
@@ -1187,6 +1201,7 @@ Retrieve a list of all FIM incidents from the current user account.
 #### Base Command
 
 `qualys-fim-incidents-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1211,9 +1226,11 @@ Retrieve a list of all FIM incidents from the current user account.
 
 
 #### Command Example
+
 ```!qualys-fim-incidents-list sort=least_recent limit=15 attributes=name,status,id filter=status:closed```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1301,6 +1318,7 @@ Retrieve a list of all FIM incidents from the current user account.
 #### Human Readable Output
 
 >### Listed 15 Incidents:
+>
 >|id|name|status|
 >|---|---|---|
 >| 4710aa44-8d69-4c00-8013-737768cb54be | Deletion of Log Files | CLOSED |
@@ -1321,6 +1339,7 @@ Retrieve a list of all FIM incidents from the current user account.
 
 
 ### qualys-fim-incidents-get-events
+
 ***
 Retrieve a list of the events logged under an incident.
 
@@ -1328,6 +1347,7 @@ Retrieve a list of the events logged under an incident.
 #### Base Command
 
 `qualys-fim-incidents-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1354,9 +1374,11 @@ Retrieve a list of the events logged under an incident.
 
 
 #### Command Example
+
 ```!qualys-fim-incidents-get-events incident_id=4710aa44-8d69-4c00-8013-737768cb54be limit=7 attributes=id,name,type page_number=2 filter=action:create```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1404,6 +1426,7 @@ Retrieve a list of the events logged under an incident.
 #### Human Readable Output
 
 >### Listed 7 Events From Incident:
+>
 >|id|name|type|
 >|---|---|---|
 >| 85873770-2c46-3c1c-94f6-a1fd117ca504 | 8fe303d4743fc547b447af276bb19008 | File |
@@ -1416,6 +1439,7 @@ Retrieve a list of the events logged under an incident.
 
 
 ### qualys-fim-incident-create
+
 ***
 Create a manual FIM incident of type "DEFAULT".
 
@@ -1423,6 +1447,7 @@ Create a manual FIM incident of type "DEFAULT".
 #### Base Command
 
 `qualys-fim-incident-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1448,9 +1473,11 @@ Create a manual FIM incident of type "DEFAULT".
 
 
 #### Command Example
+
 ```!qualys-fim-incident-create name=testtest7 comment=new_incident filters="dateTime: ['2021-01-01'..'2021-02-15']"```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1481,12 +1508,14 @@ Create a manual FIM incident of type "DEFAULT".
 #### Human Readable Output
 
 >### Created New Incident: testtest7
+>
 >|id|name|reviewers|username|occurred|filters|approvalType|
 >|---|---|---|---|---|---|---|
 >| 5f9f5504-46eb-4a30-b022-fd0dba7758eb | testtest7 | useruser | Qmasters | 2021-02-16 09:52:48 | dateTime: ['2021-01-01'..'2021-02-15'] | MANUAL |
 
 
 ### qualys-fim-incident-approve
+
 ***
 Mark an existing FIM incident as approved.
 
@@ -1494,6 +1523,7 @@ Mark an existing FIM incident as approved.
 #### Base Command
 
 `qualys-fim-incident-approve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1523,9 +1553,11 @@ Mark an existing FIM incident as approved.
 
 
 #### Command Example
+
 ```!qualys-fim-incident-approve incident_id=8af30349-bd07-4c0d-8469-58d9d7218ffa approval_status=APPROVED change_type=AUTOMATED comment=approved disposition_category=MALWARE```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1571,12 +1603,14 @@ Mark an existing FIM incident as approved.
 #### Human Readable Output
 
 >### Approved Incident: testtest
+>
 >|id|name|type|filterFromDate|filterToDate|filters|approvalDate|approvalStatus|approvalType|comment|createdByName|status|reviewers|dispositionCategory|changeType|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 8af30349-bd07-4c0d-8469-58d9d7218ffa | testtest | DEFAULT | 2021-01-01 00:00:00 | 2021-02-15 00:00:00 | dateTime: ['2021-01-01'..'2021-02-15'] | 2021-02-16 09:52:49 | APPROVED | MANUAL | approved | Qmasters | CLOSED | useruser | MALWARE | AUTOMATED |
 
 
 ### qualys-fim-assets-list
+
 ***
 Retrieve a list of all FIM assets.
 
@@ -1584,6 +1618,7 @@ Retrieve a list of all FIM assets.
 #### Base Command
 
 `qualys-fim-assets-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1604,9 +1639,11 @@ Retrieve a list of all FIM assets.
 
 
 #### Command Example
+
 ```!qualys-fim-assets-list limit=3```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1928,6 +1965,7 @@ Retrieve a list of all FIM assets.
 #### Human Readable Output
 
 >### Listed 2 Assets:
+>
 >|Hostname|Last Activity|Creation Time|Agent Version|Driver Version|Last Agent Update|Asset ID|
 >|---|---|---|---|---|---|---|
 >| Qmasters_desktop | 2021-02-16 08:18:39 | 2021-01-10 11:58:40 | 1.1.1.1 | 4.1.0.744 | 2021-02-16 09:31:25 | b1caea93-0d21-4343-801c-92009f036c79 |

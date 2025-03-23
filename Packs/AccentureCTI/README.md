@@ -7,6 +7,7 @@
 # **Accenture CTI v2**
  
 This pack has 2 sub-pack/integration namely:
+
 - ACTI Indicator Query
 - ACTI Vulnerability Query
 
@@ -15,6 +16,7 @@ _____
 
 
 ## **What to expect from the Accenture Cyber Threat Intelligence (_Accenture CTI v2_) pack?**
+
 - A playbook that automatically queries Accenture's IntelGraph API to pull context for IOC and associated intelligence reports into XSOAR incidents.
 - Reputation Commands to query for network-level indicators (_IP, Domain, and URL_).
 - Command to query for ACTI intelligence reports.

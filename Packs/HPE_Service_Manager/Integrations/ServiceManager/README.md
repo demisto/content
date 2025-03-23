@@ -12,9 +12,12 @@ Service Manager By Micro Focus (Formerly HPE Software).
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### hpsm-update-incident
+
 ***
 Updates existing incident (beta).
 
@@ -22,6 +25,7 @@ Updates existing incident (beta).
 #### Base Command
 
 `hpsm-update-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -78,6 +82,7 @@ Updates existing incident (beta).
 | HPSM.Incidents.Urgency | unknown | Incident urgency. | 
 
 ### hpsm-create-incident
+
 ***
 Creates a new incident.
 
@@ -85,6 +90,7 @@ Creates a new incident.
 #### Base Command
 
 `hpsm-create-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -140,6 +146,7 @@ Creates a new incident.
 | HPSM.Incidents.Urgency | unknown | Incident urgency. | 
 
 ### hpsm-list-incidents
+
 ***
 Returns all incidents.
 
@@ -147,6 +154,7 @@ Returns all incidents.
 #### Base Command
 
 `hpsm-list-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -161,6 +169,7 @@ Returns all incidents.
 | HPSM.IncidentIDs | unknown | An array of incident IDs. | 
 
 ### hpsm-get-incident-by-id
+
 ***
 Returns a single incident by ID. If no incident exists with the specified ID, an error will be returned.
 
@@ -168,6 +177,7 @@ Returns a single incident by ID. If no incident exists with the specified ID, an
 #### Base Command
 
 `hpsm-get-incident-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -209,6 +219,7 @@ Returns a single incident by ID. If no incident exists with the specified ID, an
 | HPSM.Incidents.Urgency | unknown | Incident urgency. | 
 
 ### hpsm-create-resource
+
 ***
 Updates the existing resource (beta).
 
@@ -216,6 +227,7 @@ Updates the existing resource (beta).
 #### Base Command
 
 `hpsm-create-resource`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -273,6 +285,7 @@ Updates the existing resource (beta).
 | HPSM.Resources.Urgency | unknown | Resource urgency. | 
 
 ### hpsm-update-resource
+
 ***
 Creates a new resource.
 
@@ -280,6 +293,7 @@ Creates a new resource.
 #### Base Command
 
 `hpsm-update-resource`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -337,6 +351,7 @@ Creates a new resource.
 | HPSM.Resources.Urgency | unknown | Resource urgency. | 
 
 ### hpsm-list-resources
+
 ***
 Returns all resources (beta).
 
@@ -344,6 +359,7 @@ Returns all resources (beta).
 #### Base Command
 
 `hpsm-list-resources`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -359,6 +375,7 @@ Returns all resources (beta).
 | HPSM.ResourceIDs | unknown | An array of resource IDs. | 
 
 ### hpsm-get-resource-by-id
+
 ***
 Returns a single resource by ID. If no resource exists with the specified ID, an error will be returned (beta).
 
@@ -366,6 +383,7 @@ Returns a single resource by ID. If no resource exists with the specified ID, an
 #### Base Command
 
 `hpsm-get-resource-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -408,6 +426,7 @@ Returns a single resource by ID. If no resource exists with the specified ID, an
 | HPSM.Resources.Urgency | unknown | Resource urgency. | 
 
 ### hpsm-list-devices
+
 ***
 Returns a list of devices, filtered according to query.
 
@@ -415,6 +434,7 @@ Returns a list of devices, filtered according to query.
 #### Base Command
 
 `hpsm-list-devices`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -429,6 +449,7 @@ Returns a list of devices, filtered according to query.
 | HPSM.DeviceIDs | unknown | The IDs \(configuration items\) of the devices. | 
 
 ### hpsm-get-device
+
 ***
 Find and return a device by ID.
 
@@ -436,6 +457,7 @@ Find and return a device by ID.
 #### Base Command
 
 `hpsm-get-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -462,6 +484,7 @@ Find and return a device by ID.
 | HPSM.Devices.UpdatedBy | unknown | The last user who updated the device. | 
 
 ### hpsm-create-request
+
 ***
 Creates a new service request
 
@@ -469,6 +492,7 @@ Creates a new service request
 #### Base Command
 
 `hpsm-create-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -28,9 +28,12 @@ Use Cases
 | isFetch | Fetch incidents | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### bonusly-list-bonuses
+
 ***
 Get a list of bonuses based on a filter
 
@@ -38,6 +41,7 @@ Get a list of bonuses based on a filter
 #### Base Command
 
 `bonusly-list-bonuses`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -97,9 +101,11 @@ Get a list of bonuses based on a filter
 
 
 #### Command Example
+
 ```!bonusly-list-bonuses limit="20"```
 
 #### Context Example
+
 ```
 {
     "Bonusly": {
@@ -156,11 +162,13 @@ Get a list of bonuses based on a filter
 #### Human Readable Output
 
 >### Latest Updates From Bonus.ly
+>
 >|amount|amount_with_currency|child_bonuses|created_at|editable_until|family_amount|giver|hashtag|id|parent_bonus_id|reason|reason_decoded|reason_html|receiver|receivers|value|via|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 
 ### bonusly-create-bonus
+
 ***
 Creates a bonusly bonus
 
@@ -168,6 +176,7 @@ Creates a bonusly bonus
 #### Base Command
 
 `bonusly-create-bonus`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -221,6 +230,7 @@ Creates a bonusly bonus
 
 
 #### Command Example
+
 ```bonusly-get-bonus id="5ec263bb0e519c009a1ec0db"```
 
 #### Human Readable Output
@@ -228,6 +238,7 @@ Creates a bonusly bonus
 
 
 ### bonusly-get-bonus
+
 ***
 Get a bonusly based on an ID
 
@@ -235,6 +246,7 @@ Get a bonusly based on an ID
 #### Base Command
 
 `bonusly-get-bonus`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -286,9 +298,11 @@ Get a bonusly based on an ID
 
 
 #### Command Example
+
 ```!bonusly-get-bonus id="24abcdef1234567890abcdef"```
 
 #### Context Example
+
 ```
 {
     "Bonusly": {
@@ -343,12 +357,14 @@ Get a bonusly based on an ID
 #### Human Readable Output
 
 >### Latest Updates From Bonus.ly
+>
 >|amount|amount_with_currency|child_count|created_at|editable_until|family_amount|giver|hashtag|id|parent_bonus_id|reason|reason_decoded|reason_html|receiver|receivers|value|via|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 
 ### bonusly-update-bonus
+
 ***
 Update a bonus to bonusly
 
@@ -356,6 +372,7 @@ Update a bonus to bonusly
 #### Base Command
 
 `bonusly-update-bonus`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -408,15 +425,18 @@ Update a bonus to bonusly
 
 
 #### Command Example
+
 ```!bonusly-update-bonus id="5ec279591160850099b1ae3c" reason="Removing old archive"```
 
 #### Human Readable Output
+>
 >|amount|amount_with_currency|child_count|created_at|editable_until|family_amount|giver|hashtag|id|parent_bonus_id|reason|reason_decoded|reason_html|receiver|receivers|value|via|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 
 #### Context Example
+
 ```
 {
     "Bonusly": {
@@ -469,6 +489,7 @@ Update a bonus to bonusly
 ```
 
 ### bonusly-delete-bonus
+
 ***
 Delete a bonus based on an ID like 24abcdef1234567890abcdef
 
@@ -476,6 +497,7 @@ Delete a bonus based on an ID like 24abcdef1234567890abcdef
 #### Base Command
 
 `bonusly-delete-bonus`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -491,6 +513,7 @@ Delete a bonus based on an ID like 24abcdef1234567890abcdef
 
 
 #### Command Example
+
 ```!bonusly-delete-bonus id="5ec279591160850099b1ae3c"```
 
 #### Human Readable Output
@@ -499,6 +522,7 @@ Latest Updates From Bonus.ly
 No entries.
 
 #### Context Example
+
 ```
 {
     "Bonusly": {
@@ -508,7 +532,9 @@ No entries.
      }
 }
 ```
+
 =======
+
 ## Bonusly
 
 Bonus.ly is an employee recognition platform which enterprises use to for employee recognition. We're building tools to help people feel a sense of purpose and progress at work. The platform which also has an API enables employees to recognize each other by providing a point based bonus system. Bonus.ly helps your employees feel connected, engaged, and aligned is mission critical right now. Bonusly makes employee recognition easy and fun, fostering community and creating company-wide alignment. It also provides employees with positive feedback in the work that they are doing. 

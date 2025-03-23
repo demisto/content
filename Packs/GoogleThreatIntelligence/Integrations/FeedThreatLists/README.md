@@ -23,16 +23,19 @@ Use this feed integration to fetch Google Threat Intelligence Threat Lists match
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### gti-threatlists-get-indicators
+
 ***
 Gets the matches from Google Threat Intelligence Threat Lists.
 
 #### Base Command
 
 `gti-threatlists-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -48,12 +51,14 @@ Gets the matches from Google Threat Intelligence Threat Lists.
 There is no context output for this command.
 
 #### Command Example
+
 ```!gti-threatlists-get-indicators```
 ```!gti-threatlists-get-indicators feed=malware package=2025021910 filter="gti_score:70+" limit=10```
 
 #### Human Readable Output
 
 ### Indicators from Google Threat Intelligence Threat Lists:
+
 | Id | Detections | Gti Threat Score | Gti Severity | Gti Verdict | Malware Families | Threat Actors |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | f221425286c9073cbb2168f73120b6... | 59/69 | 80 | SEVERITY_LOW | VERDICT_MALICIOUS | beacon | SWEED |

@@ -1,6 +1,7 @@
 Deprecated. No available replacement. Run a query through Splunk and format the results as a table.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Deprecated. No available replacement. Run a query through Splunk and format the 
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * splunk-search
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,5 +27,6 @@ This script uses the following commands and scripts.
 | rows | Return up to X first rows. If omitted, defaults to 10. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

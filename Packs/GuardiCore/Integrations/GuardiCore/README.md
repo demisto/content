@@ -1,5 +1,6 @@
 Data center breach detection.
 This integration was integrated and tested with version v3.0 of GuardiCore API.
+
 ## Configure GuardiCore in Cortex
 
 
@@ -11,9 +12,12 @@ This integration was integrated and tested with version v3.0 of GuardiCore API.
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### guardicore-get-incidents
+
 ***
 Display information about incidents (with filters).
 
@@ -21,6 +25,7 @@ Display information about incidents (with filters).
 #### Base Command
 
 `guardicore-get-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -35,6 +40,7 @@ Display information about incidents (with filters).
 
 
 ### guardicore-uncommon-domains
+
 ***
 Display the uncommon domains.
 
@@ -42,6 +48,7 @@ Display the uncommon domains.
 #### Base Command
 
 `guardicore-uncommon-domains`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -49,6 +56,7 @@ Display the uncommon domains.
 
 
 ### guardicore-unresolved-domains
+
 ***
 Display the unresolved domains.
 
@@ -56,6 +64,7 @@ Display the unresolved domains.
 #### Base Command
 
 `guardicore-unresolved-domains`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -63,6 +72,7 @@ Display the unresolved domains.
 
 
 ### guardicore-show-endpoint
+
 ***
 Display information about the endpoint given its ID.
 
@@ -70,6 +80,7 @@ Display information about the endpoint given its ID.
 #### Base Command
 
 `guardicore-show-endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -78,6 +89,7 @@ Display information about the endpoint given its ID.
 
 
 ### guardicore-dns-requests
+
 ***
 Display the DNS requests.
 
@@ -85,6 +97,7 @@ Display the DNS requests.
 #### Base Command
 
 `guardicore-dns-requests`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -92,6 +105,7 @@ Display the DNS requests.
 
 
 ### guardicore-search-endpoint
+
 ***
 Display information about the endpoint by its hostname or IP address.
 
@@ -99,6 +113,7 @@ Display information about the endpoint by its hostname or IP address.
 #### Base Command
 
 `guardicore-search-endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -108,6 +123,7 @@ Display information about the endpoint by its hostname or IP address.
 
 
 ### guardicore-misconfigurations
+
 ***
 Display the misconfigurations.
 
@@ -115,6 +131,7 @@ Display the misconfigurations.
 #### Base Command
 
 `guardicore-misconfigurations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -122,6 +139,7 @@ Display the misconfigurations.
 
 
 ### guardicore-get-incident
+
 ***
 Display information about the given incident.
 
@@ -129,6 +147,7 @@ Display information about the given incident.
 #### Base Command
 
 `guardicore-get-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -137,6 +156,7 @@ Display information about the given incident.
 
 
 ### guardicore-get-incident-iocs
+
 ***
 Display the IOCs (Indicators of Compromise) of the given incident.
 
@@ -144,6 +164,7 @@ Display the IOCs (Indicators of Compromise) of the given incident.
 #### Base Command
 
 `guardicore-get-incident-iocs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -152,6 +173,7 @@ Display the IOCs (Indicators of Compromise) of the given incident.
 
 
 ### guardicore-get-incident-events
+
 ***
 Display the events related to the given incidents.
 
@@ -159,6 +181,7 @@ Display the events related to the given incidents.
 #### Base Command
 
 `guardicore-get-incident-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -167,6 +190,7 @@ Display the events related to the given incidents.
 
 
 ### guardicore-get-incident-pcap
+
 ***
 Retrieve the PCAP file attached to the given incident.
 
@@ -174,6 +198,7 @@ Retrieve the PCAP file attached to the given incident.
 #### Base Command
 
 `guardicore-get-incident-pcap`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -182,6 +207,7 @@ Retrieve the PCAP file attached to the given incident.
 
 
 ### guardicore-get-incident-attachments
+
 ***
 Retrieve the files attached to the given incidents.
 
@@ -189,6 +215,7 @@ Retrieve the files attached to the given incidents.
 #### Base Command
 
 `guardicore-get-incident-attachments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -197,6 +224,7 @@ Retrieve the files attached to the given incidents.
 
 
 ### guardicore-search-network-log
+
 ***
 Searches within the network log (with filters).
 
@@ -204,6 +232,7 @@ Searches within the network log (with filters).
 #### Base Command
 
 `guardicore-search-network-log`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

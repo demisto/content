@@ -15,10 +15,12 @@ This integration was integrated and tested with version 3.157 of Symantec CloudS
 
 
 Symantec CloudSOC Event Collector collects the following event types:
+
 * Investigate logs
 * Detect incidents logs
   
 ### API Limitations
+
   You cannot retrieve investigate logs that are older than 180 days. Therefore, if setting a first fetch that is more than 180 days, for investigate logs it will be a maximum of 180 days.
 
 ## Commands

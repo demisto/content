@@ -25,6 +25,7 @@ ExtraHop Reveal(x) for Cortex XSOAR is a network detection and response solution
     
 
 ## Commands
+
 You can run the following commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully run a command, a DBot message appears in the War Room with the command details.
 
@@ -46,6 +47,7 @@ After you successfully run a command, a DBot message appears in the War Room wit
 </ul>
 
 ### extrahop-watchlist-get
+
 ***
 Get all devices on the advanced analysis watchlist in ExtraHop Reveal(x).
 
@@ -53,6 +55,7 @@ Get all devices on the advanced analysis watchlist in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-watchlist-get`
+
 #### Input
 
 There are no input arguments for this command.
@@ -89,8 +92,11 @@ There are no input arguments for this command.
 | ExtraHop.Device.Url | string | Link to the device details page in ExtraHop Reveal(x). | 
 
 #### Command example
+
 ```!extrahop-watchlist-get```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -163,6 +169,7 @@ There are no input arguments for this command.
 
 
 ### extrahop-peers-get
+
 ***
 Get all peers for a device from ExtraHop Reveal(x).
 
@@ -170,6 +177,7 @@ Get all peers for a device from ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-peers-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -213,8 +221,11 @@ Get all peers for a device from ExtraHop Reveal(x).
 | ExtraHop.Device.Url | string | Link to the device details page in ExtraHop Reveal(x). | 
 
 #### Command example
+
 ```!extrahop-peers-get ip_or_id=0.0.0.0 peer_role=server protocol=any query_from=-60m query_until=0```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -259,6 +270,7 @@ Get all peers for a device from ExtraHop Reveal(x).
 
 
 ### extrahop-devices-search
+
 ***
 Search for devices in ExtraHop Reveal(x).
 
@@ -266,6 +278,7 @@ Search for devices in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-devices-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -320,8 +333,11 @@ Search for devices in ExtraHop Reveal(x).
 | ExtraHop.Device.Url | String | Link to the device details page in ExtraHop Reveal(x). | 
 
 #### Command example
+
 ```!extrahop-devices-search activity=aaa_client discover_time=-10m ip=0.0.0.0 l3_only=true limit=2 mac=00:00:00:00:00:00 match_type=or name=DNS operator=!= role=file_server software=linux tag=tag1 vendor=cisco```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -394,6 +410,7 @@ Search for devices in ExtraHop Reveal(x).
 
 
 ### extrahop-protocols-get
+
 ***
 Get all active network protocols for a device from ExtraHop Reveal(x).
 
@@ -401,6 +418,7 @@ Get all active network protocols for a device from ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-protocols-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -444,8 +462,11 @@ Get all active network protocols for a device from ExtraHop Reveal(x).
 | ExtraHop.Device.ServerProtocols | String | The list of protocols the peer device is communicating on as a server. | 
 
 #### Command example
+
 ```!extrahop-protocols-get ip_or_id=0.0.0.0 query_from=-20m query_until=0```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -492,6 +513,7 @@ Get all active network protocols for a device from ExtraHop Reveal(x).
 
 
 ### extrahop-activity-map-get
+
 ***
 Get a link to a live activity map in ExtraHop Reveal(x).
 
@@ -499,6 +521,7 @@ Get a link to a live activity map in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-activity-map-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -518,8 +541,11 @@ Get a link to a live activity map in ExtraHop Reveal(x).
 | ExtraHop.ActivityMap.url | String | The link to a visual activity map in ExtraHop Reveal(x). | 
 
 #### Command example
+
 ```!extrahop-activity-map-get ip_or_id=0.0.0.0 peer_role=server protocol=any time_interval="30 minutes"```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -535,6 +561,7 @@ Get a link to a live activity map in ExtraHop Reveal(x).
 >[View Live Activity Map in ExtraHop](https://dummy_url/extrahop/#/activitymaps?appliance_id=00000000000000000000000000000000&discovery_id=0000000000000000&from=30&interval_type=MIN&object_type=device&protocol=any&role=server&until=0)
 
 ### extrahop-alert-rules-get
+
 ***
 Get all alert rules from ExtraHop Reveal(x).
 
@@ -542,6 +569,7 @@ Get all alert rules from ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-alert-rules-get`
+
 #### Input
 
 There are no input arguments for this command.
@@ -571,8 +599,11 @@ There are no input arguments for this command.
 | ExtraHop.Alert.StatName | String | The statistic name for the alert. | 
 
 #### Command example
+
 ```!extrahop-alert-rules-get```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -648,6 +679,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Found 3 Alert(s)
+>
 >|Apply All|Author|Description|Disabled|Field Name|Field Name2|Field Op|Id|Interval Length|Mod Time|Name|Notify Snmp|Operand|Operator|Refire Interval|Severity|Stat Name|Type|Units|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | ExtraHop | Alert triggered when ratio of DB errors is greater than 1%. | false | rsp_error | rsp | / | 15 | 30 | 1617887147538 | DB Error Ratio - Orange | false | 0.01 | > | 300 | 3 | extrahop.application.db | threshold | none |
@@ -656,6 +688,7 @@ There are no input arguments for this command.
 
 
 ### extrahop-packets-search
+
 ***
 Search for specific packets in ExtraHop Reveal(x).
 
@@ -663,6 +696,7 @@ Search for specific packets in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-packets-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -695,7 +729,9 @@ Search for specific packets in ExtraHop Reveal(x).
 | File.Extension | String | The file extension. | 
 
 #### Command example
+
 ```!extrahop-packets-search ip1=0.0.0.0 ip2=0.0.0.0 limit_bytes=10MB limit_search_duration=10m output=pcap port1=8000 port2=8000 query_from=-15m query_until=0```
+
 #### Human Readable Output
 
 >Uploaded file: extrahop 2022-12-15 21.12.29 to 21.27.29 IST.pcapDownload.
@@ -712,6 +748,7 @@ Search for specific packets in ExtraHop Reveal(x).
 > | SSDeep | 12288:WzC9IOFcF8jgBXx00uMOsOFtKu1R4mF48f6G2GeXCuX:Wgo8cNx3QsODKugmnfjcPX |
 
 ### extrahop-devices-tag
+
 ***
 Add or remove a tag from devices in ExtraHop Reveal(x).
 
@@ -719,6 +756,7 @@ Add or remove a tag from devices in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-devices-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -731,13 +769,17 @@ Add or remove a tag from devices in ExtraHop Reveal(x).
 #### Context Output
 
 There is no context output for this command.<br>
+
 #### Command example
+
 ```!extrahop-devices-tag tag=MyTag add=0.0.0.0 remove=0.0.0.0```
+
 #### Human Readable Output
 
 >Successfully tagged untagged the device/s.
 
 ### extrahop-alert-rule-create
+
 ***
 Create a new alert rule in ExtraHop Reveal(x).
 
@@ -745,6 +787,7 @@ Create a new alert rule in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-alert-rule-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -773,13 +816,18 @@ Create a new alert rule in ExtraHop Reveal(x).
 #### Context Output
 
 There is no context output for this command.<br>
+
 #### Command example
+
 ```!extrahop-alert-rule-create apply_all=true interval_length=30 disabled=false name="test10" notify_snmp=false refire_interval=300 severity=4 type=detection object_type=device protocols="udp"```
 <br>
+
 #### Human Readable Output
 
 >Successfully created alert rule.
+>
 ### extrahop-ticket-track
+
 ***
 Link an ExtraHop Reveal(x) detection to a Cortex XSOAR incident.
 
@@ -787,6 +835,7 @@ Link an ExtraHop Reveal(x) detection to a Cortex XSOAR incident.
 #### Base Command
 
 `extrahop-ticket-track`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -805,8 +854,11 @@ Link an ExtraHop Reveal(x) detection to a Cortex XSOAR incident.
 | ExtraHop.TicketId | String | Cortex XSOAR incident ID successfully tracked to the ExtraHop Reveal(x) detection. | 
 
 #### Command example
+
 ```!extrahop-ticket-track detection_id=1234 incident_id=1 incident_owner=John incident_status=1```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -822,6 +874,7 @@ Link an ExtraHop Reveal(x) detection to a Cortex XSOAR incident.
 >Successfully linked detection(1234) with incident(1)
 
 ### extrahop-alert-rule-edit
+
 ***
 Modify an alert rule in ExtraHop Reveal(x).
 
@@ -829,6 +882,7 @@ Modify an alert rule in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-alert-rule-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -858,13 +912,17 @@ Modify an alert rule in ExtraHop Reveal(x).
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!extrahop-alert-rule-edit interval_length=30 alert_id=36 apply_all=true disabled=false name="t127" notify_snmp=false refire_interval=300 severity=4 type=detection protocols="udp" object_type=device```
+
 #### Human Readable Output
 
 >Successfully updated alert rule.
 
 ### extrahop-watchlist-edit
+
 ***
 Add or remove devices from the advanced analysis watchlist in ExtraHop Reveal(x).
 
@@ -872,6 +930,7 @@ Add or remove devices from the advanced analysis watchlist in ExtraHop Reveal(x)
 #### Base Command
 
 `extrahop-watchlist-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -883,14 +942,18 @@ Add or remove devices from the advanced analysis watchlist in ExtraHop Reveal(x)
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!extrahop-watchlist-edit add=0.0.0.0 remove=0.0.0.0```
+
 #### Human Readable Output
 
 >Successfully added new devices(0.0.0.0) in the watchlist 
 >Successfully removed devices(0.0.0.0) from the watchlist
 
 ### extrahop-metrics-list
+
 ***
 Get metrics for specified objects from ExtraHop Reveal(x).
 
@@ -898,6 +961,7 @@ Get metrics for specified objects from ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-metrics-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -926,8 +990,11 @@ Get metrics for specified objects from ExtraHop Reveal(x).
 | ExtraHop.Metrics.stats.values | Unknown | The count value of the metrics that were collected. | 
 
 #### Command example
+
 ```!extrahop-metrics-list cycle=auto from_time=0 metric_category=http object_ids=0 object_type=application until_time=0 metric_specs="[{\"name\": \"req\", \"key\": \"/GET/\"}]"```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -981,6 +1048,7 @@ Metrics Found:
 | Stats | {'oid': 0, 'time': 1637740800000, 'duration': 30000, 'values': [4]},<br>{'oid': 0, 'time': 1676871420000, 'duration': 30000, 'values': [9]},<br>{'oid': 0, 'time': 1676871450000, 'duration': 30000, 'values': [4]}, |
 
 ### extrahop-detections-list
+
 ***
 Get detections from ExtraHop Reveal(x).
 
@@ -988,6 +1056,7 @@ Get detections from ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-detections-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1026,8 +1095,11 @@ Get detections from ExtraHop Reveal(x).
 | ExtraHop.Detections.is_user_created | Boolean | Indicates whether the detection is user-created. | 
 
 #### Command example
+
 ```!extrahop-detections-list limit=3```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -1136,6 +1208,7 @@ Get detections from ExtraHop Reveal(x).
 #### Human Readable Output
 
 >### Found 3 Detection(s)
+>
 >|Detection ID|Risk Score|Description|Categories|Start Time|
 >|---|---|---|---|---|
 >| 1110161 | 50 | The offender was recently observed carrying out a TCP SYN Scan and has now made a successful TCP 3-way handshake to the victim device. Investigate to determine if this is the result of the SYN Scan. | sec,<br/>sec.exploit | 1676895361452 |
@@ -1144,6 +1217,7 @@ Get detections from ExtraHop Reveal(x).
 
 
 ## Additional Information
+
 <h2>ExtraHop Reveal(x) Playbooks</h2>
 <ul>
   <li>ExtraHop - Default</li>

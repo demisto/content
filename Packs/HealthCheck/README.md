@@ -4,7 +4,7 @@ The pack goal is to identify potential issues and remediate them before they bec
 The resulting layout tabs will provide the current system status and system diagnostics to identify issues to resolve.
 The actionable items report will contain recommendations based on errors found or best practices.
 
-##Prerequisites
+## Prerequisites
 **Single Server Deployment**
 
 1. Configure **"Core REST API"** Integration Instance with **Admin** user
@@ -19,6 +19,7 @@ The actionable items report will contain recommendations based on errors found o
 
 
 **How to**:
+
 1. Create new manual Incident
 2. pick **System Diagnostics and Health Check** incident type and **create new incident**.
 3. Once the playbook is completed, the incident layout will contain the collected data and some improvement suggestions.

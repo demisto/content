@@ -1,4 +1,5 @@
 Signum password expiry notification.
+
 ## Configure Signum in Cortex
 
 
@@ -20,6 +21,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ***
 List domain users by domain ID.
+
 #### Base Command
 
 `signum-list-domain-users`

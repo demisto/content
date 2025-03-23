@@ -1,16 +1,19 @@
 ## Overview
+
 ---
 Uptycs combines the open source universal agent, osquery, with a scalable security analytics platform for fleet visibility, intrusion detection, vulnerability monitoring and compliance.  Uptycs deploys osquery to your entire infrastructure, regardless of operating system mix or hosting environment, collects, and stores system state data.  Uptycs will stream that data over secure TLS protocol, storing it in your unique instance, and continuously monitoring for suspicious activity.  Integrated third party feeds of known malware, threats and over 170,000 indicators of compromise (IOCs) further enhance threat visibility.  Finally, take action with real-time alerts, dashboards and reports packaged for multiple security protocols.
 
 The Cortex XSOAR-Uptycs integration connects to the Uptycs backend via the Uptycs API.  The integration allows the use of Uptycs data in existing workflows.  Features include fetching and handling alerts, threat investigation, posting new threat sources, setting tags on assets, and the ability to run arbitrary SQL queries against your Uptycs database or in real-time against registered endpoints.
 
 ## Uptycs Playbook
+
 ---
 
 1. Uptycs - Bad IP Incident and Uptycs - Outbound Connection to Threat IOC Incident
     Get details about connections which have been opened to known bad IP addresses, including process and parent process information, IP addresses, ports, sockets, and the source of the threat intelligence.
 
 ## Use Cases
+
 ---
 
 *  Incident investigation
@@ -22,9 +25,11 @@ The Cortex XSOAR-Uptycs integration connects to the Uptycs backend via the Uptyc
 
 
 ## Configure Uptycs on Cortex XSOAR
+
 ---
 
 ## How to get an API Key and API Secret
+
 In order to create an instance of the integration, you need to download a user API key and secret from your Uptycs account.  
 
 1. Go to your Uptycs environment.
@@ -33,29 +38,34 @@ In order to create an instance of the integration, you need to download a user A
    The downloaded file will have all the information necessary to create the instance.
 
 ## Parameters
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Uptycs.
-3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __API key__
-    * __API secret__
-    * __API domain__: the domain found in your API key file as well as the Top Level Domain for your Uptycs stack (example: if your Uptycs' stack URL is "mystack.uptycs.io" then your API key file will say "mystack" in the domain field.  You would then put "mystack.uptycs.io" in the API domain field when configuring your integration instance).
-    * __API Customer ID__
-    * __Fetch incidents__
-    * __Incident type__
-    * __Trust any certificate (unsecure)__
-    * __Use system proxy__
+3. Click **Add instance** to create and configure a new integration instance.
+    * **Name**: a textual name for the integration instance.
+    * **API key**
+    * **API secret**
+    * **API domain**: the domain found in your API key file as well as the Top Level Domain for your Uptycs stack (example: if your Uptycs' stack URL is "mystack.uptycs.io" then your API key file will say "mystack" in the domain field.  You would then put "mystack.uptycs.io" in the API domain field when configuring your integration instance).
+    * **API Customer ID**
+    * **Fetch incidents**
+    * **Incident type**
+    * **Trust any certificate (unsecure)**
+    * **Use system proxy**
     * __ First fetch since__
-4. Click __Test__ to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, token, and connection.
+
 ## Fetched Incidents Data
+
 ---
 The Cortex XSOAR-Uptycs integration creates incients from Uptycs alerts using the Uptycs API 
 
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. uptycs-get-assets
 2. uptycs-run-query
 3. uptycs-get-alerts
@@ -103,12 +113,16 @@ After you successfully execute a command, a DBot message appears in the War Room
 45. uptycs-get-lookuptables
 46. uptycs-delete-lookuptable
 47. uptycs-delete-assets-tag
+
 ### 1. uptycs-get-assets
+
 ---
 return assets enrolled with Uptycs
+
 ##### Base Command
 
 `uptycs-get-assets`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -136,9 +150,11 @@ return assets enrolled with Uptycs
 
 
 ##### Command Example
+
 `uptycs-get-assets os="Mac OS X/Apple OS X/macOS" limit=1`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.Assets": [
@@ -162,18 +178,23 @@ return assets enrolled with Uptycs
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Assets
+
 |id|host_name|os|os_version|osquery_version|last_activity_at|
 |---|---|---|---|---|---|
 |984d4a7a-9f3a-580a-a3ef-2841a561669b|kyle-mbp-work|Mac OS X|10.14.5|3.2.6.51-Uptycs|2019-07-19 17:02:41.704|
 
 
 ### 2. uptycs-run-query
+
 ---
 enter a SQL query to run against your Uptycs database.  A list of tables can be found at osquery.io/schema, or by using the query "select * from information_schema.tables"
+
 ##### Base Command
 
 `uptycs-run-query`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -193,9 +214,11 @@ enter a SQL query to run against your Uptycs database.  A list of tables can be 
 
 
 ##### Command Example
+
 `uptycs-run-query query="SELECT * FROM process_open_sockets LIMIT 10" query_type=global host_name_like="uptycs-osquery-"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.QueryResults": [
@@ -464,7 +487,9 @@ enter a SQL query to run against your Uptycs database.  A list of tables can be 
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Query Result
+
 |protocol|family|upt_counter|pid|upt_asset_id|upt_hostname|local_port|upt_asset_tags|upt_hash|upt_asset_group_id|state|upt_time|local_address|upt_added|upt_server_time|remote_address|fd|upt_asset_group_name|path|upt_day|socket|upt_epoch|remote_port|net_namespace|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |6|2|20595|11|a4991bf9-13e3-026b-7b46-af192746d556|uptycs-osquery-d4trq|45864||1752f1a2-f773-5812-b611-577ee662b889||ESTABLISHED|2019-04-18 02:37:09.000|10.8.0.29|false||18.213.163.112|14|||20190418|127377813|0|443|4026532943|
@@ -480,11 +505,14 @@ enter a SQL query to run against your Uptycs database.  A list of tables can be 
 
 
 ### 3. uptycs-get-alerts
+
 ---
 return alerts from Uptycs DB
+
 ##### Base Command
 
 `uptycs-get-alerts`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -519,9 +547,11 @@ return alerts from Uptycs DB
 
 
 ##### Command Example
+
 `uptycs-get-alerts limit=1 time_ago="30 days"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.Alerts": [
@@ -550,18 +580,23 @@ return alerts from Uptycs DB
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Alerts: 
+
 |upt_asset_id|host_name|grouping|alert_time|description|value|severity|threat_indicator_id|threat_source_name|
 |---|---|---|---|---|---|---|---|---|
 |984d4a7a-9f3a-580a-a3ef-2841a561669b|kyle-mbp-work|OS X Crashes|2019-07-02 11:41:22.000|Crash|Amazon Music Helper|medium|No threat indicator                     for this alert|No threat source for                     this alert|
 
 
 ### 4. uptycs-get-alert-rules
+
 ---
 retrieve a list of alert rules
+
 ##### Base Command
 
 `uptycs-get-alert-rules`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -574,26 +609,33 @@ retrieve a list of alert rules
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-get-alert-rules limit=1`
 
 ##### Context Example
+
 ```
 
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Alert Rules
+
 |name|description|grouping|enabled|updatedAt|code|
 |---|---|---|---|---|---|
 |Bad Domain Alert|Bad Domain Alert|Bad Domain|true|2019-06-19T08:17:04.892Z|BAD_DOMAIN|
 
 
 ### 5. uptycs-get-event-rules
+
 ---
 retrieve a list of event rules
+
 ##### Base Command
 
 `uptycs-get-event-rules`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -606,26 +648,33 @@ retrieve a list of event rules
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-get-event-rules limit=1`
 
 ##### Context Example
+
 ```
 
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Event Rules
+
 |name|description|grouping|enabled|updatedAt|code|
 |---|---|---|---|---|---|
 |Bad domain|Malicious domain resolved|default|true|2019-06-19T08:17:05.115Z|BAD_DOMAIN|
 
 
 ### 6. uptycs-get-events
+
 ---
 return events from Uptycs DB
+
 ##### Base Command
 
 `uptycs-get-events`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -656,9 +705,11 @@ return events from Uptycs DB
 
 
 ##### Command Example
+
 `uptycs-get-events limit=10 time_ago="30 days"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.Events": [
@@ -807,7 +858,9 @@ return events from Uptycs DB
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Events
+
 |host_name|grouping|event_time|description|value|severity|
 |---|---|---|---|---|---|
 |brandons-mini.fios-router.home|OS X Crashes|2019-07-07 13:03:11.000|Crash|mediaremoted|medium|
@@ -823,11 +876,14 @@ return events from Uptycs DB
 
 
 ### 7. uptycs-get-process-open-sockets
+
 ---
 find processes which opened a socket
+
 ##### Base Command
 
 `uptycs-get-process-open-sockets`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -863,9 +919,11 @@ find processes which opened a socket
 
 
 ##### Command Example
+
 `uptycs-get-process-open-sockets limit=1`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.Sockets": [
@@ -889,18 +947,23 @@ find processes which opened a socket
 ```
 
 ##### Human Readable Output
+
 ### process_open_sockets
+
 |upt_hostname|pid|local_address|remote_address|upt_time|local_port|remote_port|socket|
 |---|---|---|---|---|---|---|---|
 |kyle-mbp-work|704|192.168.86.61|69.147.92.12|2019-07-19 17:03:31.000|54755|443|0|
 
 
 ### 8. uptycs-get-process-information
+
 ---
 get information for a particular process
+
 ##### Base Command
 
 `uptycs-get-process-information`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -929,9 +992,11 @@ get information for a particular process
 
 
 ##### Command Example
+
 `uptycs-get-process-information asset_id="984d4a7a-9f3a-580a-a3ef-2841a561669b" pid=5119 time="2019-01-29 17:05:07.000"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.Proc": [
@@ -954,18 +1019,23 @@ get information for a particular process
 ```
 
 ##### Human Readable Output
+
 ### Process information
+
 |upt_hostname|parent|pid|name|path|cmdline|
 |---|---|---|---|---|---|
 |kyle-mbp-work|484|5119|VBoxHeadless|/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless|/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless --comment vagrant_default_1535385658307_92120 --startvm 11742093-a8fa-4189-a88c-afc4cb7c70a6 --vrde config|
 
 
 ### 9. uptycs-get-process-child-processes
+
 ---
 get all the child processes for a given parent process
+
 ##### Base Command
 
 `uptycs-get-process-child-processes`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -996,9 +1066,11 @@ get all the child processes for a given parent process
 
 
 ##### Command Example
+
 `uptycs-get-process-child-processes asset_id="984d4a7a-9f3a-580a-a3ef-2841a561669b" parent=484 parent_start_time="2019-01-28 14:16:58.000" parent_end_time="2019-01-29 19:21:31.000"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.Children": [
@@ -1077,7 +1149,9 @@ get all the child processes for a given parent process
 ```
 
 ##### Human Readable Output
+
 ### Child processes of a specified pid
+
 |upt_hostname|pid|name|path|cmdline|upt_add_time|
 |---|---|---|---|---|---|
 |kyle-mbp-work|5119|VBoxHeadless|/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless|/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless --comment vagrant_default_1535385658307_92120 --startvm 11742093-a8fa-4189-a88c-afc4cb7c70a6 --vrde config|2019-01-29 16:14:27.000|
@@ -1088,11 +1162,14 @@ get all the child processes for a given parent process
 
 
 ### 10. uptycs-get-processes
+
 ---
 find processes which are running or have run on a registered Uptycs asset
+
 ##### Base Command
 
 `uptycs-get-processes`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1124,9 +1201,11 @@ find processes which are running or have run on a registered Uptycs asset
 
 
 ##### Command Example
+
 `uptycs-get-processes limit=1`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.Process": [
@@ -1147,18 +1226,23 @@ find processes which are running or have run on a registered Uptycs asset
 ```
 
 ##### Human Readable Output
+
 ### Processes
+
 |upt_hostname|pid|name|path|upt_time|parent|cmdline|
 |---|---|---|---|---|---|---|
 |kyle-mbp-work|60051|SCHelper|/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper|2019-07-19 07:29:32.000|1|/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper|
 
 
 ### 11. uptycs-get-process-open-files
+
 ---
 find processes which have opened files
+
 ##### Base Command
 
 `uptycs-get-process-open-files`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1186,9 +1270,11 @@ find processes which have opened files
 
 
 ##### Command Example
+
 `uptycs-get-process-open-files limit=1`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.Files": [
@@ -1205,18 +1291,23 @@ find processes which have opened files
 ```
 
 ##### Human Readable Output
+
 ### Process which has opened a file
+
 |upt_hostname|pid|path|fd|upt_time|
 |---|---|---|---|---|
 |uptycs-osquery-mhntm|30143|/var/osquery/osquery.db/001951.log|35|2019-07-19 17:00:38.000|
 
 
 ### 12. uptycs-set-alert-status
+
 ---
 Set the status of an alert to new, assigned, resolved, or closed
+
 ##### Base Command
 
 `uptycs-set-alert-status`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1230,9 +1321,11 @@ Set the status of an alert to new, assigned, resolved, or closed
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-set-alert-status alert_id="9cb18abd-2c9a-43a8-988a-0601e9140f6c" status=assigned`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.AlertStatus": {
@@ -1249,18 +1342,23 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Alert Status
+
 |id|code|status|createdAt|updatedAt|
 |---|---|---|---|---|
 |9cb18abd-2c9a-43a8-988a-0601e9140f6c|OUTBOUND_CONNECTION_TO_THREAT_IOC|assigned|2019-02-22T21:13:21.238Z|2019-07-19T17:07:27.447Z|
 
 
 ### 13. uptycs-set-asset-tag
+
 ---
 Sets a tag on a particular asset
+
 ##### Base Command
 
 `uptycs-set-asset-tag`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1275,9 +1373,11 @@ Sets a tag on a particular asset
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-set-asset-tag asset_id="984d4a7a-9f3a-580a-a3ef-2841a561669b" tag_key="Uptycs" tag_value="work laptop"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.AssetTags": {
@@ -1295,18 +1395,23 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Asset Tag
+
 |hostName|tags|
 |---|---|
 |kyle-mbp-work|Uptycs=work laptop,<br/>owner=Uptycs office,<br/>network=low,<br/>cpu=unknown,<br/>memory=unknown,<br/>disk=high|
 
 
 ### 14. uptycs-get-user-information
+
 ---
 get info for an Uptycs user
+
 ##### Base Command
 
 `uptycs-get-user-information`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1324,9 +1429,11 @@ get info for an Uptycs user
 
 
 ##### Command Example
+
 `uptycs-get-user-information user_id="33436e24-f30f-42d0-8438-d948be12b5af"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.UserInfo": {
@@ -1530,18 +1637,23 @@ get info for an Uptycs user
 ```
 
 ##### Human Readable Output
+
 ### Uptycs User Information
+
 |name|email|id|
 |---|---|---|
 |B schmoll|goo@test.com|33436e24-f30f-42d0-8438-d948be12b5af|
 
 
 ### 15. uptycs-get-threat-indicators
+
 ---
 get Uptycs threat indicators
+
 ##### Base Command
 
 `uptycs-get-threat-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1555,9 +1667,11 @@ get Uptycs threat indicators
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-get-threat-indicators limit=1`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.ThreatIndicators": [
@@ -1575,18 +1689,23 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Threat Indicators
+
 |id|indicator|description|indicatorType|createdAt|isActive|threatId|
 |---|---|---|---|---|---|---|
 |8e54f94c-469a-4737-9eef-4e650a93ab58|54.165.17.209|malware.com|IPv4|2019-07-19T16:44:17.511Z|true|b3f44b34-f6a1-46bc-88f1-9755e3ac1a65|
 
 
 ### 16. uptycs-get-threat-sources
+
 ---
 get Uptycs threat sources
+
 ##### Base Command
 
 `uptycs-get-threat-sources`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1599,9 +1718,11 @@ get Uptycs threat sources
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-get-threat-sources limit=1`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.ThreatSources": [
@@ -1619,18 +1740,23 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Threat Sources
+
 |name|description|url|enabled|custom|createdAt|lastDownload|
 |---|---|---|---|---|---|---|
 |AlienVault Open Threat Exchange Malicious Domains and IPs|A feed of malicious domains and IP addresses|4533da856e43f06ee00bb5f1adf170a0ce5cacaca5992ab1279733c2bdd0a88c|true|false|2019-05-12T01:01:04.154Z|2019-05-13T01:00:05.934Z|
 
 
 ### 17. uptycs-get-threat-vendors
+
 ---
 get Uptycs threat vendors
+
 ##### Base Command
 
 `uptycs-get-threat-vendors`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1643,9 +1769,11 @@ get Uptycs threat vendors
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-get-threat-vendors `
 
 ##### Context Example
+
 ```
 {
     "Uptycs.ThreatVendors": [
@@ -1666,18 +1794,23 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Threat Vendors
+
 |description|url|updatedAt|customerId|numIocs|numThreats|lastDownload|id|createdAt|name|
 |---|---|---|---|---|---|---|---|---|---|
 |||2018-11-20T19:15:05.611Z|e8213ef3-ef92-460e-a542-46dccd700c16||||42b9220c-7e29-4fd8-9cf7-9f811e851f8e|2018-11-20T19:15:05.611Z|Bschmoll Inc.-Threats|
 
 
 ### 18. uptycs-get-parent-information
+
 ---
 get the parent process information for a particular child process
+
 ##### Base Command
 
 `uptycs-get-parent-information`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1706,9 +1839,11 @@ get the parent process information for a particular child process
 
 
 ##### Command Example
+
 `uptycs-get-parent-information asset_id="984d4a7a-9f3a-580a-a3ef-2841a561669b" child_add_time="2019-01-29 16:14:27.000" parent=484`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.Parent": [
@@ -1731,18 +1866,23 @@ get the parent process information for a particular child process
 ```
 
 ##### Human Readable Output
+
 ### Parent process information
+
 |upt_hostname|parent|pid|name|path|cmdline|
 |---|---|---|---|---|---|
 |kyle-mbp-work|1|484|VBoxSVC|/Applications/VirtualBox.app/Contents/MacOS/VBoxSVC|/Applications/VirtualBox.app/Contents/MacOS/VBoxSVC --auto-shutdown|
 
 
 ### 19. uptycs-post-threat-source
+
 ---
 post a new threat source to your threat sources in Uptycs
+
 ##### Base Command
 
 `uptycs-post-threat-source`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1758,22 +1898,28 @@ post a new threat source to your threat sources in Uptycs
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-post-threat-source  name="testThreatSources" description="testing Uptycs API" entry_id="4322@27d41dbb-9676-4408-88bf-51193334caf7" filename="threatSourcesTest.csv"`
 
 ##### Context Example
+
 ```
 
 ```
 
 ##### Human Readable Output
+
 Uptycs Posted Threat Source
 
 ### 20. uptycs-get-users
+
 ---
 get a list of Uptycs users
+
 ##### Base Command
 
 `uptycs-get-users`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1795,9 +1941,11 @@ get a list of Uptycs users
 
 
 ##### Command Example
+
 `uptycs-get-users limit=1`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.Users": [
@@ -1815,18 +1963,23 @@ get a list of Uptycs users
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Users
+
 |name|email|id|admin|active|createdAt|updatedAt|
 |---|---|---|---|---|---|---|
 |B schmoll|goo@test.com|33436e24-f30f-42d0-8438-d948be12b5af|true|true|2018-09-24T17:24:38.635Z|2018-09-25T16:10:28.140Z|
 
 
 ### 21. uptycs-get-asset-groups
+
 ---
 get Uptycs asset groups
+
 ##### Base Command
 
 `uptycs-get-asset-groups`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1845,9 +1998,11 @@ get Uptycs asset groups
 
 
 ##### Command Example
+
 `uptycs-get-asset-groups `
 
 ##### Context Example
+
 ```
 {
     "Uptycs.AssetGroups": [
@@ -1874,7 +2029,9 @@ get Uptycs asset groups
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Users
+
 |id|name|description|objectType|custom|createdAt|updatedAt|
 |---|---|---|---|---|---|---|
 |106eef5e-c3a6-44eb-bb3d-1a2087cded3d|assets|Default asset group|ASSET|false|2018-09-24T17:24:45.604Z|2018-09-24T17:24:45.604Z|
@@ -1882,11 +2039,14 @@ get Uptycs asset groups
 
 
 ### 22. uptycs-get-user-asset-groups
+
 ---
 get a list of users in a particular asset group
+
 ##### Base Command
 
 `uptycs-get-user-asset-groups`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1899,9 +2059,11 @@ get a list of users in a particular asset group
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-get-user-asset-groups asset_group_id="106eef5e-c3a6-44eb-bb3d-1a2087cded3d"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.UserGroups": {
@@ -1922,18 +2084,23 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs User Asset Groups
+
 |B schmoll|Mike Boldi|Milan Shah|
 |---|---|---|
 |email: goo@test.com<br/>id: 33436e24-f30f-42d0-8438-d948be12b5af|email: woo@test.com<br/>id: e43b0119-8d23-4ea2-9fd9-3a9ff14fc195|email: foo@test.com<br/>id: 89d26aa4-f0a8-48d9-a174-ce5285d9dd60|
 
 
 ### 23. uptycs-get-threat-indicator
+
 ---
 retrieve information about a specific threat indicator using a unique threat indicator id
+
 ##### Base Command
 
 `uptycs-get-threat-indicator`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1955,9 +2122,11 @@ retrieve information about a specific threat indicator using a unique threat ind
 
 
 ##### Command Example
+
 `uptycs-get-threat-indicator indicator_id="0ab619bb-cfe0-4db0-8a31-0a71fcc2a362"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.ThreatIndicator": {
@@ -1977,18 +2146,23 @@ retrieve information about a specific threat indicator using a unique threat ind
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Threat Indicator
+
 |id|indicator|description|indicatorType|createdAt|isActive|threatId|
 |---|---|---|---|---|---|---|
 |0ab619bb-cfe0-4db0-8a31-0a71fcc2a362|92.242.140.21|nishant.uptycs.io|IPv4|2019-01-10T21:25:49.280Z|true|60e2e9eb-f756-4a4d-a85d-55aa8167d59d|
 
 
 ### 24. uptycs-get-threat-source
+
 ---
 retrieve information about a specific threat source
+
 ##### Base Command
 
 `uptycs-get-threat-source`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2001,9 +2175,11 @@ retrieve information about a specific threat source
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-get-threat-source threat_source_id="20ee2177-4fdc-4070-a046-945048373dd1"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.ThreatSources": {
@@ -2019,18 +2195,23 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Threat Sources
+
 |name|description|url|enabled|custom|createdAt|lastDownload|
 |---|---|---|---|---|---|---|
 |Debian Linux vulnerabilities|Debian Linux vulnerabilities|`https://vulners.com/api/v3/archive/collection/?type=debian`|true|false|2018-09-14T18:43:54.832Z||
 
 
 ### 25. uptycs-get-process-events
+
 ---
 find process events which are running or have run on a registered Uptycs asset
+
 ##### Base Command
 
 `uptycs-get-process-events`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2060,9 +2241,11 @@ find process events which are running or have run on a registered Uptycs asset
 
 
 ##### Command Example
+
 `uptycs-get-process-events limit=1`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.ProcessEvents": [
@@ -2081,18 +2264,23 @@ find process events which are running or have run on a registered Uptycs asset
 ```
 
 ##### Human Readable Output
+
 ### Process events
+
 |upt_hostname|pid|path|upt_time|parent|cmdline|
 |---|---|---|---|---|---|
 |kyle-mbp-work|60067|/usr/sbin/spctl|2019-07-19 09:29:47.000|60065|/usr/sbin/spctl --status |
 
 
 ### 26. uptycs-get-process-event-information
+
 ---
 get information for a particular process event
+
 ##### Base Command
 
 `uptycs-get-process-event-information`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2118,9 +2306,11 @@ get information for a particular process event
 
 
 ##### Command Example
+
 `uptycs-get-process-event-information asset_id="984d4a7a-9f3a-580a-a3ef-2841a561669b" pid=3318 time="2019-02-28 18:43:04.000"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.ProcEvent": [
@@ -2139,18 +2329,23 @@ get information for a particular process event
 ```
 
 ##### Human Readable Output
+
 ### Process event information
+
 |upt_hostname|parent|pid|path|cmdline|
 |---|---|---|---|---|
 |kyle-mbp-work|1|3318|/dev/console|xpcproxy com.apple.WebKit.WebContent.024FB342-0ECE-4E09-82E1-B9C9CF5F9CDF 3266 |
 
 
 ### 27. uptycs-get-socket-events
+
 ---
 find processes which opened a socket
+
 ##### Base Command
 
 `uptycs-get-socket-events`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2186,9 +2381,11 @@ find processes which opened a socket
 
 
 ##### Command Example
+
 `uptycs-get-socket-events limit=1 remote_address="98.239.146.208"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.SocketEvents": [
@@ -2212,18 +2409,23 @@ find processes which opened a socket
 ```
 
 ##### Human Readable Output
+
 ### Socket events
+
 |upt_hostname|pid|local_address|remote_address|upt_time|local_port|action|
 |---|---|---|---|---|---|---|
 |kyle-mbp-work|89|0.0.0.0|17.142.171.8|2019-07-19 09:29:52.000|47873|connect|
 
 
 ### 28. uptycs-get-parent-event-information
+
 ---
 find information for parent process events which are running or have run on a registered Uptycs assert
+
 ##### Base Command
 
 `uptycs-get-parent-event-information`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2249,9 +2451,11 @@ find information for parent process events which are running or have run on a re
 
 
 ##### Command Example
+
 `uptycs-get-parent-event-information child_add_time="2019-05-07 12:24:34.000" parent=9347 host_name_is="kyle-mbp-work"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.ParentEvent": [
@@ -2270,18 +2474,23 @@ find information for parent process events which are running or have run on a re
 ```
 
 ##### Human Readable Output
+
 ### Parent process event information
+
 |upt_hostname|parent|pid|path|cmdline|
 |---|---|---|---|---|
 |kyle-mbp-work|75|9347|/sbin/mount|/sbin/mount -t hfs -o -u=99,-g=99,-m=755,nodev,noowners,nosuid,owners,nobrowse,-t=4m /dev/disk2s2 /Volumes/Time Machine Backups |
 
 
 ### 29. uptycs-get-socket-event-information
+
 ---
 get information for a particular socket event
+
 ##### Base Command
 
 `uptycs-get-socket-event-information`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2312,9 +2521,11 @@ get information for a particular socket event
 
 
 ##### Command Example
+
 `uptycs-get-socket-event-information ip="18.213.163.112" time="2019-03-18 14:34:31.000"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.SocketEvent": [
@@ -2338,18 +2549,23 @@ get information for a particular socket event
 ```
 
 ##### Human Readable Output
+
 ### Socket event information
+
 |upt_hostname|pid|local_address|remote_address|upt_time|local_port|action|
 |---|---|---|---|---|---|---|
 |kyle-mbp-work|16570|0.0.0.0|18.213.163.112|2019-03-18 14:34:31.000|47873|connect|
 
 
 ### 30. uptycs-get-asset-tags
+
 ---
 Retrieve a list of tags for a particular asset
+
 ##### Base Command
 
 `uptycs-get-asset-tags`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2362,9 +2578,11 @@ Retrieve a list of tags for a particular asset
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-get-asset-tags asset_id="984d4a7a-9f3a-580a-a3ef-2841a561669b"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.AssetTags": [
@@ -2379,7 +2597,9 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Asset Tags for asset id: 984d4a7a-9f3a-580a-a3ef-2841a561669b
+
 |Tags|
 |---|
 |Uptycs=work laptop|
@@ -2391,11 +2611,14 @@ There is no context output for this command.
 
 
 ### 31. uptycs-get-saved-queries
+
 ---
 Retrieve a saved query or list of all saved queries
+
 ##### Base Command
 
 `uptycs-get-saved-queries`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2410,9 +2633,11 @@ Retrieve a saved query or list of all saved queries
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-get-saved-queries name="test_saved_query"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.SavedQueries": [
@@ -2445,18 +2670,23 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Saved Queries
+
 |name|description|query|executionType|grouping|id|
 |---|---|---|---|---|---|
 |test_saved_query|this is a test query|select * from upt_assets limit 1|global|""|16de057d-6f69-46b0-80d0-46cb9348c8fe|
 
 
 ### 32. uptycs-run-saved-query
+
 ---
 Run a saved query
+
 ##### Base Command
 
 `uptycs-run-saved-query`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2474,9 +2704,11 @@ Run a saved query
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-run-saved-query name="test_saved_query"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.RunQuery": [
@@ -2516,18 +2748,23 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Query Results
+
 |city_id|updated_at|hardware_vendor|disabled|last_enrolled_at|deleted_at|gateway|cpu_brand|osquery_version|id|hardware_model|os_version|live|location|latitude|host_name|status|os_key|description|object_group_id|last_activity_at|hardware_serial|created_at|longitude|memory_mb|logical_cores|os_flavor|cores|os|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |6ee1f7ef-ad7d-46b1-9f74-384299c90830|2018-09-25 16:14:28.898|Dell Inc.|false|2018-09-25 16:14:28.863||50.79.168.117|Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz|3.2.6.15-Uptycs|4c4c4544-0044-3910-8033-c8c04f5a4832|PowerEdge T30|10.0.14393|false|United States|37.751|caol|active|windows_10.0||106eef5e-c3a6-44eb-bb3d-1a2087cded3d|2018-09-26 17:03:16.187|HD93ZH2|2018-09-25 16:14:28.881|-97.822|16250|4|windows|4|Microsoft Windows Server 2016 Datacenter|
 
 
 ### 33. uptycs-post-saved-query
+
 ---
 Save a query to the Uptycs DB
+
 ##### Base Command
 
 `uptycs-post-saved-query`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2545,9 +2782,11 @@ Save a query to the Uptycs DB
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-post-saved-query name="process_query" query="select * from processes where name=:name limit 1" execution_type=global description="This is a test query with a variable argument for the column 'name’"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.PostedQuery": {
@@ -2587,17 +2826,22 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Posted Query
+
 |name|type|description|query|executionType|grouping|custom|
 |---|---|---|---|---|---|---|
 |process_query|default|This is a test query with a variable argument for the column 'name’|select * from processes where name=:name limit 1|global|""|true|
 
 ### 34. uptycs-get-carves
+
 ---
 Get the list of carves file from a specific path.
+
 ##### Base Command
 
 `uptycs-get-carves`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2622,9 +2866,11 @@ Get the list of carves file from a specific path.
 | Uptycs.Carves.deleted_at | number | Time at which the carve was deleted |
 
 ##### Command Example
+
 `uptycs-get-carves path="/etc/"`
 
 ##### Context Example
+
 ```
  {
     "Uptycs.Carves": [
@@ -2646,7 +2892,9 @@ Get the list of carves file from a specific path.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Carves
+
 |id|assetId|path|createdAt|updatedAt|status|assetHostName|offset|length|deletedUserName|deletedAt|
 |---|---|---|---|---|---|---|---|---|---|---|
 |e037cb0b-e9b0-4061-8966-5d3404cef9f6|2fb29ec9-5c16-4021-af7c-65528fead280|/etc/hosts|2023-05-19T06:58:12.304Z|2023-05-19T06:58:13.576Z|FINISHED|uptycs-testhost|0|197|||
@@ -2654,11 +2902,14 @@ Get the list of carves file from a specific path.
 
 
 ### 35. uptycs-get-carves-link
+
 ---
 Get the url of a carved file using uuid
+
 ##### Base Command
 
 `uptycs-get-carves-link`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2673,9 +2924,11 @@ Get the url of a carved file using uuid
 | Uptycs.CarvesLink.url | string | url of the carved file |
 
 ##### Command Example
+
 `uptycs-get-carves-link carve_id="e037cb0b-e9b0-4061-8966-5d3404cef9f6"`
 
 ##### Context Example
+
 ```
  {
     "Uptycs.CarvesLink.url": "https://uptycs-carves-xxxxx.s3.us-xxxx-2.amazonaws.com/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/xxxx...."
@@ -2683,18 +2936,23 @@ Get the url of a carved file using uuid
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Carves
+
 |url|
 |---|
 |https://uptycs-carves-xxxxx.s3.us-xxxx-2.amazonaws.com/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/xxxx....|
 
 
 ### 36. uptycs-get-carves-download-file
+
 ---
 Download a carved file using uuid
+
 ##### Base Command
 
 `uptycs-get-carves-download-file`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2708,6 +2966,7 @@ There is no context output for this command.
 
 
 ##### Command Example
+
 `uptycs-get-carves-download-file carve_id="e037cb0b-e9b0-4061-8966-5d3404cef9f6"`
 
 ##### Context Example
@@ -2715,17 +2974,22 @@ There is no context output for this command.
 There is no context output for this command.
 
 ##### Human Readable Output
+
 ### Uptycs Carves file download
+
 `Uploaded file: e037cb0b-e9b0-4061-8966-5d3404cef9f6.tar`
 
 
 
 ### 37. uptycs-get-asset-with-id
+
 ---
 Get an Uptycs asset details.
+
 ##### Base Command
 
 `uptycs-get-asset-with-id`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2764,9 +3028,11 @@ Get an Uptycs asset details.
 
 
 ##### Command Example
+
 `uptycs-get-asset-with-id asset_id="984d4a7a-9f3a-580a-a3ef-2841a561669b"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.Asset": [
@@ -2802,18 +3068,23 @@ Get an Uptycs asset details.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs Assets
+
 |status|live|disabled|quarantinedStatus|tags|lastEnrolledAt|osVersion|osqueryVersion|agentVersion|createdAt|osFlavor|hostName|gateway|os|osKey|objectGroupId|cpuBrand|hardwareModel|hardwareSerial|hardwareVendor|cores|logicalCores|memoryMb|arch|osDisplay|location|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |active|true|false|false|assets,macos,darwin|2019-07-19 14:47:27.485 |10.14.5 |3.x.x.x-Uptycs |5.x.x.x-Uptycs|2018-09-25 16:38:16.440|darwin |kyle-mbp-work |x.y.z.a|Mac OS X |darwin_10.14.5|984d4a7a-9f3a-580a-a3ef-2841a561669b|Intel(R) Xeon(R) CPU E5-2686 v4 @ 2.30GHz|HVM domU|ec272101-e5c1-58b2-f847-c439abdadcf4|Xen|2|2|8192|x86_64|macOS 10.14.5|United States|
 
 
 ### 38. uptycs-get-tag
+
 ---
 Return Uptycs asset tag details
+
 ##### Base Command
 
 `uptycs-get-tag`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2848,9 +3119,11 @@ Return Uptycs asset tag details
 
 
 ##### Command Example
+
 `uptycs-get-tag tag_id="984d4a7a-9f3a-580a-a3ef-2841a561669b"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.tag": [
@@ -2881,18 +3154,23 @@ Return Uptycs asset tag details
 ```
 
 ##### Human Readable Output
+
 ### Uptycs tag
+
 |tag|resourceType|seedId|key|value|flagProfileId|customProfileId|complianceProfileId|processBlockRuleId|dnsBlockRuleId|windowsDefenderPreferenceId|createdBy|updatedBy|createdAt|updatedAt|status|source|system|custom|tagRuleId|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |asset-group=Asset test 1|asset|14e579e4-3661-4bd6-ace3-082cf6fc4ec5|asset-group|Asset test 1|5d894e7c-5606-4380-8711-123ee2a7d96c|||ec272101-e5c1-58b2-f847-c439abdadcf4|984d4a7a-9f3a-580a-a3ef-2841a561669b||testuser|testuser|2019-07-19 14:47:27.485|2019-07-19 14:47:27.485|active|direct|false|false||
 
 
 ### 39. uptycs-get-tags
+
 ---
 Return a list of Uptycs asset tags with details.
+
 ##### Base Command
 
 `uptycs-get-tags`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2929,9 +3207,11 @@ Return a list of Uptycs asset tags with details.
 
 
 ##### Command Example
+
 `uptycs-get-tags key="asset-group"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.tags": [
@@ -2962,18 +3242,23 @@ Return a list of Uptycs asset tags with details.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs tags
+
 |tag|resourceType|seedId|key|value|flagProfileId|customProfileId|complianceProfileId|processBlockRuleId|dnsBlockRuleId|windowsDefenderPreferenceId|createdBy|updatedBy|createdAt|updatedAt|status|source|system|custom|tagRuleId|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |asset-group=Asset test 1|asset|14e579e4-3661-4bd6-ace3-082cf6fc4ec5|asset-group|Asset test 1|5d894e7c-5606-4380-8711-123ee2a7d96c|||ec272101-e5c1-58b2-f847-c439abdadcf4|984d4a7a-9f3a-580a-a3ef-2841a561669b||testuser|testuser|2019-07-19 14:47:27.485|2019-07-19 14:47:27.485|active|direct|false|false||
 
 
 ### 40. uptycs-delete-tag
+
 ---
 Delete an Uptycs asset tag
+
 ##### Base Command
 
 `uptycs-delete-tag`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2986,23 +3271,30 @@ Delete an Uptycs asset tag
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-delete-tag tag_id="14e579e4-3661-4bd6-ace3-082cf6fc4ec5"`
 
 ##### Context Example
+
 ```
 ```
 
 ##### Human Readable Output
+
 ### Uptycs deleted tag
+
 Uptycs Deleted tag
 
 
 ### 41. uptycs-create-lookuptable
+
 ---
 Create a new Uptycs lookup table.
+
 ##### Base Command
 
 `uptycs-create-lookuptable`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3020,9 +3312,11 @@ Create a new Uptycs lookup table.
 | Uptycs.lookuptable.name | string | Name of the created lookup table |
 
 ##### Command Example
+
 `uptycs-create-lookuptable name="test_table" id_field="remote_address" description="look up table with remote address"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.lookuptable": [
@@ -3035,18 +3329,23 @@ Create a new Uptycs lookup table.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs create lookup table
+
 |id|name|
 |---|---|
 |984d4a7a-9f3a-580a-a3ef-2841a561669b|test_table|
 
 
 ### 42. uptycs-post-lookuptable-data
+
 ---
 Update csv data for a look up table.
+
 ##### Base Command
 
 `uptycs-post-lookuptable-data`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3060,22 +3359,28 @@ Update csv data for a look up table.
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-post-lookuptable-data table_id="984d4a7a-9f3a-580a-a3ef-2841a561669b" filename="lookuptable.csv"`
 
 ##### Context Example
+
 ```
 ```
 
 ##### Human Readable Output
+
 Uptycs Posted lookup table data
 
 
 ### 43. uptycs-edit-lookuptable
+
 ---
 Edit an Uptycs lookup table
+
 ##### Base Command
 
 `uptycs-edit-lookuptable`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3090,9 +3395,11 @@ Edit an Uptycs lookup table
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-edit-lookuptable table_id="984d4a7a-9f3a-580a-a3ef-2841a561669b" name="test_table_new" description="look up table with remote address"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.lookuptable": [
@@ -3118,18 +3425,23 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs edit lookup table
+
 |active|createdAt|createdBy|customerId|dataLookupTable|description|fetchRowsquery|forRuleEngine|id|idField|name|rowCount|seedId|updatedAt|updatedBy|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |TRUE|2023-04-21T08:27:20.888Z|f976bda8-d5dc-468f-8283-20d5368352e2|b1c3b08c-eedd-4b94-8ba0-9ca322401016|null|null|SELECT id_field_value,data FROM upt_lookup_rows WHERE lookup_table_id = '3fdb051b-b38b-4792-9daa-0a88ba4fae53'|TRUE|3fdb051b-b38b-4792-9daa-0a88ba4fae53|remote_address|Test 1|24|null|2023-04-25T04:11:04.664Z|f976bda8-d5dc-468f-8283-20d5368352e2|
 
 
 ### 44. uptycs-get-lookuptable
+
 ---
 Get an Uptycs lookup table details
+
 ##### Base Command
 
 `uptycs-get-lookuptable`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3155,9 +3467,11 @@ Get an Uptycs lookup table details
 | Uptycs.lookuptable.fetchRowsquery | string | Query used to fetch rows |
 
 ##### Command Example
+
 `uptycs-get-lookuptable table_id="984d4a7a-9f3a-580a-a3ef-2841a561669b"`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.lookuptable": [
@@ -3183,18 +3497,23 @@ Get an Uptycs lookup table details
 ```
 
 ##### Human Readable Output
+
 ### Uptycs look up tables
+
 |active|createdAt|createdBy|customerId|dataLookupTable|description|fetchRowsquery|forRuleEngine|id|idField|name|rowCount|seedId|updatedAt|updatedBy|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |TRUE|2023-04-21T08:27:20.888Z|f976bda8-d5dc-468f-8283-20d5368352e2|b1c3b08c-eedd-4b94-8ba0-9ca322401016|null|null|SELECT id_field_value,data FROM upt_lookup_rows WHERE lookup_table_id = '3fdb051b-b38b-4792-9daa-0a88ba4fae53'|TRUE|3fdb051b-b38b-4792-9daa-0a88ba4fae53|remote_address|Test 1|24|null|2023-04-25T04:11:04.664Z|f976bda8-d5dc-468f-8283-20d5368352e2|
 
 
 ### 45. uptycs-get-lookuptables
+
 ---
 Get List of Uptycs lookup table details
+
 ##### Base Command
 
 `uptycs-get-lookuptables`
+
 ##### Input
 
 There are no arguments for this command.
@@ -3219,9 +3538,11 @@ There are no arguments for this command.
 | Uptycs.lookuptable.fetchRowsquery | string | Query used to fetch rows |
 
 ##### Command Example
+
 `uptycs-get-lookuptables`
 
 ##### Context Example
+
 ```
 {
     "Uptycs.lookuptables": [
@@ -3247,18 +3568,23 @@ There are no arguments for this command.
 ```
 
 ##### Human Readable Output
+
 ### Uptycs look up tables
+
 |active|createdAt|createdBy|customerId|dataLookupTable|description|fetchRowsquery|forRuleEngine|id|idField|name|rowCount|seedId|updatedAt|updatedBy|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |TRUE|2023-04-21T08:27:20.888Z|f976bda8-d5dc-468f-8283-20d5368352e2|b1c3b08c-eedd-4b94-8ba0-9ca322401016|null|null|SELECT id_field_value,data FROM upt_lookup_rows WHERE lookup_table_id = '3fdb051b-b38b-4792-9daa-0a88ba4fae53'|TRUE|3fdb051b-b38b-4792-9daa-0a88ba4fae53|remote_address|Test 1|24|null|2023-04-25T04:11:04.664Z|f976bda8-d5dc-468f-8283-20d5368352e2|
 
 
 ### 46. uptycs-delete-lookuptable
+
 ---
 Delete an Uptycs lookup table
+
 ##### Base Command
 
 `uptycs-delete-lookuptable`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3271,23 +3597,30 @@ Delete an Uptycs lookup table
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-delete-lookuptable table_id="984d4a7a-9f3a-580a-a3ef-2841a561669b"`
 
 ##### Context Example
+
 ```
 ```
 
 ##### Human Readable Output
+
 ### Uptycs deleted lookuptable
+
 Uptycs Deleted lookuptable
 
 
 ### 47. uptycs-delete-assets-tag
+
 ---
 Disassociate an asset with a tag
+
 ##### Base Command
 
 `uptycs-delete-assets-tag`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3301,24 +3634,30 @@ Disassociate an asset with a tag
 There is no context output for this command.
 
 ##### Command Example
+
 `uptycs-delete-asset-tag tag_id="14e579e4-3661-4bd6-ace3-082cf6fc4ec5" asset_id="984d4a7a-9f3a-580a-a3ef-2841a561669b"`
 
 ##### Context Example
+
 ```
 
 ```
 
 ##### Human Readable Output
+
 ### Uptycs delete assets tag
+
 Uptycs disassociated assets tags
 
 
 ## Additional Information
+
 ---
 
 In order to create an instance of the integration, a user API key and secret must be downloaded from the users Uptycs account.  After signing in, navigate to Configuration->Users.  At the bottom left of the screen you will see a window labeled "User API key".  Click download.  The downloaded file will have all the information necessary to create the instance.
 
 ## Known Limitations
+
 ---
 
 While the Cortex XSOAR-Uptycs integration provides multiple commands with which to access the Uptycs backend, not all features are supported.  In particular, configuration changes are best made using the Uptycs UI.  Many of the commands have a limit set to reduce the number of rows returned from a query or api call.  The limit can be raised, or turned off, however, this may cause the queries take longer to return and potentially return large numbers of rows.  When writing queries, it can sometimes be easier to test using the Uptycs UI rather than the integration.

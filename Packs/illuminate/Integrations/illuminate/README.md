@@ -1,19 +1,25 @@
 ## Overview
+
 ---
 
 Deprecated. Use Analyst1 integration instead.
 
 This integration was integrated and tested with version 1.8.7 of illuminate
+
 ## illuminate Playbook
+
 ---
 illuminate Basic Indicator Enrichment: This is a simple playbook that can apply on top of an incident created from an indicator that will determine the indicator type and then properly enrich it with the associated illuminate integration command.
 
 ## Use Cases
+
 ---
+
 * When you wish to have more information on a given indicator
 * When you use both Cortex XSOAR and illuminate and wish to have easy linking between the two
 
 ## Configure illuminate on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -27,9 +33,11 @@ illuminate Basic Indicator Enrichment: This is a simple playbook that can apply 
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. domain
 2. email
 3. ip
@@ -39,22 +47,26 @@ After you successfully execute a command, a DBot message appears in the War Room
 7. illuminate-enrich-mutex
 8. illuminate-enrich-http-request
 9. url
+
 ### 1. domain
+
 ---
 Queries the illuminate REST API and enriches the given domain with illuminate Indicator data
+
 ##### Base Command
 
 `domain`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | domain | The domain for which to return information. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Domain.Name | string | The domain name, for example, "google.com". | 
 | Illuminate.Domain.ID | number | The indicator's unique ID in illuminate. | 
@@ -79,9 +91,11 @@ Queries the illuminate REST API and enriches the given domain with illuminate In
 
 
 ##### Command Example
+
 ```!domain domain=abc.com```
 
 ##### Context Example
+
 ```
 {
     "Illuminate.Domain": {
@@ -118,28 +132,33 @@ Queries the illuminate REST API and enriches the given domain with illuminate In
 ```
 
 ##### Human Readable Output
+
 ### illuminate Domain Information
+
 |Active|EvidenceCount|ID|IlluminateLink|Indicator|ReportedDates|
 |---|---|---|---|---|---|
 | true | 1 | 2043650 | https://partner.analystplatform.com/indicators/2043650 | abc.com | 2018-06-12 |
 
 
 ### 2. email
+
 ---
 Queries the illuminate REST API and enriches the given email with illuminate indicator data.
+
 ##### Base Command
 
 `email`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | email | The email for which to return information. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Email.From | string | The sender of the email. | 
 | Illuminate.Email.ID | number | The unique identifier of the given Indicator in illuminate | 
@@ -163,9 +182,11 @@ Queries the illuminate REST API and enriches the given email with illuminate ind
 
 
 ##### Command Example
+
 ```!email email=001toxic@gmail.com```
 
 ##### Context Example
+
 ```
 {
     "DBotScore": {
@@ -207,28 +228,33 @@ Queries the illuminate REST API and enriches the given email with illuminate ind
 ```
 
 ##### Human Readable Output
+
 ### illuminate Email Information
+
 |Active|Actors|EvidenceCount|ID|IlluminateLink|Indicator|ReportedDates|
 |---|---|---|---|---|---|---|
 | true | id = -2, name = Unknown | 1 | 1637756 | https://partner.analystplatform.com/indicators/1637756 | 001toxic@gmail.com | 2018-02-05 |
 
 
 ### 3. ip
+
 ---
 Queries the illuminate REST API and enriches the given IP address with illuminate indicator data.
+
 ##### Base Command
 
 `ip`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | ip | The IP address for which to return information. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | IP.Address | string | The IP address. | 
 | Illuminate.Ip.ID | number | The indicator's unique ID in illuminate. | 
@@ -252,9 +278,11 @@ Queries the illuminate REST API and enriches the given IP address with illuminat
 
 
 ##### Command Example
+
 ```!ip ip=0.154.17.105```
 
 ##### Context Example
+
 ```
 {
     "IP": {
@@ -291,28 +319,33 @@ Queries the illuminate REST API and enriches the given IP address with illuminat
 ```
 
 ##### Human Readable Output
+
 ### illuminate Ip Information
+
 |Active|EvidenceCount|ID|IlluminateLink|Indicator|ReportedDates|
 |---|---|---|---|---|---|
 | true | 1 | 51469 | https://partner.analystplatform.com/indicators/51469 | 0.154.17.105 | 2014-01-04 |
 
 
 ### 4. file
+
 ---
 Queries the illuminate REST API and enriches the given file with illuminate indicator data.
+
 ##### Base Command
 
 `file`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | file | The file for which to return information. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
@@ -338,9 +371,11 @@ Queries the illuminate REST API and enriches the given file with illuminate indi
 
 
 ##### Command Example
+
 ```!file file=00000000000000000000000000000000```
 
 ##### Context Example
+
 ```
 {
     "Illuminate.File": {
@@ -390,28 +425,33 @@ Queries the illuminate REST API and enriches the given file with illuminate indi
 ```
 
 ##### Human Readable Output
+
 ### illuminate File Information
+
 |Active|ActivityDates|Actors|EvidenceCount|ID|IlluminateLink|Indicator|ReportedDates|
 |---|---|---|---|---|---|---|---|
 | true | 2018-08-02,<br/>2019-09-01 | id = -4, name = Multiple Actors Extracted,<br/>id = 150, name = FIN8 | 2 | 1527155 | https://partner.analystplatform.com/indicators/1527155 | 00000000000000000000000000000000 | 2019-06-25,<br/>2020-01-09 |
 
 
 ### 5. illuminate-enrich-string
+
 ---
 Queries the illuminate REST API and enriches the given string with illuminate indicator data
+
 ##### Base Command
 
 `illuminate-enrich-string`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | string | The string for which to return information. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Illuminate.String.ID | number | The unique identifier of the given Indicator in illuminate | 
 | Illuminate.String.EvidenceCount | number | The number of evidence reports of the given indicator in illuminate. | 
@@ -430,9 +470,11 @@ Queries the illuminate REST API and enriches the given string with illuminate in
 
 
 ##### Command Example
+
 ```!illuminate-enrich-string string=??```
 
 ##### Context Example
+
 ```
 {
     "Illuminate.String": {
@@ -469,28 +511,33 @@ Queries the illuminate REST API and enriches the given string with illuminate in
 ```
 
 ##### Human Readable Output
+
 ### illuminate String Information
+
 |Active|ActivityDates|Actors|EvidenceCount|ID|IlluminateLink|Indicator|ReportedDates|
 |---|---|---|---|---|---|---|---|
 | true | 2014-12-11,<br/>2014-12-14,<br/>2014-12-19,<br/>2014-12-20 | id = -2, name = Unknown | 15 | 90548 | https://partner.analystplatform.com/indicators/90548 | ?? | 2014-12-12,<br/>2014-12-14,<br/>2014-12-19,<br/>2014-12-20 |
 
 
 ### 6. illuminate-enrich-ipv6
+
 ---
 Queries the illuminate REST API and enriches the given IP address with illuminate indicator data.
+
 ##### Base Command
 
 `illuminate-enrich-ipv6`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | ip | The IP address for which to return information. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Illuminate.Ipv6.ID | number | The unique identifier of the given Indicator in illuminate | 
 | Illuminate.Ipv6.EvidenceCount | number | The number of evidence reports of the given indicator in illuminate. | 
@@ -509,9 +556,11 @@ Queries the illuminate REST API and enriches the given IP address with illuminat
 
 
 ##### Command Example
+
 ```!illuminate-enrich-ipv6 ip=16::```
 
 ##### Context Example
+
 ```
 {
     "Illuminate.Ipv6": {
@@ -537,28 +586,33 @@ Queries the illuminate REST API and enriches the given IP address with illuminat
 ```
 
 ##### Human Readable Output
+
 ### illuminate Ipv6 Information
+
 |Active|ActivityDates|EvidenceCount|ID|IlluminateLink|Indicator|ReportedDates|
 |---|---|---|---|---|---|---|
 | true | 2018-09-08 | 1 | 2623838 | https://partner.analystplatform.com/indicators/2623838 | 16:: | 2015-05-13 |
 
 
 ### 7. illuminate-enrich-mutex
+
 ---
 Queries the illuminate REST API and enriches the given mutex with illuminate indicator data.
+
 ##### Base Command
 
 `illuminate-enrich-mutex`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | mutex | The mutex to query information for | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Illuminate.Mutex.ID | number | The unique identifier of the given Indicator in illuminate | 
 | Illuminate.Mutex.EvidenceCount | number | The number of evidence reports of the given indicator in illuminate. | 
@@ -577,9 +631,11 @@ Queries the illuminate REST API and enriches the given mutex with illuminate ind
 
 
 ##### Command Example
+
 ```!illuminate-enrich-mutex mutex=??```
 
 ##### Context Example
+
 ```
 {
     "Illuminate.Mutex": {
@@ -619,28 +675,33 @@ Queries the illuminate REST API and enriches the given mutex with illuminate ind
 ```
 
 ##### Human Readable Output
+
 ### illuminate Mutex Information
+
 |Active|ActivityDates|Actors|EvidenceCount|ID|IlluminateLink|Indicator|ReportedDates|
 |---|---|---|---|---|---|---|---|
 | true | 2015-01-06,<br/>2015-01-07,<br/>2015-01-14,<br/>2015-02-23,<br/>2017-08-05,<br/>2017-08-06 | id = -2, name = Unknown | 6 | 95267 | https://partner.analystplatform.com/indicators/95267 | ?? | 2015-01-07,<br/>2015-01-14,<br/>2015-02-23,<br/>2017-08-05,<br/>2017-08-06 |
 
 
 ### 8. illuminate-enrich-http-request
+
 ---
 Queries the illuminate REST API and enriches the given HTTP request with illuminate indicator data.
+
 ##### Base Command
 
 `illuminate-enrich-http-request`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | http-request | The HTTP request for which to return information. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Illuminate.Httprequest.ID | number | The unique identifier of the given Indicator in illuminate | 
 | Illuminate.Httprequest.EvidenceCount | number | The number of evidence reports of the given indicator in illuminate. | 
@@ -659,9 +720,11 @@ Queries the illuminate REST API and enriches the given HTTP request with illumin
 
 
 ##### Command Example
+
 ```!illuminate-enrich-http-request http-request=/~```
 
 ##### Context Example
+
 ```
 {
     "Illuminate.Httprequest": {
@@ -685,28 +748,33 @@ Queries the illuminate REST API and enriches the given HTTP request with illumin
 ```
 
 ##### Human Readable Output
+
 ### illuminate Httprequest Information
+
 |Active|ConfidenceLevel|EvidenceCount|ID|IlluminateLink|Indicator|ReportedDates|
 |---|---|---|---|---|---|---|
 | true | high | 1 | 2885382 | https://partner.analystplatform.com/indicators/2885382 | /~ | 2020-01-06 |
 
 
 ### 9. url
+
 ---
 Queries the illuminate REST API and enriches the given URL with illuminate indicator data.
+
 ##### Base Command
 
 `url`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | url | The URL for which to return information. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | URL.Data | String | The URL. | 
 | Illuminate.Url.ID | number | The unique identifier of the given Indicator in illuminate | 
@@ -730,9 +798,11 @@ Queries the illuminate REST API and enriches the given URL with illuminate indic
 
 
 ##### Command Example
+
 ```!url url=104.218.120.128/check.aspx```
 
 ##### Context Example
+
 ```
 {
     "URL": {
@@ -776,7 +846,9 @@ Queries the illuminate REST API and enriches the given URL with illuminate indic
 ```
 
 ##### Human Readable Output
+
 ### illuminate Url Information
+
 |Active|ActivityDates|Actors|EvidenceCount|ID|IlluminateLink|Indicator|ReportedDates|
 |---|---|---|---|---|---|---|---|
 | true | 2018-12-08 | id = 178, name = APT33 | 1 | 2699554 | https://partner.analystplatform.com/indicators/2699554 | 104.218.120.128/check.aspx | 2019-07-04 |

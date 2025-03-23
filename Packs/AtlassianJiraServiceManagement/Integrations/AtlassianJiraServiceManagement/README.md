@@ -180,6 +180,7 @@ Updates an existing object of specified object type ID. Either attributes or att
 #### Context Output
 
 There is no context output for this command.
+
 ### jira-asset-object-delete
 
 ***
@@ -198,6 +199,7 @@ Deletes an existing object of the specified object ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### jira-asset-object-get
 
 ***

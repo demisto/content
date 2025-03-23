@@ -10,9 +10,12 @@ This integration was integrated and tested with version 2 of SpyCloud
 | API Key of SpyCloud | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### spycloud-list-breaches
+
 ***
 Lists the breaches identified. By default this lists all breaches known in Spycloud. With the arguments it's possible to scope the results on date and keywords.
 
@@ -20,6 +23,7 @@ Lists the breaches identified. By default this lists all breaches known in Spycl
 #### Base Command
 
 `spycloud-list-breaches`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -44,8 +48,11 @@ Lists the breaches identified. By default this lists all breaches known in Spycl
 | SpyCloud.Breaches.id | Number | Unique breach ID | 
 
 #### Command example
+
 ```!spycloud-list-breaches```
+
 #### Context Example
+
 ```json
 {
     "SpyCloud": {
@@ -69,12 +76,14 @@ Lists the breaches identified. By default this lists all breaches known in Spycl
 #### Human Readable Output
 
 >### Results
+>
 >|acquisition_date|description|id|num_records|site|spycloud_publish_date|title|type|uuid|
 >|---|---|---|---|---|---|---|---|---|
 >| 2021-05-19T00:00:00Z | In x time, site Y was breached | 35911 | 45810 | examplers.com | 2022-05-19T00:00:00Z | Cool title | PRIVATE | 1111111-2222-34567-aaaa-9282829dddde |
 
 
 ### spycloud-get-breach-data
+
 ***
 Retrieves the breach details. While very similar to list-breaches, this command obtains one specific breach, which is easier for automation tasks
 
@@ -82,6 +91,7 @@ Retrieves the breach details. While very similar to list-breaches, this command 
 #### Base Command
 
 `spycloud-get-breach-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -104,8 +114,11 @@ Retrieves the breach details. While very similar to list-breaches, this command 
 | SpyCloud.Breaches.id | Number | Unique breach ID | 
 
 #### Command example
+
 ```!spycloud-get-breach-data id=37666```
+
 #### Context Example
+
 ```json
 {
     "SpyCloud": {
@@ -127,12 +140,14 @@ Retrieves the breach details. While very similar to list-breaches, this command 
 #### Human Readable Output
 
 >### Results
+>
 >|acquisition_date|description|id|num_records|site|spycloud_publish_date|title|type|uuid|
 >|---|---|---|---|---|---|---|---|---|
 >| 2021-05-13T00:00:00Z | Cool description of the threat | 37666 | 802751 | n/a | 2021-05-18T00:00:00Z | Cool title | PRIVATE | 11111111-2222-3333-44444444444444444 |
 
 
 ### spycloud-domain-data
+
 ***
 Get all the data from a monitored domain and the breaches occurred that relates with it. Can be scoped by domain, type and severity
 
@@ -141,6 +156,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `spycloud-domain-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -165,8 +181,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 | SpyCloud.Domain.password_plaintext | String | Plaintext password identified | 
 
 #### Command example
+
 ```!spycloud-domain-data domain=example.com since=2022-05-01```
+
 #### Context Example
+
 ```json
 {
     "SpyCloud": {
@@ -199,6 +218,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### Results
+>
 >|document_id|email|infected_time|password_plaintext|source_id|spycloud_publish_date|target_domain|username|
 >|---|---|---|---|---|---|---|---|
 >| 11111111-2222-3333-4444-555555555555 | sales@example.com | empty | empty | 37518 | 2022-01-12T00:00:00Z | empty | empty |
@@ -206,6 +226,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### spycloud-email-data
+
 ***
 Get all the data from a monitored email address and the breaches occurred that relates with it. Can be scoped by date, severity and breach
 
@@ -213,6 +234,7 @@ Get all the data from a monitored email address and the breaches occurred that r
 #### Base Command
 
 `spycloud-email-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -239,8 +261,11 @@ Get all the data from a monitored email address and the breaches occurred that r
 | SpyCloud.Emails.target_url | String | The target url of the credentials | 
 
 #### Command example
+
 ```!spycloud-email-data emailaddr=john.doe@example.com since=2020-08-01 until=2021-02-01```
+
 #### Context Example
+
 ```json
 {
     "SpyCloud": {
@@ -264,12 +289,14 @@ Get all the data from a monitored email address and the breaches occurred that r
 #### Human Readable Output
 
 >### Results
+>
 >|document_id|domain|email|password|source_id|spycloud_publish_date|target_url|user_browser|username|
 >|---|---|---|---|---|---|---|---|---|
 >| 11111111-2222-3333-4444-555555555555 | example.com | john.doe@example.com | empty | 38666 | 2021-10-21T00:00:00Z | empty | empty | empty 
 
 
 ### spycloud-watchlist-data
+
 ***
 Get all the data from a watchlist.
 
@@ -277,6 +304,7 @@ Get all the data from a watchlist.
 #### Base Command
 
 `spycloud-watchlist-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -302,8 +330,11 @@ Get all the data from a watchlist.
 | SpyCloud.Watchlist.domain | String | The domain involved of the watchlist \(if that type is selected\) | 
 
 #### Command example
+
 ```!spycloud-watchlist-data watchlist_type=email since=2022-02-11```
+
 #### Context Example
+
 ```json
 {
     "SpyCloud": {
@@ -324,6 +355,7 @@ Get all the data from a watchlist.
 #### Human Readable Output
 
 >### Results
+>
 >|breach_id|document_id|domain|email|password|spycloud_publish_date|target_url|username|
 >|---|---|---|---|---|---|---|---|
 >| 38666 | 11111111-2222-3333-4444-555555555555 | hotmail.com | john.doe@hotmail.com | empty | 2020-03-03T00:00:00Z | empty | empty |

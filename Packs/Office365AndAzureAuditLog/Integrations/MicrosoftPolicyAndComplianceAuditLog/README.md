@@ -1,4 +1,5 @@
 Use the integration to get logs from the O365 service.
+
 ## Configure Microsoft Policy And Compliance (Audit Log) in Cortex
 
 
@@ -12,6 +13,7 @@ Use the integration to get logs from the O365 service.
 
 
 ## Required Permissions To Search Audit Logs
+
 - The minimum required Exchange permissions are **Audit Logs** or **View-Only Audit Logs**.
 - Go to [The Microsoft Admin Portal](https://admin.microsoft.com/Adminportal#/homepage).
 - Click **Show All** --> **Roles** --> **Roles Assignments** --> **Exchange section**.
@@ -19,11 +21,13 @@ Use the integration to get logs from the O365 service.
 - For more information --> [How to assign permissions to search the audit log](https://docs.microsoft.com/en-us/microsoft-365/compliance/set-up-basic-audit?view=o365-worldwide#step-2-assign-permissions-to-search-the-audit-log).
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
 ### o365-auditlog-search
+
 ***
 Use the o365-search-auditlog command to search the unified audit log. This log contains events from Exchange Online, SharePoint Online, OneDrive for Business, Azure Active Directory, Microsoft Teams, Power BI, and other Microsoft 365 services. You can search for all events in a specified date range, or you can filter the results based on specific criteria, such as the action, the user who performed the action, or the target object.
 
@@ -31,6 +35,7 @@ Use the o365-search-auditlog command to search the unified audit log. This log c
 #### Base Command
 
 `o365-auditlog-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -83,9 +88,11 @@ Use the o365-search-auditlog command to search the unified audit log. This log c
 
 
 #### Command Example
+
 ```!o365-auditlog-search start_date="01/01/21" end_date="01/02/21" result_size=1```
 
 #### Context Example
+
 ```json
 {
     "O365AuditLog": {
@@ -157,6 +164,7 @@ Use the o365-search-auditlog command to search the unified audit log. This log c
 #### Human Readable Output
 
 >### Audit log from 01/01/2021 00:00:00 to 01/02/2021 00:00:00
+>
 >| Actor | ActorContextId | ActorIpAddress | ApplicationId | AzureActiveDirectoryEventType | ClientIP | CreationTime | ExtendedProperties | Id | InterSystemsId | IntraSystemId | LogonError | ModifiedProperties | ObjectId | Operation | OrganizationId | RecordType | ResultStatus | SupportTicketId | Target | TargetContextId | UserId | UserKey | UserType | Version | Workload
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| \[\{"ID":"ID","Type":0\},\{"ID":"user@example.com","Type":5\}\] | "ebac1a16\-81bf\-449b\-8d43\-5732c3c1d999" | "ClientIP" | "00000002\-0000\-0ff1\-ce00\-000000000000" | 1 | "ClientIP" | \{"value":"2021\-01\-01T23:59:56","DateTime":"Friday, January 1, 2021 11:59:56 PM"\} | \[\{"Name":"UserAgent","Value":"python\-requests/2.18.4"\},\{"Name":"UserAuthenticationMethod","Value":"1"\},\{"Name":"RequestType","Value":"OAuth2:Token"\},\{"Name":"ResultStatusDetail","Value":"UserError"\},\{"Name":"KeepMeSignedIn","Value":"false"\}\] | "8133912e\-b888\-4849\-b8fb\-070710b35400" | "4bf55773\-4137\-4d68\-b7f8\-ef8ef9c0235f" | "8133912e\-b888\-4849\-b8fb\-070710b35400" | "InvalidUserNameOrPassword" | "00000002\-0000\-0ff1\-ce00\-000000000000" | "UserLoginFailed" | "ebac1a16\-81bf\-449b\-8d43\-5732c3c1d999" | 15 | "Failed" | "" | \{"ID":"00000002\-0000\-0ff1\-ce00\-000000000000","Type":0\} | "ebac1a16\-81bf\-449b\-8d43\-5732c3c1d999" | "user@example.com" | "user@example.com" | 0 | 1 | "AzureActiveDirectory"

@@ -72,8 +72,11 @@ Search users. Only a user created as a "Team admin" is authorized to perform thi
 | Zimperium.User.validated | Boolean | The user's validated status. | 
 
 #### Command example
+
 ```!zimperium-users-search user_id="1" team_id="1"```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -109,6 +112,7 @@ Search users. Only a user created as a "Team admin" is authorized to perform thi
 #### Human Readable Output
 
 >### Users Search Results
+>
 >| Id | First Name | Last Name |Email|Created|Role|Teams|
 >|----|------------|-----------|---|---|---|---|
 >| 1  | name       | name      | email1@email.com | 2024-01-21T11:02:08.789+00:00 | scopeBounds: TEAM_BOUNDED<br/>name: Team Admin<br/>id: 1 | {'name': 'Default', 'id': '1'} |
@@ -193,8 +197,11 @@ Search devices.
 | Zimperium.Device.isJailbroken | Boolean | Whether the endpoint's device is jailbroken or not. | 
 
 #### Command example
+
 ```!zimperium-devices-search device_id="5"```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -281,6 +288,7 @@ Search devices.
 #### Human Readable Output
 
 >### Device Search Results
+>
 >|Risk Posture Name|Id|Model|Os|Bundle Id|Last Seen|
 >|---|---|---|---|---|---|
 >| ELEVATED | 5 | iphone145 | id: 2<br/>name: ios<br/>type: iOS<br/>version: 16.3<br/>versionUpgradeable: true<br/>maxOsVersion: 17.2<br/>osVersionId: 57106<br/>policyCompliant: false | com.zimperium | 2023-12-20 14:46:27 |
@@ -323,8 +331,11 @@ Gets a report.
 | Zimperium.Report.result | Number | The Zimperium report result. | 
 
 #### Command example
+
 ```!zimperium-report-get app_version_id="61" importance="Low"```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -406,6 +417,7 @@ Gets a report.
 #### Human Readable Output
 
 >### Report
+>
 >|Risk Type|Kind|Description|Location|Importance|
 >|---|---|---|---|---|
 >| security | Code Analysis | The app is using unity |  | Low |
@@ -509,8 +521,11 @@ Gets a report.
 | Zimperium.Threat.mitigatedAt | Date | The date when the Threat was mitigated. | 
 
 #### Command example
+
 ```!zimperium-threat-search after="3 month" team_id="33" limit=1```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -622,6 +637,7 @@ Gets a report.
 #### Human Readable Output
 
 >### Threat Search Result
+>
 >|Id|Severity Name|State|Vector Name|Threat Type Name|Os|Device Owner|Device Id|Team Name|Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|
 >| d7 | CRITICAL | 1 | Device | SYSTEM TAMPERING | android | user@email.com | 6 | Default | 2023-12-12 14:59:25 |
@@ -675,8 +691,11 @@ List the app versions.
 | Zimperium.AppVersion.managed | Boolean | Whether the app version is managed. | 
 
 #### Command example
+
 ```!zimperium-app-version-list bundle_id="com.url"```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -734,6 +753,7 @@ List the app versions.
 #### Human Readable Output
 
 >### App Version List
+>
 >|Id|Name|Bundle Id|Version|Platform|Security|Privacy|Classification|Developer Name|Created|Updated On|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 7 | Name | com.url | 2.12.0 | android | High | Low | LEGIT |  | 2023-12-11 14:24:28 | 2023-12-11 15:28:08 |
@@ -782,8 +802,11 @@ Gets a devices associated with a specific CVE.
 
 
 #### Command example
+
 ```!zimperium-get-devices-by-cve cve_id="CVE-2021-1886" limit=1```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -812,6 +835,7 @@ Gets a devices associated with a specific CVE.
 #### Human Readable Output
 
 >### Devices Associated with CVE-2021-1886
+>
 >|Id|Zdevice Id|Team Id|Os|
 >|---|---|---|---|
 >| 6 | 5 | 33 | id: 1<br/>name: android<br/>type: Android<br/>version: 7.1.1<br/>patchDate: 2017-09-01<br/>versionUpgradeable: true<br/>maxOsVersion: 10<br/>maxOsPatchDate: 20200901<br/>osVersionId: 57063<br/>policyCompliant: false |
@@ -859,8 +883,11 @@ Gets devices associated with a specific operating system version.
 | Zimperium.DeviceOsVersion.zdeviceId | String | The zdevice ID of the device. | 
 
 #### Command example
+
 ```!zimperium-devices-os-version os_version="9"```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -888,6 +915,7 @@ Gets devices associated with a specific operating system version.
 #### Human Readable Output
 
 >### Device Os Version
+>
 >|Id|Team Id|Os|
 >|---|---|---|
 >| 2a | 1 | id: 1<br/>name: android<br/>type: Android<br/>version: 9<br/>patchDate: 2019-08-05<br/>versionUpgradeable: true<br/>maxOsVersion: 13<br/>maxOsPatchDate: 20230501<br/>osVersionId: 57062<br/>policyCompliant: false |
@@ -924,8 +952,11 @@ Gets the CVEs associated with a specific device.
 | Zimperium.CVEByDevice.url | String | The URL of the CVE.                  | 
 
 #### Command example
+
 ```!zimperium-get-cves-by-device device_id="2a"```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -960,6 +991,7 @@ Gets the CVEs associated with a specific device.
 #### Human Readable Output
 
 >### CVE on Device 2a
+>
 >|Id|Type|Severity|Url|Active Exploit|Exploit Poc Url|
 >|---|---|---|---|---|---|
 >| CVE-2019-2173 | Elevation of privilege | High | https:<span>//</span>cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-2173 | false | exploitPocUrls:  |
@@ -1000,8 +1032,11 @@ Gets the vulnerabilities.
 
 
 #### Command example
+
 ```!zimperium-vulnerability-get limit=1```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -1024,6 +1059,7 @@ Gets the vulnerabilities.
 #### Human Readable Output
 
 >### Vulnerabilities List
+>
 >|Id|Os|Os Version And Patch Date|Os Version|Os Patch Date|Risk|Cve Count|Last Cve Sync|Os Risk Checksum|Blue Borne Vulnerable|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 56745 | 2 | 14.6 | 14.6 |  | Critical | 432 | 2024-02-06 11:19:47 | 6A | false |
@@ -1075,8 +1111,11 @@ Get policy groups.
 | Zimperium.PolicyGroup.team | Unknown | The policy group's team information. | 
 
 #### Command example
+
 ```!zimperium-policy-group-list```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -1116,6 +1155,7 @@ Get policy groups.
 #### Human Readable Output
 
 >### Policy Group List
+>
 >|Id|Name|Team|Privacy Id|Trm Id|Phishing Policy Id|App Settings Id|App Policy Id|Network Policy Id|Os Risk Policy Id|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 65 | Test | id: 1<br/>name: Default | a2 | er | 2 | a5 | 2 | 2 | 2 |
@@ -1157,8 +1197,11 @@ Get a privacy policy by its identifier.
 | Zimperium.PolicyPrivacy.teamId | Unknown | The team ID the policy is associated with. | 
 
 #### Command example
+
 ```!zimperium-policy-privacy-get policy_id="a2"```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -1224,6 +1267,7 @@ Get a privacy policy by its identifier.
 #### Human Readable Output
 
 >### Privacy Policy
+>
 >|Id|Name|Created|Modified|
 >|---|---|---|---|
 >| a2 | Default | 2023-12-05T20:09:16.621+00:00 | 2023-12-05T20:09:16.853+00:00 |
@@ -1266,8 +1310,11 @@ Get a threat policy by its identifier.
 | Zimperium.PolicyThreat.rules.id | String | The ID of the policy rule. | 
 
 #### Command example
+
 ```!zimperium-policy-threat-get policy_id="er"```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -1346,6 +1393,7 @@ Get a threat policy by its identifier.
 #### Human Readable Output
 
 >### Threat Policy
+>
 >|Id|Is Deployed|Name|Created|Modified|
 >|---|---|---|---|---|
 >| er | true | Default | 2023-12-05T20:09:16.621+00:00 | 2023-12-05T20:09:17.184+00:00 |
@@ -1393,8 +1441,11 @@ Get a phishing policy by its identifier.
 | Zimperium.PolicyPhishing.useUrlSharing | Boolean | Whether the URL sharing is enabled or not. | 
 
 #### Command example
+
 ```!zimperium-policy-phishing-get policy_id="2"```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -1461,6 +1512,7 @@ Get a phishing policy by its identifier.
 #### Human Readable Output
 
 >### Phishing Policy
+>
 >|Id|Name|Created|Modified|Enable Safari Browser Extension Tutorial|Enable Dns Phishing Tutorial|Use Local Vpn|Use Url Sharing|Allow End User Control|Use Remote Content Inspection|Enable Message Filter Tutorial|Phishing Detection Action|Phishing Policy Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2 | Default | 2023-12-05T20:09:16.621+00:00 | 2023-12-11T13:33:08.481+00:00 | true | false | true | true | false | true | true | WARN | ON_DEVICE |
@@ -1513,8 +1565,11 @@ List the app versions.
 | Zimperium.PolicyAppSetting.teamId | Unknown | The ID of the team to which the policy belongs. | 
 
 #### Command example
+
 ```!zimperium-policy-app-settings-get app_settings_policy_id="9e"```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -1573,6 +1628,7 @@ List the app versions.
 #### Human Readable Output
 
 >### Policy App Settings
+>
 >|Id|Name|Detection Enabled|Cogito Enabled|Cogito Threshold|Phishing Enabled|Phishing Threshold|Phishing DB Refresh Minutes|Created|Modified|Static Files Written|Json Hash|Proto Hash|Dangerzone Enabled|Site Insight Enabled|Phishing Local Classifier Enabled|App Risk Lookup Enabled|Auto Battery Optimization Enabled|Auto Activate Knox|Privacy Summary Enabled|Forensic Analysis Enabled|Team|Assigned|Team Id|Global|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 9e | Default | true | true | 70 | true | 75 | 480 | 2023-12-05T20:09:16.621+00:00 | 2023-12-05T20:09:16.729+00:00 | 2023-12-05T20:09:17.418+00:00 | 616 | ea9 | true | false | true | true | true | false | true | false |  | true |  | true |
@@ -1605,8 +1661,11 @@ Get the policy device inactivity list.
 | Zimperium.PolicyDeviceInactivity.name | String | The name of the policy device inactivity list. | 
 
 #### Command example
+
 ```!zimperium-policy-device-inactivity-list team_id="1"```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -1629,6 +1688,7 @@ Get the policy device inactivity list.
 #### Human Readable Output
 
 >### Device Inactivity List
+>
 >|Id|Name|Team Id|
 >|---|---|---|
 >| 2 | Default |  |
@@ -1675,8 +1735,11 @@ Get policy device inactivity.
 | Zimperium.PolicyDeviceInactivity.teamId | String | The Team ID for the policy device inactivity. | 
 
 #### Command example
+
 ```!zimperium-policy-device-inactivity-get policy_id="ff3"```
+
 #### Context Example
+
 ```json
 {
     "Zimperium": {
@@ -1723,16 +1786,20 @@ Get policy device inactivity.
 #### Human Readable Output
 
 >### Device Inactivity
+>
 >|Id|Name|Team Id|Pending Activation Settings|Inactive App Settings|Created|Modified|
 >|---|---|---|---|---|---|---|
 >| ff3 | InactivityTest | 1 | enabled: false<br/>timeBeforeWarningSeconds: 259200<br/>timeBeforeWarningDisplayUnits: DAYS<br/>timeBetweenWarningsSeconds: 86400<br/>timeBetweenWarningsDisplayUnits: DAYS<br/>maxWarningsCount: 2<br/>sendEmailIos: false<br/>sendEmailAndroid: false | enabled: false<br/>timeBeforeWarningSeconds: 259200<br/>timeBeforeWarningDisplayUnits: DAYS<br/>timeBetweenWarningsSeconds: 86400<br/>timeBetweenWarningsDisplayUnits: DAYS<br/>maxWarningsCount: 2<br/>notifyDevicesIos: false<br/>notifyDevicesAndroid: false<br/>sendEmailIos: false<br/>sendEmailAndroid: false | 2023-12-11 14:38:35 | 2023-12-11 14:38:35 |
 
 
 ## Breaking changes from the previous version of this integration
+
 The following sections list the changes in this version.
 
 ### Commands
+
 #### The following commands were removed in this version:
+
 * ***zimperium-events-search*** - this command was replaced by ***zimperium-threat-search***.
 * ***zimperium-user-get-by-id*** - this command was replaced by ***zimperium-users-search***.
 * ***zimperium-device-get-by-id*** - this command was replaced by ***zimperium-devices-search***.
@@ -1742,16 +1809,20 @@ The following sections list the changes in this version.
 
 
 ### Arguments
+
 #### The following arguments were removed in this version:
 
 In the *zimperium-users-search* command:
+
 * *query*
 * *email*
 
 In the *zimperium-devices-search* command:
+
 * *query*
 
 In the ***zimperium-report-get*** command:
+
 * *bundle_id*
 * *itunes_id*
 * *app_hash*

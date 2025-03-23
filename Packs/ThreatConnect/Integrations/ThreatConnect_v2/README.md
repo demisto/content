@@ -16,9 +16,12 @@ Deprecated. Use the ThreatConnect v2 integration instead.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Searches for an indicator of type IP address.
 
@@ -26,6 +29,7 @@ Searches for an indicator of type IP address.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -61,9 +65,11 @@ Searches for an indicator of type IP address.
 
 
 #### Command Example
+
 ```!ip ip=88.88.88.88```
 
 #### Context Example
+
 ```
 { "TC.Indicator":
 	 [ {
@@ -87,12 +93,14 @@ Searches for an indicator of type IP address.
 #### Human Readable Output
 
 >### ThreatConnect IP Reputation for: 88.88.88.88
+>
 >|Confidence|Create Date|ID|Last Modified|Name|Owner|Rating|Type|
 >|---|---|---|---|---|---|---|---|
 >| 0 | 2020-04-27T04:57:20Z | 112677927 | 2020-04-27T04:57:20Z | 88.88.88.88 | Demisto Inc. | 0 | Address |
 
 
 ### url
+
 ***
 Searches for an indicator of type URL.
 
@@ -100,6 +108,7 @@ Searches for an indicator of type URL.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -135,9 +144,11 @@ Searches for an indicator of type URL.
 
 
 #### Command Example
+
 ```!url url=https://www.domain.com```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -166,10 +177,13 @@ Searches for an indicator of type URL.
 #### Human Readable Output
 
 >### ThreatConnect URL Reputation for: https://www.domain.com
+>
 >|Confidence|Create Date|ID|Last Modified|Name|Owner|Rating|Type|
 >|---|---|---|---|---|---|---|---|
 >| 50 | 2020-04-23T14:41:16Z | 112618313 | 2020-04-27T10:03:38Z | https://www.domain.com | Demisto Inc. | 3 | URL |
+>
 >### ThreatConnect URL Reputation for: https://www.domain.com
+>
 >|Confidence|Create Date|ID|Last Modified|Name|Owner|Rating|Type|
 >|---|---|---|---|---|---|---|---|
 >| 50 | 2020-04-23T14:41:16Z | 112618313 | 2020-04-27T10:03:38Z | https://www.domain.com | Demisto Inc. | 3 | URL |
@@ -177,6 +191,7 @@ Searches for an indicator of type URL.
 
 
 ### file
+
 ***
 Searches for an indicator of type file.
 
@@ -184,6 +199,7 @@ Searches for an indicator of type file.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -224,9 +240,11 @@ Searches for an indicator of type file.
 
 
 #### Command Example
+
 ```!file file=4a4a4e885f7189bbaa2fcc2f2403b128f79e951826c57c0e1ab50e085ae390e7```
 
 #### Context Example
+
 ```
 {
 	"TC.Indicator": [ {
@@ -252,12 +270,14 @@ Searches for an indicator of type file.
 #### Human Readable Output
 
 >### ThreatConnect File Report for: 4a4a4e885f7189bbaa2fcc2f2403b128f79e951826c57c0e1ab50e085ae390e7  
+>
 >|Confidence|Create Date|File|ID|Last Modified|Owner|Rating|Type|  
 >|---|---|---|---|---|---|---|---|  
 >| 0 | 2020-04-23T14:40:26Z | SHA256: 4A4A4E885F7189BBAA2FCC2F2403B128F79E951826C57C0E1AB50E085AE390E7 | 112618312 | 2020-04-23T14:40:26Z | Demisto Inc. | 0 | File |  
 
 
 ### tc-owners
+
 ***
 Retrieves all owners for the current account.
 
@@ -265,6 +285,7 @@ Retrieves all owners for the current account.
 #### Base Command
 
 `tc-owners`
+
 #### Input
 
 There are no input arguments for this command.
@@ -279,9 +300,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!tc-owners```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -309,6 +332,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### ThreatConnect Owners:
+>
 >|ID|Name|Type|
 >|---|---|---|
 >| 737 | Demisto Inc. | Organization |
@@ -317,6 +341,7 @@ There are no input arguments for this command.
 
 
 ### tc-indicators
+
 ***
 Retrieves a list of all indicators.
 
@@ -324,6 +349,7 @@ Retrieves a list of all indicators.
 #### Base Command
 
 `tc-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -372,9 +398,11 @@ Retrieves a list of all indicators.
 
 
 #### Command Example
+
 ```!tc-indicators limit=3 owner="Demisto Inc."```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -437,6 +465,7 @@ Retrieves a list of all indicators.
 #### Human Readable Output
 
 >### ThreatConnect Indicators:
+>
 >|Confidence|Create Date|ID|Last Modified|Name|Owner|Rating|Type|
 >|---|---|---|---|---|---|---|---|
 >| 0 | 2020-05-10T09:45:19Z | 112951652 | 2020-05-10T09:45:19Z | 88.88.88.88 | Demisto Inc. | 0 | Address |
@@ -445,6 +474,7 @@ Retrieves a list of all indicators.
 
 
 ### tc-get-tags
+
 ***
 Returns a list of all ThreatConnect tags.
 
@@ -452,6 +482,7 @@ Returns a list of all ThreatConnect tags.
 #### Base Command
 
 `tc-get-tags`
+
 #### Input
 
 There are no input arguments for this command.
@@ -464,9 +495,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!tc-get-tags```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -482,6 +515,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### ThreatConnect Tags:
+>
 >|Name|
 >|---|
 >| malicious file |
@@ -490,6 +524,7 @@ There are no input arguments for this command.
 
 
 ### tc-tag-indicator
+
 ***
 Adds a tag to an existing indicator.
 
@@ -497,6 +532,7 @@ Adds a tag to an existing indicator.
 #### Base Command
 
 `tc-tag-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -511,9 +547,11 @@ Adds a tag to an existing indicator.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tc-tag-indicator indicator=99.99.99.99 tag="malicious ip"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -523,6 +561,7 @@ There is no context output for this command.
 >Indicator 99.99.99.99 with ID 112951655, was tagged with: malicious ip
 
 ### tc-get-indicator
+
 ***
 Retrieves information about an indicator.
 
@@ -530,6 +569,7 @@ Retrieves information about an indicator.
 #### Base Command
 
 `tc-get-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -592,9 +632,11 @@ Retrieves information about an indicator.
 
 
 #### Command Example
+
 ```!tc-get-indicator indicator=99.99.99.99 group_associations=false```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -623,12 +665,14 @@ Retrieves information about an indicator.
 #### Human Readable Output
 
 >### ThreatConnect indicator for: 99.99.99.99
+>
 >|Confidence|Create Date|ID|Last Modified|Name|Owner|Rating|Type|
 >|---|---|---|---|---|---|---|---|
 >| 70 | 2020-05-10T09:57:18Z | 112951655 | 2020-05-10T09:57:27Z | 99.99.99.99 | Demisto Inc. | 1 | Address |
 
 
 ### tc-get-indicators-by-tag
+
 ***
 Fetches all indicators that have a tag.
 
@@ -636,6 +680,7 @@ Fetches all indicators that have a tag.
 #### Base Command
 
 `tc-get-indicators-by-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -684,9 +729,11 @@ Fetches all indicators that have a tag.
 
 
 #### Command Example
+
 ```!tc-get-indicators-by-tag tag="malicious ip"```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -750,6 +797,7 @@ Fetches all indicators that have a tag.
 #### Human Readable Output
 
 >### ThreatConnect Indicators with tag: malicious ip
+>
 >|Confidence|Create Date|ID|Last Modified|Name|Owner|Rating|Type|
 >|---|---|---|---|---|---|---|---|
 >| 70 | 2020-05-10T09:57:18Z | 112951655 | 2020-05-10T09:57:18Z | 99.99.99.99 | Demisto Inc. | 2 | Address |
@@ -758,6 +806,7 @@ Fetches all indicators that have a tag.
 
 
 ### tc-add-indicator
+
 ***
 Adds a new indicator to ThreatConnect.
 
@@ -765,6 +814,7 @@ Adds a new indicator to ThreatConnect.
 #### Base Command
 
 `tc-add-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -810,9 +860,11 @@ Adds a new indicator to ThreatConnect.
 
 
 #### Command Example
+
 ```!tc-add-indicator indicator=99.99.99.99 confidence=70 rating=2```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -833,12 +885,14 @@ Adds a new indicator to ThreatConnect.
 #### Human Readable Output
 
 >### Created new indicator successfully:
+>
 >|Confidence|Create Date|ID|Last Modified|Name|Owner|Rating|Type|
 >|---|---|---|---|---|---|---|---|
 >| 70 | 2020-05-10T09:57:18Z | 112951655 | 2020-05-10T09:57:18Z | 99.99.99.99 | Demisto Inc. | 2 | Address |
 
 
 ### tc-create-incident
+
 ***
 Creates a new incident group.
 
@@ -846,6 +900,7 @@ Creates a new incident group.
 #### Base Command
 
 `tc-create-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -871,9 +926,11 @@ Creates a new incident group.
 
 
 #### Command Example
+
 ```!tc-create-incident incidentName=test_incident```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -892,6 +949,7 @@ Creates a new incident group.
 >Incident test_incident Created Successfully
 
 ### tc-fetch-incidents
+
 ***
 Fetches incidents from ThreatConnect.
 
@@ -899,6 +957,7 @@ Fetches incidents from ThreatConnect.
 #### Base Command
 
 `tc-fetch-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -918,9 +977,11 @@ Fetches incidents from ThreatConnect.
 
 
 #### Command Example
+
 ```!tc-fetch-incidents incidentId=5101576```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -952,12 +1013,14 @@ Fetches incidents from ThreatConnect.
 #### Human Readable Output
 
 >### Incidents:
+>
 >|Date Added|Event Date|Id|Name|Owner Name|Type|Weblink|
 >|---|---|---|---|---|---|---|
 >| 2020-04-21T06:54:46Z | 2020-04-21T00:00:00Z | 5101576 | try | Demisto Inc. |  | https://sandbox.threatconnect.com/auth/incident/incident.xhtml?incident=5101576 |
 
 
 ### tc-incident-associate-indicator
+
 ***
 Associates an indicator with an existing incident. The indicator must exist before running this command. To add an indicator, run the tc-add-indicator command.
 
@@ -965,6 +1028,7 @@ Associates an indicator with an existing incident. The indicator must exist befo
 #### Base Command
 
 `tc-incident-associate-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1010,9 +1074,11 @@ Associates an indicator with an existing incident. The indicator must exist befo
 
 
 #### Command Example
+
 ```!tc-incident-associate-indicator indicator=99.99.99.99 indicatorType=ADDRESSES incidentId=5101577```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -1033,6 +1099,7 @@ Associates an indicator with an existing incident. The indicator must exist befo
 >Incident for_try with ID 5101577, was tagged with: 99.99.99.99
 
 ### domain
+
 ***
 Searches for an indicator of type domain.
 
@@ -1040,6 +1107,7 @@ Searches for an indicator of type domain.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1076,9 +1144,11 @@ Searches for an indicator of type domain.
 
 
 #### Command Example
+
 ```!domain domain=domain.info```
 
 #### Context Example
+
 ```
 {  
  "TC.Indicator": [ {
@@ -1104,12 +1174,14 @@ Searches for an indicator of type domain.
 #### Human Readable Output
 
 >### ThreatConnect Domain Reputation for: domain.info  
+>
 >|Active|Confidence|Create Date|ID|Last Modified|Name|Owner|Rating|Type|  
 >|---|---|---|---|---|---|---|---|---|  
 >| false | 0 | 2020-04-23T14:42:21Z | 112618314 | 2020-04-23T14:42:21Z | domain.info | Demisto Inc. | 0 | Host |  
 
 
 ### tc-get-incident-associate-indicators
+
 ***
 Returns indicators that are related to a specific incident.
 
@@ -1117,6 +1189,7 @@ Returns indicators that are related to a specific incident.
 #### Base Command
 
 `tc-get-incident-associate-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1164,9 +1237,11 @@ Returns indicators that are related to a specific incident.
 
 
 #### Command Example
+
 ```!tc-get-incident-associate-indicators incidentId=5101576 owner="Demisto Inc."```
 
 #### Context Example
+
 ```
 {"TC.Indicator": [{
 	"Rating": 0,
@@ -1188,12 +1263,14 @@ Returns indicators that are related to a specific incident.
 #### Human Readable Output
 
 >### Incident Associated Indicators:
+>
 >|Confidence|Create Date|ID|Last Modified|Name|Owner|Rating|Type|
 >|---|---|---|---|---|---|---|---|
 >| 0 | 2020-04-27T04:57:20Z | 112677927 | 2020-04-27T04:57:20Z | 88.88.88.88 | Demisto Inc. | 0 | Address |
 
 
 ### tc-update-indicator
+
 ***
 Updates the indicator in ThreatConnect.
 
@@ -1201,6 +1278,7 @@ Updates the indicator in ThreatConnect.
 #### Base Command
 
 `tc-update-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1254,9 +1332,11 @@ Updates the indicator in ThreatConnect.
 
 
 #### Command Example
+
 ```!tc-update-indicator indicator=99.99.99.99 rating=1```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -1279,6 +1359,7 @@ Updates the indicator in ThreatConnect.
 >Indicator 112951655 Updated Successfully
 
 ### tc-delete-indicator-tag
+
 ***
 Removes a tag from a specified indicator.
 
@@ -1286,6 +1367,7 @@ Removes a tag from a specified indicator.
 #### Base Command
 
 `tc-delete-indicator-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1329,9 +1411,11 @@ Removes a tag from a specified indicator.
 
 
 #### Command Example
+
 ```!tc-delete-indicator-tag indicator=99.99.99.99 tag="malicious ip"```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -1354,6 +1438,7 @@ Removes a tag from a specified indicator.
 >Removed tag malicious ip from indicator 99.99.99.99.
 
 ### tc-delete-indicator
+
 ***
 Deletes an indicator from ThreatConnect.
 
@@ -1361,6 +1446,7 @@ Deletes an indicator from ThreatConnect.
 #### Base Command
 
 `tc-delete-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1373,9 +1459,11 @@ Deletes an indicator from ThreatConnect.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tc-delete-indicator indicator=99.99.99.99```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -1385,6 +1473,7 @@ There is no context output for this command.
 >Indicator 99.99.99.99 removed Successfully
 
 ### tc-create-campaign
+
 ***
 Creates a group based on the "Campaign" type.
 
@@ -1392,6 +1481,7 @@ Creates a group based on the "Campaign" type.
 #### Base Command
 
 `tc-create-campaign`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1417,9 +1507,11 @@ Creates a group based on the "Campaign" type.
 
 
 #### Command Example
+
 ```!tc-create-campaign name=test_campaign description="test campaign"```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -1438,6 +1530,7 @@ Creates a group based on the "Campaign" type.
 >Campaign test_campaign Created Successfully
 
 ### tc-create-event
+
 ***
 Creates a group based on the "Event" type.
 
@@ -1445,6 +1538,7 @@ Creates a group based on the "Event" type.
 #### Base Command
 
 `tc-create-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1470,9 +1564,11 @@ Creates a group based on the "Event" type.
 
 
 #### Command Example
+
 ```!tc-create-event name=test_event```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -1491,6 +1587,7 @@ Creates a group based on the "Event" type.
 >Incident test_event Created Successfully
 
 ### tc-create-threat
+
 ***
 Creates a group based on the "Threats" type.
 
@@ -1498,6 +1595,7 @@ Creates a group based on the "Threats" type.
 #### Base Command
 
 `tc-create-threat`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1514,9 +1612,11 @@ Creates a group based on the "Threats" type.
 
 
 #### Command Example
+
 ```!tc-create-threat name=test_threat```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -1533,6 +1633,7 @@ Creates a group based on the "Threats" type.
 >Threat test_threat Created Successfully
 
 ### tc-delete-group
+
 ***
 Deletes a group.
 
@@ -1540,6 +1641,7 @@ Deletes a group.
 #### Base Command
 
 `tc-delete-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1553,13 +1655,16 @@ Deletes a group.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tc-delete-group groupID=5101578 type=Campaigns```
 
 #### Human Readable Output
+>
 >campaigns 5101578 deleted Successfully
 
 
 ### tc-add-group-attribute
+
 ***
 Adds an attribute to a specified group.
 
@@ -1567,6 +1672,7 @@ Adds an attribute to a specified group.
 #### Base Command
 
 `tc-add-group-attribute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1589,9 +1695,11 @@ Adds an attribute to a specified group.
 
 
 #### Command Example
+
 ```!tc-add-group-attribute group_id=5101576 group_type=incidents attribute_type=description attribute_value="test add group attribute"```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -1609,12 +1717,14 @@ Adds an attribute to a specified group.
 #### Human Readable Output
 
 >### The attribute was added successfully to group 5101576
+>
 >|Type|Value|ID|DateAdded|LastModified|
 >|---|---|---|---|---|
 >| Description | test add group attribute | 23379726 | 2020-05-10T09:57:00Z | 2020-05-10T09:57:00Z |
 
 
 ### tc-get-events
+
 ***
 Returns a list of events.
 
@@ -1622,6 +1732,7 @@ Returns a list of events.
 #### Base Command
 
 `tc-get-events`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1638,9 +1749,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!tc-get-events```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -1669,6 +1782,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### ThreatConnect Events
+>
 >|ID|Name|OwnerName|EventDate|DateAdded|Status|
 >|---|---|---|---|---|---|
 >| 5156602 | test_event | Demisto Inc. | 2020-05-10T09:56:50Z | 2020-05-10T09:56:51Z | Needs Review |
@@ -1676,6 +1790,7 @@ There are no input arguments for this command.
 
 
 ### tc-get-groups
+
 ***
 Returns all groups, filtered by the group type.
 
@@ -1683,6 +1798,7 @@ Returns all groups, filtered by the group type.
 #### Base Command
 
 `tc-get-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1703,9 +1819,11 @@ Returns all groups, filtered by the group type.
 
 
 #### Command Example
+
 ```!tc-get-groups group_type=incidents```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -1742,6 +1860,7 @@ Returns all groups, filtered by the group type.
 #### Human Readable Output
 
 >### ThreatConnect incidents
+>
 >|ID|Name|OwnerName|EventDate|DateAdded|
 >|---|---|---|---|---|
 >| 5156603 | test_incident | Demisto Inc. | 2020-05-10T00:00:00Z | 2020-05-10T09:56:52Z |
@@ -1750,6 +1869,7 @@ Returns all groups, filtered by the group type.
 
 
 ### tc-add-group-security-label
+
 ***
 Adds a security label to a group.
 
@@ -1757,6 +1877,7 @@ Adds a security label to a group.
 #### Base Command
 
 `tc-add-group-security-label`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1771,9 +1892,11 @@ Adds a security label to a group.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tc-add-group-security-label group_id=5101576 group_type=incidents security_label_name=TLP:GREEN```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -1783,6 +1906,7 @@ There is no context output for this command.
 >The security label TLP:GREEN was added successfully to incidents 5101576
 
 ### tc-add-group-tag
+
 ***
 Adds tags to a specified group.
 
@@ -1790,6 +1914,7 @@ Adds tags to a specified group.
 #### Base Command
 
 `tc-add-group-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1804,9 +1929,11 @@ Adds tags to a specified group.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tc-add-group-tag group_id=5101576 group_type=incidents tag_name="malicious ip"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -1816,6 +1943,7 @@ There is no context output for this command.
 >The tag malicious ip was added successfully to group incidents 5101576
 
 ### tc-get-indicator-types
+
 ***
 Returns all indicator types available.
 
@@ -1823,6 +1951,7 @@ Returns all indicator types available.
 #### Base Command
 
 `tc-get-indicator-types`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1841,9 +1970,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!tc-get-indicator-types```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -1896,6 +2027,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### ThreatConnect indicator types
+>
 >|Name|Custom|Parsable|ApiBranch|CasePreference|Value1Type|
 >|---|---|---|---|---|---|
 >| Address | false | true | addresses |  |  |
@@ -1905,6 +2037,7 @@ There are no input arguments for this command.
 
 
 ### tc-group-associate-indicator
+
 ***
 Associates an indicator with a group.
 
@@ -1912,6 +2045,7 @@ Associates an indicator with a group.
 #### Base Command
 
 `tc-group-associate-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1933,6 +2067,7 @@ Associates an indicator with a group.
 
 
 #### Command Example
+
 ```tc-group-associate-indicator indicator_type=addresses group_id=5101576 group_type=incidents indicator=99.99.99.99```
 
 #### Human Readable Output
@@ -1940,6 +2075,7 @@ Associates an indicator with a group.
 
 
 ### tc-create-document-group
+
 ***
 Creates a document group.
 
@@ -1947,6 +2083,7 @@ Creates a document group.
 #### Base Command
 
 `tc-create-document-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1973,6 +2110,7 @@ Creates a document group.
 
 
 #### Command Example
+
 ```!tc-create-document-group entry_id=11@11 file_name=test.txt name=test_document```
 
 #### Human Readable Output
@@ -1980,6 +2118,7 @@ Creates a document group.
 
 
 ### tc-get-group
+
 ***
 Retrieves a single group.
 
@@ -1987,6 +2126,7 @@ Retrieves a single group.
 #### Base Command
 
 `tc-get-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2009,9 +2149,11 @@ Retrieves a single group.
 
 
 #### Command Example
+
 ```!tc-get-group group_id=5101576 group_type=incidents```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -2034,12 +2176,14 @@ Retrieves a single group.
 #### Human Readable Output
 
 >### ThreatConnect Group information
+>
 >|DateAdded|EventDate|ID|Name|Owner|
 >|---|---|---|---|---|
 >| 2020-04-21T06:54:46Z | 2020-04-21T00:00:00Z | 5101576 | try | Name: Demisto Inc.<br/>ID: 737<br/>Type: Organization |
 
 
 ### tc-get-group-attributes
+
 ***
 Retrieves the attribute of a group.
 
@@ -2047,6 +2191,7 @@ Retrieves the attribute of a group.
 #### Base Command
 
 `tc-get-group-attributes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2068,9 +2213,11 @@ Retrieves the attribute of a group.
 
 
 #### Command Example
+
 ```!tc-get-group-attributes group_id=5101576 group_type=incidents```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -2103,6 +2250,7 @@ Retrieves the attribute of a group.
 #### Human Readable Output
 
 >### ThreatConnect Group Attributes
+>
 >|AttributeID|Type|Value|DateAdded|LastModified|Displayed|
 >|---|---|---|---|---|---|
 >| 23379726 | Description | test add group attribute | 2020-05-10T09:57:00Z | 2020-05-10T09:57:00Z | true |
@@ -2110,6 +2258,7 @@ Retrieves the attribute of a group.
 
 
 ### tc-get-group-security-labels
+
 ***
 Retrieves the security labels of a group.
 
@@ -2117,6 +2266,7 @@ Retrieves the security labels of a group.
 #### Base Command
 
 `tc-get-group-security-labels`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2135,9 +2285,11 @@ Retrieves the security labels of a group.
 
 
 #### Command Example
+
 ```!tc-get-group-security-labels group_id=5101576 group_type=incidents```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -2156,12 +2308,14 @@ Retrieves the security labels of a group.
 #### Human Readable Output
 
 >### ThreatConnect Group Security Labels
+>
 >|Name|Description|DateAdded|
 >|---|---|---|
 >| TLP:GREEN | This security label is used for information that is useful for the awareness of all participating organizations as well as with peers within the broader community or sector. | 2016-08-31T00:00:00Z |
 
 
 ### tc-get-group-tags
+
 ***
 Retrieves the tags of a group.
 
@@ -2169,6 +2323,7 @@ Retrieves the tags of a group.
 #### Base Command
 
 `tc-get-group-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2185,9 +2340,11 @@ Retrieves the tags of a group.
 
 
 #### Command Example
+
 ```!tc-get-group-tags group_id=5101576 group_type=incidents```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -2204,12 +2361,14 @@ Retrieves the tags of a group.
 #### Human Readable Output
 
 >### ThreatConnect Group Tags
+>
 >|Name|
 >|---|
 >| malicious ip |
 
 
 ### tc-download-document
+
 ***
 Downloads the contents of a document.
 
@@ -2217,6 +2376,7 @@ Downloads the contents of a document.
 #### Base Command
 
 `tc-download-document`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2241,6 +2401,7 @@ Downloads the contents of a document.
 
 
 #### Command Example
+
 ```!tc-download-document document_id=12345```
 
 #### Human Readable Output
@@ -2248,6 +2409,7 @@ Downloads the contents of a document.
 
 
 ### tc-get-group-indicators
+
 ***
 Returns indicators associated with a group.
 
@@ -2255,6 +2417,7 @@ Returns indicators associated with a group.
 #### Base Command
 
 `tc-get-group-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2279,9 +2442,11 @@ Returns indicators associated with a group.
 
 
 #### Command Example
+
 ```!tc-get-group-indicators group_type="incidents" group_id="5110299"```
 
 #### Context Example
+
 ```
 {
 	"TC.Group.Indicator": [ {
@@ -2302,12 +2467,14 @@ Returns indicators associated with a group.
 #### Human Readable Output
 
 >### ThreatConnect Group Indicators
+>
 >|Confidence|DateAdded|GroupID|IndicatorID|LastModified|OwnerName|Rating|Summary|ThreatAssertRating|ThreatAssessConfidence|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 2020-04-27T04:57:20Z | 5110299 | 112677927 | 2020-04-27T04:57:20Z | Demisto Inc. | 0.0 | 88.88.88.88 | 3.0 | 53.0 | Address |  
 
 
 ### tc-get-associated-groups
+
 ***
 Returns indicators associated with a specified group.
 
@@ -2315,6 +2482,7 @@ Returns indicators associated with a specified group.
 #### Base Command
 
 `tc-get-associated-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2335,9 +2503,11 @@ Returns indicators associated with a specified group.
 
 
 #### Command Example
+
 ```!tc-get-associated-groups group_id=5101576 group_type=incidents```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -2357,12 +2527,14 @@ Returns indicators associated with a specified group.
 #### Human Readable Output
 
 >### ThreatConnect Associated Groups
+>
 >|GroupID|Name|Type|OwnerName|DateAdded|
 >|---|---|---|---|---|
 >| 5110299 | test_as | Incident | Demisto Inc. | 2020-04-27T05:03:28Z |
 
 
 ### tc-associate-group-to-group
+
 ***
 Associates one group with another group.
 
@@ -2370,6 +2542,7 @@ Associates one group with another group.
 #### Base Command
 
 `tc-associate-group-to-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2391,9 +2564,11 @@ Associates one group with another group.
 
 
 #### Command Example
+
 ```!tc-associate-group-to-group group_id=5101576 group_type=incidents associated_group_id=5101578 associated_group_type=campaigns```
 
 ##### Context Example  
+
 ```  
 {
 	"TC.Group.AssociatedGroup": {
@@ -2406,11 +2581,13 @@ Associates one group with another group.
 ```  
   
 >##### Human Readable Output  
+>
 >The group 5101578 was associated successfully. 
 
 
 
 ### tc-get-indicator-owners
+
 ***
 Get Owner for Indicator
 
@@ -2418,6 +2595,7 @@ Get Owner for Indicator
 #### Base Command
 
 `tc-get-indicator-owners`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2430,9 +2608,11 @@ Get Owner for Indicator
 There is no context output for this command.
 
 #### Command Example
+
 ```!tc-get-indicator-owners indicator=99.99.99.99```
 
 #### Context Example
+
 ```
 {
     "TC": {
@@ -2450,11 +2630,13 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### ThreatConnect Owners for Indicator:99.99.99.99
+>
 >|id|name|type|
 >|---|---|---|
 >| 737 | Demisto Inc. | Organization |
 
 ### tc-download-report
+
 ***
 The group report to download in PDF format.
 
@@ -2462,6 +2644,7 @@ The group report to download in PDF format.
 #### Base Command
 
 `tc-download-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

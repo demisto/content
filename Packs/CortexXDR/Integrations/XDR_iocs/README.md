@@ -35,9 +35,12 @@ An API key of type **Advanced** with an **Administrator** role.
 | feedBypassExclusionList | Bypass exclusion list | False |  
   
 ## Commands  
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.  
 After you successfully execute a command, a DBot message appears in the War Room with the command details.  
+
 ### xdr-iocs-sync  
+
 ***
 Sync IOCs with Cortex XDR.
 Run this command manually only when configuring the instance integration with fetch indicators disabled (run this only once).
@@ -50,6 +53,7 @@ As a result, the duration of the first sync depends on the number of IOCs in the
 #### Base Command  
   
 `xdr-iocs-sync`  
+
 #### Input  
   
 There are no input arguments for this command.  
@@ -59,12 +63,15 @@ There are no input arguments for this command.
 There is no context output for this command.  
   
 #### Command Example  
+
 ```!xdr-iocs-sync```  
+
 #### Human Readable Output  
   
 >sync with XDR completed.  
   
 ### xdr-iocs-push
+
 ***  
 Push new or modified IOCs to Cortex XDR.
   
@@ -72,6 +79,7 @@ Push new or modified IOCs to Cortex XDR.
 #### Base Command  
   
 `xdr-iocs-push`  
+
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |
@@ -84,13 +92,16 @@ Push new or modified IOCs to Cortex XDR.
 There is no context output for this command.  
   
 #### Command Example  
+
 ```xdr-iocs-push```  
   
 #### Human Readable Output  
+>
 >push success.
   
   
 ### xdr-iocs-enable  
+
 ***  
 Enable iocs in XDR server  
   
@@ -98,6 +109,7 @@ Enable iocs in XDR server
 #### Base Command  
   
 `xdr-iocs-enable`  
+
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |  
@@ -109,6 +121,7 @@ Enable iocs in XDR server
 There is no context output for this command.  
   
 #### Command Example  
+
 ```!xdr-iocs-enable indicator=11.11.11.11```  
     
 #### Human Readable Output  
@@ -116,6 +129,7 @@ There is no context output for this command.
 >indicators 11.11.11.11 enabled.  
   
 ### xdr-iocs-disable  
+
 ***  
 Disable iocs in XDR server  
   
@@ -123,6 +137,7 @@ Disable iocs in XDR server
 #### Base Command  
   
 `xdr-iocs-disable`  
+
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |  
@@ -134,12 +149,15 @@ Disable iocs in XDR server
 There is no context output for this command.  
   
 #### Command Example  
+
 ```!xdr-iocs-disable indicator=22.22.22.22```  
   
 #### Human Readable Output  
   
 >indicators 22.22.22.22 disabled.  
+>
 ### xdr-iocs-set-sync-time
+
 ***
 Set sync time manually (Do not use this command unless you unredstandard the consequences).
 
@@ -147,6 +165,7 @@ Set sync time manually (Do not use this command unless you unredstandard the con
 #### Base Command
 
 `xdr-iocs-set-sync-time`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -157,7 +176,9 @@ Set sync time manually (Do not use this command unless you unredstandard the con
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-iocs-create-sync-file
+
 ***
 Creates the sync file for the manual process. Run this command when instructed by the XDR support team.
 
@@ -165,6 +186,7 @@ Creates the sync file for the manual process. Run this command when instructed b
 #### Base Command
 
 `xdr-iocs-create-sync-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -180,6 +202,7 @@ There is no context output for this command.
 #### Base Command
 
 `xdr-iocs-to-keep-file`
+
 #### Input
 
 There are no input arguments for this command.

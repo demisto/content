@@ -4,6 +4,7 @@ organization assets, and automatically alerts users in real time of any relevant
 The integration will focus on retrieving Cybersixgill's Actionable Alerts as incidents
 
 ## Use Cases
+
 Fetch Incidents & Events
 
 ## Configure Cybersixgill on XSOAR
@@ -17,10 +18,12 @@ Fetch Incidents & Events
 | threat_type | Filter by alert threat type | False |
 
 ## Fetch incidents
+
 You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ## output
+
 ```
 [{
 'name': "<alert name>",
@@ -45,9 +48,12 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cybersixgill-update-alert-status
+
 ***
 updates the existing actionable alert status
 
@@ -55,6 +61,7 @@ updates the existing actionable alert status
 #### Base Command
 
 `cybersixgill-update-alert-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -67,5 +74,7 @@ updates the existing actionable alert status
 #### Context Output
 
 There is no context output for this command.
+
 ## Additional Information
+
 Contact us: support@cybersixgill.com

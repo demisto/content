@@ -5,5 +5,6 @@ It is a Malware Detonation & Research platform designed for deep dynamic analysi
 Polygon could be used either for application-level tasks (like smtp-based mail filtering) and analytical purposes (files/urls analysis for verdict, report and indicators).
 
 ### What does this pack do?
+
 * Detonate URLs.
 * Detonate files.

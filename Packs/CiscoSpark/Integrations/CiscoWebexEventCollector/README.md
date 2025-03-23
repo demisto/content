@@ -56,6 +56,7 @@ Use this command to start the authorization process. In order to authorize the i
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-oauth-complete
 
 ***
@@ -75,6 +76,7 @@ Use this command to complete the authorization process. After copying the author
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-oauth-test
 
 ***
@@ -93,6 +95,7 @@ Use this command to complete the authorization process. After copying the author
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-get-admin-audit-events
 
 ***
@@ -121,6 +124,7 @@ Gets admin audit events from Cisco Webex.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-get-security-audit-events
 
 ***
@@ -149,6 +153,7 @@ Gets security audit events from Cisco Webex.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-get-compliance-officer-events
 
 ***

@@ -19,9 +19,12 @@ This integration was integrated and tested with Symantec Advanced Threat Protect
 | Query string for fetch incidents. For example - "updated&gt;='2020-06-06T15:39:55.616Z' and updated&lt;'2020-08-07T00:00:00.000Z' " |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### satp-appliances
+
 ***
 Retrieve the appliances configured with the versions
 
@@ -29,6 +32,7 @@ Retrieve the appliances configured with the versions
 #### Base Command
 
 `satp-appliances`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -47,15 +51,18 @@ Retrieve the appliances configured with the versions
 
 
 #### Command Example
+
 ``` !satp-appliances ```
 
 #### Human Readable Output
+
 |appliance_id|appliance_name|appliance_time|software_version|role|
 |---|---|---|---|---|
 | 56123234-132F-123344-C8EF-1234 | test-atd | 2021-11-11T05:52:20.063Z | 3.0.0-123 | endpoint, network scanner, management | 
 
 
 ### satp-command
+
 ***
 Issue commands to endpoints managed by Symantec Endpoint Protection
 
@@ -63,6 +70,7 @@ Issue commands to endpoints managed by Symantec Endpoint Protection
 #### Base Command
 
 `satp-command`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -80,6 +88,7 @@ Issue commands to endpoints managed by Symantec Endpoint Protection
 
 
 #### Command Example
+
 ``` !satp-command action=isolate_endpoint targets="123e4567-e89b-12d3-a456-426614174000"```
 
 #### Human Readable Output
@@ -91,6 +100,7 @@ Issue commands to endpoints managed by Symantec Endpoint Protection
 
 
 ### satp-command-state
+
 ***
 Retrieve the command state
 
@@ -98,6 +108,7 @@ Retrieve the command state
 #### Base Command
 
 `satp-command-state`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -118,6 +129,7 @@ Retrieve the command state
 
 
 #### Command Example
+
 ``` !satp-command-state command="command_id"" ```
 
 #### Human Readable Output
@@ -130,6 +142,7 @@ Retrieve the command state
 
 
 ### satp-command-cancel
+
 ***
 Cancel the given command
 
@@ -137,6 +150,7 @@ Cancel the given command
 #### Base Command
 
 `satp-command-cancel`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -154,6 +168,7 @@ Cancel the given command
 
 
 #### Command Example
+
 ``` !satp-command-cancel command=command_id ```
 
 #### Symantec ATP Command Cancel
@@ -166,6 +181,7 @@ Cancel the given command
 
 
 ### satp-events
+
 ***
 Accepts search requests over a specified time range and returns events that match the search condition. You must specify the time range using the start_time parameter and the end_time parameter (the maximum time range is 7 days). The time in the result schema and is typically the event creation time. This API supports search conditions (such as logical operators and special characters) to narrow the events to be retrieved. See examples at https://help.symantec.com/api-doc/atp_2.2/EN_US/#_events_query_api_example.
 
@@ -173,6 +189,7 @@ Accepts search requests over a specified time range and returns events that matc
 #### Base Command
 
 `satp-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -267,6 +284,7 @@ Accepts search requests over a specified time range and returns events that matc
 
 
 #### Command Example
+
 ``` !satp-events ```
 
 #### Human Readable Output
@@ -274,6 +292,7 @@ Accepts search requests over a specified time range and returns events that matc
 
 
 ### satp-files
+
 ***
 Retrieve details about file based on given hash
 
@@ -281,6 +300,7 @@ Retrieve details about file based on given hash
 #### Base Command
 
 `satp-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -310,16 +330,19 @@ Retrieve details about file based on given hash
 
 
 #### Command Example
+
 ``` !satp-events ```
 
 #### Human Readable Output
 
 ### Symantec ATP Events
+
 data_direction|data_source_ip|data_source_url|data_source_url_domain|device_ip|device_name|device_time|device_uid|external_ip|file|log_name|log_time|sep_installed|type_id|uuid
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 inbound | 62.324.344.170 | path_to_source | test.123 | 1234.1234.1234.1234 | 1234.1234.1234.1234 | 2021-11-10T23:42:15.779Z | 712da396-2dc6-44a9-bb8f-e1234124 | 1234.1234.1234.1234 | {"sha2":"b75aa777","md5":"4c2e3","name":"AM_Delta.exe","folder":"CSIDL_WINDOWS\\","size":2413000,"signature_company_name":"test","signature_issuer":"test","signature_serial_number":"1234","reputation_band":1344,"prevalence_band":04354} | test | 2021-11-10T23:42:16.706Z | true | 4096 | 345345-427f-11ec-345345-4t4554
 
 ### satp-incident-events
+
 ***
 Get events that are related to incidents
 
@@ -327,6 +350,7 @@ Get events that are related to incidents
 #### Base Command
 
 `satp-incident-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -421,9 +445,11 @@ Get events that are related to incidents
 
 
 #### Command Example
+
 ``` !satp-incident-events  ```
 
 ### satp-incidents
+
 ***
 Query incidents from ATP
 
@@ -431,6 +457,7 @@ Query incidents from ATP
 #### Base Command
 
 `satp-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -466,6 +493,7 @@ Query incidents from ATP
 
 
 #### Command Example
+
 ``` !satp-incidents ```
 
 

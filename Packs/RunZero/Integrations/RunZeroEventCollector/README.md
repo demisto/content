@@ -16,9 +16,12 @@ This integration was integrated and tested with version 3.3.0 of RunZero Event C
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### runzero-get-events
+
 ***
 Gets events from RunZero.
 
@@ -26,6 +29,7 @@ Gets events from RunZero.
 #### Base Command
 
 `runzero-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -1,10 +1,12 @@
 Proofpoint email security appliance.
 
 This integration was integrated and tested with the following versions of Proofpoint Protection Server:
+
 - Cloud 8.16.2
 - On-premise 8.14.2
 
 ## Authentication
+
 An administrator must have a role that includes access to a specific REST API. 
 
 Proofpoint on Demand (PoD) administrators must file a support ticket to Proofpoint support to obtain a role with access to an API.
@@ -14,8 +16,9 @@ On premise administrators: Edit the **filter.cfg** file and set the following ke
 In the management interface, create a role of type API and select the APIs under **Managed Modules** for the role and assign an administrator that role.
 
 The following are the required managed modules for this integration:
- - pss
- - Quarantine
+
+- pss
+- Quarantine
  
   <img height="400" src="./../../doc_imgs/api_role.png" />
 
@@ -32,9 +35,12 @@ The operations are accessed through port 10000.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### proofpoint-pps-smart-search
+
 ***
 Trace and analyze information about messages after they have been filtered by the Proofpoint Protection Server.
 
@@ -42,6 +48,7 @@ Trace and analyze information about messages after they have been filtered by th
 #### Base Command
 
 `proofpoint-pps-smart-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -112,9 +119,11 @@ Trace and analyze information about messages after they have been filtered by th
 
 
 #### Command Example
+
 ```!proofpoint-pps-smart-search recipient=user@example.com sender=root@user.example.com start_time="24 hours ago"```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -175,6 +184,7 @@ Trace and analyze information about messages after they have been filtered by th
 #### Human Readable Output
 
 >### Proofpoint Protection Server Smart Search Results
+>
 >|GUID|Date|Sender|Recipients|Subject|Final_Action|
 >|---|---|---|---|---|---|
 >| 8lLtu31xs8H24NF8McYw-S6EidtLK-y_ | 2020-05-20 14:13:02 [UTC-0600] | root@user.example.com | user@example.com | Cron \<pps@user\> /opt/proofpoint/pps8.0.1.1446/admin/tools/dbutil.sh -optimize -db msgqueue | accept |
@@ -185,6 +195,7 @@ Trace and analyze information about messages after they have been filtered by th
 Smart Search parses email addresses to support a variety of partial matches.
 
 For example, the email address a.b@c.d can be found with these partial searches:
+
 - a.b
 - a.b*
 - a.b@
@@ -223,6 +234,7 @@ Here is a list of stop words:
 Example: "I'm going to a party" becomes "I go party"
 
 ### proofpoint-pps-quarantine-messages-list
+
 ***
 Search for quarantined messages.
 
@@ -230,6 +242,7 @@ Search for quarantined messages.
 #### Base Command
 
 `proofpoint-pps-quarantine-messages-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -262,9 +275,11 @@ Search for quarantined messages.
 
 
 #### Command Example
+
 ```!proofpoint-pps-quarantine-messages-list subject=Loan* sender=john@doe.com```
 
 #### Context Example
+
 ```json
 {
     "Proofpoint": {
@@ -309,6 +324,7 @@ Search for quarantined messages.
 #### Human Readable Output
 
 >### Proofpoint Protection Server Quarantined Messages
+>
 >|localguid|folder|spamscore|from|rcpts|subject|date|size|host_ip|
 >|---|---|---|---|---|---|---|---|---|
 >| 6:6:239 | Quarantine | 100 | john@doe.com | foo@bar.com | Loan | 2020-01-15 20:00:00 | 6496 | [10.54.40.3] [10.54.40.3] |
@@ -316,6 +332,7 @@ Search for quarantined messages.
 
 
 ### proofpoint-pps-quarantine-message-release
+
 ***
 Releases the message to the email infrastructure without further scanning. The message remains in the folder and is moved to the deleted_folder if specified.
 
@@ -323,6 +340,7 @@ Releases the message to the email infrastructure without further scanning. The m
 #### Base Command
 
 `proofpoint-pps-quarantine-message-release`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -340,6 +358,7 @@ Releases the message to the email infrastructure without further scanning. The m
 There is no context output for this command.
 
 #### Command Example
+
 ```!proofpoint-pps-quarantine-message-release folder_name=HIPAA local_guid=4:2:6```
 
 #### Human Readable Output
@@ -347,6 +366,7 @@ There is no context output for this command.
 >Request sent. Message 4:2:6 will be released momentarily'
 
 ### proofpoint-pps-quarantine-message-resubmit
+
 ***
 Resubmits the message to the filtering modules. The message is removed from the folder and is moved to any folder.
 
@@ -354,6 +374,7 @@ Resubmits the message to the filtering modules. The message is removed from the 
 #### Base Command
 
 `proofpoint-pps-quarantine-message-resubmit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -367,6 +388,7 @@ Resubmits the message to the filtering modules. The message is removed from the 
 There is no context output for this command.
 
 #### Command Example
+
 ```!proofpoint-pps-quarantine-message-resubmit folder_name=HIPAA local_guid=4:2:6```
 
 #### Human Readable Output
@@ -374,6 +396,7 @@ There is no context output for this command.
 >Request sent. Message 4:2:6 will be resubmitted momentarily
 
 ### proofpoint-pps-quarantine-message-forward
+
 ***
 Forwards the message to another recipient. The message remains in the folder and will be moved to the deleted_folder if specified.
 
@@ -381,6 +404,7 @@ Forwards the message to another recipient. The message remains in the folder and
 #### Base Command
 
 `proofpoint-pps-quarantine-message-forward`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -401,6 +425,7 @@ Forwards the message to another recipient. The message remains in the folder and
 There is no context output for this command.
 
 #### Command Example
+
 ```!proofpoint-pps-quarantine-message-forward folder_name=HIPAA local_guid=4:2:6```
 
 #### Human Readable Output
@@ -408,6 +433,7 @@ There is no context output for this command.
 >Request sent. Message 4:2:6 will be forwarded momentarily
 
 ### proofpoint-pps-quarantine-message-move
+
 ***
 Moves the message to the specified target folder.
 
@@ -415,6 +441,7 @@ Moves the message to the specified target folder.
 #### Base Command
 
 `proofpoint-pps-quarantine-message-move`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -429,6 +456,7 @@ Moves the message to the specified target folder.
 There is no context output for this command.
 
 #### Command Example
+
 ```!proofpoint-pps-quarantine-message-move folder_name=HIPAA local_guid=4:2:6 target_folder=PCI```
 
 #### Human Readable Output
@@ -436,6 +464,7 @@ There is no context output for this command.
 >Successfully moved message 4:2:6
 
 ### proofpoint-pps-quarantine-message-delete
+
 ***
 Deletes the message from the quarantine folder. The message is removed from its folder and is moved to the deleted_folder if specified.
 
@@ -443,6 +472,7 @@ Deletes the message from the quarantine folder. The message is removed from its 
 #### Base Command
 
 `proofpoint-pps-quarantine-message-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -457,6 +487,7 @@ Deletes the message from the quarantine folder. The message is removed from its 
 There is no context output for this command.
 
 #### Command Example
+
 ```!proofpoint-pps-quarantine-message-delete folder_name=HIPAA local_guid=4:2:6```
 
 #### Human Readable Output
@@ -464,12 +495,14 @@ There is no context output for this command.
 >Successfully deleted message 4:2:6
 
 ### proofpoint-pps-quarantine-message-download
+
 ***
 Downloads an email message's raw data.
 
 #### Base Command
 
 `proofpoint-pps-quarantine-message-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -482,11 +515,13 @@ Downloads an email message's raw data.
 There is no context output for this command.
 
 #### Command Example
+
 ```!proofpoint-pps-quarantine-message-download guid=g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7```
 
 
 
 ### proofpoint-pps-get-user
+
 ***
 Gets the end user resource with the specified email address or UID.
 
@@ -494,6 +529,7 @@ Gets the end user resource with the specified email address or UID.
 #### Base Command
 
 `proofpoint-pps-get-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -522,7 +558,9 @@ Gets the end user resource with the specified email address or UID.
 | Proofpoint.User.suborg | unknown | Defines the sub-organization to which this user profile belongs. | 
 | Proofpoint.User.type | unknown | 0=User 1=Mailing List | 
 | Proofpoint.User.uid | unknown | uid of the user. | 
+
 ### proofpoint-pps-create-user
+
 ***
 Creates a new end user resource with the specified email address.
 
@@ -530,6 +568,7 @@ Creates a new end user resource with the specified email address.
 #### Base Command
 
 `proofpoint-pps-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -559,7 +598,9 @@ Creates a new end user resource with the specified email address.
 | Proofpoint.User.suborg | unknown | Defines the sub-organization to which this user profile belongs. | 
 | Proofpoint.User.type | unknown | 0=User 1=Mailing List | 
 | Proofpoint.User.uid | unknown | uid of the user. | 
+
 ### proofpoint-pps-modify-user
+
 ***
 Modifies a user profile.
 
@@ -567,6 +608,7 @@ Modifies a user profile.
 #### Base Command
 
 `proofpoint-pps-modify-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -597,7 +639,9 @@ Modifies a user profile.
 | Proofpoint.User.suborg | unknown | Defines the sub-organization to which this user profile belongs. | 
 | Proofpoint.User.type | unknown | 0=User 1=Mailing List | 
 | Proofpoint.User.uid | unknown | uid of the user. | 
+
 ### proofpoint-pps-delete-user
+
 ***
 Delete a user profile.
 
@@ -605,6 +649,7 @@ Delete a user profile.
 #### Base Command
 
 `proofpoint-pps-delete-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

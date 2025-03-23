@@ -1,5 +1,6 @@
 Automate Detection and Response to Network Threats and data leakage in your organization with Fidelis Elevate Network Integration.
 This integration was integrated and tested with version 9.2.4 of Fidelis Elevate Network
+
 ## Configure Fidelis Elevate Network in Cortex
 
 
@@ -14,9 +15,12 @@ This integration was integrated and tested with version 9.2.4 of Fidelis Elevate
 | fetch_time | First fetch timestamp (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fidelis-get-alert
+
 ***
 Gets alert details from Fidelis Elevate.
 
@@ -24,6 +28,7 @@ Gets alert details from Fidelis Elevate.
 ##### Base Command
 
 `fidelis-get-alert`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -49,9 +54,11 @@ Gets alert details from Fidelis Elevate.
 
 
 ##### Command Example
+
 ```!fidelis-get-alert alert_id=1```
 
 ##### Context Example
+
 ```
 {
     "Fidelis": {
@@ -74,13 +81,16 @@ Gets alert details from Fidelis Elevate.
 ```
 
 ##### Human Readable Output
+
 ### Alert 1
+
 |Alert UUID|Assigned User|ID|Policy Name|Rule ID|Severity|Summary|Threat Score|Time|Type|
 |---|---|---|---|---|---|---|---|---|---|
 | 80d0ccf5-5879-11ea-b430-0eb174ee0947 | 0 | 1 | Endpoint Alerts | 227 | Medium | Endpoint alert on fidelis-endpoint.c.dmst-integrations.internal: , Intel Source: Unknown, Artifact:  | 100 | 2020-02-26 09:21:02 | ENDPOINT |
 
 
 ### fidelis-delete-alert
+
 ***
 Deletes an alert from Fidelis Elevate.
 
@@ -88,6 +98,7 @@ Deletes an alert from Fidelis Elevate.
 ##### Base Command
 
 `fidelis-delete-alert`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -100,13 +111,16 @@ Deletes an alert from Fidelis Elevate.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!fidelis-delete-alert alert_id=3```
 
 
 ##### Human Readable Output
+
 Alert (3) deleted successfully!
 
 ### fidelis-get-malware-data
+
 ***
 Retrieves malware data related to a "Malware" type alert.
 
@@ -114,6 +128,7 @@ Retrieves malware data related to a "Malware" type alert.
 ##### Base Command
 
 `fidelis-get-malware-data`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -136,9 +151,11 @@ Retrieves malware data related to a "Malware" type alert.
 
 
 ##### Command Example
+
 ```!fidelis-get-malware-data alert_id=6```
 
 ##### Context Example
+
 ```
 {
     "Fidelis": {
@@ -159,13 +176,16 @@ Retrieves malware data related to a "Malware" type alert.
 ```
 
 ##### Human Readable Output
+
 ### Alert 6 Malware:
+
 |Malware Behavior|Malware Description|Malware Detail Name|Malware Name|Malware Platform|Malware Type|Malware Variant|
 |---|---|---|---|---|---|---|
 |  |  |  |  |  |  |  |
 
 
 ### fidelis-get-alert-report
+
 ***
 Downloads a PDF report for a specified alert.
 
@@ -173,6 +193,7 @@ Downloads a PDF report for a specified alert.
 ##### Base Command
 
 `fidelis-get-alert-report`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -185,9 +206,11 @@ Downloads a PDF report for a specified alert.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!fidelis-get-alert-report alert_id=5```
 
 ##### Context Example
+
 ```
 {
     "InfoFile": {
@@ -202,6 +225,7 @@ There is no context output for this command.
 ```
 
 ### fidelis-list-alerts
+
 ***
 Returns a list of open alerts from Fidelis Elevate.
 
@@ -209,6 +233,7 @@ Returns a list of open alerts from Fidelis Elevate.
 ##### Base Command
 
 `fidelis-list-alerts`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -234,9 +259,11 @@ Returns a list of open alerts from Fidelis Elevate.
 
 
 ##### Command Example
+
 ```!fidelis-list-alerts```
 
 ##### Context Example
+
 ```
 {
     "Fidelis": {
@@ -261,7 +288,9 @@ Returns a list of open alerts from Fidelis Elevate.
 ```
 
 ##### Human Readable Output
+
 ### Found 6 Alerts:
+
 |ID|Severity|Summary|Time|Type|
 |---|---|---|---|---|
 | 6 | High | Endpoint alert on fidelis-endpoint.c.dmst-integrations.internal: , Intel Source: Unknown | 2020-03-19 23:59:59 | Endpoint |
@@ -273,6 +302,7 @@ Returns a list of open alerts from Fidelis Elevate.
 
 
 ### fidelis-upload-pcap
+
 ***
 Uploads a PCAP file to Fidelis Elevate for analysis.
 
@@ -280,6 +310,7 @@ Uploads a PCAP file to Fidelis Elevate for analysis.
 ##### Base Command
 
 `fidelis-upload-pcap`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -293,12 +324,15 @@ Uploads a PCAP file to Fidelis Elevate for analysis.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!fidelis-upload-pcap component_ip=1.1.1.1 entry_id=7317@99```
 
 ##### Human Readable Output
+
 Pcap file uploaded successfully.
 
 ### fidelis-list-pcap-components
+
 ***
 Gets PCAP components.
 
@@ -306,6 +340,7 @@ Gets PCAP components.
 ##### Base Command
 
 `fidelis-list-pcap-components`
+
 ##### Input
 
 There are no input arguments for this command.
@@ -319,9 +354,11 @@ There are no input arguments for this command.
 
 
 ##### Command Example
+
 ```!fidelis-list-pcap-components```
 
 ##### Context Example
+
 ```
 {
     "Fidelis": {
@@ -334,13 +371,16 @@ There are no input arguments for this command.
 ```
 
 ##### Human Readable Output
+
 ### PCAP Components
+
 |Name|IP|
 |---|---|
 | Sensor | 1.1.1.1 |
 
 
 ### fidelis-run-pcap
+
 ***
 Runs PCAP file analysis in Fidelis Elevate.
 
@@ -348,6 +388,7 @@ Runs PCAP file analysis in Fidelis Elevate.
 ##### Base Command
 
 `fidelis-run-pcap`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -361,12 +402,15 @@ Runs PCAP file analysis in Fidelis Elevate.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!fidelis-run-pcap component_ip=1.1.1.1 files=file.pcap```
 
 ##### Human Readable Output
+
 Pcap file run submitted.
 
 ### fidelis-get-alert-by-uuid
+
 ***
 Returns an alert, by UUID.
 
@@ -374,6 +418,7 @@ Returns an alert, by UUID.
 ##### Base Command
 
 `fidelis-get-alert-by-uuid`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -394,9 +439,11 @@ Returns an alert, by UUID.
 
 
 ##### Command Example
+
 ```!fidelis-get-alert-by-uuid alert_uuid=80d0ccf5-5879-11ea-b430-0eb174ee0947```
 
 ##### Context Example
+
 ```
 {
     "Fidelis": {
@@ -412,13 +459,16 @@ Returns an alert, by UUID.
 ```
 
 ##### Human Readable Output
+
 ### Found 1 Alerts:
+
 |ID|Severity|Summary|Time|Type|
 |---|---|---|---|---|
 | 1 | Medium | Endpoint alert on fidelis-endpoint.c.dmst-integrations.internal: , Intel Source: Unknown, Artifact:  | 2020-02-26 09:21:02 | Endpoint |
 
 
 ### fidelis-list-metadata
+
 ***
 Returns a metadata list.
 
@@ -426,6 +476,7 @@ Returns a metadata list.
 ##### Base Command
 
 `fidelis-list-metadata`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -470,9 +521,11 @@ Returns a metadata list.
 
 
 ##### Command Example
+
 ```!fidelis-list-metadata```
 
 ##### Context Example
+
 ```
 {
     "Fidelis": {
@@ -482,11 +535,14 @@ Returns a metadata list.
 ```
 
 ##### Human Readable Output
+
 ### Found 0 Metadata:
+
 **No entries.**
 
 
 ### fidelis-list-alerts-by-ip
+
 ***
 Returns a list of alerts, by source IP address or destination IP address.
 
@@ -494,6 +550,7 @@ Returns a list of alerts, by source IP address or destination IP address.
 ##### Base Command
 
 `fidelis-list-alerts-by-ip`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -524,9 +581,11 @@ Returns a list of alerts, by source IP address or destination IP address.
 
 
 ##### Command Example
+
 ```!fidelis-list-alerts-by-ip```
 
 ##### Context Example
+
 ```
 {
     "Fidelis": {
@@ -565,7 +624,9 @@ Returns a list of alerts, by source IP address or destination IP address.
 ```
 
 ##### Human Readable Output
+
 ### Found 6 Alerts:
+
 |Time|AlertUUID|ID|DistributedAlertID|UserRating|HostIP|AssetID|Type|DestinationCountry|SourceCountry|DestinationIP|SourceIP|
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 2020-03-19 23:59:59 | 151fa61c-6b08-11ea-85b0-0eb174ee0947 | 6 | Console-6 | No Rating | 2.2.2.2| 2 | Endpoint |  |  | :: | :: |
@@ -577,6 +638,7 @@ Returns a list of alerts, by source IP address or destination IP address.
 
 
 ### fidelis-download-malware-file
+
 ***
 Downloads a malware file from a specified alert.
 
@@ -584,6 +646,7 @@ Downloads a malware file from a specified alert.
 ##### Base Command
 
 `fidelis-download-malware-file`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -608,9 +671,11 @@ Downloads a malware file from a specified alert.
 
 
 ##### Command Example
+
 ```!fidelis-download-malware-file alert_id=9```
 
 ##### Context Example
+
 ```
 {
     "File": {
@@ -630,9 +695,11 @@ Downloads a malware file from a specified alert.
 ```
 
 ##### Human Readable Output
+
 No File Found
 
 ### fidelis-download-pcap-file
+
 ***
 Downloads the PCAP file from a specified alert.
 
@@ -640,6 +707,7 @@ Downloads the PCAP file from a specified alert.
 ##### Base Command
 
 `fidelis-download-pcap-file`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -663,9 +731,11 @@ Downloads the PCAP file from a specified alert.
 
 
 ##### Command Example
+
 ```!fidelis-download-pcap-file alert_id=5```
 
 ##### Context Example
+
 ```
 {
     "File": {
@@ -688,6 +758,7 @@ Downloads the PCAP file from a specified alert.
 
 
 ### fidelis-get-alert-session-data
+
 ***
 Return the session information related to an alert.
 
@@ -695,6 +766,7 @@ Return the session information related to an alert.
 ##### Base Command
 
 `fidelis-get-alert-session-data`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -739,9 +811,11 @@ Return the session information related to an alert.
 
 
 ##### Command Example
+
 ```!fidelis-get-alert-session-data alert_id=9```
 
 ##### Context Example
+
 ```
 {
     "Fidelis": {
@@ -786,13 +860,16 @@ Return the session information related to an alert.
 ```
 
 ##### Human Readable Output
+
 ### Alert 9
+
 |Binary Client Data|Client Data|Client Data Complete|Client Data Size|Client Ip|Client Port|Duration|End Time|Exist|No Forensics|Recorded Object|Server Data Complete|Server Ip|Server Port|Showing Data Size|Start Time|Time Zone|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | {file binary data} | {file client data} | true | 2990 | 0.0.0.0 | 0 | 0 | 2020-03-30 09:07:33 | true | false | true | true | 0.0.0.0 | 0 | 4 | 2020-03-30 09:07:33 | UTC |
 
 
 ### fidelis-get-alert-execution-forensics
+
 ***
 Get the exectution forensics for an alert.
 
@@ -800,6 +877,7 @@ Get the exectution forensics for an alert.
 ##### Base Command
 
 `fidelis-get-alert-execution-forensics`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -844,9 +922,11 @@ Get the exectution forensics for an alert.
 
 
 ##### Command Example
+
 ```!fidelis-get-alert-execution-forensics alert_id=9```
 
 ##### Context Example
+
 ```
 {
     "Fidelis": {
@@ -889,13 +969,16 @@ Get the exectution forensics for an alert.
 ```
 
 ##### Human Readable Output
+
 ### Alert 9
+
 |Alert Flags Xe Nonsubmit|Alert Id|Dns Feed|EF Enabled|File Check Alert|File Size|Js Submitable|Recording Complete|Sand Box On|Size|Status|Submit Id|Submit Time|Submitable|Tg Report|Threat Grid On|Type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | false | 9 | false | true | true | 2990 | true | true | true | 0 | Submitted | 0 | 1585559253000 | true | false | false | alert |
 
 
 ### fidelis-get-alert-forensic-text
+
 ***
 Get the text of the forensic data.
 
@@ -903,6 +986,7 @@ Get the text of the forensic data.
 ##### Base Command
 
 `fidelis-get-alert-forensic-text`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -919,9 +1003,11 @@ Get the text of the forensic data.
 
 
 ##### Command Example
+
 ```!fidelis-get-alert-forensic-text alert_id=9```
 
 ##### Context Example
+
 ```
 {
     "Fidelis": {
@@ -934,10 +1020,12 @@ Get the text of the forensic data.
 ```
 
 ##### Human Readable Output
+
 Alert 9
 Forensic Text: {file forensic text}
 
 ### fidelis-get-alert-decoding-path
+
 ***
 Get the alert's decoding path.
 
@@ -945,6 +1033,7 @@ Get the alert's decoding path.
 ##### Base Command
 
 `fidelis-get-alert-decoding-path`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -967,9 +1056,11 @@ Get the alert's decoding path.
 
 
 ##### Command Example
+
 ```!fidelis-get-alert-decoding-path alert_id=9```
 
 ##### Context Example
+
 ```
 {
     "Fidelis": {
@@ -1012,13 +1103,16 @@ Get the alert's decoding path.
 ```
 
 ##### Human Readable Output
+
 ### Alert 9
+
 |Attribute Map|Clickable Dpaths|Decoding Paths|Original Attributes|Original D Path|
 |---|---|---|---|---|
 | HTTP: {u'endIndex': 29, u'name': u'Filename', u'valueFirst255': u'file.pcap', u'highLights': [], u'value': u'file.pcap', u'startIndex': 0, u'link': False, u'partialAttr': u'HTTP\x0cFilename\tfile.pcap\n'} | HTTP(file.pcap) | {u'clickable': True, u'highLights': [], u'linkPath': u':HTTP(file.pcap)', u'path': u'HTTP(file.pcap)'} | HTTPFilename	file.pcap<br/> | :HTTP(file.pcap) |
 
 
 ### fidelis-update-alert-status
+
 ***
 Update alert status
 
@@ -1026,6 +1120,7 @@ Update alert status
 ##### Base Command
 
 `fidelis-update-alert-status`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1039,13 +1134,16 @@ Update alert status
 There is no context output for this command.
 
 ##### Command Example
+
 ```!fidelis-update-alert-status alert_id=1 status=Actionable```
 
 
 ##### Human Readable Output
+
 Alert 1 has been updated to Actionable status
 
 ### fidelis-alert-execution-forensics-submission
+
 ***
 Submit an excutable file to the fidelis sandbox.
 
@@ -1053,6 +1151,7 @@ Submit an excutable file to the fidelis sandbox.
 ##### Base Command
 
 `fidelis-alert-execution-forensics-submission`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1097,9 +1196,11 @@ Submit an excutable file to the fidelis sandbox.
 
 
 ##### Command Example
+
 ```!fidelis-alert-execution-forensics-submission alert_id=9```
 
 ##### Context Example
+
 ```
 {
     "Fidelis": {
@@ -1142,13 +1243,16 @@ Submit an excutable file to the fidelis sandbox.
 ```
 
 ##### Human Readable Output
+
 ### Alert 9
+
 |Alert Flags Xe Nonsubmit|Alert Id|Dns Feed|EF Enabled|File Check Alert|File Size|Js Submitable|Recording Complete|Sand Box On|Size|Status|Submit Id|Submit Time|Submitable|Tg Report|Threat Grid On|Type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | false | 9 | false | true | true | 2990 | true | true | true | 0 | Submitted | 0 | 1585559253000 | true | false | false | alert |
 
 
 ### fidelis-add-alert-comment
+
 ***
 Adds a comment to an alert.
 
@@ -1156,6 +1260,7 @@ Adds a comment to an alert.
 ##### Base Command
 
 `fidelis-add-alert-comment`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1169,14 +1274,17 @@ Adds a comment to an alert.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!fidelis-add-alert-comment alert_id=1 comment="my new comment"```
 
 
 ##### Human Readable Output
+
 Added this comment: my new comment
  To alert ID: 1
 
 ### fidelis-assign-user-to-alert
+
 ***
 Assign a user to an alert.
 
@@ -1184,6 +1292,7 @@ Assign a user to an alert.
 ##### Base Command
 
 `fidelis-assign-user-to-alert`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1202,9 +1311,11 @@ Assign a user to an alert.
 
 
 ##### Command Example
+
 ```!fidelis-assign-user-to-alert assign_user=cloud-user conclusion_id=2```
 
 ##### Context Example
+
 ```
 {
     "Fidelis": {
@@ -1217,9 +1328,11 @@ Assign a user to an alert.
 ```
 
 ##### Human Readable Output
+
 Assigned User: cloud-user to alert with conclusion ID 2
 
 ### fidelis-close-alert
+
 ***
 Closes a fidelis alert and can assign a user.
 
@@ -1227,6 +1340,7 @@ Closes a fidelis alert and can assign a user.
 ##### Base Command
 
 `fidelis-close-alert`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1244,13 +1358,16 @@ Closes a fidelis alert and can assign a user.
 
 
 ##### Command Example
+
 ```!fidelis-close-alert conclusion_id=2 resolution="False Positive"```
 
 
 ##### Human Readable Output
+
 Closed alert conclusion ID 2
 
 ### fidelis-manage-alert-label
+
 ***
 Adds a label to an alert.
 
@@ -1258,6 +1375,7 @@ Adds a label to an alert.
 ##### Base Command
 
 `fidelis-manage-alert-label`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1272,8 +1390,10 @@ Adds a label to an alert.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!fidelis-manage-alert-label action=Add alert_id=3 label="example-label"```
 
 
 ##### Human Readable Output
+
 Assigned label: example-label to alert 3

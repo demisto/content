@@ -3,6 +3,7 @@ This integration enables the management of Azure Services using Ansible modules.
 To use this integration, configure an instance of this integration. This will associate a credential to be used to manage a Azure Subscription.
 
 # Authorize Cortex XSOAR for Azure Cloud
+
 To use this integration you must generate a Service Principal for your Azure subscription. Follow [Microsoft's guide](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal) on how to create a Azure AD application and associated service principal.
 
 After stepping through the guide you will have:
@@ -26,10 +27,13 @@ After stepping through the guide you will have:
 
 
 # Idempotence
+
 The action commands in this integration are idempotent. This means that the result of performing it once is exactly the same as the result of performing it repeatedly without any intervening actions.
 
 # State Arguement
+
 Some of the commands in this integration take a state argument. These define the desired end state of the object being managed. As a result these commands are able to perform multiple management operations depending on the desired state value. Common state values are:
+
 | **State** | **Result** |
 | --- | --- |
 | present | Object should exist. If not present, the object will be created with the provided parameters. If present but not with correct parameters, it will be modified to met provided parameters. |
@@ -39,13 +43,18 @@ Some of the commands in this integration take a state argument. These define the
 | absent | Object should not exist. If it it exists it will be deleted. |
 
 ## Complex Command Inputs
+
 Some commands may require structured input arguments such as `lists` or `dictionary`, these can be provided in standard JSON notation wrapped in double curly braces. For example a argument called `dns_servers` that accepts a list of server IPs 8.8.8.8 and 8.8.4.4 would be entered as `dns_servers="{{ ['8.8.8.8', '8.8.4.4'] }}"`.
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
+
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-rm-autoscale
+
 ***
 Manage Azure autoscale setting
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_autoscale_module.html
@@ -54,6 +63,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-autoscale`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -79,9 +89,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-autoscale target="/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss" enabled="True" profiles="{{ [{\"count\": \"1\", \"recurrence_days\": [\"Monday\"], \"name\": \"Auto created scale condition\", \"recurrence_timezone\": \"China Standard Time\", \"recurrence_mins\": [\"0\"], \"min_count\": \"1\", \"max_count\": \"1\", \"recurrence_frequency\": \"Week\", \"recurrence_hours\": [\"18\"]}] }}" name="auto_scale_name" resource_group="myResourceGroup" location="australiasoutheast"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -123,32 +135,45 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * enabled: True
->  * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/microsoft.insights/autoscalesettings/auto_scale_name
->  * location: australiasoutheast
->  * name: auto_scale_name
->  * target: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss
->  * ## Notifications
->  * ## Profiles
->  * ## Auto Created Scale Condition
->    * count: 1
->    * max_count: 1
->    * min_count: 1
->    * name: Auto created scale condition
->    * recurrence_frequency: Week
->    * recurrence_timezone: China Standard Time
->    * ### Recurrence_Days
->      * 0: Monday
->    * ### Recurrence_Hours
->      * 0: 18
->    * ### Recurrence_Mins
->      * 0: 0
->  * ## Tags
+># CHANGED 
+>
+> * changed: True
+> * enabled: True
+> * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/microsoft.insights/autoscalesettings/auto_scale_name
+> * location: australiasoutheast
+> * name: auto_scale_name
+> * target: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss
+>
+> * ## Notifications
+>
+> * ## Profiles
+>
+> * ## Auto Created Scale Condition
+>
+>   * count: 1
+>   * max_count: 1
+>   * min_count: 1
+>   * name: Auto created scale condition
+>   * recurrence_frequency: Week
+>   * recurrence_timezone: China Standard Time
+>
+>   * ### Recurrence_Days
+>
+>     * 0: Monday
+>
+>   * ### Recurrence_Hours
+>
+>     * 0: 18
+>
+>   * ### Recurrence_Mins
+>
+>     * 0: 0
+>
+> * ## Tags
 
 
 ### azure-rm-autoscale-info
+
 ***
 Get Azure Auto Scale Setting facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_autoscale_info_module.html
@@ -157,6 +182,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-autoscale-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -175,9 +201,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-autoscale-info resource_group="myResourceGroup" name="auto_scale_name" location="australiasoutheast"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -223,34 +251,50 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Autoscales
->  * ## Auto_Scale_Name
->    * enabled: True
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/microsoft.insights/autoscalesettings/auto_scale_name
->    * location: australiasoutheast
->    * name: auto_scale_name
->    * target: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss
->    * ### Notifications
->    * ### Profiles
->    * ### Auto Created Scale Condition
->      * count: 1
->      * max_count: 1
->      * min_count: 1
->      * name: Auto created scale condition
->      * recurrence_frequency: Week
->      * recurrence_timezone: China Standard Time
->      * #### Recurrence_Days
->        * 0: Monday
->      * #### Recurrence_Hours
->        * 0: 18
->      * #### Recurrence_Mins
->        * 0: 0
->    * ### Tags
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Autoscales
+>
+> * ## Auto_Scale_Name
+>
+>   * enabled: True
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/microsoft.insights/autoscalesettings/auto_scale_name
+>   * location: australiasoutheast
+>   * name: auto_scale_name
+>   * target: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss
+>
+>   * ### Notifications
+>
+>   * ### Profiles
+>
+>   * ### Auto Created Scale Condition
+>
+>     * count: 1
+>     * max_count: 1
+>     * min_count: 1
+>     * name: Auto created scale condition
+>     * recurrence_frequency: Week
+>     * recurrence_timezone: China Standard Time
+>
+>     * #### Recurrence_Days
+>
+>       * 0: Monday
+>
+>     * #### Recurrence_Hours
+>
+>       * 0: 18
+>
+>     * #### Recurrence_Mins
+>
+>       * 0: 0
+>
+>   * ### Tags
 
 
 ### azure-rm-availabilityset
+
 ***
 Manage Azure Availability Set
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_availabilityset_module.html
@@ -259,6 +303,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-availabilityset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -284,9 +329,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-availabilityset name="myAvailabilitySet" location="australiasoutheast" resource_group="myResourceGroup" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -311,19 +358,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## State
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/availabilitySets/myAvailabilitySet
->    * location: australiasoutheast
->    * name: myAvailabilitySet
->    * platform_fault_domain_count: 3
->    * platform_update_domain_count: 5
->    * sku: Classic
->    * tags: None
+># CHANGED 
+>
+> * changed: True
+>
+> * ## State
+>
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/availabilitySets/myAvailabilitySet
+>   * location: australiasoutheast
+>   * name: myAvailabilitySet
+>   * platform_fault_domain_count: 3
+>   * platform_update_domain_count: 5
+>   * sku: Classic
+>   * tags: None
 
 
 ### azure-rm-availabilityset-info
+
 ***
 Get Azure Availability Set facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_availabilityset_info_module.html
@@ -332,6 +383,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-availabilityset-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -350,9 +402,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-availabilityset-info name="Testing" resource_group="myResourceGroup" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -371,13 +425,17 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Info
->    * ### Azure_Availabilitysets
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Info
+>
+>   * ### Azure_Availabilitysets
 
 
 ### azure-rm-deployment
+
 ***
 Create or destroy Azure Resource Manager template deployments
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_deployment_module.html
@@ -386,6 +444,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-deployment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -414,9 +473,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-deployment resource_group="myResourceGroup" name="myDeployment" location="australiasoutheast" template_link="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-vm-simple-linux/azuredeploy.json" parameters="{\"vmName\":{\"value\":\"simpleLinuxVM\"},\"adminUsername\":{\"value\":\"exampleadmin\"},\"authenticationType\":{\"value\":\"password\"},\"adminPasswordOrKey\":{\"value\":\"CHANGEME\"},\"dnsLabelPrefix\":{\"value\":\"xsoarexample\"},\"ubuntuOSVersion\":{\"value\":\"18.04-LTS\"},\"VmSize\":{\"value\":\"Standard_B2s\"},\"virtualNetworkName\":{\"value\":\"vNet\"},\"subnetName\":{\"value\":\"Subnet\"},\"networkSecurityGroupName\":{\"value\":\"SecGroupNet\"}}"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -469,38 +530,57 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * msg: deployment succeeded
->  * ## Deployment
->    * group_name: myResourceGroup
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Resources/deployments/myDeployment
->    * name: myDeployment
->    * ### Instances
->    * ### Simplelinuxvm
->      * vm_name: simpleLinuxVM
->      * #### Ips
->      * #### Simplelinuxvmpublicip
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/simpleLinuxVMPublicIP
->        * name: simpleLinuxVMPublicIP
->        * public_ip: 1.1.1.1
->        * public_ip_allocation_method: Dynamic
->        * ##### Dns_Settings
->          * domain_name_label: xsoarexample
->          * fqdn: xsoarexample.australiasoutheast.cloudapp.azure.com
->    * ### Outputs
->      * #### Adminusername
->        * type: String
->        * value: exampleadmin
->      * #### Hostname
->        * type: String
->        * value: xsoarexample.australiasoutheast.cloudapp.azure.com
->      * #### Sshcommand
->        * type: String
->        * value: ssh exampleadmin@xsoarexample.australiasoutheast.cloudapp.azure.com
+># CHANGED 
+>
+> * changed: True
+> * msg: deployment succeeded
+>
+> * ## Deployment
+>
+>   * group_name: myResourceGroup
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Resources/deployments/myDeployment
+>   * name: myDeployment
+>
+>   * ### Instances
+>
+>   * ### Simplelinuxvm
+>
+>     * vm_name: simpleLinuxVM
+>
+>     * #### Ips
+>
+>     * #### Simplelinuxvmpublicip
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/simpleLinuxVMPublicIP
+>       * name: simpleLinuxVMPublicIP
+>       * public_ip: 1.1.1.1
+>       * public_ip_allocation_method: Dynamic
+>
+>       * ##### Dns_Settings
+>
+>         * domain_name_label: xsoarexample
+>         * fqdn: xsoarexample.australiasoutheast.cloudapp.azure.com
+>
+>   * ### Outputs
+>
+>     * #### Adminusername
+>
+>       * type: String
+>       * value: exampleadmin
+>
+>     * #### Hostname
+>
+>       * type: String
+>       * value: xsoarexample.australiasoutheast.cloudapp.azure.com
+>
+>     * #### Sshcommand
+>
+>       * type: String
+>       * value: ssh exampleadmin@xsoarexample.australiasoutheast.cloudapp.azure.com
 
 
 ### azure-rm-deployment-info
+
 ***
 Get Azure Deployment facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_deployment_info_module.html
@@ -509,6 +589,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-deployment-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -526,9 +607,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-deployment-info resource_group="myResourceGroup" name="myDeployment" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -651,92 +734,145 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Deployments
->  * ## Mydeployment
->    * correlation_id: 07a08b8c-9c48-45fe-9f67-53c7eea232b6
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Resources/deployments/myDeployment
->    * name: myDeployment
->    * provisioning_state: Succeeded
->    * resource_group: myResourceGroup
->    * template_link: https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-vm-simple-linux/azuredeploy.json
->    * ### Output_Resources
->    * ### Secgroupnet
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/SecGroupNet
->      * name: SecGroupNet
->      * type: Microsoft.Network/networkSecurityGroups
->      * #### Depends_On
->    * ### Vnet
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/vNet
->      * name: vNet
->      * type: Microsoft.Network/virtualNetworks
->      * #### Depends_On
->    * ### Simplelinuxvmpublicip
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIpAddresses/simpleLinuxVMPublicIP
->      * name: simpleLinuxVMPublicIP
->      * type: Microsoft.Network/publicIpAddresses
->      * #### Depends_On
->    * ### Simplelinuxvmnetint
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkInterfaces/simpleLinuxVMNetInt
->      * name: simpleLinuxVMNetInt
->      * type: Microsoft.Network/networkInterfaces
->      * #### Depends_On
->        * 0: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/SecGroupNet
->        * 1: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/vNet
->        * 2: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIpAddresses/simpleLinuxVMPublicIP
->    * ### Simplelinuxvm
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/simpleLinuxVM
->      * name: simpleLinuxVM
->      * type: Microsoft.Compute/virtualMachines
->      * #### Depends_On
->        * 0: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkInterfaces/simpleLinuxVMNetInt
->    * ### Outputs
->      * #### Adminusername
->        * type: String
->        * value: exampleadmin
->      * #### Hostname
->        * type: String
->        * value: xsoarexample.australiasoutheast.cloudapp.azure.com
->      * #### Sshcommand
->        * type: String
->        * value: ssh exampleadmin@xsoarexample.australiasoutheast.cloudapp.azure.com
->    * ### Parameters
->      * #### Adminpasswordorkey
->        * type: SecureString
->      * #### Adminusername
->        * type: String
->        * value: exampleadmin
->      * #### Authenticationtype
->        * type: String
->        * value: password
->      * #### Dnslabelprefix
->        * type: String
->        * value: xsoarexample
->      * #### Location
->        * type: String
->        * value: australiasoutheast
->      * #### Networksecuritygroupname
->        * type: String
->        * value: SecGroupNet
->      * #### Subnetname
->        * type: String
->        * value: Subnet
->      * #### Ubuntuosversion
->        * type: String
->        * value: 18.04-LTS
->      * #### Virtualnetworkname
->        * type: String
->        * value: vNet
->      * #### Vmname
->        * type: String
->        * value: simpleLinuxVM
->      * #### Vmsize
->        * type: String
->        * value: Standard_B2s
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Deployments
+>
+> * ## Mydeployment
+>
+>   * correlation_id: 07a08b8c-9c48-45fe-9f67-53c7eea232b6
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Resources/deployments/myDeployment
+>   * name: myDeployment
+>   * provisioning_state: Succeeded
+>   * resource_group: myResourceGroup
+>   * template_link: https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-vm-simple-linux/azuredeploy.json
+>
+>   * ### Output_Resources
+>
+>   * ### Secgroupnet
+>
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/SecGroupNet
+>     * name: SecGroupNet
+>     * type: Microsoft.Network/networkSecurityGroups
+>
+>     * #### Depends_On
+>
+>   * ### Vnet
+>
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/vNet
+>     * name: vNet
+>     * type: Microsoft.Network/virtualNetworks
+>
+>     * #### Depends_On
+>
+>   * ### Simplelinuxvmpublicip
+>
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIpAddresses/simpleLinuxVMPublicIP
+>     * name: simpleLinuxVMPublicIP
+>     * type: Microsoft.Network/publicIpAddresses
+>
+>     * #### Depends_On
+>
+>   * ### Simplelinuxvmnetint
+>
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkInterfaces/simpleLinuxVMNetInt
+>     * name: simpleLinuxVMNetInt
+>     * type: Microsoft.Network/networkInterfaces
+>
+>     * #### Depends_On
+>
+>       * 0: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/SecGroupNet
+>       * 1: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/vNet
+>       * 2: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIpAddresses/simpleLinuxVMPublicIP
+>
+>   * ### Simplelinuxvm
+>
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/simpleLinuxVM
+>     * name: simpleLinuxVM
+>     * type: Microsoft.Compute/virtualMachines
+>
+>     * #### Depends_On
+>
+>       * 0: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkInterfaces/simpleLinuxVMNetInt
+>
+>   * ### Outputs
+>
+>     * #### Adminusername
+>
+>       * type: String
+>       * value: exampleadmin
+>
+>     * #### Hostname
+>
+>       * type: String
+>       * value: xsoarexample.australiasoutheast.cloudapp.azure.com
+>
+>     * #### Sshcommand
+>
+>       * type: String
+>       * value: ssh exampleadmin@xsoarexample.australiasoutheast.cloudapp.azure.com
+>
+>   * ### Parameters
+>
+>     * #### Adminpasswordorkey
+>
+>       * type: SecureString
+>
+>     * #### Adminusername
+>
+>       * type: String
+>       * value: exampleadmin
+>
+>     * #### Authenticationtype
+>
+>       * type: String
+>       * value: password
+>
+>     * #### Dnslabelprefix
+>
+>       * type: String
+>       * value: xsoarexample
+>
+>     * #### Location
+>
+>       * type: String
+>       * value: australiasoutheast
+>
+>     * #### Networksecuritygroupname
+>
+>       * type: String
+>       * value: SecGroupNet
+>
+>     * #### Subnetname
+>
+>       * type: String
+>       * value: Subnet
+>
+>     * #### Ubuntuosversion
+>
+>       * type: String
+>       * value: 18.04-LTS
+>
+>     * #### Virtualnetworkname
+>
+>       * type: String
+>       * value: vNet
+>
+>     * #### Vmname
+>
+>       * type: String
+>       * value: simpleLinuxVM
+>
+>     * #### Vmsize
+>
+>       * type: String
+>       * value: Standard_B2s
 
 
 ### azure-rm-functionapp
+
 ***
 Manage Azure Function Apps
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_functionapp_module.html
@@ -745,6 +881,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-functionapp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -770,9 +907,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-functionapp resource_group="myResourceGroup" name="myxsoarFunctionApp" storage_account="xsoarexamplestorage" state="absent"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -789,12 +928,15 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## State
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## State
 
 
 ### azure-rm-functionapp-info
+
 ***
 Get Azure Function App facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_functionapp_info_module.html
@@ -803,6 +945,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-functionapp-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -821,9 +964,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-functionapp-info resource_group="myResourceGroup"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -842,13 +987,17 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Info
->    * ### Azure_Functionapps
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Info
+>
+>   * ### Azure_Functionapps
 
 
 ### azure-rm-gallery
+
 ***
 Manage Azure Shared Image Gallery instance.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_gallery_module.html
@@ -857,6 +1006,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-gallery`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -879,9 +1029,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-gallery resource_group="myResourceGroup" name="myGallery1283" location="australiasoutheast" description="This is the gallery description." ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -898,12 +1050,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/myGallery1283
+># CHANGED 
+>
+> * changed: True
+> * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/myGallery1283
 
 
 ### azure-rm-gallery-info
+
 ***
 Get Azure Shared Image Gallery info.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_gallery_info_module.html
@@ -912,6 +1066,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-gallery-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -929,9 +1084,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-gallery-info```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -957,19 +1114,24 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Galleries
->  * ## Mygallery1283
->    * description: This is the gallery description.
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/MYRESOURCEGROUP/providers/Microsoft.Compute/galleries/myGallery1283
->    * location: australiasoutheast
->    * name: myGallery1283
->    * provisioning_state: Succeeded
->    * tags: None
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Galleries
+>
+> * ## Mygallery1283
+>
+>   * description: This is the gallery description.
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/MYRESOURCEGROUP/providers/Microsoft.Compute/galleries/myGallery1283
+>   * location: australiasoutheast
+>   * name: myGallery1283
+>   * provisioning_state: Succeeded
+>   * tags: None
 
 
 ### azure-rm-galleryimage
+
 ***
 Manage Azure SIG Image instance.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimage_module.html
@@ -978,6 +1140,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-galleryimage`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1011,9 +1174,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-galleryimage resource_group="myResourceGroup" gallery_name="myGallery1283" name="myImage" location="australiasoutheast" os_type="linux" os_state="generalized" identifier="{\"publisher\": \"myPublisherName\", \"offer\": \"myOfferName\", \"sku\": \"mySkuName\"}" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -1030,12 +1195,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/myGallery1283/images/myImage
+># CHANGED 
+>
+> * changed: True
+> * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/myGallery1283/images/myImage
 
 
 ### azure-rm-galleryimage-info
+
 ***
 Get Azure SIG Image info.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimage_info_module.html
@@ -1044,6 +1211,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-galleryimage-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1062,9 +1230,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-galleryimage-info resource_group="myResourceGroup" gallery_name="myGallery1283"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -1095,23 +1265,30 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Images
->  * ## Myimage
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/myGallery1283/images/myImage
->    * location: australiasoutheast
->    * name: myImage
->    * os_state: Generalized
->    * os_type: Linux
->    * tags: None
->    * ### Identifier
->      * offer: myOfferName
->      * publisher: myPublisherName
->      * sku: mySkuName
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Images
+>
+> * ## Myimage
+>
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/myGallery1283/images/myImage
+>   * location: australiasoutheast
+>   * name: myImage
+>   * os_state: Generalized
+>   * os_type: Linux
+>   * tags: None
+>
+>   * ### Identifier
+>
+>     * offer: myOfferName
+>     * publisher: myPublisherName
+>     * sku: mySkuName
 
 
 ### azure-rm-galleryimageversion
+
 ***
 Manage Azure SIG Image Version instance.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimageversion_module.html
@@ -1120,6 +1297,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-galleryimageversion`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1144,9 +1322,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-galleryimageversion resource_group="myResourceGroup" gallery_name="myGallery1283" gallery_image_name="myImage" name="10.1.3" location="australiasoutheast" publishing_profile="{{{\"end_of_life_date\": \"2022-10-01t00:00:00+00:00\", \"exclude_from_latest\": True, \"replica_count\": 1, \"storage_account_type\": \"Standard_LRS\", \"target_regions\": [{\"name\": \"australiasoutheast\", \"regional_replica_count\": 1}], \"managed_image\": {\"name\": \"myImage\", \"resource_group\": \"myResourceGroup\"}}}}" execution-timeout=90000000```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -1163,12 +1343,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/myGallery1283/images/myImage/versions/10.1.3
+># CHANGED 
+>
+> * changed: True
+> * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/myGallery1283/images/myImage/versions/10.1.3
 
 
 ### azure-rm-galleryimageversion-info
+
 ***
 Get Azure SIG Image Version info.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimageversion_info_module.html
@@ -1177,6 +1359,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-galleryimageversion-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1196,9 +1379,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-galleryimageversion-info resource_group="myResourceGroup" gallery_name="myGallery1283" gallery_image_name="myImage" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -1242,32 +1427,45 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Versions
->  * ## 10.1.3
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/myGallery1283/images/myImage/versions/10.1.3
->    * location: australiasoutheast
->    * name: 10.1.3
->    * provisioning_state: Failed
->    * tags: None
->    * ### Publishing_Profile
->      * endOfLifeDate: 2022-10-01T00:00:00+00:00
->      * excludeFromLatest: True
->      * publishedDate: 2021-06-20T15:39:54.9539674+00:00
->      * replicaCount: 1
->      * storageAccountType: Standard_LRS
->      * #### Source
->        * ##### Managedimage
->          * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/myImage
->      * #### Targetregions
->      * #### Australia Southeast
->        * name: Australia Southeast
->        * regionalReplicaCount: 1
->        * storageAccountType: Standard_LRS
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Versions
+>
+> * ## 10.1.3
+>
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/myGallery1283/images/myImage/versions/10.1.3
+>   * location: australiasoutheast
+>   * name: 10.1.3
+>   * provisioning_state: Failed
+>   * tags: None
+>
+>   * ### Publishing_Profile
+>
+>     * endOfLifeDate: 2022-10-01T00:00:00+00:00
+>     * excludeFromLatest: True
+>     * publishedDate: 2021-06-20T15:39:54.9539674+00:00
+>     * replicaCount: 1
+>     * storageAccountType: Standard_LRS
+>
+>     * #### Source
+>
+>       * ##### Managedimage
+>
+>         * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/myImage
+>
+>     * #### Targetregions
+>
+>     * #### Australia Southeast
+>
+>       * name: Australia Southeast
+>       * regionalReplicaCount: 1
+>       * storageAccountType: Standard_LRS
 
 
 ### azure-rm-image
+
 ***
 Manage Azure image
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_image_module.html
@@ -1276,6 +1474,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-image`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1300,9 +1499,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-image resource_group="myResourceGroup" name="myImage" source="testvm10" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -1319,13 +1520,15 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/myImage
+># CHANGED 
+>
+> * changed: True
+> * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/myImage
 
 
 
 ### azure-rm-image-info
+
 ***
 Get facts about azure custom images
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_image_info_module.html
@@ -1334,6 +1537,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-image-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1352,9 +1556,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-image-info name="myImage" resource_group="myResourceGroup" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -1388,27 +1594,33 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Images
->  * ## Myimage
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/myImage
->    * location: australiasoutheast
->    * name: myImage
->    * os_blob_uri: https://test/vhds/testvm10.vhd
->    * os_disk: None
->    * os_disk_caching: ReadOnly
->    * os_state: Generalized
->    * os_storage_account_type: Standard_LRS
->    * os_type: Linux
->    * provisioning_state: Succeeded
->    * resource_group: myResourceGroup
->    * source: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/testvm10
->    * tags: None
->    * ### Data_Disks
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Images
+>
+> * ## Myimage
+>
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/myImage
+>   * location: australiasoutheast
+>   * name: myImage
+>   * os_blob_uri: https://test/vhds/testvm10.vhd
+>   * os_disk: None
+>   * os_disk_caching: ReadOnly
+>   * os_state: Generalized
+>   * os_storage_account_type: Standard_LRS
+>   * os_type: Linux
+>   * provisioning_state: Succeeded
+>   * resource_group: myResourceGroup
+>   * source: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/testvm10
+>   * tags: None
+>
+>   * ### Data_Disks
 
 
 ### azure-rm-loadbalancer
+
 ***
 Manage Azure load balancers
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_loadbalancer_module.html
@@ -1417,6 +1629,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-loadbalancer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1461,9 +1674,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-loadbalancer resource_group="myResourceGroup" name="testloadbalancer1" frontend_ip_configurations="{{ [{\"name\": \"frontendipconf0\", \"public_ip_address\": \"loadbalancerpip\"}] }}" backend_address_pools="{{ [{\"name\": \"backendaddrpool0\"}] }}" probes="{{ [{\"name\": \"prob0\", \"port\": 80}] }}" inbound_nat_pools="{{ [{\"name\": \"inboundnatpool0\", \"frontend_ip_configuration_name\": \"frontendipconf0\", \"protocol\": \"Tcp\", \"frontend_port_range_start\": 80, \"frontend_port_range_end\": 81, \"backend_port\": 8080}] }}" load_balancing_rules="{{ [{\"name\": \"lbrbalancingrule0\", \"frontend_ip_configuration\": \"frontendipconf0\", \"backend_address_pool\": \"backendaddrpool0\", \"frontend_port\": 80, \"backend_port\": 80, \"probe\": \"prob0\"}] }}"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -1591,98 +1806,142 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## State
->    * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1
->    * location: australiasoutheast
->    * name: testloadbalancer1
->    * provisioning_state: Succeeded
->    * resource_guid: 96a7cea3-982d-4478-b164-c99a2a0ff9a5
->    * type: Microsoft.Network/loadBalancers
->    * ### Backend_Address_Pools
->    * ### Backendaddrpool0
->      * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/backendAddressPools/backendaddrpool0
->      * name: backendaddrpool0
->      * provisioning_state: Succeeded
->      * type: Microsoft.Network/loadBalancers/backendAddressPools
->      * #### Load_Balancing_Rules
->      * #### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Loadbalancingrules/Lbrbalancingrule0
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
->    * ### Frontend_Ip_Configurations
->    * ### Frontendipconf0
->      * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/frontendIPConfigurations/frontendipconf0
->      * name: frontendipconf0
->      * private_ip_allocation_method: Dynamic
->      * provisioning_state: Succeeded
->      * type: Microsoft.Network/loadBalancers/frontendIPConfigurations
->      * #### Inbound_Nat_Pools
->      * #### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Inboundnatpools/Inboundnatpool0
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/inboundNatPools/inboundnatpool0
->      * #### Load_Balancing_Rules
->      * #### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Loadbalancingrules/Lbrbalancingrule0
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
->      * #### Public_Ip_Address
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/loadbalancerpip
->    * ### Inbound_Nat_Pools
->    * ### Inboundnatpool0
->      * backend_port: 8080
->      * enable_floating_ip: False
->      * enable_tcp_reset: False
->      * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
->      * frontend_port_range_end: 81
->      * frontend_port_range_start: 80
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/inboundNatPools/inboundnatpool0
->      * idle_timeout_in_minutes: 4
->      * name: inboundnatpool0
->      * protocol: Tcp
->      * provisioning_state: Succeeded
->      * type: Microsoft.Network/loadBalancers/inboundNatPools
->      * #### Frontend_Ip_Configuration
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/frontendIPConfigurations/frontendipconf0
->    * ### Inbound_Nat_Rules
->    * ### Load_Balancing_Rules
->    * ### Lbrbalancingrule0
->      * backend_port: 80
->      * enable_floating_ip: False
->      * enable_tcp_reset: False
->      * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
->      * frontend_port: 80
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
->      * idle_timeout_in_minutes: 4
->      * load_distribution: Default
->      * name: lbrbalancingrule0
->      * protocol: Tcp
->      * provisioning_state: Succeeded
->      * type: Microsoft.Network/loadBalancers/loadBalancingRules
->      * #### Backend_Address_Pool
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/backendAddressPools/backendaddrpool0
->      * #### Frontend_Ip_Configuration
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/frontendIPConfigurations/frontendipconf0
->      * #### Probe
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/probes/prob0
->    * ### Probes
->    * ### Prob0
->      * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/probes/prob0
->      * interval_in_seconds: 15
->      * name: prob0
->      * number_of_probes: 3
->      * port: 80
->      * protocol: Tcp
->      * provisioning_state: Succeeded
->      * type: Microsoft.Network/loadBalancers/probes
->      * #### Load_Balancing_Rules
->      * #### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Loadbalancingrules/Lbrbalancingrule0
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
->    * ### Sku
->      * name: Basic
+># CHANGED 
+>
+> * changed: True
+>
+> * ## State
+>
+>   * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1
+>   * location: australiasoutheast
+>   * name: testloadbalancer1
+>   * provisioning_state: Succeeded
+>   * resource_guid: 96a7cea3-982d-4478-b164-c99a2a0ff9a5
+>   * type: Microsoft.Network/loadBalancers
+>
+>   * ### Backend_Address_Pools
+>
+>   * ### Backendaddrpool0
+>
+>     * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/backendAddressPools/backendaddrpool0
+>     * name: backendaddrpool0
+>     * provisioning_state: Succeeded
+>     * type: Microsoft.Network/loadBalancers/backendAddressPools
+>
+>     * #### Load_Balancing_Rules
+>
+>     * #### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Loadbalancingrules/Lbrbalancingrule0
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
+>
+>   * ### Frontend_Ip_Configurations
+>
+>   * ### Frontendipconf0
+>
+>     * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/frontendIPConfigurations/frontendipconf0
+>     * name: frontendipconf0
+>     * private_ip_allocation_method: Dynamic
+>     * provisioning_state: Succeeded
+>     * type: Microsoft.Network/loadBalancers/frontendIPConfigurations
+>
+>     * #### Inbound_Nat_Pools
+>
+>     * #### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Inboundnatpools/Inboundnatpool0
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/inboundNatPools/inboundnatpool0
+>
+>     * #### Load_Balancing_Rules
+>
+>     * #### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Loadbalancingrules/Lbrbalancingrule0
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
+>
+>     * #### Public_Ip_Address
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/loadbalancerpip
+>
+>   * ### Inbound_Nat_Pools
+>
+>   * ### Inboundnatpool0
+>
+>     * backend_port: 8080
+>     * enable_floating_ip: False
+>     * enable_tcp_reset: False
+>     * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
+>     * frontend_port_range_end: 81
+>     * frontend_port_range_start: 80
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/inboundNatPools/inboundnatpool0
+>     * idle_timeout_in_minutes: 4
+>     * name: inboundnatpool0
+>     * protocol: Tcp
+>     * provisioning_state: Succeeded
+>     * type: Microsoft.Network/loadBalancers/inboundNatPools
+>
+>     * #### Frontend_Ip_Configuration
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/frontendIPConfigurations/frontendipconf0
+>
+>   * ### Inbound_Nat_Rules
+>
+>   * ### Load_Balancing_Rules
+>
+>   * ### Lbrbalancingrule0
+>
+>     * backend_port: 80
+>     * enable_floating_ip: False
+>     * enable_tcp_reset: False
+>     * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
+>     * frontend_port: 80
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
+>     * idle_timeout_in_minutes: 4
+>     * load_distribution: Default
+>     * name: lbrbalancingrule0
+>     * protocol: Tcp
+>     * provisioning_state: Succeeded
+>     * type: Microsoft.Network/loadBalancers/loadBalancingRules
+>
+>     * #### Backend_Address_Pool
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/backendAddressPools/backendaddrpool0
+>
+>     * #### Frontend_Ip_Configuration
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/frontendIPConfigurations/frontendipconf0
+>
+>     * #### Probe
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/probes/prob0
+>
+>   * ### Probes
+>
+>   * ### Prob0
+>
+>     * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/probes/prob0
+>     * interval_in_seconds: 15
+>     * name: prob0
+>     * number_of_probes: 3
+>     * port: 80
+>     * protocol: Tcp
+>     * provisioning_state: Succeeded
+>     * type: Microsoft.Network/loadBalancers/probes
+>
+>     * #### Load_Balancing_Rules
+>
+>     * #### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Loadbalancingrules/Lbrbalancingrule0
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
+>
+>   * ### Sku
+>
+>     * name: Basic
 
 
 ### azure-rm-loadbalancer-info
+
 ***
 Get load balancer facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_loadbalancer_info_module.html
@@ -1691,6 +1950,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-loadbalancer-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1709,9 +1969,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-loadbalancer-info name="testloadbalancer1" resource_group="myResourceGroup" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -1855,106 +2117,142 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Info
->    * ### Azure_Loadbalancers
->    * ### Testloadbalancer1
->      * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1
->      * location: australiasoutheast
->      * name: testloadbalancer1
->      * type: Microsoft.Network/loadBalancers
->      * #### Properties
->        * provisioningState: Succeeded
->        * resourceGuid: 96a7cea3-982d-4478-b164-c99a2a0ff9a5
->        * ##### Backendaddresspools
->        * ##### Backendaddrpool0
->          * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
->          * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/backendAddressPools/backendaddrpool0
->          * name: backendaddrpool0
->          * type: Microsoft.Network/loadBalancers/backendAddressPools
->          * ###### Properties
->            * provisioningState: Succeeded
->            * ####### Loadbalancingrules
->            * ####### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Loadbalancingrules/Lbrbalancingrule0
->              * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
->        * ##### Frontendipconfigurations
->        * ##### Frontendipconf0
->          * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
->          * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/frontendIPConfigurations/frontendipconf0
->          * name: frontendipconf0
->          * type: Microsoft.Network/loadBalancers/frontendIPConfigurations
->          * ###### Properties
->            * privateIPAllocationMethod: Dynamic
->            * provisioningState: Succeeded
->            * ####### Inboundnatpools
->            * ####### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Inboundnatpools/Inboundnatpool0
->              * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/inboundNatPools/inboundnatpool0
->            * ####### Loadbalancingrules
->            * ####### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Loadbalancingrules/Lbrbalancingrule0
->              * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
->            * ####### Publicipaddress
->              * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/loadbalancerpip
->        * ##### Inboundnatpools
->        * ##### Inboundnatpool0
->          * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
->          * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/inboundNatPools/inboundnatpool0
->          * name: inboundnatpool0
->          * type: Microsoft.Network/loadBalancers/inboundNatPools
->          * ###### Properties
->            * backendPort: 8080
->            * enableFloatingIP: False
->            * enableTcpReset: False
->            * frontendPortRangeEnd: 81
->            * frontendPortRangeStart: 80
->            * idleTimeoutInMinutes: 4
->            * protocol: Tcp
->            * provisioningState: Succeeded
->            * ####### Frontendipconfiguration
->              * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/frontendIPConfigurations/frontendipconf0
->        * ##### Inboundnatrules
->        * ##### Loadbalancingrules
->        * ##### Lbrbalancingrule0
->          * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
->          * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
->          * name: lbrbalancingrule0
->          * type: Microsoft.Network/loadBalancers/loadBalancingRules
->          * ###### Properties
->            * backendPort: 80
->            * enableFloatingIP: False
->            * enableTcpReset: False
->            * frontendPort: 80
->            * idleTimeoutInMinutes: 4
->            * loadDistribution: Default
->            * protocol: Tcp
->            * provisioningState: Succeeded
->            * ####### Backendaddresspool
->              * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/backendAddressPools/backendaddrpool0
->            * ####### Frontendipconfiguration
->              * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/frontendIPConfigurations/frontendipconf0
->            * ####### Probe
->              * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/probes/prob0
->        * ##### Probes
->        * ##### Prob0
->          * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
->          * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/probes/prob0
->          * name: prob0
->          * type: Microsoft.Network/loadBalancers/probes
->          * ###### Properties
->            * intervalInSeconds: 15
->            * numberOfProbes: 3
->            * port: 80
->            * protocol: Tcp
->            * provisioningState: Succeeded
->            * ####### Loadbalancingrules
->            * ####### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Loadbalancingrules/Lbrbalancingrule0
->              * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
->      * #### Sku
->        * name: Basic
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Info
+>
+>   * ### Azure_Loadbalancers
+>
+>   * ### Testloadbalancer1
+>
+>     * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1
+>     * location: australiasoutheast
+>     * name: testloadbalancer1
+>     * type: Microsoft.Network/loadBalancers
+>
+>     * #### Properties
+>
+>       * provisioningState: Succeeded
+>       * resourceGuid: 96a7cea3-982d-4478-b164-c99a2a0ff9a5
+>
+>       * ##### Backendaddresspools
+>
+>       * ##### Backendaddrpool0
+>
+>         * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
+>         * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/backendAddressPools/backendaddrpool0
+>         * name: backendaddrpool0
+>         * type: Microsoft.Network/loadBalancers/backendAddressPools
+>
+>         * ###### Properties
+>
+>           * provisioningState: Succeeded
+>           * ####### Loadbalancingrules
+>           * ####### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Loadbalancingrules/Lbrbalancingrule0
+>             * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
+>
+>       * ##### Frontendipconfigurations
+>
+>       * ##### Frontendipconf0
+>
+>         * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
+>         * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/frontendIPConfigurations/frontendipconf0
+>         * name: frontendipconf0
+>         * type: Microsoft.Network/loadBalancers/frontendIPConfigurations
+>
+>         * ###### Properties
+>
+>           * privateIPAllocationMethod: Dynamic
+>           * provisioningState: Succeeded
+>           * ####### Inboundnatpools
+>           * ####### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Inboundnatpools/Inboundnatpool0
+>             * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/inboundNatPools/inboundnatpool0
+>           * ####### Loadbalancingrules
+>           * ####### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Loadbalancingrules/Lbrbalancingrule0
+>             * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
+>           * ####### Publicipaddress
+>             * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/loadbalancerpip
+>
+>       * ##### Inboundnatpools
+>
+>       * ##### Inboundnatpool0
+>
+>         * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
+>         * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/inboundNatPools/inboundnatpool0
+>         * name: inboundnatpool0
+>         * type: Microsoft.Network/loadBalancers/inboundNatPools
+>
+>         * ###### Properties
+>
+>           * backendPort: 8080
+>           * enableFloatingIP: False
+>           * enableTcpReset: False
+>           * frontendPortRangeEnd: 81
+>           * frontendPortRangeStart: 80
+>           * idleTimeoutInMinutes: 4
+>           * protocol: Tcp
+>           * provisioningState: Succeeded
+>           * ####### Frontendipconfiguration
+>             * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/frontendIPConfigurations/frontendipconf0
+>
+>       * ##### Inboundnatrules
+>
+>       * ##### Loadbalancingrules
+>
+>       * ##### Lbrbalancingrule0
+>
+>         * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
+>         * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
+>         * name: lbrbalancingrule0
+>         * type: Microsoft.Network/loadBalancers/loadBalancingRules
+>
+>         * ###### Properties
+>
+>           * backendPort: 80
+>           * enableFloatingIP: False
+>           * enableTcpReset: False
+>           * frontendPort: 80
+>           * idleTimeoutInMinutes: 4
+>           * loadDistribution: Default
+>           * protocol: Tcp
+>           * provisioningState: Succeeded
+>           * ####### Backendaddresspool
+>             * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/backendAddressPools/backendaddrpool0
+>           * ####### Frontendipconfiguration
+>             * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/frontendIPConfigurations/frontendipconf0
+>           * ####### Probe
+>             * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/probes/prob0
+>
+>       * ##### Probes
+>
+>       * ##### Prob0
+>
+>         * etag: W/"4fcaeb51-9c56-4e98-9fa1-15eca75d0b96"
+>         * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/probes/prob0
+>         * name: prob0
+>         * type: Microsoft.Network/loadBalancers/probes
+>
+>         * ###### Properties
+>
+>           * intervalInSeconds: 15
+>           * numberOfProbes: 3
+>           * port: 80
+>           * protocol: Tcp
+>           * provisioningState: Succeeded
+>           * ####### Loadbalancingrules
+>           * ####### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Loadbalancers/Testloadbalancer1/Loadbalancingrules/Lbrbalancingrule0
+>             * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/testloadbalancer1/loadBalancingRules/lbrbalancingrule0
+>
+>     * #### Sku
+>
+>       * name: Basic
 
 
 ### azure-rm-manageddisk
+
 ***
 Manage Azure Manage Disks
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_manageddisk_module.html
@@ -1963,6 +2261,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-manageddisk`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1994,9 +2293,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-manageddisk name="mymanageddisk" location="australiasoutheast" resource_group="myResourceGroup" disk_size_gb="4" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -2025,23 +2326,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## State
->    * create_option: empty
->    * disk_size_gb: 4
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/mymanageddisk
->    * location: australiasoutheast
->    * managed_by: None
->    * name: mymanageddisk
->    * os_type: None
->    * source_uri: None
->    * storage_account_type: Standard_LRS
->    * tags: None
->    * zone: 
+># CHANGED 
+>
+> * changed: True
+>
+> * ## State
+>
+>   * create_option: empty
+>   * disk_size_gb: 4
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/mymanageddisk
+>   * location: australiasoutheast
+>   * managed_by: None
+>   * name: mymanageddisk
+>   * os_type: None
+>   * source_uri: None
+>   * storage_account_type: Standard_LRS
+>   * tags: None
+>   * zone: 
 
 
 ### azure-rm-manageddisk-info
+
 ***
 Get managed disk facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_manageddisk_info_module.html
@@ -2050,6 +2355,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-manageddisk-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2069,9 +2375,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-manageddisk-info name="mymanageddisk" resource_group="myResourceGroup" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -2104,25 +2412,31 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Info
->    * ### Azure_Managed_Disk
->    * ### Mymanageddisk
->      * create_option: empty
->      * disk_size_gb: 4
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/mymanageddisk
->      * location: australiasoutheast
->      * managed_by: None
->      * name: mymanageddisk
->      * os_type: None
->      * source_uri: None
->      * storage_account_type: Standard_LRS
->      * tags: None
->      * zone: 
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Info
+>
+>   * ### Azure_Managed_Disk
+>
+>   * ### Mymanageddisk
+>
+>     * create_option: empty
+>     * disk_size_gb: 4
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/mymanageddisk
+>     * location: australiasoutheast
+>     * managed_by: None
+>     * name: mymanageddisk
+>     * os_type: None
+>     * source_uri: None
+>     * storage_account_type: Standard_LRS
+>     * tags: None
+>     * zone: 
 
 
 ### azure-rm-resource-info
+
 ***
 Generic facts of Azure resources
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resource_info_module.html
@@ -2131,6 +2445,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-resource-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2153,9 +2468,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-resource-info resource_group="myResourceGroup" provider="compute" resource_type="virtualMachines" resource_name="testvm10"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -2256,76 +2573,115 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * url: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.compute/virtualMachines/testvm10
->  * ## Response
->  * ## Testvm10
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/testvm10
->    * location: australiasoutheast
->    * name: testvm10
->    * type: Microsoft.Compute/virtualMachines
->    * ### Properties
->      * provisioningState: Succeeded
->      * vmId: 052c538f-3b0a-4c06-9996-8f8a32bb208f
->      * #### Hardwareprofile
->        * vmSize: Standard_B2ms
->      * #### Networkprofile
->        * ##### Networkinterfaces
->        * ##### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Networkinterfaces/Testvm1001
->          * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkInterfaces/testvm1001
->          * ###### Properties
->            * primary: True
->      * #### Osprofile
->        * adminUsername: exampleadmin
->        * allowExtensionOperations: True
->        * computerName: testvm10
->        * requireGuestProvisionSignal: True
->        * ##### Linuxconfiguration
->          * disablePasswordAuthentication: False
->          * provisionVMAgent: True
->          * ###### Patchsettings
->            * assessmentMode: ImageDefault
->            * patchMode: ImageDefault
->        * ##### Secrets
->      * #### Storageprofile
->        * ##### Datadisks
->        * ##### Imagereference
->          * exactVersion: 0.20210329.591
->          * offer: debian-10
->          * publisher: Debian
->          * sku: 10
->          * version: 0.20210329.591
->        * ##### Osdisk
->          * caching: ReadOnly
->          * createOption: FromImage
->          * diskSizeGB: 30
->          * name: testvm10.vhd
->          * osType: Linux
->          * ###### Vhd
->            * uri: https://testvm103335.blob.core.windows.net/vhds/testvm10.vhd
->    * ### Resources
->    * ### Myvmextension
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/testvm10/extensions/myvmextension
->      * location: australiasoutheast
->      * name: myvmextension
->      * type: Microsoft.Compute/virtualMachines/extensions
->      * #### Properties
->        * autoUpgradeMinorVersion: True
->        * provisioningState: Succeeded
->        * publisher: Microsoft.Azure.Extensions
->        * type: CustomScript
->        * typeHandlerVersion: 2.0
->        * ##### Settings
->          * commandToExecute: hostname
->    * ### Tags
->      * _own_nic_: testvm1001
->      * _own_nsg_: testvm1001
->      * _own_pip_: testvm1001
->      * _own_sa_: testvm103335
+># SUCCESS 
+>
+> * changed: False
+> * url: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.compute/virtualMachines/testvm10
+>
+> * ## Response
+>
+> * ## Testvm10
+>
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/testvm10
+>   * location: australiasoutheast
+>   * name: testvm10
+>   * type: Microsoft.Compute/virtualMachines
+>
+>   * ### Properties
+>
+>     * provisioningState: Succeeded
+>     * vmId: 052c538f-3b0a-4c06-9996-8f8a32bb208f
+>
+>     * #### Hardwareprofile
+>
+>       * vmSize: Standard_B2ms
+>
+>     * #### Networkprofile
+>
+>       * ##### Networkinterfaces
+>
+>       * ##### /Subscriptions/11111111-1111-1111-1111-111111111111/Resourcegroups/Myresourcegroup/Providers/Microsoft.Network/Networkinterfaces/Testvm1001
+>
+>         * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkInterfaces/testvm1001
+>
+>         * ###### Properties
+>
+>           * primary: True
+>
+>     * #### Osprofile
+>
+>       * adminUsername: exampleadmin
+>       * allowExtensionOperations: True
+>       * computerName: testvm10
+>       * requireGuestProvisionSignal: True
+>
+>       * ##### Linuxconfiguration
+>
+>         * disablePasswordAuthentication: False
+>         * provisionVMAgent: True
+>
+>         * ###### Patchsettings
+>
+>           * assessmentMode: ImageDefault
+>           * patchMode: ImageDefault
+>
+>       * ##### Secrets
+>
+>     * #### Storageprofile
+>
+>       * ##### Datadisks
+>
+>       * ##### Imagereference
+>
+>         * exactVersion: 0.20210329.591
+>         * offer: debian-10
+>         * publisher: Debian
+>         * sku: 10
+>         * version: 0.20210329.591
+>
+>       * ##### Osdisk
+>
+>         * caching: ReadOnly
+>         * createOption: FromImage
+>         * diskSizeGB: 30
+>         * name: testvm10.vhd
+>         * osType: Linux
+>
+>         * ###### Vhd
+>
+>           * uri: https://testvm103335.blob.core.windows.net/vhds/testvm10.vhd
+>
+>   * ### Resources
+>
+>   * ### Myvmextension
+>
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/testvm10/extensions/myvmextension
+>     * location: australiasoutheast
+>     * name: myvmextension
+>     * type: Microsoft.Compute/virtualMachines/extensions
+>
+>     * #### Properties
+>
+>       * autoUpgradeMinorVersion: True
+>       * provisioningState: Succeeded
+>       * publisher: Microsoft.Azure.Extensions
+>       * type: CustomScript
+>       * typeHandlerVersion: 2.0
+>
+>       * ##### Settings
+>
+>         * commandToExecute: hostname
+>
+>   * ### Tags
+>
+>     * _own_nic_: testvm1001
+>     * _own_nsg_: testvm1001
+>     * _own_pip_: testvm1001
+>     * _own_sa_: testvm103335
 
 
 ### azure-rm-resourcegroup
+
 ***
 Manage Azure resource groups
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_module.html
@@ -2334,6 +2690,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-resourcegroup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2356,9 +2713,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-resourcegroup name="myResourceGroup" location="australiasoutheast" tags="{\"testing\": \"testing\", \"delete\": \"never\"}" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -2385,20 +2744,26 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * contains_resources: False
->  * ## State
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup
->    * location: australiasoutheast
->    * name: myResourceGroup
->    * provisioning_state: Succeeded
->    * ### Tags
->      * delete: never
->      * testing: testing
+># CHANGED 
+>
+> * changed: True
+> * contains_resources: False
+>
+> * ## State
+>
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup
+>   * location: australiasoutheast
+>   * name: myResourceGroup
+>   * provisioning_state: Succeeded
+>
+>   * ### Tags
+>
+>     * delete: never
+>     * testing: testing
 
 
 ### azure-rm-resourcegroup-info
+
 ***
 Get resource group facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_info_module.html
@@ -2407,6 +2772,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-resourcegroup-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2425,9 +2791,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-resourcegroup-info name="myResourceGroup" location="australiasoutheast"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -2457,21 +2825,30 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Resourcegroups
->  * ## Myresourcegroup
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup
->    * location: australiasoutheast
->    * name: myResourceGroup
->    * ### Properties
->      * provisioningState: Succeeded
->    * ### Tags
->      * delete: never
->      * testing: testing
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Resourcegroups
+>
+> * ## Myresourcegroup
+>
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup
+>   * location: australiasoutheast
+>   * name: myResourceGroup
+>
+>   * ### Properties
+>
+>     * provisioningState: Succeeded
+>
+>   * ### Tags
+>
+>     * delete: never
+>     * testing: testing
 
 
 ### azure-rm-snapshot
+
 ***
 Manage Azure Snapshot instance.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_snapshot_module.html
@@ -2480,6 +2857,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-snapshot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2504,9 +2882,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-snapshot resource_group="myResourceGroup" name="mySnapshot" creation_data="{\"create_option\": \"Copy\", \"source_uri\": \"/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/MYRESOURCEGROUP/providers/Microsoft.Compute/disks/mymanageddisk\"}" state="present" append_tags="Yes"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -2523,13 +2903,15 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot
+># CHANGED 
+>
+> * changed: True
+> * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot
 
 
 
 ### azure-rm-virtualmachine
+
 ***
 Manage Azure virtual machines
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachine_module.html
@@ -2538,6 +2920,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualmachine`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2599,9 +2982,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualmachine resource_group="myResourceGroup" name="testvm10" state="present" started="Yes" allocated="No" admin_username="exampleadmin" admin_password="CHANGEME" ssh_password_enabled="Yes" image="{{ {'offer': 'debian-10', 'publisher': 'Debian', 'sku': '10','version': 'latest'} }}" vm_size=Standard_B2ms```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -2618,12 +3003,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * powerstate_change: None
+># CHANGED 
+>
+> * changed: True
+> * powerstate_change: None
 
 
 ### azure-rm-virtualmachine-info
+
 ***
 Get virtual machine facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachine_info_module.html
@@ -2632,6 +3019,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualmachine-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2650,9 +3038,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualmachine-info resource_group="myResourceGroup"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -2732,65 +3122,88 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Vms
->  * ## Exampleadmin
->    * admin_username: exampleadmin
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/simpleLinuxVM
->    * location: australiasoutheast
->    * name: simpleLinuxVM
->    * os_disk_caching: ReadWrite
->    * os_type: Linux
->    * power_state: running
->    * resource_group: myResourceGroup
->    * state: present
->    * tags: None
->    * vm_size: Standard_B2s
->    * ### Boot_Diagnostics
->      * enabled: False
->      * storage_uri: False
->    * ### Data_Disks
->    * ### Image
->      * offer: UbuntuServer
->      * publisher: Canonical
->      * sku: 18.04-LTS
->      * version: latest
->    * ### Network_Interface_Names
->      * 0: simpleLinuxVMNetInt
->  * ## Exampleadmin
->    * admin_username: exampleadmin
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/testvm10
->    * location: australiasoutheast
->    * name: testvm10
->    * os_disk_caching: ReadOnly
->    * os_type: Linux
->    * power_state: running
->    * resource_group: myResourceGroup
->    * state: present
->    * storage_account_name: testvm103335
->    * storage_blob_name: testvm10.vhd
->    * storage_container_name: vhds
->    * vm_size: Standard_B2ms
->    * ### Boot_Diagnostics
->      * enabled: False
->      * storage_uri: False
->    * ### Data_Disks
->    * ### Image
->      * offer: debian-10
->      * publisher: Debian
->      * sku: 10
->      * version: 0.20210329.591
->    * ### Network_Interface_Names
->      * 0: testvm1001
->    * ### Tags
->      * _own_nic_: testvm1001
->      * _own_nsg_: testvm1001
->      * _own_pip_: testvm1001
->      * _own_sa_: testvm103335
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Vms
+>
+> * ## Exampleadmin
+>
+>   * admin_username: exampleadmin
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/simpleLinuxVM
+>   * location: australiasoutheast
+>   * name: simpleLinuxVM
+>   * os_disk_caching: ReadWrite
+>   * os_type: Linux
+>   * power_state: running
+>   * resource_group: myResourceGroup
+>   * state: present
+>   * tags: None
+>   * vm_size: Standard_B2s
+>
+>   * ### Boot_Diagnostics
+>
+>     * enabled: False
+>     * storage_uri: False
+>
+>   * ### Data_Disks
+>
+>   * ### Image
+>
+>     * offer: UbuntuServer
+>     * publisher: Canonical
+>     * sku: 18.04-LTS
+>     * version: latest
+>
+>   * ### Network_Interface_Names
+>
+>     * 0: simpleLinuxVMNetInt
+>
+> * ## Exampleadmin
+>
+>   * admin_username: exampleadmin
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/testvm10
+>   * location: australiasoutheast
+>   * name: testvm10
+>   * os_disk_caching: ReadOnly
+>   * os_type: Linux
+>   * power_state: running
+>   * resource_group: myResourceGroup
+>   * state: present
+>   * storage_account_name: testvm103335
+>   * storage_blob_name: testvm10.vhd
+>   * storage_container_name: vhds
+>   * vm_size: Standard_B2ms
+>
+>   * ### Boot_Diagnostics
+>
+>     * enabled: False
+>     * storage_uri: False
+>
+>   * ### Data_Disks
+>
+>   * ### Image
+>
+>     * offer: debian-10
+>     * publisher: Debian
+>     * sku: 10
+>     * version: 0.20210329.591
+>
+>   * ### Network_Interface_Names
+>
+>     * 0: testvm1001
+>
+>   * ### Tags
+>
+>     * _own_nic_: testvm1001
+>     * _own_nsg_: testvm1001
+>     * _own_pip_: testvm1001
+>     * _own_sa_: testvm103335
 
 
 ### azure-rm-virtualmachineextension
+
 ***
 Managed Azure Virtual Machine extension
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineextension_module.html
@@ -2799,6 +3212,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualmachineextension`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2826,9 +3240,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualmachineextension name="myvmextension" location="australiasoutheast" resource_group="myResourceGroup" virtual_machine_name="testvm10" publisher="Microsoft.Azure.Extensions" virtual_machine_extension_type="CustomScript" type_handler_version="2.0" settings="{\"commandToExecute\": \"hostname\"}" auto_upgrade_minor_version="True" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -2857,22 +3273,28 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## State
->    * auto_upgrade_minor_version: True
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/testvm10/extensions/myvmextension
->    * location: australiasoutheast
->    * name: myvmextension
->    * protected_settings: None
->    * publisher: Microsoft.Azure.Extensions
->    * type_handler_version: 2.0
->    * virtual_machine_extension_type: CustomScript
->    * ### Settings
->      * commandToExecute: hostname
+># CHANGED 
+>
+> * changed: True
+>
+> * ## State
+>
+>   * auto_upgrade_minor_version: True
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/testvm10/extensions/myvmextension
+>   * location: australiasoutheast
+>   * name: myvmextension
+>   * protected_settings: None
+>   * publisher: Microsoft.Azure.Extensions
+>   * type_handler_version: 2.0
+>   * virtual_machine_extension_type: CustomScript
+>
+>   * ### Settings
+>
+>     * commandToExecute: hostname
 
 
 ### azure-rm-virtualmachineextension-info
+
 ***
 Get Azure Virtual Machine Extension facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineextension_info_module.html
@@ -2881,6 +3303,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualmachineextension-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2900,9 +3323,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualmachineextension-info resource_group="myResourceGroup" virtual_machine_name="testvm10" name="myvmextension" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -2935,25 +3360,32 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Extensions
->  * ## Myvmextension
->    * auto_upgrade_minor_version: True
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/testvm10/extensions/myvmextension
->    * location: australiasoutheast
->    * name: myvmextension
->    * provisioning_state: Succeeded
->    * publisher: Microsoft.Azure.Extensions
->    * resource_group: myResourceGroup
->    * tags: None
->    * type: CustomScript
->    * virtual_machine_name: testvm10
->    * ### Settings
->      * commandToExecute: hostname
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Extensions
+>
+> * ## Myvmextension
+>
+>   * auto_upgrade_minor_version: True
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/testvm10/extensions/myvmextension
+>   * location: australiasoutheast
+>   * name: myvmextension
+>   * provisioning_state: Succeeded
+>   * publisher: Microsoft.Azure.Extensions
+>   * resource_group: myResourceGroup
+>   * tags: None
+>   * type: CustomScript
+>   * virtual_machine_name: testvm10
+>
+>   * ### Settings
+>
+>     * commandToExecute: hostname
 
 
 ### azure-rm-virtualmachineimage-info
+
 ***
 Get virtual machine image facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineimage_info_module.html
@@ -2962,6 +3394,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualmachineimage-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2982,9 +3415,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualmachineimage-info location="australiasoutheast" publisher="Debian" offer="debian-10" sku="10" version=0.20190705.396```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -3017,23 +3452,35 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Vmimages
->  * ## 0.20190705.396
->    * id: /Subscriptions/11111111-1111-1111-1111-111111111111/Providers/Microsoft.Compute/Locations/australiasoutheast/Publishers/Debian/ArtifactTypes/VMImage/Offers/debian-10/Skus/10/Versions/0.20190705.396
->    * location: australiasoutheast
->    * name: 0.20190705.396
->    * ### Properties
->      * hyperVGeneration: V1
->      * #### Automaticosupgradeproperties
->        * automaticOSUpgradeSupported: False
->      * #### Datadiskimages
->      * #### Osdiskimage
->        * operatingSystem: Linux
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Vmimages
+>
+> * ## 0.20190705.396
+>
+>   * id: /Subscriptions/11111111-1111-1111-1111-111111111111/Providers/Microsoft.Compute/Locations/australiasoutheast/Publishers/Debian/ArtifactTypes/VMImage/Offers/debian-10/Skus/10/Versions/0.20190705.396
+>   * location: australiasoutheast
+>   * name: 0.20190705.396
+>
+>   * ### Properties
+>
+>     * hyperVGeneration: V1
+>
+>     * #### Automaticosupgradeproperties
+>
+>       * automaticOSUpgradeSupported: False
+>
+>     * #### Datadiskimages
+>
+>     * #### Osdiskimage
+>
+>       * operatingSystem: Linux
 
 
 ### azure-rm-virtualmachinescaleset
+
 ***
 Manage Azure virtual machine scale sets
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescaleset_module.html
@@ -3042,6 +3489,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualmachinescaleset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3090,9 +3538,11 @@ Note that facts are not part of the registered output but available directly. |
 
 
 #### Command Example
+
 ```!azure-rm-virtualmachinescaleset resource_group="myResourceGroup" name="testvmss" vm_size="Standard_DS1_v2" capacity="2" virtual_network_name="vnet" upgrade_policy="Manual" subnet_name="subnet" admin_username="adminUser" ssh_password_enabled=Yes admin_password="CHANGEME" managed_disk_type="Standard_LRS" image="{{ {'offer': 'debian-10', 'publisher': 'Debian', 'sku': '10','version': 'latest'} }}"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -3108,11 +3558,13 @@ Note that facts are not part of the registered output but available directly. |
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
+># CHANGED 
+>
+> * changed: True
 
 
 ### azure-rm-virtualmachinescaleset-info
+
 ***
 Get Virtual Machine Scale Set facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescaleset_info_module.html
@@ -3121,6 +3573,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualmachinescaleset-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3140,9 +3593,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualmachinescaleset-info resource_group="myResourceGroup" name="testvmss" format="curated"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -3189,39 +3644,47 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Vmss
->  * ## Adminuser
->    * admin_password: None
->    * admin_username: adminUser
->    * capacity: 2
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss
->    * load_balancer: None
->    * location: australiasoutheast
->    * managed_disk_type: Standard_LRS
->    * name: testvmss
->    * os_disk_caching: ReadOnly
->    * os_type: Linux
->    * overprovision: True
->    * resource_group: myResourceGroup
->    * ssh_password_enabled: True
->    * state: present
->    * subnet_name: Subnet
->    * tags: None
->    * tier: Standard
->    * upgrade_policy: Manual
->    * virtual_network_name: None
->    * vm_size: Standard_DS1_v2
->    * ### Data_Disks
->    * ### Image
->      * offer: debian-10
->      * publisher: Debian
->      * sku: 10
->      * version: 0.20210329.591
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Vmss
+>
+> * ## Adminuser
+>
+>   * admin_password: None
+>   * admin_username: adminUser
+>   * capacity: 2
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss
+>   * load_balancer: None
+>   * location: australiasoutheast
+>   * managed_disk_type: Standard_LRS
+>   * name: testvmss
+>   * os_disk_caching: ReadOnly
+>   * os_type: Linux
+>   * overprovision: True
+>   * resource_group: myResourceGroup
+>   * ssh_password_enabled: True
+>   * state: present
+>   * subnet_name: Subnet
+>   * tags: None
+>   * tier: Standard
+>   * upgrade_policy: Manual
+>   * virtual_network_name: None
+>   * vm_size: Standard_DS1_v2
+>
+>   * ### Data_Disks
+>
+>   * ### Image
+>
+>     * offer: debian-10
+>     * publisher: Debian
+>     * sku: 10
+>     * version: 0.20210329.591
 
 
 ### azure-rm-virtualmachinescalesetextension
+
 ***
 Manage Azure Virtual Machine Scale Set (VMSS) extensions
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetextension_module.html
@@ -3230,6 +3693,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualmachinescalesetextension`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3256,9 +3720,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualmachinescalesetextension name="myvmssextension" location="australiasoutheast" resource_group="myResourceGroup" vmss_name="testvmss" publisher="Microsoft.Azure.Extensions" type="CustomScript" type_handler_version="2.0" settings="{\"commandToExecute\": \"hostname\"}" auto_upgrade_minor_version="True" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -3276,13 +3742,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss/extensions/myvmssextension
->  * ## State
+># CHANGED 
+>
+> * changed: True
+> * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss/extensions/myvmssextension
+>
+> * ## State
 
 
 ### azure-rm-virtualmachinescalesetextension-info
+
 ***
 Get Azure Virtual Machine Scale Set Extension facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetextension_info_module.html
@@ -3291,6 +3760,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualmachinescalesetextension-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3309,9 +3779,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualmachinescalesetextension-info resource_group="myResourceGroup" vmss_name="testvmss" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -3342,23 +3814,30 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Extensions
->  * ## Myvmssextension
->    * auto_upgrade_minor_version: True
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss/extensions/myvmssextension
->    * name: myvmssextension
->    * provisioning_state: Creating
->    * publisher: Microsoft.Azure.Extensions
->    * resource_group: myResourceGroup
->    * type: CustomScript
->    * vmss_name: testvmss
->    * ### Settings
->      * commandToExecute: hostname
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Extensions
+>
+> * ## Myvmssextension
+>
+>   * auto_upgrade_minor_version: True
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss/extensions/myvmssextension
+>   * name: myvmssextension
+>   * provisioning_state: Creating
+>   * publisher: Microsoft.Azure.Extensions
+>   * resource_group: myResourceGroup
+>   * type: CustomScript
+>   * vmss_name: testvmss
+>
+>   * ### Settings
+>
+>     * commandToExecute: hostname
 
 
 ### azure-rm-virtualmachinescalesetinstance
+
 ***
 Get Azure Virtual Machine Scale Set Instance facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetinstance_module.html
@@ -3367,6 +3846,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualmachinescalesetinstance`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3388,9 +3868,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualmachinescalesetinstance resource_group="myResourceGroup" vmss_name="testvmss" instance_id="2" latest_model="True" power_state=running```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -3407,12 +3889,15 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Instances
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Instances
 
 
 ### azure-rm-virtualmachinescalesetinstance-info
+
 ***
 Get Azure Virtual Machine Scale Set Instance facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetinstance_info_module.html
@@ -3421,6 +3906,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualmachinescalesetinstance-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3440,9 +3926,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualmachinescalesetinstance-info resource_group="myResourceGroup" vmss_name="testvmss"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -3496,41 +3984,51 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Instances
->  * ## Testvmss000001
->    * computer_name: testvmss000001
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss/virtualMachines/1
->    * instance_id: 1
->    * latest_model: False
->    * name: testvmss_1
->    * power_state: running
->    * provisioning_state: Succeeded
->    * resource_group: myResourceGroup
->    * tags: None
->    * vm_id: a5d531ad-8a0d-4a06-a5ed-e19ab6536177
->    * ### Image_Reference
->      * offer: debian-10
->      * publisher: Debian
->      * sku: 10
->      * version: 0.20210329.591
->  * ## Testvmss000003
->    * computer_name: testvmss000003
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss/virtualMachines/3
->    * instance_id: 3
->    * latest_model: False
->    * name: testvmss_3
->    * power_state: running
->    * provisioning_state: Succeeded
->    * resource_group: myResourceGroup
->    * tags: None
->    * vm_id: cf99d90e-2358-4373-adc3-f2d5d181e9a1
->    * ### Image_Reference
->      * offer: debian-10
->      * publisher: Debian
->      * sku: 10
->      * version: 0.20210329.591
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Instances
+>
+> * ## Testvmss000001
+>
+>   * computer_name: testvmss000001
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss/virtualMachines/1
+>   * instance_id: 1
+>   * latest_model: False
+>   * name: testvmss_1
+>   * power_state: running
+>   * provisioning_state: Succeeded
+>   * resource_group: myResourceGroup
+>   * tags: None
+>   * vm_id: a5d531ad-8a0d-4a06-a5ed-e19ab6536177
+>
+>   * ### Image_Reference
+>
+>     * offer: debian-10
+>     * publisher: Debian
+>     * sku: 10
+>     * version: 0.20210329.591
+>
+> * ## Testvmss000003
+>
+>   * computer_name: testvmss000003
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss/virtualMachines/3
+>   * instance_id: 3
+>   * latest_model: False
+>   * name: testvmss_3
+>   * power_state: running
+>   * provisioning_state: Succeeded
+>   * resource_group: myResourceGroup
+>   * tags: None
+>   * vm_id: cf99d90e-2358-4373-adc3-f2d5d181e9a1
+>
+>   * ### Image_Reference
+>
+>     * offer: debian-10
+>     * publisher: Debian
+>     * sku: 10
+>     * version: 0.20210329.591
 
 
 ### azure-rm-webapp
@@ -3576,8 +4074,11 @@ Manage Web App instances
 | Azure.AzureRmWebapp.azure_webapp | string | ID of current web app. | 
 
 #### Command example
+
 ```!azure-rm-webapp name=test resource_group=resource_group plan="{{{'name': 'testing', 'resource_group': 'resource_group', 'sku': 'mySkuName', 'is_linux': 'true', 'number_of_workers': '1'}}}"```
+
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -3594,12 +4095,14 @@ Manage Web App instances
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * id: ID
+># CHANGED 
+>
+> * changed: True
+> * id: ID
 
 
 ### azure-rm-webapp-info
+
 ***
 Get Azure web app facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_info_module.html
@@ -3608,6 +4111,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-webapp-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3627,9 +4131,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-webapp-info resource_group="myResourceGroup" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -3646,12 +4152,15 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Webapps
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Webapps
 
 
 ### azure-rm-webappslot
+
 ***
 Manage Azure Web App slot
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webappslot_module.html
@@ -3660,6 +4169,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-webappslot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3692,6 +4202,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### azure-rm-azurefirewall
+
 ***
 Manage Azure Firewall instance.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_azurefirewall_module.html
@@ -3700,6 +4211,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-azurefirewall`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3725,9 +4237,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-azurefirewall resource_group="myResourceGroup" name="myAzureFirewall" tags="{{ {'key1': 'value1'} }}" ip_configurations="{{ [{'subnet': '/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/AzureFirewallSubnet', 'public_ip_address': '/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/myPublicIpAddress', 'name': 'azureFirewallIpConfiguration'}] }}" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -3751,17 +4265,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/azureFirewalls/myAzureFirewall
->  * ## Compare
->  * ## Modifiers
->    * ### /Location
->      * comparison: location
->      * updatable: False
+># SUCCESS 
+>
+> * changed: False
+> * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/azureFirewalls/myAzureFirewall
+>
+> * ## Compare
+>
+> * ## Modifiers
+>
+>   * ### /Location
+>
+>     * comparison: location
+>     * updatable: False
 
 
 ### azure-rm-azurefirewall-info
+
 ***
 Get AzureFirewall info.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_azurefirewall_info_module.html
@@ -3770,6 +4290,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-azurefirewall-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3787,9 +4308,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-azurefirewall-info ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -3838,36 +4361,54 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Firewalls
->  * ## Myazurefirewall
->    * etag: W/"3c426480-93a2-4db2-93d9-d3f0cbfd45ba"
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/azureFirewalls/myAzureFirewall
->    * location: australiasoutheast
->    * name: myAzureFirewall
->    * provisioning_state: Succeeded
->    * ### Ip_Configurations
->    * ### Azurefirewallipconfiguration
->      * etag: W/"3c426480-93a2-4db2-93d9-d3f0cbfd45ba"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/azureFirewalls/myAzureFirewall/azureFirewallIpConfigurations/azureFirewallIpConfiguration
->      * name: azureFirewallIpConfiguration
->      * type: Microsoft.Network/azureFirewalls/azureFirewallIpConfigurations
->      * #### Properties
->        * privateIPAddress: 1.1.1.2
->        * privateIPAllocationMethod: Dynamic
->        * provisioningState: Succeeded
->        * ##### Publicipaddress
->          * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/myPublicIpAddress
->        * ##### Subnet
->          * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/AzureFirewallSubnet
->    * ### Nat_Rule_Collections
->    * ### Network_Rule_Collections
->    * ### Tags
->      * key1: value1
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Firewalls
+>
+> * ## Myazurefirewall
+>
+>   * etag: W/"3c426480-93a2-4db2-93d9-d3f0cbfd45ba"
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/azureFirewalls/myAzureFirewall
+>   * location: australiasoutheast
+>   * name: myAzureFirewall
+>   * provisioning_state: Succeeded
+>
+>   * ### Ip_Configurations
+>
+>   * ### Azurefirewallipconfiguration
+>
+>     * etag: W/"3c426480-93a2-4db2-93d9-d3f0cbfd45ba"
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/azureFirewalls/myAzureFirewall/azureFirewallIpConfigurations/azureFirewallIpConfiguration
+>     * name: azureFirewallIpConfiguration
+>     * type: Microsoft.Network/azureFirewalls/azureFirewallIpConfigurations
+>
+>     * #### Properties
+>
+>       * privateIPAddress: 1.1.1.2
+>       * privateIPAllocationMethod: Dynamic
+>       * provisioningState: Succeeded
+>
+>       * ##### Publicipaddress
+>
+>         * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/myPublicIpAddress
+>
+>       * ##### Subnet
+>
+>         * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/AzureFirewallSubnet
+>
+>   * ### Nat_Rule_Collections
+>
+>   * ### Network_Rule_Collections
+>
+>   * ### Tags
+>
+>     * key1: value1
 
 
 ### azure-rm-virtualnetwork
+
 ***
 Manage Azure virtual networks
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetwork_module.html
@@ -3876,6 +4417,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualnetwork`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3901,9 +4443,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualnetwork resource_group="myResourceGroup" name="myVirtualNetwork" address_prefixes_cidr="{{ ['10.1.0.0/16', '1.1.1.3/16'] }}" dns_servers="{{ ['127.0.0.1', '127.0.0.2'] }}" tags="{{ {'testing': 'testing', 'delete': 'on-exit'} }}" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -3941,29 +4485,39 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * check_mode: False
->  * ## State
->    * etag: W/"fb7ef035-16d2-4915-80b7-956c42d7a2fb"
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork
->    * location: australiasoutheast
->    * name: myVirtualNetwork
->    * provisioning_state: Succeeded
->    * type: Microsoft.Network/virtualNetworks
->    * ### Address_Prefixes
->      * 0: 10.0.0.0/16
->      * 1: 10.1.0.0/16
->      * 2: 1.1.1.3/16
->    * ### Dns_Servers
->      * 0: 127.0.0.1
->      * 1: 127.0.0.2
->    * ### Tags
->      * delete: on-exit
->      * testing: testing
+># SUCCESS 
+>
+> * changed: False
+> * check_mode: False
+>
+> * ## State
+>
+>   * etag: W/"fb7ef035-16d2-4915-80b7-956c42d7a2fb"
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork
+>   * location: australiasoutheast
+>   * name: myVirtualNetwork
+>   * provisioning_state: Succeeded
+>   * type: Microsoft.Network/virtualNetworks
+>
+>   * ### Address_Prefixes
+>
+>     * 0: 10.0.0.0/16
+>     * 1: 10.1.0.0/16
+>     * 2: 1.1.1.3/16
+>
+>   * ### Dns_Servers
+>
+>     * 0: 127.0.0.1
+>     * 1: 127.0.0.2
+>
+>   * ### Tags
+>
+>     * delete: on-exit
+>     * testing: testing
 
 
 ### azure-rm-virtualnetwork-info
+
 ***
 Get virtual network facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetwork_info_module.html
@@ -3972,6 +4526,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualnetwork-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3991,9 +4546,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualnetwork-info resource_group="myResourceGroup" name="myVirtualNetwork" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -4050,44 +4607,60 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Virtualnetworks
->  * ## Myvirtualnetwork
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork
->    * location: australiasoutheast
->    * name: myVirtualNetwork
->    * provisioning_state: Succeeded
->    * ### Address_Prefixes
->      * 0: 10.0.0.0/16
->      * 1: 10.1.0.0/16
->      * 2: 1.1.1.3/16
->    * ### Dns_Servers
->      * 0: 127.0.0.1
->      * 1: 127.0.0.2
->    * ### Subnets
->    * ### Default
->      * address_prefix: 10.0.0.0/24
->      * address_prefixes: None
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/default
->      * name: default
->      * network_security_group: None
->      * provisioning_state: Succeeded
->      * route_table: None
->    * ### Mysubnet
->      * address_prefix: 10.1.0.0/24
->      * address_prefixes: None
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/mySubnet
->      * name: mySubnet
->      * network_security_group: None
->      * provisioning_state: Succeeded
->      * route_table: None
->    * ### Tags
->      * delete: on-exit
->      * testing: testing
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Virtualnetworks
+>
+> * ## Myvirtualnetwork
+>
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork
+>   * location: australiasoutheast
+>   * name: myVirtualNetwork
+>   * provisioning_state: Succeeded
+>
+>   * ### Address_Prefixes
+>
+>     * 0: 10.0.0.0/16
+>     * 1: 10.1.0.0/16
+>     * 2: 1.1.1.3/16
+>
+>   * ### Dns_Servers
+>
+>     * 0: 127.0.0.1
+>     * 1: 127.0.0.2
+>
+>   * ### Subnets
+>
+>   * ### Default
+>
+>     * address_prefix: 10.0.0.0/24
+>     * address_prefixes: None
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/default
+>     * name: default
+>     * network_security_group: None
+>     * provisioning_state: Succeeded
+>     * route_table: None
+>
+>   * ### Mysubnet
+>
+>     * address_prefix: 10.1.0.0/24
+>     * address_prefixes: None
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/mySubnet
+>     * name: mySubnet
+>     * network_security_group: None
+>     * provisioning_state: Succeeded
+>     * route_table: None
+>
+>   * ### Tags
+>
+>     * delete: on-exit
+>     * testing: testing
 
 
 ### azure-rm-virtualnetworkgateway
+
 ***
 Manage Azure virtual network gateways
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetworkgateway_module.html
@@ -4096,6 +4669,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualnetworkgateway`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4124,9 +4698,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualnetworkgateway resource_group="myResourceGroup" name="myVirtualNetworkGateway" ip_configurations="{{ [{'name': 'testipconfig', 'private_ip_allocation_method': 'Dynamic', 'public_ip_address_name': 'testipaddr'}] }}" virtual_network="myVirtualNetwork" tags="{{ {'common': 'xyz'} }}" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -4144,13 +4720,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworkGateways/myVirtualNetworkGateway
->  * ## State
+># SUCCESS 
+>
+> * changed: False
+> * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworkGateways/myVirtualNetworkGateway
+>
+> * ## State
 
 
 ### azure-rm-virtualnetworkpeering
+
 ***
 Manage Azure Virtual Network Peering
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetworkpeering_module.html
@@ -4159,6 +4738,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualnetworkpeering`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4183,9 +4763,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualnetworkpeering resource_group="myResourceGroup" virtual_network="myVirtualNetwork" name="myPeering" remote_virtual_network="{{ {'resource_group': 'mySecondResourceGroup', 'name': 'myRemoteVirtualNetwork'} }}" allow_virtual_network_access="False" allow_forwarded_traffic="True" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -4201,11 +4783,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
+># SUCCESS 
+>
+> * changed: False
 
 
 ### azure-rm-virtualnetworkpeering-info
+
 ***
 Get facts of Azure Virtual Network Peering
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetworkpeering_info_module.html
@@ -4214,6 +4798,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-virtualnetworkpeering-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4232,9 +4817,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-virtualnetworkpeering-info resource_group="myResourceGroup" virtual_network="myVirtualNetwork" name="myPeering" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -4268,25 +4855,33 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Vnetpeerings
->  * ## Mypeering
->    * allow_forwarded_traffic: True
->    * allow_gateway_transit: False
->    * allow_virtual_network_access: False
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/virtualNetworkPeerings/myPeering
->    * name: myPeering
->    * peering_state: Initiated
->    * provisioning_state: Succeeded
->    * remote_virtual_network: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/mySecondResourceGroup/providers/Microsoft.Network/virtualNetworks/myRemoteVirtualNetwork
->    * use_remote_gateways: False
->    * ### Remote_Address_Space
->      * #### Address_Prefixes
->        * 0: 1.1.1.3/16
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Vnetpeerings
+>
+> * ## Mypeering
+>
+>   * allow_forwarded_traffic: True
+>   * allow_gateway_transit: False
+>   * allow_virtual_network_access: False
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/virtualNetworkPeerings/myPeering
+>   * name: myPeering
+>   * peering_state: Initiated
+>   * provisioning_state: Succeeded
+>   * remote_virtual_network: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/mySecondResourceGroup/providers/Microsoft.Network/virtualNetworks/myRemoteVirtualNetwork
+>   * use_remote_gateways: False
+>
+>   * ### Remote_Address_Space
+>
+>     * #### Address_Prefixes
+>
+>       * 0: 1.1.1.3/16
 
 
 ### azure-rm-subnet
+
 ***
 Manage Azure subnets
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_subnet_module.html
@@ -4295,6 +4890,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-subnet`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4318,9 +4914,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-subnet resource_group="myResourceGroup" virtual_network_name="myVirtualNetwork" name="mySubnet" address_prefix_cidr="10.1.0.0/24" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -4347,21 +4945,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## State
->    * address_prefix: 10.1.0.0/24
->    * address_prefixes: None
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/mySubnet
->    * name: mySubnet
->    * private_endpoint_network_policies: Enabled
->    * private_link_service_network_policies: Enabled
->    * provisioning_state: Succeeded
->    * ### Network_Security_Group
->    * ### Route_Table
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## State
+>
+>   * address_prefix: 10.1.0.0/24
+>   * address_prefixes: None
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/mySubnet
+>   * name: mySubnet
+>   * private_endpoint_network_policies: Enabled
+>   * private_link_service_network_policies: Enabled
+>   * provisioning_state: Succeeded
+>
+>   * ### Network_Security_Group
+>
+>   * ### Route_Table
 
 
 ### azure-rm-subnet-info
+
 ***
 Get Azure Subnet facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_subnet_info_module.html
@@ -4370,6 +4974,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-subnet-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4388,9 +4993,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-subnet-info resource_group="myResourceGroup" virtual_network_name="myVirtualNetwork" name="mySubnet" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -4423,26 +5030,32 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Subnets
->  * ## Mysubnet
->    * address_prefix_cidr: 10.1.0.0/24
->    * address_prefixes_cidr: None
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/mySubnet
->    * name: mySubnet
->    * private_endpoint_network_policies: Enabled
->    * private_link_service_network_policies: Enabled
->    * provisioning_state: Succeeded
->    * resource_group: myResourceGroup
->    * route_table: None
->    * security_group: None
->    * service_endpoints: None
->    * virtual_network_name: myVirtualNetwork
->    * ### Delegations
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Subnets
+>
+> * ## Mysubnet
+>
+>   * address_prefix_cidr: 10.1.0.0/24
+>   * address_prefixes_cidr: None
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/mySubnet
+>   * name: mySubnet
+>   * private_endpoint_network_policies: Enabled
+>   * private_link_service_network_policies: Enabled
+>   * provisioning_state: Succeeded
+>   * resource_group: myResourceGroup
+>   * route_table: None
+>   * security_group: None
+>   * service_endpoints: None
+>   * virtual_network_name: myVirtualNetwork
+>
+>   * ### Delegations
 
 
 ### azure-rm-trafficmanagerendpoint
+
 ***
 Manage Azure Traffic Manager endpoint
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerendpoint_module.html
@@ -4451,6 +5064,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-trafficmanagerendpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4479,9 +5093,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-trafficmanagerendpoint resource_group="myResourceGroup" profile_name="tmtest" name="testendpoint1" type="external_endpoints" location="westus" priority="2" weight="1" target="1.2.3.4" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -4498,12 +5114,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/trafficManagerProfiles/tmtest/externalEndpoints/testendpoint1
+># SUCCESS 
+>
+> * changed: False
+> * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/trafficManagerProfiles/tmtest/externalEndpoints/testendpoint1
 
 
 ### azure-rm-trafficmanagerendpoint-info
+
 ***
 Get Azure Traffic Manager endpoint facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerendpoint_info_module.html
@@ -4512,6 +5130,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-trafficmanagerendpoint-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4531,9 +5150,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-trafficmanagerendpoint-info resource_group="myResourceGroup" profile_name="tmtest" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -4566,26 +5187,31 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Endpoints
->  * ## Testendpoint1
->    * enabled: True
->    * geo_mapping: None
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/trafficManagerProfiles/tmtest/externalEndpoints/testendpoint1
->    * location: West US
->    * min_child_endpoints: None
->    * monitor_status: Degraded
->    * name: testendpoint1
->    * priority: 2
->    * resource_group: myResourceGroup
->    * target: 1.2.3.4
->    * target_resource_id: None
->    * type: external_endpoints
->    * weight: 1
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Endpoints
+>
+> * ## Testendpoint1
+>
+>   * enabled: True
+>   * geo_mapping: None
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/trafficManagerProfiles/tmtest/externalEndpoints/testendpoint1
+>   * location: West US
+>   * min_child_endpoints: None
+>   * monitor_status: Degraded
+>   * name: testendpoint1
+>   * priority: 2
+>   * resource_group: myResourceGroup
+>   * target: 1.2.3.4
+>   * target_resource_id: None
+>   * type: external_endpoints
+>   * weight: 1
 
 
 ### azure-rm-trafficmanagerprofile
+
 ***
 Manage Azure Traffic Manager profile
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerprofile_module.html
@@ -4594,6 +5220,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-trafficmanagerprofile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4620,9 +5247,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-trafficmanagerprofile name="tmtest" resource_group="myResourceGroup" location="global" profile_status="enabled" routing_method="priority" dns_config="{{ {'relative_name': 'xsoartmtest', 'ttl': 60} }}" monitor_config="{{ {'protocol': 'HTTPS', 'port': 80, 'path': '/'} }}" tags="{{ {'Environment': 'Test'} }}" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -4642,14 +5271,18 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/trafficManagerProfiles/tmtest
->  * ## Endpoints
->    * 0: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/trafficManagerProfiles/tmtest/externalEndpoints/testendpoint1
+># SUCCESS 
+>
+> * changed: False
+> * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/trafficManagerProfiles/tmtest
+>
+> * ## Endpoints
+>
+>   * 0: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/trafficManagerProfiles/tmtest/externalEndpoints/testendpoint1
 
 
 ### azure-rm-trafficmanagerprofile-info
+
 ***
 Get Azure Traffic Manager profile facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerprofile_info_module.html
@@ -4658,6 +5291,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-trafficmanagerprofile-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4676,9 +5310,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-trafficmanagerprofile-info ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -4737,47 +5373,61 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Tms
->  * ## Tmtest
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/trafficManagerProfiles/tmtest
->    * location: global
->    * name: tmtest
->    * profile_status: Enabled
->    * resource_group: myresourcegroup
->    * routing_method: priority
->    * state: present
->    * ### Dns_Config
->      * fqdn: xsoartmtest.trafficmanager.net
->      * relative_name: xsoartmtest
->      * ttl: 60
->    * ### Endpoints
->    * ### Testendpoint1
->      * geo_mapping: None
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/trafficManagerProfiles/tmtest/externalEndpoints/testendpoint1
->      * location: West US
->      * min_child_endpoints: None
->      * name: testendpoint1
->      * priority: 2
->      * status: Enabled
->      * target: 1.2.3.4
->      * target_resource_id: None
->      * type: external_endpoints
->      * weight: 1
->    * ### Monitor_Config
->      * interval: 30
->      * path: /
->      * port: 80
->      * profile_monitor_status: None
->      * protocol: HTTPS
->      * timeout: 10
->      * tolerated_failures: 3
->    * ### Tags
->      * Environment: Test
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Tms
+>
+> * ## Tmtest
+>
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/trafficManagerProfiles/tmtest
+>   * location: global
+>   * name: tmtest
+>   * profile_status: Enabled
+>   * resource_group: myresourcegroup
+>   * routing_method: priority
+>   * state: present
+>
+>   * ### Dns_Config
+>
+>     * fqdn: xsoartmtest.trafficmanager.net
+>     * relative_name: xsoartmtest
+>     * ttl: 60
+>
+>   * ### Endpoints
+>
+>   * ### Testendpoint1
+>
+>     * geo_mapping: None
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/trafficManagerProfiles/tmtest/externalEndpoints/testendpoint1
+>     * location: West US
+>     * min_child_endpoints: None
+>     * name: testendpoint1
+>     * priority: 2
+>     * status: Enabled
+>     * target: 1.2.3.4
+>     * target_resource_id: None
+>     * type: external_endpoints
+>     * weight: 1
+>
+>   * ### Monitor_Config
+>
+>     * interval: 30
+>     * path: /
+>     * port: 80
+>     * profile_monitor_status: None
+>     * protocol: HTTPS
+>     * timeout: 10
+>     * tolerated_failures: 3
+>
+>   * ### Tags
+>
+>     * Environment: Test
 
 
 ### azure-rm-networkinterface
+
 ***
 Manage Azure network interfaces
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_networkinterface_module.html
@@ -4786,6 +5436,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-networkinterface`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4822,9 +5473,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-networkinterface name="nic001" resource_group="myResourceGroup" virtual_network="myVirtualNetwork" subnet_name="mySubnet" ip_configurations="{{ [{'name': 'ipconfig1', 'public_ip_address_name': 'publicip001', 'primary': True}] }}" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -4903,64 +5556,89 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## State
->    * enable_accelerated_networking: False
->    * enable_ip_forwarding: False
->    * etag: W/"165cdc7d-852f-4e0c-af11-0511290660a3"
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkInterfaces/nic001
->    * location: australiasoutheast
->    * mac_address: None
->    * name: nic001
->    * provisioning_state: Succeeded
->    * type: Microsoft.Network/networkInterfaces
->    * ### Dns_Servers
->    * ### Dns_Settings
->      * internal_dns_name_label: None
->      * internal_fqdn: None
->      * #### Applied_Dns_Servers
->      * #### Dns_Servers
->    * ### Ip_Configuration
->      * application_security_groups: None
->      * load_balancer_backend_address_pools: None
->      * name: ipconfig1
->      * primary: True
->      * private_ip_address: 1.1.1.3
->      * private_ip_allocation_method: Dynamic
->      * #### Public_Ip_Address
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/publicip001
->        * name: publicip001
->        * public_ip_allocation_method: None
->      * #### Subnet
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/mySubnet
->        * name: mySubnet
->        * resource_group: myResourceGroup
->        * virtual_network_name: myVirtualNetwork
->    * ### Ip_Configurations
->    * ### Ipconfig1
->      * application_security_groups: None
->      * load_balancer_backend_address_pools: None
->      * name: ipconfig1
->      * primary: True
->      * private_ip_address: 1.1.1.3
->      * private_ip_allocation_method: Dynamic
->      * #### Public_Ip_Address
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/publicip001
->        * name: publicip001
->        * public_ip_allocation_method: None
->      * #### Subnet
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/mySubnet
->        * name: mySubnet
->        * resource_group: myResourceGroup
->        * virtual_network_name: myVirtualNetwork
->    * ### Network_Security_Group
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/nic001
->      * name: nic001
->    * ### Tags
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## State
+>
+>   * enable_accelerated_networking: False
+>   * enable_ip_forwarding: False
+>   * etag: W/"165cdc7d-852f-4e0c-af11-0511290660a3"
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkInterfaces/nic001
+>   * location: australiasoutheast
+>   * mac_address: None
+>   * name: nic001
+>   * provisioning_state: Succeeded
+>   * type: Microsoft.Network/networkInterfaces
+>
+>   * ### Dns_Servers
+>
+>   * ### Dns_Settings
+>
+>     * internal_dns_name_label: None
+>     * internal_fqdn: None
+>
+>     * #### Applied_Dns_Servers
+>
+>     * #### Dns_Servers
+>
+>   * ### Ip_Configuration
+>
+>     * application_security_groups: None
+>     * load_balancer_backend_address_pools: None
+>     * name: ipconfig1
+>     * primary: True
+>     * private_ip_address: 1.1.1.3
+>     * private_ip_allocation_method: Dynamic
+>
+>     * #### Public_Ip_Address
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/publicip001
+>       * name: publicip001
+>       * public_ip_allocation_method: None
+>
+>     * #### Subnet
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/mySubnet
+>       * name: mySubnet
+>       * resource_group: myResourceGroup
+>       * virtual_network_name: myVirtualNetwork
+>
+>   * ### Ip_Configurations
+>
+>   * ### Ipconfig1
+>
+>     * application_security_groups: None
+>     * load_balancer_backend_address_pools: None
+>     * name: ipconfig1
+>     * primary: True
+>     * private_ip_address: 1.1.1.3
+>     * private_ip_allocation_method: Dynamic
+>
+>     * #### Public_Ip_Address
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/publicip001
+>       * name: publicip001
+>       * public_ip_allocation_method: None
+>
+>     * #### Subnet
+>
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/mySubnet
+>       * name: mySubnet
+>       * resource_group: myResourceGroup
+>       * virtual_network_name: myVirtualNetwork
+>
+>   * ### Network_Security_Group
+>
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/nic001
+>     * name: nic001
+>
+>   * ### Tags
 
 
 ### azure-rm-networkinterface-info
+
 ***
 Get network interface facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_networkinterface_info_module.html
@@ -4969,6 +5647,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-networkinterface-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4988,9 +5667,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-networkinterface-info resource_group="myResourceGroup" name="nic001" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -5044,43 +5725,58 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Networkinterfaces
->  * ## Nic001
->    * enable_accelerated_networking: False
->    * enable_ip_forwarding: False
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkInterfaces/nic001
->    * location: australiasoutheast
->    * mac_address: None
->    * name: nic001
->    * provisioning_state: Succeeded
->    * resource_group: myResourceGroup
->    * security_group: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/nic001
->    * subnet: mySubnet
->    * tags: None
->    * ### Dns_Servers
->    * ### Dns_Settings
->      * internal_dns_name_label: None
->      * internal_fqdn: None
->      * #### Applied_Dns_Servers
->      * #### Dns_Servers
->    * ### Ip_Configurations
->    * ### Ipconfig1
->      * application_security_groups: None
->      * load_balancer_backend_address_pools: None
->      * name: ipconfig1
->      * primary: True
->      * private_ip_address: 1.1.1.3
->      * private_ip_allocation_method: Dynamic
->      * public_ip_address: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/publicip001
->      * public_ip_allocation_method: None
->    * ### Virtual_Network
->      * name: myVirtualNetwork
->      * resource_group: myResourceGroup
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Networkinterfaces
+>
+> * ## Nic001
+>
+>   * enable_accelerated_networking: False
+>   * enable_ip_forwarding: False
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkInterfaces/nic001
+>   * location: australiasoutheast
+>   * mac_address: None
+>   * name: nic001
+>   * provisioning_state: Succeeded
+>   * resource_group: myResourceGroup
+>   * security_group: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/nic001
+>   * subnet: mySubnet
+>   * tags: None
+>
+>   * ### Dns_Servers
+>
+>   * ### Dns_Settings
+>
+>     * internal_dns_name_label: None
+>     * internal_fqdn: None
+>
+>     * #### Applied_Dns_Servers
+>
+>     * #### Dns_Servers
+>
+>   * ### Ip_Configurations
+>
+>   * ### Ipconfig1
+>
+>     * application_security_groups: None
+>     * load_balancer_backend_address_pools: None
+>     * name: ipconfig1
+>     * primary: True
+>     * private_ip_address: 1.1.1.3
+>     * private_ip_allocation_method: Dynamic
+>     * public_ip_address: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/publicip001
+>     * public_ip_allocation_method: None
+>
+>   * ### Virtual_Network
+>
+>     * name: myVirtualNetwork
+>     * resource_group: myResourceGroup
 
 
 ### azure-rm-publicipaddress
+
 ***
 Manage Azure Public IP Addresses
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_publicipaddress_module.html
@@ -5089,6 +5785,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-publicipaddress`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5116,9 +5813,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-publicipaddress resource_group="myResourceGroup" name="my_public_ip" allocation_method="static" domain_name="foobar" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -5152,27 +5851,34 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## State
->    * etag: W/"1bee56b0-3bdb-45c8-b378-ddc94cc8e504"
->    * idle_timeout_in_minutes: 4
->    * ip_address: 1.1.1.3
->    * location: australiasoutheast
->    * name: my_public_ip
->    * provisioning_state: Succeeded
->    * public_ip_address_version: ipv4
->    * public_ip_allocation_method: static
->    * sku: Basic
->    * type: Microsoft.Network/publicIPAddresses
->    * ### Dns_Settings
->      * domain_name_label: foobar
->      * fqdn: foobar.australiasoutheast.cloudapp.azure.com
->      * reverse_fqdn: None
->    * ### Tags
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## State
+>
+>   * etag: W/"1bee56b0-3bdb-45c8-b378-ddc94cc8e504"
+>   * idle_timeout_in_minutes: 4
+>   * ip_address: 1.1.1.3
+>   * location: australiasoutheast
+>   * name: my_public_ip
+>   * provisioning_state: Succeeded
+>   * public_ip_address_version: ipv4
+>   * public_ip_allocation_method: static
+>   * sku: Basic
+>   * type: Microsoft.Network/publicIPAddresses
+>
+>   * ### Dns_Settings
+>
+>     * domain_name_label: foobar
+>     * fqdn: foobar.australiasoutheast.cloudapp.azure.com
+>     * reverse_fqdn: None
+>
+>   * ### Tags
 
 
 ### azure-rm-publicipaddress-info
+
 ***
 Get public IP facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_publicipaddress_info_module.html
@@ -5181,6 +5887,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-publicipaddress-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5200,9 +5907,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-publicipaddress-info resource_group="myResourceGroup" name="my_public_ip" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -5240,30 +5949,38 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Publicipaddresses
->  * ## My_Public_Ip
->    * allocation_method: static
->    * etag: W/"1bee56b0-3bdb-45c8-b378-ddc94cc8e504"
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/my_public_ip
->    * idle_timeout: 4
->    * ip_address: 1.1.1.3
->    * location: australiasoutheast
->    * name: my_public_ip
->    * provisioning_state: Succeeded
->    * sku: Basic
->    * tags: None
->    * type: Microsoft.Network/publicIPAddresses
->    * version: ipv4
->    * ### Dns_Settings
->      * domain_name_label: foobar
->      * fqdn: foobar.australiasoutheast.cloudapp.azure.com
->      * reverse_fqdn: None
->    * ### Ip_Tags
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Publicipaddresses
+>
+> * ## My_Public_Ip
+>
+>   * allocation_method: static
+>   * etag: W/"1bee56b0-3bdb-45c8-b378-ddc94cc8e504"
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/my_public_ip
+>   * idle_timeout: 4
+>   * ip_address: 1.1.1.3
+>   * location: australiasoutheast
+>   * name: my_public_ip
+>   * provisioning_state: Succeeded
+>   * sku: Basic
+>   * tags: None
+>   * type: Microsoft.Network/publicIPAddresses
+>   * version: ipv4
+>
+>   * ### Dns_Settings
+>
+>     * domain_name_label: foobar
+>     * fqdn: foobar.australiasoutheast.cloudapp.azure.com
+>     * reverse_fqdn: None
+>
+>   * ### Ip_Tags
 
 
 ### azure-rm-route
+
 ***
 Manage Azure route resource
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_route_module.html
@@ -5272,6 +5989,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-route`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5296,9 +6014,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-route resource_group="myResourceGroup" name="myRoute" address_prefix="10.1.0.0/16" next_hop_type="virtual_network_gateway" route_table_name="myRouteTable" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -5315,12 +6035,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/routeTables/myRouteTable/routes/myRoute
+># SUCCESS 
+>
+> * changed: False
+> * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/routeTables/myRouteTable/routes/myRoute
 
 
 ### azure-rm-routetable
+
 ***
 Manage Azure route table resource
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_routetable_module.html
@@ -5329,6 +6051,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-routetable`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5352,9 +6075,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-routetable resource_group="myResourceGroup" name="myRouteTable" disable_bgp_route_propagation="False" tags="{{ {'purpose': 'testing'} }}" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -5371,12 +6096,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/routeTables/myRouteTable
+># SUCCESS 
+>
+> * changed: False
+> * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/routeTables/myRouteTable
 
 
 ### azure-rm-routetable-info
+
 ***
 Get route table facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_routetable_info_module.html
@@ -5385,6 +6112,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-routetable-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5408,9 +6136,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-routetable-info name="Testing" resource_group="myResourceGroup"```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -5427,12 +6157,15 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Route_Tables
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Route_Tables
 
 
 ### azure-rm-securitygroup
+
 ***
 Manage Azure network security groups
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_securitygroup_module.html
@@ -5441,6 +6174,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-securitygroup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5466,9 +6200,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-securitygroup resource_group="myResourceGroup" name="mysecgroup" purge_rules="True" rules="{{ [{'name': 'DenySSH', 'protocol': 'Tcp', 'destination_port_range': 22, 'access': 'Deny', 'priority': 100, 'direction': 'Inbound'}, {'name': 'AllowSSH', 'protocol': 'Tcp', 'source_address_prefix': ['1.1.1.3/24', '1.1.1.4/24'], 'destination_port_range': 22, 'access': 'Allow', 'priority': 101, 'direction': 'Inbound'}, {'name': 'AllowMultiplePorts', 'protocol': 'Tcp', 'source_address_prefix': ['1.1.1.1/24', '1.1.1.4/24'], 'destination_port_range': [80, 443], 'access': 'Allow', 'priority': 102}] }}" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -5539,61 +6275,82 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## State
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup
->    * location: australiasoutheast
->    * name: mysecgroup
->    * type: Microsoft.Network/networkSecurityGroups
->    * ### Default_Rules
->    * ### Allowvnetinbound
->      * access: Allow
->      * description: Allow inbound traffic from all VMs in VNET
->      * destination_address_prefix: VirtualNetwork
->      * destination_application_security_groups: None
->      * destination_port_range: *
->      * direction: Inbound
->      * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowVnetInBound
->      * name: AllowVnetInBound
->      * priority: 65000
->      * protocol: *
->      * provisioning_state: Succeeded
->      * source_address_prefix: VirtualNetwork
->      * source_application_security_groups: None
->      * source_port_range: *
->      * #### Destination_Address_Prefixes
->      * #### Destination_Port_Ranges
->      * #### Source_Address_Prefixes
->      * #### Source_Port_Ranges
->    * ### Network_Interfaces
->    * ### Rules
->    * ### Denyssh
->      * access: Deny
->      * description: None
->      * destination_address_prefix: *
->      * destination_application_security_groups: None
->      * destination_port_range: 22
->      * direction: Inbound
->      * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/securityRules/DenySSH
->      * name: DenySSH
->      * priority: 100
->      * protocol: Tcp
->      * provisioning_state: Succeeded
->      * source_address_prefix: *
->      * source_application_security_groups: None
->      * source_port_range: *
->      * #### Destination_Address_Prefixes
->      * #### Destination_Port_Ranges
->      * #### Source_Address_Prefixes
->      * #### Source_Port_Ranges
->    * ### Subnets
->    * ### Tags
+># CHANGED 
+>
+> * changed: True
+>
+> * ## State
+>
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup
+>   * location: australiasoutheast
+>   * name: mysecgroup
+>   * type: Microsoft.Network/networkSecurityGroups
+>
+>   * ### Default_Rules
+>
+>   * ### Allowvnetinbound
+>
+>     * access: Allow
+>     * description: Allow inbound traffic from all VMs in VNET
+>     * destination_address_prefix: VirtualNetwork
+>     * destination_application_security_groups: None
+>     * destination_port_range: *
+>     * direction: Inbound
+>     * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowVnetInBound
+>     * name: AllowVnetInBound
+>     * priority: 65000
+>     * protocol: *
+>     * provisioning_state: Succeeded
+>     * source_address_prefix: VirtualNetwork
+>     * source_application_security_groups: None
+>     * source_port_range: *
+>
+>     * #### Destination_Address_Prefixes
+>
+>     * #### Destination_Port_Ranges
+>
+>     * #### Source_Address_Prefixes
+>
+>     * #### Source_Port_Ranges
+>
+>   * ### Network_Interfaces
+>
+>   * ### Rules
+>
+>   * ### Denyssh
+>
+>     * access: Deny
+>     * description: None
+>     * destination_address_prefix: *
+>     * destination_application_security_groups: None
+>     * destination_port_range: 22
+>     * direction: Inbound
+>     * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/securityRules/DenySSH
+>     * name: DenySSH
+>     * priority: 100
+>     * protocol: Tcp
+>     * provisioning_state: Succeeded
+>     * source_address_prefix: *
+>     * source_application_security_groups: None
+>     * source_port_range: *
+>
+>     * #### Destination_Address_Prefixes
+>
+>     * #### Destination_Port_Ranges
+>
+>     * #### Source_Address_Prefixes
+>
+>     * #### Source_Port_Ranges
+>
+>   * ### Subnets
+>
+>   * ### Tags
 
 
 ### azure-rm-securitygroup-info
+
 ***
 Get security group facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_securitygroup_info_module.html
@@ -5602,6 +6359,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-securitygroup-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5620,9 +6378,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-securitygroup-info resource_group="myResourceGroup" name="mysecgroup" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -5697,61 +6457,87 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Securitygroups
->  * ## Mysecgroup
->    * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup
->    * location: australiasoutheast
->    * name: mysecgroup
->    * type: Microsoft.Network/networkSecurityGroups
->    * ### Properties
->      * provisioningState: Succeeded
->      * resourceGuid: 2ceea731-b4fb-4999-8ac6-0b6a74a1df94
->      * #### Defaultsecurityrules
->      * #### Allowvnetinbound
->        * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowVnetInBound
->        * name: AllowVnetInBound
->        * ##### Properties
->          * access: Allow
->          * description: Allow inbound traffic from all VMs in VNET
->          * destinationAddressPrefix: VirtualNetwork
->          * destinationPortRange: *
->          * direction: Inbound
->          * priority: 65000
->          * protocol: *
->          * provisioningState: Succeeded
->          * sourceAddressPrefix: VirtualNetwork
->          * sourcePortRange: *
->          * ###### Destinationaddressprefixes
->          * ###### Destinationportranges
->          * ###### Sourceaddressprefixes
->          * ###### Sourceportranges
->      * #### Securityrules
->      * #### Denyssh
->        * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/securityRules/DenySSH
->        * name: DenySSH
->        * ##### Properties
->          * access: Deny
->          * destinationAddressPrefix: *
->          * destinationPortRange: 22
->          * direction: Inbound
->          * priority: 100
->          * protocol: Tcp
->          * provisioningState: Succeeded
->          * sourceAddressPrefix: *
->          * sourcePortRange: *
->          * ###### Destinationaddressprefixes
->          * ###### Destinationportranges
->          * ###### Sourceaddressprefixes
->          * ###### Sourceportranges
->    * ### Tags
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Securitygroups
+>
+> * ## Mysecgroup
+>
+>   * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup
+>   * location: australiasoutheast
+>   * name: mysecgroup
+>   * type: Microsoft.Network/networkSecurityGroups
+>
+>   * ### Properties
+>
+>     * provisioningState: Succeeded
+>     * resourceGuid: 2ceea731-b4fb-4999-8ac6-0b6a74a1df94
+>
+>     * #### Defaultsecurityrules
+>
+>     * #### Allowvnetinbound
+>
+>       * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowVnetInBound
+>       * name: AllowVnetInBound
+>
+>       * ##### Properties
+>
+>         * access: Allow
+>         * description: Allow inbound traffic from all VMs in VNET
+>         * destinationAddressPrefix: VirtualNetwork
+>         * destinationPortRange: *
+>         * direction: Inbound
+>         * priority: 65000
+>         * protocol: *
+>         * provisioningState: Succeeded
+>         * sourceAddressPrefix: VirtualNetwork
+>         * sourcePortRange: *
+>
+>         * ###### Destinationaddressprefixes
+>
+>         * ###### Destinationportranges
+>
+>         * ###### Sourceaddressprefixes
+>
+>         * ###### Sourceportranges
+>
+>     * #### Securityrules
+>
+>     * #### Denyssh
+>
+>       * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
+>       * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/securityRules/DenySSH
+>       * name: DenySSH
+>
+>       * ##### Properties
+>
+>         * access: Deny
+>         * destinationAddressPrefix: *
+>         * destinationPortRange: 22
+>         * direction: Inbound
+>         * priority: 100
+>         * protocol: Tcp
+>         * provisioningState: Succeeded
+>         * sourceAddressPrefix: *
+>         * sourcePortRange: *
+>
+>         * ###### Destinationaddressprefixes
+>
+>         * ###### Destinationportranges
+>
+>         * ###### Sourceaddressprefixes
+>
+>         * ###### Sourceportranges
+>
+>   * ### Tags
 
 
 ### azure-rm-dnsrecordset
+
 ***
 Create, delete and update DNS record sets and records
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnsrecordset_module.html
@@ -5760,6 +6546,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-dnsrecordset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5785,9 +6572,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-dnsrecordset resource_group="myResourceGroup" relative_name="www" zone_name="xsoarexample.com" record_type="A" records="{{ [{'entry': '192.168.100.101'}, {'entry': '192.168.100.102'}, {'entry': '192.168.100.103'}] }}" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -5824,27 +6613,39 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## State
->    * etag: 97b23b1e-1d39-4340-a97b-325b17725d55
->    * fqdn: www.xsoarexample.com.
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/dnszones/xsoarexample.com/A/www
->    * name: www
->    * provisioning_state: Succeeded
->    * ttl: 3600
->    * type: A
->    * ### Arecords
->    * ### List
->      * ipv4_address: 192.168.100.101
->    * ### List
->      * ipv4_address: 192.168.100.102
->    * ### List
->      * ipv4_address: 192.168.100.103
->    * ### Target_Resource
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## State
+>
+>   * etag: 97b23b1e-1d39-4340-a97b-325b17725d55
+>   * fqdn: www.xsoarexample.com.
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/dnszones/xsoarexample.com/A/www
+>   * name: www
+>   * provisioning_state: Succeeded
+>   * ttl: 3600
+>   * type: A
+>
+>   * ### Arecords
+>
+>   * ### List
+>
+>     * ipv4_address: 192.168.100.101
+>
+>   * ### List
+>
+>     * ipv4_address: 192.168.100.102
+>
+>   * ### List
+>
+>     * ipv4_address: 192.168.100.103
+>
+>   * ### Target_Resource
 
 
 ### azure-rm-dnsrecordset-info
+
 ***
 Get DNS Record Set facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnsrecordset_info_module.html
@@ -5853,6 +6654,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-dnsrecordset-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5876,9 +6678,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-dnsrecordset-info resource_group="myResourceGroup" zone_name="xsoarexample.com" relative_name="www" record_type="A" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -5915,26 +6719,38 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Dnsrecordsets
->  * ## Www
->    * fqdn: www.xsoarexample.com.
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/dnszones/xsoarexample.com/A/www
->    * provisioning_state: Succeeded
->    * record_type: A
->    * relative_name: www
->    * time_to_live: 3600
->    * ### Records
->    * ### List
->      * ipv4_address: 192.168.100.101
->    * ### List
->      * ipv4_address: 192.168.100.102
->    * ### List
->      * ipv4_address: 192.168.100.103
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Dnsrecordsets
+>
+> * ## Www
+>
+>   * fqdn: www.xsoarexample.com.
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/dnszones/xsoarexample.com/A/www
+>   * provisioning_state: Succeeded
+>   * record_type: A
+>   * relative_name: www
+>   * time_to_live: 3600
+>
+>   * ### Records
+>
+>   * ### List
+>
+>     * ipv4_address: 192.168.100.101
+>
+>   * ### List
+>
+>     * ipv4_address: 192.168.100.102
+>
+>   * ### List
+>
+>     * ipv4_address: 192.168.100.103
 
 
 ### azure-rm-dnszone
+
 ***
 Manage Azure DNS zones
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnszone_module.html
@@ -5943,6 +6759,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-dnszone`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5966,9 +6783,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-dnszone resource_group="myResourceGroup" name="xsoarexample.com" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -6000,25 +6819,32 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * check_mode: False
->  * ## State
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/dnszones/xsoarexample.com
->    * name: xsoarexample.com
->    * number_of_record_sets: 3
->    * registration_virtual_networks: None
->    * resolution_virtual_networks: None
->    * type: public
->    * ### Name_Servers
->      * 0: ns1-01.azure-dns.com.
->      * 1: ns2-01.azure-dns.net.
->      * 2: ns3-01.azure-dns.org.
->      * 3: ns4-01.azure-dns.info.
->    * ### Tags
+># SUCCESS 
+>
+> * changed: False
+> * check_mode: False
+>
+> * ## State
+>
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/dnszones/xsoarexample.com
+>   * name: xsoarexample.com
+>   * number_of_record_sets: 3
+>   * registration_virtual_networks: None
+>   * resolution_virtual_networks: None
+>   * type: public
+>
+>   * ### Name_Servers
+>
+>     * 0: ns1-01.azure-dns.com.
+>     * 1: ns2-01.azure-dns.net.
+>     * 2: ns3-01.azure-dns.org.
+>     * 3: ns4-01.azure-dns.info.
+>
+>   * ### Tags
 
 
 ### azure-rm-dnszone-info
+
 ***
 Get DNS zone facts
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnszone_info_module.html
@@ -6027,6 +6853,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `azure-rm-dnszone-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6047,9 +6874,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!azure-rm-dnszone-info resource_group="myResourceGroup" name="xsoarexample.com" ```
 
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -6106,44 +6935,61 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Info
->    * ### Azure_Dnszones
->    * ### Xsoarexample.Com
->      * etag: 00000002-0000-0000-2a52-97b25176d701
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/dnszones/xsoarexample.com
->      * location: global
->      * name: xsoarexample.com
->      * type: Microsoft.Network/dnszones
->      * #### Properties
->        * maxNumberOfRecordSets: 10000
->        * numberOfRecordSets: 3
->        * zoneType: Public
->        * ##### Nameservers
->          * 0: ns1-01.azure-dns.com.
->          * 1: ns2-01.azure-dns.net.
->          * 2: ns3-01.azure-dns.org.
->          * 3: ns4-01.azure-dns.info.
->      * #### Tags
->  * ## Dnszones
->  * ## Xsoarexample.Com
->    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/dnszones/xsoarexample.com
->    * max_number_of_record_sets: 10000
->    * name: xsoarexample.com
->    * number_of_record_sets: 3
->    * registration_virtual_networks: None
->    * resolution_virtual_networks: None
->    * type: public
->    * ### Name_Servers
->      * 0: ns1-01.azure-dns.com.
->      * 1: ns2-01.azure-dns.net.
->      * 2: ns3-01.azure-dns.org.
->      * 3: ns4-01.azure-dns.info.
->    * ### Tags
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Info
+>
+>   * ### Azure_Dnszones
+>
+>   * ### Xsoarexample.Com
+>
+>     * etag: 00000002-0000-0000-2a52-97b25176d701
+>     * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/dnszones/xsoarexample.com
+>     * location: global
+>     * name: xsoarexample.com
+>     * type: Microsoft.Network/dnszones
+>
+>     * #### Properties
+>
+>       * maxNumberOfRecordSets: 10000
+>       * numberOfRecordSets: 3
+>       * zoneType: Public
+>
+>       * ##### Nameservers
+>
+>         * 0: ns1-01.azure-dns.com.
+>         * 1: ns2-01.azure-dns.net.
+>         * 2: ns3-01.azure-dns.org.
+>         * 3: ns4-01.azure-dns.info.
+>
+>     * #### Tags
+>
+> * ## Dnszones
+>
+> * ## Xsoarexample.Com
+>
+>   * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/dnszones/xsoarexample.com
+>   * max_number_of_record_sets: 10000
+>   * name: xsoarexample.com
+>   * number_of_record_sets: 3
+>   * registration_virtual_networks: None
+>   * resolution_virtual_networks: None
+>   * type: public
+>
+>   * ### Name_Servers
+>
+>     * 0: ns1-01.azure-dns.com.
+>     * 1: ns2-01.azure-dns.net.
+>     * 2: ns3-01.azure-dns.org.
+>     * 3: ns4-01.azure-dns.info.
+>
+>   * ### Tags
 
 
 ### Troubleshooting
+
 The Ansible-Runner container is not suitable for running as a non-root user.
 Therefore, the Ansible integrations will fail if you follow the instructions in [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide).
 
@@ -6155,4 +7001,4 @@ This is a limitation of the Ansible-Runner software itself https://github.com/an
 
 A workaround is to use the `docker.run.internal.asuser.ignore` server setting and to configure Cortex XSOAR to ignore the Ansible container image by setting the value of `demisto/ansible-runner` and afterwards running /reset_containers to reload any containers that might be running to ensure they receive the configuration.
 
-See step 2 of this [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users). For Cortex XSOAR 8 Cloud see step 3 in *Run Docker with non-root internal users* of this [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide). For Cortex XSOAR 8.7 On-prem see step 3 in *Run Docker with non-root internal users* of this [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide) for complete instructions.
+See step 2 of this [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users). For Cortex XSOAR 8 Cloud see step 3 in _Run Docker with non-root internal users_ of this [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide). For Cortex XSOAR 8.7 On-prem see step 3 in _Run Docker with non-root internal users_ of this [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide) for complete instructions.

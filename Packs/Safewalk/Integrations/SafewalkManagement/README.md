@@ -28,9 +28,12 @@ This is the default integration for this content pack when configured by the Dat
 | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### safewalk-get-transactionlog
+
 ***
 Display transaction log.
 
@@ -38,6 +41,7 @@ Display transaction log.
 #### Base Command
 
 `safewalk-get-transactionlog`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -75,6 +79,7 @@ Display transaction log.
 
 
 ### safewalk-get-users
+
 ***
 Search local users.
 
@@ -82,6 +87,7 @@ Search local users.
 #### Base Command
 
 `safewalk-get-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -112,6 +118,7 @@ Search local users.
 
 
 ### safewalk-get-ldap-users
+
 ***
 Search LDAP users
 
@@ -119,6 +126,7 @@ Search LDAP users
 #### Base Command
 
 `safewalk-get-ldap-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -150,6 +158,7 @@ Search LDAP users
 
 
 ### safewalk-get-ldaps
+
 ***
 Get LDAP configuration.
 
@@ -157,6 +166,7 @@ Get LDAP configuration.
 #### Base Command
 
 `safewalk-get-ldaps`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -201,6 +211,7 @@ Get LDAP configuration.
 
 
 ### safewalk-get-user-personalinformation
+
 ***
 Get users personal information.
 
@@ -208,6 +219,7 @@ Get users personal information.
 #### Base Command
 
 `safewalk-get-user-personalinformation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -243,6 +255,7 @@ Get users personal information.
 
 
 ### safewalk-set-user-personalinformation
+
 ***
 Set user personal information.
 
@@ -250,6 +263,7 @@ Set user personal information.
 #### Base Command
 
 `safewalk-set-user-personalinformation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -269,6 +283,7 @@ There is no context output for this command.
 
 
 ### safewalk-get-user-accessattempts
+
 ***
 Get user access attempts
 
@@ -276,6 +291,7 @@ Get user access attempts
 #### Base Command
 
 `safewalk-get-user-accessattempts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -298,6 +314,7 @@ Get user access attempts
 
 
 ### safewalk-delete-user-accessattempts
+
 ***
 Delete user access attempts
 
@@ -305,6 +322,7 @@ Delete user access attempts
 #### Base Command
 
 `safewalk-delete-user-accessattempts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -322,6 +340,7 @@ There is no context output for this command.
 
 
 ### safewalk-get-user-tokens
+
 ***
 Get user tokens
 
@@ -329,6 +348,7 @@ Get user tokens
 #### Base Command
 
 `safewalk-get-user-tokens`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -355,6 +375,7 @@ Get user tokens
 
 
 ### safewalk-delete-user-token
+
 ***
 Delete user token.
 
@@ -362,6 +383,7 @@ Delete user token.
 #### Base Command
 
 `safewalk-delete-user-token`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -381,6 +403,7 @@ There is no context output for this command.
 
 
 ### safewalk-send-user-virtualtoken
+
 ***
 Send user virtual token.
 
@@ -388,6 +411,7 @@ Send user virtual token.
 #### Base Command
 
 `safewalk-send-user-virtualtoken`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -407,6 +431,7 @@ There is no context output for this command.
 
 
 ### safewalk-get-user-settings
+
 ***
 Get user settings.
 
@@ -414,6 +439,7 @@ Get user settings.
 #### Base Command
 
 `safewalk-get-user-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -541,6 +567,7 @@ Get user settings.
 
 
 ### safewalk-get-user-group
+
 ***
 Get user group.
 
@@ -548,6 +575,7 @@ Get user group.
 #### Base Command
 
 `safewalk-get-user-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -575,6 +603,7 @@ Get user group.
 
 
 ### safewalk-add-user-group
+
 ***
 Add user group.
 
@@ -582,6 +611,7 @@ Add user group.
 #### Base Command
 
 `safewalk-add-user-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -600,6 +630,7 @@ There is no context output for this command.
 
 
 ### safewalk-remove-user-group
+
 ***
 Remove user group.
 
@@ -607,6 +638,7 @@ Remove user group.
 #### Base Command
 
 `safewalk-remove-user-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -625,6 +657,7 @@ There is no context output for this command.
 
 
 ### safewalk-get-user-registrationcode
+
 ***
 Get user registration code
 
@@ -632,6 +665,7 @@ Get user registration code
 #### Base Command
 
 `safewalk-get-user-registrationcode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -657,6 +691,7 @@ Get user registration code
 
 
 ### safewalk-set-user-registrationcode
+
 ***
 Set user registration code
 
@@ -664,6 +699,7 @@ Set user registration code
 #### Base Command
 
 `safewalk-set-user-registrationcode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -683,6 +719,7 @@ There is no context output for this command.
 
 
 ### safewalk-send-user-registrationcode
+
 ***
 Send user registration code
 
@@ -690,6 +727,7 @@ Send user registration code
 #### Base Command
 
 `safewalk-send-user-registrationcode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -707,6 +745,7 @@ There is no context output for this command.
 
 
 ### safewalk-create-user-token-virtual
+
 ***
 Create user virtual token
 
@@ -714,6 +753,7 @@ Create user virtual token
 #### Base Command
 
 `safewalk-create-user-token-virtual`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -731,6 +771,7 @@ There is no context output for this command.
 
 
 ### safewalk-create-user-token-fastauth
+
 ***
 Create user FastAuth Token
 
@@ -738,6 +779,7 @@ Create user FastAuth Token
 #### Base Command
 
 `safewalk-create-user-token-fastauth`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -756,6 +798,7 @@ There is no context output for this command.
 
 
 ### safewalk-create-user-token-totpmobile
+
 ***
 Create user TopMobile Token
 
@@ -763,6 +806,7 @@ Create user TopMobile Token
 #### Base Command
 
 `safewalk-create-user-token-totpmobile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -782,6 +826,7 @@ There is no context output for this command.
 
 
 ### safewalk-create-user-token-totmobilehybrid
+
 ***
 Create user TotMobileHybrid
 
@@ -789,6 +834,7 @@ Create user TotMobileHybrid
 #### Base Command
 
 `safewalk-create-user-token-totmobilehybrid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -807,6 +853,7 @@ There is no context output for this command.
 
 
 ### safewalk-create-user-token-physical
+
 ***
 Create user Physical Token
 
@@ -814,6 +861,7 @@ Create user Physical Token
 #### Base Command
 
 `safewalk-create-user-token-physical`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -833,6 +881,7 @@ There is no context output for this command.
 
 
 ### safewalk-create-user-token-backup
+
 ***
 Create user Backup Token
 
@@ -840,6 +889,7 @@ Create user Backup Token
 #### Base Command
 
 `safewalk-create-user-token-backup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -860,6 +910,7 @@ There is no context output for this command.
 
 
 ### safewalk-set-user-backuptoken-settings
+
 ***
 Set user backup token
 
@@ -867,6 +918,7 @@ Set user backup token
 #### Base Command
 
 `safewalk-set-user-backuptoken-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -887,6 +939,7 @@ There is no context output for this command.
 
 
 ### safewalk-set-user-general-settings
+
 ***
 Set user general settings
 
@@ -894,6 +947,7 @@ Set user general settings
 #### Base Command
 
 `safewalk-set-user-general-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -912,6 +966,7 @@ There is no context output for this command.
 
 
 ### safewalk-set-user-hotpauthentication-settings
+
 ***
 Set user hotpauthentication settings
 
@@ -919,6 +974,7 @@ Set user hotpauthentication settings
 #### Base Command
 
 `safewalk-set-user-hotpauthentication-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -942,6 +998,7 @@ There is no context output for this command.
 
 
 ### safewalk-set-user-sesamiauthentication-settings
+
 ***
 Set user sesamiauthentication setttings
 
@@ -949,6 +1006,7 @@ Set user sesamiauthentication setttings
 #### Base Command
 
 `safewalk-set-user-sesamiauthentication-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -969,6 +1027,7 @@ There is no context output for this command.
 
 
 ### safewalk-set-user-totpauthentication-settings
+
 ***
 Set user  totpauthentication settings
 
@@ -976,6 +1035,7 @@ Set user  totpauthentication settings
 #### Base Command
 
 `safewalk-set-user-totpauthentication-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1000,6 +1060,7 @@ There is no context output for this command.
 
 
 ### safewalk-set-user-userauthentication-settings
+
 ***
 Set user userauthentication settings
 
@@ -1007,6 +1068,7 @@ Set user userauthentication settings
 #### Base Command
 
 `safewalk-set-user-userauthentication-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1035,6 +1097,7 @@ There is no context output for this command.
 
 
 ### safewalk-set-user-virtualauthentication-settings
+
 ***
 Set user virtualauthentication settings
 
@@ -1042,6 +1105,7 @@ Set user virtualauthentication settings
 #### Base Command
 
 `safewalk-set-user-virtualauthentication-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1061,6 +1125,7 @@ There is no context output for this command.
 
 
 ### safewalk-create-user
+
 ***
 Create user
 
@@ -1068,6 +1133,7 @@ Create user
 #### Base Command
 
 `safewalk-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1090,6 +1156,7 @@ There is no context output for this command.
 
 
 ### safewalk-delete-user
+
 ***
 Delete user
 
@@ -1097,6 +1164,7 @@ Delete user
 #### Base Command
 
 `safewalk-delete-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1114,6 +1182,7 @@ There is no context output for this command.
 
 
 ### safewalk-update-user-group
+
 ***
 Update user group
 
@@ -1121,6 +1190,7 @@ Update user group
 #### Base Command
 
 `safewalk-update-user-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

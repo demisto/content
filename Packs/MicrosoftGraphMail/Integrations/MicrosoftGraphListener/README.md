@@ -143,9 +143,11 @@ Creates a draft message in the specified user's mailbox.
 Replies to an email using Graph Mail Single User.
 
 ##### Required Permissions
+
 **The following permissions are required for this command:**
-- Mail.Send (Application)
-- Mail.ReadWrite (Application) - to send attachments > 3mb
+* Mail.Send (Application)
+* Mail.ReadWrite (Application) - to send attachments > 3mb
+
 #### Base Command
 
 `reply-mail`
@@ -184,9 +186,10 @@ Replies to an email using Graph Mail Single User.
 Sends an email using Microsoft Graph.
 
 ##### Required Permissions
+
 **The following permissions are required for this command:**
-- Mail.Send (Application)
-- Mail.ReadWrite (Application) - to send attachments > 3mb
+* Mail.Send (Application)
+* Mail.ReadWrite (Application) - to send attachments > 3mb
 
 #### Base Command
 
@@ -277,6 +280,7 @@ Sends a draft email using Microsoft Graph.
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-mail-test
 
 ***
@@ -294,6 +298,7 @@ Tests connectivity of the email.
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-mail-auth-reset
 
 ***
@@ -304,11 +309,13 @@ Run this command if for some reason you need to rerun the authentication process
 `msgraph-mail-auth-reset`
 
 #### Input
+
 There are no input arguments for this command.
 
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-mail-list-emails
 
 ***
@@ -471,6 +478,7 @@ Update the status of an email to read / unread.
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-mail-generate-login-url
 
 ***
@@ -489,11 +497,13 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```msgraph-mail-generate-login-url```
 
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -607,6 +617,7 @@ Returns the folder list under the specified folder.
 | MSGraphMail.Folders.ParentFolderID | String | The parent folder ID. | 
 | MSGraphMail.Folders.TotalItemCount | Number | The total number of email messages in the folder. | 
 | MSGraphMail.Folders.UnreadItemCount | Number | The number of unread email messages in the folder. | 
+
 ### msgraph-mail-list-rules
 
 ***
@@ -635,6 +646,7 @@ List email rules for a user's mailbox using Microsoft Graph API.
 | MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. | 
 | MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. | 
 | MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. | 
+
 ### msgraph-mail-get-rule
 
 ***
@@ -663,6 +675,7 @@ Get details of a specific email rule by ID for a user's mailbox using Microsoft 
 | MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. | 
 | MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. | 
 | MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. | 
+
 ### msgraph-mail-delete-rule
 
 ***
@@ -685,6 +698,7 @@ There is no context output for this command.
 ## Troubleshooting
 
 In case of a **hash verification** error:
+
 1. Use the Oproxy flow to generate a new pair of credentials. This is crucial as it ensures that any issues related to authentication can be mitigated with fresh credentials.
 2. Execute the command ***!msgraph-mail-auth-reset***. This command resets the authentication mechanism, allowing for the new credentials to be accepted.
 3. Insert the newly created credentials into the original instance where the error occurred. Make sure the credentials are entered correctly to avoid further errors.

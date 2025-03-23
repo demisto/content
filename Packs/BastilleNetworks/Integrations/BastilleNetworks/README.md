@@ -18,9 +18,12 @@ This integration was integrated and tested with Bastille Networks product versio
 | event_types | Event types | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### bastille-get-device-events
+
 ***
 Command to fetch device detection events
 
@@ -28,6 +31,7 @@ Command to fetch device detection events
 #### Base Command
 
 `bastille-get-device-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -68,9 +72,11 @@ Command to fetch device detection events
 
 
 #### Command Example
+
 ```!bastille-get-device-events since=2020-05-01T13:00:00T until=2020-05-01T17:00:00T```
 
 #### Context Example
+
 ```
 {
     "Bastille": {
@@ -278,6 +284,7 @@ Command to fetch device detection events
 #### Human Readable Output
 
 >### Device Events
+>
 >|area|device_info|emitter|event_id|first_seen|last_seen|tags|time_s|
 >|---|---|---|---|---|---|---|---|
 >| site_id: s1<br/>concentrator_id: c1<br/>map_id: m1 | manufacturer: Apple<br/>user: Jane Doe<br/>model: iPhone 7<br/>name: Jane's iPhone 7 | protocol: LTE<br/>transmitter_id: vzw:1100:249:6f4d<br/>vendor: Unknown<br/>network: {"name": "Verizon"} | LTE_vzw:1100:249:6f4d_s1_c1_m1_1588338000 | time_s: 2020-05-01T13:00:00+00:00<br/>position: 34.61,<br/>13.31 | position: 32.31,<br/>11.24<br/>time_s: 2020-05-01T13:00:00+00:00 |  | 2020-05-01T13:00:00+00:00 |
@@ -288,6 +295,7 @@ Command to fetch device detection events
 
 
 ### bastille-get-zone-events
+
 ***
 Command to fetch zone detection events
 
@@ -295,6 +303,7 @@ Command to fetch zone detection events
 #### Base Command
 
 `bastille-get-zone-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -335,9 +344,11 @@ Command to fetch zone detection events
 
 
 #### Command Example
+
 ```!bastille-get-zone-events zone=conference-1```
 
 #### Context Example
+
 ```
 {
     "Bastille": {
@@ -550,6 +561,7 @@ Command to fetch zone detection events
 #### Human Readable Output
 
 >### Zone Events
+>
 >|area|device_info|emitter|event_id|first_seen|last_seen|tags|time_s|zone_name|
 >|---|---|---|---|---|---|---|---|---|
 >| site_id: s1<br/>concentrator_id: c1<br/>map_id: m1 | manufacturer: Apple<br/>user: Jane Doe<br/>model: iPhone 7<br/>name: Jane's iPhone 7 | protocol: LTE<br/>transmitter_id: vzw:1100:249:6f4d<br/>vendor: Unknown<br/>network: {"name": "Verizon"} | conference-1_LTE_vzw:1100:249:6f4d_s1_c1_m1_1585699200 | time_s: 2020-04-01T00:00:00+00:00<br/>position: 34.61,<br/>13.31 | position: 32.31,<br/>11.24<br/>time_s: 2020-04-01T00:00:00+00:00 |  | 2020-04-01T00:00:00+00:00 | conference-1 |
@@ -560,6 +572,7 @@ Command to fetch zone detection events
 
 
 ### bastille-add-device-tag
+
 ***
 Command to add tag to an existing device
 
@@ -567,6 +580,7 @@ Command to add tag to an existing device
 #### Base Command
 
 `bastille-add-device-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -580,9 +594,11 @@ Command to add tag to an existing device
 There is no context output for this command.
 
 #### Command Example
+
 ```!bastille-add-device-tag transmitter_id=78:9f:70:7b:62:82 tag=test-tag```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -592,6 +608,7 @@ There is no context output for this command.
 >created
 
 ### bastille-remove-device-tag
+
 ***
 Command to remove tag from an existing device
 
@@ -599,6 +616,7 @@ Command to remove tag from an existing device
 #### Base Command
 
 `bastille-remove-device-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -612,9 +630,11 @@ Command to remove tag from an existing device
 There is no context output for this command.
 
 #### Command Example
+
 ```!bastille-remove-device-tag transmitter_id=78:9f:70:7b:62:82 tag=test-tag```
 
 #### Context Example
+
 ```
 {}
 ```

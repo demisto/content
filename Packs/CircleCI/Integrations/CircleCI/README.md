@@ -1,5 +1,6 @@
 Gets the details of the CircleCI workflows; including the details of the last runs and the jobs, and retrieves the artifacts of the jobs.
 This integration was integrated and tested with version v2 of CircleCI.
+
 ## Configure CircleCI on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -17,10 +18,14 @@ This integration was integrated and tested with version v2 of CircleCI.
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### circleci-workflows-list
+
 ***
 Gets information on workflows.
 
@@ -28,6 +33,7 @@ Gets information on workflows.
 #### Base Command
 
 `circleci-workflows-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -65,9 +71,11 @@ Gets information on workflows.
 
 
 #### Command Example
+
 ```!circleci-workflows-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "CircleCI": {
@@ -104,6 +112,7 @@ Gets information on workflows.
 #### Human Readable Output
 
 >### CircleCI Workflows
+>
 >|Metrics|Name|ProjectId|WindowEnd|WindowStart|
 >|---|---|---|---|---|
 >| total_runs: 181<br/>successful_runs: 136<br/>mttr: 93519<br/>total_credits_used: 323000<br/>failed_runs: 43<br/>median_credits_used: 0<br/>success_rate: 0.7513812154696132<br/>duration_metrics: {"min": 202, "mean": 8807, "median": 8606, "p95": 11307, "max": 16317, "standard_deviation": 1707.0, "total_duration": 0}<br/>total_recoveries: 0<br/>throughput: 2.033707865168539 | bucket_upload | 4eaba5af-8c43-43ec-b469-3968d8a76f68 | 2021-06-28T23:42:38.647Z | 2021-03-31T09:01:11.412Z |
@@ -111,6 +120,7 @@ Gets information on workflows.
 
 
 ### circleci-artifacts-list
+
 ***
 Retrieves the artifacts list from the CircleCI job.
 
@@ -118,6 +128,7 @@ Retrieves the artifacts list from the CircleCI job.
 #### Base Command
 
 `circleci-artifacts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -140,9 +151,11 @@ Retrieves the artifacts list from the CircleCI job.
 
 
 #### Command Example
+
 ```!circleci-artifacts-list job_number=390115 limit=2```
 
 #### Context Example
+
 ```json
 {
     "CircleCI": {
@@ -165,6 +178,7 @@ Retrieves the artifacts list from the CircleCI job.
 #### Human Readable Output
 
 >### CircleCI Artifacts
+>
 >|NodeIndex|Path|Url|
 >|---|---|---|
 >| 0 | artifacts/env.json | https://390115-12353212-gh.circle-artifacts.com/0/artifacts/env.json |
@@ -172,6 +186,7 @@ Retrieves the artifacts list from the CircleCI job.
 
 
 ### circleci-workflow-jobs-list
+
 ***
 Retrieves the jobs list from the CircleCI workflow.
 
@@ -179,6 +194,7 @@ Retrieves the jobs list from the CircleCI workflow.
 #### Base Command
 
 `circleci-workflow-jobs-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -203,9 +219,11 @@ Retrieves the jobs list from the CircleCI workflow.
 
 
 #### Command Example
+
 ```!circleci-workflow-jobs-list workflow_id=f85efae0-cbf4-4b6d-b136-e3db67d41221 limit=2```
 
 #### Context Example
+
 ```json
 {
     "CircleCI": {
@@ -244,6 +262,7 @@ Retrieves the jobs list from the CircleCI workflow.
 #### Human Readable Output
 
 >### CircleCI Workflow f85efae0-cbf4-4b6d-b136-e3db67d41221 Jobs
+>
 >|Dependencies|Id|JobNumber|Name|ProjectSlug|StartedAt|Status|StoppedAt|Type|
 >|---|---|---|---|---|---|---|---|---|
 >|  | c7425325-bb57-4e78-968f-2c9867d31z11 | 389133 | Setup Environment | gh/organization_name/repo_name | 2021-06-24T00:04:57Z | success | 2021-06-24T00:06:32Z | build |
@@ -251,6 +270,7 @@ Retrieves the jobs list from the CircleCI workflow.
 
 
 ### circleci-workflow-last-runs
+
 ***
 Retrieves the jobs list from the CircleCI workflow.
 
@@ -258,6 +278,7 @@ Retrieves the jobs list from the CircleCI workflow.
 #### Base Command
 
 `circleci-workflow-last-runs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -283,9 +304,11 @@ Retrieves the jobs list from the CircleCI workflow.
 
 
 #### Command Example
+
 ```!circleci-workflow-last-runs workflow_name=nightly limit=2```
 
 #### Context Example
+
 ```json
 {
     "CircleCI": {
@@ -316,12 +339,14 @@ Retrieves the jobs list from the CircleCI workflow.
 #### Human Readable Output
 
 >### CircleCI Workflow nightly Last Runs
+>
 >|Branch|CreatedAt|CreditsUsed|Duration|Id|Status|StoppedAt|
 >|---|---|---|---|---|---|---|
 >| master | 2021-06-29T00:04:56.069Z | 2482 | 7743 | d832d004-0069-4412-8e6d-41265143411z | failed | 2021-06-29T02:13:59.354Z |
 >| master | 2021-06-28T00:04:55.409Z | 3129 | 9778 | 531e678e-73e3-4f2a-ac80-55aa203461za | failed | 2021-06-28T02:47:52.916Z |
 
 ### circleci-trigger-workflow
+
 ***
 Triggers a new pipeline on the project.
 
@@ -329,6 +354,7 @@ Triggers a new pipeline on the project.
 #### Base Command
 
 `circleci-trigger-workflow`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -347,9 +373,11 @@ Triggers a new pipeline on the project.
 
 
 #### Command Example
+
 ```!circleci-trigger-workflow parameters={"param1": "value"}```
 
 #### Context Example
+
 ```json
 {
     "CircleCI": {

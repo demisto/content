@@ -25,10 +25,14 @@ Before configuring OTRS on Cortex XSOAR, you need to enable the webservices in y
 | look_back | Days to look back when fetching | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### otrs-get-ticket
+
 ***
 Retrieves details for an OTRS ticket by ticket ID or ticket number. At least one input argument is required for the integration to run.
 
@@ -36,6 +40,7 @@ Retrieves details for an OTRS ticket by ticket ID or ticket number. At least one
 ##### Base Command
 
 `otrs-get-ticket`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -82,9 +87,11 @@ Retrieves details for an OTRS ticket by ticket ID or ticket number. At least one
 
 
 ##### Command Example
+
 ```!otrs-get-ticket ticket_id="7023"```
 
 ##### Context Example
+
 ```
 {
     "OTRS": {
@@ -129,11 +136,15 @@ Retrieves details for an OTRS ticket by ticket ID or ticket number. At least one
 ```
 
 ##### Human Readable Output
+
 ### OTRS Ticket 7023
+
 |ID|Number|Age|Title|State|Lock|Queue|Owner|CustomerID|Priority|Type|Created|DynamicField|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 7023 | 2020042610000031 | 0 h 09 m | UpdatedTitle | open | unlock | Inbox::SIEM | siem | jb | 1 very low | Incident | 2020-04-26 11:05:07 | Firstname: Jens<br />Gender: male |
+
 ### Articles
+
 |ID|From|Subject|Body|CreateTime|ContentType|
 |---|---|---|---|---|---|
 | 11187 | "Jens Bothe" <jens.bothe@otrs.com\> | TestArticle | Testing | 2020-04-26 11:05:07 | text/plain; charset=utf8 |
@@ -141,6 +152,7 @@ Retrieves details for an OTRS ticket by ticket ID or ticket number. At least one
 
 
 ### otrs-search-ticket
+
 ***
 Search for an OTRS ticket using search filters
 
@@ -148,6 +160,7 @@ Search for an OTRS ticket using search filters
 ##### Base Command
 
 `otrs-search-ticket`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -178,17 +191,21 @@ Search for an OTRS ticket using search filters
 
 
 ##### Command Example
+
 ```!otrs-search-ticket state="PendingReminder" title="7023"```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
+
 No results found
 
 ### otrs-create-ticket
+
 ***
 Create a new ticket in OTRS
 
@@ -196,6 +213,7 @@ Create a new ticket in OTRS
 ##### Base Command
 
 `otrs-create-ticket`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -231,9 +249,11 @@ Create a new ticket in OTRS
 
 
 ##### Command Example
+
 ```!otrs-create-ticket title="TestTicket" queue="Inbox::SIEM" state="New" priority="2Low" customer_user="jb" article_subject="TestArticle" article_body="Testing" type="Unclassified"```
 
 ##### Context Example
+
 ```
 {
     "OTRS": {
@@ -257,9 +277,11 @@ Create a new ticket in OTRS
 ```
 
 ##### Human Readable Output
+
 Created ticket 7024 successfully
 
 ### otrs-update-ticket
+
 ***
 Update an OTRS ticket
 
@@ -267,6 +289,7 @@ Update an OTRS ticket
 ##### Base Command
 
 `otrs-update-ticket`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -300,9 +323,11 @@ Update an OTRS ticket
 
 
 ##### Command Example
+
 ```!otrs-update-ticket ticket_id="7023" title="UpdatedTitle" state="Open" priority="1VeryLow" type="Incident"```
 
 ##### Context Example
+
 ```
 {
     "OTRS": {
@@ -318,9 +343,11 @@ Update an OTRS ticket
 ```
 
 ##### Human Readable Output
+
 Updated ticket 7023 successfully
 
 ### otrs-close-ticket
+
 ***
 Close an OTRS ticket
 
@@ -328,6 +355,7 @@ Close an OTRS ticket
 ##### Base Command
 
 `otrs-close-ticket`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -348,9 +376,11 @@ Close an OTRS ticket
 
 
 ##### Command Example
+
 ```!otrs-close-ticket ticket_id="7023" article_subject="ClosingSubject" article_body="ClosingBody"```
 
 ##### Context Example
+
 ```
 {
     "OTRS": {
@@ -367,4 +397,5 @@ Close an OTRS ticket
 ```
 
 ##### Human Readable Output
+
 Closed ticket 7023 successfully

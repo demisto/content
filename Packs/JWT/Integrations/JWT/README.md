@@ -1,5 +1,6 @@
 JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. This Integration can be used to Generate New JWT Tokens, Encode and Decode Existing Ones.
 This integration was integrated and tested with generic JWT authentication service.
+
 ## Configure JWT in Cortex
 
 
@@ -13,9 +14,12 @@ This integration was integrated and tested with generic JWT authentication servi
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### jwt-generate-access-token
+
 ***
 Generates a JWT authorization token with an optional scope and queries the API for an access token and then returns the received API access token
 
@@ -23,6 +27,7 @@ Generates a JWT authorization token with an optional scope and queries the API f
 #### Base Command
 
 `jwt-generate-access-token`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -49,9 +54,11 @@ Generates a JWT authorization token with an optional scope and queries the API f
 
 
 #### Command Example
+
 ```!jwt-generate-access-token iss="http://example.com" sub="3233-2344-4b52-2323-fc0bfb11e673" additionalClaims="{"parameter1":"23323-323-4854-893c-b59610423ad"}" tokenTimeout="300"```
 
 #### Context Example
+
 ```json
 {
     "JWT": {
@@ -67,12 +74,14 @@ Generates a JWT authorization token with an optional scope and queries the API f
 #### Human Readable Output
 
 >### Results
+>
 >|AccessToken|AuthenticationToken|ID|
 >|---|---|---|
 >| eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MjIwNTA1ODMsImlhdCI6MTYyMjA1MDI4MywianRpIjoiMDA5ZWIwMzYtMWU2MC00M2U1LWFhZDItMTE4NzQ2MmRiMGJlIiwiaXNzIjoiaHR0cDovL2V4YW1wbGUuY29tIiwic3ViIjoiMzIzMy0yMzQ0LTRiNTItMjMyMy1mYzBiZmIxMWU2NzMiLCJwYXJhbWV0ZXIxIjoiMjMzMjMtMzIzLTQ4NTQtODkzYy1iNTk2MTA0MjNhZCJ9.13zCwNhvt8fCuyHBcmdbDSaXUIpDRI95Q5-m1EbPQmk", | 009eb036-1e60-43e5-aad2-1187462db0be |
 
 
 ### jwt-generate-authentication-payload
+
 ***
 Generates a JWT authorization request payload by encoding the provided claims.
 
@@ -80,6 +89,7 @@ Generates a JWT authorization request payload by encoding the provided claims.
 #### Base Command
 
 `jwt-generate-authentication-payload`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -105,9 +115,11 @@ Generates a JWT authorization request payload by encoding the provided claims.
 
 
 #### Command Example
+
 ```!jwt-generate-authentication-payload iss="http://example.com" sub="3233-2344-4b52-2323-fc0bfb11e673" additionalClaims=`{"parameter1":"23323-323-4854-893c-b59610423ad"}````
 
 #### Context Example
+
 ```json
 {
     "JWT": {
@@ -122,12 +134,14 @@ Generates a JWT authorization request payload by encoding the provided claims.
 #### Human Readable Output
 
 >### Results
+>
 >|AuthenticationToken|ID|
 >|---|---|
 >| *** |
 
 
 ### jwt-decode-token
+
 ***
 A command to decode JWT tokens
 
@@ -135,6 +149,7 @@ A command to decode JWT tokens
 #### Base Command
 
 `jwt-decode-token`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -148,9 +163,11 @@ A command to decode JWT tokens
 There is no context output for this command.
 
 #### Command Example
+
 ```!jwt-decode-token token="************************************.*********************************************************************************************************************************************************************************************************************************************************************.******************************************"```
 
 #### Context Example
+
 ```json
 {
     "JWT": {
@@ -169,6 +186,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|exp|iat|iss|jti|parameter1|sub|
 >|---|---|---|---|---|---|
 >| 1622050583 | 1622050283 | http://example.com | 009eb036-1e60-43e5-aad2-1187462db0be | 23323-323-4854-893c-b59610423ad | 3233-2344-4b52-2323-fc0bfb11e673 |

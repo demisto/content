@@ -191,8 +191,11 @@ Returns all assets for which you have access.
 | Endpoint.OS | string | Endpoint operating system. | 
 
 #### Command example
+
 ```!nexpose-get-assets limit=3```
+
 #### Context Example
+
 ```json
 {
     "Endpoint": [
@@ -268,6 +271,7 @@ Returns all assets for which you have access.
 #### Human Readable Output
 
 >### Nexpose Asset 12
+>
 >|AssetId|Address|Site|Exploits|Malware|OperatingSystem|Vulnerabilities|RiskScore|Assessed|LastScanDate|LastScanId|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 12 | 192.0.2.3 | PANW | 4 | 0 | Microsoft Windows | 45 | 18819.919921875 | true | 2049-03-01T04:31:56Z | - |
@@ -320,8 +324,11 @@ Search and return all assets matching specific filters. Returns only assets the 
 | Endpoint.OS | string | Endpoint operating system. | 
 
 #### Command example
+
 ```!nexpose-search-assets match=all riskScoreHigherThan=1000 limit=3```
+
 #### Context Example
+
 ```json
 {
     "Endpoint": [
@@ -398,6 +405,7 @@ Search and return all assets matching specific filters. Returns only assets the 
 #### Human Readable Output
 
 >### Nexpose Asset 13
+>
 >|AssetId|Address|Name|Site|Exploits|Malware|OperatingSystem|RiskScore|Assessed|LastScanDate|LastScanId|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 13 | 192.0.2.4 | 57.27.185.35.bc.googleusercontent.com | PANW | 0 | 0 | Linux 2.6.18 | 1323.0916748046875 | true | 2022-11-15T11:53:25.281Z | - |
@@ -435,8 +443,11 @@ Get a specific scan.
 | Nexpose.Scan.Vulnerabilities.Total | number | The total number of vulnerabilities. | 
 
 #### Command example
+
 ```!nexpose-get-scan id=1```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -464,10 +475,13 @@ Get a specific scan.
 #### Human Readable Output
 
 >### Nexpose Scan ID 1
+>
 >|Id|ScanType|ScanName|Assets|TotalTime|Completed|Status|
 >|---|---|---|---|---|---|---|
 >| 1 | Manual | Tue 03 Dec 2019 10:47 PM | 0 | 51.316 seconds | 2019-12-03T20:48:01.368Z | finished |
+>
 >### Vulnerabilities
+>
 >|Critical|Severe|Moderate|Total|
 >|---|---|---|---|
 >| 0 | 0 | 0 | 0 |
@@ -520,8 +534,11 @@ Returns details and possible remediations for an asset's vulnerability.
 | CVE.ID | string | Common Vulnerabilities and Exposures IDs. | 
 
 #### Command example
+
 ```!nexpose-get-asset-vulnerability id=1 vulnerabilityId=apache-httpd-cve-2017-15710```
+
 #### Context Example
+
 ```json
 {
     "CVE": {
@@ -602,15 +619,20 @@ Returns details and possible remediations for an asset's vulnerability.
 #### Human Readable Output
 
 >### Vulnerability apache-httpd-cve-2017-15710
+>
 >|Id|Title|Severity|RiskScore|CVSS|CVSSV3|Published|Added|Modified|CVSSScore|CVSSV3Score|Categories|CVES|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| apache-httpd-cve-2017-15710 | Apache HTTPD: Out of bound write in mod_authnz_ldap when using too small Accept-Language values (CVE-2017-15710) | Severe | 175.22 | AV:N/AC:L/Au:N/C:N/I:N/A:P | CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H | 2018-03-26 | 2018-03-26 | 2020-01-30 | 5.0 | 7.5 | Apache,<br/>Apache HTTP Server,<br/>Denial of Service,<br/>LDAP,<br/>Web | CVE-2017-15710 |
+>
 >### Checks
+>
 >|Port|Protocol|Since|Proof|Status|
 >|---|---|---|---|---|
 >| 80 | tcp | 2020-10-01T22:40:08.844Z | Running HTTP serviceProduct HTTPD exists -- Apache HTTPD 2.4.29Vulnerable version of product HTTPD found -- Apache HTTPD 2.4.29 | vulnerable-version |
 >| 8000 | tcp | 2020-10-01T22:40:08.844Z | Running HTTP serviceProduct HTTPD exists -- Apache HTTPD 2.4.29Vulnerable version of product HTTPD found -- Apache HTTPD 2.4.29 | vulnerable-version |
+>
 >### Solutions
+>
 >|Type|Summary|Steps|Estimate|AdditionalInformation|
 >|---|---|---|---|---|
 >| rollup-patch | Upgrade to the latest version of Apache HTTPD | Download and apply the upgrade from: http:<span>//</span>archive.apache.org/dist/httpd/httpd-2.4.48.tar.gz (http:<span>//</span>archive.apache.org/dist/httpd/httpd-2.4.48.tar.gz) | 2 hours | The latest version of Apache HTTPD is 2.4.48.<br/><br/>Many platforms and distributions provide pre-built binary packages for Apache HTTP server. These pre-built packages are usually customized and optimized for a particular distribution, therefore we recommend that you use the packages if they are available for your operating system. |
@@ -733,8 +755,11 @@ Delete an asset.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!nexpose-delete-asset id=1```
+
 #### Human Readable Output
 
 >Asset 1 has been deleted.
@@ -759,6 +784,7 @@ Delete a scheduled scan.
 #### Context Output
 
 There is no context output for this command.
+
 ### nexpose-delete-shared-credential
 
 ***
@@ -780,6 +806,7 @@ Delete a shared credential.
 #### Context Output
 
 There is no context output for this command.
+
 ### nexpose-delete-site-scan-credential
 
 ***
@@ -803,6 +830,7 @@ Delete a site scan credential.
 #### Context Output
 
 There is no context output for this command.
+
 ### nexpose-delete-site
 
 ***
@@ -822,6 +850,7 @@ Deletes a site.
 #### Context Output
 
 There is no context output for this command.
+
 ### nexpose-delete-vulnerability-exception
 
 ***
@@ -839,7 +868,9 @@ Delete a vulnerability exception.
 
 
 #### Command example
+
 ```!nexpose-delete-vulnerability-exception id=1```
+
 #### Human Readable Output
 
 >Vulnerability exception with ID 1 has been deleted.
@@ -875,8 +906,11 @@ Retrieves accessible sites.
 | Nexpose.Site.LastScan | date | The date and time of the site's last scan. | 
 
 #### Command example
+
 ```!nexpose-get-sites limit=5```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -916,6 +950,7 @@ Retrieves accessible sites.
 #### Human Readable Output
 
 >### Nexpose Sites
+>
 >| Id  |Name|Assets|Vulnerabilities|Risk|Type|LastScan|
 -----|---|---|---|---|---|---|---|
 >| 1   | Authenticated-Assets | 4 | 41 | 20416.0 | static | 2021-08-03T14:09:15.321Z |
@@ -946,8 +981,11 @@ There are no input arguments for this command.
 | Nexpose.Template.Type | string | The type of the report template. document is a templatized, typically printable, report that has various sections of content. export is data-oriented output, typically CSV. file is a printable report template using a report template file. | 
 
 #### Command example
+
 ```!nexpose-get-report-templates```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -1002,6 +1040,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Nexpose Templates
+>
 >|Id|Name|Description|Type|
 >|---|---|---|---|
 >| audit-report | Audit Report | Provides comprehensive details about discovered assets, vulnerabilities, and users. | document |
@@ -1040,8 +1079,11 @@ Create a new asset.
 | Nexpose.Asset.id | string | ID of the newly created asset. | 
 
 #### Command example
+
 ```!nexpose-create-asset site_id="1" date="2022-01-01T10:00:00Z" ip="192.0.2.0"```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -1210,8 +1252,11 @@ Generates a new report for a specified scan.
 | Nexpose.Report.Format | string | The report format. | 
 
 #### Command example
+
 ```!nexpose-create-scan-report scan=1 download_immediately=false```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -1228,6 +1273,7 @@ Generates a new report for a specified scan.
 #### Human Readable Output
 
 >### Report Information
+>
 >|Format|ID|InstanceID|Name|
 >|---|---|---|---|
 >| pdf | 3241 | 3212 | report 2022-11-30 09:25:36.359529 |
@@ -1300,8 +1346,11 @@ Retrieve information about shared credentials for a specific site.
 | Nexpose.AssignedSharedCredential.service | string | Credential service type. | 
 
 #### Command example
+
 ```!nexpose-list-assigned-shared-credential site_id=1 limit=3```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -1332,6 +1381,7 @@ Retrieve information about shared credentials for a specific site.
 #### Human Readable Output
 
 >### Nexpose Assigned Shared Credentials
+>
 >| Id  |Name|Service|Enabled|
 -----|---|---|---|---|
 >| 1   | Test 1 | ftp | true |
@@ -1406,8 +1456,11 @@ Retrieve information about all or a specific vulnerability.
 | Nexpose.Vulnerability.title | string | The title \(summary\) of the vulnerability. | 
 
 #### Command example
+
 ```!nexpose-list-vulnerability limit=3```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -1580,6 +1633,7 @@ Retrieve information about all or a specific vulnerability.
 #### Human Readable Output
 
 >### Nexpose Vulnerabilities
+>
 >|Title|MalwareKits|Exploits|CVSS|CVSSv3|Risk|PublishedOn|ModifiedOn|Severity|
 >|---|---|---|---|---|---|---|---|---|
 >| 7-Zip: CVE-2008-6536: Unspecified vulnerability in 7-zip before 4.5.7 | 0 | 0 | 10.0 |  | 898.63 | 2009-03-29 | 2018-06-08 | Critical |
@@ -1680,8 +1734,11 @@ Retrieve information about all or a specific shared credential.
 | Nexpose.SharedCredential.sites | array | List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential, allowing it to use the credential during a scan. | 
 
 #### Command example
+
 ```!nexpose-list-shared-credential limit=3```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -1734,6 +1791,7 @@ Retrieve information about all or a specific shared credential.
 #### Human Readable Output
 
 >### Nexpose Shared Credentials
+>
 >| Id  |Name|Service|UserName|
 -----|---|---|---|---|
 >| 1   | shared credentials | snmpv3 | test |
@@ -1831,8 +1889,11 @@ Retrieve information about scan schedules for a specific site or a specific scan
 | Nexpose.VulnerabilityException.submit.user | int | The identifier of the user who submitted the vulnerability exception. | 
 
 #### Command example
+
 ```!nexpose-list-vulnerability-exceptions sort="submit.date,ASC" limit=3```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -1899,6 +1960,7 @@ Retrieve information about scan schedules for a specific site or a specific scan
 #### Human Readable Output
 
 >### Nexpose Vulnerability Exceptions
+>
 >| Id  |Vulnerability|ExceptionScope|Reason|ReportedBy|ReviewStatus|ReviewedOn|ExpiresOn|
 -----|---|---|---|---|---|---|---|---|
 >| 1   | tlsv1_0-enabled | global | false positive | admin | approved | 2022-10-31T14:39:15.736Z | 2028-03-01T04:31:56Z |
@@ -2021,8 +2083,11 @@ Return a list of scans. Returns only active scans by default (active=true).
 | Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating. | 
 
 #### Command example
+
 ```!nexpose-get-scans active=false limit=3```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -2068,6 +2133,7 @@ Return a list of scans. Returns only active scans by default (active=true).
 #### Human Readable Output
 
 >### Nexpose Scans
+>
 >|Id|ScanType|ScanName|Assets|TotalTime|Completed|Status|
 >|---|---|---|---|---|---|---|
 >| 1 | Manual | Tue 03 Dec 2019 10:47 PM | 0 | 51.316 seconds | 2019-12-03T20:48:01.368Z | finished |
@@ -2126,8 +2192,11 @@ Returns the generated report.
 | InfoFile.Type | string | Type of the report file. | 
 
 #### Command example
+
 ```!nexpose-download-report report_id=1 instance_id=latest```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -2187,8 +2256,11 @@ Returns the status of a report generation process.
 | Nexpose.Report.Status | string | The status of the report generation process. Valid values: "aborted", "failed", "complete", "running", "unknown". | 
 
 #### Command example
+
 ```!nexpose-get-report-status report_id=1 instance_id=latest```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -2204,6 +2276,7 @@ Returns the status of a report generation process.
 #### Human Readable Output
 
 >### Report Generation Status
+>
 >|ID|InstanceID|Status|
 >|---|---|---|
 >| 1 | latest | complete |
@@ -2247,6 +2320,7 @@ Update an existing site scan schedule.
 #### Context Output
 
 There is no context output for this command.
+
 ### nexpose-update-site-scan-credential
 
 ***
@@ -2295,6 +2369,7 @@ Update an existing site scan credential. For detailed explanation of all paramet
 #### Context Output
 
 There is no context output for this command.
+
 ### nexpose-update-vulnerability-exception-expiration
 
 ***
@@ -2313,7 +2388,9 @@ Update an existing vulnerability exception.
 
 
 #### Command example
+
 ```!nexpose-update-vulnerability-exception-expiration id=1 expiration=2024-10-10T10:00:00Z```
+
 #### Human Readable Output
 
 >Successfully updated expiration date of vulnerability exception 1.
@@ -2336,7 +2413,9 @@ Update an existing vulnerability exception.
 
 
 #### Command example
+
 ```!nexpose-update-vulnerability-exception-status id=1 status=Approve```
+
 #### Human Readable Output
 
 >Successfully updated status of vulnerability exception 1.
@@ -2406,7 +2485,9 @@ There is no context output for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!nexpose-add-site-included-asset site_id=848 assets=8.8.8.8```
 
 #### Human Readable Output
@@ -2432,7 +2513,9 @@ Remove an asset from a tag. Note that the asset must be added through the asset 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!nexpose-remove-tag-asset asset_id=25 tag_id=61```
 
 #### Human Readable Output
@@ -2462,8 +2545,11 @@ Return a list of assets for a tag.
 | Nexpose.TagAsset.sources | string | The asset sources. | 
 
 #### Command example
+
 ```!nexpose-list-tag-asset tag_id=33```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -2494,6 +2580,7 @@ Return a list of assets for a tag.
 #### Human Readable Output
 
 >### Tag 33 assets
+>
 >|Id|Sources|
 >|---|---|
 >| 18 | tag |
@@ -2519,6 +2606,7 @@ Delete a tag.
 #### Context Output
 
 There is no context output for this command.
+
 ### nexpose-list-site-included-asset
 
 ***
@@ -2542,8 +2630,11 @@ Return a list of included assets for a site.
 | Nexpose.IncludedAsset.addresses | string | A list of addresses of the included assets for the specified site. | 
 
 #### Command example
+
 ```!nexpose-list-site-included-asset site_id=848```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -2561,6 +2652,7 @@ Return a list of included assets for a site.
 #### Human Readable Output
 
 >### Asset list for site ID 848
+>
 >|Addresses|
 >|---|
 >| 8.8.8.8 |
@@ -2590,8 +2682,11 @@ Return a list of excluded asset groups for a site.
 | Nexpose.ExcludedAssetGroup.resources | int | The asset group ID. | 
 
 #### Command example
+
 ```!nexpose-list-site-excluded-asset-group site_id=848```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -2627,8 +2722,11 @@ Return a list of included asset groups for a site.
 | Nexpose.IncludedAssetGroup.resources | int | The asset group ID. | 
 
 #### Command example
+
 ```!nexpose-list-site-included-asset-group site_id=848```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -2643,6 +2741,7 @@ Return a list of included asset groups for a site.
 #### Human Readable Output
 
 >### Asset group list for site ID 848
+>
 >**No entries.**
 
 
@@ -2665,7 +2764,9 @@ Remove an asset group from a tag.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!nexpose-remove-tag-asset-group asset_group_id=1 tag_id=61```
 
 #### Human Readable Output
@@ -2722,7 +2823,9 @@ Add an existing asset to an existing tag.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!nexpose-add-tag-asset asset_id=25 tag_id=61```
 
 #### Human Readable Output
@@ -2749,7 +2852,9 @@ Remove excluded assets from a site.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!nexpose-remove-site-excluded-asset site_id=848 assets=8.8.8.8```
 
 #### Human Readable Output
@@ -2775,7 +2880,9 @@ There is no context output for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!nexpose-remove-site-included-asset site_id=848 assets=8.8.8.8```
 
 #### Human Readable Output
@@ -2809,6 +2916,7 @@ Update tag search criteria.
 #### Context Output
 
 There is no context output for this command.
+
 ### nexpose-add-tag-asset-group
 
 ***
@@ -2828,6 +2936,7 @@ Add existing asset groups to an existing tag.()
 #### Context Output
 
 There is no context output for this command.
+
 ### nexpose-list-site-excluded-asset
 
 ***
@@ -2851,8 +2960,11 @@ Return a list of excluded assets for a site.
 | Nexpose.ExcludedAsset.addresses | string | A list of addresses of the excluded assets for the specified site. | 
 
 #### Command example
+
 ```!nexpose-list-site-excluded-asset site_id=848```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -2866,6 +2978,7 @@ Return a list of excluded assets for a site.
 #### Human Readable Output
 
 >### Asset list for site ID 848
+>
 >**No entries.**
 
 
@@ -2891,8 +3004,11 @@ Return a list of asset groups for a tag.
 | Nexpose.TagAssetGroup.id | int | Asset group ID. | 
 
 #### Command example
+
 ```!nexpose-list-tag-asset-group tag_id=2```
+
 #### Context Example
+
 ```json
 {
     "Nexpose": {
@@ -2906,6 +3022,7 @@ Return a list of asset groups for a tag.
 #### Human Readable Output
 
 >### Tag 2 asset groups.
+>
 >|Asset groups IDs|
 >|---|
 >| 3 |
@@ -2954,9 +3071,11 @@ Return a list of tags.
 
 
 #### Command example
+
 ```!nexpose-list-tag limit=2 name=test```
 
 #### Context Example
+
 ```json
 {
     "resources": [
@@ -3028,7 +3147,9 @@ Add excluded assets to a site.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!nexpose-add-site-excluded-asset site_id=848 assets=8.8.8.8```
 
 #### Human Readable Output
@@ -3070,8 +3191,11 @@ Return a list of asset groups.
 | Nexpose.AssetGroup.vulnerabilities.severe | Number | The number of severe vulnerabilities in the asset group. | 
 | Nexpose.AssetGroup.vulnerabilities.total | Number | The total number of vulnerabilities in the asset group. | 
 | Nexpose.AssetGroup.description | String | The description of the asset group. | 
+
 #### Command example
+
 ```!nexpose-list-asset-group limit=2```
+
 ### nexpose-create-asset-group
 
 ***
@@ -3104,4 +3228,5 @@ Create an asset group.
 | Nexpose.AssetGroup.id | int | The asset group ID. | 
 
 #### Command example
+
 ```!nexpose-create-asset-group name=test3 type=dynamic ip_address_is=1.1.1.1 query=`risk-score is-greater-than 8000` escription=test```

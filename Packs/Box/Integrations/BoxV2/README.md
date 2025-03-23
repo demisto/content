@@ -2,6 +2,7 @@ Manage Box users
 This integration was integrated and tested with API version 2.0 of Box v2
 
 ## Configure the Box Application to Interface with XSOAR
+
 1. Navigate to [the developer console](https://app.box.com/developers/console) for Box.
 2. Click **Create a New App**.
 3. Select **Custom App** and when prompted, select **Server Authentication (with JWT)**
@@ -41,6 +42,7 @@ From the General Settings menu, you may also obtain your *User ID* for the servi
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Differences between Box \(Deprecated\) and Box v2
+
 - Context outputs were changed to be nested under the entity type for each command. For example, user outputs
 used to be stored under the context root, Box. In this version they are stored under the entity Box.Users.
 - Authentication is handled via JSON Web Tokens \(JWT\) and no longer requires each command to retrieve an authentication
@@ -48,9 +50,12 @@ token manually.
 - All results given via the Box API is returned into the context.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### box-search-content
+
 ***
 Searches for files, folders, web links, and shared files across the users content or across the entire enterprise.
 
@@ -58,6 +63,7 @@ Searches for files, folders, web links, and shared files across the users conten
 #### Base Command
 
 `box-search-content`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -139,9 +145,11 @@ Searches for files, folders, web links, and shared files across the users conten
 
 
 #### Command Example
+
 ```!box-search-content item_name="test" limit="1"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -207,12 +215,14 @@ Searches for files, folders, web links, and shared files across the users conten
 #### Human Readable Output
 
 >### Search results
+>
 >|Content Created At|Content Modified At|Created At|Created By|Etag|Id|Item Status|Modified At|Modified By|Name|Owned By|Parent|Path Collection|Sequence Id|Size|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2020-11-30T03:53:45-08:00 | 2020-11-30T03:53:45-08:00 | 2020-11-30T03:53:45-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 0 | 127109452066 | active | 2020-11-30T03:53:45-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | test-demo name | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | type: folder<br/>id: 0<br/>sequence_id: null<br/>etag: null<br/>name: All Files | total_count: 1<br/>entries: {'type': 'folder', 'id': '0', 'sequence_id': None, 'etag': None, 'name': 'All Files'} | 0 | 0 | folder |
 
 
 ### box-find-file-folder-by-share-link
+
 ***
 Return the file represented by a shared link.
 
@@ -220,6 +230,7 @@ Return the file represented by a shared link.
 #### Base Command
 
 `box-find-file-folder-by-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -289,9 +300,11 @@ Return the file represented by a shared link.
 
 
 #### Command Example
+
 ```!box-find-file-folder-by-share-link shared_link="https://app.box.com/s/oyujr5qpxy1nbky394slw7n98v8pnpmy"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -348,12 +361,14 @@ Return the file represented by a shared link.
 #### Human Readable Output
 
 >### File/Folder Share Link for `https://app.box.com/s/oyujr5qpxy1nbky394slw7n98v8pnpmy`
+>
 >|Content Created At|Content Modified At|Created At|Created By|Etag|File Version|Id|Item Status|Modified At|Modified By|Name|Owned By|Path Collection|Sequence Id|Sha1|Size|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2020-11-25T05:20:55-08:00 | 2020-11-25T05:20:55-08:00 | 2020-11-25T05:20:56-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 2 | type: file_version<br/>id: 794731944502<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f | 745868717302 | active | 2020-12-01T06:28:21-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 55555.gif | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | total_count: 0<br/>entries:  | 2 | 1ff8be1766d9e16b0b651f89001e8e7375c9e71f | 26891788 | file |
 
 
 ### box-get-shared-link-by-file
+
 ***
 Gets the information for a shared link on a file.
 
@@ -361,6 +376,7 @@ Gets the information for a shared link on a file.
 #### Base Command
 
 `box-get-shared-link-by-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -392,9 +408,11 @@ Gets the information for a shared link on a file.
 
 
 #### Command Example
+
 ```!box-get-shared-link-by-file file_id="742246263170" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -427,12 +445,14 @@ Gets the information for a shared link on a file.
 #### Human Readable Output
 
 >### Shared link information for the file 742246263170
+>
 >|Access|Download Count|Download Url|Effective Access|Effective Permission|Is Password Enabled|Permissions|Preview Count|Url|
 >|---|---|---|---|---|---|---|---|---|
 >| open | 0 | `https://app.box.com/shared/static/khro4bw4g6ay68ye70gsnisqsp9c9r23.jpeg` | open | can_preview | false | can_preview: true<br/>can_download: false | 0 | `https://app.box.com/s/khro4bw4g6ay68ye70gsnisqsp9c9r23` |
 
 
 ### box-create-file-share-link
+
 ***
 Adds a shared link to a file.
 
@@ -440,6 +460,7 @@ Adds a shared link to a file.
 #### Base Command
 
 `box-create-file-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -475,9 +496,11 @@ Adds a shared link to a file.
 
 
 #### Command Example
+
 ```!box-create-file-share-link file_id="742246263170" access="open" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -510,12 +533,14 @@ Adds a shared link to a file.
 #### Human Readable Output
 
 >### File Share Link was created/updated for file_id: 742246263170
+>
 >|Access|Download Count|Download Url|Effective Access|Effective Permission|Is Password Enabled|Permissions|Preview Count|Url|
 >|---|---|---|---|---|---|---|---|---|
 >| open | 0 | `https://app.box.com/shared/static/khro4bw4g6ay68ye70gsnisqsp9c9r23.jpeg` | open | can_preview | false | can_preview: true<br/>can_download: false | 0 | `https://app.box.com/s/khro4bw4g6ay68ye70gsnisqsp9c9r23` |
 
 
 ### box-update-file-share-link
+
 ***
 Updates a shared link on a file.
 
@@ -523,6 +548,7 @@ Updates a shared link on a file.
 #### Base Command
 
 `box-update-file-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -558,9 +584,11 @@ Updates a shared link on a file.
 
 
 #### Command Example
+
 ```!box-update-file-share-link file_id="742246263170" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -593,12 +621,14 @@ Updates a shared link on a file.
 #### Human Readable Output
 
 >### File Share Link was created/updated for file_id: 742246263170
+>
 >|Access|Download Count|Download Url|Effective Access|Effective Permission|Is Password Enabled|Permissions|Preview Count|Url|
 >|---|---|---|---|---|---|---|---|---|
 >| open | 0 | `https://app.box.com/shared/static/g3xy2he56jd2hfakjv5ptik08de8v15f.jpeg` | open | can_preview | false | can_preview: true<br/>can_download: false | 0 | `https://app.box.com/s/g3xy2he56jd2hfakjv5ptik08de8v15f` |
 
 
 ### box-remove-file-share-link
+
 ***
 Removes a shared link from a file.
 
@@ -606,6 +636,7 @@ Removes a shared link from a file.
 #### Base Command
 
 `box-remove-file-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -624,9 +655,11 @@ Removes a shared link from a file.
 
 
 #### Command Example
+
 ```!box-remove-file-share-link file_id="742246263170" as_user="test@test.com"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -645,6 +678,7 @@ Removes a shared link from a file.
 >File Share Link for the file_id 742246263170 was removed.
 
 ### box-get-shared-link-by-folder
+
 ***
 Gets the information for a shared link on a folder.
 
@@ -652,6 +686,7 @@ Gets the information for a shared link on a folder.
 #### Base Command
 
 `box-get-shared-link-by-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -683,9 +718,11 @@ Gets the information for a shared link on a folder.
 
 
 #### Command Example
+
 ```!box-get-shared-link-by-folder folder_id="125959916474" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -718,12 +755,14 @@ Gets the information for a shared link on a folder.
 #### Human Readable Output
 
 >### Shared link information for the folder 125959916474
+>
 >|Etag|Id|Shared Link|Type|
 >|---|---|---|---|
 >| 0 | 125959916474 | url: `https://app.box.com/s/qmfynlq5bpaq5cn7nnbet8vh9nnsswqi` <br/>download_url: null<br/>vanity_url: null<br/>vanity_name: null<br/>effective_access: open<br/>effective_permission: can_preview<br/>is_password_enabled: false<br/>unshared_at: null<br/>download_count: 0<br/>preview_count: 0<br/>access: open<br/>permissions: {"can_preview": true, "can_download": false} | folder |
 
 
 ### box-create-folder-share-link
+
 ***
 Adds a shared link to a folder.
 
@@ -731,6 +770,7 @@ Adds a shared link to a folder.
 #### Base Command
 
 `box-create-folder-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -766,9 +806,11 @@ Adds a shared link to a folder.
 
 
 #### Command Example
+
 ```!box-create-folder-share-link folder_id="125959916474" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -801,12 +843,14 @@ Adds a shared link to a folder.
 #### Human Readable Output
 
 >### Folder Share Link for 125959916474
+>
 >|Etag|Id|Shared Link|Type|
 >|---|---|---|---|
 >| 0 | 125959916474 | url: `https://app.box.com/s/qmfynlq5bpaq5cn7nnbet8vh9nnsswqi` <br/>download_url: null<br/>vanity_url: null<br/>vanity_name: null<br/>effective_access: open<br/>effective_permission: can_preview<br/>is_password_enabled: false<br/>unshared_at: null<br/>download_count: 0<br/>preview_count: 0<br/>access: open<br/>permissions: {"can_preview": true, "can_download": false} | folder |
 
 
 ### box-update-folder-share-link
+
 ***
 Updates a shared link on a folder.
 
@@ -814,6 +858,7 @@ Updates a shared link on a folder.
 #### Base Command
 
 `box-update-folder-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -849,9 +894,11 @@ Updates a shared link on a folder.
 
 
 #### Command Example
+
 ```!box-update-folder-share-link folder_id="125959916474" as_user="14342567114" access="open" can_download="false"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -884,12 +931,14 @@ Updates a shared link on a folder.
 #### Human Readable Output
 
 >### Folder Share Link for 125959916474
+>
 >|Etag|Id|Shared Link|Type|
 >|---|---|---|---|
 >| 0 | 125959916474 | url: `https://app.box.com/s/uaigc08phyoxnx59nlllecax7mfsrfb1` <br/>download_url: null<br/>vanity_url: null<br/>vanity_name: null<br/>effective_access: open<br/>effective_permission: can_preview<br/>is_password_enabled: false<br/>unshared_at: null<br/>download_count: 0<br/>preview_count: 0<br/>access: open<br/>permissions: {"can_preview": true, "can_download": false} | folder |
 
 
 ### box-remove-folder-share-link
+
 ***
 Removes a shared link from a folder.
 
@@ -897,6 +946,7 @@ Removes a shared link from a folder.
 #### Base Command
 
 `box-remove-folder-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -915,9 +965,11 @@ Removes a shared link from a folder.
 
 
 #### Command Example
+
 ```!box-remove-folder-share-link folder_id="125959916474" as_user="test@test.com"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -934,12 +986,14 @@ Removes a shared link from a folder.
 #### Human Readable Output
 
 >### Folder Share Link for 125959916474 was removed.
+>
 >|Etag|Id|Type|
 >|---|---|---|
 >| 0 | 125959916474 | folder |
 
 
 ### box-get-folder
+
 ***
 Retrieves details for a folder, including the first 100 entries in the folder.
 
@@ -947,6 +1001,7 @@ Retrieves details for a folder, including the first 100 entries in the folder.
 #### Base Command
 
 `box-get-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1016,9 +1071,11 @@ Retrieves details for a folder, including the first 100 entries in the folder.
 
 
 #### Command Example
+
 ```!box-get-folder folder_id="0" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -1279,10 +1336,13 @@ Retrieves details for a folder, including the first 100 entries in the folder.
 #### Human Readable Output
 
 >### Folder overview for 0.
+>
 >|Created By|Id|Item Status|Modified By|Name|Owned By|Path Collection|Size|Type|
 >|---|---|---|---|---|---|---|---|---|
 >| type: user<br/>id: <br/>name: <br/>login:  | 0 | active | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | All Files | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | total_count: 0<br/>entries:  | 212311360 | folder |
+>
 >### File contents for the folder 0
+>
 >|Etag|Id|Name|Sequence Id|Type|
 >|---|---|---|---|---|
 >| 0 | 125959916474 | My Box Notes | 0 | folder |
@@ -1306,6 +1366,7 @@ Retrieves details for a folder, including the first 100 entries in the folder.
 
 
 ### box-list-folder-items
+
 ***
 Retrieves a page of items in a folder.
 
@@ -1313,6 +1374,7 @@ Retrieves a page of items in a folder.
 #### Base Command
 
 `box-list-folder-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1340,9 +1402,11 @@ Retrieves a page of items in a folder.
 
 
 #### Command Example
+
 ```!box-list-folder-items folder_id="0" as_user="test@test.com"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -1603,10 +1667,13 @@ Retrieves a page of items in a folder.
 #### Human Readable Output
 
 >### Folder overview for 0.
+>
 >|Created By|Id|Item Status|Modified By|Name|Owned By|Path Collection|Size|Type|
 >|---|---|---|---|---|---|---|---|---|
 >| type: user<br/>id: <br/>name: <br/>login:  | 0 | active | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | All Files | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | total_count: 0<br/>entries:  | 212311360 | folder |
+>
 >### File contents for the folder 0
+>
 >|Etag|Id|Name|Sequence Id|Type|
 >|---|---|---|---|---|
 >| 0 | 125959916474 | My Box Notes | 0 | folder |
@@ -1630,6 +1697,7 @@ Retrieves a page of items in a folder.
 
 
 ### box-folder-create
+
 ***
 Creates a new empty folder within the specified parent folder.
 
@@ -1637,6 +1705,7 @@ Creates a new empty folder within the specified parent folder.
 #### Base Command
 
 `box-folder-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1707,9 +1776,11 @@ Creates a new empty folder within the specified parent folder.
 
 
 #### Command Example
+
 ```!box-folder-create name="Sample Folder for Docs" parent_id="0" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -1728,6 +1799,7 @@ Creates a new empty folder within the specified parent folder.
 >Folder named Sample Folder for Docs, was successfully created.
 
 ### box-file-delete
+
 ***
 Deletes a file, either permanently or by moving it to the trash.
 
@@ -1735,6 +1807,7 @@ Deletes a file, either permanently or by moving it to the trash.
 #### Base Command
 
 `box-file-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1748,9 +1821,11 @@ Deletes a file, either permanently or by moving it to the trash.
 There is no context output for this command.
 
 #### Command Example
+
 ```!box-file-delete file_id="751526132294" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -1760,6 +1835,7 @@ There is no context output for this command.
 >The file 751526132294 was successfully deleted.
 
 ### box-list-users
+
 ***
 Returns a list of all users for the Enterprise along with their user_id, public_name, and login.
 
@@ -1767,6 +1843,7 @@ Returns a list of all users for the Enterprise along with their user_id, public_
 #### Base Command
 
 `box-list-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1802,9 +1879,11 @@ Returns a list of all users for the Enterprise along with their user_id, public_
 
 
 #### Command Example
+
 ```!box-list-users fields=name filter_term="Andrew"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -1820,12 +1899,14 @@ Returns a list of all users for the Enterprise along with their user_id, public_
 #### Human Readable Output
 
 >### The following users were found.
+>
 >|Id|Name|Type|
 >|---|---|---|
 >| 14342567114 | Jane Doe | user |
 
 
 ### box-upload-file
+
 ***
 Uploads a file to the given folder.
 
@@ -1833,6 +1914,7 @@ Uploads a file to the given folder.
 #### Base Command
 
 `box-upload-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1904,9 +1986,11 @@ Uploads a file to the given folder.
 
 
 #### Command Example
+
 ```!box-upload-file entry_id="364@c9316be6-93dc-440a-8c68-c68912590052" folder_id="0" file_name="changelog.json" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -1916,6 +2000,7 @@ Uploads a file to the given folder.
 >File was successfully uploaded
 
 ### box-trashed-items-list
+
 ***
 Retrieves the files and folders that have been moved to the trash.
 
@@ -1923,6 +2008,7 @@ Retrieves the files and folders that have been moved to the trash.
 #### Base Command
 
 `box-trashed-items-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1948,9 +2034,11 @@ Retrieves the files and folders that have been moved to the trash.
 
 
 #### Command Example
+
 ```!box-trashed-items-list as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -1974,12 +2062,14 @@ Retrieves the files and folders that have been moved to the trash.
 #### Human Readable Output
 
 >### Trashed items were found.
+>
 >|Etag|File Version|Id|Name|Sequence Id|Sha1|Type|
 >|---|---|---|---|---|---|---|
 >| 11 | type: file_version<br/>id: 801011020694<br/>sha1: aa58d9692d58f5d9316d7cf1950d19a0b01bc204 | 751526132294 | list.json | 11 | aa58d9692d58f5d9316d7cf1950d19a0b01bc204 | file |
 
 
 ### box-trashed-item-restore
+
 ***
 Restores a file or folder that has been moved to the trash.
 
@@ -1987,6 +2077,7 @@ Restores a file or folder that has been moved to the trash.
 #### Base Command
 
 `box-trashed-item-restore`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2057,9 +2148,11 @@ Restores a file or folder that has been moved to the trash.
 
 
 #### Command Example
+
 ```!box-trashed-item-restore item_id="751526132294" type="file" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -2132,6 +2225,7 @@ Restores a file or folder that has been moved to the trash.
 >Item with the ID 751526132294 was restored.
 
 ### box-trashed-item-delete-permanently
+
 ***
 Permanently deletes a file or folder that is in the trash. This action cannot be undone.
 
@@ -2139,6 +2233,7 @@ Permanently deletes a file or folder that is in the trash. This action cannot be
 #### Base Command
 
 `box-trashed-item-delete-permanently`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2153,6 +2248,7 @@ Permanently deletes a file or folder that is in the trash. This action cannot be
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -2160,6 +2256,7 @@ There is no context output for this command.
 
 
 ### box-get-current-user
+
 ***
 Retrieves information about the user who is currently authenticated.
 
@@ -2167,6 +2264,7 @@ Retrieves information about the user who is currently authenticated.
 #### Base Command
 
 `box-get-current-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2199,9 +2297,11 @@ Retrieves information about the user who is currently authenticated.
 
 
 #### Command Example
+
 ```!box-get-current-user as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -2231,12 +2331,14 @@ Retrieves information about the user who is currently authenticated.
 #### Human Readable Output
 
 >### The current user is test@test.com.
+>
 >|Avatar Url|Created At|Id|Language|Login|Max Upload Size|Modified At|Name|Phone|Space Amount|Space Used|Status|Timezone|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| https://app.box.com/api/avatar/large/14342567114 | 2020-11-11T04:34:53-08:00 | 14342567114 | en | test@test.com | 2147483648 | 2020-12-15T03:58:34-08:00 | Jane Doe | 4808675309 | 10737418240 | 212311360 | active | America/Los_Angeles | user |
 
 
 ### box-update-user
+
 ***
 Updates a managed user in an enterprise. This endpoint is only available to users and applications with the right admin permissions.
 
@@ -2244,6 +2346,7 @@ Updates a managed user in an enterprise. This endpoint is only available to user
 #### Base Command
 
 `box-update-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2293,9 +2396,11 @@ Updates a managed user in an enterprise. This endpoint is only available to user
 
 
 #### Command Example
+
 ```!box-update-user phone="4808675309" is_sync_enabled="true" is_exempt_from_device_limits="true" is_external_collab_restricted="false" is_exempt_from_login_verification="false" can_see_managed_users="true" user_id="14342567114" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -2325,12 +2430,14 @@ Updates a managed user in an enterprise. This endpoint is only available to user
 #### Human Readable Output
 
 >### The user test@test.com has been updated.
+>
 >|Avatar Url|Created At|Id|Language|Login|Max Upload Size|Modified At|Name|Phone|Space Amount|Space Used|Status|Timezone|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| https://app.box.com/api/avatar/large/14342567114 | 2020-11-11T04:34:53-08:00 | 14342567114 | en | test@test.com | 2147483648 | 2020-12-15T03:59:04-08:00 | Jane Doe | 4808675309 | 10737418240 | 212312495 | active | America/Los_Angeles | user |
 
 
 ### box-create-user
+
 ***
 Creates a new managed user in an enterprise. This endpoint is only available to users and applications with the right admin permissions.
 
@@ -2338,6 +2445,7 @@ Creates a new managed user in an enterprise. This endpoint is only available to 
 #### Base Command
 
 `box-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2387,9 +2495,11 @@ Creates a new managed user in an enterprise. This endpoint is only available to 
 
 
 #### Command Example
+
 ```!box-create-user name="some_name_test" is_sync_enabled="false" phone="000000000" can_see_managed_users="false" is_exempt_from_device_limits="true" is_exempt_from_login_verification="false" is_external_collab_restricted="false" is_platform_access_only="true"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -2419,12 +2529,14 @@ Creates a new managed user in an enterprise. This endpoint is only available to 
 #### Human Readable Output
 
 >### The user AppUser_1403892_rBpFRjYb94@boxdevedition.com has been created.
+>
 >|Avatar Url|Created At|Id|Language|Login|Max Upload Size|Modified At|Name|Phone|Space Amount|Space Used|Status|Timezone|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| https://app.box.com/api/avatar/large/14658591950 | 2020-12-15T03:58:28-08:00 | 14658591950 | en | AppUser_1403892_rBpFRjYb94@boxdevedition.com | 2147483648 | 2020-12-15T03:58:28-08:00 | some_name_test | 000000000 | 10737418240 | 0 | active | America/Los_Angeles | user |
 
 
 ### box-delete-user
+
 ***
 Deletes a user. By default this will fail if the user still owns any content. Move their owned content first before proceeding, or use the force field to delete the user and their files.
 
@@ -2432,6 +2544,7 @@ Deletes a user. By default this will fail if the user still owns any content. Mo
 #### Base Command
 
 `box-delete-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2446,9 +2559,11 @@ Deletes a user. By default this will fail if the user still owns any content. Mo
 There is no context output for this command.
 
 #### Command Example
+
 ```!box-delete-user user_id="14639008448"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -2458,6 +2573,7 @@ There is no context output for this command.
 >The user 14639008448 was successfully deleted.
 
 ### box-list-user-events
+
 ***
 Returns up to a year of past events for a given user.
 
@@ -2465,6 +2581,7 @@ Returns up to a year of past events for a given user.
 #### Base Command
 
 `box-list-user-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2491,9 +2608,11 @@ Returns up to a year of past events for a given user.
 
 
 #### Command Example
+
 ```!box-list-user-events stream_type="all" limit="1"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -3256,6 +3375,7 @@ Returns up to a year of past events for a given user.
 #### Human Readable Output
 
 >### Events found for the user: 14342567114
+>
 >|Created At|Created By|Event Id|Event Type|Recorded At|Session Id|Source|Type|
 >|---|---|---|---|---|---|---|---|
 >| 2020-11-25T04:12:23-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 821c82f3cf438bf0d206aa80aac526ea1700a46b | ITEM_UPLOAD | 2020-11-25T04:12:24-08:00 | stw7zogl1ohiczrp | type: file<br/>id: 745851995250<br/>file_version: {"type": "file_version", "id": "794713426050", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T04:12:23-08:00<br/>modified_at: 2020-11-25T04:12:23-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T04:12:23-08:00<br/>content_modified_at: 2020-11-25T04:12:23-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
@@ -3271,6 +3391,7 @@ Returns up to a year of past events for a given user.
 
 
 ### box-list-enterprise-events
+
 ***
 Returns up to a year of past events for the entire enterprise.
 
@@ -3278,6 +3399,7 @@ Returns up to a year of past events for the entire enterprise.
 #### Base Command
 
 `box-list-enterprise-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3313,9 +3435,11 @@ Returns up to a year of past events for the entire enterprise.
 
 
 #### Command Example
+
 ```!box-list-enterprise-events created_after="1 day" limit="1"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -3692,6 +3816,7 @@ Returns up to a year of past events for the entire enterprise.
 #### Human Readable Output
 
 >### Enterprise Events found.
+>
 >|Additional Details|Created At|Created By|Event Id|Event Type|Ip Address|Source|Type|
 >|---|---|---|---|---|---|---|---|
 >| size: 18860439<br/>version_id: 803108695891 | 2020-12-15T00:44:58-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 451677f7-9c7c-497d-a272-69903c1f6c29 | RENAME | 37.142.10.140 | item_type: file<br/>item_id: 753421883491<br/>item_name: vandijk3.gif<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
@@ -3706,12 +3831,14 @@ Returns up to a year of past events for the entire enterprise.
 >| size: 1135<br/>version_id: 801011020694<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:11:59-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | cdc29617-5e30-477f-8a56-0497457c61fb | UNDELETE | 176.34.214.130 | item_type: file<br/>item_id: 751526132294<br/>item_name: list.json<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
 
 ### box-download-file
+
 ***
 Returns the contents of a file in binary format.
 
 #### Base Command
 
 `box-download-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3725,9 +3852,11 @@ Returns the contents of a file in binary format.
 There is no context output for this command.
 
 #### Command Example
+
 ``` !box-download-file file_id="745898898314" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -3737,6 +3866,7 @@ There is no context output for this command.
 >Uploaded file: TestFile.gif
 
 ### box-move-folder
+
 ***
 Moves all of the items (files, folders and workflows) owned by a user into another user's account. Only the root folder `0` will be transferred.
 
@@ -3748,6 +3878,7 @@ This command is performed synchronously which might lead to a slow response when
 #### Base Command
 
 `box-move-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3818,9 +3949,11 @@ This command is performed synchronously which might lead to a slow response when
 
 
 #### Command Example
+
 ```!box-move-folder to_user_id="123456" from_user_id="654321" notify="true"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -3872,6 +4005,7 @@ This command is performed synchronously which might lead to a slow response when
 #### Human Readable Output
 
 >### Folder overview for transferred folder.
+>
 >|Created By|Id|Item Status|Modified By|Name|Owned By|Path Collection|Size|Type|
 >|---|---|---|---|---|---|---|---|---|
 >| type: user<br/>id: <br/>name: <br/>login:  | 0 | active | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | All Files | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | total_count: 0<br/>entries:  | 212311360 | folder |

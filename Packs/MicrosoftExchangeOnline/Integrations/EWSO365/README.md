@@ -66,7 +66,7 @@ The need for this permission is specified in each relevant command's Permission 
 To set this permission follow these steps:
 
 1. Navigate to **Home** > **App registrations**.
-2. Search for your app under *all applications*.
+2. Search for your app under _all applications_.
 3. Click **API permissions** > **Add permission**.
 4. Search for `Office 365 Exchange Online` API > `Application Permission`> `full_access_as_app` permission.
 
@@ -113,8 +113,8 @@ When set to get a long period of time, the `Timeout` field might need to be set 
 
 Pay special attention to the following fields in the instance settings:
 
-- `Email Address` – mailbox to fetch incidents from.  
-- `Name of the folder from which to fetch incidents` – use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder.
+* `Email Address` – mailbox to fetch incidents from.  
+* `Name of the folder from which to fetch incidents` – use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder.
 
 #### Permissions
 
@@ -327,7 +327,7 @@ There are no input arguments for this command.
 
 >|displayName|isExternal|mailbox|mailboxId|
 >|--- |--- |--- |--- |
->|test|false|test@demistodev.onmicrosoft.com|/o=Exchange\*\*\*/ou=Exchange Administrative Group ()/cn=\*\*/cn=\*\\*-*\*|
+>|test|false|test@demistodev.onmicrosoft.com|/o=Exchange\*\*\*/ou=Exchange Administrative Group ()/cn=\*\*/cn=\*\\_-_\*|
 
 ##### Context Example
 
@@ -472,6 +472,7 @@ No known limitations.
 }
 
 ```
+
 </details>
 
 
@@ -1647,8 +1648,8 @@ There is no context output for this command.
 <details><summary><h3 style={{display: 'inline'}}> Fetching Incidents crash due to unparsable emails </h3></summary>
 If you find that your fetch incidents command is unable to parse a specific invalid email due to various parsing issues, you can follow these steps:
 
-1. In the instance configuration, navigate to the *Collect* section and click on *Advanced Settings*.
-2. Check the box labeled *Skip unparsable emails during fetch incidents*.
+1. In the instance configuration, navigate to the _Collect_ section and click on _Advanced Settings_.
+2. Check the box labeled _Skip unparsable emails during fetch incidents_.
 
 By enabling this option, the integration can catch and skip unparsable emails without causing the fetch incidents command to crash.
 When this parameter is active, a message will appear in the "Fetch History" panel of the instance whenever an unparsable email is recognized and skipped.

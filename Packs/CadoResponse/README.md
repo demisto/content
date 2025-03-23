@@ -9,11 +9,12 @@ The Cado Response and Cortex XSOAR integration enables security teams to benefit
 _Note, this Content Pack requires a deployed instance of Cado Response._
 
 ##### What does this pack do?
+
 - Allows you to create projects from your war room, or automatically create them based on incident parameters and triggers,
 - Provides commands and actions to perform acquisition of files and compromised machines via AWS S3 and EC2,
 - Gives you the ability to monitor evidence processing progress inside Cado Response as it happens.
 
 ---
 
-- Try Cado Response for free by visiting: (https://www.cadosecurity.com/free-investigation)[https://www.cadosecurity.com/free-investigation]
-- For instructions on how to set up the Cado Response and Cortex XSOAR integration, see Cado’s technical documentation here: (https://docs.cadosecurity.com/docs/cado-response/integrations/cortex-xsoar)[https://docs.cadosecurity.com/docs/cado-response/integrations/cortex-xsoar]
+- Try Cado Response for free by visiting: [https://www.cadosecurity.com/free-investigation](https://www.cadosecurity.com/free-investigation)
+- For instructions on how to set up the Cado Response and Cortex XSOAR integration, see Cado’s technical documentation here: [https://docs.cadosecurity.com/docs/cado-response/integrations/cortex-xsoar](https://docs.cadosecurity.com/docs/cado-response/integrations/cortex-xsoar)

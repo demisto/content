@@ -356,11 +356,17 @@ Get detailed information regarding identities.
 #### Human Readable Output
 
 > ## Credentials Lookup
+>
 >*****
+>
 >## Results for **fake1@fake.com**:
+>
 >## We found 1 passwords that were leaked for this identity:
+>
 >*****
+>
 >## Password 1:
+>
 >Rank: TopMillionCommonPasswords
 >
 >Properties: Letter, Number, LowerCase, AtLeast8Characters
@@ -396,6 +402,7 @@ Get detailed information regarding identities.
 >Malware Family: RedLine Stealer
 >
 >## Information about dumps where we found for Password 1:
+>
 >*****
 > Stealer Malware Logs 2022-11-03, Nov 2022
 >
@@ -482,6 +489,7 @@ Lookup for password in Recorded Future Dataset.
 #### Human Readable Output
 
 > ## This is search results for password you provided:
+>
 >Password hash: 0e44ce7308af2b3de5232e4616403ce7d49ba2aec83f79c196409556422a4927
 >
 >Password hash algorithm: SHA256

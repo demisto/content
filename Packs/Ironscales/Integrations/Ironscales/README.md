@@ -16,9 +16,12 @@ IRONSCALES, a self-learning email security platform integration
 | Incident type | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ironscales-get-incident
+
 ***
 Get incident data by ID.
 
@@ -26,6 +29,7 @@ Get incident data by ID.
 #### Base Command
 
 `ironscales-get-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -60,6 +64,7 @@ Get incident data by ID.
 
 
 ### ironscales-classify-incident
+
 ***
 Classify incident by ID.
 
@@ -67,6 +72,7 @@ Classify incident by ID.
 #### Base Command
 
 `ironscales-classify-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -85,6 +91,7 @@ Classify incident by ID.
 
 
 ### ironscales-get-open-incidents
+
 ***
 Get open incident ids.
 
@@ -92,6 +99,7 @@ Get open incident ids.
 #### Base Command
 
 `ironscales-get-open-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -20,9 +20,12 @@ To obtain access to Cybersixgill DVE Score feed via Cortex XSOAR, please contact
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cybersixgill-cve-enrich
+
 ***
 Returns information for each CVE in the input list
 
@@ -30,6 +33,7 @@ Returns information for each CVE in the input list
 #### Base Command
 
 `cybersixgill-cve-enrich`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -63,6 +67,7 @@ Returns information for each CVE in the input list
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

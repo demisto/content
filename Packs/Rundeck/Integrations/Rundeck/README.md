@@ -1,5 +1,6 @@
 Rundeck is a runbook automation for incident management, business continuity, and self-service operations. The integration enables you to install software on a list of machines or perform a task periodically. Can be used when there is a new attack and you want to perform an update of the software to block the attack.
 This integration was integrated and tested with version 24 of Rundeck.
+
 ## Configure Rundeck in Cortex
 
 
@@ -12,9 +13,12 @@ This integration was integrated and tested with version 24 of Rundeck.
 | project_name | Project Name | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### rundeck-projects-list
+
 ***
 Gets all existing projects on the server.
 
@@ -22,6 +26,7 @@ Gets all existing projects on the server.
 #### Base Command
 
 `rundeck-projects-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -35,10 +40,13 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 !rundeck-projects-list
 
 #### Human Readable Output
+
 ### Projects List:
+
 |Name|Description|
 |---|---|
 | Demisto | Demisto Test |
@@ -46,6 +54,7 @@ There are no input arguments for this command.
 
 
 ### rundeck-jobs-list
+
 ***
 Gets a list of all the jobs that exist in a project.
 
@@ -53,6 +62,7 @@ Gets a list of all the jobs that exist in a project.
 #### Base Command
 
 `rundeck-jobs-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -79,10 +89,13 @@ Gets a list of all the jobs that exist in a project.
 
 
 #### Command Example
+
 !rundeck-jobs-list scheduled_filter=false id_list={first_id},{second_id}
 
 #### Human Readable Output
+
 ### Jobs List:
+
 |Id|Schedule Enabled|Scheduled|Enabled|Group|Description|Project|Name|
 |---|---|---|---|---|---|---|---|
 | 123 | true | false | true |  | just a sample job | Cortex XSOAR | Arseny\'s Job |
@@ -90,6 +103,7 @@ Gets a list of all the jobs that exist in a project.
 
 
 ### rundeck-job-execute
+
 ***
 Executes a new job.
 
@@ -97,6 +111,7 @@ Executes a new job.
 #### Base Command
 
 `rundeck-job-execute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -134,10 +149,13 @@ Executes a new job.
 
 
 #### Command Example
+
 !rundeck-job-execute job_id={job_id} arg_string="-arg1 value1" as_user=galb log_level=ERROR
 
 #### Human Readable Output
+
 ### Execute Job:
+
 |Id|Status|Project|Execution Type|User|Datestarted|Job|Description|Argstring|
 |---|---|---|---|---|---|---|---|---|
 | 194 | running | Demisto | user | Galb | unixtime: 123 date: 123 | id: 123 averageDuration: 463 name:  Test Job group:  project: Demisto description: just a sample job options: {"foo": "0"} | 123 | -foo 0 |
@@ -145,6 +163,7 @@ Executes a new job.
 
 
 ### rundeck-job-retry
+
 ***
 Retry running a failed execution
 
@@ -152,6 +171,7 @@ Retry running a failed execution
 #### Base Command
 
 `rundeck-job-retry`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -188,10 +208,13 @@ Retry running a failed execution
 
 
 #### Command Example
+
 !rundeck-job-retry execution_id=122 job_id={job_id}
 
 #### Human Readable Output
+
 ### Execute Job:
+
 |Id|Status|Project|Execution Type|User|Datestarted|Job|Description|Argstring|
 |---|---|---|---|---|---|---|---|---|
 | 194 | running | Demisto | user | Galb | unixtime: 123 date: 123 | id: 123 averageDuration: 463 name:  Test Job group: project: Demisto description: just a sample job options: {"foo": "0"} | 123 | -foo 0 |
@@ -199,6 +222,7 @@ Retry running a failed execution
 
 
 ### rundeck-job-executions-query
+
 ***
 Gets all executions based on the job or execution details.
 
@@ -206,6 +230,7 @@ Gets all executions based on the job or execution details.
 #### Base Command
 
 `rundeck-job-executions-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -270,10 +295,13 @@ Gets all executions based on the job or execution details.
 
 
 #### Command Example
+
 !rundeck-job-executions-query adhoc=false max_results=3 project_name=Demisto user_filter=galb status_filter=failed
 
 #### Human Readable Output
+
 ### Job Execution Query - got total results: 2
+
 |Id|Status|Project|Execution Type|User|Datestarted|Dateended|Job|Description|Argstring|Failed Nodes|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 195 | failed | Demisto | user | Galb | unixtime: 123 date: 123 | unixtime: 123 date: 123 | id: 123 averageDuration: 463 name:  Test Job group:  project: Demisto description: just a sample job options: {"foo": "0"} | 123 | -foo 0 | localhost |
@@ -281,6 +309,7 @@ Gets all executions based on the job or execution details.
 
 
 ### rundeck-job-execution-output
+
 ***
 Gets the metadata associated with the workflow step state.
 
@@ -288,6 +317,7 @@ Gets the metadata associated with the workflow step state.
 #### Base Command
 
 `rundeck-job-execution-output`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -325,14 +355,19 @@ Gets the metadata associated with the workflow step state.
 
 
 #### Command Example
+
 !rundeck-job-execution-output execution_id=118 aggregate_log=true
 
 #### Human Readable Output
+
 ### Job Execution Output:
+
 |Id|Offset|Completed|Exec Completed|Has Failed Nodes|Exec State|Last Modified|Exec Duration|Percent Loaded|Total Size|Retry Backoff|Cluster Exec|Compacted|Entries|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 69 | 3732 | true | true | true | failed | 123 | 237 | 12 | 3738 | 0 | false | false | {'node': 'localhost', 'step': '1', 'stepctx': '1', 'user': 'admin', 'time': '10:54:52', 'level': 'NORMAL', 'type': 'stepbegin', 'absolute_time': '123', 'log': ''} |
+
 ### Job Execution Entries View:
+
 |Log|Node|Step|Stepctx|User|Time|Level|Type|Absolute Time|Log|
 |---|---|---|---|---|---|---|---|---|---|
 |  | localhost | 1 | 1 | admin | 10:54:52 | NORMAL | stepbegin |  |  |
@@ -340,6 +375,7 @@ Gets the metadata associated with the workflow step state.
 
 
 ### rundeck-job-execution-abort
+
 ***
 Aborts an active execution.
 
@@ -347,6 +383,7 @@ Aborts an active execution.
 #### Base Command
 
 `rundeck-job-execution-abort`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -365,10 +402,13 @@ Aborts an active execution.
 
 
 #### Command Example
+
 !rundeck-job-execution-abort execution_id=65
 
 #### Human Readable Output
+
 ### Job Execution Abort:
+
 |Abort|Execution|
 |---|---|
 | status: failed reason: Job is not running | id: 69 status: failed |
@@ -376,6 +416,7 @@ Aborts an active execution.
 
 
 ### rundeck-adhoc-command-run
+
 ***
 Executes shell commands in nodes.
 
@@ -383,6 +424,7 @@ Executes shell commands in nodes.
 #### Base Command
 
 `rundeck-adhoc-command-run`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -404,10 +446,13 @@ Executes shell commands in nodes.
 
 
 #### Command Example
+
 !rundeck-adhoc-command-run exec_command="echo hello" as_user=adhocTest project_name=Demisto node_keepgoing=true
 
 #### Human Readable Output
+
 ### Adhoc Run:
+
 |Message|Execution|
 |---|---|
 | Immediate execution scheduled (196) | id: 196 |
@@ -415,6 +460,7 @@ Executes shell commands in nodes.
 
 
 ### rundeck-adhoc-script-run
+
 ***
 Runs a script from file.
 
@@ -422,6 +468,7 @@ Runs a script from file.
 #### Base Command
 
 `rundeck-adhoc-script-run`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -447,10 +494,13 @@ Runs a script from file.
 
 
 #### Command Example
+
 !rundeck-adhoc-script-run entry_id=@121 as_user='test'
 
 #### Human Readable Output
+
 ### Adhoc Run Script:
+
 |Message|Execution|
 |---|---|
 | Immediate execution scheduled (196) | id: 196 |
@@ -458,6 +508,7 @@ Runs a script from file.
 
 
 ### rundeck-adhoc-script-run-from-url
+
 ***
 Runs a script downloaded from a URL.
 
@@ -465,6 +516,7 @@ Runs a script downloaded from a URL.
 #### Base Command
 
 `rundeck-adhoc-script-run-from-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -486,10 +538,13 @@ Runs a script downloaded from a URL.
 There is no context output for this command.
 
 #### Command Example
+
 !rundeck-adhoc-script-run-from-url script_url='URL' node_keepgoing=true
 
 #### Human Readable Output
+
 ### Adhoc Run Script From Url:
+
 |Message|Execution|
 |---|---|
 | Immediate execution scheduled (196) | id: 196 |
@@ -497,6 +552,7 @@ There is no context output for this command.
 
 
 ### rundeck-webhooks-list
+
 ***
 Gets a list of all existing webhooks
 
@@ -504,6 +560,7 @@ Gets a list of all existing webhooks
 #### Base Command
 
 `rundeck-webhooks-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -530,10 +587,13 @@ Gets a list of all existing webhooks
 
 
 #### Command Example
+
 !rundeck-webhooks-list project_name="TEST"
 
 #### Human Readable Output
+
 ### Webhooks List:
+
 |Id|Uuid|Name|Project|Enabled|User|Creator|Roles|Auth Token|Event Plugin|Config|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1 | 123 |  Test hook | Demisto | true | admin | admin | 123 | 123 | webhook-run-job | jobId: 123 argString: 123 |
@@ -541,6 +601,7 @@ Gets a list of all existing webhooks
 
 
 ### rundeck-webhook-event-send
+
 ***
 Send webhook event
 
@@ -548,6 +609,7 @@ Send webhook event
 #### Base Command
 
 `rundeck-webhook-event-send`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -566,10 +628,13 @@ Send webhook event
 
 
 #### Command Example
+
 !rundeck-webhook-event-send json=`{"test":1}` auth_token={auth_id}
 
 #### Human Readable Output
+
 ### Webhook event send:
+
 |Job Id|Execution Id|
 |---|---|
 | 123 | 199 |

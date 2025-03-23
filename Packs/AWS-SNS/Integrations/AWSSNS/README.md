@@ -23,9 +23,12 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### aws-sns-create-subscription
+
 ***
 Subscribes an endpoint to an Amazon SNS topic. If the endpoint type is HTTP/S or email, or if the endpoint and the topic are not in the same Amazon Web Services account, the endpoint owner must run the ConfirmSubscription action to confirm the subscription.
 
@@ -33,6 +36,7 @@ Subscribes an endpoint to an Amazon SNS topic. If the endpoint type is HTTP/S or
 #### Base Command
 
 `aws-sns-create-subscription`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -60,6 +64,7 @@ Subscribes an endpoint to an Amazon SNS topic. If the endpoint type is HTTP/S or
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -67,6 +72,7 @@ Subscribes an endpoint to an Amazon SNS topic. If the endpoint type is HTTP/S or
 
 
 ### aws-sns-list-topics
+
 ***
 Returns a list of the requester's topics.
 
@@ -74,6 +80,7 @@ Returns a list of the requester's topics.
 #### Base Command
 
 `aws-sns-list-topics`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -93,6 +100,7 @@ Returns a list of the requester's topics.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -100,6 +108,7 @@ Returns a list of the requester's topics.
 
 
 ### aws-sns-send-message
+
 ***
 Sends a message to an Amazon SNS topic, a text message (SMS message) directly to a phone number, or a message to a mobile platform endpoint (when you specify the TargetArn ).
 
@@ -107,6 +116,7 @@ Sends a message to an Amazon SNS topic, a text message (SMS message) directly to
 #### Base Command
 
 `aws-sns-send-message`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -133,6 +143,7 @@ Sends a message to an Amazon SNS topic, a text message (SMS message) directly to
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -140,6 +151,7 @@ Sends a message to an Amazon SNS topic, a text message (SMS message) directly to
 
 
 ### aws-sns-create-topic
+
 ***
 Creates a new a topic to which notifications can be published. You can specify the attribute to create FIFO topic.
 
@@ -147,6 +159,7 @@ Creates a new a topic to which notifications can be published. You can specify t
 #### Base Command
 
 `aws-sns-create-topic`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -172,6 +185,7 @@ Creates a new a topic to which notifications can be published. You can specify t
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -179,6 +193,7 @@ Creates a new a topic to which notifications can be published. You can specify t
 
 
 ### aws-sns-delete-topic
+
 ***
 Deletes a topic and all its subscriptions.
 
@@ -186,6 +201,7 @@ Deletes a topic and all its subscriptions.
 #### Base Command
 
 `aws-sns-delete-topic`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -202,6 +218,7 @@ Deletes a topic and all its subscriptions.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -209,6 +226,7 @@ There is no context output for this command.
 
 
 ### aws-sns-list-subscriptions-by-topic
+
 ***
 Returns a list of the subscriptions to a specific topic. Each call returns a limited list of subscriptions, up to 100.
 
@@ -216,6 +234,7 @@ Returns a list of the subscriptions to a specific topic. Each call returns a lim
 #### Base Command
 
 `aws-sns-list-subscriptions-by-topic`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -236,6 +255,7 @@ Returns a list of the subscriptions to a specific topic. Each call returns a lim
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

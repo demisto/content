@@ -10,9 +10,12 @@ Query dns names over https from Cloudflare or Google.
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### doh-resolve
+
 ***
 Resolve a name to IP over HTTPS
 
@@ -20,6 +23,7 @@ Resolve a name to IP over HTTPS
 #### Base Command
 
 `doh-resolve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -37,9 +41,11 @@ Resolve a name to IP over HTTPS
 
 
 #### Command Example
+
 ```!doh-resolve domain=domain.com```
 
 #### Context Example
+
 ```json
 {
     "DNSOverHTTPS": {
@@ -70,6 +76,7 @@ Resolve a name to IP over HTTPS
 #### Human Readable Output
 
 >### Results
+>
 >|TTL|data|name|type|
 >|---|---|---|---|
 >| 3600 | domain.com.edgekey.net. | www.domain.com | 5 |

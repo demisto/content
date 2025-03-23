@@ -116,6 +116,7 @@ Requires security manager role. Launch an existing scan from Tenable.sc. Set pol
 #### Human Readable Output
 
 When polling is set to false:
+
 ### Tenable.sc Scan
 
 |Name|ID|OwnerID|JobID|Status|
@@ -123,6 +124,7 @@ When polling is set to false:
 | test_scan_2023 | 169 | 38 | 118864 | Queued |
 
 When polling is set to true:
+
 ### Tenable.sc Scan 130 Report
 
 |ID|Name|Description|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|Status|Scan Type|Completed IPs|
@@ -987,6 +989,7 @@ Returns all scan results in Tenable.sc. Requires security manager role.
 ### Tenable.sc Scan results - 0-1
 
 Total number of elements is 77
+
 |ID|Name|Status|Description|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 92 | test_scan_2023-mart-05-1950 | Error | Test scan 2023 | Network Scan | Full Access | secman | 0 | 2023-04-24T23:50:07Z | 2023-04-25T01:10:13Z | 80.1 | 22639720 |  | Local |

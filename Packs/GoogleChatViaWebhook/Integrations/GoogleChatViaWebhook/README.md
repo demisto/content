@@ -1,4 +1,5 @@
 Integration for sending notifications to a Google Chat space via Incoming Webhook.
+
 ## Configure Google Chat via Webhook in Cortex
 
 

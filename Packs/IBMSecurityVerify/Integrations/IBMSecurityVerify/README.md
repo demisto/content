@@ -2,6 +2,7 @@ IBM Security Verify provides a secure and scalable solution for collecting and m
 
 
 ## Set up the Third Party System
+
 To obtain the **Client ID** and **Client Secret**, follow these steps:
 
 1. Log in to the IBM Security Verify UI.  

@@ -13,9 +13,11 @@ Our objective is to integrate with Cortex XSOAR and address use-cases such as:
 ### Use-Cases
 
 #### Automated Vulnerability Enrichment and Context Addition
+
 With the Cortex XSOAR-RiskSense integration, security orchestration playbooks can benefit from ingesting and enriching host vulnerability information along with other custom fields such as a host risk score and vulnerability risk rating to help security operations prioritize and remediate vulnerabilities. RiskSense integration can provide all necessary data to security analyst to help make their decision based on actual risk.
 
 #### Information Enrichment for Incidents and Threats
+
 Security analysts can benefit by using RiskSense commands to debug and respond to incidents and threats. For example, analysts can look up host details for the host that shows up in a alert and quickly gauge the risk that host presents based on its risk score and vulnerabilities that exist on the host.
 
 

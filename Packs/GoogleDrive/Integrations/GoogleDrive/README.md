@@ -674,6 +674,7 @@ Deletes a shared drive.
 | drive_id | ID of the shared drive. Can be retrieved using the `google-drive-drives-list` command. | Required | 
 
 #### Context Output
+
 There is no context output for this command.
 
 ### google-drive-files-list
@@ -1154,6 +1155,7 @@ Delete a permission.
 #### Context Output
 
 There is no context output for this command.
+
 ### google-drive-file-modify-label
 
 ***
@@ -1330,8 +1332,11 @@ Make a copy of a Google Drive file.
 | GoogleDrive.File.File.mimeType | String | The MIME type of the copied file. | 
 
 #### Command example
+
 ```!google-drive-file-copy file_id="1O8Gx7DslVpbd-HN7lp4MIN1DDakpw-bHVHCwir2wUlo" copy_title="New Copy"```
+
 #### Context Example
+
 ```json
 {
     "GoogleDrive": {
@@ -1350,6 +1355,7 @@ Make a copy of a Google Drive file.
 #### Human Readable Output
 
 >### File copied successfully.
+>
 >|Id|Kind|Mimetype|Name|
 >|---|---|---|---|
 >| 1JBZfuJcRpnpv5wS5-RBxT5OGjfKMP1cCmqOBHCe7GPw | drive#file | application/vnd.google-apps.spreadsheet | New Copy |

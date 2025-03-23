@@ -1,4 +1,5 @@
 Use the Azure Active Directory Identity And Access integration to manage roles and members.
+
 ## Configure Azure Active Directory Identity and Access in Cortex
 
 
@@ -16,7 +17,9 @@ Use the Azure Active Directory Identity And Access integration to manage roles a
 
 
 ## Required Permissions
+
 To use this integration, the following permissions are required on the Azure app.  
+
 - `IdentityRiskEvent.Read.All`
 - `IdentityRiskyUser.ReadWrite.All`
 - `RoleManagement.ReadWrite.Directory`
@@ -25,29 +28,35 @@ To use this integration, the following permissions are required on the Azure app
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### msgraph-identity-auth-start
+
 ***
 Run this command to start the authorization process and follow the instructions in the command results.
 
 ### msgraph-identity-auth-complete
+
 ***
 Run this command to complete the authorization process.
 Should be used after running the msgraph-identity-auth-start command.
 
 ### msgraph-identity-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
 ### msgraph-identity-auth-test
+
 ***
 Tests connectivity to Microsoft.
 
 
 
 ### msgraph-identity-directory-roles-list
+
 ***
 Lists the roles in the directory.
 
@@ -55,6 +64,7 @@ Lists the roles in the directory.
 #### Base Command
 
 `msgraph-identity-directory-roles-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -74,9 +84,11 @@ Lists the roles in the directory.
 
 
 #### Command Example
+
 ```!msgraph-identity-directory-roles-list limit=1```
 
 #### Context Example
+
 ```json
 {
     "MSGraphIdentity": {
@@ -94,12 +106,14 @@ Lists the roles in the directory.
 #### Human Readable Output
 
 >### Directory roles:
+>
 >|id|displayName|description|roleTemplateId|
 >|---|---|---|---|
 >| id | Application Administrator | Can create and manage all aspects of app registrations and enterprise apps. | role-template-id |
 
 
 ### msgraph-identity-directory-role-activate
+
 ***
 Activates a role by its template ID.
 
@@ -107,6 +121,7 @@ Activates a role by its template ID.
 #### Base Command
 
 `msgraph-identity-directory-role-activate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -126,9 +141,11 @@ Activates a role by its template ID.
 
 
 #### Command Example
+
 ```!msgraph-identity-directory-role-activate role_template_id=role-template-id```
 
 #### Context Example
+
 ```json
 {
     "MSGraphIdentity": {
@@ -146,12 +163,14 @@ Activates a role by its template ID.
 #### Human Readable Output
 
 >### Role has been activated
+>
 >|id|roleTemplateId|displayName|description|deletedDateTime|
 >|---|---|---|---|---|
 >| id | role-template-id | Application Administrator | Can create and manage all aspects of app registrations and enterprise apps. |  |
 
 
 ### msgraph-identity-directory-role-members-list
+
 ***
 Gets all members in a role ID.
 
@@ -159,6 +178,7 @@ Gets all members in a role ID.
 #### Base Command
 
 `msgraph-identity-directory-role-members-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -176,9 +196,11 @@ Gets all members in a role ID.
 
 
 #### Command Example
+
 ```!msgraph-identity-directory-role-members-list role_id=:role:```
 
 #### Context Example
+
 ```json
 {
     "MSGraphIdentity": {
@@ -196,12 +218,14 @@ Gets all members in a role ID.
 #### Human Readable Output
 
 >### Role ':role:' members:
+>
 >|role_id|user_id|
 >|---|---|
 >| :role: | 70585180-517a-43ea-9403-2d80b97ab19d,<br/>5d9ed8e5-be5c-4aaf-86f8-c133c5cd19de,<br/>"id",<br/>a7cedb37-c4e5-4cfb-a327-7bafb34a1f49 |
 
 
 ### msgraph-identity-directory-role-member-add
+
 ***
 Adds a user to a role.
 
@@ -209,6 +233,7 @@ Adds a user to a role.
 #### Base Command
 
 `msgraph-identity-directory-role-member-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -222,6 +247,7 @@ Adds a user to a role.
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-identity-directory-role-member-add role_id=:role: user_id=:id:```
 
 #### Human Readable Output
@@ -229,6 +255,7 @@ There is no context output for this command.
 >User ID :id: has been added to role :role:
 
 ### msgraph-identity-directory-role-member-remove
+
 ***
 Removes a user from a role.
 
@@ -236,6 +263,7 @@ Removes a user from a role.
 #### Base Command
 
 `msgraph-identity-directory-role-member-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -249,6 +277,7 @@ Removes a user from a role.
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-identity-directory-role-member-remove role_id=:role: user_id=:id:```
 
 #### Human Readable Output
@@ -256,6 +285,7 @@ There is no context output for this command.
 >User ID :id: has been removed from role :role:
 
 ### msgraph-identity-ip-named-locations-create
+
 ***
 Creates an ip named location.
 
@@ -263,6 +293,7 @@ Creates an ip named location.
 #### Base Command
 
 `msgraph-identity-ip-named-locations-create`
+
 #### Input
 
 | **Argument Name** | **Description**                                        | **Required** |
@@ -285,6 +316,7 @@ Creates an ip named location.
 
 
 #### Command Example
+
 ```!msgraph-identity-ip-named-locations-create ips=12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63 display_name=test is_trusted=True:```
 
 #### Human Readable Output
@@ -292,6 +324,7 @@ Creates an ip named location.
 >created Ip named location 'ID': :ipNamedLocation:  
 
 ### msgraph-identity-ip-named-locations-get
+
 ***
 Gets an ip named location.
 
@@ -321,6 +354,7 @@ Gets an ip named location.
 
 
 #### Command Example
+
 ```!msgraph-identity-ip-named-locations-get ip_id=03f8c56f-2ffd-4699-84af-XXXXXXXCX```
 
 #### Human Readable Output
@@ -329,6 +363,7 @@ Gets an ip named location.
 
 
 ### msgraph-identity-ip-named-locations-delete
+
 ***
 Deletes an ip named location.
 
@@ -336,6 +371,7 @@ Deletes an ip named location.
 #### Base Command
 
 `msgraph-identity-ip-named-locations-delete`
+
 #### Input
 
 | **Argument Name** | **Description**                            | **Required** |
@@ -349,6 +385,7 @@ No context output
 
 
 #### Command Example
+
 ```!msgraph-identity-ip-named-locations-delete ip_id=03f8c56f-2ffd-4699-84af-XXXXXXXCX```
 
 #### Human Readable Output
@@ -357,6 +394,7 @@ No context output
 
 
 ### msgraph-identity-ip-named-locations-update
+
 ***
 Updates an ip named location.
 
@@ -364,6 +402,7 @@ Updates an ip named location.
 #### Base Command
 
 `msgraph-identity-ip-named-locations-update`
+
 #### Input
 
 | **Argument Name** | **Description**                                        | **Required** |
@@ -380,6 +419,7 @@ No context output
 
 
 #### Command Example
+
 ```!msgraph-identity-ip-named-locations-update ips=12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63 display_name=test is_trusted=True ip_id=098699fc-10ad-420e-9XXXXXXXXXX```
 
 #### Human Readable Output
@@ -388,6 +428,7 @@ No context output
 
 
 ### msgraph-identity-ip-named-locations-list
+
 ***
 Lists an ip named locations.
 
@@ -395,6 +436,7 @@ Lists an ip named locations.
 #### Base Command
 
 `msgraph-identity-ip-named-locations-list`
+
 #### Input
 
 | **Argument Name** | **Description**                | **Required** |
@@ -412,18 +454,22 @@ Lists an ip named locations.
 
 
 #### Command Example
+
 ```!msgraph-identity-ip-named-locations-list```
 
 ### msgraph-identity-protection-risks-list
+
 ***
 Retrieve the properties of a collection of riskDetection objects.
 
 #### Required Permissions
+
 `IdentityRiskEvent.Read.All`
 
 #### Base Command
 
 `msgraph-identity-protection-risks-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -463,12 +509,14 @@ Retrieve the properties of a collection of riskDetection objects.
 
 
 #### Command Example
+
 ```!msgraph-identity-protection-risks-list```
 
 
 #### Human Readable Output
 
 >### risks (6 results)
+>
 >|User ID|User Principal Name|User Display Name|IP Address|Detected Date Time|Activity|Activity Date Time|Additional Info|Correlation ID|Detection Timing Type|ID|Last Updated Date Time|Location|Request ID|Risk Detail|Risk Event Type|Risk Level|Risk State|Risk Type|Source|Token Issuer Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 | jdoe@example.com | John Doe | 1.1.1.1 | 2021-04-25T09:00:40.7780969Z | signin | 2021-04-25T09:00:40.7780969Z | [{"Key":"userAgent","Value":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36"}] | 271ac223-695b-418e-85b3-7809070ee33e | realtime | 86a45315157fb75c3a6e0936ef854c139df99bdfbde4bd7e7f1bc685c3638908 | 2021-05-23T08:20:41.9161522Z | city: San Jose<br/>state: California<br/>countryOrRegion: US<br/>geoCoordinates: {"latitude": 37.33053, "longitude": -121.8382} | 86b6e4a1-25cb-40c7-af2b-9e79c6106000 | userPerformedSecuredPasswordChange | unfamiliarFeatures | low | remediated | unfamiliarFeatures | IdentityProtection | AzureAD |
@@ -480,15 +528,18 @@ Retrieve the properties of a collection of riskDetection objects.
 
 
 ### msgraph-identity-protection-risky-user-list
+
 ***
 Retrieves the properties of a collection of riskDetection objects.
 
 #### Required Permissions
+
 `IdentityRiskEvent.Read.All`
 
 #### Base Command
 
 `msgraph-identity-protection-risky-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -519,28 +570,33 @@ Retrieves the properties of a collection of riskDetection objects.
 
 
 #### Command Example
+
 ```!msgraph-identity-protection-risky-user-list```
 
 
 #### Human Readable Output
 
 >### Risky Users (1 result)
+>
 >|User Principal Name|User Display Name|ID|Is Deleted|Is Processing|Risk Detail|Risk Last Updated Date Time|Risk Level|Risk State|
 >|---|---|---|---|---|---|---|---|---|
 >| jdoe@example.com | John Doe | 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 | false | false | none | 2021-07-21T17:56:28.958147Z | medium | atRisk |
 
 
 ### msgraph-identity-protection-risky-user-history-list
+
 ***
 Gets the risk history of a riskyUser resource.
 
 #### Required Permissions
+
 `IdentityRiskyUser.Read.All`
 `IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
 `msgraph-identity-protection-risky-user-history-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -567,12 +623,14 @@ Gets the risk history of a riskyUser resource.
 
 
 #### Command Example
+
 ```!msgraph-identity-protection-risky-user-history-list user_id="3fa9f28b-eb0e-463a-ba7b-8089fe9991e2"```
 
 
 #### Human Readable Output
 
 >### Risky User History For 3Fa9F28B-Eb0E-463A-Ba7B-8089Fe9991E2 (12 results)
+>
 >|User ID|User Principal Name|User Display Name|Activity|ID|Initiated By|Is Deleted|Is Processing|Risk Detail|Risk Last Updated Date Time|Risk Level|Risk State|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 | jdoe@example.com | John Doe | eventTypes: unfamiliarFeatures<br/>riskEventTypes: unfamiliarFeatures<br/>detail: null | 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2637571860258849619 |  | false | false | none | 2021-05-21T09:27:05.8849619Z | high | atRisk |
@@ -590,15 +648,18 @@ Gets the risk history of a riskyUser resource.
 
 
 ### msgraph-identity-protection-risky-user-confirm-compromised
+
 ***
 Confirms one or more riskyUser objects as compromised. This action sets the targeted user's risk level to high.
 
 #### Required Permissions
+
 `IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
 `msgraph-identity-protection-risky-user-confirm-compromised`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -611,6 +672,7 @@ Confirms one or more riskyUser objects as compromised. This action sets the targ
 There is no context output for this command.
 
 #### Command Example
+
 ```!MSGraph.identityProtection-risky-user-confirm-compromised user_ids="3fa9f28b-eb0e-463a-ba7b-8089fe9991e3"```
 
 #### Human Readable Output
@@ -618,15 +680,18 @@ There is no context output for this command.
 >✅ Confirmed successfully.
 
 ### msgraph-identity-protection-risky-user-dismiss
+
 ***
 Dismisses the risk of one or more riskyUser objects. This action sets the targeted user's risk level to none.
 
 #### Required Permissions
+
 `IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
 `msgraph-identity-protection-risky-user-dismiss`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -639,6 +704,7 @@ Dismisses the risk of one or more riskyUser objects. This action sets the target
 There is no context output for this command.
 
 #### Command Example
+
 ```!c user_ids="3fa9f28b-eb0e-463a-ba7b-8089fe9991e2"```
 
 #### Human Readable Output

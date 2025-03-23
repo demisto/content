@@ -10,9 +10,12 @@ Amazon Web Services Managed Cloud DNS Service.
 | Role Session Duration | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### aws-route53-create-record
+
 ***
 Creates a resource record set. Creates a resource record set that has the specified values.
 
@@ -20,6 +23,7 @@ Creates a resource record set. Creates a resource record set that has the specif
 #### Base Command
 
 `aws-route53-create-record`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -44,9 +48,11 @@ Creates a resource record set. Creates a resource record set that has the specif
 | AWS.Route53.RecordSetsChange.Comment | string | A complex type that describes change information about changes made to your hosted zone. | 
 
 #### Command Example
+
 ``` !aws-route53-create-record hostedZoneId=Z33ASF9#22MSFA6R6M5G9 source=test.example.com target=192.168.1.1 ttl=300 type=A comment="test record"```
 
 ### aws-route53-delete-record
+
 ***
 Deletes a resource record set. Deletes an existing resource record set that has the specified values.
 
@@ -54,6 +60,7 @@ Deletes a resource record set. Deletes an existing resource record set that has 
 #### Base Command
 
 `aws-route53-delete-record`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -77,9 +84,11 @@ Deletes a resource record set. Deletes an existing resource record set that has 
 | AWS.Route53.RecordSetsChange.Comment | string | A complex type that describes change information about changes made to your hosted zone. |
 
 #### Command Example
+
 ```!aws-route53-delete-record hostedZoneId=Z33935452MA6RDSFDSG6M5G9 source=test.example.com target=192.168.1.1 type=A ttl=300 ```
 
 ### aws-route53-list-hosted-zones
+
 ***
 Retrieves a list of the public and private hosted zones that are associated with the current AWS account. 
 
@@ -87,6 +96,7 @@ Retrieves a list of the public and private hosted zones that are associated with
 #### Base Command
 
 `aws-route53-list-hosted-zones`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -110,9 +120,11 @@ Retrieves a list of the public and private hosted zones that are associated with
 | AWS.Route53.HostedZones.LinkedService.Description | string | If the health check or hosted zone was created by another service, an optional description that can be provided by the other service.  | 
 
 #### Command Example
+
 ```!aws-route53-list-hosted-zones```
 
 ### aws-route53-list-resource-record-sets
+
 ***
 Lists the resource record sets in a specified hosted zone.
 
@@ -120,6 +132,7 @@ Lists the resource record sets in a specified hosted zone.
 #### Base Command
 
 `aws-route53-list-resource-record-sets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -157,9 +170,11 @@ Lists the resource record sets in a specified hosted zone.
 
 
 #### Command Example
+
 ```!aws-route53-list-resource-record-sets hostedZoneId=Z33DFSDDFSDF6R6MDF5G9```
 
 ### aws-route53-waiter-resource-record-sets-changed
+
 ***
 A waiter function that waits until record set change is successful
 
@@ -167,6 +182,7 @@ A waiter function that waits until record set change is successful
 #### Base Command
 
 `aws-route53-waiter-resource-record-sets-changed`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -182,10 +198,12 @@ There is no context output for this command.
 
 
 #### Command Example
+
 ```!aws-route53-waiter-resource-record-sets-changed id=CM3UDCRD3ZYDSAF41```
 
 
 ### aws-route53-test-dns-answer
+
 ***
 Gets the value that Amazon Route 53 returns in response to a DNS request for a specified record name and type. You can optionally specify the IP address of a DNS resolver, an EDNS0 client subnet IP address, and a subnet mask.
 
@@ -193,6 +211,7 @@ Gets the value that Amazon Route 53 returns in response to a DNS request for a s
 #### Base Command
 
 `aws-route53-test-dns-answer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -218,9 +237,11 @@ Gets the value that Amazon Route 53 returns in response to a DNS request for a s
 | AWS.Route53.TestDNSAnswer.RecordData | string | The protocol that Amazon Route 53 used to respond to the request, either UDP or TCP . | 
 
 #### Command Example
+
 ```!aws-route53-test-dns-answer hostedZoneId=Z339SDF2MA6R6ADFSM5G9 recordName=testing2.example.com recordType=A```
 
 ### aws-route53-upsert-record
+
 ***
 Upsert a resource record set. If a resource record set does not already exist, AWS creates it. If a resource set does exist, Amazon Route 53 updates it with the values in the request.
 
@@ -228,6 +249,7 @@ Upsert a resource record set. If a resource record set does not already exist, A
 #### Base Command
 
 `aws-route53-upsert-record`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -252,4 +274,5 @@ Upsert a resource record set. If a resource record set does not already exist, A
 | AWS.Route53.RecordSetsChange.Comment | string | A complex type that describes change information about changes made to your hosted zone. | 
 
 #### Command Example
+
 ```!aws-route53-upsert-record hostedZoneId=Z33ASF9#22MSFA6R6M5G9 source=test.example.com target=192.168.1.2 ttl=300 type=A comment="test record"```

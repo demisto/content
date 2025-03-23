@@ -1,5 +1,6 @@
 The Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS) capability enables the exchange of cyber threat indicators, at machine speed, to the Federal Government community.
 Use this version if your certificate supports TAXII 1 protocol.
+
 ## Configure DHS Feed in Cortex
 
 
@@ -15,9 +16,12 @@ Use this version if your certificate supports TAXII 1 protocol.
 | Tags | Supports CSV values. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### dhs-get-indicators
+
 ***
 Get the indicators.
 
@@ -25,6 +29,7 @@ Get the indicators.
 #### Base Command
 
 `dhs-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -43,4 +48,5 @@ Get the indicators.
 
 
 #### Command Example
+
 ```!dhs-get-indicators limit=2 tlp_color=GREEN```

@@ -1,4 +1,5 @@
 Exchange Web Services and Office 365 Email sender.
+
 ## Configure EWS Mail Sender in Cortex
 
     
@@ -16,19 +17,24 @@ Exchange Web Services and Office 365 Email sender.
 
 
 ## Top Use-cases:
+
 - Send notifications to external users.
 - Send an email asking for a response to be returned as part of a playbook. See [Receiving an email reply](https://xsoar.pan.dev/docs/reference/scripts/email-ask-user)
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### send-mail
+
 ***
 Sends an email using EWS.
 
 #### Base Command
 
 `send-mail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -51,17 +57,20 @@ Sends an email using EWS.
 There is no context output for this command.
 
 #### Command Example
+
 ```!send-mail body="hello this is a test" subject=Hi to=avishai@demistodev.onmicrosoft.com```
 
 #### Human Readable Output
 
 >### Sent email
+>
 >|attachments|from|subject|to|
 >|---|---|---|---|
 >|  | avishai@demistodev.onmicrosoft.com | Hi | avishai@demistodev.onmicrosoft.com |
 
 
 ### reply-mail
+
 ***
 Replies to an email using EWS.
 
@@ -69,6 +78,7 @@ Replies to an email using EWS.
 #### Base Command
 
 `reply-mail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -90,11 +100,13 @@ Replies to an email using EWS.
 There is no context output for this command.
 
 #### Command Example
+
 ```!reply-mail item_id=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq/zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq/zTrN6vWSzK4OWAAPYQGFeAAA= body=hello subject=hi to="avishai@demistodev.onmicrosoft.com"```
 
 #### Human Readable Output
 
 >### Sent email
+>
 >|attachments|from|subject|to|
 >|---|---|---|---|
 >|  | avishai@demistodev.onmicrosoft.com | hi | avishai@demistodev.onmicrosoft.com |

@@ -19,9 +19,12 @@ This integration was integrated and tested with version 2.0.0 of Zoom_IAM.
 | Outgoing Mapper                    |                                          | True         |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### iam-disable-user
+
 ***
 Disable an active user.
 
@@ -29,6 +32,7 @@ Disable an active user.
 #### Base Command
 
 `iam-disable-user`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                       | **Required** |
@@ -52,8 +56,11 @@ Disable an active user.
 | IAM.Vendor.username     | String   | The employee's username in the app.                                                     |
 
 #### Command example
+
 ```!iam-disable-user user-profile=`{"email": "example@example.com", "givenname": "Example"}````
+
 #### Context Example
+
 ```json
 {
     "IAM": {
@@ -138,12 +145,14 @@ Disable an active user.
 #### Human Readable Output
 
 >### Disable User Results (Zoom_IAM)
+>
 >|brand|instanceName|success|active|id|email|details|
 >|---|---|---|---|---|---|---|
 >| Zoom_IAM | Zoom_IAM_instance_1 JWT | true | false | 6mIygOyeTT61Wzw_PAo5jw | example@example.com | email: example@example.com<br/>givenname: Example |
 
 
 ### iam-enable-user
+
 ***
 Enable a deactivated user.
 
@@ -151,6 +160,7 @@ Enable a deactivated user.
 #### Base Command
 
 `iam-enable-user`
+
 #### Input
 
 | **Argument Name** | **Description**           | **Required** |
@@ -174,8 +184,11 @@ Enable a deactivated user.
 | IAM.Vendor.username     | String   | The employee's username in the app.                                                     |
 
 #### Command example
+
 ```!iam-enable-user user-profile=`{"email": "example@example.com", "givenname": "Example"}````
+
 #### Context Example
+
 ```json
 {
     "IAM": {
@@ -228,12 +241,14 @@ Enable a deactivated user.
 #### Human Readable Output
 
 >### Enable User Results (Zoom_IAM)
+>
 >|brand|instanceName|success|active|id|email|details|
 >|---|---|---|---|---|---|---|
 >| Zoom_IAM | Zoom_IAM_instance_2 OAuth | true | true | 6mIygOyeTT61Wzw_PAo5jw | example@example.com | email: example@example.com<br/>givenname: Example |
 
 
 ### iam-get-user
+
 ***
 Retrieves a single user resource.
 
@@ -241,6 +256,7 @@ Retrieves a single user resource.
 #### Base Command
 
 `iam-get-user`
+
 #### Input
 
 | **Argument Name** | **Description**           | **Required** |
@@ -251,9 +267,13 @@ Retrieves a single user resource.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!iam-get-user user-profile=`{"email": "example@example.com", "givenname": "Example"}````
+
 #### Context Example
+
 ```json
 {
     "IAM": {
@@ -402,12 +422,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Get User Results (Zoom_IAM)
+>
 >|brand|instanceName|success|active|id|email|details|
 >|---|---|---|---|---|---|---|
 >| Zoom_IAM | Zoom_IAM_instance_1 JWT | true | true | 6mIygOyeTT61Wzw_PAo5jw | example@example.com | id: 6mIygOyeTT61Wzw_PAo5jw<br/>first_name: Example<br/>last_name: Example<br/>email: example@example.com<br/>type: 1<br/>role_name: Member<br/>pmi: 3269259758<br/>use_pmi: false<br/>personal_meeting_url: https:<span>//</span>us06web.zoom.us/j/3269259758?pwd=Q2VTN1JsM2J2OCtmS1hWaHBTUmV6QT09<br/>timezone: Asia/Jerusalem<br/>verified: 0<br/>dept: <br/>created_at: 2020-06-16T06:57:23Z<br/>last_login_time: 2022-08-24T07:25:49Z<br/>last_client_version: 5.8.7.2058(win)<br/>pic_url: https:<span>//</span>lh3.googleusercontent.com/a/AItbvmn0GJLCTIkOIatpkUy-PuEf-tFQEnBVOUxcT2oB=s96-c<br/>cms_user_id: <br/>jid: 6miygoyett61wzw_pao5jw@xmpp.zoom.us<br/>group_ids: <br/>im_group_ids: <br/>account_id: aeKD2BFJRASt1QVURWo9CA<br/>language: en-US<br/>phone_country: <br/>phone_number: <br/>status: active<br/>job_title: <br/>location: <br/>login_types: 1<br/>role_id: 2<br/>account_number: 1114287<br/>cluster: us06<br/>user_created_at: 2020-06-16T06:57:23Z |
 
 
 ### get-mapping-fields
+
 ***
 Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
 
@@ -415,6 +437,7 @@ Retrieves a User Profile schema, which holds all of the user fields within the a
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 There are no input arguments for this command.
@@ -422,6 +445,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Zoom_IAM corresponding events (available from Cortex XSOAR version 6.0.0).

@@ -1,4 +1,5 @@
 Integrate with open source LLMs using Ollama. With an instance of Ollama running locally you can use this integration to have a conversation in an Incident, download models, and create new models.
+
 ## Configure Ollama in Cortex
 
 

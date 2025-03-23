@@ -15,9 +15,12 @@ The unified console for managing Sophos products.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### sophos-central-alert-list
+
 ***
 List alerts.
 
@@ -25,6 +28,7 @@ List alerts.
 #### Base Command
 
 `sophos-central-alert-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,9 +59,11 @@ List alerts.
 
 
 #### Command Example
+
 ```!sophos-central-alert-list limit=50```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -124,6 +130,7 @@ List alerts.
 #### Human Readable Output
 
 >### Listed Alerts:
+>
 >|id|description|severity|raisedAt|allowedActions|managedAgentId|category|type|
 >|---|---|---|---|---|---|---|---|
 >| 8e879165-81cb-4747-8608-1cc4e630a017 | Manual cleanup required: 'EICAR-AV-Test' at 'C:\Users\JonDoe\Downloads\eicarcom2.zip' | high | 2020-11-25T09:19:18.936Z | clearThreat | 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | malware | Event::Endpoint::Threat::CleanupFailed |
@@ -132,6 +139,7 @@ List alerts.
 >Results on this page: 3.Maximum number of results allowed in a page: 100
 
 ### sophos-central-alert-get
+
 ***
 Get a single alert by ID.
 
@@ -139,6 +147,7 @@ Get a single alert by ID.
 #### Base Command
 
 `sophos-central-alert-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -169,9 +178,11 @@ Get a single alert by ID.
 
 
 #### Command Example
+
 ```!sophos-central-alert-get alert_id=8e879165-81cb-4747-8608-1cc4e630a017```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -200,12 +211,14 @@ Get a single alert by ID.
 #### Human Readable Output
 
 >### Found Alert:
+>
 >|id|description|severity|raisedAt|allowedActions|managedAgentId|category|type|
 >|---|---|---|---|---|---|---|---|
 >| 8e879165-81cb-4747-8608-1cc4e630a017 | Manual cleanup required: 'EICAR-AV-Test' at 'C:\Users\JonDoe\Downloads\eicarcom2.zip' | high | 2020-11-25T09:19:18.936Z | clearThreat | 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | malware | Event::Endpoint::Threat::CleanupFailed |
 
 
 ### sophos-central-alert-action
+
 ***
 Take an action against alerts.
 
@@ -213,6 +226,7 @@ Take an action against alerts.
 #### Base Command
 
 `sophos-central-alert-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -237,9 +251,11 @@ Take an action against alerts.
 
 
 #### Command Example
+
 ```!sophos-central-alert-action action=clearThreat alert_id=8e879165-81cb-4747-8608-1cc4e630a017 message=testmessage```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -260,12 +276,14 @@ Take an action against alerts.
 #### Human Readable Output
 
 >### Alerts Acted Against:
+>
 >|id|action|alertId|result|requestedAt|status|
 >|---|---|---|---|---|---|
 >| c75b1e4d-c62c-4b3a-8ca5-dea658a18c1b | clearThreat | 8e879165-81cb-4747-8608-1cc4e630a017 | success | 2020-11-25T10:47:14.639Z | requested |
 
 
 ### sophos-central-alert-search
+
 ***
 Get alerts matching request.
 
@@ -273,6 +291,7 @@ Get alerts matching request.
 #### Base Command
 
 `sophos-central-alert-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -311,9 +330,11 @@ Get alerts matching request.
 
 
 #### Command Example
+
 ```!sophos-central-alert-search category=general product=endpoint```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -325,10 +346,12 @@ Get alerts matching request.
 #### Human Readable Output
 
 >### Found Alerts:
+>
 >**No entries.**
 >Results on this page: 0.Maximum number of results allowed in a page: 100
 
 ### sophos-central-endpoint-list
+
 ***
 List all endpoints for a tenant.
 
@@ -336,6 +359,7 @@ List all endpoints for a tenant.
 #### Base Command
 
 `sophos-central-endpoint-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -377,9 +401,11 @@ List all endpoints for a tenant.
 
 
 #### Command Example
+
 ```!sophos-central-endpoint-list```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -448,6 +474,7 @@ List all endpoints for a tenant.
 #### Human Readable Output
 
 >### Listed Endpoints:
+>
 >|id|hostname|ipv4Addresses|ipv6Addresses|macAddresses|type|tamperProtectionEnabled|
 >|---|---|---|---|---|---|---|
 >| 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | Thunderbox | 1.1.1.1 | fe80::9905:5b42:6605:5e93 | 00:00:00:B0:00:BA | computer | false |
@@ -455,6 +482,7 @@ List all endpoints for a tenant.
 >Results on this page: 2.Maximum number of results allowed in a page: 500
 
 ### sophos-central-endpoint-scan
+
 ***
 Scan endpoints of a tenant.
 
@@ -462,6 +490,7 @@ Scan endpoints of a tenant.
 #### Base Command
 
 `sophos-central-endpoint-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -479,9 +508,11 @@ Scan endpoints of a tenant.
 
 
 #### Command Example
+
 ```!sophos-central-endpoint-scan endpoint_id=6e9567ea-bb50-40c5-9f12-42eb308e4c9b```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -497,12 +528,14 @@ Scan endpoints of a tenant.
 #### Human Readable Output
 
 >### Scanning Endpoints:
+>
 >|id|status|requestedAt|
 >|---|---|---|
 >| 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | requested | 2020-11-25T10:47:20.343Z |
 
 
 ### sophos-central-endpoint-tamper-get
+
 ***
 Get tamper protection information for one or more endpoints. Potentially harmful because of the password.
 
@@ -510,6 +543,7 @@ Get tamper protection information for one or more endpoints. Potentially harmful
 #### Base Command
 
 `sophos-central-endpoint-tamper-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -528,9 +562,11 @@ Get tamper protection information for one or more endpoints. Potentially harmful
 
 
 #### Command Example
+
 ```!sophos-central-endpoint-tamper-get endpoint_id=6e9567ea-bb50-40c5-9f12-42eb308e4c9b```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -546,12 +582,14 @@ Get tamper protection information for one or more endpoints. Potentially harmful
 #### Human Readable Output
 
 >### Listed Endpoints Tamper Protection:
+>
 >|endpointId|enabled|
 >|---|---|
 >| 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | false |
 
 
 ### sophos-central-endpoint-tamper-update
+
 ***
 Update tamper protection information for one or more endpoints. Potentially Harmful because of the password.
 
@@ -559,6 +597,7 @@ Update tamper protection information for one or more endpoints. Potentially Harm
 #### Base Command
 
 `sophos-central-endpoint-tamper-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -578,9 +617,11 @@ Update tamper protection information for one or more endpoints. Potentially Harm
 
 
 #### Command Example
+
 ```!sophos-central-endpoint-tamper-update enabled=true endpoint_id=6e9567ea-bb50-40c5-9f12-42eb308e4c9b```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -596,12 +637,14 @@ Update tamper protection information for one or more endpoints. Potentially Harm
 #### Human Readable Output
 
 >### Updated Endpoints Tamper Protection:
+>
 >|endpointId|enabled|
 >|---|---|
 >| 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | true |
 
 
 ### sophos-central-allowed-item-list
+
 ***
 List all allowed items.
 
@@ -609,6 +652,7 @@ List all allowed items.
 #### Base Command
 
 `sophos-central-allowed-item-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -638,9 +682,11 @@ List all allowed items.
 
 
 #### Command Example
+
 ```!sophos-central-allowed-item-list page=1 page_size=50```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -792,6 +838,7 @@ List all allowed items.
 #### Human Readable Output
 
 >### Listed Allowed Items:
+>
 >|id|comment|fileName|sha256|path|certificateSigner|createdAt|type|updatedAt|
 >|---|---|---|---|---|---|---|---|---|
 >| b2148cc0-6ee8-440e-9c4b-cd5486b36c3c | hello world1 |  |  | /root/helloaworld/1/1 |  | 2020-11-25T10:19:37.608Z | path | 2020-11-25T10:19:37.608Z |
@@ -812,6 +859,7 @@ List all allowed items.
 >Maximum number of results allowed in a page: 100.
 
 ### sophos-central-allowed-item-get
+
 ***
 Get a single allowed item by ID.
 
@@ -819,6 +867,7 @@ Get a single allowed item by ID.
 #### Base Command
 
 `sophos-central-allowed-item-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -847,9 +896,11 @@ Get a single allowed item by ID.
 
 
 #### Command Example
+
 ```!sophos-central-allowed-item-get allowed_item_id=b2148cc0-6ee8-440e-9c4b-cd5486b36c3c```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -871,12 +922,14 @@ Get a single allowed item by ID.
 #### Human Readable Output
 
 >### Found Allowed Item:
+>
 >|id|comment|path|createdAt|type|updatedAt|
 >|---|---|---|---|---|---|
 >| b2148cc0-6ee8-440e-9c4b-cd5486b36c3c | hello world1 | /root/helloaworld/1/1 | 2020-11-25T10:19:37.608Z | path | 2020-11-25T10:19:37.608Z |
 
 
 ### sophos-central-allowed-item-add
+
 ***
 Add a new allowed item.
 
@@ -884,6 +937,7 @@ Add a new allowed item.
 #### Base Command
 
 `sophos-central-allowed-item-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -918,9 +972,11 @@ Add a new allowed item.
 
 
 #### Command Example
+
 ```!sophos-central-allowed-item-add comment="hello world1" item_type=path path=/root/helloaworld/12```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -942,12 +998,14 @@ Add a new allowed item.
 #### Human Readable Output
 
 >### Added Allowed Item:
+>
 >|id|comment|path|createdAt|type|updatedAt|
 >|---|---|---|---|---|---|
 >| c68f1abc-986d-43eb-b050-d9113959207a | hello world1 | /root/helloaworld/12 | 2020-11-25T10:47:32.082Z | path | 2020-11-25T10:47:32.082Z |
 
 
 ### sophos-central-allowed-item-update
+
 ***
 Update an existing allowed item.
 
@@ -955,6 +1013,7 @@ Update an existing allowed item.
 #### Base Command
 
 `sophos-central-allowed-item-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -984,9 +1043,11 @@ Update an existing allowed item.
 
 
 #### Command Example
+
 ```!sophos-central-allowed-item-update allowed_item_id=b2148cc0-6ee8-440e-9c4b-cd5486b36c3c comment=changedcomment```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1008,12 +1069,14 @@ Update an existing allowed item.
 #### Human Readable Output
 
 >### Updated Allowed Item:
+>
 >|id|comment|path|createdAt|type|updatedAt|
 >|---|---|---|---|---|---|
 >| b2148cc0-6ee8-440e-9c4b-cd5486b36c3c | changedcomment | /root/helloaworld/1/1 | 2020-11-25T10:19:37.608Z | path | 2020-11-25T10:47:39.104Z |
 
 
 ### sophos-central-allowed-item-delete
+
 ***
 Delete an existing allowed item.
 
@@ -1021,6 +1084,7 @@ Delete an existing allowed item.
 #### Base Command
 
 `sophos-central-allowed-item-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1036,9 +1100,11 @@ Delete an existing allowed item.
 
 
 #### Command Example
+
 ```!sophos-central-allowed-item-delete allowed_item_id=b2148cc0-6ee8-440e-9c4b-cd5486b36c3c```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1054,6 +1120,7 @@ Delete an existing allowed item.
 >Success deleting allowed item: b2148cc0-6ee8-440e-9c4b-cd5486b36c3c
 
 ### sophos-central-blocked-item-list
+
 ***
 Get all blocked items.
 
@@ -1061,6 +1128,7 @@ Get all blocked items.
 #### Base Command
 
 `sophos-central-blocked-item-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1090,9 +1158,11 @@ Get all blocked items.
 
 
 #### Command Example
+
 ```!sophos-central-blocked-item-list page=1 page_size=50```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1138,6 +1208,7 @@ Get all blocked items.
 #### Human Readable Output
 
 >### Listed Blocked Items:
+>
 >|id|comment|sha256|createdAt|type|
 >|---|---|---|---|---|
 >| 9b44086b-95bd-43e5-b84b-82b91725f02b | hello 2world | c7f4db9b3191e6e693ce938bd74fab37aee71372c8a034f50b0a62d8c69e4de1 | 2020-11-25T10:19:54.523Z | sha256 |
@@ -1148,6 +1219,7 @@ Get all blocked items.
 >Maximum number of results allowed in a page: 100.
 
 ### sophos-central-blocked-item-get
+
 ***
 Get a single blocked item by ID.
 
@@ -1155,6 +1227,7 @@ Get a single blocked item by ID.
 #### Base Command
 
 `sophos-central-blocked-item-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1183,9 +1256,11 @@ Get a single blocked item by ID.
 
 
 #### Command Example
+
 ```!sophos-central-blocked-item-get blocked_item_id=9b44086b-95bd-43e5-b84b-82b91725f02b```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1207,12 +1282,14 @@ Get a single blocked item by ID.
 #### Human Readable Output
 
 >### Found Blocked Item:
+>
 >|id|comment|sha256|createdAt|type|
 >|---|---|---|---|---|
 >| 9b44086b-95bd-43e5-b84b-82b91725f02b | hello 2world | c7f4db9b3191e6e693ce938bd74fab37aee71372c8a034f50b0a62d8c69e4de1 | 2020-11-25T10:19:54.523Z | sha256 |
 
 
 ### sophos-central-blocked-item-add
+
 ***
 Add a new blocked item.
 
@@ -1220,6 +1297,7 @@ Add a new blocked item.
 #### Base Command
 
 `sophos-central-blocked-item-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1253,9 +1331,11 @@ Add a new blocked item.
 
 
 #### Command Example
+
 ```!sophos-central-blocked-item-add comment="hello 2world" item_type=sha256 sha256=CAF4DB9B3191E6E693CE938BD74FAB37AEE71372C8A034F5040362D8C69E4DE4```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1277,12 +1357,14 @@ Add a new blocked item.
 #### Human Readable Output
 
 >### Added Blocked Item:
+>
 >|id|comment|sha256|createdAt|type|
 >|---|---|---|---|---|
 >| 9535be44-40f3-4704-94df-6afa1e563f9c | hello 2world | caf4db9b3191e6e693ce938bd74fab37aee71372c8a034f5040362d8c69e4de4 | 2020-11-25T10:47:46.428Z | sha256 |
 
 
 ### sophos-central-blocked-item-delete
+
 ***
 Delete an existing blocked item.
 
@@ -1290,6 +1372,7 @@ Delete an existing blocked item.
 #### Base Command
 
 `sophos-central-blocked-item-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1305,9 +1388,11 @@ Delete an existing blocked item.
 
 
 #### Command Example
+
 ```!sophos-central-blocked-item-delete blocked_item_id=9b44086b-95bd-43e5-b84b-82b91725f02b```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1323,6 +1408,7 @@ Delete an existing blocked item.
 >Success deleting blocked item: 9b44086b-95bd-43e5-b84b-82b91725f02b
 
 ### sophos-central-scan-exclusion-list
+
 ***
 List all scan exclusions.
 
@@ -1330,6 +1416,7 @@ List all scan exclusions.
 #### Base Command
 
 `sophos-central-scan-exclusion-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1352,9 +1439,11 @@ List all scan exclusions.
 
 
 #### Command Example
+
 ```!sophos-central-scan-exclusion-list```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1391,6 +1480,7 @@ List all scan exclusions.
 #### Human Readable Output
 
 >### Listed Scan Exclusions:
+>
 >|id|value|type|description|comment|scanMode|
 >|---|---|---|---|---|---|
 >| 369b0956-a7b6-44fc-b1cc-bd7b3279c663 | %programfiles(x86)%\Sophos\Sophos Anti-Virus\ | path | Sophos temporary exclusion see KBA 133945 | Sophos temporary exclusion see KBA 133945 | onDemandAndOnAccess |
@@ -1401,6 +1491,7 @@ List all scan exclusions.
 >Maximum number of results allowed in a page: 100.
 
 ### sophos-central-scan-exclusion-get
+
 ***
 Get a single scan exclusion by ID.
 
@@ -1408,6 +1499,7 @@ Get a single scan exclusion by ID.
 #### Base Command
 
 `sophos-central-scan-exclusion-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1428,9 +1520,11 @@ Get a single scan exclusion by ID.
 
 
 #### Command Example
+
 ```!sophos-central-scan-exclusion-get exclusion_id=6868151e-4eac-4d0a-8985-5db9bff9d6f2```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1449,12 +1543,14 @@ Get a single scan exclusion by ID.
 #### Human Readable Output
 
 >### Found Scan Exclusion:
+>
 >|id|value|type|scanMode|
 >|---|---|---|---|
 >| 6868151e-4eac-4d0a-8985-5db9bff9d6f2 | testpathhzh | path | onDemandAndOnAccess |
 
 
 ### sophos-central-scan-exclusion-add
+
 ***
 Add a new scan exclusion.
 
@@ -1462,6 +1558,7 @@ Add a new scan exclusion.
 #### Base Command
 
 `sophos-central-scan-exclusion-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1485,9 +1582,11 @@ Add a new scan exclusion.
 
 
 #### Command Example
+
 ```!sophos-central-scan-exclusion-add exclusion_type=path value=avsdfasdfaa```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1506,12 +1605,14 @@ Add a new scan exclusion.
 #### Human Readable Output
 
 >### Added Scan Exclusion:
+>
 >|id|value|type|scanMode|
 >|---|---|---|---|
 >| be7b05bf-368b-4621-8131-0776486e1c7b | avsdfasdfaa | path | onDemandAndOnAccess |
 
 
 ### sophos-central-scan-exclusion-update
+
 ***
 Update an existing scan exclusion.
 
@@ -1519,6 +1620,7 @@ Update an existing scan exclusion.
 #### Base Command
 
 `sophos-central-scan-exclusion-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1542,9 +1644,11 @@ Update an existing scan exclusion.
 
 
 #### Command Example
+
 ```!sophos-central-scan-exclusion-update exclusion_id=6868151e-4eac-4d0a-8985-5db9bff9d6f2```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1563,12 +1667,14 @@ Update an existing scan exclusion.
 #### Human Readable Output
 
 >### Updated Scan Exclusion:
+>
 >|id|value|type|scanMode|
 >|---|---|---|---|
 >| 6868151e-4eac-4d0a-8985-5db9bff9d6f2 | testpathhzh | path | onDemandAndOnAccess |
 
 
 ### sophos-central-scan-exclusion-delete
+
 ***
 Delete an existing scan exclusion.
 
@@ -1576,6 +1682,7 @@ Delete an existing scan exclusion.
 #### Base Command
 
 `sophos-central-scan-exclusion-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1591,9 +1698,11 @@ Delete an existing scan exclusion.
 
 
 #### Command Example
+
 ```!sophos-central-scan-exclusion-delete exclusion_id=6868151e-4eac-4d0a-8985-5db9bff9d6f2```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1609,6 +1718,7 @@ Delete an existing scan exclusion.
 >Success deleting scan exclusion: 6868151e-4eac-4d0a-8985-5db9bff9d6f2
 
 ### sophos-central-exploit-mitigation-list
+
 ***
 List exploit mitigation settings for all protected applications.
 
@@ -1616,6 +1726,7 @@ List exploit mitigation settings for all protected applications.
 #### Base Command
 
 `sophos-central-exploit-mitigation-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1638,9 +1749,11 @@ List exploit mitigation settings for all protected applications.
 
 
 #### Command Example
+
 ```!sophos-central-exploit-mitigation-list```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1862,6 +1975,7 @@ List exploit mitigation settings for all protected applications.
 #### Human Readable Output
 
 >### Listed Exploit Mitigations:
+>
 >|id|name|type|category|paths|
 >|---|---|---|---|---|
 >| ff9d87d0-c944-4ca5-9f76-c5efd1f89ded | 3bf6f110-48d8-4114-95e3-a286ac50d722 | custom | other | newnewnewnewnew |
@@ -1892,6 +2006,7 @@ List exploit mitigation settings for all protected applications.
 >Maximum number of results allowed in a page: 100.
 
 ### sophos-central-exploit-mitigation-get
+
 ***
 Get exploit mitigation settings for a single application.
 
@@ -1899,6 +2014,7 @@ Get exploit mitigation settings for a single application.
 #### Base Command
 
 `sophos-central-exploit-mitigation-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1918,9 +2034,11 @@ Get exploit mitigation settings for a single application.
 
 
 #### Command Example
+
 ```!sophos-central-exploit-mitigation-get mitigation_id=ff9d87d0-c944-4ca5-9f76-c5efd1f89ded```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1940,12 +2058,14 @@ Get exploit mitigation settings for a single application.
 #### Human Readable Output
 
 >### Found Exploit Mitigation:
+>
 >|id|name|type|category|paths|
 >|---|---|---|---|---|
 >| ff9d87d0-c944-4ca5-9f76-c5efd1f89ded | 3bf6f110-48d8-4114-95e3-a286ac50d722 | custom | other | newnewnewnewnew |
 
 
 ### sophos-central-exploit-mitigation-add
+
 ***
 Exclude a set of file paths from exploit mitigation.
 
@@ -1953,6 +2073,7 @@ Exclude a set of file paths from exploit mitigation.
 #### Base Command
 
 `sophos-central-exploit-mitigation-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1972,9 +2093,11 @@ Exclude a set of file paths from exploit mitigation.
 
 
 #### Command Example
+
 ```!sophos-central-exploit-mitigation-add path=testestesteset```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1994,12 +2117,14 @@ Exclude a set of file paths from exploit mitigation.
 #### Human Readable Output
 
 >### Added Exploit Mitigation:
+>
 >|id|name|type|category|paths|
 >|---|---|---|---|---|
 >| 755ec991-c04f-498f-ab8e-20ef1a187b52 | d082226b-0c17-4959-a3ed-a6957f39c9bc | custom | other | testestesteset |
 
 
 ### sophos-central-exploit-mitigation-update
+
 ***
 Update exploit mitigation settings for an application.
 
@@ -2007,6 +2132,7 @@ Update exploit mitigation settings for an application.
 #### Base Command
 
 `sophos-central-exploit-mitigation-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2027,9 +2153,11 @@ Update exploit mitigation settings for an application.
 
 
 #### Command Example
+
 ```!sophos-central-exploit-mitigation-update mitigation_id=ff9d87d0-c944-4ca5-9f76-c5efd1f89ded path=changed```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2049,12 +2177,14 @@ Update exploit mitigation settings for an application.
 #### Human Readable Output
 
 >### Updated Exploit Mitigation:
+>
 >|id|name|type|category|paths|
 >|---|---|---|---|---|
 >| ff9d87d0-c944-4ca5-9f76-c5efd1f89ded | 3bf6f110-48d8-4114-95e3-a286ac50d722 | custom | other | changed |
 
 
 ### sophos-central-exploit-mitigation-delete
+
 ***
 Delete a custom (user-defined) exploit mitigation application by ID.
 
@@ -2062,6 +2192,7 @@ Delete a custom (user-defined) exploit mitigation application by ID.
 #### Base Command
 
 `sophos-central-exploit-mitigation-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2077,9 +2208,11 @@ Delete a custom (user-defined) exploit mitigation application by ID.
 
 
 #### Command Example
+
 ```!sophos-central-exploit-mitigation-delete mitigation_id=ff9d87d0-c944-4ca5-9f76-c5efd1f89ded```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2095,6 +2228,7 @@ Delete a custom (user-defined) exploit mitigation application by ID.
 >Success deleting exploit mitigation: ff9d87d0-c944-4ca5-9f76-c5efd1f89ded
 
 ### sophos-central-detected-exploit-list
+
 ***
 List all detected exploits.
 
@@ -2102,6 +2236,7 @@ List all detected exploits.
 #### Base Command
 
 `sophos-central-detected-exploit-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2128,9 +2263,11 @@ List all detected exploits.
 
 
 #### Command Example
+
 ```!sophos-central-detected-exploit-list```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2142,12 +2279,14 @@ List all detected exploits.
 #### Human Readable Output
 
 >### Listed Detected Exploits:
+>
 >**No entries.**
 >Current page: 1.
 >Results on this page: 0.
 >Maximum number of results allowed in a page: 100.
 
 ### sophos-central-detected-exploit-get
+
 ***
 Get a single detected exploit.
 
@@ -2155,6 +2294,7 @@ Get a single detected exploit.
 #### Base Command
 
 `sophos-central-detected-exploit-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2179,12 +2319,14 @@ Get a single detected exploit.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
 
 
 ### sophos-central-isolate-endpoint
+
 ***
 Isolate one or more endpoints.
 
@@ -2192,6 +2334,7 @@ Isolate one or more endpoints.
 #### Base Command
 
 `sophos-central-isolate-endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2214,9 +2357,11 @@ Isolate one or more endpoints.
 
 
 #### Command Example
+
 ```!sophos-central-isolate-endpoint endpoint_id=25de27bc-b07a-4728-b7b2-a021365xxxxx```
 
 #### Context Example
+
 ```json
 {
     "items": [
@@ -2245,6 +2390,7 @@ Endpoint(s) isolated successfully.
 
 
 ### sophos-central-deisolate-endpoint
+
 ***
 De-isolate one or more endpoints.
 
@@ -2252,6 +2398,7 @@ De-isolate one or more endpoints.
 #### Base Command
 
 `sophos-central-deisolate-endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2274,9 +2421,11 @@ De-isolate one or more endpoints.
 
 
 #### Command Example
+
 ```!sophos-central-deisolate-endpoint endpoint_id=25de27bc-b07a-4728-b7b2-a021365xxxxx```
 
 #### Context Example
+
 ```json
 {
     "items": [
@@ -2304,6 +2453,7 @@ De-isolate one or more endpoints.
 Endpoint(s) de-isolated successfully.
 
 ### sophos-central-usergroups-users-add
+
 ***
 Add multiple users to the specified group.
 
@@ -2311,6 +2461,7 @@ Add multiple users to the specified group.
 #### Base Command
 
 `sophos-central-usergroups-users-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2328,8 +2479,11 @@ Add multiple users to the specified group.
 | SophosCentral.UserGroups.addedUsers.name | String | User's full name. | 
 
 #### Command example
+
 ```!sophos-central-usergroups-users-add groupId="733cce06-5ad0-487b-9547-03af02b5722e" userIds="09c515b2-009e-4e78-a83f-a5423e6def9a, f9029e98-311a-4c19-9908-15bafff9f39f, 86e0ae0f-77ef-423a-bbbf-d95e49edd468"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2359,6 +2513,7 @@ Add multiple users to the specified group.
 >User(s) added to the specified group.
 
 ### sophos-central-usergroups-user-delete
+
 ***
 Remove a specific User from the group.
 
@@ -2366,6 +2521,7 @@ Remove a specific User from the group.
 #### Base Command
 
 `sophos-central-usergroups-user-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2382,8 +2538,11 @@ Remove a specific User from the group.
 | SophosCentral.UserGroups.users.removedUser | String | The User ID. | 
 
 #### Command example
+
 ```!sophos-central-usergroups-user-delete groupId="733cce06-5ad0-487b-9547-03af02b5722e" userId="86e0ae0f-77ef-423a-bbbf-d95e49edd468"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2401,6 +2560,7 @@ Remove a specific User from the group.
 
 
 ### sophos-central-usergroups-membership-get
+
 ***
 List all users in a specific group.
 
@@ -2408,6 +2568,7 @@ List all users in a specific group.
 #### Base Command
 
 `sophos-central-usergroups-membership-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2439,8 +2600,11 @@ List all users in a specific group.
 | SophosCentral.UserGroups.users.groups.source.type | String | Types of sources of directory information. | 
 
 #### Command example
+
 ```!sophos-central-usergroups-membership-get groupId="6ed5e258-b427-4fa0-a9cf-568d130796c3"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2568,6 +2732,7 @@ List all users in a specific group.
 #### Human Readable Output
 
 >### Total Records: 4
+>
 >Page: 1/1
 > 
 >Listed 4 User(s) in Usergroup:
@@ -2581,6 +2746,7 @@ List all users in a specific group.
 
 
 ### sophos-central-usergroups-get
+
 ***
 Returns the details of the GroupID specified.
 
@@ -2588,6 +2754,7 @@ Returns the details of the GroupID specified.
 #### Base Command
 
 `sophos-central-usergroups-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2615,8 +2782,11 @@ Returns the details of the GroupID specified.
 | SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. | 
 
 #### Command example
+
 ```!sophos-central-usergroups-get groupId="733cce06-5ad0-487b-9547-03af02b5722e"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2666,12 +2836,14 @@ Returns the details of the GroupID specified.
 #### Human Readable Output
 
 >### Found User Groups
+>
 >|id|name|description|sourceType|
 >|---|---|---|---|
 >| 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe | NewDescriptionReadMe | custom |
 
 
 ### sophos-central-usergroups-create
+
 ***
 Creates a new “custom” (Centrally Managed) Group
 
@@ -2679,6 +2851,7 @@ Creates a new “custom” (Centrally Managed) Group
 #### Base Command
 
 `sophos-central-usergroups-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2708,8 +2881,11 @@ Creates a new “custom” (Centrally Managed) Group
 | SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. | 
 
 #### Command example
+
 ```!sophos-central-usergroups-create groupName=GroupNameTestReadMe groupDescription=GroupDescriptionReadMe userIds="86e0ae0f-77ef-423a-bbbf-d95e49edd468"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2742,6 +2918,7 @@ Creates a new “custom” (Centrally Managed) Group
 >Successfully created a user group with ID: 03d1fcb2-246e-4307-b570-82dcf9083686.
 
 ### sophos-central-usergroups-update
+
 ***
 Allows for the editing of the group name and description for a usergroup.
 
@@ -2749,6 +2926,7 @@ Allows for the editing of the group name and description for a usergroup.
 #### Base Command
 
 `sophos-central-usergroups-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2778,8 +2956,11 @@ Allows for the editing of the group name and description for a usergroup.
 | SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. | 
 
 #### Command example
+
 ```!sophos-central-usergroups-update groupId="733cce06-5ad0-487b-9547-03af02b5722e" groupName=NewGroupNameReadMe description=NewDescriptionReadMe```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2825,6 +3006,7 @@ Allows for the editing of the group name and description for a usergroup.
 >Successfully updated the user group with ID: 733cce06-5ad0-487b-9547-03af02b5722e.
 
 ### sophos-central-usergroups-delete
+
 ***
 Deletes the specified group.
 
@@ -2832,6 +3014,7 @@ Deletes the specified group.
 #### Base Command
 
 `sophos-central-usergroups-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2846,8 +3029,11 @@ Deletes the specified group.
 | SophosCentral.DeletedUserGroups.deletedUserGroupId | String | Deleted Group ID. | 
 
 #### Command example
+
 ```!sophos-central-usergroups-delete groupId="0210d539-66ab-46ac-afa2-eb8928856340"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2864,6 +3050,7 @@ Deletes the specified group.
 
 
 ### sophos-central-usergroups-list
+
 ***
 Returns a list of all user groups that match the search criteria (optional).
 
@@ -2871,6 +3058,7 @@ Returns a list of all user groups that match the search criteria (optional).
 #### Base Command
 
 `sophos-central-usergroups-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2905,8 +3093,11 @@ Returns a list of all user groups that match the search criteria (optional).
 | SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. | 
 
 #### Command example
+
 ```!sophos-central-usergroups-list groupsIds="733cce06-5ad0-487b-9547-03af02b5722e, 03d1fcb2-246e-4307-b570-82dcf9083686" search=GroupName searchFields=name,description sourceType=custom userId="86e0ae0f-77ef-423a-bbbf-d95e49edd468" page=1 pageSize=10```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2984,6 +3175,7 @@ Returns a list of all user groups that match the search criteria (optional).
 #### Human Readable Output
 
 >### Total Records: 2
+>
 >Page: 1/1
 > 
 >Listed 2 User Groups:
@@ -2994,6 +3186,7 @@ Returns a list of all user groups that match the search criteria (optional).
 >| 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe | NewDescriptionReadMe | custom |
 
 ### sophos-central-group-membership-get
+
 ***
 Get endpoints in a group.
 
@@ -3001,6 +3194,7 @@ Get endpoints in a group.
 #### Base Command
 
 `sophos-central-group-membership-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3034,8 +3228,11 @@ Get endpoints in a group.
 | SophosCentral.EndpointGroups.lastSeenAt | Date | Date and time \(UTC\) when the endpoint last communicated with Sophos Central. | 
 
 #### Command example
+
 ```!sophos-central-group-membership-get groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3122,12 +3319,14 @@ Get endpoints in a group.
 #### Human Readable Output
 
 >### Fetched 2 Endpoint(s) Successfully
+>
 >|id|type|hostname|
 >|---|---|---|
 >| 1abcf612-d426-457b-8088-10d921112f1b | computer | Lightning-uz1lwmqwqk |
 >| 3413a306-5227-40f1-8b86-53195d927566 | computer | Lightning-r8s9l77e5g |
 
 ### sophos-central-group-create
+
 ***
 Create a new endpoint group.
 
@@ -3135,6 +3334,7 @@ Create a new endpoint group.
 #### Base Command
 
 `sophos-central-group-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3159,8 +3359,11 @@ Create a new endpoint group.
 | SophosCentral.EndpointGroups.createdAt | Date | When the group was created. | 
 
 #### Command example
+
 ```!sophos-central-group-create name="Name-readme2" description=description type=computer endpointIds="3413a306-5227-40f1-8b86-53195d927566,1abcf612-d426-457b-8088-10d921112f1b"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3195,6 +3398,7 @@ Create a new endpoint group.
 #### Human Readable Output
 
 >### EndpointGroup Created Successfully
+>
 >|id|name|type|
 >|---|---|---|
 >| 3ba49c2c-2c05-4e39-8ff4-ed0488fe0a3d | Name-readme2 | computer |
@@ -3202,6 +3406,7 @@ Create a new endpoint group.
 
 
 ### sophos-central-group-update
+
 ***
 Update an endpoint group.
 
@@ -3209,6 +3414,7 @@ Update an endpoint group.
 #### Base Command
 
 `sophos-central-group-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3233,8 +3439,11 @@ Update an endpoint group.
 | SophosCentral.EndpointGroups.updatedAt | Date | When the group was updated. | 
 
 #### Command example
+
 ```!sophos-central-group-update name="Name-readme2-update" groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3261,12 +3470,14 @@ Update an endpoint group.
 #### Human Readable Output
 
 >### EndpointGroup Updated Successfully
+>
 >|id|name|description|
 >|---|---|---|
 >| f1ff9020-f101-42c7-a5eb-06e9ef35e7af | Name-readme2-update | description |
 
 
 ### sophos-central-group-get
+
 ***
 Get an endpoint group by ID.
 
@@ -3274,6 +3485,7 @@ Get an endpoint group by ID.
 #### Base Command
 
 `sophos-central-group-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3296,8 +3508,11 @@ Get an endpoint group by ID.
 | SophosCentral.EndpointGroups.updatedAt | Date | When the group was updated. | 
 
 #### Command example
+
 ```!sophos-central-group-get groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3324,12 +3539,14 @@ Get an endpoint group by ID.
 #### Human Readable Output
 
 >### Fetched EndpointGroup Successfully
+>
 >|description|name|
 >|---|---|
 >| description | Name-readme2-update |
 
 
 ### sophos-central-group-endpoints-add
+
 ***
 Add endpoints in a group.
 
@@ -3337,6 +3554,7 @@ Add endpoints in a group.
 #### Base Command
 
 `sophos-central-group-endpoints-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3354,8 +3572,11 @@ Add endpoints in a group.
 | SophosCentral.EndpointGroups.id | String | Unique group ID. | 
 
 #### Command example
+
 ```!sophos-central-group-endpoints-add groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af" ids="3413a306-5227-40f1-8b86-53195d927566,1abcf612-d426-457b-8088-10d921112f1b"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3379,6 +3600,7 @@ Add endpoints in a group.
 #### Human Readable Output
 
 >### 2 Endpoint(s) Added Successfully
+>
 >|id|hostname|
 >|---|---|
 >| 3413a306-5227-40f1-8b86-53195d927566 | Lightning-r8s9l77e5g |
@@ -3386,6 +3608,7 @@ Add endpoints in a group.
 
 
 ### sophos-central-group-endpoint-remove
+
 ***
 Remove endpoint from a group.
 
@@ -3393,6 +3616,7 @@ Remove endpoint from a group.
 #### Base Command
 
 `sophos-central-group-endpoint-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3409,8 +3633,11 @@ Remove endpoint from a group.
 | SophosCentral.EndpointGroups.id | String | Group Id. | 
 
 #### Command example
+
 ```!sophos-central-group-endpoint-remove groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af" endpointId="3413a306-5227-40f1-8b86-53195d927566"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3428,6 +3655,7 @@ Remove endpoint from a group.
 
 
 ### sophos-central-group-endpoints-remove
+
 ***
 Remove endpoints from a group.
 
@@ -3435,6 +3663,7 @@ Remove endpoints from a group.
 #### Base Command
 
 `sophos-central-group-endpoints-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3453,8 +3682,11 @@ Remove endpoints from a group.
 | SophosCentral.EndpointGroups.removedEndpoints | String | List of removed EndpointIds from the group. | 
 
 #### Command example
+
 ```!sophos-central-group-endpoints-remove groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af" ids="3413a306-5227-40f1-8b86-53195d927566,1abcf612-d426-457b-8088-10d921112f1b"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3475,12 +3707,14 @@ Remove endpoints from a group.
 #### Human Readable Output
 
 >### 1 EndPoint(s) Removed Successfully
+>
 >|id|hostname|
 >|---|---|
 >| 1abcf612-d426-457b-8088-10d921112f1b | Lightning-uz1lwmqwqk |
 
 
 ### sophos-central-group-list
+
 ***
 List endpoint groups.
 
@@ -3488,6 +3722,7 @@ List endpoint groups.
 #### Base Command
 
 `sophos-central-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3510,8 +3745,11 @@ List endpoint groups.
 | SophosCentral.EndpointGroups.description | String | Group description. | 
 
 #### Command example
+
 ```!sophos-central-group-list page_size=10```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3586,6 +3824,7 @@ List endpoint groups.
 #### Human Readable Output
 
 >### Found 4 records 
+>
 > Page : 1/1 
 > 
 > Listed 4 EndpointGroups:
@@ -3599,6 +3838,7 @@ List endpoint groups.
 
 
 ### sophos-central-group-delete
+
 ***
 Delete an endpoint group by ID.
 
@@ -3606,6 +3846,7 @@ Delete an endpoint group by ID.
 #### Base Command
 
 `sophos-central-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3621,8 +3862,11 @@ Delete an endpoint group by ID.
 | SophosCentral.EndpointGroups.id | String | Group Id. | 
 
 #### Command example
+
 ```!sophos-central-group-delete groupId="b3dec702-5d56-4cb9-8961-b0dba3194c94"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3640,6 +3884,7 @@ Delete an endpoint group by ID.
 
 
 ### sophos-central-users-list
+
 ***
 List users for the given tenant.
 
@@ -3647,6 +3892,7 @@ List users for the given tenant.
 #### Base Command
 
 `sophos-central-users-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3679,8 +3925,11 @@ List users for the given tenant.
 | SophosCentral.Users.createdAt                | Date | When the user was created. | 
 
 #### Command example
+
 ```!sophos-central-users-list searchFields="firstname, lastname, email"  search="playbook" pageSize=5```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3774,6 +4023,7 @@ List users for the given tenant.
 #### Human Readable Output
 
 >### Total Records: 3
+>
 >Page: 1/1
 > 
 >Listed 3 User(s):
@@ -3787,6 +4037,7 @@ List users for the given tenant.
 
 
 ### sophos-central-users-get
+
 ***
 List user with userId for the given tenant.
 
@@ -3794,6 +4045,7 @@ List user with userId for the given tenant.
 #### Base Command
 
 `sophos-central-users-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3821,8 +4073,11 @@ List user with userId for the given tenant.
 | SophosCentral.Users.updatedAt | Date | When the user was updated. | 
 
 #### Command example
+
 ```!sophos-central-users-get userId=4c994c63-c252-4ac9-8840-bcccb095d5a2```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3846,12 +4101,14 @@ List user with userId for the given tenant.
 #### Human Readable Output
 
 >### Found User:
+>
 >|id|firstName|lastName|email|exchangeLogin|groupIds|groupNames|
 >|---|---|---|---|---|---|---|
 >| 4c994c63-c252-4ac9-8840-bcccb095d5a2 | updatedPlaybook | updatedTest | updatedemail.forplaybook@playbook.com |  | 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe |
 
 
 ### sophos-central-users-add
+
 ***
 Add a new user.
 
@@ -3859,6 +4116,7 @@ Add a new user.
 #### Base Command
 
 `sophos-central-users-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3890,8 +4148,11 @@ Add a new user.
 | SophosCentral.Users.updatedAt | Date | When the user was updated. | 
 
 #### Command example
+
 ```!sophos-central-users-add firstName=playbook lastName=test email=email.forplaybook2@playbook.com groupIds=733cce06-5ad0-487b-9547-03af02b5722e```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3931,6 +4192,7 @@ Add a new user.
 >A new User was added to the Directory.
 
 ### sophos-central-users-update
+
 ***
 Update a user.
 
@@ -3938,6 +4200,7 @@ Update a user.
 #### Base Command
 
 `sophos-central-users-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3970,8 +4233,11 @@ Update a user.
 | SophosCentral.Users.updatedAt | Date | When the user was updated. | 
 
 #### Command example
+
 ```!sophos-central-users-update userId=4c994c63-c252-4ac9-8840-bcccb095d5a2 firstName="updatedPlaybook" lastName="updatedTest" email="updatedemail.forplaybook@playbook.com"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -4011,6 +4277,7 @@ Update a user.
 >User updated.
 
 ### sophos-central-users-delete
+
 ***
 Delete a user.
 
@@ -4018,6 +4285,7 @@ Delete a user.
 #### Base Command
 
 `sophos-central-users-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4032,8 +4300,11 @@ Delete a user.
 | SophosCentral.DeletedUsers.deletedUserId | String | Deleted User's Id. | 
 
 #### Command example
+
 ```!sophos-central-users-delete userId=9d79e670-3846-45b7-a119-12ca1ee46933```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -4050,6 +4321,7 @@ Delete a user.
 
 
 ### sophos-central-endpoint-policy-search
+
 ***
 Get all endpoint policy.
 
@@ -4057,6 +4329,7 @@ Get all endpoint policy.
 #### Base Command
 
 `sophos-central-endpoint-policy-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4081,8 +4354,11 @@ Get all endpoint policy.
 | SophosCentral.PolicyAndEnumeration.lastModified | String | Last Modified | 
 
 #### Command example
+
 ```!sophos-central-endpoint-policy-search page_size=10 page=1```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -4395,8 +4671,11 @@ Get all endpoint policy.
 #### Human Readable Output
 
 >### Total Record(s): 24 
+>
 >### Current page: 1/3
+>
 >### Listed 10 Endpoint Policies:
+>
 >|id|feature|settings|orderPriority|name|enforced|typeSingle|typeGroup|lastModified|
 >|---|---|---|---|---|---|---|---|---|
 >| 67074d6e-ce83-40c2-a7f4-8a94a1beac10 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 9 | Base Policy (cloned 3) | false |  |  | 2022-10-11T06:13:07.146Z |
@@ -4412,6 +4691,7 @@ Get all endpoint policy.
 
 
 ### sophos-central-endpoint-policy-get
+
 ***
 Get details of Policy by id.
 
@@ -4419,6 +4699,7 @@ Get details of Policy by id.
 #### Base Command
 
 `sophos-central-endpoint-policy-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4441,8 +4722,11 @@ Get details of Policy by id.
 | SophosCentral.PolicyAndEnumeration.lastModified | String | Last Modified | 
 
 #### Command example
+
 ```!sophos-central-endpoint-policy-get policy_id=67074d6e-ce83-40c2-a7f4-8a94a1beac10```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -4483,11 +4767,13 @@ Get details of Policy by id.
 #### Human Readable Output
 
 >### 67074d6e-ce83-40c2-a7f4-8a94a1beac10 Policy Details:
+>
 >|id|feature|settings|orderPriority|name|enforced|typeSingle|typeGroup|lastModified|
 >|---|---|---|---|---|---|---|---|---|
 >| 67074d6e-ce83-40c2-a7f4-8a94a1beac10 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 9 | Base Policy (cloned 3) | false |  |  | 2022-10-11T06:13:07.146Z |
 
 ### sophos-central-endpoint-policy-reorder
+
 ***
 Update Policy priority for non-base policies.
 
@@ -4495,6 +4781,7 @@ Update Policy priority for non-base policies.
 #### Base Command
 
 `sophos-central-endpoint-policy-reorder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4510,8 +4797,11 @@ Update Policy priority for non-base policies.
 | SophosCentral.PolicyAndEnumeration.updatedPolicyId | String | The ID of the updated policy. | 
 
 #### Command example
+
 ```!sophos-central-endpoint-policy-reorder policy_id=67074d6e-ce83-40c2-a7f4-8a94a1beac10 priority=1```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -4527,6 +4817,7 @@ Update Policy priority for non-base policies.
 >Success updating endpoint policy: 67074d6e-ce83-40c2-a7f4-8a94a1beac10
 
 ### sophos-central-endpoint-policy-search-delete
+
 ***
 Delete an existing endpoint policy.
 
@@ -4534,6 +4825,7 @@ Delete an existing endpoint policy.
 #### Base Command
 
 `sophos-central-endpoint-policy-search-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4548,8 +4840,11 @@ Delete an existing endpoint policy.
 | SophosCentral.PolicyAndEnumeration.deletedPolicyId | String | The ID of the deleted policy. | 
 
 #### Command example
+
 ```!sophos-central-endpoint-policy-search-delete policy_id=67074d6e-ce83-40c2-a7f4-8a94a1beac10```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -4565,6 +4860,7 @@ Delete an existing endpoint policy.
 >Success deleting endpoint policy: 67074d6e-ce83-40c2-a7f4-8a94a1beac10
 
 ### sophos-central-endpoint-policy-clone
+
 ***
 Clone an existing endpoint policy.
 
@@ -4572,6 +4868,7 @@ Clone an existing endpoint policy.
 #### Base Command
 
 `sophos-central-endpoint-policy-clone`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4587,8 +4884,11 @@ Clone an existing endpoint policy.
 | SophosCentral.PolicyAndEnumeration.clonedPolicyId | String | The ID of the cloned policy. | 
 
 #### Command example
+
 ```!sophos-central-endpoint-policy-clone policy_id=b3715f16-b675-4978-927d-2e0fb206b6e9 name=testclonenew```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {

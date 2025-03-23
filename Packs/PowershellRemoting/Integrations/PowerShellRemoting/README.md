@@ -19,12 +19,16 @@ For more information about setting up PowerShell Remoting, see the [PowerShell R
 | Use SSL (HTTPS) |  | False |
 
 ### Configuration Notes
+
 Please note that in order for the integration to function properly, *Basic Authentication* is required to be enabled for the target host. This is due to the library relying on Basic Auth headers to pass an authentication token even when MFA is enabled.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ps-remote-command
+
 ***
 Executes remote PowerShell commands on a single host.
 
@@ -32,6 +36,7 @@ Executes remote PowerShell commands on a single host.
 #### Base Command
 
 `ps-remote-command`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,9 +57,11 @@ Executes remote PowerShell commands on a single host.
 
 
 #### Command Example
+
 ```!ps-remote-command host=XSOAR-XSOAR command=whoami```
 
 #### Context Example
+
 ```json
 {
     "PsRemote": {
@@ -68,12 +75,15 @@ Executes remote PowerShell commands on a single host.
     }
 }
 ```
+
 #### Human Readable Output
+>
 > Result for PowerShell Remote Command: whoami
 > winrm\administrator
 
 
 ### ps-remote-download-file
+
 ***
 Downloads a file from the remote endpoint.
 
@@ -81,6 +91,7 @@ Downloads a file from the remote endpoint.
 #### Base Command
 
 `ps-remote-download-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -118,10 +129,12 @@ Downloads a file from the remote endpoint.
 
 
 #### Command Example
+
 ```!ps-remote-download-file host="XSOAR-XSOAR" path="c:\\XSOAR-XSOAR.etl" zip_file="true" check_hash="true" host_prefix="true"```
 
 
 ### ps-remote-upload-file
+
 ***
 Uploads a file to the remote endpoint.
 
@@ -129,6 +142,7 @@ Uploads a file to the remote endpoint.
 #### Base Command
 
 `ps-remote-upload-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -156,13 +170,16 @@ Uploads a file to the remote endpoint.
 
 
 #### Command Example
+
 ```!ps-remote-upload-file entry_id=105@1d0796aa-dde9-4f18-8f04-bbe92434ba81 host="XSOAR-XSOAR" path="c:\\tmpetl.etl"```
 
 
 #### Human Readable Output
+>
 > File 1d0796aa-dde9-4f18-8f04-bbe92434ba81_105@1d0796aa-dde9-4f18-8f04-bbe92434ba81 was uploaded successfully as: c:\tmpetl.etl
 
 ### ps-remote-etl-create-start
+
 ***
 This command starts the recording of an ETL file on a Windows endpoint. An ETL file is just like a PCAP file which is created by the Windows Netsh command.
 
@@ -170,6 +187,7 @@ This command starts the recording of an ETL file on a Windows endpoint. An ETL f
 #### Base Command
 
 `ps-remote-etl-create-start`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -194,12 +212,15 @@ This command starts the recording of an ETL file on a Windows endpoint. An ETL f
 
 
 #### Command Example
+
 ```!ps-remote-etl-create-stop host="XSOAR-XSOAR"```
 
 #### Human Readable Output
+>
 > Trace configuration: ------------------------------------------------------------------- Status:             Running Trace File:         C:\XSOAR-XSOAR__a.etl Append:             Off Circular:           On Max Size:           10 MB Report:             Off
 
 #### Context Example
+
 ```python
 {
     "PsRemote": {
@@ -224,6 +245,7 @@ This command starts the recording of an ETL file on a Windows endpoint. An ETL f
 ```
 
 ### ps-remote-etl-create-stop
+
 ***
 Ends the recording of an ETL file on a Windows endpoint.
 
@@ -231,6 +253,7 @@ Ends the recording of an ETL file on a Windows endpoint.
 #### Base Command
 
 `ps-remote-etl-create-stop`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -251,12 +274,15 @@ Ends the recording of an ETL file on a Windows endpoint.
 
 
 #### Command Example
+
 ```!ps-remote-etl-create-stop host="XSOAR-XSOAR"```
 
 #### Human Readable Output
+>
 > Correlating traces … done Merging traces … done Generating data collection … done The trace file and additional troubleshooting information have been compiled as "c:\XSOAR-XSOAR__a.cab". File location = c:\XSOAR-XSOAR__a.etl Tracing session was successfully stopped.
 
 #### Context Example
+
 ```python
 {
     "PsRemote": {
@@ -271,6 +297,7 @@ Ends the recording of an ETL file on a Windows endpoint.
 ```
 
 ### ps-remote-export-registry
+
 ***
 Exports the specified registry of hive to a file.
 
@@ -278,6 +305,7 @@ Exports the specified registry of hive to a file.
 #### Base Command
 
 `ps-remote-export-registry`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -301,13 +329,16 @@ Exports the specified registry of hive to a file.
 
 
 #### Command Example
+
 ```!ps-remote-export-registry host="XSOAR-XSOAR" file_path="c:\\XSOAR-XSOAR__a.reg"```
 
 #### Human Readable Output
+>
 >Ran Export Registry.
 >Registry file expected path: c:\XSOAR-XSOAR__a.reg
 
 #### Context Example
+
 ```python
 {
     "PsRemote": {
@@ -322,6 +353,7 @@ Exports the specified registry of hive to a file.
 ```
 
 ### ps-remote-export-mft
+
 ***
 Extracts the master file table from the volume.
 
@@ -329,6 +361,7 @@ Extracts the master file table from the volume.
 #### Base Command
 
 `ps-remote-export-mft`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -348,16 +381,20 @@ Extracts the master file table from the volume.
 
 
 #### Command Example
+
 ```!ps-remote-export-mft host="XSOAR-XSOAR" volume=C```
 
 #### Human Readable Output
+>
 >### MFT Export results:
+>
 >| ComputerName | MFT File | MFT Size | MFT Volume | NetworkPath | PSComputerName | PSShowComputerName | RunspaceId
 >| --- | --- | --- | --- | --- | --- | --- | ---
 >| XSOAR\-XSOAR | C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\zzthh5sh.hl2 | 222 MB | C | \\\\XSOAR\-XSOAR\\C$\\Users\\ADMINI~1\\AppData\\Local\\Temp\\zzthh5sh.hl2 | XSOAR\-XSOAR.winrm.local | true | \{"value":"58aa1f39\-f86d\-4f18\-978a\-c9257295df49","Guid":"58aa1f39\-f86d\-4f18\-978a\-c9257295df49"\}
 
 
 #### Context Example
+
 ```python
 {
     "PsRemote": {

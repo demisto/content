@@ -22,9 +22,12 @@ This integration was integrated and tested with version 2.0.0 of FireEyeNX APIs.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fireeye-nx-get-alerts
+
 ***
 Search and retrieve FireEye alerts based on several filters.
 
@@ -32,6 +35,7 @@ Search and retrieve FireEye alerts based on several filters.
 #### Base Command
 
 `fireeye-nx-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -292,9 +296,11 @@ Search and retrieve FireEye alerts based on several filters.
 
 
 #### Command Example
+
 ```!fireeye-nx-get-alerts```
 
 #### Context Example
+
 ```
 {
     "FireEyeNX": {
@@ -377,6 +383,7 @@ Search and retrieve FireEye alerts based on several filters.
 #### Human Readable Output
 
 >### Alert(s) Information
+>
 >|ID|Distinguisher(UUID)|Malware Name|Alert Type|Victim IP|Time (UTC)|Severity|Malicious|SC Version|Victim Port|Victim MAC Address|Target IP|Target Port|Target MAC Address|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 0b0b0b0b0-0b0b0b-0b0b-0b0b-0b0b0b0b0b | dummy malware name 1 | dummy name 1 | 1.1.1.1 | 0000-00-00 02:12:53 +0000 | MINR | yes | 1.000 | 0 | xx:xx:xx:xx:xx:xx | 1.1.1.1 | 0 | xx:xx:xx:xx:xx:xx |
@@ -384,6 +391,7 @@ Search and retrieve FireEye alerts based on several filters.
 
 
 ### fireeye-nx-get-artifacts-metadata-by-alert
+
 ***
 Gets malware artifacts metadata for the specified UUID.
 
@@ -391,6 +399,7 @@ Gets malware artifacts metadata for the specified UUID.
 #### Base Command
 
 `fireeye-nx-get-artifacts-metadata-by-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -409,9 +418,11 @@ Gets malware artifacts metadata for the specified UUID.
 
 
 #### Command Example
+
 ```!fireeye-nx-get-artifacts-metadata-by-alert uuid=0b0b0b0b-0b0b-0b0b-0b0b-0b0b0b0b0b0b```
 
 #### Context Example
+
 ```
 {
     "FireEyeNX": {
@@ -437,12 +448,14 @@ Gets malware artifacts metadata for the specified UUID.
 #### Human Readable Output
 
 >### Artifacts Metadata
+>
 >|Artifact Type|Artifact Name|Artifact Size (Bytes)|
 >|---|---|---|
 >| artifact type test 1 | artifact name test 1 | 1010 |
 >| artifact type test 2 | artifact name test 2 | 1010 |
 
 ### fireeye-nx-get-artifacts-by-alert
+
 ***
 Downloads malware artifacts data for the specified UUID as a zip file.
 
@@ -450,6 +463,7 @@ Downloads malware artifacts data for the specified UUID as a zip file.
 #### Base Command
 
 `fireeye-nx-get-artifacts-by-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -474,9 +488,11 @@ Downloads malware artifacts data for the specified UUID as a zip file.
 
 
 #### Command Example
+
 ```!fireeye-nx-get-artifacts-by-alert uuid=0b0b0b0b-0b0b-0b0b-0b0b-0b0b0b0b0b0b```
 
 #### Context Example
+
 ```
 {
     "File": {
@@ -496,6 +512,7 @@ Downloads malware artifacts data for the specified UUID as a zip file.
 
 
 ### fireeye-nx-get-reports
+
 ***
 Returns reports on selected alerts by specifying a time_frame value or a start_time and end_time of the search range.
 
@@ -503,6 +520,7 @@ Returns reports on selected alerts by specifying a time_frame value or a start_t
 #### Base Command
 
 `fireeye-nx-get-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -531,9 +549,11 @@ Returns reports on selected alerts by specifying a time_frame value or a start_t
 
 
 #### Command Example
+
 ```!fireeye-nx-get-reports report_type="IPS Executive Summary Report" type=csv time_frame=between start_time=2020-01-29T23:59:59 end_time=2020-08-29T23:59:59```
 
 #### Context Example
+
 ```
 {
     "InfoFile": {
@@ -550,6 +570,7 @@ Returns reports on selected alerts by specifying a time_frame value or a start_t
 
 
 ### fireeye-nx-get-events
+
 ***
 Search and retrieve FireEye events based on several filters.
 
@@ -557,6 +578,7 @@ Search and retrieve FireEye events based on several filters.
 #### Base Command
 
 `fireeye-nx-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -596,9 +618,11 @@ Search and retrieve FireEye events based on several filters.
 
 
 #### Command Example
+
 ```!fireeye-nx-get-events duration=48_hours end_time=2020-08-10T06:31:00```
 
 #### Context Example
+
 ```
 {
     "FireEyeNX": {
@@ -635,6 +659,7 @@ Search and retrieve FireEye events based on several filters.
 #### Human Readable Output
 
 >### IPS Events
+>
 >|Event ID|Time (UTC)|Victim IP|Attacker IP|CVE ID|Severity|Rule|Protocol|
 >|---|---|---|---|---|---|---|---|
 >| 1 | 2020-08-10T06:31:00Z | 1.1.1.1 | 1.1.1.1 | CVE-123 | 1 | dummy | 1 |

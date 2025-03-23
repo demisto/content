@@ -15,8 +15,10 @@ This is the default integration for this content pack when configured by the Dat
 
 
 ## Commands
+
 You can execute these commands in a playbook.
 
 ### okta-get-events
+
 ***
 Manual command to fetch events and display them.

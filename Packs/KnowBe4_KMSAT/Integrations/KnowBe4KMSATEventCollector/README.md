@@ -19,13 +19,18 @@ Therefore, the default and recommended **Events Fetch Interval** value is 5 hour
 **First fetch time interval** is 1 day.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### kms-get-events
+
 Manual command to fetch events and display them.
+
 #### Base Command
+
 `kms-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -56,9 +61,11 @@ Manual command to fetch events and display them.
 | KMSat.Event.event_type.name | String | The name of the event type. | 
 
 #### Command example
+
 ```!kms-get-events should_push_events=false```
 
 #### Context Example
+
 ```json
 {
     "KMSat": {
@@ -95,6 +102,7 @@ Manual command to fetch events and display them.
 #### Human Readable Output
 
 >### KnowBe4 KMSAT Logs
+>
 >|AccountId|Description|EventType|Id|OccurredDate|Risk|User|
 >|---|---|---|---|---|---|---|
 >| 52306 | My description lkjhy khl lgf | id: 420899085<br/>name: event_type_55<br/>description: null | 786a515c-1cbd-4a8c-a94a-61ad877c893c | 2022-08-09T10:05:13.890Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@paloaltonetworks.com<br/>id: 38651943<br/>archived: false |

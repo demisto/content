@@ -9,6 +9,7 @@ In order to connect to the AzureKubernetesServices using either Cortex XSOAR Azu
 - *Client Credentials Flow*.
 
 # Self-Deployed Application
+
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
 The application must have *user_impersonation* permission and must allow public client flows (found under the **Authentication** section of the app). And must allow public client flows (found under the **Authentication** section of the app) for Device-code based authentications.
@@ -28,10 +29,12 @@ Follow these steps for a self-deployed configuration:
 9. Run the ***!azure-sql-auth-test*** command - a 'Success' message should be printed to the War Room.
 
 ### Authentication Using the Device Code Flow
+
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
 to link Azure SQL Management with Cortex XSOAR.
 
 Follow these steps for a self-deployed configuration:
+
 1. Fill in the required parameters.
 2. choose the 'Device' option in the ***user_auth_flow*** parameter.
 3. Run the ***!azure-sql-auth-start*** command. 
@@ -50,6 +53,7 @@ subscription ID in the Azure Portal. For a more detailed explanation, visit [thi
 Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
 *Note:* In the *Select members* section, assign the application you created earlier.
 To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
+
    1. In the **Authentication Type** field, select the **Client Credentials** option.
    2. In the **Application ID** field, enter your Client/Application ID.
    3. In the **Tenant ID** field, enter your Tenant ID .
@@ -58,6 +62,7 @@ To configure a Microsoft integration that uses this authorization flow with a se
    6. Save the instance.
 
 ### Testing authentication and connectivity
+
 If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure SQL Management service run the ***!azure-sql-auth-test*** command. 
 If you are using Client Credentials Flow, click **Test** when you are configuring the instance.
 
@@ -66,6 +71,7 @@ If you are using Client Credentials Flow, click **Test** when you are configurin
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
 
 In order to connect to the Azure SQL Management using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
+
 1. Fill in the required parameters.
    
     | **Parameter** | **Description** | **Required** |
@@ -107,11 +113,15 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!azure-sql-auth-start```
+
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
 >and enter the code **CODECODE** to authenticate.
 >2. Run the **!azure-sql-auth-complete** command in the War Room.
@@ -134,6 +144,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-nsg-auth-complete```
 
 #### Human Readable Output
@@ -156,8 +167,11 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!azure-sql-auth-reset```
+
 #### Human Readable Output
 
 >Authorization was reset successfully. You can now run ***!azure-sql-auth-start*** and ***!azure-sql-auth-complete***.
@@ -180,6 +194,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-sql-auth-test```
 
 #### Human Readable Output
@@ -225,8 +240,11 @@ Lists all the servers.
 | AzureSQL.Server.restrictOutboundNetworkAccess | Unknown | Whether or not to restrict outbound network access for this server. Value is optional but if passed in, must be 'Enabled' or 'Disabled'. | 
 
 #### Command example
+
 ```!azure-sql-servers-list```
+
 #### Context Example
+
 ```json
 {
     "AzureSQL": {
@@ -252,6 +270,7 @@ Lists all the servers.
 #### Human Readable Output
 
 >### Servers List
+>
 >|Administrator Login|Fully Qualified Domain Name|Id|Kind|Location|Name|Public Network Access|State|Type|Version|
 >|---|---|---|---|---|---|---|---|---|---|
 >| xsoaradmin | sqlintegration.database.windows.net | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration | v12.0 | eastus | sqlintegration | Enabled | Ready | Microsoft.Sql/servers | 12.0 |
@@ -310,8 +329,11 @@ Lists all of the databases for the server.
 
 
 #### Command Example
+
 ```!azure-sql-db-list server_name=sqlintegration```
+
 #### Context Example
+
 ```json
 {
     "AzureSQL": {
@@ -359,6 +381,7 @@ Lists all of the databases for the server.
 #### Human Readable Output
 
 >### Database List
+>
 >|Name|Location|Status|Managed By|
 >|---|---|---|---|
 >| sql-integration-db | eastus | Online |  |
@@ -403,8 +426,11 @@ Gets the audit settings of the specified database.
 
 
 #### Command Example
+
 ```!azure-sql-db-audit-policy-list server_name=sqlintegration db_name=sql-integration-db```
+
 #### Context Example
+
 ```json
 {
     "AzureSQL": {
@@ -433,6 +459,7 @@ Gets the audit settings of the specified database.
 #### Human Readable Output
 
 >### Database Audit Settings for resource_group_name='sql-integration'
+>
 >|Audit Actions And Groups|Database Name| Id                                                                                                                                                            |Is Azure Monitor Target Enabled|Is Managed Identity In Use|Name| Retention Days |Server Name|State|Storage Account Subscription Id|Type|
 >|---|---------------------------------------------------------------------------------------------------------------------------------------------------------------|---|---|---|----------------|---|---|---|---|---|
 >| SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP,<br/>FAILED_DATABASE_AUTHENTICATION_GROUP,<br/>BATCH_COMPLETED_GROUP | sql-integration-db | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/auditingSettings/Default | true | false | Default | 3              | sqlintegration | Enabled | 00000000-0000-0000-0000-000000000000 | Microsoft.Sql/servers/databases/auditingSettings |
@@ -479,8 +506,11 @@ Gets the threat detection policy of the specified database.
 | AzureSQL.DBThreatPolicy.serverName | String | The name of server that the threat policy is related to. | 
 
 #### Command example
+
 ```!azure-sql-db-threat-policy-get server_name=sqlintegration db_name=sql-integration-db```
+
 #### Context Example
+
 ```json
 {
     "AzureSQL": {
@@ -510,6 +540,7 @@ Gets the threat detection policy of the specified database.
 #### Human Readable Output
 
 >### Database Threat Detection Policies
+>
 >|Creation Time|Database Name|Disabled Alerts|Email Account Admins|Email Addresses| Id                                                                                                                                                                |Name|Retention Days|Server Name|State|Type|
 >|---|---|---|---|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|---|---|---|---|---|
 >| 2021-01-04T08:05:32.05Z | sql-db |  | false |  | /subscriptions/0123456789/resourceGroups/sql/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/securityAlertPolicies/Default | Default | 0 | sqlintegration | Enabled | Microsoft.Sql/servers/databases/securityAlertPolicies |
@@ -565,8 +596,11 @@ Creates or updates the database's auditing policy.
 | AzureSQL.DBAuditPolicy.isManagedIdentityInUse | Boolean | Specifies whether Managed Identity is used to access blob storage. | 
 
 #### Command example
+
 ```!azure-sql-db-audit-policy-create-update server_name=sqlintegration db_name=sql-integration-db state=Enabled is_azure_monitor_target_enabled=true retention_days=3 queue_delay_ms=123```
+
 #### Context Example
+
 ```json
 {
     "AzureSQL": {
@@ -595,6 +629,7 @@ Creates or updates the database's auditing policy.
 #### Human Readable Output
 
 >### Create Or Update Database Auditing Settings for resource_group_name='sql-integration'
+>
 >|Audit Actions And Groups|Database Name| Id                                                                                                                                                           |Is Azure Monitor Target Enabled|Is Managed Identity In Use|Name|Queue Delay Ms|Retention Days|Server Name|State|Storage Account Subscription Id|Type|
 >|---|--------------------------------------------------------------------------------------------------------------------------------------------------------------|---|---|---|---|---|---|---|---|---|---|
 >| SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP,<br/>FAILED_DATABASE_AUTHENTICATION_GROUP,<br/>BATCH_COMPLETED_GROUP | sql-db | /subscriptions/0123456789/resourceGroups/sql/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/auditingSettings/Default | true | false | Default | 123 | 3 | sqlintegration | Enabled | 00000000-0000-0000-0000-000000000000 | Microsoft.Sql/servers/databases/auditingSettings |
@@ -648,8 +683,11 @@ Creates or updates the database's threat detection policy.
 | AzureSQL.DBThreatPolicy.serverName | String | The name of the server that the threat policy is related to.                    | 
 
 #### Command example
+
 ```!azure-sql-db-threat-policy-create-update server_name=sqlintegration db_name=sql-integration-db state=Enabled disabled_alerts="Sql_Injection,Sql_Injection_Vulnerability" retention_days=5```
+
 #### Context Example
+
 ```json
 {
     "AzureSQL": {
@@ -677,6 +715,7 @@ Creates or updates the database's threat detection policy.
 #### Human Readable Output
 
 >### Create Or Update Database Threat Detection Policies for resource_group_name='sql-integration'
+>
 >|Creation Time|Database Name|Disabled Alerts|Email Account Admins| Id                                                                                                                                                                 |Name|Retention Days|Server Name|State|Type|
 >|---|---|---|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|---|---|---|---|---|
 >| 0001-01-01T00:00:00Z | sql-integration-db | Sql_Injection,<br/>Sql_Injection_Vulnerability | false | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/securityAlertPolicies/Default | Default | 5 | sqlintegration | Enabled | Microsoft.Sql/servers/databases/securityAlertPolicies |
@@ -700,11 +739,13 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```azure-sql-generate-login-url```
 
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -740,9 +781,11 @@ There are no input arguments for this command.
 | AzureSQL.Subscription.subscriptionPolicies.spendingLimit | String | The subscription spending limit.                                                                                                                                                                                         | 
 
 #### Command Example
+
 ```azure-sql-subscriptions-list```
 
 #### Context Example
+
 ```json
 {
     "AzureSQL": {
@@ -765,7 +808,9 @@ There are no input arguments for this command.
 ```
 
 #### Human Readable Output
+>
 >### Subscription List
+>
 >|Subscription Id|Name|Tenant Id|State|
 > |---|---|---|---|
 > | subscriptionId | displayName | tenantId | Enabled |
@@ -799,9 +844,11 @@ Gets all the resource groups for a subscription.
 | AzureSQL.ResourceGroup.tags | String | The tags attached to the resource group. | 
 
 #### Command Example
+
 ```azure-sql-resource-group-list tag="Name:name"```
 
 #### Context Example
+
 ```json
 {
     "AzureSQL": {
@@ -822,7 +869,9 @@ Gets all the resource groups for a subscription.
 ```
 
 #### Human Readable Output
+>
 >### Resource Group List for subscriptionID
+>
 > |Name|Location|Tags|Provisioning State|
 > |---|---|---|---|
 > | name | location | Name: name | Succeeded |

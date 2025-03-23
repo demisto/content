@@ -3,6 +3,7 @@
 This Cortex XDR content pack contains the **Palo Alto Networks Cortex XDR - Investigation and Response** integration that enables direct execution of Cortex XDR actions within Cortex XSOAR. The **Cortex XDR Incident Handling v3** playbook enables bidirectional incident updates between Cortex XDR and Cortex XSOAR. 
 
 ## What does this pack do?
+
 The playbooks included in this pack help you save time and keep your incidents in sync. They also help automate repetitive tasks associated with Cortex XDR incidents:
 
 - Syncs and updates Cortex XDR incidents.

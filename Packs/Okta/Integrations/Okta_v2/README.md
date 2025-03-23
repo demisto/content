@@ -1,13 +1,16 @@
 Integration with Okta's cloud-based identity management service.
 
 ## Configure Okta v2 in Cortex
+
 ### API Token Authentication Prerequisites
+
 1. Sign in to your Okta organization as a user with administrator privileges.
 2. On the **Admin Console**, select **Security** > **API** from the menu, and then select the **Tokens** tab.
 3. Click **Create Token**.
 4. Name your token and click **Create Token**.
 
 #### Notes
+
 - API tokens have the same permissions as the user who creates them, and if the permissions of a user change, so do the permissions of the API token.
 - If more than one certificate is assigned to the application, the Key ID parameter is required to specify which
   certificate to use for signing the JWT token.
@@ -15,8 +18,11 @@ Integration with Okta's cloud-based identity management service.
 For more information, see the '[Create an API token](https://developer.okta.com/docs/guides/create-an-api-token/main/)' official documentation article.
 
 ### OAuth 2.0 Authentication Prerequisites
+
 #### Required Scopes
+
 The following scopes are required for the Okta v2 integration to work properly:
+
 - okta.apps.manage 
 - okta.apps.read 
 - okta.groups.manage 
@@ -91,9 +97,11 @@ Unlocks a single user.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-unlock-user username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >User testForDocs@test.com unlocked
 
 ### okta-deactivate-user
@@ -116,9 +124,11 @@ Deactivates a single user.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-deactivate-user username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >User testForDocs@test.com deactivated
 
 ### okta-activate-user
@@ -141,9 +151,11 @@ Activates a single user.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-activate-user username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >### testForDocs@test.com is active now
 
 ### okta-suspend-user
@@ -166,9 +178,11 @@ Suspends a single user. This operation can only be performed on users with an AC
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-suspend-user username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >### testForDocs@test.com status is Suspended
 
 ### okta-unsuspend-user
@@ -191,9 +205,11 @@ Returns a single user to ACTIVE status. This operation can only be performed on 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-unsuspend-user username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >### testForDocs@test.com is no longer SUSPENDED
 
 ### okta-get-user-factors
@@ -225,9 +241,11 @@ Returns all the enrolled factors for the specified user.
 
 
 ##### Command Example
+
 ```!okta-get-user-factors username=factor@test.com```
 
 ##### Context Example
+
 ```
 {
     "Account": {
@@ -263,8 +281,11 @@ Returns all the enrolled factors for the specified user.
 ```
 
 ##### Human Readable Output
+>
 >Factors for user: 00upt1w8tgFQM2v0h7
+>
 >### Factors
+>
 >|FactorType|ID|Profile|Provider|Status|
 >|---|---|---|---|---|
 >| sms | mbgt21nffaaN5F060h7 | phoneNumber: +12025550191 | OKTA | PENDING_ACTIVATION |
@@ -294,9 +315,11 @@ Un-enrolls an existing factor for the specified user. This enables the user to e
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-reset-factor factorId=ufsq7cvptfbjQa72c0h7 userId=00upt1w8t40wFQM2v6t4```
 
 ##### Human Readable Output
+>
 >Factor: ufsq7cvptfbjQa72c0h7 deleted
 
 ### okta-set-password
@@ -321,9 +344,11 @@ Sets passwords without validating existing user credentials.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-set-password username=testForDocs@test.com password=N3wPa55word!```
 
 ##### Human Readable Output
+>
 >testForDocs@test.com password was last changed on 2020-03-26T13:57:13.000Z
 
 ### okta-add-to-group
@@ -349,9 +374,11 @@ Adds a user to a group with OKTA_GROUP type.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-add-to-group groupName=Demisto username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >User: 00uqk1qesl3k0SRbH0h7 added to group: Demisto successfully
 
 ### okta-remove-from-group
@@ -377,9 +404,11 @@ Removes a user from a group with OKTA_GROUP type.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-remove-from-group groupName=demisto username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >User: 00uqk1qesl3k0SRbH0h7 was removed from group: demisto successfully
 
 ### okta-get-groups
@@ -415,9 +444,11 @@ Returns all user groups associated with a specified user.
 
 
 ##### Command Example
+
 ```!okta-get-groups username=testForDocs@test.com```
 
 ##### Context Example
+
 ```
 {
     "Account": {
@@ -453,8 +484,11 @@ Returns all user groups associated with a specified user.
 ```
 
 ##### Human Readable Output
+>
 >Okta groups for user: testForDocs@test.com
+>
 >### Groups
+>
 >|Created|Description|ID|LastMembershipUpdated|LastUpdated|Name|ObjectClass|Type|
 >|---|---|---|---|---|---|---|---|
 >| 2016-04-12T15:01:50.000Z | All users in your organization | 00g66lckgAJpLcNc0h7 | 2020-03-26T13:56:49.000Z | 2016-04-12T15:01:50.000Z | Everyone | okta:user_group | BUILT_IN |
@@ -486,12 +520,15 @@ Enrolls and verifies a push factor for the specified user.
 
 
 ##### Command Example
+
 ```!okta-verify-push-factor factorId=opfpt1joeaArlg27g0h7 userId=00upt1w8t40wFQM2v0h7```
 
 ##### Human Readable Output
+>
 >Verify push factor result for user 00upt1w8t40wgQM2v0h7: WAITING
 
 ##### Context Example
+
 ```
 {
     "factorResult": "WAITING",
@@ -569,9 +606,11 @@ Searches for Okta users.
 
 
 ##### Command Example
+
 ```!okta-search term=test verbose=true```
 
 ##### Context Example
+
 ```
 {
     "Account": [
@@ -615,34 +654,46 @@ Searches for Okta users.
 ```
 
 ##### Human Readable Output
+>
 >Okta users found:
 >User:bartest@test.com
+>
 >### Profile
+>
 >|Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 >|---|---|---|---|---|---|
 >| bartest@test.com | bar | test | bartest@test.com |  |  |
 
- ##### Additional Data
+##### Additional Data
+
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2020-02-12T14:03:51.000Z | 2020-02-12T14:03:50.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00uppjeleqJQ2kkN80h7 |  | 2020-02-12T14:03:51.000Z |  | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uppjeleqJQ2kkN80h7"} |
+
 ##### User:test@that.com
+
 ##### Profile
+
 |Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 |---|---|---|---|---|---|
 | test@that.com | test | that | test@that.com |  | test@that.com |
 
- ##### Additional Data
+##### Additional Data
+
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2020-02-19T12:33:20.000Z | 2018-07-31T12:48:33.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00ufufhqits3y78Ju0h7 |  | 2020-02-19T12:33:20.000Z | 2020-02-06T13:32:56.000Z | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00ufufhqits3y78Ju0h7"} |
+
 ##### User:testForDocs@test.com
+
 ##### Profile
+
 |Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 |---|---|---|---|---|---|
 | testForDocs@test.com | test | that | testForDocs@test.com |  |  |
 
- ##### Additional Data
+##### Additional Data
+
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}recovery_question: {"question": "whats is your favourite integration"}provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uqk1qesl3k0SRbH0h7"} |
@@ -681,9 +732,11 @@ Fetches information for a single user. You must enter one or more parameters for
 | Account.ManagerEmail | String | The manager email. | 
 
 ##### Command Example
+
 ```!okta-get-user username=testForDocs@test.com verbose=true```
 
 ##### Context Example
+
 ```
 {
     "Account": {
@@ -704,13 +757,17 @@ Fetches information for a single user. You must enter one or more parameters for
 ```
 
 ##### Human Readable Output
+>
 >### User:testForDocs@test.com
+>
 >### Profile
+>
 >|Email|First Name|Last Name|Login|Manager|Manager Email|Mobile Phone|Second Email|
 >|---|---|---|---|---|---|---|---|
 >| testForDocs@test.com | test | that | testForDocs@test.com | manager@test.com |  |  |  |
 
- ##### Additional Data
+##### Additional Data
+
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}recovery_question: {"question": "whats is your favourite integration"} provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | links|
@@ -819,9 +876,11 @@ Creates a new user with an option of setting a password, recovery question, and 
 
 
 ##### Command Example
+
 ```!okta-create-user email=testForDocs@test.com firstName=test lastName=that login=testForDocs@test.com password=Pa55word! passwordQuestion="whats is your favourite integration" passwordAnswer="Okta of course"```
 
 ##### Context Example
+
 ```
 {
     "Account": {
@@ -840,7 +899,9 @@ Creates a new user with an option of setting a password, recovery question, and 
 ```
 
 ##### Human Readable Output
+>
 >### Okta User Created: testForDocs@test.com:
+>
 >|First Name|ID|Last Login|Last Name|Login|Mobile Phone|Status|
 >|---|---|---|---|---|---|---|
 >| test | 00uqk1qesl3k0SRbH0h7 |  | that | testForDocs@test.com |  | STAGED |
@@ -901,10 +962,13 @@ Updates a user with a given login. All fields are optional. Fields which are not
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-update-user username=testForDocs@test.com firstName="First Name Updated"```
 
 ##### Human Readable Output
+>
 >### Okta user: testForDocs@test.com Updated:
+>
 >|email|firstName|lastName|login|mobilePhone|secondEmail|
 >|---|---|---|---|---|---|
 >| testForDocs@test.com | First Name Updated | that | testForDocs@test.com |  |  |
@@ -945,9 +1009,11 @@ Enumerates all users that are members of a group.
 
 
 ##### Command Example
+
 ```!okta-get-group-members groupName=Demisto limit=1 verbose=true```
 
 ##### Context Example
+
 ```
 {
     "Account": {
@@ -965,14 +1031,19 @@ Enumerates all users that are members of a group.
 ```
 
 ##### Human Readable Output
+>
 >### Users for group: Demisto:
+>
 >### User:Test@demisto.com
+>
 >### Profile
+>
 >|Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 >|---|---|---|---|---|---|
 >| XSOAR@demisto.com | Test | Demisto | XSOAR@demisto.com |  |  |
 
- ##### Additional Data
+##### Additional Data
+
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 |  | 2016-04-12T15:01:52.000Z | password: {} recovery_question: {"question": "born city"} provider: {"type": "OKTA", "name": "OKTA"} | 00u66lckd7lpjidYi0h7 | 2020-03-12T09:54:36.000Z | 2020-02-24T11:42:22.000Z | 2020-02-24T11:40:08.000Z | ACTIVE |  | id: oty66lckcyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uclpjidYi0h7"} |
@@ -1010,9 +1081,11 @@ Lists groups in your organization. A subset of groups can be returned that match
 
 
 ##### Command Example
+
 ```!okta-list-groups filter=`type eq "OKTA_GROUP" and lastUpdated lt "2019-04-30T00:00:00.000Z" and lastMembershipUpdated gt "2019-04-30T00:00:00.000Z"` query=demisto```
 
 ##### Context Example
+
 ```
 {
     "Okta": {
@@ -1032,7 +1105,9 @@ Lists groups in your organization. A subset of groups can be returned that match
 ```
 
 ##### Human Readable Output
+>
 >### Groups
+>
 >|Created|Description|ID|LastMembershipUpdated|LastUpdated|Name|ObjectClass|Type|
 >|---|---|---|---|---|---|---|---|
 >| 2018-01-19T02:02:06.000Z |  | 00gdougctEaf7c50h7 | 2020-03-26T13:56:56.000Z | 2018-01-19T02:02:06.000Z | Demisto | okta:user_group | OKTA_GROUP |
@@ -1095,9 +1170,11 @@ Returns failed login events.
 
 
 ##### Command Example
+
 ```!okta-get-failed-logins since="2019-04-30T00:00:00.000Z" limit=1```
 
 ##### Context Example
+
 ```
 {
     "Okta": {
@@ -1198,7 +1275,9 @@ Returns failed login events.
 ```
 
 ##### Human Readable Output
+>
 >### Failed Login Events
+>
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| unknown (User) | admin | 127.0.0.1 | CHROME on Windows 10 Computer | User login to Okta | FAILURE: VERIFICATION_ERROR | INFO | 127.0.0.1 | - | 09/30/2019, 18:42:38 |
@@ -1263,9 +1342,11 @@ Gets logs by providing optional filters.
 
 
 ##### Command Example
+
 ```!okta-get-logs filter=`actor.id eq "00u66lckvpjidYi0h7"` query=Boardman since="2020-03-03T20:23:17.573Z" limit=1```
 
 ##### Context Example
+
 ```
 {
     "Okta": {
@@ -1381,7 +1462,9 @@ Gets logs by providing optional filters.
 ```
 
 ##### Human Readable Output
+>
 >### Okta Events
+>
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Remove user from group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 03/03/2020, 20:23:17 |
@@ -1444,9 +1527,11 @@ Gets events for when a user was added to a group.
 
 
 ##### Command Example
+
 ```!okta-get-group-assignments since="2019-04-30T00:00:00.000Z" limit=1```
 
 ##### Context Example
+
 ```
 {
     "Okta": {
@@ -1561,7 +1646,9 @@ Gets events for when a user was added to a group.
 ```
 
 ##### Human Readable Output
+>
 >### Group Assignment Events
+>
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 09/29/2019, 03:47:46 |
@@ -1624,9 +1711,11 @@ Returns events for when a user was assigned to an application.
 
 
 ##### Command Example
+
 ```!okta-get-application-assignments since="2019-04-30T00:00:00.000Z" until="2020-02-30T00:00:00.000Z" sortOrder=DESCENDING limit=1```
 
 ##### Context Example
+
 ```
 {
     "Okta": {
@@ -1749,7 +1838,9 @@ Returns events for when a user was assigned to an application.
 ```
 
 ##### Human Readable Output
+>
 >### Application Assignment Events
+>
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to application membership | SUCCESS | INFO | 127.0.0.1 | Test 1 that (AppUser) ShrikSAML (AppInstance) Test 1 that (User)  | 02/27/2020, 17:55:12 |
@@ -1812,9 +1903,11 @@ Returns logs using specified filters.
 
 
 ##### Command Example
+
 ```!okta-get-application-authentication since="2019-04-30T00:00:00.000Z" until="2020-02-30T00:00:00.000Z" limit=1```
 
 ##### Context Example
+
 ```
 {
     "Okta": {
@@ -1934,7 +2027,9 @@ Returns logs using specified filters.
 ```
 
 ##### Human Readable Output
+>
 >### Application Authentication Events
+>
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | CHROME on Mac OS X Computer | User single sign on to app | SUCCESS | INFO | 127.0.0.1 | BenziPermanent (AppInstance) Test Demisto (AppUser)  | 10/14/2019, 12:16:53 |
@@ -1961,10 +2056,12 @@ Deletes the specified user.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-delete-user username=testForDocs@test.com```
 
 
 ##### Human Readable Output
+>
 >User: testForDocs@test.com was Deleted successfully
 
 ### okta-clear-user-sessions
@@ -1989,10 +2086,12 @@ https://developer.okta.com/docs/reference/api/users/#user-sessions
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-clear-user-sessions userId=00ui5brmwtJpMdoZZ0h7```
 
 
 ##### Human Readable Output
+>
 >### User session was cleared for: 00ui5brmwtJpMdoZZ0h7
 
 
@@ -2029,9 +2128,11 @@ Get an Okta Zone object.
 
 
 #### Command Example
+
 ```!okta-list-zones```
 
 #### Context Example
+
 ```
 {
     "Okta": {
@@ -2126,7 +2227,9 @@ Get an Okta Zone object.
 ```
 
 #### Human Readable Output
+>
 >### Okta Zones
+>
 >|name|id|gateways|status|system|lastUpdated|created|
 >|---|---|---|---|---|---|---|
 >| LegacyIpZone | nzo9rbw8evGOFV1VE0h7 | {'type': 'CIDR', 'value': '2.2.2.2/32'} | ACTIVE | true | 2020-04-23T08:58:55.000Z | 2017-03-03T22:05:24.000Z |
@@ -2170,9 +2273,11 @@ Update an Okta Zone.
 
 
 #### Command Example
+
 ```!okta-update-zone zoneID=nzoqsmcx1qWYJ6wY33h7 zoneName=MyZone```
 
 #### Context Example
+
 ```
 {
     "Okta": {
@@ -2231,6 +2336,7 @@ Update an Okta Zone.
 #### Human Readable Output
 
 >### Okta Zones
+>
 >|name|id|gateways|status|system|lastUpdated|created|
 >|---|---|---|---|---|---|---|
 >| MyZone | nzoqsmcx1qWYJ6wY33h7 | {'type': 'CIDR', 'value': '1.3.1.5/32'},<br/>{'type': 'CIDR', 'value': '1.3.1.5/32'},<br/>{'type': 'CIDR', 'value': '1.3.1.5/32'},<br/>{'type': 'CIDR', 'value': '1.3.1.5/32'} | ACTIVE | false | 2020-06-05T08:57:57.000Z | 2020-04-06T22:23:12.000Z |
@@ -2269,9 +2375,11 @@ Get a Zone by its ID.
 
 
 #### Command Example
+
 ```!okta-get-zone zoneID=nzoqsmcx1qWYJ6wY33h7```
 
 #### Context Example
+
 ```
 {
     "Okta": {
@@ -2330,11 +2438,13 @@ Get a Zone by its ID.
 #### Human Readable Output
 
 >### Okta Zones
+>
 >|name|id|gateways|status|system|lastUpdated|created|
 >|---|---|---|---|---|---|---|
 >| MyZone | nzoqsmcx1qWYJ6wY33h7 | {'type': 'CIDR', 'value': '1.3.1.3/32'},<br/>{'type': 'CIDR', 'value': '3.5.146.103/32'},<br/>{'type': 'CIDR', 'value': '3.5.1.228/32'},<br/>{'type': 'CIDR', 'value': '3.5.1.229/32'} | ACTIVE | false | 2020-06-05T08:57:57.000Z | 2020-04-06T22:23:12.000Z |
 
 ### okta-list-users
+
 ***
 Lists users in your organization.
 
@@ -2342,6 +2452,7 @@ Lists users in your organization.
 #### Base Command
 
 `okta-list-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2370,9 +2481,11 @@ For more information about filtering, visit https://developer.okta.com/docs/api/
 
 
 #### Command Example
+
 ```!okta-list-users```
 
 #### Context Example
+
 ```json
 {
     "Okta":
@@ -2399,12 +2512,15 @@ For more information about filtering, visit https://developer.okta.com/docs/api/
 #### Human Readable Output
 
 >### Okta users found:
+>
 > ### Users
+>
 >|First Name|ID|Last Login|Last Name|Login|Mobile Phone|Status|
 >|---|---|---|---|---|---|---|
 >| Dbot | XXXXX |  | XSOAR | dbot@xsoar.com |  | STAGED |
 > 
 > ### tag: test12tag
+>
 ### okta-create-zone
 
 ***
@@ -2425,6 +2541,7 @@ Creates a Zone with the specified name.
 #### Context Output
 
 There is no context output for this command.
+
 ### okta-create-group
 
 ***
@@ -2449,9 +2566,13 @@ Create a new group in Okta tenant.
 | OktaGroup.Name | Unknown | Group name in Okta. | 
 | OktaGroup.Description | Unknown | Group description in Okta. | 
 | OktaGroup.Type | Unknown | Group type in Okta. | 
+
 #### Command example
+
 ```!okta-create-group name="TestGroup" description="TestGroup description."```
+
 #### Context Example
+
 ```json
 {
     "OktaGroup": {
@@ -2487,11 +2608,15 @@ Assign a group to an application.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!okta-assign-group-to-app appName="Default-App" groupName="TestGroup"```
+
 #### Human Readable Output
 
 >Group: TestGroup added to PA App successfully
+>
 ### okta-expire-password
 
 ***
@@ -2526,8 +2651,11 @@ Expires a password for an existing Okta user.
 | Account.Username | String | Okta account usernames returned by the search. | 
 
 #### Command example
+
 ```!okta-expire-password username="4x1xh5rl@test.com" temporary_password="false"```
+
 #### Context Example
+
 ```json
 {
     "Account": {
@@ -2548,6 +2676,7 @@ Expires a password for an existing Okta user.
 #### Human Readable Output
 
 >### Okta Expired Password
+>
 >|_links|activated|created|credentials|id|lastUpdated|passwordChanged|profile|status|statusChanged|type|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| suspend: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/suspend", "method": "POST"}<br/>schema: {"href": "https://test.oktapreview.com/api/v1/meta/schemas/user/osc66lckcvDyVcGzS0h7"}<br/>resetPassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/reset_password", "method": "POST"}<br/>forgotPassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/credentials/forgot_password", "method": "POST"}<br/>expirePassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/expire_password", "method": "POST"}<br/>changeRecoveryQuestion: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/credentials/change_recovery_question", "method": "POST"}<br/>self: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8"}<br/>type: {"href": "https://test.oktapreview.com/api/v1/meta/types/user/oty66lckcvDyVcGzS0h7"}<br/>changePassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/credentials/change_password", "method": "POST"}<br/>deactivate: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/deactivate", "method": "POST"} | 2022-06-20T04:48:04.000Z | 2022-06-20T04:47:59.000Z | password: {}<br/>recovery_question: {"question": "whats the first school?"}<br/>provider: {"type": "OKTA", "name": "OKTA"} | 00u19cr5qv91HjELI0h8 | 2023-09-10T12:56:04.000Z | 2022-06-20T04:48:07.000Z | firstName: Test 1 <br/>lastName: Test1<br/>preferredLanguage: en<br/>mobilePhone: null<br/>city: Tel-Aviv<br/>displayName: Test 1 that<br/>nickName: Testush<br/>secondEmail: null<br/>login: 4x1xh5rl@test.com<br/>email: 4x1xh5rl@test.com<br/>employeeNumber: 12345 | PASSWORD_EXPIRED | 2023-09-10T12:56:04.000Z | id: oty66lckcvDyVcGzS0h7 |

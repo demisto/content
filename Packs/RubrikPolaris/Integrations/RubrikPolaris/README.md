@@ -21,9 +21,12 @@ This integration was integrated and tested with version 1.0.0 of Rubrik Security
 | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### rubrik-radar-analysis-status
+
 ***
 Check the Radar Event for updates.
 
@@ -31,6 +34,7 @@ Check the Radar Event for updates.
 #### Base Command
 
 `rubrik-radar-analysis-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,10 +54,13 @@ Check the Radar Event for updates.
 
 
 #### Command Example
+
 ```!rubrik-radar-analysis-status activitySeriesId="" clusterId="cc19573c-db6c-418a-9d48-067a256543ba"```
 
 #### Human Readable Output
+
 ### Radar Analysis Status
+
 |Activity Series ID|Cluster ID|Message|Event Complete|
 |---|---|---|---|
 | ec9c48ce-5faf-474a-927c-33667355aecd | cc19573c-db6c-418a-9d48-067a256543ba | Completed backup of the transaction log for SQL Server database 'AdventureWorks2012' from 'sx1-sql12-1\MSSQLSERVER'. | True |
@@ -61,6 +68,7 @@ Check the Radar Event for updates.
 
 
 ### rubrik-sonar-sensitive-hits
+
 ***
 Find data classification hits on an object.
 
@@ -68,6 +76,7 @@ Find data classification hits on an object.
 #### Base Command
 
 `rubrik-sonar-sensitive-hits`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -95,10 +104,13 @@ Find data classification hits on an object.
 
 
 #### Command Example
+
 ```!rubrik-sonar-sensitive-hits objectName="sx1-radar15"```
 
 #### Human Readable Output
+
 ### Sensitive Hits
+
 |ID|Total Hits|
 |---|---|
 | afc0f6f0-148a-54c5-9927-c24c7cde1608 | 49684 |
@@ -106,6 +118,7 @@ Find data classification hits on an object.
 
 
 ### rubrik-cdm-cluster-location
+
 ***
 Find the CDM GeoLocation of a CDM Cluster.
 
@@ -113,6 +126,7 @@ Find the CDM GeoLocation of a CDM Cluster.
 #### Base Command
 
 `rubrik-cdm-cluster-location`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -129,10 +143,13 @@ Find the CDM GeoLocation of a CDM Cluster.
 
 
 #### Command Example
+
 ```!rubrik-cdm-cluster-location clusterId="cc19573c-db6c-418a-9d48-067a256543ba"```
 
 #### Human Readable Output
+
 ### CDM Cluster Location
+
 |Location|
 |---|
 | San Francisco, CA, USA |
@@ -140,6 +157,7 @@ Find the CDM GeoLocation of a CDM Cluster.
 
 
 ### rubrik-cdm-cluster-connection-state
+
 ***
 Find the CDM Connection State of a CDM Cluster.
 
@@ -147,6 +165,7 @@ Find the CDM Connection State of a CDM Cluster.
 #### Base Command
 
 `rubrik-cdm-cluster-connection-state`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -163,10 +182,13 @@ Find the CDM Connection State of a CDM Cluster.
 
 
 #### Command Example
+
 ```!rubrik-cdm-cluster-connection-state clusterId="cc19573c-db6c-418a-9d48-067a256543ba"```
 
 #### Human Readable Output
+
 ### CDM Cluster Connection State
+
 |Connection State|
 |---|
 | Connected |
@@ -174,6 +196,7 @@ Find the CDM Connection State of a CDM Cluster.
 
 
 ### rubrik-polaris-object-search
+
 ***
 Search for Rubrik discovered objects of any type, return zero or more matches.
 
@@ -181,6 +204,7 @@ Search for Rubrik discovered objects of any type, return zero or more matches.
 #### Base Command
 
 `rubrik-polaris-object-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -229,10 +253,13 @@ Search for Rubrik discovered objects of any type, return zero or more matches.
 
 
 #### Command Example
+
 ```!rubrik-polaris-object-search object_name="admin" limit=2```
 
 #### Human Readable Output
+
 ### Global Objects
+
 |Object ID|Object Name|Type|SLA Domain|
 |---|---|---|---|
 | 0f667954-9052-42c8-ac20-2149da4d0ec4 | Hoang-Admin Nguyen | O365Mailbox | UNPROTECTED |
@@ -242,6 +269,7 @@ Search for Rubrik discovered objects of any type, return zero or more matches.
 
 
 ### rubrik-sonar-policies-list
+
 ***
 Retrieve the list of all the available Sonar policies.
 
@@ -249,6 +277,7 @@ Retrieve the list of all the available Sonar policies.
 #### Base Command
 
 `rubrik-sonar-policies-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -270,10 +299,13 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!rubrik-sonar-policies-list ```
 
 #### Human Readable Output
+
 ### Sonar Policies
+
 |ID|Name|Description|Analyzers|Objects|Creator Email|
 |---|---|---|---|---|---|
 | bdb8c043-ee89-43ef-a3e2-73e94b5b3900 | CCPA | California Consumer Privacy Act | 5 | 3 | dummy.email@rubrik.com |
@@ -282,6 +314,7 @@ There are no input arguments for this command.
 
 
 ### rubrik-sonar-policy-analyzer-groups-list
+
 ***
 List the analyzer group policies.
 
@@ -289,6 +322,7 @@ List the analyzer group policies.
 #### Base Command
 
 `rubrik-sonar-policy-analyzer-groups-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -306,10 +340,13 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!rubrik-sonar-policy-analyzer-groups-list ```
 
 #### Human Readable Output
+
 ### Sonar Policy Analyzer Groups
+
 |ID|Name|Group Type|Analyzers|
 |---|---|---|---|
 | 97c6a54a-acfc-5ab2-a24a-6a7f3a9a1553 | GLBA | GLBA | id: ed30dfa0-334f-55ff-a1b7-03b6bdd7849b, Name: Credit Card, Analyzer Type: CREDIT_CARD<br/><br/>id: 3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f, Name: US Bank Acct, Analyzer Type: US_BANK_ACCT<br/><br/>id: 03b3dc9e-81c1-561c-8235-17cf2fc1c729, Name: US ITIN, Analyzer Type: US_ITIN<br/><br/>id: d5ce3ae5-f530-562a-85b1-4a84264a350a, Name: US SSN, Analyzer Type: US_SSN |
@@ -320,6 +357,7 @@ There are no input arguments for this command.
 
 
 ### rubrik-polaris-vm-object-metadata-get
+
 ***
 Retrieve details for a Vsphere object based on the provided object ID.
 
@@ -327,6 +365,7 @@ Retrieve details for a Vsphere object based on the provided object ID.
 #### Base Command
 
 `rubrik-polaris-vm-object-metadata-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -411,10 +450,13 @@ Retrieve details for a Vsphere object based on the provided object ID.
 
 
 #### Command Example
+
 ```!rubrik-polaris-vm-object-metadata-get object_id="e060116b-f9dc-56a1-82a6-1b968d2f6cef"```
 
 #### Human Readable Output
+
 ### VM Object Data
+
 |Object ID|Name|Snappable ID|SLA Domain|Cluster Name|Total Snapshots|Oldest Snapshot Date|Latest Snapshot Date|
 |---|---|---|---|---|---|---|---|
 | e060116b-f9dc-56a1-82a6-1b968d2f6cef | Kali-VM | VirtualMachine:::ae4484c6-b4c0-4ce8-b2ba-206a4184540b-vm-521 | DO_NOT_PROTECT | sand2-rbk01 | 42 | 2019-04-24T16:21:12.000Z | 2020-02-12T14:00:36.000Z |
@@ -422,6 +464,7 @@ Retrieve details for a Vsphere object based on the provided object ID.
 
 
 ### rubrik-polaris-vm-objects-list
+
 ***
 Retrieve a list of all the objects of the Vsphere Vm known to the Rubrik.
 
@@ -429,6 +472,7 @@ Retrieve a list of all the objects of the Vsphere Vm known to the Rubrik.
 #### Base Command
 
 `rubrik-polaris-vm-objects-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -487,10 +531,13 @@ Retrieve a list of all the objects of the Vsphere Vm known to the Rubrik.
 
 
 #### Command Example
+
 ```!rubrik-polaris-vm-objects-list limit=2```
 
 #### Human Readable Output
+
 ### Objects List
+
 |Object ID|Name|Snappable ID|Cluster|Object Type|SLA Domain|Assignment|Snapshots|RBS Status|Source Storage|Archival Storage|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 0242e84c-773a-5877-b955-1d52765ac852 | sx1-ganebala-l1 | VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-206037 | sand1-rbk01 | VmwareVirtualMachine | DO_NOT_PROTECT | Direct | 0 | Unregistered | 0 | 0 |
@@ -500,6 +547,7 @@ Retrieve a list of all the objects of the Vsphere Vm known to the Rubrik.
 
 
 ### rubrik-sonar-ondemand-scan
+
 ***
 Trigger an on-demand scan of a system. Supports "Vsphere VM" object type only.
 
@@ -509,6 +557,7 @@ Note: To know the scan status use the "rubrik-sonar-ondemand-scan-status" comman
 #### Base Command
 
 `rubrik-sonar-ondemand-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -526,10 +575,13 @@ Note: To know the scan status use the "rubrik-sonar-ondemand-scan-status" comman
 
 
 #### Command Example
+
 ```!rubrik-sonar-ondemand-scan scan_name="GLBA Scan for new user" sonar_policy_analyzer_groups='[{"id":"97c6a54a-acfc-5ab2-a24a-6a7f3a9a1553","name":"GLBA","groupType":"GLBA","analyzers":[{"id":"ed30dfa0-334f-55ff-a1b7-03b6bdd7849b","name":"CreditCard","analyzerType":"CREDIT_CARD"},{"id":"3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f","name":"BANK_ACCT","analyzerType":"US_BANK_ACCT"},{"id":"03b3dc9e-81c1-561c-8235-17cf2fc1c729","name":"USITIN","analyzerType":"US_ITIN"},{"id":"d5ce3ae5-f530-562a-85b1-4a84264a350a","name":"USSSN","analyzerType":"US_SSN"}]}]' objects_to_scan="0887e71c-56ac-59f7-8763-54b726e64dd6, a82e888c-2440-5af9-8c2a-447a97f6746c"```
 
 #### Human Readable Output
+
 ### Sonar On-Demand Scan
+
 |Crawl ID|
 |---|
 | bb4eedc0-594b-4566-b06d-24de0bf752ca |
@@ -537,6 +589,7 @@ Note: To know the scan status use the "rubrik-sonar-ondemand-scan-status" comman
 
 
 ### rubrik-sonar-ondemand-scan-status
+
 ***
 Retrieve the status of a scanned system.
 
@@ -546,6 +599,7 @@ Note: To download the completed request use the "rubrik-sonar-ondemand-scan-resu
 #### Base Command
 
 `rubrik-sonar-ondemand-scan-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -586,10 +640,13 @@ Note: To download the completed request use the "rubrik-sonar-ondemand-scan-resu
 
 
 #### Command Example
+
 ```!rubrik-sonar-ondemand-scan-status crawl_id="bb4eedc0-594b-4566-b06d-24de0bf752ca" ```
 
 #### Human Readable Output
+
 ### Sonar On-Demand Scan Status
+
 Final status of scan with crawl ID bb4eedc0-594b-4566-b06d-24de0bf752ca is IN_PROGRESS
 
 |Object ID|Object Name|Scan Status|
@@ -600,6 +657,7 @@ Final status of scan with crawl ID bb4eedc0-594b-4566-b06d-24de0bf752ca is IN_PR
 
 
 ### rubrik-polaris-vm-object-snapshot-list
+
 ***
 Search for a Rubrik snapshot of an object based on the provided snapshot ID, exact timestamp, or specific value like earliest/latest, or closest before/after a timestamp.
 
@@ -607,6 +665,7 @@ Search for a Rubrik snapshot of an object based on the provided snapshot ID, exa
 #### Base Command
 
 `rubrik-polaris-vm-object-snapshot-list`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                              | **Required** |
@@ -635,10 +694,13 @@ Search for a Rubrik snapshot of an object based on the provided snapshot ID, exa
 
 
 #### Command Example
+
 ```!rubrik-polaris-vm-object-snapshot-list object_id="86db05d1-292f-5973-b616-2ae3977f4428" start_date="2020-05-19T18:30:00.000000Z" end_date="2020-05-20T18:30:00.000000Z" timezone_offset=5.5 ```
 
 #### Human Readable Output
+
 ### VM Object Snapshots
+
 |Snapshot Details|Snapshot IDs|
 |---|---|
 | Total Snapshots: 2<br/>Date Range: From 2020-05-19T22:30:00.000Z to 2020-05-20T22:29:59.999Z | 33060f59-9c99-5c48-8305-8d1edfe402d2,<br/>57eac609-9529-5cb5-845a-b7cc78998222 |
@@ -646,6 +708,7 @@ Search for a Rubrik snapshot of an object based on the provided snapshot ID, exa
 
 
 ### rubrik-sonar-ondemand-scan-result
+
 ***
 Retrieve the download link for the requested scanned file.
 
@@ -653,6 +716,7 @@ Retrieve the download link for the requested scanned file.
 #### Base Command
 
 `rubrik-sonar-ondemand-scan-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -670,10 +734,13 @@ Retrieve the download link for the requested scanned file.
 
 
 #### Command Example
+
 ```!rubrik-sonar-ondemand-scan-result crawl_id="bb4eedc0-594b-4566-b06d-24de0bf752ca" file_type="HITS" ```
 
 #### Human Readable Output
+
 ### Sonar On-Demand Scan Result
+
 |Scan result CSV Download Link|
 |---|
 | Download the [CSV](https://www.example.com/csv_file) file to see the result. |
@@ -681,6 +748,7 @@ Retrieve the download link for the requested scanned file.
 
 
 ### rubrik-radar-anomaly-csv-analysis
+
 ***
 Request for the analysis and retrieve the download link or directly download file for the Radar CSV analyzed file.
 
@@ -688,6 +756,7 @@ Request for the analysis and retrieve the download link or directly download fil
 #### Base Command
 
 `rubrik-radar-anomaly-csv-analysis`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -720,10 +789,13 @@ Request for the analysis and retrieve the download link or directly download fil
 
 
 #### Command Example
+
 ```!rubrik-radar-anomaly-csv-analysis cluster_id="0000-000-000-000-0000" snapshot_id="0000-000-000-000-0000" object_id="0000-000-000-000-vm-0000" download_file=True```
 
 #### Human Readable Output
+>
 >### Radar Anomaly CSV Analysis
+>
 >|CSV Download Link|
 >|---|
 >| Download the analyzed [CSV](https://www.example.com/snapshot_000-000-000-000.csv) file. |
@@ -744,6 +816,7 @@ Request for the analysis and retrieve the download link or directly download fil
 
 
 ### rubrik-sonar-csv-download
+
 ***
 Request to download the Sonar CSV Snapshot results file.
 
@@ -753,6 +826,7 @@ Note: To know the ID and status of the download, use the "rubrik-user-downloads-
 #### Base Command
 
 `rubrik-sonar-csv-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -772,10 +846,13 @@ Note: To know the ID and status of the download, use the "rubrik-user-downloads-
 
 
 #### Command Example
+
 ```!rubrik-sonar-csv-download snapshot_id="c38ec074-0c45-5c72-b611-3322cbd46776" object_id="ac0a6844-a2fc-52b0-bb71-6a55f43677be" ```
 
 #### Human Readable Output
+
 ### Sonar CSV Download
+
 |Download Status|
 |---|
 | Success |
@@ -783,6 +860,7 @@ Note: To know the ID and status of the download, use the "rubrik-user-downloads-
 
 
 ### rubrik-gps-snapshot-files-list
+
 ***
 Retrieve the list of the available files that can be downloaded.
 
@@ -792,6 +870,7 @@ Note: To initiate the file download request use the "rubrik-gps-snapshot-files-d
 #### Base Command
 
 `rubrik-gps-snapshot-files-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -821,10 +900,13 @@ Note: To initiate the file download request use the "rubrik-gps-snapshot-files-d
 
 
 #### Command Example
+
 ```!rubrik-gps-snapshot-files-list snapshot_id=90858c2f-e572-5b9c-b455-ba309d50c1a2 ```
 
 #### Human Readable Output
+
 ### GPS Snapshot Files
+
 |File Name|Absolute Path|Path|File Mode|Last Modified|
 |---|---|---|---|---|
 | C: | /C: | C: | DIRECTORY | 2020-10-05T18:56:18.000Z |
@@ -834,6 +916,7 @@ Note: To retrieve the next set of results use, "next_page_token" = xyz
 
 
 ### rubrik-gps-vm-export
+
 ***
 Request to initiate an export of a snapshot of a virtual machine.
 
@@ -843,6 +926,7 @@ Note: To know about the exported VM's status, use the "rubrik-gps-async-result" 
 #### Base Command
 
 `rubrik-gps-vm-export`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -868,10 +952,13 @@ Note: To know about the exported VM's status, use the "rubrik-gps-async-result" 
 
 
 #### Command Example
+
 ```!rubrik-gps-vm-export object_id=d39e956f-a3c9-5307-865b-58ed045b59c5 snapshot_id=07fa66e1-137a-5473-8a8e-825547075d7b datastore_id=5fe3a92a-d848-5325-a1a2-ef6cf7a16376 host_compute_cluster_id=0dc88a78-0d46-57d7-86c6-f1bd97ff979f```
 
 #### Human Readable Output
+
 ### GPS VM Export
+
 |Snapshot Export Request ID|
 |---|
 | dummy_id |
@@ -879,6 +966,7 @@ Note: To know about the exported VM's status, use the "rubrik-gps-async-result" 
 
 
 ### rubrik-user-downloads-list
+
 ***
 Retrieve the user downloads. This would return the current and past download history.
 
@@ -888,6 +976,7 @@ Note: To download the requested Sonar CSV Snapshot results file use the "rubrik-
 #### Base Command
 
 `rubrik-user-downloads-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -906,10 +995,13 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!rubrik-user-downloads-list ```
 
 #### Human Readable Output
+
 ### User Downloads
+
 |Download ID|Name|Status|Identifier|Creation Time|Completion Time|
 |---|---|---|---|---|---|
 | 156 | GDIT-billing-test-oct10 | COMPLETED | SONAR_DOWNLOAD | 2021-10-06T07:25:51.676432470Z | 2021-10-06T07:25:51.856374014Z |
@@ -917,6 +1009,7 @@ There are no input arguments for this command.
 
 
 ### rubrik-gps-sla-domain-list
+
 ***
 Enumerates the available SLA Domains to apply to the on-demand snapshot as a retention policy.
 
@@ -924,6 +1017,7 @@ Enumerates the available SLA Domains to apply to the on-demand snapshot as a ret
 #### Base Command
 
 `rubrik-gps-sla-domain-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1009,10 +1103,13 @@ Enumerates the available SLA Domains to apply to the on-demand snapshot as a ret
 
 
 #### Command Example
+
 ```!rubrik-gps-sla-domain-list cluster_id=4d4a41d5-8910-4e4d-9dca-0798f5fc6d61 limit=2```
 
 #### Human Readable Output
+
 ### GPS SLA Domains
+
 |SLA Domain ID|SLA Domain Name|Base Frequency|Protected Object Count|Archival Location|Description|Replication Target 1|Replication Target 2|
 |---|---|---|---|---|---|---|---|
 | 00000000-0000-0000-0000-000000000002 | Bronzecd | 1 Days | 0 | AWS S3:bucket-1234 | Rubrik default Bronze level SLA Domain policy | sand2-rbk01 | sand2-rbk02 |
@@ -1021,6 +1118,7 @@ Enumerates the available SLA Domains to apply to the on-demand snapshot as a ret
 
 
 ### rubrik-sonar-csv-result-download
+
 ***
 Retrieve the download link for the requested Sonar CSV Snapshot file.
 
@@ -1028,6 +1126,7 @@ Retrieve the download link for the requested Sonar CSV Snapshot file.
 #### Base Command
 
 `rubrik-sonar-csv-result-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1044,10 +1143,13 @@ Retrieve the download link for the requested Sonar CSV Snapshot file.
 
 
 #### Command Example
+
 ```!rubrik-sonar-csv-result-download download_id=65```
 
 #### Human Readable Output
+
 ### Sonar CSV Result
+
 |Download URL|
 |---|
 | Download the [CSV](https://www.example.com/csv_file) file to see the result. |
@@ -1055,6 +1157,7 @@ Retrieve the download link for the requested Sonar CSV Snapshot file.
 
 
 ### rubrik-gps-vm-snapshot-create
+
 ***
 Triggers an on-demand snapshot of a system.
 
@@ -1064,6 +1167,7 @@ Note: To know about the status of the on-demand snapshot creation, use the "rubr
 #### Base Command
 
 `rubrik-gps-vm-snapshot-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1081,10 +1185,13 @@ Note: To know about the status of the on-demand snapshot creation, use the "rubr
 
 
 #### Command Example
+
 ```!rubrik-gps-vm-snapshot-create object_id=ac0a6844-a2fc-52b0-bb71-6a55f43677be```
 
 #### Human Readable Output
+
 ### GPS VM Snapshot
+
 |On-Demand Snapshot Request ID|Status|
 |---|---|
 | dummy_id | QUEUED |
@@ -1092,6 +1199,7 @@ Note: To know about the status of the on-demand snapshot creation, use the "rubr
 
 
 ### rubrik-gps-snapshot-files-download
+
 ***
 Request to download the snapshot file from the backup.
 
@@ -1101,6 +1209,7 @@ Note: To know about the file information and which file can be downloaded, use t
 #### Base Command
 
 `rubrik-gps-snapshot-files-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1121,10 +1230,13 @@ Note: To know about the file information and which file can be downloaded, use t
 
 
 #### Command Example
+
 ```!rubrik-gps-snapshot-files-download snapshot_id=3765b5b5-827b-5588-8c34-5cb737a28685 file_path="/.autorelabel" ```
 
 #### Human Readable Output
+
 ### Snapshot File Request ID
+
 |ID|Status|
 |---|---|
 | dummy_id | QUEUED |
@@ -1132,6 +1244,7 @@ Note: To know about the file information and which file can be downloaded, use t
 
 
 ### rubrik-gps-vm-livemount
+
 ***
 Performs a live mount of a virtual machine snapshot.
 
@@ -1141,6 +1254,7 @@ Note: To know about the live mount status, use the "rubrik-gps-async-result" com
 #### Base Command
 
 `rubrik-gps-vm-livemount`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                             | **Required** |
@@ -1168,10 +1282,13 @@ Note: To know about the live mount status, use the "rubrik-gps-async-result" com
 
 
 #### Command Example
+
 ```!rubrik-gps-vm-livemount snapshot_id=d680b484-0084-5231-a05d-18e9cd5402fc vm_name=live-mount-demo ```
 
 #### Human Readable Output
+
 ### GPS VM Livemount
+
 |VM Live Mount Request ID|
 |---|
 | dummy_id |
@@ -1179,6 +1296,7 @@ Note: To know about the live mount status, use the "rubrik-gps-async-result" com
 
 
 ### rubrik-gps-vm-host-list
+
 ***
 Retrieve the list of available Vsphere Hosts.
 
@@ -1186,6 +1304,7 @@ Retrieve the list of available Vsphere Hosts.
 #### Base Command
 
 `rubrik-gps-vm-host-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1213,10 +1332,13 @@ Retrieve the list of available Vsphere Hosts.
 
 
 #### Command Example
+
 ```!rubrik-gps-vm-host-list ```
 
 #### Human Readable Output
+
 ### GPS VM Hosts
+
 |VSphere Host ID|Name|Physical Host|
 |---|---|---|
 | f57bfebf-c7c9-5310-a5fd-1f0aeea5ba25 | sjc-40302-sand1-esx02.rubrikdemo.com | {'id': '72480b29-0eaa-57a9-8c5c-45b7e1c2c826', 'name': 'Sandbox-1 SJC Cluster', 'objectType': 'VSphereComputeCluster'},<br/>{'id': '3f3a92de-c7f3-57f7-989f-3731db83aeab', 'name': 'Sandbox-1 Datacenter', 'objectType': 'VSphereDatacenter'},<br/>{'id': '415859e2-fd22-53ea-8de1-041d99298fe3', 'name': 'sand1-vcsa.rubrikdemo.com', 'objectType': 'VSphereVCenter'} |
@@ -1224,6 +1346,7 @@ Retrieve the list of available Vsphere Hosts.
 
 
 ### rubrik-gps-vm-datastore-list
+
 ***
 Retrieve the list of the available datastores on a Vsphere Host.
 
@@ -1231,6 +1354,7 @@ Retrieve the list of the available datastores on a Vsphere Host.
 #### Base Command
 
 `rubrik-gps-vm-datastore-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1260,10 +1384,13 @@ Retrieve the list of the available datastores on a Vsphere Host.
 
 
 #### Command Example
+
 ```!rubrik-gps-vm-datastore-list ```
 
 #### Human Readable Output
+
 ### GPS VM Datastores
+
 |VSphere Datastore ID|Name|Capacity|Free Space|Datastore Type|
 |---|---|---|---|---|
 | dummy_datastore_id | dummy-repo | 0.53362190336 TB | 0.188318314496 TB | NFS |
@@ -1271,6 +1398,7 @@ Retrieve the list of the available datastores on a Vsphere Host.
 
 
 ### rubrik-event-list
+
 ***
 Retrieve the list of events.
 
@@ -1278,6 +1406,7 @@ Retrieve the list of events.
 #### Base Command
 
 `rubrik-event-list`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | **Required** |
@@ -1326,10 +1455,13 @@ Retrieve the list of events.
 
 
 #### Command Example
+
 ```!rubrik-event-list limit=1```
 
 #### Human Readable Output
+
 ### Events
+
 |Event ID|Activity Series ID|Cluster ID|Object ID|Object Name|Severity|Start Time|Last Updated|Last Activity Type|Last Activity Status|
 |---|---|---|---|---|---|---|---|---|---|
 | 7739500 | 422d17c0-737d-44df-98a0-a7fa9f714c0d | cc19573c-db6c-418a-9d48-067a256543ba | Fileset:::f2666679-5b94-4116-9cbf-6ab69e575522 | AllTheThings | Info | 2021-10-25T12:15:36.911Z | 2021-10-25T12:16:10.212Z | Index | Success |
@@ -1339,6 +1471,7 @@ Retrieve the list of events.
 
 
 ### rubrik-polaris-object-list
+
 ***
 Retrieve the list of Rubrik objects, based on the provided filters.
 
@@ -1346,6 +1479,7 @@ Retrieve the list of Rubrik objects, based on the provided filters.
 #### Base Command
 
 `rubrik-polaris-object-list`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | **Required** |
@@ -1385,10 +1519,13 @@ Retrieve the list of Rubrik objects, based on the provided filters.
 
 
 #### Command Example
+
 ```!rubrik-polaris-object-list limit=1```
 
 #### Human Readable Output
+
 ### Objects
+
 |Object ID|Object Name|Object Type|Location|Cluster Name|SLA Domain Name|
 |---|---|---|---|---|---|
 | 0014037c-70ae-4c53-b1cf-df6926b88968 | Christian LeCorre | O365User | Rubrik Demo\EMEA Users\AMER Users | x | UNPROTECTED |
@@ -1398,6 +1535,7 @@ Retrieve the list of Rubrik objects, based on the provided filters.
 
 
 ### rubrik-polaris-object-snapshot-list
+
 ***
 Retrieve Rubrik snapshot(s) of an object, based on the provided object ID.
 
@@ -1405,6 +1543,7 @@ Retrieve Rubrik snapshot(s) of an object, based on the provided object ID.
 #### Base Command
 
 `rubrik-polaris-object-snapshot-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1450,10 +1589,13 @@ Retrieve Rubrik snapshot(s) of an object, based on the provided object ID.
 
 
 #### Command Example
+
 ```!rubrik-polaris-object-snapshot-list object_id=06515737-388a-57aa-9c8e-54b3f1ee5d8b limit=1```
 
 #### Human Readable Output
+
 ### Object Snapshots
+
 |Snapshot ID|Creation Date|Cluster Name|SLA Domain Name|
 |---|---|---|---|
 | a7adc499-b896-5ad6-bfc2-0aae0ed99459 | 2021-10-28T19:35:52.000Z | sand2-rbk01 | 12hr-30d-AWS |
@@ -1463,6 +1605,7 @@ Retrieve Rubrik snapshot(s) of an object, based on the provided object ID.
 
 
 ### rubrik-radar-ioc-scan
+
 ***
 Triggers an IOC scan of a system.
 
@@ -1472,6 +1615,7 @@ Note: To know the results of the scan use the "rubrik-radar-ioc-scan-results" co
 #### Base Command
 
 `rubrik-radar-ioc-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1502,10 +1646,13 @@ Note: To know the results of the scan use the "rubrik-radar-ioc-scan-results" co
 
 
 #### Command Example
+
 ```!rubrik-radar-ioc-scan scan_name="Revil Ransomware Scan" ioc_type="INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME" ioc_value="revil.exe" cluster_id="052bf7af-93a3-44e9-a7d7-bc8dad4d6b43" object_id="868aa03d-4145-4cb1-808b-e10c4f7a3741" ```
 
 #### Human Readable Output
+
 ### Radar IOC Scan
+
 |Scan ID|Status|
 |---|---|
 | dummy-ioc-id | RUNNING |
@@ -1513,6 +1660,7 @@ Note: To know the results of the scan use the "rubrik-radar-ioc-scan-results" co
 
 
 ### rubrik-radar-ioc-scan-results
+
 ***
 Retrieves the results of IOC scan of a system.
 
@@ -1522,6 +1670,7 @@ Note: To initiate a scan use the "rubrik-radar-ioc-scan" command and to list the
 #### Base Command
 
 `rubrik-radar-ioc-scan-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1557,10 +1706,13 @@ Note: To initiate a scan use the "rubrik-radar-ioc-scan" command and to list the
 
 
 #### Command Example
+
 ```!rubrik-radar-ioc-scan-results scan_id="bf687fcf-84d7-47f6-8bd1-54e8cf439680" cluster_id="052bf7af-93a3-44e9-a7d7-bc8dad4d6b43"```
 
 #### Human Readable Output
+
 ### Radar IOC Scan Results
+
 Scan ID: bf687fcf-84d7-47f6-8bd1-54e8cf439680
 Status: FINISHED
 
@@ -1576,6 +1728,7 @@ Status: FINISHED
 
 
 ### rubrik-gps-async-result
+
 ***
 Retrieve the result of an asynchronous request. This command will retrieve the result of requests made by commands "rubrik-gps-snapshot-files-download", "rubrik-gps-vm-livemount", "rubrik-gps-vm-export", "rubrik-gps-vm-snapshot-create", and "rubrik-gps-vm-recover-files".
 
@@ -1583,6 +1736,7 @@ Retrieve the result of an asynchronous request. This command will retrieve the r
 #### Base Command
 
 `rubrik-gps-async-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1606,10 +1760,13 @@ Retrieve the result of an asynchronous request. This command will retrieve the r
 
 
 #### Command Example
+
 ```!rubrik-gps-async-result request_id="EXPORT_VMWARE_SNAPSHOT_6e101218-141f-4101-b334-3c1bf440bfee_466b7d74-0d13-4e54-9a57-2ea4d7b00a0c:::0" cluster_id="052bf7af-93a3-44e9-a7d7-bc8dad4d6b43" ```
 
 #### Human Readable Output
+
 ### GPS Asynchronous Request Result
+
 |ID|Status|Node ID|Links|
 |---|---|---|---|
 | dummy_id | FAILED | cluster:::RVMHM219S004941 | [self](https://www.example.com/)<br/> |
@@ -1617,6 +1774,7 @@ Retrieve the result of an asynchronous request. This command will retrieve the r
 
 
 ### rubrik-gps-cluster-list
+
 ***
 Retrieve the list of the available rubrik clusters.
 
@@ -1624,6 +1782,7 @@ Retrieve the list of the available rubrik clusters.
 #### Base Command
 
 `rubrik-gps-cluster-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1672,10 +1831,13 @@ Retrieve the list of the available rubrik clusters.
 
 
 #### Command Example
+
 ```!rubrik-gps-cluster-list name="sand1"```
 
 #### Human Readable Output
+
 ### GPS Clusters
+
 |Cluster ID|Cluster Name|Connection Status|Cluster Location|Total Capacity|Free Space|Protected Objects|Cluster Version|IP Address|
 |---|---|---|---|---|---|---|---|---|
 | cc19573c-db6c-418a-9d48-067a256543ba | sand1-rbk01 | Connected | San Francisco, CA, USA | 52.605821063168 TB | 45.484602130432 TB | 205 | 7.0.0-EA1-14307 | X.X.X.X, X.X.X.X |
@@ -1683,6 +1845,7 @@ Retrieve the list of the available rubrik clusters.
 
 
 ### rubrik-radar-ioc-scan-list
+
 ***
 Lists the running/completed IOC scans on a cluster.
 
@@ -1692,6 +1855,7 @@ Note: To know the results of the scan use the "rubrik-radar-ioc-scan-results" co
 #### Base Command
 
 `rubrik-radar-ioc-scan-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1711,10 +1875,13 @@ Note: To know the results of the scan use the "rubrik-radar-ioc-scan-results" co
 
 
 #### Command Example
+
 ```!rubrik-radar-ioc-scan-list cluster_id="052bf7af-93a3-44e9-a7d7-bc8dad4d6b43"```
 
 #### Human Readable Output
+
 ### Radar IOC Scans
+
 |Scan ID|Start Time|End Time|Scanned Objects|
 |---|---|---|---|
 | fcac511b-20b4-472d-9b65-9198cff8cd49 | 2021-10-12T04:52:08.777Z | Not Finished | VirtualMachine:::90da5ffb-432f-4dac-8c73-39260ff5493e-vm-5952003d-f95c-4ae0-bf9b-b5a80b210935 |
@@ -1724,6 +1891,7 @@ Note: To know the results of the scan use the "rubrik-radar-ioc-scan-results" co
 
 
 ### rubrik-gps-vm-recover-files
+
 ***
 Recovers files from a snapshot backup, back into a system.
 
@@ -1732,6 +1900,7 @@ Note: To know about the recovery status, use the "rubrik-gps-async-result" comma
 #### Base Command
 
 `rubrik-gps-vm-recover-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1751,10 +1920,13 @@ Note: To know about the recovery status, use the "rubrik-gps-async-result" comma
 
 
 #### Command Example
+
 ```!rubrik-gps-vm-recover-files cluster_id="052bf7af-93a3-44e9-a7d7-bc8dad4d6b43" snapshot_id="e2a0ffa8-82a3-518b-8532-0608a0e7380f" path_to_recover="/bin,/boot" restore_path="/tmp/backup1"```
 
 #### Human Readable Output
+
 ### GPS VM Recover Files
+
 |Recover Files Request ID|
 |---|
 | dummy_id |
@@ -1822,8 +1994,11 @@ Retrieve the user access information.
 | RubrikPolaris.PageToken.UserAccess.has_next_upn_page | Boolean | Whether the result has the next UPN page or not. | 
 
 #### Command example
+
 ```!rubrik-sonar-user-access-list user_name="Demo Rubrik" user_email="demo@rubrik.com" limit="1"```
+
 #### Context Example
+
 ```json
 {
     "RubrikPolaris": {
@@ -1882,6 +2057,7 @@ Retrieve the user access information.
 #### Human Readable Output
 
 >### User Access (Showing Records 1-1 out of 1)
+>
 >|User ID|User Full Name|User Principal Name|Risk Level|Total Sensitive Objects|Total Sensitive Files|Total Sensitive Hits|
 >|---|---|---|---|---|---|---|
 >| [S-1-0-01-0000000000-0000000000-000000000-0001](https://rubrik-test.my.rubrik.com/sonar/user_intelligence?redirected_user_id=S-1-0-01-0000000000-0000000000-000000000-0001) | Demo Rubrik | demo@rubrik\.com | HIGH_RISK | 1 | 124 | 86972 |
@@ -2002,8 +2178,11 @@ Retrieve the user access information based on the provided user ID.
 | RubrikPolaris.UserAccess.__typename | String | The type of the User Access field. | 
 
 #### Command example
+
 ```!rubrik-sonar-user-access-get user_id="S-1-0-01-0000000000-0000000000-000000000-0001"```
+
 #### Context Example
+
 ```json
 {
     "RubrikPolaris": {
@@ -2285,12 +2464,14 @@ Retrieve the user access information based on the provided user ID.
 #### Human Readable Output
 
 >### User Access
+>
 >|User ID|User Full Name|User Principal Name|Risk Level|Access Risk Reason(s)|Insecure Reason(s)|Groups|Total Sensitive Objects|Total Sensitive Files|Total Sensitive Hits|
 >|---|---|---|---|---|---|---|---|---|---|
 >| [S-1-0-01-0000000000-0000000000-000000000-0001](https://rubrik-test.my.rubrik.com/sonar/user_intelligence?redirected_user_id=S-1-0-01-0000000000-0000000000-000000000-0001) | DemoRubrik | demo@rubrik\.com | HIGH_RISK | MEDIUM_RISK_ANALYZER_HITS, OPEN_ACCESS | PASSWORD_NEVER_EXPIRES | Domain Admins, Domain Users | 2 | 250 | 173954 |
 >
 >
 >### Sensitive Hits
+>
 >|Policy Name|Total Sensitive Files|Total Sensitive Hits|Sensitive Hits Delta|High Risk Hits|Medium Risk Hits|Low Risk Hits|
 >|---|---|---|---|---|---|---|
 >| Policy 1 | 164 | 138118 | 0 | 0 | 138118 | 0 |
@@ -2390,8 +2571,11 @@ Retrieve the context of the file, folder, or file share for the provided object 
 | RubrikPolaris.PageToken.FileContext.hasNextPage | Boolean | Whether the result has the next page or not. | 
 
 #### Command example
+
 ```!rubrik-sonar-file-context-list object_id="1" snapshot_id="1" limit="2"```
+
 #### Context Example
+
 ```json
 {
     "RubrikPolaris": {
@@ -2599,6 +2783,7 @@ Retrieve the context of the file, folder, or file share for the provided object 
 #### Human Readable Output
 
 >### File Context
+>
 >|File Name|File Size in Bytes|Total Sensitive Hits|Daily Hits Change|File Path|Access Type|Last Access Time|Last Modified Time|
 >|---|---|---|---|---|---|---|---|
 >| uk_drivers_license_number.xlsx | 85708 | 2000 | 0 | /C:/File Shares/uk_drivers_license_number.xlsx | INHERITED | 2022-03-24T05:26:18Z | 2022-03-24T05:26:18Z |
@@ -2663,8 +2848,11 @@ Retrieve the suspicious list of files for a snapshot ID with detected file anoma
 | RubrikPolaris.SuspiciousFile.__typename | String | The type name of the suspicious file response. | 
 
 #### Command example
+
 ```!rubrik-radar-suspicious-file-list snapshot_id="00000000-0000-0000-0000-000000000001"```
+
 #### Context Example
+
 ```json
 {
     "RubrikPolaris": {
@@ -2733,12 +2921,14 @@ Retrieve the suspicious list of files for a snapshot ID with detected file anoma
 #### Human Readable Output
 
 >### Anomaly Information
+>
 >|Anomaly ID|Is Anomaly|Anomaly Probability|Severity|Encryption|Anomaly Type|Total Suspicious Files|Total Ransomware Note|Detection Time|Snapshot Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 00000000-0000-0000-0000-000000000001:::VirtualMachine:::00000000-0000-0000-0000-000000000001-vm-206:::00000000-0000-0000-0000-000000000001 | true | 0.949999988079071 | Critical | HIGH | LockBit | 1 | 1 | 2024-02-05T18:49:03.000Z | 2024-02-05T16:59:30.000Z |
 >
 >
 >### Suspicious Files
+>
 >|File Path|Suspicious Activity|File Size in Bytes|Last Modified Time|
 >|---|---|---|---|
 >| /C:/Shares/Restore-My-Files.txt.lockbit | Ransomware Encryption | 2512 | 2024-02-05T16:00:44.000Z |
@@ -2849,8 +3039,11 @@ Retrieve the sensitive information available for the given IP address(es).
 | RubrikPolaris.IP.threatMonitoringInfo.redirectLink | String | The link to the threat monitoring information in the Rubrik UI. | 
 
 #### Command example
+
 ```!ip ip="0.0.0.1"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -2931,26 +3124,31 @@ Retrieve the sensitive information available for the given IP address(es).
 #### Human Readable Output
 
 >### General Information for the given medium risk IP: 0.0.0.1
+>
 >|Fid|Last Snapshot|Name|Object Type|Protection Status|Redirect Link|
 >|---|---|---|---|---|---|
 >| 12345678-1234-1234-1234-123456789012 | 2024-10-18T06:02:25Z | DEMO-RADAR | Vsphere Virtual Machine | Protected | [https://rubrik-test.my.rubrik.com/inventory_hierarchy/vsphere/12345678-1234-1234-1234-123456789012/overview](https://rubrik-test.my.rubrik.com/inventory_hierarchy/vsphere/12345678-1234-1234-1234-123456789012/overview) |
 >
 >### Sensitive Information
+>
 >|Open Access Files|Policy Names|Redirect Link|Risk Level|Sensitive Files|Sensitive Hits|Stale Files|
 >|---|---|---|---|---|---|---|
 >| 6 | U.S. PII | [https://rubrik-test.my.rubrik.com/sonar/objects/detail/12345678-1234-1234-1234-123456789012/12345678-1234-1234-1234-123456789012/browse](https://rubrik-test.my.rubrik.com/sonar/objects/detail/12345678-1234-1234-1234-123456789012/12345678-1234-1234-1234-123456789012/browse) | Medium | mediumCount: 11 | 2910 | 11 |
 >
 >### Anomaly Information
+>
 >|Created File Count|Deleted File Count|Detection Time|Modified File Count|Redirect Link|Severity|Suspicious File Count|
 >|---|---|---|---|---|---|---|
 >| 4487 | 4477 | 2024-10-14T17:57:06Z | 32 | [https://rubrik-test.my.rubrik.com/radar/investigations/vsphere/12345678-1234-1234-1234-123456789012/snapshot/77dc1474-a654-5f20-bcac-348a0f83cd3a/summary](https://rubrik-test.my.rubrik.com/radar/investigations/vsphere/12345678-1234-1234-1234-123456789012/snapshot/77dc1474-a654-5f20-bcac-348a0f83cd3a/summary) | Critical | 4476 |
 >
 >### Threat Hunt Information
+>
 >|Latest Malicious Threat Hunt|Latest Threat Hunt|Redirect Link|
 >|---|---|---|
 >| huntId: 12345678-1234-1234-1234-123456789012<br/>huntStartTime: 2024-10-11T09:23:26Z<br/>isMalicious: Matches Found | huntId: 12345678-1234-1234-1234-123456789012<br/>huntStartTime: 2024-10-11T09:23:26Z<br/>isMalicious: Matches Found | [https://rubrik-test.my.rubrik.com/radar/investigations/threat_hunts/12345678-1234-1234-1234-123456789012/details](https://rubrik-test.my.rubrik.com/radar/investigations/threat_hunts/12345678-1234-1234-1234-123456789012/details) |
 >
 >### Threat Monitoring Information
+>
 >|Latest Malicious Threat Monitoring|Latest Threat Monitoring|Redirect Link|
 >|---|---|---|
 >| snapshotFid: 12345678-1234-1234-1234-123456789012<br/>monitoringScanTime: 2024-10-14T04:41:15Z<br/>isMalicious: Matches Found | snapshotFid: 12345678-1234-1234-1234-123456789012<br/>monitoringScanTime: 2024-10-18T05:51:31Z<br/>isMalicious: No Matches | [https://rubrik-test.my.rubrik.com/radar/threat_monitoring/12345678-1234-1234-1234-123456789012/Cluster_B/8b4fe6f6-cc87-4354-a125-b65e23cf8c90](https://rubrik-test.my.rubrik.com/radar/threat_monitoring/12345678-1234-1234-1234-123456789012/Cluster_B/8b4fe6f6-cc87-4354-a125-b65e23cf8c90) |
@@ -3085,8 +3283,11 @@ Retrieve the sensitive information available for the given domain(s).
 | RubrikPolaris.Domain.threatMonitoringInfo.redirectLink | String | The link to the threat monitoring information in the Rubrik UI. | 
 
 #### Command example
+
 ```!domain domain="DEMO-RADAR" using-brand=RubrikPolaris```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -3170,26 +3371,31 @@ Retrieve the sensitive information available for the given domain(s).
 #### Human Readable Output
 
 >### General Information for the given medium risk domain: DEMO-RADAR
+>
 >|Fid|Last Snapshot|Name|Object Type|Protection Status|Redirect Link|
 >|---|---|---|---|---|---|
 >| 12345678-1234-1234-1234-123456789012 | 2024-10-18T06:02:25Z | DEMO-RADAR | Vsphere Virtual Machine | Protected | [https://rubrik-test.my.rubrik.com/inventory_hierarchy/vsphere/12345678-1234-1234-1234-123456789012/overview](https://rubrik-test.my.rubrik.com/inventory_hierarchy/vsphere/12345678-1234-1234-1234-123456789012/overview) |
 >
 ### Sensitive Information
+>
 >|Open Access Files|Policy Names|Redirect Link|Risk Level|Sensitive Files|Sensitive Hits|Stale Files|
 >|---|---|---|---|---|---|---|
 >| 6 | U.S. PII | [https://rubrik-test.my.rubrik.com/sonar/objects/detail/12345678-1234-1234-1234-123456789012/12345678-1234-1234-1234-123456789012/browse](https://rubrik-test.my.rubrik.com/sonar/objects/detail/12345678-1234-1234-1234-123456789012/12345678-1234-1234-1234-123456789012/browse) | Medium | mediumCount: 11 | 2910 | 11 |
 >
 >### Anomaly Information
+>
 >|Created File Count|Deleted File Count|Detection Time|Modified File Count|Redirect Link|Severity|Suspicious File Count|
 >|---|---|---|---|---|---|---|
 >| 4487 | 4477 | 2024-10-14T17:57:06Z | 32 | [https://rubrik-test.my.rubrik.com/radar/investigations/vsphere/12345678-1234-1234-1234-123456789012/snapshot/77dc1474-a654-5f20-bcac-348a0f83cd3a/summary](https://rubrik-test.my.rubrik.com/radar/investigations/vsphere/12345678-1234-1234-1234-123456789012/snapshot/77dc1474-a654-5f20-bcac-348a0f83cd3a/summary) | Critical | 4476 |
 >
 >### Threat Hunt Information
+>
 >|Latest Malicious Threat Hunt|Latest Threat Hunt|Redirect Link|
 >|---|---|---|
 >| huntId: 12345678-1234-1234-1234-123456789012<br>huntStartTime: 2024-10-11T09:23:26Z<br>isMalicious: Matches Found | huntId: 12345678-1234-1234-1234-123456789012<br>huntStartTime: 2024-10-11T09:23:26Z<br>isMalicious: Matches Found | [https://rubrik-test.my.rubrik.com/radar/investigations/threat_hunts/12345678-1234-1234-1234-123456789012/details](https://rubrik-test.my.rubrik.com/radar/investigations/threat_hunts/12345678-1234-1234-1234-123456789012/details) |
 >
 >### Threat Monitoring Information
+>
 >|Latest Malicious Threat Monitoring|Latest Threat Monitoring|Redirect Link|
 >|---|---|---|
 >| snapshotFid: 12345678-1234-1234-1234-123456789012<br>monitoringScanTime: 2024-10-14T04:41:15Z<br>isMalicious: Matches Found | snapshotFid: 12345678-1234-1234-1234-123456789012<br>monitoringScanTime: 2024-10-18T05:51:31Z<br>isMalicious: No Matches | [https://rubrik-test.my.rubrik.com/radar/threat_monitoring/12345678-1234-1234-1234-123456789012/Cluster_B/8b4fe6f6-cc87-4354-a125-b65e23cf8c90](https://rubrik-test.my.rubrik.com/radar/threat_monitoring/12345678-1234-1234-1234-123456789012/Cluster_B/8b4fe6f6-cc87-4354-a125-b65e23cf8c90) |

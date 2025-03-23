@@ -12,9 +12,12 @@ CyberChef is a web-application developed by GCHQ that's been called the “Cyber
 | Local execution | Uses the [cyberchef node package](https://github.com/polarityio/cyberchef-node) for local execution of your commands | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cyberchef-bake
+
 ***
 Bake you recipe!
 
@@ -22,6 +25,7 @@ Bake you recipe!
 #### Base Command
 
 `cyberchef-bake`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -39,16 +43,19 @@ Bake you recipe!
 
 
 #### Command Example
+
 ``` !cyberchef-bake input="One, two, three, four." recipe="{\"op\": \"to decimal\"}"```
 
 ```!cyberchef-bake input="79 110 101 44 32 116 119 111 44 32 116 104 114 101 101 44 32 102 111 117 114 46" recipe="{\"op\": \"from decimal\"}" outputType=string```
 
 #### Human Readable Output
+
 ![image](../../doc_files/138084891-3509076f-3491-4eab-b280-1707d2227d08.png)
 
 
 
 ### cyberchef-magic
+
 ***
 CyberChef Magic function
 
@@ -56,6 +63,7 @@ CyberChef Magic function
 #### Base Command
 
 `cyberchef-magic`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -72,8 +80,10 @@ CyberChef Magic function
 
 
 #### Command Example
+
 ```!cyberchef-magic input="79 110 101 44 32 116 119 111 44 32 116 104 114 101 101 44 32 102 111 117 114 46"```
 
 #### Human Readable Output
+
 ![image](../../doc_files/138084951-8e8225a5-50d5-42df-904f-9c9d0981767a.png)
 

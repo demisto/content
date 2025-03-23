@@ -1,6 +1,7 @@
 Finds the rule state for a hash value in CBEP/Bit9.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Finds the rule state for a hash value in CBEP/Bit9.
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * cbp-fileRule-search
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,5 +26,6 @@ This script uses the following commands and scripts.
 | hash | The hash value(s) to check. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

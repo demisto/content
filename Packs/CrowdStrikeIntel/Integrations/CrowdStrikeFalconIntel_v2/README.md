@@ -12,9 +12,12 @@ Threat intelligence service by CrowdStrike focused on delivering a technical fee
 | insecure | Trust any certificate \(not secure\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### file
+
 ***
 Check file reputation.
 
@@ -22,6 +25,7 @@ Check file reputation.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -60,9 +64,11 @@ Check file reputation.
 
 
 #### Command Example
+
 ```!file file=sha256_value```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -157,6 +163,7 @@ Check file reputation.
 
 
 ### url
+
 ***
 Check the given URL reputation.
 
@@ -166,6 +173,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -202,9 +210,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!url url=https://withifceale.top/treusparq.php```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -295,6 +305,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### domain
+
 ***
 Check the given URL reputation.
 
@@ -304,6 +315,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -340,9 +352,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!domain domain=xeemoquo.top```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -417,6 +431,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### ip
+
 ***
 Check IP reputation.
 
@@ -424,6 +439,7 @@ Check IP reputation.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -460,9 +476,11 @@ Check IP reputation.
 
 
 #### Command Example
+
 ```!ip ip=8.8.8.8```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -538,6 +556,7 @@ Check IP reputation.
 
 
 ### cs-actors
+
 ***
 Search known actors based on the given parameters.
 
@@ -545,6 +564,7 @@ Search known actors based on the given parameters.
 #### Base Command
 
 `cs-actors`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -594,9 +614,11 @@ Search known actors based on the given parameters.
 
 
 #### Command Example
+
 ```!cs-actors limit=1 target_industries="Entertainment,Healthcare"```
 
 #### Context Example
+
 ```
 {
     "FalconIntel": {
@@ -703,12 +725,14 @@ Search known actors based on the given parameters.
 #### Human Readable Output
 
 >### Falcon Intel Actor search:
+>
 >|Active|Capability|First Activity Date|ID|Known As|Last Activity Date|Motivations|Name|Origins|Short Description|Slug|Target Countries|Target Industries|URL|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | Average | 2019-05-01T00:00:00.000Z | 76078 | Maze Team | 2020-09-01T00:00:00.000Z | Criminal | TWISTED SPIDER | Eastern Europe,<br/>Russian Federation | TWISTED SPIDER is the criminal group behind the development and operation of Maze ransomware. While the ransomware was first observed in May 2019, the group gained notoriety in November 2019 with their brazen attitude toward victims and their willingness to speak with security researchers as they began using Big Game Hunting (BGH) tactics to target organizations and businesses. While other actors ... | twisted-spider | Algeria,<br/>Argentina,<br/>Australia,<br/>Austria,<br/>Belgium,<br/>Brazil,<br/>Canada,<br/>China,<br/>Colombia,<br/>Costa Rica,<br/>Czech Republic,<br/>Egypt,<br/>France,<br/>Germany,<br/>Hong Kong,<br/>India,<br/>Italy,<br/>Japan,<br/>Luxembourg,<br/>Macedonia,<br/>Netherlands,<br/>Nigeria,<br/>North America,<br/>Norway,<br/>Oman,<br/>Puerto Rico,<br/>Saudi Arabia,<br/>Singapore,<br/>South Africa,<br/>South Korea,<br/>Spain,<br/>Sri Lanka,<br/>Switzerland,<br/>Thailand,<br/>United Arab Emirates,<br/>United Kingdom,<br/>United States,<br/>Vietnam | Academic,<br/>Agriculture,<br/>Automotive,<br/>Aviation,<br/>Biomedical,<br/>Chemicals,<br/>Consulting & Professional Services,<br/>Consumer Goods,<br/>Energy,<br/>Entertainment,<br/>Financial Management & Hedge Funds,<br/>Financial Services,<br/>Food and Beverage,<br/>Government,<br/>Healthcare,<br/>Hospitality,<br/>Industrials and Engineering,<br/>Insurance,<br/>Legal,<br/>Logistics,<br/>Manufacturing,<br/>Media,<br/>NGOs and Nonprofits,<br/>Oil and Gas,<br/>Opportunistic,<br/>Pharmaceuticals,<br/>Real Estate,<br/>Retail,<br/>State & Municipal Government,<br/>Technology,<br/>Telecommunications,<br/>Transportation,<br/>Travel,<br/>Utilities | https://falcon.crowdstrike.com/intelligence/actors/twisted-spider/ |
 
 
 ### cs-indicators
+
 ***
 Search known indicators based on the given parameters.
 
@@ -716,6 +740,7 @@ Search known indicators based on the given parameters.
 #### Base Command
 
 `cs-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -787,9 +812,11 @@ Search known indicators based on the given parameters.
 
 
 #### Command Example
+
 ```!cs-indicators limit=1 type=ip_address malicious_confidence=high ```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -865,12 +892,14 @@ Search known indicators based on the given parameters.
 #### Human Readable Output
 
 >### Falcon Intel Indicator search:
+>
 >|ID|Kill Chains|Labels|Malicious Confidence|Malware Families|Reports|Type|Value|
 >|---|---|---|---|---|---|---|---|
 >| ip_address_id | C2 | CSD/CSA-191023,<br/>CSD/CSA-191350,<br/>CSD/CSA-181072,<br/>CSD/CSWR-17018,<br/>CSD/CSWR-20022,<br/>CSD/CSWR-19024,<br/>MaliciousConfidence/High,<br/>KillChain/C2,<br/>CSD/CSIT-16091,<br/>ThreatType/Commodity | high | njRAT | CSA-191023,<br/>CSA-191350,<br/>CSA-181072,<br/>CSWR-17018,<br/>CSWR-20022,<br/>CSWR-19024,<br/>CSIT-16091,<br/>CSA-201008,<br/>CSWR-20014 | ip_address | 8.8.8.8 |
 
 
 ### cs-reports
+
 ***
 The Falcon Intel Reports API allows to query CrowdStrike intelligence publications.
 
@@ -878,6 +907,7 @@ The Falcon Intel Reports API allows to query CrowdStrike intelligence publicatio
 #### Base Command
 
 `cs-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -923,9 +953,11 @@ The Falcon Intel Reports API allows to query CrowdStrike intelligence publicatio
 
 
 #### Command Example
+
 ```!cs-reports limit=1 created_date="2016-09-30T19:15:53.000Z"```
 
 #### Context Example
+
 ```
 {
     "FalconIntel": {
@@ -948,6 +980,7 @@ The Falcon Intel Reports API allows to query CrowdStrike intelligence publicatio
 #### Human Readable Output
 
 >### Falcon Intel Report search:
+>
 >|Created Date|ID|Last Modified Sate|Name|Short Description|Slug|Sub Type|Type|URL|
 >|---|---|---|---|---|---|---|---|---|
 >| 2016-09-30T19:15:53.000Z | 7448 | 2020-07-24T10:15:02.000Z | Snort Changelog | Added one additional rule to detect Hancitor malware traffic decsribed in CSIT-16107.  | snort-changelog-9-5-2016-6 | Snort/Suricata | Feeds | https://falcon.crowdstrike.com/intelligence/reports/snort-changelog-9-5-2016-6/ |

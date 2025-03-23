@@ -1448,6 +1448,7 @@ Known Limitations
 
 Troubleshooting
 ---------------
+
 <h5>Context Output</h5>
 There are no context output for this command.
 <p>&nbsp;</p>
@@ -1502,8 +1503,11 @@ Get all host records.
 | Infoblox.Host.AdditionalFields | Unknown | The additional fields for network. | 
 
 #### Command example
+
 ```!infoblox-list-host-info```
+
 #### Context Example
+
 ```json
 {
     "Infoblox": {
@@ -1552,6 +1556,7 @@ Get all host records.
 #### Human Readable Output
 
 >### Host records (first 50)
+>
 >|ConfigureForDHCP|ExtendedAttributes|IPv4Address|Name|Reference|
 >|---|---|---|---|---|
 >| false |  | 192.168.10.10 | localhost.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QuMTkyLjE2OC4xMC4xMC4:192.168.10.10/localhost.test/default |
@@ -1561,8 +1566,11 @@ Get all host records.
 
 
 #### Command example
+
 ```!infoblox-list-host-info additional_return_fields=extattrs,aliases```
+
 #### Context Example
+
 ```json
 {
     "Infoblox": {
@@ -1618,6 +1626,7 @@ Get all host records.
 #### Human Readable Output
 
 >### Host records (first 50)
+>
 >|ConfigureForDHCP|ExtendedAttributes|IPv4Address|Name|Reference|
 >|---|---|---|---|---|
 >| false |  | 192.168.10.10 | localhost.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QuMTkyLjE2OC4xMC4xMC4:192.168.10.10/localhost.test/default |
@@ -1655,8 +1664,11 @@ List network information.
 | Infoblox.NetworkInfo.AdditionalFields | Unknown | The additional fields for network. | 
 
 #### Command example
+
 ```!infoblox-list-network-info```
+
 #### Context Example
+
 ```json
 {
     "Infoblox": {
@@ -1683,6 +1695,7 @@ List network information.
 #### Human Readable Output
 
 >### Network information found (50 limit)
+>
 >|ExtendedAttributes|Name|NetworkView|Reference|
 >|---|---|---|---|
 >|  | 192.168.1.0/24 | default | network/ZG5zLm5ldHdvcmskMTkyLjE2OC4xLjAvMjQvMA:192.168.1.0/24/default |
@@ -1690,8 +1703,11 @@ List network information.
 
 
 #### Command example
+
 ```!infoblox-list-network-info pattern=255.255 extattrs="Region=EMEA"```
+
 #### Context Example
+
 ```json
 {
     "Infoblox": {
@@ -1712,6 +1728,7 @@ List network information.
 #### Human Readable Output
 
 >### Network information found (50 limit)
+>
 >|ExtendedAttributes|Name|NetworkView|Reference|
 >|---|---|---|---|
 >| Region: EMEA | 255.255.255.192/26 | default | network/ZG5zLm5ldHdvcmskMjU1LjI1NS4yNTUuMTkyLzI2LzA:255.255.255.192/26/default |

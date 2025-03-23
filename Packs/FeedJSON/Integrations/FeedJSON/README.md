@@ -2,6 +2,7 @@
 Use the JSON feed integration to fetch indicators from a JSON feed. This integration allows for a wide variety of user configuration to support different types of JSON feeds.
 
 ## Configure JSON Feed in Cortex
+
 ---
 
 
@@ -28,6 +29,7 @@ Use the JSON feed integration to fetch indicators from a JSON feed. This integra
 
 
 ## Step-by-step configuration
+
 ---
 
 IP address ranges from Amazon AWS will be used as examples. The feed will ingest indicators of the CIDR type. These are the feed instance configuration parameters for our example.
@@ -53,17 +55,20 @@ By clicking `Mapping` in the integration instance, the field names we previously
 We can use `Set up a new classification rule` using actual data from the feed.
 
 ## Commands
+
 ---
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get indicators from the feed
+
 ---
 Gets the feed indicators.
 
 ##### Base Command
 
 `!json-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -76,6 +81,7 @@ Gets the feed indicators.
 There is no context output for this command.
 
 ## Demo Video
+
 <video controls>
     <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedJSON/Json_generic_feed_demo.mp4"
             type="video/mp4"/>

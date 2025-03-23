@@ -1,11 +1,15 @@
 # Tanium Threat Response
+
 This pack includes Cortex XSIAM content.
 
 <~XSIAM>
+
 ## Configuration on Server Side
+
 You need to configure a Socket Receiver on the Tanium side. 
 
 Perform the following steps to configure the Socket Receiver:
+
 1. Go to **Modules** > **Connect**.
 2. Enter a name and description for the connection.
 3. From the **Source** dropdown, select **Event**.
@@ -27,10 +31,12 @@ Don't modify the value type of the **Timestamp** field. This field is set to UTC
 The supported time format is yyyy-MM-ddThh:mm:ss.nnnZ (2022-01-01T10:00:00.000Z).
 
 ## Collect Events from Vendor
+
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.

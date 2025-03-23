@@ -49,8 +49,11 @@ Hello command - prints hello to anyone.
 | hello | String | Should be Hello \*\*something\*\* here. | 
 
 #### Command example
+
 ```!helloworld-say-hello name="Hello Dbot"```
+
 #### Context Example
+
 ```json
 {
     "hello": "Hello Hello Dbot"
@@ -89,8 +92,11 @@ Lists the example alerts as it would be fetched from the API.
 | HelloWorld.alert.status | String | The status of the alert. | 
 
 #### Command example
+
 ```!helloworld-alert-list limit="3" severity="low"```
+
 #### Context Example
+
 ```json
 {
     "HelloWorld": {
@@ -124,6 +130,7 @@ Lists the example alerts as it would be fetched from the API.
 #### Human Readable Output
 
 >### Items List (Sample Data)
+>
 >|date|id|name|severity|status|
 >|---|---|---|---|---|
 >| 2023-09-14T11:30:39.882955 | 1 | XSOAR Test Alert #1 | low | Testing |
@@ -132,8 +139,11 @@ Lists the example alerts as it would be fetched from the API.
 
 
 #### Command example
+
 ```!helloworld-alert-list alert_id=2```
+
 #### Context Example
+
 ```json
 {
     "HelloWorld": {
@@ -151,6 +161,7 @@ Lists the example alerts as it would be fetched from the API.
 #### Human Readable Output
 
 >### Items List (Sample Data)
+>
 >|date|id|name|severity|status|
 >|---|---|---|---|---|
 >| 2023-09-14T11:30:39.882955 | 2 | XSOAR Test Alert #2 | low | Testing |
@@ -183,8 +194,11 @@ Example of creating a new item in the API.
 | HelloWorld.alert.status | String | The status of the alert. | 
 
 #### Command example
+
 ```!helloworld-alert-note-create alert_id=2 note_text=test```
+
 #### Context Example
+
 ```json
 {
     "HelloWorld": {
@@ -265,8 +279,11 @@ Return IP information and reputation.
 | IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
 
 #### Command example
+
 ```!ip ip="8.8.8.8"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -679,10 +696,13 @@ Return IP information and reputation.
 #### Human Readable Output
 
 >### IP (Sample Data)
+>
 >|id|ip|links|type|
 >|---|---|---|---|
 >| x.x.x.x | 8.8.8.8 | self: https:<span>//</span>www.virustotal.com/api/v3/ip_addresses/x.x.x.x | ip_address |
+>
 >### Attributes
+>
 >|as_owner|asn|continent|country|jarm|last_analysis_stats|last_modification_date|network|regional_internet_registry|reputation|tags|total_votes|whois_date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| EMERALD-ONION |  | NA | US | :jarm: | ***harmless***: 72<br/>***malicious***: 5<br/>***suspicious***: 2<br/>***timeout***: 0<br/>***undetected***: 8 |  | :cidr: | ARIN |  | ***values***:  | ***harmless***: 0<br/>***malicious***: 1 |  |

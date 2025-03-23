@@ -1,6 +1,7 @@
 Generates a single query or a query list to query in ServiceNow.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,10 +11,12 @@ Generates a single query or a query list to query in ServiceNow.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Dependencies
+
 ---
 This script doesn't have any dependencies.
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +25,7 @@ This script doesn't have any dependencies.
 
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

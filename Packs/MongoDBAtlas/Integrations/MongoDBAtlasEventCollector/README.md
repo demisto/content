@@ -43,10 +43,13 @@ https://cloud.mongodb.com/v2/<customer_organization_id>#/security/network/access
 
 
 ## Additional Information
+
 Groups and projects are synonymous terms. Your group ID is the same as your project ID. For existing groups, your group/project ID remains the same. The resource and corresponding endpoints use the term groups.
 
 ### Authentication and authorization:
+
 #### Grant Programmatic Access to a Project
+
 Use the following procedures to grant programmatic access to a project. 
 To learn more, see [Manage Programmatic Access to a Project](https://www.mongodb.com/docs/atlas/configure-api-access-project/#std-label-atlas-admin-api-access-project).
 

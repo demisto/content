@@ -92,7 +92,7 @@ Queries the Analyst1 REST API and enriches the given domain with Analyst1 Indica
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Domain.Name | string | The domain name, for example, "google.com". | 
 | Analyst1.Domain.ID | number | The indicator's unique ID in Analyst1. | 
@@ -184,7 +184,7 @@ Queries the Analyst1 REST API and enriches the given email with Analyst1 indicat
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Email.From | string | The sender of the email. | 
 | Analyst1.Email.ID | number | The unique identifier of the given Indicator in Analyst1 | 
@@ -280,7 +280,7 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | IP.Address | string | The IP address. | 
 | Analyst1.Ip.ID | number | The indicator's unique ID in Analyst1. | 
@@ -371,7 +371,7 @@ Queries the Analyst1 REST API and enriches the given file with Analyst1 indicato
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
@@ -477,7 +477,7 @@ Queries the Analyst1 REST API and enriches the given string with Analyst1 indica
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Analyst1.String.ID | number | The unique identifier of the given Indicator in Analyst1 | 
 | Analyst1.String.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
@@ -563,7 +563,7 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Analyst1.Ipv6.ID | number | The unique identifier of the given Indicator in Analyst1 | 
 | Analyst1.Ipv6.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
@@ -638,7 +638,7 @@ Queries the Analyst1 REST API and enriches the given mutex with Analyst1 indicat
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Analyst1.Mutex.ID | number | The unique identifier of the given Indicator in Analyst1 | 
 | Analyst1.Mutex.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
@@ -727,7 +727,7 @@ Queries the Analyst1 REST API and enriches the given HTTP request with Analyst1 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Analyst1.Httprequest.ID | number | The unique identifier of the given Indicator in Analyst1 | 
 | Analyst1.Httprequest.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
@@ -800,7 +800,7 @@ Queries the Analyst1 REST API and enriches the given URL with Analyst1 indicator
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | URL.Data | String | The URL. | 
 | Analyst1.Url.ID | number | The unique identifier of the given Indicator in Analyst1 | 
@@ -902,7 +902,7 @@ Submits an 'Evidence' to Analyst1. Submission can be any text or attachment (PDF
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Analyst1.EvidenceSubmit.uuid | unknown | The unique GUID tracking this specific Evidence's submission. Can be used to monitor to finish extraction. If empty, check 'message'. | 
 | Analyst1.EvidenceSubmit.message | unknown | An explanation of the error which occurred that prevented acceptance of the Evidence submission. | 
@@ -924,7 +924,7 @@ Check on the status of the analyst1-evidence-submit action by using its output U
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Analyst1.EvidenceStatus.id | unknown | Evidence ID created by the submission. If 'blank' and message is 'blank', indicates the upload is still procesing. | 
 | Analyst1.EvidenceStatus.message | unknown | If populated, will communicate errors which occurred with the status check or the upload processing.  | 
@@ -973,7 +973,7 @@ Queries the Analyst1 REST API for indicator enrichment data based on a CSV input
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Analyst1.BatchResults.ID | unknown | Matched ID values. May not all be Indicators. Could reflect Indicator, Asset, Ignore List, or System records. | 
 | Analyst1.BatchResults.matchedValue | unknown | The matched terms from Indicators, Assets, Ignore List, or System CIDR entries. | 
@@ -1047,7 +1047,7 @@ Similar to analyst1-batch-check, however the inputs can be more complex. The 'va
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Analyst1 | unknown | Full Batch Check JSON | 
 | Analyst1.ID | unknown | Matched ID values. May not all be Indicators. Could reflect Indicator, Asset, Ignore List, or System records. | 
@@ -1071,7 +1071,7 @@ Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicat
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Analyst1.Indicator | unknown | Full Analyst1 native JSON for the Indicator. Will include all attributes, associated sources, enrichment results, and all settings as seen in the Analyst1 UI. | 
 
@@ -1396,7 +1396,7 @@ Queries the Analyst1 REST API for the current sensor config given a valid Sensor
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Analyst1.SensorTaskings.ConfigFile.config_text | unknown | full text of the current configuration file for the Sensor | 
 | Analyst1.SensorTaskings.ConfigFile.warRoomEntry.FileID | unknown | FileID from invoking fileResult\(\) in the Common Server Functions. An alternative to the returned config_text in case file processing is preferred. | 
@@ -1454,7 +1454,7 @@ Queries the Analyst1 REST API for the current sensor taskings given a valid Sens
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Analyst1.SensorTaskings | unknown | Root JSON for processing all taskings data.  | 
 | Analyst1.SensorTaskings.id | unknown | Sensor ID for this Taskings response. | 
@@ -1482,7 +1482,7 @@ Gets the 'difference' from the last known Analyst1 Sensor version against the cu
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Analyst1.SensorTaskings.ID | unknown | Sensor ID | 
 | Analyst1.SensorTaskings.latestVersion | unknown | Current version of the Sensor. Meant to be saved and used on subsequent invocations to 'diff' to only get the latest changes. | 

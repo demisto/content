@@ -13,9 +13,12 @@ This integration was integrated and tested with version 1.45.1 of Arcanna.AI
 | Default Arcanna Job Id |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### arcanna-get-jobs
+
 ***
 Get jobs list
 
@@ -23,6 +26,7 @@ Get jobs list
 #### Base Command
 
 `arcanna-get-jobs`
+
 #### Input
 
 There are no input arguments for this command.
@@ -38,9 +42,11 @@ There are no input arguments for this command.
 | Arcanna.Jobs.last_processed_timestamp | date | Last processed time |
 
 #### Command Example
+
 ```!arcanna-get-jobs```
 
 #### Context Example
+
 ```json
 {
     "Arcanna": {
@@ -65,6 +71,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Arcanna Jobs
+>
 >|job_id|title|data_type|status|
 >|---|---|---|---|
 >| 1201 | dev1 |  | STARTED |
@@ -72,6 +79,7 @@ There are no input arguments for this command.
 
 
 ### arcanna-send-event
+
 ***
 Sends a raw event to Arcanna
 
@@ -79,6 +87,7 @@ Sends a raw event to Arcanna
 #### Base Command
 
 `arcanna-send-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -101,9 +110,11 @@ Sends a raw event to Arcanna
 
 
 #### Command Example
+
 ```!arcanna-send-event job_id=1202 event_json="{\"destination\":{   \"address\":\"10.128.0.6\",   \"port\":53720,   \"bytes\":836035,   \"ip\":\"10.128.0.6\",   \"packets\":6459},\"rule\":{   \"name\":\"SURICATA HTTP unable to match response to request\",   \"id\":\"2221010\",   \"category\":\"Generic Protocol Command Decode\"},\"source\":{   \"address\":\"8.8.8.8\",   \"port\":9200,   \"bytes\":4833843,   \"ip\":\"8.8.8.8\",   \"packets\":9677},\"event\":{   \"severity\":3,   \"ingested\":\"2021-06-15T07:56:50.654225827Z\",   \"created\":\"2021-06-15T07:56:49.649Z\",   \"kind\":\"alert\",   \"module\":\"suricata\",   \"start\":\"2021-06-14T14:02:06.280Z\",   \"category\":[      \"network\",      \"intrusion_detection\"   ],   \"type\":[      \"allowed\"   ],   \"dataset\":\"suricata.eve\"},\"fileset\":{   \"name\":\"eve\"},\"message\":\"Generic Protocol Command Decode\",\"url\":{   \"path\":\"/libhtp::request_uri_not_seen\",   \"original\":\"/libhtp::request_uri_not_seen\"},\"@timestamp\":\"2021-06-15T07:56:49.647Z\",\"suricata\":{   \"eve\":{      \"in_iface\":\"ens4\",      \"metadata\":{         \"flowints\":{            \"http.anomaly.count\":2419         }      },      \"event_type\":\"alert\",      \"alert\":{         \"signature_id\":2221010,         \"rev\":1,         \"gid\":1,         \"signature\":\"SURICATA HTTP unable to match response to request\",         \"category\":\"Generic Protocol Command Decode\"      },      \"flow_id\":576330410117303,      \"tx_id\":3224,      \"flow\":{               }   }}}" title=Test_alert severity=3```
 
 #### Context Example
+
 ```json
 {
     "Arcanna": {
@@ -124,12 +135,14 @@ Sends a raw event to Arcanna
 
 
 ### arcanna-trigger-train
+
 ***
 Trigger AI Train for specified Arcanna.ai Job.
 
 #### Base Command
 
 `arcanna-trigger-train`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -145,27 +158,32 @@ Trigger AI Train for specified Arcanna.ai Job.
 | Arcanna.Train.error_message | String | Message in case of error. |
 
 #### Command Example
+
 ```!arcanna-trigger-train job_id="1201" username="admin"```
 
 #### Context Example
+
 ```json
 {
   "status": "OK",
   "error_message": ""
 }
 ```
+
 #### Human Readable Output
 
 > ## Arcanna trigger train results: {'status': 'OK', 'error_message': ''}
 
 
 ### arcanna-get-decision-set
+
 ***
 Retrieve avaiable decision points for specified AI Job.
 
 #### Base Command
 
 `arcanna-get-decision-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -179,14 +197,17 @@ Retrieve avaiable decision points for specified AI Job.
 | Arcanna.Event.decision_set | List | Available decisions for specified AI Job. |
 
 #### Command Example
+
 ```!arcanna-get-decision-set job_id="1201"```
 
 #### Context Example
+
 ```json
 {
   "decision_set": ["Drop", "Escalate"]
 }
 ```
+
 #### Human Readable Output
 
 > ## Arcanna get decision set results: {'decision_set': ['Drop','Escalate']}
@@ -194,6 +215,7 @@ Retrieve avaiable decision points for specified AI Job.
 
 
 ### arcanna-export-event
+
 ***
 Export full event with metadata from Arcanna.ai based on specified Job ID and Event ID.
 
@@ -201,6 +223,7 @@ Export full event with metadata from Arcanna.ai based on specified Job ID and Ev
 #### Base Command
 
 `arcanna-export-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -215,9 +238,11 @@ Export full event with metadata from Arcanna.ai based on specified Job ID and Ev
 | Arcanna.Event.arcanna_event | unknown | Full export for specified event. |
 
 #### Command Example
+
 ```!arcanna-export-event job_id="1201" event_id="12011938471583"```
 
 #### Context Example
+
 ```json
 {
   "result": "Escalate with Priority",
@@ -235,6 +260,7 @@ Export full event with metadata from Arcanna.ai based on specified Job ID and Ev
 
 
 ### arcanna-get-event-status
+
 ***
 Retrieves Arcanna Inference result.
 
@@ -242,6 +268,7 @@ Retrieves Arcanna Inference result.
 #### Base Command
 
 `arcanna-get-event-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -267,9 +294,11 @@ Retrieves Arcanna Inference result.
 | Arcanna.Event.outlier | boolean | Arcanna signalling if event is an outlier based on historical data | 
 
 #### Command Example
+
 ```!arcanna-get-event-status job_id="1201" event_id="12011938471583"```
 
 #### Context Example
+
 ```json
 {
     "Arcanna": {
@@ -292,6 +321,7 @@ Retrieves Arcanna Inference result.
 >## {'event_id': '12011938471583', 'ingest_timestamp': '2021-08-26T12:53:47.193847Z', 'status': 'OK', 'confidence_score': 0.9999464750289917, 'result': 'escalate_alert', 'result_label': 'Escalate', 'outlier': False, 'error_message': None}
 
 ### arcanna-send-event-feedback
+
 ***
 Send Arcanna feedback for a previous inferred event.
 
@@ -299,6 +329,7 @@ Send Arcanna feedback for a previous inferred event.
 #### Base Command
 
 `arcanna-send-event-feedback`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -320,9 +351,11 @@ Send Arcanna feedback for a previous inferred event.
 
 
 #### Command Example
+
 ```!arcanna-send-event-feedback job_id="1201" event_id="12011938471583" feedback="Escalate with Priority" username="dbot"```
 
 #### Context Example
+
 ```json
 {
     "Arcanna": {

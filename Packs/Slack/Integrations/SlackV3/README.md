@@ -541,6 +541,7 @@ Get details about a specified user.
 #### Human Readable Output
 
 > ### Details for Slack user: cortex_xsoar
+>
 >|ID|Username|Name|
 >|---|---|---|
 >| U0XXXXXXXX | demisto_integration | cortex_xsoar |

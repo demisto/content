@@ -2,6 +2,7 @@ Deprecated. Use VMware Carbon Black EDR v2 instead.
 Query and response with Carbon Black endpoint detection and response.
 
 This integration was integrated and tested with version 6.2.0 of Carbon Black Response
+
 ## Configure carbonblack-v2 in Cortex
 
 
@@ -17,9 +18,12 @@ This integration was integrated and tested with version 6.2.0 of Carbon Black Re
 | Maximum Number Of Incidents To Fetch | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cb-alert
+
 ***
 Retrieve alerts from Carbon Black Response.
 
@@ -27,6 +31,7 @@ Retrieve alerts from Carbon Black Response.
 #### Base Command
 
 `cb-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -61,6 +66,7 @@ Retrieve alerts from Carbon Black Response.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -68,6 +74,7 @@ Retrieve alerts from Carbon Black Response.
 
 
 ### cb-binary
+
 ***
 Query for binaries based on given parameters
 
@@ -75,6 +82,7 @@ Query for binaries based on given parameters
 #### Base Command
 
 `cb-binary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -121,6 +129,7 @@ Query for binaries based on given parameters
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -128,6 +137,7 @@ Query for binaries based on given parameters
 
 
 ### cb-block-hash
+
 ***
 Blocking hash
 
@@ -135,6 +145,7 @@ Blocking hash
 #### Base Command
 
 `cb-block-hash`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -154,6 +165,7 @@ Blocking hash
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -161,6 +173,7 @@ Blocking hash
 
 
 ### cb-get-hash-blacklist
+
 ***
 Returns a list of hashes on block list, with each list entry describing one hash on block list.
 
@@ -168,6 +181,7 @@ Returns a list of hashes on block list, with each list entry describing one hash
 #### Base Command
 
 `cb-get-hash-blacklist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -191,6 +205,7 @@ Returns a list of hashes on block list, with each list entry describing one hash
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -198,6 +213,7 @@ Returns a list of hashes on block list, with each list entry describing one hash
 
 
 ### cb-get-process
+
 ***
 Gets basic process information for segment (segment_id) of process (process_id)
 
@@ -205,6 +221,7 @@ Gets basic process information for segment (segment_id) of process (process_id)
 #### Base Command
 
 `cb-get-process`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -254,6 +271,7 @@ Gets basic process information for segment (segment_id) of process (process_id)
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -261,6 +279,7 @@ Gets basic process information for segment (segment_id) of process (process_id)
 
 
 ### cb-get-processes
+
 ***
 Query processes based on given parameters
 
@@ -268,6 +287,7 @@ Query processes based on given parameters
 #### Base Command
 
 `cb-get-processes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -303,6 +323,7 @@ Query processes based on given parameters
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -310,6 +331,7 @@ Query processes based on given parameters
 
 
 ### cb-list-sensors
+
 ***
 List the CarbonBlack sensors
 
@@ -317,6 +339,7 @@ List the CarbonBlack sensors
 #### Base Command
 
 `cb-list-sensors`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -344,6 +367,7 @@ List the CarbonBlack sensors
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -351,6 +375,7 @@ List the CarbonBlack sensors
 
 
 ### cb-process-events
+
 ***
 Retrieve all process events for a given process segmented by segment ID
 
@@ -358,6 +383,7 @@ Retrieve all process events for a given process segmented by segment ID
 #### Base Command
 
 `cb-process-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -396,6 +422,7 @@ Retrieve all process events for a given process segmented by segment ID
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -403,6 +430,7 @@ Retrieve all process events for a given process segmented by segment ID
 
 
 ### cb-quarantine-device
+
 ***
 Isolate the endpoint from the network
 
@@ -410,6 +438,7 @@ Isolate the endpoint from the network
 #### Base Command
 
 `cb-quarantine-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -425,6 +454,7 @@ Isolate the endpoint from the network
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -432,6 +462,7 @@ Isolate the endpoint from the network
 
 
 ### cb-sensor-info
+
 ***
 Display information about the given sensor
 
@@ -439,6 +470,7 @@ Display information about the given sensor
 #### Base Command
 
 `cb-sensor-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -466,6 +498,7 @@ Display information about the given sensor
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -473,6 +506,7 @@ Display information about the given sensor
 
 
 ### cb-unblock-hash
+
 ***
 Unblocking hash
 
@@ -480,6 +514,7 @@ Unblocking hash
 #### Base Command
 
 `cb-unblock-hash`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -496,6 +531,7 @@ Unblocking hash
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -503,6 +539,7 @@ Unblocking hash
 
 
 ### cb-unquarantine-device
+
 ***
 Unquarantine the endpoint
 
@@ -510,6 +547,7 @@ Unquarantine the endpoint
 #### Base Command
 
 `cb-unquarantine-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -525,6 +563,7 @@ Unquarantine the endpoint
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -532,6 +571,7 @@ Unquarantine the endpoint
 
 
 ### cb-version
+
 ***
 Display the CarbonBlack version
 
@@ -539,6 +579,7 @@ Display the CarbonBlack version
 #### Base Command
 
 `cb-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -550,6 +591,7 @@ Display the CarbonBlack version
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -557,6 +599,7 @@ There is no context output for this command.
 
 
 ### cb-watchlist-del
+
 ***
 Delete a watchlist in Carbon black Response.
 
@@ -564,6 +607,7 @@ Delete a watchlist in Carbon black Response.
 #### Base Command
 
 `cb-watchlist-del`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -576,6 +620,7 @@ Delete a watchlist in Carbon black Response.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -583,6 +628,7 @@ There is no context output for this command.
 
 
 ### cb-watchlist-get
+
 ***
 Retrieve info for a watchlist in Carbon black Response.
 
@@ -590,6 +636,7 @@ Retrieve info for a watchlist in Carbon black Response.
 #### Base Command
 
 `cb-watchlist-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -613,6 +660,7 @@ Retrieve info for a watchlist in Carbon black Response.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -620,6 +668,7 @@ Retrieve info for a watchlist in Carbon black Response.
 
 
 ### cb-watchlist-new
+
 ***
 Create a new watchlist in Carbon black Response.
 
@@ -627,6 +676,7 @@ Create a new watchlist in Carbon black Response.
 #### Base Command
 
 `cb-watchlist-new`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -651,6 +701,7 @@ Create a new watchlist in Carbon black Response.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -658,6 +709,7 @@ Create a new watchlist in Carbon black Response.
 
 
 ### cb-watchlist-set
+
 ***
 Modify a watchlist in Carbon black Response.
 
@@ -665,6 +717,7 @@ Modify a watchlist in Carbon black Response.
 #### Base Command
 
 `cb-watchlist-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -680,6 +733,7 @@ Modify a watchlist in Carbon black Response.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -687,6 +741,7 @@ There is no context output for this command.
 
 
 ### cb-alert-update
+
 ***
 Alert update and resolution
 
@@ -694,6 +749,7 @@ Alert update and resolution
 #### Base Command
 
 `cb-alert-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -708,6 +764,7 @@ Alert update and resolution
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -715,6 +772,7 @@ There is no context output for this command.
 
 
 ### cb-watchlist
+
 ***
 Retrieve watchlist in Carbon black Response.
 
@@ -722,6 +780,7 @@ Retrieve watchlist in Carbon black Response.
 #### Base Command
 
 `cb-watchlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -744,6 +803,7 @@ Retrieve watchlist in Carbon black Response.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -751,6 +811,7 @@ Retrieve watchlist in Carbon black Response.
 
 
 ### cb-binary-download
+
 ***
 Retrieve a binary from CarbonBlack based on hash. Returns a .zip file containing the requested file and it's metadata.
 
@@ -758,6 +819,7 @@ Retrieve a binary from CarbonBlack based on hash. Returns a .zip file containing
 #### Base Command
 
 `cb-binary-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -794,6 +856,7 @@ Retrieve a binary from CarbonBlack based on hash. Returns a .zip file containing
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

@@ -1,7 +1,7 @@
 Use the Cofense Intelligence integration to check the reputation of domains, URLs, IP addresses, file hashes, and email addresses.
 This integration was integrated and tested with version 2 of Cofense Intelligence
 
-Some changes have been made that might affect your existing content. For more information, see [Breaking Changes](#Breaking-changes-from-previous-versions-of-this-integration).
+Some changes have been made that might affect your existing content. For more information, see [Breaking Changes](#breaking-changes-from-previous-versions-of-this-integration).
 
 Search for threats associated with an indicator.
 The verdict (Unknown, Benign, Suspicious, Malicious) of each threat is determined by the impact (None, Minor, Moderate, Major) of its associated web locations as detected in cofense,  along with a threshold value that is being set by the user (when configuring the instance):
@@ -16,6 +16,7 @@ Threshold = Major (Default value)
 | 1 | Minor | Suspicious | Suspicious |
 | 2 | Moderate | Suspicious | Suspicious |
 | 3  | Major | Bad | Malicious |
+
 ## Configure CofenseIntelligenceV2 in Cortex
 
 
@@ -38,9 +39,12 @@ Threshold = Major (Default value)
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Checks the reputation of an IP address.
 
@@ -48,6 +52,7 @@ Checks the reputation of an IP address.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -136,9 +141,11 @@ Checks the reputation of an IP address.
 
 
 #### Command Example
+
 ```!ip ip=8.8.8.8 using=CofenseIntelligenceV2_instance```
 
 #### Context Example
+
 ```json
 {
     "CofenseIntelligence": {
@@ -248,12 +255,14 @@ Checks the reputation of an IP address.
 #### Human Readable Output
 
 >### Cofense IP Reputation for IP 8.8.8.8
+>
 >|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|ASN|Country|Threat Report|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 125002 | type | Suspicious | summary |  Campaign | Family Description | 2021-03-22 15:56:10 | ASN |country | link
 
 
 ### cofense-search
+
 ***
 Retrieves a specific threat or a list of threats based on the filter values provided in the command arguments.
 
@@ -261,6 +270,7 @@ Retrieves a specific threat or a list of threats based on the filter values prov
 #### Base Command
 
 `cofense-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -337,9 +347,11 @@ Retrieves a specific threat or a list of threats based on the filter values prov
 
 
 #### Command Example
+
 ```!cofense-search str=border using=CofenseIntelligenceV2_instance```
 
 #### Context Example
+
 ```json
 {
     "CofenseIntelligence": {
@@ -424,6 +436,7 @@ Retrieves a specific threat or a list of threats based on the filter values prov
 
 
 ### file
+
 ***
 Checks the reputation of a file hash.
 
@@ -431,6 +444,7 @@ Checks the reputation of a file hash.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -526,9 +540,11 @@ Checks the reputation of a file hash.
 | CofenseIntelligence.File.Threats.threatType | String | If malware, will have value 'malware', otherwise it is empty. | 
 
 #### Command Example
+
 ```!file file=9798ba6199168e6d2cf205760ea683d1 using=CofenseIntelligenceV2_instance```
 
 #### Context Example
+
 ```json
 {
     "CofenseIntelligence": {
@@ -692,12 +708,14 @@ Checks the reputation of a file hash.
 #### Human Readable Output
 
 >### Cofense file Reputation for file 9798ba6199168e6d2cf205760ea683d1
+>
 >|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|Threat Report|
 >|---|---|---|---|---|---|---|---|
 >| 158959 |type | Malicious |  summary | campaign name | Family Description | 2021-03-18 19:47:48 | Link |
 
 
 ### email
+
 ***
 Checks the reputation of an email address.
 
@@ -705,6 +723,7 @@ Checks the reputation of an email address.
 #### Base Command
 
 `email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -786,9 +805,11 @@ Checks the reputation of an email address.
 | CofenseIntelligence.Email.Threats.threatType | String | If malware, will have value ‘malware’, otherwise it is empty. | 
 
 #### Command Example
+
 ```!email email=email@email.com using=CofenseIntelligenceV2_instance_1_copy```
 
 #### Context Example
+
 ```json
 {
     "CofenseIntelligence": {
@@ -882,12 +903,14 @@ Checks the reputation of an email address.
 #### Human Readable Output
 
 >### Cofense email Reputation for email email@email.com
+>
 >|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|Threat Report|
 >|---|---|---|---|---|---|---|---|
 >| 158959 | Type | Malicious | Summary | Campaign name | Family Description | 2021-03-18 19:47:48 | link |
 
 
 ### url
+
 ***
 Checks the reputation of a URL.
 
@@ -895,6 +918,7 @@ Checks the reputation of a URL.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -980,9 +1004,11 @@ Checks the reputation of a URL.
 
 
 #### Command Example
+
 ```!url url=url using=CofenseIntelligenceV2_instance```
 
 #### Context Example
+
 ```json
 {
     "CofenseIntelligence": {
@@ -1086,11 +1112,13 @@ Checks the reputation of a URL.
 #### Human Readable Output
 
 >### Cofense URL Reputation for url url
+>
 >|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|Threat Report|
 >|---|---|---|---|---|---|---|---|
 >| 125002 | threat type | Malicious | summary | Campaign name | Family Description | 2021-03-22 15:56:10 | Link |
 
 ### domain
+
 ***
 Checks the reputation of the domain.
 
@@ -1098,6 +1126,7 @@ Checks the reputation of the domain.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1183,9 +1212,11 @@ Checks the reputation of the domain.
 
 
 #### Command Example
+
 ```!domain domain=www.sutomoresmestaj.net days_back=20000 using=CofenseIntelligenceV2_instance```
 
 #### Context Example
+
 ```json
 {
     "CofenseIntelligence": {
@@ -1371,11 +1402,13 @@ Checks the reputation of the domain.
 #### Human Readable Output
 
 >### Cofense Domain Reputation for domain www.sutomoresmestaj.net
+>
 >|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|Threat Report|
 >|---|---|---|---|---|---|---|---|
 >| 55110 | MALWARE | Suspicious | This report is part of our Emotet/Geodo series. Emotet is a malware family that was initially formed as a banking trojan but today often downloads additional malware payloads. We process very large Emotet campaigns containing thousands of stage one documents and we often find there are a small number of unique URLs and stage two payloads in each campaign. As such, you may notice these lists contain mostly document-specific IOCs, compared with fewer unique URLs and unique stage two payloads. | Finance or Response Themed - OfficeMacro, Emotet/Geodo | Adaptable financial crimes botnet trojan with email worm and malware delivery capabilities, also known as Emotet | 2020-08-28 13:52:25 | [https://www.threathq.com/api/l/activethreatreport/55110/html](https://www.threathq.com/api/l/activethreatreport/55110/html) |
 
 ### cofense-threat-report-get
+
 ***
 Downloads threat report provided by cofense intelligence of an indicator for the given unique report id.
 
@@ -1383,6 +1416,7 @@ Downloads threat report provided by cofense intelligence of an indicator for the
 #### Base Command
 
 `cofense-threat-report-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1408,8 +1442,11 @@ Downloads threat report provided by cofense intelligence of an indicator for the
 | File.Extension | String | The file extension. | 
 
 #### Command example
+
 ```!cofense-threat-report-get report_id=290367```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -1437,29 +1474,36 @@ Uploaded file: 290367.html [Download](https://1.1.1.1/entry/download/17)
 >| 17353@2f1342cd-06b5-4b3f-8c20-fe27a087f3a8 | text/html; charset=utf-8 | e61fc1a2b206650a3eb48f7856126291 | 290367.html | bb419100bd5319a43f4f5640075f22a7716ed5f8 | d5da427907395fc8cf0e2942465990486e9bdb016ff820c89511599a0ec0b86a | aad5ffa7e291bb1f1528f2ed805307a8dfe9bdfae13b766e4fdbd7b9605008a2bc7eb9b177b3306de9fc113eda7c5c632f27446956394f601713cdeeaa075a43 | 1536:TVsXVrOaM0uEcFrlsd21G33VRxQFsUKRFdLeo0sw/x7W:4OapOlOXLisUybLeoO/4 | 79669 | HTML document, ASCII text, with very long lines, with CRLF line terminators |
 
 ## Breaking changes from previous versions of this integration
+
 The following sections list the changes in this version.
+
 ### Outputs
+
 The following outputs were removed in this version:
 
 In the *url* command:
+
 * *Cofense.URL.Data* - this output was replaced by *CofenseIntelligence.URL.Data*.
 * *Cofense.URL.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.URL.Malicious.Vendor*.
 * *Cofense.URL.Malicious.Description* - this output was replaced by *CofenseIntelligence.URL.Malicious.Description*.
 * *Cofense.URL.Cofense.ThreatIDs* - this output was replaced by *CofenseIntelligence.URL.Cofense.ThreatIDs*.
 
 In the *file* command:
+
 * *Cofense.File.MD5* - this output was replaced by *CofenseIntelligence.File.MD5*.
 * *Cofense.File.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.File.Malicious.Vendor*.
 * *Cofense.File.Malicious.Description* - this output was replaced by *CofenseIntelligence.File.Malicious.Description*.
 * *Cofense.File.ThreatIDs* - this output was replaced by *CofenseIntelligence.File.ThreatIDs*.
 
 In the *ip* command:
+
 * *Cofense.IP.Data* - this output was replaced by *CofenseIntelligence.IP.Data*.
 * *Cofense.IP.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.IP.Malicious.Vendor*.
 * *Cofense.IP.Malicious.Description* - this output was replaced by *CofenseIntelligence.IP.Malicious.Description*.
 * *Cofense.IP.Cofense.ThreatIDs* - this output was replaced by *CofenseIntelligence.IP.Cofense.ThreatIDs*.
 
 In the *email* command:
+
 * *Account.Email.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.Email.Malicious.Vendor*.
 * *Account.Email.Malicious.Description* - this output was replaced by *CofenseIntelligence.Email.Malicious.Description*.
 * *Cofense.Email.Data* - this output was replaced by *CofenseIntelligence.Email.Data*.
@@ -1468,8 +1512,10 @@ In the *email* command:
 * *Cofense.Email.Cofense.ThreatIDs* - this output was replaced by *CofenseIntelligence.Email.Cofense.ThreatIDs*.
 
 In the *cofense-search* command:
+
 * *Cofense.NumOfThreats* - this output was replaced by *CofenseIntelligence.NumOfThreats*.
 * *Cofense.String* - this output was replaced by *CofenseIntelligence.String*.
 
 ## Additional Considerations for this Version
+
 * Added an option to Limit the number of days from which we should start returning data. 90 days limit is recommended by Cofense.

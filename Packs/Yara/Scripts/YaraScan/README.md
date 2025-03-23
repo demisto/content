@@ -1,6 +1,7 @@
 Performs a Yara scan on the specified files.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Performs a Yara scan on the specified files.
 | Tags | - |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ Performs a Yara scan on the specified files.
 | entryIDs | A comma-separated list of file entry IDs to scan. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

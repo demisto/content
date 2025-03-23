@@ -13,6 +13,7 @@ This integration was integrated and tested with version 5.1.2 of Redmine.
     | Trust any certificate (not secure) | False |
     | API Key | True |
     | Project id | False |
+
 4. Getting your API key:
     - Use your **server URL** to enter your Redmine instance.
     - Authenticate with your username and password.
@@ -74,8 +75,11 @@ After you successfully execute a command, a DBot message appears in the War Room
 | Redmine.Issue.subject | str | The subject of the issue. | 
 
 #### Command example
+
 ```!redmine-issue-create priority_id=High subject=helloExample tracker_id=1 project_id=1 watcher_user_ids=5,6 custom_fields=1:helloCustom priority_id=1```
+
 #### Context Example
+
 ```json
 {
     "Redmine": {
@@ -128,6 +132,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 #### Human Readable Output
 
 >### The issue you created:
+>
 >|Id|Project|Tracker|Status|Priority|Author|Created On|Subject|Start Date|Custom Fields|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 167 | Cortex XSOAR | Bug | New | Low | Integration Test | 2024-04-07T11:59:34Z | helloExample | 2024-04-07 | **-**	***name***: Team_of_workers<br/>	***value***: helloCustom |
@@ -168,8 +173,11 @@ Display a list of issues
 | Redmine.Issue.id | str | A list of issues. | 
 
 #### Command example
+
 ```!redmine-issue-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "Redmine": {
@@ -270,7 +278,9 @@ Display a list of issues
 #### Human Readable Output
 
 >#### Showing 2 results from page 1:
+>
 >### Issues Results:
+>
 >|ID|Tracker|Status| Priority|Author|Subject|Start Date|done_ratio|Is Private|Custom Fields|Created On|updated_on|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 130 | Bug | New | High | Integration Test | subjectChanged | 2024-03-11 | 0 | false | **-**	***name***: Team_of_workers<br/>	***value***: helloCustom | 2024-03-11T09:16:47Z | 2024-03-11T09:16:54Z |
@@ -315,8 +325,11 @@ Update an existing issue. When attaching a file to an issue, include the entry I
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!redmine-issue-update issue_id=130 subject=subjectChanged```
+
 #### Human Readable Output
 
 >Issue with id 130 was successfully updated.
@@ -350,8 +363,11 @@ Show an issue by id
 | Redmine.Issue.watchers.id | str | The watchers of the issue. | 
 
 #### Command example
+
 ```!redmine-issue-get issue_id=130 include=watchers```
+
 #### Context Example
+
 ```json
 {
     "Redmine": {
@@ -416,6 +432,7 @@ Show an issue by id
 #### Human Readable Output
 
 >### Issues List:
+>
 >|Id|Project|Tracker|Status|Priority|Author|Subject|StartDate|DoneRatio|IsPrivate|CustomFields|CreatedOn|Watchers|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 130 | Cortex XSOAR | Bug | New | High | Integration Test | subjectChanged | 2024-03-11 | 0 | false | **-**	***name***: Team_of_workers<br/>	***value***: helloCustom | 2024-03-11T09:16:47Z | **-**	***name***: admin tests<br/>**-**	***name***: Integration Test |
@@ -439,8 +456,11 @@ Delete an issue by its ID
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!redmine-issue-delete issue_id=130```
+
 #### Human Readable Output
 
 >Issue with id 130 was deleted successfully.
@@ -464,8 +484,11 @@ Add a watcher to the specified issue
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!redmine-issue-watcher-add issue_id=130 watcher_id=1```
+
 #### Human Readable Output
 
 >Watcher with id 1 was added successfully to issue with id 130.
@@ -489,8 +512,11 @@ Remove a watcher of an issue
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!redmine-issue-watcher-remove issue_id=130 watcher_id=1```
+
 #### Human Readable Output
 
 >Watcher with id 1 was removed successfully from issue with id 130.
@@ -517,8 +543,11 @@ Retrieve a list of all projects, including both public and private ones that the
 | Redmine.Project | Array | Display a list of projects accessible to the user. | 
 
 #### Command example
+
 ```!redmine-project-list ```
+
 #### Context Example
+
 ```json
 {
     "Redmine": {
@@ -548,6 +577,7 @@ Retrieve a list of all projects, including both public and private ones that the
 #### Human Readable Output
 
 >### Projects List:
+>
 >|Id|Name|Identifier|Status|IsPublic|CreatedOn|UpdatedOn|
 >|---|---|---|---|---|---|---|
 >| 1 | Cortex XSOAR | cortex-xsoar | 1 | True | 2024-02-29T10:34:23Z | 2024-02-29T10:34:23Z |
@@ -576,8 +606,11 @@ There are no input arguments for this command.
 | Redmine.CustomField.customized_type | str | Display customized_type of custom fields. | 
 
 #### Command example
+
 ```!redmine-custom-field-list```
+
 #### Context Example
+
 ```json
 {
     "Redmine": {
@@ -637,6 +670,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Custom Fields List:
+>
 >|Id|Name|CustomizedType|FieldFormat|IsRequired|IsFilter|Searchable|Trackers|
 >|---|---|---|---|---|---|---|---|
 >| 1 | Team_of_workers | issue | string | False | True |  | **-**	***id***: 1<br/>	***name***: Bug<br/>**-**	***id***: 2<br/>	***name***: Feature<br/>**-**	***id***: 3<br/>	***name***: Support |
@@ -646,6 +680,7 @@ There are no input arguments for this command.
 ### redmine-user-id-list
 
 ***
+
 - Retrieve a list of users with optional filtering options.
 - This command requires admin privileges in your Redmine account.
 
@@ -675,8 +710,11 @@ There are no input arguments for this command.
 | Redmine.Users.mail | str | A list of users mails. | 
 
 #### Command example
+
 ```!redmine-user-id-list```
+
 #### Context Example
+
 ```json
 {
     "Redmine": {
@@ -728,6 +766,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Users List:
+>
 >|ID|Login|Admin|First Name|Last Name|Email|Created On|Last Login On|
 >|---|---|---|---|---|---|---|---|
 >| 5 | admin | True | admin | tests | admin@redmine-test.local | 2024-02-28T19:47:56Z | 2024-02-29T10:25:08Z |
@@ -755,8 +794,11 @@ There are no input arguments for this command.
 | Redmine.priorities.Name | str | Name of the priority field. | 
 
 #### Command example
+
 ```!redmine-priority-id-list```
+
 #### Context Example
+
 ```json
 {
     "Redmine": {
@@ -789,6 +831,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### priorities name to id List:
+>
 >|ID|Name|
 >|---|---|
 >| 1 | Low |
@@ -819,8 +862,11 @@ There are no input arguments for this command.
 | Redmine.Users.Name | str | Name of the status field. | 
 
 #### Command example
+
 ```!redmine-status-id-list```
+
 #### Context Example
+
 ```json
 {
     "Redmine": {
@@ -857,6 +903,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### statuses name to id List:
+>
 >|ID|Name|
 >|---|---|
 >| 1 | help |
@@ -888,8 +935,11 @@ There are no input arguments for this command.
 | Redmine.trackers.Name | str | Name of the tracker field. | 
 
 #### Command example
+
 ```!redmine-tracker-id-list```
+
 #### Context Example
+
 ```json
 {
     "Redmine": {
@@ -914,6 +964,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### trackers name to id List:
+>
 >|ID|Name|
 >|---|---|
 >| 1 | Bug111 |

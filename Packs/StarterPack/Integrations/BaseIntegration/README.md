@@ -12,9 +12,12 @@ This integration was integrated and tested with version v1.0.0 of BaseIntegratio
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### baseintegration-dummy
+
 ***
 [Enter a description of the command, including any important information users need to know, for example required permissions.]
 
@@ -22,6 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 #### Base Command
 
 `baseintegration-dummy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

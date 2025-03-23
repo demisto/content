@@ -26,6 +26,7 @@ integrated and tested with version v2 of Nutanix.
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Available Alert Type IDs, Impact Types, and Entity Types
+
 Alert Policies contains the list of all possible alerts in the system,
 and their ID, impact type, and entity type. In order to check the optional values for these entities:
 
@@ -38,19 +39,23 @@ You should see the following screen:
 * *Impact Type* is the impact type filter parameter for fetching alerts, or the argument for the ***nutanix-hypervisor-alerts-list*** command.
 
 ### Permissions
+
 The following commands require cluster admin or higher permissions.
 (Found in Nutanix Settings in the *Users And Roles* category.)
 
-- ***nutanix-hypervisor-vm-powerstatus-change***
-- ***nutanix-hypervisor-alert-acknowledge***
-- ***nutanix-hypervisor-alert-resolve***
-- ***nutanix-hypervisor-alerts-acknowledge-by-filter***
-- ***nutanix-hypervisor-alerts-resolve-by-filter***
+* ***nutanix-hypervisor-vm-powerstatus-change***
+* ***nutanix-hypervisor-alert-acknowledge***
+* ***nutanix-hypervisor-alert-resolve***
+* ***nutanix-hypervisor-alerts-acknowledge-by-filter***
+* ***nutanix-hypervisor-alerts-resolve-by-filter***
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### nutanix-hypervisor-hosts-list
+
 ***
 Gets the list of physical hosts configured in the cluster.
 
@@ -58,6 +63,7 @@ Gets the list of physical hosts configured in the cluster.
 #### Base Command
 
 `nutanix-hypervisor-hosts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -143,9 +149,11 @@ Gets the list of physical hosts configured in the cluster.
 
 
 #### Command Example
+
 ```!nutanix-hypervisor-hosts-list filter="num_vms==2" limit=3 page=1```
 
 #### Context Example
+
 ```json
 {
     "NutanixHypervisor": {
@@ -187,12 +195,14 @@ Gets the list of physical hosts configured in the cluster.
 #### Human Readable Output
 
 >### Nutanix Hosts List
+>
 >|is_hardware_virtualized|host_type|serial|boot_time|hypervisor_type|num_cpu_sockets|hypervisor_full_name|hypervisor_username|uuid|vzone_name|hypervisor_address|num_vms|is_secure_booted|management_server_name|monitored|is_degraded|state|num_cpu_cores|name|service_vmid|service_vmexternal_ip|reboot_pending|cluster_uuid|has_csr|hypervisor_key|cpu_model|num_cpu_threads|controller_vm_backplane_ip|boot_time_in_usecs|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | HYPER_CONVERGED | 59bc015e-a22d-41ab-9ce2-a96164955e9q | 2020-11-22T14:13:52.399817+00:00 | kKvm | 2 | Nutanix 20190916.321 | root | 59bc015e-a22d-41ab-9ce2-a96164955e9q |  | 192.168.1.111 | 2 | false | 192.168.1.111 | true | false | NORMAL | 8 | NTNX-386a5fb4-A | asra1631-a234-zxd1-aa23-azxr124z23aq::2 | 192.168.1.111 | false | asra1631-a234-zxd1-aa23-azxr124z23aq | false | 192.168.1.111 | Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz | 8 | 192.168.1.111 | 1606054432399817 |
 
 
 ### nutanix-hypervisor-vms-list
+
 ***
 Gets a list of virtual machines.
 
@@ -200,6 +210,7 @@ Gets a list of virtual machines.
 #### Base Command
 
 `nutanix-hypervisor-vms-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -234,9 +245,11 @@ Gets a list of virtual machines.
 
 
 #### Command Example
+
 ```!nutanix-hypervisor-vms-list filter="machine_type==pc,power_state!=off" length=3 offset=0```
 
 #### Context Example
+
 ```json
 {
     "NutanixHypervisor": {
@@ -275,12 +288,14 @@ Gets a list of virtual machines.
 #### Human Readable Output
 
 >### Nutanix Virtual Machines List
+>
 >|timezone|allow_live_migrate|name|ha_priority|machine_type|memory_mb|uuid|power_state|num_cores_per_vcpu|vm_logical_timestamp|gpus_assigned|host_uuid|num_vcpus|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| UTC | false | CentOS7_Test | 0 | pc | 4096 | 16c3d845-dc54-4fb1-bfc8-7671dd230967 | on | 2 | 243 | false | 59bc015e-a22d-41ab-9ce2-a96164955e9q | 2 |
 
 
 ### nutanix-hypervisor-vm-powerstatus-change
+
 ***
 Sets the power state of a virtual machine. If the virtual machine is being powered on and no host is specified, the host with
 the most available CPU and memory will be chosen. Note that such a host may not be available. If the virtual machine is
@@ -290,6 +305,7 @@ monitored by the nutanix-hypervisor-task-results-get command.
 #### Base Command
 
 `nutanix-hypervisor-vm-powerstatus-change`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -307,9 +323,11 @@ monitored by the nutanix-hypervisor-task-results-get command.
 
 
 #### Command Example
+
 ```!nutanix-hypervisor-vm-powerstatus-change vm_uuid=16c3d845-dc54-4fb1-bfc8-7671dd230967 transition=ON```
 
 #### Context Example
+
 ```json
 {
     "NutanixHypervisor": {
@@ -323,12 +341,14 @@ monitored by the nutanix-hypervisor-task-results-get command.
 #### Human Readable Output
 
 >### Results
+>
 >|task_uuid|
 >|---|
 >| 7f522fb2-1b19-491a-ab49-763f48be8712 |
 
 
 ### nutanix-hypervisor-task-results-get
+
 ***
 Returns the results of given tasks. If a task is not ready, its status will be returned.
 
@@ -336,6 +356,7 @@ Returns the results of given tasks. If a task is not ready, its status will be r
 #### Base Command
 
 `nutanix-hypervisor-task-results-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -372,9 +393,11 @@ Returns the results of given tasks. If a task is not ready, its status will be r
 
 
 #### Command Example
+
 ```!nutanix-hypervisor-task-results-get task_ids=072f64d8-c737-4230-a1ec-199b449b9795```
 
 #### Context Example
+
 ```json
 {
     "NutanixHypervisor": {
@@ -416,12 +439,14 @@ Returns the results of given tasks. If a task is not ready, its status will be r
 #### Human Readable Output
 
 >### Nutanix Hypervisor Tasks Status
+>
 >|cluster_uuid|complete_time|complete_time_usecs|create_time|create_time_usecs|entity_list|last_updated|last_updated_time_usecs|message|meta_request|meta_response|operation_type|percentage_complete|progress_status|start_time|start_time_usecs|subtask_uuid_list|uuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| asra1631-a234-zxd1-aa23-azxr124z23aq | 2021-02-03T15:51:26.579757+00:00 | 1612367486579757 | 2021-02-03T15:51:26.346257+00:00 | 1612367486346257 | {'entity_id': '16c3d845-dc54-4fb1-bfc8-7671dd230967', 'entity_type': 'VM'} | 2021-02-03T15:51:26.579757+00:00 | 1612367486579757 |  | method_name: VmChangePowerState | error_code: 17<br/>error_detail: Cannot complete request in state InvalidVmState: Cannot complete request in state On | VmChangePowerState | 100 | Failed | 2021-02-03T15:51:26.376685+00:00 | 1612367486376685 | 6f90a15d-ad76-4782-89bd-80811f162543 | 072f64d8-c737-4230-a1ec-199b449b9795 |
 
 
 ### nutanix-hypervisor-alerts-list
+
 ***
 Gets the list of alerts generated in the cluster that matches the filters. Nutanix fetches the latest alerts created if there are more than the defined maximum number of alerts.
 
@@ -429,6 +454,7 @@ Gets the list of alerts generated in the cluster that matches the filters. Nutan
 #### Base Command
 
 `nutanix-hypervisor-alerts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -496,9 +522,11 @@ Gets the list of alerts generated in the cluster that matches the filters. Nutan
 
 
 #### Command Example
+
 ```!nutanix-hypervisor-alerts-list acknowledged=true auto_resolved=true resolved=true start_time=2018-12-31T21:34:54 limit=4```
 
 #### Context Example
+
 ```json
 {
     "NutanixHypervisor": {
@@ -593,6 +621,7 @@ Gets the list of alerts generated in the cluster that matches the filters. Nutan
 #### Human Readable Output
 
 >### Nutanix Alert List
+>
 >|impact_types|created_time_stamp_in_usecs|created_time|severity|acknowledged_time_stamp_in_usecs|resolved|acknowledged_by_username|resolved_by_username|last_occurrence_time_stamp_in_usecs|acknowledged_time|check_id|alert_title|service_vmid|id|classifications|acknowledged|resolved_time|last_occurrence|alert_type_uuid|detailed_message|operation_type|originating_cluster_uuid|message|node_uuid|user_defined|cluster_uuid|auto_resolved|resolved_time_stamp_in_usecs|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Configuration | 1606055474675609 | 2020-11-22T14:31:14.675609+00:00 | kWarning | 1606318082804764 | true | N/A | N/A | 1606055474675609 | 2020-11-25T15:28:02.804764+00:00 | asra1631-a234-zxd1-aa23-azxr124z23aq::3026 | {vm_type} time not synchronized with any external servers. | asra1631-a234-zxd1-aa23-azxr124z23aq::2 | 4b12dc84-2a77-4b3a-a40a-2dc47c919caa | ControllerVM | true | 2020-11-25T15:28:02.804758+00:00 | 2020-11-22T14:31:14.675609+00:00 | A3026 |  | kCreate | asra1631-a234-zxd1-aa23-azxr124z23aq | The {vm_type} is not synchronizing time with any external servers. {alert_msg} | 59bc015e-a22d-41ab-9ce2-a96164955e9q | false | asra1631-a234-zxd1-aa23-azxr124z23aq | true | 1606318082804758 |
@@ -600,6 +629,7 @@ Gets the list of alerts generated in the cluster that matches the filters. Nutan
 
 
 ### nutanix-hypervisor-alert-acknowledge
+
 ***
 Acknowledges the alert with the specified alert_id.
 
@@ -607,6 +637,7 @@ Acknowledges the alert with the specified alert_id.
 #### Base Command
 
 `nutanix-hypervisor-alert-acknowledge`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -624,9 +655,11 @@ Acknowledges the alert with the specified alert_id.
 
 
 #### Command Example
+
 ```!nutanix-hypervisor-alert-acknowledge alert_id=da53aaa3-8c29-4b68-9f27-e0927ca694ce```
 
 #### Context Example
+
 ```json
 {
     "NutanixHypervisor": {
@@ -642,12 +675,14 @@ Acknowledges the alert with the specified alert_id.
 #### Human Readable Output
 
 >### Results
+>
 >|id|message|successful|
 >|---|---|---|
 >| da53aaa3-8c29-4b68-9f27-e0927ca694ce |  | true |
 
 
 ### nutanix-hypervisor-alert-resolve
+
 ***
 Resolves the alert with the specified alert_id. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'
 
@@ -655,6 +690,7 @@ Resolves the alert with the specified alert_id. Alert ID is the 'id' field retur
 #### Base Command
 
 `nutanix-hypervisor-alert-resolve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -672,9 +708,11 @@ Resolves the alert with the specified alert_id. Alert ID is the 'id' field retur
 
 
 #### Command Example
+
 ```!nutanix-hypervisor-alert-resolve alert_id=da53aaa3-8c29-4b68-9f27-e0927ca694ce```
 
 #### Context Example
+
 ```json
 {
     "NutanixHypervisor": {
@@ -690,12 +728,14 @@ Resolves the alert with the specified alert_id. Alert ID is the 'id' field retur
 #### Human Readable Output
 
 >### Results
+>
 >|id|message|successful|
 >|---|---|---|
 >| da53aaa3-8c29-4b68-9f27-e0927ca694ce |  | true |
 
 
 ### nutanix-hypervisor-alerts-acknowledge-by-filter
+
 ***
 Acknowledges alerts using a filter.
 
@@ -703,6 +743,7 @@ Acknowledges alerts using a filter.
 #### Base Command
 
 `nutanix-hypervisor-alerts-acknowledge-by-filter`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -727,9 +768,11 @@ Acknowledges alerts using a filter.
 
 
 #### Command Example
+
 ```!nutanix-hypervisor-alerts-acknowledge-by-filter end_time=2021-12-22T13:14:15 entity_types=Host severity=WARNING```
 
 #### Context Example
+
 ```json
 {
     "NutanixHypervisor": {
@@ -744,12 +787,14 @@ Acknowledges alerts using a filter.
 #### Human Readable Output
 
 >### Results
+>
 >|num_failed_updates|num_successful_updates|
 >|---|---|
 >| 0 | 0 |
 
 
 ### nutanix-hypervisor-alerts-resolve-by-filter
+
 ***
 Resolves alerts using a filter.
 
@@ -757,6 +802,7 @@ Resolves alerts using a filter.
 #### Base Command
 
 `nutanix-hypervisor-alerts-resolve-by-filter`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -781,9 +827,11 @@ Resolves alerts using a filter.
 
 
 #### Command Example
+
 ```!nutanix-hypervisor-alerts-resolve-by-filter limit=2 impact_types=SystemIndicator entity_types=VM```
 
 #### Context Example
+
 ```json
 {
     "NutanixHypervisor": {
@@ -798,6 +846,7 @@ Resolves alerts using a filter.
 #### Human Readable Output
 
 >### Results
+>
 >|num_failed_updates|num_successful_updates|
 >|---|---|
 >| 0 | 0 |

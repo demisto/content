@@ -27,9 +27,12 @@ integrated and tested with version 2 of the DNSDB API.
 | useproxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### dnsdb-flex
+
 ***
 DNSDB flex search
 
@@ -37,6 +40,7 @@ DNSDB flex search
 #### Base Command
 
 `dnsdb-flex`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -68,9 +72,11 @@ DNSDB flex search
 
 
 #### Command Example
+
 ```!dnsdb-flex method=regex key=rrnames value=farsightsecurity limit=5```
 
 #### Context Example
+
 ```json
 {
     "DNSDB": {
@@ -118,6 +124,7 @@ DNSDB flex search
 #### Human Readable Output
 
 >### Farsight DNSDB Flex Search
+>
 >|RRName|RRType|Count|TimeFirst|TimeLast|
 >|---|---|---|---|---|
 >| farsightsecurity.yahoo.com.au | CNAME |  |  |  |
@@ -130,6 +137,7 @@ DNSDB flex search
 
 
 ### dnsdb-rdata
+
 ***
 Lookup RData records
 
@@ -137,6 +145,7 @@ Lookup RData records
 #### Base Command
 
 `dnsdb-rdata`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -169,9 +178,11 @@ Lookup RData records
 
 
 #### Command Example
+
 ```!dnsdb-rdata type=name value=www.farsightsecurity.com limit=5```
 
 #### Context Example
+
 ```json
 {
     "DNSDB": {
@@ -217,6 +228,7 @@ Lookup RData records
 #### Human Readable Output
 
 >### Farsight DNSDB Lookup
+>
 >|RRName|RRType|RData|Count|TimeFirst|TimeLast|FromZoneFile|
 >|---|---|---|---|---|---|---|
 >| scout.dnsdb.info | CNAME | www.farsightsecurity.com. | 606 | 2020-03-27T18:37:24Z | 2020-10-21T18:11:47Z | False |
@@ -225,6 +237,7 @@ Lookup RData records
 
 
 ### dnsdb-summarize-rdata
+
 ***
 Summarize RData records
 
@@ -232,6 +245,7 @@ Summarize RData records
 #### Base Command
 
 `dnsdb-summarize-rdata`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -261,9 +275,11 @@ Summarize RData records
 
 
 #### Command Example
+
 ```!dnsdb-summarize-rdata type=name value=www.farsightsecurity.com limit=5```
 
 #### Context Example
+
 ```json
 {
     "DNSDB": {
@@ -281,12 +297,14 @@ Summarize RData records
 #### Human Readable Output
 
 >### Farsight DNSDB Summarize
+>
 >|Count|NumResults|TimeFirst|TimeLast|
 >|---|---|---|---|
 >| 1273 | 3 | 2013-12-10T01:20:08Z | 2020-10-21T18:11:47Z |
 
 
 ### dnsdb-rrset
+
 ***
 Lookup RRset records
 
@@ -294,6 +312,7 @@ Lookup RRset records
 #### Base Command
 
 `dnsdb-rrset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -328,9 +347,11 @@ Lookup RRset records
 
 
 #### Command Example
+
 ```!dnsdb-rrset owner_name=*.farsightsecurity.com type=NS limit=5```
 
 #### Context Example
+
 ```json
 {
     "DNSDB": {
@@ -409,6 +430,7 @@ Lookup RRset records
 #### Human Readable Output
 
 >### Farsight DNSDB Lookup
+>
 >|RRName|RRType|Bailiwick|RData|Count|TimeFirst|TimeLast|FromZoneFile|
 >|---|---|---|---|---|---|---|---|
 >| farsightsecurity.com | NS | com | ns.lah1.vix.com.<br/>ns1.isc-sns.net.<br/>ns2.isc-sns.com.<br/>ns3.isc-sns.info. | 19 | 2013-06-30T16:21:41Z | 2013-07-18T16:22:47Z | True |
@@ -419,6 +441,7 @@ Lookup RRset records
 
 
 ### dnsdb-summarize-rrset
+
 ***
 Lookup RRset records
 
@@ -426,6 +449,7 @@ Lookup RRset records
 #### Base Command
 
 `dnsdb-summarize-rrset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -455,9 +479,11 @@ Lookup RRset records
 
 
 #### Command Example
+
 ```!dnsdb-summarize-rrset owner_name=*.farsightsecurity.com type=NS limit=5```
 
 #### Context Example
+
 ```json
 {
     "DNSDB": {
@@ -475,12 +501,14 @@ Lookup RRset records
 #### Human Readable Output
 
 >### Farsight DNSDB Summarize
+>
 >|Count|NumResults|TimeFirst|TimeLast|ZoneTimeFirst|ZoneTimeLast|
 >|---|---|---|---|---|---|
 >| 45186 | 5 | 2013-09-25T15:37:03Z | 2018-09-27T00:29:43Z | 2013-01-24T17:18:05Z | 2020-07-24T16:02:05Z |
 
 
 ### dnsdb-rate-limit
+
 ***
 Retrieve service limits
 
@@ -488,6 +516,7 @@ Retrieve service limits
 #### Base Command
 
 `dnsdb-rate-limit`
+
 #### Input
 
 There are no input arguments for this command.
@@ -515,9 +544,11 @@ For block-based quotas: the remaining number of API lookups in the block quota.
 
 
 #### Command Example
+
 ```!dnsdb-rate-limit```
 
 #### Context Example
+
 ```json
 {
     "DNSDB": {
@@ -531,6 +562,7 @@ For block-based quotas: the remaining number of API lookups in the block quota.
 #### Human Readable Output
 
 >### Farsight DNSDB Service Limits
+>
 >|Unlimited|
 >|---|
 >| true |

@@ -1,5 +1,6 @@
 The Engine API is an HTTP API served by Docker Engine. It is the API the Docker client uses to communicate with the Engine, so everything the Docker client can do can be done with the API.
 This integration was integrated and tested with version 20.10.17 ([API Version 1.41](https://docs.docker.com/engine/api/v1.41/)) of Docker Engine API
+
 ## Configure Docker Engine API in Cortex
 
 
@@ -20,6 +21,7 @@ Note: The Docker private key must be first stored into XSOAR as a credential att
 
 
 ## Docker Engine
+
 Docker Engine is an open source containerization technology for building and containerizing your applications. Docker Engine acts as a client-server application with:
 
 - A server with a long-running daemon process dockerd.
@@ -29,11 +31,13 @@ Docker Engine is an open source containerization technology for building and con
 The CLI uses Docker APIs to control or interact with the Docker daemon through scripting or direct CLI commands. Many other Docker applications use the underlying API and CLI. The daemon creates and manage Docker objects, such as images, containers, networks, and volumes.
 
 ## Requirements
+
 By default, Docker runs through a non-networked UNIX socket. It can also optionally communicate using an HTTP socket. This integration manages a Docker Server that has had it's Docker daemon API interface exposed over HTTPS.
 
 Refer to the [Docker documentation](https://docs.docker.com/engine/security/protect-access/#use-tls-https-to-protect-the-docker-daemon-socket) for how to configure Docker server to securely accept HTTPS connections.
 
 To use this integration you need:
+
 1. The Docker server to be running in TLS (HTTPS) mode
 2. Have generated a certificate for this integration to act as a Docker Client authorised to manage this server
 
@@ -43,11 +47,16 @@ If a CA cert is not provided, the Docker server certificate will be validated us
 
 
 ### Docker Registry Authentication
+
 Authentication for registries is handled by the integration not the Docker Server. This is configured as a integration parameter. This can be in the form of either a identitytoken or Username/Password/Serveraddress. These four parameters are optional and if none authentication credentials are provided the integration will function in "Anonymous mode". Some Commands may not function as a result.
+
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### docker-build-prune
+
 ***
 Delete builder cache
 
@@ -55,6 +64,7 @@ Delete builder cache
 #### Base Command
 
 `docker-build-prune`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -72,9 +82,11 @@ Delete builder cache
 
 
 #### Command Example
+
 ```!docker-build-prune```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -89,12 +101,14 @@ Delete builder cache
 #### Human Readable Output
 
 >### Results
+>
 >|CachesDeleted|SpaceReclaimed|
 >|---|---|
 >|  | 0 |
 
 
 ### docker-config-create
+
 ***
 Create a config
 
@@ -102,6 +116,7 @@ Create a config
 #### Base Command
 
 `docker-config-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -118,9 +133,11 @@ Create a config
 There is no context output for this command.
 
 #### Command Example
+
 ```!docker-config-create configspec_name="test_config" configspec_data="VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg=="```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -132,12 +149,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|ID|
 >|---|
 >| vfih5lb2qn8rrxla178td04al |
 
 
 ### docker-config-inspect
+
 ***
 Inspect a config
 
@@ -145,6 +164,7 @@ Inspect a config
 #### Base Command
 
 `docker-config-inspect`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -162,9 +182,11 @@ Inspect a config
 
 
 #### Command Example
+
 ```!docker-config-inspect id="ud0ychozv55f7n0pzk6qo9kq9"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -178,12 +200,14 @@ Inspect a config
 #### Human Readable Output
 
 >### Results
+>
 >|message|
 >|---|
 >| config ud0ychozv55f7n0pzk6qo9kq9 not found |
 
 
 ### docker-config-list
+
 ***
 List configs
 
@@ -191,6 +215,7 @@ List configs
 #### Base Command
 
 `docker-config-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -208,9 +233,11 @@ List configs
 
 
 #### Command Example
+
 ```!docker-config-list```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -236,12 +263,14 @@ List configs
 #### Human Readable Output
 
 >### Results
+>
 >|CreatedAt|ID|Spec|UpdatedAt|Version|
 >|---|---|---|---|---|
 >| 2021-01-10T07:33:59.040093065Z | vfih5lb2qn8rrxla178td04al | Name: test_config<br/>Labels: {}<br/>Data: VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg== | 2021-01-10T07:33:59.040093065Z | Index: 11 |
 
 
 ### docker-container-changes
+
 ***
 Get changes on a container’s filesystem
 
@@ -249,6 +278,7 @@ Get changes on a container’s filesystem
 #### Base Command
 
 `docker-container-changes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -265,9 +295,11 @@ Get changes on a container’s filesystem
 
 
 #### Command Example
+
 ```!docker-container-changes id="04be62e20d33bf299865e26b657ec5516928641558ccff6a899407ab0b6b1d94"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -292,6 +324,7 @@ Get changes on a container’s filesystem
 #### Human Readable Output
 
 >### Results
+>
 >|Kind|Path|
 >|---|---|
 >| 0 | /tmp |
@@ -300,6 +333,7 @@ Get changes on a container’s filesystem
 
 
 ### docker-container-create
+
 ***
 Create a container
 
@@ -307,6 +341,7 @@ Create a container
 #### Base Command
 
 `docker-container-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -389,9 +424,11 @@ Create a container
 There is no context output for this command.
 
 #### Command Example
+
 ```!docker-container-create name="hello-docker" containerconfig_image="hello-world"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -403,11 +440,13 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|message|
 >|---|
 >| Conflict. The container name "/hello-docker" is already in use by container "7997c8bd061e762bfdb105274af3f60e5f2254aaba2172744db1edfccc2b8a41". You have to remove (or rename) that container to be able to reuse that name. |
 
 ### docker-container-delete
+
 ***
 Remove a container
 
@@ -415,6 +454,7 @@ Remove a container
 #### Base Command
 
 `docker-container-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -432,8 +472,11 @@ Remove a container
 | Docker.ContainerDelete.Status Code | String | Image Tag Result | 
 
 #### Command example
+
 ```!docker-container-delete id="hello-docker"```
+
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -445,11 +488,13 @@ Remove a container
 #### Human Readable Output
 
 >### Results
+>
 >|Status Code|
 >|---|
 >| 204 |
 
 ### docker-container-inspect
+
 ***
 Inspect a container
 
@@ -457,6 +502,7 @@ Inspect a container
 #### Base Command
 
 `docker-container-inspect`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -497,9 +543,11 @@ Inspect a container
 
 
 #### Command Example
+
 ```!docker-container-inspect id="7997c8bd061e762bfdb105274af3f60e5f2254aaba2172744db1edfccc2b8a41"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -705,12 +753,14 @@ Inspect a container
 #### Human Readable Output
 
 >### Results
+>
 >|AppArmorProfile|Args|Config|Created|Driver|ExecIDs|GraphDriver|HostConfig|HostnamePath|HostsPath|Id|Image|LogPath|MountLabel|Mounts|Name|NetworkSettings|Path|Platform|ProcessLabel|ResolvConfPath|RestartCount|State|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  |  | Hostname: 7997c8bd061e<br/>Domainname: <br/>User: <br/>AttachStdin: false<br/>AttachStdout: false<br/>AttachStderr: false<br/>Tty: false<br/>OpenStdin: false<br/>StdinOnce: false<br/>Env: PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin<br/>Cmd: /hello<br/>Image: hello-world<br/>Volumes: null<br/>WorkingDir: <br/>Entrypoint: null<br/>OnBuild: null<br/>Labels: {}<br/>StopSignal: SIGTERM | 2021-01-08T16:22:02.396165935Z | overlay2 |  | Data: {"LowerDir": "/var/lib/docker/overlay2/2ce039a43f37e7fae47787c5533de9e83f2c2d16876938e1183e6ee7dbf7f3d8-init/diff:/var/lib/docker/overlay2/1f480a7135adc30bb61259a8c1b45c7213946dfc1959c082a53c174d47c8f73f/diff", "MergedDir": "/var/lib/docker/overlay2/2ce039a43f37e7fae47787c5533de9e83f2c2d16876938e1183e6ee7dbf7f3d8/merged", "UpperDir": "/var/lib/docker/overlay2/2ce039a43f37e7fae47787c5533de9e83f2c2d16876938e1183e6ee7dbf7f3d8/diff", "WorkDir": "/var/lib/docker/overlay2/2ce039a43f37e7fae47787c5533de9e83f2c2d16876938e1183e6ee7dbf7f3d8/work"}<br/>Name: overlay2 | Binds: null<br/>ContainerIDFile: <br/>LogConfig: {"Type": "json-file", "Config": {}}<br/>NetworkMode: default<br/>PortBindings: null<br/>RestartPolicy: {"Name": "", "MaximumRetryCount": 0}<br/>AutoRemove: false<br/>VolumeDriver: <br/>VolumesFrom: null<br/>CapAdd: null<br/>CapDrop: null<br/>CgroupnsMode: host<br/>Dns: <br/>DnsOptions: <br/>DnsSearch: <br/>ExtraHosts: null<br/>GroupAdd: null<br/>IpcMode: private<br/>Cgroup: <br/>Links: null<br/>OomScoreAdj: 0<br/>PidMode: <br/>Privileged: false<br/>PublishAllPorts: false<br/>ReadonlyRootfs: false<br/>SecurityOpt: null<br/>UTSMode: <br/>UsernsMode: <br/>ShmSize: 67108864<br/>Runtime: runc<br/>ConsoleSize: 0,<br/>0<br/>Isolation: <br/>CpuShares: 0<br/>Memory: 0<br/>NanoCpus: 0<br/>CgroupParent: <br/>BlkioWeight: 0<br/>BlkioWeightDevice: null<br/>BlkioDeviceReadBps: null<br/>BlkioDeviceWriteBps: null<br/>BlkioDeviceReadIOps: null<br/>BlkioDeviceWriteIOps: null<br/>CpuPeriod: 0<br/>CpuQuota: 0<br/>CpuRealtimePeriod: 0<br/>CpuRealtimeRuntime: 0<br/>CpusetCpus: <br/>CpusetMems: <br/>Devices: null<br/>DeviceCgroupRules: null<br/>DeviceRequests: null<br/>KernelMemory: 0<br/>KernelMemoryTCP: 0<br/>MemoryReservation: 0<br/>MemorySwap: 0<br/>MemorySwappiness: null<br/>OomKillDisable: false<br/>PidsLimit: null<br/>Ulimits: null<br/>CpuCount: 0<br/>CpuPercent: 0<br/>IOMaximumIOps: 0<br/>IOMaximumBandwidth: 0<br/>MaskedPaths: /proc/asound,<br/>/proc/acpi,<br/>/proc/kcore,<br/>/proc/keys,<br/>/proc/latency_stats,<br/>/proc/timer_list,<br/>/proc/timer_stats,<br/>/proc/sched_debug,<br/>/proc/scsi,<br/>/sys/firmware<br/>ReadonlyPaths: /proc/bus,<br/>/proc/fs,<br/>/proc/irq,<br/>/proc/sys,<br/>/proc/sysrq-trigger | /var/lib/docker/containers/7997c8bd061e762bfdb105274af3f60e5f2254aaba2172744db1edfccc2b8a41/hostname | /var/lib/docker/containers/7997c8bd061e762bfdb105274af3f60e5f2254aaba2172744db1edfccc2b8a41/hosts | 7997c8bd061e762bfdb105274af3f60e5f2254aaba2172744db1edfccc2b8a41 | sha256:bf756fb1ae65adf866bd8c456593cd24beb6a0a061dedf42b26a993176745f6b | /var/lib/docker/containers/7997c8bd061e762bfdb105274af3f60e5f2254aaba2172744db1edfccc2b8a41/7997c8bd061e762bfdb105274af3f60e5f2254aaba2172744db1edfccc2b8a41-json.log |  |  | /hello-docker | Bridge: <br/>SandboxID: 6d48185534118ce5b3549501c122dd1f67831418c306ef2291cfda6763db6e0e<br/>HairpinMode: false<br/>LinkLocalIPv6Address: <br/>LinkLocalIPv6PrefixLen: 0<br/>Ports: {}<br/>SandboxKey: /var/run/docker/netns/6d4818553411<br/>SecondaryIPAddresses: null<br/>SecondaryIPv6Addresses: null<br/>EndpointID: <br/>Gateway: <br/>GlobalIPv6Address: <br/>GlobalIPv6PrefixLen: 0<br/>IPAddress: <br/>IPPrefixLen: 0<br/>IPv6Gateway: <br/>MacAddress: <br/>Networks: {"bridge": {"IPAMConfig": null, "Links": null, "Aliases": null, "NetworkID": "b5b425aad28e5f4b9c9b118257ce214455d84a7901e5a90d79e3ae4f527f725e", "EndpointID": "", "Gateway": "", "IPAddress": "", "IPPrefixLen": 0, "IPv6Gateway": "", "GlobalIPv6Address": "", "GlobalIPv6PrefixLen": 0, "MacAddress": "", "DriverOpts": null}} | /hello | linux |  | /var/lib/docker/containers/7997c8bd061e762bfdb105274af3f60e5f2254aaba2172744db1edfccc2b8a41/resolv.conf | 0 | Status: exited<br/>Running: false<br/>Paused: false<br/>Restarting: false<br/>OOMKilled: false<br/>Dead: false<br/>Pid: 0<br/>ExitCode: 0<br/>Error: <br/>StartedAt: 2021-01-08T16:26:46.401416786Z<br/>FinishedAt: 2021-01-08T16:26:46.413127348Z |
 
 
 ### docker-container-list
+
 ***
 List containers
 
@@ -718,6 +768,7 @@ List containers
 #### Base Command
 
 `docker-container-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -733,9 +784,11 @@ List containers
 There is no context output for this command.
 
 #### Command Example
+
 ```!docker-container-list```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -1775,6 +1828,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|Command|Created|HostConfig|Id|Image|ImageID|Labels|Mounts|Names|NetworkSettings|Ports|State|Status|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| tini -- /docker-entrypoint.sh mongo-express | 1609920735 | NetworkMode: mongodb_default | 57d49db83f2ced79c87e5c50d2b407bbb7bc33c3a95a03e142477f3a3b79ded5 | mongo-express | sha256:05bf9d904cd0953ee1ad647a61abfb0ab1470062f8baa70495b4b068e95a514e | com.docker.compose.config-hash: 0a75befcc34f36ab677c5d8f09d2ee8063e8ad3d<br/>com.docker.compose.container-number: 1<br/>com.docker.compose.oneoff: False<br/>com.docker.compose.project: mongodb<br/>com.docker.compose.service: mongo-express<br/>com.docker.compose.version: 1.5.0 |  | /mongodb-express | Networks: {"mongodb_default": {"IPAMConfig": {}, "Links": null, "Aliases": null, "NetworkID": "5e04b0a7302ac9ce9c5fa3ba9d71c6bf173a9aaca5b3efc6c79b3bf01260371b", "EndpointID": "2628f2ac3df2f3b5a8059fe3e736d9fe9da4d428c9da9220dad5d2eb100258fa", "Gateway": "1.0.0.1", "IPAddress": "1.0.0.3", "IPPrefixLen": 16, "IPv6Gateway": "", "GlobalIPv6Address": "", "GlobalIPv6PrefixLen": 0, "MacAddress": "02:42:ac:1a:00:03", "DriverOpts": null}} | {'IP': '0.0.0.0', 'PrivatePort': 8081, 'PublicPort': 8081, 'Type': 'tcp'} | running | Up 23 minutes |
@@ -1798,6 +1852,7 @@ There is no context output for this command.
 
 
 ### docker-container-stats
+
 ***
 Get container stats based on resource usage
 
@@ -1805,6 +1860,7 @@ Get container stats based on resource usage
 #### Base Command
 
 `docker-container-stats`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1819,9 +1875,11 @@ Get container stats based on resource usage
 There is no context output for this command.
 
 #### Command Example
+
 ```!docker-container-stats id="04be62e20d33bf299865e26b657ec5516928641558ccff6a899407ab0b6b1d94"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -2096,12 +2154,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|blkio_stats|cpu_stats|id|memory_stats|name|networks|num_procs|pids_stats|precpu_stats|preread|read|storage_stats|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| io_service_bytes_recursive: {'major': 8, 'minor': 0, 'op': 'Read', 'value': 51187712},<br/>{'major': 8, 'minor': 0, 'op': 'Write', 'value': 8192},<br/>{'major': 8, 'minor': 0, 'op': 'Sync', 'value': 51187712},<br/>{'major': 8, 'minor': 0, 'op': 'Async', 'value': 8192},<br/>{'major': 8, 'minor': 0, 'op': 'Discard', 'value': 0},<br/>{'major': 8, 'minor': 0, 'op': 'Total', 'value': 51195904},<br/>{'major': 253, 'minor': 0, 'op': 'Read', 'value': 51187712},<br/>{'major': 253, 'minor': 0, 'op': 'Write', 'value': 8192},<br/>{'major': 253, 'minor': 0, 'op': 'Sync', 'value': 51187712},<br/>{'major': 253, 'minor': 0, 'op': 'Async', 'value': 8192},<br/>{'major': 253, 'minor': 0, 'op': 'Discard', 'value': 0},<br/>{'major': 253, 'minor': 0, 'op': 'Total', 'value': 51195904}<br/>io_serviced_recursive: {'major': 8, 'minor': 0, 'op': 'Read', 'value': 921},<br/>{'major': 8, 'minor': 0, 'op': 'Write', 'value': 2},<br/>{'major': 8, 'minor': 0, 'op': 'Sync', 'value': 921},<br/>{'major': 8, 'minor': 0, 'op': 'Async', 'value': 2},<br/>{'major': 8, 'minor': 0, 'op': 'Discard', 'value': 0},<br/>{'major': 8, 'minor': 0, 'op': 'Total', 'value': 923},<br/>{'major': 253, 'minor': 0, 'op': 'Read', 'value': 903},<br/>{'major': 253, 'minor': 0, 'op': 'Write', 'value': 2},<br/>{'major': 253, 'minor': 0, 'op': 'Sync', 'value': 903},<br/>{'major': 253, 'minor': 0, 'op': 'Async', 'value': 2},<br/>{'major': 253, 'minor': 0, 'op': 'Discard', 'value': 0},<br/>{'major': 253, 'minor': 0, 'op': 'Total', 'value': 905}<br/>io_queue_recursive: <br/>io_service_time_recursive: <br/>io_wait_time_recursive: <br/>io_merged_recursive: <br/>io_time_recursive: <br/>sectors_recursive:  | cpu_usage: {"total_usage": 1582824194, "percpu_usage": [80337610, 246108128, 104408379, 375538972, 131439025, 327257147, 130127173, 187607760], "usage_in_kernelmode": 150000000, "usage_in_usermode": 1400000000}<br/>system_cpu_usage: 613825660000000<br/>online_cpus: 8<br/>throttling_data: {"periods": 0, "throttled_periods": 0, "throttled_time": 0} | 04be62e20d33bf299865e26b657ec5516928641558ccff6a899407ab0b6b1d94 | usage: 107155456<br/>max_usage: 107409408<br/>stats: {"active_anon": 50569216, "active_file": 2973696, "cache": 48525312, "dirty": 0, "hierarchical_memory_limit": 9223372036854771712, "hierarchical_memsw_limit": 9223372036854771712, "inactive_anon": 0, "inactive_file": 45281280, "mapped_file": 14598144, "pgfault": 28974, "pgmajfault": 0, "pgpgin": 34947, "pgpgout": 10597, "rss": 50515968, "rss_huge": 0, "total_active_anon": 50569216, "total_active_file": 2973696, "total_cache": 48525312, "total_dirty": 0, "total_inactive_anon": 0, "total_inactive_file": 45281280, "total_mapped_file": 14598144, "total_pgfault": 28974, "total_pgmajfault": 0, "total_pgpgin": 34947, "total_pgpgout": 10597, "total_rss": 50515968, "total_rss_huge": 0, "total_unevictable": 0, "total_writeback": 0, "unevictable": 0, "writeback": 0}<br/>limit: 8143470592 | /test-taxii | eth0: {"rx_bytes": 1436, "rx_packets": 18, "rx_errors": 0, "rx_dropped": 0, "tx_bytes": 0, "tx_packets": 0, "tx_errors": 0, "tx_dropped": 0} | 0 | current: 3 | cpu_usage: {"total_usage": 1582721133, "percpu_usage": [80234549, 246108128, 104408379, 375538972, 131439025, 327257147, 130127173, 187607760], "usage_in_kernelmode": 150000000, "usage_in_usermode": 1400000000}<br/>system_cpu_usage: 613817680000000<br/>online_cpus: 8<br/>throttling_data: {"periods": 0, "throttled_periods": 0, "throttled_time": 0} | 2021-01-10T07:34:03.405981877Z | 2021-01-10T07:34:04.407988262Z |  |
 
 
 ### docker-container-top
+
 ***
 List processes running inside a container
 
@@ -2109,6 +2169,7 @@ List processes running inside a container
 #### Base Command
 
 `docker-container-top`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2125,9 +2186,11 @@ List processes running inside a container
 
 
 #### Command Example
+
 ```!docker-container-top id="04be62e20d33bf299865e26b657ec5516928641558ccff6a899407ab0b6b1d94"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -2182,12 +2245,14 @@ List processes running inside a container
 #### Human Readable Output
 
 >### Results
+>
 >|Processes|Titles|
 >|---|---|
 >| ['root', '3830', '3780', '0', '11:10', '?', '00:00:01', '/venv/bin/python3 /venv/bin/gunicorn opentaxii.http:app --workers=2 --log-level=info --log-file=- --timeout=300 --config=python:opentaxii.http --bind=0.0.0.0:9000'],<br/>['root', '6188', '3830', '0', '11:10', '?', '00:00:00', '/venv/bin/python3 /venv/bin/gunicorn opentaxii.http:app --workers=2 --log-level=info --log-file=- --timeout=300 --config=python:opentaxii.http --bind=0.0.0.0:9000'],<br/>['root', '6190', '3830', '0', '11:10', '?', '00:00:00', '/venv/bin/python3 /venv/bin/gunicorn opentaxii.http:app --workers=2 --log-level=info --log-file=- --timeout=300 --config=python:opentaxii.http --bind=0.0.0.0:9000'] | UID,<br/>PID,<br/>PPID,<br/>C,<br/>STIME,<br/>TTY,<br/>TIME,<br/>CMD |
 
 
 ### docker-image-create
+
 ***
 Create an image by either pulling it from a registry or importing it.
 
@@ -2195,6 +2260,7 @@ Create an image by either pulling it from a registry or importing it.
 #### Base Command
 
 `docker-image-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2214,8 +2280,11 @@ Create an image by either pulling it from a registry or importing it.
 | Docker.ImageCreate.Status | String | Image Create result | 
 
 #### Command example
+
 ```!docker-image-create from_image="alpine:latest"```
+
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -2229,11 +2298,13 @@ Create an image by either pulling it from a registry or importing it.
 #### Human Readable Output
 
 >### Results
+>
 >|status|
 >|---|
 >| Status: Downloaded newer image for alpine:latest |
 
 ### docker-image-delete
+
 ***
 Remove an image, along with any untagged parent images that were referenced by that image. Images can't be removed if they have descendant images, are being used by a running container or are being used by a build.
 
@@ -2241,6 +2312,7 @@ Remove an image, along with any untagged parent images that were referenced by t
 #### Base Command
 
 `docker-image-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2257,8 +2329,11 @@ Remove an image, along with any untagged parent images that were referenced by t
 | Docker.ImageDeleteResponseItem | string | Deletion Response | 
 
 #### Command example
+
 ```!docker-image-delete name="alpine:latest"```
+
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -2277,6 +2352,7 @@ Remove an image, along with any untagged parent images that were referenced by t
 #### Human Readable Output
 
 >### Results
+>
 >|Untagged|
 >|---|
 >| alpine:latest |
@@ -2284,6 +2360,7 @@ Remove an image, along with any untagged parent images that were referenced by t
 
 
 ### docker-image-history
+
 ***
 Get the history of an image
 
@@ -2291,6 +2368,7 @@ Get the history of an image
 #### Base Command
 
 `docker-image-history`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2310,9 +2388,11 @@ Get the history of an image
 
 
 #### Command Example
+
 ```!docker-image-history name="05bf9d904cd0953ee1ad647a61abfb0ab1470062f8baa70495b4b068e95a514e"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -2479,6 +2559,7 @@ Get the history of an image
 #### Human Readable Output
 
 >### Results
+>
 >|Comment|Created|CreatedBy|Id|Size|Tags|
 >|---|---|---|---|---|---|
 >|  | 1609870186 | /bin/sh -c #(nop)  CMD ["mongo-express"] | sha256:05bf9d904cd0953ee1ad647a61abfb0ab1470062f8baa70495b4b068e95a514e | 0 | mongo-express:latest |
@@ -2502,6 +2583,7 @@ Get the history of an image
 
 
 ### docker-image-inspect
+
 ***
 Inspect an image
 
@@ -2509,6 +2591,7 @@ Inspect an image
 #### Base Command
 
 `docker-image-inspect`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2535,9 +2618,11 @@ Inspect an image
 
 
 #### Command Example
+
 ```!docker-image-inspect name="05bf9d904cd0953ee1ad647a61abfb0ab1470062f8baa70495b4b068e95a514e"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -2673,12 +2758,14 @@ Inspect an image
 #### Human Readable Output
 
 >### Results
+>
 >|Architecture|Author|Comment|Config|Container|ContainerConfig|Created|DockerVersion|GraphDriver|Id|Metadata|Os|Parent|RepoDigests|RepoTags|RootFS|Size|VirtualSize|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| amd64 |  |  | Hostname: <br/>Domainname: <br/>User: <br/>AttachStdin: false<br/>AttachStdout: false<br/>AttachStderr: false<br/>ExposedPorts: {"8081/tcp": {}}<br/>Tty: false<br/>OpenStdin: false<br/>StdinOnce: false<br/>Env: PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin,<br/>NODE_VERSION=12.20.1,<br/>YARN_VERSION=1.22.5,<br/>ME_CONFIG_EDITORTHEME=default,<br/>ME_CONFIG_MONGODB_SERVER=mongo,<br/>ME_CONFIG_MONGODB_ENABLE_ADMIN=true,<br/>ME_CONFIG_BASICAUTH_USERNAME=,<br/>ME_CONFIG_BASICAUTH_PASSWORD=,<br/>VCAP_APP_HOST=0.0.0.0,<br/>MONGO_EXPRESS=0.54.0<br/>Cmd: mongo-express<br/>Image: sha256:a40e2035f4c886f16698034a527edd6a4c3bff2dbf22ecb5dcb461ac33ea798a<br/>Volumes: null<br/>WorkingDir: /node_modules/mongo-express<br/>Entrypoint: tini,<br/>--,<br/>/docker-entrypoint.sh<br/>OnBuild: null<br/>Labels: null | 91acb3f551fd19d56a0f0b1582f664f2069239a5d9ed999ac38dc161392fedc9 | Hostname: 91acb3f551fd<br/>Domainname: <br/>User: <br/>AttachStdin: false<br/>AttachStdout: false<br/>AttachStderr: false<br/>ExposedPorts: {"8081/tcp": {}}<br/>Tty: false<br/>OpenStdin: false<br/>StdinOnce: false<br/>Env: PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin,<br/>NODE_VERSION=12.20.1,<br/>YARN_VERSION=1.22.5,<br/>ME_CONFIG_EDITORTHEME=default,<br/>ME_CONFIG_MONGODB_SERVER=mongo,<br/>ME_CONFIG_MONGODB_ENABLE_ADMIN=true,<br/>ME_CONFIG_BASICAUTH_USERNAME=,<br/>ME_CONFIG_BASICAUTH_PASSWORD=,<br/>VCAP_APP_HOST=0.0.0.0,<br/>MONGO_EXPRESS=0.54.0<br/>Cmd: /bin/sh,<br/>-c,<br/>#(nop) ,<br/>CMD ["mongo-express"]<br/>Image: sha256:a40e2035f4c886f16698034a527edd6a4c3bff2dbf22ecb5dcb461ac33ea798a<br/>Volumes: null<br/>WorkingDir: /node_modules/mongo-express<br/>Entrypoint: tini,<br/>--,<br/>/docker-entrypoint.sh<br/>OnBuild: null<br/>Labels: {} | 2021-01-05T18:09:46.916579532Z | 19.03.12 | Data: {"LowerDir": "/var/lib/docker/overlay2/c0484e122f4fe26b7f63c04e38ccc18b2a932ae7ba00a1f223d966ce6889ec8d/diff:/var/lib/docker/overlay2/eab51a1fd1f1abde2b80839670b68909d0edbd1ae5528526308ee496593da92d/diff:/var/lib/docker/overlay2/f152df862c74cc8f87423425a78c618e38285b61ad193e5c9d69abc4b801ebfd/diff:/var/lib/docker/overlay2/79be70a57f5523e094ddf66406736876bda8d400cf4e41cae52650b938c1ea4f/diff:/var/lib/docker/overlay2/a0082ccffb2ad9b0bf73e98617defb1511ba6537c21709675b2b2b474f9c9642/diff:/var/lib/docker/overlay2/5b5385f706911829168165cd805284c213400e11c849838a9835e44e8c81692c/diff:/var/lib/docker/overlay2/a621ef67bdf8bbd8965845f159240e790d8bd621fa123f97e94c56b9828bf0b3/diff", "MergedDir": "/var/lib/docker/overlay2/5c7904a490e6f7f175426b17d1d9ef26951da650895e437bfc36ec11a99e4c37/merged", "UpperDir": "/var/lib/docker/overlay2/5c7904a490e6f7f175426b17d1d9ef26951da650895e437bfc36ec11a99e4c37/diff", "WorkDir": "/var/lib/docker/overlay2/5c7904a490e6f7f175426b17d1d9ef26951da650895e437bfc36ec11a99e4c37/work"}<br/>Name: overlay2 | sha256:05bf9d904cd0953ee1ad647a61abfb0ab1470062f8baa70495b4b068e95a514e | LastTagTime: 0001-01-01T00:00:00Z | linux |  | mongo-express@sha256:6ae44c697cd2381772f8ea8f0571008b62e36301305b113df7f35f2e683e8255 | mongo-express:latest | Type: layers<br/>Layers: sha256:0fcbbeeeb0d7fc5c06362d7a6717b999e605574c7210eff4f7418f6e9be9fbfe,<br/>sha256:62d0a87660b82baeaac545f86febf9fa085015fc446edaa836b06189662a21bf,<br/>sha256:ab2b283144664cdf32922dbb6e6febceee3941aed7d77840765959d131b4cfd1,<br/>sha256:6693766656f04c9719744dcfa046c0d51c12676eb75880f325ccebf56a9a1d60,<br/>sha256:09a8b406deae52f384b03c2e7914f65fdbda67c412e4c7249542407e825fda9d,<br/>sha256:1a0d48792d28c938b4decb611fb3eebe6bf4efe4405ccfc1d77229bfd47a0ca4,<br/>sha256:a88f4e88722d6d6a553a5f35b624e6d6b1e20e3b22bb6c099524d437223dcba3,<br/>sha256:4257a8584459b164c82f0e8da2c79ada2f760d82dfee8bcd26f77a2de2f82a06 | 129388912 | 129388912 |
 
 
 ### docker-image-list
+
 ***
 List Images
 
@@ -2686,6 +2773,7 @@ List Images
 #### Base Command
 
 `docker-image-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2709,9 +2797,11 @@ List Images
 
 
 #### Command Example
+
 ```!docker-image-list```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -3176,6 +3266,7 @@ List Images
 #### Human Readable Output
 
 >### Results
+>
 >|Containers|Created|Id|Labels|ParentId|RepoDigests|RepoTags|SharedSize|Size|VirtualSize|
 >|---|---|---|---|---|---|---|---|---|---|
 >| -1 | 1609870186 | sha256:05bf9d904cd0953ee1ad647a61abfb0ab1470062f8baa70495b4b068e95a514e |  |  | mongo-express@sha256:6ae44c697cd2381772f8ea8f0571008b62e36301305b113df7f35f2e683e8255 | mongo-express:latest | -1 | 129388912 | 129388912 |
@@ -3205,6 +3296,7 @@ List Images
 
 
 ### docker-image-prune
+
 ***
 Delete unused images
 
@@ -3212,6 +3304,7 @@ Delete unused images
 #### Base Command
 
 `docker-image-prune`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3229,9 +3322,11 @@ Delete unused images
 
 
 #### Command Example
+
 ```!docker-image-prune```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -3246,11 +3341,13 @@ Delete unused images
 #### Human Readable Output
 
 >### Results
+>
 >|ImagesDeleted|SpaceReclaimed|
 >|---|---|
 >|  | 0 |
 
 ### docker-image-push
+
 ***
 Push an image to a registry. If you wish to push an image on to a private registry, that image must already have a tag which references the registry. For example, registry.example.com/myimage:latest. The push is cancelled if the HTTP connection is closed.
 
@@ -3258,6 +3355,7 @@ Push an image to a registry. If you wish to push an image on to a private regist
 #### Base Command
 
 `docker-image-push`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3273,8 +3371,11 @@ Push an image to a registry. If you wish to push an image on to a private regist
 | Docker.ImagePush | String | Image Push Result | 
 
 #### Command example
+
 ```!docker-image-push name="example/alpine:test"```
+
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -3293,12 +3394,14 @@ Push an image to a registry. If you wish to push an image on to a private regist
 #### Human Readable Output
 
 >### Results
+>
 >|aux|progressDetail|
 >|---|---|
 >| Tag: test<br/>Digest: sha256:4ff3ca91275773af45cb4b0834e12b7eb47d1c18f770a0b151381cd227f4c253<br/>Size: 528 |  |
 
 
 ### docker-image-search
+
 ***
 Search images
 
@@ -3306,6 +3409,7 @@ Search images
 #### Base Command
 
 `docker-image-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3327,9 +3431,11 @@ Search images
 
 
 #### Command Example
+
 ```!docker-image-search term="centos"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -3517,6 +3623,7 @@ Search images
 #### Human Readable Output
 
 >### Results
+>
 >|description|is_automated|is_official|name|star_count|
 >|---|---|---|---|---|
 >| The official build of CentOS. | false | true | centos | 6365 |
@@ -3547,6 +3654,7 @@ Search images
 
 
 ### docker-image-tag
+
 ***
 Tag an image so that it becomes part of a repository.
 
@@ -3554,6 +3662,7 @@ Tag an image so that it becomes part of a repository.
 #### Base Command
 
 `docker-image-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3570,8 +3679,11 @@ Tag an image so that it becomes part of a repository.
 | Docker.ImageTag.Status Code | String | Image Tag Result | 
 
 #### Command example
+
 ```!docker-image-tag name="alpine:latest" repo="example/alpine" tag="test"```
+
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -3585,12 +3697,14 @@ Tag an image so that it becomes part of a repository.
 #### Human Readable Output
 
 >### Results
+>
 >|Status Code|
 >|---|
 >| 201 |
 
 
 ### docker-network-create
+
 ***
 Create a network
 
@@ -3598,6 +3712,7 @@ Create a network
 #### Base Command
 
 `docker-network-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3621,9 +3736,11 @@ Create a network
 There is no context output for this command.
 
 #### Command Example
+
 ```!docker-network-create networkconfig_name="test-network1"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -3636,12 +3753,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|Id|Warning|
 >|---|---|
 >| 5878fae3ab77e56b2599a830342c343ea66bed1f7808c277b5a7d8f30f3b054d |  |
 
 
 ### docker-network-list
+
 ***
 List networks
 
@@ -3649,6 +3768,7 @@ List networks
 #### Base Command
 
 `docker-network-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3677,9 +3797,11 @@ List networks
 
 
 #### Command Example
+
 ```!docker-network-list```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -3891,6 +4013,7 @@ List networks
 #### Human Readable Output
 
 >### Results
+>
 >|Attachable|ConfigFrom|ConfigOnly|Containers|Created|Driver|EnableIPv6|IPAM|Id|Ingress|Internal|Labels|Name|Options|Scope|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | Network:  | false |  | 2021-01-10T07:33:54.637849596Z | overlay | false | Driver: default<br/>Options: null<br/>Config: {'Subnet': '10.0.0.0/24', 'Gateway': '10.0.0.1'} | eo50uuvgxacjaumqfg1a939x7 | true | false |  | ingress | com.docker.network.driver.overlay.vxlanid_list: 4096 | swarm |
@@ -3903,6 +4026,7 @@ List networks
 
 
 ### docker-network-prune
+
 ***
 Delete unused networks
 
@@ -3910,6 +4034,7 @@ Delete unused networks
 #### Base Command
 
 `docker-network-prune`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3922,9 +4047,11 @@ Delete unused networks
 There is no context output for this command.
 
 #### Command Example
+
 ```!docker-network-prune```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -3940,12 +4067,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|NetworksDeleted|
 >|---|
 >| test-network1 |
 
 
 ### docker-node-inspect
+
 ***
 Inspect a node
 
@@ -3953,6 +4082,7 @@ Inspect a node
 #### Base Command
 
 `docker-node-inspect`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3970,9 +4100,11 @@ Inspect a node
 
 
 #### Command Example
+
 ```!docker-node-inspect id="ihwbb8r17uj4zgk1ds427r06o"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -3986,12 +4118,14 @@ Inspect a node
 #### Human Readable Output
 
 >### Results
+>
 >|message|
 >|---|
 >| node ihwbb8r17uj4zgk1ds427r06o not found |
 
 
 ### docker-node-list
+
 ***
 List nodes
 
@@ -3999,6 +4133,7 @@ List nodes
 #### Base Command
 
 `docker-node-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4016,9 +4151,11 @@ List nodes
 
 
 #### Command Example
+
 ```!docker-node-list```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -4142,12 +4279,14 @@ List nodes
 #### Human Readable Output
 
 >### Results
+>
 >|CreatedAt|Description|ID|ManagerStatus|Spec|Status|UpdatedAt|Version|
 >|---|---|---|---|---|---|---|---|
 >| 2021-01-10T07:33:54.637814818Z | Hostname: docker<br/>Platform: {"Architecture": "x86_64", "OS": "linux"}<br/>Resources: {"NanoCPUs": 8000000000, "MemoryBytes": 8143470592}<br/>Engine: {"EngineVersion": "20.10.1", "Plugins": [{"Type": "Log", "Name": "awslogs"}, {"Type": "Log", "Name": "fluentd"}, {"Type": "Log", "Name": "gcplogs"}, {"Type": "Log", "Name": "gelf"}, {"Type": "Log", "Name": "journald"}, {"Type": "Log", "Name": "json-file"}, {"Type": "Log", "Name": "local"}, {"Type": "Log", "Name": "logentries"}, {"Type": "Log", "Name": "splunk"}, {"Type": "Log", "Name": "syslog"}, {"Type": "Network", "Name": "bridge"}, {"Type": "Network", "Name": "host"}, {"Type": "Network", "Name": "ipvlan"}, {"Type": "Network", "Name": "macvlan"}, {"Type": "Network", "Name": "null"}, {"Type": "Network", "Name": "overlay"}, {"Type": "Volume", "Name": "local"}]}<br/>TLSInfo: {"TrustRoot": "-----BEGIN CERTIFICATE-----\nMIIBazCCARCgAwIBAgIUOiN4v/EY6RXDOD/KhFdvH3brl7AwCgYIKoZIzj0EAwIw\nEzERMA8GA1UEAxMIc3dhcm0tY2EwHhcNMjEwMTEwMDcyOTAwWhcNNDEwMTA1MDcy\nOTAwWjATMREwDwYDVQQDEwhzd2FybS1jYTBZMBMGByqGSM49AgEGCCqGSM49AwEH\nA0IABCxLs7pWJhTn8c0gmLbDah0hhTPK0Zm3k/sWNSV8TRcN8TOuWXScUgY2T87J\nMKWd62vigYHbVqbwOrOsSwcHzbmjQjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMB\nAf8EBTADAQH/MB0GA1UdDgQWBBS4aSrlzrksA4rV4dI/+VaVF6FPUDAKBggqhkjO\nPQQDAgNJADBGAiEA7XBazcswvm/Dl4z7OHI6LGodSFOS5Z8Zg1DFPmdoodoCIQCh\n2+H2IcBXUO50IAzFvKt754HImW+kpLNe6fOFtEj+kQ==\n-----END CERTIFICATE-----\n", "CertIssuerSubject": "MBMxETAPBgNVBAMTCHN3YXJtLWNh", "CertIssuerPublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELEuzulYmFOfxzSCYtsNqHSGFM8rRmbeT+xY1JXxNFw3xM65ZdJxSBjZPzskwpZ3ra+KBgdtWpvA6s6xLBwfNuQ=="} | cgj752x81xe8wbwhfr0chpa1n | Leader: true<br/>Reachability: reachable<br/>Addr: 1.0.0.2:2377 | Labels: {}<br/>Role: manager<br/>Availability: active | State: ready<br/>Addr: 1.0.0.2 | 2021-01-10T07:33:55.240452056Z | Index: 9 |
 
 
 ### docker-secret-create
+
 ***
 Create a secret
 
@@ -4155,6 +4294,7 @@ Create a secret
 #### Base Command
 
 `docker-secret-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4173,9 +4313,11 @@ Create a secret
 There is no context output for this command.
 
 #### Command Example
+
 ```!docker-secret-create secretspec_name="temp-secret1" secretspec_data="test"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -4187,12 +4329,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|ID|
 >|---|
 >| 4ifl4ou479wz933pezt2t87u0 |
 
 
 ### docker-secret-inspect
+
 ***
 Inspect a secret
 
@@ -4200,6 +4344,7 @@ Inspect a secret
 #### Base Command
 
 `docker-secret-inspect`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4217,9 +4362,11 @@ Inspect a secret
 
 
 #### Command Example
+
 ```!docker-secret-inspect id="2k3h2oy2qiiz2rc35zhgh3yvz"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -4233,12 +4380,14 @@ Inspect a secret
 #### Human Readable Output
 
 >### Results
+>
 >|message|
 >|---|
 >| secret 2k3h2oy2qiiz2rc35zhgh3yvz not found |
 
 
 ### docker-secret-list
+
 ***
 List secrets
 
@@ -4246,6 +4395,7 @@ List secrets
 #### Base Command
 
 `docker-secret-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4263,9 +4413,11 @@ List secrets
 
 
 #### Command Example
+
 ```!docker-secret-list```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -4290,12 +4442,14 @@ List secrets
 #### Human Readable Output
 
 >### Results
+>
 >|CreatedAt|ID|Spec|UpdatedAt|Version|
 >|---|---|---|---|---|
 >| 2021-01-10T07:34:16.735786395Z | 4ifl4ou479wz933pezt2t87u0 | Name: temp-secret1<br/>Labels: {} | 2021-01-10T07:34:16.735786395Z | Index: 12 |
 
 
 ### docker-swarm-init
+
 ***
 Initialize a new swarm
 
@@ -4303,6 +4457,7 @@ Initialize a new swarm
 #### Base Command
 
 `docker-swarm-init`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4329,9 +4484,11 @@ Initialize a new swarm
 There is no context output for this command.
 
 #### Command Example
+
 ```!docker-swarm-init listenaddr="1.0.0.2" advertiseaddr="1.0.0.2"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -4347,12 +4504,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|Node ID|
 >|---|
 >| cgj752x81xe8wbwhfr0chpa1n |
 
 
 ### docker-swarm-inspect
+
 ***
 Inspect swarm
 
@@ -4360,6 +4519,7 @@ Inspect swarm
 #### Base Command
 
 `docker-swarm-inspect`
+
 #### Input
 
 There are no input arguments for this command.
@@ -4369,9 +4529,11 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!docker-swarm-inspect```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -4429,12 +4591,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|CreatedAt|DataPathPort|DefaultAddrPool|ID|JoinTokens|RootRotationInProgress|Spec|SubnetSize|TLSInfo|UpdatedAt|Version|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 2021-01-10T07:33:54.637800661Z | 4789 | 10.0.0.0/8 | vlnbrh88562b0zqkfznqxp3lo | Worker: SWMTKN-1-5saqys3rd44qxyua8eq7ssa6o0k79sgwyjpcat8ocpz7jaq8ij-aj3qmgg6e5zvn9bz2k71pu7pv<br/>Manager: SWMTKN-1-5saqys3rd44qxyua8eq7ssa6o0k79sgwyjpcat8ocpz7jaq8ij-38lq63qd8ruxh0eabe5gmxqrz | false | Name: default<br/>Labels: {}<br/>Orchestration: {"TaskHistoryRetentionLimit": 5}<br/>Raft: {"SnapshotInterval": 10000, "KeepOldSnapshots": 0, "LogEntriesForSlowFollowers": 500, "ElectionTick": 10, "HeartbeatTick": 1}<br/>Dispatcher: {"HeartbeatPeriod": 5000000000}<br/>CAConfig: {"NodeCertExpiry": 7776000000000000}<br/>TaskDefaults: {}<br/>EncryptionConfig: {"AutoLockManagers": false} | 24 | TrustRoot: -----BEGIN CERTIFICATE-----<br/>MIIBazCCARCgAwIBAgIUOiN4v/EY6RXDOD/KhFdvH3brl7AwCgYIKoZIzj0EAwIw<br/>EzERMA8GA1UEAxMIc3dhcm0tY2EwHhcNMjEwMTEwMDcyOTAwWhcNNDEwMTA1MDcy<br/>OTAwWjATMREwDwYDVQQDEwhzd2FybS1jYTBZMBMGByqGSM49AgEGCCqGSM49AwEH<br/>A0IABCxLs7pWJhTn8c0gmLbDah0hhTPK0Zm3k/sWNSV8TRcN8TOuWXScUgY2T87J<br/>MKWd62vigYHbVqbwOrOsSwcHzbmjQjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMB<br/>Af8EBTADAQH/MB0GA1UdDgQWBBS4aSrlzrksA4rV4dI/+VaVF6FPUDAKBggqhkjO<br/>PQQDAgNJADBGAiEA7XBazcswvm/Dl4z7OHI6LGodSFOS5Z8Zg1DFPmdoodoCIQCh<br/>2+H2IcBXUO50IAzFvKt754HImW+kpLNe6fOFtEj+kQ==<br/>-----END CERTIFICATE-----<br/><br/>CertIssuerSubject: MBMxETAPBgNVBAMTCHN3YXJtLWNh<br/>CertIssuerPublicKey: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELEuzulYmFOfxzSCYtsNqHSGFM8rRmbeT+xY1JXxNFw3xM65ZdJxSBjZPzskwpZ3ra+KBgdtWpvA6s6xLBwfNuQ== | 2021-01-10T07:33:55.245247885Z | Index: 10 |
 
 
 ### docker-swarm-join
+
 ***
 Join an existing swarm
 
@@ -4442,6 +4606,7 @@ Join an existing swarm
 #### Base Command
 
 `docker-swarm-join`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4458,9 +4623,11 @@ Join an existing swarm
 There is no context output for this command.
 
 #### Command Example
+
 ```!docker-swarm-join```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -4472,12 +4639,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|message|
 >|---|
 >| This node is already part of a swarm. Use "docker swarm leave" to leave this swarm and join another one. |
 
 
 ### docker-swarm-leave
+
 ***
 Leave a swarm
 
@@ -4485,6 +4654,7 @@ Leave a swarm
 #### Base Command
 
 `docker-swarm-leave`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4497,9 +4667,11 @@ Leave a swarm
 There is no context output for this command.
 
 #### Command Example
+
 ```!docker-swarm-leave force="True"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -4511,12 +4683,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|message|
 >|---|
 >| Swarm node left. |
 
 
 ### docker-swarm-unlock
+
 ***
 Unlock a locked manager
 
@@ -4524,6 +4698,7 @@ Unlock a locked manager
 #### Base Command
 
 `docker-swarm-unlock`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4536,9 +4711,11 @@ Unlock a locked manager
 There is no context output for this command.
 
 #### Command Example
+
 ```!docker-swarm-unlock```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -4550,12 +4727,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|message|
 >|---|
 >| swarm is not locked |
 
 
 ### docker-swarm-unlockkey
+
 ***
 Get the unlock key
 
@@ -4563,6 +4742,7 @@ Get the unlock key
 #### Base Command
 
 `docker-swarm-unlockkey`
+
 #### Input
 
 There are no input arguments for this command.
@@ -4575,9 +4755,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!docker-swarm-unlockkey```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -4591,12 +4773,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|UnlockKey|
 >|---|
 >|  |
 
 
 ### docker-system-data-usage
+
 ***
 Get data usage information
 
@@ -4604,6 +4788,7 @@ Get data usage information
 #### Base Command
 
 `docker-system-data-usage`
+
 #### Input
 
 There are no input arguments for this command.
@@ -4638,9 +4823,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!docker-system-data-usage```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -6417,12 +6604,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|BuildCache|BuilderSize|Containers|Images|LayersSize|Volumes|
 >|---|---|---|---|---|---|
 >|  | 0 | {'Id': '7997c8bd061e762bfdb105274af3f60e5f2254aaba2172744db1edfccc2b8a41', 'Names': ['/hello-docker'], 'Image': 'hello-world', 'ImageID': 'sha256:bf756fb1ae65adf866bd8c456593cd24beb6a0a061dedf42b26a993176745f6b', 'Command': '/hello', 'Created': 1610122922, 'Ports': [], 'SizeRootFs': 13336, 'Labels': {}, 'State': 'exited', 'Status': 'Exited (0) 39 hours ago', 'HostConfig': {'NetworkMode': 'default'}, 'NetworkSettings': {'Networks': {'bridge': {'IPAMConfig': None, 'Links': None, 'Aliases': None, 'NetworkID': 'b5b425aad28e5f4b9c9b118257ce214455d84a7901e5a90d79e3ae4f527f725e', 'EndpointID': '', 'Gateway': '', 'IPAddress': '', 'IPPrefixLen': 0, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': '0caea4d0b099175e6d3d8c0f68d0ab6624fc4339ff3e88db7ec509efd5e3c6c3', 'Names': ['/crazy_curran'], 'Image': 'hello-world', 'ImageID': 'sha256:bf756fb1ae65adf866bd8c456593cd24beb6a0a061dedf42b26a993176745f6b', 'Command': '/hello', 'Created': 1610121618, 'Ports': [], 'SizeRootFs': 13336, 'Labels': {}, 'State': 'exited', 'Status': 'Exited (0) 40 hours ago', 'HostConfig': {'NetworkMode': 'default'}, 'NetworkSettings': {'Networks': {'bridge': {'IPAMConfig': None, 'Links': None, 'Aliases': None, 'NetworkID': 'b5b425aad28e5f4b9c9b118257ce214455d84a7901e5a90d79e3ae4f527f725e', 'EndpointID': '', 'Gateway': '', 'IPAddress': '', 'IPPrefixLen': 0, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': '57d49db83f2ced79c87e5c50d2b407bbb7bc33c3a95a03e142477f3a3b79ded5', 'Names': ['/mongodb-express'], 'Image': 'mongo-express', 'ImageID': 'sha256:05bf9d904cd0953ee1ad647a61abfb0ab1470062f8baa70495b4b068e95a514e', 'Command': 'tini -- /docker-entrypoint.sh mongo-express', 'Created': 1609920735, 'Ports': [{'IP': '0.0.0.0', 'PrivatePort': 8081, 'PublicPort': 8081, 'Type': 'tcp'}], 'SizeRw': 169, 'SizeRootFs': 129389081, 'Labels': {'com.docker.compose.config-hash': '0a75befcc34f36ab677c5d8f09d2ee8063e8ad3d', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'mongodb', 'com.docker.compose.service': 'mongo-express', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'mongodb_default'}, 'NetworkSettings': {'Networks': {'mongodb_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '5e04b0a7302ac9ce9c5fa3ba9d71c6bf173a9aaca5b3efc6c79b3bf01260371b', 'EndpointID': '2628f2ac3df2f3b5a8059fe3e736d9fe9da4d428c9da9220dad5d2eb100258fa', 'Gateway': '1.0.0.1', 'IPAddress': '1.0.0.3', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:1a:00:03', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': '161f9d908f5bc34a9638a496b492cce47a16cd47268ec61f04e10b1224dbd2a3', 'Names': ['/mongodb'], 'Image': 'mongo', 'ImageID': 'sha256:c97feb3412a387d4d3bbd8653b09ef26683263a192e0e8dc6554e65bfb637a86', 'Command': 'docker-entrypoint.sh mongod', 'Created': 1609920723, 'Ports': [{'IP': '0.0.0.0', 'PrivatePort': 27017, 'PublicPort': 27017, 'Type': 'tcp'}], 'SizeRootFs': 492934722, 'Labels': {'com.docker.compose.config-hash': '74e20e7feccade15ae2ce2378088081ae5726a05', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'mongodb', 'com.docker.compose.service': 'mongo', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'mongodb_default'}, 'NetworkSettings': {'Networks': {'mongodb_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '5e04b0a7302ac9ce9c5fa3ba9d71c6bf173a9aaca5b3efc6c79b3bf01260371b', 'EndpointID': '2f478dd56c3bfa4b0bfb2a6bdfa5a7f95f20960dbc5045238567f4f7c2b5e46d', 'Gateway': '1.0.0.1', 'IPAddress': '1.0.0.2', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:1a:00:02', 'DriverOpts': None}}}, 'Mounts': [{'Type': 'volume', 'Name': '88b259421004c4300e96dc6d2ec2685b243dea9f5007bfebf881a7d6ae0a6b55', 'Source': '', 'Destination': '/data/configdb', 'Driver': 'local', 'Mode': '', 'RW': True, 'Propagation': ''}, {'Type': 'volume', 'Name': 'mongodb', 'Source': '/var/lib/docker/volumes/mongodb/_data', 'Destination': '/data/db', 'Driver': 'local', 'Mode': 'z', 'RW': True, 'Propagation': ''}]},<br/>{'Id': 'b2f4cb3dbb3656d62441ba4d6a718e1271df075781d8c56e85cf585841772ac9', 'Names': ['/taxiserver'], 'Image': 'taxiserver:latest', 'ImageID': 'sha256:70d8624ce3a1f02008bcdb8ba2bf4001e178bcb0ab90bdfab0eb17fd4ea2ca7f', 'Command': "/bin/sh -c 'java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dcom.sun.management.jmxremote -noverify ${JAVA_OPTS} -jar taxii-server-micronaut-all.jar'", 'Created': 1609866461, 'Ports': [], 'SizeRootFs': 298529298, 'Labels': {}, 'State': 'exited', 'Status': 'Exited (143) 3 days ago', 'HostConfig': {'NetworkMode': 'bridge'}, 'NetworkSettings': {'Networks': {'bridge': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': 'ebc2e7e11094a2f780d8f41f7a2fffd1e36208d6e2939ec94770dfd6083a384d', 'EndpointID': '', 'Gateway': '', 'IPAddress': '', 'IPPrefixLen': 0, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': '04be62e20d33bf299865e26b657ec5516928641558ccff6a899407ab0b6b1d94', 'Names': ['/test-taxii'], 'Image': 'eclecticiq/opentaxii:latest', 'ImageID': 'sha256:aa50897f28e43c1110328f1b8740a2ad097031e8d2443266e562fe74be1a7a19', 'Command': '/entrypoint.sh /venv/bin/gunicorn opentaxii.http:app --workers=2 --log-level=info --log-file=- --timeout=300 --config=python:opentaxii.http --bind=0.0.0.0:9000', 'Created': 1609863181, 'Ports': [{'IP': '0.0.0.0', 'PrivatePort': 9000, 'PublicPort': 6000, 'Type': 'tcp'}], 'SizeRw': 782, 'SizeRootFs': 188189407, 'Labels': {'maintainer': 'EclecticIQ <opentaxii@eclecticiq.com>'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'bridge'}, 'NetworkSettings': {'Networks': {'bridge': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': 'bd9761f59994adf640e4728dfdf92856d8292a649e4cf6b102ddbed672445a34', 'EndpointID': '3fccdab7ca5ad3f11ef72dd8d76044160c0cc66e005643d9584fbcb903500c1b', 'Gateway': '1.0.0.7', 'IPAddress': '1.0.0.2', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:11:00:02', 'DriverOpts': None}}}, 'Mounts': [{'Type': 'volume', 'Name': 'opentaxii-input', 'Source': '/var/lib/docker/volumes/opentaxii-input/_data', 'Destination': '/input', 'Driver': 'local', 'Mode': 'z', 'RW': True, 'Propagation': ''}, {'Type': 'volume', 'Name': 'opentaxii-data', 'Source': '/var/lib/docker/volumes/opentaxii-data/_data', 'Destination': '/data', 'Driver': 'local', 'Mode': 'z', 'RW': True, 'Propagation': ''}]},<br/>{'Id': '14d3c9c9c306e427b8cd4a2e4d80ddd6ad38684936224f3e36440b6b6f08bc34', 'Names': ['/opencti_connector-ipinfo'], 'Image': 'opencti/connector-ipinfo:4.0.3', 'ImageID': 'sha256:cd608aa8a042cb46adf5aaa3c43ce92a85b3817c5254b8de0e53b49b7a729c6b', 'Command': '/entrypoint.sh', 'Created': 1608827060, 'Ports': [], 'SizeRw': 537027, 'SizeRootFs': 94682341, 'Labels': {'com.docker.compose.config-hash': '3a9bd111dfb135ed1a839ad5e164068c78b2b630', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'connector-export-file-stix', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': '717ad998186f308ebefb4f0f71c04ae5fbc143e450bed9eba8570d9adc099624', 'Gateway': '1.0.0.5', 'IPAddress': '1.0.0.5', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:08', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': '7ba5c18139e09bd2a34e7be27db70520c6901dad7db901dd073c1f96abfc9034', 'Names': ['/opencti_connector-import-file-pdf-observables'], 'Image': 'opencti/connector-import-file-pdf-observables:4.0.3', 'ImageID': 'sha256:51afb662d3c993510447e431e3da8495140690cb9c1ca93c7cf19424a63ce223', 'Command': '/entrypoint.sh', 'Created': 1608564498, 'Ports': [], 'SizeRw': 553305, 'SizeRootFs': 115044111, 'Labels': {'com.docker.compose.config-hash': '336a368bc6eb7eae69a090a9ac80f9614d02685e', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'connector-import-file-pdf-observables', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': 'e99d6307854d91785af35603157c0a82826a5ebe59b3072924770dd7e66be07c', 'Gateway': '1.0.0.5', 'IPAddress': '1.0.0.2', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:02', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': '2aa24d29411d89e1d3fcd708b0dae10e32a84d53d9164a5998c217e054d31bd9', 'Names': ['/opencti_connector-import-file-stix'], 'Image': 'opencti/connector-import-file-stix:4.0.3', 'ImageID': 'sha256:cfd88d87460e5c1e0d7c82ee58258208c80d8acbd9417afe2f7cea10bfef4dd9', 'Command': '/entrypoint.sh', 'Created': 1608564460, 'Ports': [], 'SizeRw': 537027, 'SizeRootFs': 66912727, 'Labels': {'com.docker.compose.config-hash': 'd39640557a02e44f4983eac94b75e00a8b975e07', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'connector-import-file-stix', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up Less than a second', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': '5b5f7eef4e12eef95f1a28143b26a49d4edbc971592859348393be98a56320f8', 'Gateway': '1.0.0.5', 'IPAddress': '1.0.0.5', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:07', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': '5f92895691ca7eeb6c8bc3f4914cd6210a3d59a72e8e48890f336d352cbc9753', 'Names': ['/opencti_connector-export-file-csv'], 'Image': 'opencti/connector-export-file-csv:4.0.3', 'ImageID': 'sha256:25500204dfbea42059fc77100177de2c5d92cd4219ca6437831bfc26c53b628c', 'Command': '/entrypoint.sh', 'Created': 1608564417, 'Ports': [], 'SizeRw': 537027, 'SizeRootFs': 66919911, 'Labels': {'com.docker.compose.config-hash': '64d591ae3f975e1a79738447dd38d1e554486f44', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'connector-export-file-csv', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': '91a3c7767104581ddb04f739c3cc313e7bfe0f6db5ad4c6865970d1e60bf99b7', 'Gateway': '1.0.0.5', 'IPAddress': '1.0.0.5', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:09', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': '65ddee16a51d57e8b57f6b00acd7f9ae5b92152731276d6d4d497c2f979e2b1e', 'Names': ['/opencti_connector-export-file-stix'], 'Image': 'opencti/connector-export-file-stix:4.0.3', 'ImageID': 'sha256:42efb539088b86558557e24c10d00810014e5e820f0d7ac8bb8d0fd3981a0bda', 'Command': '/entrypoint.sh', 'Created': 1608564294, 'Ports': [], 'SizeRw': 537027, 'SizeRootFs': 66914627, 'Labels': {'com.docker.compose.config-hash': '3a9bd111dfb135ed1a839ad5e164068c78b2b630', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'connector-export-file-stix', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': '8cd31e2f66b6df498962e8cc4df17f741b842546c4fd61ac9a79c2f6805f66bc', 'Gateway': '1.0.0.5', 'IPAddress': '1.0.0.5', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:04', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': 'c61e3108d286e07032f8ec44f3e5883bac00838a673972e871c31d970b75d155', 'Names': ['/opencti_connector-history'], 'Image': 'opencti/connector-history:4.0.3', 'ImageID': 'sha256:0257f00635aca1087fa630362c470f22c4661bc87d4e6e8c54c64f5795dfce1e', 'Command': '/entrypoint.sh', 'Created': 1608564112, 'Ports': [], 'SizeRw': 537027, 'SizeRootFs': 69431220, 'Labels': {'com.docker.compose.config-hash': '6ac905cdbdc63d012688d34a06393c135d384c79', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'connector-history', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': '048b58a95cd8a27e6f640c844e9b5ea7c65c4fdcbdc5dfdc683986daf6813e4a', 'Gateway': '1.0.0.5', 'IPAddress': '1.0.0.5', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:0d', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': '2220832cc2840320c53156993563fce5298d4e0317d71b42851067f02c762423', 'Names': ['/opencti_connector-alienvault'], 'Image': 'opencti/connector-alienvault:4.0.3', 'ImageID': 'sha256:3e718135d5fb38c0af85c9c00b64160082a407722d929572a190d6092c604e15', 'Command': '/entrypoint.sh', 'Created': 1608563957, 'Ports': [], 'SizeRw': 597000, 'SizeRootFs': 67793705, 'Labels': {'com.docker.compose.config-hash': '3a9bd111dfb135ed1a839ad5e164068c78b2b630', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'connector-export-file-stix', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': '3a8b638639e908f26163f7271bb88eee017a3fc5cb253bf180e8b190ebca5a80', 'Gateway': '1.2.0.1', 'IPAddress': '1.2.0.12', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:0c', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': 'cc1743f3d83750f973796d0aaadba7ec5fb67361906666b2a48be0512d82a050', 'Names': ['/opencti_worker_2'], 'Image': 'opencti/worker:4.0.3', 'ImageID': 'sha256:670872e9f7dbae235172cb2b7c732b0ea05283aeb45fcaa4616673826f9c4473', 'Command': '/entrypoint.sh', 'Created': 1608562731, 'Ports': [], 'SizeRw': 267877, 'SizeRootFs': 130086647, 'Labels': {'com.docker.compose.config-hash': '4f611b1efe20fd3b147a1b830afceff276398af1', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'worker', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': '03f052a4e86e16124c279fe9e593e4686fcc658b57d82b51c031163f2076cfc6', 'Gateway': '1.2.0.1', 'IPAddress': '1.2.0.1', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:0e', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': '118fe891bacfe3328ad64677ac492f0568547740458090594600950613774fcf', 'Names': ['/opencti_worker_1'], 'Image': 'opencti/worker:4.0.3', 'ImageID': 'sha256:670872e9f7dbae235172cb2b7c732b0ea05283aeb45fcaa4616673826f9c4473', 'Command': '/entrypoint.sh', 'Created': 1608561358, 'Ports': [], 'SizeRw': 267877, 'SizeRootFs': 130086647, 'Labels': {'com.docker.compose.config-hash': '4f611b1efe20fd3b147a1b830afceff276398af1', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'worker', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': 'ce7645ab046233a84fc7c2c9ce796a120edfd790280a52fb9df55f2066458141', 'Gateway': '1.2.0.1', 'IPAddress': '1.0.0.5', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:0f', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': '4be1f8dec98809ec2cf360d1d882beb8c819a58111070a04affbc714a071d1a0', 'Names': ['/redis'], 'Image': 'redis:6.0.9', 'ImageID': 'sha256:ef47f3b6dc11e8f17fb39a6e46ecaf4efd47b3d374e92aeb9f2606896b751251', 'Command': 'docker-entrypoint.sh redis-server', 'Created': 1608559382, 'Ports': [{'IP': '0.0.0.0', 'PrivatePort': 6379, 'PublicPort': 6379, 'Type': 'tcp'}], 'SizeRootFs': 104252176, 'Labels': {'com.docker.compose.config-hash': 'daf5e1ad7b16619b8c479df88301daf432c5a564', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'redis', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': '996d21e0ac5c57239c1622bba9c9a5d303a82cec1c15146a94c84766cd460966', 'Gateway': '1.0.0.5', 'IPAddress': '1.0.0.3', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:03', 'DriverOpts': None}}}, 'Mounts': [{'Type': 'volume', 'Name': 'redisdata', 'Source': '/var/lib/docker/volumes/redisdata/_data', 'Destination': '/data', 'Driver': 'local', 'Mode': 'z', 'RW': True, 'Propagation': ''}]},<br/>{'Id': '5c3b991454ad1daa7d2f287cc0450d69f0c1e0a7778f8f55199b5201da3b5390', 'Names': ['/elasticsearch'], 'Image': 'docker.elastic.co/elasticsearch/elasticsearch:7.10.1', 'ImageID': 'sha256:558380375f1a36c20e67c3a0b7bf715c659d75520d0e688b066d5e708918d716', 'Command': '/tini -- /usr/local/bin/docker-entrypoint.sh eswrapper', 'Created': 1608559270, 'Ports': [{'IP': '0.0.0.0', 'PrivatePort': 9200, 'PublicPort': 9200, 'Type': 'tcp'}, {'IP': '0.0.0.0', 'PrivatePort': 9300, 'PublicPort': 9300, 'Type': 'tcp'}], 'SizeRw': 335097051, 'SizeRootFs': 1108853726, 'Labels': {'com.docker.compose.config-hash': '6367ce3fdc8ac903d07574f97c9dc4a7208f3aef', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'elasticsearch', 'com.docker.compose.version': '1.5.0', 'org.label-schema.build-date': '2020-12-05T01:00:33.671820Z', 'org.label-schema.license': 'Elastic-License', 'org.label-schema.name': 'Elasticsearch', 'org.label-schema.schema-version': '1.0', 'org.label-schema.url': 'https://www.elastic.co/products/elasticsearch', 'org.label-schema.usage': 'https://www.elastic.co/guide/en/elasticsearch/reference/index.html', 'org.label-schema.vcs-ref': '1c34507e66d7db1211f66f3513706fdf548736aa', 'org.label-schema.vcs-url': 'https://github.com/elastic/elasticsearch', 'org.label-schema.vendor': 'Elastic', 'org.label-schema.version': '7.10.1', 'org.opencontainers.image.created': '2020-12-05T01:00:33.671820Z', 'org.opencontainers.image.documentation': 'https://www.elastic.co/guide/en/elasticsearch/reference/index.html', 'org.opencontainers.image.licenses': 'Elastic-License', 'org.opencontainers.image.revision': '1c34507e66d7db1211f66f3513706fdf548736aa', 'org.opencontainers.image.source': 'https://github.com/elastic/elasticsearch', 'org.opencontainers.image.title': 'Elasticsearch', 'org.opencontainers.image.url': 'https://www.elastic.co/products/elasticsearch', 'org.opencontainers.image.vendor': 'Elastic', 'org.opencontainers.image.version': '7.10.1'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': '64904da59143266418038a1f64c1f7573d0a31f79ed0a32998ce94172ba49c88', 'Gateway': '1.0.0.5', 'IPAddress': '1.0.0.5', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:06', 'DriverOpts': None}}}, 'Mounts': [{'Type': 'volume', 'Name': 'esdata', 'Source': '/var/lib/docker/volumes/esdata/_data', 'Destination': '/usr/share/elasticsearch/data', 'Driver': 'local', 'Mode': 'z', 'RW': True, 'Propagation': ''}]},<br/>{'Id': '93b8c8f3e5c5b959b5382b20ec3f441d1b960124419e809d86f0a34cee59d7c8', 'Names': ['/rabbitmq'], 'Image': 'rabbitmq:3.8-management', 'ImageID': 'sha256:1ecd87fb78edc5feada026b0f926bcf7458eb9c80db8100618e1df725645540e', 'Command': 'docker-entrypoint.sh rabbitmq-server', 'Created': 1608559125, 'Ports': [{'PrivatePort': 5672, 'Type': 'tcp'}, {'PrivatePort': 15671, 'Type': 'tcp'}, {'IP': '0.0.0.0', 'PrivatePort': 15672, 'PublicPort': 15672, 'Type': 'tcp'}, {'PrivatePort': 15691, 'Type': 'tcp'}, {'PrivatePort': 15692, 'Type': 'tcp'}, {'PrivatePort': 25672, 'Type': 'tcp'}, {'PrivatePort': 4369, 'Type': 'tcp'}, {'PrivatePort': 5671, 'Type': 'tcp'}], 'SizeRw': 1101, 'SizeRootFs': 197694194, 'Labels': {'com.docker.compose.config-hash': 'd18573c6a89abeacddfab591aca6e68b2921b90a', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'rabbitmq', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': '2eb072c87b19c95fac0f6121af754ea0cec052a27cb4f2aee8755c2aec92dfce', 'Gateway': '1.0.0.5', 'IPAddress': '1.0.0.1', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:0a', 'DriverOpts': None}}}, 'Mounts': [{'Type': 'volume', 'Name': 'amqpdata', 'Source': '/var/lib/docker/volumes/amqpdata/_data', 'Destination': '/var/lib/rabbitmq', 'Driver': 'local', 'Mode': 'z', 'RW': True, 'Propagation': ''}]},<br/>{'Id': '0b7479a2f6abb93887cfb881dc8e4464e48df384887cb483c99a134cf894644b', 'Names': ['/opencti'], 'Image': 'opencti/platform:4.0.3', 'ImageID': 'sha256:b03e4ab4fe4739d8ef6cd6a6639ccea8e09eaee8f6fb8842be9225c3719e27cd', 'Command': '/entrypoint.sh', 'Created': 1608557349, 'Ports': [{'IP': '0.0.0.0', 'PrivatePort': 8080, 'PublicPort': 8080, 'Type': 'tcp'}], 'SizeRw': 495546664, 'SizeRootFs': 1213991401, 'Labels': {'com.docker.compose.config-hash': '22687afb96da8b20f51629f9868dfd237ad601a6', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'opencti', 'com.docker.compose.version': '1.5.0'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': '588234b49254b09744635401d2c95f092f7884bac7ae85e3e23e6cccab00abb7', 'Gateway': '1.0.0.5', 'IPAddress': '1.0.0.1', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:0b', 'DriverOpts': None}}}, 'Mounts': []},<br/>{'Id': 'cddbc48191628fde8991adfed5d0e4c2704f4e09b9b79d96549be8baf608984d', 'Names': ['/minio'], 'Image': 'minio/minio:RELEASE.2020-12-12T08-39-07Z', 'ImageID': 'sha256:f1a30c1dd760a7927d12a559c55fcf6ccb7efbbe79295ecc9394b7e4fe21d216', 'Command': '/usr/bin/docker-entrypoint.sh server /data', 'Created': 1608557040, 'Ports': [{'IP': '0.0.0.0', 'PrivatePort': 9000, 'PublicPort': 5000, 'Type': 'tcp'}], 'SizeRootFs': 182261690, 'Labels': {'architecture': 'x86_64', 'build-date': '2020-10-31T05:07:05.471303', 'com.docker.compose.config-hash': 'da8a89d63690ae08df58294ad3685f61c201125e', 'com.docker.compose.container-number': '1', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'openctiv4', 'com.docker.compose.service': 'minio', 'com.docker.compose.version': '1.5.0', 'com.redhat.build-host': 'cpt-1002.osbs.prod.upshift.rdu2.redhat.com', 'com.redhat.component': 'ubi8-minimal-container', 'com.redhat.license_terms': 'https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI', 'description': 'MinIO object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. MinIO is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads.', 'distribution-scope': 'public', 'io.k8s.description': 'The Universal Base Image Minimal is a stripped down image that uses microdnf as a package manager. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.', 'io.k8s.display-name': 'Red Hat Universal Base Image 8 Minimal', 'io.openshift.expose-services': '', 'io.openshift.tags': 'minimal rhel8', 'maintainer': 'MinIO Inc <dev@min.io>', 'name': 'MinIO', 'release': 'RELEASE.2020-11-25T22-36-25Z', 'summary': 'MinIO is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service.', 'url': 'https://access.redhat.com/containers/#/registry.access.redhat.com/ubi8-minimal/images/8.3-201', 'vcs-ref': 'f53dab37c7541dd0080f410727c5886e85c09ee7', 'vcs-type': 'git', 'vendor': 'MinIO Inc <dev@min.io>', 'version': 'RELEASE.2020-11-25T22-36-25Z'}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'openctiv4_default'}, 'NetworkSettings': {'Networks': {'openctiv4_default': {'IPAMConfig': {}, 'Links': None, 'Aliases': None, 'NetworkID': '51bdffad4912288c4232bdc10e4e0c54a029b1291db71e3034c6b6353fb10a86', 'EndpointID': 'b3d4562edf6ea434a58ac398ca2c179cb95740af5e4c3bf970499544413397a4', 'Gateway': '1.0.0.5', 'IPAddress': '1.0.0.5', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:18:00:05', 'DriverOpts': None}}}, 'Mounts': [{'Type': 'volume', 'Name': 's3data', 'Source': '/var/lib/docker/volumes/s3data/_data', 'Destination': '/data', 'Driver': 'local', 'Mode': 'z', 'RW': True, 'Propagation': ''}]},<br/>{'Id': '63de66e6e323ae7e189aeeba070adc184b386456ffe0dde9e3a88b8da0660d54', 'Names': ['/portainer'], 'Image': 'portainer/portainer-ce', 'ImageID': 'sha256:a0a227bf03ddc8b88bbb74b1b84a8a7220c8fa95b122cbde2a7444f32dc30659', 'Command': '/portainer', 'Created': 1608307988, 'Ports': [{'IP': '0.0.0.0', 'PrivatePort': 9000, 'PublicPort': 9000, 'Type': 'tcp'}, {'IP': '0.0.0.0', 'PrivatePort': 8000, 'PublicPort': 8000, 'Type': 'tcp'}], 'SizeRootFs': 195546824, 'Labels': {}, 'State': 'running', 'Status': 'Up 23 minutes', 'HostConfig': {'NetworkMode': 'default'}, 'NetworkSettings': {'Networks': {'bridge': {'IPAMConfig': None, 'Links': None, 'Aliases': None, 'NetworkID': 'bd9761f59994adf640e4728dfdf92856d8292a649e4cf6b102ddbed672445a34', 'EndpointID': '338cd95d726c3fde9674c4e86a9754ad5041ed9f3ea67b533224d8d27f2203f8', 'Gateway': '1.0.0.7', 'IPAddress': '1.0.0.3', 'IPPrefixLen': 16, 'IPv6Gateway': '', 'GlobalIPv6Address': '', 'GlobalIPv6PrefixLen': 0, 'MacAddress': '02:42:ac:11:00:03', 'DriverOpts': None}}}, 'Mounts': [{'Type': 'volume', 'Name': 'portainer_data', 'Source': '/var/lib/docker/volumes/portainer_data/_data', 'Destination': '/data', 'Driver': 'local', 'Mode': 'z', 'RW': True, 'Propagation': ''}, {'Type': 'bind', 'Source': '/var/run/docker.sock', 'Destination': '/var/run/docker.sock', 'Mode': '', 'RW': True, 'Propagation': 'rprivate'}]} | {'Containers': 1, 'Created': 1609870186, 'Id': 'sha256:05bf9d904cd0953ee1ad647a61abfb0ab1470062f8baa70495b4b068e95a514e', 'Labels': None, 'ParentId': '', 'RepoDigests': ['mongo-express@sha256:6ae44c697cd2381772f8ea8f0571008b62e36301305b113df7f35f2e683e8255'], 'RepoTags': ['mongo-express:latest'], 'SharedSize': 0, 'Size': 129388912, 'VirtualSize': 129388912},<br/>{'Containers': 1, 'Created': 1609866227, 'Id': 'sha256:70d8624ce3a1f02008bcdb8ba2bf4001e178bcb0ab90bdfab0eb17fd4ea2ca7f', 'Labels': None, 'ParentId': 'sha256:c6c592c10fd1c88676835629a4b9d19f3e1354ca7d927c2d829628a53b427b3c', 'RepoDigests': None, 'RepoTags': ['taxiserver:latest'], 'SharedSize': 237380314, 'Size': 298529298, 'VirtualSize': 298529298},<br/>{'Containers': 1, 'Created': 1609798872, 'Id': 'sha256:c97feb3412a387d4d3bbd8653b09ef26683263a192e0e8dc6554e65bfb637a86', 'Labels': None, 'ParentId': '', 'RepoDigests': ['mongo@sha256:7722bd2778a299b6f4a62b93a0d2741c734ba7332a090131030ca28261a9a198'], 'RepoTags': ['mongo:latest'], 'SharedSize': 63252300, 'Size': 492934722, 'VirtualSize': 492934722},<br/>{'Containers': 2, 'Created': 1608474777, 'Id': 'sha256:670872e9f7dbae235172cb2b7c732b0ea05283aeb45fcaa4616673826f9c4473', 'Labels': None, 'ParentId': '', 'RepoDigests': ['opencti/worker@sha256:5eef44425b59c272135cb6460232891cd607ccc4b5557a441cce3120624b9538'], 'RepoTags': ['opencti/worker:4.0.3'], 'SharedSize': 0, 'Size': 129818770, 'VirtualSize': 129818770},<br/>{'Containers': 1, 'Created': 1608474717, 'Id': 'sha256:b03e4ab4fe4739d8ef6cd6a6639ccea8e09eaee8f6fb8842be9225c3719e27cd', 'Labels': None, 'ParentId': '', 'RepoDigests': ['opencti/platform@sha256:19a610656b32bf6ff894e04a0dcf9064ce3e850b3fc2f497f5478a21598753e5'], 'RepoTags': ['opencti/platform:4.0.3'], 'SharedSize': 80179887, 'Size': 718444737, 'VirtualSize': 718444737},<br/>{'Containers': 1, 'Created': 1608473851, 'Id': 'sha256:0257f00635aca1087fa630362c470f22c4661bc87d4e6e8c54c64f5795dfce1e', 'Labels': None, 'ParentId': '', 'RepoDigests': ['opencti/connector-history@sha256:a80726951eb8d10acb6700c1ba1a602178e672f52b72787ed23f79d473d588cc'], 'RepoTags': ['opencti/connector-history:4.0.3'], 'SharedSize': 42359686, 'Size': 68894193, 'VirtualSize': 68894193},<br/>{'Containers': 1, 'Created': 1608473623, 'Id': 'sha256:cd608aa8a042cb46adf5aaa3c43ce92a85b3817c5254b8de0e53b49b7a729c6b', 'Labels': None, 'ParentId': '', 'RepoDigests': ['opencti/connector-ipinfo@sha256:ae818dcf18b0acf5bdd25279ada6feb7f05c9b1745c847d3930a1fdaee555c57'], 'RepoTags': ['opencti/connector-ipinfo:4.0.3'], 'SharedSize': 42359686, 'Size': 94145314, 'VirtualSize': 94145314},<br/>{'Containers': 1, 'Created': 1608472895, 'Id': 'sha256:3e718135d5fb38c0af85c9c00b64160082a407722d929572a190d6092c604e15', 'Labels': None, 'ParentId': '', 'RepoDigests': ['opencti/connector-alienvault@sha256:417b9cf7ed4f8ab5ebb391c52a38decfa306ef89b5dbc1853a85280f75fdd78d'], 'RepoTags': ['opencti/connector-alienvault:4.0.3'], 'SharedSize': 42359686, 'Size': 67196705, 'VirtualSize': 67196705},<br/>{'Containers': 1, 'Created': 1608472820, 'Id': 'sha256:25500204dfbea42059fc77100177de2c5d92cd4219ca6437831bfc26c53b628c', 'Labels': None, 'ParentId': '', 'RepoDigests': ['opencti/connector-export-file-csv@sha256:d36ba9933590e3ade436fefa790fe03918a561cc69a944b473fc8eac5ca580f0'], 'RepoTags': ['opencti/connector-export-file-csv:4.0.3'], 'SharedSize': 42359686, 'Size': 66382884, 'VirtualSize': 66382884},<br/>{'Containers': 1, 'Created': 1608472784, 'Id': 'sha256:42efb539088b86558557e24c10d00810014e5e820f0d7ac8bb8d0fd3981a0bda', 'Labels': None, 'ParentId': '', 'RepoDigests': ['opencti/connector-export-file-stix@sha256:3f0d74c5c77295edff0e7bb8ff7fa67db496c9f851b52643d705a0044d0fd67b'], 'RepoTags': ['opencti/connector-export-file-stix:4.0.3'], 'SharedSize': 42359686, 'Size': 66377600, 'VirtualSize': 66377600},<br/>{'Containers': 1, 'Created': 1608472749, 'Id': 'sha256:51afb662d3c993510447e431e3da8495140690cb9c1ca93c7cf19424a63ce223', 'Labels': None, 'ParentId': '', 'RepoDigests': ['opencti/connector-import-file-pdf-observables@sha256:1f778d9cfb81b3f1d7e4456b9123022dca285da4bd5431360035dd13ec23e9ca'], 'RepoTags': ['opencti/connector-import-file-pdf-observables:4.0.3'], 'SharedSize': 42359686, 'Size': 114490806, 'VirtualSize': 114490806},<br/>{'Containers': 1, 'Created': 1608472472, 'Id': 'sha256:cfd88d87460e5c1e0d7c82ee58258208c80d8acbd9417afe2f7cea10bfef4dd9', 'Labels': None, 'ParentId': '', 'RepoDigests': ['opencti/connector-import-file-stix@sha256:2e43819b4d1ef5f4de3a74382e5334e52647100553ea1b411a5bad87fa9e2984'], 'RepoTags': ['opencti/connector-import-file-stix:4.0.3'], 'SharedSize': 42359686, 'Size': 66375700, 'VirtualSize': 66375700},<br/>{'Containers': 0, 'Created': 1608200626, 'Id': 'sha256:dca5e1ed7218f3145b4414b6599a8aec9385857664bd6cc928ea9fba26febf3f', 'Labels': None, 'ParentId': '', 'RepoDigests': ['opencti/platform@sha256:183a3c085644615eab322d9d460d875c4d6b3f4c03bd5c4bac3e467771c79bdf'], 'RepoTags': ['opencti/platform:4.0.2', 'opencti/platform:latest'], 'SharedSize': 80179887, 'Size': 718413368, 'VirtualSize': 718413368},<br/>{'Containers': 1, 'Created': 1608165887, 'Id': 'sha256:1ecd87fb78edc5feada026b0f926bcf7458eb9c80db8100618e1df725645540e', 'Labels': None, 'ParentId': '', 'RepoDigests': ['rabbitmq@sha256:849677f6903921038a4541dd907e48a7d0e64a4cea63302acd73f9ee208789ce'], 'RepoTags': ['rabbitmq:3.8-management'], 'SharedSize': 63252300, 'Size': 197693093, 'VirtualSize': 197693093},<br/>{'Containers': 0, 'Created': 1608160149, 'Id': 'sha256:959fcab9b1e95d6d7ec1fc4c25491dd7e8cf43aed7346e089d2b564f83cbf58b', 'Labels': {'maintainer': 'ownCloud DevOps <devops@owncloud.com>', 'org.label-schema.build-date': '2020-12-16T23:07:14Z', 'org.label-schema.name': 'ownCloud Server', 'org.label-schema.schema-version': '1.0', 'org.label-schema.vcs-ref': '6da3457d723a5ffee6bc0eea945e0ba3fdbd629b', 'org.label-schema.vcs-url': 'https://github.com/owncloud-docker/server.git', 'org.label-schema.vendor': 'ownCloud GmbH'}, 'ParentId': '', 'RepoDigests': ['owncloud/server@sha256:e5be595c31734b25133c69aec27c32e87fe011201540b940f1acbd629f910691'], 'RepoTags': ['owncloud/server:latest'], 'SharedSize': 0, 'Size': 1363203435, 'VirtualSize': 1363203435},<br/>{'Containers': 1, 'Created': 1607763909, 'Id': 'sha256:f1a30c1dd760a7927d12a559c55fcf6ccb7efbbe79295ecc9394b7e4fe21d216', 'Labels': {'architecture': 'x86_64', 'build-date': '2020-10-31T05:07:05.471303', 'com.redhat.build-host': 'cpt-1002.osbs.prod.upshift.rdu2.redhat.com', 'com.redhat.component': 'ubi8-minimal-container', 'com.redhat.license_terms': 'https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI', 'description': 'MinIO object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. MinIO is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads.', 'distribution-scope': 'public', 'io.k8s.description': 'The Universal Base Image Minimal is a stripped down image that uses microdnf as a package manager. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.', 'io.k8s.display-name': 'Red Hat Universal Base Image 8 Minimal', 'io.openshift.expose-services': '', 'io.openshift.tags': 'minimal rhel8', 'maintainer': 'MinIO Inc <dev@min.io>', 'name': 'MinIO', 'release': 'RELEASE.2020-11-25T22-36-25Z', 'summary': 'MinIO is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service.', 'url': 'https://access.redhat.com/containers/#/registry.access.redhat.com/ubi8-minimal/images/8.3-201', 'vcs-ref': 'f53dab37c7541dd0080f410727c5886e85c09ee7', 'vcs-type': 'git', 'vendor': 'MinIO Inc <dev@min.io>', 'version': 'RELEASE.2020-11-25T22-36-25Z'}, 'ParentId': '', 'RepoDigests': ['minio/minio@sha256:a2eeb964863632a274f3eed08fc256b790ca83a020e164dd18e1e5f402d9f8d4'], 'RepoTags': ['minio/minio:RELEASE.2020-12-12T08-39-07Z'], 'SharedSize': 0, 'Size': 182261690, 'VirtualSize': 182261690},<br/>{'Containers': 1, 'Created': 1607703900, 'Id': 'sha256:ef47f3b6dc11e8f17fb39a6e46ecaf4efd47b3d374e92aeb9f2606896b751251', 'Labels': None, 'ParentId': '', 'RepoDigests': ['redis@sha256:0f724af268d0d3f5fb1d6b33fc22127ba5cbca2d58523b286ed3122db0dc5381'], 'RepoTags': ['redis:6.0.9'], 'SharedSize': 0, 'Size': 104252176, 'VirtualSize': 104252176},<br/>{'Containers': 1, 'Created': 1607130473, 'Id': 'sha256:558380375f1a36c20e67c3a0b7bf715c659d75520d0e688b066d5e708918d716', 'Labels': {'org.label-schema.build-date': '2020-12-05T01:00:33.671820Z', 'org.label-schema.license': 'Elastic-License', 'org.label-schema.name': 'Elasticsearch', 'org.label-schema.schema-version': '1.0', 'org.label-schema.url': 'https://www.elastic.co/products/elasticsearch', 'org.label-schema.usage': 'https://www.elastic.co/guide/en/elasticsearch/reference/index.html', 'org.label-schema.vcs-ref': '1c34507e66d7db1211f66f3513706fdf548736aa', 'org.label-schema.vcs-url': 'https://github.com/elastic/elasticsearch', 'org.label-schema.vendor': 'Elastic', 'org.label-schema.version': '7.10.1', 'org.opencontainers.image.created': '2020-12-05T01:00:33.671820Z', 'org.opencontainers.image.documentation': 'https://www.elastic.co/guide/en/elasticsearch/reference/index.html', 'org.opencontainers.image.licenses': 'Elastic-License', 'org.opencontainers.image.revision': '1c34507e66d7db1211f66f3513706fdf548736aa', 'org.opencontainers.image.source': 'https://github.com/elastic/elasticsearch', 'org.opencontainers.image.title': 'Elasticsearch', 'org.opencontainers.image.url': 'https://www.elastic.co/products/elasticsearch', 'org.opencontainers.image.vendor': 'Elastic', 'org.opencontainers.image.version': '7.10.1'}, 'ParentId': '', 'RepoDigests': ['docker.elastic.co/elasticsearch/elasticsearch@sha256:5d8f1962907ef60746a8cf61c8a7f2b8755510ee36bdee0f65417f90a38a0139'], 'RepoTags': ['docker.elastic.co/elasticsearch/elasticsearch:7.10.1'], 'SharedSize': 0, 'Size': 773756675, 'VirtualSize': 773756675},<br/>{'Containers': 1, 'Created': 1598864687, 'Id': 'sha256:a0a227bf03ddc8b88bbb74b1b84a8a7220c8fa95b122cbde2a7444f32dc30659', 'Labels': None, 'ParentId': '', 'RepoDigests': ['portainer/portainer-ce@sha256:0ab9d25e9ac7b663a51afc6853875b2055d8812fcaf677d0013eba32d0bf0e0d'], 'RepoTags': ['portainer/portainer-ce:latest'], 'SharedSize': 0, 'Size': 195546824, 'VirtualSize': 195546824},<br/>{'Containers': 2, 'Created': 1578014497, 'Id': 'sha256:bf756fb1ae65adf866bd8c456593cd24beb6a0a061dedf42b26a993176745f6b', 'Labels': None, 'ParentId': '', 'RepoDigests': ['hello-world@sha256:1a523af650137b8accdaed439c17d684df61ee4d74feac151b5b337bd29e7eec'], 'RepoTags': ['hello-world:latest'], 'SharedSize': 0, 'Size': 13336, 'VirtualSize': 13336},<br/>{'Containers': 0, 'Created': 1573631696, 'Id': 'sha256:3f6237885724af871088cfbb9d787ea4aebb37c0565e207e897c7f51ce0ad0ed', 'Labels': {'maintainer': 'Thomas Boerger <thomas@webhippie.de>', 'org.label-schema.build-date': '2019-11-13T07:54:28Z', 'org.label-schema.name': 'MariaDB', 'org.label-schema.schema-version': '1.0', 'org.label-schema.vcs-ref': '1e1f1924a0477f837c8a4399467594a0a5c3bada', 'org.label-schema.vcs-url': 'https://github.com/dockhippie/mariadb.git', 'org.label-schema.vendor': 'Thomas Boerger', 'org.label-schema.version': 'latest'}, 'ParentId': '', 'RepoDigests': ['webhippie/mariadb@sha256:8a2c927529e5fd6238f08f79e3855d90a353e4475481574aa4bf0b90550b5db9'], 'RepoTags': ['webhippie/mariadb:latest'], 'SharedSize': 57530959, 'Size': 656206898, 'VirtualSize': 656206898},<br/>{'Containers': 0, 'Created': 1573631680, 'Id': 'sha256:42ab00c664c227dce98aec279e4098cb569084d6597e562dd226c98df32dc058', 'Labels': {'maintainer': 'Thomas Boerger <thomas@webhippie.de>', 'org.label-schema.build-date': '2019-11-13T07:54:26Z', 'org.label-schema.name': 'Redis', 'org.label-schema.schema-version': '1.0', 'org.label-schema.vcs-ref': '7b176b8e39cb973ed19aee8243ba63a6e75ffe60', 'org.label-schema.vcs-url': 'https://github.com/dockhippie/redis.git', 'org.label-schema.vendor': 'Thomas Boerger', 'org.label-schema.version': 'latest'}, 'ParentId': '', 'RepoDigests': ['webhippie/redis@sha256:42f6d51be6a7a5ef6fb672e98507824816566f0b1f89c19b2d585f54e26b2529'], 'RepoTags': ['webhippie/redis:latest'], 'SharedSize': 57530959, 'Size': 59184716, 'VirtualSize': 59184716},<br/>{'Containers': 1, 'Created': 1551262109, 'Id': 'sha256:aa50897f28e43c1110328f1b8740a2ad097031e8d2443266e562fe74be1a7a19', 'Labels': {'maintainer': 'EclecticIQ <opentaxii@eclecticiq.com>'}, 'ParentId': '', 'RepoDigests': ['eclecticiq/opentaxii@sha256:647b07724ae60b31accaf57a56fb8e7ee8f25506e3d283dce5ef6ca89002d662'], 'RepoTags': ['eclecticiq/opentaxii:latest'], 'SharedSize': 0, 'Size': 188188625, 'VirtualSize': 188188625},<br/>{'Containers': 0, 'Created': 1548789201, 'Id': 'sha256:f3f4b8ddca6feca170e6239933cbf5139f52d8496737df497911850440f40a5a', 'Labels': None, 'ParentId': '', 'RepoDigests': ['adoptopenjdk/openjdk11-openj9@sha256:60718fa9eb6b6bc4ab6fe7f3a9db31b8725fb63ebdda833a43f541c07792ff5c'], 'RepoTags': ['adoptopenjdk/openjdk11-openj9:jdk-x.x.x.x-alpine-slim'], 'SharedSize': 237380314, 'Size': 237380314, 'VirtualSize': 237380314} | 6296579215 | {'CreatedAt': '2021-01-10T11:33:47+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/mongodb/_data', 'Name': 'mongodb', 'Options': {}, 'Scope': 'local', 'UsageData': {'RefCount': 1, 'Size': 332256838}},<br/>{'CreatedAt': '2021-01-10T11:15:46+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/redisdata/_data', 'Name': 'redisdata', 'Options': None, 'Scope': 'local', 'UsageData': {'RefCount': 1, 'Size': 44588590}},<br/>{'CreatedAt': '2021-01-05T20:13:01+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/opentaxii-input/_data', 'Name': 'opentaxii-input', 'Options': {}, 'Scope': 'local', 'UsageData': {'RefCount': 1, 'Size': 0}},<br/>{'CreatedAt': '2020-12-18T20:13:08+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/portainer_data/_data', 'Name': 'portainer_data', 'Options': None, 'Scope': 'local', 'UsageData': {'RefCount': 1, 'Size': 202048}},<br/>{'CreatedAt': '2021-01-10T11:10:47+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/s3data/_data', 'Name': 's3data', 'Options': None, 'Scope': 'local', 'UsageData': {'RefCount': 1, 'Size': 503932}},<br/>{'CreatedAt': '2021-01-10T11:34:11+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/temp-volume/_data', 'Name': 'temp-volume', 'Options': None, 'Scope': 'local', 'UsageData': {'RefCount': 0, 'Size': 0}},<br/>{'CreatedAt': '2021-01-06T12:12:03+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/88b259421004c4300e96dc6d2ec2685b243dea9f5007bfebf881a7d6ae0a6b55/_data', 'Name': '88b259421004c4300e96dc6d2ec2685b243dea9f5007bfebf881a7d6ae0a6b55', 'Options': None, 'Scope': 'local', 'UsageData': {'RefCount': 1, 'Size': 0}},<br/>{'CreatedAt': '2020-12-18T20:33:49+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/amqpdata/_data', 'Name': 'amqpdata', 'Options': None, 'Scope': 'local', 'UsageData': {'RefCount': 1, 'Size': 2775833149}},<br/>{'CreatedAt': '2020-12-18T20:33:46+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/esdata/_data', 'Name': 'esdata', 'Options': None, 'Scope': 'local', 'UsageData': {'RefCount': 1, 'Size': 392439372}},<br/>{'CreatedAt': '2021-01-05T20:13:03+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/opentaxii-data/_data', 'Name': 'opentaxii-data', 'Options': {}, 'Scope': 'local', 'UsageData': {'RefCount': 1, 'Size': 98304}} |
 
 
 ### docker-system-info
+
 ***
 Get system information
 
@@ -6430,6 +6619,7 @@ Get system information
 #### Base Command
 
 `docker-system-info`
+
 #### Input
 
 There are no input arguments for this command.
@@ -6494,9 +6684,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!docker-system-info```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -6702,12 +6894,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|Architecture|BridgeNfIp6tables|BridgeNfIptables|CPUSet|CPUShares|CgroupDriver|CgroupVersion|ContainerdCommit|Containers|ContainersPaused|ContainersRunning|ContainersStopped|CpuCfsPeriod|CpuCfsQuota|Debug|DefaultRuntime|DockerRootDir|Driver|DriverStatus|ExperimentalBuild|GenericResources|HttpProxy|HttpsProxy|ID|IPv4Forwarding|Images|IndexServerAddress|InitBinary|InitCommit|Isolation|KernelMemory|KernelMemoryTCP|KernelVersion|Labels|LiveRestoreEnabled|LoggingDriver|MemTotal|MemoryLimit|NCPU|NEventsListener|NFd|NGoroutines|Name|NoProxy|OSType|OSVersion|OomKillDisable|OperatingSystem|PidsLimit|Plugins|RegistryConfig|RuncCommit|Runtimes|SecurityOptions|ServerVersion|SwapLimit|Swarm|SystemTime|Warnings|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| x86_64 | true | true | true | true | cgroupfs | 1 | ID: 269548fa27e0089a8b8278fc4fc781d7f65a939b<br/>Expected: 269548fa27e0089a8b8278fc4fc781d7f65a939b | 21 | 0 | 18 | 3 | true | true | false | runc | /var/lib/docker | overlay2 | ['Backing Filesystem', 'xfs'],<br/>['Supports d_type', 'true'],<br/>['Native Overlay Diff', 'true'] | false |  |  |  | 5PJK:E7MV:OVJT:2VTA:F55W:MUFB:D3XC:242O:7VO6:D6FJ:ST5I:EI3V | true | 26 | https://index.docker.io/v1/ | docker-init | ID: de40ad0<br/>Expected: de40ad0 |  | true | true | 4.18.0-240.1.1.el8_3.x86_64 |  | false | json-file | 8143470592 | true | 8 | 0 | 179 | 252 | docker |  | linux | 8 | true | CentOS Linux 8 | true | Volume: local<br/>Network: bridge,<br/>host,<br/>ipvlan,<br/>macvlan,<br/>null,<br/>overlay<br/>Authorization: null<br/>Log: awslogs,<br/>fluentd,<br/>gcplogs,<br/>gelf,<br/>journald,<br/>json-file,<br/>local,<br/>logentries,<br/>splunk,<br/>syslog | AllowNondistributableArtifactsCIDRs: <br/>AllowNondistributableArtifactsHostnames: <br/>InsecureRegistryCIDRs: 127.0.0.0/8<br/>IndexConfigs: {"docker.io": {"Name": "docker.io", "Mirrors": [], "Secure": true, "Official": true}}<br/>Mirrors:  | ID: ff819c7e9184c13b7c2607fe6c30ae19403a7aff<br/>Expected: ff819c7e9184c13b7c2607fe6c30ae19403a7aff | io.containerd.runc.v2: {"path": "runc"}<br/>io.containerd.runtime.v1.linux: {"path": "runc"}<br/>runc: {"path": "runc"} | name=seccomp,profile=default | 20.10.1 | true | NodeID: cgj752x81xe8wbwhfr0chpa1n<br/>NodeAddr: 1.0.0.1<br/>LocalNodeState: active<br/>ControlAvailable: true<br/>Error: <br/>RemoteManagers: {'NodeID': 'cgj752x81xe8wbwhfr0chpa1n', 'Addr': '1.0.0.1:1337'}<br/>Nodes: 1<br/>Managers: 1<br/>Cluster: {"ID": "vlnbrh88562b0zqkfznqxp3lo", "Version": {"Index": 10}, "CreatedAt": "2021-01-10T07:33:54.637800661Z", "UpdatedAt": "2021-01-10T07:33:55.245247885Z", "Spec": {"Name": "default", "Labels": {}, "Orchestration": {"TaskHistoryRetentionLimit": 5}, "Raft": {"SnapshotInterval": 10000, "KeepOldSnapshots": 0, "LogEntriesForSlowFollowers": 500, "ElectionTick": 10, "HeartbeatTick": 1}, "Dispatcher": {"HeartbeatPeriod": 5000000000}, "CAConfig": {"NodeCertExpiry": 7776000000000000}, "TaskDefaults": {}, "EncryptionConfig": {"AutoLockManagers": false}}, "TLSInfo": {"TrustRoot": "-----BEGIN CERTIFICATE-----\nMIIBazCCARCgAwIBAgIUOiN4v/EY6RXDOD/KhFdvH3brl7AwCgYIKoZIzj0EAwIw\nEzERMA8GA1UEAxMIc3dhcm0tY2EwHhcNMjEwMTEwMDcyOTAwWhcNNDEwMTA1MDcy\nOTAwWjATMREwDwYDVQQDEwhzd2FybS1jYTBZMBMGByqGSM49AgEGCCqGSM49AwEH\nA0IABCxLs7pWJhTn8c0gmLbDah0hhTPK0Zm3k/sWNSV8TRcN8TOuWXScUgY2T87J\nMKWd62vigYHbVqbwOrOsSwcHzbmjQjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMB\nAf8EBTADAQH/MB0GA1UdDgQWBBS4aSrlzrksA4rV4dI/+VaVF6FPUDAKBggqhkjO\nPQQDAgNJADBGAiEA7XBazcswvm/Dl4z7OHI6LGodSFOS5Z8Zg1DFPmdoodoCIQCh\n2+H2IcBXUO50IAzFvKt754HImW+kpLNe6fOFtEj+kQ==\n-----END CERTIFICATE-----\n", "CertIssuerSubject": "MBMxETAPBgNVBAMTCHN3YXJtLWNh", "CertIssuerPublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELEuzulYmFOfxzSCYtsNqHSGFM8rRmbeT+xY1JXxNFw3xM65ZdJxSBjZPzskwpZ3ra+KBgdtWpvA6s6xLBwfNuQ=="}, "RootRotationInProgress": false, "DefaultAddrPool": ["10.0.0.0/8"], "SubnetSize": 24, "DataPathPort": 4789} | 2021-01-10T11:34:15.475287531+04:00 | WARNING: No blkio weight support,<br/>WARNING: No blkio weight_device support |
 
 
 ### docker-system-version
+
 ***
 Get version
 
@@ -6715,6 +6909,7 @@ Get version
 #### Base Command
 
 `docker-system-version`
+
 #### Input
 
 There are no input arguments for this command.
@@ -6738,9 +6933,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!docker-system-version```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -6803,12 +7000,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|ApiVersion|Arch|BuildTime|Components|GitCommit|GoVersion|KernelVersion|MinAPIVersion|Os|Platform|Version|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 1.41 | amd64 | 2020-12-15T04:32:21.000000000+00:00 | {'Name': 'Engine', 'Version': '20.10.1', 'Details': {'ApiVersion': '1.41', 'Arch': 'amd64', 'BuildTime': '2020-12-15T04:32:21.000000000+00:00', 'Experimental': 'false', 'GitCommit': 'f001486', 'GoVersion': 'go1.13.15', 'KernelVersion': '4.18.0-240.1.1.el8_3.x86_64', 'MinAPIVersion': '1.12', 'Os': 'linux'}},<br/>{'Name': 'containerd', 'Version': '1.4.3', 'Details': {'GitCommit': '269548fa27e0089a8b8278fc4fc781d7f65a939b'}},<br/>{'Name': 'runc', 'Version': '1.0.0-rc92', 'Details': {'GitCommit': 'ff819c7e9184c13b7c2607fe6c30ae19403a7aff'}},<br/>{'Name': 'docker-init', 'Version': '0.19.0', 'Details': {'GitCommit': 'de40ad0'}} | f001486 | go1.13.15 | 4.18.0-240.1.1.el8_3.x86_64 | 1.12 | linux | Name: Docker Engine - Community | 20.10.1 |
 
 
 ### docker-task-list
+
 ***
 List tasks
 
@@ -6816,6 +7015,7 @@ List tasks
 #### Base Command
 
 `docker-task-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6837,9 +7037,11 @@ List tasks
 
 
 #### Command Example
+
 ```!docker-task-list```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -6849,6 +7051,7 @@ List tasks
 >null
 
 ### docker-volume-create
+
 ***
 Create a volume
 
@@ -6856,6 +7059,7 @@ Create a volume
 #### Base Command
 
 `docker-volume-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6871,9 +7075,11 @@ Create a volume
 There is no context output for this command.
 
 #### Command Example
+
 ```!docker-volume-create volumeconfig_name="temp-volume"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -6891,12 +7097,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|CreatedAt|Driver|Labels|Mountpoint|Name|Options|Scope|
 >|---|---|---|---|---|---|---|
 >| 2021-01-10T11:34:11+04:00 | local |  | /var/lib/docker/volumes/temp-volume/_data | temp-volume |  | local |
 
 
 ### docker-volume-inspect
+
 ***
 Inspect a volume
 
@@ -6904,6 +7112,7 @@ Inspect a volume
 #### Base Command
 
 `docker-volume-inspect`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6923,9 +7132,11 @@ Inspect a volume
 
 
 #### Command Example
+
 ```!docker-volume-inspect name="temp-volume"```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -6945,12 +7156,14 @@ Inspect a volume
 #### Human Readable Output
 
 >### Results
+>
 >|CreatedAt|Driver|Labels|Mountpoint|Name|Options|Scope|
 >|---|---|---|---|---|---|---|
 >| 2021-01-10T11:34:11+04:00 | local |  | /var/lib/docker/volumes/temp-volume/_data | temp-volume |  | local |
 
 
 ### docker-volume-list
+
 ***
 List volumes
 
@@ -6958,6 +7171,7 @@ List volumes
 #### Base Command
 
 `docker-volume-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6977,9 +7191,11 @@ List volumes
 
 
 #### Command Example
+
 ```!docker-volume-list```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -7085,12 +7301,14 @@ List volumes
 #### Human Readable Output
 
 >### Results
+>
 >|Volumes|Warnings|
 >|---|---|
 >| {'CreatedAt': '2021-01-10T11:33:47+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/mongodb/_data', 'Name': 'mongodb', 'Options': {}, 'Scope': 'local'},<br/>{'CreatedAt': '2021-01-10T11:15:46+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/redisdata/_data', 'Name': 'redisdata', 'Options': None, 'Scope': 'local'},<br/>{'CreatedAt': '2020-12-18T20:33:46+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/esdata/_data', 'Name': 'esdata', 'Options': None, 'Scope': 'local'},<br/>{'CreatedAt': '2021-01-05T20:13:03+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/opentaxii-data/_data', 'Name': 'opentaxii-data', 'Options': {}, 'Scope': 'local'},<br/>{'CreatedAt': '2021-01-05T20:13:01+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/opentaxii-input/_data', 'Name': 'opentaxii-input', 'Options': {}, 'Scope': 'local'},<br/>{'CreatedAt': '2020-12-18T20:13:08+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/portainer_data/_data', 'Name': 'portainer_data', 'Options': None, 'Scope': 'local'},<br/>{'CreatedAt': '2021-01-10T11:10:47+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/s3data/_data', 'Name': 's3data', 'Options': None, 'Scope': 'local'},<br/>{'CreatedAt': '2021-01-10T11:14:49+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/temp-volume/_data', 'Name': 'temp-volume', 'Options': None, 'Scope': 'local'},<br/>{'CreatedAt': '2021-01-06T12:12:03+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/88b259421004c4300e96dc6d2ec2685b243dea9f5007bfebf881a7d6ae0a6b55/_data', 'Name': '88b259421004c4300e96dc6d2ec2685b243dea9f5007bfebf881a7d6ae0a6b55', 'Options': None, 'Scope': 'local'},<br/>{'CreatedAt': '2020-12-18T20:33:49+04:00', 'Driver': 'local', 'Labels': None, 'Mountpoint': '/var/lib/docker/volumes/amqpdata/_data', 'Name': 'amqpdata', 'Options': None, 'Scope': 'local'} |  |
 
 
 ### docker-volume-prune
+
 ***
 Delete unused volumes
 
@@ -7098,6 +7316,7 @@ Delete unused volumes
 #### Base Command
 
 `docker-volume-prune`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7113,9 +7332,11 @@ Delete unused volumes
 
 
 #### Command Example
+
 ```!docker-volume-prune```
 
 #### Context Example
+
 ```json
 {
     "Docker": {
@@ -7132,6 +7353,7 @@ Delete unused volumes
 #### Human Readable Output
 
 >### Results
+>
 >|SpaceReclaimed|VolumesDeleted|
 >|---|---|
 >| 0 | temp-volume |

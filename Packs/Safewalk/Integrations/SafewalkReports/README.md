@@ -27,9 +27,12 @@ This integration was integrated and tested with version 3 of SafewalkReports
 | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### safewalk-get-associated-users
+
 ***
 safewalk-get-associated-users
 
@@ -37,6 +40,7 @@ safewalk-get-associated-users
 #### Base Command
 
 `safewalk-get-associated-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -58,6 +62,7 @@ safewalk-get-associated-users
 
 
 ### safewalk-get-authentication-methods-distribution
+
 ***
 safewalk-get-authentication-methods-distribution
 
@@ -65,6 +70,7 @@ safewalk-get-authentication-methods-distribution
 #### Base Command
 
 `safewalk-get-authentication-methods-distribution`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -87,6 +93,7 @@ safewalk-get-authentication-methods-distribution
 
 
 ### safewalk-get-authentication-rate-per-device
+
 ***
 safewalk-get-authentication-rate-per-device
 
@@ -94,6 +101,7 @@ safewalk-get-authentication-rate-per-device
 #### Base Command
 
 `safewalk-get-authentication-rate-per-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -116,6 +124,7 @@ safewalk-get-authentication-rate-per-device
 
 
 ### safewalk-get-least-active-users
+
 ***
 safewalk-get-least-active-users
 
@@ -123,6 +132,7 @@ safewalk-get-least-active-users
 #### Base Command
 
 `safewalk-get-least-active-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -145,6 +155,7 @@ safewalk-get-least-active-users
 
 
 ### safewalk-get-licenses-inventory
+
 ***
 safewalk-get-licenses-inventory
 
@@ -152,6 +163,7 @@ safewalk-get-licenses-inventory
 #### Base Command
 
 `safewalk-get-licenses-inventory`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -175,6 +187,7 @@ safewalk-get-licenses-inventory
 
 
 ### safewalk-get-licenses-usage
+
 ***
 safewalk-get-licenses-usage
 
@@ -182,6 +195,7 @@ safewalk-get-licenses-usage
 #### Base Command
 
 `safewalk-get-licenses-usage`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -207,6 +221,7 @@ safewalk-get-licenses-usage
 
 
 ### safewalk-get-most-active-users
+
 ***
 safewalk-get-most-active-users
 
@@ -214,6 +229,7 @@ safewalk-get-most-active-users
 #### Base Command
 
 `safewalk-get-most-active-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -239,6 +255,7 @@ safewalk-get-most-active-users
 
 
 ### safewalk-get-physical-tokens-inventory
+
 ***
 safewalk-get-physical-tokens-inventory
 
@@ -246,6 +263,7 @@ safewalk-get-physical-tokens-inventory
 #### Base Command
 
 `safewalk-get-physical-tokens-inventory`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -269,6 +287,7 @@ safewalk-get-physical-tokens-inventory
 
 
 ### safewalk-get-registered-devices-distribution
+
 ***
 safewalk-get-registered-devices-distribution
 
@@ -276,6 +295,7 @@ safewalk-get-registered-devices-distribution
 #### Base Command
 
 `safewalk-get-registered-devices-distribution`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -299,6 +319,7 @@ safewalk-get-registered-devices-distribution
 
 
 ### safewalk-get-registration
+
 ***
 safewalk-get-registration
 
@@ -306,6 +327,7 @@ safewalk-get-registration
 #### Base Command
 
 `safewalk-get-registration`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -331,6 +353,7 @@ safewalk-get-registration
 
 
 ### safewalk-get-users-associations-indicators
+
 ***
 safewalk-get-users-associations-indicators
 
@@ -338,6 +361,7 @@ safewalk-get-users-associations-indicators
 #### Base Command
 
 `safewalk-get-users-associations-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -32,27 +32,34 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 ## Integration Settings Preferences
 
 If Inbox or Reconnaissance is provided as a filter for Report Location:
+
 - Category ID filter cannot be used. 
 - Categorization Tags filter cannot be used.
 
 If only Processed is provided as a filter for Report Location:
+
 - Tags filter cannot be used.
  
 If Category ID is used as a filter for fetch incidents:
+
 - The Report Location cannot be Inbox or Reconnaissance.
 - Tags filter cannot be used.
 
 If Categorization tags are provided in fetch incident parameters:
+
 - The Report Location must be Processed.
 
 If Tags are provided in fetch incident parameters:
+
 - The Report Location must be Reconnaissance.
 
 ## Filtering
+
 For all the list commands provided filter_by argument to filter list by attribute values.
 The general filtering syntax is as follows:
 
 ```{\"attribute_operator\": \"value1, value2\"}```
+
 - `attribute` is the name of the attribute that the filter will be applied against.
 - `operator` is the comparison operator to use when comparing the attribute to the specified value. The default is EQ. You can omit
 this parameter if you want to use the default. See Comparison Operators for the expected syntax for other comparison
@@ -67,6 +74,7 @@ that match _ANY_ of the supplied values.
 ## Comparison Operators
 
 ### Standard Comparison Operators
+
 - `eq`: This is the default comparison operator if no operator is specified. Returns results when an attribute is equal to the supplied value.
 - `not_eq`: Returns results when an attribute is not equal to the supplied value.
 - `lt`: Returns results when an attribute is less than the supplied value.
@@ -75,7 +83,9 @@ that match _ANY_ of the supplied values.
 - `gteq`: Returns results when an attribute is greater than or equal to the supplied value.
 
 ### String Comparison Operators
+
 In addition to the standard comparison operators, string attributes can also use the following comparison operators:
+
 - `start`: Returns results when an attribute starts with the supplied value.
 - `not_start`: Returns results when an attribute does not start with the supplied value.
 - `end`: Returns results when an attribute ends with the supplied value.
@@ -84,27 +94,35 @@ In addition to the standard comparison operators, string attributes can also use
 - `not_cont`: Returns results when an attribute does not contain the supplied value.
 
 ### Array Comparison Operators
+
 Some resources have an array attribute that contains a list of values. Array attributes follow a common usage pattern, but the
 filters supported will vary.
+
 - `any_OP`: Returns resources where any value in the array matches the standard or string comparison operator (`OP`).
 
 ### Tag List Comparison Operators
+
 Some resources have a `tag_list` attribute that contains a list of Triage tags that were applied to that resource.
 Tag List attributes do not support the standard or string comparison operators. Attributes of this type support the following
 comparison operators:
+
 - `any`: Returns results when a resource is tagged with any of the specified tags.
 - `all`: Returns results when a resource is tagged with all of the specified tags.
 - `none`: Returns results when a resource is not tagged with any of the specified tags.
 
 ## Mirroring
+
 The data in Cofense Triage Report can be mirrored to Cortex XSOAR to view the modifications when the report is updated.
 
 For example: When the report is processed, the fields like Report Category ID and Report location get modified, and hence the user will be able to see the modified field's value in XSOAR.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cofense-threat-indicator-list
+
 ***
 Retrieves the list of threat indicators based on the provided parameters. 
 Threat indicators identify the threat level of an email's subject, sender, domains, URLs, and MD5 and SHA256 attachment hash signatures.
@@ -113,6 +131,7 @@ Threat indicators identify the threat level of an email's subject, sender, domai
 #### Base Command
 
 `cofense-threat-indicator-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -155,9 +174,11 @@ Threat indicators identify the threat level of an email's subject, sender, domai
 
 
 #### Command Example
+
 ```!cofense-threat-indicator-list page_size=2```
 
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -248,6 +269,7 @@ Threat indicators identify the threat level of an email's subject, sender, domai
 #### Human Readable Output
 
 >### Threat Indicator(s)
+>
 >|Threat Indicator ID|Threat Level|Threat Type|Threat Value|Threat Source|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| 1 | Malicious | SHA256 | dummy_hash | URL | 2020-10-26T10:47:09.675Z | 2021-06-22T05:52:10.016Z |
@@ -255,6 +277,7 @@ Threat indicators identify the threat level of an email's subject, sender, domai
 
 
 ### cofense-report-list
+
 ***
 Retrieves a report or a list of reports based on the filter values provided in the command arguments.
 
@@ -262,6 +285,7 @@ Retrieves a report or a list of reports based on the filter values provided in t
 #### Base Command
 
 `cofense-report-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -347,9 +371,11 @@ Retrieves a report or a list of reports based on the filter values provided in t
 
 
 #### Command Example
+
 ```!cofense-report-list page_size=2```
 
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -611,6 +637,7 @@ Retrieves a report or a list of reports based on the filter values provided in t
 #### Human Readable Output
 
 >### Report(s)
+>
 >|Report ID|Subject|Match Priority|Location|MD5|SHA256|Created At|
 >|---|---|---|---|---|---|---|
 >| 4 | IBM X-Force Exchange Notifications | 0 | Processed | 12345727a75f1231be55c9d47513f510 | 123c12345c3131479335d5d118da42118e802a48f4bc91992b8e93f87ec95f5c | 2020-10-21T20:54:23.444Z |
@@ -618,6 +645,7 @@ Retrieves a report or a list of reports based on the filter values provided in t
 
 
 ### cofense-report-download
+
 ***
 Downloads the raw email for the report that matches the specified report ID.
 
@@ -625,6 +653,7 @@ Downloads the raw email for the report that matches the specified report ID.
 #### Base Command
 
 `cofense-report-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -650,9 +679,11 @@ Downloads the raw email for the report that matches the specified report ID.
 
 
 #### Command Example
+
 ```!cofense-report-download id=4```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -687,6 +718,7 @@ Downloads the raw email for the report that matches the specified report ID.
 >| SSDeep | 12:sentTp60+VqTKBV+VUllVDVSm+s1C1609QfzYxVNtMt7JvVNtMtZTRVNtMtO6hFC:smVp6DJV+6ku8QfzYr |
 
 ### cofense-report-categorize
+
 ***
 Categorizes a report into a specific category provided by the user.
 
@@ -694,6 +726,7 @@ Categorizes a report into a specific category provided by the user.
 #### Base Command
 
 `cofense-report-categorize`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -707,6 +740,7 @@ Categorizes a report into a specific category provided by the user.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cofense-report-categorize category_id=1 id=4```
 
 #### Human Readable Output
@@ -715,6 +749,7 @@ There is no context output for this command.
 
 
 ### cofense-report-attachment-payload-list
+
 ***
 Retrieves attachment payloads based on provided report id in the command arguments.
 Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of a reported email attachment.
@@ -723,6 +758,7 @@ Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of
 #### Base Command
 
 `cofense-report-attachment-payload-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -758,9 +794,11 @@ Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of
 
 
 #### Command Example
+
 ```!cofense-report-attachment-payload-list id=47024 page_size=2```
 
 #### Context Example
+
 ```json
 {
   "Cofense": {
@@ -854,6 +892,7 @@ Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of
 #### Human Readable Output
 
 >### Attachment Payload(s)
+>
 >|Attachment Payload ID|Mime Type|MD5|SHA256|Risk Score|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| 74 | application/xml; charset=us-ascii | 99a9eb2612d7e84c5402fde1114c53ee | 22b3e2a4f41a0a0b6c93cd0da7b28b84a2375b815f787624e81acaaf32a5d191 | 0 | 2020-10-21T20:57:56.750Z | 2022-03-08T20:20:32.561Z |
@@ -907,9 +946,11 @@ For reported emails that contain attachments, Cofense Triage captures the attach
 
 
 #### Command Example
+
 ```!cofense-report-attachment-list id=30339 page_size=2```
 
 #### Context Example
+
 ```json
 {
   "Cofense": {
@@ -1010,6 +1051,7 @@ For reported emails that contain attachments, Cofense Triage captures the attach
 #### Human Readable Output
 
 >### Attachment(s)
+>
 >|Attachment ID|File Name|File Size in Bytes|Is Child|Created At|Updated At|
 >|---|---|---|---|---|---|
 >| 30339 | Invoice.xlsm | 100000 | false | 2023-04-09T13:25:28.540Z | 2023-04-09T13:25:28.540Z |
@@ -1048,8 +1090,11 @@ Downloads the attachment for the specified attachment ID.
 | File.Extension | String | The file extension. | 
 
 #### Command example
+
 ```!cofense-report-attachment-download id=30```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -1085,6 +1130,7 @@ Downloads the attachment for the specified attachment ID.
 
 
 ### cofense-category-list
+
 ***
 Retrieves categories based on the provided parameters.
 Categories are applied while processing the email to indicate the type of threat (or non-threat) that reports and clusters pose to the organization.
@@ -1093,6 +1139,7 @@ Categories are applied while processing the email to indicate the type of threat
 #### Base Command
 
 `cofense-category-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1131,9 +1178,11 @@ Categories are applied while processing the email to indicate the type of threat
 
 
 #### Command Example
+
 ```!cofense-category-list page_size=2```
 
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1206,6 +1255,7 @@ Categories are applied while processing the email to indicate the type of threat
 #### Human Readable Output
 
 >### Categories
+>
 >|Category ID|Name|Malicious|Archived|Created At|Updated At|
 >|---|---|---|---|---|---|
 >| 1 | Non-Malicious | false | false | 2020-10-21T15:30:56.280Z | 2020-10-21T15:30:56.280Z |
@@ -1213,6 +1263,7 @@ Categories are applied while processing the email to indicate the type of threat
 
 
 ### cofense-rule-list
+
 ***
 Retrieves rules based on the filter values provided in the command arguments.
 Rules identify specific characteristics for categorizing the reported emails.
@@ -1221,6 +1272,7 @@ Rules identify specific characteristics for categorizing the reported emails.
 #### Base Command
 
 `cofense-rule-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1283,9 +1335,11 @@ Rules identify specific characteristics for categorizing the reported emails.
 
 
 #### Command Example
+
 ```!cofense-rule-list page_size=2```
 
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1418,6 +1472,7 @@ Rules identify specific characteristics for categorizing the reported emails.
 #### Human Readable Output
 
 >### Rule(s)
+>
 >|Rule ID|Rule Name|Description|Active|Priority|Scope|Author Name|Rule Context|Created At|Updated At|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 1690 | MX_Testing | Testing customer-created rule | true | 5 | Email | Thor | Phishing Tactic | 2020-11-24T15:19:12.616Z | 2020-11-24T15:19:12.616Z |
@@ -1425,6 +1480,7 @@ Rules identify specific characteristics for categorizing the reported emails.
 
 
 ### cofense-url-list
+
 ***
 Retrieves URLs based on the filter values provided in the command arguments. 
 URLs are the threats (or non-threat)  that are detected in the reported emails.
@@ -1433,6 +1489,7 @@ URLs are the threats (or non-threat)  that are detected in the reported emails.
 #### Base Command
 
 `cofense-url-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1474,9 +1531,11 @@ URLs are the threats (or non-threat)  that are detected in the reported emails.
 
 
 #### Command Example
+
 ```!cofense-url-list page_size=2```
 
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1585,6 +1644,7 @@ URLs are the threats (or non-threat)  that are detected in the reported emails.
 #### Human Readable Output
 
 >### URL(s)
+>
 >|URL ID|URL|Created At|Updated At|
 >|---|---|---|---|
 >| 15 | http://dummy.com/servlet/MailView?ms=MTE4NDM1ODgS1&r=LTMyMjA1MjQ1ODcS1&j=MTc2MDQ3MTQ4MwS2&mt=1&rt=0 | 2020-10-21T20:54:24.185Z | 2020-10-21T20:54:24.185Z |
@@ -1592,6 +1652,7 @@ URLs are the threats (or non-threat)  that are detected in the reported emails.
 
 
 ### cofense-threat-indicator-create
+
 ***
 Creates a threat indicator based on the values provided in the command arguments.
 
@@ -1599,6 +1660,7 @@ Creates a threat indicator based on the values provided in the command arguments
 #### Base Command
 
 `cofense-threat-indicator-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1633,9 +1695,11 @@ Creates a threat indicator based on the values provided in the command arguments
 
 
 #### Command Example
+
 ```!cofense-threat-indicator-create threat_level=Benign threat_type=Hostname threat_value="abc.com"```
 
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1685,12 +1749,14 @@ Creates a threat indicator based on the values provided in the command arguments
 #### Human Readable Output
 
 >### Threat Indicator(s)
+>
 >|Threat Indicator ID|Threat Level|Threat Type|Threat Value|Threat Source|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| 393 | Benign | Hostname | abc.com | XSOAR-UI | 2021-06-22T06:11:57.462Z | 2021-06-22T06:11:57.462Z |
 
 
 ### cofense-reporter-list
+
 ***
 Retrieves the reporters that match the provided parameters. 
 Reporters are employees of an organization who send, or report, suspicious emails to Cofense Triage.
@@ -1699,6 +1765,7 @@ Reporters are employees of an organization who send, or report, suspicious email
 #### Base Command
 
 `cofense-reporter-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1737,9 +1804,11 @@ Reporters are employees of an organization who send, or report, suspicious email
 
 
 #### Command Example
+
 ```!cofense-reporter-list page_size=2```
 
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1812,6 +1881,7 @@ Reporters are employees of an organization who send, or report, suspicious email
 #### Human Readable Output
 
 >### Reporter(s)
+>
 >|Reporter ID|Reporter Email|Reports Count|Reputation Score|VIP|Last Reported At|Created At|Updated At|
 >|---|---|---|---|---|---|---|---|
 >| 4 | no-reply@xyz.com | 10 | 8 | false | 2020-12-11T05:46:39.000Z | 2020-10-21T20:54:23.383Z | 2021-05-30T11:51:00.170Z |
@@ -1819,10 +1889,12 @@ Reporters are employees of an organization who send, or report, suspicious email
 
 
 ### cofense-integration-submission-get
+
 ***
 Retrieves integration submission based on the filter values provided in the command arguments.
 
 Note:
+
 - When the user provides incorrect values in arguments, the user will be getting a 500 internal error.
 - When the user provides any value in **kind** argument, the user will be getting a 500 internal error.
 
@@ -1830,6 +1902,7 @@ Note:
 #### Base Command
 
 `cofense-integration-submission-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1872,9 +1945,11 @@ Note:
 
 
 #### Command Example
+
 ```!cofense-integration-submission-get id=4879 type=urls```
 
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1995,6 +2070,7 @@ Note:
 #### Human Readable Output
 
 >### Integration Submission(s)
+>
 >|Integration Submission ID|Status|Kind|Created At|Updated At|
 >|---|---|---|---|---|
 >| 155 | error | URL | 2021-04-02T16:32:43.525Z | 2021-04-02T16:34:11.016Z |
@@ -2003,6 +2079,7 @@ Note:
 
 
 ### cofense-attachment-payload-list
+
 ***
 Retrieves attachment payloads based on the filter values provided in the command arguments.
 Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of a reported email.
@@ -2011,6 +2088,7 @@ Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of
 #### Base Command
 
 `cofense-attachment-payload-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2050,9 +2128,11 @@ Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of
 
 
 #### Command Example
+
 ```!cofense-attachment-payload-list page_size=2```
 
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -2145,6 +2225,7 @@ Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of
 #### Human Readable Output
 
 >### Attachment Payload(s)
+>
 >|Attachment Payload ID|Mime Type|MD5|SHA256|Created At|Updated At|
 >|---|---|---|---|---|---|
 >| 8 | image/png; charset=binary | 123456789ec6d4a936ef02d4042a93c2 | 123456789f8c56c47f9a481c919eb869af09f9fff0c1551781aa77e8674377b9 | 2020-10-21T20:54:36.450Z | 2020-10-21T20:54:36.450Z |
@@ -2152,6 +2233,7 @@ Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of
 
 
 ### cofense-comment-list
+
 ***
 Retrieves comments based on the filter values provided in the command arguments.
 
@@ -2159,6 +2241,7 @@ Retrieves comments based on the filter values provided in the command arguments.
 #### Base Command
 
 `cofense-comment-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2240,9 +2323,11 @@ Retrieves comments based on the filter values provided in the command arguments.
 
 
 #### Command Example
+
 ```!cofense-comment-list page_size=2```
 
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -2325,6 +2410,7 @@ Retrieves comments based on the filter values provided in the command arguments.
 #### Human Readable Output
 
 >### Comment(s)
+>
 >|Comment ID|Body Format|Body|Created At|Updated At|Associated To|Associated To ID|
 >|---|---|---|---|---|---|---|
 >| 1 | text | www.xyz.com | 2021-04-01T20:52:59.342Z | 2021-04-01T20:52:59.342Z | threat_indicators | 216 |
@@ -2332,6 +2418,7 @@ Retrieves comments based on the filter values provided in the command arguments.
 
 
 ### cofense-cluster-list
+
 ***
 Retrieves clusters based on the filter values provided in the command arguments.
 
@@ -2339,6 +2426,7 @@ Retrieves clusters based on the filter values provided in the command arguments.
 #### Base Command
 
 `cofense-cluster-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2400,9 +2488,11 @@ Retrieves clusters based on the filter values provided in the command arguments.
 
 
 #### Command Example
+
 ```!cofense-cluster-list page_size=2```
 
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -2549,6 +2639,7 @@ Retrieves clusters based on the filter values provided in the command arguments.
 #### Human Readable Output
 
 >### Cluster(s)
+>
 >|Cluster ID|Unprocessed Report|Total Report Count|Match Priority|Host Source|Average Reporter Reputation Score|VIP Reporter count|Created At|Updated At|
 >|---|---|---|---|---|---|---|---|---|
 >| 1 | 0 | 11 | 0 | dummy.xyz.com;dummy.com | 0.0 | 0 | 2020-10-21T20:54:25.644Z | 2021-06-02T11:05:02.806Z |
@@ -2556,6 +2647,7 @@ Retrieves clusters based on the filter values provided in the command arguments.
 
 
 ### cofense-threat-indicator-update
+
 ***
 Updates a threat indicator based on the values provided in the command arguments.
 
@@ -2563,6 +2655,7 @@ Updates a threat indicator based on the values provided in the command arguments
 #### Base Command
 
 `cofense-threat-indicator-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2596,9 +2689,11 @@ Updates a threat indicator based on the values provided in the command arguments
 
 
 #### Command Example
+
 ```!cofense-threat-indicator-update id=1 threat_level=Suspicious```
 
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -2648,12 +2743,14 @@ Updates a threat indicator based on the values provided in the command arguments
 #### Human Readable Output
 
 >### Threat Indicator(s)
+>
 >|Threat Indicator ID|Threat Level|Threat Type|Threat Value|Threat Source|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| 1 | Suspicious | SHA256 | dummy_hash | URL | 2020-10-26T10:47:09.675Z | 2021-06-22T06:09:22.661Z |
 
 
 ### get-remote-data
+
 ***
 Get remote data from a remote incident. Please note that this method will not update the current incident, it's here for debugging purposes.
 
@@ -2661,6 +2758,7 @@ Get remote data from a remote incident. Please note that this method will not up
 #### Base Command
 
 `get-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2674,10 +2772,12 @@ Get remote data from a remote incident. Please note that this method will not up
 There is no context output for this command.
 
 #### Command Example
+
 ```!get-remote-data id=34 lastUpdate="3 days"```
 
 
 ### get-modified-remote-data
+
 ***
 Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
 
@@ -2685,6 +2785,7 @@ Gets the list of incidents that were modified since the last update time. Note t
 #### Base Command
 
 `get-modified-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2697,10 +2798,12 @@ Gets the list of incidents that were modified since the last update time. Note t
 There is no context output for this command.
 
 #### Command Example
+
 ```!get-modified-remote-data lastUpdate="3 days"```
 
 
 ### cofense-report-image-download
+
 ***
 Downloads the image of the report that matches the specified report ID.
 
@@ -2708,6 +2811,7 @@ Downloads the image of the report that matches the specified report ID.
 #### Base Command
 
 `cofense-report-image-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2729,9 +2833,11 @@ Downloads the image of the report that matches the specified report ID.
 
 
 #### Command Example
+
 ```!cofense-report-image-download id="4"```
 
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -2755,31 +2861,32 @@ Downloads the image of the report that matches the specified report ID.
 The following sections list the changes in this version.
 
 ### Commands
+
 #### The following commands were removed in this version:
-* *cofense-search-reports* - this command was replaced by cofense-report-list.
-* *cofense-search-inbox-reports* - this command was replaced by cofense-report-list with argument 'report_location' .
-* *cofense-get-attachment*
-* *cofense-get-reporter* - this command was replaced by cofense-reporter-list.
-* *cofense-get-report-by-id* - this command was replaced by cofense-report-list with argument 'id'.
-* *cofense-get-report-png-by-id* - this command was replaced by cofense-report-image-download.
-* *cofense-get-threat-indicators* - this command was replaced by cofense-threat-indicator-list.
+- _cofense-search-reports_ - this command was replaced by cofense-report-list.
+- _cofense-search-inbox-reports_ - this command was replaced by cofense-report-list with argument 'report_location' .
+- _cofense-get-attachment_
+- _cofense-get-reporter_ - this command was replaced by cofense-reporter-list.
+- _cofense-get-report-by-id_ - this command was replaced by cofense-report-list with argument 'id'.
+- _cofense-get-report-png-by-id_ - this command was replaced by cofense-report-image-download.
+- _cofense-get-threat-indicators_ - this command was replaced by cofense-threat-indicator-list.
 
 ## Additional Considerations for this version
 
 The ability to mirror incident data has been added.
 
 #### The following commands were added in this version:
-* *cofense-attachment-payload-list*
-* *cofense-category-list*
-* *cofense-cluster-list*
-* *cofense-comment-list*
-* *cofense-integration-submission-get*
-* *cofense-report-categorize*
-* *cofense-report-download*
-* *cofense-rule-list*
-* *cofense-threat-indicator-create*
-* *cofense-threat-indicator-update*
-* *cofense-url-list*
-* *cofense-report-attachment-payload-list*
-* *cofense-report-attachment-list*
-* *cofense-report-attachment-download*
+- _cofense-attachment-payload-list_
+- _cofense-category-list_
+- _cofense-cluster-list_
+- _cofense-comment-list_
+- _cofense-integration-submission-get_
+- _cofense-report-categorize_
+- _cofense-report-download_
+- _cofense-rule-list_
+- _cofense-threat-indicator-create_
+- _cofense-threat-indicator-update_
+- _cofense-url-list_
+- _cofense-report-attachment-payload-list_
+- _cofense-report-attachment-list_
+- _cofense-report-attachment-download_

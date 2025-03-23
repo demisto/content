@@ -1,4 +1,5 @@
 The CrowdStrike intelligence team tracks the activities of threat actor groups and advanced persistent threats (APTs) to understand as much as possible about their known aliases, targets, methods, and more.
+
 ## Configure Crowdstrike Falcon Intel Feed in Cortex
 
 
@@ -24,9 +25,12 @@ The CrowdStrike intelligence team tracks the activities of threat actor groups a
 | custom_filter | A custom filter by which to filter the indicators. If you pass the custom_filter argument it will override the custom\_filter parameter from the integration instance configuration.| False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### crowdstrike-falcon-intel-get-indicators
+
 ***
 Gets indicators from Crowdstrike Falcon Intel Feed.
 
@@ -34,6 +38,7 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
 #### Base Command
 
 `crowdstrike-falcon-intel-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,6 +55,7 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

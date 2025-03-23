@@ -1,6 +1,7 @@
 Trend Micro Apex One central automation to manage agents and User-Defined Suspicious Objects
 
 This integration was integrated and tested with version 2019 hotfix 5449 of Trend Micro Apex One Central
+
 ## Configure Trend Micro Apex One in Cortex
 
 
@@ -13,9 +14,12 @@ This integration was integrated and tested with version 2019 hotfix 5449 of Tren
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### trendmicro-apex-udso-list
+
 ***
 Retrieve a list of User-Defined Suspicious Objects from the Apex One Central server.
 
@@ -23,6 +27,7 @@ Retrieve a list of User-Defined Suspicious Objects from the Apex One Central ser
 #### Base Command
 
 `trendmicro-apex-udso-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -43,9 +48,11 @@ Retrieve a list of User-Defined Suspicious Objects from the Apex One Central ser
 
 
 #### Command Example
+
 ```!trendmicro-apex-udso-list```
 
 #### Context Example
+
 ```
 {
     "TrendMicroApex": {
@@ -72,6 +79,7 @@ Retrieve a list of User-Defined Suspicious Objects from the Apex One Central ser
 #### Human Readable Output
 
 >### Apex UDSO List
+>
 >|content|expiration_utc_date|notes|scan_action|type|
 >|---|---|---|---|---|
 >| A94A8FE5CCB19BA61C4C0873D391E987982FBBD3 |  | Documentation | log | file |
@@ -79,6 +87,7 @@ Retrieve a list of User-Defined Suspicious Objects from the Apex One Central ser
 
 
 ### trendmicro-apex-udso-add
+
 ***
 Add suspicious file SHA-1, IP address, domain, or URL objects to the User-Defined Suspicious Object list.
 
@@ -86,6 +95,7 @@ Add suspicious file SHA-1, IP address, domain, or URL objects to the User-Define
 #### Base Command
 
 `trendmicro-apex-udso-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -102,9 +112,11 @@ Add suspicious file SHA-1, IP address, domain, or URL objects to the User-Define
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-apex-udso-add type="ip" content="8.8.8.8" scan_action="log" notes="Documentation"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -114,6 +126,7 @@ There is no context output for this command.
 >### UDSO "8.8.8.8" of type "ip" was added successfully with scan action "log"
 
 ### trendmicro-apex-udso-delete
+
 ***
 Delete suspicious file SHA-1, IP address, domain, or URL objects from the User-Defined Suspicious Object list.
 
@@ -121,6 +134,7 @@ Delete suspicious file SHA-1, IP address, domain, or URL objects from the User-D
 #### Base Command
 
 `trendmicro-apex-udso-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -136,9 +150,11 @@ Delete suspicious file SHA-1, IP address, domain, or URL objects from the User-D
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-apex-udso-delete type=ip content=8.8.8.8```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -148,6 +164,7 @@ There is no context output for this command.
 >### UDSO "8.8.8.8" of type "ip" was deleted successfully
 
 ### trendmicro-apex-isolate
+
 ***
 Isolate an agent from the network
 
@@ -155,6 +172,7 @@ Isolate an agent from the network
 #### Base Command
 
 `trendmicro-apex-isolate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -172,9 +190,11 @@ Isolate an agent from the network
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-apex-isolate multi_match="true" ip_address="8.8.8.8"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -184,6 +204,7 @@ There is no context output for this command.
 >### No agents were affected.
 
 ### trendmicro-apex-restore
+
 ***
 Restore an isolated agent connection to the network.
 
@@ -191,6 +212,7 @@ Restore an isolated agent connection to the network.
 #### Base Command
 
 `trendmicro-apex-restore`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -208,9 +230,11 @@ Restore an isolated agent connection to the network.
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-apex-restore multi_match="true" ip_address="8.8.8.8"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -220,6 +244,7 @@ There is no context output for this command.
 >### No agents were affected.
 
 ### trendmicro-apex-list-logs
+
 ***
 Retrieves a maximum of 1000 logs of detection types from the server. The `Pattern Update Status` and `Engine Update Status` log types returns all logs (no maximum) from the specified "since_time". In some cases the command might return alerts that were created before the specified time. This is a known issue with the API.
 
@@ -227,6 +252,7 @@ Retrieves a maximum of 1000 logs of detection types from the server. The `Patter
 #### Base Command
 
 `trendmicro-apex-list-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -250,9 +276,11 @@ Retrieves a maximum of 1000 logs of detection types from the server. The `Patter
 
 
 #### Command Example
+
 ```!trendmicro-apex-list-logs log_type="Web Violation" limit=2 since_time="Jun 21 2020 07:56:09 GMT+00:00"```
 
 #### Context Example
+
 ```
 {
     "TrendMicroApex": {
@@ -319,6 +347,7 @@ Retrieves a maximum of 1000 logs of detection types from the server. The `Patter
 #### Human Readable Output
 
 >### Trend Micro Apex One - Web Violation Logs
+>
 >|EventName|EventID|CreationTime|LogVersion|ApplianceVersion|ApplianceProduct|ApplianceVendor|
 >|---|---|---|---|---|---|---|
 >| 36 | WB:36 | Jun 21 2020 07:56:09 GMT+00:00 | 0 | 2019 | Apex Central | Trend Micro |
@@ -326,6 +355,7 @@ Retrieves a maximum of 1000 logs of detection types from the server. The `Patter
 
 
 ### trendmicro-apex-udso-file-add
+
 ***
 Adds the uploaded file information to the User-Defined Suspicious Objects list. If the file already exists, it will be updated with the new arguments.
 
@@ -333,6 +363,7 @@ Adds the uploaded file information to the User-Defined Suspicious Objects list. 
 #### Base Command
 
 `trendmicro-apex-udso-file-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -347,9 +378,11 @@ Adds the uploaded file information to the User-Defined Suspicious Objects list. 
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-apex-udso-file-add entry_id=10378@f6e9c46f-e2e9-446f-8cd9-909bd5f72dbf file_scan_action=Log note="Documentation"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -359,6 +392,7 @@ There is no context output for this command.
 >### The file "test" was added to the UDSO list successfully
 
 ### trendmicro-apex-managed-servers-list
+
 ***
 Retrieves a list of managed product servers reporting to Apex One Central.
 
@@ -366,6 +400,7 @@ Retrieves a list of managed product servers reporting to Apex One Central.
 #### Base Command
 
 `trendmicro-apex-managed-servers-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -390,9 +425,11 @@ Retrieves a list of managed product servers reporting to Apex One Central.
 
 
 #### Command Example
+
 ```!trendmicro-apex-managed-servers-list```
 
 #### Context Example
+
 ```
 {
     "TrendMicroApex": {
@@ -437,6 +474,7 @@ Retrieves a list of managed product servers reporting to Apex One Central.
 #### Human Readable Output
 
 >### Trend Micro Apex Servers List
+>
 >|Entity Id|Product|Host Name|Ip Address List|Capabilities|
 >|---|---|---|---|---|
 >| E9DF20C5-F060-4BC5-8A4B-5452163A1C77 | SLF_PRODUCT_PLS_TMSM | cu-pro1-8254-2 | 8.8.8.8 |  |
@@ -445,6 +483,7 @@ Retrieves a list of managed product servers reporting to Apex One Central.
 
 
 ### trendmicro-apex-security-agents-list
+
 ***
 Retrieves a list of Security Agents.
 
@@ -452,6 +491,7 @@ Retrieves a list of Security Agents.
 #### Base Command
 
 `trendmicro-apex-security-agents-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -481,9 +521,11 @@ Retrieves a list of Security Agents.
 
 
 #### Command Example
+
 ```!trendmicro-apex-security-agents-list```
 
 #### Context Example
+
 ```
 {
     "TrendMicroApex": {
@@ -513,12 +555,14 @@ Retrieves a list of Security Agents.
 #### Human Readable Output
 
 >### Trend Micro Apex One Agents List
+>
 >|Capabilities|Entity Id|Folder Path|Host Name|Ip Address List|Isolation Status|Mac Address List|Managing Server Id|Product|
 >|---|---|---|---|---|---|---|---|---|
 >| cmd_restore_isolated_agent,<br/>cmd_isolate_agent,<br/>cmd_relocate_agent,<br/>cmd_uninstall_agent | b59e624c-2cf0-4180-83d7-e08abbf9ad54 | Workgroup | TRENDMICROAPEX- | 8.8.8.8 | normal | 42-01-0A-80-00-0B | B220EB61-6240-44B4-9B94-4AC3F22E6A62 | SLF_PRODUCT_OFFICESCAN_CE |
 
 
 ### trendmicro-apex-endpoint-sensors-list
+
 ***
 Retrieves a list of Security Agents with the Endpoint Sensor feature enabled.
 
@@ -526,6 +570,7 @@ Retrieves a list of Security Agents with the Endpoint Sensor feature enabled.
 #### Base Command
 
 `trendmicro-apex-endpoint-sensors-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -560,9 +605,11 @@ Retrieves a list of Security Agents with the Endpoint Sensor feature enabled.
 
 
 #### Command Example
+
 ```!trendmicro-apex-endpoint-sensors-list```
 
 #### Context Example
+
 ```
 {
     "TrendMicroApex": {
@@ -590,12 +637,14 @@ Retrieves a list of Security Agents with the Endpoint Sensor feature enabled.
 #### Human Readable Output
 
 >### Trend Micro Apex Security Agents with Endpoint Sensor enabled
+>
 >|agentGuid|ip|isEnable|isImportant|isOnline|isolateStatus|machineGuid|machineName|machineOS|machineType|productType|serverGuid|userGuid|userName|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| b59e624c-2cf0-4180-83d7-e08abbf9ad54 | 8.8.8.8 | true | false | true | 0 | 4C80331A-E39E-4584-A1B7-5237B3F0F239 | TRENDMICROAPEX- | Windows Server 2019 | Server | 15 | B220EB61-6240-44B4-9B94-4AC3F22E6A62 | DC15EA904-03CC-E3A2-9CC0-BA57D814772 | TRENDMICROAPEX-\admin |
 
 
 ### trendmicro-apex-historical-investigation-create
+
 ***
 Creates a new historical investigation on all Security Agents with Endpoint Sensor enabled using the specified criteria, search operator, and match condition.
 
@@ -603,6 +652,7 @@ Creates a new historical investigation on all Security Agents with Endpoint Sens
 #### Base Command
 
 `trendmicro-apex-historical-investigation-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -641,9 +691,11 @@ Creates a new historical investigation on all Security Agents with Endpoint Sens
 
 
 #### Command Example
+
 ```!trendmicro-apex-historical-investigation-create operator=OR file_name_is=notepad.exe criteria_kvp="File name: notepad.exe" criteria_source=56 search_period="Twelve months"```
 
 #### Context Example
+
 ```
 {
     "TrendMicroApex": {
@@ -662,12 +714,14 @@ Creates a new historical investigation on all Security Agents with Endpoint Sens
 #### Human Readable Output
 
 >### The historical investigation was created successfully
+>
 >|taskId|serverName|serverGuid|
 >|---|---|---|
 >| 16545889-7708-48BF-BDFC-53A9E2A6942A | Apex One as a Service | B220EB61-6240-44B4-9B94-4AC3F22E6A62 |
 
 
 ### trendmicro-apex-investigation-result-list
+
 ***
 Retrieves a list of all investigation results.
 
@@ -675,6 +729,7 @@ Retrieves a list of all investigation results.
 #### Base Command
 
 `trendmicro-apex-investigation-result-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -722,9 +777,11 @@ Retrieves a list of all investigation results.
 
 
 #### Command Example
+
 ```!trendmicro-apex-investigation-result-list scan_status=All scan_type="YARA rule file"```
 
 #### Context Example
+
 ```
 {
     "TrendMicroApex": {
@@ -769,6 +826,7 @@ Retrieves a list of all investigation results.
 #### Human Readable Output
 
 >### Investigation result list:
+>
 >|name|scanSummaryId|scanSummaryGuid|submitTime|serverGuidList|creator|
 >|---|---|---|---|---|---|
 >| this is a test | 3 | 6161bf10-f073-4762-bd10-088b0f68ad1d | 2020-09-13T12:24:05+00:00 | B220EB61-6240-44B4-9B94-4AC3F22E6A62 | Cortex XSOAR-PANW |

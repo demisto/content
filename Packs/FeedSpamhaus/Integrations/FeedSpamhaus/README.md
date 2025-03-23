@@ -1,10 +1,12 @@
 ## Overview
+
 ---
 
 Use the Spamhaus feed integration to fetch indicators from the feed.
 
 
 ## Configure SpamhausFeed on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -28,6 +30,7 @@ Use the Spamhaus feed integration to fetch indicators from the feed.
 
 
 ### spamhaus-get-indicators
+
 ***
 Gets the feed indicators.
 
@@ -35,9 +38,10 @@ Gets the feed indicators.
 #### Base Command
 
 `spamhaus-get-indicators`
+
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | limit | The maximum number of results to return. The default value is 50. Default is 50. | Optional | 
 | indicator_type | The indicator type. | Optional | 

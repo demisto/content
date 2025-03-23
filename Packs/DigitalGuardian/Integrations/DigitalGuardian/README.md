@@ -15,9 +15,12 @@ This integration was integrated and tested with version 2.11.0 of Digital Guardi
 | export_profile | export_profile | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### digitalguardian-add-watchlist-entry
+
 ***
 Add Watchlist Entry
 
@@ -25,6 +28,7 @@ Add Watchlist Entry
 ##### Base Command
 
 `digitalguardian-add-watchlist-entry`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -38,17 +42,21 @@ Add Watchlist Entry
 There is no context output for this command.
 
 ##### Command Example
+
 ```!digitalguardian-add-watchlist-entry watchlist_entry=playbook_test watchlist_name=atac_test```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
+
 added watchlist entry (playbook_test) to watchlist name (atac_test)
 
 ### digitalguardian-check-watchlist-entry
+
 ***
 Check Watchlist Entry
 
@@ -56,6 +64,7 @@ Check Watchlist Entry
 ##### Base Command
 
 `digitalguardian-check-watchlist-entry`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -72,9 +81,11 @@ Check Watchlist Entry
 
 
 ##### Command Example
+
 ```!digitalguardian-check-watchlist-entry watchlist_entry=playbook_test watchlist_name=atac_test```
 
 ##### Context Example
+
 ```
 {
     "DigitalGuardian": {
@@ -86,9 +97,11 @@ Check Watchlist Entry
 ```
 
 ##### Human Readable Output
+
 Watchlist found
 
 ### digitalguardian-remove-watchlist-entry
+
 ***
 Remove Watchlist Entry
 
@@ -96,6 +109,7 @@ Remove Watchlist Entry
 ##### Base Command
 
 `digitalguardian-remove-watchlist-entry`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -109,17 +123,21 @@ Remove Watchlist Entry
 There is no context output for this command.
 
 ##### Command Example
+
 ```!digitalguardian-remove-watchlist-entry watchlist_entry=playbook_test watchlist_name=atac_test```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
+
 removed watchlist entry (playbook_test) from watchlist name (atac_test)
 
 ### digitalguardian-add-componentlist-entry
+
 ***
 Add Componentlist Entry
 
@@ -127,6 +145,7 @@ Add Componentlist Entry
 ##### Base Command
 
 `digitalguardian-add-componentlist-entry`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -140,17 +159,21 @@ Add Componentlist Entry
 There is no context output for this command.
 
 ##### Command Example
+
 ```!digitalguardian-add-componentlist-entry componentlist_entry=email@example.com componentlist_name="Test - JLL - Email Address Blacklist"```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
+
 added componentlist entry (email@example.com) to componentlist name (Test - JLL - Email Address Blacklist)
 
 ### digitalguardian-check-componentlist-entry
+
 ***
 Check Componentlist Entry
 
@@ -158,6 +181,7 @@ Check Componentlist Entry
 ##### Base Command
 
 `digitalguardian-check-componentlist-entry`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -174,9 +198,11 @@ Check Componentlist Entry
 
 
 ##### Command Example
+
 ```!digitalguardian-check-componentlist-entry componentlist_entry=email@example.com componentlist_name="Test - JLL - Email Address Blacklist"```
 
 ##### Context Example
+
 ```
 {
     "DigitalGuardian": {
@@ -188,9 +214,11 @@ Check Componentlist Entry
 ```
 
 ##### Human Readable Output
+
 Componentlist found
 
 ### digitalguardian-remove-componentlist-entry
+
 ***
 Remove Componentlist Entry
 
@@ -198,6 +226,7 @@ Remove Componentlist Entry
 ##### Base Command
 
 `digitalguardian-remove-componentlist-entry`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -211,12 +240,15 @@ Remove Componentlist Entry
 There is no context output for this command.
 
 ##### Command Example
+
 ```!digitalguardian-remove-componentlist-entry componentlist_entry=email@example.com componentlist_name="Test - JLL - Email Address Blacklist"```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
+
 removed componentlist entry (email@example.com) from componentlist name (Test - JLL - Email Address Blacklist)

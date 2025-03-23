@@ -11,9 +11,12 @@ This integration was integrated and tested with version 2.0 of Lansweeper
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ls-site-list
+
 ***
 Retrieve a list of all sites to which an application has access.
 
@@ -21,6 +24,7 @@ Retrieve a list of all sites to which an application has access.
 #### Base Command
 
 `ls-site-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -34,9 +38,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!ls-site-list```
 
 #### Context Example
+
 ```json
 {
     "Lansweeper": {
@@ -57,6 +63,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Authorized Site(s)
+>
 >|Site ID|Site Name|
 >|---|---|
 >| 401d153d-2a59-45eb-879a-c291390448ca | api-demo-data |
@@ -64,6 +71,7 @@ There are no input arguments for this command.
 
 
 ### ls-ip-hunt
+
 ***
 Return a list of all assets associated with a given site and IP address.
 
@@ -71,6 +79,7 @@ Return a list of all assets associated with a given site and IP address.
 #### Base Command
 
 `ls-ip-hunt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -116,9 +125,11 @@ Return a list of all assets associated with a given site and IP address.
 
 
 #### Command Example
+
 ```!ls-ip-hunt ip="192.168.2.1"```
 
 #### Context Example
+
 ```json
 {
     "Lansweeper": {
@@ -165,6 +176,7 @@ Return a list of all assets associated with a given site and IP address.
 #### Human Readable Output
 
 >### Asset(s)
+>
 >|Name|Domain|User Name|User Domain|FQDN|Description|Type|IP Address|Mac Address|Model|Manufacturer|Serial Number|SKU|Site Name|First Seen|Last Seen|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| [XLAN-897](https://app.lansweeper.com/api-demo-data/asset/ODk3LUFzc2V0LTBkZjNkZGJhLTM3MDctNDRlZS05YjQzLWMxOTE5NDU2ZmRhMQ==/summary) | Demo-domain | John Doe | Demo-domain | Demo67.com | Video / Image Editing | APC | 192.168.2.1 | 03:00:00:00:00:57 | iMac18,3 | Apple | LAN897 | LN001 | api-demo-data | 2018-02-12T16:04:02.733Z | 2018-02-12T16:04:02.733Z |
@@ -172,6 +184,7 @@ Return a list of all assets associated with a given site and IP address.
 
 
 ### ls-mac-hunt
+
 ***
 Return a list of all assets associated with a given site and MAC address.
 
@@ -179,6 +192,7 @@ Return a list of all assets associated with a given site and MAC address.
 #### Base Command
 
 `ls-mac-hunt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -224,9 +238,11 @@ Return a list of all assets associated with a given site and MAC address.
 
 
 #### Command Example
+
 ```!ls-mac-hunt mac_address="03:00:00:00:00:57"```
 
 #### Context Example
+
 ```json
 {
     "Lansweeper": {
@@ -287,6 +303,7 @@ Return a list of all assets associated with a given site and MAC address.
 #### Human Readable Output
 
 >### Asset(s)
+>
 >|Name|Domain|User Name|User Domain|FQDN|Description|Type|IP Address|Mac Address|Model|Manufacturer|Serial Number|SKU|Site Name|First Seen|Last Seen|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| [XLAN-897](https://app.lansweeper.com/api-demo-data/asset/ODk3LUFzc2V0LTBkZjNkZGJhLTM3MDctNDRlZS05YjQzLWMxOTE5NDU2ZmRhMQ==/summary) | Demo-domain | John Doe | Demo-domain | Demo67.com | Video / Image Editing | APC | 10.10.11.104 | 03:00:00:00:00:57 | iMac18,3 | Apple | LAN897 | LN001 | api-demo-data | 2018-02-12T16:04:02.733Z | 2018-02-12T16:04:02.733Z |

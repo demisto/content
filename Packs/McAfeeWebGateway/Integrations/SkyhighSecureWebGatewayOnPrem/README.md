@@ -42,8 +42,11 @@ Get all available lists.
 | SWG.List.Type | Unknown | List type. | 
 
 #### Command example
+
 ```!swg-get-available-lists name=blocklist```
+
 #### Context Example
+
 ```json
 {
     "SWG": {
@@ -59,6 +62,7 @@ Get all available lists.
 #### Human Readable Output
 
 >### Lists
+>
 >|Title|ID|Type|
 >|---|---|---|
 >| blocklist | com.scur.type.regex.386 | regex |
@@ -95,8 +99,11 @@ Retrieve a specific list.
 | SWG.List.Description | Unknown | List description. | 
 
 #### Command example
+
 ```!swg-get-list list_id=com.scur.type.regex.386```
+
 #### Context Example
+
 ```json
 {
     "SWG": {
@@ -127,10 +134,13 @@ Retrieve a specific list.
 #### Human Readable Output
 
 >### List Properties
+>
 >|Title|ID|Description|Type|
 >|---|---|---|---|
 >| blocklist | com.scur.type.regex.386 | blocklist | regex |
+>
 >### blocklist
+>
 >|Position|Name|Description|
 >|---|---|---|
 >| 0 | http*://test.evil/* | this is really evil |
@@ -163,8 +173,11 @@ Retrieve a specific entry from a list.
 | SWG.List.ListEntries.Description | Unknown | Entry description. | 
 
 #### Command example
+
 ```!swg-get-list-entry list_id=com.scur.type.regex.386 entry_pos=0```
+
 #### Context Example
+
 ```json
 {
     "SWG": {
@@ -184,6 +197,7 @@ Retrieve a specific entry from a list.
 #### Human Readable Output
 
 >### List entry at position 0
+>
 >|ListID|Position|Name|Description|
 >|---|---|---|---|
 >| com.scur.type.regex.386 | 0 | http*://test.evil/* | this is really evil |
@@ -217,8 +231,11 @@ Insert a new entry to a list.
 | SWG.List.ListEntries.Description | Unknown | Entry description. | 
 
 #### Command example
+
 ```!swg-insert-entry list_id=com.scur.type.regex.386 entry_pos=0 name="http*://evil.corp/*" description="ticket #1: This is an evil domain"```
+
 #### Context Example
+
 ```json
 {
     "SWG": {
@@ -238,6 +255,7 @@ Insert a new entry to a list.
 #### Human Readable Output
 
 >### Added List entry at position 0
+>
 >|ListID|Position|Name|Description|
 >|---|---|---|---|
 >| com.scur.type.regex.386 | 0 | http*://evil.corp/* | ticket #1: This is an evil domain |
@@ -262,11 +280,15 @@ Insert a new entry to a list.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!swg-delete-entry list_id=com.scur.type.regex.386 entry_pos=0```
+
 #### Human Readable Output
 
 >### Deleted List entry at position 0
+>
 >|ListID|Position|Name|Description|
 >|---|---|---|---|
 >| com.scur.type.regex.386 | 0 | http*://evil.corp* | ticket #1: This is an evil domain |
@@ -302,8 +324,11 @@ Overwrites the complete XML configuration of a list.
 | SWG.List.Description | Unknown | List description. | 
 
 #### Command example
+
 ```!swg-modify-list list_id=com.scur.type.regex.386 config=`<list version="1.0.3.46" mwg-version="11.2.9-44482" name="blocklist" id="com.scur.type.regex.386" typeId="com.scur.type.regex" classifier="Other" systemList="false" structuralList="false" defaultRights="2"><description>blocklist</description><content><listEntry><entry>http*://evil.corp/*</entry><description>ticket #1: This is an evil domain</description></listEntry></content></list>` ```
+
 #### Context Example
+
 ```json
 {
     "SWG": {
@@ -328,6 +353,7 @@ Overwrites the complete XML configuration of a list.
 #### Human Readable Output
 
 >### Modified blocklist
+>
 >|Title|ID|Description|Type|
 >|---|---|---|---|
 >| blocklist | com.scur.type.regex.386 | blocklist | regex |
@@ -359,8 +385,11 @@ Create a new list.
 | SWG.List.Description | Unknown | List description. |  
 
 #### Command example
+
 ```!swg-create-list name="blocklist" type=regex```
+
 #### Context Example
+
 ```json
 {
     "SWG": {
@@ -377,6 +406,7 @@ Create a new list.
 #### Human Readable Output
 
 >### Created List Properties
+>
 >|Title|ID|Description|Type|
 >|---|---|---|---|
 >| blocklist | com.scur.type.regex.460 |  | regex |
@@ -400,11 +430,15 @@ Delete a list.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!swg-delete-list list_id=com.scur.type.regex.460```
+
 #### Human Readable Output
 
 >### Deleted List Properties
+>
 >|Title|ID|Description|Type|
 >|---|---|---|---|
 >| blocklist | com.scur.type.regex.460 |  | regex |

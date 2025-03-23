@@ -20,9 +20,12 @@ Use the Proofpoint Threat Response integration to orchestrate and automate incid
 | POST URL of the JSON alert source. | You can find this value by navigating to Sources -> JSON event source -> POST URL. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### proofpoint-tr-get-list
+
 ***
 Gets items for the specified list.
 
@@ -30,6 +33,7 @@ Gets items for the specified list.
 #### Base Command
 
 `proofpoint-tr-get-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -42,6 +46,7 @@ Gets items for the specified list.
 There is no context output for this command.
 
 ### proofpoint-tr-add-to-list
+
 ***
 Adds a member to the specified list.
 
@@ -49,6 +54,7 @@ Adds a member to the specified list.
 #### Base Command
 
 `proofpoint-tr-add-to-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -64,6 +70,7 @@ Adds a member to the specified list.
 There is no context output for this command.
 
 ### proofpoint-tr-block-ip
+
 ***
 Adds the supplied IP addresses to the specified IP block list.
 
@@ -71,6 +78,7 @@ Adds the supplied IP addresses to the specified IP block list.
 #### Base Command
 
 `proofpoint-tr-block-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -85,12 +93,14 @@ Adds the supplied IP addresses to the specified IP block list.
 There is no context output for this command.
 
 ### proofpoint-tr-block-domain
+
 ***
 Adds the supplied domains to the specified block list.
 
 #### Base Command
 
 `proofpoint-tr-block-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -105,12 +115,14 @@ Adds the supplied domains to the specified block list.
 There is no context output for this command.
 
 ### proofpoint-tr-search-indicator
+
 ***
 Returns indicators from the specified list, according to the defined filter.
 
 #### Base Command
 
 `proofpoint-tr-search-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -124,12 +136,14 @@ Returns indicators from the specified list, according to the defined filter.
 There is no context output for this command.
 
 ### proofpoint-tr-delete-indicator
+
 ***
 Deletes an indicator from the specified list.
 
 #### Base Command
 
 `proofpoint-tr-delete-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -143,12 +157,14 @@ Deletes an indicator from the specified list.
 There is no context output for this command.
 
 ### proofpoint-tr-block-url
+
 ***
 Adds the supplied URLs to the specified URL block list.
 
 #### Base Command
 
 `proofpoint-tr-block-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -163,12 +179,14 @@ Adds the supplied URLs to the specified URL block list.
 There is no context output for this command.
 
 ### proofpoint-tr-block-hash
+
 ***
 Adds the supplied file hashes to the specified file hash block list.
 
 #### Base Command
 
 `proofpoint-tr-block-hash`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -183,12 +201,14 @@ Adds the supplied file hashes to the specified file hash block list.
 There is no context output for this command.
 
 ### proofpoint-tr-list-incidents
+
 ***
 Retrieves all incident metadata from Threat Response by specifying filter criteria such as the state of the incident or time of closure.
 
 #### Base Command
 
 `proofpoint-tr-list-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -261,6 +281,7 @@ Retrieves all incident metadata from Threat Response by specifying filter criter
 
 
 ### proofpoint-tr-get-incident
+
 ***
 Retrieves incident metadata from Threat Response.
 
@@ -268,6 +289,7 @@ Retrieves incident metadata from Threat Response.
 #### Base Command
 
 `proofpoint-tr-get-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -335,12 +357,14 @@ Retrieves incident metadata from Threat Response.
 
 
 ### proofpoint-tr-update-incident-comment
+
 ***
 Adds comments to an existing Threat Response incident, by incident ID.
 
 #### Base Command
 
 `proofpoint-tr-update-incident-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -368,12 +392,14 @@ Adds comments to an existing Threat Response incident, by incident ID.
 
 
 ### proofpoint-tr-add-user-to-incident
+
 ***
 Assigns a user to an incident as a target or attacker.
 
 #### Base Command
 
 `proofpoint-tr-add-user-to-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -388,12 +414,14 @@ Assigns a user to an incident as a target or attacker.
 There is no context output for this command.
 
 ### proofpoint-tr-ingest-alert
+
 ***
 Ingest an alert into Threat Response.
 
 #### Base Command
 
 `proofpoint-tr-ingest-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -419,12 +447,14 @@ Ingest an alert into Threat Response.
 There is no context output for this command.
 
 ### proofpoint-tr-close-incident
+
 ***
 Close an incident
 
 #### Base Command
 
 `proofpoint-tr-close-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -439,12 +469,14 @@ Close an incident
 There is no context output for this command.
 
 ### proofpoint-tr-verify-quarantine
+
 ***
 Verify if an email has been quarantined.
 
 #### Base Command
 
 `proofpoint-tr-verify-quarantine`
+
 #### Input
 
 | **Argument Name** | **Description**                           | **Required** |
@@ -462,10 +494,13 @@ Verify if an email has been quarantined.
 | **Path**                     | **Type** | **Description**          |
 |------------------------------|----------|--------------------------|
 | ProofPointTRAP.Quarantine | String | The result of the quarantine. | 
+
 #### Command Example
+
 ``` !proofpoint-tr-verify-quarantine messageid=<message_id_example> time="2022-06-02T17:22:45Z" recipient=example@example.com```
 
 #### Context Example
+
 ```json
 {
     "ProofPointTRAP": {

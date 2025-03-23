@@ -1,4 +1,5 @@
 Uses screenshot machine to get a screenshot
+
 ## Configure Screenshot Machine in Cortex
 
 
@@ -7,9 +8,12 @@ Uses screenshot machine to get a screenshot
 | Api Key | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### screenshot
+
 ***
 Retrieve screenshot
 
@@ -17,6 +21,7 @@ Retrieve screenshot
 #### Base Command
 
 `screenshot-machine-get-screenshot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -34,6 +39,7 @@ Retrieve screenshot
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

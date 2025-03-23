@@ -2,6 +2,7 @@ This integration fetches indicators from ThreatConnect.
 This integration was integrated and tested with version 3 of ThreatConnect Feed.
 
 ## ThreatConnect Feed HMAC credentials
+
 1. On the top navigation bar, hover the cursor over the Settings icon and select Org Settings from the dropdown menu.
 2. Click the Create API User button on the Membership tab of the Organization Settings screen, and the API User Administration window will be displayed.
 3. Fill up the following parts of the form:
@@ -47,10 +48,14 @@ For more information - click [here](https://training.threatconnect.com/learn/art
     | Threat Assess Score Threshold | Minimal threat assess score value to fetch indicators by \(an integer between 0 to 1000\).  Note: this parameter is not relevant for groups. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### tc-get-indicators
+
 ***
 Gets indicators from ThreatConnect.
 
@@ -58,6 +63,7 @@ Gets indicators from ThreatConnect.
 #### Base Command
 
 `tc-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -75,24 +81,32 @@ Gets indicators from ThreatConnect.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!tc-get-indicators limit=1 offset=0 indicator_type=URL active_indicators=true```
+
 #### Human Readable Output
 
 >### ThreatConnect Feed - Indicators
+>
 >|fields|rawJSON|relationships|score|type|value|
 >|---|---|---|---|---|---|
 >| firstseenbysource: 2022-09-27T17:20:19Z<br/>updateddate: 2022-09-27T17:20:19Z<br/>description: This indicator appears in a post from VirIT.<br/>name: name<br/>address: address<br/>reportedby: Technical Blogs and Reports | id: 98590287<br/>ownerName: Technical Blogs and Reports<br/>dateAdded: 2022-09-27T17:20:19Z<br/>webLink: link<br/>type: URL<br/>lastModified: 2022-09-27T17:20:19Z<br/>rating: 3.0<br/>confidence: 70<br/>source: source<br/>description: This indicator appears in a post from VirIT.<br/>summary: address/<br/>privateFlag: false<br/>active: true<br/>activeLocked: false<br/>text: address |  | 0 | URL | address |
 
 #### Command Example
+
 ```!tc-get-indicators limit=2 offset=0```
+
 #### Human Readable Output
+>
 >|rawJSON|score|type|value|
 >|---|---|---|---|
 >| id: Indicator01 | 2 | IP | 8.8.8.8 |
 >| id: Indicator02 | 3 | IP | 8.8.4.4 |
 
 ### tc-get-owners
+
 ***
 Gets available indicators owners.
 
@@ -100,6 +114,7 @@ Gets available indicators owners.
 #### Base Command
 
 `tc-get-owners`
+
 #### Input
 
 There are no input arguments for this command.
@@ -109,7 +124,9 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Human Readable Output
+>
 >### ThreatConnect Feed - Owners
+>
 >|id|name|type|
 >|---|---|---|
 >| 10303 | NAME-01 | Organization |

@@ -20,9 +20,12 @@ This integration was integrated and tested with version 1.0 of VaronisDataSecuri
 | Varonis alert status |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### varonis-get-alerts
+
 ***
 Get alerts from Varonis DA
 
@@ -30,6 +33,7 @@ Get alerts from Varonis DA
 #### Base Command
 
 `varonis-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -82,8 +86,11 @@ Get alerts from Varonis DA
 | Varonis.Pagination.PageSize | Number | Number of records on the page | 
 
 #### Command example
+
 ```!varonis-get-alerts page=1 alert_status=Open max_results=1 start_time=2022-02-16T13:00:00+02:00```
+
 #### Context Example
+
 ```json
 {
     "Varonis": {
@@ -132,12 +139,14 @@ Get alerts from Varonis DA
 #### Human Readable Output
 
 >### Varonis Alerts
+>
 >|Name|Severity|Time|Category|UserName|Status|
 >|---|---|---|---|---|---|
 >| dns aaaaaalert | Medium | 2022-02-15T16:02:00 | Privilege Escalation |  | Open |
 
 
 ### varonis-update-alert-status
+
 ***
 Update alert status
 
@@ -145,6 +154,7 @@ Update alert status
 #### Base Command
 
 `varonis-update-alert-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -156,13 +166,17 @@ Update alert status
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!varonis-update-alert-status alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C status="Under Investigation"```
+
 #### Human Readable Output
 
 >True
 
 ### varonis-close-alert
+
 ***
 Close the alert
 
@@ -170,6 +184,7 @@ Close the alert
 #### Base Command
 
 `varonis-close-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -181,13 +196,17 @@ Close the alert
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!varonis-close-alert alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C,0D9D657A-A51F-4674-B49A-FFB1EDD35D51 close_reason=Resolved```
+
 #### Human Readable Output
 
 >True
 
 ### varonis-get-alerted-events
+
 ***
 Get events applied to specific alerts
 
@@ -195,6 +214,7 @@ Get events applied to specific alerts
 #### Base Command
 
 `varonis-get-alerted-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -245,8 +265,11 @@ Get events applied to specific alerts
 | Varonis.Pagination.PageSize | Number | Number of records on the page | 
 
 #### Command example
+
 ```!varonis-get-alerted-events page=1 alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C max_results=1```
+
 #### Context Example
+
 ```json
 {
     "Varonis": {
@@ -303,6 +326,7 @@ Get events applied to specific alerts
 #### Human Readable Output
 
 >### Varonis Alerted Events
+>
 >|ByUser|Country|Description|Details|ID|IPReputation|IPThreatType|IsMaliciousIP|OnObject|SourceIP|State|Status|Type|UTCTime|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Name: <br/>UserType: <br/>UserAccountType: <br/>SAMAccountName: <br/>Domain: <br/>DisabledAccount: <br/>StaleAccount: <br/>LockoutAccounts:  |  | The DNS Server has resolved successfully  | IsBlacklist: <br/>Operation: Request | 22D3EFC0-E758-4BA0-92C4-EB9566C830AD |  |  |  | Name: dns.msftncsi.com<br/>ObjectType: Dns<br/>Platform: DNS<br/>IsSensitive: <br/>FileServerOrDomain: DNS<br/>IsDisabledAccount: <br/>IsLockOutAccount: <br/>SAMAccountName: <br/>UserAccountType: <br/>DestinationIP: <br/>DestinationDevice:  | 10.10.10.10 |  | Success | Client DNS request | 2022-03-17T17:52:14Z |

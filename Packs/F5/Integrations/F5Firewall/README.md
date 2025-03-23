@@ -13,15 +13,19 @@ Use the F5 Firewall integration to manage your F5 firewall rules.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### Create a firewall policy
+
 ***
 Creates an F5 firewall policy.
 
 ##### Base Command
 
 `f5-create-policy`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -33,18 +37,21 @@ Creates an F5 firewall policy.
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### f5-create-rule
+
 ***
 Creates a rule in a specific policy
 
 ##### Base Command
 
 `f5-create-rule`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -57,18 +64,21 @@ Creates a rule in a specific policy
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### List all rules for a policy
+
 ***
 Lists all the rules of a specific policy
 
 ##### Base Command
 
 `f5-list-rules`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -81,16 +91,19 @@ Lists all the rules of a specific policy
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 
 ### Modify the rule for a policy
+
 ***
 Modifies an F5 rule in a specific policy.
 
 ##### Base Command
 
 `f5-modify-rule`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -104,18 +117,21 @@ Modifies an F5 rule in a specific policy.
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### Delete a rule
+
 ***
 Delete an F5 rule.
 
 ##### Base Command
 
 `f5-del-rule`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -129,16 +145,19 @@ Delete an F5 rule.
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 
 ### Add a policy to a global policy
+
 ***
 Adds the specified policy to a global policy.
 
 ##### Base Command
 
 `f5-modify-global-policy`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -151,18 +170,21 @@ Adds the specified policy to a global policy.
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### Get a global policy
+
 ***
 Display global policy.
 
 ##### Base Command
 
 `f5-show-global-policy`
+
 ##### Input
 
 There are no input arguments for this command.
@@ -172,17 +194,20 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 
 
 ### Delete a policy
+
 ***
 Deletes a policy.
 
 ##### Base Command
 
 `f5-del-policy`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -195,18 +220,21 @@ Deletes a policy.
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### Get a list of all user sessions
+
 ***
 Lists all the sessions with client IP for the given username.
 
 ##### Base Command
 
 `f5-list-all-user-sessions`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -219,4 +247,5 @@ Lists all the sessions with client IP for the given username.
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```

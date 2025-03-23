@@ -558,6 +558,7 @@ Fetch your User by id
 | OctoxLabs.User.results.is_active | Boolean | User is active | 
 | OctoxLabs.User.results.is_ldap | Boolean | User is ldap | 
 | OctoxLabs.User.results.groups | Unknown | List&lt;Dict&gt; User groups | 
+
 ### octoxlabs-search-scroll-users
 
 ***

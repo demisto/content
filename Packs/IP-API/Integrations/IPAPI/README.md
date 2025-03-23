@@ -16,9 +16,12 @@ This integration was integrated and tested with IP-API
 | Trust any certificate (not secure) |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Return IP information
 
@@ -26,6 +29,7 @@ Return IP information
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -71,6 +75,7 @@ Return IP information
 | DBotScore.Reliability | Reliability of the source providing the intelligence data. | String |
 
 #### Command Example
+
 ```!ip ip=8.8.8.8```
 
 #### Human Readable Output

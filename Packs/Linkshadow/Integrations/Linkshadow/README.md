@@ -19,13 +19,16 @@ API Token, API Username from Linkshadow  ( Generate tokens from following url : 
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### Linkshadow-fetch-entity-anomalies
+
 ***
 Linkshadow returns the full incident details referenced by timeframe (default = 60min) in an API response. Use of this command will return the JSON structure of the API response. 
 
 #### Base Command
 
 `Linkshadow-fetch-entity-anomalies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

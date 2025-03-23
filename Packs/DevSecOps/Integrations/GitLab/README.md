@@ -1,5 +1,6 @@
 An integration with GitLab.
 This integration was integrated and tested with version v4.0 of GitLab API.
+
 ## Configure GitLab Integration in Cortex
 
 
@@ -11,9 +12,12 @@ This integration was integrated and tested with version v4.0 of GitLab API.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### gitlab-get-projects
+
 ***
 Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with simple fields are returned.
 
@@ -21,6 +25,7 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
 #### Base Command
 
 `gitlab-get-projects`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -61,9 +66,11 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
 
 
 #### Command Example
+
 ```!gitlab-get-projects owned=true using="Moon-Integration"```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -335,6 +342,7 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
 #### Human Readable Output
 
 >### Results
+>
 >|_links|allow_merge_on_skipped_pipeline|approvals_before_merge|archived|auto_cancel_pending_pipelines|auto_devops_deploy_strategy|auto_devops_enabled|autoclose_referenced_issues|avatar_url|build_coverage_regex|build_timeout|builds_access_level|can_create_merge_request_in|ci_config_path|ci_default_git_depth|ci_forward_deployment_enabled|compliance_frameworks|container_expiration_policy|container_registry_enabled|created_at|creator_id|default_branch|description|emails_disabled|empty_repo|external_authorization_classification_label|forking_access_level|forks_count|http_url_to_repo|id|import_status|issues_access_level|issues_enabled|jobs_enabled|last_activity_at|lfs_enabled|marked_for_deletion_at|marked_for_deletion_on|merge_method|merge_requests_access_level|merge_requests_enabled|mirror|name|name_with_namespace|namespace|only_allow_merge_if_all_discussions_are_resolved|only_allow_merge_if_pipeline_succeeds|open_issues_count|owner|packages_enabled|pages_access_level|path|path_with_namespace|permissions|printing_merge_request_link_enabled|public_jobs|readme_url|remove_source_branch_after_merge|repository_access_level|request_access_enabled|resolve_outdated_diff_discussions|service_desk_address|service_desk_enabled|shared_runners_enabled|shared_with_groups|snippets_access_level|snippets_enabled|ssh_url_to_repo|star_count|suggestion_commit_message|tag_list|visibility|web_url|wiki_access_level|wiki_enabled|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| self: https://gitlab.com/api/v4/projects/21898188<br/>issues: https://gitlab.com/api/v4/projects/21898188/issues<br/>merge_requests: https://gitlab.com/api/v4/projects/21898188/merge_requests<br/>repo_branches: https://gitlab.com/api/v4/projects/21898188/repository/branches<br/>labels: https://gitlab.com/api/v4/projects/21898188/labels<br/>events: https://gitlab.com/api/v4/projects/21898188/events<br/>members: https://gitlab.com/api/v4/projects/21898188/members |  | 0 | false | enabled | continuous | false | true |  |  | 3600 | enabled | true |  | 50 | true |  | cadence: 1d<br/>enabled: true<br/>keep_n: 10<br/>older_than: 90d<br/>name_regex: null<br/>name_regex_keep: null<br/>next_run_at: 2020-10-21T10:49:15.236Z | true | 2020-10-20T10:49:15.219Z | 5773551 | master |  |  | false |  | enabled | 0 | https://gitlab.com/test-user/moon.git | 21898188 | finished | enabled | true | true | 2020-10-25T11:50:47.126Z | true |  |  | merge | enabled | true | false | moon | test user / moon | id: 7637905<br/>name: test user<br/>path: test-user<br/>kind: user<br/>full_path: test-user<br/>parent_id: null<br/>avatar_url: /uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/test-user | false | false | 16 | id: 5773551<br/>name: test user<br/>username: test-user<br/>state: active<br/>avatar_url: https://assets.gitlab-static.net/uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/test-user | true | enabled | moon | test-user/moon | project_access: {"access_level": 40, "notification_level": 3}<br/>group_access: null | true | true | https://gitlab.com/test-user/moon/-/blob/master/README.md | true | enabled | true | false | incoming+test-user-moon-21898188-issue-@incoming.gitlab.com | true | true |  | enabled | true | git@gitlab.com:test-user/moon.git | 0 |  |  | public | https://gitlab.com/test-user/moon | enabled | true |
@@ -342,6 +350,7 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
 
 
 ### gitlab-projects-get-access-requests
+
 ***
 Gets a list of access requests viewable by the authenticated user.
 
@@ -349,6 +358,7 @@ Gets a list of access requests viewable by the authenticated user.
 #### Base Command
 
 `gitlab-projects-get-access-requests`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -367,9 +377,11 @@ Gets a list of access requests viewable by the authenticated user.
 
 
 #### Command Example
+
 ```!gitlab-projects-get-access-requests id=21898188 using="Moon-Integration"```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -389,12 +401,14 @@ Gets a list of access requests viewable by the authenticated user.
 #### Human Readable Output
 
 >### Results
+>
 >|avatar_url|id|name|requested_at|state|username|web_url|
 >|---|---|---|---|---|---|---|
 >| https://secure.gravatar.com/avatar/bcecfc2b23ff4a3962520685ccf046cc?s=80&d=identicon | 7475865 | test user | 2020-10-25T12:50:05.865Z | active | testuser | https://gitlab.com/testuser |
 
 
 ### gitlab-projects-request-access
+
 ***
 Requests the authenticated user access to a group or project.
 
@@ -402,6 +416,7 @@ Requests the authenticated user access to a group or project.
 #### Base Command
 
 `gitlab-projects-request-access`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -420,9 +435,11 @@ Requests the authenticated user access to a group or project.
 
 
 #### Command Example
+
 ```!gitlab-projects-request-access id=21898188 using=Asteroid```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -442,12 +459,14 @@ Requests the authenticated user access to a group or project.
 #### Human Readable Output
 
 >### Results
+>
 >|avatar_url|id|name|requested_at|state|username|web_url|
 >|---|---|---|---|---|---|---|
 >| https://secure.gravatar.com/avatar/bcecfc2b23ff4a3962520685ccf046cc?s=80&d=identicon | 7475865 | test user | 2020-10-25T12:50:05.865Z | active | testuser | https://gitlab.com/testuser |
 
 
 ### gitlab-projects-approve-access
+
 ***
 Approves an access request for the given user.
 
@@ -455,6 +474,7 @@ Approves an access request for the given user.
 #### Base Command
 
 `gitlab-projects-approve-access`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -475,6 +495,7 @@ Approves an access request for the given user.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -482,6 +503,7 @@ Approves an access request for the given user.
 
 
 ### gitlab-projects-deny-access
+
 ***
 Denies an access request for the given user.
 
@@ -489,6 +511,7 @@ Denies an access request for the given user.
 #### Base Command
 
 `gitlab-projects-deny-access`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -506,9 +529,11 @@ Denies an access request for the given user.
 
 
 #### Command Example
+
 ```!gitlab-projects-deny-access id=21898188 user_id=7475865 using="Moon-Integration"```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -523,12 +548,14 @@ Denies an access request for the given user.
 #### Human Readable Output
 
 >### Results
+>
 >|id|state|
 >|---|---|
 >| 7475865 | denied |
 
 
 ### gitlab-projects-get-repository-branches
+
 ***
 Gets a list of repository branches from a project, sorted by name alphabetically.
 
@@ -536,6 +563,7 @@ Gets a list of repository branches from a project, sorted by name alphabetically
 #### Base Command
 
 `gitlab-projects-get-repository-branches`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -554,9 +582,11 @@ Gets a list of repository branches from a project, sorted by name alphabetically
 
 
 #### Command Example
+
 ```!gitlab-projects-get-repository-branches id=21898188 using="Moon-Integration"```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -694,6 +724,7 @@ Gets a list of repository branches from a project, sorted by name alphabetically
 #### Human Readable Output
 
 >### Results
+>
 >|can_push|commit|default|developers_can_merge|developers_can_push|merged|name|protected|web_url|
 >|---|---|---|---|---|---|---|---|---|
 >| true | id: 3ccb453019594b9a56ae8090663af76dcac4cc0c<br/>short_id: 3ccb4530<br/>created_at: 2020-09-09T05:39:00.000+00:00<br/>parent_ids: null<br/>title: Create atom.py<br/>message: Create atom.py<br/>author_name: test user<br/>author_email: 57979775+test-user@users.noreply.github.com<br/>authored_date: 2020-09-09T05:39:00.000+00:00<br/>committer_name: GitHub<br/>committer_email: noreply@github.com<br/>committed_date: 2020-09-09T05:39:00.000+00:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/3ccb453019594b9a56ae8090663af76dcac4cc0c | false | false | false | false | codeql | false | https://gitlab.com/test-user/moon/-/tree/codeql |
@@ -704,6 +735,7 @@ Gets a list of repository branches from a project, sorted by name alphabetically
 
 
 ### gitlab-projects-create-repository-branch
+
 ***
 Create a new branch in the repository.
 
@@ -711,6 +743,7 @@ Create a new branch in the repository.
 #### Base Command
 
 `gitlab-projects-create-repository-branch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -730,9 +763,11 @@ Create a new branch in the repository.
 
 
 #### Command Example
+
 ```!gitlab-projects-create-repository-branch branch=feature1 id=21898188 ref=master using="Moon-Integration"```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -770,12 +805,14 @@ Create a new branch in the repository.
 #### Human Readable Output
 
 >### Results
+>
 >|can_push|commit|default|developers_can_merge|developers_can_push|merged|name|protected|web_url|
 >|---|---|---|---|---|---|---|---|---|
 >| true | id: 39eb3dc0c7e86d0b943df1be922b173068010bf5<br/>short_id: 39eb3dc0<br/>created_at: 2020-09-09T18:53:17.000+04:00<br/>parent_ids: b736f064314a254c5c847f042938290167598454<br/>title: Update ReadME<br/>message: Update ReadME<br/><br/>author_name: test user<br/>author_email: amahmoud@paloaltonetworks.com<br/>authored_date: 2020-09-09T18:53:17.000+04:00<br/>committer_name: test user<br/>committer_email: amahmoud@paloaltonetworks.com<br/>committed_date: 2020-09-09T18:53:17.000+04:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5 | false | false | false | false | feature1 | false | https://gitlab.com/test-user/moon/-/tree/feature1 |
 
 
 ### gitlab-projects-delete-repository-branch
+
 ***
 Delete a branch from the repository.
 
@@ -783,6 +820,7 @@ Delete a branch from the repository.
 #### Base Command
 
 `gitlab-projects-delete-repository-branch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -796,9 +834,11 @@ Delete a branch from the repository.
 There is no context output for this command.
 
 #### Command Example
+
 ```!gitlab-projects-delete-repository-branch branch=feature1 id=21898188 using="Moon-Integration"```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -812,12 +852,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|message|
 >|---|
 >| Branch 'feature1' is deleted. |
 
 
 ### gitlab-projects-delete-repository-merged-branches
+
 ***
 Deletes all branches that are merged into the project’s default branch.
 
@@ -825,6 +867,7 @@ Deletes all branches that are merged into the project’s default branch.
 #### Base Command
 
 `gitlab-projects-delete-repository-merged-branches`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -837,9 +880,11 @@ Deletes all branches that are merged into the project’s default branch.
 There is no context output for this command.
 
 #### Command Example
+
 ```!gitlab-projects-delete-repository-merged-branches id=21898188 using="Moon-Integration"```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -851,12 +896,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|message|
 >|---|
 >| 202 Accepted |
 
 
 ### gitlab-get-version
+
 ***
 Retrieves version information for the GitLab instance, and responds 200 OK for authenticated users.
 
@@ -864,6 +911,7 @@ Retrieves version information for the GitLab instance, and responds 200 OK for a
 #### Base Command
 
 `gitlab-get-version`
+
 #### Input
 
 There are no input arguments for this command.
@@ -877,9 +925,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!gitlab-get-version using="Moon-Integration"```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -892,6 +942,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|revision|version|
 >|---|---|
 >| 18e3d7de8d5 | 13.6.0-pre |
@@ -899,6 +950,7 @@ There are no input arguments for this command.
 
 
 ### gitlab-pipelines-schedules-list
+
 ***
 Gets the details of the pipeline schedules.
 
@@ -906,6 +958,7 @@ Gets the details of the pipeline schedules.
 #### Base Command
 
 `gitlab-pipelines-schedules-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -931,9 +984,11 @@ Gets the details of the pipeline schedules.
 
 
 #### Command Example
+
 ```!gitlab-pipelines-schedules-list project_id=123```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -964,6 +1019,7 @@ Gets the details of the pipeline schedules.
 #### Human Readable Output
 
 >### GitLab Pipeline Schedules
+>
 >|active|created_at|description|id|next_run_at|ref|updated_at|
 >|---|---|---|---|---|---|---|
 >| true | 2021-05-23T14:00:34.105Z | Run the nightly build | 336 | 2021-06-16T00:05:00.000Z | master | 2021-06-15T00:05:06.617Z |
@@ -974,6 +1030,7 @@ Gets the details of the pipeline schedules.
 
 
 ### gitlab-pipelines-list
+
 ***
 Gets the details of the pipelines.
 
@@ -981,6 +1038,7 @@ Gets the details of the pipelines.
 #### Base Command
 
 `gitlab-pipelines-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1016,9 +1074,11 @@ Gets the details of the pipelines.
 
 
 #### Command Example
+
 ```!gitlab-pipelines-list project_id=123 pipeline_id=1254426```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -1042,12 +1102,14 @@ Gets the details of the pipelines.
 #### Human Readable Output
 
 >### GitLab Pipelines
+>
 >|created_at|duration|finished_at|id|project_id|ref|sha|started_at|status|updated_at|web_url|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 2021-06-15T00:05:09.041Z | 5945 | 2021-06-15T01:44:17.788Z | 1254426 | 123 | master | asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5 | 2021-06-15T00:05:11.131Z | failed | 2021-06-15T01:44:17.793Z | https://server_url/-/pipelines/1254426 |
 
 
 ### gitlab-jobs-list
+
 ***
 Gets details of jobs.
 
@@ -1055,6 +1117,7 @@ Gets details of jobs.
 #### Base Command
 
 `gitlab-jobs-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1085,9 +1148,11 @@ Gets details of jobs.
 
 
 #### Command Example
+
 ```!gitlab-jobs-list project_id=123 pipeline_id=1254426```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -1142,6 +1207,7 @@ Gets details of jobs.
 #### Human Readable Output
 
 >### GitLab Jobs
+>
 >|created_at|duration|finished_at|id|name|pipeline|ref|stage|started_at|web_url|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2021-06-15T00:05:09.139Z | 4104.433651 | 2021-06-15T01:44:16.559Z | 6054873 | server_master | id: 1254426<br/>project_id: 123<br/>sha: asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5<br/>ref: master<br/>status: failed<br/>created_at: 2021-06-15T00:05:09.041Z<br/>updated_at: 2021-06-15T01:44:17.793Z<br/>web_url: https://server_url/-/pipelines/1254426 | master | run-instances | 2021-06-15T00:35:52.125Z | https://server_url/-/jobs/6054873 |
@@ -1149,6 +1215,7 @@ Gets details of jobs.
 
 
 ### gitlab-artifact-get
+
 ***
 Gets an artifact from a given artifact path, corresponding to a given job ID.
 
@@ -1156,6 +1223,7 @@ Gets an artifact from a given artifact path, corresponding to a given job ID.
 #### Base Command
 
 `gitlab-artifact-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1175,9 +1243,11 @@ Gets an artifact from a given artifact path, corresponding to a given job ID.
 
 
 #### Command Example
+
 ```!gitlab-artifact-get project_id=123 job_id=6063195 artifact_path_suffix=artifacts/failed_tests.txt```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -1193,11 +1263,13 @@ Gets an artifact from a given artifact path, corresponding to a given job ID.
 #### Human Readable Output
 
 >### Results
+>
 >|artifact_data|artifact_path_suffix|job_id|
 >|---|---|---|
 >| Carbon Black Response Test | artifacts/failed_tests.txt | 6063195 |
 
 ### gitlab-issue-edit
+
 ***
 Edit an issue
 
@@ -1205,6 +1277,7 @@ Edit an issue
 #### Base Command
 
 `gitlab-issue-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1237,9 +1310,11 @@ Edit an issue
 
 
 #### Command Example
+
 ```!gitlab-issue-edit project_id=123 issue_id=1 add_labels=label1,label2```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -1332,11 +1407,13 @@ Edit an issue
 #### Human Readable Output
 
 ### Edit Issue 1
+
 |_links|assignee|assignees|author|blocking_issues_count|closed_at|closed_by|confidential|created_at|description|discussion_locked|downvotes|due_date|epic|epic_iid|has_tasks|health_status|id|iid|labels|merge_requests_count|milestone|moved_to_id|project_id|references|service_desk_reply_to|state|subscribed|task_completion_status|task_status|time_stats|title|updated_at|upvotes|user_notes_count|web_url|weight|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | award_emoji: www.google.com<br>notes: www.google.com<br>project: www.google.com<br>self: www.google.com | avatar_url: www.google.com<br>id: 9831<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | {'avatar_url': 'www.google.com', 'id': 9831, 'name': 'wow', 'state': 'active', 'username': 'wow', 'web_url': 'www.google.com'} | avatar_url: www.google.com<br>id: 7127<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | 0 |  |  | false | 2021-07-15T16:25:57.419Z | Issue Description |  | 0 |  |  |  | true |  | 40572 | 1 | label1,<br>label2 | 0 |  |  | 7959 | full: wow<br>relative: #1<br>short: #1 |  | opened | true | completed_count: 9<br>count: 46 | 9 of 46 tasks completed | human_time_estimate: null<br>human_total_time_spent: null<br>time_estimate: 0<br>total_time_spent: 0 | wow | 2021-08-19T13:54:12.337Z | 0 | 3 | www.google.com |  |
 
 ### gitlab-issue-create
+
 ***
 Create an issue
 
@@ -1344,6 +1421,7 @@ Create an issue
 #### Base Command
 
 `gitlab-issue-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1375,9 +1453,11 @@ Create an issue
 
 
 #### Command Example
+
 `gitlab-issue-create labels="a,b,c" title=wow description="bla bla" project_id=123`
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -1470,12 +1550,14 @@ Create an issue
 #### Human Readable Output
 
 ### Create Issue
+
 |_links|assignee|assignees|author|blocking_issues_count|closed_at|closed_by|confidential|created_at|description|discussion_locked|downvotes|due_date|epic|epic_iid|has_tasks|health_status|id|iid|labels|merge_requests_count|milestone|moved_to_id|project_id|references|service_desk_reply_to|state|subscribed|task_completion_status|task_status|time_stats|title|updated_at|upvotes|user_notes_count|web_url|weight|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | award_emoji: www.google.com<br>notes: www.google.com<br>project: www.google.com<br>self: www.google.com | avatar_url: www.google.com<br>id: 9831<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | {'avatar_url': 'www.google.com', 'id': 9831, 'name': 'wow', 'state': 'active', 'username': 'wow', 'web_url': 'www.google.com'} | avatar_url: www.google.com<br>id: 7127<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | 0 |  |  | false | 2021-07-15T16:25:57.419Z | Issue Description |  | 0 |  |  |  | true |  | 40572 | 1 | label1,<br>label2 | 0 |  |  | 7959 | full: wow<br>relative: #1<br>short: #1 |  | opened | true | completed_count: 9<br>count: 46 | 9 of 46 tasks completed | human_time_estimate: null<br>human_total_time_spent: null<br>time_estimate: 0<br>total_time_spent: 0 | wow | 2021-08-19T13:54:12.337Z | 0 | 3 | www.google.com |  |
 
 
 ### gitlab-issues-list
+
 ***
 List all issues
 
@@ -1483,6 +1565,7 @@ List all issues
 #### Base Command
 
 `gitlab-issues-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1516,9 +1599,11 @@ List all issues
 
 
 #### Command Example
+
 ```!gitlab-issues-list project_id=123 state=opened search="Summary"```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -1607,11 +1692,13 @@ List all issues
 #### Human Readable Output
 
 ### Issues Lists
+
 |_links|assignee|assignees|author|blocking_issues_count|closed_at|closed_by|confidential|created_at|description|discussion_locked|downvotes|due_date|epic|epic_iid|has_tasks|health_status|id|iid|labels|merge_requests_count|milestone|moved_to_id|project_id|references|service_desk_reply_to|state|subscribed|task_completion_status|task_status|time_stats|title|updated_at|upvotes|user_notes_count|web_url|weight|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | award_emoji: www.google.com<br>notes: www.google.com<br>project: www.google.com<br>self: www.google.com | avatar_url: www.google.com<br>id: 9831<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | {'avatar_url': 'www.google.com', 'id': 9831, 'name': 'wow', 'state': 'active', 'username': 'wow', 'web_url': 'www.google.com'} | avatar_url: www.google.com<br>id: 7127<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | 0 |  |  | false | 2021-07-15T16:25:57.419Z | Issue Description |  | 0 |  |  |  | true |  | 40572 | 1 |  | 0 |  |  | 7959 | full: wow<br>relative: #1<br>short: #1 |  | opened | true | completed_count: 9<br>count: 46 | 9 of 46 tasks completed | human_time_estimate: null<br>human_total_time_spent: null<br>time_estimate: 0<br>total_time_spent: 0 | wow | 2021-08-19T13:54:12.337Z | 0 | 3 | www.google.com |  |
 
 ### gitlab-merge-requests-list
+
 ***
 List all merge requests
 
@@ -1619,6 +1706,7 @@ List all merge requests
 #### Base Command
 
 `gitlab-merge-requests-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1652,9 +1740,11 @@ List all merge requests
 
 
 #### Command Example
+
 ```!gitlab-merge-requests-list target_branch=development project_id=123 state=merged```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -1738,12 +1828,14 @@ List all merge requests
 #### Human Readable Output
 
 ### Merge Request Lists to branch master in state opened
+
 |approvals_before_merge|assignee|assignees|author|blocking_discussions_resolved|closed_at|closed_by|created_at|description|discussion_locked|downvotes|force_remove_source_branch|has_conflicts|id|iid|labels|merge_commit_sha|merge_status|merge_when_pipeline_succeeds|merged_at|merged_by|milestone|project_id|reference|references|reviewers|sha|should_remove_source_branch|source_branch|source_project_id|squash|squash_commit_sha|state|target_branch|target_project_id|task_completion_status|time_stats|title|updated_at|upvotes|user_notes_count|web_url|work_in_progress|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |  |  |  | avatar_url: www.google.com<br>id: 10582<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | true |  |  | 2021-08-16T12:16:06.143Z |  |  | 0 |  | false | 53852 | 18 |  | SHA | can_be_merged | false | 2021-08-16T19:07:14.962Z | avatar_url: www.google.com<br>id: 9164<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com |  | 7959 | !18 | full: wow<br>relative: !18<br>short: !18 |  | SHA |  | 1.0.1.23955-feature-branch | 7959 | false |  | merged | development | 7959 | completed_count: 0<br>count: 0 | human_time_estimate: null<br>human_total_time_spent: null<br>time_estimate: 0<br>total_time_spent: 0 | wow | 2021-08-16T19:07:14.765Z | 0 | 0 | www.google.com | false |
 
 
 ### gitlab-merge-request-get
+
 ***
 Get a Merge Request
 
@@ -1751,6 +1843,7 @@ Get a Merge Request
 #### Base Command
 
 `gitlab-merge-request-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1783,9 +1876,11 @@ Get a Merge Request
 
 
 #### Command Example
+
 ```!gitlab-merge-request-get project_id=123 merge_request_iid=18```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -1867,6 +1962,7 @@ Get a Merge Request
 #### Human Readable Output
 
 ### Merge Request 18
+
 |approvals_before_merge|assignee|assignees|author|blocking_discussions_resolved|closed_at|closed_by|created_at|description|discussion_locked|downvotes|force_remove_source_branch|has_conflicts|id|iid|labels|merge_commit_sha|merge_status|merge_when_pipeline_succeeds|merged_at|merged_by|milestone|project_id|reference|references|reviewers|sha|should_remove_source_branch|source_branch|source_project_id|squash|squash_commit_sha|state|target_branch|target_project_id|task_completion_status|time_stats|title|updated_at|upvotes|user_notes_count|web_url|work_in_progress|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |  |  |  | avatar_url: www.google.com<br>id: 10582<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | true |  |  | 2021-08-16T12:16:06.143Z |  |  | 0 |  | false | 53852 | 18 |  | SHA | can_be_merged | false | 2021-08-16T19:07:14.962Z | avatar_url: www.google.com<br>id: 9164<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com |  | 7959 | !18 | full: wow<br>relative: !18<br>short: !18 |  | SHA |  | 1.0.1.23955-feature-branch | 7959 | false |  | merged | development | 7959 | completed_count: 0<br>count: 0 | human_time_estimate: null<br>human_total_time_spent: null<br>time_estimate: 0<br>total_time_spent: 0 | wow | 2021-08-16T19:07:14.765Z | 0 | 0 | www.google.com | false |
@@ -1874,6 +1970,7 @@ Get a Merge Request
 
 
 ### gitlab-group-projects-list
+
 ***
 Get the list of projects of a given group.
 
@@ -1881,6 +1978,7 @@ Get the list of projects of a given group.
 #### Base Command
 
 `gitlab-group-projects-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1898,9 +1996,11 @@ Get the list of projects of a given group.
 
 
 #### Command Example
+
 ```!gitlab-group-projects-list group_id=1```
 
 #### Context Example
+
 ```json
 {
     "GitLab": {
@@ -2017,12 +2117,15 @@ Get the list of projects of a given group.
 ```
 
 #### Human Readable Output
+
 ### List Group Projects
+
 |_links|allow_merge_on_skipped_pipeline|analytics_access_level|approvals_before_merge|archived|auto_cancel_pending_pipelines|auto_devops_deploy_strategy|auto_devops_enabled|autoclose_referenced_issues|avatar_url|build_coverage_regex|build_timeout|builds_access_level|can_create_merge_request_in|ci_config_path|ci_default_git_depth|ci_forward_deployment_enabled|compliance_frameworks|container_expiration_policy|container_registry_enabled|container_registry_image_prefix|created_at|creator_id|default_branch|description|emails_disabled|empty_repo|external_authorization_classification_label|forking_access_level|forks_count|http_url_to_repo|id|import_status|issues_access_level|issues_enabled|issues_template|jobs_enabled|last_activity_at|lfs_enabled|marked_for_deletion_at|marked_for_deletion_on|merge_method|merge_requests_access_level|merge_requests_enabled|merge_requests_template|mirror|name|name_with_namespace|namespace|only_allow_merge_if_all_discussions_are_resolved|only_allow_merge_if_pipeline_succeeds|open_issues_count|operations_access_level|packages_enabled|pages_access_level|path|path_with_namespace|printing_merge_request_link_enabled|public_jobs|readme_url|remove_source_branch_after_merge|repository_access_level|request_access_enabled|requirements_enabled|resolve_outdated_diff_discussions|restrict_user_defined_variables|security_and_compliance_enabled|service_desk_address|service_desk_enabled|shared_runners_enabled|shared_with_groups|snippets_access_level|snippets_enabled|ssh_url_to_repo|star_count|suggestion_commit_message|tag_list|visibility|web_url|wiki_access_level|wiki_enabled|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | self: www.google.com<br>issues: www.google.com<br>merge_requests: www.google.com<br>repo_branches: www.google.com<br>labels: www.google.com<br>events: www.google.com<br>members: www.google.com | false | enabled | 0 | false | enabled | continuous | false | true |  |  | 3600 | enabled | false | wow | 50 | true |  | cadence: 1d<br>enabled: false<br>keep_n: 10<br>older_than: 90d<br>name_regex: .*<br>name_regex_keep: null<br>next_run_at: 2021-07-16T17:53:46.012Z | false | www.google.com | 2021-07-15T17:53:45.964Z | 7127 | development |  | false | false |  | enabled | 0 | www.google.com | 7988 | finished | enabled | true |  | true | 2021-08-12T03:05:08.722Z | false |  |  | merge | enabled | true |  | false | wow | a / b / c / wow | id: 10665<br>name: wow<br>path: wow<br>kind: group<br>full_path: a/b/c<br>parent_id: 10664<br>avatar_url: null<br>web_url: www.google.com | true | false | 1 | enabled | false | enabled | wow | x/a/b/c/wow | true | true | www.google.com | true | enabled | true | true | false | true |  |  | false | true |  | disabled | false | wow | 0 |  |  | public | www.google.com | disabled | false |
 
 ### gitlab-raw-file-get
+
 ***
 Get raw file
 
@@ -2030,6 +2133,7 @@ Get raw file
 #### Base Command
 
 `gitlab-raw-file-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2049,10 +2153,13 @@ Get raw file
 
 
 #### Command Example
+
 ```!gitlab-raw-file-get project_id=123 ref=master file=wow.py```
 
 #### Human Readable Output
+
 ### Raw file wow.py on branch master
+
 |content|path|ref|
 |---|---|---|
 | wow | wow.py | master |

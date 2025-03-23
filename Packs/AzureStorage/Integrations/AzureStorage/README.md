@@ -147,6 +147,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 > ### Authorization instructions
+>
 >        1. To sign in, use a web browser to open the page:
 >            [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
 >           and enter the code **XXXXXXXX** to authenticate.
@@ -324,6 +325,7 @@ Run this command to get the all or specific account storage details.
 #### Human Readable Output
 
 > ### Azure Storage Account List
+>
 >|Account Name|Subscription ID|Resource Group|Kind|Status Primary|Status Secondary|Location|
 >|---|---|---|---|---|---|---|
 >| acount_name1 | subscription_id1 | resource_group_name1 | Storage | available | available | eastus |
@@ -486,6 +488,7 @@ account storage.
 #### Human Readable Output
 
 > ### Azure Storage Account
+>
 >|Account Name|Subscription ID|Resource Group|Kind|Status Primary|Status Secondary|Location|
 >|---|---|---|---|---|---|---|
 >| acount_name1 | subscription_id1 | resource_group_name1 | BlobStorage | available | available | eastus |
@@ -556,6 +559,7 @@ Run this command to get the blob service properties of a specific account storag
 #### Human Readable Output
 
 > ### Azure Storage Blob Service Properties
+>
 >|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|
 >|---|---|---|---|---|---|---|
 >| default | account_name | subscription_id | resource_group_name | change_feed_enabled | delete_retention_policy_enabled | is_versioning_enabled |
@@ -638,6 +642,7 @@ the blob service in a specific account storage
 #### Human Readable Output
 
 > ### Azure Storage Blob Service Properties
+>
 >|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|
 >|---|---|---|---|---|---|---|
 >| default | account_name | subscription_id | resource_group_name | change_feed_enabled | delete_retention_policy_enabled | is_versioning_enabled |
@@ -698,6 +703,7 @@ Run this command to create a blob container.
 #### Human Readable Output
 
 > ### Azure Storage Blob Containers Properties
+>
 >|Name|Account Name|Subscription ID|Resource Group|Public Access|
 >|---|---|---|---|---|
 >| container_name | account_name | subscription_id | resource_group |  |
@@ -763,6 +769,7 @@ blob container.
 #### Human Readable Output
 
 > ### Azure Storage Blob Containers Properties
+>
 >|Name|Account Name|Subscription ID|Resource Group|Public Access|
 >|---|---|---|---|---|
 >| container_name | account_name | subscription_id | resource_group |  |
@@ -853,6 +860,7 @@ Run this command to get the all or specific blob container details.
 #### Human Readable Output
 
 > ### Azure Storage Blob Containers list
+>
 >|Container Name|Account Name|Subscription ID|Resource Group|Public Access|Lease State|Last Modified Time|
 >|---|---|---|---|---|---|---|
 >| container_name1 | account_name | subscription_id | resource_group | None | Available | 2021-03-31T06:49:57.0000000Z |
@@ -912,6 +920,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 > ### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
     You will be automatically redirected to a link with the following structure:
     ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -994,6 +1003,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 > ### Azure Storage Subscriptions list
+>
 >|subscriptionId|tenantId|displayName|state|
 >|---|---|---|---|
 >| 00000000000000000000 | 00000000000000000 | Access to Azure Active Directory | Enabled |
@@ -1072,6 +1082,7 @@ Gets all resource groups for a subscription.
 #### Human Readable Output
 
 > ### Resource Groups List
+>
 >|Name|Location|Tags|
 >|---|---|---|
 >| cloud-shell-storage-eastus | eastus |  |

@@ -13,14 +13,18 @@ This integration was integrated and tested with version 7.03 of VMware
 
 
 ## Use Cases
+
 - Create and revert to snapshot.
 - Get information regarding virtual machines.
 - Power-on, power-off, suspend, reboot, clone, create, delete, relocate, resigster and unregister virtual machines.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### vmware-get-vms
+
 ***
 Returns all virtual machines on a system.
 
@@ -28,6 +32,7 @@ Returns all virtual machines on a system.
 #### Base Command
 
 `vmware-get-vms`
+
 #### Input
 
 | **Argument Name** | **Description**                    | **Required** |
@@ -57,9 +62,11 @@ Returns all virtual machines on a system.
 
 
 #### Command Example
+
 ``` !vmware-get-vms ```
 
 #### Context Example
+
 ```json
 {
  "VMWare":[
@@ -92,6 +99,7 @@ Returns all virtual machines on a system.
 
 
 ### vmware-poweron
+
 ***
 Powers on a powered-off or suspended virtual machine.
 
@@ -99,6 +107,7 @@ Powers on a powered-off or suspended virtual machine.
 #### Base Command
 
 `vmware-poweron`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -115,9 +124,11 @@ Powers on a powered-off or suspended virtual machine.
 
 
 #### Command Example
+
 ```!vmware-poweron vm-uuid="503ca58b-0821-cf21-fb56-459e55df6d19" ```
 
 #### Context Example
+
 ```json
 {
  "VMWare": {
@@ -128,11 +139,13 @@ Powers on a powered-off or suspended virtual machine.
 ```
 
 #### Human Readable Output
+>
 > Virtual Machine was powered on successfully.
 
 
 
 ### vmware-poweroff
+
 ***
 Powers off a powered-on or suspended virtual machine.
 
@@ -140,6 +153,7 @@ Powers off a powered-on or suspended virtual machine.
 #### Base Command
 
 `vmware-poweroff`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -156,9 +170,11 @@ Powers off a powered-on or suspended virtual machine.
 
 
 #### Command Example
+
 ```!vmware-poweroff vm-uuid="503ca58b-0821-cf21-fb56-459e55df6d19" ```
 
 #### Context Example
+
 ```json
 {
  "VMWare": {
@@ -169,11 +185,13 @@ Powers off a powered-on or suspended virtual machine.
 ```
 
 #### Human Readable Output
+>
 > Virtual Machine was powered off successfully.
 
 
 
 ### vmware-hard-reboot
+
 ***
 Reboots a powered-on virtual machine.
 
@@ -181,6 +199,7 @@ Reboots a powered-on virtual machine.
 #### Base Command
 
 `vmware-hard-reboot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -197,9 +216,11 @@ Reboots a powered-on virtual machine.
 
 
 #### Command Example
+
 ```!vmware-hard-reboot vm-uuid="503ca58b-0821-cf21-fb56-459e55df6d19" ```
 
 #### Context Example
+
 ```json
 {
  "VMWare": {
@@ -211,11 +232,13 @@ Reboots a powered-on virtual machine.
 
 
 #### Human Readable Output
+>
 > Virtual Machine was rebooted successfully.
 
 
 
 ### vmware-suspend
+
 ***
 Suspends a powered-on virtual machine.
 
@@ -223,6 +246,7 @@ Suspends a powered-on virtual machine.
 #### Base Command
 
 `vmware-suspend`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -239,9 +263,11 @@ Suspends a powered-on virtual machine.
 
 
 #### Command Example
+
 ```!vmware-suspend vm-uuid="503ca58b-0821-cf21-fb56-459e55df6d19" ```
 
 #### Context Example
+
 ```json
 {
  "VMWare": {
@@ -252,11 +278,13 @@ Suspends a powered-on virtual machine.
 ```
 
 #### Human Readable Output
+>
 > Virtual Machine was suspended successfully.
 
 
 
 ### vmware-soft-reboot
+
 ***
 Issues a command to the guest operating system asking it to perform a reboot.
 
@@ -264,6 +292,7 @@ Issues a command to the guest operating system asking it to perform a reboot.
 #### Base Command
 
 `vmware-soft-reboot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -276,13 +305,16 @@ Issues a command to the guest operating system asking it to perform a reboot.
 There is no context output for this command.
 
 #### Command Example
+
 ```!vmware-soft-reboot vm-uuid="503ca58b-0821-cf21-fb56-459e55df6d19" ```
 
 #### Human Readable Output
+>
 > A request to reboot the guest has been sent.
 
 
 ### vmware-create-snapshot
+
 ***
 Creates a VM snapshot.
 
@@ -290,6 +322,7 @@ Creates a VM snapshot.
 #### Base Command
 
 `vmware-create-snapshot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -306,14 +339,17 @@ Creates a VM snapshot.
 There is no context output for this command.
 
 #### Command Example
+
 ```!vmware-create-snapshot vm-uuid="503ca58b-0821-cf21-fb56-459e55df6d19" name="SnapShotName" description="A daily snapshot of VM" memory=true quiesce=false ```
 
 #### Human Readable Output
+>
 >Snapshot SnapShotName completed.
 
 
 
 ### vmware-revert-snapshot
+
 ***
 Reverts VM to snapshot.
 
@@ -321,6 +357,7 @@ Reverts VM to snapshot.
 #### Base Command
 
 `vmware-revert-snapshot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -338,9 +375,11 @@ Reverts VM to snapshot.
 
 
 #### Command Example
+
 ```!vmware-revert-snapshot  vm-uuid="503ca58b-0821-cf21-fb56-459e55df6d19" snapshot-name="SnapShotName"```
 
 #### Context Example
+
 ```json
 {
  "VMWare": {
@@ -351,11 +390,13 @@ Reverts VM to snapshot.
 ```
 
 #### Human Readable Output
+>
 > Reverted to snapshot SnapShotName successfully.
 
 
 
 ### vmware-get-events
+
 ***
 Gets events of a VM.
 
@@ -363,6 +404,7 @@ Gets events of a VM.
 #### Base Command
 
 `vmware-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -386,9 +428,11 @@ Gets events of a VM.
 
 
 #### Command Example
+
 ``` !vmware-get-events vm-uuid=525306-77f9-ac98-77d3-63bb537ad7d2 start-date="2021-12-14T00:00:00" end-date="2021-12-16T00:00:00" user="VSPHERE.TEST"```
 
 #### Context Example
+
 ```json
 {
   "VMWareEvenet": [
@@ -403,6 +447,7 @@ Gets events of a VM.
 ```
 
 #### Human Readable Output
+
 |CreatedTime|Event| UserName     |id|
 |---|---|--------------|---|
 | 2021-12-15 09:38:46 | Guest OS reboot for Datacenter | VSPHERE.TEST | 999 |
@@ -410,6 +455,7 @@ Gets events of a VM.
 
 
 ### vmware-change-nic-state
+
 ***
 Changes the state of a VM NIC.
 
@@ -417,6 +463,7 @@ Changes the state of a VM NIC.
 #### Base Command
 
 `vmware-change-nic-state`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -435,9 +482,11 @@ Changes the state of a VM NIC.
 
 
 #### Command Example
+
 ```!vmware-change-nic-state vm-uuid="503ca58b-0821-cf21-fb56-459e55df6d19" nic-state="disconnected" nic-number=1 ```
 
 #### Context Example
+
 ```json
 {
  "VMWare": {
@@ -448,11 +497,13 @@ Changes the state of a VM NIC.
 ```
 
 #### Human Readable Output
+>
 > Virtual Machine's NIC was disconnected successfully.
 
 
 
 ### vmware-list-vms-by-tag
+
 ***
 Lists all virtual storage objects attached to the tag.
 
@@ -460,6 +511,7 @@ Lists all virtual storage objects attached to the tag.
 #### Base Command
 
 `vmware-list-vms-by-tag`
+
 #### Input
 
 | **Argument Name** | **Description**                        | **Required** |
@@ -478,9 +530,11 @@ Lists all virtual storage objects attached to the tag.
 
 
 #### Command Example
+
 ``` !vmware-list-vms-by-tag category="Test Category" tag=test```
 
 #### Context Example
+
 ```json
 {
   "VMWareTag": [
@@ -503,6 +557,7 @@ Lists all virtual storage objects attached to the tag.
 ```    
 
 #### Human Readable Output
+
 |Category|TagName|VM|
 |---|---|---|
 | Test Category | test | Integration_Test |
@@ -512,6 +567,7 @@ Lists all virtual storage objects attached to the tag.
 
 
 ### vmware-create-vm
+
 ***
 Creates a new virtual machine in the current folder and attaches it to the specified resource pool. This operation creates a virtual machine, instead of cloning a virtual machine from an existing one.
 
@@ -519,6 +575,7 @@ Creates a new virtual machine in the current folder and attaches it to the speci
 #### Base Command
 
 `vmware-create-vm`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -555,9 +612,11 @@ Creates a new virtual machine in the current folder and attaches it to the speci
 
 
 #### Command Example
+
 ```!vmware-create-vm cpu-allocation=1 cpu-num=1 guest-os-familiy=Windows guest-os-version="Microsoft Windows Server 2019 (64-bit)" host=11.11.1.111 memory=32 name="test_vm_ui" virtual-memory=32 folder="vm"```
 
 #### Context Example
+
 ```json
 {
   "VMWare": [
@@ -581,6 +640,7 @@ Creates a new virtual machine in the current folder and attaches it to the speci
 ```
 
 #### Human Readable Output
+
 |Name|Template|Path|Guest|UUID|State|Deleted|
 |---|---|---|---|---|---|---|
 | test_vm_ui | false | [datastore1] test_vm_ui/test_vm_ui.vmx | Other (32-bit) | 503d9bc9-5c5a-603e-65d9-0fea7b29b9a7 | poweredOff | false |
@@ -588,6 +648,7 @@ Creates a new virtual machine in the current folder and attaches it to the speci
 
 
 ### vmware-clone-vm
+
 ***
 Creates a clone of this virtual machine. If the virtual machine is used as a template, this method corresponds to the deploy command.
 
@@ -595,6 +656,7 @@ Creates a clone of this virtual machine. If the virtual machine is used as a tem
 #### Base Command
 
 `vmware-clone-vm`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -628,9 +690,11 @@ Creates a clone of this virtual machine. If the virtual machine is used as a tem
 
 
 #### Command Example
+
 ```!vmware-clone-vm folder=vm name=cloned_vm powerOn=false uuid=603e-65d9-0fea7b29b9a7```
 
 #### Context Example
+
 ```json
 {
   "VMWare": [
@@ -653,12 +717,14 @@ Creates a clone of this virtual machine. If the virtual machine is used as a tem
 ```
 
 #### Human Readable Output
+
 |Name|Template|Path|Guest|UUID|State| Deleted |
 |---|---|---|---|---|---|---------|
 | cloned_vm | false | [datastore1] cloned_vm/cloned_vm.vmx | Other (32-bit) | e5aa-8fe8-a3faf1191395 | poweredOff | false   |
 
 
 ### vmware-relocate-vm
+
 ***
 Relocates a virtual machine to the location specified.
 
@@ -666,6 +732,7 @@ Relocates a virtual machine to the location specified.
 #### Base Command
 
 `vmware-relocate-vm`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -685,14 +752,17 @@ Relocates a virtual machine to the location specified.
 There is no context output for this command.
 
 #### Command Example
+
 ```!vmware-relocate-vm folder=enhancement_check priority=defaultPriority uuid=e5aa-8fe8-a3faf1191395```
 
 #### Human Readable Output
+>
 >Virtual Machine was relocated successfully.
 
 
 
 ### vmware-delete-vm
+
 ***
 Destroys this object, deleting its contents and removing it from its parent folder (if any).
 
@@ -700,6 +770,7 @@ Destroys this object, deleting its contents and removing it from its parent fold
 #### Base Command
 
 `vmware-delete-vm`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -716,13 +787,16 @@ Destroys this object, deleting its contents and removing it from its parent fold
 
 
 #### Command Example
+
 ```!vmware-delete-vm uuid=503d537f-a8d0-e5aa-8fe8-a3faf1191395```
 
 #### Human Readable Output
+>
 >Virtual Machine was deleted successfully.
 
 
 ### vmware-register-vm
+
 ***
 Adds an existing virtual machine to the folder.
 
@@ -730,6 +804,7 @@ Adds an existing virtual machine to the folder.
 #### Base Command
 
 `vmware-register-vm`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -746,12 +821,15 @@ Adds an existing virtual machine to the folder.
 There is no context output for this command.
 
 #### Command Example
+
 ```!vmware-register-vm path="[datastore1] test_vm_ui/test_vm_ui.vmx" folder=vm host=192.168.1.140 name=rgistered_vm asTemplate=false```
 
 #### Human Readable Output
+>
 >Virtual Machine was registered successfully.
 
 ### vmware-unregister-vm
+
 ***
 emoves this virtual machine from the inventory without removing any of the virtual machine's files on disk.
 
@@ -759,6 +837,7 @@ emoves this virtual machine from the inventory without removing any of the virtu
 #### Base Command
 
 `vmware-unregister-vm`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -771,7 +850,9 @@ emoves this virtual machine from the inventory without removing any of the virtu
 There is no context output for this command.
 
 #### Command Example
+
 ```!vmware-unregister-vm uuid=503d9bc9-5c5a-603e-65d9-0fea7b29b9a7```
 
 #### Human Readable Output
+>
 >Virtual Machine was unregistered successfully.

@@ -26,6 +26,7 @@ This integration was integrated and tested with version 2.13.7+ of Hurukai
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -48,6 +49,7 @@ Allows to retrieve incidents from the HarfangLab EDR API
 There is no context output for this command.
 
 ### harfanglab-get-endpoint-info
+
 ***
 Get endpoint information from agent_id
 
@@ -55,6 +57,7 @@ Get endpoint information from agent_id
 #### Base Command
 
 `harfanglab-get-endpoint-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -69,8 +72,11 @@ Get endpoint information from agent_id
 | Harfanglab.Agent | unknown | Agent information | 
 
 #### Command example
+
 ```!harfanglab-get-endpoint-info agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -182,12 +188,14 @@ Get endpoint information from agent_id
 #### Human Readable Output
 
 >### Endpoint information for agent_id : 0fae71cf-ebde-4533-a50c-b3c0290378db
+>
 >|additional_info|avg_cpu|avg_memory|bitness|cpu_count|cpu_frequency|domainname|driver_enabled|driver_policy|effective_policy_id|effective_policy_revision|external_ipaddress|firstseen|group_count|hostname|id|installdate|ipaddress|ipmask|isolation_policy|isolation_state|lastseen|lastseen_error|lastseen_warning|machine_boottime|osbuild|osid|osmajor|osminor|osproducttype|ostype|osversion|policy|producttype|starttime|status|total_memory|uninstall_status|update_experimental|update_status|version|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| additional_info1: null<br/>additional_info2: null<br/>additional_info3: null<br/>additional_info4: null | 1.0 | 183558144.0 | x64 | 2 | 3192 | WORKGROUP | true | false | e96699ef-3dd9-4718-90ef-c7e5646fd466 | 5 | (REDACTED) | 2022-06-15T06:42:50.008015Z | 0 | DC-01 | 0fae71cf-ebde-4533-a50c-b3c0290378db | 2022/06/15 06:38:58 | (REDACTED) | (REDACTED) | false | true | 2022-07-28T07:41:32.197641Z | 2022-07-28T07:47:02.197641Z | 2022-07-28T07:43:44.197641Z | 2022-06-28T14:18:31Z | 20348 | 00454-40000-00001-AA596 | 10 | 0 | Windows Server 2022 Standard Evaluation | windows | 10.0.20348 | id: e96699ef-3dd9-4718-90ef-c7e5646fd466<br/>tenant: null<br/>name: No psexec<br/>description: <br/>revision: 5<br/>sleeptime: 60<br/>sleepjitter: 10<br/>telemetry_process: true<br/>telemetry_process_limit: false<br/>telemetry_process_limit_value: 1000<br/>telemetry_network: true<br/>telemetry_network_limit: false<br/>telemetry_network_limit_value: 1000<br/>telemetry_log: true<br/>telemetry_log_limit: false<br/>telemetry_log_limit_value: 1000<br/>telemetry_remotethread: true<br/>telemetry_remotethread_limit: false<br/>telemetry_remotethread_limit_value: 1000<br/>telemetry_alerts_limit: false<br/>telemetry_alerts_limit_value: 1000<br/>binary_download_enabled: true<br/>loglevel: ERROR<br/>use_sigma: true<br/>ioc_mode: 2<br/>hlai_mode: 1<br/>hlai_skip_signed_ms: true<br/>hlai_skip_signed_others: false<br/>hlai_minimum_level: critical<br/>hibou_mode: 0<br/>hibou_skip_signed_ms: false<br/>hibou_skip_signed_others: false<br/>hibou_minimum_level: critical<br/>yara_mode: 1<br/>yara_skip_signed_ms: true<br/>yara_skip_signed_others: false<br/>use_driver: true<br/>use_isolation: true<br/>use_ransomguard: true<br/>ransomguard_alert_only: false<br/>self_protection: false<br/>use_process_block: true<br/>use_sigma_process_block: false<br/>sigma_ruleset: 1<br/>yara_ruleset: null<br/>ioc_ruleset: null | server | 2022-06-28T14:18:47Z | online | 2133962752.0 | 0 | false | 0 | 2.15.0 |
 
 
 ### harfanglab-endpoint-search
+
 ***
 Search for endpoint information from a hostname
 
@@ -195,6 +203,7 @@ Search for endpoint information from a hostname
 #### Base Command
 
 `harfanglab-endpoint-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -211,8 +220,11 @@ Search for endpoint information from a hostname
 | Harfanglab.status | string | Status (DEPRECATED) | 
 
 #### Command example
+
 ```!harfanglab-endpoint-search hostname="DC-01"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -322,6 +334,7 @@ Search for endpoint information from a hostname
 #### Human Readable Output
 
 >### Endpoint information for Hostname : DC-01
+>
 >|additional_info|avg_cpu|avg_memory|bitness|cpu_count|cpu_frequency|domainname|driver_enabled|driver_policy|external_ipaddress|firstseen|group_count|hostname|id|installdate|ipaddress|ipmask|isolation_policy|isolation_state|lastseen|lastseen_error|lastseen_warning|machine_boottime|osbuild|osid|osmajor|osminor|osproducttype|ostype|osversion|policy|producttype|starttime|status|total_memory|uninstall_status|update_experimental|update_status|version|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| additional_info1: null<br/>additional_info2: null<br/>additional_info3: null<br/>additional_info4: null | 1.0 | 183558144.0 | x64 | 2 | 3192 | WORKGROUP | true | false | (REDACTED) | 2022-06-15T06:42:50.008015Z | 0 | DC-01 | 0fae71cf-ebde-4533-a50c-b3c0290378db | 2022/06/15 06:38:58 | (REDACTED) | (REDACTED) | false | true | 2022-07-28T07:41:32.197641Z | 2022-07-28T07:47:02.197641Z | 2022-07-28T07:43:44.197641Z | 2022-06-28T14:18:31Z | 20348 | 00454-40000-00001-AA596 | 10 | 0 | Windows Server 2022 Standard Evaluation | windows | 10.0.20348 | id: e96699ef-3dd9-4718-90ef-c7e5646fd466<br/>tenant: null<br/>name: No psexec<br/>description: <br/>revision: 5<br/>sleeptime: 60<br/>sleepjitter: 10<br/>telemetry_process: true<br/>telemetry_process_limit: false<br/>telemetry_process_limit_value: 1000<br/>telemetry_network: true<br/>telemetry_network_limit: false<br/>telemetry_network_limit_value: 1000<br/>telemetry_log: true<br/>telemetry_log_limit: false<br/>telemetry_log_limit_value: 1000<br/>telemetry_remotethread: true<br/>telemetry_remotethread_limit: false<br/>telemetry_remotethread_limit_value: 1000<br/>telemetry_alerts_limit: false<br/>telemetry_alerts_limit_value: 1000<br/>binary_download_enabled: true<br/>loglevel: ERROR<br/>use_sigma: true<br/>ioc_mode: 2<br/>hlai_mode: 1<br/>hlai_skip_signed_ms: true<br/>hlai_skip_signed_others: false<br/>hlai_minimum_level: critical<br/>hibou_mode: 0<br/>hibou_skip_signed_ms: false<br/>hibou_skip_signed_others: false<br/>hibou_minimum_level: critical<br/>yara_mode: 1<br/>yara_skip_signed_ms: true<br/>yara_skip_signed_others: false<br/>use_driver: true<br/>use_isolation: true<br/>use_ransomguard: true<br/>ransomguard_alert_only: false<br/>self_protection: false<br/>use_process_block: true<br/>use_sigma_process_block: false<br/>sigma_ruleset: 1<br/>yara_ruleset: null<br/>ioc_ruleset: null | server | 2022-06-28T14:18:47Z | online | 2133962752.0 | 0 | false | 0 | 2.15.0 |
@@ -353,8 +366,11 @@ Perform a generic API call
 | Harfanglab.API | unknown | API call result | 
 
 #### Command example
+
 ```!harfanglab-api-call api_method=GET api_endpoint=/api/version```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -368,12 +384,14 @@ Perform a generic API call
 #### Human Readable Output
 
 >### Results
+>
 >|version|
 >|---|
 >| 2.29.7 |
 
 
 ### harfanglab-telemetry-processes
+
 ***
 Search processes
 
@@ -381,6 +399,7 @@ Search processes
 #### Base Command
 
 `harfanglab-telemetry-processes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -402,8 +421,11 @@ Search processes
 | hashes.sha256 | unknown | DEPRECATED | 
 
 #### Command example
+
 ```!harfanglab-telemetry-processes hostname="DC-01" hash=3541d189d1bd3341a72769d43bf487eaa3b20e80aa04a54550bbfa9a04360db3 limit=5```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -488,6 +510,7 @@ Search processes
 #### Human Readable Output
 
 >### Processes list
+>
 >|create date|hostname|process name|image name|commandline|integrity level|parent image|parent commandline|username|signed|signer|sha256|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2022-07-28T07:28:58.757000Z | DC-01 | sppsvc.exe | C:\Windows\System32\sppsvc.exe | C:\Windows\system32\sppsvc.exe | System | C:\Windows\System32\services.exe | C:\Windows\system32\services.exe | NT AUTHORITY\NETWORK SERVICE | true | Microsoft Windows | 3541d189d1bd3341a72769d43bf487eaa3b20e80aa04a54550bbfa9a04360db3 |
@@ -498,8 +521,11 @@ Search processes
 
 
 #### Command example
+
 ```!harfanglab-telemetry-processes hostname="DC-01" limit=5```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -584,6 +610,7 @@ Search processes
 #### Human Readable Output
 
 >### Processes list
+>
 >|create date|hostname|process name|image name|commandline|integrity level|parent image|parent commandline|username|signed|signer|sha256|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2022-07-28T07:45:44.942000Z | DC-01 | MicrosoftEdgeUpdate.exe | C:\Program Files (x86)\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe | C:\Program Files (x86)\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe /ua /installsource scheduler | System | C:\Windows\System32\svchost.exe | C:\Windows\system32\svchost.exe -k netsvcs -p | NT AUTHORITY\SYSTEM | true | Microsoft Corporation | bef9dbed290af17cf3f30cc43fc0a94cdadc540f171c25df1363b2e852d0a042 |
@@ -594,8 +621,11 @@ Search processes
 
 
 #### Command example
+
 ```!harfanglab-telemetry-processes hash=3541d189d1bd3341a72769d43bf487eaa3b20e80aa04a54550bbfa9a04360db3 limit=5```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -680,6 +710,7 @@ Search processes
 #### Human Readable Output
 
 >### Processes list
+>
 >|create date|hostname|process name|image name|commandline|integrity level|parent image|parent commandline|username|signed|signer|sha256|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2022-07-28T07:46:16.086000Z | WEBSERVER | sppsvc.exe | C:\Windows\System32\sppsvc.exe | C:\Windows\system32\sppsvc.exe | System | C:\Windows\System32\services.exe | C:\Windows\system32\services.exe | NT AUTHORITY\NETWORK SERVICE | true | Microsoft Windows | 3541d189d1bd3341a72769d43bf487eaa3b20e80aa04a54550bbfa9a04360db3 |
@@ -690,8 +721,11 @@ Search processes
 
 
 #### Command example
+
 ```!harfanglab-telemetry-processes hostname="DC-01" from_date="2022-07-22T20:26:10" to_date="2022-07-22T20:26:20" limit=5```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -720,12 +754,14 @@ Search processes
 #### Human Readable Output
 
 >### Processes list
+>
 >|create date|hostname|process name|image name|commandline|integrity level|parent image|parent commandline|username|signed|signer|sha256|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2022-07-22T20:26:19.645000Z | DC-01 | sppsvc.exe | C:\Windows\System32\sppsvc.exe | C:\Windows\system32\sppsvc.exe | System | C:\Windows\System32\services.exe | C:\Windows\system32\services.exe | NT AUTHORITY\NETWORK SERVICE | true | Microsoft Windows | 3541d189d1bd3341a72769d43bf487eaa3b20e80aa04a54550bbfa9a04360db3 |
 
 
 ### harfanglab-job-pipelist
+
 ***
 Start a job to get the list of pipes from a host (Windows)
 
@@ -733,6 +769,7 @@ Start a job to get the list of pipes from a host (Windows)
 #### Base Command
 
 `harfanglab-job-pipelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -748,8 +785,11 @@ Start a job to get the list of pipes from a host (Windows)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-pipelist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -771,6 +811,7 @@ Start a job to get the list of pipes from a host (Windows)
 >```
 
 ### harfanglab-job-artifact-downloadfile
+
 ***
 Start a job to download a file from a host (Windows / Linux)
 
@@ -778,6 +819,7 @@ Start a job to download a file from a host (Windows / Linux)
 #### Base Command
 
 `harfanglab-job-artifact-downloadfile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -794,8 +836,11 @@ Start a job to download a file from a host (Windows / Linux)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-artifact-downloadfile agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filename="C:\\Program Files\\HarfangLab\\agent.ini"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -817,6 +862,7 @@ Start a job to download a file from a host (Windows / Linux)
 >```
 
 ### harfanglab-job-prefetchlist
+
 ***
 Start a job to get the list of prefetches from a host (Windows)
 
@@ -824,6 +870,7 @@ Start a job to get the list of prefetches from a host (Windows)
 #### Base Command
 
 `harfanglab-job-prefetchlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -839,8 +886,11 @@ Start a job to get the list of prefetches from a host (Windows)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-prefetchlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -862,6 +912,7 @@ Start a job to get the list of prefetches from a host (Windows)
 >```
 
 ### harfanglab-job-runkeylist
+
 ***
 Start a job to get the list of run keys from a host (Windows)
 
@@ -869,6 +920,7 @@ Start a job to get the list of run keys from a host (Windows)
 #### Base Command
 
 `harfanglab-job-runkeylist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -884,8 +936,11 @@ Start a job to get the list of run keys from a host (Windows)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-runkeylist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -907,6 +962,7 @@ Start a job to get the list of run keys from a host (Windows)
 >```
 
 ### harfanglab-job-scheduledtasklist
+
 ***
 Start a job to get the list of scheduled tasks from a host (Windows)
 
@@ -914,6 +970,7 @@ Start a job to get the list of scheduled tasks from a host (Windows)
 #### Base Command
 
 `harfanglab-job-scheduledtasklist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -929,8 +986,11 @@ Start a job to get the list of scheduled tasks from a host (Windows)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-scheduledtasklist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -952,6 +1012,7 @@ Start a job to get the list of scheduled tasks from a host (Windows)
 >```
 
 ### harfanglab-job-driverlist
+
 ***
 Start a job to get the list of drivers from a host (Windows)
 
@@ -959,6 +1020,7 @@ Start a job to get the list of drivers from a host (Windows)
 #### Base Command
 
 `harfanglab-job-driverlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -974,8 +1036,11 @@ Start a job to get the list of drivers from a host (Windows)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-driverlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -997,6 +1062,7 @@ Start a job to get the list of drivers from a host (Windows)
 >```
 
 ### harfanglab-job-servicelist
+
 ***
 Start a job to get the list of services from a host (Windows)
 
@@ -1004,6 +1070,7 @@ Start a job to get the list of services from a host (Windows)
 #### Base Command
 
 `harfanglab-job-servicelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1019,8 +1086,11 @@ Start a job to get the list of services from a host (Windows)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-servicelist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1042,6 +1112,7 @@ Start a job to get the list of services from a host (Windows)
 >```
 
 ### harfanglab-job-processlist
+
 ***
 Start a job to get the list of processes from a host (Windows / Linux)
 
@@ -1049,6 +1120,7 @@ Start a job to get the list of processes from a host (Windows / Linux)
 #### Base Command
 
 `harfanglab-job-processlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1064,8 +1136,11 @@ Start a job to get the list of processes from a host (Windows / Linux)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-processlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1087,6 +1162,7 @@ Start a job to get the list of processes from a host (Windows / Linux)
 >```
 
 ### harfanglab-job-networkconnectionlist
+
 ***
 Start a job to get the list of network connections from a host (Windows / Linux)
 
@@ -1094,6 +1170,7 @@ Start a job to get the list of network connections from a host (Windows / Linux)
 #### Base Command
 
 `harfanglab-job-networkconnectionlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1109,8 +1186,11 @@ Start a job to get the list of network connections from a host (Windows / Linux)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-networkconnectionlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1132,6 +1212,7 @@ Start a job to get the list of network connections from a host (Windows / Linux)
 >```
 
 ### harfanglab-job-networksharelist
+
 ***
 Start a job to get the list of network shares from a host (Windows)
 
@@ -1139,6 +1220,7 @@ Start a job to get the list of network shares from a host (Windows)
 #### Base Command
 
 `harfanglab-job-networksharelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1154,8 +1236,11 @@ Start a job to get the list of network shares from a host (Windows)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-networksharelist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1177,6 +1262,7 @@ Start a job to get the list of network shares from a host (Windows)
 >```
 
 ### harfanglab-job-sessionlist
+
 ***
 Start a job to get the list of sessions from a host (Windows)
 
@@ -1184,6 +1270,7 @@ Start a job to get the list of sessions from a host (Windows)
 #### Base Command
 
 `harfanglab-job-sessionlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1199,8 +1286,11 @@ Start a job to get the list of sessions from a host (Windows)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-sessionlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1222,6 +1312,7 @@ Start a job to get the list of sessions from a host (Windows)
 >```
 
 ### harfanglab-job-persistencelist
+
 ***
 Start a job to get the list of persistence items from a host (Linux)
 
@@ -1229,6 +1320,7 @@ Start a job to get the list of persistence items from a host (Linux)
 #### Base Command
 
 `harfanglab-job-persistencelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1244,8 +1336,11 @@ Start a job to get the list of persistence items from a host (Linux)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-persistencelist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1267,6 +1362,7 @@ Start a job to get the list of persistence items from a host (Linux)
 >```
 
 ### harfanglab-job-ioc
+
 ***
 Start a job to search for IOCs on a host (Windows / Linux)
 
@@ -1274,6 +1370,7 @@ Start a job to search for IOCs on a host (Windows / Linux)
 #### Base Command
 
 `harfanglab-job-ioc`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1297,8 +1394,11 @@ Start a job to search for IOCs on a host (Windows / Linux)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filename="agent.ini"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1320,8 +1420,11 @@ Start a job to search for IOCs on a host (Windows / Linux)
 >```
 
 #### Command example
+
 ```!harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filename="agent.ini" search_in_path="C:\\Program Files"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1343,8 +1446,11 @@ Start a job to search for IOCs on a host (Windows / Linux)
 >```
 
 #### Command example
+
 ```!harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filename="agent.ini" filesize=1688```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1366,8 +1472,11 @@ Start a job to search for IOCs on a host (Windows / Linux)
 >```
 
 #### Command example
+
 ```!harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filepath="C:\\windows\\system32\\calc.exe"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1389,8 +1498,11 @@ Start a job to search for IOCs on a host (Windows / Linux)
 >```
 
 #### Command example
+
 ```!harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filepath_regex="System32\\\\calc\\.exe"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1412,8 +1524,11 @@ Start a job to search for IOCs on a host (Windows / Linux)
 >```
 
 #### Command example
+
 ```!harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" hash=4208893c871d2499f184e3f0f2554da89f451fa9e98d95fc9516c5ae8f2b3bbd filesize=45056```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1435,8 +1550,11 @@ Start a job to search for IOCs on a host (Windows / Linux)
 >```
 
 #### Command example
+
 ```!harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" registry="DLLPath"	```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1458,8 +1576,11 @@ Start a job to search for IOCs on a host (Windows / Linux)
 >```
 
 #### Command example
+
 ```!harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" registry="hmmapi"	```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1481,6 +1602,7 @@ Start a job to search for IOCs on a host (Windows / Linux)
 >```
 
 ### harfanglab-job-startuplist
+
 ***
 Start a job to get the list of startup items from a host (Windows)
 
@@ -1488,6 +1610,7 @@ Start a job to get the list of startup items from a host (Windows)
 #### Base Command
 
 `harfanglab-job-startuplist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1503,8 +1626,11 @@ Start a job to get the list of startup items from a host (Windows)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-startuplist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1526,6 +1652,7 @@ Start a job to get the list of startup items from a host (Windows)
 >```
 
 ### harfanglab-job-wmilist
+
 ***
 Start a job to get the list of WMI items from a host (Windows)
 
@@ -1533,6 +1660,7 @@ Start a job to get the list of WMI items from a host (Windows)
 #### Base Command
 
 `harfanglab-job-wmilist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1548,8 +1676,11 @@ Start a job to get the list of WMI items from a host (Windows)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-wmilist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1571,6 +1702,7 @@ Start a job to get the list of WMI items from a host (Windows)
 >```
 
 ### harfanglab-job-artifact-mft
+
 ***
 Start a job to download the MFT from a host (Windows)
 
@@ -1578,6 +1710,7 @@ Start a job to download the MFT from a host (Windows)
 #### Base Command
 
 `harfanglab-job-artifact-mft`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1593,8 +1726,11 @@ Start a job to download the MFT from a host (Windows)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-artifact-mft agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1616,6 +1752,7 @@ Start a job to download the MFT from a host (Windows)
 >```
 
 ### harfanglab-job-artifact-hives
+
 ***
 Start a job to download the hives from a host (Windows)
 
@@ -1623,6 +1760,7 @@ Start a job to download the hives from a host (Windows)
 #### Base Command
 
 `harfanglab-job-artifact-hives`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1638,8 +1776,11 @@ Start a job to download the hives from a host (Windows)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-artifact-hives agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1661,6 +1802,7 @@ Start a job to download the hives from a host (Windows)
 >```
 
 ### harfanglab-job-artifact-evtx
+
 ***
 Start a job to download the event logs from a host (Windows)
 
@@ -1668,6 +1810,7 @@ Start a job to download the event logs from a host (Windows)
 #### Base Command
 
 `harfanglab-job-artifact-evtx`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1683,8 +1826,11 @@ Start a job to download the event logs from a host (Windows)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-artifact-evtx agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1706,6 +1852,7 @@ Start a job to download the event logs from a host (Windows)
 >```
 
 ### harfanglab-job-artifact-logs
+
 ***
 Start a job to download Linux log files from a host (Linux)
 
@@ -1713,6 +1860,7 @@ Start a job to download Linux log files from a host (Linux)
 #### Base Command
 
 `harfanglab-job-artifact-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1728,8 +1876,11 @@ Start a job to download Linux log files from a host (Linux)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-artifact-logs agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1751,6 +1902,7 @@ Start a job to download Linux log files from a host (Linux)
 >```
 
 ### harfanglab-job-artifact-filesystem
+
 ***
 Start a job to download Linux filesystem entries from a host (Linux)
 
@@ -1758,6 +1910,7 @@ Start a job to download Linux filesystem entries from a host (Linux)
 #### Base Command
 
 `harfanglab-job-artifact-filesystem`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1773,8 +1926,11 @@ Start a job to download Linux filesystem entries from a host (Linux)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-artifact-filesystem agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1796,6 +1952,7 @@ Start a job to download Linux filesystem entries from a host (Linux)
 >```
 
 ### harfanglab-job-artifact-all
+
 ***
 Start a job to download all artifacts from a host (Windows MFT, Hives, evt/evtx, Prefetch, USN, Linux logs and file list)
 
@@ -1803,6 +1960,7 @@ Start a job to download all artifacts from a host (Windows MFT, Hives, evt/evtx,
 #### Base Command
 
 `harfanglab-job-artifact-all`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1818,8 +1976,11 @@ Start a job to download all artifacts from a host (Windows MFT, Hives, evt/evtx,
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-artifact-all agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1841,6 +2002,7 @@ Start a job to download all artifacts from a host (Windows MFT, Hives, evt/evtx,
 >```
 
 ### harfanglab-job-artifact-ramdump
+
 ***
 Start a job to get the entine RAM from a host (Windows / Linux)
 
@@ -1848,6 +2010,7 @@ Start a job to get the entine RAM from a host (Windows / Linux)
 #### Base Command
 
 `harfanglab-job-artifact-ramdump`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1863,8 +2026,11 @@ Start a job to get the entine RAM from a host (Windows / Linux)
 | Harfanglab.Job.Action | string | HarfangLab job action | 
 
 #### Command example
+
 ```!harfanglab-job-artifact-ramdump agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1886,6 +2052,7 @@ Start a job to get the entine RAM from a host (Windows / Linux)
 >```
 
 ### harfanglab-telemetry-network
+
 ***
 Search network connections
 
@@ -1893,6 +2060,7 @@ Search network connections
 #### Base Command
 
 `harfanglab-telemetry-network`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1914,8 +2082,11 @@ Search network connections
 | Harfanglab.Telemetrynetwork.network | unknown | Provides a list of network connections | 
 
 #### Command example
+
 ```!harfanglab-telemetry-network hostname="DC-01" limit=5```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -1985,6 +2156,7 @@ Search network connections
 #### Human Readable Output
 
 >### Network list
+>
 >|create date|hostname|image name|username|source address|source port|destination addr|destination port|direction|
 >|---|---|---|---|---|---|---|---|---|
 >| 2022-06-29T22:33:42.434000Z | DC-01 | C:\Windows\System32\svchost.exe | NT AUTHORITY\SYSTEM | (REDACTED) | 50000 | (REDACTED) | 443 | out |
@@ -1995,8 +2167,11 @@ Search network connections
 
 
 #### Command example
+
 ```!harfanglab-telemetry-network destination_address="(REDACTED)" limit=5```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -2066,6 +2241,7 @@ Search network connections
 #### Human Readable Output
 
 >### Network list
+>
 >|create date|hostname|image name|username|source address|source port|destination addr|destination port|direction|
 >|---|---|---|---|---|---|---|---|---|
 >| 2022-07-27T14:59:56.114000Z | WORKSTATION-1879 | C:\Windows\System32\svchost.exe | NT AUTHORITY\NETWORK SERVICE | (REDACTED) | 62787 | (REDACTED) | 80 | out |
@@ -2076,8 +2252,11 @@ Search network connections
 
 
 #### Command example
+
 ```!harfanglab-telemetry-network destination_address="(REDACTED)" from_date="2022-07-21T12:34:05" to_date="2022-07-21T12:34:15" limit=5```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -2103,12 +2282,14 @@ Search network connections
 #### Human Readable Output
 
 >### Network list
+>
 >|create date|hostname|image name|username|source address|source port|destination addr|destination port|direction|
 >|---|---|---|---|---|---|---|---|---|
 >| 2022-07-21T12:34:09.265000Z | WORKSTATION-4812 | C:\Windows\System32\svchost.exe | NT AUTHORITY\NETWORK SERVICE | (REDACTED) | 50363 | (REDACTED) | 80 | out |
 
 
 ### harfanglab-telemetry-eventlog
+
 ***
 Search event logs
 
@@ -2116,6 +2297,7 @@ Search event logs
 #### Base Command
 
 `harfanglab-telemetry-eventlog`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2134,8 +2316,11 @@ Search event logs
 | Harfanglab.Telemetryeventlog.eventlog | unknown | Provides a list of event logs | 
 
 #### Command example
+
 ```!harfanglab-telemetry-eventlog hostname="DC-01" limit=5```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -2225,6 +2410,7 @@ Search event logs
 #### Human Readable Output
 
 >### Event Log list
+>
 >|create date|hostname|event id|source name|log name|keywords|event data|level|
 >|---|---|---|---|---|---|---|---|
 >| 2022-07-28T07:29:29.327000Z | DC-01 | 7036 | Service Control Manager | System | Classic | param1: Software Protection<br/>param2: stopped<br/>Binary: 7300700070007300760063002F0031000000 | Information |
@@ -2235,8 +2421,11 @@ Search event logs
 
 
 #### Command example
+
 ```!harfanglab-telemetry-eventlog hostname="DC-01" event_id=4624 limit=5```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -2451,6 +2640,7 @@ Search event logs
 #### Human Readable Output
 
 >### Event Log list
+>
 >|create date|hostname|event id|source name|log name|keywords|event data|level|
 >|---|---|---|---|---|---|---|---|
 >| 2022-07-28T07:24:48.105000Z | DC-01 | 4624 | Microsoft-Windows-Security-Auditing | Security | Audit Success | SubjectUserSid: S-1-5-18<br/>SubjectUserName: DC-01$<br/>SubjectDomainName: WORKGROUP<br/>SubjectLogonId: 0x3e7<br/>TargetUserSid: S-1-5-18<br/>TargetUserName: SYSTEM<br/>TargetDomainName: NT AUTHORITY<br/>TargetLogonId: 0x3e7<br/>LogonType: 5<br/>LogonProcessName: Advapi  <br/>AuthenticationPackageName: Negotiate<br/>WorkstationName: -<br/>LogonGuid: {00000000-0000-0000-0000-000000000000}<br/>TransmittedServices: -<br/>LmPackageName: -<br/>KeyLength: 0<br/>ProcessId: 0x278<br/>ProcessName: C:\Windows\System32\services.exe<br/>IpAddress: -<br/>IpPort: -<br/>ImpersonationLevel: %%1833<br/>RestrictedAdminMode: -<br/>TargetOutboundUserName: -<br/>TargetOutboundDomainName: -<br/>VirtualAccount: %%1843<br/>TargetLinkedLogonId: 0x0<br/>ElevatedToken: %%1842 | Information |
@@ -2461,8 +2651,11 @@ Search event logs
 
 
 #### Command example
+
 ```!harfanglab-telemetry-eventlog event_id=4624 from_date="2022-07-21T21:25:34" to_date="2022-07-23T21:25:34" limit=5```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -2677,6 +2870,7 @@ Search event logs
 #### Human Readable Output
 
 >### Event Log list
+>
 >|create date|hostname|event id|source name|log name|keywords|event data|level|
 >|---|---|---|---|---|---|---|---|
 >| 2022-07-23T21:25:18.159000Z | WORKSTATION-1234 | 4624 | Microsoft-Windows-Security-Auditing | Security | Audit Success | SubjectUserSid: S-1-5-18<br/>SubjectUserName: WORKSTATION-123$<br/>SubjectDomainName: WORKGROUP<br/>SubjectLogonId: 0x3e7<br/>TargetUserSid: S-1-5-18<br/>TargetUserName: SYSTEM<br/>TargetDomainName: NT AUTHORITY<br/>TargetLogonId: 0x3e7<br/>LogonType: 5<br/>LogonProcessName: Advapi  <br/>AuthenticationPackageName: Negotiate<br/>WorkstationName: -<br/>LogonGuid: {00000000-0000-0000-0000-000000000000}<br/>TransmittedServices: -<br/>LmPackageName: -<br/>KeyLength: 0<br/>ProcessId: 0x280<br/>ProcessName: C:\Windows\System32\services.exe<br/>IpAddress: -<br/>IpPort: -<br/>ImpersonationLevel: %%1833<br/>RestrictedAdminMode: -<br/>TargetOutboundUserName: -<br/>TargetOutboundDomainName: -<br/>VirtualAccount: %%1843<br/>TargetLinkedLogonId: 0x0<br/>ElevatedToken: %%1842 | Information |
@@ -2687,6 +2881,7 @@ Search event logs
 
 
 ### harfanglab-telemetry-binary
+
 ***
 Search for binaries
 
@@ -2694,6 +2889,7 @@ Search for binaries
 #### Base Command
 
 `harfanglab-telemetry-binary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2713,8 +2909,11 @@ Search for binaries
 
 
 #### Command example
+
 ```!harfanglab-telemetry-binary hash=2577fb22e98a4585bedcccfe7fbb48a8b2e0b5ea4c41408247cba86e89ea2eb5```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -2738,12 +2937,14 @@ Search for binaries
 #### Human Readable Output
 
 >### Binary list
+>
 >|name|path|size|sha256|download link|
 >|---|---|---|---|---|
 >| hurukai | /opt/hurukai/hurukai | 5882824 | 2577fb22e98a4585bedcccfe7fbb48a8b2e0b5ea4c41408247cba86e89ea2eb5 | https://my_edr_stack:8443/api/data/telemetry/Binary/download/2577fb22e98a4585bedcccfe7fbb48a8b2e0b5ea4c41408247cba86e89ea2eb5/?hl_expiring_key=0123456789abcdef |
 
 
 ### harfanglab-telemetry-dns
+
 ***
 Search DNS resolutions
 
@@ -2751,6 +2952,7 @@ Search DNS resolutions
 #### Base Command
 
 `harfanglab-telemetry-dns`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2770,8 +2972,11 @@ Search DNS resolutions
 | Harfanglab.TelemetryDNS.resolutions | unknown | Provides a list of DNS resolutions | 
 
 #### Command example
+
 ```!harfanglab-telemetry-dns requested_name=download.windowsupdate.com hostname=webserver```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -3182,6 +3387,7 @@ Search DNS resolutions
 >```
 
 ### harfanglab-telemetry-authentication-windows
+
 ***
 Search Windows authentication telemetry
 
@@ -3189,6 +3395,7 @@ Search Windows authentication telemetry
 #### Base Command
 
 `harfanglab-telemetry-authentication-windows`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3211,8 +3418,11 @@ Search Windows authentication telemetry
 | Harfanglab.TelemetryWindowsAuthentications.authentications | unknown | Provides a list of Windows authentications | 
 
 #### Command example
+
 ```!harfanglab-telemetry-authentication-windows limit=5 target_username=vagrant```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -3320,6 +3530,7 @@ Search Windows authentication telemetry
 >```
 
 ### harfanglab-telemetry-authentication-linux
+
 ***
 Search Linux authentication telemetry
 
@@ -3327,6 +3538,7 @@ Search Linux authentication telemetry
 #### Base Command
 
 `harfanglab-telemetry-authentication-linux`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3348,6 +3560,7 @@ Search Linux authentication telemetry
 | Harfanglab.TelemetryLinuxAuthentications.authentications | unknown | Provides a list of Linux authentications | 
 
 ### harfanglab-telemetry-authentication-macos
+
 ***
 Search Macos authentication telemetry
 
@@ -3355,6 +3568,7 @@ Search Macos authentication telemetry
 #### Base Command
 
 `harfanglab-telemetry-authentication-macos`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3400,8 +3614,11 @@ Get the top N users who successfully authenticated on the host
 | Harfanglab.Authentications.Users | unknown | Provides a list of users who successfully authenticated on the host with interactive logon \(sorted per decreasing occurrence\) | 
 
 #### Command example
+
 ```!harfanglab-telemetry-authentication-users hostname=CL-Ep2-Win11 limit=4```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -3424,6 +3641,7 @@ Get the top N users who successfully authenticated on the host
 #### Human Readable Output
 
 >### Top None authentications
+>
 >|Username|Authentication attempts|
 >|---|---|
 >| CL-EP2-WIN11\hladmin | 4 |
@@ -3431,6 +3649,7 @@ Get the top N users who successfully authenticated on the host
 
 
 ### harfanglab-telemetry-process-graph
+
 ***
 Get a process graph
 
@@ -3438,6 +3657,7 @@ Get a process graph
 #### Base Command
 
 `harfanglab-telemetry-process-graph`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3452,8 +3672,11 @@ Get a process graph
 | Harfanglab.ProcessGraph | unknown | Process Graph | 
 
 #### Command example
+
 ```!harfanglab-telemetry-process-graph process_uuid=37d378de-b558-4597-e820-009fa44c4c03```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -4568,6 +4791,7 @@ Get a process graph
 
 
 ### harfanglab-job-info
+
 ***
 Get job status information
 
@@ -4575,6 +4799,7 @@ Get job status information
 #### Base Command
 
 `harfanglab-job-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4589,8 +4814,11 @@ Get job status information
 | Harfanglab.Job.Info | unknown | Job Status | 
 
 #### Command example
+
 ```!harfanglab-job-info ids="ba28f05f-e3c8-4eec-ab6a-01d639c14f2e,70b2cd7b-8a57-4a6c-aa7e-e392676fa7ac"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -4615,6 +4843,7 @@ Get job status information
 #### Human Readable Output
 
 >### Jobs Info
+>
 >|ID|Status|Creation date|
 >|---|---|---|
 >| ba28f05f-e3c8-4eec-ab6a-01d639c14f2e | finished | 2022-07-19 19:47:00 |
@@ -4622,6 +4851,7 @@ Get job status information
 
 
 ### harfanglab-result-pipelist
+
 ***
 Get a hostname's list of pipes from job results
 
@@ -4629,6 +4859,7 @@ Get a hostname's list of pipes from job results
 #### Base Command
 
 `harfanglab-result-pipelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4643,8 +4874,11 @@ Get a hostname's list of pipes from job results
 | Harfanglab.Pipe.data | unknown | Provides a list of named pipes | 
 
 #### Command example
+
 ```!harfanglab-result-pipelist job_id="f6cba4b2-e4a1-41b7-bdc0-0dcb6815d3ad"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -4686,6 +4920,7 @@ Get a hostname's list of pipes from job results
 #### Human Readable Output
 
 >### Pipe List
+>
 >|name|
 >|---|
 >| atsvc |
@@ -4718,6 +4953,7 @@ Get a hostname's list of pipes from job results
 
 
 ### harfanglab-result-prefetchlist
+
 ***
 Get a hostname's list of prefetches from job results
 
@@ -4725,6 +4961,7 @@ Get a hostname's list of prefetches from job results
 #### Base Command
 
 `harfanglab-result-prefetchlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4739,8 +4976,11 @@ Get a hostname's list of prefetches from job results
 | Harfanglab.Prefetch.data | unknown | Provides a list of prefetch files | 
 
 #### Command example
+
 ```!harfanglab-result-prefetchlist job_id="16834054-574b-4dc4-8981-9e6bb93e4529"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -4754,10 +4994,12 @@ Get a hostname's list of prefetches from job results
 #### Human Readable Output
 
 >### Prefetch List
+>
 >**No entries.**
 
 
 ### harfanglab-result-runkeylist
+
 ***
 Get a hostname's list of run keys from job results
 
@@ -4765,6 +5007,7 @@ Get a hostname's list of run keys from job results
 #### Base Command
 
 `harfanglab-result-runkeylist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4779,8 +5022,11 @@ Get a hostname's list of run keys from job results
 | Harfanglab.RunKey.data | unknown | Provides a list of Run Keys | 
 
 #### Command example
+
 ```!harfanglab-result-runkeylist job_id="704cac37-57df-4b70-8227-4a770b724108"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -4807,6 +5053,7 @@ Get a hostname's list of run keys from job results
 #### Human Readable Output
 
 >### RunKey List
+>
 >|name|fullpath|signed|md5|
 >|---|---|---|---|
 >| SecurityHealth | C:\Windows\system32\SecurityHealthSystray.exe | true | 37eea8b4d205b2300e79a9e96f2f7a46 |
@@ -4814,6 +5061,7 @@ Get a hostname's list of run keys from job results
 
 
 ### harfanglab-result-scheduledtasklist
+
 ***
 Get a hostname's list of scheduled tasks from job results
 
@@ -4821,6 +5069,7 @@ Get a hostname's list of scheduled tasks from job results
 #### Base Command
 
 `harfanglab-result-scheduledtasklist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4835,8 +5084,11 @@ Get a hostname's list of scheduled tasks from job results
 | Harfanglab.ScheduledTask.data | unknown | Provides a list of scheduled tasks | 
 
 #### Command example
+
 ```!harfanglab-result-scheduledtasklist job_id="f22b531a-b078-44fc-8d23-d06725548934"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -5769,6 +6021,7 @@ Get a hostname's list of scheduled tasks from job results
 #### Human Readable Output
 
 >### Scheduled Task List
+>
 >|name|fullpath|signed|md5|
 >|---|---|---|---|
 >| .NET Framework NGEN v4.0.30319 | C:\Windows\System32\mscoree.dll | true | 7ddb05ec3be80b951478e594294c0361 |
@@ -5927,6 +6180,7 @@ Get a hostname's list of scheduled tasks from job results
 
 
 ### harfanglab-result-driverlist
+
 ***
 Get a hostname's loaded drivers from job results
 
@@ -5934,6 +6188,7 @@ Get a hostname's loaded drivers from job results
 #### Base Command
 
 `harfanglab-result-driverlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5948,8 +6203,11 @@ Get a hostname's loaded drivers from job results
 | Harfanglab.Driver.data | unknown | Provides a list of loaded drivers | 
 
 #### Command example
+
 ```!harfanglab-result-driverlist job_id="d93fdb8c-2877-4625-a6a4-7d8642f7a02b"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -6674,6 +6932,7 @@ Get a hostname's loaded drivers from job results
 #### Human Readable Output
 
 >### Driver List
+>
 >|fullpath|signed|md5|
 >|---|---|---|
 >| C:\Windows\system32\ntoskrnl.exe | true | 10936de9161009cdf20e17450dcfff58 |
@@ -6821,6 +7080,7 @@ Get a hostname's loaded drivers from job results
 
 
 ### harfanglab-result-servicelist
+
 ***
 Get a hostname's list of services from job results
 
@@ -6828,6 +7088,7 @@ Get a hostname's list of services from job results
 #### Base Command
 
 `harfanglab-result-servicelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6842,8 +7103,11 @@ Get a hostname's list of services from job results
 | Harfanglab.Service.data | unknown | Provides a list of services | 
 
 #### Command example
+
 ```!harfanglab-result-servicelist job_id="bde92340-27da-4009-b310-5b7fa6e4fcb9"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -6928,6 +7192,7 @@ Get a hostname's list of services from job results
 #### Human Readable Output
 
 >### Scheduled Task List
+>
 >|name|fullpath|signed|md5|
 >|---|---|---|---|
 >| 1394ohci | C:\Windows\System32\drivers\1394ohci.sys | true | 809badbedd63ae4481fd65b8b20e8c0b |
@@ -6943,6 +7208,7 @@ Get a hostname's list of services from job results
 
 
 ### harfanglab-result-processlist
+
 ***
 Get a hostname's list of processes from job results
 
@@ -6950,6 +7216,7 @@ Get a hostname's list of processes from job results
 #### Base Command
 
 `harfanglab-result-processlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6964,8 +7231,11 @@ Get a hostname's list of processes from job results
 | Harfanglab.Process.data | unknown | Provides a list of processes | 
 
 #### Command example
+
 ```!harfanglab-result-processlist job_id="db793a9d-6d86-4fbf-8ee5-8836f04e14ff"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -7736,6 +8006,7 @@ Get a hostname's list of processes from job results
 #### Human Readable Output
 
 >### Process List
+>
 >|name|session|username|integrity|pid|ppid|cmdline|fullpath|signed|md5|
 >|---|---|---|---|---|---|---|---|---|---|
 >| AggregatorHost.exe | 0 | NT AUTHORITY\SYSTEM | System | 2588 | 1428 | AggregatorHost.exe | C:\Windows\System32\AggregatorHost.exe | true | 391ed483154f77cfdad1e2e0f9ce2001 |
@@ -7804,6 +8075,7 @@ Get a hostname's list of processes from job results
 
 
 ### harfanglab-result-networkconnectionlist
+
 ***
 Get a hostname's network connections from job results
 
@@ -7811,6 +8083,7 @@ Get a hostname's network connections from job results
 #### Base Command
 
 `harfanglab-result-networkconnectionlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7825,8 +8098,11 @@ Get a hostname's network connections from job results
 | Harfanglab.NetworkConnection.data | unknown | Provides a list of active network connections | 
 
 #### Command example
+
 ```!harfanglab-result-networkconnectionlist job_id="da31761f-003d-4abb-ab42-3d1737d75e7c"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -8345,6 +8621,7 @@ Get a hostname's network connections from job results
 #### Human Readable Output
 
 >### Network Connection List
+>
 >|state|protocol|version|src_addr|src_port|dst_addr|dst_port|fullpath|signed|md5|
 >|---|---|---|---|---|---|---|---|---|---|
 >| ESTABLISHED | TCP | IPv4 | (REDACTED) | 55267 | (REDACTED) | 443 | C:\Program Files\HarfangLab\hurukai.exe | true | 05049f1cadb8af2b6893e1ead33351c9 |
@@ -8392,6 +8669,7 @@ Get a hostname's network connections from job results
 
 
 ### harfanglab-result-networksharelist
+
 ***
 Get a hostname's network shares from job results
 
@@ -8399,6 +8677,7 @@ Get a hostname's network shares from job results
 #### Base Command
 
 `harfanglab-result-networksharelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8413,8 +8692,11 @@ Get a hostname's network shares from job results
 | Harfanglab.NetworkShare.data | unknown | Provides a list of network shares | 
 
 #### Command example
+
 ```!harfanglab-result-networksharelist job_id="3ec3821f-278b-4cf1-8fb8-11f4a1c431d5"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -8459,6 +8741,7 @@ Get a hostname's network shares from job results
 #### Human Readable Output
 
 >### Network Share List
+>
 >|Name|Caption|Description|Path|Status|Share type val|Share type|Hostname|
 >|---|---|---|---|---|---|---|---|
 >| ADMIN$ | Remote Admin | Remote Admin | C:\Windows | OK | 2147483648 | Disk Drive Admin | DC-01 |
@@ -8467,6 +8750,7 @@ Get a hostname's network shares from job results
 
 
 ### harfanglab-result-sessionlist
+
 ***
 Get a hostname's sessions from job results
 
@@ -8474,6 +8758,7 @@ Get a hostname's sessions from job results
 #### Base Command
 
 `harfanglab-result-sessionlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8488,8 +8773,11 @@ Get a hostname's sessions from job results
 | Harfanglab.Session.data | unknown | Provides a list of active sessions | 
 
 #### Command example
+
 ```!harfanglab-result-sessionlist job_id="01819f9a-44f5-42b6-9e1a-4efc3fadd48d"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -8608,6 +8896,7 @@ Get a hostname's sessions from job results
 #### Human Readable Output
 
 >### Session List
+>
 >|Logon Id|Authentication package|Logon type|Logon type str|Session start time|Hostname|
 >|---|---|---|---|---|---|
 >| 999 | NTLM | 0 | System | 2022-06-28T14:18:30.944000Z | DC-01 |
@@ -8626,6 +8915,7 @@ Get a hostname's sessions from job results
 
 
 ### harfanglab-result-persistencelist
+
 ***
 Get a hostname's persistence items from job results
 
@@ -8633,6 +8923,7 @@ Get a hostname's persistence items from job results
 #### Base Command
 
 `harfanglab-result-persistencelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8647,8 +8938,11 @@ Get a hostname's persistence items from job results
 | Harfanglab.Persistence.data | unknown | Provides a list of persistence means | 
 
 #### Command example
+
 ```!harfanglab-result-persistencelist job_id="8ee99c61-9c0e-4cfb-89ea-4aba01cbf1ed"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -8662,10 +8956,12 @@ Get a hostname's persistence items from job results
 #### Human Readable Output
 
 >### Linux persistence list
+>
 >**No entries.**
 
 
 ### harfanglab-result-ioc
+
 ***
 Get the list of items matching IOCs searched in an IOC job
 
@@ -8673,6 +8969,7 @@ Get the list of items matching IOCs searched in an IOC job
 #### Base Command
 
 `harfanglab-result-ioc`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8687,8 +8984,11 @@ Get the list of items matching IOCs searched in an IOC job
 | Harfanglab.IOC.data | unknown | Provides a list of matching elements | 
 
 #### Command example
+
 ```!harfanglab-result-ioc job_id="1680a62a-7a9c-456d-ae89-75788daa94e8"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -8713,12 +9013,14 @@ Get the list of items matching IOCs searched in an IOC job
 #### Human Readable Output
 
 >### IOC Found List
+>
 >|type|search_value|fullpath|signed|md5|
 >|---|---|---|---|---|
 >| filename | agent.ini | C:\Program Files\HarfangLab\agent.ini | false | f43c1ddce185d649e61deb4f3dfcf7c8 |
 
 
 ### harfanglab-result-startuplist
+
 ***
 Get a hostname's startup items from job results
 
@@ -8726,6 +9028,7 @@ Get a hostname's startup items from job results
 #### Base Command
 
 `harfanglab-result-startuplist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8740,8 +9043,11 @@ Get a hostname's startup items from job results
 | Harfanglab.Startup.data | unknown | Provides a list of startup files | 
 
 #### Command example
+
 ```!harfanglab-result-startuplist job_id="f1fac880-ade0-44c3-837f-486517565909"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -8755,10 +9061,12 @@ Get a hostname's startup items from job results
 #### Human Readable Output
 
 >### Startup List
+>
 >**No entries.**
 
 
 ### harfanglab-result-wmilist
+
 ***
 Get a hostname's WMI items from job results
 
@@ -8766,6 +9074,7 @@ Get a hostname's WMI items from job results
 #### Base Command
 
 `harfanglab-result-wmilist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8780,8 +9089,11 @@ Get a hostname's WMI items from job results
 | Harfanglab.Wmi.data | unknown | Provides a list of WMI items | 
 
 #### Command example
+
 ```!harfanglab-result-wmilist job_id="5219bfca-4a8b-4913-813f-446d88e28d99"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -8795,10 +9107,12 @@ Get a hostname's WMI items from job results
 #### Human Readable Output
 
 >### WMI List
+>
 >**No entries.**
 
 
 ### harfanglab-result-artifact-mft
+
 ***
 Get a hostname's MFT from job results
 
@@ -8806,6 +9120,7 @@ Get a hostname's MFT from job results
 #### Base Command
 
 `harfanglab-result-artifact-mft`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8820,8 +9135,11 @@ Get a hostname's MFT from job results
 | Harfanglab.Artifact.MFT | unknown | Provides a link to download the raw MFT | 
 
 #### Command example
+
 ```!harfanglab-result-artifact-mft job_id="10fae902-ddb0-48b8-bbd9-aa94e92f9222"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -8862,12 +9180,14 @@ Get a hostname's MFT from job results
 #### Human Readable Output
 
 >### MFT download list
+>
 >|hostname|msg|size|download link|
 >|---|---|---|---|
 >| DC-01 | got 0 hives, 1 mft, 0 USN, 0 prefetch, 0 logs files | 206045184 | https://my_edr_stack:8443/api/data/investigation/artefact/Artefact/uDV4NIIB3S3Gj-GSVFRk/download/?hl_expiring_key=0123456789abcdef |
 
 
 ### harfanglab-result-artifact-hives
+
 ***
 Get a hostname's hives from job results
 
@@ -8875,6 +9195,7 @@ Get a hostname's hives from job results
 #### Base Command
 
 `harfanglab-result-artifact-hives`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8889,8 +9210,11 @@ Get a hostname's hives from job results
 | Harfanglab.Artifact.HIVES | unknown | Provides a link to download the raw hives | 
 
 #### Command example
+
 ```!harfanglab-result-artifact-hives job_id="8a0b77e2-6c55-4bfb-89c5-377c2a3b6bf4"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -8931,12 +9255,14 @@ Get a hostname's hives from job results
 #### Human Readable Output
 
 >### HIVES download list
+>
 >|hostname|msg|size|download link|
 >|---|---|---|---|
 >| DC-01 | got 11 hives, 0 mft, 0 USN, 0 prefetch, 0 logs files | 91324416 | https://my_edr_stack:8443/api/data/investigation/artefact/Artefact/jDV2NIIB3S3Gj-GSkVSP/download/?hl_expiring_key=0123456789abcdef |
 
 
 ### harfanglab-result-artifact-evtx
+
 ***
 Get a hostname's log files from job results
 
@@ -8944,6 +9270,7 @@ Get a hostname's log files from job results
 #### Base Command
 
 `harfanglab-result-artifact-evtx`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8958,8 +9285,11 @@ Get a hostname's log files from job results
 | Harfanglab.Artifact.EVTX | unknown | Provides a link to download the evt/evtx files | 
 
 #### Command example
+
 ```!harfanglab-result-artifact-evtx job_id="43f4c7bf-ed15-4b1b-8b14-d71f48ad9077"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -9000,12 +9330,14 @@ Get a hostname's log files from job results
 #### Human Readable Output
 
 >### EVTX download list
+>
 >|hostname|msg|size|download link|
 >|---|---|---|---|
 >| DC-01 | got 0 hives, 0 mft, 0 USN, 0 prefetch, 133 logs files | 400969728 | https://my_edr_stack:8443/api/data/investigation/artefact/Artefact/SjV0NIIB3S3Gj-GS8FQF/download/?hl_expiring_key=0123456789abcdef |
 
 
 ### harfanglab-result-artifact-logs
+
 ***
 Get a hostname's log files from job results
 
@@ -9013,6 +9345,7 @@ Get a hostname's log files from job results
 #### Base Command
 
 `harfanglab-result-artifact-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9027,8 +9360,11 @@ Get a hostname's log files from job results
 | Harfanglab.Artifact.LOGS | unknown | Provides a link to download the log files | 
 
 #### Command example
+
 ```!harfanglab-result-artifact-logs job_id="eb957909-57cb-4f20-ad76-dc47aab5496f"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -9069,12 +9405,14 @@ Get a hostname's log files from job results
 #### Human Readable Output
 
 >### LOGS download list
+>
 >|hostname|msg|size|download link|
 >|---|---|---|---|
 >| DC-01 | got 0 hives, 0 mft, 0 USN, 0 prefetch, 0 logs files, 0 linux filesystem parse | 0 | https://my_edr_stack:8443/api/data/investigation/artefact/Artefact/mzV3NIIB3S3Gj-GSMlSI/download/?hl_expiring_key=0123456789abcdef |
 
 
 ### harfanglab-result-artifact-filesystem
+
 ***
 Get a hostname's filesystem entries from job results
 
@@ -9082,6 +9420,7 @@ Get a hostname's filesystem entries from job results
 #### Base Command
 
 `harfanglab-result-artifact-filesystem`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9096,8 +9435,11 @@ Get a hostname's filesystem entries from job results
 | Harfanglab.Artifact.FS | unknown | Provides a link to download the CSV file with filesystem entries | 
 
 #### Command example
+
 ```!harfanglab-result-artifact-filesystem job_id="210b72f7-7ee5-4e89-b3fb-8106e7a57bf7"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -9138,12 +9480,14 @@ Get a hostname's filesystem entries from job results
 #### Human Readable Output
 
 >### FS download list
+>
 >|hostname|msg|size|download link|
 >|---|---|---|---|
 >| DC-01 | got 0 hives, 0 mft, 0 USN, 0 prefetch, 0 logs files, 0 linux filesystem parse | 0 | https://my_edr_stack:8443/api/data/investigation/artefact/Artefact/ajV1NIIB3S3Gj-GShlQa/download/?hl_expiring_key=0123456789abcdef |
 
 
 ### harfanglab-result-artifact-all
+
 ***
 Get all artifacts from a hostname from job results
 
@@ -9151,6 +9495,7 @@ Get all artifacts from a hostname from job results
 #### Base Command
 
 `harfanglab-result-artifact-all`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9165,8 +9510,11 @@ Get all artifacts from a hostname from job results
 | Harfanglab.Artifact.ALL | unknown | Provides a link to download an archive with all raw artifacts | 
 
 #### Command example
+
 ```!harfanglab-result-artifact-all job_id="affe8871-c838-4c17-b5cb-fa30b6aeacfc"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -9207,12 +9555,14 @@ Get all artifacts from a hostname from job results
 #### Human Readable Output
 
 >### ALL download list
+>
 >|hostname|msg|size|download link|
 >|---|---|---|---|
 >| DC-01 | got 11 hives, 1 mft, 1 USN, 0 prefetch, 133 logs files | 734616576 | https://my_edr_stack:8443/api/data/investigation/artefact/Artefact/HDVyNIIB3S3Gj-GSsFTu/download/?hl_expiring_key=0123456789abcdef |
 
 
 ### harfanglab-result-artifact-downloadfile
+
 ***
 Get a hostname's file from job results
 
@@ -9220,6 +9570,7 @@ Get a hostname's file from job results
 #### Base Command
 
 `harfanglab-result-artifact-downloadfile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9234,8 +9585,11 @@ Get a hostname's file from job results
 | Harfanglab.DownloadFile.data | unknown | Provides a link to download the file | 
 
 #### Command example
+
 ```!harfanglab-result-artifact-downloadfile job_id="aa83c9e9-91de-4f6f-b2f3-f01c936c4ee6"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -9256,12 +9610,14 @@ Get a hostname's file from job results
 #### Human Readable Output
 
 >### file download list
+>
 >|hostname|msg|size|download link|
 >|---|---|---|---|
 >| DC-01 | 1 file(s) downloaded | 1688 | https://my_edr_stack:8443/api/data/investigation/artefact/Artefact/MTVzNIIB3S3Gj-GSxFQ5/download/?hl_expiring_key=0123456789abcdef |
 
 
 ### harfanglab-result-artifact-ramdump
+
 ***
 Get a hostname's RAM dump from job results
 
@@ -9269,6 +9625,7 @@ Get a hostname's RAM dump from job results
 #### Base Command
 
 `harfanglab-result-artifact-ramdump`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9283,8 +9640,11 @@ Get a hostname's RAM dump from job results
 | Harfanglab.Ramdump.data | unknown | Provides a link to download the raw RAM dump | 
 
 #### Command example
+
 ```!harfanglab-result-artifact-ramdump job_id="539456d8-872c-4e60-a28b-210ffcd4c7c4"```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -9305,12 +9665,14 @@ Get a hostname's RAM dump from job results
 #### Human Readable Output
 
 >### Ramdump list
+>
 >|hostname|msg|size|download link|
 >|---|---|---|---|
 >| DC-01 | 1 file(s) downloaded | 1080819582 | https://my_edr_stack:8443/api/data/investigation/artefact/Artefact/_TV7NIIB3S3Gj-GSBVTv/download/?hl_expiring_key=0123456789abcdef |
 
 
 ### harfanglab-hunt-search-hash
+
 ***
 Command used to search a hash IOC in database
 
@@ -9318,6 +9680,7 @@ Command used to search a hash IOC in database
 #### Base Command
 
 `harfanglab-hunt-search-hash`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9332,8 +9695,11 @@ Command used to search a hash IOC in database
 | Harfanglab.Hash | unknown | Provides statistics associated to currently running processes and previously executed processes associated to hash | 
 
 #### Command example
+
 ```!harfanglab-hunt-search-hash hash=2198a7b58bccb758036b969ddae6cc2ece07565e2659a7c541a313a0492231a3```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -9349,12 +9715,14 @@ Command used to search a hash IOC in database
 #### Human Readable Output
 
 >### Hash search results
+>
 >|curr_running|hash|prev_runned|
 >|---|---|---|
 >| 0 | 2198a7b58bccb758036b969ddae6cc2ece07565e2659a7c541a313a0492231a3 | 8994 |
 
 
 ### harfanglab-hunt-search-running-process-hash
+
 ***
 Command used to search running process associated with Hash
 
@@ -9362,6 +9730,7 @@ Command used to search running process associated with Hash
 #### Base Command
 
 `harfanglab-hunt-search-running-process-hash`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9376,8 +9745,11 @@ Command used to search running process associated with Hash
 | Harfanglab.HuntRunningProcessSearch.data | unknown | List of all systems where processes associated to hash are running | 
 
 #### Command example
+
 ```!harfanglab-hunt-search-running-process-hash hash=2198a7b58bccb758036b969ddae6cc2ece07565e2659a7c541a313a0492231a3```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -9391,10 +9763,12 @@ Command used to search running process associated with Hash
 #### Human Readable Output
 
 >### War room overview
+>
 >**No entries.**
 
 
 ### harfanglab-hunt-search-runned-process-hash
+
 ***
 Command used to search runned process associated with Hash
 
@@ -9402,6 +9776,7 @@ Command used to search runned process associated with Hash
 #### Base Command
 
 `harfanglab-hunt-search-runned-process-hash`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9416,8 +9791,11 @@ Command used to search runned process associated with Hash
 | Harfanglab.HuntRunnedProcessSearch.data | unknown | List of all systems where processes associated to hash have been previously running | 
 
 #### Command example
+
 ```!harfanglab-hunt-search-runned-process-hash hash=2198a7b58bccb758036b969ddae6cc2ece07565e2659a7c541a313a0492231a3```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -9632,6 +10010,7 @@ Command used to search runned process associated with Hash
 #### Human Readable Output
 
 >### War room overview
+>
 >|Hostname|Domain|Username|OS|Binary Path|Create timestamp|
 >|---|---|---|---|---|---|
 >| WORKSTATION-4812 | WORKGROUP | NT AUTHORITY\LOCAL SERVICE | Windows 10 Enterprise Evaluation 10.0.19041 | C:\Windows\System32\wbem\WmiPrvSE.exe | 2019-10-16T23:45:21Z |
@@ -9647,6 +10026,7 @@ Command used to search runned process associated with Hash
 
 
 ### harfanglab-isolate-endpoint
+
 ***
 Command used to isolate an endpoint from the network while remaining connected to the EDR manager
 
@@ -9654,6 +10034,7 @@ Command used to isolate an endpoint from the network while remaining connected t
 #### Base Command
 
 `harfanglab-isolate-endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9664,8 +10045,11 @@ Command used to isolate an endpoint from the network while remaining connected t
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!harfanglab-isolate-endpoint agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Human Readable Output
 
 >```
@@ -9676,6 +10060,7 @@ There is no context output for this command.
 >```
 
 ### harfanglab-deisolate-endpoint
+
 ***
 Command used to deisolate an endpoint and reconnect it to the network
 
@@ -9683,6 +10068,7 @@ Command used to deisolate an endpoint and reconnect it to the network
 #### Base Command
 
 `harfanglab-deisolate-endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9693,8 +10079,11 @@ Command used to deisolate an endpoint and reconnect it to the network
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!harfanglab-deisolate-endpoint agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"```
+
 #### Human Readable Output
 
 >```
@@ -9705,6 +10094,7 @@ There is no context output for this command.
 >```
 
 ### harfanglab-change-security-event-status
+
 ***
 Command used to change the status of a security event
 
@@ -9712,6 +10102,7 @@ Command used to change the status of a security event
 #### Base Command
 
 `harfanglab-change-security-event-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9723,8 +10114,11 @@ Command used to change the status of a security event
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!harfanglab-change-security-event-status security_event_id="QCzd2IEB3S3Gj-GS6z9S" status=Investigating ```
+
 #### Human Readable Output
 
 >```
@@ -9734,6 +10128,7 @@ There is no context output for this command.
 >```
 
 ### harfanglab-assign-policy-to-agent
+
 ***
 Assign a policy to an agent
 
@@ -9741,6 +10136,7 @@ Assign a policy to an agent
 #### Base Command
 
 `harfanglab-assign-policy-to-agent`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9752,8 +10148,11 @@ Assign a policy to an agent
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!harfanglab-assign-policy-to-agent agentid=0fae71cf-ebde-4533-a50c-b3c0290378db policy="No psexec"```
+
 #### Human Readable Output
 
 >```
@@ -9763,6 +10162,7 @@ There is no context output for this command.
 >```
 
 ### harfanglab-add-ioc-to-source
+
 ***
 Add an IOC to a Threat Intelligence source
 
@@ -9770,6 +10170,7 @@ Add an IOC to a Threat Intelligence source
 #### Base Command
 
 `harfanglab-add-ioc-to-source`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9784,8 +10185,11 @@ Add an IOC to a Threat Intelligence source
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!harfanglab-add-ioc-to-source ioc_value=0004ffbd9a1a1acd44f4859c39a49639babe515434ca34bec603598b50211bab ioc_type=hash ioc_status=stable source_name="Industrial Spy"```
+
 #### Human Readable Output
 
 >```
@@ -9795,6 +10199,7 @@ There is no context output for this command.
 >```
 
 ### harfanglab-delete-ioc-from-source
+
 ***
 Delete an IOC from a Threat Intelligence source
 
@@ -9802,6 +10207,7 @@ Delete an IOC from a Threat Intelligence source
 #### Base Command
 
 `harfanglab-delete-ioc-from-source`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9813,8 +10219,11 @@ Delete an IOC from a Threat Intelligence source
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!harfanglab-delete-ioc-from-source ioc_value=0004ffbd9a1a1acd44f4859c39a49639babe515434ca34bec603598b50211bab source_name="Industrial Spy"```
+
 #### Human Readable Output
 
 >```
@@ -9824,6 +10233,7 @@ There is no context output for this command.
 >```
 
 ### harfanglab-whitelist-add
+
 ***
 Add a whitelist
 
@@ -9831,6 +10241,7 @@ Add a whitelist
 #### Base Command
 
 `harfanglab-whitelist-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9851,8 +10262,11 @@ Add a whitelist
 | Harfanglab.Whitelists | unknown | Whitelists | 
 
 #### Command example
+
 ```!harfanglab-whitelist-add target=all field=process.hashes.sha256 operator=eq value=dcaabeb77b7e02eb31269f1ee0dcbb30e92233c2a26ba22a3be02fcf01bd2514 comment="Example of whitelist for all detection engines" case_insensitive=true```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -9914,6 +10328,7 @@ Add a whitelist
 >```
 
 ### harfanglab-whitelist-add-criterion
+
 ***
 Add a criterion to an existing whitelist
 
@@ -9921,6 +10336,7 @@ Add a criterion to an existing whitelist
 #### Base Command
 
 `harfanglab-whitelist-add-criterion`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9939,8 +10355,11 @@ Add a criterion to an existing whitelist
 | Harfanglab.Whitelists | unknown | Whitelists | 
 
 #### Command example
+
 ```!harfanglab-whitelist-add-criterion id=2518 field=process.commandline operator=contains value=cmd.exe```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -10021,6 +10440,7 @@ Add a criterion to an existing whitelist
 
 
 ### harfanglab-whitelist-search
+
 ***
 Search whitelists from a keyword
 
@@ -10028,6 +10448,7 @@ Search whitelists from a keyword
 #### Base Command
 
 `harfanglab-whitelist-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -10043,8 +10464,11 @@ Search whitelists from a keyword
 | Harfanglab.Whitelists | unknown | Whitelists | 
 
 #### Command example
+
 ```!harfanglab-whitelist-search keyword=cmd.exe```
+
 #### Context Example
+
 ```json
 {
     "Harfanglab": {
@@ -10131,6 +10555,7 @@ Search whitelists from a keyword
 >```
 
 ### harfanglab-whitelist-delete
+
 ***
 Delete a whitelist
 
@@ -10138,6 +10563,7 @@ Delete a whitelist
 #### Base Command
 
 `harfanglab-whitelist-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -10148,13 +10574,17 @@ Delete a whitelist
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!harfanglab-whitelist-delete id=2518```
+
 #### Human Readable Output
 
 >None
 
 ### harfanglab-endpoint-search
+
 ***
 Search for endpoint information from a hostname
 
@@ -10162,6 +10592,7 @@ Search for endpoint information from a hostname
 #### Base Command
 
 `harfanglab-endpoint-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

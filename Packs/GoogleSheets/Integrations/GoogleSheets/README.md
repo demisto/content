@@ -13,12 +13,16 @@ This integration was integrated and tested with version 4 of Google Sheets API.
 
 
 ## Known limitations
+
 You can only delete a spreadsheet with the Google Drive integrations. 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### google-sheets-spreadsheet-create
+
 ***
 Create a new spreadsheet.
 
@@ -26,6 +30,7 @@ Create a new spreadsheet.
 #### Base Command
 
 `google-sheets-spreadsheet-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -48,8 +53,11 @@ Create a new spreadsheet.
 | GoogleSheets.Spreadsheet.spreadsheetId | Unknown | Spreadsheet ID. | 
 
 #### Command example
+
 ```!google-sheets-spreadsheet-create title=NewSpreadsheet sheet_title=newSheetTitle cell_format_backgroundColor=1,1,1,1 cell_format_textformat_font_size=11 cell_format_type=TEXT```
+
 #### Context Example
+
 ```json
 {
     "GoogleSheets": {
@@ -209,12 +217,14 @@ Create a new spreadsheet.
 #### Human Readable Output
 
 >### Success
+>
 >|spreadsheet Id|spreadsheet title|
 >|---|---|
 >| 1yRsYph-litbiP4opkjzWwVzJ3ZyOybYL5D2f840-uog | NewSpreadsheet |
 
 
 ### google-sheets-spreadsheet-get
+
 ***
 Returns the spreadsheet of the given ID. If include_grid_data is set to true and no ranges given, will defaultly return the first 500 rows and 20 columns of the first sheet.
 
@@ -222,6 +232,7 @@ Returns the spreadsheet of the given ID. If include_grid_data is set to true and
 #### Base Command
 
 `google-sheets-spreadsheet-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -245,8 +256,11 @@ Returns the spreadsheet of the given ID. If include_grid_data is set to true and
 | GoogleSheets.Spreadsheet.sheets.rowData | Unknown | Sheet row data. | 
 
 #### Command example
+
 ```!google-sheets-spreadsheet-get spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk```
+
 #### Context Example
+
 ```json
 {
     "GoogleSheets": {
@@ -284,12 +298,15 @@ Returns the spreadsheet of the given ID. If include_grid_data is set to true and
 #### Human Readable Output
 
 >### Success
+>
 >### NewSpreadsheet
+>
 >|spreadsheet Id|spreadsheet url|
 >|---|---|
 >| 1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk | https:<span>//</span>docs.google.com/spreadsheets/d/1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk/edit?ouid=103020731686044834269 |
 >
 >### Content
+>
 >|SheetId|Sheet title|
 >|---|---|
 >| 0 | Sheet1 |
@@ -297,37 +314,49 @@ Returns the spreadsheet of the given ID. If include_grid_data is set to true and
 
 
 #### Command example
+
 ```!google-sheets-spreadsheet-get spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk,1meYzOYg7oCK7zYGBJu_hw3iQ_oEvJ6EecCBOV8ZQvFA```
+
 #### Human Readable Output
 
 >### Success
 >
 >### NewSpreadsheet
+>
 >|spreadsheet Id|spreadsheet url|
 >|---|---|
 >| 1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk | https:<span>//</span>docs.google.com/spreadsheets/d/1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk/edit?ouid=103020731686044834269 |
 >
 >### Content
+>
 >|SheetId|Sheet title|
 >|---|---|
 >| 0 | Sheet1 |
 >| 3 | newSheetTitle |
+>
 >---
+>
 >### SpreadSheet2
+>
 >|spreadsheet Id|spreadsheet url|
 >|---|---|
 >| 1meYzOYg7oCK7zYGBJu_hw3iQ_oEvJ6EecCBOV8ZQvFA | https:<span>//</span>docs.google.com/spreadsheets/d/1meYzOYg7oCK7zYGBJu_hw3iQ_oEvJ6EecCBOV8ZQvFA/edit?ouid=103020731686044834269 |
 >
 >### Content
+>
 >|SheetId|Sheet title|
 >|---|---|
 >| 1144878200 | Sheet1 |
+>
 >---
 
 
 #### Command example
+
 ```!google-sheets-spreadsheet-get spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk include_grid_data=true ranges=newSheetTitle!A1:F10```
+
 #### Context Example
+
 ```json
 {
     "GoogleSheets": {
@@ -395,11 +424,13 @@ Returns the spreadsheet of the given ID. If include_grid_data is set to true and
 #### Human Readable Output
 
 >### Success
+>
 >|spreadsheet Id|spreadsheet url|
 >|---|---|
 >| 1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk | https:<span>//</span>docs.google.com/spreadsheets/d/1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk/edit?ouid=103020731686044834269 |
 >
 >### ***Name: newSheetTitle     Sheet Id: 3***
+>
 >|col 0 |col 1 |col 2 |col 3 |col 4 |
 >|-------------- | -------------- | -------------- | -------------- | -------------- | 
 >|a |b |c |d |! |
@@ -410,6 +441,7 @@ Returns the spreadsheet of the given ID. If include_grid_data is set to true and
 
 
 ### google-sheets-sheet-create
+
 ***
 Adds a new sheet. When a sheet is added at a given index, all subsequent sheet indexes are incremented.
 
@@ -417,6 +449,7 @@ Adds a new sheet. When a sheet is added at a given index, all subsequent sheet i
 #### Base Command
 
 `google-sheets-sheet-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -443,13 +476,16 @@ Adds a new sheet. When a sheet is added at a given index, all subsequent sheet i
 | GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
+
 ```!google-sheets-sheet-create spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk sheet_title=newSheetTitle sheet_id=3 sheet_index=2 tab_color=1,1,1,1 right_to_left=false```
+
 #### Human Readable Output
 
 >### Success
 
 
 ### google-sheets-sheet-duplicate
+
 ***
 Duplicates the contents of a sheet.
 
@@ -457,6 +493,7 @@ Duplicates the contents of a sheet.
 #### Base Command
 
 `google-sheets-sheet-duplicate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -479,8 +516,11 @@ Duplicates the contents of a sheet.
 | GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
+
 ```!google-sheets-sheet-duplicate new_sheet_name=duplicated_sheet spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk source_sheet_id=3 echo_spreadsheet=true```
+
 #### Context Example
+
 ```json
 {
     "GoogleSheets": {
@@ -731,12 +771,15 @@ Duplicates the contents of a sheet.
 #### Human Readable Output
 
 >### Success
+>
 >### NewSpreadsheet
+>
 >|spreadsheet Id|spreadsheet url|
 >|---|---|
 >| 1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk | https:<span>//</span>docs.google.com/spreadsheets/d/1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk/edit?ouid=103020731686044834269 |
 >
 >### Content
+>
 >|SheetId|Sheet title|
 >|---|---|
 >| 2030116478 | duplicated_sheet |
@@ -745,6 +788,7 @@ Duplicates the contents of a sheet.
 
 
 ### google-sheets-sheet-copy-to
+
 ***
 Copies a single sheet from a spreadsheet to another spreadsheet.
 
@@ -752,6 +796,7 @@ Copies a single sheet from a spreadsheet to another spreadsheet.
 #### Base Command
 
 `google-sheets-sheet-copy-to`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -764,13 +809,17 @@ Copies a single sheet from a spreadsheet to another spreadsheet.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!google-sheets-sheet-copy-to source_sheet_id=3 source_spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk destination_spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk```
+
 #### Human Readable Output
 
 >### Success
 
 ### google-sheets-sheet-delete
+
 ***
 Delete a sheet from a spreadsheet by ID.
 
@@ -778,6 +827,7 @@ Delete a sheet from a spreadsheet by ID.
 #### Base Command
 
 `google-sheets-sheet-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -798,13 +848,16 @@ Delete a sheet from a spreadsheet by ID.
 | GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
+
 ```!google-sheets-sheet-delete sheet_id=3 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk```
+
 #### Human Readable Output
 
 >### Success
 
 
 ### google-sheets-sheet-clear
+
 ***
 Clears values from a spreadsheet. The caller must specify the spreadsheet ID and range. Only values are cleared. All other properties of the cell (such as formatting, data validation, etc..) are kept.
 
@@ -812,6 +865,7 @@ Clears values from a spreadsheet. The caller must specify the spreadsheet ID and
 #### Base Command
 
 `google-sheets-sheet-clear`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -831,18 +885,23 @@ Clears values from a spreadsheet. The caller must specify the spreadsheet ID and
 | GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
+
 ```!google-sheets-sheet-clear spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk range=newSheetTitle!2:2```
+
 #### Human Readable Output
 
 >### Success
 
 #### Command example
+
 ```!google-sheets-sheet-clear range=newSheetTitle spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk```
+
 #### Human Readable Output
 
 >### Success
 
 ### google-sheets-range-delete
+
 ***
 Deletes a range of cells, shifting other cells into the deleted area.
 
@@ -850,6 +909,7 @@ Deletes a range of cells, shifting other cells into the deleted area.
 #### Base Command
 
 `google-sheets-range-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -875,13 +935,16 @@ Deletes a range of cells, shifting other cells into the deleted area.
 | GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
+
 ```!google-sheets-range-delete spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk sheet_id=3 shift_dimension=COLUMNS start_row_index=0 end_row_index=2 start_column_index=0 end_column_index=2```
+
 #### Human Readable Output
 
 >### Success
 
 
 ### google-sheets-dimension-delete
+
 ***
 Deletes the dimensions from the sheet. Note that the indexing starts from 0.
 
@@ -889,6 +952,7 @@ Deletes the dimensions from the sheet. Note that the indexing starts from 0.
 #### Base Command
 
 `google-sheets-dimension-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -912,8 +976,11 @@ Deletes the dimensions from the sheet. Note that the indexing starts from 0.
 | GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
+
 ```!google-sheets-dimension-delete dimension_type=ROWS sheet_id=3 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk start_index=0 end_index=3 echo_spreadsheet=true```
+
 #### Context Example
+
 ```json
 {
     "GoogleSheets": {
@@ -1115,12 +1182,15 @@ Deletes the dimensions from the sheet. Note that the indexing starts from 0.
 #### Human Readable Output
 
 >### Success
+>
 >### NewSpreadsheet
+>
 >|spreadsheet Id|spreadsheet url|
 >|---|---|
 >| 1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk | https:<span>//</span>docs.google.com/spreadsheets/d/1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk/edit?ouid=103020731686044834269 |
 >
 >### Content
+>
 >|SheetId|Sheet title|
 >|---|---|
 >| 0 | Sheet1 |
@@ -1128,6 +1198,7 @@ Deletes the dimensions from the sheet. Note that the indexing starts from 0.
 
 
 ### google-sheets-data-paste
+
 ***
 Inserts data into the spreadsheet starting at the specified coordinate.
 
@@ -1135,6 +1206,7 @@ Inserts data into the spreadsheet starting at the specified coordinate.
 #### Base Command
 
 `google-sheets-data-paste`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1160,13 +1232,16 @@ Inserts data into the spreadsheet starting at the specified coordinate.
 | GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
+
 ```!google-sheets-data-paste column_index=0 row_index=2 data_kind=delimiter data=1,2,3,4,5 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk sheet_id=3```
+
 #### Human Readable Output
 
 >### Success
 
 
 ### google-sheets-find-replace
+
 ***
 Finds and replaces data in cells over a range, sheet, or all sheets.
 
@@ -1174,6 +1249,7 @@ Finds and replaces data in cells over a range, sheet, or all sheets.
 #### Base Command
 
 `google-sheets-find-replace`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1204,13 +1280,16 @@ Finds and replaces data in cells over a range, sheet, or all sheets.
 | GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
+
 ```!google-sheets-find-replace find=e replacement=! spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk all_sheets=True```
+
 #### Human Readable Output
 
 >### Success
 
 
 ### google-sheets-value-update
+
 ***
 Sets values in a range of a spreadsheet. The caller must specify the spreadsheet ID, range, and a valueInputOption.
 
@@ -1218,6 +1297,7 @@ Sets values in a range of a spreadsheet. The caller must specify the spreadsheet
 #### Base Command
 
 `google-sheets-value-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1232,14 +1312,18 @@ Sets values in a range of a spreadsheet. The caller must specify the spreadsheet
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!google-sheets-value-update input_option=RAW major_dimension=ROWS range=newSheetTitle!A1:E5 values=[a,b,c,d,e],[a,b,c,d,e],[a,b,c,d,e],[a,b,c,d,e],[a,b,c,d,e] spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk```
+
 #### Human Readable Output
 
 >### Success
 
 
 ### google-sheets-value-append
+
 ***
 Appends values to a spreadsheet. The input range is used to search for existing data and find a "table" within that range. Values will be appended to the next row of the table, starting with the first column of the table. See the guide (https://developers.google.com/sheets/api/guides/values#appending_values) and sample code (https://developers.google.com/sheets/api/samples/writing#append_values) for specific details of how tables are detected and data is appended. The caller must specify the spreadsheet ID, range, and a valueInputOption. The valueInputOption only controls how the input data will be added to the sheet (column-wise or row-wise), it does not influence what cell the data starts being written to.
 
@@ -1247,6 +1331,7 @@ Appends values to a spreadsheet. The input range is used to search for existing 
 #### Base Command
 
 `google-sheets-value-append`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1262,14 +1347,18 @@ Appends values to a spreadsheet. The input range is used to search for existing 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!google-sheets-value-append insert_option=OVERWRITE major_dimension=ROWS range=newSheetTitle!A1:D5 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk input_option=RAW values=[77,77,77],[777,777,777]```
+
 #### Human Readable Output
 
 >### Success
 
 
 ### google-sheets-spreadsheet-update
+
 ***
 This is a custom update command, used to apply any of the Google Sheets API options. Applies one or more updates to the spreadsheet. Each request is validated before being applied. If any request is not valid, the entire request will fail and nothing will be applied.
 
@@ -1277,6 +1366,7 @@ This is a custom update command, used to apply any of the Google Sheets API opti
 #### Base Command
 
 `google-sheets-spreadsheet-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1297,7 +1387,9 @@ This is a custom update command, used to apply any of the Google Sheets API opti
 | GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
+
 ```!google-sheets-spreadsheet-update spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk requests=`{"requests": [{"copyPaste": {"destination": {"startRowIndex": 0, "startColumnIndex": 0, "endRowIndex": 5, "endColumnIndex": 5, "sheetId": 3}, "pasteOrientation": "TRANSPOSE", "source": {"sheetId": 3, "startRowIndex": 0, "startColumnIndex": 0, "endColumnIndex": 5, "endRowIndex": 5}, "pasteType": "PASTE_NORMAL"}}]}````
+
 #### Human Readable Output
 
 >### Success

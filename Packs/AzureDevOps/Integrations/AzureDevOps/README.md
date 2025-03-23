@@ -1,4 +1,5 @@
 # Azure DevOps
+
 Manage Git repositories in Azure DevOps Services. Integration capabilities include retrieving, creating, and updating pull requests. Run pipelines and retrieve git information.
 
 ## Configure AzureDevOps in Cortex
@@ -86,6 +87,7 @@ To use the [device authorization grant flow](https://docs.microsoft.com/en-us/az
 Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
 *Note:* In the *Select members* section, assign the application you created earlier.
 To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
+
    1. In the **Authentication Type** field, select the **Client Credentials** option.
    2. In the **Application ID** field, enter your Client/Application ID.
    3. In the **Tenant ID** field, enter your Tenant ID .
@@ -94,14 +96,18 @@ To configure a Microsoft integration that uses this authorization flow with a se
    6. Save the instance.
     
 ### Testing authentication and connectivity
+
 If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure DevOps service run the ***!azure-devops-auth-test*** command. 
 
 If you are using Client Credentials Flow, click **Test** when you are configuring the instance.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-devops-auth-test
+
 ***
 Tests the connectivity to Azure.
 
@@ -109,6 +115,7 @@ Tests the connectivity to Azure.
 #### Base Command
 
 `azure-devops-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -118,6 +125,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-devops-auth-test```
 
 #### Human Readable Output
@@ -125,12 +133,14 @@ There is no context output for this command.
 >Success!
 
 ### azure-devops-generate-login-url
+
 ***
 Generate the login url used for Authorization code flow.
 
 #### Base Command
 
 `azure-devops-generate-login-url`
+
 #### Input
 
 There are no input arguments for this command.
@@ -140,11 +150,13 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```azure-devops-generate-login-url```
 
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 >```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -154,6 +166,7 @@ and paste it in your instance configuration under the **Authorization code** par
 
 
 ### azure-devops-auth-start
+
 ***
 Run this command to start the authorization process and follow the instructions in the command results.
 
@@ -161,6 +174,7 @@ Run this command to start the authorization process and follow the instructions 
 #### Base Command
 
 `azure-devops-auth-start`
+
 #### Input
 
 There are no input arguments for this command.
@@ -170,16 +184,19 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-devops-auth-start```
 
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
 >and enter the code *XXXX** to authenticate.
 >2. Run the **!azure-devops-auth-complete** command in the War Room.
 
 ### azure-devops-auth-complete
+
 ***
 Run this command to complete the authorization process. Should be used after running the azure-devops-auth-start command.
 
@@ -187,6 +204,7 @@ Run this command to complete the authorization process. Should be used after run
 #### Base Command
 
 `azure-devops-auth-complete`
+
 #### Input
 
 There are no input arguments for this command.
@@ -196,6 +214,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-devops-auth-complete```
 
 #### Human Readable Output
@@ -203,12 +222,14 @@ There is no context output for this command.
 >Authorization completed successfully.
 
 ### azure-devops-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
 #### Base Command
 
 `azure-devops-auth-reset`
+
 #### Input
 
 There are no input arguments for this command.
@@ -218,6 +239,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-devops-auth-reset```
 
 #### Human Readable Output
@@ -225,6 +247,7 @@ There is no context output for this command.
 >Authorization was reset successfully. Run **!azure-devops-auth-start** to start the authentication process.
 
 ### get-mapping-fields
+
 ***
 Get mapping fields from remote incident. Please note that this method will not update the current incident. It's here for debugging purposes.
 
@@ -232,6 +255,7 @@ Get mapping fields from remote incident. Please note that this method will not u
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 There are no input arguments for this command.
@@ -241,6 +265,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -248,6 +273,7 @@ There is no context output for this command.
 
 
 ### azure-devops-pipeline-run
+
 ***
 Run a pipeline. A DevOps pipeline is a set of automated processes and tools that allows both developers and operations professionals to work cohesively to build and deploy code to a production environment.
 
@@ -255,6 +281,7 @@ Run a pipeline. A DevOps pipeline is a set of automated processes and tools that
 #### Base Command
 
 `azure-devops-pipeline-run`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -283,9 +310,11 @@ Run a pipeline. A DevOps pipeline is a set of automated processes and tools that
 
 
 #### Command Example
+
 ```!azure-devops-pipeline-run project="xsoar" pipeline_id="1" branch_name="main"```
 
 #### Context Example
+
 ```json
 {
     "AzureDevOps": {
@@ -338,12 +367,14 @@ Run a pipeline. A DevOps pipeline is a set of automated processes and tools that
 #### Human Readable Output
 
 >### Pipeline Run Information:
+>
 >|Pipeline Id|Run State|Creation Date|Run Id|Result|
 >|---|---|---|---|---|
 >| 1 | inProgress | 2021-11-30T08:57:03.110121+00:00 | 1154 | unknown |
 
 
 ### azure-devops-user-add
+
 ***
 Add a user, assign the user a license and extensions, and make the user a member of a project group in an account.
 
@@ -351,6 +382,7 @@ Add a user, assign the user a license and extensions, and make the user a member
 #### Base Command
 
 `azure-devops-user-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -369,9 +401,11 @@ Add a user, assign the user a license and extensions, and make the user a member
 
 
 #### Command Example
+
 ```!azure-devops-user-add user_email="user1@xsoar.com" account_license_type="express" group_type="projectContributor" project_id="xsoar-project"```
 
 #### Context Example
+
 ```json
 {
     "AzureDevOps": {
@@ -429,12 +463,14 @@ Add a user, assign the user a license and extensions, and make the user a member
 #### Human Readable Output
 
 >### User Information:
+>
 >|Id|Account License Type|Last Accessed Date|
 >|---|---|---|
 >| XXXX | express | 0001-01-01T00:00:00Z |
 
 
 ### azure-devops-user-remove
+
 ***
 Remove the user from all project memberships.
 
@@ -442,6 +478,7 @@ Remove the user from all project memberships.
 #### Base Command
 
 `azure-devops-user-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -454,6 +491,7 @@ Remove the user from all project memberships.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-devops-user-remove user_id="XXXX"```
 
 #### Human Readable Output
@@ -461,6 +499,7 @@ There is no context output for this command.
 >User XXXX was successfully removed from the organization.
 
 ### azure-devops-pull-request-create
+
 ***
 Create a new pull request.
 
@@ -468,6 +507,7 @@ Create a new pull request.
 #### Base Command
 
 `azure-devops-pull-request-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -509,9 +549,11 @@ Create a new pull request.
 
 
 #### Command Example
+
 ```!azure-devops-pull-request-create project="xsoar" repository_id="XXXX" source_branch="test-test" target_branch="main" title="Test xsoar" description="Demo pr" reviewers_ids="XXXX"```
 
 #### Context Example
+
 ```json
 {
     "AzureDevOps": {
@@ -629,12 +671,14 @@ Create a new pull request.
 #### Human Readable Output
 
 >### Pull Request Information:
+>
 >|Title|Description|Created By|Pull Request Id|Repository Name|Repository Id|Project Name|Project Id|Creation Date|
 >|---|---|---|---|---|---|---|---|---|
 >| Test xsoar | Demo pr | XSOAR User 1 | 70 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-30T08:56:55 |
 
 
 ### azure-devops-pull-request-update
+
 ***
 Update a pull request. At least one of the following arguments must be provided: title, description, or status.
 
@@ -642,6 +686,7 @@ Update a pull request. At least one of the following arguments must be provided:
 #### Base Command
 
 `azure-devops-pull-request-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -682,9 +727,11 @@ Update a pull request. At least one of the following arguments must be provided:
 
 
 #### Command Example
+
 ```!azure-devops-pull-request-update project="xsoar" repository_id="XXXX" pull_request_id="70" title="New title"```
 
 #### Context Example
+
 ```json
 {
     "AzureDevOps": {
@@ -816,12 +863,14 @@ Update a pull request. At least one of the following arguments must be provided:
 #### Human Readable Output
 
 >### Pull Request Information:
+>
 >|Title|Description|Created By|Pull Request Id|Repository Name|Repository Id|Project Name|Project Id|Creation Date|
 >|---|---|---|---|---|---|---|---|---|
 >| New title | Demo pr | XSOAR User 1 | 70 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-30T08:56:55 |
 
 
 ### azure-devops-pull-request-list
+
 ***
 Retrieve pull requests in repository.
 
@@ -829,6 +878,7 @@ Retrieve pull requests in repository.
 #### Base Command
 
 `azure-devops-pull-request-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -866,9 +916,11 @@ Retrieve pull requests in repository.
 
 
 #### Command Example
+
 ```!azure-devops-pull-request-list project="xsoar" repository="xsoar" page="1" limit="2"```
 
 #### Context Example
+
 ```json
 {
     "AzureDevOps": {
@@ -1021,8 +1073,10 @@ Retrieve pull requests in repository.
 #### Human Readable Output
 
 >### Pull Request List:
+>
 > Current page size: 2
 > Showing page 1 out others that may exist.
+>
 >|Title|Description|Created By|Pull Request Id|Repository Name|Repository Id|Project Name|Project Id|Creation Date|
 >|---|---|---|---|---|---|---|---|---|
 >| Test xsoar | Demo pr | XSOAR User 1 | 70 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-30T08:56:55 |
@@ -1030,6 +1084,7 @@ Retrieve pull requests in repository.
 
 
 ### azure-devops-project-list
+
 ***
 Retrieve all projects in the organization that the authenticated user has access to.
 
@@ -1037,6 +1092,7 @@ Retrieve all projects in the organization that the authenticated user has access
 #### Base Command
 
 `azure-devops-project-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1058,9 +1114,11 @@ Retrieve all projects in the organization that the authenticated user has access
 
 
 #### Command Example
+
 ```!azure-devops-project-list page="1" limit="50"```
 
 #### Context Example
+
 ```json
 {
     "AzureDevOps": {
@@ -1082,14 +1140,17 @@ Retrieve all projects in the organization that the authenticated user has access
 #### Human Readable Output
 
 >### Project List:
+>
 > Current page size: 50
 > Showing page 1 out others that may exist.
+>
 >|Name|Id|State|Revision|Visibility|Last Update Time|
 >|---|---|---|---|---|---|
 >| xsoar | xsoar-project | wellFormed | 11 | private | 2021-10-13T15:46:18.017000+00:00 |
 
 
 ### azure-devops-repository-list
+
 ***
 Retrieve git repositories in the organization project.
 
@@ -1097,6 +1158,7 @@ Retrieve git repositories in the organization project.
 #### Base Command
 
 `azure-devops-repository-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1118,9 +1180,11 @@ Retrieve git repositories in the organization project.
 
 
 #### Command Example
+
 ```!azure-devops-repository-list project="xsoar" limit="1" page="1"```
 
 #### Context Example
+
 ```json
 {
     "AzureDevOps": {
@@ -1150,14 +1214,17 @@ Retrieve git repositories in the organization project.
 #### Human Readable Output
 
 >### Repositories List:
+>
 > Current page size: 1
 > Showing page 1 out others that may exist.
+>
 >|Id|Name|Web Url|Size ( Bytes )|
 >|---|---|---|---|
 >| xsoar-repository | test2803 | https:<span>//</span>dev.azure.com/xsoar-organization/xsoar/_git/test2803 | 0 |
 
 
 ### azure-devops-user-list
+
 ***
 Query users that were added to organization projects.
 
@@ -1165,6 +1232,7 @@ Query users that were added to organization projects.
 #### Base Command
 
 `azure-devops-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1184,9 +1252,11 @@ Query users that were added to organization projects.
 
 
 #### Command Example
+
 ```!azure-devops-user-list query="ofek"```
 
 #### Context Example
+
 ```json
 {
     "AzureDevOps": {
@@ -1223,8 +1293,10 @@ Query users that were added to organization projects.
 #### Human Readable Output
 
 >### Users List:
+>
 > Current page size: 50
 > Showing page 1 out others that may exist.
+>
 >|Email|Entity Type|Id|
 >|---|---|---|
 >| user1@xsoar.com | User | XXXX |
@@ -1232,6 +1304,7 @@ Query users that were added to organization projects.
 
 
 ### azure-devops-pull-request-get
+
 ***
 Retrieve pull-request.
 
@@ -1239,6 +1312,7 @@ Retrieve pull-request.
 #### Base Command
 
 `azure-devops-pull-request-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1276,9 +1350,11 @@ Retrieve pull-request.
 
 
 #### Command Example
+
 ```!azure-devops-pull-request-get project="xsoar" repository_id="XXXX" pull_request_id="70"```
 
 #### Context Example
+
 ```json
 {
     "AzureDevOps": {
@@ -1410,12 +1486,14 @@ Retrieve pull-request.
 #### Human Readable Output
 
 >### Pull Request Information:
+>
 >|Title|Description|Created By|Pull Request Id|Repository Name|Repository Id|Project Name|Project Id|Creation Date|
 >|---|---|---|---|---|---|---|---|---|
 >| Test xsoar | Demo pr | XSOAR User 1 | 70 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-30T08:56:55 |
 
 
 ### azure-devops-pipeline-run-get
+
 ***
 Retrieve information for a pipeline run.
 
@@ -1423,6 +1501,7 @@ Retrieve information for a pipeline run.
 #### Base Command
 
 `azure-devops-pipeline-run-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1450,9 +1529,11 @@ Retrieve information for a pipeline run.
 
 
 #### Command Example
+
 ```!azure-devops-pipeline-run-get project="xsoar" pipeline_id="1" run_id="114"```
 
 #### Context Example
+
 ```json
 {
     "AzureDevOps": {
@@ -1506,12 +1587,14 @@ Retrieve information for a pipeline run.
 #### Human Readable Output
 
 >### Pipeline Run Information:
+>
 >|Pipeline Id|Run State|Creation Date|Run Id|Result|
 >|---|---|---|---|---|
 >| 1 | completed | 2021-11-07T08:09:03.592213+00:00 | 114 | failed |
 
 
 ### azure-devops-pipeline-run-list
+
 ***
 Retrieve pipeline runs list. The command retrieves up to the top 10000 runs for a particular pipeline.
 
@@ -1519,6 +1602,7 @@ Retrieve pipeline runs list. The command retrieves up to the top 10000 runs for 
 #### Base Command
 
 `azure-devops-pipeline-run-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1544,9 +1628,11 @@ Retrieve pipeline runs list. The command retrieves up to the top 10000 runs for 
 
 
 #### Command Example
+
 ```!azure-devops-pipeline-run-list project="xsoar" page="1" limit="1" pipeline_id="1"```
 
 #### Context Example
+
 ```json
 {
     "AzureDevOps": {
@@ -1587,14 +1673,17 @@ Retrieve pipeline runs list. The command retrieves up to the top 10000 runs for 
 #### Human Readable Output
 
 >### Pipeline runs List:
+>
 > Current page size: 1
 > Showing page 1 out others that may exist.
+>
 >|Pipeline Id|Run State|Creation Date|Run Id|Result|
 >|---|---|---|---|---|
 >| 1 | inProgress | 2021-11-30T08:57:03.110121+00:00 | 1154 | unknown |
 
 
 ### azure-devops-pipeline-list
+
 ***
 Retrieve project pipelines list.
 
@@ -1602,6 +1691,7 @@ Retrieve project pipelines list.
 #### Base Command
 
 `azure-devops-pipeline-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1623,9 +1713,11 @@ Retrieve project pipelines list.
 
 
 #### Command Example
+
 ```!azure-devops-pipeline-list project="xsoar" page="1" limit="1"```
 
 #### Context Example
+
 ```json
 {
     "AzureDevOps": {
@@ -1652,14 +1744,17 @@ Retrieve project pipelines list.
 #### Human Readable Output
 
 >### Pipelines List:
+>
 > Current page size: 1
 > Showing page 1 out others that may exist.
+>
 >|Id|Name|Revision|Folder|
 >|---|---|---|---|
 >| 2 | xsoar (1) | 1 | \ |
 
 
 ### azure-devops-branch-list
+
 ***
 Retrieve repository branches list.
 
@@ -1667,6 +1762,7 @@ Retrieve repository branches list.
 #### Base Command
 
 `azure-devops-branch-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1687,9 +1783,11 @@ Retrieve repository branches list.
 
 
 #### Command Example
+
 ```!azure-devops-branch-list project="xsoar" repository="xsoar" page="1" limit="1"```
 
 #### Context Example
+
 ```json
 {
     "AzureDevOps": {
@@ -1720,8 +1818,10 @@ Retrieve repository branches list.
 #### Human Readable Output
 
 >### Branches List:
+>
 > Current page size: 1
 > Showing page 1 out others that may exist.
+>
 >|Name|
 >|---|
 >| refs/heads/main |
@@ -2773,6 +2873,7 @@ There is no context output for this command.
 
 You can enable incident mirroring between Cortex XSOAR incidents and AzureDevOps corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.

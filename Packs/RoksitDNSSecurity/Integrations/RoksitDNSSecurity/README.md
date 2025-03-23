@@ -34,8 +34,11 @@ This command adds a given domain to tha Roksit blacklist.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!Roksit-add-to-blacklist Domain=dummy.com```
+
 #### Human Readable Output
 
 >dummy.com was successfully added to the blacklist.

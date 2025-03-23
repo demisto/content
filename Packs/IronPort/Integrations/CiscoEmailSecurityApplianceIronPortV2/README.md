@@ -1,5 +1,6 @@
 The Cisco Email Security Appliance is an email security gateway product. It is designed to detect and block a wide variety of email-born threats, such as malware, spam and phishing attempts.
 This integration was integrated and tested with version 14.0 of Cisco Email Security Appliance.
+
 ## Configure Cisco ESA in Cortex
 
 
@@ -23,18 +24,24 @@ This integration was integrated and tested with version 14.0 of Cisco Email Secu
 
 
 ### Troubleshooting
+
 If you encounter multiple recurring errors similar to the following message:
+
 ```
 Authorization Error: make sure username and password are set correctly.
 ```
+
 By default, the integration assumes your JWT session tokens have a time to live of 30 minutes. 
 If the time to live is shorter, it can lead to the authorization error above. To resolve this error, reduce the value for the *Time to live* for JWT session token parameter. 
 By default, this value is 30 minutes and should only be reduced if these errors occur.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cisco-esa-spam-quarantine-message-search
+
 ***
 Search messages in the spam quarantine.
 
@@ -42,6 +49,7 @@ Search messages in the spam quarantine.
 #### Base Command
 
 `cisco-esa-spam-quarantine-message-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -73,8 +81,11 @@ Search messages in the spam quarantine.
 | CiscoESA.SpamQuarantineMessage.mid | Number | Message ID. | 
 
 #### Command example
+
 ```!cisco-esa-spam-quarantine-message-search start_date=2weeks end_date=now page=3 page_size=2```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -117,8 +128,10 @@ Search messages in the spam quarantine.
 #### Human Readable Output
 
 >### Spam Quarantine Messages List
+>
 >Showing page 3.
 > Current page size: 2.
+>
 >|Mid|Date|From Address|To Address|Subject|Size|
 >|---|---|---|---|---|---|
 >| 1573 | 13 Oct 2022 11:56 (GMT +00:00) | Test Test <test@test.com> | "test@test.com" <test@test.com> | hello 1 | 10.20K |
@@ -126,6 +139,7 @@ Search messages in the spam quarantine.
 
 
 ### cisco-esa-spam-quarantine-message-get
+
 ***
 Get spam quarantine message details.
 
@@ -133,6 +147,7 @@ Get spam quarantine message details.
 #### Base Command
 
 `cisco-esa-spam-quarantine-message-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -153,8 +168,11 @@ Get spam quarantine message details.
 | CiscoESA.SpamQuarantineMessage.mid | Number | Message ID. | 
 
 #### Command example
+
 ```!cisco-esa-spam-quarantine-message-get message_id=1572```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -181,13 +199,16 @@ Get spam quarantine message details.
 #### Human Readable Output
 
 >### Spam Quarantine Message
+>
 >Found spam quarantine message with ID: 1572
+>
 >|Mid|From Address|To Address|Date|Subject|
 >|---|---|---|---|---|
 >| 1572 | Test Test <test@test.com> | "test@test.com" <test@test.com> | 13 Oct 2022 11:56 (GMT +00:00) | hello |
 
 
 ### cisco-esa-spam-quarantine-message-release
+
 ***
 Release quarantine emails.
 
@@ -195,6 +216,7 @@ Release quarantine emails.
 #### Base Command
 
 `cisco-esa-spam-quarantine-message-release`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -205,13 +227,17 @@ Release quarantine emails.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-esa-spam-quarantine-message-release message_ids=1573```
+
 #### Human Readable Output
 
 >Quarantined message 1573 successfully released.
 
 ### cisco-esa-spam-quarantine-message-delete
+
 ***
 Delete quarantine emails.
 
@@ -219,6 +245,7 @@ Delete quarantine emails.
 #### Base Command
 
 `cisco-esa-spam-quarantine-message-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -229,13 +256,17 @@ Delete quarantine emails.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-esa-spam-quarantine-message-delete message_ids=1574```
+
 #### Human Readable Output
 
 >Quarantined message 1574 successfully deleted.
 
 ### cisco-esa-list-entry-get
+
 ***
 Get spam quarantine blocklist/safelist entry.
 
@@ -243,6 +274,7 @@ Get spam quarantine blocklist/safelist entry.
 #### Base Command
 
 `cisco-esa-list-entry-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -271,8 +303,11 @@ Get spam quarantine blocklist/safelist entry.
 | CiscoESA.ListEntry.Safelist.senderAddress | String | Sender address. | 
 
 #### Command example
+
 ```!cisco-esa-list-entry-get entry_type=safelist page=2 page_size=3 view_by=recipient order_by=recipient order_dir=desc```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -305,8 +340,10 @@ Get spam quarantine blocklist/safelist entry.
 #### Human Readable Output
 
 >### Safelist Entries
+>
 >Showing page 2.
 > Current page size: 3.
+>
 >|Recipient Address|Sender List|
 >|---|---|
 >| test4@test.com | test@test.com |
@@ -315,6 +352,7 @@ Get spam quarantine blocklist/safelist entry.
 
 
 ### cisco-esa-list-entry-add
+
 ***
 Add spam quarantine blocklist/safelist entry.
 
@@ -322,6 +360,7 @@ Add spam quarantine blocklist/safelist entry.
 #### Base Command
 
 `cisco-esa-list-entry-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -337,13 +376,17 @@ Add spam quarantine blocklist/safelist entry.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-esa-list-entry-add entry_type=blocklist view_by=recipient recipient_addresses=test@test.com sender_list=t1@test.com,t2@test.com```
+
 #### Human Readable Output
 
 >Successfully added t1@test.com, t2@test.com senders to test@test.com recipients in blocklist.
 
 ### cisco-esa-list-entry-append
+
 ***
 Append spam quarantine blocklist/safelist entry.
 
@@ -351,6 +394,7 @@ Append spam quarantine blocklist/safelist entry.
 #### Base Command
 
 `cisco-esa-list-entry-append`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -366,13 +410,17 @@ Append spam quarantine blocklist/safelist entry.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-esa-list-entry-append entry_type=blocklist recipient_addresses=test@test.com sender_list=t4@test.com```
+
 #### Human Readable Output
 
 >Successfully appended t4@test.com senders to test@test.com recipients in blocklist.
 
 ### cisco-esa-list-entry-edit
+
 ***
 Edit spam quarantine blocklist/safelist entry. Using this command will override the existing value.
 
@@ -380,6 +428,7 @@ Edit spam quarantine blocklist/safelist entry. Using this command will override 
 #### Base Command
 
 `cisco-esa-list-entry-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -395,13 +444,17 @@ Edit spam quarantine blocklist/safelist entry. Using this command will override 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-esa-list-entry-edit entry_type=blocklist view_by=recipient recipient_addresses=test@test.com sender_list=t5@test.com,t6@test.com```
+
 #### Human Readable Output
 
 >Successfully edited test@test.com recipients' senders to t5@test.com, t6@test.com in blocklist.
 
 ### cisco-esa-list-entry-delete
+
 ***
 Delete spam quarantine blocklist/safelist entry.
 
@@ -409,6 +462,7 @@ Delete spam quarantine blocklist/safelist entry.
 #### Base Command
 
 `cisco-esa-list-entry-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -422,13 +476,17 @@ Delete spam quarantine blocklist/safelist entry.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-esa-list-entry-delete entry_type=blocklist view_by=recipient recipient_list=test@test.com```
+
 #### Human Readable Output
 
 >Successfully deleted test@test.com recipients from blocklist.
 
 ### cisco-esa-message-search
+
 ***
 Search tracking messages.
 
@@ -436,6 +494,7 @@ Search tracking messages.
 #### Base Command
 
 `cisco-esa-message-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -486,8 +545,11 @@ Search tracking messages.
 | CiscoESA.Message.sbrs | String | Sender Base Reputation Scores. | 
 
 #### Command example
+
 ```!cisco-esa-message-search start_date=1month end_date=now page=3 page_size=2 subject_filter_operator=contains subject_filter_value=test```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -598,8 +660,10 @@ Search tracking messages.
 #### Human Readable Output
 
 >### Messages List
+>
 >Showing page 3.
 > Current page size: 2.
+>
 >|Mid|All Icid|Serial Number|Sender|Recipient|Subject|Message Status|Timestamp|Sender Ip|Sbrs|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 1438 | 29969 | test-test | test@test.com | test@test.com | test | 1438: Quarantined by Anti-Spam/Graymail | 2022-10-03T11:54:28Z | 1.1.1.1 | 3.5 |
@@ -607,6 +671,7 @@ Search tracking messages.
 
 
 ### cisco-esa-message-details-get
+
 ***
 Get message details.
 
@@ -614,6 +679,7 @@ Get message details.
 #### Base Command
 
 `cisco-esa-message-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -659,8 +725,11 @@ Get message details.
 | CiscoESA.Message.headerFrom | String | Email message header from. | 
 
 #### Command example
+
 ```!cisco-esa-message-details-get serial_number=test-test message_ids=1576 injection_connection_id=36859```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -875,11 +944,15 @@ Get message details.
 #### Human Readable Output
 
 >### Message Details
+>
 >Found message with ID 1576.
+>
 >|Mid|All Icid|Subject|Sender|Recipient|Timestamp|Message Size|Sending Host Summary|Message Status|Direction|Mail Policy|Sender Group|Show AMP|Show DLP|Show URL|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1576 | 36859 | hello 4 | test@test.com | test@test.com | 2022-10-13T11:56:23Z | 9.17 (KB) | reverseDnsHostname: mail-test.test.test.test.com (verified)<br/>ipAddress: 1.1.1.1<br/>sbrsScore: 3.5 | Quarantined by Anti-Spam/Graymail | incoming | DEFAULT | ACCEPTLIST | false | false | false |
+>
 >### Message Summary
+>
 >|Description|Timestamp|Last Event|
 >|---|---|---|
 >| Incoming connection (ICID 36859) has sender_group: ACCEPTLIST, sender_ip: 1.1.1.1 and sbrs: 3.5 | 2022-10-13T11:56:22Z | false |
@@ -917,6 +990,7 @@ Get message details.
 
 
 ### cisco-esa-message-amp-details-get
+
 ***
 Get message AMP summary details.
 
@@ -924,6 +998,7 @@ Get message AMP summary details.
 #### Base Command
 
 `cisco-esa-message-amp-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -961,8 +1036,11 @@ Get message AMP summary details.
 | CiscoESA.AMPDetail.headerFrom | String | Email header from. | 
 
 #### Command example
+
 ```!cisco-esa-message-amp-details-get message_ids=741,742,743 serial_number=test-test```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -1022,11 +1100,15 @@ Get message AMP summary details.
 #### Human Readable Output
 
 >### Message AMP Report Details
+>
 >Found AMP details for message ID 741, 742, 743.
+>
 >|Mid|All Icid|Subject|Sender|Recipient|Attachments|Timestamp|Message Size|Message Status|Direction|Sender Group|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 741,<br/>742,<br/>743 | 19599 | Fwd: test | test@test.com | test@test.com | bear.jpg | 2022-09-20T13:31:15Z | 439.26 (KB) | Quarantined by Multiple Engines | incoming | ACCEPTLIST |
+>
 >### Message AMP Report Details Summary
+>
 >|Description|Timestamp|
 >|---|---|
 >| File reputation query initiating. File Name = bear.jpg, MID = 741, File Size = 325663 bytes, File Type = image/jpeg | 2022-09-20T13:31:18Z |
@@ -1035,6 +1117,7 @@ Get message AMP summary details.
 
 
 ### cisco-esa-message-dlp-details-get
+
 ***
 Get message DLP summary details.
 
@@ -1042,6 +1125,7 @@ Get message DLP summary details.
 #### Base Command
 
 `cisco-esa-message-dlp-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1082,8 +1166,11 @@ Get message DLP summary details.
 | CiscoESA.DLPDetail.headerFrom | String | Email header from. | 
 
 #### Command example
+
 ```!cisco-esa-message-dlp-details-get message_ids=1131 serial_number=test-test```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -1156,17 +1243,22 @@ Get message DLP summary details.
 #### Human Readable Output
 
 >### Message DLP Report Details
+>
 >Found DLP details for message ID 1131.
+>
 >|Mid|All Icid|Subject|Sender|Recipient|Timestamp|Message Size|Message Status|Direction|Sender Group|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 1131 | 20460 | Fw: DLP | test@test.com | test@test.com | 2022-09-21T08:42:32Z | 29.67 (KB) | Delivered | outgoing | RELAY_O365 |
+>
 >### Message DLP Report Details Summary
+>
 >|Mid|Violation Severity|Risk Factor|Dlp Policy|
 >|---|---|---|---|
 >| 1131 | HIGH | 72 | US HIPAA and HITECH (Low Threshold) |
 
 
 ### cisco-esa-message-url-details-get
+
 ***
 Get message URL summary details.
 
@@ -1174,6 +1266,7 @@ Get message URL summary details.
 #### Base Command
 
 `cisco-esa-message-url-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1210,8 +1303,11 @@ Get message URL summary details.
 | CiscoESA.URLDetail.headerFrom | String | Email header from. | 
 
 #### Command example
+
 ```!cisco-esa-message-url-details-get message_ids=737,738,739 serial_number=test-test```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -1286,11 +1382,15 @@ Get message URL summary details.
 #### Human Readable Output
 
 >### Message URL Report Details
+>
 >Found URL details for message ID 737, 738, 739.
+>
 >|Mid|All Icid|Subject|Sender|Recipient|Attachments|Timestamp|Message Size|Message Status|Direction|Sender Group|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 737,<br/>738,<br/>739 | 19598 | Fwd: test | test@test.com | test@test.com | bear.jpg | 2022-09-20T13:31:08Z | 439.25 (KB) | Quarantined by Multiple Engines | incoming | ACCEPTLIST |
+>
 >### Message URL Report Details Summary
+>
 >|Description|Timestamp|
 >|---|---|
 >| Message 737 URL: http:<span>//</span>1.1.1.1:8080/, URL reputation: -6.8, Condition: URL Reputation Rule. | 2022-09-20T13:31:12Z |
@@ -1303,6 +1403,7 @@ Get message URL summary details.
 
 
 ### cisco-esa-report-get
+
 ***
 Get statistics reports.
 Note that each report type is compatible with different arguments.
@@ -1313,6 +1414,7 @@ https://www.cisco.com/c/dam/en/us/td/docs/security/esa/esa14-0/api/AsyncOS-14-0-
 #### Base Command
 
 `cisco-esa-report-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1337,8 +1439,11 @@ https://www.cisco.com/c/dam/en/us/td/docs/security/esa/esa14-0/api/AsyncOS-14-0-
 | CiscoESA.Report.resultSet | Number | Report results summary. | 
 
 #### Command example
+
 ```!cisco-esa-report-get start_date=2weeks end_date=now report_type=mail_incoming_traffic_summary```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -1433,7 +1538,9 @@ https://www.cisco.com/c/dam/en/us/td/docs/security/esa/esa14-0/api/AsyncOS-14-0-
 #### Human Readable Output
 
 >### Report type: mail_incoming_traffic_summary
+>
 >Report UUID: 6535f7b3-0d35-411b-ab76-42e27ea661ce
+>
 >|Blocked Dmarc|Blocked Invalid Recipient|Blocked Reputation|Blocked Sdr|Bulk Mail|Detected Amp|Detected Spam|Detected Spam Certain|Detected Spam Suspect|Detected Virus|Detected Virus Per Msg|Failed Dkim|Failed Spf|Ims Spam Increment Over Case|Malicious Url|Marketing Mail|Social Mail|Threat Content Filter|Total Clean Recipients|Total Graymail Recipients|Total Mailbox Auto Remediated Recipients|Total Recipients|Total Spoofed Emails|Total Threat Recipients|Verif Decrypt Fail|Verif Decrypt Success|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 12 | 1345 | 0 | 1 | 0 | 19 | 15 | 4 | 0 | 0 | 0 | 0 | 0 | 3 | 4 | 0 | 4 | 179 | 5 | 0 | 1567 | 1 | 1383 | 0 | 0 |
@@ -1465,6 +1572,7 @@ Add a new dictionary.
 There is no context output for this command.
 
 #### Command example
+
 ```!cisco-esa-dictionary-add dictionary_name=testing1 ignore_case_sensitive=False whole_words=False mode=cluster words=['*credit',2,'prefix'],['test2']```
 
 ```!cisco-esa-dictionary-add dictionary_name=testing2 words=['*credit',2,'prefix'],['test2']```
@@ -1500,6 +1608,7 @@ Edit a dictionary.
 There is no context output for this command.
 
 #### Command example
+
 ```!cisco-esa-dictionary-edit dictionary_name=testing1 words=['*credit',6,'prefix'],['test2']```
 
 #### Human Readable Output
@@ -1537,11 +1646,13 @@ Retrieve information of all dictionaries or a specific configured dictionary and
 | CiscoESA.Dictionary.wholewords | Number | Indicates whether the dictionary considers whole words only \(1 for true, 0 for false\). | 
 
 #### Command example
+
 ```!cisco-esa-dictionary-list mode=cluster dictionary_name=test```
 
 #### Human Readable Output
 
 >### Information for Dictionary: testing
+>
 >| Name | Words | Ignore Case | Whole Words | Words Count | Smart Identifier Count | Encoding |
 >| --- | --- | --- | --- | --- | --- | --- |
 >| testing | ['test6', 1], ['testing7', 1], ['noy', 1] | 1 | 1 | term_count: 4 | 0 | utf-8 |
@@ -1571,6 +1682,7 @@ Delete existing words from a specific dictionary.
 There is no context output for this command.
 
 #### Command example
+
 ```!cisco-esa-dictionary-words-delete dictionary_name=testing mode=cluster words=*credit```
 
 ```!cisco-esa-dictionary-words-delete dictionary_name=testing words=test1,test2```
@@ -1603,6 +1715,7 @@ Add words to a specific dictionary.
 There is no context output for this command.
 
 #### Command example
+
 ```!cisco-esa-dictionary-words-add dictionary_name=testing words=['*ssn',2,'prefix'],['test3']```
 
 ```!cisco-esa-dictionary-words-add dictionary_name=testing1 mode=cluster words=['test1'],['testing2']```
@@ -1635,6 +1748,7 @@ There is no context output for this command.
 
 
 #### Command example
+
 ```!cisco-esa-dictionary-delete dictionary_name=test mode=cluster```
 
 #### Human Readable Output

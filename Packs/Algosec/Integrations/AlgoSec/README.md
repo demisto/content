@@ -1,6 +1,7 @@
 Algosec AppViz, Firewall Analyzer (AFA) and FireFlow(AFF).
 
 ## Configure AlgoSec on XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -14,24 +15,29 @@ Algosec AppViz, Firewall Analyzer (AFA) and FireFlow(AFF).
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
+
 ---
 You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. algosec-get-ticket
 2. algosec-create-ticket
 3. algosec-get-applications
 4. algosec-get-network-object
 5. algosec-query
+
 ### 1. algosec-get-ticket
+
 ---
 Retrieves a FireFlow change request by its ID
 
 ##### Base Command
 
 `algosec-get-ticket`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | ticketId | ID of requested change request | Required | 
 
@@ -42,14 +48,17 @@ There is no context output for this command.
 
 
 ### 2. algosec-create-ticket
+
 ---
 Creates a new FireFlow change request
+
 ##### Base Command
 
 `algosec-create-ticket`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | description | A free text description of the issue | Optional | 
 | devices | A list of device names, on which the change should be made | Optional | 
@@ -69,15 +78,17 @@ There is no context output for this command.
 
 
 ### 3. algosec-get-applications
+
 ---
 Find applications containing network objects related to IP address using AppViz
 
 ##### Base Command
 
 `algosec-get-applications`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | address | The IP/Subnet to search | Required | 
 | type | The search method for the address | Optional | 
@@ -88,15 +99,17 @@ Find applications containing network objects related to IP address using AppViz
 There is no context output for this command.
 
 ### 4. algosec-get-network-object
+
 ---
 Find network objects related to IP address
 
 ##### Base Command
 
 `algosec-get-network-object`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | address | The IP/Subnet to search | Required | 
 | type | The search method for the address (default is INTERSECT) | Optional | 
@@ -107,15 +120,17 @@ Find network objects related to IP address
 There is no context output for this command.
 
 ### 5. algosec-query
+
 ---
 Performs a batch traffic simulation query using Firewall Analyzer
 
 ##### Base Command
 
 `algosec-query`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | source | source(s) for the query. Multiple values are separated by commas (,) | Required | 
 | destination | destination(s) for the query. Multiple values are separated by commas (,) | Required | 

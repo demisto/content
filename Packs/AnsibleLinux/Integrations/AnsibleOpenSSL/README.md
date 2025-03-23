@@ -3,31 +3,40 @@ This integration enables the management of certificates on Linux hosts directly 
 To use this integration, configure an instance of this integration. This will associate a credential to be used to access hosts when commands are run. The commands from this integration will take the Linux host address(es) as an input, and use the saved credential associated to the instance to execute. Create separate instances if multiple credentials are required.
 
 ## Requirements
+
 The Linux host(s) being managed requires Python >= 2.6. Different commands will use different underlying Ansible modules, and may have their own unique package requirements. Refer to the individual command documentation for further information.
 
 ## Network Requirements
+
 By default, TCP port 22 will be used to initiate a SSH connection to the Linux host.
 
 The connection will be initiated from the XSOAR engine/server specified in the instance settings.
 
 ## Credentials
+
 This integration supports a number of methods of authenticating with the Linux Host:
+
 1. Username & Password entered into the integration
 2. Username & Password credential from the XSOAR credential manager
 3. Username and SSH Key from the XSOAR credential manager
 
 ## Permissions
+
 Whilst un-privileged Linux user privileges can be used, a SuperUser account is recommended as most commands will require elevated permissions to execute.
 
 ## Privilege Escalation
+
 Ansible can use existing privilege escalation systems to allow a user to execute tasks as another. Different from the user that logged into the machine (remote user). This is done using existing privilege escalation tools, which you probably already use or have configured, like sudo, su, or doas. Unless you are remoting into the system as root (uid 0) you will need to escalate your privileges to a super user. Use the Integration parameters `Escalate Privileges`, `Privilege Escalation Method`, `Privilege Escalation User`, `Privileges Escalation Password` to configure this.
 
 
 ## Concurrency
+
 This integration supports execution of commands against multiple hosts concurrently. The `host` parameter accepts a list of addresses, and will run the command in parallel as per the **Concurrency Factor** value.
 
 ## Further information
+
 This integration is powered by Ansible 2.9. Further information can be found on that the following locations:
+
 * [Ansible Getting Started](https://docs.ansible.com/ansible/latest/user_guide/intro_getting_started.html)
 * [Module Documentation](https://docs.ansible.com/ansible/2.9/modules/list_of_all_modules.html)
 
@@ -45,17 +54,22 @@ This integration is powered by Ansible 2.9. Further information can be found on 
 | Privilege Escalation Password | Set the privilege escalation password. | False |
 
 ## Testing
+
 This integration does not support testing from the integration management screen. Instead it is recommended to use the `!openssl-certificate-info` command providing an example `host` and `path` to a certificate as the command argument. This command will connect to the specified host with the configured credentials in the integration, and if successful output information about the certificate at the path.
 
 ## Complex Command Inputs
+
 Some commands may require structured input arguments such as `lists` or `dictionary`, these can be provided in standard JSON notation wrapped in double curly braces. For example a argument called `dns_servers` that accepts a list of server IPs 8.8.8.8 and 8.8.4.4 would be entered as `dns_servers="{{ ['8.8.8.8', '8.8.4.4'] }}"`.
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### openssl-certificate
+
 ***
 Generate and/or check OpenSSL certificates
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssl_certificate_module.html
@@ -64,6 +78,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `openssl-certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -143,9 +158,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!openssl-certificate host="123.123.123.123" path="/etc/ssl/crt/ansible.com.crt" privatekey_path="/etc/ssl/private/ansible.com.pem" csr_path="/etc/ssl/csr/www.ansible.com.csr" provider="selfsigned" ```
 
 #### Context Example
+
 ```json
 {
     "OpenSSL": {
@@ -167,16 +184,18 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * csr: /etc/ssl/csr/www.ansible.com.csr
->  * filename: /etc/ssl/crt/ansible.com.crt
->  * notAfter: 20310706075859Z
->  * notBefore: 20210708075859Z
->  * privatekey: /etc/ssl/private/ansible.com.pem
->  * serial_number: 73011232805376328985612064552790767398333247880
+>
+> * changed: False
+> * csr: /etc/ssl/csr/www.ansible.com.csr
+> * filename: /etc/ssl/crt/ansible.com.crt
+> * notAfter: 20310706075859Z
+> * notBefore: 20210708075859Z
+> * privatekey: /etc/ssl/private/ansible.com.pem
+> * serial_number: 73011232805376328985612064552790767398333247880
 
 
 ### openssl-certificate-info
+
 ***
 Provide information of OpenSSL X.509 certificates
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssl_certificate_info_module.html
@@ -185,6 +204,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `openssl-certificate-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -240,9 +260,11 @@ Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. |
 
 
 #### Command Example
+
 ```!openssl-certificate-info host="123.123.123.123" path="/etc/ssl/crt/ansible.com.crt"```
 
 #### Context Example
+
 ```json
 {
     "OpenSSL": {
@@ -343,23 +365,24 @@ Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. |
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * authority_cert_issuer: None
->  * authority_cert_serial_number: None
->  * authority_key_identifier: None
->  * basic_constraints: None
->  * basic_constraints_critical: False
->  * changed: False
->  * expired: False
->  * extended_key_usage: None
->  * extended_key_usage_critical: False
->  * key_usage: None
->  * key_usage_critical: False
->  * not_after: 20310706075859Z
->  * not_before: 20210708075859Z
->  * ocsp_must_staple: None
->  * ocsp_must_staple_critical: False
->  * ocsp_uri: None
->  * public_key: -----BEGIN PUBLIC KEY-----
+>
+> * authority_cert_issuer: None
+> * authority_cert_serial_number: None
+> * authority_key_identifier: None
+> * basic_constraints: None
+> * basic_constraints_critical: False
+> * changed: False
+> * expired: False
+> * extended_key_usage: None
+> * extended_key_usage_critical: False
+> * key_usage: None
+> * key_usage_critical: False
+> * not_after: 20310706075859Z
+> * not_before: 20210708075859Z
+> * ocsp_must_staple: None
+> * ocsp_must_staple_critical: False
+> * ocsp_uri: None
+> * public_key: -----BEGIN PUBLIC KEY-----
 >MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA2JSDcBy4bxZU7jC5I0p6
 >550ylJDYog5bb60it9bK0QZ9N9pGbCSAaWf1untaYr3zrZysFcmeaQKS75utx7Mc
 >UgzbiGwTgLJk2fya5cdiMTzQEAwjbnDnmOPviPabXxuR7ZImitD9HF3UkLbpoBAl
@@ -374,66 +397,89 @@ Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. |
 >0c404Rh6Mlq65yD+C8l30y8CAwEAAQ==
 >-----END PUBLIC KEY-----
 >
->  * serial_number: 73011232805376328985612064552790767398333247880
->  * signature_algorithm: sha256WithRSAEncryption
->  * subject_alt_name_critical: False
->  * subject_key_identifier: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->  * version: 3
->  * ## Extensions_By_Oid
->    * ### 1.1.1.1
->      * critical: False
->      * value: BBRtlXuXV61dCrNybX135iGY0y8Yxg==
->    * ### 1.1.1.2
->      * critical: False
->      * value: MBGCD3d3dy5hbnNpYmxlLmNvbQ==
->  * ## Fingerprints
->    * blake2b: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14:11:11:11:11:11:11:11:15:11:11:11:11:11:11:11:16:11:11:11:11:11:11:11:17:11:11:11:11:11:11:11:18
->    * blake2s: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * md5: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha1: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * shake_128: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * shake_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->  * ## Issuer
->    * commonName: www.ansible.com
->  * ## Issuer_Ordered
->  * ## List
->    * 0: commonName
->    * 1: www.ansible.com
->  * ## Public_Key_Fingerprints
->    * blake2b: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * blake2s: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * md5: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha1: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * shake_128: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * shake_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->  * ## Subject
->    * commonName: www.ansible.com
->  * ## Subject_Alt_Name
->    * 0: DNS:www.ansible.com
->  * ## Subject_Ordered
->  * ## List
->    * 0: commonName
->    * 1: www.ansible.com
->  * ## Valid_At
+> * serial_number: 73011232805376328985612064552790767398333247880
+> * signature_algorithm: sha256WithRSAEncryption
+> * subject_alt_name_critical: False
+> * subject_key_identifier: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+> * version: 3
+>
+> * ## Extensions_By_Oid
+>
+>   * ### 1.1.1.1
+>
+>     * critical: False
+>     * value: BBRtlXuXV61dCrNybX135iGY0y8Yxg==
+>
+>   * ### 1.1.1.2
+>
+>     * critical: False
+>     * value: MBGCD3d3dy5hbnNpYmxlLmNvbQ==
+>
+> * ## Fingerprints
+>
+>   * blake2b: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14:11:11:11:11:11:11:11:15:11:11:11:11:11:11:11:16:11:11:11:11:11:11:11:17:11:11:11:11:11:11:11:18
+>   * blake2s: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * md5: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha1: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * shake_128: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * shake_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>
+> * ## Issuer
+>
+>   * commonName: www.ansible.com
+>
+> * ## Issuer_Ordered
+>
+> * ## List
+>
+>   * 0: commonName
+>   * 1: www.ansible.com
+>
+> * ## Public_Key_Fingerprints
+>
+>   * blake2b: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * blake2s: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * md5: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha1: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * shake_128: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * shake_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>
+> * ## Subject
+>
+>   * commonName: www.ansible.com
+>
+> * ## Subject_Alt_Name
+>
+>   * 0: DNS:www.ansible.com
+>
+> * ## Subject_Ordered
+>
+> * ## List
+>
+>   * 0: commonName
+>   * 1: www.ansible.com
+>
+> * ## Valid_At
 
 
 ### openssl-csr
+
 ***
 Generate OpenSSL Certificate Signing Request (CSR)
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssl_csr_module.html
@@ -442,6 +488,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `openssl-csr`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -507,9 +554,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!openssl-csr host="123.123.123.123" path="/etc/ssl/csr/www.ansible.com.csr" privatekey_path="/etc/ssl/private/ansible.com.pem" common_name="www.ansible.com" ```
 
 #### Context Example
+
 ```json
 {
     "OpenSSL": {
@@ -542,24 +591,33 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * basicConstraints: None
->  * changed: False
->  * extendedKeyUsage: None
->  * filename: /etc/ssl/csr/www.ansible.com.csr
->  * keyUsage: None
->  * ocspMustStaple: False
->  * privatekey: /etc/ssl/private/ansible.com.pem
->  * ## Name_Constraints_Excluded
->  * ## Name_Constraints_Permitted
->  * ## Subject
->  * ## List
->    * 0: CN
->    * 1: www.ansible.com
->  * ## Subjectaltname
->    * 0: DNS:www.ansible.com
+>
+> * basicConstraints: None
+> * changed: False
+> * extendedKeyUsage: None
+> * filename: /etc/ssl/csr/www.ansible.com.csr
+> * keyUsage: None
+> * ocspMustStaple: False
+> * privatekey: /etc/ssl/private/ansible.com.pem
+>
+> * ## Name_Constraints_Excluded
+>
+> * ## Name_Constraints_Permitted
+>
+> * ## Subject
+>
+> * ## List
+>
+>   * 0: CN
+>   * 1: www.ansible.com
+>
+> * ## Subjectaltname
+>
+>   * 0: DNS:www.ansible.com
 
 
 ### openssl-csr-info
+
 ***
 Provide information of OpenSSL Certificate Signing Requests (CSR)
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssl_csr_info_module.html
@@ -568,6 +626,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `openssl-csr-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -613,9 +672,11 @@ Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. |
 
 
 #### Command Example
+
 ```!openssl-csr-info host="123.123.123.123" path="/etc/ssl/csr/www.ansible.com.csr"```
 
 #### Context Example
+
 ```json
 {
     "OpenSSL": {
@@ -683,22 +744,23 @@ Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. |
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * authority_cert_issuer: None
->  * authority_cert_serial_number: None
->  * authority_key_identifier: None
->  * basic_constraints: None
->  * basic_constraints_critical: False
->  * changed: False
->  * extended_key_usage: None
->  * extended_key_usage_critical: False
->  * key_usage: None
->  * key_usage_critical: False
->  * name_constraints_critical: False
->  * name_constraints_excluded: None
->  * name_constraints_permitted: None
->  * ocsp_must_staple: None
->  * ocsp_must_staple_critical: False
->  * public_key: -----BEGIN PUBLIC KEY-----
+>
+> * authority_cert_issuer: None
+> * authority_cert_serial_number: None
+> * authority_key_identifier: None
+> * basic_constraints: None
+> * basic_constraints_critical: False
+> * changed: False
+> * extended_key_usage: None
+> * extended_key_usage_critical: False
+> * key_usage: None
+> * key_usage_critical: False
+> * name_constraints_critical: False
+> * name_constraints_excluded: None
+> * name_constraints_permitted: None
+> * ocsp_must_staple: None
+> * ocsp_must_staple_critical: False
+> * public_key: -----BEGIN PUBLIC KEY-----
 >MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA2JSDcBy4bxZU7jC5I0p6
 >550ylJDYog5bb60it9bK0QZ9N9pGbCSAaWf1untaYr3zrZysFcmeaQKS75utx7Mc
 >UgzbiGwTgLJk2fya5cdiMTzQEAwjbnDnmOPviPabXxuR7ZImitD9HF3UkLbpoBAl
@@ -713,39 +775,52 @@ Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. |
 >0c404Rh6Mlq65yD+C8l30y8CAwEAAQ==
 >-----END PUBLIC KEY-----
 >
->  * signature_valid: True
->  * subject_alt_name_critical: False
->  * subject_key_identifier: None
->  * ## Extensions_By_Oid
->    * ### 1.1.1.2
->      * critical: False
->      * value: MBGCD3d3dy5hbnNpYmxlLmNvbQ==
->  * ## Public_Key_Fingerprints
->    * blake2b: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * blake2s: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * md5: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha1: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * shake_128: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * shake_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->  * ## Subject
->    * commonName: www.ansible.com
->  * ## Subject_Alt_Name
->    * 0: DNS:www.ansible.com
->  * ## Subject_Ordered
->  * ## List
->    * 0: commonName
->    * 1: www.ansible.com
+> * signature_valid: True
+> * subject_alt_name_critical: False
+> * subject_key_identifier: None
+>
+> * ## Extensions_By_Oid
+>
+>   * ### 1.1.1.2
+>
+>     * critical: False
+>     * value: MBGCD3d3dy5hbnNpYmxlLmNvbQ==
+>
+> * ## Public_Key_Fingerprints
+>
+>   * blake2b: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * blake2s: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * md5: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha1: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * shake_128: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * shake_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>
+> * ## Subject
+>
+>   * commonName: www.ansible.com
+>
+> * ## Subject_Alt_Name
+>
+>   * 0: DNS:www.ansible.com
+>
+> * ## Subject_Ordered
+>
+> * ## List
+>
+>   * 0: commonName
+>   * 1: www.ansible.com
 
 
 ### openssl-dhparam
+
 ***
 Generate OpenSSL Diffie-Hellman Parameters
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssl_dhparam_module.html
@@ -754,6 +829,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `openssl-dhparam`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -787,6 +863,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### openssl-pkcs12
+
 ***
 Generate OpenSSL PKCS#12 archive
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssl_pkcs12_module.html
@@ -795,6 +872,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `openssl-pkcs12`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -835,9 +913,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!openssl-pkcs12 host="123.123.123.123" action="export" path="/opt/certs/ansible.p12" friendly_name="raclette" privatekey_path="/etc/ssl/private/ansible.com.pem" certificate_path="/etc/ssl/crt/ansible.com.crt" other_certificates="/etc/ssl/crt/ca.crt" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "OpenSSL": {
@@ -856,13 +936,15 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * filename: /opt/certs/ansible.p12
->  * mode: 0400
->  * privatekey_path: /etc/ssl/private/ansible.com.pem
+>
+> * changed: False
+> * filename: /opt/certs/ansible.p12
+> * mode: 0400
+> * privatekey_path: /etc/ssl/private/ansible.com.pem
 
 
 ### openssl-privatekey
+
 ***
 Generate OpenSSL private keys
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssl_privatekey_module.html
@@ -871,6 +953,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `openssl-privatekey`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -911,9 +994,11 @@ The PyOpenSSL backend requires PyOpenSSL &gt;= 16.0 for meaningful output. |
 
 
 #### Command Example
+
 ```!openssl-privatekey host="123.123.123.123" path="/etc/ssl/private/ansible.com.pem" ```
 
 #### Context Example
+
 ```json
 {
     "OpenSSL": {
@@ -948,28 +1033,32 @@ The PyOpenSSL backend requires PyOpenSSL &gt;= 16.0 for meaningful output. |
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * filename: /etc/ssl/private/ansible.com.pem
->  * size: 4096
->  * type: RSA
->  * ## Fingerprint
->    * blake2b: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * blake2s: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * md5: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha1: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * shake_128: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * shake_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>
+> * changed: False
+> * filename: /etc/ssl/private/ansible.com.pem
+> * size: 4096
+> * type: RSA
+>
+> * ## Fingerprint
+>
+>   * blake2b: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * blake2s: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * md5: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha1: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * shake_128: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * shake_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
 
 
 ### openssl-privatekey-info
+
 ***
 Provide information for OpenSSL private keys
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssl_privatekey_info_module.html
@@ -978,6 +1067,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `openssl-privatekey-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1008,6 +1098,7 @@ Will start with \`unknown\` if the key type cannot be determined. |
 
 
 ### openssl-publickey
+
 ***
 Generate an OpenSSL public key from its private key.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssl_publickey_module.html
@@ -1016,6 +1107,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `openssl-publickey`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1053,9 +1145,11 @@ Requires PyOpenSSL &gt;= 16.0 for meaningful output. |
 
 
 #### Command Example
+
 ```!openssl-publickey host="123.123.123.123" path="/etc/ssl/public/ansible.com.pem" privatekey_path="/etc/ssl/private/ansible.com.pem" ```
 
 #### Context Example
+
 ```json
 {
     "OpenSSL": {
@@ -1090,28 +1184,32 @@ Requires PyOpenSSL &gt;= 16.0 for meaningful output. |
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * filename: /etc/ssl/public/ansible.com.pem
->  * format: PEM
->  * privatekey: /etc/ssl/private/ansible.com.pem
->  * ## Fingerprint
->    * blake2b: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * blake2s: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * md5: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha1: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha3_512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * sha512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * shake_128: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
->    * shake_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>
+> * changed: False
+> * filename: /etc/ssl/public/ansible.com.pem
+> * format: PEM
+> * privatekey: /etc/ssl/private/ansible.com.pem
+>
+> * ## Fingerprint
+>
+>   * blake2b: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * blake2s: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * md5: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha1: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_224: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_384: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha3_512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * sha512: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * shake_128: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
+>   * shake_256: 11:11:11:11:11:11:11:11:11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:13:11:11:11:11:11:11:11:14
 
 
 ### openssl-certificate-complete-chain
+
 ***
 Complete certificate chain given a set of untrusted and root certificates
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/certificate_complete_chain_module.html
@@ -1120,6 +1218,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `openssl-certificate-complete-chain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1143,6 +1242,7 @@ Returned as a list of PEM certificates. |
 
 
 ### openssl-get-certificate
+
 ***
 Get a certificate from a host:port
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/get_certificate_module.html
@@ -1151,6 +1251,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `openssl-get-certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1182,6 +1283,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### Troubleshooting
+
 The Ansible-Runner container is not suitable for running as a non-root user.
 Therefore, the Ansible integrations will fail if you follow the instructions in [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide). 
 

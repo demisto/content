@@ -59,10 +59,11 @@ Reference the Enforcement Policy section in the [Genian NAC Docs](https://docs.g
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1. [Post IP address to a tag: genians-assign-ip-tag](#Post-IP-address-to-a-tag)
-2. [Delete IP address from a tag: genians-unassign-ip-tag](#Delete-IP-address-from-a-tag)
+1. [Post IP address to a tag: genians-assign-ip-tag](#post-ip-address-to-a-tag)
+2. [Delete IP address from a tag: genians-unassign-ip-tag](#delete-ip-address-from-a-tag)
 
 ### Post IP address to a tag
+
 ***
 Assigns a tag to the Node specified.
 
@@ -98,12 +99,14 @@ Assigns a tag to the Node specified.
 ```
 
 ### Delete IP address from a tag
+
 ***
 Removes the tag(s) from the Node specified.
 
 #### Base Command
 
 `genians-unassign-ip-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

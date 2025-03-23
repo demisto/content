@@ -19,9 +19,12 @@ This integration was integrated and tested with version 1.1.6 of QWatch
 | Default Incident Severity | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### qintel-qwatch-exposures
+
 ***
 Search QWatch for exposed credentials
 
@@ -29,6 +32,7 @@ Search QWatch for exposed credentials
 #### Base Command
 
 `qintel-qwatch-exposures`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -45,9 +49,11 @@ Search QWatch for exposed credentials
 
 
 #### Command Example
+
 ```!qintel-qwatch-exposures email=test@example.local```
 
 #### Context Example
+
 ```json
 {
     "Qintel": {

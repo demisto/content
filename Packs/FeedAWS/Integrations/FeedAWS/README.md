@@ -1,10 +1,12 @@
 ## Overview
+
 ---
 
 Use the AWS feed integration to fetch indicators from the feed.
 
 
 ## Configure AWS Feed on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.

@@ -75,8 +75,11 @@ List all investigations. Retrieve a list of investigations matching the given re
 | Rapid7InsightIDR.Investigation.alert.first_event_time | String | First event time of the alert in the investigation. Relevant when api_version is V1 only. |
 
 #### Command example
+
 ```!rapid7-insight-idr-list-investigations api_version=V2 limit=1```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -105,6 +108,7 @@ List all investigations. Retrieve a list of investigations matching the given re
 #### Human Readable Output
 
 >### Investigations
+>
 >|Title|Rrn|Status|Created Time|Source|Assignee|Priority|
 >|---|---|---|---|---|---|---|
 >| demo2025 | rrn:investigation:eu:123-123-123:investigation:SF6PGC3DEOLJ | CLOSED | 2024-03-05T12:53:02.722Z | USER | name: test<br/>email: test@test.com | HIGH |
@@ -150,8 +154,11 @@ Get a specific investigation. This investigation is specified by either ID or Ra
 | Rapid7InsightIDR.Investigation.alert.first_event_time | String | First event time of alert in the investigation. Relevant when api_version is V1 only. |
 
 #### Command example
+
 ```!rapid7-insight-idr-get-investigation investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472 api_version=V2```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -180,6 +187,7 @@ Get a specific investigation. This investigation is specified by either ID or Ra
 #### Human Readable Output
 
 >### Investigation "3793645a-6484-4a7e-9228-7aeb4ba97472" Information
+>
 >|Title|Rrn|Status|Created Time|Source|Assignee|Priority|
 >|---|---|---|---|---|---|---|
 >| test1 | rrn:investigation:eu:123-123-123:investigation:UFBFNSRZG4N2 | OPEN | 2024-03-05T19:02:28.419Z | USER | name: test<br/>email: test@test.com | UNSPECIFIED |
@@ -214,10 +222,13 @@ Close all investigations that match the provided request parameters. If there ar
 | Rapid7InsightIDR.Investigation.status | String | The new status (Closed) of the investigation. |
 
 #### Command example
+
 ```!rapid7-insight-idr-close-investigations source=HUNT start_time=2020-12-04T10:00:00.515Z end_time=2020-12-29T10:00:00.526Z```
+
 #### Human Readable Output
 
 >### Investigation '[]' (0) was successfully closed.
+>
 >**No entries.**
 
 
@@ -261,8 +272,11 @@ Assign a user by email to an investigation. Users will receive an email whenever
 | Rapid7InsightIDR.Investigation.alert.first_event_time | String | The create time of the first alert belonging to this investigation \(if any\). Relevant when api_version is V1 only. |
 
 #### Command example
+
 ```!rapid7-insight-idr-assign-user investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472 user_email_address=test@test.com api_version=V2```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -291,6 +305,7 @@ Assign a user by email to an investigation. Users will receive an email whenever
 #### Human Readable Output
 
 >### Investigation '3793645a-6484-4a7e-9228-7aeb4ba97472' was successfully assigned to test@test.com.
+>
 >|Title|Rrn|Status|Created Time|Source|Assignee|Priority|
 >|---|---|---|---|---|---|---|
 >| test1 | rrn:investigation:eu:123-123-123:investigation:UFBFNSRZG4N2 | OPEN | 2024-03-05T19:02:28.419Z | USER | name: test<br/>email: test@test.com | UNSPECIFIED |
@@ -343,8 +358,11 @@ Set the status of the investigation, which is specified by ID or Rapid7 Resource
 | Rapid7InsightIDR.Investigation.alert.first_event_time | String | The create time of the first alert belonging to this investigation \(if any\). Relevant when api_version is V1 only.                                                                                                          |
 
 #### Command example
+
 ```!rapid7-insight-idr-set-status status=open investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472 api_version=V2```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -373,6 +391,7 @@ Set the status of the investigation, which is specified by ID or Rapid7 Resource
 #### Human Readable Output
 
 >### Investigation '3793645a-6484-4a7e-9228-7aeb4ba97472' status was successfully updated to open.
+>
 >|Title|Rrn|Status|Created Time|Source|Assignee|Priority|
 >|---|---|---|---|---|---|---|
 >| test1 | rrn:investigation:eu:123-123-123:investigation:UFBFNSRZG4N2 | OPEN | 2024-03-05T19:02:28.419Z | USER | name: test<br/>email: test@test.com | UNSPECIFIED |
@@ -407,8 +426,11 @@ Adds new indicators to a threat (IP addresses, hashes, domains, and URLs).
 | Rapid7InsightIDR.Threat.published | Boolean | Whether or not the threat is published. |
 
 #### Command example
+
 ```!rapid7-insight-idr-add-threat-indicators key=76b06783-83cb-4018-b828-82a917278940 ip_addresses=20.20.20.20```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -425,6 +447,7 @@ Adds new indicators to a threat (IP addresses, hashes, domains, and URLs).
 #### Human Readable Output
 
 >### Threat Information (key: 76b06783-83cb-4018-b828-82a917278940)
+>
 >|name|indicator_count|published|
 >|---|---|---|
 >| test | 2 | true |
@@ -459,8 +482,11 @@ Deletes existing indicators from a threat and adds new indicators to the threat.
 | Rapid7InsightIDR.Threat.published | Boolean | Whether or not the threat is published. |
 
 #### Command example
+
 ```!rapid7-insight-idr-replace-threat-indicators key=76b06783-83cb-4018-b828-82a917278940 ip_addresses=30.30.30.30```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -477,6 +503,7 @@ Deletes existing indicators from a threat and adds new indicators to the threat.
 #### Human Readable Output
 
 >### Threat Information (key: 76b06783-83cb-4018-b828-82a917278940)
+>
 >|name|indicator_count|published|
 >|---|---|---|
 >| test | 1 | true |
@@ -504,8 +531,11 @@ Lists all existing logs for an account.
 | Rapid7InsightIDR.Log.id | String | Log ID. |
 
 #### Command example
+
 ```!rapid7-insight-idr-list-logs```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -1096,6 +1126,7 @@ Lists all existing logs for an account.
 #### Human Readable Output
 
 >### List Logs
+>
 >|name|id|
 >|---|---|
 >| InsightIDR Investigations | ee919c89-22c7-490e-be3e-db8994ee21cb |
@@ -1138,8 +1169,11 @@ Lists all existing log sets for your InsightsIDR instance.
 | Rapid7InsightIDR.LogSet.id | String | Log ID. |
 
 #### Command example
+
 ```!rapid7-insight-idr-list-log-sets```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -1445,6 +1479,7 @@ Lists all existing log sets for your InsightsIDR instance.
 #### Human Readable Output
 
 >### List Log Sets
+>
 >|name|id|
 >|---|---|
 >| File Access Activity | 665aa34b-e489-4b78-a020-76203dbb2eea |
@@ -1483,9 +1518,13 @@ Downloads logs from your InsightsIDR instance. The maximum number of logs per ca
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!rapid7-insight-idr-download-logs log_ids=ee919c89-22c7-490e-be3e-db8994ee21cb time_range="last 7 days"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -1600,8 +1639,11 @@ Create a new investigation manually.
 | Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. |
 
 #### Command example
+
 ```!rapid7-insight-idr-create-investigation title=test limit=1```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -1627,6 +1669,7 @@ Create a new investigation manually.
 #### Human Readable Output
 
 >### Investigation 'rrn:investigation:eu:123-123-123:investigation:U92BZEYO124T' was successfuly created.
+>
 >|Title|Rrn|Status|Created Time|Source|Priority|
 >|---|---|---|---|---|---|
 >| test | rrn:investigation:eu:123-123-123:investigation:U92BZEYO124T | OPEN | 2024-03-05T19:07:04.610Z | USER | UNSPECIFIED |
@@ -1674,8 +1717,11 @@ Updates multiple fields in a single operation for an investigation, specified by
 | Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. |
 
 #### Command example
+
 ```!rapid7-insight-idr-update-investigation investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472 title=test1```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -1704,6 +1750,7 @@ Updates multiple fields in a single operation for an investigation, specified by
 #### Human Readable Output
 
 >### Investigation '3793645a-6484-4a7e-9228-7aeb4ba97472' was successfuly updated.
+>
 >|Title|Rrn|Status|Created Time|Source|Assignee|Priority|
 >|---|---|---|---|---|---|---|
 >| test1 | rrn:investigation:eu:123-123-123:investigation:UFBFNSRZG4N2 | OPEN | 2024-03-05T19:02:28.419Z | USER | name: test<br/>email: test@test.com | UNSPECIFIED |
@@ -1761,8 +1808,11 @@ Search for investigations matching the given search/sort criteria.
 | Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. |
 
 #### Command example
+
 ```!rapid7-insight-idr-search-investigation limit=1```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -1788,6 +1838,7 @@ Search for investigations matching the given search/sort criteria.
 #### Human Readable Output
 
 >### Investigations
+>
 >|Title|Rrn|Status|Created Time|Source|Priority|
 >|---|---|---|---|---|---|
 >| test | rrn:investigation:eu:244e0f2e-2e23-43de-9910-da818cdf9ef8:investigation:U92BZEYO124T | OPEN | 2024-03-05T19:07:04.61Z | USER | UNMAPPED |
@@ -1828,8 +1879,11 @@ Retrieve and list all alerts associated with an investigation, with the given ID
 | Rapid7InsightIDR.Investigation.rrn | String | The ID of the investigation. |
 
 #### Command example
+
 ```!rapid7-insight-idr-list-investigation-alerts investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -1844,6 +1898,7 @@ Retrieve and list all alerts associated with an investigation, with the given ID
 #### Human Readable Output
 
 >### Investigation "3793645a-6484-4a7e-9228-7aeb4ba97472" alerts
+>
 >**No entries.**
 
 
@@ -1875,8 +1930,11 @@ Retrieve and list all Rapid7 product alerts associated with an investigation, wi
 | Rapid7InsightIDR.Investigation.ProductAlert.Alert.alert_type | String | The investigation product alert type. |
 
 #### Command example
+
 ```!rapid7-insight-idr-list-investigation-product-alerts investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -1908,6 +1966,7 @@ Retrieve and list all Rapid7 product alerts associated with an investigation, wi
 #### Human Readable Output
 
 >### Investigation "3793645a-6484-4a7e-9228-7aeb4ba97472" product alerts
+>
 >|Name|Alert Type|Alert Id|
 >|---|---|---|
 >| THREAT_COMMAND | Endpoint Prevention | 972bef1b-72c9-48d2-9e33-ca9056cfe086 |
@@ -1949,8 +2008,11 @@ List all users matching the given search/sort criteria or retrieve a user with t
 | Rapid7InsightIDR.User.rrn | String | The unique identifier for this user. |
 
 #### Command example
+
 ```!rapid7-insight-idr-list-users limit=1```
+
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -1966,6 +2028,7 @@ List all users matching the given search/sort criteria or retrieve a user with t
 #### Human Readable Output
 
 >### Users
+>
 >|Rrn|Name|Domain|
 >|---|---|---|
 >| rrn:uba:eu:244e0f2e-2e23-43de-9910-da818cdf9ef8:user:15N2NECIYNFB | nirvaron | azuread |
@@ -1973,6 +2036,7 @@ List all users matching the given search/sort criteria or retrieve a user with t
 
 
 ### rapid7-insight-idr-query-log
+
 ***
 Query inside a log for certain values.
 
@@ -1980,6 +2044,7 @@ Query inside a log for certain values.
 #### Base Command
 
 `rapid7-insight-idr-query-log`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2003,9 +2068,11 @@ Query inside a log for certain values.
 
 
 #### Command Example
+
 ```!rapid7-insight-idr-query-log log_id=ab5a7594-5fde-4c5c-9ee6-e67291f0a40c query=where(destination_asset=\"jenkinsnode.someorganiztion.co\") start_time=0 end_time=3000557004000```
 
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -2634,6 +2701,7 @@ Query inside a log for certain values.
 #### Human Readable Output
 
 >### Query Results
+>
 >|log_id|message|timestamp|
 >|---|---|---|
 >| ab5a7594-5fde-4c5c-9ee6-e67291f0a40c | {"timestamp":"2020-11-11T13:44:21.067Z","destination_asset":"jenkinsnode.someorganiztion.co","source_asset_address":"x.x.x.x","destination_asset_address":"jenkinsnode.someorganiztion.co","destination_local_account":"someuser","logon_type":"NETWORK","result":"SUCCESS","new_authentication":"true","service":"/usr/sbin/sshd","source_json":{"audit_id":755448,"pid":15620,"uid":null,"auid":4294967295,"ses":4294967295,"subj":"system_u:system_r:sshd_t:s0-s0:c0.c1023","op":"PAM:authentication","grantors":"pam_unix","acct":"someuser","hostname":"x.x.x.x","addr":"x.x.x.x","terminal":"ssh","res":"success","type":1100,"startTime":1605102231970,"cmdLine":"sshd: someuser [priv]   ","processName":"sshd","executablePath":"/usr/sbin/sshd","ppid":1131,"hashes":{"sha256":"2c6bf828ee0b4e78c49a71affd3d33b7916700cf7a288cd1a55fc4e701e50d68"},"metadata":{"creationDate":1592052866191,"lastModifiedDate":1565314847000,"lastAccessDate":1605098588968,"size":852856,"permissions":"-rwxr-xr-x","uid":0,"gid":0,"uidName":"someuser","gidName":"someuser"},"euid":0,"egid":0,"uidName":null,"euidName":"someuser","egidName":"someuser","auidName":null,"domain":"someorganiztion.co"}} | 1605102271671 |
@@ -2683,6 +2751,7 @@ Query inside a log for certain values.
 
 
 ### rapid7-insight-idr-query-log-set
+
 ***
 Query inside a log set for certain values.
 
@@ -2690,6 +2759,7 @@ Query inside a log set for certain values.
 #### Base Command
 
 `rapid7-insight-idr-query-log-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2713,9 +2783,11 @@ Query inside a log set for certain values.
 
 
 #### Command Example
+
 ```!rapid7-insight-idr-query-log-set log_set_id=74c4af9d-2673-4bc2-b8e8-afe3d1354987 query=where(destination_asset=\"jenkinsnode.someorganiztion.co\") start_time=0 end_time=3000557004000```
 
 #### Context Example
+
 ```json
 {
     "Rapid7InsightIDR": {
@@ -3344,6 +3416,7 @@ Query inside a log set for certain values.
 #### Human Readable Output
 
 >### Query Results
+>
 >|log_id|message|timestamp|
 >|---|---|---|
 >| ab5a7594-5fde-4c5c-9ee6-e67291f0a40c | {"timestamp":"2020-11-11T13:44:21.067Z","destination_asset":"jenkinsnode.someorganiztion.co","source_asset_address":"x.x.x.x","destination_asset_address":"jenkinsnode.someorganiztion.co","destination_local_account":"someuser","logon_type":"NETWORK","result":"SUCCESS","new_authentication":"true","service":"/usr/sbin/sshd","source_json":{"audit_id":755448,"pid":15620,"uid":null,"auid":4294967295,"ses":4294967295,"subj":"system_u:system_r:sshd_t:s0-s0:c0.c1023","op":"PAM:authentication","grantors":"pam_unix","acct":"someuser","hostname":"x.x.x.x","addr":"x.x.x.x","terminal":"ssh","res":"success","type":1100,"startTime":1605102231970,"cmdLine":"sshd: someuser [priv]   ","processName":"sshd","executablePath":"/usr/sbin/sshd","ppid":1131,"hashes":{"sha256":"2c6bf828ee0b4e78c49a71affd3d33b7916700cf7a288cd1a55fc4e701e50d68"},"metadata":{"creationDate":1592052866191,"lastModifiedDate":1565314847000,"lastAccessDate":1605098588968,"size":852856,"permissions":"-rwxr-xr-x","uid":0,"gid":0,"uidName":"someuser","gidName":"someuser"},"euid":0,"egid":0,"uidName":null,"euidName":"someuser","egidName":"someuser","auidName":null,"domain":"someorganiztion.co"}} | 1605102271671 |

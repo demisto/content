@@ -2,7 +2,9 @@ Amazon GuardDuty is a threat detection service that continuously monitors for ma
 
 
 ## What does this pack do
+
 This integration enables you to:
+
 - Create an AWS GuardDuty detector on the integration instance specified AWS account. 
 - Retrieve, update, or delete Amazon GuardDuty detectors.
 - Create, retrieve, update, or delete a list of IP addresses that are trusted for secure communication with AWS infrastructure and applications.

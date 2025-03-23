@@ -3,6 +3,7 @@ This integration enables the management of Cisco IOS Switches and Routers direct
 To use this integration, configure an instance of this integration. This will associate a credential to be used to access hosts when commands are run. The commands from this integration will take the IOS host address(es) as an input, and use the saved credential associated to the instance to execute. Create separate instances if multiple credentials are required.
 
 ## Credentials
+
 This integration supports a number of methods of authenticating with the network device:
 
 1. Username & Password entered into the integration
@@ -10,12 +11,17 @@ This integration supports a number of methods of authenticating with the network
 3. Username and SSH Key from the XSOAR credential manager
 
 In addition to the SSH credential, a `enable` password must be also provided.
+
 ## Permissions
+
 The user account used for initial SSH login access can be level 1, however the enable password must also be provided.
+
 ## Network Requirements
+
 By default, TCP port 22 will be used to initiate a SSH connection to the IOS host.
 
 The connection will be initiated from the XSOAR engine/server specified in the instance settings.
+
 ## Configure Ansible Cisco IOS in Cortex
 
 
@@ -28,13 +34,17 @@ The connection will be initiated from the XSOAR engine/server specified in the i
 | Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
 
 ## Testing
+
 This integration does not support testing from the integration management screen. Instead it is recommended to use the `!ios-facts`command providing an example `host` as the command argument. This command will connect to the specified network device with the configured credentials in the integration, and if successful output general information about the device.
 
 ## Idempotence
+
 The action commands in this integration are idempotent. This means that the result of performing it once is exactly the same as the result of performing it repeatedly without any intervening actions.
 
 ## State Arguement
+
 Some of the commands in this integration take a state argument. These define the desired end state of the object being managed. As a result these commands are able to perform multiple management operations depending on the desired state value. Common state values are:
+
 | **State** | **Result** |
 | --- | --- |
 | present | Object should exist. If not present, the object will be created with the provided parameters. If present but not with correct parameters, it will be modified to met provided parameters. |
@@ -44,13 +54,18 @@ Some of the commands in this integration take a state argument. These define the
 | absent | Object should not exist. If it it exists it will be deleted. |
 
 ## Complex Command Inputs
+
 Some commands may require structured input arguments such as `lists` or `dictionary`, these can be provided in standard JSON notation wrapped in double curly braces. For example a argument called `dns_servers` that accepts a list of server IPs 8.8.8.8 and 8.8.4.4 would be entered as `dns_servers="{{ ['8.8.8.8', '8.8.4.4'] }}"`.
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
+
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ios-banner
+
 ***
 Manage multiline banners on Cisco IOS devices
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_banner_module.html
@@ -59,6 +74,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-banner`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -77,9 +93,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-banner host="123.123.123.123" banner="login" text="this is my login banner" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -98,14 +116,18 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: banner login @
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: banner login @
 >this is my login banner
 >@
 
 
 ### ios-bgp
+
 ***
 Configure global BGP protocol settings on Cisco IOS.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_bgp_module.html
@@ -114,6 +136,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-bgp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -131,9 +154,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-bgp host="123.123.123.123" config="{{ {'bgp_as': 64496, 'router_id': '192.0.2.1', 'log_neighbor_changes': True, 'neighbors': [{'neighbor': '1.1.1.1', 'remote_as': 64511, 'timers': {'keepalive': 300, 'holdtime': 360, 'min_neighbor_holdtime': 360}}, {'neighbor': '1.1.1.2', 'remote_as': 64498}], 'networks': [{'prefix': '198.51.100.0', 'route_map': 'RMAP_1'}, {'prefix': '192.0.2.0', 'masklen': 23}], 'address_family': [{'afi': 'ipv4', 'safi': 'unicast', 'redistribute': [{'protocol': 'ospf', 'id': 223, 'metric': 10}]}]} }}" operation="merge" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -150,11 +175,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 
 ### ios-command
+
 ***
 Run commands on remote devices running Cisco IOS
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_command_module.html
@@ -163,6 +191,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-command`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -185,9 +214,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-command host="123.123.123.123" commands="show version"```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -253,9 +284,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ## Stdout
->    * 0: Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Version 15.7(3)M3, RELEASE SOFTWARE (fc2)
+>
+> * changed: False
+>
+> * ## Stdout
+>
+>   * 0: Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Version 15.7(3)M3, RELEASE SOFTWARE (fc2)
 >Technical Support: http://www.cisco.com/techsupport
 >Copyright (c) 1986-2018 by Cisco Systems, Inc.
 >Compiled Wed 01-Aug-18 16:45 by prod_rel_team
@@ -298,54 +332,58 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >
 >
 >Configuration register is 0x0
->  * ## Stdout_Lines
->  * ## List
->    * 0: Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Version 15.7(3)M3, RELEASE SOFTWARE (fc2)
->    * 1: Technical Support: http://www.cisco.com/techsupport
->    * 2: Copyright (c) 1986-2018 by Cisco Systems, Inc.
->    * 3: Compiled Wed 01-Aug-18 16:45 by prod_rel_team
->    * 4: 
->    * 4: 
->    * 6: ROM: Bootstrap program is IOSv
->    * 4: 
->    * 8: IOSv01 uptime is 1 hour, 33 minutes
->    * 9: System returned to ROM by reload
->    * 10: System image file is "flash0:/vios-adventerprisek9-m"
->    * 11: Last reload reason: Unknown reason
->    * 4: 
->    * 4: 
->    * 4: 
->    * 15: This product contains cryptographic features and is subject to United
->    * 16: States and local country laws governing import, export, transfer and
->    * 17: use. Delivery of Cisco cryptographic products does not imply
->    * 18: third-party authority to import, export, distribute or use encryption.
->    * 19: Importers, exporters, distributors and users are responsible for
->    * 20: compliance with U.S. and local country laws. By using this product you
->    * 21: agree to comply with applicable laws and regulations. If you are unable
->    * 22: to comply with U.S. and local laws, return this product immediately.
->    * 4: 
->    * 24: A summary of U.S. laws governing Cisco cryptographic products may be found at:
->    * 25: http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
->    * 4: 
->    * 27: If you require further assistance please contact us by sending email to
->    * 28: export@cisco.com.
->    * 4: 
->    * 30: Cisco IOSv (revision 1.0) with  with 460009K/62464K bytes of memory.
->    * 31: Processor board ID XXXX
->    * 32: 4 Gigabit Ethernet interfaces
->    * 33: DRAM configuration is 72 bits wide with parity disabled.
->    * 34: 256K bytes of non-volatile configuration memory.
->    * 35: 2097152K bytes of ATA System CompactFlash 0 (Read/Write)
->    * 36: 0K bytes of ATA CompactFlash 1 (Read/Write)
->    * 37: 1024K bytes of ATA CompactFlash 2 (Read/Write)
->    * 38: 0K bytes of ATA CompactFlash 3 (Read/Write)
->    * 4: 
->    * 4: 
->    * 4: 
->    * 42: Configuration register is 0x0
+>
+> * ## Stdout_Lines
+>
+> * ## List
+>
+>   * 0: Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Version 15.7(3)M3, RELEASE SOFTWARE (fc2)
+>   * 1: Technical Support: http://www.cisco.com/techsupport
+>   * 2: Copyright (c) 1986-2018 by Cisco Systems, Inc.
+>   * 3: Compiled Wed 01-Aug-18 16:45 by prod_rel_team
+>   * 4: 
+>   * 4: 
+>   * 6: ROM: Bootstrap program is IOSv
+>   * 4: 
+>   * 8: IOSv01 uptime is 1 hour, 33 minutes
+>   * 9: System returned to ROM by reload
+>   * 10: System image file is "flash0:/vios-adventerprisek9-m"
+>   * 11: Last reload reason: Unknown reason
+>   * 4: 
+>   * 4: 
+>   * 4: 
+>   * 15: This product contains cryptographic features and is subject to United
+>   * 16: States and local country laws governing import, export, transfer and
+>   * 17: use. Delivery of Cisco cryptographic products does not imply
+>   * 18: third-party authority to import, export, distribute or use encryption.
+>   * 19: Importers, exporters, distributors and users are responsible for
+>   * 20: compliance with U.S. and local country laws. By using this product you
+>   * 21: agree to comply with applicable laws and regulations. If you are unable
+>   * 22: to comply with U.S. and local laws, return this product immediately.
+>   * 4: 
+>   * 24: A summary of U.S. laws governing Cisco cryptographic products may be found at:
+>   * 25: http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+>   * 4: 
+>   * 27: If you require further assistance please contact us by sending email to
+>   * 28: export@cisco.com.
+>   * 4: 
+>   * 30: Cisco IOSv (revision 1.0) with  with 460009K/62464K bytes of memory.
+>   * 31: Processor board ID XXXX
+>   * 32: 4 Gigabit Ethernet interfaces
+>   * 33: DRAM configuration is 72 bits wide with parity disabled.
+>   * 34: 256K bytes of non-volatile configuration memory.
+>   * 35: 2097152K bytes of ATA System CompactFlash 0 (Read/Write)
+>   * 36: 0K bytes of ATA CompactFlash 1 (Read/Write)
+>   * 37: 1024K bytes of ATA CompactFlash 2 (Read/Write)
+>   * 38: 0K bytes of ATA CompactFlash 3 (Read/Write)
+>   * 4: 
+>   * 4: 
+>   * 4: 
+>   * 42: Configuration register is 0x0
 
 
 ### ios-config
+
 ***
 Manage Cisco IOS configuration sections
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_config_module.html
@@ -354,6 +392,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -391,9 +430,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-config host="123.123.123.123" lines="hostname IOSv01" backup="yes"```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -414,15 +455,17 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * backup_path: ./backup/123.123.123.123_config.2021-07-11@09:08:02
->  * changed: True
->  * date: 2021-07-11
->  * filename: 123.123.123.123_config.2021-07-11@09:08:02
->  * shortname: ./backup/123.123.123.123_config
->  * time: 09:08:02
+>
+> * backup_path: ./backup/123.123.123.123_config.2021-07-11@09:08:02
+> * changed: True
+> * date: 2021-07-11
+> * filename: 123.123.123.123_config.2021-07-11@09:08:02
+> * shortname: ./backup/123.123.123.123_config
+> * time: 09:08:02
 
 
 ### ios-facts
+
 ***
 Collect facts from remote devices running Cisco IOS
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_facts_module.html
@@ -431,6 +474,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -468,9 +512,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-facts host="123.123.123.123" gather_subset="all" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -601,8 +647,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * net_api: cliconf
->  * net_config: !
+>
+> * net_api: cliconf
+> * net_config: !
 >! Last configuration change at 08:56:26 UTC Sun Jul 11 2021 by admin
 >!
 >version 15.7
@@ -723,7 +770,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >control-plane
 >!
 >banner exec ^C
+>
 >**************************************************************************
+>
 >* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
 >* education. IOSv is provided as-is and is not supported by Cisco's      *
 >* Technical Advisory Center. Any use or disclosure, in whole or in part, *
@@ -732,7 +781,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >* Cisco in writing.                                                      *
 >**************************************************************************^C
 >banner incoming ^C
+>
 >**************************************************************************
+>
 >* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
 >* education. IOSv is provided as-is and is not supported by Cisco's      *
 >* Technical Advisory Center. Any use or disclosure, in whole or in part, *
@@ -760,105 +811,143 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >ntp server 1.1.1.3
 >!
 >end
->  * net_hostname: IOSv01
->  * net_image: flash0:/vios-adventerprisek9-m
->  * net_iostype: IOS
->  * net_memfree_mb: 244233.24609375
->  * net_memtotal_mb: 310087.16796875
->  * net_model: IOSv
->  * net_python_version: 3.9.5
->  * net_serialnum: XXXX
->  * net_system: ios
->  * net_version: 15.7(3)M3
->  * discovered_interpreter_python: /usr/local/bin/python
->  * ## Net_All_Ipv4_Addresses
->    * 0: 123.123.123.123
->    * 1: 192.168.0.2
->  * ## Net_All_Ipv6_Addresses
->    * 0: 1:11:11:11
->  * ## Net_Filesystems
->    * 0: flash0:
->  * ## Net_Filesystems_Info
->    * ### Flash0:
->      * spacefree_kb: 1941968.0
->      * spacetotal_kb: 2092496.0
->  * ## Net_Gather_Network_Resources
->  * ## Net_Gather_Subset
->    * 0: interfaces
->    * 1: default
->    * 2: hardware
->    * 3: config
->  * ## Net_Interfaces
->    * ### Gigabitethernet0/0
->      * bandwidth: 1000000
->      * description: None
->      * duplex: Auto
->      * lineprotocol: up
->      * macaddress: 0c05.2bf9.3e00
->      * mediatype: RJ45
->      * mtu: 1500
->      * operstatus: up
->      * type: iGbE
->      * #### Ipv4
->      * #### List
->        * address: 123.123.123.123
->        * subnet: 24
->    * ### Gigabitethernet0/1
->      * bandwidth: 1000000
->      * description: None
->      * duplex: Auto
->      * lineprotocol: down
->      * macaddress: 0c05.2bf9.3e01
->      * mediatype: RJ45
->      * mtu: 1500
->      * operstatus: administratively down
->      * type: iGbE
->      * #### Ipv4
->    * ### Gigabitethernet0/2
->      * bandwidth: 1000000
->      * description: Configured and Merged by Ansible Network
->      * duplex: Auto
->      * lineprotocol: down
->      * macaddress: 0c05.2bf9.3e02
->      * mediatype: RJ45
->      * mtu: 1500
->      * operstatus: down
->      * type: iGbE
->      * #### Ipv4
->      * #### List
->        * address: 192.168.0.2
->        * subnet: 24
->    * ### Gigabitethernet0/3
->      * bandwidth: 100000
->      * description: Configured and Merged by Ansible Network
->      * duplex: Full
->      * lineprotocol: down
->      * macaddress: 0c05.2bf9.3e03
->      * mediatype: RJ45
->      * mtu: 2800
->      * operstatus: administratively down
->      * type: iGbE
->      * #### Ipv4
->      * #### Ipv6
->      * #### List
->        * address: 1:11:11:11
->        * subnet: 11:11:11:11:11:11:11:11/64 [TEN]
->    * ### Gigabitethernet0/3.100
->      * bandwidth: 100000
->      * description: None
->      * duplex: None
->      * lineprotocol: down
->      * macaddress: 0c05.2bf9.3e03
->      * mediatype: None
->      * mtu: 2800
->      * operstatus: administratively down
->      * type: iGbE
->      * #### Ipv4
->  * ## Net_Neighbors
->  * ## Network_Resources
+> * net_hostname: IOSv01
+> * net_image: flash0:/vios-adventerprisek9-m
+> * net_iostype: IOS
+> * net_memfree_mb: 244233.24609375
+> * net_memtotal_mb: 310087.16796875
+> * net_model: IOSv
+> * net_python_version: 3.9.5
+> * net_serialnum: XXXX
+> * net_system: ios
+> * net_version: 15.7(3)M3
+> * discovered_interpreter_python: /usr/local/bin/python
+>
+> * ## Net_All_Ipv4_Addresses
+>
+>   * 0: 123.123.123.123
+>   * 1: 192.168.0.2
+>
+> * ## Net_All_Ipv6_Addresses
+>
+>   * 0: 1:11:11:11
+>
+> * ## Net_Filesystems
+>
+>   * 0: flash0:
+>
+> * ## Net_Filesystems_Info
+>
+>   * ### Flash0:
+>
+>     * spacefree_kb: 1941968.0
+>     * spacetotal_kb: 2092496.0
+>
+> * ## Net_Gather_Network_Resources
+>
+> * ## Net_Gather_Subset
+>
+>   * 0: interfaces
+>   * 1: default
+>   * 2: hardware
+>   * 3: config
+>
+> * ## Net_Interfaces
+>
+>   * ### Gigabitethernet0/0
+>
+>     * bandwidth: 1000000
+>     * description: None
+>     * duplex: Auto
+>     * lineprotocol: up
+>     * macaddress: 0c05.2bf9.3e00
+>     * mediatype: RJ45
+>     * mtu: 1500
+>     * operstatus: up
+>     * type: iGbE
+>
+>     * #### Ipv4
+>
+>     * #### List
+>
+>       * address: 123.123.123.123
+>       * subnet: 24
+>
+>   * ### Gigabitethernet0/1
+>
+>     * bandwidth: 1000000
+>     * description: None
+>     * duplex: Auto
+>     * lineprotocol: down
+>     * macaddress: 0c05.2bf9.3e01
+>     * mediatype: RJ45
+>     * mtu: 1500
+>     * operstatus: administratively down
+>     * type: iGbE
+>
+>     * #### Ipv4
+>
+>   * ### Gigabitethernet0/2
+>
+>     * bandwidth: 1000000
+>     * description: Configured and Merged by Ansible Network
+>     * duplex: Auto
+>     * lineprotocol: down
+>     * macaddress: 0c05.2bf9.3e02
+>     * mediatype: RJ45
+>     * mtu: 1500
+>     * operstatus: down
+>     * type: iGbE
+>
+>     * #### Ipv4
+>
+>     * #### List
+>
+>       * address: 192.168.0.2
+>       * subnet: 24
+>
+>   * ### Gigabitethernet0/3
+>
+>     * bandwidth: 100000
+>     * description: Configured and Merged by Ansible Network
+>     * duplex: Full
+>     * lineprotocol: down
+>     * macaddress: 0c05.2bf9.3e03
+>     * mediatype: RJ45
+>     * mtu: 2800
+>     * operstatus: administratively down
+>     * type: iGbE
+>
+>     * #### Ipv4
+>
+>     * #### Ipv6
+>
+>     * #### List
+>
+>       * address: 1:11:11:11
+>       * subnet: 11:11:11:11:11:11:11:11/64 [TEN]
+>
+>   * ### Gigabitethernet0/3.100
+>
+>     * bandwidth: 100000
+>     * description: None
+>     * duplex: None
+>     * lineprotocol: down
+>     * macaddress: 0c05.2bf9.3e03
+>     * mediatype: None
+>     * mtu: 2800
+>     * operstatus: administratively down
+>     * type: iGbE
+>
+>     * #### Ipv4
+>
+> * ## Net_Neighbors
+>
+> * ## Network_Resources
 
 
 ### ios-interfaces
+
 ***
 Manages interface attributes of Cisco IOS network devices
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_interfaces_module.html
@@ -867,6 +956,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-interfaces`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -886,9 +976,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-interfaces host="123.123.123.123" config="{{ [{'name': 'GigabitEthernet0/2', 'description': 'Configured and Merged by Ansible Network', 'enabled': True}, {'name': 'GigabitEthernet0/3', 'description': 'Configured and Merged by Ansible Network', 'mtu': 2800, 'enabled': False, 'speed': 100, 'duplex': 'full'}] }}" state="merged" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -938,38 +1030,52 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ## Before
->  * ## Gigabitethernet0/0
->    * duplex: auto
->    * enabled: True
->    * name: GigabitEthernet0/0
->    * speed: auto
->  * ## Gigabitethernet0/1
->    * duplex: auto
->    * enabled: False
->    * name: GigabitEthernet0/1
->    * speed: auto
->  * ## Gigabitethernet0/2
->    * description: Configured and Merged by Ansible Network
->    * duplex: auto
->    * enabled: True
->    * name: GigabitEthernet0/2
->    * speed: auto
->  * ## Gigabitethernet0/3
->    * description: Configured and Merged by Ansible Network
->    * duplex: full
->    * enabled: False
->    * mtu: 2800
->    * name: GigabitEthernet0/3
->    * speed: 100
->  * ## Gigabitethernet0/3.100
->    * enabled: True
->    * name: GigabitEthernet0/3.100
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Before
+>
+> * ## Gigabitethernet0/0
+>
+>   * duplex: auto
+>   * enabled: True
+>   * name: GigabitEthernet0/0
+>   * speed: auto
+>
+> * ## Gigabitethernet0/1
+>
+>   * duplex: auto
+>   * enabled: False
+>   * name: GigabitEthernet0/1
+>   * speed: auto
+>
+> * ## Gigabitethernet0/2
+>
+>   * description: Configured and Merged by Ansible Network
+>   * duplex: auto
+>   * enabled: True
+>   * name: GigabitEthernet0/2
+>   * speed: auto
+>
+> * ## Gigabitethernet0/3
+>
+>   * description: Configured and Merged by Ansible Network
+>   * duplex: full
+>   * enabled: False
+>   * mtu: 2800
+>   * name: GigabitEthernet0/3
+>   * speed: 100
+>
+> * ## Gigabitethernet0/3.100
+>
+>   * enabled: True
+>   * name: GigabitEthernet0/3.100
+>
+> * ## Commands
 
 
 ### ios-l2-interfaces
+
 ***
 Manage Layer-2 interface on Cisco IOS devices.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_l2_interfaces_module.html
@@ -978,6 +1084,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-l2-interfaces`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -998,6 +1105,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### ios-l3-interfaces
+
 ***
 Manage Layer-3 interface on Cisco IOS devices.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_l3_interfaces_module.html
@@ -1006,6 +1114,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-l3-interfaces`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1025,9 +1134,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-l3-interfaces host="123.123.123.123" config="{{ [{'name': 'GigabitEthernet0/3', 'ipv4': [{'address': '192.168.0.1/24', 'secondary': True}]}, {'name': 'GigabitEthernet0/2', 'ipv4': [{'address': '192.168.0.2/24'}]}, {'name': 'GigabitEthernet0/3', 'ipv6': [{'address': '1:11:11:11/64'}]}, {'name': 'GigabitEthernet0/3.100', 'ipv4': [{'address': '192.168.0.3/24'}]}] }}" state="merged" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -1113,55 +1224,99 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * ## After
->  * ## Gigabitethernet0/0
->    * name: GigabitEthernet0/0
->    * ### Ipv4
->    * ### List
->      * address: 123.123.123.123 255.255.255.0
->  * ## Gigabitethernet0/1
->    * name: GigabitEthernet0/1
->  * ## Gigabitethernet0/2
->    * name: GigabitEthernet0/2
->    * ### Ipv4
->    * ### List
->      * address: 192.168.0.2 255.255.255.0
->  * ## Gigabitethernet0/3
->    * name: GigabitEthernet0/3
->    * ### Ipv6
->    * ### List
->      * address: 1:11:11:11/64
->  * ## Gigabitethernet0/3.100
->    * name: GigabitEthernet0/3.100
->  * ## Before
->  * ## Gigabitethernet0/0
->    * name: GigabitEthernet0/0
->    * ### Ipv4
->    * ### List
->      * address: 123.123.123.123 255.255.255.0
->  * ## Gigabitethernet0/1
->    * name: GigabitEthernet0/1
->  * ## Gigabitethernet0/2
->    * name: GigabitEthernet0/2
->    * ### Ipv4
->    * ### List
->      * address: 192.168.0.2 255.255.255.0
->  * ## Gigabitethernet0/3
->    * name: GigabitEthernet0/3
->    * ### Ipv6
->    * ### List
->      * address: 1:11:11:11/64
->  * ## Gigabitethernet0/3.100
->    * name: GigabitEthernet0/3.100
->  * ## Commands
->    * 0: interface GigabitEthernet0/3
->    * 1: ip address 192.168.0.1 255.255.255.0 secondary
->    * 2: interface GigabitEthernet0/3.100
->    * 3: ip address 192.168.0.3 255.255.255.0
+>
+> * changed: True
+>
+> * ## After
+>
+> * ## Gigabitethernet0/0
+>
+>   * name: GigabitEthernet0/0
+>
+>   * ### Ipv4
+>
+>   * ### List
+>
+>     * address: 123.123.123.123 255.255.255.0
+>
+> * ## Gigabitethernet0/1
+>
+>   * name: GigabitEthernet0/1
+>
+> * ## Gigabitethernet0/2
+>
+>   * name: GigabitEthernet0/2
+>
+>   * ### Ipv4
+>
+>   * ### List
+>
+>     * address: 192.168.0.2 255.255.255.0
+>
+> * ## Gigabitethernet0/3
+>
+>   * name: GigabitEthernet0/3
+>
+>   * ### Ipv6
+>
+>   * ### List
+>
+>     * address: 1:11:11:11/64
+>
+> * ## Gigabitethernet0/3.100
+>
+>   * name: GigabitEthernet0/3.100
+>
+> * ## Before
+>
+> * ## Gigabitethernet0/0
+>
+>   * name: GigabitEthernet0/0
+>
+>   * ### Ipv4
+>
+>   * ### List
+>
+>     * address: 123.123.123.123 255.255.255.0
+>
+> * ## Gigabitethernet0/1
+>
+>   * name: GigabitEthernet0/1
+>
+> * ## Gigabitethernet0/2
+>
+>   * name: GigabitEthernet0/2
+>
+>   * ### Ipv4
+>
+>   * ### List
+>
+>     * address: 192.168.0.2 255.255.255.0
+>
+> * ## Gigabitethernet0/3
+>
+>   * name: GigabitEthernet0/3
+>
+>   * ### Ipv6
+>
+>   * ### List
+>
+>     * address: 1:11:11:11/64
+>
+> * ## Gigabitethernet0/3.100
+>
+>   * name: GigabitEthernet0/3.100
+>
+> * ## Commands
+>
+>   * 0: interface GigabitEthernet0/3
+>   * 1: ip address 192.168.0.1 255.255.255.0 secondary
+>   * 2: interface GigabitEthernet0/3.100
+>   * 3: ip address 192.168.0.3 255.255.255.0
 
 
 ### ios-lacp
+
 ***
 Manage Global Link Aggregation Control Protocol (LACP) on Cisco IOS devices.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lacp_module.html
@@ -1170,6 +1325,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-lacp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1190,6 +1346,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### ios-lacp-interfaces
+
 ***
 Manage Link Aggregation Control Protocol (LACP) on Cisco IOS devices interface.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lacp_interfaces_module.html
@@ -1198,6 +1355,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-lacp-interfaces`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1218,6 +1376,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### ios-lag-interfaces
+
 ***
 Manage Link Aggregation on Cisco IOS devices.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lag_interfaces_module.html
@@ -1226,6 +1385,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-lag-interfaces`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1246,6 +1406,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### ios-linkagg
+
 ***
 Manage link aggregation groups on Cisco IOS network devices
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_linkagg_module.html
@@ -1254,6 +1415,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-linkagg`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1276,6 +1438,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### ios-lldp
+
 ***
 Manage LLDP configuration on Cisco IOS network devices.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_module.html
@@ -1284,6 +1447,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-lldp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1300,9 +1464,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-lldp host="123.123.123.123" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -1319,11 +1485,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 
 ### ios-lldp-global
+
 ***
 Configure and manage Link Layer Discovery Protocol(LLDP) attributes on IOS platforms.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_global_module.html
@@ -1332,6 +1501,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-lldp-global`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1351,9 +1521,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-lldp-global host="123.123.123.123" config="{{ {'holdtime': 10, 'enabled': True, 'reinit': 3, 'timer': 10} }}" state="merged" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -1376,16 +1548,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ## Before
->    * enabled: True
->    * holdtime: 10
->    * reinit: 3
->    * timer: 10
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Before
+>
+>   * enabled: True
+>   * holdtime: 10
+>   * reinit: 3
+>   * timer: 10
+>
+> * ## Commands
 
 
 ### ios-lldp-interfaces
+
 ***
 Manage link layer discovery protocol (LLDP) attributes of interfaces on Cisco IOS devices.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_interfaces_module.html
@@ -1394,6 +1571,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-lldp-interfaces`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1413,9 +1591,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-lldp-interfaces host="123.123.123.123" config="{{ [{'name': 'GigabitEthernet0/1', 'receive': True, 'transmit': True}, {'name': 'GigabitEthernet0/2', 'receive': True}, {'name': 'GigabitEthernet0/3', 'transmit': True}] }}" state="merged" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -1459,32 +1639,46 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ## Before
->  * ## Gigabitethernet0/0
->    * name: GigabitEthernet0/0
->    * receive: True
->    * transmit: True
->  * ## Gigabitethernet0/1
->    * name: GigabitEthernet0/1
->    * receive: True
->    * transmit: True
->  * ## Gigabitethernet0/2
->    * name: GigabitEthernet0/2
->    * receive: True
->    * transmit: True
->  * ## Gigabitethernet0/3
->    * name: GigabitEthernet0/3
->    * receive: True
->    * transmit: True
->  * ## Gigabitethernet0/3.100
->    * name: GigabitEthernet0/3.100
->    * receive: True
->    * transmit: True
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Before
+>
+> * ## Gigabitethernet0/0
+>
+>   * name: GigabitEthernet0/0
+>   * receive: True
+>   * transmit: True
+>
+> * ## Gigabitethernet0/1
+>
+>   * name: GigabitEthernet0/1
+>   * receive: True
+>   * transmit: True
+>
+> * ## Gigabitethernet0/2
+>
+>   * name: GigabitEthernet0/2
+>   * receive: True
+>   * transmit: True
+>
+> * ## Gigabitethernet0/3
+>
+>   * name: GigabitEthernet0/3
+>   * receive: True
+>   * transmit: True
+>
+> * ## Gigabitethernet0/3.100
+>
+>   * name: GigabitEthernet0/3.100
+>   * receive: True
+>   * transmit: True
+>
+> * ## Commands
 
 
 ### ios-logging
+
 ***
 Manage logging on network devices
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_logging_module.html
@@ -1493,6 +1687,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-logging`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1515,9 +1710,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-logging host="123.123.123.123" dest="host" name="172.16.0.1" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -1534,11 +1731,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 
 ### ios-ntp
+
 ***
 Manages core NTP configuration.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_ntp_module.html
@@ -1547,6 +1747,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-ntp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1570,9 +1771,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-ntp host="123.123.123.123" server="1.1.1.3" source_int="GigabitEthernet0/1" logging="False" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -1591,12 +1794,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: ntp source GigabitEthernet0/1
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: ntp source GigabitEthernet0/1
 
 
 ### ios-ping
+
 ***
 Tests reachability using ping from Cisco IOS network devices
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_ping_module.html
@@ -1605,6 +1812,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-ping`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1630,6 +1838,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### ios-static-route
+
 ***
 Manage static IP routes on Cisco IOS network devices
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_static_route_module.html
@@ -1638,6 +1847,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-static-route`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1664,9 +1874,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-static-route host="123.123.123.123" prefix="192.168.2.0" mask="255.255.255.0" next_hop="10.0.0.1" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -1683,11 +1895,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 
 ### ios-system
+
 ***
 Manage the system attributes on Cisco IOS devices
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_system_module.html
@@ -1696,6 +1911,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-system`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1718,9 +1934,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-system host="123.123.123.123" hostname="ios01" domain_name="test.example.com" domain_search="{{ ['ansible.com', 'redhat.com', 'cisco.com'] }}" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -1739,12 +1957,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: hostname ios01
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: hostname ios01
 
 
 ### ios-user
+
 ***
 Manage the aggregate of local users on Cisco IOS device
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_user_module.html
@@ -1753,6 +1975,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1780,9 +2003,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ios-user host="123.123.123.123" name="ansible" nopassword="True" sshkey="ssh-rsa AAAA...u+DM=" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoIOS": {
@@ -1805,16 +2030,20 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: ip ssh pubkey-chain
->    * 1: username ansible
->    * 2: key-hash ssh-rsa B1E29F17C950E2FEAB5BC3AC2A760208
->    * 3: exit
->    * 3: exit
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: ip ssh pubkey-chain
+>   * 1: username ansible
+>   * 2: key-hash ssh-rsa B1E29F17C950E2FEAB5BC3AC2A760208
+>   * 3: exit
+>   * 3: exit
 
 
 ### ios-vlans
+
 ***
 Manage VLANs on Cisco IOS devices.
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_vlans_module.html
@@ -1823,6 +2052,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-vlans`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1843,6 +2073,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### ios-vrf
+
 ***
 Manage the collection of VRF definitions on Cisco IOS devices
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_vrf_module.html
@@ -1851,6 +2082,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Base Command
 
 `ios-vrf`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1887,6 +2119,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### Troubleshooting
+
 The Ansible-Runner container is not suitable for running as a non-root user.
 Therefore, the Ansible integrations will fail if you follow the instructions in [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide). 
 

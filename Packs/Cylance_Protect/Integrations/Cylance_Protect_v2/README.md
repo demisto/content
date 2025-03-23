@@ -1712,6 +1712,7 @@
 <p><a href="../../doc_files/48305037-5d36e300-e52c-11e8-8444-db223ee4b34e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/48305037-5d36e300-e52c-11e8-8444-db223ee4b34e.png" alt="screen shot 2018-11-10 at 21 02 56" width="595" height="685"></a></p>
 
 ### cylance-protect-get-device-by-hostname
+
 ***
 Allows a caller to request a specific device resource belonging to a Tenant by hostname
 
@@ -1719,6 +1720,7 @@ Allows a caller to request a specific device resource belonging to a Tenant by h
 #### Base Command
 
 `cylance-protect-get-device-by-hostname`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1755,9 +1757,11 @@ Allows a caller to request a specific device resource belonging to a Tenant by h
 
 
 #### Command Example
+
 ```!cylance-protect-get-device-by-hostname hostname=WIN-5HMOGIEG6M5```
 
 #### Context Example
+
 ```json
 {
     "CylanceProtect": {
@@ -1803,6 +1807,7 @@ Allows a caller to request a specific device resource belonging to a Tenant by h
 #### Human Readable Output
 
 >### Cylance Protect Device WIN-5HMOGIEG6M5
+>
 >|AgentVersion|BackgroundDetection|DateFirstRegistered|DateOffline|DlcmStatus|HostName|Id|IpAddresses|IsSafe|MacAddresses|Name|OsKernelVersion|OsVersion|Policy|Products|State|UpdateAvailable|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1.2.1418 | false | 2017-12-29T04:07:56 | 2020-02-07T02:25:34.151 | Unknown | WIN-5HMOGIEG6M5 | b4eceeb0-8699-4d42-b853-155513042d6e | 127.0.0.1 | true | 02-76-91-6B-0A-BB | WIN-5HMOGIEG6M5 | 6.3.0 | Microsoft Windows Server 2012 R2 Standard | Default | {u'status': u'Offline', u'version': u'1.2.1418', u'name': u'protect'} | Offline | false |
@@ -1816,6 +1821,7 @@ Create a cylance InstaQuery
 #### Base Command
 
 `cylance-optics-create-instaquery`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1839,11 +1845,13 @@ Create a cylance InstaQuery
 
 
 #### Command Example
+
 ``` 
 !cylance-optics-create-instaquery name="Test Insta continue" description="Test only" artifact="File" match_value_type="File.Path" match_values="exe" zone="6608ca0e-88c6-4647-b276-271cc5ea4295" match_type="Fuzzy"
 ```
 
 #### Human Readable Output
+
 | Result            |                                  |
 |-------------------|----------------------------------|
 | case_sensitive    | false                            |
@@ -1869,6 +1877,7 @@ Get a cylance InstaQuery search result
 #### Base Command
 
 `cylance-optics-get-instaquery-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1884,6 +1893,7 @@ Get a cylance InstaQuery search result
 
 
 #### Command Example
+
 ``` 
 !cylance-optics-get-instaquery-result query_id=9E2CCDA5A93918C588E6865ED6FEEA70
 ```
@@ -1906,6 +1916,7 @@ Get a list of InstaQuery
 #### Base Command
 
 `cylance-optics-list-instaquery`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1922,11 +1933,13 @@ Get a list of InstaQuery
 
 
 #### Command Example
+
 ``` 
 !cylance-optics-list-instaquery page_size="10"
 ```
 
 #### Human Readable Output
+
 |                       | Result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 |-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | page_items            | {u'match_type': u'Fuzzy', u'name': u'Test Insta continue', u'created_at': u'2022-05-05T05:52:36Z', u'artifact': u'File', u'case_sensitive': False, u'zones': [u'6608CA0E88C64647B276271CC5EA4295'], u'progress': {u'queried': 0, u'responded': 0}, u'match_value_type': u'Path', u'results_available': True, u'match_values': [u'exe'], u'id': u'9E2CCDA5A93918C588E6865ED6FEEA70', u'description': u'Test only'} |

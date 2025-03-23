@@ -3,6 +3,7 @@ Checks if the left side is in range of the right side (from,to anotation).
 Example - InRange left=4right=1,8 will return true
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,6 +13,7 @@ Example - InRange left=4right=1,8 will return true
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -20,5 +22,6 @@ Example - InRange left=4right=1,8 will return true
 | right | The range to check against with the form of from,to. For example, 2,8. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

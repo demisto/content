@@ -6,6 +6,7 @@ Each technique is mapped out-of-the-box into the specific Courses of Action that
 With this Pack, you can reduce the time your teams spend on consuming threat intelligence and translating the reports into action items, and on sustaining best practices policies for your security products. 
 
 **What does this Pack do?**
+
 - Automatically maps MITRE ATT&CK Techniques into Courses of Action playbooks.
 - Takes action to remediate the techniques throughout Palo Alto Networks security products, following the MITRE ATT&CK kill chain.
 - Checks existing profiles against best practices and suggests manual or automated policy changes. 

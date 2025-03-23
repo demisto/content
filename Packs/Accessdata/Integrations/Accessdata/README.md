@@ -19,6 +19,7 @@ For example, you can look at “Accessdata: Dump memory for malicious process”
     
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
@@ -50,11 +51,13 @@ Returns a list of processes from the legacy agent.
 | Accessdata.Job.State | string | The execution state of the job. |
 
 ##### Command Example
+
 ```
 accessdata-legacyagent-get-processlist caseid=2 target_ip=X.X.X.X
 ```
 
 ##### Context Example
+
 ```
 {
     "Accessdata.Job": {
@@ -99,10 +102,13 @@ Creates a legacy agent memory dump.
 | Accessdata.Job.State | string | The execution state of the job. |
 
 ##### Command Example
+
 ```
 accessdata-legacyagent-get-memorydump caseid=2 target_ip=X.X.X.X
 ```
+
 ##### Context Example
+
 ```
 {
     "Accessdata.Job": {
@@ -142,11 +148,13 @@ Reads a file from a case folder and puts the contents into the context output.
 | Accessdata.File.Contents | string | The contents of the file. |
 
 ##### Command Example
+
 ```
 accessdata-read-casefile filepath="\\X.X.X.X\D$\paths\cases\ProcessingHelperCase\b389a8e9-4ce4-473d-8d2e-9026f53f925c\Jobs\job_153\fa9787a3-49a1-4d73-a194-7c944eb9a3bf\1\snapshot.xml"
 ```
 
 ##### Context Example
+
 ```
 {
     "Accessdata.File.Contents": "<?xml version=\"1.0\"?>\r\n<root>\r\n<Process resultitemtype=\"15\"><Name>addm.exe</Name><Path/><StartTi ... ress>0</baseAddress><ImageSize>0</ImageSize><ProcessName/><FromAgent/></DLL>\r\n</root>\r\n"
@@ -154,12 +162,14 @@ accessdata-read-casefile filepath="\\X.X.X.X\D$\paths\cases\ProcessingHelperCase
 ```
 
 ##### Human Readable Output
+
 ```
 <?xml version="1.0"?>
 <root>
 <Process resultitemtype="15">\<Name>addm.exe</Name>\<Path/>\<StartTi ... ress>0</baseAddress>\<ImageSize>0</ImageSize>\<ProcessName/>\<FromAgent/>\</DLL>
 </root>
 ```
+
 ### Check the status of a job
 
 * * *
@@ -186,11 +196,13 @@ Checks the status of a job.
 | Accessdata.Job.State | string | The execution state of the job. |
 
 ##### Command Example
+
 ```
 accessdata-jobstatus-scan caseJobID=2_153
 ```
 
 ##### Context Example
+
 ```
 {
     "Accessdata.Job": {
@@ -234,11 +246,13 @@ Gets a snapshot of the path from the results of the process list job.
 | Accessdata.Job.CaseJobID | string | The concatenated CaseID and JobID, for example, like “1_800”. |
 
 ##### Command Example
+
 ```
 accessdata-get-jobstatus-processlist caseID=2 jobID=153
 ```
 
 ##### Context Example
+
 ```
 {
     "Accessdata.Job": {
@@ -283,10 +297,13 @@ Gets a memory dump path from the results of a memory dump job.
 | Accessdata.Job.CaseJobID | string | The concatenated CaseID and JobID, for example, like “1_800”. |
 
 ##### Command Example
+
 ```
 accessdata-get-jobstatus-memorydump caseID=2 jobID=154
 ```
+
 ##### Context Example
+
 ```
 {
     "Accessdata.Job": {
@@ -324,11 +341,13 @@ There are no input arguments for this command.
 | Accessdata.ProcessingCaseId | string | The ID of the processing case. |
 
 ##### Command Example
+
 ```
 accessdata-get-processing-case-id
 ```
 
 ##### Context Example
+
 ```
 {
     "Accessdata.ProcessingCaseId": 2

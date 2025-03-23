@@ -21,9 +21,12 @@ Use the Talos Feed integration to get indicators from the feed.
 | feed | Fetch indicators | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### talos-get-indicators
+
 ***
 Gets indicators from the feed.
 
@@ -31,6 +34,7 @@ Gets indicators from the feed.
 #### Base Command
 
 `talos-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -43,6 +47,7 @@ Gets indicators from the feed.
 There is no context output for this command.
 
 #### Command Example
+
 ```!talos-get-indicators```
 
 #### Human Readable Output

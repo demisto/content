@@ -40,6 +40,7 @@ Use this operation to add a new account that should be managed by the account of
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-list-managed-accounts
 
 ***
@@ -60,6 +61,7 @@ Use this operation to get the list of accounts that are managed by account of th
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-add-subaccount
 
 ***
@@ -83,6 +85,7 @@ Use this operation to add a new sub account to be managed by the account of the 
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-list-subaccounts
 
 ***
@@ -103,6 +106,7 @@ Use this operation to get a list of sub accounts that are managed by the account
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-account-status
 
 ***
@@ -121,6 +125,7 @@ Use this operation to get information about the account of the API client or one
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-modify-account-configuration
 
 ***
@@ -141,6 +146,7 @@ Use this operation to change the configuration of the account of the API client 
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-set-account-log-level
 
 ***
@@ -160,6 +166,7 @@ Use this operation to change the account log configuration.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-test-account-s3-connection
 
 ***
@@ -182,6 +189,7 @@ Use this operation to check that a connection can be created with your Amazon S3
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-test-account-sftp-connection
 
 ***
@@ -205,6 +213,7 @@ Use this operation to check that a connection can be created with your SFTP stor
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-set-account-s3-log-storage
 
 ***
@@ -226,6 +235,7 @@ Use this operation to configure your Amazon cloud storage. Once configured, Inca
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-set-account-sftp-log-storage
 
 ***
@@ -248,6 +258,7 @@ Use this operation to configure your SFTP server storage. Once configured, Incap
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-set-account-default-log-storage
 
 ***
@@ -266,6 +277,7 @@ Use this operation to have your logs saved on Incapsula servers. Once configured
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-account-login-token
 
 ***
@@ -285,6 +297,7 @@ In order to use the token, the user must use the following link:  https://my.inc
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-delete-managed-account
 
 ***
@@ -303,6 +316,7 @@ Use this operation to delete an account.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-delete-subaccount
 
 ***
@@ -321,6 +335,7 @@ Use this operation to delete a sub account.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-account-audit-events
 
 ***
@@ -345,6 +360,7 @@ Use this operation to get audit events for an account.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-set-account-default-data-storage-region
 
 ***
@@ -364,6 +380,7 @@ Use this operation to set the default data region of the account for newly creat
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-account-default-data-storage-region
 
 ***
@@ -382,6 +399,7 @@ Use this operation to get the default data region of the account.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-add-site
 
 ***
@@ -407,6 +425,7 @@ Add a new site to an account. If the site already exists, its status is returned
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-site-status
 
 ***
@@ -426,6 +445,7 @@ Use this operation to get the status of a site
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-domain-approver-email
 
 ***
@@ -444,6 +464,7 @@ Use this operation to get the list of email addresses that can be used when addi
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-modify-site-configuration
 
 ***
@@ -464,6 +485,7 @@ Use this operation to change one of the basic configuration settings of the site
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-modify-site-log-level
 
 ***
@@ -483,6 +505,7 @@ Use this operation to change the site log configuration
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-modify-site-tls-support
 
 ***
@@ -502,6 +525,7 @@ Use this operation to support all TLS versions for the site for connectivity bet
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-modify-site-scurity-config
 
 ***
@@ -527,6 +551,7 @@ Use this operation to change the security configuration of a site
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-modify-site-acl-config
 
 ***
@@ -551,6 +576,7 @@ Use this operation to change the ACL configuration of a site. To modify the conf
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-modify-site-wl-config
 
 ***
@@ -580,6 +606,7 @@ Use this operation to set allow lists to security rules or ACLs. To update an ex
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-delete-site
 
 ***
@@ -598,6 +625,7 @@ Delete the site
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-list-sites
 
 ***
@@ -618,6 +646,7 @@ List sites for an account
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-site-report
 
 ***
@@ -641,6 +670,7 @@ Use this operation to get a report for a site. Reports are sent using Base64 enc
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-site-html-injection-rules
 
 ***
@@ -659,6 +689,7 @@ Use this operation to list all the HTML Injection rules.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-add-site-html-injection-rule
 
 ***
@@ -681,6 +712,7 @@ Use this operation to add a new HTML injection rule or to replace an existing ru
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-delete-site-html-injection-rule
 
 ***
@@ -703,6 +735,7 @@ Use this operation to removes an existing HTML injection rule. To confirm the re
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-create-new-csr
 
 ***
@@ -727,6 +760,7 @@ Use this operation to create a certificate signing request (CSR) for your site
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-upload-certificate
 
 ***
@@ -748,6 +782,7 @@ Use this operation to upload custom certificate for your site. The following SSL
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-remove-custom-integration
 
 ***
@@ -766,6 +801,7 @@ Use this operation to remove custom certificate
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-move-site
 
 ***
@@ -785,6 +821,7 @@ Use this operation to move a site from one account to another. You can move a si
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-check-compliance
 
 ***
@@ -804,6 +841,7 @@ This operation returns an updated list of the site’s associated SANs that are 
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-set-site-data-storage-region
 
 ***
@@ -823,6 +861,7 @@ Use this operation to set the site's data storage region.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-site-data-storage-region
 
 ***
@@ -841,6 +880,7 @@ Use this operation to get the site's data storage region.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-set-site-data-storage-region-geo-override
 
 ***
@@ -860,6 +900,7 @@ Use this operation to set the data storage region for each new site based on the
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-site-data-storage-region-geo-override
 
 ***
@@ -878,6 +919,7 @@ Use this operation to check if the data storage region for each new site is base
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-purge-site-cache
 
 ***
@@ -897,6 +939,7 @@ There is no context output for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-modify-cache-mode
 
 ***
@@ -918,6 +961,7 @@ Use this operation to edit basic site caching settings
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-purge-resources
 
 ***
@@ -939,6 +983,7 @@ Use this operation to purge site resources
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-modify-caching-rules
 
 ***
@@ -965,6 +1010,7 @@ Use this operation to set-up advanced caching rules
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-set-advanced-caching-settings
 
 ***
@@ -985,6 +1031,7 @@ Use this operation to modify advanced caching settings. For more information, ht
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-purge-hostname-from-cache
 
 ***
@@ -1003,6 +1050,7 @@ Use this operation to purge the hostname from the cache. This API is for custome
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-site-get-xray-link
 
 ***
@@ -1021,6 +1069,7 @@ Use this operation to get a URL that enables debug headers on a specific site.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-list-site-rule-revisions
 
 ***
@@ -1040,6 +1089,7 @@ Use this operation to list revisions of a rule (Delivery Rules or IncapRules).
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-add-site-rule
 
 ***
@@ -1070,6 +1120,7 @@ Use this operation to add a rule (Delivery Rules or IncapRules).
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-edit-site-rule
 
 ***
@@ -1100,6 +1151,7 @@ Use this operation to edit an existing rule (Delivery Rules or IncapRules).
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-enable-site-rule
 
 ***
@@ -1120,6 +1172,7 @@ Use this operation to enable or disable a rule (Delivery Rules or IncapRules).
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-delete-site-rule
 
 ***
@@ -1140,6 +1193,7 @@ Use this operation to delete a rule (Delivery Rules or IncapRules).
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-list-site-rules
 
 ***
@@ -1162,6 +1216,7 @@ Use this operation to list rules (Delivery Rules and IncapRules) for a given sit
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-revert-site-rule
 
 ***
@@ -1182,6 +1237,7 @@ Revert a rule (Delivery Rule or IncapRule) using an existing revision.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-set-site-rule-priority
 
 ***
@@ -1201,6 +1257,7 @@ Use this operation to change a Delivery Rule's priority.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-add-site-datacenter
 
 ***
@@ -1223,6 +1280,7 @@ Use this operation to add a data center to a site.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-edit-site-datacenter
 
 ***
@@ -1245,6 +1303,7 @@ Use this operation to edit a site's data center.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-delete-site-datacenter
 
 ***
@@ -1263,6 +1322,7 @@ Use this operation to delete a site's data center.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-list-site-datacenters
 
 ***
@@ -1281,6 +1341,7 @@ Use this operation to list a site's data centers including the data centers' ser
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-add-site-datacenter-server
 
 ***
@@ -1302,6 +1363,7 @@ Use this operation to add a server to a data center.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-edit-site-datacenter-server
 
 ***
@@ -1324,6 +1386,7 @@ Use this operation to add a server to a data center.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-delete-site-datacenter-server
 
 ***
@@ -1342,6 +1405,7 @@ Use this operation to delete a data center's server.
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-statistics
 
 ***
@@ -1366,6 +1430,7 @@ Use this operation to get site statistics for one or more sites. This operation 
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-visits
 
 ***
@@ -1394,6 +1459,7 @@ Use this operation to get a log of recent visits to a website. The visits are fe
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-upload-public-key
 
 ***
@@ -1413,6 +1479,7 @@ Organizations that purchased the Security Logs Integration SKU can download secu
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-change-logs-collector-configuration
 
 ***
@@ -1432,6 +1499,7 @@ Available only for Enterprise Plan customers that purchased the Security Logs In
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-infra-protection-statistics
 
 ***
@@ -1485,6 +1553,7 @@ Use this operation to get Infrastructure Protection event information for an acc
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-add-login-protect
 
 ***
@@ -1509,6 +1578,7 @@ Use this operation to add Login Protect user for site
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-edit-login-protect
 
 ***
@@ -1533,6 +1603,7 @@ Use this operation to edit Login Protect user's settings
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-login-protect
 
 ***
@@ -1551,6 +1622,7 @@ Use this operation to get the account's login protect user list
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-remove-login-protect
 
 ***
@@ -1570,6 +1642,7 @@ Use this operation to remove login protect user from account's user list
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-send-sms-to-user
 
 ***
@@ -1590,6 +1663,7 @@ Use this operation to send SMS to login protect user
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-modify-login-protect
 
 ***
@@ -1615,6 +1689,7 @@ Use this operation to change Login Protect settings for site
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-configure-app
 
 ***
@@ -1634,6 +1709,7 @@ Use this operation to configure Login Protect on wordpress | joomla | phpbb admi
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-ip-ranges
 
 ***
@@ -1651,6 +1727,7 @@ Use this operation to get the updated list of Incapsula IP ranges
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-texts
 
 ***
@@ -1668,6 +1745,7 @@ Use this operation to retrieve a list of all text messages that may be part of A
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-geo-info
 
 ***
@@ -1685,6 +1763,7 @@ Use this operation to retrieve a list of all the countries and continents codes
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-app-info
 
 ***
@@ -1702,6 +1781,7 @@ Use this operation to retrieve a list of all the client applications
 #### Context Output
 
 There is no context output for this command.
+
 ### incap-get-infra-protection-top-items-table
 
 ***

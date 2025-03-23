@@ -1244,6 +1244,7 @@ Search for a malware by specified filters.
 `recordedfuture-collective-insight`
 
 #### Input
+
 #### Input
 
 | **Argument Name**  | **Description**                                                                                     | **Required** |

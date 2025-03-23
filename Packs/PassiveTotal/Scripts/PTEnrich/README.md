@@ -1,6 +1,7 @@
 Enriches the given IP address or domain with metadata, malware, or osint.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,8 +11,10 @@ Enriches the given IP address or domain with metadata, malware, or osint.
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * pt-osint
 * pt-malware
 * pt-enrichment
@@ -21,6 +24,7 @@ This script uses the following commands and scripts.
 * pt-passive-dns
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -28,6 +32,7 @@ This script uses the following commands and scripts.
 | query | The IP address or domain to enrich. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

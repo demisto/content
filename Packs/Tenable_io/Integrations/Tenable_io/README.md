@@ -52,6 +52,7 @@ This integration was integrated and tested with January 2023 release of Tenable.
 | Two concurrent asset exports per container. Tenable.io also prevents duplicate exports from running concurrently. <br>For example, export requests with the same filters. | tenable-io-export-assets<br>tenable-io-export-vulnerabilities                                                                                                                                                                                                                      |
 
 ## Notes:
+
 - ***Fetch assets and vulnerabilities (Beta)*** command fetches assets and vulnerabilities from the last 90 days only.
 
 ## Commands
@@ -788,6 +789,7 @@ Retrieves details for the specified asset including custom attributes.
 Retrieves details for the specified asset to include custom attributes.
 
 ## Limitations
+
 When inserting invalid arguments, an error message could be returned.
 
 #### Base Command
@@ -1056,6 +1058,7 @@ Retrieves details for the specified asset to include custom attributes.
 
 
 ## Limitations
+
 When inserting invalid arguments, an error message could be returned.
 
 
@@ -1369,6 +1372,7 @@ When inserting invalid arguments, an error message could be returned.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| fake_uuid | 1.1.1.1 | 1.1.1.1 | Linux Kernel 3.13 on Ubuntu 14.04 (trusty) | general-purpose | fqdn | info | 00000 | Name |  |  | TCP | 22 | 2024-11-07T11:11:05.906Z | 2024-11-07T11:11:05.906Z | Description | N/A |
 >| fake_uuid | 1.3.2.1 | 1.3.2.1 | Nutanix | general-purpose | fqdn | info | 00000 | Name |  |  | TCP | 0 | 2024-11-07T11:11:05.906Z | 2024-11-07T11:11:05.906Z | Description | N/A |
+>
 ### tenable-io-list-scan-filters
 
 ***
@@ -1396,8 +1400,11 @@ There are no inputs for this command.
 | TenableIO.ScanFilter.group_name | String | The group name associated with the scan filter. | 
 
 #### Command example
+
 ```!tenable-io-list-scan-filters```
+
 #### Context Example
+
 ```json
 {
     "TenableIO": {
@@ -1443,6 +1450,7 @@ There are no inputs for this command.
 #### Human Readable Output
 
 >### Tenable IO Scan Filters
+>
 >|Filter name|Filter Readable name|Filter Control type|Filter regex|Readable regex|Filter operators|
 >|---|---|---|---|---|---|
 >| host.id | Asset ID | entry | [0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})* | 01234567-abcd-ef01-2345-6789abcdef01 | eq,<br/>neq,<br/>match,<br/>nmatch |
@@ -1484,8 +1492,11 @@ Lists the individual runs of the specified scan.
 | TenableIO.ScanHistory.status | String | The status of the scan. | 
 
 #### Command example
+
 ```!tenable-io-get-scan-history scanId=16 excludeRollover=true sortFields=end_date,status sortOrder=desc page=2 pageSize=4```
+
 #### Context Example
+
 ```json
 {
     "TenableIO": {
@@ -1554,6 +1565,7 @@ Lists the individual runs of the specified scan.
 #### Human Readable Output
 
 >### Tenable IO Scan History
+>
 >|History id|History uuid|Status|Is archived|Targets default|Visibility|Time start|Time end|
 >|---|---|---|---|---|---|---|---|
 >| 17235445 | 69a55b8e-0d52-427a-81e0-7dfe4dc6eda6 | completed | true | false | public | 1677424566 | 1677425182 |
@@ -1598,7 +1610,9 @@ Scans that are actively running cannot be exported (run "tenable-io-list-scans" 
 | InfoFile.Extension | unknown | The file extension of the file. | 
 
 #### Command example
+
 ```!tenable-io-export-scan scanId=16 format=HTML chapters="compliance_exec,remediations,vuln_by_plugin" historyId=19540157 historyUuid=f7eaad37-23bd-4aac-a979-baab0e9a465b filterSearchType=OR filter="port.protocol eq tcp, plugin_id eq 1234567" assetId=10```
+
 #### Human Readable Output
 
 >Preparing scan report:
@@ -1606,6 +1620,7 @@ Scans that are actively running cannot be exported (run "tenable-io-list-scans" 
 >Returned file: scan_16_SSE-144f3dc6-cb2d-42fc-b6cc-dd20b807735f-html.html [Download](https://www.paloaltonetworks.com/cortex)
 
 ### tenable-io-get-audit-logs
+
 ***
 Returns audit logs extracted from Tenable io.
 
@@ -1613,6 +1628,7 @@ Returns audit logs extracted from Tenable io.
 #### Base Command
 
 `tenable-io-get-audit-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1630,12 +1646,14 @@ Returns audit logs extracted from Tenable io.
 There is no context output for this command.
 
 #### Command example
+
 ```!tenable-io-get-audit-logs limit=1```
 
 
 #### Human Readable Output
 
 >### Audit Logs List:
+>
 >|Action| Actor    | Crud | Description | Fields                                                                                                                                                  | Id  |Is Anonymous|Is Failure|Received| Target                                              |
 >|----------|------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|-----|---|---|---|-----------------------------------------------------|---|
 >| user.create | id: test | c    |             | {'key': 'X-Access-Type', 'value': 'apikey'},<br>{'key': 'X-Forwarded-For', 'value': '1.2.3.4'},<br>{'key': 'X-Request-Uuid', 'value': '12:12:12:12:12'} | 12  | true | false | 2022-05-18T16:33:02Z | id: 12-1-1-1-1<br>name: test@test.com<br>type: User |

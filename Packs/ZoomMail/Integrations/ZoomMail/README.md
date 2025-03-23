@@ -23,11 +23,15 @@ Enables interaction with the Zoom Mail API.
 
 
 ## Scopes Required
+
 ### Classic Scopes
+
 - mail:read
 - mail:write
 - user:read
+
 ### Granular Scopes
+
 - email:read:list_msgs
 - email:write:trash_msg
 - email:read:list_threads
@@ -38,6 +42,7 @@ Enables interaction with the Zoom Mail API.
 - user:read:list_users:admin
 
 ## Additional Resources
+
 - [API credentials creation (server-to-server)](https://developers.zoom.us/docs/internal-apps/create/)
 - [Internal apps (server-to-server)](https://developers.zoom.us/docs/internal-apps/)
 
@@ -65,6 +70,7 @@ Move a message to the trash.
 #### Context Output
 
 There is no context output for this command.
+
 ### zoom-mail-email-list
 
 ***
@@ -163,6 +169,7 @@ Get an email attachment.
 #### Context Output
 
 There is no context output for this command.
+
 ### zoom-mail-send-email
 
 ***

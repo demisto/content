@@ -36,10 +36,12 @@ Follow this [link](https://documentation.solarwinds.com/en/success_center/orionp
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### swis-event-list
+
 ***
 Retrieves a list of events on the filter values provided in the command arguments.
 
@@ -47,6 +49,7 @@ Retrieves a list of events on the filter values provided in the command argument
 #### Base Command
 
 `swis-event-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -86,9 +89,11 @@ Retrieves a list of events on the filter values provided in the command argument
 
 
 #### Command Example
+
 ```!swis-event-list sort_key="EventID" sort_order="Ascending" page="1" limit="2"```
 
 #### Context Example
+
 ```json
 {
     "SolarWinds": {
@@ -153,6 +158,7 @@ Retrieves a list of events on the filter values provided in the command argument
 #### Human Readable Output
 
 >### Events
+>
 >|ID|Message|Type|Node|Acknowledged|Triggered At|
 >|---|---|---|---|---|---|
 >| 3 | Resetting unknown traffic notification events. | Notification Reset | WIN-MV956AU5BSN | false | 31/03/2021 12:02 PM |
@@ -160,6 +166,7 @@ Retrieves a list of events on the filter values provided in the command argument
 
 
 ### swis-alert-list
+
 ***
 Retrieves a list of alerts based on the filter values provided in the command arguments.
 
@@ -167,6 +174,7 @@ Retrieves a list of alerts based on the filter values provided in the command ar
 #### Base Command
 
 `swis-alert-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -235,9 +243,11 @@ Retrieves a list of alerts based on the filter values provided in the command ar
 
 
 #### Command Example
+
 ```!swis-alert-list sort_key="AlertActiveID" sort_order="ascending" page="1" limit="2"```
 
 #### Context Example
+
 ```json
 {
     "SolarWinds": {
@@ -315,6 +325,7 @@ Retrieves a list of alerts based on the filter values provided in the command ar
 #### Human Readable Output
 
 >### Alerts
+>
 >|Active Alert ID|Alert Name|Triggered Message|Entity Caption|Triggered At|Severity|Type|Configuration Description|
 >|---|---|---|---|---|---|---|---|
 >| 4 | IP Address Request | test test has requested 1 IP address(es) at 4/6/2021 4:54:24 PM<br/>      Contact details: , dummy@dummy.com<br/>      Comments:  | IP Request (test test) | 06/04/2021 12:53 PM | CRITICAL | IPAM.IPRequests | This alert writes to the event log when Request IP Address is created. |
@@ -322,6 +333,7 @@ Retrieves a list of alerts based on the filter values provided in the command ar
 
 
 ### swis-query
+
 ***
 Executes a query request.<br/>
 Click [here](https://support.solarwinds.com/SuccessCenter/s/article/Use-SolarWinds-Query-Language-SWQL) to navigate to the guidelines to generate a query. SolarWinds Information Service schema can be found [here](http://solarwinds.github.io/OrionSDK/2020.2/schema/index.html).
@@ -330,6 +342,7 @@ Click [here](https://support.solarwinds.com/SuccessCenter/s/article/Use-SolarWin
 #### Base Command
 
 `swis-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -342,9 +355,11 @@ Click [here](https://support.solarwinds.com/SuccessCenter/s/article/Use-SolarWin
 There is no context output for this command.
 
 #### Command Example
+
 ```!swis-query query="SELECT AlertActiveID, TriggeredDateTime FROM Orion.AlertActive ORDER BY AlertActiveID DESC WITH ROWS 1 To 3"```
 
 #### Context Example
+
 ```json
 {
     "SolarWinds": {
@@ -369,6 +384,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Query Result
+>
 >|Alert Active ID|Triggered Date Time|
 >|---|---|
 >| 18543 | 2021-04-20T06:39:32.4330000Z |

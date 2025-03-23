@@ -1,6 +1,7 @@
 Rapid Breach Response dynamic section, will show the updated number of remediation tasks.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,9 +11,11 @@ Rapid Breach Response dynamic section, will show the updated number of remediati
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

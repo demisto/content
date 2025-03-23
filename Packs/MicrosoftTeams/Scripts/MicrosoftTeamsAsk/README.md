@@ -1,6 +1,7 @@
 Send a team member or channel a question with predefined response options on Microsoft Teams. The response can be used to close a task (might be conditional) in a playbook.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Send a team member or channel a question with predefined response options on Mic
 | Cortex  XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * send-notification
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -30,6 +34,7 @@ This script uses the following commands and scripts.
 | team | The team in which to mirror the Cortex XSOAR investigation. If not specified, the default team configured in the integration parameters will be used. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 

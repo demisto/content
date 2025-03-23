@@ -12,13 +12,16 @@ These fields also support the use of API key headers. To use API key headers, sp
 `_header:<header_name>` in the **Username** field and the header value in the **Password** field.
 * **Ignore Regex** - Python regular expression for lines that should be ignored.
 * **Indicator extraction pattern** - A JSON string of an extraction pattern for the indicator value in the text that consists of a regular expression and a transform template for each regex group. For example:
+
 ```json
 {
   "regex": "^([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})\\t([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})",
   "transform": "\\1-\\2"
 }
 ```
+
 * **Fields extraction pattern** - A JSON string of an extraction pattern for the additional fields in the text that consists of a regular expression and a transform template for each regex group. For example:
+
 ```json
 {
   "number_of_attacks":
@@ -42,6 +45,7 @@ For more information about regular expression extraction, see this [python docum
 
 
 ## Step by step configuration
+
 As an example, we'll be looking at the Recommended Block List feed by DShield. This feed will ingest indicators of type CIDR. These are the feed instance configuration parameters for our example.
 
 **Indicator Type** - CIDR.
@@ -59,6 +63,7 @@ so we'll configure `^#` as the regular expression to use to ignore this text.
 and transform the 2 groups to an IP range. We will then convert the IP range into a CIDR in the integration code.
 
 This would be our extraction pattern object as a JSON string which we will fill in the field in the instance configuration:
+
 ```json
 {
   "regex": "^([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})\\t([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})",
@@ -69,6 +74,7 @@ This would be our extraction pattern object as a JSON string which we will fill 
 ****Fields extraction pattern**** - We want to extract the name and the number of attacks field for each IP range in the feed.
 For each field we will configure a regular expression to extract it and then a template to grab the regex group as is.
 This would be the JSON string we will use in the integration configuration:
+
 ```json
 {
   "number_of_attacks":

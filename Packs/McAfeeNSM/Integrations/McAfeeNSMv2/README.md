@@ -17,9 +17,12 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### nsm-list-domain-firewall-policy
+
 ***
 Gets the list of firewall policies defined in a particular domain.
 
@@ -27,6 +30,7 @@ Gets the list of firewall policies defined in a particular domain.
 #### Base Command
 
 `nsm-list-domain-firewall-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,8 +56,11 @@ Gets the list of firewall policies defined in a particular domain.
 | NSM.Policy.lastModUser | String | Last user who modified the policy. | 
 
 #### Command example
+
 ```!nsm-list-domain-firewall-policy domain_id=0 limit=2```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -88,6 +95,7 @@ Gets the list of firewall policies defined in a particular domain.
 #### Human Readable Output
 
 >### Firewall Policies List
+>
 >|policyId|policyName|domainId|visibleToChild|description|isEditable|policyType|policyVersion| lastModUser |
 >|---|---|---|---|---|---|---|-------------|---|
 >| 292 | another policy | 0 | true | hello updatingg | true | ADVANCED | 1 | user        |
@@ -95,6 +103,7 @@ Gets the list of firewall policies defined in a particular domain.
 
 
 ### nsm-get-firewall-policy
+
 ***
 Gets the firewall policy details.
 
@@ -102,6 +111,7 @@ Gets the firewall policy details.
 #### Base Command
 
 `nsm-get-firewall-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -151,8 +161,11 @@ Gets the firewall policy details.
 | NSM.Policy.MemberDetails.MemberRuleList.TimeObjectList.RuleObjectType | Unknown | Time mode. Can be "FINITE_TIME_PERIOD" / "RECURRING_TIME_PERIOD" / "RECURRING_TIME_PERIOD_GROUP". | 
 
 #### Command example
+
 ```!nsm-get-firewall-policy policy_id=147 include_rule_objects=true```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -223,12 +236,14 @@ Gets the firewall policy details.
 #### Human Readable Output
 
 >### Firewall Policy 147
+>
 >|Name|Description|VisibleToChild|IsEditable|PolicyType|PolicyVersion| LastModifiedUser |LastModifiedTime|
 >|---|---|---|---|---|------------------|---|---|
 >| name147 | update policy | true | true | ADVANCED | 1 | user             | 2022-12-28 05:37:23 |
 
 
 ### nsm-create-firewall-policy
+
 ***
 Adds a new firewall policy and access rules. You have to provide at lease one of the source/destination rule objects. If you provide the id or type of the source/destination rule object, you must provide the matching type or id the source/destination rule object as well.
 
@@ -236,6 +251,7 @@ Adds a new firewall policy and access rules. You have to provide at lease one of
 #### Base Command
 
 `nsm-create-firewall-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -263,9 +279,11 @@ Adds a new firewall policy and access rules. You have to provide at lease one of
 | NSM.Policy.FirewallPolicyId | Number | The ID of the newly created firewall policy. | 
 
 #### Command example
+
 ```!nsm-create-firewall-policy domain=0 name=policy visible_to_child=yes description="a new policy" is_editable=yes policy_type=Advanced response=Scan rule_description="Test Member Rule" direction=Inbound destination_rule_object_id=111 destination_rule_object_type="Range IP V.4"```
 
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -277,11 +295,14 @@ Adds a new firewall policy and access rules. You have to provide at lease one of
 ```
 
 #### Human Readable Output
+
 ```The firewall policy no.112 was created successfully```
 
 ### nsm-update-firewall-policy
+
 ***
 Updates the firewall policy details. If the argument is_overwrite=true, the new values of the provided addresses will replace the existing values, otherwise the addresses will be added to them. 
+
 * If you want to delete a rule, enter is_overwrite=true and the relevant rule_object_id=-1. 
 * If is_overwrite=false and there is no value in one of the rules (source or destination), their value will be as before. 
 * If is_overwrite=true, at least one of the rules (source or destination) must be provided. 
@@ -291,6 +312,7 @@ Updates the firewall policy details. If the argument is_overwrite=true, the new 
 #### Base Command
 
 `nsm-update-firewall-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -316,13 +338,17 @@ Updates the firewall policy details. If the argument is_overwrite=true, the new 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!nsm-update-firewall-policy policy_id=147 description="update policy"```
+
 #### Human Readable Output
 
 >The firewall policy no.147 was updated successfully
 
 ### nsm-delete-firewall-policy
+
 ***
 Deletes the specified firewall policy.
 
@@ -330,6 +356,7 @@ Deletes the specified firewall policy.
 #### Base Command
 
 `nsm-delete-firewall-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -342,13 +369,16 @@ Deletes the specified firewall policy.
 There is no context output for this command.
 
 #### Command example
+
 ```!nsm-delete-firewall-policy policy_id=101```
+
 #### Human Readable Output
 
 >The firewall policy no.101 was deleted successfully
 
 
 ### nsm-list-domain-rule-object
+
 ***
 Gets the list of rule objects defined in a particular domain.
 
@@ -356,6 +386,7 @@ Gets the list of rule objects defined in a particular domain.
 #### Base Command
 
 `nsm-list-domain-rule-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -402,8 +433,11 @@ Gets the list of rule objects defined in a particular domain.
 | NSM.Rule.Network_IPV_6.networkIPV6List | String | Network IPV6 list. | 
 
 #### Command example
+
 ```!nsm-list-domain-rule-object domain_id=0 limit=2```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -477,6 +511,7 @@ Gets the list of rule objects defined in a particular domain.
 #### Human Readable Output
 
 >### List of Rule Objects
+>
 >|RuleId| Name |VisibleToChild|RuleType|
 >|---------|---|---|---|
 >| 134 | testing | true | Endpoint IP V.4 |
@@ -484,6 +519,7 @@ Gets the list of rule objects defined in a particular domain.
 
 
 ### nsm-get-rule-object
+
 ***
 Gets the details of a rule object.
 
@@ -491,6 +527,7 @@ Gets the details of a rule object.
 #### Base Command
 
 `nsm-get-rule-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -532,8 +569,10 @@ Gets the details of a rule object.
 | NSM.Rule.HostIPv4.hostIPv4AddressList | String | Host IPv4 address list. | 
 
 ### nsm-create-rule-object
+
 ***
 Adds a new rule object. 
+
 * If the type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” must contain a value. 
 * If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value. Where X is 4 or 6 respectively.
 
@@ -541,6 +580,7 @@ Adds a new rule object.
 #### Base Command
 
 `nsm-create-rule-object`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                 | **Required** |
@@ -566,8 +606,11 @@ Adds a new rule object.
 | NSM.Rule.ruleobjId | Number | The ID of the newly created rule object. | 
 
 #### Command example
+
 ```!nsm-create-rule-object domain=0 rule_object_type="Range IP V.4" name="ruleo" visible_to_child=yes from_address_ip_v.4=1.1.1.1 to_address_ip_v.4=2.2.2.2```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -583,8 +626,10 @@ Adds a new rule object.
 >The rule object no.154 was created successfully
 
 ### nsm-update-rule-object
+
 ***
 Updates a Rule object. In case of address rule update: 
+
 * if the rule type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” should contain a value. 
 * If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” should contain a value, Where X is 4 or 6 respectively.
 
@@ -592,6 +637,7 @@ Updates a Rule object. In case of address rule update:
 #### Base Command
 
 `nsm-update-rule-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -616,6 +662,7 @@ Updates a Rule object. In case of address rule update:
 There is no context output for this command.
 
 #### Command example
+
 ```!nsm-update-rule-object domain=0 rule_id=125 description="new desc"```
 
 #### Human Readable Output
@@ -623,6 +670,7 @@ There is no context output for this command.
 >The rule object no.125 was updated successfully.
 
 ### nsm-delete-rule-object
+
 ***
 Deletes a rule object.
 
@@ -630,6 +678,7 @@ Deletes a rule object.
 #### Base Command
 
 `nsm-delete-rule-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -642,6 +691,7 @@ Deletes a rule object.
 There is no context output for this command.
 
 #### Command example
+
 ```!nsm-delete-rule-object rule_id=125```
 
 #### Human Readable Output
@@ -649,6 +699,7 @@ There is no context output for this command.
 >The rule object no.125 was deleted successfully.
 
 ### nsm-get-alerts
+
 ***
 Retrieves the alerts.
 
@@ -656,6 +707,7 @@ Retrieves the alerts.
 #### Base Command
 
 `nsm-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -742,8 +794,11 @@ Retrieves the alerts.
 | NSM.Alerts.SensorID | String | Sensor ID. | 
 
 #### Command example
+
 ```!nsm-get-alerts domain_id=0 time_period=CUSTOM start_time="12/17/2000 14:14:22" end_time="12/18/2022 00:26:45" limit=2```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -912,12 +967,14 @@ Retrieves the alerts.
 #### Human Readable Output
 
 >### Alerts list. Showing 2 of 20
+>
 >|ID|Name|Severity|State|
 >|---|---|---|---|
 >| 3333333333333333333 | HTTP: vulnerability | High | Acknowledged |
 >| 5555555555555555555 | HTTP: IIS 6.0 (CVE-2017-7269) | High | Acknowledged |
 
 ### nsm-get-alert-details
+
 ***
 Retrieves the relevant alert details.
 
@@ -925,6 +982,7 @@ Retrieves the relevant alert details.
 #### Base Command
 
 `nsm-get-alert-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1022,8 +1080,11 @@ Retrieves the relevant alert details.
 | NSM.Alerts.Event.interface                             | String   | The event interface.                                 | 
 
 #### Command example
+
 ```!nsm-get-alert-details alert_id=6666666666666666666 sensor_id=1001```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -1176,12 +1237,14 @@ Retrieves the relevant alert details.
 #### Human Readable Output
 
 >### Alerts list. Showing 2 of 20
+>
 >|ID|Name|Event Time|State| Direction |Result|Attack Count| Attacker IP | Target IP |
 >|---|---|---|---------|---|---|-------------|-----------|---|
 >| 6666666666666666666 | Buffer Overflow | Apr 23, 2020 22:26:13 | UnAcknowledged | Inbound | Inconclusive | 1 | 9.9.9.9 | 1.1.1.1 | 
 
 
 ### nsm-get-attacks
+
 ***
 If an attack is given, the command returns the details for the specific attack. Otherwise, gets all available attack definitions in the Manager UI. This command can take a few minutes. If you get a timeout error, increase the timeout by using the parameter "execution-timeout".
 
@@ -1189,6 +1252,7 @@ If an attack is given, the command returns the details for the specific attack. 
 #### Base Command
 
 `nsm-get-attacks`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1235,8 +1299,11 @@ If an attack is given, the command returns the details for the specific attack. 
 | NSM.Attacks.description.comments.parentDomainComments | Unknown | Parent domain comments. | 
 
 #### Command example
+
 ```!nsm-get-attacks attack_id=0x00000100```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -1255,12 +1322,14 @@ If an attack is given, the command returns the details for the specific attack. 
 #### Human Readable Output
 
 >### Attack no.0x00000100
+>
 >|ID|Name|Severity|
 >|---|---|---|
 >| 0x00000100 | IP: too Large | 5 |
 
 
 ### nsm-get-domains
+
 ***
 If a domain ID is given, the command returns the details of the specific domain. Otherwise, gets all available domains.
 
@@ -1268,6 +1337,7 @@ If a domain ID is given, the command returns the details of the specific domain.
 #### Base Command
 
 `nsm-get-domains`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1287,8 +1357,11 @@ If a domain ID is given, the command returns the details of the specific domain.
 | NSM.Domains.childdomains | Unknown | The children of the domain. | 
 
 #### Command example
+
 ```!nsm-get-domains```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -1304,12 +1377,14 @@ If a domain ID is given, the command returns the details of the specific domain.
 #### Human Readable Output
 
 >### List of Domains
+>
 >|ID|Name|
 >|---|---|
 >| 0 | My Company |
 
 
 ### nsm-get-sensors
+
 ***
 Gets the list of sensors available in the specified domain. If the domain is not specified, details of all the sensors in all ADs will be provided.
 
@@ -1317,6 +1392,7 @@ Gets the list of sensors available in the specified domain. If the domain is not
 #### Base Command
 
 `nsm-get-sensors`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1352,8 +1428,11 @@ Gets the list of sensors available in the specified domain. If the domain is not
 | NSM.Sensors.MemberSensors | Unknown | Sensors members. | 
 
 #### Command example
+
 ```!nsm-get-sensors```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -1383,11 +1462,13 @@ Gets the list of sensors available in the specified domain. If the domain is not
 #### Human Readable Output
 
 >### Sensors List
+>
 >|ID|Name|Description|DomainID|IPSPolicyID|IP Address|
 >|---|---|---|---|---|---|---|
 >| 1111 | VVVV1 | MCAFEE-NETWORK-SECURITY-PLATFORM | 0 | 0 | 1.1.1.1 |
 
 ### nsm-get-ips-policies
+
 ***
 Gets all the IPS policies defined in the specific domain.
 
@@ -1395,6 +1476,7 @@ Gets all the IPS policies defined in the specific domain.
 #### Base Command
 
 `nsm-get-ips-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1416,8 +1498,11 @@ Gets all the IPS policies defined in the specific domain.
 | NSM.IPSPolicies.Name | String | IPS policy name. | 
 
 #### Command example
+
 ```!nsm-get-ips-policies domain_id=0 limit=2```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -1444,6 +1529,7 @@ Gets all the IPS policies defined in the specific domain.
 #### Human Readable Output
 
 >### IPS Policies List of Domain no.0
+>
 >|ID|Name|DomainID|IsEditable|VisibleToChildren|
 >|---|---|---|---|---|
 >| -1 | Master | 0 | true | true |
@@ -1451,6 +1537,7 @@ Gets all the IPS policies defined in the specific domain.
 
 
 ### nsm-get-ips-policy-details
+
 ***
 Gets all the IPS policies defined in the specific domain.
 
@@ -1458,6 +1545,7 @@ Gets all the IPS policies defined in the specific domain.
 #### Base Command
 
 `nsm-get-ips-policy-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1481,8 +1569,11 @@ Gets all the IPS policies defined in the specific domain.
 | NSM.IPSPolicies.ExploitAttacks | Unknown | A list of exploit attacks related to the IPS policy. | 
 
 #### Command example
+
 ```!nsm-get-ips-policy-details policy_id=17```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -1640,11 +1731,13 @@ Gets all the IPS policies defined in the specific domain.
 #### Human Readable Output
 
 >### IPS Policy no.17 Details
+>
 >|ID|Name|Description|CreatedTime|IsEditable|VisibleToChildren|Version|InboundRuleSet|OutboundRuleSet|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 17 | IpsPolicy | To test the IPS policy | To test the IPS policy | false | true | 1 | To test the IPS policy | Null |
 
 ### nsm-update-alerts
+
 ***
 Update state or assignee of alerts. It is required to provide at least one of them. If none of the alerts match the time_period they won't be updated.
 
@@ -1652,6 +1745,7 @@ Update state or assignee of alerts. It is required to provide at least one of th
 #### Base Command
 
 `nsm-update-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1736,8 +1830,11 @@ Update state or assignee of alerts. It is required to provide at least one of th
 | NSM.Alerts.SensorID | String | Sensor ID. | 
 
 #### Command example
+
 ```!nsm-update-alerts state=Unacknowledged new_state=Acknowledged 'time_period': 'CUSTOM', 'start_time': '12/17/2000 14:14:22', 'end_time': '12/28/2022 00:26:45'```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -1914,6 +2011,7 @@ Update state or assignee of alerts. It is required to provide at least one of th
 
 
 ### nsm-list-pcap-file
+
 ***
 Retrieves the list of captured PCAP files.
 
@@ -1921,6 +2019,7 @@ Retrieves the list of captured PCAP files.
 #### Base Command
 
 `nsm-list-pcap-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1938,8 +2037,11 @@ Retrieves the list of captured PCAP files.
 | NSM.PcapFile | string | PCAP file name. | 
 
 #### Command example
+
 ```!nsm-update-alerts state=Unacknowledged new_state=Acknowledged 'time_period': 'CUSTOM', 'start_time': '12/17/2000 14:14:22', 'end_time': '12/28/2022 00:26:45'```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -1962,6 +2064,7 @@ Retrieves the list of captured PCAP files.
 >| capture_Mon_Aug_18_16_12_55_IST_2014.pcap |
 
 ### nsm-export-pcap-file
+
 ***
 Exports the captured PCAP file.
 
@@ -1969,6 +2072,7 @@ Exports the captured PCAP file.
 #### Base Command
 
 `nsm-export-pcap-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1988,33 +2092,42 @@ Exports the captured PCAP file.
 | InfoFile.Info | string | Basic information about the file. | 
 
 #### Command example
+
 ```!nsm-export-pcap-file sensor_id=1003 file_name=Dummy Device Name-PacketCapture-2022-12-21_16-25-52.pcap```
 
 #### Human Readable Output
+
 There isn't a human readable.
 
 
 ## Breaking changes from the previous version of this integration - McAfee NSM v2
+
 The following sections list the changes in this version.
 
 
 ### Arguments
+
 #### The following arguments were removed in this version:
 
 In the *nsm-get-sensors* command:
+
 * *domainID* - this argument was replaced by domain_id.
 
 In the *nsm-get-domains* command:
+
 * *domain* - this argument was replaced by domain_id.
 
 #### The behavior of the following arguments was changed:
 
 In the *nsm-get-alerts* command:
+
 * *time_period* - The default value changed to 'LAST_7_DAYS'.
 * *domain_id* - The default value changed to 0.
 
 In the *nsm-get-alert-details* command:
+
 * *sensor_id* - Is now required.
+
 ### nsm-list-domain-device
 
 ***
@@ -2044,8 +2157,11 @@ List the devices related to a given domain.
 | NSM.Device.UpdatingMode | string | The updating mode of the device. | 
 
 #### Command example
+
 ```!nsm-list-domain-device domain_id=0```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -2066,6 +2182,7 @@ List the devices related to a given domain.
 #### Human Readable Output
 
 >### Domain devices List
+>
 >|DeviceId|DeviceName|DeviceType|UpdatingMode|
 >|---|---|---|---|
 >| 1003 | Dummy Device Name | IPS_NAC_SENSOR | ONLINE |
@@ -2098,8 +2215,11 @@ List the interfaces related to a given device.
 | NSM.Interface.InterfaceType | string | The type of the interface. | 
 
 #### Command example
+
 ```!nsm-list-device-interface device_id=1003 domain_id=0```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -2127,6 +2247,7 @@ List the interfaces related to a given device.
 #### Human Readable Output
 
 >### Device interfaces List
+>
 >|InterfaceId|InterfaceName|InterfaceType|
 >|---|---|---|
 >| 102 | 5-6 | Dedicated |
@@ -2176,8 +2297,11 @@ List all the policies assigned to a domain or a specific device.
 | NSM.DevicePolicy.FirewallPolicyFirst | Unknown |  | 
 
 #### Command example
+
 ```!nsm-list-device-policy domain_id=0```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -2213,6 +2337,7 @@ List all the policies assigned to a domain or a specific device.
 #### Human Readable Output
 
 >### Device policy List
+>
 >|DeviceId|DeviceName|FirewallPolicyFirst|InterfaceId|
 >|---|---|---|---|
 >| 1003 | Dummy Device Name | Test | 0 |
@@ -2260,8 +2385,11 @@ List all the policies assigned to all interfaces or a specific interface.
 | NSM.InterfacePolicy.FirewallPolicyFirst | Unknown |  | 
 
 #### Command example
+
 ```!nsm-list-interface-policy domain_id=0```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -2343,6 +2471,7 @@ List all the policies assigned to all interfaces or a specific interface.
 #### Human Readable Output
 
 >### Interface policy List
+>
 >|DeviceId|DeviceName|FirewallPolicy|InterfaceId|InterfaceName|IpsPolicy|
 >|---|---|---|---|---|---|
 >| 1003 | Dummy Device Name | a policy | 104 | 1-2 | Default Prevention |
@@ -2371,11 +2500,15 @@ Assign a policy to a specific device.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!nsm-assign-device-policy device_id=1003 domain_id=0 pre_firewall_policy_name=Test```
+
 #### Human Readable Output
 
 >Policy assigned successfully.
+>
 ### nsm-assign-interface-policy
 
 ***
@@ -2399,11 +2532,15 @@ Assign a policy to a specific interface.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!nsm-assign-interface-policy domain_id=0 interface_id=102 ips_policy_name=testing```
+
 #### Human Readable Output
 
 >Policy assigned successfully.
+>
 ### nsm-get-device-configuration
 
 ***
@@ -2438,8 +2575,11 @@ Provides configuration information of a given device.
 | NSM.DeviceConfiguration.IsBotnetConfigurationChanged | boolean |  | 
 
 #### Command example
+
 ```!nsm-get-device-configuration device_id=1003```
+
 #### Context Example
+
 ```json
 {
     "NSM": {
@@ -2465,6 +2605,7 @@ Provides configuration information of a given device.
 #### Human Readable Output
 
 >### Device Configuration
+>
 >|DeviceName|IsBotnetConfigurationChanged|IsBotnetPushRequired|IsConfigurationChanged|IsGAMUpdateRequired|IsGloablPolicyConfigurationChanged|IsMalwareConfigurationChanged|IsPolicyConfigurationChanged|IsSSLConfigurationChanged|IsSSLPushRequired|IsSignatureSetConfigurationChanged|IsSigsetConfigPushRequired|LastUpdateTime|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Dummy Device Name | false | false | true | false | false | false | false | false | false | false | true | 2023-03-25 20:52:59.600 UTC |
@@ -2496,8 +2637,11 @@ To get the pending changes, use the !nsm-get-device-configuration command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!nsm-deploy-device-configuration device_id=1003 push_configuration_signature_set="true" interval_in_seconds=10```
+
 #### Human Readable Output
 
 >

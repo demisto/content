@@ -1,4 +1,5 @@
 ## Overview
+
 ---
 
 Integration Overview Manage Check Point Firewall. Read information and to send commands to the Check Point Firewall server. 
@@ -28,9 +29,12 @@ Enable sftp on your server Check Point guide to walk you through: https://suppor
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### checkpoint-host-list
+
 ***
 Show all host objects
 
@@ -38,6 +42,7 @@ Show all host objects
 #### Base Command
 
 `checkpoint-host-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -59,9 +64,11 @@ Show all host objects
 
 
 #### Command Example
+
 ```!checkpoint-host-list limit=5```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -139,6 +146,7 @@ Show all host objects
 #### Human Readable Output
 
 >### CheckPoint data for all hosts:
+>
 >|name|uid|type|ipv4-address|ipv6-address|
 >|---|---|---|---|---|
 >| 18.88.8.7 | f083d3ce-8e95-460f-a386-0bc4eca1214a | host | 18.88.8.7 | 2001:0db8:85a3:0000:0000:8a2e:0370:7334 |
@@ -149,6 +157,7 @@ Show all host objects
 
 
 ### checkpoint-host-get
+
 ***
 get all data of a given host
 
@@ -156,6 +165,7 @@ get all data of a given host
 #### Base Command
 
 `checkpoint-host-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -183,9 +193,11 @@ get all data of a given host
 
 
 #### Command Example
+
 ```!checkpoint-host-get identifier=host_test```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -209,12 +221,14 @@ get all data of a given host
 #### Human Readable Output
 
 >### CheckPoint data of host object host_test:
+>
 >|name|uid|type|ipv4-address|domain-name|domain-uid|read-only|creator|last-modifier|
 >|---|---|---|---|---|---|---|---|---|
 >| host_test | 11c194c4-db5f-46de-a9e2-95b8e858b98f | host | 1.1.1.1 | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | false | adminsh | adminsh |
 
 
 ### checkpoint-host-add
+
 ***
 Add new host
 
@@ -222,6 +236,7 @@ Add new host
 #### Base Command
 
 `checkpoint-host-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -232,6 +247,7 @@ Add new host
 | session_id | Execute command with a specific session ID | Required | 
 | ignore_warnings | Whether to ignore warnings when adding a host. | Optional |
 | ignore_errors | Whether to ignore errors when adding a host. | Optional |
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -251,9 +267,11 @@ Add new host
 
 
 #### Command Example
+
 ```!checkpoint-host-add name=test_host_1 ip_address=18.18.18.18 session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -278,12 +296,14 @@ Add new host
 #### Human Readable Output
 
 >### CheckPoint data for adding host:
+>
 >|name|uid|type|domain-name|domain-uid|creator|last-modifier|ipv4-address|read-only|
 >|---|---|---|---|---|---|---|---|---|
 >| test_host_1 | 7290f66a-fdd4-40fb-a639-774e3f387113 | host | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | adminsh | 18.18.18.18 | true |
 
 
 ### checkpoint-host-update
+
 ***
 update host changes
 
@@ -291,6 +311,7 @@ update host changes
 #### Base Command
 
 `checkpoint-host-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -325,9 +346,11 @@ update host changes
 
 
 #### Command Example
+
 ```!checkpoint-host-update identifier=host_test session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -351,12 +374,14 @@ update host changes
 #### Human Readable Output
 
 >### CheckPoint data for updating a host:
+>
 >|name|uid|type|domain-name|domain-uid|creator|ipv4-address|last-modifier|read-only|
 >|---|---|---|---|---|---|---|---|---|
 >| host_test | 11c194c4-db5f-46de-a9e2-95b8e858b98f | host | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | 1.1.1.1 | adminsh | false |
 
 
 ### checkpoint-host-delete
+
 ***
 delete host
 
@@ -364,6 +389,7 @@ delete host
 #### Base Command
 
 `checkpoint-host-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -379,9 +405,11 @@ delete host
 | CheckPoint.Host.message | String | operation status | 
 
 #### Command Example
+
 ```!checkpoint-host-delete identifier=host_test session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -395,12 +423,14 @@ delete host
 #### Human Readable Output
 
 >### CheckPoint data for deleting host_test:
+>
 >|message|
 >|---|
 >| OK |
 
 
 ### checkpoint-group-list
+
 ***
 Show a list of all groups
 
@@ -408,6 +438,7 @@ Show a list of all groups
 #### Base Command
 
 `checkpoint-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -427,9 +458,11 @@ Show a list of all groups
 
 
 #### Command Example
+
 ```!checkpoint-group-list limit=5```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -502,6 +535,7 @@ Show a list of all groups
 #### Human Readable Output
 
 >### CheckPoint data for all groups:
+>
 >|name|uid|type|
 >|---|---|---|
 >| bensar | fe26adc1-c0e1-4424-9a9e-f74f511a7f28 | group |
@@ -512,6 +546,7 @@ Show a list of all groups
 
 
 ### checkpoint-group-get
+
 ***
 Get all data of a given group
 
@@ -519,6 +554,7 @@ Get all data of a given group
 #### Base Command
 
 `checkpoint-group-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -553,9 +589,11 @@ Get all data of a given group
 | CheckPoint.Group.members.member-type | string | Group member type. | 
 
 #### Command Example
+
 ```!checkpoint-group-get identifier=group_test```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -579,12 +617,14 @@ Get all data of a given group
 #### Human Readable Output
 
 >### CheckPoint for group_test group:
+>
 >|name|uid|type|domain-name|domain-uid|read-only|creator|last-modifier|
 >|---|---|---|---|---|---|---|---|
 >| group_test | 35a46b01-47f5-496f-9329-d55c7d2ab083 | group | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | false | adminsh | adminsh |
 
 
 ### checkpoint-group-add
+
 ***
 add a group
 
@@ -592,6 +632,7 @@ add a group
 #### Base Command
 
 `checkpoint-group-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -617,9 +658,11 @@ add a group
 
 
 #### Command Example
+
 ```!checkpoint-group-add name=test_group_1 session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -640,12 +683,14 @@ add a group
 #### Human Readable Output
 
 >### CheckPoint data for adding Group:
+>
 >|creator|domain-name|domain-uid|last-modifier|name|type|uid|
 >|---|---|---|---|---|---|---|
 >| adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | test_group_1 | group | 11e751da-a0e7-499a-bcde-5bc638c73fb5 |
 
 
 ### checkpoint-group-update
+
 ***
 update group object
 
@@ -653,6 +698,7 @@ update group object
 #### Base Command
 
 `checkpoint-group-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -682,9 +728,11 @@ update group object
 
 
 #### Command Example
+
 ```!checkpoint-group-update identifier=group_test session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -706,12 +754,14 @@ update group object
 #### Human Readable Output
 
 >### CheckPoint data for updating a group:
+>
 >|name|uid|type|domain-name|domain-uid|creator|last-modifier|read-only|
 >|---|---|---|---|---|---|---|---|
 >| group_test | 35a46b01-47f5-496f-9329-d55c7d2ab083 | group | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | adminsh | false |
 
 
 ### checkpoint-group-delete
+
 ***
 delete a group object
 
@@ -719,6 +769,7 @@ delete a group object
 #### Base Command
 
 `checkpoint-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -735,9 +786,11 @@ delete a group object
 
 
 #### Command Example
+
 ```!checkpoint-group-delete identifier=group_test session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -751,12 +804,14 @@ delete a group object
 #### Human Readable Output
 
 >### CheckPoint data for deleting group_test:
+>
 >|message|
 >|---|
 >| OK |
 
 
 ### checkpoint-address-range-list
+
 ***
 List all address range objects
 
@@ -764,6 +819,7 @@ List all address range objects
 #### Base Command
 
 `checkpoint-address-range-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -783,9 +839,11 @@ List all address range objects
 
 
 #### Command Example
+
 ```!checkpoint-address-range-list limit=5```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -858,6 +916,7 @@ List all address range objects
 #### Human Readable Output
 
 >### CheckPoint data for all address ranges:
+>
 >|name|uid|type|
 >|---|---|---|
 >| address_range_1 | d4543195-8744-4592-906e-1cdcd534a564 | address-range |
@@ -868,6 +927,7 @@ List all address range objects
 
 
 ### checkpoint-address-range-add
+
 ***
 Add address range object
 
@@ -875,6 +935,7 @@ Add address range object
 #### Base Command
 
 `checkpoint-address-range-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -910,9 +971,11 @@ Add address range object
 
 
 #### Command Example
+
 ```!checkpoint-address-range-add name=address_range_test_2 ip_address_first=8.8.8.8 ip_address_last=9.9.9.9 session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -938,12 +1001,14 @@ Add address range object
 #### Human Readable Output
 
 >### CheckPoint data for adding an address range:
+>
 >|name|uid|type|domain-name|domain-uid|creator|ipv4-address-first|ipv4-address-last|last-modifier|read-only|
 >|---|---|---|---|---|---|---|---|---|---|
 >| address_range_test_2 | 4fb8174d-89db-42f8-88b8-525c8fe818be | address-range | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | 8.8.8.8 | 9.9.9.9 | adminsh | true |
 
 
 ### checkpoint-address-range-update
+
 ***
 Update an address range object
 
@@ -951,6 +1016,7 @@ Update an address range object
 #### Base Command
 
 `checkpoint-address-range-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -985,9 +1051,11 @@ Update an address range object
 
 
 #### Command Example
+
 ```!checkpoint-address-range-update identifier=address_range_test layer=Network session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1011,12 +1079,14 @@ Update an address range object
 #### Human Readable Output
 
 >### CheckPoint data for updating an address range:
+>
 >|name|uid|type|domain-name|domain-uid|creator|last-modifier|read-only|
 >|---|---|---|---|---|---|---|---|
 >| address_range_test | 26887214-d639-4acd-ab48-508d900cdfc2 | address-range | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | adminsh | false |
 
 
 ### checkpoint-address-range-delete
+
 ***
 Delete a given address range
 
@@ -1024,6 +1094,7 @@ Delete a given address range
 #### Base Command
 
 `checkpoint-address-range-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1040,9 +1111,11 @@ Delete a given address range
 
 
 #### Command Example
+
 ```!checkpoint-address-range-delete identifier=address_range_test session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1056,12 +1129,14 @@ Delete a given address range
 #### Human Readable Output
 
 >### CheckPoint data for deleting address range:
+>
 >|message|
 >|---|
 >| OK |
 
 
 ### checkpoint-threat-indicator-list
+
 ***
 List all threat indicators
 
@@ -1069,6 +1144,7 @@ List all threat indicators
 #### Base Command
 
 `checkpoint-threat-indicator-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1088,9 +1164,11 @@ List all threat indicators
 
 
 #### Command Example
+
 ```!checkpoint-threat-indicator-list limit=5```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1163,6 +1241,7 @@ List all threat indicators
 #### Human Readable Output
 
 >### CheckPoint data for all threat indicators:
+>
 >|name|uid|type|
 >|---|---|---|
 >| My_Indicator! | a40ec97c-e286-474b-bff7-b922e3b3294d | threat-indicator |
@@ -1173,6 +1252,7 @@ List all threat indicators
 
 
 ### checkpoint-threat-indicator-get
+
 ***
 Get data for a given list indicator
 
@@ -1180,6 +1260,7 @@ Get data for a given list indicator
 #### Base Command
 
 `checkpoint-threat-indicator-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1204,9 +1285,11 @@ Get data for a given list indicator
 
 
 #### Command Example
+
 ```!checkpoint-threat-indicator-get identifier=threat_test_1```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1231,12 +1314,14 @@ Get data for a given list indicator
 #### Human Readable Output
 
 >### CheckPoint data for threat_test_1 threat indicator:
+>
 >|name|uid|type|domain-name|domain-uid|read-only|creator|last-modifier|number-of-observables|
 >|---|---|---|---|---|---|---|---|---|
 >| threat_test_1 | 88e502f1-2bd5-4ad4-ba6b-dbbb2fef8260 | threat-indicator | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | false | adminsh | adminsh | 1 |
 
 
 ### checkpoint-threat-indicator-add
+
 ***
 Add a threat indicator
 
@@ -1244,6 +1329,7 @@ Add a threat indicator
 #### Base Command
 
 `checkpoint-threat-indicator-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1261,9 +1347,11 @@ Add a threat indicator
 
 
 #### Command Example
+
 ```!checkpoint-threat-indicator-add name=threat_test2 observables=[] session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew ```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1279,6 +1367,7 @@ Add a threat indicator
 
 
 ### checkpoint-threat-indicator-update
+
 ***
 Update a given indicator
 
@@ -1286,6 +1375,7 @@ Update a given indicator
 #### Base Command
 
 `checkpoint-threat-indicator-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1314,9 +1404,11 @@ Update a given indicator
 
 
 #### Command Example
+
 ```!checkpoint-threat-indicator-update identifier=threat_test_1 session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1340,12 +1432,14 @@ Update a given indicator
 #### Human Readable Output
 
 >### CheckPoint data for update threat_test_1 threat indicator
+>
 >|name|uid|type|domain-name|domain-uid|creator|last-modifier|read-only|
 >|---|---|---|---|---|---|---|---|
 >| threat_test_1 | 88e502f1-2bd5-4ad4-ba6b-dbbb2fef8260 | threat-indicator | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | adminsh | false |
 
 
 ### checkpoint-address-range-get
+
 ***
 Get all date of a given address range object
 
@@ -1353,6 +1447,7 @@ Get all date of a given address range object
 #### Base Command
 
 `checkpoint-address-range-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1376,9 +1471,11 @@ Get all date of a given address range object
 
 
 #### Command Example
+
 ```!checkpoint-address-range-get identifier=address_range_test```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1402,12 +1499,14 @@ Get all date of a given address range object
 #### Human Readable Output
 
 >### CheckPoint data for address_range_test address range:
+>
 >|name|uid|type|domain-name|domain-uid|read-only|creator|last-modifier|
 >|---|---|---|---|---|---|---|---|
 >| address_range_test | 26887214-d639-4acd-ab48-508d900cdfc2 | address-range | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | false | adminsh | adminsh |
 
 
 ### checkpoint-threat-indicator-delete
+
 ***
 delete threat indicator
 
@@ -1415,6 +1514,7 @@ delete threat indicator
 #### Base Command
 
 `checkpoint-threat-indicator-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1431,9 +1531,11 @@ delete threat indicator
 
 
 #### Command Example
+
 ```!checkpoint-threat-indicator-delete identifier=threat_test_1 session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1447,12 +1549,14 @@ delete threat indicator
 #### Human Readable Output
 
 >### CheckPoint status for deleting threat_test_1threat indicator:
+>
 >|message|
 >|---|
 >| OK |
 
 
 ### checkpoint-access-rule-list
+
 ***
 Shows the entire Access Rules layer. This layer is divided into sections. An Access Rule may be within a section, or independent of a section.
 
@@ -1460,6 +1564,7 @@ Shows the entire Access Rules layer. This layer is divided into sections. An Acc
 #### Base Command
 
 `checkpoint-access-rule-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1487,9 +1592,11 @@ Shows the entire Access Rules layer. This layer is divided into sections. An Acc
 | CheckPoint.AccessRule.groups | Unknown | Collection of group identifiers. | 
 
 #### Command Example
+
 ```!checkpoint-access-rule-list identifier=Network limit=5```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1562,6 +1669,7 @@ Shows the entire Access Rules layer. This layer is divided into sections. An Acc
 #### Human Readable Output
 
 >### CheckPoint data for all access rule bases:
+>
 >|name|uid|type|
 >|---|---|---|
 >|  | 6521b7b9-d340-44ec-a104-17d5ea669bc0 | access-rule |
@@ -1572,6 +1680,7 @@ Shows the entire Access Rules layer. This layer is divided into sections. An Acc
 
 
 ### checkpoint-access-rule-add
+
 ***
 Create new access rule
 
@@ -1579,6 +1688,7 @@ Create new access rule
 #### Base Command
 
 `checkpoint-access-rule-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1611,9 +1721,11 @@ Create new access rule
 
 
 #### Command Example
+
 ```!checkpoint-access-rule-add name=test_access_rule layer=Network position=top session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1636,12 +1748,14 @@ Create new access rule
 #### Human Readable Output
 
 >### CheckPoint data for adding access rule:
+>
 >|name|uid|type|domain-name|domain-uid|enabled|layer|creator|last-modifier|
 >|---|---|---|---|---|---|---|---|---|
 >| test_access_rule | a9f00b65-bb3b-4548-b06a-6c5672df6c8b | access-rule | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | true | c0264a80-1832-4fce-8a90-d0849dc4ba33 | adminsh | adminsh |
 
 
 ### checkpoint-access-rule-update
+
 ***
 Edit existing access rule using object name or uid.
 
@@ -1649,6 +1763,7 @@ Edit existing access rule using object name or uid.
 #### Base Command
 
 `checkpoint-access-rule-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1686,9 +1801,11 @@ Edit existing access rule using object name or uid.
 
 
 #### Command Example
+
 ```!checkpoint-access-rule-update identifier=7867e584-0e68-42b4-ba18-2dd16cdbd436 layer=Network session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1714,12 +1831,14 @@ Edit existing access rule using object name or uid.
 #### Human Readable Output
 
 >### CheckPoint data for updating an access rule:
+>
 >|name|uid|type|domain-name|domain-uid|action-name|action-uid|action-type|content-direction|creator|enabled|last-modifier|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| None | 7867e584-0e68-42b4-ba18-2dd16cdbd436 | access-rule | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | Drop | 6c488338-8eec-4103-ad21-cd461ac2c473 | RulebaseAction | any | adminsh | true | adminsh |
 
 
 ### checkpoint-access-rule-delete
+
 ***
 Delete access rule
 
@@ -1727,6 +1846,7 @@ Delete access rule
 #### Base Command
 
 `checkpoint-access-rule-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1744,9 +1864,11 @@ Delete access rule
 
 
 #### Command Example
+
 ```!checkpoint-access-rule-delete identifier=7867e584-0e68-42b4-ba18-2dd16cdbd436 layer=Network session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1760,12 +1882,14 @@ Delete access rule
 #### Human Readable Output
 
 >### CheckPoint data for deleting access rule range: 7867e584-0e68-42b4-ba18-2dd16cdbd436
+>
 >|message|
 >|---|
 >| OK |
 
 
 ### checkpoint-application-site-list
+
 ***
 Retrieve all objects.
 
@@ -1773,6 +1897,7 @@ Retrieve all objects.
 #### Base Command
 
 `checkpoint-application-site-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1792,9 +1917,11 @@ Retrieve all objects.
 
 
 #### Command Example
+
 ```!checkpoint-application-site-list limit=5```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1867,6 +1994,7 @@ Retrieve all objects.
 #### Human Readable Output
 
 >### CheckPoint data for all access rule bases:
+>
 >|name|uid|type|
 >|---|---|---|
 >| #hashtags | 00fa9e3c-36ef-0f65-e053-08241dc22da2 | application-site |
@@ -1877,6 +2005,7 @@ Retrieve all objects.
 
 
 ### checkpoint-application-site-add
+
 ***
 Add application site
 
@@ -1884,6 +2013,7 @@ Add application site
 #### Base Command
 
 `checkpoint-application-site-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1914,9 +2044,11 @@ Add application site
 
 
 #### Command Example
+
 ``` !checkpoint-application-site-add name="test_application_site_1" primary_category="Test Category" identifier="qmasters.co" session_id="TEAK9kWnZ9Dhql9hYP5IR4aZEw1mrKdPjw3lRnxvp88"```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -1939,7 +2071,9 @@ Add application site
 ``` 
 
 #### Human Readable Output
+
 ### CheckPoint data for adding application site:
+
 |application-id|creator|domain-name|domain-uid|last-modifier|name|type|uid|url-list|
 |---|---|---|---|---|---|---|---|---|
 | 0 | adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | test_application_site_1 | application-site | 452f6cff-e7fb-47b8-abfe-53c668dc0038 | qmasters.co |
@@ -1948,6 +2082,7 @@ Add application site
 
 
 ### checkpoint-application-site-update
+
 ***
 Edit existing application using object name or uid. 
 It's impossible to set  'application-signature' when the application was initialized with 'url-list' and vice-verse.
@@ -1956,6 +2091,7 @@ It's impossible to set  'application-signature' when the application was initial
 #### Base Command
 
 `checkpoint-application-site-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1991,9 +2127,11 @@ It's impossible to set  'application-signature' when the application was initial
 
 
 #### Command Example
+
 ```!checkpoint-application-site-update identifier=test_application_site session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -2019,12 +2157,14 @@ It's impossible to set  'application-signature' when the application was initial
 #### Human Readable Output
 
 >### CheckPoint data for updating an application site:
+>
 >|name|uid|type|application-id|primary-category|url-list|domain-name|domain-uid|
 >|---|---|---|---|---|---|---|---|
 >| test_application_site | ccc788d1-b798-4e5c-8530-a6c375853730 | application-site | 1073741861 | Test Category | qmasters.co | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde |
 
 
 ### checkpoint-application-site-delete
+
 ***
 Delete existing application site object using object name or uid.
 
@@ -2032,6 +2172,7 @@ Delete existing application site object using object name or uid.
 #### Base Command
 
 `checkpoint-application-site-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2048,9 +2189,11 @@ Delete existing application site object using object name or uid.
 
 
 #### Command Example
+
 ```!checkpoint-application-site-delete identifier=test_application_site session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -2064,12 +2207,14 @@ Delete existing application site object using object name or uid.
 #### Human Readable Output
 
 >### CheckPoint data for deleting application site : test_application_site
+>
 >|message|
 >|---|
 >| OK |
 
 
 ### checkpoint-publish
+
 ***
 publish changes
 
@@ -2077,6 +2222,7 @@ publish changes
 #### Base Command
 
 `checkpoint-publish`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2092,9 +2238,11 @@ publish changes
 
 
 #### Command Example
+
 ```!checkpoint-publish session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -2108,12 +2256,14 @@ publish changes
 #### Human Readable Output
 
 >### CheckPoint data for publishing current session:
+>
 >|task-id|
 >|---|
 >| 01234567-89ab-cdef-9338-e44df5384ac3 |
 
 
 ### checkpoint-install-policy
+
 ***
 Intsalling policy
 
@@ -2121,6 +2271,7 @@ Intsalling policy
 #### Base Command
 
 `checkpoint-install-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2139,9 +2290,11 @@ Intsalling policy
 
 
 #### Command Example
+
 ```!checkpoint-install-policy policy_package=standard targets=test-gw session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -2155,12 +2308,14 @@ Intsalling policy
 #### Human Readable Output
 
 >### CheckPoint data for installing policy:
+>
 >|task-id|
 >|---|
 >| d461078b-cc1e-41b6-869b-096438673323 |
 
 
 ### checkpoint-verify-policy
+
 ***
 Verifies the policy of the selected package.
 
@@ -2168,6 +2323,7 @@ Verifies the policy of the selected package.
 #### Base Command
 
 `checkpoint-verify-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2184,6 +2340,7 @@ Verifies the policy of the selected package.
 
 
 #### Command Example
+
 ```!checkpoint-policy-verify policy_package=standard session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Human Readable Output
@@ -2191,6 +2348,7 @@ Verifies the policy of the selected package.
 
 
 ### checkpoint-show-task
+
 ***
 Show task progress and details.
 
@@ -2198,6 +2356,7 @@ Show task progress and details.
 #### Base Command
 
 `checkpoint-show-task`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2218,9 +2377,11 @@ Show task progress and details.
 
 
 #### Command Example
+
 ```!checkpoint-show-task task_id=01234567-89ab-cdef-997f-2e3e3b4b2541```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -2238,12 +2399,14 @@ Show task progress and details.
 #### Human Readable Output
 
 >### CheckPoint data for tasks:
+>
 >|task-name|task-id|status|suppressed|progress-percentage|
 >|---|---|---|---|---|
 >| Publish operation | 01234567-89ab-cdef-997f-2e3e3b4b2541 | succeeded | false | 100 |
 
 
 ### checkpoint-login-and-get-session-id
+
 ***
 Login to CheckPoint and get the session id
 
@@ -2251,6 +2414,7 @@ Login to CheckPoint and get the session id
 #### Base Command
 
 `checkpoint-login-and-get-session-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2267,12 +2431,14 @@ Login to CheckPoint and get the session id
 
 
 #### Command Example
+
 ```
 !checkpoint-login-and-get-session-id
 !checkpoint-login-and-get-session-id domain='Corp'
 ```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -2286,12 +2452,14 @@ Login to CheckPoint and get the session id
 #### Human Readable Output
 
 >### CheckPoint session data:
+>
 >|session-id|
 >|---|
 >| LoUhF29pRkJsBiIWlMdBFy1LhHWXzE0VJT_lWpz4v0k |
 
 
 ### checkpoint-logout
+
 ***
 Logout from a given session
 
@@ -2299,6 +2467,7 @@ Logout from a given session
 #### Base Command
 
 `checkpoint-logout`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2311,9 +2480,11 @@ Logout from a given session
 There is no context output for this command.
 
 #### Command Example
+
 ```!checkpoint-logout session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2323,6 +2494,7 @@ There is no context output for this command.
 >OK
 
 ### checkpoint-packages-list
+
 ***
 List all packages.
 
@@ -2330,6 +2502,7 @@ List all packages.
 #### Base Command
 
 `checkpoint-packages-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2352,9 +2525,11 @@ List all packages.
 
 
 #### Command Example
+
 ```!checkpoint-packages-list session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -2377,6 +2552,7 @@ List all packages.
 #### Human Readable Output
 
 >### CheckPoint data for all packages:
+>
 >|name|uid|type|
 >|---|---|---|
 >| BenLayer | 9daac370-ad2d-4a21-a503-a312755aceaf | package |
@@ -2384,6 +2560,7 @@ List all packages.
 
 
 ### checkpoint-gateways-list
+
 ***
 Retrieve all gateways and servers
 
@@ -2391,6 +2568,7 @@ Retrieve all gateways and servers
 #### Base Command
 
 `checkpoint-gateways-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2416,9 +2594,11 @@ Retrieve all gateways and servers
 
 
 #### Command Example
+
 ```!checkpoint-gateways-list session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -2452,6 +2632,7 @@ Retrieve all gateways and servers
 #### Human Readable Output
 
 >### CheckPoint data for all gateways:
+>
 >|name|uid|type|version|network-security-blades|management-blades|
 >|---|---|---|---|---|---|
 >| gw-88a290 | 98bee60f-23ab-bf41-ba29-4c574b9d6f7c | CpmiHostCkp | R80.30 |  | network-policy-management: true<br/>logging-and-status: true |
@@ -2459,6 +2640,7 @@ Retrieve all gateways and servers
 
 
 ### checkpoint-application-site-category-list
+
 ***
 Retrieve all application site category.
 
@@ -2466,6 +2648,7 @@ Retrieve all application site category.
 #### Base Command
 
 `checkpoint-application-site-category-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2488,9 +2671,11 @@ Retrieve all application site category.
 
 
 #### Command Example
+
 ```!checkpoint-application-site-category-list limit=5```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -2563,6 +2748,7 @@ Retrieve all application site category.
 #### Human Readable Output
 
 >### CheckPoint data for all application site category:
+>
 >|name|uid|type|
 >|---|---|---|
 >| 0new_app_site_category | d42e14e7-1c50-48d5-9412-2306dc8e5219 | application-site-category |
@@ -2573,6 +2759,7 @@ Retrieve all application site category.
 
 
 ### checkpoint-application-site-category-add
+
 ***
 Add new application site category
 
@@ -2580,6 +2767,7 @@ Add new application site category
 #### Base Command
 
 `checkpoint-application-site-category-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2606,9 +2794,11 @@ Add new application site category
 
 
 #### Command Example
+
 ```!checkpoint-application-site-category-add identifier=application_site_category_0101 session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -2633,12 +2823,14 @@ Add new application site category
 #### Human Readable Output
 
 >### CheckPoint data for adding application site category application_site_category_0101:
+>
 >|name|uid|type|domain-name|domain-uid|creator|last-modifier|
 >|---|---|---|---|---|---|---|
 >| application_site_category_0101 | 5fb2e946-7e9c-42db-8b0a-cf5056f427d8 | application-site-category | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | adminsh |
 
 
 ### checkpoint-application-site-category-get
+
 ***
 Retrieve application site category object using object name or uid.
 
@@ -2646,6 +2838,7 @@ Retrieve application site category object using object name or uid.
 #### Base Command
 
 `checkpoint-application-site-category-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2669,9 +2862,11 @@ Retrieve application site category object using object name or uid.
 
 
 #### Command Example
+
 ```!checkpoint-application-site-category-get identifier=Alcohol```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -2695,12 +2890,14 @@ Retrieve application site category object using object name or uid.
 #### Human Readable Output
 
 >### CheckPoint data for adding application site category:
+>
 >|name|uid|type|domain-name|domain-uid|read-only|creator|last-modifier|
 >|---|---|---|---|---|---|---|---|
 >| Alcohol | 00fa9e44-409e-0f65-e053-08241dc22da2 | application-site-category | APPI Data | 8bf4ac51-2df7-40e1-9bce-bedbedbedbed | false | System | System |
 
 
 ### checkpoint-show-objects
+
 ***
 Retrieve data about objects.
 
@@ -2708,6 +2905,7 @@ Retrieve data about objects.
 #### Base Command
 
 `checkpoint-show-objects`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2737,9 +2935,11 @@ Retrieve data about objects.
 | CheckPoint.Objects.groups | Unknown | Collection of group identifiers. | 
 
 #### Command Example
+
 ```!checkpoint-show-objects limit=3 filter_search=1.2.3.4 ip_only=true```
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -2762,12 +2962,14 @@ Retrieve data about objects.
 #### Human Readable Output
 
 >### CheckPoint data for objects:
+>
 >|name|uid|type|
 >|---|---|---|
 >| All_Internet | f90e0a2b-f166-427a-b47f-a107b6fe43b9 | address-range |
 
 
 ### checkpoint-package-list
+
 ***
 Get checkpoint-packages details.
 
@@ -2775,6 +2977,7 @@ Get checkpoint-packages details.
 #### Base Command
 
 `checkpoint-package-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2798,10 +3001,12 @@ Get checkpoint-packages details.
 
 
 #### Command Example
+
 ```!checkpoint-package-list identifier=Standard session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 
 #### Context Example
+
 ```
 {
     "CheckPoint": {
@@ -2826,10 +3031,13 @@ Get checkpoint-packages details.
 #### Human Readable Output
 
 >### CheckPoint data for objects:
+>
 >|target-name|name|target-uid|revision
 >|---|---|---|---|
 >| Host1 | Standard | 41e821a0-3720-11e3-aa6e-0800200c9fde | "domain": {<br/>"name": "test",<br/>"domain-type": "domain",<br/>"uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/>},<br/>"type": "session",<br/>"uid", "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/> |
+>
 ### checkpoint-add-objects-batch
+
 ***
 Creates new objects in batch. To achieve optimum performance when adding more than one object, use this API. Note: Errors and warnings are ignored when using this API, operation will apply changes while ignoring errors. It is not possible to publish changes that contain validations errors.
 
@@ -2837,6 +3045,7 @@ Creates new objects in batch. To achieve optimum performance when adding more th
 #### Base Command
 
 `checkpoint-add-objects-batch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2854,6 +3063,7 @@ Creates new objects in batch. To achieve optimum performance when adding more th
 | CheckPoint.AddObjectBatch.task-id | string | Task id of the add-objects-batch command. | 
 
 ### checkpoint-delete-objects-batch
+
 ***
 Deletes existing objects in batch using object name or uid. To achieve optimum performance when deleting more than one object, use this API.
 
@@ -2861,6 +3071,7 @@ Deletes existing objects in batch using object name or uid. To achieve optimum p
 #### Base Command
 
 `checkpoint-delete-objects-batch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2877,6 +3088,7 @@ Deletes existing objects in batch using object name or uid. To achieve optimum p
 | CheckPoint.DeleteObjectsBatch.task-id | string | Task id of the delete-objects-batch command. | 
 
 ### checkpoint-show-threat-protection
+
 ***
 Shows an existing threat protection using object name or uid
 
@@ -2884,6 +3096,7 @@ Shows an existing threat protection using object name or uid
 #### Base Command
 
 `checkpoint-show-threat-protection`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2901,6 +3114,7 @@ Shows an existing threat protection using object name or uid
 | CheckPoint.ShowThreatProtection | unknown |  | 
 
 ### checkpoint-show-threat-protections
+
 ***
 Shows existing threat protections using a filter
 
@@ -2908,6 +3122,7 @@ Shows existing threat protections using a filter
 #### Base Command
 
 `checkpoint-show-threat-protections`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2925,6 +3140,7 @@ Shows existing threat protections using a filter
 | CheckPoint.ShowThreatProtections | unknown |  | 
 
 ### checkpoint-set-threat-protection
+
 ***
 Edit existing object using object name or uid.
 
@@ -2932,6 +3148,7 @@ Edit existing object using object name or uid.
 #### Base Command
 
 `checkpoint-set-threat-protection`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2953,6 +3170,7 @@ Edit existing object using object name or uid.
 | CheckPoint.SetThreatProtections | unknown |  | 
 
 ### checkpoint-add-threat-profile
+
 ***
 Add a new threat profile
 
@@ -2960,6 +3178,7 @@ Add a new threat profile
 #### Base Command
 
 `checkpoint-add-threat-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2991,6 +3210,7 @@ Add a new threat profile
 | CheckPoint.AddedThreatProfiles | unknown |  | 
 
 ### checkpoint-delete-threat-protections
+
 ***
 Deletes threat protections.
 
@@ -2998,6 +3218,7 @@ Deletes threat protections.
 #### Base Command
 
 `checkpoint-delete-threat-protections`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

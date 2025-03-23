@@ -6,6 +6,7 @@ Armis is an agentless, enterprise-class security platform to address the threat 
 ##### What does this pack do?
 
 The Integrations and Playbooks in this pack provide the following functionality:
+
 - Fetch incidents from an Armis instance.
 - Search for Armis Alerts.
 - Search for Devices connected to an Alert.
@@ -34,18 +35,23 @@ The SIEM content contains modeling rules for the following Armis event types:
 The following XQL Queries demonstrate the XDM modeling for the supported datasets:
 
 1. **Alerts**
+
    ```javascript
     config timeframe = 1H 
     | datamodel dataset = armis_security_raw
     | fields xdm.event.type, xdm.alert.category, xdm.alert.severity, xdm.alert.original_alert_id, xdm.alert.name, xdm.alert.description,xdm.event.outcome, xdm.event.is_completed,    xdm.source.host.device_id,  xdm.event.id, xdm.alert.original_threat_id, xdm.alert.original_threat_name,  xdm.event.tags,  xdm.network.rule, xdm.network.session_id
     ```
+
 2. **Activities** 
+
     ```javascript
     config timeframe = 1H
     | datamodel dataset = armis_security_activities_raw
     | fields xdm.source.zone, xdm.observer.name, xdm.observer.type,xdm.event.id, xdm.event.type, xdm.event.description, xdm.source.host.device_id, xdm.source.host.hostname, xdm.source.ipv4, xdm.source.ipv6, xdm.source.user_agent, xdm.target.host.hostname, xdm.target.ipv4,xdm.target.host.ipv4_addresses, xdm.target.ipv6, xdm.target.port, xdm.network.tls.cipher, xdm.network.tls.protocol_version, xdm.event.duration, xdm.network.http.method, xdm.network.ip_protocol, xdm.network.session_id, xdm.target.user.username, xdm.source.application.name, xdm.source.application.version
     ```
+
 3. **Devices** 
+
     ```javascript
     config timeframe = 1D 
     | datamodel dataset = armis_security_devices_raw 

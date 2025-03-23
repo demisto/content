@@ -1,6 +1,7 @@
 # Google Vertex AI
 
 ## Integration Author: Sameh El-Hakim
+
 ***
 Fine-tuned to conduct natural conversation. Using Google Vertex Ai (PaLM API for Chat)
 
@@ -13,7 +14,9 @@ Model Development
 
 Once the New API for (PaLM for Chat & Text) is released to the public from Google, then this integration will be modified to support quick integration. This integration is using an early version of Generative AI API from Google. So, you are expected to face some challenges.
 ***
+
 ## The setup steps as following:
+
 1. Create a new project on Google Cloud (Recommended instead of using existing project)
 2. Enable Vertex AI API
 3. Configure Consent Page
@@ -185,6 +188,7 @@ Now it is time to put the integration in test.
 ![commandOutput](../../doc_files/commandOutput.png)
 
 ***
+
 ## Troubleshooting
 
 In case of any failure it will be related to authentication code expired or reset somehow. In that case, you will need to repeat steps of generating a new auth code and adding it to XSOAR. BUT before that most important to reset the cache to the integration as following:

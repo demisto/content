@@ -1,8 +1,11 @@
 ## Overview
+
 [GitHub](https://github.com/about) is an internet hosting provider that uses Git for software development and version control. It offers the distributed version control and source code management (SCM) functionality of Git, plus its own features. It provides access control and collaboration features such as bug tracking, feature requests, task management, continuous integration, and wikis for every project.
 
 ## Use Cases
+
 This integration enables you to:
+
 - Create, close, or update a GitHub issue.
 - Get a list of all GitHub issues you have access to.
 - Create a branch in GitHub.
@@ -15,7 +18,9 @@ This integration enables you to:
 - Create a release.
 
 ## Configuration
+
 To configure the GitHub integration on Cortex XSOAR you need to do the following (see below for more details):
+
 1. Configure access to GitHub.
 2. Configure integration parameters.
 
@@ -24,8 +29,10 @@ To configure the GitHub integration on Cortex XSOAR you need to do the following
 You can configure access to GitHub by either creating a personal access token or by creating a new GitHub app for Cortex XSOAR.
 
 #### Create a Personal Access Token 
+
 Personal access tokens (PATs) are an alternative to using passwords for authentication to GitHub when using the GitHub API. 
 To generate a new token:
+
 1. Navigate to the upper-right corner of any page and click your **profile photo**. 
 2. In the left sidebar, click **Developer settings**. 
 3. In the left sidebar, click **Personal access tokens** and click **Generate new token**. 
@@ -37,6 +44,7 @@ To generate a new token:
 #### Create a new GitHub App for Cortex XSOAR
 
 Another authentication option is to create and register a GitHub app under your personal account or under any organization you have administrative access to.
+
 1. Navigate to the upper-right corner of any page and click your **profile photo**:
    - For a personal account owned app, go to your **Account Settings**.
    - For an organization owned app, click Your organizations. To the right of the organization, click **Settings**.
@@ -125,7 +133,9 @@ Creates an issue in GitHub.
 ```!GitHub-create-issue title=“newbug” body=“found a new bug” lable=bug,new```
 
 #### Human Readable Output
+
 ## Issues:
+
 |ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|
 |---|---|---|---|---|---|---|---|
 |138|Git-Integration|demisto|“newbug”|open|“found|2019-06-17T15:14:10Z|2019-06-17T15:14:10Z|
@@ -167,7 +177,9 @@ Closes an existing issue.
 ```!GitHub-close-issue ID=136```
 
 #### Human Readable Output
+
 ## Issues:
+
 |ID|Repository|Organization|Title|State|Created_at|Updated_at|Closed_at|Closed_by|Labels|
 |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
 |136|Git-Integration|demisto|new|closed|2019-06-17T14:48:15Z|2019-06-17T15:14:12Z|2019-06-17T15:14:12Z|roysagi|bug, else, new|
@@ -214,7 +226,9 @@ Updates the parameters of a specified issue.
 ```!GitHub-update-issue ID=137 title=“new_title” body=“new info” state=open```
 
 #### Human Readable Output
+
 ## Issues:
+
 |ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|
 |--- |--- |--- |--- |--- |--- |--- |--- |
 |137|Git-Integration|demisto|“new_title”|open|“new|2019-06-17T15:09:50Z|2019-06-17T15:14:13Z|
@@ -258,7 +272,9 @@ Lists all issues that the user has access to view.
 ```!GitHub-list-all-issues state=all limit=2```
 
 #### Human Readable Output
+
 ## Issues:
+
 |ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|Closed_at|Labels|
 |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
 |109|Git-Integration|demisto|"new issue"|closed|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|newbug|
@@ -266,6 +282,7 @@ Lists all issues that the user has access to view.
 
 
 ### GitHub-search-code
+
 ***
 Searches for code in repositories that match a given query.
 
@@ -273,6 +290,7 @@ Searches for code in repositories that match a given query.
 #### Base Command
 
 `GitHub-search-code`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -301,9 +319,11 @@ Searches for code in repositories that match a given query.
 
 
 #### Command Example
+
 ```!GitHub-search-code query="create_artifacts+repo:demisto/demisto-sdk" page_size="2" limit="5"```
 
 #### Context Example
+
 ```json
 {
     "GitHub": {
@@ -376,6 +396,7 @@ Searches for code in repositories that match a given query.
 #### Human Readable Output
 
 >### Returned 5 out of 6 total results.
+>
 >|Name|Path|Repository Name|Repository Description|Is Repository Private|
 >|---|---|---|---|---|
 >| [.pre-commit-config.yaml](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/.pre-commit-config.yaml) | .pre-commit-config.yaml | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
@@ -423,7 +444,9 @@ Searches for and returns issues that match a given query.
 ```!GitHub-search-issues query=“label:bug state:open” limit=1```
 
 #### Human Readable Output
+
 ## Issues:
+
 |ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|Closed_at|Assignees|Labels|
 |--- |--- |--- |--- |--- |--- |--- |--- |--- | ---|--- |
 |109|Git-Integration|demisto|"new issue"|open|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|teizenman|newbug|
@@ -457,7 +480,9 @@ There are no input arguments for this command.
 ```!GitHub-get-download-count```
 
 #### Human Readable Output
+
 ## Releases:
+
 |ID|Name|Download_count|Body|Created_at|Published_at|
 |--- |--- |--- |--- |--- |--- |
 |17519182|anotherone|5|this is another release|2019-05-22T15:00:51Z|2019-05-22T15:06:48Z|
@@ -493,7 +518,9 @@ Gets inactive pull requests.
 ``!GitHub-get-stale-prs stale_time="2 days"``
 
 #### Human Readable Output
+
 ## Stale PRs:
+
 |Number|URL|
 |--- |--- |
 |18|https://github.com/example-user1/content/pull/18|
@@ -533,7 +560,9 @@ Get a branch
 ```!GitHub-get-pull-request pull_number=1```
 
 #### Human Readable Output
+
 ## Branch "master"
+
 |CommitAuthorID|CommitAuthorLogin|CommitNodeID|CommitParentSHA|CommitSHA|Name|Protected|
 |--- |--- |--- |--- |--- |--- |--- |
 |55035720|example-user1|MDY6Q29tbWl0MjA3NzQ0Njg1OjhhNjdhMDc4MTM5NDk4ZjNlOGUxYmQyZTI2ZmZjNWEyZmVhMWI5MTg=|d6bafef5a0021a6d9ab0a22e11bd0afd5801d936|8a67a078139498f3e8e1bd2e26ffc5a2fea1b918|master|false|
@@ -564,6 +593,7 @@ There is no context output for this command.
 ```GitHub-create-branch branch_name=new-branch-example commit_sha=8a67a078139498f3e8e1bd2e26ffc5a2fea1b918```
 
 #### Human Readable Output
+
 Branch "new-branch-example" Created Successfully.
 
 ### GitHub-get-team-membership
@@ -596,7 +626,9 @@ Retrieves a user membership status with a team.
 ```!GitHub-get-team-membership team_id=3043448 user_name=example-user2```
 
 #### Human Readable Output
+
 ## Team Membership of example-user2
+
 |ID|Role|State|Login|
 |--- |--- |--- |--- |
 |3043448|member|active|example-user2|
@@ -634,7 +666,9 @@ Requests reviews from GitHub users for a given pull request.
 ```!GitHub-request-review pull_number=1 reviewers=example-user1```
 
 #### Human Readable Output
+
 ## Requested Reviewers for #1
+
 |ID|Login|NodeID|SiteAdmin|Type|
 |--- |--- |--- |--- |--- |
 |30797606|example-user3|MDQ6VXNlcjMwNzk3NjA2|false|User|
@@ -675,7 +709,9 @@ Creates a comment for a given issue.
 ```!GitHub-create-comment issue_number=1 body="Look this comment was made using the GitHub integration"```
 
 #### Human Readable Output
+
 ## Created Comment
+
 |Body|ID|IssueNumber|NodeID|User|
 |--- |--- |--- |--- |--- |
 |This comment was made using the GitHub integration|532700206|1|MDEyOklzc3VlQ29tbWVudDUzMjcwMDIwNg==|Login: example-user1 ID: 55035720 NodeID: MDQ6VXNlcjU1MDM1NzIw Type: User SiteAdmin: false|
@@ -716,7 +752,9 @@ Lists comments on an issue.
 ```!GitHub-list-issue-comments issue_number=1```
 
 #### Human Readable Output
+
 ## Comments for Issue #1
+
 |Body|ID|IssueNumber|NodeID|User|
 |--- |--- |--- |--- |--- |
 |Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content wizard @example-user3 will very shortly look over your proposed changes.|530276333|1|MDEyOklzc3VlQ29tbWVudDUzMDI3NjMzMw==|Login: example-user1 ID: 55035720 NodeID: MDQ6VXNlcjU1MDM1NzIw Type: User SiteAdmin: false|
@@ -759,7 +797,9 @@ Lists the pull request files.
 ```!GitHub-list-pr-files pull_number=1```
 
 #### Human Readable Output
+
 ## Pull Request Files for #1
+
 |Additions|Changes|Deletions|Name|SHA|Status|
 |--- |--- |--- |--- |--- |--- |
 |4|4|0|TEST.md|4e7fd23b44ef46ebd04a9812dda55cecb487fcbe|added|
@@ -801,7 +841,9 @@ Lists reviews on a pull request.
 ```!GitHub-list-pr-reviews pull_number=1```
 
 #### Human Readable Output
+
 ## Pull Request Reviews for #1
+
 |Body|CommitID|ID|NodeID|State|User|
 |--- |--- |--- |--- |--- |--- |
 |review comment|b6cf0431e2aea2b345ea1d66d18aa72be63936a9|287327154|MDE3OlB1bGxSZXF1ZXN0UmV2aWV3Mjg3MzI3MTU0|COMMENTED|Login: example-user2 ID: 31018228 NodeID: MDQ6VXNlcjMxMDE4MjI4 Type: User SiteAdmin: false|
@@ -846,7 +888,9 @@ Gets a commit.
 ```!GitHub-get-commit commit_sha=8a67a078139498f3e8e1bd2e26ffc5a2fea1b918```
 
 #### Human Readable Output
-## Commit *8a67a07813*
+
+## Commit _8a67a07813_
+
 |Author|Committer|Message|Parent|SHA|TreeSHA|Verification|
 |--- |--- |--- |--- |--- |--- |--- |
 |Date: 2019-09-16T15:42:43Z Name: example-user1 Email: 55035720example.user1@users.noreply.github.com|Date: 2019-09-16T15:42:43Z Name: GitHub Email: noreply@github.com|Update config.yml|{'SHA': 'd6bafef5a0021a6d9ab0a22e11bd0afd5801d936'}|8a67a078139498f3e8e1bd2e26ffc5a2fea1b918|42fdb6c89538099a141e94fabe4bbc58098f4d90|Verified: true Reason: valid Signature: -----BEGIN PGP SIGNATURE-----  wsBcBAABCAAQBQJ****************************sIKrPT2jUSWyzfu5wnu oWz7+2KMdaglV****************************M08HXTm a9eO/ahlodARkgH/bWjulomeO+jDEgbZenlPUrBnX136QzPPqgl4uvxfquAOj1/a a89YtPAFh2X1+1q7pl5dVtZfYpo6mYJoY9dwVpDRbLoVHJRa1wnqEv4kxRHrrRL9 mGWSMHqK8I6j9zXi4niod8pQpl0k4O/2SlNh81RyeILEYb587Zs1XGuIYQEDrcAf u+FURxEHSuT4yaZ+oBwhhcIsmsWQMGkfABbwo1Fi2BMtEgZpzd/TScNg1KeSrVI= =dWrz -----END PGP SIGNATURE-----  Payload: tree 42fdb6c89538099a141e94fabe4bbc58098f4d90 parent d6bafef5a0021a6d9ab0a22e11bd0afd5801d936 author example-user1 <55035720example.user1@users.noreply.github.com> 1568648563 +0300 committer GitHub <noreply@github.com> 1568648563 +0300  Update config.yml|
@@ -877,6 +921,7 @@ There is no context output for this command.
 ```!GitHub-add-label issue_number=1 labels=Content```
 
 #### Human Readable Output
+
 Label "Content" Successfully Added to Issue #1
 
 ### GitHub-get-pull-request
@@ -1067,7 +1112,9 @@ Gets a pull request.
 ```!GitHub-get-pull-request pull_number=1```
 
 #### Human Readable Output
+
 ## Pull Request #1
+
 |Additions|AuthorAssociation|Base|Body|ChangedFiles|Comments|Commits|CreatedAt|Deletions|Head|ID|Label|Locked|MaintainerCanModify|MergeCommitSHA|Mergeable|MergeableState|Merged|NodeID|Number|Rebaseable|RequestedReviewer|ReviewComments|State|UpdatedAt|User|
 |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
 |4|FIRST_TIME_CONTRIBUTOR|Label: example-user1:master Ref: master SHA: b27ea6ac9836d2e756b44eb1d66f02d3d4299362 User: {"Login": "example-user1", "ID": 55035720, "NodeID": "MDQ6VXNlcjU1MDM1NzIw", "Type": "User", "SiteAdmin": false} Repo: {"ID": 207744685, "NodeID": "MDEwOlJlcG9zaXRvcnkyMDc3NDQ2ODU=", "Name": "content", "FullName": "example-user1/content", "Owner": {"Login": "example-user1", "ID": 55035720, "NodeID": "MDQ6VXNlcjU1MDM1NzIw", "Type": "User", "SiteAdmin": false}, "Private": false, "Description": "This repository contains all Demisto content and from here we share content updates", "Fork": true, "Language": "Python", "ForksCount": 0, "StargazersCount": 0, "WatchersCount": 0, "Size": 96530, "DefaultBranch": "master", "OpenIssuesCount": 10, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2019-09-18T14:05:43Z", "CreatedAt": "2019-09-11T06:59:20Z", "UpdatedAt": "2019-09-16T15:42:46Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null}|## Status Ready/In Progress/In Hold(Reason for hold)  ## Related Issues fixes: link to the issue  ## Description A few sentences describing the overall goals of the pull request's commits.  ## Screenshots Paste here any images that will help the reviewer  ## Related PRs List related PRs against other branches:  branch \ PR ------ \ ## Required version of Demistox.x.x ## Does it break backward compatibility?- Yes- Further details:- No ## Must have- [ ] Tests- [ ] Documentation (with link to it)- [ ] Code Review ## DependenciesMention the dependencies of the entity you changed as given from the precommit hooks in checkboxes, and tick after tested them.- [ ] Dependency 1- [ ] Dependency 2- [ ] Dependency 3 ## Additional changesDescribe additional changes done, for example adding a function to common server.|1|5|4|2019-09-11T07:06:26Z|0|Label: example-user4:patch-1 Ref: patch-1 SHA: c01238eea80e35bb76a5c51ac0c95eba4010d8e5 User: {"Login": "example-user4", "ID": 46294017, "NodeID": "MDQ6VXNlcjQ2Mjk0MDE3", "Type": "User", "SiteAdmin": false} Repo: {"ID": 205137013, "NodeID": "MDEwOlJlcG9zaXRvcnkyMDUxMzcwMTM=", "Name": "content", "FullName": "example-user4/content", "Owner": {"Login": "example-user4", "ID": 46294017, "NodeID": "MDQ6VXNlcjQ2Mjk0MDE3", "Type": "User", "SiteAdmin": false}, "Private": false, "Description": "This repository contains all Demisto content and from here we share content updates", "Fork": true, "Language": "Python", "ForksCount": 2, "StargazersCount": 0, "WatchersCount": 0, "Size": 95883, "DefaultBranch": "master", "OpenIssuesCount": 2, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2019-09-16T15:43:54Z", "CreatedAt": "2019-08-29T10:18:15Z", "UpdatedAt": "2019-08-29T10:18:18Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null}|316303415|'ID': 1563600288, 'NodeID': 'MDU6TGFiZWwxNTYzNjAwMjg4', 'Name': 'Content', 'Description': None, 'Color': None, 'Default': False},{'ID': 1549466359, 'NodeID': 'MDU6TGFiZWwxNTQ5NDY2MzU5', 'Name': 'Contribution', 'Description': None, 'Color': None, 'Default': False},{'ID': 1549411616, 'NodeID': 'MDU6TGFiZWwxNTQ5NDExNjE2', 'Name': 'bug', 'Description': None, 'Color': None, 'Default': True}|false|true|5714b1359b9d7549c89c35fe9fdc266a3db3b766|true|unstable|false|MDExOlB1bGxSZXF1ZXN0MzE2MzAzNDE1|1|true|{'Login': 'example-user3', 'ID': 30797606, 'NodeID': 'MDQ6VXNlcjMwNzk3NjA2', 'Type': 'User', 'SiteAdmin': False}, {'Login': 'example-user1', 'ID': 55035720, 'NodeID': 'MDQ6VXNlcjU1MDM1NzIw', 'Type': 'User', 'SiteAdmin': False}|0|open|2019-09-18T14:05:51Z|Login: example-user4 ID: 46294017 NodeID: MDQ6VXNlcjQ2Mjk0MDE3 Type: User SiteAdmin: false|
@@ -1106,7 +1153,9 @@ Lists the teams for an organization. Note that this API call is only available t
 ```!GitHub-list-teams organization=demisto```
 
 #### Human Readable Output
+
 ## Teams for Organization "demisto"
+
 |Description|ID|Name|NodeID|Permission|Privacy|Slug|
 |--- |--- |--- |--- |--- |--- |--- |
 |Our customer success team|2276690|customer-success|MDQ6VGVhbTIyNzY2NzA=|pull|closed|customer-success|
@@ -1137,6 +1186,7 @@ There is no context output for this command.
 ```!GitHub-delete-branch branch_name=new-branch-example```
 
 #### Human Readable Output
+
 Branch "new-branch-example" Deleted Successfully
 
 ### GitHub-list-pr-review-comments
@@ -1184,7 +1234,9 @@ Lists all the review comments for a pull request.
 ```!GitHub-list-pr-review-comments pull_number=1```
 
 #### Human Readable Output
+
 ## Pull Request Review Comments for #1
+
 |AuthorAssociation|Body|CommitID|CreatedAt|DiffHunk|ID|NodeID|OriginalCommitID|OriginalPosition|Path|Position|PullRequestReviewID|UpdatedAt|User|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |COLLABORATOR|Change it|1af17e73721dbe0c40011b82ed4bb1a7dbe3ce29|2021-04-08T11:00:21Z|@@ -9,7 +9,7 @@ "url": "some url" } ], -    "another key": [ +    "fixed key": [|609573611|df35047fffd38a65b8fe6963579254e8b09db25e1234567890==|df35047fffd38a65b8fe6963579254e8b09db25e|5|file.json|5|631256917|2021-04-08T11:00:28Z|Login: teizenman ID: 50326704 NodeID: MDQ6VXNlcjUwMzI2NzA0 Type: User SiteAdmin: false|
@@ -1380,7 +1432,9 @@ Updates a pull request in a repository.
 ```!GitHub-update-pull-request pull_number=1 body=Changing```
 
 #### Human Readable Output
+
 ## Updated Pull Request #15
+
 |Additions|AuthorAssociation|Base|Body|ChangedFiles|Comments|Commits|CreatedAt|Deletions|Draft|Head|ID|Locked|MaintainerCanModify|MergeCommitSHA|Mergeable|MergeableState|Merged|NodeID|Number|Rebaseable|ReviewComments|State|UpdatedAt|User|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |1|COLLABORATOR|Label: demisto:master Ref: master SHA: 56b289d4b1402b1492dd0cc681325b1f0ae47505 User: {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false} Repo: {"ID": 315109290, "NodeID": "MDEwOlJlcG9zaXRvcnkzMTUxMDkyOTA=", "Name": "content-internal-dist", "FullName": "demisto/content-internal-dist", "Owner": {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}, "Private": true, "Description": null, "Fork": false, "Language": "Python", "ForksCount": 0, "StargazersCount": 0, "WatchersCount": 0, "Size": 226, "DefaultBranch": "master", "OpenIssuesCount": 1, "Topics": null, "HasIssues": true, "HasProjects": true, "HasWiki": true, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-04-08T10:59:28Z", "CreatedAt": "2020-11-22T18:51:37Z", "UpdatedAt": "2021-04-07T08:58:02Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null}|Changing|1|0|1|2021-04-08T10:59:27Z|1|false|Label: demisto:teizenman-gh-test Ref: teizenman-gh-test SHA: 87429cec185dfd82be0f2e6d98b0f5d2d0bb91b0 User: {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false} Repo: {"ID": 315109290, "NodeID": "MDEwOlJlcG9zaXRvcnkzMTUxMDkyOTA=", "Name": "content-internal-dist", "FullName": "demisto/content-internal-dist", "Owner": {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}, "Private": true, "Description": null, "Fork": false, "Language": "Python", "ForksCount": 0, "StargazersCount": 0, "WatchersCount": 0, "Size": 226, "DefaultBranch": "master", "OpenIssuesCount": 1, "Topics": null, "HasIssues": true, "HasProjects": true, "HasWiki": true, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-04-08T10:59:28Z", "CreatedAt": "2020-11-22T18:51:37Z", "UpdatedAt": "2021-04-07T08:58:02Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null}|611450655|false|false|1af17e73721dbe0c40011b82ed4bb1a7dbe3ce29|true|blocked|false|1af17e73721dbe0c40011b82ed4bb1a7|15|true|1|open|2021-04-08T11:08:14Z|Login: teizenman ID: 50326704 NodeID: MDQ6VXNlcjUwMzI2NzA0 Type: User SiteAdmin: false|
@@ -1410,6 +1464,7 @@ There is no context output for this command.
 ```!GitHub-is-pr-merged pull_number=1```
 
 #### Human Readable Output
+
 Pull Request #1 was Merged
 
 ### GitHub-create-pull-request
@@ -1603,6 +1658,7 @@ Creates a new pull request.
 ```!GitHub-create-pull-request base=master head=branch-test title=Testing```
 
 #### Human Readable Output
+
 ## Created Pull Request #16
 
 |Additions|AuthorAssociation|Base|ChangedFiles|Comments|Commits|CreatedAt|Deletions|Draft|Head|ID|Locked|MaintainerCanModify|MergeableState|Merged|NodeID|Number|ReviewComments|State|UpdatedAt|User|
@@ -1638,12 +1694,15 @@ Gets the usage details of GitHub action workflows of private repositories by rep
 ```!Github-get-github-actions-usage owner=user```
 
 #### Human Readable Output
+
 ## Github Actions Usage
+
 |Repositoryname|Workflowid|Workflowname|Workflowusage|
 |---|---|---|---|
 |Git-Repo|12345|An Action|UBUNTU: {"total_ms": 12345}|
 
 ### Github-get-check-run
+
 ***
 Gets a check run details
 
@@ -1651,6 +1710,7 @@ Gets a check run details
 #### Base Command
 
 `Github-get-check-run`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1706,12 +1766,15 @@ Gets the content of a file from GitHub.
 ```!GitHub-get-file-content file_path=file.json branch_name=branch-test```
 
 #### Human Readable Output
+
 ## File file.json successfully fetched.
+
 |Branch|Content|MediaType|Path|
 |---|---|---|---|
 |branch-test|This is the content of the file|raw|file.json| 
 
 ### Github-list-files
+
 ***
 Gets a list of files from the given path in the repository.
 
@@ -1719,6 +1782,7 @@ Gets a list of files from the given path in the repository.
 #### Base Command
 
 `Github-list-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1740,36 +1804,49 @@ Gets a list of files from the given path in the repository.
 | GitHub.File.SHA | String | The SHA of the file. | 
 
 #### Command Example
+
 ```!Github-list-files path=Index```
 
 #### Human Readable Output
+
 ## Files in path: Index
+
 |Name|Path|Type|Size|DownloadUrl|
 |--- |--- |--- |--- |--- |
 |README.md|Index/README.md|file|1500|https://raw.githubusercontent.com/demisto/hello-world/master/index/README.md|
 |images|Index/images|dir|0||
 
 ### GitHub-list-team-members
+
 ***
 List team members.
+
 #### Base Command
+
 `GitHub-list-team-members`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | organization | The name of the organization. | Required | 
 | team_slug | The name of the team under the organization. | Required | 
 | maximum_users | The maximum number of users to return. | Optional | 
+
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GitHub.TeamMember.ID | String | The ID of the team member. | 
 | GitHub.TeamMember.Login | String | The login name of the team member. |
 | GitHub.TeamMember.Team | String | The user's team. |
+
 #### Command Example
+
 ```!GitHub-list-team-members organization=demisto team_slug=content maximum_users=20```
 
 ##### Context Example
+
 ```
 {
     "GitHub.GitHub": [
@@ -1783,12 +1860,15 @@ List team members.
 ```
 
 #### Human Readable Output
+
 ## Team Member of team content in organization XSOAR
+
 |ID|Login|Team|
 |--- |---|---|
 |1234567|user1|content|
 
 ### GitHub-list-branch-pull-requests
+
 ***
 Get pull requests corresponding to the given branch name.
 
@@ -1796,6 +1876,7 @@ Get pull requests corresponding to the given branch name.
 #### Base Command
 
 `GitHub-list-branch-pull-requests`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1972,9 +2053,11 @@ Get pull requests corresponding to the given branch name.
 
 
 #### Command Example
+
 ```!GitHub-list-branch-pull-requests branch_name=Update-Docker-Image```
 
 #### Context Example
+
 ```json
 {
  "GitHub": {
@@ -2129,11 +2212,13 @@ Get pull requests corresponding to the given branch name.
 #### Human Readable Output
 
 >### Pull Request For Branch #Update-Docker-Image
+>
 >|AuthorAssociation|Base|Body|CreatedAt|Draft|Head|ID|Label|Locked|MergeCommitSHA|NodeID|Number|State|UpdatedAt|User|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| MEMBER | Label: demisto:master<br/>Ref: master<br/>SHA: 9adf770fb981ec8bc9d6e87669be75da23176693<br/>User: {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}<br/>Repo: {"ID": 60525392, "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==", "Name": "content", "FullName": "demisto/content", "Owner": {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}, "Private": false, "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ", "Fork": false, "Language": "Python", "ForksCount": 678, "StargazersCount": 635, "WatchersCount": 635, "Size": 371861, "DefaultBranch": "master", "OpenIssuesCount": 181, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-05-06T11:49:07Z", "CreatedAt": "2016-06-06T12:17:02Z", "UpdatedAt": "2021-05-06T11:41:27Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null} | Updated Docker Images For Integrations | 2021-05-03T14:29:25Z | false | Label: demisto:Update-Docker-Image<br/>Ref: Update-Docker-Image<br/>SHA: baee6e30aaa0f52e676987c1968ffd3ce11d7e57<br/>User: {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}<br/>Repo: {"ID": 60525392, "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==", "Name": "content", "FullName": "demisto/content", "Owner": {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}, "Private": false, "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ", "Fork": false, "Language": "Python", "ForksCount": 678, "StargazersCount": 635, "WatchersCount": 635, "Size": 371861, "DefaultBranch": "master", "OpenIssuesCount": 181, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-05-06T11:49:07Z", "CreatedAt": "2016-06-06T12:17:02Z", "UpdatedAt": "2021-05-06T11:41:27Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null} | 629143674 | {'ID': 1523790036, 'NodeID': 'MDU6TGFiZWwxNTIzNzkwMDM2', 'Name': 'docs-approved', 'Description': '', 'Color': None, 'Default': False} | false | 5854633d909c5672ba6ccf118c4dae68eb4e38c0 | MDExOlB1bGxSZXF1ZXN0NjI5MTQzNjc0 | 12510 | open | 2021-05-03T14:48:58Z | Login: content-bot<br/>ID: 55035720<br/>NodeID: MDQ6VXNlcjU1MDM1NzIw<br/>Type: User<br/>SiteAdmin: false |
 
 ### Github-commit-file
+
 ***
 Commits a given file.
 
@@ -2141,6 +2226,7 @@ Commits a given file.
 #### Base Command
 
 `Github-commit-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2158,12 +2244,15 @@ Commits a given file.
 There is no context output for this command.
 
 #### Command Example
+
 ```!Github-commit-file commit_message="test commit" path_to_file="TEST.md" branch_name=branch-for-pr file_sha=hjashd878ad file_text=Test```
 
 #### Human Readable Output
+
 The file TEST.md committed successfully. Link to the commit: https://github.com/content-bot/hello-world/commit/7678213ghg72136
 
 ### GitHub-create-release
+
 ***
 Creates a release.
 
@@ -2171,6 +2260,7 @@ Creates a release.
 #### Base Command
 
 `GitHub-create-release`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2193,9 +2283,11 @@ Creates a release.
 
 
 #### Command Example
+
 ```!GitHub-create-release tag_name=1.0.0 body=`First release` draft=True name=1.0.0```
 
 ##### Context Example
+
 ```
 {
     "GitHub.Release": [
@@ -2210,10 +2302,12 @@ Creates a release.
 ```
 
 #### Human Readable Output
+>
 > Release 1.0.0 created successfully for repo sdk: https:<span>//github</span>.com/demisto/sdk/releases/tag/1.0.0
 
 
 ### Github-list-issue-events
+
 ***
 Returns events corresponding to the given issue.
 
@@ -2221,6 +2315,7 @@ Returns events corresponding to the given issue.
 #### Base Command
 
 `Github-list-issue-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2299,9 +2394,11 @@ Returns events corresponding to the given issue.
 
 
 #### Command Example
+
 ```!Github-list-issue-events issue_number=1079```
 
 #### Context Example
+
 ```json
 {
     "GitHub": {
@@ -2378,6 +2475,7 @@ Returns events corresponding to the given issue.
 #### Human Readable Output
 
 >### GitHub Issue Events For Issue 1079
+>
 >|actor|commit_id|commit_url|created_at|event|id|label|node_id|performed_via_github_app|url|
 >|---|---|---|---|---|---|---|---|---|---|
 >| login: tomneeman151293<br/>id: 70005542<br/>node_id: MDQ6VXNlcjcwMDA1NTQy<br/>avatar_url: https://avatars.githubusercontent.com/u/70005542?v=4<br/>gravatar_id: <br/>url: https://api.github.com/users/tomneeman151293<br/>html_url: https://github.com/tomneeman151293<br/>followers_url: https://api.github.com/users/tomneeman151293/followers<br/>following_url: https://api.github.com/users/tomneeman151293/following{/other_user}<br/>gists_url: https://api.github.com/users/tomneeman151293/gists{/gist_id}<br/>starred_url: https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}<br/>subscriptions_url: https://api.github.com/users/tomneeman151293/subscriptions<br/>organizations_url: https://api.github.com/users/tomneeman151293/orgs<br/>repos_url: https://api.github.com/users/tomneeman151293/repos<br/>events_url: https://api.github.com/users/tomneeman151293/events{/privacy}<br/>received_events_url: https://api.github.com/users/tomneeman151293/received_events<br/>type: User<br/>site_admin: false |  |  | 2021-01-28T13:00:26Z | labeled | 4260960414 | name: bug<br/>color: d73a4a | MDEyOkxhYmVsZWRFdmVudDQyNjA5NjA0MTQ= |  | https://api.github.com/repos/demisto/demisto-sdk/issues/events/4260960414 |
@@ -2417,6 +2515,7 @@ Lists all project boards a user can see.
 ```!GitHub-list-all-projects project_filter="1,2"```
 
 #### Context Example
+
 ```json
 {
   "GitHub": {
@@ -2490,6 +2589,7 @@ Moves an issue in the project board to a different column.
 ```!GitHub-move-issue-to-project-board card_id=1111 column_id=1234 position="top"```
 
 ### GitHub-add-issue-to-project-board
+
 ***
 Adds an Issue as a card in column of a spesific project.
 
@@ -2497,6 +2597,7 @@ Adds an Issue as a card in column of a spesific project.
 #### Base Command
 
 `GitHub-add-issue-to-project-board`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2511,6 +2612,7 @@ Adds an Issue as a card in column of a spesific project.
 There is no context output for this command.
 
 ### GitHub-get-path-data
+
 ***
 Gets the data of the a given path.
 
@@ -2518,6 +2620,7 @@ Gets the data of the a given path.
 #### Base Command
 
 `GitHub-get-path-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2555,9 +2658,11 @@ Gets the data of the a given path.
 
 
 #### Command Example
+
 ```!GitHub-get-path-data organization=demisto repository=content relative_path=Packs/BitcoinAbuse/Integrations/BitcoinAbuse```
 
 #### Context Example
+
 ```json
 {
     "GitHub": {
@@ -2680,11 +2785,13 @@ Gets the data of the a given path.
 #### Human Readable Output
 
 >### File Data For File Packs/BitcoinAbuse/Integrations/BitcoinAbuse
+>
 >|entries|git_url|html_url|name|path|sha|size|type|url|
 >|---|---|---|---|---|---|---|---|---|
 >| {'name': 'BitcoinAbuse.py', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py', 'sha': '23b55cb33aadaa6753e3df1e1d90d3cdc951c745', 'size': 14395, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/23b55cb33aadaa6753e3df1e1d90d3cdc951c745', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py', 'type': 'file'},<br/>{'name': 'BitcoinAbuse.yml', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml', 'sha': '17bbcfd9270570727c2e0f48591fcb9a98a0711e', 'size': 3929, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/17bbcfd9270570727c2e0f48591fcb9a98a0711e', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml', 'type': 'file'},<br/>{'name': 'BitcoinAbuse_description.md', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md', 'sha': '7d969d68833e2424ba8411c93fb8110face60414', 'size': 1305, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/7d969d68833e2424ba8411c93fb8110face60414', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md', 'type': 'file'},<br/>{'name': 'BitcoinAbuse_image.png', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png', 'sha': '52bef504f8dc4b58ddc6f200cdd135bcdfe9719a', 'size': 3212, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/52bef504f8dc4b58ddc6f200cdd135bcdfe9719a', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png', 'type': 'file'},<br/>{'name': 'BitcoinAbuse_test.py', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py', 'sha': 'dc2c4106cc3589461c7470a5c26e6e8927192d7f', 'size': 7150, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/dc2c4106cc3589461c7470a5c26e6e8927192d7f', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py', 'type': 'file'},<br/>{'name': 'Pipfile', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile', 'sha': '3523d3b6b93bd611859c23e1f63a774d78a0363a', 'size': 257, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/3523d3b6b93bd611859c23e1f63a774d78a0363a', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile', 'type': 'file'},<br/>{'name': 'Pipfile.lock', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock', 'sha': '6bdb9313414e337e128df3715f17d372f5691608', 'size': 15993, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/6bdb9313414e337e128df3715f17d372f5691608', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock', 'type': 'file'},<br/>{'name': 'README.md', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md', 'sha': 'fba823cddcc3637b2989598b7ae08731002f8feb', 'size': 7188, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/fba823cddcc3637b2989598b7ae08731002f8feb', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md', 'type': 'file'},<br/>{'name': 'test_data', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data', 'sha': 'ed2025b734667dfde3b405f8a131b785e9d8fc9d', 'size': 0, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/trees/ed2025b734667dfde3b405f8a131b785e9d8fc9d', 'download_url': None, 'type': 'dir'} | https:<span>//</span>api.github.com/repos/demisto/content/git/trees/1a0c49c84e7bcd02af5587082b6ed48634a20402 | https:<span>//</span>github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse | BitcoinAbuse | Packs/BitcoinAbuse/Integrations/BitcoinAbuse | 1a0c49c84e7bcd02af5587082b6ed48634a20402 | 0 | dir | https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse?ref=master |
 
 ### GitHub-releases-list
+
 ***
 Gets release data from a given repository and organization.
 
@@ -2692,6 +2799,7 @@ Gets release data from a given repository and organization.
 #### Base Command
 
 `GitHub-releases-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2744,9 +2852,11 @@ Gets release data from a given repository and organization.
 
 
 #### Command Example
+
 ```!GitHub-releases-list limit=1```
 
 #### Context Example
+
 ```json
 {
     "GitHub": {
@@ -2796,11 +2906,13 @@ Gets release data from a given repository and organization.
 #### Human Readable Output
 
 >### Releases Data Of hello-world
+>
 >|assets_url|author|body|created_at|draft|html_url|id|name|node_id|prerelease|tag_name|target_commitish|upload_url|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| https:<span>//</span>api.github.com/repos/content-bot/hello-world/releases/48262112/assets | login: content-bot<br/>id: 55035720<br/>node_id: MDQ6VXNlcjU1MDM1NzIw<br/>avatar_url: https:<span>//</span>avatars.githubusercontent.com/u/55035720?v=4<br/>gravatar_id: <br/>url: https:<span>//</span>api.github.com/users/content-bot<br/>html_url: https:<span>//</span>github.com/content-bot<br/>followers_url: https:<span>//</span>api.github.com/users/content-bot/followers<br/>following_url: https:<span>//</span>api.github.com/users/content-bot/following{/other_user}<br/>gists_url: https:<span>//</span>api.github.com/users/content-bot/gists{/gist_id}<br/>starred_url: https:<span>//</span>api.github.com/users/content-bot/starred{/owner}{/repo}<br/>subscriptions_url: https:<span>//</span>api.github.com/users/content-bot/subscriptions<br/>organizations_url: https:<span>//</span>api.github.com/users/content-bot/orgs<br/>repos_url: https:<span>//</span>api.github.com/users/content-bot/repos<br/>events_url: https:<span>//</span>api.github.com/users/content-bot/events{/privacy}<br/>received_events_url: https:<span>//</span>api.github.com/users/content-bot/received_events<br/>type: User<br/>site_admin: false | test | 2021-08-23T07:54:37Z | true | https:<span>//</span>github.com/content-bot/hello-world/releases/tag/untagged-e106615f0216817665d8 | 48262112 | 1.0.0 | MDc6UmVsZWFzZTQ4MjYyMTEy | false | 1.0.0 | master | https:<span>//</span>uploads.github.com/repos/content-bot/hello-world/releases/48262112/assets{?name,label} | https:<span>//</span>api.github.com/repos/content-bot/hello-world/releases/48262112 |
 
 ### GitHub-update-comment
+
 ***
 Update an already existing comment.
 
@@ -2808,6 +2920,7 @@ Update an already existing comment.
 #### Base Command
 
 `GitHub-update-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2832,6 +2945,7 @@ Update an already existing comment.
 | GitHub.Comment.User.SiteAdmin | Boolean | Whether the user who commented is a site admin. | 
 
 ### GitHub-delete-comment
+
 ***
 Deletes a comment.
 
@@ -2839,6 +2953,7 @@ Deletes a comment.
 #### Base Command
 
 `GitHub-delete-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2851,6 +2966,7 @@ Deletes a comment.
 There is no context output for this command.
 
 ### GitHub-add-assignee
+
 ***
 Adds up to 10 assignees to an issue. Users already assigned to an issue are not replaced.
 
@@ -2858,6 +2974,7 @@ Adds up to 10 assignees to an issue. Users already assigned to an issue are not 
 #### Base Command
 
 `GitHub-add-assignee`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2933,6 +3050,7 @@ Cancels a GitHub workflow.
 #### Context Output
 
 There is no context output for this command.
+
 ### GitHub-list-workflows
 
 ***
@@ -2972,8 +3090,11 @@ Returns a list of GitHub workflows on a given repository.
 | GitHub.Workflow.updated_at | Date | Datetime the GitHub workflow was updated at. | 
 
 #### Command example
+
 ```!GitHub-list-workflows workflow=nightly.yml limit=1```
+
 #### Context Example
+
 ```json
 {
     "GitHub": {
@@ -3001,6 +3122,7 @@ Returns a list of GitHub workflows on a given repository.
 #### Human Readable Output
 
 >### GitHub workflows
+>
 >|created_at|display_title|event|head_branch|head_sha|html_url|id|name|path|run_number|status|updated_at|url|workflow_id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2023-07-04T08:36:31Z | Private repo nightly build | workflow_dispatch | master | 123456abcdef | https:<span>//</span>github.com/demisto/content-private/actions/runs/123456 | 123456 | Private repo nightly build | .github/workflows/nightly.yml | 1178 | in_progress | 2023-07-04T08:36:41Z | https:<span>//</span>api.github.com/repos/demisto/content-private/actions/runs/123456 | 1212121 |

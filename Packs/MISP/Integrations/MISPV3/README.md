@@ -303,6 +303,7 @@ Search for events in MISP. This search command will return only information abou
 
 > Current page size: 3
 >Showing page 1 out others that may exist
+>
 >|Event Distribution|Event ID|Event Info|Event Objects|Event Org ID|Event Orgc ID|Event Tags|Event UUID|Publish Timestamp|
 >|---|---|---|---|---|---|---|---|---|
 >| 1 | 238 | New Targets Enterprise Wireless Presentation & Display Systems | 16142,<br/>16341,<br/>16348,<br/>16374,<br/>16381,<br/>16403 | 1 | 7 | tlp:white | 5c93d7f7-7de4-4548-ae4c-403ec0a8ab16 | 2021-06-23T13:50:21Z |
@@ -4139,6 +4140,7 @@ Search for attributes in MISP.
 
 > Current page size: 50
 >Showing page 1
+>
 >|Attribute Category|Attribute ID|Attribute Tags|Attribute Type|Attribute Value|Event Distribution|Event ID|Event Info|Event Organization ID|Event UUID|To IDs|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Payload delivery | 71703 | COVID-19,<br/>misp-galaxy:financial-fraud="Cash Recovery Scam" | sha256 | c8466c386261facf38ce62e75a8c6414affbfaed439e91fa00e515e079702fe0 | 3 | 149 | Capitalizing on Coronavirus Panic, Threat Actors Target Victims Worldwide | 1 | 5e6b322a-9f80-4e2f-9f2a-3cab0a3b4631 | true |
@@ -4410,6 +4412,7 @@ Display role names and role ids.
 #### Human Readable Output
 
 >### MISP Roles
+>
 >|id|name|
 >|---|---|
 >| 1 | rolename |

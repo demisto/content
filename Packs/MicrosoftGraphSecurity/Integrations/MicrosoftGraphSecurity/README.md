@@ -9,13 +9,14 @@ For more details about the authentication used in this integration, see [Microso
 When using the `Authorization Code flow` for this integration, you should log in as an administrator or a user with administrative privileges (`Security Reader` or `Security Administrator`) after running the ***msg-generate-login-url*** command and the login window appears. For more information, see [here](https://learn.microsoft.com/en-us/graph/security-authorization).
 
 ## Important Notes:
+
 - Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
 For more information, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
 - When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
 - As of July 2023, Microsoft Graph API does **not support** a solution to search for and delete emails. To do this, refer to the [Security & Compliance](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance) integration. 
 - When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
 - When using Threat Assessment, for information protection, The following limits apply to any request on /informationProtection:
-    - For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
+  - For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
      
   | **Operation** | **Limit per tenant** | **Limit per resource (email, URL, file)** |
     | --- | --- | --- |
@@ -461,6 +462,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ### eDiscovery Commands
+
 ### msg-list-ediscovery-cases
 
 ***
@@ -1710,12 +1712,14 @@ There is no context output for this command.
 
 
 ### Threat Assessment Commands
+
 ### msg-create-mail-assessment-request
 
 ***
 Create and retrieve a mail threat assessment.
 
 Note:
+
 - The message given in the command's argument *message_id* has to contain *X-MS-Exchange-Organization-Network-Message-Id* header in the message or in the *X-MS-Office365-Filtering-Correlation-Id* header in quarantined messages.
 - Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to access the mail received by the user (recipient email and message user), which means that if the authenticated user is different from the user specified in the recipient_email and message_user, then *Read and manage permissions* on behalf of the given user need to be added for the authenticated user via [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
 
@@ -2148,7 +2152,9 @@ Retrieve all threat assessment requests.
 ```
 
 #### Human Readable Output
+>
 >###Next Token is: eyJQYWdlQ29va2llIjoiPHJvdyBpZF9JZGVudGl
+>
 >### Mail assessment request:
 
 >|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Created User ID|Created Username|destinationRoutingReason|
@@ -2176,7 +2182,9 @@ Generate the login URL used for the authorization code flow.
 There is no context output for this command.
 
 #### Human Readable Output
+>
 >### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 >```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -2211,8 +2219,11 @@ To save result in context to 'Microsoft365Defender' as well, you can check the '
 | Microsoft365Defender.Hunt.results | Unknown | The results of the query. | 
 
 #### Command example
+
 ```!msg-advanced-hunting query=AlertInfo limit=1```
+
 #### Context Example
+
 ```json
 {
     "Microsoft365Defender": {
@@ -2301,8 +2312,11 @@ Get a list of incident objects that Microsoft 365 Defender created to track atta
 | MsGraph.Incident.systemTags | string | The system tags associated with the incident. | 
 
 #### Command example
+
 ```!msg-list-security-incident limit=1```
+
 #### Context Example
+
 ```json
 {
     "MsGraph": {
@@ -2331,6 +2345,7 @@ Get a list of incident objects that Microsoft 365 Defender created to track atta
 #### Human Readable Output
 
 >### Incidents:
+>
 >|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min) involving one user | 12345 | medium | active |  |  |  | unknown | unknown | 2024-03-19T08:08:33.2533333Z | 2024-03-19T08:08:33.36Z |
@@ -2380,8 +2395,11 @@ Update the incident with the given ID.
 | MsGraph.Incident.systemTags | String collection | The system tags associated with the incident. | 
 
 #### Command example
+
 ```!msg-update-security-incident incident_id=12345```
+
 #### Context Example
+
 ```json
 {
     "MsGraph": {
@@ -2411,6 +2429,7 @@ Update the incident with the given ID.
 #### Human Readable Output
 
 >### Updated incident No. 12345:
+>
 >|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Exfiltration incident involving one user | 12345 | medium | active | test5 |  |  | unknown | unknown | 2024-03-17T15:50:31.9033333Z | 2024-03-19T07:24:34.7066667Z |

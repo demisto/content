@@ -2,6 +2,7 @@ Deprecated. Use Flashpoint Ignite Feed instead.
 This integration was integrated and tested with version 4.0.0 of FlashpointFeed
 
 ## Fetch Indicators
+
 Fetching the Flashpoint indicators. The indicators that are created or updated after the provided first fetch time interval will be fetched in the ascending order. 
 
 ## Configure FlashpointFeed in Cortex
@@ -29,10 +30,12 @@ Fetching the Flashpoint indicators. The indicators that are created or updated a
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### flashpoint-get-indicators
+
 ***
 Retrieves indicators from the Flashpoint API. It displays the content of the fetch-indicators command.
 
@@ -40,6 +43,7 @@ Retrieves indicators from the Flashpoint API. It displays the content of the fet
 #### Base Command
 
 `flashpoint-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -54,11 +58,13 @@ Retrieves indicators from the Flashpoint API. It displays the content of the fet
 There is no context output for this command.
 
 #### Command Example
+
 ```!flashpoint-get-indicators limit=10 types=url updated_since="3 days"```
 
 #### Human Readable Output
 
 >### Indicator(s)
+>
 >|FPID|Indicator Type|Indicator Value|Category|Event Name|Event Tags|Created Timestamp (UTC)|First Observed Date|
 >|---|---|---|---|---|---|---|---|
 >| [dummy_fpid1](https://fp.tools/api/v4/indicators/attribute/dummy_fpid1) | url | https://dummy_url1.com/attachments/1234/1234/dummy_file1.exe | Payload delivery | Analysis: dummy_event1 "dummy_value1" [2021-07-06 20:11:11] | analysis_id:12345,<br/>event:analysis,<br/>malware:dummy_event1,<br/>misp-galaxy:mitre-enterprise-attack-attack-pattern="Software Packing - T1045",<br/>os:windows,<br/>source:virustotal,<br/>type:trojan | 2021-07-06T22:31:24Z | 2021-07-06T22:31:44+00:00 |

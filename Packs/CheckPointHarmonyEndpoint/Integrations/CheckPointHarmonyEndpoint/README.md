@@ -41,8 +41,11 @@ Retrieves the status and result (if any) of a given asynchronous operation. A jo
 | HarmonyEP.Job.status | String | The job status. | 
 
 #### Command example
+
 ```!harmony-ep-job-status-get23```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -87,6 +90,7 @@ Retrieves the status and result (if any) of a given asynchronous operation. A jo
 #### Human Readable Output
 
 >### Results
+>
 >|data|status|statusCode|statusType|
 >|---|---|---|---|
 >| data: {'machine': {'id': '1', 'name': 'DESKTOP-1'}, 'operation': {'response': None, 'status': 'DA_NOT_INSTALLED'}},<br/>{'machine': {'id': '2', 'name': 'DESKTOP-2'}, 'operation': {'response': None, 'status': 'DA_NOT_INSTALLED'}}<br/>metadata: {"from": 0, "to": 100, "count": 2} | DONE | 200 | 2 |
@@ -123,8 +127,11 @@ Gets a list of all Indicators of Compromise. Use the filter parameters to fetch 
 | HarmonyEP.IOC.id | String | The IOC ID. | 
 
 #### Command example
+
 ```!harmony-ep-ioc-list```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -151,8 +158,10 @@ Gets a list of all Indicators of Compromise. Use the filter parameters to fetch 
 #### Human Readable Output
 
 >### IOC List:
+>
 >Showing page 1.
 >Current page size: 50.
+>
 >|Id|Type|Value|Comment|Modifiedon|
 >|---|---|---|---|---|
 >| 3 | Domain | test2.com | test | 2024-04-03T09:15:04.182Z |
@@ -188,8 +197,11 @@ Updates the given Indicators of Compromise with the given parameters.
 | HarmonyEP.IOC.id | String | The IOC ID. | 
 
 #### Command example
+
 ```!harmony-ep-ioc-update ioc_id=8 comment=test value=8.8.8.8 type=IP```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -207,6 +219,7 @@ Updates the given Indicators of Compromise with the given parameters.
 #### Human Readable Output
 
 >### IOC 8 was updated successfully.
+>
 >|Id|Type|Value|Comment|Modifiedon|
 >|---|---|---|---|---|
 >| 8 | IP | 8.8.8.8 | test | 2024-06-24T06:44:49.214Z |
@@ -232,8 +245,11 @@ Creates new Indicators of Compromise using the given parameters.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!harmony-ep-ioc-create comment=test value=1.1.1.2 type=IP```
+
 #### Human Readable Output
 
 >IOC was created successfully.
@@ -257,8 +273,11 @@ Deletes the given Indicators of Compromise by their ID.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!harmony-ep-ioc-delete ids=7```
+
 #### Human Readable Output
 
 >IOCs 7 was deleted successfully.
@@ -287,8 +306,11 @@ Gets all entities directly assigned to the given rule.
 | HarmonyEP.Rule.Assignments.id | String | The rule assignment ID. | 
 
 #### Command example
+
 ```!harmony-ep-policy-rule-assignments-get rule_id=1a2b ```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -309,6 +331,7 @@ Gets all entities directly assigned to the given rule.
 #### Human Readable Output
 
 >### Rule 1a2b assignments:
+>
 >|Id|Name|Type|
 >|---|---|---|
 >| 456 | ChromeOsLaptops | VIRTUAL_GROUP |
@@ -333,8 +356,11 @@ Assigns the specified entities to the given rule. Specified IDs that are already
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!harmony-ep-policy-rule-assignments-add rule_id=1a2b entities_ids=000```
+
 #### Human Readable Output
 
 >Entities ['000'] were assigned to rule 1a2b successfully.
@@ -358,8 +384,11 @@ Removes the specified entities from the given rule's assignments. Specified IDs 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!harmony-ep-policy-rule-assignments-remove rule_id=1a2b entities_ids=000```
+
 #### Human Readable Output
 
 >Entities ['000'] were removed from rule 1a2b successfully.
@@ -388,8 +417,11 @@ Installs all policies.
 | HarmonyEP.PolicyRuleInstall.job_id | String | The job ID of the policy installation. | 
 
 #### Command example
+
 ```!harmony-ep-policy-rule-install job_id=976```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -403,6 +435,7 @@ Installs all policies.
 #### Human Readable Output
 
 >### Policy was installed successfully.
+>
 >Job ID: 976
 >**No entries.**
 
@@ -443,8 +476,11 @@ Gets information on modifications to a given rule. (Modifications are the additi
 | HarmonyEP.Rule.orientation | String | Rule policy orientation. | 
 
 #### Command example
+
 ```!harmony-ep-policy-rule-modifications-get rule_id=1a2b job_id=999```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -478,7 +514,9 @@ Gets information on modifications to a given rule. (Modifications are the additi
 #### Human Readable Output
 
 >### Rule 1a2b modification:
+>
 >Job ID: 999
+>
 >|Id|Name|Family|Connectionstate|Lastmodifiedby|Job Id|
 >|---|---|---|---|---|---|
 >| 1a2b | New Rule 1 | Access | CONNECTED | talg | 999 |
@@ -520,8 +558,11 @@ Gets the metadata of all rules or the given rule's metadata. (Metadata refers to
 | HarmonyEP.Rule.orientation | String | Rule policy orientation. | 
 
 #### Command example
+
 ```!harmony-ep-policy-rule-metadata-list rule_id=1a2b```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -554,6 +595,7 @@ Gets the metadata of all rules or the given rule's metadata. (Metadata refers to
 #### Human Readable Output
 
 >### Rule 1a2b metadata:
+>
 >|Id|Name|Family|Comment|Orientation|Connectionstate|Assignments|
 >|---|---|---|---|---|---|---|
 >| 1a2b | TalTest | Threat Prevention |  | DEVICE | CONNECTED | {'id': '000', 'name': 'Entire Organization', 'type': 'ORGANIZATION_ROOT'},<br/>{'id': '456', 'name': 'ChromeOsLaptops', 'type': 'VIRTUAL_GROUP'} |
@@ -593,8 +635,11 @@ Gets the current statuses of all remediation operations or if a specific ID is s
 | HarmonyEP.PushOperation.numberOfAffectedEntities | Number | The total number of entities affected by the operation. | 
 
 #### Command example
+
 ```!harmony-ep-push-operation-status-list remediation_operation_id=4d```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -622,7 +667,9 @@ Gets the current statuses of all remediation operations or if a specific ID is s
 #### Human Readable Output
 
 >### Push operations status list:
+>
 >Job ID: 3
+>
 >|Id|Type|Createdon|Overallstatus|
 >|---|---|---|---|
 >| d45 | AM_SCAN | 2024-06-20T10:58:19.407Z | ABORTED |
@@ -663,8 +710,11 @@ Gets the results of a given Remediation Operation. Remediation Operations may pr
 | HarmonyEP.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-push-operation-get remediation_operation_id=4d```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -689,10 +739,12 @@ Gets the results of a given Remediation Operation. Remediation Operations may pr
 #### Human Readable Output
 
 >### Push operations:
+>
 >Job ID: 6
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 5s | DESKTOP-M4OAKII | DA_NOT_INSTALLED |
@@ -723,8 +775,11 @@ Aborts the given remediation operation. Aborting an operation prevents it from b
 | HarmonyEP.PushOperationAbort.job_id | String | The job ID of the remediation operation. | 
 
 #### Command example
+
 ```!harmony-ep-push-operation-abort remediation_operation_id=93 job_id=976```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -738,6 +793,7 @@ Aborts the given remediation operation. Aborting an operation prevents it from b
 #### Human Readable Output
 
 >### Remediation operation abort was added to the push operation list successfully.
+>
 >Job ID: 976
 >**No entries.**
 
@@ -791,8 +847,11 @@ Performs an anti-malware scan on computers matching the given query. Note that y
 | HarmonyEP.AntiMalwareScan.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-anti-malware-scan computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -819,10 +878,12 @@ Performs an anti-malware scan on computers matching the given query. Note that y
 #### Human Readable Output
 
 >### Anti-Malware scan was added to the push operation list successfully.
+>
 >Job ID: 13
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -880,8 +941,11 @@ Updates the anti-malware Signature Database on computers matching the given quer
 | HarmonyEP.AntiMalwareUpdate.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-anti-malware-update computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -908,10 +972,12 @@ Updates the anti-malware Signature Database on computers matching the given quer
 #### Human Readable Output
 
 >### Anti-Malware Signature Database update was added to the push operation list successfully.
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -968,8 +1034,11 @@ Restores a file that was previously quarantined by the Harmony Endpoint Client's
 | HarmonyEP.AntiMalwareRestore.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-anti-malware-restore files=test computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -996,10 +1065,12 @@ Restores a file that was previously quarantined by the Harmony Endpoint Client's
 #### Human Readable Output
 
 >### File restore was added to the push operation list successfully.
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -1058,8 +1129,11 @@ Collects forensics data whenever a computer that matches the given query accesse
 | HarmonyEP.IndicatorAnalyze.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-forensics-indicator-analyze indicator_type=IP indicator_value=8.8.8.8 computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -1086,10 +1160,12 @@ Collects forensics data whenever a computer that matches the given query accesse
 #### Human Readable Output
 
 >### IOC analyze was added to the push operation list successfully.
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -1147,8 +1223,11 @@ Quarantines files given by path or MD5 or detections relating to a forensic inci
 | HarmonyEP.FileQuarantine.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-forensics-file-quarantine file_type=PATH file_value=test computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -1175,10 +1254,12 @@ Quarantines files given by path or MD5 or detections relating to a forensic inci
 #### Human Readable Output
 
 >### File quarantine was added to the push operation list successfully.
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -1236,8 +1317,11 @@ Restores previously quarantined files given by path or MD5 or detections relatin
 | HarmonyEP.FileRestore.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-forensics-file-restore file_type=PATH file_value=test computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -1264,10 +1348,12 @@ Restores previously quarantined files given by path or MD5 or detections relatin
 #### Human Readable Output
 
 >### File restore was added to the push operation list successfully.
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -1321,8 +1407,11 @@ Isolates the computers matching the given query. Isolation is the act of denying
 | HarmonyEP.ComputerIsolate.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-remediation-computer-isolate computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -1349,10 +1438,12 @@ Isolates the computers matching the given query. Isolation is the act of denying
 #### Human Readable Output
 
 >### Remediation isolate was added to the push operation list successfully.
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -1406,8 +1497,11 @@ De-Isolates the computers matching the given query. De-isolating a computer rest
 | HarmonyEP.ComputerDeisolate.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-remediation-computer-deisolate computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -1434,10 +1528,12 @@ De-Isolates the computers matching the given query. De-isolating a computer rest
 #### Human Readable Output
 
 >### Remediation de-isolate was added to the push operation list successfully.
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -1494,8 +1590,11 @@ Restarts computers matching the given query. Note that you must specify at least
 | HarmonyEP.ComputerRestart.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-agent-computer-restart computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -1522,10 +1621,12 @@ Restarts computers matching the given query. Note that you must specify at least
 #### Human Readable Output
 
 >### Computer reset restore was added to the push operation list successfully.
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -1582,8 +1683,11 @@ Shuts-down computers match the given query. Note that you must specify at least 
 | HarmonyEP.ComputerShutdown.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-agent-computer-shutdown computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -1610,10 +1714,12 @@ Shuts-down computers match the given query. Note that you must specify at least 
 #### Human Readable Output
 
 >### Computer shutdown was added to the push operation list successfully..
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -1669,8 +1775,11 @@ Repairs the Harmony Endpoint Client installation on computers matching the given
 | HarmonyEP.ComputerRepair.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-agent-computer-repair computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -1697,10 +1806,12 @@ Repairs the Harmony Endpoint Client installation on computers matching the given
 #### Human Readable Output
 
 >### Computer repair was added to the push operation list successfully..
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -1758,8 +1869,11 @@ Gets a list of computers matching the given filters. Note that you must specify 
 | HarmonyEP.Computer.id | String | The computer's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-computer-list computer_ids=1 job_id=845```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -1799,10 +1913,12 @@ Gets a list of computers matching the given filters. Note that you must specify 
 #### Human Readable Output
 
 >### Computer list:
+>
 >Job ID: 845
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Id|Name|Ip|Type|Groups|User Name|Client Version|
 >|---|---|---|---|---|---|---|
 >| 888 | DESKTOP-E7V07D5 | 1.1.1.1 | Desktop | {'id': '666', 'name': 'Desktops'},<br/>{'id': '222', 'name': 'WinDesktops'} | ntlocal | 87.62.2002 |
@@ -1859,8 +1975,11 @@ Collects information about processes on computers matching the given query. Note
 | HarmonyEP.ProcessInformation.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-agent-process-information-get computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -1887,10 +2006,12 @@ Collects information about processes on computers matching the given query. Note
 #### Human Readable Output
 
 >### Process information fetch was added to the push operation list successfully..
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -1949,8 +2070,11 @@ Terminates the given process on computers matching the given query. Note that yo
 | HarmonyEP.ProcessTerminate.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-agent-process-terminate name=test computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -1977,10 +2101,12 @@ Terminates the given process on computers matching the given query. Note that yo
 #### Human Readable Output
 
 >### Process terminate was added to the push operation list successfully..
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -2042,8 +2168,11 @@ Adds a given registry key and/or value to the registry of computers matching the
 | HarmonyEP.RegistryKeyAdd.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-agent-registry-key-add value_data=test value_type="STRING (REG_GZ)" value_name=test key=test hive=HKEY_USERS computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -2068,10 +2197,12 @@ Adds a given registry key and/or value to the registry of computers matching the
 #### Human Readable Output
 
 >### Registry key add was added to the push operation list successfully..
+>
 >Job ID: 54
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -2129,8 +2260,11 @@ Removes the given registry key or value to the registry of computers matching th
 | HarmonyEP.RegistryKeyDelete.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-agent-registry-key-delete value_name='test' key='test' hive=HKEY_USERS computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -2155,10 +2289,12 @@ Removes the given registry key or value to the registry of computers matching th
 #### Human Readable Output
 
 >### Registry key delete was added to the push operation list successfully..
+>
 >Job ID: 54
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -2215,8 +2351,11 @@ Copies the given file from the given source to the given destination on computer
 | HarmonyEP.FileCopy.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-agent-file-copy destination_absolute_path='test.txt' source_absolute_path='test.txt' computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -2243,10 +2382,12 @@ Copies the given file from the given source to the given destination on computer
 #### Human Readable Output
 
 >### File copy was added to the push operation list successfully..
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -2304,8 +2445,11 @@ Moves the given file from the given source to the given destination on computers
 | HarmonyEP.FileMove.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-agent-file-move destination_absolute_path='test.txt' source_absolute_path='test.txt' computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -2330,10 +2474,12 @@ Moves the given file from the given source to the given destination on computers
 #### Human Readable Output
 
 >### File move was added to the push operation list successfully..
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -2390,8 +2536,11 @@ Deletes the given file from the given source on computers matching the given que
 | HarmonyEP.FileDelete.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-agent-file-delete target_absolute_path='test.txt' computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -2418,10 +2567,12 @@ Deletes the given file from the given source on computers matching the given que
 #### Human Readable Output
 
 >### File delete was added to the push operation list successfully..
+>
 >Job ID: 16
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -2482,8 +2633,11 @@ Deletes the given file from the given source on computers matching the given que
 | HarmonyEP.VPNsiteConfigurationAdd.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-agent-vpn-site-add remote_access_gateway_name='test' fingerprint='test' authentication_method=CERTIFICATE host='test' computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -2508,10 +2662,12 @@ Deletes the given file from the given source on computers matching the given que
 #### Human Readable Output
 
 >### VPN site configuration remove was added to the push operation list successfully..
+>
 >Job ID: 67
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
@@ -2568,8 +2724,11 @@ Removes the given VPN site's configuration to computers matching the given query
 | HarmonyEP.VPNsiteConfigurationRemove.PushOperation.machine.id | String | The client device's unique ID. | 
 
 #### Command example
+
 ```!harmony-ep-agent-vpn-site-remove display_name='test' computer_ids=1```
+
 #### Context Example
+
 ```json
 {
     "HarmonyEP": {
@@ -2594,10 +2753,12 @@ Removes the given VPN site's configuration to computers matching the given query
 #### Human Readable Output
 
 >### VPN site configuration remove was added to the push operation list successfully..
+>
 >Job ID: 67
 >
 >Showing page 1.
 >Current page size: 50.
+>
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |

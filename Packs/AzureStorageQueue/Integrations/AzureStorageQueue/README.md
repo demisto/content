@@ -1,4 +1,5 @@
 # Azure Storage Queue
+
 Create and Manage Azure Storage Queues and Messages.
 This integration was integrated and tested with version "2020-10-02" of Azure Storage Queue
 
@@ -20,16 +21,21 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
 
 
 ## Shared Access Signatures (SAS) Permissions
+
 In order to use the integration use-cases, 
 please make sure your SAS token contains the following permissions:
+
   1. 'Queue' service.
   2. 'Service' and 'Object' resource types.
   3. 'Read', 'Write', 'Delete', 'List', 'Create', 'Add', 'Update', 'Process' and 'Immutable storage' permissions.
   
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-storage-queue-list
+
 ***
 List queues in storage account.
 
@@ -37,6 +43,7 @@ List queues in storage account.
 #### Base Command
 
 `azure-storage-queue-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -54,9 +61,11 @@ List queues in storage account.
 
 
 #### Command Example
+
 ```!azure-storage-queue-list limit="2" prefix="xs"```
 
 #### Context Example
+
 ```json
 {
     "AzureStorageQueue": {
@@ -75,8 +84,10 @@ List queues in storage account.
 #### Human Readable Output
 
 >### Queues List:
+>
 > Current page size: 2
 > Showing page 1 out others that may exist
+>
 >|Name|
 >|---|
 >| xsoar-new-test |
@@ -84,6 +95,7 @@ List queues in storage account.
 
 
 ### azure-storage-queue-create
+
 ***
 Create new queue in storage account.
 
@@ -91,6 +103,7 @@ Create new queue in storage account.
 #### Base Command
 
 `azure-storage-queue-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -103,6 +116,7 @@ Create new queue in storage account.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-queue-create queue_name="xsoar-test"```
 
 #### Human Readable Output
@@ -110,6 +124,7 @@ There is no context output for this command.
 >Queue xsoar-test successfully created.
 
 ### azure-storage-queue-delete
+
 ***
 Delete queue from storage account.
 
@@ -117,6 +132,7 @@ Delete queue from storage account.
 #### Base Command
 
 `azure-storage-queue-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -129,6 +145,7 @@ Delete queue from storage account.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-queue-delete queue_name="xsoar-test"```
 
 #### Human Readable Output
@@ -136,6 +153,7 @@ There is no context output for this command.
 >Queue xsoar-test successfully deleted.
 
 ### azure-storage-queue-message-create
+
 ***
 Add a new message to the back of the queue.
 
@@ -143,6 +161,7 @@ Add a new message to the back of the queue.
 #### Base Command
 
 `azure-storage-queue-message-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -167,9 +186,11 @@ Add a new message to the back of the queue.
 
 
 #### Command Example
+
 ```!azure-storage-queue-message-create message_content="test demo" queue_name="xsoar-test" base64_encoding="True"```
 
 #### Context Example
+
 ```json
 {
     "AzureStorageQueue": {
@@ -190,12 +211,14 @@ Add a new message to the back of the queue.
 #### Human Readable Output
 
 >### xsoar-test Queue message:
+>
 >|Message Id|Expiration Time|Insertion Time|Time Next Visible|Pop Receipt|
 >|---|---|---|---|---|
 >| 0d579602-222f-4256-9003-8772f0d65399 | 2021-12-05T11:55:31 | 2021-11-28T11:55:31 | 2021-11-28T11:55:31 | AgAAAAMAAAAAAAAAN734107k1wE= |
 
 
 ### azure-storage-queue-message-get
+
 ***
 Retrieves messages from the front of the queue. Retrieved messages will move to the end of the queue,and will be visible after 'TimeNextVisible' param.
 
@@ -203,6 +226,7 @@ Retrieves messages from the front of the queue. Retrieved messages will move to 
 #### Base Command
 
 `azure-storage-queue-message-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -227,9 +251,11 @@ Retrieves messages from the front of the queue. Retrieved messages will move to 
 
 
 #### Command Example
+
 ```!azure-storage-queue-message-get limit="1" queue_name="xsoar-test"```
 
 #### Context Example
+
 ```json
 {
     "AzureStorageQueue": {
@@ -254,12 +280,14 @@ Retrieves messages from the front of the queue. Retrieved messages will move to 
 #### Human Readable Output
 
 >### xsoar-test Queue messages:
+>
 >|Message Text|Message Id|Pop Receipt|Dequeue Count|Expiration Time|Insertion Time|Time Next Visible|
 >|---|---|---|---|---|---|---|
 >| test demo | 0d579602-222f-4256-9003-8772f0d65399 | AgAAAAMAAAAAAAAAziUx7U7k1wE= | 1 | 2021-12-05T11:55:31 | 2021-11-28T11:55:31 | 2021-11-28T11:56:06 |
 
 
 ### azure-storage-queue-message-peek
+
 ***
 Retrieves messages from the front of the queue. The command does not alter the visibility of the message.
 
@@ -267,6 +295,7 @@ Retrieves messages from the front of the queue. The command does not alter the v
 #### Base Command
 
 `azure-storage-queue-message-peek`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -288,9 +317,11 @@ Retrieves messages from the front of the queue. The command does not alter the v
 
 
 #### Command Example
+
 ```!azure-storage-queue-message-peek limit="1" queue_name="xsoar-test"```
 
 #### Context Example
+
 ```json
 {
     "AzureStorageQueue": {
@@ -305,10 +336,12 @@ Retrieves messages from the front of the queue. The command does not alter the v
 #### Human Readable Output
 
 >### xsoar-test Queue messages:
+>
 >**No entries.**
 
 
 ### azure-storage-queue-message-dequeue
+
 ***
 Dequeue a message from the front of the queue.
 
@@ -316,6 +349,7 @@ Dequeue a message from the front of the queue.
 #### Base Command
 
 `azure-storage-queue-message-dequeue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -328,6 +362,7 @@ Dequeue a message from the front of the queue.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-queue-message-dequeue queue_name="xsoar-test"```
 
 #### Human Readable Output
@@ -335,6 +370,7 @@ There is no context output for this command.
 >There are no messages in xsoar-test queue.
 
 ### azure-storage-queue-message-update
+
 ***
 Update message content in the  queue.
 
@@ -342,6 +378,7 @@ Update message content in the  queue.
 #### Base Command
 
 `azure-storage-queue-message-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -359,6 +396,7 @@ Update message content in the  queue.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-queue-message-update queue_name="test-xsoar" message_content="new content" message_id="ea0db196-dad3-4c12-b845-dc6223739870" pop_receipt="AgAAAAMAAAAAAAAA0xNSmE7k1wE="```
 
 #### Human Readable Output
@@ -366,6 +404,7 @@ There is no context output for this command.
 >The message in test-xsoar successfully updated.
 
 ### azure-storage-queue-message-delete
+
 ***
 Delete message from a Queue.
 
@@ -373,6 +412,7 @@ Delete message from a Queue.
 #### Base Command
 
 `azure-storage-queue-message-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -387,6 +427,7 @@ Delete message from a Queue.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-queue-message-delete queue_name="test-xsoar" message_id="66df94e9-4a66-428a-9c4a-e2a3c4fe7284" pop_receipt="AgAAAAMAAAAAAAAA0xNSmE7k1wE="```
 
 #### Human Readable Output
@@ -394,6 +435,7 @@ There is no context output for this command.
 >Message in test-xsoar successfully deleted.
 
 ### azure-storage-queue-message-clear
+
 ***
 Delete all messages from the specified Queue.
 
@@ -401,6 +443,7 @@ Delete all messages from the specified Queue.
 #### Base Command
 
 `azure-storage-queue-message-clear`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -413,6 +456,7 @@ Delete all messages from the specified Queue.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-queue-message-clear queue_name="xsoar-test"```
 
 #### Human Readable Output

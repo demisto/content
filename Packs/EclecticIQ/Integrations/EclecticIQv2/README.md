@@ -1,4 +1,5 @@
 ### EclecticIQ Platform v2
+
 Threat Intelligence Platform that connects and interprets intelligence data from open sources, commercial suppliers and industry partnerships.
 This integration was integrated and tested with version of EclecticIQ Platform v2
 
@@ -12,9 +13,12 @@ This integration was integrated and tested with version of EclecticIQ Platform v
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### EclecticIQ_lookup_observables
+
 ***
 Lookup observables from EclecticIQ Intelligence Center Platform
 
@@ -22,6 +26,7 @@ Lookup observables from EclecticIQ Intelligence Center Platform
 #### Base Command
 
 `EclecticIQ_lookup_observables`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -40,8 +45,11 @@ Lookup observables from EclecticIQ Intelligence Center Platform
 | EclecticIQ.Entity.title | string | EclecticIQ Entity Title | 
 
 #### Command Example
+
 ```!EclecticIQ_lookup_observables type="ipv4" value="001.001.001.001"```
+
 #### Context Example
+
 ```json
 {
     "EclecticIQ":{
@@ -87,19 +95,24 @@ Lookup observables from EclecticIQ Intelligence Center Platform
     }
  }
 ```
+
 ##### Human Readable Output
+
 #### EclecticIQ observable reputation - 001.001.001.001 
+
 |confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
 |:--------     |:-------     |------|------|---------|--------|------|
 |`low`	|creationofsighting|	{'type': 'ipv4', 'value': '001.001.001.001, 'classification': 'low'}|   |   |	2022-08-25T04:50:56+00:00|sighting|
 
 ### EclecticIQ_create_sighting
+
 ***
 create sighting in the EclecticIQ Intelligence Center Platform 
 
 #### Base Command
 
 `EclecticIQ_create_sighting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -123,9 +136,11 @@ create sighting in the EclecticIQ Intelligence Center Platform
 | Sighting.Data.data.timestamp | string | Sighting timestamp | 
 
 #### Command Example
+
 ```!EclecticIQ_create_sighting  type="ipv4" value="001.001.001.001" description="sighting creation" title="sighting" tags="Alert" confidence_level="high"```
 
 #### Context Example
+
 ```json
 {
    "Sighting":{
@@ -169,8 +184,11 @@ create sighting in the EclecticIQ Intelligence Center Platform
    }
 }
 ```
+
 ##### Human Readable Output
+
 #### !sighting created for- 001.001.001.001
+
 |confidence	|description|
 | :--------     | :-------     |
 |`Type`	|ipv4  |
@@ -181,12 +199,14 @@ create sighting in the EclecticIQ Intelligence Center Platform
 |`value`|	001.001.001.001|
 
 ### EclecticIQ_create_observable
+
 ***
 create observable in the EclecticIQ Intelligence Center Platform 
 
 #### Base Command
 
 `EclecticIQ_create_observable`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -205,8 +225,11 @@ create observable in the EclecticIQ Intelligence Center Platform
 | Observables.Data.data.maliciousness | string | Observable maliciousness | 
 
 #### Command Example
+
 ```!EclecticIQ_create_observable  type="ipv4" value="001.001.001.001" maliciousness="high"```
+
 #### Context Example
+
 ```json
 {
    "Observables":{
@@ -233,8 +256,11 @@ create observable in the EclecticIQ Intelligence Center Platform
    }
 }
 ```
+
 ##### Human Readable Output
+
 #### Observables created successfully…!!
+
 |confidence	|description|
 | :--------     | :-------     |
 |`maliciousness`	|low|

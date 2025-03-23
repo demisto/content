@@ -2,6 +2,7 @@ Ignores second notifications, but will process first notification into incidents
 
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,14 +12,18 @@ Ignores second notifications, but will process first notification into incidents
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * dam-get-latest-by-rule
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

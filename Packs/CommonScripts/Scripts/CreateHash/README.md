@@ -2,6 +2,7 @@ Creating a hash of a given input, support sha1, sha256, sha512, md5 and blake. W
 
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Creating a hash of a given input, support sha1, sha256, sha512, md5 and blake. W
 | Tags | transformer, Utilities, hash |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Creating a hash of a given input, support sha1, sha256, sha512, md5 and blake. W
 | type | Hash method to be used. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

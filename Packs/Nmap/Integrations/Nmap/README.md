@@ -6,9 +6,12 @@ This integration was integrated and tested with version 7.70 of nmap. The nmap b
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### nmap-scan
+
 ***
 Scan targets with the given parameters
 
@@ -16,6 +19,7 @@ Scan targets with the given parameters
 ##### Base Command
 
 `nmap-scan`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -48,9 +52,11 @@ Scan targets with the given parameters
 
 
 #### Command Example
+
 ```!nmap-scan options="-sV" targets=scanme.nmap.org```
 
 #### Context Example
+
 ```
 {
     "NMAP": {
@@ -127,9 +133,13 @@ Scan targets with the given parameters
 #### Human Readable Output
 
 >## Nmap done at Fri May  1 13:41:05 2020; 1 IP address (1 host up) scanned in 183.98 seconds
+>
 >### Nmap scan report for scanme.nmap.org (45.33.32.156)
+>
 >#### Host is up.
+>
 >### Services
+>
 >|Port|Protocol|State|Service|Banner|
 >|---|---|---|---|---|
 >| 21 | tcp | open | tcpwrapped |  |

@@ -2426,6 +2426,7 @@ If the indicator was updated in Cortex XSOAR in the last 3 days:
 > 
 > This domain list is from existing records found in Cortex XSOAR within the last 3 days.
 > These domains have not been found to be attributed to Cortex Xpanse.
+>
 > |integrations|name|
 > |---|---|
 > | VirusTotal (API v3) | www.fakedomain.com |

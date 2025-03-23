@@ -1,5 +1,6 @@
 Zimperium is a mobile security platform that generates alerts based on anomalous or unauthorized activities detected on a user's mobile device.
 This integration was integrated and tested with version 4.24 of Zimperium
+
 ## Configure Zimperium in Cortex
 
 
@@ -16,9 +17,12 @@ This integration was integrated and tested with version 4.24 of Zimperium
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### zimperium-events-search
+
 ***
 Search events.
 
@@ -26,6 +30,7 @@ Search events.
 #### Base Command
 
 `zimperium-events-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -84,9 +89,11 @@ Search events.
 
 
 #### Command Example
+
 ```!zimperium-events-search query="severity==LOW;eventName==THREAT_DETECTED;osType==Android"```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -139,12 +146,14 @@ Search events.
 #### Human Readable Output
 
 >### Number of events found: 1. 
+>
 >|eventId|eventName|eventState|incidentSummary|severity|persistedTime|
 >|---|---|---|---|---|---|
 >| 7fb73a12-4be1-4b91-be33-60f3e580c689 | THREAT_DETECTED | Pending | Device is dormant. It is recommended to contact the user to reactivate the app. | LOW | 2020-06-06 02:05:57 +0000 |
 
 
 ### zimperium-users-search
+
 ***
 Search users.
 
@@ -152,6 +161,7 @@ Search users.
 #### Base Command
 
 `zimperium-users-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -195,9 +205,11 @@ Search users.
 
 
 #### Command Example
+
 ```!zimperium-users-search size=3 page=0```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -306,6 +318,7 @@ Search users.
 #### Human Readable Output
 
 >### Number of users found: 5.  More users are available in the next page.
+>
 >|objectId|alias|firstName|lastName|email|
 >|---|---|---|---|---|
 >| 3d588112-6467-4c2d-932a-b728f866163d | paxsoar-rbaqodbmqad6dr53qmx0jvl2ze5v02pw | Fname | Lname | test@gmail.com |
@@ -314,6 +327,7 @@ Search users.
 
 
 ### zimperium-user-get-by-id
+
 ***
 Retrieves details for a single user by object ID.
 
@@ -321,6 +335,7 @@ Retrieves details for a single user by object ID.
 #### Base Command
 
 `zimperium-user-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -361,9 +376,11 @@ Retrieves details for a single user by object ID.
 
 
 #### Command Example
+
 ```!zimperium-user-get-by-id object_id=a045723f-5d3b-46f6-915a-fcbd42752aa0```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -406,12 +423,14 @@ Retrieves details for a single user by object ID.
 #### Human Readable Output
 
 >### User:
+>
 >|objectId|alias|firstName|lastName|email|
 >|---|---|---|---|---|
 >| a045723f-5d3b-46f6-915a-fcbd42752aa0 | paxsoar-mb11mz8o7mgne39eybezl8qngzen7bbg3ywld0lxqa | Z | Support | paxsoar.support@zimperium.com |
 
 
 ### zimperium-devices-search
+
 ***
 Search devices.
 
@@ -419,6 +438,7 @@ Search devices.
 #### Base Command
 
 `zimperium-devices-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -474,9 +494,11 @@ Search devices.
 
 
 #### Command Example
+
 ```!zimperium-devices-search query="osType==Android"```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -536,12 +558,14 @@ Search devices.
 #### Human Readable Output
 
 >### Number of devices found: 1. 
+>
 >|deviceId|zdid|deviceHash|model|osType|osVersion|updatedDate|
 >|---|---|---|---|---|---|---|
 >| 198280699673142 | c728a9f1-dbcc-4b0f-84b2-5dc07e80b6e5 | d3a5f56726ea39341ca19a534b8d5bc0cac07484b3032148857118f31b72bf01 | SM-G900H | Android | 4.4.2 | 2020-07-07 02:28:47 UTC |
 
 
 ### zimperium-device-get-by-id
+
 ***
 Retrieves details for a single device.
 
@@ -549,6 +573,7 @@ Retrieves details for a single device.
 #### Base Command
 
 `zimperium-device-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -603,9 +628,11 @@ Retrieves details for a single device.
 
 
 #### Command Example
+
 ```!zimperium-device-get-by-id zdid=2a086e00-32f3-4c03-90b2-b9fd4ea836e5```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -661,12 +688,14 @@ Retrieves details for a single device.
 #### Human Readable Output
 
 >### Device :
+>
 >|deviceId|zdid|updatedDate|deviceHash|
 >|---|---|---|---|
 >| c3e39cf6-97aa-38df-86eb-60a8a2cafbc1 | 2a086e00-32f3-4c03-90b2-b9fd4ea836e5 | 2020-07-13 12:20:52 UTC | f5b42533a5cd2e4452a954b62a5bbab7ac2147d5bf1ade726a48f1f1d111c9 |
 
 
 ### zimperium-devices-get-last-updated
+
 ***
 Retrieves devices from Greater than Last Updated.
 
@@ -674,6 +703,7 @@ Retrieves devices from Greater than Last Updated.
 #### Base Command
 
 `zimperium-devices-get-last-updated`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -730,9 +760,11 @@ Retrieves devices from Greater than Last Updated.
 
 
 #### Command Example
+
 ```!zimperium-devices-get-last-updated from_last_update="1 month"```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -839,6 +871,7 @@ Retrieves devices from Greater than Last Updated.
 #### Human Readable Output
 
 >### Number of devices found: 2. 
+>
 >|deviceId|zdid|model|osType|osVersion|updatedDate|deviceHash|
 >|---|---|---|---|---|---|---|
 >| 198280699673142 | c728a9f1-dbcc-4b0f-84b2-5dc07e80b6e5 | SM-G900H | Android | 4.4.2 | 2020-07-07 02:28:47 UTC | d3a5f56726ea39341ca19a534b8d5bc0cac07484b3032148857118f31b72bf01 |
@@ -846,6 +879,7 @@ Retrieves devices from Greater than Last Updated.
 
 
 ### zimperium-app-classification-get
+
 ***
 Retrieves application classification.
 
@@ -853,6 +887,7 @@ Retrieves application classification.
 #### Base Command
 
 `zimperium-app-classification-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -885,9 +920,11 @@ Retrieves application classification.
 
 
 #### Command Example
+
 ```!zimperium-app-classification-get app_name=Duo```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -1262,6 +1299,7 @@ Retrieves application classification.
 #### Human Readable Output
 
 >### Application:
+>
 >|objectId|hash|name|version|classification|score|privacyEnum|securityEnum|
 >|---|---|---|---|---|---|---|---|
 >| ebdfed24-951e-45f5-845a-2c163c53fc47 | 85525e9c1fd30a20848812e417f3bb1a | Duo | 91.0.315322534.DR91_RC03 | Legitimate | 0.0 | 1 | 1 |
@@ -1269,6 +1307,7 @@ Retrieves application classification.
 
 
 ### zimperium-report-get
+
 ***
 Gets a report.
 
@@ -1276,6 +1315,7 @@ Gets a report.
 #### Base Command
 
 `zimperium-report-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1318,9 +1358,11 @@ Gets a report.
 
 
 #### Command Example
+
 ```!zimperium-report-get app_hash=f26cf1135f9d2ea60532a5a13c6fbed5```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -8207,12 +8249,14 @@ Gets a report.
 #### Human Readable Output
 
 >### Report:
+>
 >|behavior|md5|threats|
 >|---|---|---|
 >| sms: network: {"http_requests": null} count_sms: 0 telephony: null broadcast_receivers:  | f26cf1135f9d2ea60532a5a13c6fbed5 | total: null status: Waiting in the queue detected: null scan_details: detected_skip: 0 |
 
 
 ### file
+
 ***
 Checks the reputation of an app in Zimperium.
 
@@ -8220,6 +8264,7 @@ Checks the reputation of an app in Zimperium.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8242,9 +8287,11 @@ Checks the reputation of an app in Zimperium.
 
 
 #### Command Example
+
 ```!file file=85525e9c1fd30a20848812e417f3bb1a using-brand=Zimperium```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -8445,6 +8492,7 @@ Checks the reputation of an app in Zimperium.
 #### Human Readable Output
 
 >### Hash 85525e9c1fd30a20848812e417f3bb1a reputation:
+>
 >|objectId|hash|name|version|classification|score|privacyEnum|securityEnum|
 >|---|---|---|---|---|---|---|---|
 >| ebdfed24-951e-45f5-845a-2c163c53fc47 | 85525e9c1fd30a20848812e417f3bb1a | Duo | 91.0.315322534.DR91_RC03 | Legitimate | 0.0 | 1 | 1 |

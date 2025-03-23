@@ -1163,6 +1163,7 @@ Invokes a fetch files command against an agent endpoint.
 #### Context Output
 
 There is no context output for this command.
+
 ### sentinelone-download-fetched-file
 
 ***
@@ -1183,6 +1184,7 @@ Download a file fetched using th sentinelone-fetch-file command to submit the re
 #### Context Output
 
 There is no context output for this command.
+
 ### sentinelone-write-threat-note
 
 ***
@@ -1338,6 +1340,7 @@ Deprecated. Start a Deep Visibility Power query to get back status and potential
 #### Context Output
 
 There is no context output for this command.
+
 ### sentinelone-ping-power-query
 
 ***
@@ -1356,6 +1359,7 @@ Deprecated. Ping a Deep Visibility Power query using the queryId argument if res
 #### Context Output
 
 There is no context output for this command.
+
 ### sentinelone-update-threats-status
 
 ***
@@ -1808,6 +1812,7 @@ Returns the list of fields for an incident type.
 #### Context Output
 
 There is no context output for this command.
+
 ### update-remote-system
 
 ***
@@ -1825,6 +1830,7 @@ Pushes local changes to the remote system.
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
 
 ***
@@ -1844,6 +1850,7 @@ Get remote data from a remote incident. This method does not update the current 
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
 
 ***
@@ -1862,6 +1869,7 @@ Gets the list of incidents that were modified since the last update time. Note t
 #### Context Output
 
 There is no context output for this command.
+
 ### sentinelone-get-dv-query-status
 
 ***
@@ -2059,6 +2067,7 @@ Returns all service users that match the specified filter values.
 
 You can enable incident mirroring between Cortex XSOAR incidents and SentinelOne v2 corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 

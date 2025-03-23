@@ -62,6 +62,7 @@ Check file hash on OPSWAT
 #### Context Output
 
 There is no context output for this command.
+
 ### opswat-scan-result
 
 ***
@@ -80,6 +81,7 @@ Get OPSWAT result
 #### Context Output
 
 There is no context output for this command.
+
 ### opswat-sanitization-result
 
 ***

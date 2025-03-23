@@ -8,9 +8,12 @@ Active TLS fingerprinting using JARM
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### jarm-fingerprint
+
 ***
 Calculate JARM fingerprint by scanning host with multiple TLS packets.
 
@@ -18,6 +21,7 @@ Calculate JARM fingerprint by scanning host with multiple TLS packets.
 #### Base Command
 
 `jarm-fingerprint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,9 +45,11 @@ Calculate JARM fingerprint by scanning host with multiple TLS packets.
 | DBotScore.Score | Number | The actual score. |
 
 #### Command Example
+
 ```!jarm-fingerprint host="google.com" port=443```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -66,6 +72,7 @@ Calculate JARM fingerprint by scanning host with multiple TLS packets.
 #### Human Readable Output
 
 >### Results
+>
 >|FQDN|Fingerprint|Port|Target|
 >|---|---|---|---|
 >| google.com | 27d40d40d29d40d1dc42d43d00041d4689ee210389f4f6b4b5b1b93f92252d | 443 | google.com:443 |

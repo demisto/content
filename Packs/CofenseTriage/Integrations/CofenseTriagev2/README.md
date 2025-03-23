@@ -1,5 +1,6 @@
 Use the Cofense Triage integration to ingest reported phishing indicators.
 This integration was integrated and tested with version 1.20 of Cofense Triage v2
+
 ## Configure Cofense Triage v2 in Cortex
 
 
@@ -19,9 +20,12 @@ This integration was integrated and tested with version 1.20 of Cofense Triage v
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cofense-search-reports
+
 ***
 Runs a query for reports.
 
@@ -29,6 +33,7 @@ Runs a query for reports.
 #### Base Command
 
 `cofense-search-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -67,9 +72,11 @@ Runs a query for reports.
 
 
 #### Command Example
+
 ```!cofense-search-reports reported_at="7 days" created_at="7 days" max_matches="1"```
 
 #### Context Example
+
 ```
 {
     "Cofense": {
@@ -188,12 +195,14 @@ Runs a query for reports.
 #### Human Readable Output
 
 >### Reports:
+>
 >|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Body|Report Subject|Reported At|Reporter Id|Sha256|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 4 | 2020-06-04T13:42:26.173Z | {'id': 18087, 'report_id': 13429, 'decoded_filename': 'image001.png', 'content_type': 'image/png; name=image001.png', 'size_in_bytes': 1397, 'email_attachment_payload': {'id': 7095, 'md5': '5008fb6e6652f56cac5bdc5bf1cbe9c2', 'sha256': '554aeaaace31c7038a09dd408945583e1035ec124a46b04e5c6c5b148dc96f68', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18089, 'report_id': 13429, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 1701, 'email_attachment_payload': {'id': 7097, 'md5': '731ffb7846c22e41e9de8de307c93ece', 'sha256': 'c911d07d1f7be624e00e44821148629d98cf6d0f2bfac112362c7c564522ea51', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18092, 'report_id': 13429, 'decoded_filename': 'image006.png', 'content_type': 'image/png; name=image006.png', 'size_in_bytes': 1994, 'email_attachment_payload': {'id': 7100, 'md5': '124bd437f87181fdfe3154b31fd2cf6b', 'sha256': '3d804c705545bf2a1e5ac6b0ea9b93a41ceb16d7453adebc58fba5df75335b20', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18088, 'report_id': 13429, 'decoded_filename': 'image002.png', 'content_type': 'image/png; name=image002.png', 'size_in_bytes': 1430, 'email_attachment_payload': {'id': 7096, 'md5': 'cc07463ceeaaed79783a7f2a607797f9', 'sha256': 'c6c2c95238f52648faaef4520fa9bba49c10ca0f1df9bfd1912be544f319b80b', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18090, 'report_id': 13429, 'decoded_filename': 'image004.png', 'content_type': 'image/png; name=image004.png', 'size_in_bytes': 1557, 'email_attachment_payload': {'id': 7098, 'md5': '95878e37974ed3cad67154d36dd58a9a', 'sha256': 'e0d478f6ce56721867a0584ddea0016d713b9b2ab758fd0c9be3f1409d6e2634', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18091, 'report_id': 13429, 'decoded_filename': 'image005.png', 'content_type': 'image/png; name=image005.png', 'size_in_bytes': 1609, 'email_attachment_payload': {'id': 7099, 'md5': '0e911498bf4dc5eddb544ab5ece4b06a', 'sha256': '5f2046b3c55a874aadde052f9da4af3c17e2b5bf5baf704f58b1dd1eadf08544', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18093, 'report_id': 13429, 'decoded_filename': 'XSOAR Attachment Test -Inquiry - Agent Tesla Keylogger.pdf', 'content_type': 'application/pdf; name="XSOAR Attachment Test -Inquiry - Agent Tesla Keylogger.pdf"', 'size_in_bytes': 49597, 'email_attachment_payload': {'id': 7110, 'md5': 'fb7f083f4fb93a88ab8110d857312978', 'sha256': '15ab1b20ada04dfc6285caff5e4da4eab09a9157c2cbe32cd96113da6304a5ee', 'mime_type': 'application/pdf; charset=binary'}} | 13429 | Processed | 1 | d312e79695d5de744436006aab6b4ec1 | Testing PDF attachment<br/><br/><br/>Test User  \|  Director<br/>COFENSE<br/>m. 123-456-7890<br/>e. test@test.com<mailto:test@test.com><br/><br/>Connect with Cofense:<br/><br/>[signature_527626984]<https://cofense.com/>[signature_379086648]<https://facebook.com/cofense>[signature_426568440]<https://twitter.com/cofense>[signature_1467413640]<https://linkedin.com/company/cofense>[signature_749445379]<https://www.instagram.com/cofense/>[signature_1384270593]<https://www.themuse.com/profiles/cofense><br/><br/>Uniting Humanity Against Phishing. Watch Our Video<https://cofense.com/project/uhap-video/><br/><br/> | 2020-06-04 XSOAR attachment test | 2020-06-04T13:40:29.000Z | 5331 | ba77b5d984f7da97b6f96daa442535c79f47e4b6ea0055e3472b855ee8c244e4 |
 
 
 ### cofense-search-inbox-reports
+
 ***
 Runs a query for reports from the `inbox` mailbox.
 
@@ -201,6 +210,7 @@ Runs a query for reports from the `inbox` mailbox.
 #### Base Command
 
 `cofense-search-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -239,9 +249,11 @@ Runs a query for reports from the `inbox` mailbox.
 
 
 #### Command Example
+
 ```!cofense-search-inbox-reports reported_at="7 days" created_at="7 days" max_matches="1"```
 
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -360,12 +372,14 @@ Runs a query for reports from the `inbox` mailbox.
 #### Human Readable Output
 
 >### Reports:
+>
 >|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Body|Report Subject|Reported At|Reporter Id|Sha256|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 4 | 2020-06-04T13:42:26.173Z | {'id': 18087, 'report_id': 13429, 'decoded_filename': 'image001.png', 'content_type': 'image/png; name=image001.png', 'size_in_bytes': 1397, 'email_attachment_payload': {'id': 7095, 'md5': '5008fb6e6652f56cac5bdc5bf1cbe9c2', 'sha256': '554aeaaace31c7038a09dd408945583e1035ec124a46b04e5c6c5b148dc96f68', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18089, 'report_id': 13429, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 1701, 'email_attachment_payload': {'id': 7097, 'md5': '731ffb7846c22e41e9de8de307c93ece', 'sha256': 'c911d07d1f7be624e00e44821148629d98cf6d0f2bfac112362c7c564522ea51', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18092, 'report_id': 13429, 'decoded_filename': 'image006.png', 'content_type': 'image/png; name=image006.png', 'size_in_bytes': 1994, 'email_attachment_payload': {'id': 7100, 'md5': '124bd437f87181fdfe3154b31fd2cf6b', 'sha256': '3d804c705545bf2a1e5ac6b0ea9b93a41ceb16d7453adebc58fba5df75335b20', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18088, 'report_id': 13429, 'decoded_filename': 'image002.png', 'content_type': 'image/png; name=image002.png', 'size_in_bytes': 1430, 'email_attachment_payload': {'id': 7096, 'md5': 'cc07463ceeaaed79783a7f2a607797f9', 'sha256': 'c6c2c95238f52648faaef4520fa9bba49c10ca0f1df9bfd1912be544f319b80b', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18090, 'report_id': 13429, 'decoded_filename': 'image004.png', 'content_type': 'image/png; name=image004.png', 'size_in_bytes': 1557, 'email_attachment_payload': {'id': 7098, 'md5': '95878e37974ed3cad67154d36dd58a9a', 'sha256': 'e0d478f6ce56721867a0584ddea0016d713b9b2ab758fd0c9be3f1409d6e2634', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18091, 'report_id': 13429, 'decoded_filename': 'image005.png', 'content_type': 'image/png; name=image005.png', 'size_in_bytes': 1609, 'email_attachment_payload': {'id': 7099, 'md5': '0e911498bf4dc5eddb544ab5ece4b06a', 'sha256': '5f2046b3c55a874aadde052f9da4af3c17e2b5bf5baf704f58b1dd1eadf08544', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18093, 'report_id': 13429, 'decoded_filename': 'XSOAR Attachment Test -Inquiry - Agent Tesla Keylogger.pdf', 'content_type': 'application/pdf; name="XSOAR Attachment Test -Inquiry - Agent Tesla Keylogger.pdf"', 'size_in_bytes': 49597, 'email_attachment_payload': {'id': 7110, 'md5': 'fb7f083f4fb93a88ab8110d857312978', 'sha256': '15ab1b20ada04dfc6285caff5e4da4eab09a9157c2cbe32cd96113da6304a5ee', 'mime_type': 'application/pdf; charset=binary'}} | 13429 | Processed | 1 | d312e79695d5de744436006aab6b4ec1 | Testing PDF attachment<br/><br/><br/>Test User  \|  Director<br/>TEST<br/>m. 123-456-7890<br/>e. test@test.com<mailto:test@test.com><br/><br/>Connect with Cofense:<br/><br/>[signature_527626984]<https://cofense.com/>[signature_379086648]<https://facebook.com/cofense>[signature_426568440]<https://twitter.com/cofense>[signature_1467413640]<https://linkedin.com/company/cofense>[signature_749445379]<https://www.instagram.com/cofense/>[signature_1384270593]<https://www.themuse.com/profiles/cofense><br/><br/>Uniting Humanity Against Phishing. Watch Our Video<https://cofense.com/project/uhap-video/><br/><br/> | 2020-06-04 XSOAR attachment test | 2020-06-04T13:40:29.000Z | 5331 | ba77b5d984f7da97b6f96daa442535c79f47e4b6ea0055e3472b855ee8c244e4 |
 
 
 ### cofense-get-attachment
+
 ***
 Retrieves an attachment by the attachment ID number. 
 
@@ -373,6 +387,7 @@ Retrieves an attachment by the attachment ID number.
 #### Base Command
 
 `cofense-get-attachment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -394,9 +409,11 @@ Retrieves an attachment by the attachment ID number.
 
 
 #### Command Example
+
 ```!cofense-get-attachment attachment_id="13311"```
 
 #### Context Example
+
 ```
 {
     "File": {
@@ -419,6 +436,7 @@ Retrieves an attachment by the attachment ID number.
 
 
 ### cofense-get-reporter
+
 ***
 Retrieves Email address of the reporter by ID
 
@@ -426,6 +444,7 @@ Retrieves Email address of the reporter by ID
 #### Base Command
 
 `cofense-get-reporter`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -448,9 +467,11 @@ Retrieves Email address of the reporter by ID
 
 
 #### Command Example
+
 ```!cofense-get-reporter reporter_id="1"```
 
 #### Context Example
+
 ```
 {
     "Cofense": {
@@ -471,12 +492,14 @@ Retrieves Email address of the reporter by ID
 #### Human Readable Output
 
 >Integration log: cmel case attrs: {'ID': 1, 'Email': 'ha.oullette@example.com', 'CreatedAt': '2019-04-12T02:58:17.401Z', 'UpdatedAt': '2019-04-12T02:59:22.287Z', 'CredibilityScore': 0, 'ReportsCount': 3, 'LastReportedAt': '2016-02-18T00:24:45.000Z', 'Vip': False}### Reporter Results:
+>
 >|Created At|Credibility Score|Email|Id|Last Reported At|Reports Count|Updated At|Vip|
 >|---|---|---|---|---|---|---|---|
 >| 2019-04-12T02:58:17.401Z | 0 | ha.oullette@example.com | 1 | 2016-02-18T00:24:45.000Z | 3 | 2019-04-12T02:59:22.287Z | false |
 
 
 ### cofense-get-report-by-id
+
 ***
 Retrieves a report by the report ID number. 
 
@@ -484,6 +507,7 @@ Retrieves a report by the report ID number.
 #### Base Command
 
 `cofense-get-report-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -515,9 +539,11 @@ Retrieves a report by the report ID number.
 
 
 #### Command Example
+
 ```!cofense-get-report-by-id report_id="5760"```
 
 #### Context Example
+
 ```
 {
     "Cofense": {
@@ -543,12 +569,14 @@ Retrieves a report by the report ID number.
 #### Human Readable Output
 
 >{"HumanReadable":"### Cofense HTML Report:\nHTML report download request has been completed","name":"5760-report.html","path":"aaf1160b-9176-45d9-aab9-90efd278e05d"}### Report Summary:
+>
 >|Category Id|Created At|Id|Location|Match Priority|Md5|Report Subject|Reported At|Reporter Id|Sha256|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 4 | 2019-04-17T20:53:02.090Z | 5760 | Processed | 0 | f13bbc172fe7d394828ccabb25c3c99e | test@test.nul Reset password instruction | 2019-04-17T16:54:57.000Z | 3280 | 4f6bc0d9c1217a2a6f327423e16b7a6e9294c68cfb33864541bd805fe4ab2d72 |
 
 
 ### cofense-get-report-png-by-id
+
 ***
 Retrieves a report by the report ID number and displays as PNG
 
@@ -556,6 +584,7 @@ Retrieves a report by the report ID number and displays as PNG
 #### Base Command
 
 `cofense-get-report-png-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -569,9 +598,11 @@ Retrieves a report by the report ID number and displays as PNG
 There is no context output for this command.
 
 #### Command Example
+
 ```!cofense-get-report-png-by-id report_id="5760" set_white_bg="True"```
 
 #### Context Example
+
 ```
 {
     "InfoFile": {
@@ -590,6 +621,7 @@ There is no context output for this command.
 >Cofense: PNG of Report 5760
 
 ### cofense-get-threat-indicators
+
 ***
 Threat Indicators that are designated by analysts as malicious, suspicious or benign
 
@@ -597,6 +629,7 @@ Threat Indicators that are designated by analysts as malicious, suspicious or be
 #### Base Command
 
 `cofense-get-threat-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -621,9 +654,11 @@ Threat Indicators that are designated by analysts as malicious, suspicious or be
 
 
 #### Command Example
+
 ```!cofense-get-threat-indicators type="URL" level="Malicious" start_date="2020-05-28"```
 
 #### Context Example
+
 ```
 {
     "Cofense": {
@@ -643,6 +678,7 @@ Threat Indicators that are designated by analysts as malicious, suspicious or be
 #### Human Readable Output
 
 >### Threat Indicators:
+>
 >|Created At|Id|Operator Id|Report Id|Threat Key|Threat Level|Threat Value|
 >|---|---|---|---|---|---|---|
 >| 2020-05-28T22:14:52.690Z | 75 | 2 | 5760 | URL | Malicious | `http://bold-air0example.com/notification.php?email=test@test.net` |

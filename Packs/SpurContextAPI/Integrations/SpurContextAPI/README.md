@@ -51,6 +51,7 @@ Enrich indicators using the Spur Context API.
 | SpurContextAPI.Context.client_count | number | The average number of clients we observe on this IP address. | 
 | SpurContextAPI.Context.client_behaviors | array | An array of behavior tags for an IP Address. | 
 | SpurContextAPI.Context.client_types | array | The different type of client devices that we have observed on this IP address. | 
+
 ### ip
 
 ***

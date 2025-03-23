@@ -1,5 +1,6 @@
 Proactively Prevent Fraud
 This integration was integrated and tested with version 1.0 of IPQualityScore
+
 ## Configure IPQualityScore in Cortex
 
 
@@ -17,9 +18,12 @@ This integration was integrated and tested with version 1.0 of IPQualityScore
 | Source Reliability | Reliability of the source providing the intelligence data | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Runs reputation on IPs.
 
@@ -32,6 +36,7 @@ Runs reputation on IPs.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -83,9 +88,11 @@ Runs reputation on IPs.
 
 
 #### Command Example
+
 ```!ip ip="8.8.8.8"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -147,12 +154,14 @@ Runs reputation on IPs.
 #### Human Readable Output
 
 >### IPQualityScore Results for 8.8.8.8
+>
 >|success|message|fraud_score|country_code|region|city|ISP|ASN|organization|latitude|longitude|is_crawler|timezone|mobile|host|proxy|vpn|tor|active_vpn|active_tor|recent_abuse|bot_status|connection_type|abuse_velocity|request_id|address|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| true | Success | 100 | US | California | Mountain View | Google | 15169 | Google | 37.39 | -122.07 | false | America/Los_Angeles | false | dns.google | true | true | false | false | false | true | true | Data Center | high | 4DpK9WpOZGPFSPg | 8.8.8.8 |
 
 
 ### email
+
 ***
 Runs reputation on email addresses.
 
@@ -160,6 +169,7 @@ Runs reputation on email addresses.
 #### Base Command
 
 `email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -208,9 +218,11 @@ Runs reputation on email addresses.
 
 
 #### Command Example
+
 ```!email email="noreply@ipqualityscore.com"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -271,12 +283,14 @@ Runs reputation on email addresses.
 #### Human Readable Output
 
 >### IPQualityScore Results for noreply@ipqualityscore.com
+>
 >|message|success|valid|disposable|smtp_score|overall_score|first_name|generic|common|dns_valid|honeypot|deliverability|frequent_complainer|spam_trap_score|catch_all|timed_out|suspect|recent_abuse|fraud_score|suggested_domain|leaked|domain_age|first_seen|sanitized_email|request_id|address|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Success. | true | true | false | 2 | 3 | Corporate | true | false | true | true | low | false | medium | true | false | true | true | 95 | N/A | false | human: 10 years ago<br/>timestamp: 1302837997<br/>iso: 2011-04-14T23:26:37-04:00 | human: 2 years ago<br/>timestamp: 1557122946<br/>iso: 2019-05-06T02:09:06-04:00 | noreply@ipqualityscore.com | 4DpK9WpOZGQDnr7 | noreply@ipqualityscore.com |
 
 
 ### url
+
 ***
 Runs reputation on URLs.
 
@@ -286,6 +300,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -329,9 +344,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!url url="https://google.com"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -379,6 +396,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### IPQualityScore Results for https://google.com
+>
 >|message|success|unsafe|domain|ip_address|server|content_type|status_code|page_size|domain_rank|dns_valid|parking|spamming|malware|phishing|suspicious|adult|risk_score|domain_age|request_id|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Success. | true | false | google.com | 172.217.11.142 |  gws<br/> | text/html; charset=UTF-8 | 200 | 39242 | 1 | true | false | false | false | false | false | false | 0 | human: 24 years ago<br/>timestamp: 874296000<br/>iso: 1997-09-15T00:00:00-04:00 | 4DpK9WpOZGQFSPi | https://google.com |

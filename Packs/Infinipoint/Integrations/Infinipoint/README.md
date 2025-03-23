@@ -14,9 +14,12 @@
 | incidentType | Incident type | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### infinipoint-get-vulnerable-devices
+
 ***
 Get Vulnerable Devices
 
@@ -24,6 +27,7 @@ Get Vulnerable Devices
 #### Base Command
 
 `infinipoint-get-vulnerable-devices`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -46,9 +50,11 @@ Get Vulnerable Devices
 
 
 #### Command Example
+
 ```!infinipoint-get-vulnerable-devices device_risk=3```
 
 #### Context Example
+
 ```
 {
     "Infinipoint": {
@@ -87,6 +93,7 @@ Get Vulnerable Devices
 #### Human Readable Output
 
 >### Results
+>
 >|$device|$host|cve_id|device_risk|device_risk_type|mac_address|os_name|platform|software_name|vulnerability_count|
 >|---|---|---|---|---|---|---|---|---|---|
 >| XXXX-XXXX-XXXX-XXXX-XXXX | OSX-Machine |  | 10 | 4 | - | Mac OS X 10.15.3 | darwin |  | 103 |
@@ -95,6 +102,7 @@ Get Vulnerable Devices
 
 
 ### infinipoint-get-assets-programs
+
 ***
 infinipoint get assets programs
 
@@ -102,6 +110,7 @@ infinipoint get assets programs
 #### Base Command
 
 `infinipoint-get-assets-programs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -129,9 +138,11 @@ infinipoint get assets programs
 
 
 #### Command Example
+
 ```!infinipoint-get-assets-programs name="VMware"```
 
 #### Context Example
+
 ```
 {
     "Infinipoint": {
@@ -169,6 +180,7 @@ infinipoint get assets programs
 #### Human Readable Output
 
 >### Results
+>
 >|$device|$host|$time|$type|name|os_type|program_exists|publisher|version|
 >|---|---|---|---|---|---|---|---|---|
 >| XXXX-XXXX-XXXX-XXXX-XXXX | ubuntu-VM | 2020-07-20T09:13:31+00:00 | csv | xserver-xorg-video-vmware-hwe-18.04 | 2 |  |  | 1:13.3.0-2build1~18.04.1 |
@@ -177,6 +189,7 @@ infinipoint get assets programs
 
 
 ### infinipoint-get-cve
+
 ***
 infinipoint get cve
 
@@ -184,6 +197,7 @@ infinipoint get cve
 #### Base Command
 
 `infinipoint-get-cve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -261,9 +275,11 @@ infinipoint get cve
 
 
 #### Command Example
+
 ```!infinipoint-get-cve cve_id="CVE-2020-9859"```
 
 #### Context Example
+
 ```
 {
     "CVE": {
@@ -383,12 +399,14 @@ infinipoint get cve
 #### Human Readable Output
 
 >### Results
+>
 >|campaign_intelligence|cve_description|cve_dynamic_data|cve_id|cwe_description|cwe_id|devices|scan_date|software_list|top_devices|
 >|---|---|---|---|---|---|---|---|---|---|
 >| {'apt': 'Publicly Available Exploit', 'description': 'The zero-day vulnerability tracked as CVE-2020-9859 is exploited by the Unc0ver jailbreak tool ', 'targeted_countries': [''], 'targeted_industries': ['']} | A memory consumption issue was addressed with improved memory handling. This issue is fixed in iOS 13.5.1 and iPadOS 13.5.1, macOS Catalina 10.15.5 Supplemental Update, tvOS 13.4.6, watchOS 6.2.6. An application may be able to execute arbitrary code with kernel privileges. | infinipoint_base_metric: {"device_count": 1, "risk_level": 10, "attack_complexity": "10", "campaigns": 1, "exploits": 1, "trends_level": "10", "exploitability_risk": "3.9", "risk_label": "Critical", "risk_type": 4}<br/>base_metric_v2: {"vector_string": "AV:L/AC:L/Au:N/C:C/I:C/A:C", "access_vector": "LOCAL", "attack_complexity": "LOW", "authentication": "NONE", "confidentiality_impact": "COMPLETE", "integrity_impact": "COMPLETE", "availability_impact": "COMPLETE", "base_score": "7.2", "severity": "HIGH", "exploitability_score": "3.9", "impact_score": "10.0", "ac_insuf_info": "False", "obtain_all_privilege": "False", "obtain_other_privilege": "False", "obtain_user_privilege": "False", "user_interaction_required": "False"}<br/>base_metric_v3: {"vector_string": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H", "attack_vector": "LOCAL", "attack_complexity": "LOW", "privileges_required": "LOW", "user_interaction": "NONE", "scope": "UNCHANGED", "confidentiality_impact": "HIGH", "integrity_impact": "HIGH", "availability_impact": "HIGH", "base_score": "7.8", "base_severity": "HIGH", "exploitability_score": "1.8", "impact_score": "5.9"} | CVE-2020-9859 | Uncontrolled Resource Consumption (Resource Exhaustion) | CWE-400 | {'$device': 'XXXX-XXXX-XXXX-XXXX-YYYY', 'device_name_string': 'OSX-Machine', 'vulnerableProduct': 'Mac OS X 10.15.3', 'vulnerableVersion': 'Mac OS X 10.15.3', 'device_risk': 10, 'map_id': 'XXXX-XXXX-XXXX-XXXX-YYYY', 'device_os': 'Mac OS X 10.15.3', 'is_managed': True} |  | {'cpe_name_string': 'Mac OS X 10.15.3 10.15.3', 'cpe_type': 'OS_ONLY', 'cpe_strings': []} | {'$device': 'XXXX-XXXX-XXXX-XXXX-YYYY', 'device_name_string': 'OSX-Machine', 'vulnerableProduct': 'Mac OS X 10.15.3', 'vulnerableVersion': 'Mac OS X 10.15.3', 'device_risk': 10, 'map_id': 'XXXX-XXXX-XXXX-XXXX-YYYY', 'device_os': 'Mac OS X 10.15.3', 'is_managed': True} |
 
 
 ### infinipoint-get-device
+
 ***
 get device
 
@@ -396,6 +414,7 @@ get device
 #### Base Command
 
 `infinipoint-get-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -447,9 +466,11 @@ get device
 
 
 #### Command Example
+
 ```!infinipoint-get-device osType=1```
 
 #### Context Example
+
 ```
 {
     "Infinipoint": {
@@ -504,12 +525,14 @@ get device
 #### Human Readable Output
 
 >### Results
+>
 >|agentVersion|clientType|discoveryId|domain|edge|ftDidRespond|ftIsSuccessful|ftResult|gatewayIp|gatewayMACAddress|host|id|ip|lastSeen|macAddress|networkAlias|networkId|networks|osName|osType|policyVersion|productType|regDate|status|statusCode|statusDescription|supportId|tags|uniqueHostname|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 3.200.20.0 | 0 |  | WORKGROUP | true | false | false |  | -1062671102 | 00:50:56:00:00:00 | DESKTOP-VM | XXXX-XXXX-XXXX-XXXX-YYYY | -10000001 | 2020-07-13T11:06:06.632976Z | 00:0C:29:BB:74:92 | GCP | 5866697 | {'alias': 'GCP', 'cidr': '192.1.1.0/24', 'gatewayIp': -100000001, 'gatewayMACAddress': '00:50:56:00:00:00'} | windows-10.0.17763.1282 | 1 | 1.0.0 | Work Station | 2020-07-13T09:46:43.385267Z | 0 |  |  |  | {'color': 'fefb08', 'name': 'et', 'tagId': 'XXXX-XXXX-XXXX-XXXX-YYYY'} | DESKTOP-VM-xkp |
 
 
 ### infinipoint-get-tag
+
 ***
 get tag
 
@@ -517,6 +540,7 @@ get tag
 #### Base Command
 
 `infinipoint-get-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -537,9 +561,11 @@ get tag
 
 
 #### Command Example
+
 ```!infinipoint-get-tag name=et```
 
 #### Context Example
+
 ```
 {
     "Infinipoint": {
@@ -558,12 +584,14 @@ get tag
 #### Human Readable Output
 
 >### Results
+>
 >|color|count|description|name|tagId|type|
 >|---|---|---|---|---|---|
 >| fefb08 | 1 | et | et | 6d0b5156-eb2d-4b28-9c7c-3cb6e80f2cfb | 0 |
 
 
 ### infinipoint-get-networks
+
 ***
 get networks
 
@@ -571,6 +599,7 @@ get networks
 #### Base Command
 
 `infinipoint-get-networks`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -614,9 +643,11 @@ get networks
 
 
 #### Command Example
+
 ```!infinipoint-get-networks alias=GCP```
 
 #### Context Example
+
 ```
 {
     "Infinipoint": {
@@ -660,12 +691,14 @@ get networks
 #### Human Readable Output
 
 >### Results
+>
 >|alias|cidr|city|country|cronExpression|dnsName|externalIp|firstSeen|floor|gatewayIp|gatewayMacAddress|hidden|ip|ipSubnetMask|lastRun|lastSeen|latitude|longitude|managedCount|name|networkId|nextRun|onPrem|room|scheduleStatus|state|street|type|unmanagedCount|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| GCP | 192.1.1.0/24 |  |  |  |  | 0 | 2020-07-13T09:46:43.376984Z |  | -1062671102 | 00:50:56:F9:90:54 | false | 0 | 0 | 1970-01-01T00:00:00Z | 2020-08-09T14:13:47.084573Z |  |  | 3 |  | 5866697 | 1970-01-01T00:00:00Z | false |  | 3 |  |  | 0 | 0 |
 
 
 ### infinipoint-get-assets-devices
+
 ***
 get assets hardware
 
@@ -673,6 +706,7 @@ get assets hardware
 #### Base Command
 
 `infinipoint-get-assets-devices`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -707,9 +741,11 @@ get assets hardware
 
 
 #### Command Example
+
 ```!infinipoint-get-assets-devices os_type="1"```
 
 #### Context Example
+
 ```
 {
     "Infinipoint": {
@@ -743,12 +779,14 @@ get assets hardware
 #### Human Readable Output
 
 >### Results
+>
 >|$device|$host|$time|$type|cpu_brand|cpu_logical_cores|cpu_physical_cores|hardware_model|hardware_serial|hardware_vendor|kernel_version|os_build|os_name|os_patch_version|os_type|os_version|physical_memory|platform|user|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 22ddf738-7e1c-4f20-a9c7-07620d1f2110 | DESKTOP-U0QSLQ8 | 2020-07-13T11:19:57+00:00 | csv | Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz | 2 | 1 | VMware Virtual Platform | VMware-56 4d 8c d8 6d 32 31 e2-ed 43 1f 09 ff bb 74 92 | VMware, Inc. | 10.0.17763.1282 | 17763 | Microsoft Windows 10 Enterprise Evaluation |  | 1 | 10.0.17763 | 4.0 | windows | tesst2 |
 
 
 ### infinipoint-get-assets-cloud
+
 ***
 get assets cloud
 
@@ -756,6 +794,7 @@ get assets cloud
 #### Base Command
 
 `infinipoint-get-assets-cloud`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -797,9 +836,11 @@ get assets cloud
 
 
 #### Command Example
+
 ```!infinipoint-get-assets-cloud source="GCP API"```
 
 #### Context Example
+
 ```
 {
     "Infinipoint": {
@@ -836,12 +877,14 @@ get assets cloud
 #### Human Readable Output
 
 >### Results
+>
 >|$device|$host|$time|$type|cloud_scan_timestamp|cpu_brand|cpu_logical_cores|cpu_physical_cores|hardware_model|hardware_serial|hardware_vendor|instance_id|kernel_version|os_build|os_name|os_patch_version|os_type|os_version|physical_memory|platform|source|user|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| a523014f-1612-4b65-90a8-7974b116cb44 | ubu-et | 2020-07-13T13:19:37+00:00 | csv | 1594644075 | Intel(R) Xeon(R) CPU @ 2.30GHz | 1 | 1 | Google Compute Engine | GoogleCloud-46BCBFA9C0E1789A71BA4A36CAD5E7A0 | Google | 7730283300603950466 | 5.4.0-1019-gcp |  | Ubuntu |  | 2 | 20.04 LTS (Focal Fossa) | 4.0 | ubuntu | GCP API | eturjeman_riscale_com |
 
 
 ### infinipoint-get-assets-users
+
 ***
 get assets users
 
@@ -849,6 +892,7 @@ get assets users
 #### Base Command
 
 `infinipoint-get-assets-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -871,9 +915,11 @@ get assets users
 
 
 #### Command Example
+
 ```!infinipoint-get-assets-users username="et"```
 
 #### Context Example
+
 ```
 {
     "Infinipoint": {
@@ -915,6 +961,7 @@ get assets users
 #### Human Readable Output
 
 >### Results
+>
 >|$device|$host|$time|$type|description|directory|username|
 >|---|---|---|---|---|---|---|
 >| XXXX-XXXX-XXXX-XXXX-YYYY | OSX-Machine | 2020-08-05T07:01:49+00:00 | csv | Setup User | /var/setup | _mbsetupuser |
@@ -924,6 +971,7 @@ get assets users
 
 
 ### infinipoint-get-action-results
+
 ***
 get action
 
@@ -931,6 +979,7 @@ get action
 #### Base Command
 
 `infinipoint-get-action-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -950,6 +999,7 @@ get action
 
 
 #### Command Example
+
 ```!infinipoint-get-action-results action_id=8761df7a-05fd-4343-8c7e-794bc6d06940```
 
 #### Human Readable Output
@@ -957,6 +1007,7 @@ get action
 
 
 ### infinipoint-get-queries
+
 ***
 get queries
 
@@ -964,6 +1015,7 @@ get queries
 #### Base Command
 
 `infinipoint-get-queries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -986,9 +1038,11 @@ get queries
 
 
 #### Command Example
+
 ```!infinipoint-get-queries name=os_version```
 
 #### Context Example
+
 ```
 {
     "Infinipoint": {
@@ -1012,12 +1066,14 @@ get queries
 #### Human Readable Output
 
 >### Results
+>
 >|aggregation|createdOn|description|format|id|interp|module|name|osType|
 >|---|---|---|---|---|---|---|---|---|
 >| true | 2020-02-02T09:28:00.500226Z | Retrieves information FROM the Operative Systems. | 2 | XXXX-XXXX-XXXX-XXXX-YYYY | 0 | 4 | OS versions | 7 |
 
 
 ### infinipoint-execute-action
+
 ***
 run queries
 
@@ -1025,6 +1081,7 @@ run queries
 #### Base Command
 
 `infinipoint-execute-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1044,9 +1101,11 @@ run queries
 
 
 #### Command Example
+
 ```!infinipoint-execute-action id=0b5004ce-0a18-11ea-9a9f-362b9e155667```
 
 #### Context Example
+
 ```
 {
     "Infinipoint": {
@@ -1067,12 +1126,14 @@ run queries
 #### Human Readable Output
 
 >### Results
+>
 >|actionId|aggColumns|devicesCount|name|
 >|---|---|---|---|
 >| 40151026-c5a6-4a3a-92a4-39a0bbee5902 | Name | 0 | User Profile Not In Use (90 days) |
 
 
 ### infinipoint-get-non-compliance
+
 ***
 get non compliance devices
 
@@ -1080,6 +1141,7 @@ get non compliance devices
 #### Base Command
 
 `infinipoint-get-non-compliance`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1106,6 +1168,7 @@ get non compliance devices
 
 
 #### Command Example
+
 ``` !infinipoint-get-non-compliance limit=100 offset=0```
 
 #### Human Readable Output
@@ -1113,6 +1176,7 @@ get non compliance devices
 
 
 ### infinipoint-get-device-details
+
 ***
 get device details
 
@@ -1120,6 +1184,7 @@ get device details
 #### Base Command
 
 `infinipoint-get-device-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1165,6 +1230,7 @@ get device details
 
 
 #### Command Example
+
 ```!infinipoint-get-device-details discoveryId=23eb50e7ceb907975686ba5cebbd3520```
 
 #### Human Readable Output
@@ -1172,6 +1238,7 @@ get device details
 
 
 ### infinipoint-get-compliance-status
+
 ***
 get compliance status
 
@@ -1179,6 +1246,7 @@ get compliance status
 #### Base Command
 
 `infinipoint-get-compliance-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1195,6 +1263,7 @@ get compliance status
 
 
 #### Command Example
+
 ``` !infinipoint-get-compliance-status device_id=40151026-c5a6-4a3a-92a4-39a0bbee5902```
 
 #### Human Readable Output

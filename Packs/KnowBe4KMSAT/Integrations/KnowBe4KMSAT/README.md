@@ -67,9 +67,11 @@
 | KMSAT.AccountInfo.current_risk_score    | Number   | Account Risk Score            |
 
 #### Command Example
+
 ```!kmsat-account-info-list```
 
 #### Context Example
+
 ```json
 
 {
@@ -110,9 +112,11 @@
 | KMSAT.AccountRiskScoreHistory.date       | Date     | Account Risk Score history date        |
 
 #### Command Example
+
 ```!kmsat-account-risk-score-history-list  page=1 per_page=25```
 
 #### Context Example
+
 ```json
 
 {
@@ -146,9 +150,11 @@
 
 
 #### Command Example
+
 ```!kmsat-groups-list page=1 per_page=25```
 
 #### Context Example
+
 ```json
 
 {
@@ -180,9 +186,11 @@
 | KMSAT.GroupRiskHistory.date            | Date     | Group Risk Score history date         |
 
 #### Command Example
+
 ```!kmsat-groups-risk-score-history-list page=1 per_page=25```
 
 #### Context Example
+
 ```json
 
 {
@@ -238,9 +246,11 @@
 | KMSAT.GroupsMembers.custom_date_2          | Date     | User custom date 2                   |
 
 #### Command Example
+
 ```!kmsat-groups-members-list  group_id=1 page=1 per_page=25```
 
 #### Context Example
+
 ```json
 
 {
@@ -302,9 +312,11 @@
 | KMSAT.UsersRiskHistory.date       | Date     | User's Risk Score history date        |
 
 #### Command Example
+
 ```!kmsat-users-risk-score-history-list  user_id=1 page=1 per_page=25```
 
 #### Context Example
+
 ```json
 
 {
@@ -354,9 +366,11 @@
 
 
 #### Command Example
+
 ```!kmsat-phishing-security-tests-list  page=1 per_page=25```
 
 #### Context Example
+
 ```json
 
 [
@@ -438,9 +452,11 @@
 | KMSAT.PhishingSecurityPST.os                   | String   | PST operating system                   |
 
 #### Command Example
+
 ```!kmsat-phishing-security-tests-recipients-list  pst_id=1 page=1 per_page=25```
 
 #### Context Example
+
 ```json
 
 [
@@ -511,9 +527,11 @@
 | KMSAT.PhishingSecurityPST.os                   | String   | PST operating system                   |
 
 #### Command Example
+
 ```!kmsat-phishing-security-tests-failed-recipients-list  pst_id=1```
 
 #### Context Example
+
 ```json
 
 [
@@ -594,9 +612,11 @@
 
 
 #### Command Example
+
 ```!kmsat-phishing-campaign-security-tests-list  campaign_id=1 page=1 per_page=25```
 
 #### Context Example
+
 ```json
 
 [
@@ -686,9 +706,11 @@
 
 
 #### Command Example
+
 ```!kmsat-training-campaigns-list  campaign_id=1 page=1 per_page=25```
 
 #### Context Example
+
 ```json
 
 {
@@ -768,9 +790,11 @@
 
 
 #### Command Example
+
 ```!kmsat-training-enrollments-list  status="Completed" page=1 per_page=25```
 
 #### Context Example
+
 ```json
 
 {
@@ -793,6 +817,7 @@
 }
 
 ```
+
 ### kmsat-user-event-list
 
 
@@ -829,8 +854,11 @@
 | KMSAT.UserEvents.risk.expire_date | String   | Risk expiration date         |
 | KMSAT.UserEvents.event_type.id    | Number   | ID of event type             |
 | KMSAT.UserEvents.event_type.name  | String   | Name of event type           |
+
 #### Command Example
+
 ```!kmsat-user-event-list id=xyz```
+
 ### kmsat-user-events-list
 
 
@@ -869,9 +897,11 @@
 | KMSAT.UserEvents.event_type.name  | String   | Name of event type           |
 
 #### Command Example
+
 ```!kmsat-user-events-list target_user=1 risk_level=1 page=1 per_page=25```
 
 #### Context Example
+
 ```json
 
 {
@@ -919,9 +949,11 @@
 | KMSAT.UserEventTypes.description | String   | Description of event type |
 
 #### Command Example
+
 ```!kmsat-user-event-types-list name="John"```
 
 #### Context Example
+
 ```json
 
 {
@@ -957,9 +989,11 @@
 | KMSAT.UserEventCreate.id | Number   | Unique ID of the event |
 
 #### Command Example
+
 ```!kmsat-user-event-create target_user="John" event_type="New Event"```
 
 #### Context Example
+
 ```json
 
 {
@@ -977,6 +1011,7 @@
 | id                | Event ID        | Required        |
 
 #### Command Example
+
 ```!kmsat-user-event-delete id=1```
 
 ### kmsat-user-event-status-list
@@ -997,9 +1032,11 @@
 | KMSAT.UserEventTypes.api_key   | String   | Name of api key used |
 
 #### Command Example
+
 ```!kmsat-user-event-status-list id=xyz```
 
 #### Context Example
+
 ```json
 {
     "data": {
@@ -1017,6 +1054,7 @@
 ```
 
 ### kmsat-user-event-statuses-list
+
 | **Argument Name** | **Description**                  | **Requirement** |
 | ----------------- | -------------------------------- | --------------- |
 | processed         | date item was processed | No        |
@@ -1035,9 +1073,11 @@
 | KMSAT.UserEventTypes.api_key   | String   | Name of api key used |
 
 #### Command Example
+
 ```!kmsat-user-event-status-list id=xyz```
 
 #### Context Example
+
 ```json
 {
     "data": [

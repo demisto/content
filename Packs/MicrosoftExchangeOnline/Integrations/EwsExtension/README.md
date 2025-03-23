@@ -35,7 +35,7 @@ For more [info](https://docs.microsoft.com/en-us/powershell/exchange/disable-acc
 
             1. Run the ***!ews-auth-start*** command and follow the instructions. Expected output is:
 
-            > ## EWS extension - Authorize instructions
+           > ## EWS extension - Authorize instructions
             >
             > 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
             > 2. Run the command ***!ews-auth-complete*** command in the War Room.
@@ -55,10 +55,12 @@ For more [info](https://docs.microsoft.com/en-us/powershell/exchange/disable-acc
     2. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ews-auth-start
+
 ***
 OAuth2.0 - Start authorization.
 
@@ -76,16 +78,19 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ews-auth-start```
 
 #### Human Readable Output
 
 >## EWS extension - Authorize instructions
+>
 >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
 >2. Run the ***!ews-auth-complete*** command in the War Room.
 
 
 ### ews-auth-complete
+
 ***
 Completes the OAuth2.0 authorization process.
 
@@ -104,6 +109,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ews-auth-complete```
 
 #### Human Readable Output
@@ -111,6 +117,7 @@ There is no context output for this command.
 >Your account **successfully** authorized!
 
 ### ews-auth-test
+
 ***
 Tests the OAuth2.0 authorization process.
 
@@ -127,6 +134,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ews-auth-test```
 
 #### Human Readable Output
@@ -134,6 +142,7 @@ There is no context output for this command.
 >**Test ok!**
 
 ### ews-junk-rules-get
+
 ***
 Gets junk rules for the specified mailbox.
 
@@ -141,6 +150,7 @@ Gets junk rules for the specified mailbox.
 #### Base Command
 
 `ews-junk-rules-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -163,9 +173,11 @@ Gets junk rules for the specified mailbox.
 
 
 #### Command Example
+
 ```!ews-junk-rules-get mailbox="xsoar@dev.onmicrosoft.com"```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -197,12 +209,14 @@ Gets junk rules for the specified mailbox.
 #### Human Readable Output
 
 >### EWS extension - 'xsoar@dev.onmicrosoft.com' Junk rules
+>
 >| BlockedSendersAndDomains | ContactsTrusted | Enabled | TrustedListsOnly | TrustedSendersAndDomains
 >| --- | --- | --- | --- | ---
 >| \["user1@gmail.com","user2@gmail.com"\] | False | False | False | \["user1@gmail.com","user2@gmail.com"\]
 
 
 ### ews-junk-rules-set
+
 ***
 Sets junk rules for the specified mailbox.
 
@@ -210,6 +224,7 @@ Sets junk rules for the specified mailbox.
 #### Base Command
 
 `ews-junk-rules-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -229,6 +244,7 @@ Sets junk rules for the specified mailbox.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ews-junk-rules-set mailbox="xsoar@dev.onmicrosoft.com" add_blocked_senders_and_domains="test@gmail.com" add_trusted_senders_and_domains="dev.onmicrosoft.com"```
 
 #### Human Readable Output
@@ -236,6 +252,7 @@ There is no context output for this command.
 >EWS extension - 'xsoar@dev.onmicrosoft.com' Junk rules **modified**!
 
 ### ews-global-junk-rules-set
+
 ***
 Sets junk rules in all managed accounts.
 
@@ -243,6 +260,7 @@ Sets junk rules in all managed accounts.
 #### Base Command
 
 `ews-global-junk-rules-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -261,6 +279,7 @@ Sets junk rules in all managed accounts.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ews-global-junk-rules-set add_blocked_senders_and_domains="test@demisto.com" add_trusted_senders_and_domains="demisto.com"```
 
 #### Human Readable Output
@@ -268,6 +287,7 @@ There is no context output for this command.
 >EWS extension - Junk rules globally **modified**!
 
 ### ews-message-trace-get
+
 ***
 Searches message data for the last 10 days. If you run this command without any arguments, only data from the last 48 hours is returned.
 If you enter a start date that is older than 10 days, you will receive an error and the command will return no results.
@@ -278,6 +298,7 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 #### Base Command
 
 `ews-message-trace-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -316,9 +337,11 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 
 
 #### Command Example
+
 ```!ews-message-trace-get```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -363,6 +386,7 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 #### Human Readable Output
 
 >### EWS extension - Messages trace
+>
 >| EndDate | FromIP | Index | MessageId | MessageTraceId | Organization | Received | RecipientAddress | SenderAddress | Size | StartDate | Status | Subject | ToIP
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| 1/3/2021 6:14:14 AM | 8.8.8.8 | 0 | xxx | xxxx | microsoft.com | 1/3/2021 4:45:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:14:14 AM | Delivered | Test mail |
@@ -370,6 +394,7 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 
 
 ### ews-federation-trust-get
+
 ***
 Displays the federation trust configured for the Exchange organization.
 
@@ -377,6 +402,7 @@ Displays the federation trust configured for the Exchange organization.
 #### Base Command
 
 `ews-federation-trust-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -606,6 +632,7 @@ Displays the federation trust configured for the Exchange organization.
 | EWS.FederationTrust.WhenCreatedUTC | Date | The date in UTC format of when the federation trust was created. | 
 
 ### ews-federation-configuration-get
+
 ***
 Retrieves the Exchange organization's federated organization identifier and related details, such as federated domains, organization contact, and status.
 
@@ -613,6 +640,7 @@ Retrieves the Exchange organization's federated organization identifier and rela
 #### Base Command
 
 `ews-federation-configuration-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -654,6 +682,7 @@ Retrieves the Exchange organization's federated organization identifier and rela
 | EWS.FederationConfiguration.WhenCreatedUTC | Date | The date in UTC format of when the federation configuration was created. | 
 
 ### ews-remote-domain-get
+
 ***
 Gets the configuration information for the remote domains configured in your organization. This command is available only in the Exchange Online PowerShell V2 module.
 
@@ -661,6 +690,7 @@ Gets the configuration information for the remote domains configured in your org
 #### Base Command
 
 `ews-remote-domain-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -719,6 +749,7 @@ Gets the configuration information for the remote domains configured in your org
 | EWS.RemoteDomain.WhenCreatedUTC | Date | The date in UTC format of when the remote domain was created. | 
 
 ### ews-user-list
+
 ***
 Displays the existing user objects in your organization.
 
@@ -726,6 +757,7 @@ Displays the existing user objects in your organization.
 #### Base Command
 
 `ews-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -849,6 +881,7 @@ Displays the existing user objects in your organization.
 | EWS.User.DirectReports | String | Direct reports of the user object. | 
 
 ### ews-mailbox-audit-bypass-association-list
+
 ***
 Retrieves information about the AuditBypassEnabled property value for user accounts (on-premises Exchange and the cloud) and computer accounts (on-premises Exchange only).
 
@@ -856,6 +889,7 @@ Retrieves information about the AuditBypassEnabled property value for user accou
 #### Base Command
 
 `ews-mailbox-audit-bypass-association-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

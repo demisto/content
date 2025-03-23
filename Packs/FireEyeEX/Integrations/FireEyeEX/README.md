@@ -2,12 +2,15 @@ FireEye Email Security (EX) series protects against breaches caused by advanced 
 This integration was integrated and tested with version 9.0.2.929543 of FireEye Email Security.
 
 ## API Key management
+
 This integration generates an API Key from the username and password given to be authenticated with FireEye.
 The API Key is valid for 15 minutes.
 The integration manages the storage of this key, and its re-generation when the key expires.
 
 ## Fetch FireEye EX Alert Emails
+
 To fetch a FireEye EX alert email, you will need the UUID.
+
 1. Run the ***fireeye-ex-get-alert-details** command with the alert ID. For example,
    ***!fireeye-ex-get-alert-details alert_id=542***
 2. Locate the UUID in the context data and run the ***fireeye-ex-get-artifacts-by-uuid*** command with the UUID. For example: 
@@ -15,7 +18,9 @@ To fetch a FireEye EX alert email, you will need the UUID.
 3. Download the email.
 
 ## Access the FireEye Alert URL
+
 To display a proper link in the FireEye NX Alert URL field of the FireEye EX Alert layout, you need to configure the hostname in the appliance settings of the FireEye application.
+
 1. Log in to your FireEye application.
 3. In the Hostname field, enter your URL/server/ip address.
 
@@ -37,9 +42,12 @@ To display a proper link in the FireEye NX Alert URL field of the FireEye EX Ale
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fireeye-ex-get-alerts
+
 ***
 Searches and retrieves FireEye EX alerts based on several filters.
 
@@ -47,6 +55,7 @@ Searches and retrieves FireEye EX alerts based on several filters.
 #### Base Command
 
 `fireeye-ex-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -93,9 +102,11 @@ Searches and retrieves FireEye EX alerts based on several filters.
 
 
 #### Command Example
+
 ```!fireeye-ex-get-alerts start_time="2 month" sender_email="test@malicious.net" limit=4```
 
 #### Context Example
+
 ```json
 {
     "FireEyeEX": {
@@ -256,6 +267,7 @@ Searches and retrieves FireEye EX alerts based on several filters.
 #### Human Readable Output
 
 >### FireEye Email Security Alerts:
+>
 >|id|occurred|product|name|malicious|severity|alertUrl|
 >|---|---|---|---|---|---|---|
 >| 1 | 2021-02-14 09:42:47 +0000 | EMAIL_MPS | MALWARE_OBJECT | yes | MAJR | https://FireEyeEX/emps/eanalysis?e_id=9&type=url |
@@ -265,6 +277,7 @@ Searches and retrieves FireEye EX alerts based on several filters.
 
 
 ### fireeye-ex-get-alert-details
+
 ***
 Searches and retrieves the details of a single alert.
 
@@ -272,6 +285,7 @@ Searches and retrieves the details of a single alert.
 #### Base Command
 
 `fireeye-ex-get-alert-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -303,9 +317,11 @@ Searches and retrieves the details of a single alert.
 
 
 #### Command Example
+
 ```!fireeye-ex-get-alert-details alert_id=3```
 
 #### Context Example
+
 ```json
 {
     "FireEyeEX": {
@@ -353,12 +369,14 @@ Searches and retrieves the details of a single alert.
 #### Human Readable Output
 
 >### FireEye Email Security Alerts:
+>
 >|id|occurred|product|name|malicious|action|src|dst|severity|alertUrl|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 3 | 2021-02-14 09:45:58 +0000 | EMAIL_MPS | MALWARE_OBJECT | yes | notified | smtpMailFrom: test@malicious.net | smtpTo: test@actualdomain.org | MAJR | https://FireEyeEX/emps/eanalysis?e_id=12&type=url |
 
 
 ### fireeye-ex-get-artifacts-by-uuid
+
 ***
 Downloads malware artifacts data for the specified UUID as a zip file.
 
@@ -366,6 +384,7 @@ Downloads malware artifacts data for the specified UUID as a zip file.
 #### Base Command
 
 `fireeye-ex-get-artifacts-by-uuid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -387,9 +406,11 @@ Downloads malware artifacts data for the specified UUID as a zip file.
 
 
 #### Command Example
+
 ```!fireeye-ex-get-artifacts-by-uuid uuid=44f2a6f0-aa3f-451d-956f-25565671c4d3```
 
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -408,6 +429,7 @@ Downloads malware artifacts data for the specified UUID as a zip file.
 
 
 ### fireeye-ex-get-artifacts-metadata-by-uuid
+
 ***
 Gets artifacts metadata for the specified UUID.
 
@@ -415,6 +437,7 @@ Gets artifacts metadata for the specified UUID.
 #### Base Command
 
 `fireeye-ex-get-artifacts-metadata-by-uuid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -433,9 +456,11 @@ Gets artifacts metadata for the specified UUID.
 
 
 #### Command Example
+
 ```!fireeye-ex-get-artifacts-metadata-by-uuid uuid=44f2a6f0-aa3f-451d-956f-25565671c4d3```
 
 #### Context Example
+
 ```json
 {
     "FireEyeEX": {
@@ -456,12 +481,14 @@ Gets artifacts metadata for the specified UUID.
 #### Human Readable Output
 
 >### FireEye Email Security 44f2a6f0-aa3f-451d-956f-25565671c4d3 Artifact metadata:
+>
 >|artifactName|artifactSize|artifactType|
 >|---|---|---|
 >| name | 269 | original_email |
 
 
 ### fireeye-ex-get-quarantined-emails
+
 ***
 Searches and retrieves quarantined emails.
 
@@ -469,6 +496,7 @@ Searches and retrieves quarantined emails.
 #### Base Command
 
 `fireeye-ex-get-quarantined-emails`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -496,9 +524,11 @@ Searches and retrieves quarantined emails.
 
 
 #### Command Example
+
 ```!fireeye-ex-get-quarantined-emails limit=2```
 
 #### Context Example
+
 ```json
 {
     "FireEyeEX": {
@@ -529,6 +559,7 @@ Searches and retrieves quarantined emails.
 #### Human Readable Output
 
 >### FireEye Email Security Quarantined emails:
+>
 >|email_uuid|from|subject|message_id|completed_at|
 >|---|---|---|---|---|
 >| uuid | undisclosed_sender | test | queue-id-queue@no-message-id | 2021-06-14T16:01:15 |
@@ -536,6 +567,7 @@ Searches and retrieves quarantined emails.
 
 
 ### fireeye-ex-release-quarantined-emails
+
 ***
 Releases and deletes quarantined emails. This is not available when Email Security is in Drop mode.
 
@@ -543,6 +575,7 @@ Releases and deletes quarantined emails. This is not available when Email Securi
 #### Base Command
 
 `fireeye-ex-release-quarantined-emails`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -555,6 +588,7 @@ Releases and deletes quarantined emails. This is not available when Email Securi
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -562,6 +596,7 @@ There is no context output for this command.
 
 
 ### fireeye-ex-delete-quarantined-emails
+
 ***
 Deletes quarantined emails. This is not available when Email Security is in Drop mode.
 
@@ -569,6 +604,7 @@ Deletes quarantined emails. This is not available when Email Security is in Drop
 #### Base Command
 
 `fireeye-ex-delete-quarantined-emails`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -581,6 +617,7 @@ Deletes quarantined emails. This is not available when Email Security is in Drop
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -588,6 +625,7 @@ There is no context output for this command.
 
 
 ### fireeye-ex-download-quarantined-emails
+
 ***
 Download quarantined emails.
 
@@ -595,6 +633,7 @@ Download quarantined emails.
 #### Base Command
 
 `fireeye-ex-download-quarantined-emails`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -616,9 +655,11 @@ Download quarantined emails.
 
 
 #### Command Example
+
 ```!fireeye-ex-download-quarantined-emails queue_id=queue```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -642,6 +683,7 @@ Download quarantined emails.
 
 
 ### fireeye-ex-get-reports
+
 ***
 Returns reports on selected alerts.
 
@@ -649,6 +691,7 @@ Returns reports on selected alerts.
 #### Base Command
 
 `fireeye-ex-get-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -677,9 +720,11 @@ Returns reports on selected alerts.
 
 
 #### Command Example
+
 ```!fireeye-ex-get-reports report_type=alertDetailsReport alert_id=3```
 
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -698,6 +743,7 @@ Returns reports on selected alerts.
 
 
 ### fireeye-ex-list-allowedlist
+
 ***
 Lists the allowed sender domain by type.
 
@@ -705,6 +751,7 @@ Lists the allowed sender domain by type.
 #### Base Command
 
 `fireeye-ex-list-allowedlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -723,6 +770,7 @@ Lists the allowed sender domain by type.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -730,6 +778,7 @@ Lists the allowed sender domain by type.
 
 
 ### fireeye-ex-create-allowedlist
+
 ***
 Creates allowed sender domain.
 
@@ -737,6 +786,7 @@ Creates allowed sender domain.
 #### Base Command
 
 `fireeye-ex-create-allowedlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -756,6 +806,7 @@ Creates allowed sender domain.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -763,6 +814,7 @@ Creates allowed sender domain.
 
 
 ### fireeye-ex-update-allowedlist
+
 ***
 Updates allowed sender domain.
 
@@ -770,6 +822,7 @@ Updates allowed sender domain.
 #### Base Command
 
 `fireeye-ex-update-allowedlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -789,6 +842,7 @@ Updates allowed sender domain.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -796,6 +850,7 @@ Updates allowed sender domain.
 
 
 ### fireeye-ex-delete-allowedlist
+
 ***
 Deletes allowed sender domain.
 
@@ -803,6 +858,7 @@ Deletes allowed sender domain.
 #### Base Command
 
 `fireeye-ex-delete-allowedlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -821,6 +877,7 @@ Deletes allowed sender domain.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -828,6 +885,7 @@ Deletes allowed sender domain.
 
 
 ### fireeye-ex-list-blockedlist
+
 ***
 Lists the blocked sender domain by type.
 
@@ -835,6 +893,7 @@ Lists the blocked sender domain by type.
 #### Base Command
 
 `fireeye-ex-list-blockedlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -853,6 +912,7 @@ Lists the blocked sender domain by type.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -860,6 +920,7 @@ Lists the blocked sender domain by type.
 
 
 ### fireeye-ex-create-blockedlist
+
 ***
 Creates blocked sender domain.
 
@@ -867,6 +928,7 @@ Creates blocked sender domain.
 #### Base Command
 
 `fireeye-ex-create-blockedlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -886,6 +948,7 @@ Creates blocked sender domain.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -893,6 +956,7 @@ Creates blocked sender domain.
 
 
 ### fireeye-ex-update-blockedlist
+
 ***
 Updates blocked sender domain.
 
@@ -900,6 +964,7 @@ Updates blocked sender domain.
 #### Base Command
 
 `fireeye-ex-update-blockedlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -919,6 +984,7 @@ Updates blocked sender domain.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -926,6 +992,7 @@ Updates blocked sender domain.
 
 
 ### fireeye-ex-delete-blockedlist
+
 ***
 Deletes blocked sender domain.
 
@@ -933,6 +1000,7 @@ Deletes blocked sender domain.
 #### Base Command
 
 `fireeye-ex-delete-blockedlist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -951,11 +1019,13 @@ Deletes blocked sender domain.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
 
 
 ## Known Limitations
+
 Clicking the **Test** button of the **Integration instance settings** window verifies that the instance configuration is correct.
 Due to a known limitation, clicking the **Test** button several times in quick succession may result in an "Unauthorized" error, even after a successful result was initially returned. It is enough to receive one success message to verify that the configuration is correct. "Unauthorized" error messages received from repeated clicking of the instance configuration **Test** button do not affect the validity of the instance if the initial response was successful.

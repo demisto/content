@@ -67,21 +67,26 @@ This integration was integrated and tested majorly with G Suite Basic edition.
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate ``credentails.json``, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
 ### gsuite-mobile-update
+
 ***
 Takes an action that affects a mobile device. For example, remotely wiping a device.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.device.mobile.action`
 
 #### Base Command
 
 `gsuite-mobile-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -97,19 +102,23 @@ Takes an action that affects a mobile device. For example, remotely wiping a dev
 There is no context output for this command.
 
 #### Command Example
+
 ``` 
 !gsuite-mobile-update resource_id=RESOURCE_ID  action=admin_account_wipe customer_id=my_customer admin_email=admin@domain.io
 ```
 
 #### Human Readable Output
+>
 > Mobile device with resource id - RESOURCE_ID updated.
 
 
 ### gsuite-mobile-delete
+
 ***
 Removes a mobile device. Note that this does not break the device's sync, it simply removes it from the list of devices connected to the domain. If the device still has a valid login/authentication, it will be added back on it's next successful sync.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.user.readonly`
 `https://www.googleapis.com/auth/admin.directory.user `
 `https://www.googleapis.com/auth/cloud-platform `
@@ -117,6 +126,7 @@ Removes a mobile device. Note that this does not break the device's sync, it sim
 #### Base Command
 
 `gsuite-mobile-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -131,6 +141,7 @@ Removes a mobile device. Note that this does not break the device's sync, it sim
 There is no context output for this command.
 
 #### Command Example
+
 ```!gsuite-mobile-delete customer_id=my_customer resource_id=AFFIQUAU-Adjghah-rezwed admin_email=adminemail@domain.com```
 
 
@@ -140,16 +151,19 @@ There is no context output for this command.
 
 
 ### gsuite-user-alias-add
+
 ***
 Adds an alias.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.user.alias`
 `https://www.googleapis.com/auth/admin.directory.user `
 
 #### Base Command
 
 `gsuite-user-alias-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -170,9 +184,11 @@ Adds an alias.
 
 
 #### Command Example
+
 ```!gsuite-user-alias-add alias=alias_321@domain.com user_key=demoaccount@domain.com admin_email=user1@domain.com```
 
 #### Context Example
+
 ```
 {
     "GSuite": {
@@ -192,15 +208,18 @@ Adds an alias.
 
 
 ### gsuite-user-create
+
 ***
 Creates a user.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.user`
 
 #### Base Command
 
 `gsuite-user-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -270,9 +289,11 @@ Creates a user.
 
 
 #### Command Example
+
 ```!gsuite-user-create admin_email=adminemail@domain.com first_name="new" last_name="user" primary_email="new.user@domain.com" password="user@123"```
 
 #### Context Example
+
 ``` 
 {
  "GSuite":{
@@ -298,21 +319,25 @@ Creates a user.
 #### Human Readable Output
 
 >### User Details
+>
 >|Id|Customer Id|Primary Email|First Name|Last Name|Is Admin|Creation Time|
 >|---|---|---|---|---|---|---|
 >| 111364427621472798290 | C03puekhd | new.user@domain.com | new | user | false | 2020-09-22T11:26:26.000Z |
 
 
 ### gsuite-group-create
+
 ***
 Creates a group with a group name and its description.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.group`
 
 #### Base Command
 
 `gsuite-group-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -340,9 +365,11 @@ Creates a group with a group name and its description.
 
 
 #### Command Example
+
 ```!gsuite-group-create group_email="testsgroup@domain.com" admin_email=adminemail@domain.com group_description="group description"```
 
 #### Context Example
+
 ```
 {
     "GSuite": {
@@ -362,22 +389,26 @@ Creates a group with a group name and its description.
 #### Human Readable Output
 
 >### A new group named "testsgroup" created.
+>
 >|Id|Email|Description|Admin Created|
 >|---|---|---|---|
 >| 017dp8vu2zdcnpe | testsgroup@domain.com | group description | true |
 
 
 ### gsuite-role-assignment-list
+
 ***
 Retrieves a paginated list of all role assignments.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly`
 `https://www.googleapis.com/auth/admin.directory.rolemanagement`
 
 #### Base Command
 
 `gsuite-role-assignment-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -405,9 +436,11 @@ Retrieves a paginated list of all role assignments.
 
 
 #### Command Example
+
 ```!gsuite-role-assignment-list customer_id=my_customer admin_email=adminemail@domain.com max_results=2 user_key=112697610```
 
 #### Context Example
+
 ```
 {
     "GSuite": {
@@ -441,7 +474,9 @@ Retrieves a paginated list of all role assignments.
 #### Human Readable Output
 
 >### Next Page Token: 1380118834
+>
 >### Total Retrieved Role Assignment(s): 2
+>
 >|Role Assignment Id|Role Id|Assigned To|Scope Type|
 >|---|---|---|---|
 >| 1380118833 | 1380118839 | 112697610 | CUSTOMER |
@@ -449,15 +484,18 @@ Retrieves a paginated list of all role assignments.
 
 
 ### gsuite-role-assignment-create
+
 ***
 Creates a role assignment.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.rolemanagement`
 
 #### Base Command
 
 `gsuite-role-assignment-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -484,9 +522,11 @@ Creates a role assignment.
 
 
 #### Command Example
+
 ```!gsuite-role-assignment-create assigned_to=112697610 customer_id=my_customer role_id=13801188331880450 scope_type=CUSTOMER admin_email=adminemail@domain.com```
 
 #### Context Example
+
 ```
 {
     "GSuite": {
@@ -505,21 +545,25 @@ Creates a role assignment.
 #### Human Readable Output
 
 >### Role Assignment Details
+>
 >|Role Assignment Id|Role Id|Assigned To|Scope Type|
 >|---|---|---|---|
 >| 331880504 | 13801188331880450 | 112697610 | CUSTOMER |
 
 
 ### gsuite-role-create
+
 ***
 Creates a new role.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.rolemanagement`
 
 #### Base Command
 
 `gsuite-role-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -547,6 +591,7 @@ Creates a new role.
 
 
 #### Command Example
+
 ``` 
 !gsuite-role-create customer_id=my_customer role_name role_privileges="PRIVILEGE_NAME:service_id" 
 admin_email=admin@domain.com
@@ -554,6 +599,7 @@ admin_email=admin@domain.com
 
 
 #### Context Example
+
 ``` 
 {
  "GSuite": {
@@ -577,21 +623,25 @@ admin_email=admin@domain.com
 #### Human Readable Output
 
 >### A new role created.
+>
 >|Id|Name|Privileges|
 >|---|---|---|
 >| 13801188331880469 | role_22345 | PRIVILEGE_NAME: service_id |
 
 
 ### gsuite-token-revoke
+
 ***
 Delete all access tokens issued by a user for an application.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.user.security`
 
 #### Base Command
 
 `gsuite-token-revoke`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -606,6 +656,7 @@ Delete all access tokens issued by a user for an application.
 There is no context output for this command.
 
 #### Command Example
+
 ```!gsuite-token-revoke client_id=297408095146-fug707qsjv4ikron0hugpevbrjhkmsk7.apps.googleusercontent.com user_key=user1@domain.com admin_email=adminemail@domain.com```
 
 
@@ -615,15 +666,18 @@ There is no context output for this command.
 
 
 ### gsuite-user-signout
+
 ***
  Signs a user out of all web and device sessions and reset their sign-in cookies.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.user.security`
 
 #### Base Command
 
 `gsuite-user-signout`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -635,10 +689,12 @@ There is no context output for this command.
 There is no context output for this command.
 
 ### gsuite-datatransfer-list
+
 ***
 Lists the transfers for a customer by source user, destination user, or status.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.datatransfer`
 `https://www.googleapis.com/auth/admin.datatransfer.readonly`
 
@@ -678,9 +734,11 @@ Lists the transfers for a customer by source user, destination user, or status.
 
 
 #### Command Example
+
 ```!gsuite-datatransfer-list admin_email=adminemail@domain.com customer_id=my_customer max_results=2```
 
 #### Context Example
+
 ```
 {
     "GSuite": {
@@ -748,6 +806,7 @@ Lists the transfers for a customer by source user, destination user, or status.
 >### Next Page Token: AKrEtIYG88pek5zyrIzBx7kV5g4Jha32YbTTHrbqLTPGaiqmLKuA3WFU7zyxmmkwUrGZcf73dt4SAcDmj5_GeCgoCRFJWbyIxg
 >
 >### Total Retrieved Data Transfers: 2
+>
 >|Id|Old Owner User Id|New Owner User Id|Overall Transfer Status Code|Request Time|Application Data Transfers|
 >|---|---|---|---|---|---|
 >| AKrEtIYG88pek5zyrIzBx7kV5g4JNiUshLFkMbPUYKXsTgRGIJvAyjpzpti9I38WXJ70t6ef0fUIx0EM82KfN_PPP7KKNfHeSQ | 111046242590772774691 | 103744886667034914950 | completed | 2020-09-14T06:30:55.672Z | Application Id: 55656082996<br/>Application Transfer Status: completed<br/><br/> |
@@ -755,16 +814,19 @@ Lists the transfers for a customer by source user, destination user, or status.
 
 
 ### gsuite-custom-user-schema-create
+
 ***
 Creates a custom user schema to add custom fields to user profiles.
 Note: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.userschema`
 
 #### Base Command
 
 `gsuite-custom-user-schema-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -800,9 +862,11 @@ Note: field_raw_json has higher precedence when both field_raw_json and field_js
 
 
 #### Command Example
+
 ```!gsuite-custom-user-schema-create customer_id=my_customer schema_display_name=test44 schema_name=schema_name4 admin_email=adminemail@domain.com  field_raw_json="{\"fields\":[{\"fieldType\":\"BOOL\",\"fieldName\":\"surname4\",\"displayName\":\"Surname4\",\"multiValued\":true}]}"```
 
 #### Context Example
+
 ```
 {
     "GSuite": {
@@ -832,26 +896,32 @@ Note: field_raw_json has higher precedence when both field_raw_json and field_js
 #### Human Readable Output
 
 >### Custom User Schema Details
+>
 >Schema Id: 5JijaVh6R7ar7zK0u95XSw== \
 >Schema Name: schema_name4 \
 >Schema Display Name: test44
+>
 >### Field Details
+>
 >|Field Id|Field Name|Display Name|Field Type|Read Access Type|Multi Valued|
 >|---|---|---|---|---|---|
 >| ltlnHmK5SJGk8zXvNWYA9g== | surname4 | Surname4 | BOOL | ALL_DOMAIN_USERS | true |
 
 
 ### gsuite-custom-user-schema-update
+
 ***
 Updates a custom user schema.
 Note: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.userschema`
 
 #### Base Command
 
 `gsuite-custom-user-schema-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -888,9 +958,11 @@ Note: field_raw_json has higher precedence when both field_raw_json and field_js
 
 
 #### Command Example
+
 ```!gsuite-custom-user-schema-update customer_id=my_customer admin_email=adminemail@domain.com field_raw_json="{\"fields\":[{\"fieldType\":\"BOOL\",\"fieldName\":\"surname\",\"displayName\":\"Surname\",\"multiValued\":true}]}" schema_id=ZZi9zLU7ROmyBoufhbn9gg== schema_name=test222```
 
 #### Context Example
+
 ```
 {
     "GSuite": {
@@ -919,16 +991,20 @@ Note: field_raw_json has higher precedence when both field_raw_json and field_js
 #### Human Readable Output
 
 >### Updated Custom User Schema Details
+>
 >Schema Id: ZZi9zLU7ROmyBoufhbn9gg== \
 >Schema Name: test222 \
 >Schema Display Name: test222
+>
 >### Field Details
+>
 >|Field Id|Field Name|Display Name|Field Type|Multi Valued|
 >|---|---|---|---|---|
 >| cMmMeyLxTKyM-7m7bb9Y_Q== | surname | Surname | BOOL | true |
 
 
 ### gsuite-datatransfer-request-create
+
 ***
 Inserts a data transfer request.
 
@@ -937,11 +1013,13 @@ the higher precedence will be in order of applications_raw_json, applications_ra
 and application_id respectively.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.datatransfer`
 
 #### Base Command
 
 `gsuite-datatransfer-request-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -973,9 +1051,11 @@ and application_id respectively.
 
 
 #### Command Example
+
 ```!gsuite-datatransfer-request-create application_id=435070579839 application_transfer_params="RELEASE_RESOURCES:TRUE" new_owner_id=108028652821197762751 old_owner_id=119443780932332```
 
 #### Context Example
+
 ```
 {
     "GSuite": {
@@ -1009,20 +1089,24 @@ and application_id respectively.
 #### Human Readable Output
 
 >### Data transfer request inserted successfully.
+>
 >|Id|Old Owner User Id|New Owner User Id|Overall Transfer Status Code|Request Time|Application Data Transfers|
 >|---|---|---|---|---|---|
 >| AKrEtIYCgUCoI7j9IqOCJ2q4HkJUVaZJaYpgSPDEP-GIzkHz3pH1CQuBa-P38vqhSOSuKcJOwPT8GSKhTGDqOw8vJt8FQeTL8Q | 119443780932332 | 108028652821197762751 | inProgress | 2020-09-22T07:44:44.473Z | Application Id: 435070579839,<br/>Application Transfer Status: pending |
 
 ### gsuite-user-update
+
 ***
 Updates a user.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.user`
 
 #### Base Command
 
 `gsuite-user-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1172,9 +1256,11 @@ Updates a user.
 
 
 #### Command Example
+
 ```!gsuite-user-update first_name="test" last_name="user" user_key="test@domain.io"```
 
 #### Context Example
+
 ```json
 {
     "GSuite": {
@@ -1222,20 +1308,24 @@ Updates a user.
 #### Human Readable Output
 
 >### Updated User Details
+>
 >|Id|Customer Id|Primary Email|First Name|Last Name|Archived|Suspended|Org Unit Path|Is Admin|Creation Time|Secondary Email Details|Ip Whitelisted|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 113716761692464219843 | C03puekhd |test@domain.io | test | user | false | false | / | false | 2020-09-19T13:43:57.000Z | Address: test1@nimbledata.io<br/>Type: custom | false |
 
 ### gsuite-user-delete
+
 ***
 Deletes a user.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.user`
 
 #### Base Command
 
 `gsuite-user-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1249,6 +1339,7 @@ Deletes a user.
 There is no context output for this command.
 
 #### Command Example
+
 ```!gsuite-user-delete user_key=user.test@domain.io```
 
 #### Human Readable Output
@@ -1256,15 +1347,18 @@ There is no context output for this command.
 >User with user key user.test@domain.io deleted successfully.
 
 ### gsuite-group-get
+
 ***
 Retreive a group's details given a group key.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.group`
 
 #### Base Command
 
 `gsuite-group-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1288,8 +1382,11 @@ Retreive a group's details given a group key.
 | GSuite.Group.nonEditableAliases | String | List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains. | 
 
 #### Command example
+
 ```!gsuite-group-get group=test-group@demistodev.com```
+
 #### Context Example
+
 ```json
 {
     "GSuite": {
@@ -1313,21 +1410,25 @@ Retreive a group's details given a group key.
 #### Human Readable Output
 
 >### Found group named "Atlassian Test Group" .
+>
 >|Id|Email|Description|Admin Created|
 >|---|---|---|---|
 >| example_id | test-group@demistodev.com | Test Group | true |
 
 
 ### gsuite-user-get
+
 ***
 Retrieve a user's details given a user key
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.user`
 
 #### Base Command
 
 `gsuite-user-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1450,8 +1551,11 @@ Retrieve a user's details given a user key
 | GSuite.User.customSchemas | Unknown | Custom fields of the user. | 
 
 #### Command example
+
 ```!gsuite-user-get user=adminemail@domain.com```
+
 #### Context Example
+
 ```json
 {
     "GSuite": {
@@ -1520,21 +1624,25 @@ Retrieve a user's details given a user key
 #### Human Readable Output
 
 >### Retrieved details for user adminemail@domain.com
+>
 >|Id|Customer Id|Primary Email|First Name|Last Name|Archived|Suspended|Org Unit Path|Is Admin|Creation Time|Phone Details|Secondary Email Details|Ip Whitelisted|Recovery Email|Recovery Phone|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 103020731686044834269 | C02f0zfqw | adminemail@domain.com | Tomer | Malache | false | false | / | true | 2016-05-18T10:45:01.000Z | Value: 77777777<br/>Type: home | Address: adminemail@domain.com<br/>Primary: True | false | tmalache@paloaltonetworks.com | +972545429435 |
 
 
 ### google-mobiledevice-list
+
 ***
 Retrieves a paginated list that includes company-owned mobile devices.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.device.mobile.readonly`
 
 #### Base Command
 
 `gsuite-mobiledevice-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1602,8 +1710,11 @@ Retrieves a paginated list that includes company-owned mobile devices.
 | GSuite.MobileDevices.MobileListObjects.applications.permission | Object | The list of permissions of this application. | 
 
 #### Command example
+
 ```!gsuite-mobiledevice-list customer_id=my_customer limit=2 admin_email=adminemail@domain.com```
+
 #### Context Example
+
 ```json
 {
     "GSuite": {
@@ -1708,7 +1819,9 @@ Retrieves a paginated list that includes company-owned mobile devices.
 #### Human Readable Output
 
 >### Google Workspace Admin - Mobile Devices List
+>
 >2 results found
+>
 >|Model Name|OS|Resource Id|Serial Number|Status|Type|User Names|
 >|---|---|---|---|---|---|---|
 >| SM-G960F | Android 8.0.0" | example_resource_id | example_serial_number | APPROVED | ANDROID | example_name |
@@ -1716,15 +1829,18 @@ Retrieves a paginated list that includes company-owned mobile devices.
 
 
 ### gsuite-chromeosdevice-list
+
 ***
 Retrieves a paginated list of company-owned ChromeOS devices.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly`
 
 #### Base Command
 
 `gsuite-chromeosdevice-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1839,19 +1955,23 @@ Retrieves a paginated list of company-owned ChromeOS devices.
 | GSuite.ChromeOSDevices.ChromeOSListObjects.firstEnrollmentTime | String | Date and time for the first time the device was enrolled. | 
 
 #### Command example
+
 ```!gsuite-chromeosdevice-list customer_id=my_customer limit=2 admin_email=adminemail@domain.com```
 
 
 ### gsuite-chromeosdevice-action
+
 ***
 Executes an action that affects a ChromeOS Device. This includes de-provisioning, disabling, and re-enabling devices.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.device.chromeos`
 
 #### Base Command
 
 `gsuite-chromeosdevice-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1867,9 +1987,11 @@ Executes an action that affects a ChromeOS Device. This includes de-provisioning
 There is no context output for this command.
 
 #### Command Example
+
 ```!gsuite-chromeosdevice-action resource_id=RESOURCE_ID  action=admin_account_wipe customer_id=my_customer admin_email=admin@domain.io```
 
 #### Human Readable Output
+>
 > ChromeOS device with resource id - RESOURCE_ID updated.
 
 
@@ -1879,6 +2001,7 @@ There is no context output for this command.
 Retreive a group's details given a group key.
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.user`
 
 #### Base Command
@@ -2006,9 +2129,11 @@ Retreive a group's details given a group key.
 | GSuite.User.customSchemas | Unknown | Custom fields of the user. | 
 
 #### Command Example
+
 ```gsuite-user-reset-password user_key=nikolic@demistodev.com```
 
 #### Context Example
+
 ```json
 {
     "GSuite": {
@@ -2054,6 +2179,7 @@ Retreive a group's details given a group key.
 #### Human Readable Output
 
 >### Updated User Details
+>
 >|Id|Customer Id|Primary Email|Change Password At Next Login|
 >|---|---|---|---|
 >| 104065793340555884068 | C02f0zfqw | nikolic@demistodev.com | true |
@@ -2070,6 +2196,7 @@ To move Chrome browser devices assigned to an account from one organization unit
 `gsuite-chromebrowserdevice-move-ou`
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.device.chromebrowsers`
 
 #### Input
@@ -2085,9 +2212,11 @@ To move Chrome browser devices assigned to an account from one organization unit
 There is no context output for this command.
 
 #### Command Example
+
 ```!gsuite-chromebrowserdevice-move-ou customer_id="test" resource_ids="11111" org_unit_path="/testing"```
 
 #### Human Readable Output
+>
 > Chrome browser devices have been moved to the new organization unit ORGANIZATIONAL_UNIT_PATH.
 
 ### gsuite-chromebrowserdevice-list
@@ -2100,6 +2229,7 @@ Retrieve all Chrome browser devices for an account or a specific Chrome browser 
 `gsuite-chromebrowserdevice-list`
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/admin.directory.device.chromebrowsers`
 
 #### Input
@@ -2136,9 +2266,11 @@ Retrieve all Chrome browser devices for an account or a specific Chrome browser 
 | GSuite.ChromeBrowserDevices.browserObjects.deviceIdentifiersHistory | String | Device identifier history. |
 
 #### Command Example
+
 ```!gsuite-chromebrowserdevice-list customer_id=test```
 
 #### Context Example
+
 ```json
 {
     "GSuite": {
@@ -2165,6 +2297,7 @@ Retrieve all Chrome browser devices for an account or a specific Chrome browser 
 #### Human Readable Output
 
 >### Chrome Browser Device List
+>
 >|Device Id|Os Platform|Os Version|Machine Name|Serial Number|Org Unit Path|
 >|---|---|---|---|---|---|
 >| test | Windows | 10.0.19045.4046 | WIN10-test | test 00 00 00 | /testing |
@@ -2180,6 +2313,7 @@ Modifies multiple policy values that are applied to a specific group. All target
 `gsuite-policy-modify`
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/chrome.management.policy`
 
 #### Input
@@ -2201,9 +2335,11 @@ Modifies multiple policy values that are applied to a specific group. All target
 There is no context output for this command.
 
 #### Command Example
+
 ```!gsuite-policy-modify customer_id=test target_type=Group target_resource=1111111111 policy_schema_filter=chrome.users.apps.InstallType additional_target_keys="\"app_id\":\"chrome:1111111aaaaaaaaa\"" policy_schema=chrome.users.apps.InstallType policy_value=BLOCKED update_mask=appInstallType```
 
 #### Human Readable Output
+>
 > Policy has been modified for the customer CUSTOMER_ID.
 
 ### gsuite-policy-schemas-list
@@ -2216,6 +2352,7 @@ Gets a list of policy schemas that match a specified filter value for a given cu
 `gsuite-policy-schemas-list`
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/chrome.management.policy`
 
 #### Input
@@ -2259,9 +2396,11 @@ Gets a list of policy schemas that match a specified filter value for a given cu
 | GSuite.PolicySchema.policySchemaObjects.supportedPlatforms | String | Policy supported platforms. | 
 
 #### Command Example
+
 ```!gsuite-policy-schemas-list customer_id=test limit=2```
 
 #### Context Example
+
 ```json
 {
     "GSuite": {
@@ -2381,6 +2520,7 @@ Gets a list of policy schemas that match a specified filter value for a given cu
 #### Human Readable Output
 
 >### Policy Schemas List
+>
 >|Name|Policy Description|Schema Name|
 >|---|---|---|
 >| customers/test/policySchemas/chrome.devices.test.appsconfig.AutoLaunchApp | Allows setting of the auto-launch app. | chrome.devices.test.appsconfig.AutoLaunchApp |
@@ -2397,6 +2537,7 @@ Gets the resolved policy values for a list of policies that match a search query
 `gsuite-policy-resolve`
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/chrome.management.policy`
 
 #### Input
@@ -2426,9 +2567,11 @@ Gets the resolved policy values for a list of policies that match a search query
 
 
 #### Command Example
+
 ```!gsuite-policy-resolve customer_id=test policy_schema_filter=chrome.users.apps.InstallType target_resource=1111111 target_type=OrgUnit```
 
 #### Context Example
+
 ```json
 {
     "GSuite": {
@@ -2467,6 +2610,7 @@ Gets the resolved policy values for a list of policies that match a search query
 #### Human Readable Output
 
 >### Resolved Policies
+>
 >|Target Resource|Additional Target Keys|Policy Schema|
 >|---|---|---|
 >| orgunits/1111111 | app_id: chrome:aaaaaaaaaaaa | chrome.users.apps.InstallType |
@@ -2481,6 +2625,7 @@ Delete multiple policy values that are applied to a specific group. All targets 
 `gsuite-policy-groups-delete`
 
 ##### Required Permissions
+
 `https://www.googleapis.com/auth/chrome.management.policy`
 
 #### Input
@@ -2499,7 +2644,9 @@ Delete multiple policy values that are applied to a specific group. All targets 
 There is no context output for this command.
 
 #### Command Example
+
 ```!gsuite-policy-groups-delete customer_id=test target_type=Group target_resource=1111 policy_schema=chrome.users.apps.InstallType additional_target_keys=""\"app_id\":\"chrome:111111\""```
 
 #### Human Readable Output
+>
 > Policy has been deleted for the customer CUSTOMER_ID.

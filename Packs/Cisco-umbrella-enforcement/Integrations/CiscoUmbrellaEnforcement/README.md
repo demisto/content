@@ -13,9 +13,12 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### umbrella-domain-event-add
+
 ***
 Posts a malware event to the API for processing and optionally adding to a customer's domain lists.
 
@@ -23,6 +26,7 @@ Posts a malware event to the API for processing and optionally adding to a custo
 #### Base Command
 
 `umbrella-domain-event-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -46,9 +50,11 @@ Posts a malware event to the API for processing and optionally adding to a custo
 There is no context output for this command.
 
 #### Command Example
+
 ```!umbrella-domain-event-add alert_time=2013-02-08T09:30:26.0Z device_id=ba6a58f4-e692-4724-ba36-c28132c761de destination_domain=test6.com device_version=13.7a destination_url=test6.com```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -58,6 +64,7 @@ There is no context output for this command.
 >New event was added successfully, The Event id is 31bb0adb,8f27,4423,a081-3b5773260f87.
 
 ### umbrella-domains-list
+
 ***
 List of domains.
 
@@ -65,6 +72,7 @@ List of domains.
 #### Base Command
 
 `umbrella-domains-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -83,9 +91,11 @@ List of domains.
 
 
 #### Command Example
+
 ```!umbrella-domains-list```
 
 #### Context Example
+
 ```json
 {
     "UmbrellaEnforcement": {
@@ -123,6 +133,7 @@ List of domains.
 #### Human Readable Output
 
 >### List of Domains
+>
 >|id|name|
 >|---|---|
 >| 3569571 | test6.com |
@@ -133,6 +144,7 @@ List of domains.
 
 
 ### umbrella-domain-delete
+
 ***
 Delete domain.
 
@@ -140,6 +152,7 @@ Delete domain.
 #### Base Command
 
 `umbrella-domain-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -153,9 +166,11 @@ Delete domain.
 There is no context output for this command.
 
 #### Command Example
+
 ```!umbrella-domain-delete name=test6.com```
 
 #### Context Example
+
 ```json
 {}
 ```

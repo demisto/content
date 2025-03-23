@@ -19,6 +19,7 @@ This is the default integration for this content pack when configured by the Dat
 | Fetch events                                                                     |                                                                                                                                                                                                                   | False        |
 | Trust any certificate (not secure)                                               |                                                                                                                                                                                                                   | False        |
 | Use system proxy settings                                                        |                                                                                                                                                                                                                   | False        |
+
 4. Click **Test** to validate the URLs, token, and connection.
 
 ***
@@ -58,6 +59,7 @@ The following table provides a brief description of each role.
 
 
 ### API Limitations
+
 * You cannot retrieve audit logs that are older than 180 days. Therefore, if setting a first fetch that is more than 180 days, for audit logs it will be a maximum of 180 days.
 * For API rate limits, refer [here](https://automation.trendmicro.com/xdr/Guides/API-Request-Limits)
 * Observed Attack Techniques Logs and Search Detection Logs are fetched from the newest to the oldest as its the logs are returned in descending order from the api.

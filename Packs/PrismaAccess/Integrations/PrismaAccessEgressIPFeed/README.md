@@ -22,9 +22,12 @@ Dynamically retrieve and allow IPs Prisma Access uses to egress traffic to the i
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### prisma-access-get-indicators
+
 ***
 Gets indicators from the feed.
 
@@ -32,6 +35,7 @@ Gets indicators from the feed.
 ##### Base Command
 
 `prisma-access-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -48,4 +52,5 @@ Gets indicators from the feed.
 
 
 ##### Command Example
+
 ```!prisma-access-get-indicators limit=300```

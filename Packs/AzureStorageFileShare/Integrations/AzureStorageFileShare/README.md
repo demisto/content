@@ -1,4 +1,5 @@
 # Azure Storage FileShare
+
 Create and Manage Azure FileShare Files and Directories.
 This integration was integrated and tested with version "2020-10-02" of Azure Storage FileShare
 
@@ -13,16 +14,22 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
 | Trust any certificate (not secure) | False |
 
 ## Shared Access Signatures (SAS) Permissions
+
 In order to use the integration use-cases, 
 please make sure your SAS token contains the following permissions:
+
   1. 'File' and 'Blob' services.
   2. 'Service', 'Container' and 'Object' resource types.
   3. 'Read', 'Write', 'Delete', 'List', 'Create', 'Add', 'Update' and 'Immutable storage' permissions.
   4. 'Blob versioning permissions'
+
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-storage-fileshare-create
+
 ***
 Create a new Azure file share under the specified account.
 
@@ -30,6 +37,7 @@ Create a new Azure file share under the specified account.
 #### Base Command
 
 `azure-storage-fileshare-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -42,6 +50,7 @@ Create a new Azure file share under the specified account.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-fileshare-create share_name="test-xsoar"```
 
 #### Human Readable Output
@@ -49,6 +58,7 @@ There is no context output for this command.
 >Share test-xsoar successfully created.
 
 ### azure-storage-fileshare-delete
+
 ***
 Delete file share under the specified account.
 
@@ -56,6 +66,7 @@ Delete file share under the specified account.
 #### Base Command
 
 `azure-storage-fileshare-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -68,6 +79,7 @@ Delete file share under the specified account.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-fileshare-delete share_name="test-xsoar"```
 
 #### Human Readable Output
@@ -75,6 +87,7 @@ There is no context output for this command.
 >Share test-xsoar successfully deleted.
 
 ### azure-storage-fileshare-list
+
 ***
 list Azure file shares under the specified account.
 
@@ -82,6 +95,7 @@ list Azure file shares under the specified account.
 #### Base Command
 
 `azure-storage-fileshare-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -99,9 +113,11 @@ list Azure file shares under the specified account.
 
 
 #### Command Example
+
 ```!azure-storage-fileshare-list prefix="test-xsoar" limit="1"```
 
 #### Context Example
+
 ```json
 {
     "AzureStorageFileShare": {
@@ -115,14 +131,17 @@ list Azure file shares under the specified account.
 #### Human Readable Output
 
 >### Shares List:
+>
 > Current page size: 1
 > Showing page 1 out others that may exist
+>
 >|Name|
 >|---|
 >| test-xsoar |
 
 
 ### azure-storage-fileshare-content-list
+
 ***
 List files and directories under the specified share or directory.
 
@@ -130,6 +149,7 @@ List files and directories under the specified share or directory.
 #### Base Command
 
 `azure-storage-fileshare-content-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -166,9 +186,11 @@ List files and directories under the specified share or directory.
 
 
 #### Command Example
+
 ```!azure-storage-fileshare-content-list limit="50" share_name="myfileshare" directory_path="mydirectorytest" page="1"```
 
 #### Context Example
+
 ```json
 {
     "AzureStorageFileShare": {
@@ -238,13 +260,16 @@ List files and directories under the specified share or directory.
 >Directories and Files List:
 > Current page size: 50
 > Showing page 1 out others that may exist
+>
 >### Directories:
+>
 >|Name|File Id|
 >|---|---|
 >| tttttt | 13835084443561230336 |
 >| yehuda123 | 16140971433240035328 |
 >
 >### Files:
+>
 >|Name|File Id|
 >|---|---|
 >| testepoccreation.txt | 13835137220119363584 |
@@ -252,6 +277,7 @@ List files and directories under the specified share or directory.
 
 
 ### azure-storage-fileshare-directory-create
+
 ***
 Create a new directory under the specified share or parent directory.
 
@@ -259,6 +285,7 @@ Create a new directory under the specified share or parent directory.
 #### Base Command
 
 `azure-storage-fileshare-directory-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -273,6 +300,7 @@ Create a new directory under the specified share or parent directory.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-fileshare-directory-create share_name="test-xsoar" directory_name="xsoar-directory"```
 
 #### Human Readable Output
@@ -280,6 +308,7 @@ There is no context output for this command.
 >xsoar-directory Directory successfully created in test-xsoar.
 
 ### azure-storage-fileshare-directory-delete
+
 ***
 Delete the specified empty directory. Note that the directory must be empty before it can be deleted.
 
@@ -287,6 +316,7 @@ Delete the specified empty directory. Note that the directory must be empty befo
 #### Base Command
 
 `azure-storage-fileshare-directory-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -301,6 +331,7 @@ Delete the specified empty directory. Note that the directory must be empty befo
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-fileshare-directory-delete share_name="test-xsoar" directory_name="xsoar-directory"```
 
 #### Human Readable Output
@@ -308,6 +339,7 @@ There is no context output for this command.
 >xsoar-directory Directory successfully deleted from test-xsoar.
 
 ### azure-storage-fileshare-file-create
+
 ***
 Creates a new file in Share.
 
@@ -315,6 +347,7 @@ Creates a new file in Share.
 #### Base Command
 
 `azure-storage-fileshare-file-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -330,6 +363,7 @@ Creates a new file in Share.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-fileshare-file-create share_name="test-xsoar" directory_path="xsoar-directory" file_name="AzureStorage.txt" file_entry_id="16488@b5e40781-86c8-4799-8f10-ace443e93234"```
 
 #### Human Readable Output
@@ -337,6 +371,7 @@ There is no context output for this command.
 >File successfully created in test-xsoar.
 
 ### azure-storage-fileshare-file-get
+
 ***
 Retrieve file from Share.
 
@@ -344,6 +379,7 @@ Retrieve file from Share.
 #### Base Command
 
 `azure-storage-fileshare-file-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -370,9 +406,11 @@ Retrieve file from Share.
 
 
 #### Command Example
+
 ```!azure-storage-fileshare-file-get share_name="test-xsoar" file_name="AzureStorage.txt" directory_path="xsoar-directory"```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -396,6 +434,7 @@ Retrieve file from Share.
 
 
 ### azure-storage-fileshare-file-delete
+
 ***
 Delete file from Share.
 
@@ -403,6 +442,7 @@ Delete file from Share.
 #### Base Command
 
 `azure-storage-fileshare-file-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -417,6 +457,7 @@ Delete file from Share.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-fileshare-file-delete share_name="test-xsoar" file_name="AzureStorage.txt" directory_path="xsoar-directory"```
 
 #### Human Readable Output

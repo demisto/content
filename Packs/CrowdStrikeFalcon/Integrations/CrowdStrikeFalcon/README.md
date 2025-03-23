@@ -62,6 +62,7 @@ In order to use the CrowdStrike Falcon integration, the API client must have the
 
 You can enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Fetch types* integration parameter, select what types to mirror.
 3. Optional: You can go to one of the *fetch query* parameters and select the query to fetch the events from CrowdStrike Falcon.
@@ -933,6 +934,7 @@ Script le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 was del
 #### Context Output
 
 There is no context output for this command.
+
 ### cs-falcon-list-scripts
 
 ***
@@ -6106,6 +6108,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Mobile Detection(s) id_1, id_2 were successfully updated
+>
 ### cs-falcon-list-users
 
 ***

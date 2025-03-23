@@ -27,6 +27,7 @@ The normalization rules included in this pack supports the following log types:
 
 
 ### Other Azure Log Types 
+
 There are additional Azure log types which are collected via the [Azure Event Hub](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-from-Microsoft-Azure-Event-Hub) data source that are normalized into XDM via separate dedicated packs.   
 See the table below that lists these additional log types, along the relevant marketplace pack that handles their XDM modeling. 
 
@@ -44,6 +45,7 @@ See the table below that lists these additional log types, along the relevant ma
 To collect Azure Entra ID logs and ingest them into the *`msft_azure_ad_raw`* and *`msft_azure_ad_audit_raw`* datasets, you will need to configure an instance of the **Office 365** data source as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-from-Microsoft-Office-365).
 
 When configuring the Office 365 data source, mark the following checkboxes under the *Microsoft Graph API* section, as demonstrated in the screenshot below:
+
 * **`Azure AD Authentication Logs`** 
   * **`Collect all sign-in event types`**
 * **`Azure AD Audit Logs`**
@@ -55,6 +57,7 @@ When configuring the Office 365 data source, mark the following checkboxes under
 To collect Azure Logs from an Azure Event Hub and ingest them into the *`msft_azure_raw`* dataset, you will need to configure an instance of the **Azure Event Hub** data source as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-from-Microsoft-Azure-Event-Hub).
 
 When configuring the Azure Event Hub data source, mark the following checkbox under the *Enhanced Cloud Protection* section, as demonstrated in the screenshot below:
+
 * **`Use audit logs in analytics`** 
 
 ![MicrosoftEntraID_Azure_Event_Hub](./././doc_files/MicrosoftEntraID_Azure_Event_Hub.png)

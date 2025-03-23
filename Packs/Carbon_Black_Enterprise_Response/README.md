@@ -2,6 +2,7 @@ This response and threat hunting pack provides you with endpoint data enabling y
 
 
 ## What does this pack do?
+
 - Hunts for malicious indicators.
 - Investigates and analyzes potential malware and threats.
 - Remediates/removes unauthorized, malicious, or unwanted processes.

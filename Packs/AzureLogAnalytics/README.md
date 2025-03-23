@@ -3,6 +3,7 @@ Log Analytics enables you to edit and run log queries on data collected by your 
 ## What does this pack do?
 
 You can use Log Analytics queries to:
+
 - Retrieve records that match particular criteria
 - Identify trends
 - Analyze patterns

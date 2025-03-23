@@ -59,8 +59,11 @@ List the organizations that the user has privileges on.
 | CiscoMeraki.Organization.management.details.value | String | Value of management data. |
 
 #### Command example
+
 ```!meraki-organization-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -127,6 +130,7 @@ List the organizations that the user has privileges on.
 #### Human Readable Output
 
 >### Organization(s)
+>
 >|ID|Name|URL|Cloud Region Name|Cloud Region Host Name|
 >|---|---|---|---|---|
 >| 1565046 | Qmasters | https:<span>//</span>www.example.com/o/4WI3pa/manage/organization/overview | Europe | Europe |
@@ -173,8 +177,11 @@ List the networks that the user has privileges on in an organization.
 | CiscoMeraki.Network.tags | String | Network tags. |
 
 #### Command example
+
 ```!meraki-network-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -221,6 +228,7 @@ List the networks that the user has privileges on in an organization.
 #### Human Readable Output
 
 >### Network(s)
+>
 >|ID|Name|Organization ID|URL|
 >|---|---|---|---|
 >| L_0000 | QMDEV | 1565046 | https:<span>//</span>www.example.com/QMDEV-systems-ma/n/Vxca_d4wb/manage/usage/list |
@@ -281,8 +289,11 @@ List the license states overview of an organization.
 | CiscoMeraki.LicenseState.licenseTypes.counts.unassigned | Number | The number of unassigned licenses. |
 
 #### Command example
+
 ```!meraki-organization-license-state-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -301,6 +312,7 @@ List the license states overview of an organization.
 #### Human Readable Output
 
 >### License State(s)
+>
 >|Expiration Date|Status|
 >|---|---|
 >| Jul 4, 2025 UTC | License Required |
@@ -358,8 +370,11 @@ List the device inventories for an organization.
 | CiscoMeraki.Inventory.details.value | String | Additional property value. |
 
 #### Command example
+
 ```!meraki-organization-inventory-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -386,6 +401,7 @@ List the device inventories for an organization.
 #### Human Readable Output
 
 >### Inventory Device(s)
+>
 >|Serial|Name|Network ID|MAC|Model|Claimed At|Product Type|
 >|---|---|---|---|---|---|---|
 >| 0000-0000-0000 | ACCESS POINT | L_0000 | 00:00:00:00:00:00 | MR28 | 2024-07-08T14:00:47.679658Z | wireless |
@@ -412,11 +428,13 @@ Claim devices into a network. (Note: For recently claimed devices, it may take a
 There is no context output for this command.
 
 #### Command example
+
 ```!meraki-device-claim serials=0000-0000-0000```
 
 #### Human Readable Output
 
 >## The device(s) were successfully claimed into the network 'L_0000':
+>
 >- 0000-0000-0000
 
 ### meraki-organization-device-search
@@ -482,8 +500,11 @@ Search for devices in an organization.
 | CiscoMeraki.Device.details.value | String | Additional property value. |
 
 #### Command example
+
 ```!meraki-organization-device-search```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -515,6 +536,7 @@ Search for devices in an organization.
 #### Human Readable Output
 
 >### Device(s)
+>
 >|Serial|Name|Network ID|Address|Model|Firmware|Lan IP|
 >|---|---|---|---|---|---|---|
 >| 0000-0000-0000 | ACCESS POINT | L_0000 | Tel Aviv | MR28 | wireless-30-7 | 0.0.0.0 |
@@ -562,8 +584,11 @@ List the devices in an network or fetch a specific device with a serial number. 
 | CiscoMeraki.Device.details.value | String | Additional property value. |
 
 #### Command example
+
 ```!meraki-device-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -594,6 +619,7 @@ List the devices in an network or fetch a specific device with a serial number. 
 #### Human Readable Output
 
 >### Device(s)
+>
 >|Serial|Name|Network ID|Address|Model|Firmware|Lan IP|
 >|---|---|---|---|---|---|---|
 >| 0000-0000-0000 | ACCESS POINT | L_0000 | Tel Aviv | MR28 | wireless-30-7 | 0.0.0.0 |
@@ -649,8 +675,11 @@ Update the attributes of a device.
 | CiscoMeraki.Device.details.value | String | Additional property value. |
 
 #### Command example
+
 ```!meraki-device-update serial=0000-0000-0000 tags="aaa,bbb"```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -681,6 +710,7 @@ Update the attributes of a device.
 #### Human Readable Output
 
 >### The device '0000-0000-0000' was successfully updated.
+>
 >|Serial|Name|Network ID|Address|Model|Firmware|Lan IP|
 >|---|---|---|---|---|---|---|
 >| 0000-0000-0000 | ACCESS POINT | L_0000 | Tel Aviv | MR28 | wireless-30-7 | 0.0.0.0 |
@@ -705,8 +735,11 @@ Remove a single device from a network.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!meraki-device-remove serial=0000-0000-0000```
+
 #### Human Readable Output
 
 >## The device with the serial number: '0000-0000-0000' was successfully removed from the network 'L_0000'.
@@ -767,8 +800,11 @@ List the status of every Meraki device in the organization.
 | CiscoMeraki.DeviceStatus.components.powerSupplies.poe.unit | String | Unit of the PoE maximum. |
 
 #### Command example
+
 ```!meraki-device-status-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -799,6 +835,7 @@ List the status of every Meraki device in the organization.
 #### Human Readable Output
 
 >### Device Status(es)
+>
 >|Serial|Name|Network ID|Status|Model|IP Type|Gateway|Public IP|Lan IP|Last Reported At|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 0000-0000-0000 | ACCESS POINT | L_0000 | offline | MR28 | dhcp | 0.0.0.0 | 0.0.0.0 | 0.0.0.0 | 2024-07-18T13:54:26.364000Z |
@@ -858,8 +895,11 @@ List the uplink status of every Meraki MX, MG and Z series devices in the organi
 | CiscoMeraki.UplinkStatus.uplinks.signalStat.rsrq | String | Reference Signal Received Quality. |
 
 #### Command example
+
 ```!meraki-organization-uplink-status-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -903,6 +943,7 @@ List the uplink status of every Meraki MX, MG and Z series devices in the organi
 #### Human Readable Output
 
 >### Uplink Status(es)
+>
 >|Serial|Network ID|Model|Last Reported At|Uplink ICCID|Uplink Interface|Uplink IP|Uplink Public IP|Uplink Signal Type|Uplink Status|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 0000-0000-0000 | N_24329156 | MX68C | 2018-02-11T00:00:00Z | 123456789 | wan1 | 0.0.0.0 | 0.0.0.0 | 4G | active |
@@ -969,8 +1010,11 @@ Return the client details in an organization.
 | CiscoMeraki.Client.records.clientVpnConnections.remoteIp | String | The IP address of the VPN the client last connected to. |
 
 #### Command example
+
 ```!meraki-organization-client-list mac=00:00:00:00:00:00```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -1055,6 +1099,7 @@ Return the client details in an organization.
 #### Human Readable Output
 
 >### Client 0000000 MAC 00:00:00:00:00:00 Record(s)
+>
 >|Description|IP|Status|Network ID|Network Name|
 >|---|---|---|---|---|
 >| DESKTOP-000000 | 0.0.0.0 | Offline | N_0000000003823457 | TLV |
@@ -1139,8 +1184,11 @@ List the clients that have used this network in the time span. The data is updat
 | CiscoMeraki.NetworkClient.clientVpnConnections.remoteIp | String | The IP address of the VPN the client last connected to. |
 
 #### Command example
+
 ```!meraki-network-client-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -1185,6 +1233,7 @@ List the clients that have used this network in the time span. The data is updat
 #### Human Readable Output
 
 >### Network Monitor Client(s)
+>
 >|ID|Description|IP|Recent Device Name|SSID|Status|Usage Received|Usage Sent|
 >|---|---|---|---|---|---|---|---|
 >| 0000000 | Lior pc | 0.0.0.0 | ACCESS POINT | QMDEV-temp WiFi | Offline | 394111 | 7479 |
@@ -1228,8 +1277,11 @@ List the clients of a device, up to a maximum of a month ago. The usage of each 
 | CiscoMeraki.DeviceClient.usage.sent | Number | Usage sent by the client. |
 
 #### Command example
+
 ```!meraki-device-client-list serial=0000-0000-0000```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -1257,6 +1309,7 @@ List the clients of a device, up to a maximum of a month ago. The usage of each 
 #### Human Readable Output
 
 >### Device Monitored Client(s)
+>
 >|ID|Description|IP|MAC|MDNS Name|Usage Received|Usage Sent|
 >|---|---|---|---|---|---|---|
 >| 0000000 | Lior pc | 0.0.0.0 | 00:00:00:00:00:00 | DESKTOP-000000.local | 7572.45118874967 | 394326.99434949923 |
@@ -1296,8 +1349,11 @@ List the MX SSIDs in a network.
 | CiscoMeraki.SSID.Appliance.radiusServers.host | String | The IP address of your RADIUS server. |
 
 #### Command example
+
 ```!meraki-ssid-appliance-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -1326,6 +1382,7 @@ List the MX SSIDs in a network.
 #### Human Readable Output
 
 >### MX SSID(s)
+>
 >|Number|Name|Default VLAN ID|SSID Enabled|Visible|
 >|---|---|---|---|---|
 >| 1 | My SSID | 1 | true | true |
@@ -1392,8 +1449,11 @@ List the MR SSIDs in a network.
 | CiscoMeraki.SSID.Wireless.radiusServers.host | String | IP address \(or FQDN\) of your RADIUS server. |
 
 #### Command example
+
 ```!meraki-ssid-wireless-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -1462,6 +1522,7 @@ List the MR SSIDs in a network.
 #### Human Readable Output
 
 >### MR SSID(s)
+>
 >|Number|Name|IP Assignment Mode|Enable|Visible|
 >|---|---|---|---|---|
 >| 0 | QMDEV-temp WiFi | NAT mode | true | true |
@@ -1511,8 +1572,11 @@ List the L3 firewall rules for an MX network.
 | CiscoMeraki.L3FirewallRule.rules.syslogEnabled | Boolean | Whether syslog is enabled. |
 
 #### Command example
+
 ```!meraki-network-l3firewall-rule-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -1552,6 +1616,7 @@ List the L3 firewall rules for an MX network.
 #### Human Readable Output
 
 >### L3 Firewall Rule(s)
+>
 >|Comment|Policy|Protocol|Destination Port|Destination CIDR|
 >|---|---|---|---|---|
 >| helloworld1 | allow | any | Any | Any |
@@ -1600,8 +1665,11 @@ Update the L3 firewall rules of an MX network.
 | CiscoMeraki.L3FirewallRule.rules.syslogEnabled | Boolean | Whether syslog is enabled. |
 
 #### Command example
+
 ```!meraki-network-l3firewall-rule-update dest_cidr=any policy=allow protocol=any src_cidr="0.0.0.0/24" comment=helloworld1```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -1641,6 +1709,7 @@ Update the L3 firewall rules of an MX network.
 #### Human Readable Output
 
 >### The L3 firewall rules for the network 'L_0000' were successfully updated.
+>
 >|Comment|Policy|Protocol|Destination Port|Destination CIDR|
 >|---|---|---|---|---|
 >| helloworld1 | allow | any | Any | Any |
@@ -1666,6 +1735,7 @@ Delete the L3 firewall rules from an MX network.
 #### Context Output
 
 There is no context output for this command.
+
 ### meraki-network-l7firewall-rule-list
 
 ***
@@ -1691,8 +1761,11 @@ List the MX L7 firewall rules for an MX network.
 | CiscoMeraki.L7FirewallRule.rules.value | String | Value for the chosen type. |
 
 #### Command example
+
 ```!meraki-network-l7firewall-rule-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -1713,6 +1786,7 @@ List the MX L7 firewall rules for an MX network.
 #### Human Readable Output
 
 >### L7 Firewall Rule(s)
+>
 >|Policy|Type|Value|
 >|---|---|---|
 >| deny | port | 43 |
@@ -1748,8 +1822,11 @@ Update the MX L7 firewall rules for an MX network.
 | CiscoMeraki.L7FirewallRule.rules.value | String | Value for the chosen type. |
 
 #### Command example
+
 ```!meraki-network-l7firewall-rule-update policy=deny type=port value=43```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -1770,6 +1847,7 @@ Update the MX L7 firewall rules for an MX network.
 #### Human Readable Output
 
 >### The L7 firewall rules for the network 'L_0000' were successfully updated.
+>
 >|Policy|Type|Value|
 >|---|---|---|
 >| deny | port | 43 |
@@ -1793,8 +1871,11 @@ Delete the L7 firewall rules from an MX network.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!meraki-network-l7firewall-rule-delete```
+
 #### Human Readable Output
 
 >## The L7 firewall rules of the network 'L_0000' were successfully deleted.
@@ -1833,8 +1914,11 @@ List adaptive policy ACLs in a organization.
 | CiscoMeraki.AdaptivePolicyACL.rules.srcPort | String | Source port. |
 
 #### Command example
+
 ```!meraki-organization-adaptive-policy-acl-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -1895,6 +1979,7 @@ List adaptive policy ACLs in a organization.
 #### Human Readable Output
 
 >### Adaptive Policy ACL(s)
+>
 >|ACL ID|Name|Description|Created At|Rules Policy|Rules Protocol|Rules Destination Port|Rules Source Port|
 >|---|---|---|---|---|---|---|---|
 >| 0000000003806821 | Block sensitive web traffic | Blocks sensitive web traffic | 2024-07-09T12:32:26Z | deny | tcp | 22-30 | 1,33 |
@@ -1940,8 +2025,11 @@ List adaptive policies in an organization. An adaptive policy is a dynamic secur
 | CiscoMeraki.AdaptivePolicy.acls.name | String | The name for the access control list. |
 
 #### Command example
+
 ```!meraki-organization-adaptive-policy-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -1988,6 +2076,7 @@ List adaptive policies in an organization. An adaptive policy is a dynamic secur
 #### Human Readable Output
 
 >### Adaptive Policy(ies)
+>
 >|Adaptive Policy ID|Destination Group ID|Destination Group Name|Source Group ID|Source Group Name|
 >|---|---|---|---|---|
 >| 0000000003806834 | 0000000003809147 | blah | 0000000003808988 | Infrastructure |
@@ -2028,8 +2117,11 @@ List adaptive policy groups in a organization.
 | CiscoMeraki.AdaptivePolicyGroup.policyObjects.name | String | The name of the policy object. |
 
 #### Command example
+
 ```!meraki-organization-adaptive-policy-group-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -2101,6 +2193,7 @@ List adaptive policy groups in a organization.
 #### Human Readable Output
 
 >### Adaptive Policy Group(s)
+>
 >|Group ID|Name|Description|Security Group Tag|
 >|---|---|---|---|
 >| 0000000003808987 | Unknown | Created by Meraki, the Unknown group applies when a policy is specified for unsuccessful group classification | 0 |
@@ -2133,8 +2226,11 @@ Returns global adaptive policy settings in an organization.
 | CiscoMeraki.AdaptivePolicySettings.enabledNetworks | String | List of network IDs with adaptive policy enabled. |
 
 #### Command example
+
 ```!meraki-organization-adaptive-policy-settings-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -2149,6 +2245,7 @@ Returns global adaptive policy settings in an organization.
 #### Human Readable Output
 
 >### Adaptive Policy Settings
+>
 >**No entries.**
 
 
@@ -2198,8 +2295,11 @@ List the branding policies of an organization. This allows MSPs to view and moni
 | CiscoMeraki.BrandingPolicy.helpSettings.universalSearchKnowledgeBaseSearch | String | The universal search box always visible on Dashboard will, by default, present results from the Meraki KB. This configures whether these Meraki KB results should be returned. Can be one of 'default or inherit', 'hide' or 'show'. |
 
 #### Command example
+
 ```!meraki-organization-branding-policy-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -2247,6 +2347,7 @@ List the branding policies of an organization. This allows MSPs to view and moni
 #### Human Readable Output
 
 >### Branding Policy(ies)
+>
 >|Name|Enabled|Admin Settings Values|
 >|---|---|---|
 >| My Branding Policy | true | N_1234,<br/>L_5678 |
@@ -2333,8 +2434,11 @@ List the group policies in a network.
 | CiscoMeraki.GroupPolicy.vlanTagging.vlanId | String | The ID of the VLAN you want to tag. This only applies if 'settings' is set to 'custom'. |
 
 #### Command example
+
 ```!meraki-network-group-policy-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -2473,6 +2577,7 @@ List the group policies in a network.
 #### Human Readable Output
 
 >### Group Policy(ies)
+>
 >|Group Policy ID|Group Policy Name|Group Splash Auth Settings|
 >|---|---|---|
 >| 101 | 3 | network default |
@@ -2516,8 +2621,11 @@ List all policies owned by each client.
 | CiscoMeraki.ClientPolicy.assigned.ssid.ssidNumber | Number | SSID number. |
 
 #### Command example
+
 ```!meraki-network-client-policy-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -2534,6 +2642,7 @@ List all policies owned by each client.
 #### Human Readable Output
 
 >### Client's Policies
+>
 >|Client ID|Name|
 >|---|---|
 >| 0000000 | Lior pc |
@@ -2572,8 +2681,11 @@ List VLAN profiles for a network.
 | CiscoMeraki.VlanProfile.vlanNames.adaptivePolicyGroup.name | String | Adaptive Policy Group name. |
 
 #### Command example
+
 ```!meraki-network-vlan-profile-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -2596,6 +2708,7 @@ List VLAN profiles for a network.
 #### Human Readable Output
 
 >### VLAN Profile(s)
+>
 >|IName|Name|Is Default|VLAN Names|
 >|---|---|---|---|
 >| Default | Default Profile | true | default |
@@ -2656,8 +2769,11 @@ List the VLANs for an MX network.
 | CiscoMeraki.ApplianceVlan.reservedIpRanges.start | String | The first IP address in the reserved range. |
 
 #### Command example
+
 ```!meraki-network-appliance-vlan-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoMeraki": {
@@ -2729,27 +2845,30 @@ List the VLANs for an MX network.
 #### Human Readable Output
 
 >### MX VLAN(s)
+>
 >|ID|Name|Group Policy ID|Interface ID|Appliance IP|Mask|CIDR|Subnet|
 >|---|---|---|---|---|---|---|---|
 >| 1234 | My VLAN | 101 | 1284392014819 | 0.0.0.0 | 28 | 0.0.0.0/24 | 0.0.0.0/24 |
 
 
 ## Breaking changes from the previous version of this integration - Cisco Meraki v2
+
 The following sections list the changes in this version.
 
 ### Commands
+
 The following commands were removed in this version:
-* ***meraki-fetch-organizations*** - this command was replaced by ***meraki-organization-list***.
-* ***meraki-get-organization-license-state*** - this command was replaced by ***meraki-organization-license-state-list***.
-* ***meraki-fetch-organization-inventory*** - this command was replaced by ***meraki-organization-inventory-list***.
-* ***meraki-fetch-networks*** - this command was replaced by ***meraki-network-list***.
-* ***meraki-fetch-devices*** - this command was replaced by ***meraki-device-list***.
-* ***meraki-fetch-device-uplink*** - this command was replaced by ***meraki-organization-uplink-status-list***.
-* ***meraki-fetch-ssids*** - this command was replaced by ***meraki-network-appliance-ssid-list***.
-* ***meraki-fetch-clients*** - this command was replaced by ***meraki-device-client-list***.
-* ***meraki-fetch-firewall-rules*** - this command was replaced by ***meraki-network-l3firewall-rule-list***.
-* ***meraki-remove-device*** - this command was replaced by ***meraki-device-remove***.
-* ***meraki-get-device*** - this command was replaced by ***meraki-device-list***.
-* ***meraki-update-device*** - this command was replaced by ***meraki-device-update***.
-* ***meraki-claim-device*** - this command was replaced by ***meraki-device-claim***.
-* ***meraki-update-firewall-rules*** - this command was replaced by ***meraki-network-l3firewall-rule-update****.
+- ***meraki-fetch-organizations*** - this command was replaced by ***meraki-organization-list***.
+- ***meraki-get-organization-license-state*** - this command was replaced by ***meraki-organization-license-state-list***.
+- ***meraki-fetch-organization-inventory*** - this command was replaced by ***meraki-organization-inventory-list***.
+- ***meraki-fetch-networks*** - this command was replaced by ***meraki-network-list***.
+- ***meraki-fetch-devices*** - this command was replaced by ***meraki-device-list***.
+- ***meraki-fetch-device-uplink*** - this command was replaced by ***meraki-organization-uplink-status-list***.
+- ***meraki-fetch-ssids*** - this command was replaced by ***meraki-network-appliance-ssid-list***.
+- ***meraki-fetch-clients*** - this command was replaced by ***meraki-device-client-list***.
+- ***meraki-fetch-firewall-rules*** - this command was replaced by ***meraki-network-l3firewall-rule-list***.
+- ***meraki-remove-device*** - this command was replaced by ***meraki-device-remove***.
+- ***meraki-get-device*** - this command was replaced by ***meraki-device-list***.
+- ***meraki-update-device*** - this command was replaced by ***meraki-device-update***.
+- ***meraki-claim-device*** - this command was replaced by ***meraki-device-claim***.
+- ***meraki-update-firewall-rules*** - this command was replaced by ***meraki-network-l3firewall-rule-update****.

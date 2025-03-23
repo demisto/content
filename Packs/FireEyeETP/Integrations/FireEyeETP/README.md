@@ -1,14 +1,18 @@
 # FireEye Email Threat Prevention (ETP)
 
 ## Overview
+
 Use the FireEye Email Threat Prevention (ETP) integration to import messages as incidents, search for messages with specific attributes, and retrieve alert data.
 
 ## Use Cases
+
 * Search for messages using specific message attributes as indicators.
 * Import messages as Cortex XSOAR incidents, using the message status as indicator.
 
 ## Prerequisites
+
 Make sure you obtain the following information.
+
 * Valid FireEye ETP account
 * Configure an API key on the ETP Web portal. Select the product as both *Email Threat Prevention* and *Identity Access Management*. Select all entitlements.
 * Upon Authentication errors, contact FireEye Technical Support to let them know the IP address of your Cortex XSOAR Server and the URL you are accessing , e.g. https://etp.us.fireeye.com. FireEye will add these details to their Firewall rules so that the bidirectional traffic can be allowed between Cortex XSOAR and FireEye ETP.
@@ -17,26 +21,28 @@ Make sure you obtain the following information.
 
 * *Name*: a textual name for the integration instance.
 * *Server URL*: ETP server URL. Use the endpoint in the region that hosts your ETP service:
-    * US instance: https://etp.us.fireeye.com
-    * EMEA instance: https://etp.eu.fireeye.com
-    * US GOV instance: https://etp.us.fireeyegov.com
+  * US instance: https://etp.us.fireeye.com
+  * EMEA instance: https://etp.eu.fireeye.com
+  * US GOV instance: https://etp.us.fireeyegov.com
 * *API key*: The API key configured in the ETP Web Portal.
 * *Messages status*: All status specified messages will be imported as incidents. Valid values are:
-    * accepted
-    * deleted
-    * delivered
-    * delivered (retroactive)
-    * dropped
-    * dropped oob
-    * dropped (oob retroactive)
-    * permanent failure
-    * processing
-    * quarantined
-    * rejected
-    * temporary failure
+  * accepted
+  * deleted
+  * delivered
+  * delivered (retroactive)
+  * dropped
+  * dropped oob
+  * dropped (oob retroactive)
+  * permanent failure
+  * processing
+  * quarantined
+  * rejected
+  * temporary failure
 
 ## Fetched Incidents Data
+
 To use Fetch incidents:
+
 1. Configure a new instance.
 2. Navigate to *instance settings*, and specify the *message status* (using the valid values).
 3. Select *Fetch incidents* option.
@@ -44,6 +50,7 @@ To use Fetch incidents:
 The integration will fetch alerts as incidents. It is possible to filter alerts using the specified message status.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Search for messages: fireeye-etp-search-messages](#search-for-messages)
@@ -54,6 +61,7 @@ You can execute these commands from the CLI, as part of an automation, or in a p
 * * *
 
 ### Search for messages
+
 Search for messages using specific message attributes as indicators.
 
 ##### Base Command
@@ -104,12 +112,15 @@ Search for messages using specific message attributes as indicators.
 |FireEyeETP.Message.id|Message ID|
  
 ##### Command example 1
+
 `!fireeye-etp-search-messages to_accepted_date_time=2017-10- 24T10:00:00.000Z from_accepted_date_time=2017-10- 24T10:30:00.000Z`
 
 ##### Command example 2
+
 `!fireeye-etp-search-messages from_email=diana@corp.com,charles@corp.com`
 
 ##### Raw Output
+
 ```json
 {  
    "data": [  
@@ -166,17 +177,21 @@ Search for messages using specific message attributes as indicators.
 * * *
 
 ### Get metadata of a specified message
+
 Get the metadata of a specified message.
 
 #### Base Command
+
 `fireeye-etp-get-message`
 
 ##### Input
+
 |Parameter|Description|
 |---|----|
 |message_id|Message ID|
  
 ##### Context Output
+
 |Path|Description|
 |---|---|
 |FireEyeETP.Message.acceptedDateTime|Date and time that the message was accepted|
@@ -199,18 +214,23 @@ Get the metadata of a specified message.
 |FireEyeETP.Message.id|Message ID|
  
 ##### Command example
+
 `!fireeye-etp-get-message message_id= C88B18749AAAAB1B55fc0fa78`
 
 ##### Raw Output
+
 There is no raw output for this command.
 
 ### Get summary of all alerts
+
 Get summary-format information about the alerts. Alerts that are more than 90 days old are not available.
 
 ##### Base Command
+
 fireeye-etp-get-alerts
 
 ##### Input
+
 |Parameter|Description|More Information|
 |---|---|---|
 |legacy_id|Alert ID as shown in ETP Web Portal|
@@ -219,6 +239,7 @@ fireeye-etp-get-alerts
 |size|Number of alerts intended in response|Default is 20.<br />Valid range is 1-100.|
 
 ##### Context Output
+
 |Path|Description|
 |---|---|
 |FireEyeETP.Alerts.meta.read|Has the email been read?|
@@ -241,9 +262,11 @@ fireeye-etp-get-alerts
 |FireEyeETP.Alerts.id|Alert ID|
  
 ##### Command example
+
 `!fireeye-etp-get-alerts legacy_id=50038117`
 
 ##### Raw Output
+
 ```json
 {
   "data": [
@@ -293,18 +316,22 @@ fireeye-etp-get-alerts
 * * *
 
 ### Get details of specified alert
+
 Returns detailed information for any specified alert. Alerts that are more than 90 days old are not available.
 
 ##### Base Command
+
 `fireeye-etp-get-alert`
 
 ##### Input
+
 |Parameter|Description|
 |---|---|
 |alert_id|Alert ID|
  
 
 ##### Context Output
+
 |Path|Description|
 |---|---|
 |FireEyeETP.Alerts.meta.read|Has the email been read?|
@@ -342,9 +369,11 @@ Returns detailed information for any specified alert. Alerts that are more than 
 |FireEyeETP.Alerts.id|The alert unique ID|  
  
 ##### Command example
+
 `!fireeye-etp-get-alert alert_id= AWKMOs-2_r7_CWOc2okO`
 
 ##### Raw Output
+
 ```json
 {  
    "data": [  
@@ -447,6 +476,7 @@ Downloads a YARA file.
 #### Context Output
 
 There is no context output for this command.
+
 ### fireeye-etp-get-events-data
 
 ***
@@ -513,6 +543,7 @@ Update or replace the YARA rule file in the existing ruleset.
 #### Context Output
 
 There is no context output for this command.
+
 ### fireeye-etp-download-alert-artifact
 
 ***
@@ -531,6 +562,7 @@ Downloads all case files of the alert specified by the alert ID, in a zip file. 
 #### Context Output
 
 There is no context output for this command.
+
 ### fireeye-etp-quarantine-release
 
 ***

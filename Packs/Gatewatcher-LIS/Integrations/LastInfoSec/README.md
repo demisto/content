@@ -45,8 +45,11 @@ Max 1440 minutes.
 | LIS.GetByMinute.Value | String | Value. | 
 
 #### Command example
+
 ```!gw-lis-get-by-minute Minute=10```
+
 #### Context Example
+
 ```json
 {
     "LIS": {
@@ -62,6 +65,7 @@ Max 1440 minutes.
 #### Human Readable Output
 
 >### Get IoC by minute
+>
 >|Value|
 >|---|
 >| http:<span>//</span>103.182.16.23/900/HTMLcode.vbs |
@@ -97,8 +101,11 @@ Allows you to search for an IOC (url, hash, host) or a vulnerability in the Gate
 | LIS.GetByValue.Vulnerabilities | String | Vulnerabilities. | 
 
 #### Command example
+
 ```!gw-lis-get-by-value Value="58b525579968cba0c68e8f7ae12e51e0b5542acc2c14a2e75fa6df44556e373f"```
+
 #### Context Example
+
 ```json
 {
     "LIS": {
@@ -122,6 +129,7 @@ Allows you to search for an IOC (url, hash, host) or a vulnerability in the Gate
 #### Human Readable Output
 
 >### Get IoC corresponding to the value
+>
 >|Categories|Risk|TLP|Type|UsageMode|Value|Vulnerabilities|
 >|---|---|---|---|---|---|---|
 >| trojan,<br/>malware,<br/>agent | Suspicious | green | SHA256 | detection | 58b525579968cba0c68e8f7ae12e51e0b5542acc2c14a2e75fa6df44556e373f |  |
@@ -150,8 +158,11 @@ Allows you to search for leaked emails via a domain in Gatewatcher's CTI databas
 | LIS.LeakedEmail.GetByDomain | String | leaked emails. | 
 
 #### Command example
+
 ```!gw-lis-leaked-email-by-domain Domain=foobar.com```
+
 #### Context Example
+
 ```json
 {
     "LIS": {
@@ -170,6 +181,7 @@ Allows you to search for leaked emails via a domain in Gatewatcher's CTI databas
 #### Human Readable Output
 
 >### Leaked email
+>
 >|Emails|
 >|---|
 >| lucien@fr.foobar.com |
@@ -201,8 +213,11 @@ Allows you to search if a specific email was leaked in Gatewatcher's CTI databas
 | LIS.LeakedEmail.GetByEmail | String | leaked email. | 
 
 #### Command example
+
 ```!gw-lis-is-email-leaked Email=lucien@fr.foobar.com```
+
 #### Context Example
+
 ```json
 {
     "LIS": {
@@ -216,6 +231,7 @@ Allows you to search if a specific email was leaked in Gatewatcher's CTI databas
 #### Human Readable Output
 
 >### Is email leaked
+>
 >|Value|
 >|---|
 >| lucien@fr.foobar.com |
@@ -256,8 +272,11 @@ search IOCs for URLs in Gatewatcher's CTI database.
 | LIS.URL.Vulnerabilities | String | Vulnerabilities associated to this URL. | 
 
 #### Command example
+
 ```!url url=http://217.196.96.84/WatchDog.exe```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -291,6 +310,7 @@ search IOCs for URLs in Gatewatcher's CTI database.
 #### Human Readable Output
 
 >### Get IoC corresponding to the value
+>
 >|Categories|Risk|TLP|Type|UsageMode|Value|Vulnerabilities|
 >|---|---|---|---|---|---|---|
 >| malware | Suspicious | green | URL | detection | http:<span>//</span>217.196.96.84/WatchDog.exe |  |
@@ -337,8 +357,11 @@ search IOCs for file hashes in Gatewatcher's CTI database.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 
 #### Command example
+
 ```!file file=58b525579968cba0c68e8f7ae12e51e0b5542acc2c14a2e75fa6df44556e373f```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -390,6 +413,7 @@ search IOCs for file hashes in Gatewatcher's CTI database.
 #### Human Readable Output
 
 >### Get IoC corresponding to the value
+>
 >|Categories|Risk|TLP|Type|UsageMode|Value|Vulnerabilities|
 >|---|---|---|---|---|---|---|
 >| trojan,<br/>malware,<br/>agent | Suspicious | green | SHA256 | detection | 58b525579968cba0c68e8f7ae12e51e0b5542acc2c14a2e75fa6df44556e373f |  |
@@ -431,8 +455,11 @@ search IOCs for domains in Gatewatcher's CTI database.
 | LIS.Domain.Vulnerabilities | String | Vulnerabilities associated to this domain. | 
 
 #### Command example
+
 ```!domain domain=kopabayport.co.tz```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -466,6 +493,7 @@ search IOCs for domains in Gatewatcher's CTI database.
 #### Human Readable Output
 
 >### Get IoC corresponding to the value
+>
 >|Categories|Risk|TLP|Type|UsageMode|Value|Vulnerabilities|
 >|---|---|---|---|---|---|---|
 >| malware | Suspicious | green | Host | detection | kopabayport.co.tz |  |

@@ -12,9 +12,12 @@ Use the Google Key Management Service API for CryptoKey management and encrypt/d
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### google-kms-create-key
+
 ***
 Creates a new CryptoKey within a KeyRing.
 
@@ -22,6 +25,7 @@ Creates a new CryptoKey within a KeyRing.
 #### Base Command
 
 `google-kms-create-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -61,6 +65,7 @@ creates a new version of this CryptoKey and marks the new version as primary. |
 | GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime | Date | The time this CryptoKeyVersion's key material was generated. | 
 
 ### google-kms-symmetric-decrypt
+
 ***
 Decrypts data that was protected by Encrypt.
 
@@ -68,6 +73,7 @@ Decrypts data that was protected by Encrypt.
 #### Base Command
 
 `google-kms-symmetric-decrypt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -90,6 +96,7 @@ Decrypts data that was protected by Encrypt.
 | GoogleKMS.SymmetricDecrypt.Plaintext | String | The decrypted plaintext. | 
 
 ### google-kms-symmetric-encrypt
+
 ***
 Encrypts data, so it can only be recovered by a call to Decrypt.
 
@@ -97,6 +104,7 @@ Encrypts data, so it can only be recovered by a call to Decrypt.
 #### Base Command
 
 `google-kms-symmetric-encrypt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -119,6 +127,7 @@ Encrypts data, so it can only be recovered by a call to Decrypt.
 | GoogleKMS.SymmetricEncrypt.Ciphertext | String | The encrypted ciphertext. | 
 
 ### google-kms-get-key
+
 ***
 Returns metadata for a given CryptoKey, and its primary CryptoKeyVersion.
 
@@ -126,6 +135,7 @@ Returns metadata for a given CryptoKey, and its primary CryptoKeyVersion.
 #### Base Command
 
 `google-kms-get-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -156,6 +166,7 @@ creates a new version of this CryptoKey and marks the new version as primary. |
 | GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime | Date | The time this CryptoKeyVersion's key material was generated. | 
 
 ### google-kms-update-key
+
 ***
 Updates a CryptoKey.
 
@@ -163,6 +174,7 @@ Updates a CryptoKey.
 #### Base Command
 
 `google-kms-update-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -201,6 +213,7 @@ creates a new version of this CryptoKey and marks the new version as primary. |
 | GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime | Date | The time this CryptoKeyVersion's key material was generated. | 
 
 ### google-kms-destroy-key
+
 ***
 Schedules a CryptoKeyVersion for destruction.
 
@@ -208,6 +221,7 @@ Schedules a CryptoKeyVersion for destruction.
 #### Base Command
 
 `google-kms-destroy-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -221,7 +235,9 @@ Schedules a CryptoKeyVersion for destruction.
 #### Context Output
 
 There is no context output for this command.
+
 ### google-kms-restore-key
+
 ***
 Restores a CryptoKeyVersion in the DESTROY_SCHEDULED state.
 
@@ -229,6 +245,7 @@ Restores a CryptoKeyVersion in the DESTROY_SCHEDULED state.
 #### Base Command
 
 `google-kms-restore-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -242,7 +259,9 @@ Restores a CryptoKeyVersion in the DESTROY_SCHEDULED state.
 #### Context Output
 
 There is no context output for this command.
+
 ### google-kms-disable-key
+
 ***
 Disables a CryptoKeyVersion of a given CryptoKey.
 
@@ -250,6 +269,7 @@ Disables a CryptoKeyVersion of a given CryptoKey.
 #### Base Command
 
 `google-kms-disable-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -263,7 +283,9 @@ Disables a CryptoKeyVersion of a given CryptoKey.
 #### Context Output
 
 There is no context output for this command.
+
 ### google-kms-enable-key
+
 ***
 Enables a CryptoKeyVersion of a given CryptoKey.
 
@@ -271,6 +293,7 @@ Enables a CryptoKeyVersion of a given CryptoKey.
 #### Base Command
 
 `google-kms-enable-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -284,7 +307,9 @@ Enables a CryptoKeyVersion of a given CryptoKey.
 #### Context Output
 
 There is no context output for this command.
+
 ### google-kms-list-keys
+
 ***
 Lists all keys in key ring.
 
@@ -292,6 +317,7 @@ Lists all keys in key ring.
 #### Base Command
 
 `google-kms-list-keys`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -304,7 +330,9 @@ Lists all keys in key ring.
 #### Context Output
 
 There is no context output for this command.
+
 ### google-kms-asymmetric-encrypt
+
 ***
 Encrypts data using a asymmetric CryptoKey
 
@@ -312,6 +340,7 @@ Encrypts data using a asymmetric CryptoKey
 #### Base Command
 
 `google-kms-asymmetric-encrypt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -334,6 +363,7 @@ Encrypts data using a asymmetric CryptoKey
 | GoogleKMS.AsymmetricEncrypt.Ciphertext | String | The encrypted ciphertext | 
 
 ### google-kms-asymmetric-decrypt
+
 ***
 Decrypts data using an asymmetric CryptoKey.
 
@@ -341,6 +371,7 @@ Decrypts data using an asymmetric CryptoKey.
 #### Base Command
 
 `google-kms-asymmetric-decrypt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -363,6 +394,7 @@ Decrypts data using an asymmetric CryptoKey.
 | GoogleKMS.AsymmetricDecrypt.Plaintext | String | The decrypted plain text. | 
 
 ### google-kms-list-key-rings
+
 ***
 Lists all KeyRings in a given location.
 
@@ -370,6 +402,7 @@ Lists all KeyRings in a given location.
 #### Base Command
 
 `google-kms-list-key-rings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -386,6 +419,7 @@ Lists all KeyRings in a given location.
 | GoogleKMS.KeyRing.CreateTime | Date | The creation time of the KeyRing. | 
 
 ### google-kms-list-all-keys
+
 ***
 Lists all CryptoKeys across all KeyRings in a given location.
 
@@ -393,6 +427,7 @@ Lists all CryptoKeys across all KeyRings in a given location.
 #### Base Command
 
 `google-kms-list-all-keys`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -424,6 +459,7 @@ marks the new version as primary. |
 | GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime | Date | The time this CryptoKeyVersion's key material was generated. | 
 
 ### google-kms-get-public-key
+
 ***
 Returns the public key from a given CryptoKey.
 
@@ -431,6 +467,7 @@ Returns the public key from a given CryptoKey.
 #### Base Command
 
 `google-kms-get-public-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -16,6 +16,7 @@ This integration was integrated and tested with version v1 of [Impartner Objects
 4. Click **Test** to validate the URLs, token, and connection.
 5. to get API key, please reach out to Impartner contact
 6. 
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -53,8 +54,11 @@ Get account IDs from Impartner
 | Impartner.Account.results.tech_BD_Assigned_for_XSOAR__cf | String | Tech partner BD assigned to account. | 
 
 #### Command example
+
 ```!impartner-get-account-list```
+
 #### Context Example
+
 ```json
 {
     "Impartner": {
@@ -133,6 +137,7 @@ Get account IDs from Impartner
 #### Human Readable Output
 
 >### List of account ID's
+>
 >| id   | name | recordLink |  tech_BBD_Assigned_for_XSOAR__cf|
 >|------|------|------|------|------|
 >| 1111 | 1111 | https://prod.impartner.live/load/ACT/1111 | |
@@ -190,8 +195,11 @@ Get account details from Impartner
  
 
 #### Command example
+
 ```!impartner-get-account-id id=2247998```
+
 #### Context Example
+
 ```json
 {
     "Impartner": {
@@ -224,6 +232,7 @@ Get account details from Impartner
 #### Human Readable Output
 
 >### Account Details
+>
 >|Name|ID|Link|PST Engineer|
 >|---|---|---|---|
 >| test_account | 11111111 | https://prod.impartner.live/load/ACT/11111111 | Edi |

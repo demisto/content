@@ -86,6 +86,7 @@ Deletes a trail. This operation must be called from the region in which the trai
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-cloudtrail-describe-trails
 
 ***
@@ -191,6 +192,7 @@ Starts the recording of AWS API calls and log file delivery for a trail. For a t
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-cloudtrail-stop-logging
 
 ***
@@ -213,6 +215,7 @@ Suspends the recording of AWS API calls and log file delivery for the specified 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-cloudtrail-lookup-events
 
 ***

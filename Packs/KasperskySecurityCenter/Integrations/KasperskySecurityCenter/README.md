@@ -7,6 +7,7 @@ This integration was integrated and tested with version 12 of Kaspersky Security
 ## Prerequisites
 
 The user should be assigned to a role with the relevant devices in scope, and the following access rights:
+
 - Basic functionality - Read
 - Management of administration groups - Modify
 
@@ -24,9 +25,12 @@ The user should be assigned to a role with the relevant devices in scope, and th
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ksc-hosts-list
+
 ***
 Returns a list of hosts.
 
@@ -34,6 +38,7 @@ Returns a list of hosts.
 #### Base Command
 
 `ksc-hosts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,9 +60,11 @@ Returns a list of hosts.
 
 
 #### Command Example
+
 ```!ksc-hosts-list filter=KLHST_WKS_OS_NAME = "Microsoft Windows Server 2016"```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -77,12 +84,14 @@ Returns a list of hosts.
 #### Human Readable Output
 
 >### Hosts List
+>
 >|KLHST_WKS_HOSTNAME|KLHST_WKS_DN|KLHST_WKS_OS_NAME|KLHST_WKS_FQDN|
 >|---|---|---|---|
 >| 4328e16f-bf83-47c3-8d0b-0fdf79f9d673 | EC2AMAZ-U66K3JK |	Microsoft Windows Server 2016 | ip-172-32-34-237.eu-west-2.compute.internal |
 
 
 ### ksc-host-get
+
 ***
 Returns details of a host
 
@@ -90,6 +99,7 @@ Returns details of a host
 #### Base Command
 
 `ksc-host-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -137,9 +147,11 @@ Returns details of a host
 
 
 #### Command Example
+
 ```!ksc-host-get hostname="4328e16f-bf83-47c3-8d0b-0fdf79f9d673"```
 
 #### Context Example
+
 ```json
 {
     "Endpoint": {
@@ -197,12 +209,14 @@ Returns details of a host
 #### Human Readable Output
 
 >### Host 4328e16f-bf83-47c3-8d0b-0fdf79f9d673
+>
 >|KLHST_WKS_HOSTNAME|KLHST_WKS_OS_NAME|KLHST_WKS_FQDN|KLHST_WKS_DN|KLHST_WKS_NAG_VERSION|
 >|---|---|---|---|---|
 >| 4328e16f-bf83-47c3-8d0b-0fdf79f9d673 | 	Microsoft Windows Server 2016 | ip-172-32-34-237.eu-west-2.compute.internal | EC2AMAZ-U66K3L | 12.2.0.4376 |
 
 
 ### ksc-groups-list
+
 ***
 Returns a list of groups.
 
@@ -210,6 +224,7 @@ Returns a list of groups.
 #### Base Command
 
 `ksc-groups-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -227,9 +242,11 @@ Returns a list of groups.
 
 
 #### Command Example
+
 ```!ksc-groups-list filter=name = "Managed devices"```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -244,12 +261,14 @@ Returns a list of groups.
 #### Human Readable Output
 
 >### Groups List
+>
 >|id|name|
 >|---|---|
 >| 0 | Managed devices |
 
 
 ### ksc-group-add
+
 ***
 Create new administration group.
 
@@ -257,6 +276,7 @@ Create new administration group.
 #### Base Command
 
 `ksc-group-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -274,9 +294,11 @@ Create new administration group.
 
 
 #### Command Example
+
 ```!ksc-group-add name="Assigned Devices" parent_id=1```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -291,12 +313,14 @@ Create new administration group.
 #### Human Readable Output
 
 >### Group was added successfully
+>
 >|id|name|
 >|---|---|
 >| 10 | Assigned Devices |
 
 
 ### ksc-group-delete
+
 ***
 Deletes an administrative group.
 
@@ -304,6 +328,7 @@ Deletes an administrative group.
 #### Base Command
 
 `ksc-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -317,6 +342,7 @@ Deletes an administrative group.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ksc-group-delete group_id=10 flags=1```
 
 #### Human Readable Output
@@ -324,6 +350,7 @@ There is no context output for this command.
 >Delete group action was submitted
 
 ### ksc-software-applications-list
+
 ***
 Returns limited attributes for all software applications.
 
@@ -331,6 +358,7 @@ Returns limited attributes for all software applications.
 #### Base Command
 
 `ksc-software-applications-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -348,9 +376,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!ksc-software-applications-list```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -409,6 +439,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Inventory Software Applications
+>
 >|DisplayName|Publisher|DisplayVersion|
 >|---|---|---|
 >| Microsoft SQL Server 2014 Transact-SQL ScriptDom  | Microsoft Corporation | 12.2.5000.0 |
@@ -416,6 +447,7 @@ There are no input arguments for this command.
 
 
 ### ksc-software-patches-list
+
 ***
 Returns limited attributes for all software application updates.
 
@@ -423,6 +455,7 @@ Returns limited attributes for all software application updates.
 #### Base Command
 
 `ksc-software-patches-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -440,9 +473,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!ksc-software-patches-list```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -489,6 +524,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Inventory Software Patches
+>
 >|DisplayName|Publisher|DisplayVersion|
 >|---|---|---|
 >| Service Pack 2 for SQL Server 2014 (KB3171021) (64-bit) | Microsoft Corporation | 12.2.5000.0 |
@@ -496,6 +532,7 @@ There are no input arguments for this command.
 
 
 ### ksc-host-software-applications-list
+
 ***
 Retrieve software applications for a host.
 
@@ -503,6 +540,7 @@ Retrieve software applications for a host.
 #### Base Command
 
 `ksc-host-software-applications-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -523,9 +561,11 @@ Retrieve software applications for a host.
 
 
 #### Command Example
+
 ```!ksc-host-software-applications-list hostname=4328e16f-bf83-47c3-8d0b-0fdf79f9d673```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -592,6 +632,7 @@ Retrieve software applications for a host.
 #### Human Readable Output
 
 >### Host 4328e16f-bf83-47c3-8d0b-0fdf79f9d673 Software Applications
+>
 >|DisplayName|Publisher|DisplayVersion|
 >|---|---|---|
 >| Microsoft SQL Server 2014 Transact-SQL ScriptDom  | Microsoft Corporation | 12.2.5000.0 |
@@ -599,6 +640,7 @@ Retrieve software applications for a host.
 
 
 ### ksc-host-software-patches-list
+
 ***
 Retrieves patches for a host.
 
@@ -606,6 +648,7 @@ Retrieves patches for a host.
 #### Base Command
 
 `ksc-host-software-patches-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -626,9 +669,11 @@ Retrieves patches for a host.
 
 
 #### Command Example
+
 ```!ksc-host-software-patches-list hostname=4328e16f-bf83-47c3-8d0b-0fdf79f9d673```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -675,6 +720,7 @@ Retrieves patches for a host.
 #### Human Readable Output
 
 >### Host 4328e16f-bf83-47c3-8d0b-0fdf79f9d673 Software Patches
+>
 >|DisplayName|Publisher|DisplayVersion|
 >|---|---|---|
 >| Service Pack 2 for SQL Server 2014 (KB3171021) (64-bit) | Microsoft Corporation | 12.2.5000.0 |
@@ -682,6 +728,7 @@ Retrieves patches for a host.
 
 
 ### ksc-policies-list
+
 ***
 Returns policies located in specified group.
 
@@ -689,6 +736,7 @@ Returns policies located in specified group.
 #### Base Command
 
 `ksc-policies-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -711,9 +759,11 @@ Returns policies located in specified group.
 
 
 #### Command Example
+
 ```!ksc-policies-list group_id=0```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -776,6 +826,7 @@ Returns policies located in specified group.
 #### Human Readable Output
 
 >### Policies List
+>
 >|KLPOL_ID|KLPOL_DN|KLPOL_PRODUCT|KLPOL_VERSION|
 >|---|---|---|---|
 >| 1 | Kaspersky Endpoint Security for Windows (11.5.0) | KES | 11.0.0.0 |
@@ -783,6 +834,7 @@ Returns policies located in specified group.
 
 
 ### ksc-policy-get
+
 ***
 Retrieves data for specified policy.
 
@@ -790,6 +842,7 @@ Retrieves data for specified policy.
 #### Base Command
 
 `ksc-policy-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -812,9 +865,11 @@ Retrieves data for specified policy.
 
 
 #### Command Example
+
 ```!ksc-policy-get policy_id=1```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -849,11 +904,13 @@ Retrieves data for specified policy.
 #### Human Readable Output
 
 >### Policy 1
+>
 >|KLPOL_ID|KLPOL_DN|KLPOL_PRODUCT|KLPOL_VERSION|
 >|---|---|---|---|
 >| 1 | Kaspersky Endpoint Security for Windows (11.5.0) | KES | 11.0.0.0 |
 
 ## Search Filter Syntax
+
 A number of commands are using a search filter that has syntax resembling one from RFC 2254.
 
 ```

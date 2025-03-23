@@ -1,12 +1,15 @@
 
 ## OpenAI GPT
+
 ### Instance Configuration
 
 - #### Generate an API Key
+
     1. Sign-up or login to [OpenAI developer platform](https://platform.openai.com).
     2. Generate a new API Key at [OpenAI developer platform - api-keys](https://platform.openai.com/api-keys).
 
 - #### Choose a GPT model to interact with
+
     1. The integration utilizes the **'Chat Completions'** endpoint merely. Therefore, it will only be possible to configure models that support this endpoint (_https://api.openai.com/v1/chat/completions_). 
 
     2. For tasks requiring deep understanding and extensive inputs, opt for more advanced models (e.g. gpt-4). These models offer a larger context window, allowing them to process bigger documents, and provide more refined and comprehensive responses.
@@ -27,6 +30,7 @@
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 
 ### gpt-send-message
+
 ***
 Send a message as a prompt to the GPT model.
 
@@ -45,6 +49,7 @@ Send a message as a prompt to the GPT model.
 
 
 ### gpt-check-email-body
+
 ***
 Check email body for possible security issues.
 
@@ -61,6 +66,7 @@ Check email body for possible security issues.
 | top_p                  | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           |
 
 ### gpt-check-email-header
+
 ***
 Check email body for possible security issues.
 
@@ -78,6 +84,7 @@ Check email body for possible security issues.
 
 
 ### gpt-create-soc-email-template
+
 ***
 Create an email template out of the conversation context to be sent from the SOC.
 

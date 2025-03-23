@@ -31,6 +31,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -171,7 +172,9 @@ To overcome this issue increase the [execution-timeout](https://xsoar.pan.dev/do
 #### Human Readable Output
 
 > Found 3 results added after 2022-12-07T10:29:13.079493Z UTC:
+>
 >### DHS Indicators
+>
 >|value|type|
 >|---|---|
 >| coronashop.jp | Domain |
@@ -218,6 +221,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 > ### DHS Server Collections
+>
 >|Name|ID|
 >|---|---|
 >| Public Collection | 3 |
@@ -251,5 +255,6 @@ In the *dhs-get-indicators* command:
 Use this version if your certificate supports TAXII 2 protocol.
 
 ## Known Limitations
+
 "First Fetch Time" parameter can be configured for a maximum of 48 hours, due to limitations in DHS TAXII2 API. 
 Therefore, it is not possible to fetch indicators that last appeared in the feed more than 48 hours ago.

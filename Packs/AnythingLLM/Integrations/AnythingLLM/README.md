@@ -1,4 +1,5 @@
 Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local for full data privacy or cloud-based for greater functionality
+
 ## Configure AnythingLLM in Cortex
 
 
@@ -31,6 +32,7 @@ Uploads an XSOAR file entry to the custom-documents folder
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-document-upload-link
 
 ***
@@ -53,6 +55,7 @@ Uploads a web link to the custom-documents folder
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-document-upload-text
 
 ***
@@ -75,6 +78,7 @@ Upload text content as a document to the custom-documents folder
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-new
 
 ***
@@ -93,6 +97,7 @@ Creates a new workspace in AnythingLLM
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-delete
 
 ***
@@ -111,6 +116,7 @@ Deletes an AnythingLLM workspace
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-list
 
 ***
@@ -128,6 +134,7 @@ List all the workspaces in AnythingLLM
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-get
 
 ***
@@ -146,6 +153,7 @@ Get a specific workspace details
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-settings
 
 ***
@@ -165,6 +173,7 @@ Update workspace settings
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-add-embedding
 
 ***
@@ -185,6 +194,7 @@ Add a document to a workspace and create its vector embedding in the workspace
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-delete-embedding
 
 ***
@@ -205,6 +215,7 @@ Delete a document embedding from the workspace
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-document-createfolder
 
 ***
@@ -223,6 +234,7 @@ Create a new document folder
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-document-move
 
 ***
@@ -243,6 +255,7 @@ Move a document from a source folder to a destination folder
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-document-delete
 
 ***
@@ -262,6 +275,7 @@ Delete a document
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-chat
 
 ***
@@ -283,6 +297,7 @@ Send a chat message to a workspace (default thread). Query mode is based on embe
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-stream-chat
 
 ***
@@ -303,6 +318,7 @@ Send a stream chat message to a workspace (default thread). Query mode is based 
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-document-list
 
 ***
@@ -320,6 +336,7 @@ List all document details
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-document-get
 
 ***
@@ -339,6 +356,7 @@ Get a specific document details
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-pin
 
 ***
@@ -360,6 +378,7 @@ Set the pinned status of a document embedding
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-thread-chats
 
 ***
@@ -379,6 +398,7 @@ Get the conversation for a workspace thread
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-thread-chat
 
 ***
@@ -400,6 +420,7 @@ Send a chat a message to a conversation thread
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-thread-new
 
 ***
@@ -419,6 +440,7 @@ Create a new conversation thread
 #### Context Output
 
 There is no context output for this command.
+
 ### anyllm-workspace-thread-delete
 
 ***

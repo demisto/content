@@ -24,7 +24,9 @@ This integration was integrated and tested with version 6.9.0 of CommvaultSecuri
 
 
 ##### Note :- If "Fetch Incidents" parameter is selected then make sure "Long running instance" capability of the integration is disabled.
+
 ##### Note :- Set Mapper (incoming) to "Commvault Suspicious File Activity Mapper"
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -122,6 +124,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### commvault-security-set-disable-user
 
 ***

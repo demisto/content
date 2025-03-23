@@ -4,6 +4,7 @@ RiskIQ PassiveTotal provides access to the most comprehensive internet data sets
 **What does this pack do?**
 
 The content pack PassiveTotal provides the following capabilities:
+
 - Returns the DomainWhois record for the registered domain name portion of the hostname.
 - Search all tracker addresses and host information.
 - Active account sources can be used to retrieve passive DNS results.

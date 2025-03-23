@@ -106,6 +106,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ### akamai-siem-get-events
+
 ***
 Get security events from Akamai WAF.
 
@@ -113,6 +114,7 @@ Get security events from Akamai WAF.
 #### Base Command
 
 `akamai-siem-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

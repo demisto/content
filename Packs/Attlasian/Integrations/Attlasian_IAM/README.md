@@ -24,9 +24,12 @@ Integrate with Atlassian's services to execute generic ILM management operations
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### iam-create-user
+
 ***
 Creates a user.
 
@@ -34,6 +37,7 @@ Creates a user.
 #### Base Command
 
 `iam-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -59,9 +63,11 @@ Creates a user.
 
 
 #### Command Example
+
 ```!iam-create-user user-profile=`{"emails":[{"value":"testatlas@paloaltonetworks.com","type":"work","primary":"true"}],"is_active": "true", "userName":"testatlas@paloaltonetworks.com"}` using="Atlassian IAM_instance_1"```
 
 #### Context Example
+
 ```json
 {
     "IAM": {
@@ -124,12 +130,14 @@ Creates a user.
 #### Human Readable Output
 
 >### Create User Results (Atlassian IAM)
+>
 >|brand|instanceName|success|active|id|username|details|
 >|---|---|---|---|---|---|---|
 >| Atlassian IAM | Atlassian IAM_instance_1 | true | true | 247b915a-9d6c-4cd5-b5a5-071b1b3abc2e | testatlas@paloaltonetworks.com | schemas: urn:scim:schemas:extension:atlassian-external:1.0,<br/>urn:ietf:params:scim:schemas:core:2.0:User,<br/>urn:ietf:params:scim:schemas:extension:enterprise:2.0:User<br/>userName: testatlas@paloaltonetworks.com<br/>emails: {'value': 'testatlas@paloaltonetworks.com', 'type': 'work', 'primary': True}<br/>meta: {"resourceType": "User", "location": "https://api.atlassian.com/scim/directory/315e79ae-404a-4061-8a88-df91c8c7db34/Users/247b915a-9d6c-4cd5-b5a5-071b1b3abc2e", "lastModified": "2021-02-16T15:05:41.185473Z", "created": "2021-02-16T15:05:41.185473Z"}<br/>groups: <br/>urn:scim:schemas:extension:atlassian-external:1.0: {"atlassianAccountId": "602bdf457b23f40068547c25"}<br/>id: 247b915a-9d6c-4cd5-b5a5-071b1b3abc2e<br/>active: true |
 
 
 ### iam-update-user
+
 ***
 Updates an existing user with the data passed in the user-profile argument.
 
@@ -137,6 +145,7 @@ Updates an existing user with the data passed in the user-profile argument.
 #### Base Command
 
 `iam-update-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -162,9 +171,11 @@ Updates an existing user with the data passed in the user-profile argument.
 
 
 #### Command Example
+
 ```!iam-update-user user-profile=`{"email": "testatlas@paloaltonetworks.com", "username": "testatlas@paloaltonetworks.com", "title": "Manager"}` using="Atlassian IAM_instance_1"```
 
 #### Context Example
+
 ```json
 {
     "IAM": {
@@ -221,12 +232,14 @@ Updates an existing user with the data passed in the user-profile argument.
 #### Human Readable Output
 
 >### Update User Results (Atlassian IAM)
+>
 >|brand|instanceName|success|active|id|username|email|details|
 >|---|---|---|---|---|---|---|---|
 >| Atlassian IAM | Atlassian IAM_instance_1 | true | true | 247b915a-9d6c-4cd5-b5a5-071b1b3abc2e | testatlas@paloaltonetworks.com | testatlas@paloaltonetworks.com | schemas: urn:scim:schemas:extension:atlassian-external:1.0,<br/>urn:ietf:params:scim:schemas:core:2.0:User,<br/>urn:ietf:params:scim:schemas:extension:enterprise:2.0:User<br/>userName: testatlas@paloaltonetworks.com<br/>emails: {'value': 'testatlas@paloaltonetworks.com', 'type': 'work', 'primary': True}<br/>meta: {"resourceType": "User", "location": "https://api.atlassian.com/scim/directory/315e79ae-404a-4061-8a88-df91c8c7db34/Users/247b915a-9d6c-4cd5-b5a5-071b1b3abc2e", "lastModified": "2021-02-16T15:05:41.185473Z", "created": "2021-02-16T15:05:41.185473Z"}<br/>groups: <br/>urn:scim:schemas:extension:atlassian-external:1.0: {"atlassianAccountId": "602bdf457b23f40068547c25"}<br/>id: 247b915a-9d6c-4cd5-b5a5-071b1b3abc2e<br/>active: true |
 
 
 ### iam-get-user
+
 ***
 Retrieves a single user resource.
 
@@ -234,6 +247,7 @@ Retrieves a single user resource.
 #### Base Command
 
 `iam-get-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -258,9 +272,11 @@ Retrieves a single user resource.
 
 
 #### Command Example
+
 ```!iam-get-user user-profile=`{"email": "test@paloaltonetworks.com", "username": "testDemisto"}` using="Atlassian IAM_instance_1"```
 
 #### Context Example
+
 ```json
 {
     "IAM": {
@@ -317,12 +333,14 @@ Retrieves a single user resource.
 #### Human Readable Output
 
 >### Get User Results (Atlassian IAM)
+>
 >|brand|instanceName|success|id|username|details|
 >|---|---|---|---|---|---|
 >| Atlassian IAM | Atlassian IAM_instance_1 | true | 550364dd-1c1e-4953-bffc-418fce013c2e | testDemisto | schemas: urn:scim:schemas:extension:atlassian-external:1.0,<br/>urn:ietf:params:scim:schemas:core:2.0:User,<br/>urn:ietf:params:scim:schemas:extension:enterprise:2.0:User<br/>userName: testDemisto<br/>emails: {'value': 'test@paloaltonetworks.com', 'type': 'work', 'primary': True}<br/>title: Team Lead<br/>meta: {"resourceType": "User", "location": "https://api.atlassian.com/scim/directory/315e79ae-404a-4061-8a88-df91c8c7db34/Users/550364dd-1c1e-4953-bffc-418fce013c2e", "lastModified": "2021-02-15T17:01:01.876067Z", "created": "2021-02-15T13:26:34.13545Z"}<br/>groups: <br/>urn:scim:schemas:extension:atlassian-external:1.0: {"atlassianAccountId": "5f3589458d89e30046317d34"}<br/>id: 550364dd-1c1e-4953-bffc-418fce013c2e |
 
 
 ### iam-disable-user
+
 ***
 Disable an active user.
 
@@ -330,6 +348,7 @@ Disable an active user.
 #### Base Command
 
 `iam-disable-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -354,9 +373,11 @@ Disable an active user.
 
 
 #### Command Example
+
 ```!iam-disable-user user-profile=`{"email": "testdemisto@paloaltonetworks.com", "username": "Demisto"}` using="Atlassian IAM_instance_1"```
 
 #### Context Example
+
 ```json
 {
     "IAM": {
@@ -386,6 +407,7 @@ Disable an active user.
 #### Human Readable Output
 
 >### Disable User Results (Atlassian IAM)
+>
 >|brand|instanceName|skipped|reason|
 >|---|---|---|---|
 >| Atlassian IAM | Atlassian IAM_instance_1 | true | User does not exist |

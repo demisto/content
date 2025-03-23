@@ -1,5 +1,6 @@
 RiskIQ Digital Footprint integration enables your security team to manage assets outside your firewall, by bringing its details, providing you to add or update assets and analyze your digital footprint from the view of the global adversary with the help of various commands that summarise the activities performed on your assets.
 This integration was integrated and tested with enterprise version of RiskIQDigitalFootprint.
+
 ## Configure RiskIQDigitalFootprint in Cortex
 
 
@@ -12,9 +13,12 @@ This integration was integrated and tested with enterprise version of RiskIQDigi
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### df-asset-connections
+
 ***
 Retrieve the set of assets that are connected to the requested asset.
 
@@ -22,6 +26,7 @@ Retrieve the set of assets that are connected to the requested asset.
 #### Base Command
 
 `df-asset-connections`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -88,9 +93,11 @@ Retrieve the set of assets that are connected to the requested asset.
 
 
 #### Command Example
+
 ```!df-asset-connections type="Domain" name="dummy.com" size="2"```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -195,14 +202,20 @@ Retrieve the set of assets that are connected to the requested asset.
 #### Human Readable Output
 
 >### CONNECTED ASSETS
+>
 >### Total Hosts: 20
+>
 >### Fetched Hosts: 2
+>
 >|Name|State|First Seen (GMT)|Last Seen (GMT)|
 >|---|---|---|---|
 >| host.dummy.com | CONFIRMED | 2020-07-08 00:27:27 | 2020-07-11 23:08:26 |
 >| host1.dummy.com | CONFIRMED | 2020-07-04 21:43:42 | 2020-07-11 23:08:26 |
+>
 >### Total Pages: 50
+>
 >### Fetched Pages: 2
+>
 >|Name|State|First Seen (GMT)|Last Seen (GMT)|
 >|---|---|---|---|
 >| https://dummyurl.com | CONFIRMED | 2020-07-09 13:32:58 | 2020-07-09 13:32:58 |
@@ -210,6 +223,7 @@ Retrieve the set of assets that are connected to the requested asset.
 
 
 ### df-asset-changes-summary
+
 ***
 Retrieve summary information describing counts of confirmed assets that have been added, removed or changed in inventory over the given time period.
 
@@ -217,6 +231,7 @@ Retrieve summary information describing counts of confirmed assets that have bee
 #### Base Command
 
 `df-asset-changes-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -243,9 +258,11 @@ Retrieve summary information describing counts of confirmed assets that have bee
 
 
 #### Command Example
+
 ```!df-asset-changes-summary```
 
 #### Context Example
+
 ```
 {
     "RiskIQDigitalFootprint": {
@@ -469,8 +486,11 @@ Retrieve summary information describing counts of confirmed assets that have bee
 #### Human Readable Output
 
 >### [INVENTORY CHANGES](https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/2020-07-11)
+>
 >#### Note: If the range argument is specified, a list of tables containing a daily, weekly and monthly changes summary identified over the given period of time will be presented i.e. there will be an individual table for all the dates from the last run date to the date derived from the range.
+>
 >### Date of the run in which following changes were identified: 2020-07-11
+>
 >|Asset Type|1 Day|7 Days|30 Days|
 >|---|---|---|---|
 >| **Domain** | **Count:** 25 | **Removed:** 2<br/>**Difference:** -2 | **Added:** 5<br/>**Removed:** 3<br/>**Difference:** 2 |
@@ -484,6 +504,7 @@ Retrieve summary information describing counts of confirmed assets that have bee
 
 
 ### df-asset-changes
+
 ***
 Retrieve the list of confirmed assets that have been added or removed from inventory over the given time period. Retrieve the list of asset detail changes in inventory over the given time period.
 
@@ -491,6 +512,7 @@ Retrieve the list of confirmed assets that have been added or removed from inven
 #### Base Command
 
 `df-asset-changes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -583,9 +605,11 @@ Retrieve the list of confirmed assets that have been added or removed from inven
 
 
 #### Command Example
+
 ```!df-asset-changes type="Page" range="30" size="2"```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -648,9 +672,13 @@ Retrieve the list of confirmed assets that have been added or removed from inven
 #### Human Readable Output
 
 >### [INVENTORY CHANGES: DETAILS](https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/details/date=2020-07-11&measure=ADDED&range=30&type=PAGE)
+>
 >### Added Inventory Assets: 2
+>
 >### Total: 600
+>
 >### Fetched: 2
+>
 >|Name|Description|State|Priority|Measure|RunDate|
 >|---|---|---|---|---|---|
 >| http://dummy.com/ | http://dummy.com/ | CONFIRMED | NONE | added | 2020-07-11 |
@@ -658,6 +686,7 @@ Retrieve the list of confirmed assets that have been added or removed from inven
 
 
 ### df-get-asset
+
 ***
 Retrieve the asset of the specified UUID or type and name from Global Inventory.
 
@@ -665,6 +694,7 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
 #### Base Command
 
 `df-get-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1522,9 +1552,11 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
 
 
 #### Command Example
+
 ```!df-get-asset name="dummy.com" type="Domain" global="true"```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -1758,26 +1790,35 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
 #### Human Readable Output
 
 >### ASSET DETAILS
+>
 >### Basic Details
+>
 >|Name|Type|UUID|First Seen (GMT)|Last Seen (GMT)|
 >|---|---|---|---|---|
 >| dummy.com | DOMAIN | 78c63cee-18bb-d342-f00d-81bdbcf53be8 | 2019-05-25 07:31:58 | 2020-06-28 16:37:19 |
+>
 >### Domain Details
+>
 >|Domain Name|Alexa Rank|
 >|---|---|
 >| dummy.com | Not in Alexa |
+>
 >### Name Servers
+>
 >|Name|First Seen (GMT)|Last Seen (GMT)|Recent|Current|
 >|---|---|---|---|---|
 >| dummy.nameserver.com | 2019-05-25 07:31:58 | 2020-06-25 22:27:20 | true | true |
 >| dummy1.nameserver.com | 2019-05-25 07:31:58 | 2020-06-25 22:27:20 | true | true |
+>
 >### WHOIS
+>
 >|Whois Server|Email|Organization|Phone|Name Servers|
 >|---|---|---|---|---|
 >| whois.dummy.com | Registrant: domains@dummy.com<br/>Admin: admin@dummy.com<br/>Technical: technical@dummy.com<br/> | Registrant: RiskIQ, Inc.<br/>Admin: Domain Manager<br/>Technical: Technical Manager<br/> | Registrant: 1 2345678901<br/>Admin: 12 3456789101<br/>Technical: 12 3456789101<br/> | dummy.nameserver.com |
 
 
 ### df-add-assets
+
 ***
 Add one or more assets to Global Inventory with a provided set of properties to apply to all assets.
 
@@ -1785,6 +1826,7 @@ Add one or more assets to Global Inventory with a provided set of properties to 
 #### Base Command
 
 `df-add-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1815,9 +1857,11 @@ Add one or more assets to Global Inventory with a provided set of properties to 
 
 
 #### Command Example
+
 ```!df-add-assets name="testdomain.com" type="Domain"```
 
 #### Context Example
+
 ```
 {
     "RiskIQDigitalFootprint": {
@@ -1836,6 +1880,7 @@ Add one or more assets to Global Inventory with a provided set of properties to 
 >### The requested asset(s) have been successfully added.
 
 ### df-update-assets
+
 ***
 Update one or more assets in Global Inventory with provided set of properties.
 
@@ -1843,6 +1888,7 @@ Update one or more assets in Global Inventory with provided set of properties.
 #### Base Command
 
 `df-update-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1874,9 +1920,11 @@ Update one or more assets in Global Inventory with provided set of properties.
 
 
 #### Command Example
+
 ```!df-update-assets name="dummy.com" type="Domain" organization="RiskIQ" action="Add"```
 
 #### Context Example
+
 ```
 {
     "RiskIQDigitalFootprint": {

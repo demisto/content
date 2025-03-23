@@ -22,9 +22,12 @@ This integration was integrated and tested with CyCognito V1 API.
 | Incidents Fetch Interval | Time interval for fetching incidents. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cycognito-issue-get
+
 ***
 Retrieves information about an issue associated with a particular instance based on the provided issue instance ID.
 
@@ -32,6 +35,7 @@ Retrieves information about an issue associated with a particular instance based
 #### Base Command
 
 `cycognito-issue-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -70,8 +74,11 @@ Retrieves information about an issue associated with a particular instance based
 | CyCognito.Issue.evidence | Unknown | Provides a reason or proof of why the issue was indeed detected by CyCognito. |
 
 #### Command example
+
 ```!cycognito-issue-get issue_instance_id=127.0.0.1-cve-2019-00000```
+
 #### Context Example
+
 ```json
 {
     "CyCognito": {
@@ -121,13 +128,16 @@ Retrieves information about an issue associated with a particular instance based
 #### Human Readable Output
 
 >### Issue detail:
+>
 >#### ID: 127.0.0.1-test
+>
 >|Title|Affected Asset|Detection Complexity|Investigation Status|Exploitation Score|First Detected|Last Detected|Organizations|Locations|Potential Threat|Severity|Issue Type|Issue Status|Remediation Steps|Potential Impact|Tags|Summary|Link to Platform|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Pulse Secure Arbitrary File Reading | ip/127.0.0.1 | Service Detection | investigating | 3 | 31 Mar 2022, 03:39 AM | 31 Mar 2022, 03:39 AM | Acme Interior Design, Acme Corporation | India | Information Disclosure | critical | Vulnerable Software | new | Patch the Pulse Secure VPN to the latest version. | Loss of integrity, Loss of confidentiality, Data compromise | Vulnerable Software, Pulse Secure, network vulnerabilities | The Pulse Secure VPN has been confirmed to be vulnerable to an arbitrary file reading vulnerability. Unauthenticated remote attackers can send the asset a specially crafted URI and thereby access arbitrary sensitive files. Attackers can leverage the harvested information to perform further attacks. | [Click Here](https://platform.cycognito.com/issues/issue/127.0.0.1-test/info)
 
 
 ### cycognito-asset-get
+
 ***
 Retrieves information about a specific asset according to the specified asset type and asset ID.
 
@@ -135,6 +145,7 @@ Retrieves information about a specific asset according to the specified asset ty
 #### Base Command
 
 `cycognito-asset-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -197,8 +208,11 @@ Retrieves information about a specific asset according to the specified asset ty
 | CyCognito.Asset.discoverability | String | Quantifies an asset's level of exposure. |
 
 #### Command example
+
 ```!cycognito-asset-get asset_type=ip asset_id=127.0.0.1```
+
 #### Context Example
+
 ```json
 {
     "CyCognito": {
@@ -288,12 +302,14 @@ Retrieves information about a specific asset according to the specified asset ty
 #### Human Readable Output
 
 >### Asset Details:
+>
 >|Asset ID|Asset Type|Hosting Type|Alive|Locations|First Seen|Last Seen|Status|Security Grade|Tags|Organizations|Severe Issues|Investigation Status|Open Ports|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 127.0.0.1 | ip | owned | true | India | 20 Jan 2022, 03:58 AM | 31 Mar 2022, 03:39 AM | new | B | Gateways,<br/>ACME | Acme Interior Design, Acme Corporation | 0 | investigated | TCP - 9999, TCP - 2000 |
 
 
 ### cycognito-asset-investigation-status-change
+
 ***
 Modifies the investigation status of the specified asset.
 
@@ -301,6 +317,7 @@ Modifies the investigation status of the specified asset.
 #### Base Command
 
 `cycognito-asset-investigation-status-change`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -320,8 +337,11 @@ Modifies the investigation status of the specified asset.
 | CyCognito.Asset.action_status | String | Whether the status update is successful or failed. | 
 
 #### Command example
+
 ```!cycognito-asset-investigation-status-change asset_type=ip asset_id=127.0.0.1 investigation_status=investigated```
+
 #### Context Example
+
 ```json
 {
     "CyCognito": {
@@ -338,12 +358,14 @@ Modifies the investigation status of the specified asset.
 #### Human Readable Output
 
 >### Investigation Status has been successfully updated for 127.0.0.1
+>
 >|Asset Type|Asset ID|Investigation Status|Action Status|
 >|---|---|---|---|
 >| ip | 127.0.0.1 | investigated | Success |
 
 
 ### cycognito-issue-investigation-status-change
+
 ***
 Modifies the investigation status of the specified issue.
 
@@ -351,6 +373,7 @@ Modifies the investigation status of the specified issue.
 #### Base Command
 
 `cycognito-issue-investigation-status-change`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -368,8 +391,11 @@ Modifies the investigation status of the specified issue.
 | CyCognito.Issue.action_status | String | Whether the update is successful or failed. | 
 
 #### Command example
+
 ```!cycognito-issue-investigation-status-change issue_instance_id=127.0.0.1-cve-2019-00000 investigation_status=investigated```
+
 #### Context Example
+
 ```json
 {
     "CyCognito": {
@@ -385,12 +411,14 @@ Modifies the investigation status of the specified issue.
 #### Human Readable Output
 
 >### Investigation Status has been successfully updated for 127.0.0.1-cve-2019-00000
+>
 >|Issue ID|Investigation Status|Action Status|
 >|---|---|---|
 >| 127.0.0.1-cve-2019-00000 | investigated | Success |
 
 
 ### cycognito-issues-list
+
 ***
 Retrieves the list of the issues that meet the specified filter criteria.
 
@@ -398,6 +426,7 @@ Retrieves the list of the issues that meet the specified filter criteria.
 #### Base Command
 
 `cycognito-issues-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -446,8 +475,11 @@ Retrieves the list of the issues that meet the specified filter criteria.
 | CyCognito.Issue.evidence | Unknown | Provides a reason or proof of why the issue was indeed detected by CyCognito. |
 
 #### Command example
+
 ```!cycognito-issues-list count=2```
+
 #### Context Example
+
 ```json
 {
     "CyCognito": {
@@ -536,6 +568,7 @@ Retrieves the list of the issues that meet the specified filter criteria.
 #### Human Readable Output
 
 >### Issues:
+>
 >|ID|Title|Severity Score|Severity|Issue Type|Issue Status|Organizations|Investigation Status|First Detected|Last Detected|Locations|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 127.0.0.1-cve-2019-00000 | Pulse Secure Arbitrary File Reading | 10.0 | critical | Vulnerable Software | new | Acme Interior Design, Acme Corporation | investigating | 31 Mar 2022, 03:39 AM | 31 Mar 2022, 03:39 AM | India |
@@ -543,6 +576,7 @@ Retrieves the list of the issues that meet the specified filter criteria.
 
 
 ### cycognito-assets-list
+
 ***
 Retrieves the list of assets that meet specified filter criteria.
 
@@ -550,6 +584,7 @@ Retrieves the list of assets that meet specified filter criteria.
 #### Base Command
 
 `cycognito-assets-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -623,8 +658,11 @@ Retrieves the list of assets that meet specified filter criteria.
 | CyCognito.Asset.discoverability | String | Quantifies an asset's level of exposure. |
 
 #### Command example
+
 ```!cycognito-assets-list asset_type=ip count=2```
+
 #### Context Example
+
 ```json
 {
     "CyCognito": {
@@ -804,7 +842,9 @@ Retrieves the list of assets that meet specified filter criteria.
 #### Human Readable Output
 
 >### Asset List:
+>
 >### Assets Type: IP
+>
 >|Asset ID|Security Grade|Status|Organizations|Investigation Status|Severe Issues|First Seen|Last Seen|Hosting Type|Locations|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 127.0.0.1 | F | new | Acme Corporation | investigated | 1 | 23 Mar 2022, 12:27 PM | 31 Mar 2022, 03:39 AM | owned | Malaysia |

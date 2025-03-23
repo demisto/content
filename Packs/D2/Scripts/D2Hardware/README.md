@@ -1,5 +1,7 @@
 Shows system information.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,9 +11,11 @@ Shows system information.
 
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

@@ -1,5 +1,6 @@
 Acalvio ShadowPlex is a comprehensive Autonomous Deception Platform that offers Advanced Threat Detection, Investigation and Response capabilities.
 This integration was integrated and tested with Acalvio ShadowPlex 5.x and ShadowPlex API 2.0.
+
 ## Configure Acalvio ShadowPlex in Cortex
 
 
@@ -11,9 +12,12 @@ This integration was integrated and tested with Acalvio ShadowPlex 5.x and Shado
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### acalvio-is-deception-host
+
 ***
 Check if its a Deception Host
 
@@ -44,6 +48,7 @@ Check if its a Deception Host
 
 
 #### Context Example
+
 ```
 {
     'is_deception': true, 
@@ -53,9 +58,10 @@ Check if its a Deception Host
 
 
 #### Human Readable Output
+>
 >Results - Deception Host
 >
->| __Key__ | __Value__ |
+>| **Key** | **Value** |
 >| --- | --- |
 >| is_deception | true |
 >| host | 10.10.10.10 |
@@ -64,6 +70,7 @@ Check if its a Deception Host
 
 
 ### acalvio-is-deception-user
+
 ***
 Check if its a Deception User
 
@@ -96,6 +103,7 @@ Check if its a Deception User
 
 
 #### Context Example
+
 ```
 {
     'is_deception': true, 
@@ -106,10 +114,12 @@ Check if its a Deception User
 
 
 #### Human Readable Output
+>
 >Results - Deception User
 > 
->| __Key__ | __Value__ |
+>| **Key** | **Value** |
 >| --- | --- |
+>
 | is_deception | true |
 | username  | dmusernonadmin2 |
 | domain | acalvio.com |
@@ -117,6 +127,7 @@ Check if its a Deception User
 
 
 ### acalvio-is-deception-file
+
 ***
 Check if its a Deception File on the Endpoint
 
@@ -149,6 +160,7 @@ Check if its a Deception File on the Endpoint
 
 
 #### Context Example
+
 ```
 {
     'is_deception': true, 
@@ -159,10 +171,12 @@ Check if its a Deception File on the Endpoint
 
 
 #### Human Readable Output
+>
 >Results - Deception File
 >
->| __Key__ | __Value__ |
+>| **Key** | **Value** |
 >| --- | --- |
+>
 | is_deception | true |
 | filename  | t33.pdf |
 | endpoint | win10-ep |
@@ -170,6 +184,7 @@ Check if its a Deception File on the Endpoint
 
 
 ### acalvio-mute-deception-host
+
 ***
 Mute a Deception Host
 
@@ -200,6 +215,7 @@ Mute a Deception Host
 
 
 #### Context Example
+
 ```
 {
     'is_mute': true, 
@@ -209,16 +225,19 @@ Mute a Deception Host
 
 
 #### Human Readable Output
+>
 >Results - Mute Deception
 >
->| __Key__ | __Value__ |
+>| **Key** | **Value** |
 >| --- | --- |
+>
 | is_mute | true |
 | host | win10-host |
 
 
 
 ### acalvio-unmute-deception-host
+
 ***
 Unmute a Deception Host
 
@@ -249,6 +268,7 @@ Unmute a Deception Host
 
 
 #### Context Example
+
 ```
 {
     'is_unmute': true, 
@@ -258,16 +278,19 @@ Unmute a Deception Host
 
 
 #### Human Readable Output
+>
 >Results - Unute Deception
 >
->| __Key__ | __Value__ |
+>| **Key** | **Value** |
 >| --- | --- |
+>
 | is_unmute | true |
 | host | win10-host |
 
 
 
 ### acalvio-mute-deception-on-endpoint
+
 ***
 Mute a Deception on Endpoint
 
@@ -298,6 +321,7 @@ Mute a Deception on Endpoint
 
 
 #### Context Example
+
 ```
 {
     'is_mute': true, 
@@ -307,16 +331,19 @@ Mute a Deception on Endpoint
 
 
 #### Human Readable Output
+>
 >Results - Mute Deception
 >
->| __Key__ | __Value__ |
+>| **Key** | **Value** |
 >| --- | --- |
+>
 | is_mute | true |
 | endpoint | win10-ep |
 
 
 
 ### acalvio-unmute-deception-on-endpoint
+
 ***
 Unmute a Deception on Endpoint
 
@@ -347,6 +374,7 @@ Unmute a Deception on Endpoint
 
 
 #### Context Example
+
 ```
 {
     'is_unmute': true, 
@@ -356,9 +384,11 @@ Unmute a Deception on Endpoint
 
 
 #### Human Readable Output
+>
 >Results - Unmute Deception
 >
->| __Key__ | __Value__ |
+>| **Key** | **Value** |
 >| --- | --- |
+>
 | is_unmute | true |
 | endpoint | win10-ep |

@@ -1,6 +1,7 @@
 Use the AlienVault Reputation feed integration to fetch indicators from the feed.
 
 ## Configure AlienVault Reputation Feed in Cortex
+
 ---
 
 
@@ -18,17 +19,20 @@ Use the AlienVault Reputation feed integration to fetch indicators from the feed
 
 
 ## Commands
+
 ---
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get indicators from the feed: alienvault-get-indicators
+
 ---
 Gets the feed indicators.
 
 ##### Base Command
 
 `alienvault-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
