@@ -1737,8 +1737,8 @@ class Client(BaseClient):
             response = ""
 
         demisto.debug(
-            f'Got host list detections response length of {len(response)} characters '
-            f'and {len(response.encode(errors="replace"))} bytes.'
+            f"Got host list detections response length of {len(response)} characters "
+            f"and {len(response.encode(errors='replace'))} bytes."
         )
         return response, set_new_limit
 
@@ -3288,7 +3288,7 @@ def get_activity_logs_events_command(client: Client, args, first_fetch_time):
         since_datetime=since_datetime,
         max_fetch=0,
     )
-    limited_activity_logs_events = activity_logs_events[offset : limit + offset]  # type: ignore[index,operator]
+    limited_activity_logs_events = activity_logs_events[offset: limit + offset]  # type: ignore[index,operator]
     activity_logs_hr = tableToMarkdown(name="Activity Logs", t=limited_activity_logs_events)
     results = CommandResults(
         readable_output=activity_logs_hr,
