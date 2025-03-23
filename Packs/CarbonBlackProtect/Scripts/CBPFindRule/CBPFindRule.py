@@ -6,7 +6,7 @@ def cbp_find_rule(args):
     STATES = {1: "Unapproved", 2: "Approved", 3: "Banned"}
     res = []
     found = []
-    md = ''
+    md = ""
     t = []
     hashes = argToList(args["hash"])
     for h in hashes:
@@ -20,7 +20,7 @@ def cbp_find_rule(args):
                     found.append(rule["hash"])
                     md += "Hash " + rule["hash"] + " is in state **" + STATES[rule["fileState"]] + "**\n"
     if found:
-        appendContext('found_hashes', ','.join(found), dedup=True)
+        appendContext("found_hashes", ",".join(found), dedup=True)
     res.append({"Type": entryTypes["note"], "ContentsFormat": formats["markdown"], "Contents": md})
     res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": t})
     demisto.results(res)
@@ -31,9 +31,9 @@ def main():  # pragma: no cover
     try:
         cbp_find_rule(args)
     except Exception as e:
-        err_msg = f'Encountered an error while running the script: [{e}]'
+        err_msg = f"Encountered an error while running the script: [{e}]"
         return_error(err_msg, error=e)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

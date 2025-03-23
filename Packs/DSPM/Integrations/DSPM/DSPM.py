@@ -143,30 +143,20 @@ class Client(BaseClient):
         super().__init__(base_url, verify=verify, headers=headers, proxy=proxy)
 
     def get_labels(self):
-        return self._http_request(
-            method="GET", url_suffix=f"{GET_LABELS}"
-        )
+        return self._http_request(method="GET", url_suffix=f"{GET_LABELS}")
 
     def fetch_risk_findings(self, params: dict[str, Any]):
         demisto.debug(f"all params : {params}")
-        return self._http_request(
-            method="GET", url_suffix=f"{GET_RISK_FINDINGS_ENDPOINT}", params=params
-        )
+        return self._http_request(method="GET", url_suffix=f"{GET_RISK_FINDINGS_ENDPOINT}", params=params)
 
     def get_asset_files(self, params: dict[str, Any]):
-        return self._http_request(
-            method="POST", url_suffix=f"{GET_ASSET_FILES}", params=params
-        )
+        return self._http_request(method="POST", url_suffix=f"{GET_ASSET_FILES}", params=params)
 
     def get_asset_details(self, asset_id: str):
-        return self._http_request(
-            method="GET", url_suffix=f"{GET_ASSET_DETAILS}{asset_id}"
-        )
+        return self._http_request(method="GET", url_suffix=f"{GET_ASSET_DETAILS}{asset_id}")
 
     def get_asset_lists(self, params: dict[str, Any]):
-        return self._http_request(
-            method="GET", url_suffix=f"{GET_ASSET_LISTS}", params=params
-        )
+        return self._http_request(method="GET", url_suffix=f"{GET_ASSET_LISTS}", params=params)
 
     def get_data_types(self):
         return self._http_request(
@@ -175,9 +165,7 @@ class Client(BaseClient):
         )
 
     def get_data_type_findings(self, params: dict[str, Any]):
-        return self._http_request(
-            method="GET", url_suffix=f"{GET_DATA_TYPE_FINDINGS_ENDPOINT}", params=params
-        )
+        return self._http_request(method="GET", url_suffix=f"{GET_DATA_TYPE_FINDINGS_ENDPOINT}", params=params)
 
     def get_risk_information(self, risk_id: str):
         """
@@ -186,9 +174,7 @@ class Client(BaseClient):
         :param incident_id: The ID of the incident to retrieve.
         :return: The incident data as a dictionary.
         """
-        return self._http_request(
-            method="GET", url_suffix=f"{GET_RISK_FINDING_BY_ID}{risk_id}"
-        )
+        return self._http_request(method="GET", url_suffix=f"{GET_RISK_FINDING_BY_ID}{risk_id}")
 
     def update_risk_status(self, risk_id: str, updated_status: str):
         return self._http_request(
@@ -197,11 +183,7 @@ class Client(BaseClient):
         )
 
     def get_alerts_list(self, params: dict[str, Any]):
-        return self._http_request(
-            method="GET",
-            url_suffix=f"{GET_ALERTS_LIST}",
-            params=params
-        )
+        return self._http_request(method="GET", url_suffix=f"{GET_ALERTS_LIST}", params=params)
 
     def update_alert_status(self, alert_id: str, updated_status: str):
         return self._http_request(
@@ -210,19 +192,13 @@ class Client(BaseClient):
         )
 
     def get_list_of_asset_fields(self, params):
-        return self._http_request(
-            method="POST",
-            url_suffix=f"{GET_ASSET_FIELDS}",
-            params=params
-        )
+        return self._http_request(method="POST", url_suffix=f"{GET_ASSET_FIELDS}", params=params)
 
 
 """ HELPER FUNCTIONS """
 
 
-def validate_parameter(
-    param_name: str, param_in: str, param_equal: str, supported_list: list[str]
-):
+def validate_parameter(param_name: str, param_in: str, param_equal: str, supported_list: list[str]):
     if param_in:
         param_list = [item.strip() for item in param_in.split(",") if item.strip()]
         for param in param_list:
@@ -250,23 +226,17 @@ def test_module(client: Client) -> str:
             return f"Error: An unknown exception occurred: {e}"
 
 
-def get_list_risk_findings(
-    client: Client, args: dict[str, Any], page: int
-) -> list[dict]:
+def get_list_risk_findings(client: Client, args: dict[str, Any], page: int) -> list[dict]:
     """Fetch list of DSPM Risk findings"""
     # Validate and process cloudProvider parameters
     cloud_provider_in = args.get("cloud_provider_in", "")
     cloud_provider_equal = args.get("cloud_provider_equal", "")
-    validate_parameter(
-        "cloudProvider", cloud_provider_in, cloud_provider_equal, SUPPORTED_CLOUD_PROVIDERS
-    )
+    validate_parameter("cloudProvider", cloud_provider_in, cloud_provider_equal, SUPPORTED_CLOUD_PROVIDERS)
 
     # Check supported affects
     affects_in = args.get("affects_in", "")
     affects_equal = args.get("affects_equal", "")
-    validate_parameter(
-        "affects", affects_in, affects_equal, SUPPORTED_CATEGORIES
-    )
+    validate_parameter("affects", affects_in, affects_equal, SUPPORTED_CATEGORIES)
 
     # Check supported Status
     status_in = args.get("status_in", "")
@@ -313,9 +283,7 @@ def get_list_risk_findings(
     return findings
 
 
-def get_risk_finding_by_id(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def get_risk_finding_by_id(client: Client, args: dict[str, Any]) -> CommandResults:
     risk_id = args.get("finding_id")
     if not risk_id:
         raise ValueError("finding_id argument is required")
@@ -335,7 +303,7 @@ def get_risk_finding_by_id(
         outputs_key_field="id",
         outputs=finding,
         readable_output=readable_output,
-        raw_response=finding
+        raw_response=finding,
     )
 
 
@@ -343,23 +311,17 @@ def get_list_of_assets(client: Client, args: dict[str, Any], page: int) -> list[
     # Validate and process cloudProvider parameters
     cloud_provider_in = args.get("cloud_provider_in", "")
     cloud_provider_equal = args.get("cloud_provider_equal", "")
-    validate_parameter(
-        "cloudProvider", cloud_provider_in, cloud_provider_equal, SUPPORTED_CLOUD_PROVIDERS
-    )
+    validate_parameter("cloudProvider", cloud_provider_in, cloud_provider_equal, SUPPORTED_CLOUD_PROVIDERS)
 
     # Validate and process serviceType parameters
     service_Type_In = args.get("service_type_in", "")
     service_Type_Equal = args.get("service_type_equal", "")
-    validate_parameter(
-        "serviceType", service_Type_In, service_Type_Equal, SUPPORTED_SERVICE_TYPES
-    )
+    validate_parameter("serviceType", service_Type_In, service_Type_Equal, SUPPORTED_SERVICE_TYPES)
 
     # Validate and process lifecycle parameters
     lifecycle_In = args.get("lifecycle_in", "")
     lifecycle_Equal = args.get("lifecycle_equal", "")
-    validate_parameter(
-        "lifecycle", lifecycle_In, lifecycle_Equal, SUPPORTED_LIFECYCLE
-    )
+    validate_parameter("lifecycle", lifecycle_In, lifecycle_Equal, SUPPORTED_LIFECYCLE)
 
     # Check supported sorting order
     sort_order = args.get("sort")
@@ -411,7 +373,7 @@ def get_asset_details(client: Client, args: dict[str, Any]) -> CommandResults:
         outputs_key_field="id",
         outputs=asset_details,
         readable_output=readable_output,
-        raw_response=asset_details
+        raw_response=asset_details,
     )
 
 
@@ -424,11 +386,7 @@ def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResult
     all_files = []
 
     while True:
-        params = {
-            "id": asset_id,
-            "page": page_number,
-            "size": MAX_PAGE_SIZE
-        }
+        params = {"id": asset_id, "page": page_number, "size": MAX_PAGE_SIZE}
 
         # Fetch the asset files for the current page
         response = client.get_asset_files(params)
@@ -452,19 +410,17 @@ def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResult
         outputs_key_field="filename",
         outputs={"files": all_files, "filesCount": files_count},
         readable_output=readable_output,
-        raw_response=all_files
+        raw_response=all_files,
     )
 
 
 def get_data_types(client: Client) -> CommandResults:
     """Command to fetch data types."""
     data_types = client.get_data_types()
-    data_types_formatted = [
-        {"No": index + 1, "Key": dt} for index, dt in enumerate(data_types)
-    ]
+    data_types_formatted = [{"No": index + 1, "Key": dt} for index, dt in enumerate(data_types)]
 
     table_name = "Data Types"
-    headers = ['No', 'Key']
+    headers = ["No", "Key"]
     readable_output = tableToMarkdown(table_name, data_types_formatted, headers=headers)
 
     return CommandResults(
@@ -472,34 +428,26 @@ def get_data_types(client: Client) -> CommandResults:
         outputs_key_field="Key",
         outputs=data_types_formatted,
         readable_output=readable_output,
-        raw_response=data_types
+        raw_response=data_types,
     )
 
 
-def get_data_type_findings(
-    client: Client, args: dict[str, Any], page: int
-) -> list[dict]:
+def get_data_type_findings(client: Client, args: dict[str, Any], page: int) -> list[dict]:
     """Fetch data type findings for a specific page."""
     # check supported cloud providers
     cloud_provider_in = args.get("cloud_provider_in", "")
     cloud_provider_equal = args.get("cloud_provider_equal", "")
-    validate_parameter(
-        "cloudProvider", cloud_provider_in, cloud_provider_equal, SUPPORTED_CLOUD_PROVIDERS
-    )
+    validate_parameter("cloudProvider", cloud_provider_in, cloud_provider_equal, SUPPORTED_CLOUD_PROVIDERS)
 
     # check supported service type
     service_type_in = args.get("service_type_in", "")
     service_type_equal = args.get("service_type_equal", "")
-    validate_parameter(
-        "serviceType", service_type_in, service_type_equal, SUPPORTED_SERVICE_TYPES
-    )
+    validate_parameter("serviceType", service_type_in, service_type_equal, SUPPORTED_SERVICE_TYPES)
 
     # check supported lifecycle
     lifecycle_in = args.get("lifecycle_in", "")
     lifecycle_equal = args.get("lifecycle_equal", "")
-    validate_parameter(
-        "lifecycle", lifecycle_in, lifecycle_equal, SUPPORTED_LIFECYCLE
-    )
+    validate_parameter("lifecycle", lifecycle_in, lifecycle_equal, SUPPORTED_LIFECYCLE)
 
     # Check supported sorting order
     sort_order = args.get("sort")
@@ -548,52 +496,38 @@ def update_risk_finding_status(client, args):
             outputs_prefix="DSPM.RiskFindingStatusUpdate",
             outputs_key_field="riskFindingId",
             outputs=response,
-            raw_response=response
+            raw_response=response,
         )
     except Exception as e:
-        return_error(
-            f"Failed to update risk finding {finding_id} to status {status}. Error: {str(e)}"
-        )
+        return_error(f"Failed to update risk finding {finding_id} to status {status}. Error: {str(e)}")
 
 
-def get_list_of_alerts(
-    client: Client, args: dict[str, Any], page: int
-) -> list[dict]:
+def get_list_of_alerts(client: Client, args: dict[str, Any], page: int) -> list[dict]:
     """fetch list of dspm alerts"""
     # check supported cloud providers
     cloud_provider_in = args.get("cloud_provider_in", "")
     cloud_provider_equal = args.get("cloud_provider_equal", "")
-    validate_parameter(
-        "cloudProvider", cloud_provider_in, cloud_provider_equal, SUPPORTED_CLOUD_PROVIDERS
-    )
+    validate_parameter("cloudProvider", cloud_provider_in, cloud_provider_equal, SUPPORTED_CLOUD_PROVIDERS)
 
     # check supported cloud environments
     cloud_environment_in = args.get("cloud_environment_in", "")
     cloud_environment_equal = args.get("cloud_environment_equal", "")
-    validate_parameter(
-        "cloudEnvironment", cloud_environment_in, cloud_environment_equal, SUPPORTED_CLOUD_ENVIRONMENTS
-    )
+    validate_parameter("cloudEnvironment", cloud_environment_in, cloud_environment_equal, SUPPORTED_CLOUD_ENVIRONMENTS)
 
     # check supported policy severity
     policy_severity_in = args.get("policy_severity_in", "")
     policy_severity_equal = args.get("policy_severity_equal", "")
-    validate_parameter(
-        "policySeverity", policy_severity_in, policy_severity_equal, SUPPORTED_POLICY_SEVERITIES
-    )
+    validate_parameter("policySeverity", policy_severity_in, policy_severity_equal, SUPPORTED_POLICY_SEVERITIES)
 
     # check supported category type
     category_type_in = args.get("category_type_in", "")
     category_type_equal = args.get("category_type_equal", "")
-    validate_parameter(
-        "categoryType", category_type_in, category_type_equal, SUPPORTED_CATEGORY_TYPES
-    )
+    validate_parameter("categoryType", category_type_in, category_type_equal, SUPPORTED_CATEGORY_TYPES)
 
     # check supported category type
     status_in = args.get("status_in", "")
     status_equal = args.get("status_equal", "")
-    validate_parameter(
-        "status", status_in, status_equal, SUPPORTED_STATUSES
-    )
+    validate_parameter("status", status_in, status_equal, SUPPORTED_STATUSES)
 
     # Check supported sorting order
     sort_order = args.get("sort")
@@ -627,7 +561,7 @@ def get_list_of_alerts(
         "status.equals": args.get("status_equals"),
         "sort": args.get("sort"),
         "page": page,
-        "size": MAX_PAGE_SIZE
+        "size": MAX_PAGE_SIZE,
     }
 
     # Remove None values from params
@@ -654,23 +588,19 @@ def update_dspm_alert_status(client, args):
             outputs_prefix="DSPM.AlertStatusUpdate",
             outputs_key_field="alertId",
             outputs=response,
-            raw_response=response
+            raw_response=response,
         )
     except Exception as e:
-        return_error(
-            f"Failed to update alert '{alert_id}' to status '{status}'. Error: {str(e)}"
-        )
+        return_error(f"Failed to update alert '{alert_id}' to status '{status}'. Error: {str(e)}")
 
 
 def get_list_of_labels(client: Client):
     """Command to fetch list of label names based on company"""
     labels = client.get_labels()
-    labels_formatted = [
-        {"No": index + 1, "Key": dt} for index, dt in enumerate(labels)
-    ]
+    labels_formatted = [{"No": index + 1, "Key": dt} for index, dt in enumerate(labels)]
 
     table_name = "Labels"
-    headers = ['No', 'Key']
+    headers = ["No", "Key"]
     readable_output = tableToMarkdown(table_name, labels_formatted, headers=headers)
 
     return CommandResults(
@@ -678,7 +608,7 @@ def get_list_of_labels(client: Client):
         outputs_key_field="Key",
         outputs=labels_formatted,
         readable_output=readable_output,
-        raw_response=labels
+        raw_response=labels,
     )
 
 
@@ -696,9 +626,7 @@ def dspm_list_risk_findings_command(client, args):
             if page == 0 and not findings_collected:
                 demisto.info("No risks were fetched")
 
-                return CommandResults(
-                    readable_output="No Risk Findings found."
-                )
+                return CommandResults(readable_output="No Risk Findings found.")
 
             break  # No more findings to fetch
 
@@ -720,7 +648,7 @@ def dspm_list_risk_findings_command(client, args):
         outputs_key_field="id",
         outputs=findings_collected,
         readable_output=readable_output,
-        raw_response=findings_collected
+        raw_response=findings_collected,
     )
 
 
@@ -736,9 +664,7 @@ def dspm_list_assets_command(client, args):
         assets = get_list_of_assets(client, args, page)
         if not assets:
             if page == 0 and not collected_assets:
-                return CommandResults(
-                    readable_output="No assets found."
-                )
+                return CommandResults(readable_output="No assets found.")
 
             break
 
@@ -760,7 +686,7 @@ def dspm_list_assets_command(client, args):
         outputs_key_field="id",
         outputs=collected_assets,
         readable_output=readable_output,
-        raw_response=collected_assets
+        raw_response=collected_assets,
     )
 
 
@@ -773,9 +699,7 @@ def dspm_list_data_types_findings_command(client, args):
     collected_data_types: list = []
 
     while len(collected_data_types) < limit:
-        data_type_findings = get_data_type_findings(
-            client, args, page
-        )
+        data_type_findings = get_data_type_findings(client, args, page)
         if not data_type_findings:
             if page == 0 and not collected_data_types:
                 return CommandResults(
@@ -799,7 +723,7 @@ def dspm_list_data_types_findings_command(client, args):
         outputs_key_field="dataTypeName",
         outputs=collected_data_types,
         readable_output=readable_output,
-        raw_response=collected_data_types
+        raw_response=collected_data_types,
     )
 
 
@@ -835,7 +759,7 @@ def dspm_list_alerts_command(client, args):
         outputs_key_field="id",
         outputs=collected_alerts,
         readable_output=readable_output,
-        raw_response=collected_alerts
+        raw_response=collected_alerts,
     )
 
 
@@ -848,11 +772,7 @@ def dspm_get_list_of_asset_fields_command(client: Client, args: dict[str, Any]) 
     all_fields = []
     try:
         while True:
-            params = {
-                "id": asset_id,
-                "page": page_number,
-                "size": MAX_PAGE_SIZE
-            }
+            params = {"id": asset_id, "page": page_number, "size": MAX_PAGE_SIZE}
 
             # Fetch the asset fields for the current page
             response = client.get_list_of_asset_fields(params)
@@ -880,7 +800,7 @@ def dspm_get_list_of_asset_fields_command(client: Client, args: dict[str, Any]) 
             outputs_prefix="DSPM.AssetFields",
             outputs_key_field="name",
             outputs={"fields": all_fields, "fieldsCount": fields_count},
-            readable_output=readable_output
+            readable_output=readable_output,
         )
     except Exception as e:
         error = str(e)
@@ -911,9 +831,7 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        client = Client(
-            base_url=base_url, api_key=api_key, verify=verify_certificate, proxy=proxy
-        )
+        client = Client(base_url=base_url, api_key=api_key, verify=verify_certificate, proxy=proxy)
 
         if demisto.command() == "test-module":
             result = test_module(client)
@@ -969,9 +887,7 @@ def main() -> None:
             return_results(dspm_list_alerts_command(client, demisto.args()))
 
     except Exception as e:
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """
