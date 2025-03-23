@@ -1,5 +1,5 @@
 name: CiscoSMA Parsing Rule
-id: CiscoSMA Parsing Rule
+id: CiscoSMA_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''

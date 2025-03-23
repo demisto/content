@@ -247,6 +247,7 @@ class TAXII2Server:
         if objects:
             first_added = objects[-1].get('date_added')
             last_added = objects[0].get('date_added')
+            demisto.debug(f"T2S: get_manifest {objects=}")
 
         response = {
             'objects': objects,
@@ -268,12 +269,14 @@ class TAXII2Server:
         """
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get('query')
+        demisto.debug(f"T2S: calling find_indicators with {query=} {types=} {added_after=} {limit=} {offset=}")
         iocs, extensions, total = find_indicators(
             query=query,
             types=types,
             added_after=added_after,
             limit=limit,
             offset=offset)
+        demisto.debug(f"T2S: after find_indicators {iocs}")
 
         first_added = None
         last_added = None
@@ -284,6 +287,7 @@ class TAXII2Server:
             raise RequestedRangeNotSatisfiable
 
         objects = limited_iocs
+        demisto.debug(f"T2S: in get_objects {objects=}")
 
         if SERVER.has_extension:
             limited_extensions = get_limited_extensions(limited_iocs, extensions)
@@ -576,6 +580,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
                                                fields_to_present=SERVER.fields_to_present,
                                                types_for_indicator_sdo=SERVER.types_for_indicator_sdo)
     iocs, extensions, total = XSOAR2STIXParser_client.create_indicators(indicator_searcher, is_manifest)
+    demisto.debug(f"T2S: find_indicators {iocs=}")
 
     return iocs, extensions, total
 
@@ -850,6 +855,7 @@ def taxii2_objects(api_root: str, collection_id: str) -> Response:
     try:
         created = datetime.now(timezone.utc)
         added_after, offset, limit, types = parse_manifest_and_object_args()
+        demisto.debug(f"T2S: called objects endpoint {collection_id=}")
         objects_response, date_added_first, date_added_last, content_range = SERVER.get_objects(
             collection_id=collection_id,
             added_after=added_after,

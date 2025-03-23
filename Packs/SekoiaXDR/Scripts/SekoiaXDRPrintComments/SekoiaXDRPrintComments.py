@@ -23,13 +23,9 @@ def get_comments(alert_id: str):
     if len(comments) > 0:  # type: ignore
         readable_comments = create_comment_object(comments)
         headers = ["date", "comment", "user"]
-        readable_output = tableToMarkdown(
-            "Comments:", readable_comments, headers=headers
-        )
+        readable_output = tableToMarkdown("Comments:", readable_comments, headers=headers)
     else:
-        readable_output = (
-            "### Comments:\n ### {{color:green}}(There is no comments in this alert.)"
-        )
+        readable_output = "### Comments:\n ### {{color:green}}(There is no comments in this alert.)"
 
     return readable_output
 

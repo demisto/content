@@ -2,7 +2,7 @@
     "name": "Linux Events Collection",
     "description": "Linux is an operating system for servers, desktops, cloud, and IoTs",
     "support": "xsoar",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.15",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

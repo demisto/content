@@ -415,7 +415,7 @@ def next_expiry_time() -> float:
     return (datetime.now(timezone.utc) + timedelta(seconds=5)).timestamp()
 
 
-async def check_and_handle_entitlement(text: str, message_id: str, user_name: str) -> str:
+async def check_and_handle_entitlement(text: str, message_id: str, user_name: str, user_email: str) -> str:
     """
     Handles an entitlement message (a reply to a question)
     Args:
@@ -434,7 +434,7 @@ async def check_and_handle_entitlement(text: str, message_id: str, user_name: st
         entitlement = message.get('entitlement')
         reply = message.get('reply', f'Thank you {user_name} for your response {text}.')
         guid, incident_id, task_id = extract_entitlement(entitlement)
-        demisto.handleEntitlementForUser(incident_id, guid, user_name, text, task_id)
+        demisto.handleEntitlementForUser(incident_id, guid, user_email, text, task_id)
         message['remove'] = True
         set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     return reply
@@ -786,7 +786,9 @@ async def handle_zoom_response(request: Request, credentials: HTTPBasicCredentia
             robot_jid = payload['robotJid']
             to_jid = payload['toJid']
             user_name = payload['userName']
-            entitlement_reply = await check_and_handle_entitlement(action, message_id, user_name)
+            user_id = payload['userId']
+            user_email = zoom_get_user_email_by_id(CLIENT, user_id)
+            entitlement_reply = await check_and_handle_entitlement(action, message_id, user_name, user_email)
             if entitlement_reply:
                 await process_entitlement_reply(entitlement_reply, account_id, robot_jid, to_jid, user_name, action)
                 demisto.updateModuleHealth("")
@@ -2062,6 +2064,23 @@ def zoom_get_user_name_by_email(client, user_email):
         raise DemistoException(USER_NOT_FOUND)
     user_name = user_name.get('display_name')
     return user_name
+
+
+def zoom_get_user_email_by_id(client, user_id):
+    """
+    Retrieves the user email address associated with the given user ID.
+
+    :param client: The Zoom client object.
+    user_id: The user ID of the user.
+
+    :return: The email address associated with the user ID.
+    :rtype: str
+    """
+    user_url_suffix = f'users/{user_id}'
+    user_email = client.zoom_list_users(page_size=1, url_suffix=user_url_suffix).get('email')
+    if not user_email:
+        raise DemistoException(USER_NOT_FOUND)
+    return user_email
 
 
 def zoom_list_messages_command(client, **args) -> CommandResults:

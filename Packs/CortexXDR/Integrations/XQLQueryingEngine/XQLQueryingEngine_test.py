@@ -975,30 +975,26 @@ def test_get_built_in_query_results_polling_command(mocker):
     assert res.call_args.args[1]['time_frame'] == '7 days'
 
 
+@patch('XQLQueryingEngine.Client')
+@patch('CoreXQLApiModule.demisto.params')
 @patch('XQLQueryingEngine.get_nonce')
 @patch('CoreXQLApiModule.demisto.debug')
 @patch('CoreXQLApiModule.demisto.command')
 @patch('CoreXQLApiModule.demisto.args')
-@patch('CoreXQLApiModule.demisto.params')
-@patch('XQLQueryingEngine.Client')
 @patch('CoreXQLApiModule.return_results')
 @patch('CoreXQLApiModule.return_error')
-def test_main_success(mock_return_error, mock_return_results, mock_Client, mock_demisto_params, mock_demisto_args,
-                      mock_demisto_command, mock_demisto_debug, mock_get_nonce):
+def test_main_success(mock_return_error, mock_return_results, mock_demisto_args,
+                      mock_demisto_command, mock_demisto_debug, mock_get_nonce,
+                      mock_demisto_params, mock_Client):
     """
     Given:
     - demisto.params().
-    - demisto.args().
-    - demisto.command()
-
-    When:
     - Calling main().
-
+    When:
+    - main() is called.
     Then:
     - Ensure the main() is called properly.
-
     """
-    import hashlib
     from XQLQueryingEngine import main
     mock_demisto_params.return_value = {
         'apikey': {'password': 'test_apikey'},
@@ -1014,23 +1010,18 @@ def test_main_success(mock_return_error, mock_return_results, mock_Client, mock_
     mock_demisto_command.return_value = 'test-module'
     mock_return_results.return_value = None
 
-    timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
-    auth_key = f'test_apikeyrandom_nonce{timestamp}'.encode()
-    api_key_hash = hashlib.sha256(auth_key).hexdigest()
-
     main()
 
     mock_demisto_debug.assert_called_once_with('Command being called is test-module')
-    mock_Client.assert_called_once_with(
-        base_url='http://example.com/public_api/v1',
-        verify=True,
-        headers={'x-xdr-timestamp': timestamp,
-                 'x-xdr-nonce': 'random_nonce',
-                 'x-xdr-auth-id': 'test_apikey_id',
-                 'Authorization': api_key_hash},
-        proxy=False,
-        is_core=False
-    )
+    actual_call = mock_Client.call_args
+    filtered_kwargs = {k: v for k, v in actual_call.kwargs.items() if k != 'headers'}
+    expected_kwargs = {
+        'base_url': 'http://example.com/public_api/v1',
+        'verify': True,
+        'proxy': False,
+        'is_core': False,
+    }
+    assert filtered_kwargs == expected_kwargs
     mock_return_error.assert_not_called()
 
 

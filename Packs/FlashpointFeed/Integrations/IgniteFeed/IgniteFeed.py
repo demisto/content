@@ -47,7 +47,7 @@ HTTP_ERRORS = {
     404: "Resource not found: Invalid endpoint was called.",
     500: "Internal server error: Please try again after some time."
 }
-INTEGRATION_VERSION = get_pack_version()
+INTEGRATION_VERSION = "2.0.4"
 INTEGRATION_PLATFORM = 'Cortex XSOAR'
 DEFAULT_API_PATH = 'api.flashpoint.io'
 DEFAULT_PLATFORM_PATH = 'https://app.flashpoint.io'

@@ -81,7 +81,7 @@ Check if entry ID exist
 ### file-management-delete-attachment
 
 ***
-Delete the attachment from the incident and from the XSOAR server
+Delete the attachment from the incident and from the XSOAR server.
 
 #### Base Command
 
@@ -98,6 +98,28 @@ Delete the attachment from the incident and from the XSOAR server
 #### Context Output
 
 There is no context output for this command.
+
+### file-management-delete-custom-attachment
+
+***
+Delete the custom field attachment from the incident and from the XSOAR server.
+
+#### Base Command
+
+`file-management-delete-custom-attachment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filePath | File path of the file. | Required | 
+| incidentID | ID of the incident to delete attachment. | Optional | 
+| fieldName | Name of the custom field (type attachment) you want to remove the attachment. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ### file-management-rename-file
 
 ***

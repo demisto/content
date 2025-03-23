@@ -2,7 +2,7 @@
     "name": "LDAP Authentication",
     "description": "Authenticate using Open LDAP or Active Directory",
     "support": "xsoar",
-    "currentVersion": "2.0.15",
+    "currentVersion": "2.0.18",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

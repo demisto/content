@@ -1,0 +1,47 @@
+[
+    {
+        "first_seen": "20-12-2023 04:51:51 AM",
+        "last_seen": "20-12-2023 04:51:51 AM",
+        "card_number": "0123456789012345",
+        "cvv": "123",
+        "expiry_month": 4,
+        "expiry_year": 2026,
+        "brand": "Demo Bank",
+        "id": "LC-A1E202F49",
+        "status": "Member Feedback",
+        "timestamp": 1735107419000,
+        "severity":"High",
+        "type":"Compromised Cards",
+        "remarks":"LC-A1E202F49"
+    },
+    {
+        "first_seen": "20-12-2024 09:16:59 AM",
+        "last_seen": "20-12-2024 09:16:59 AM",
+        "card_number": "0123456798012345",
+        "cvv": "052",
+        "expiry_month": 5,
+        "expiry_year": 2027,
+        "brand": "Demo Bank",
+        "id": "LC-A1R252F49",
+        "status": "New",
+        "timestamp": 1734675419000,
+        "severity":"Medium",
+        "type":"Compromised Cards",
+        "remarks":"LC-A1R252F49"
+    },
+    {
+        "first_seen": "15-11-2024 09:16:59 AM",
+        "last_seen": "15-11-2024 09:16:59 AM",
+        "card_number": "0123456789013245",
+        "cvv": "475",
+        "expiry_month": 3,
+        "expiry_year": 2028,
+        "brand": "Demo Bank",
+        "id": "LC-A1CV42F49",
+        "status": "New",
+        "timestamp": 1731651419000,
+        "severity":"High",
+        "type":"Compromised Cards",
+        "remarks":"LC-A1CV42F49"
+    }
+]

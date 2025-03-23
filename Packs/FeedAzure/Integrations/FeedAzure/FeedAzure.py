@@ -84,7 +84,7 @@ class Client(BaseClient):
             timeout=self._polling_timeout,
             resp_type='text',
             retries=4,
-            status_list_to_retry=[403]
+            status_list_to_retry=[403, 404]
         )
 
         download_link_search_regex = re.search(r'.+\"(https://download\.microsoft\.com/download/.+\.json)\",', azure_url_response)

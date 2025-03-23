@@ -2,64 +2,80 @@ category: Case Management
 commonfields:
   id: RTIR
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: Server URL (e.g. http://192.168.0.1)
   name: server
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: false
   type: 9
+  section: Connect
 - name: token
   type: 9
   displaypassword: Token
   hiddenusername: true
+  section: Connect
 - display: Certificate
   name: certificate
   type: 9
   required: false
+  section: Connect
   displaypassword: Private Key
 - display: 'Trust any certificate (not secure)'
   name: unsecure
   type: 8
   required: false
+  section: Connect
 - display: 'Use system proxy settings'
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: 'Fetch incidents'
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: 'Incident type'
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - defaultvalue: 'new,open'
   display: 'Fetch incidents of the following status:'
   name: fetch_status
   type: 0
   required: false
+  section: Collect
 - display: 'Fetch incidents with priority greater or equal to:'
   name: fetch_priority
   type: 0
   required: false
   defaultvalue: '0'
+  section: Collect
 - defaultvalue: 'Incident Reports'
   display: Queue name to fetch incidents from
   name: fetch_queue
   type: 0
   required: false
+  section: Collect
 - display: Referer request header
   name: referer
   type: 0
   required: false
+  section: Collect
 - defaultvalue: '0'
   display: Fetch incidents limit (the max amount of incidents per fetch iteration)
   name: fetch_limit
   type: 0
   required: false
+  section: Collect
 description: Request Tracker for Incident Response is a ticketing system which provides pre-configured queues and workflows designed for incident response teams.
 display: RTIR
 name: RTIR
@@ -432,7 +448,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - RTIR Test
 fromversion: 5.0.0

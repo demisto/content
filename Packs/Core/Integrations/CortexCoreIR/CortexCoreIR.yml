@@ -1,5 +1,8 @@
 category: Endpoint
 defaultEnabled: true
+sectionOrder:
+  - Connect
+  - Collect
 commonfields:
   id: Cortex Core - IR
   version: -1
@@ -8,21 +11,25 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Server URL (copy URL from Core - click ? to see more info.)
   name: url
   type: 0
   hidden: true
   required: false
+  section: Connect  
 - display: API Key ID
   name: apikey_id
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: API Key
   name: apikey
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: API Key ID
   name: credentials
   defaultvalue: ""
@@ -36,6 +43,7 @@ configuration:
   name: timeout
   type: 0
   required: false
+  section: Connect  
 description: The Cortex Core IR integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 display: Investigation & Response
 name: Cortex Core - IR
@@ -2280,8 +2288,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'true'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - description: Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False.
       name: events_from_decider_format
       auto: PREDEFINED

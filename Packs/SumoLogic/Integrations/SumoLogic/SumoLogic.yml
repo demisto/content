@@ -4,30 +4,37 @@ commonfields:
 name: SumoLogic
 display: SumoLogic
 category: Analytics & SIEM
-description: Cloud-based service for logs & metrics management
+description: Cloud-based service for logs & metrics management.
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: 'Sumo Logic URL (region specific), for example: https://api.us2.sumologic.com/api/'
   name: url
   defaultvalue: https://api.us2.sumologic.com/api/
   type: 0
   required: true
+  section: Connect
 - display: API Version
   name: apiVersion
   defaultvalue: v1
   type: 0
   required: true
+  section: Connect
 - display: Access ID - can be created in Sumo Logic under "Settings"
   name: accessID
   defaultvalue: ""
   type: 0
   hidden: true
   required: false
+  section: Connect
 - display: Access key - can be created in Sumo Logic under "Settings"
   name: accessKey
   defaultvalue: ""
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Access ID - can be created in Sumo Logic under "Settings"
   name: credentialsAccess
   type: 9
@@ -38,41 +45,50 @@ configuration:
   name: useproxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
 - display: Escape URLs
   name: escape_urls
   defaultvalue: "false"
   type: 8
   additionalinfo: "Whether to add escaping before `=` chars in URLs. For further information, see the pack README"
   required: false
+  section: Connect
 - display: Seconds to sleep between checking for results
   name: sleepBetweenChecks
   defaultvalue: "3"
   type: 0
   required: true
+  section: Connect
 - display: Default maximum number of records to retrieve
   name: limit
   defaultvalue: "100"
   type: 0
   required: true
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Run this query to fetch new events as incidents
+  section: Collect
   name: fetchQuery
   defaultvalue: ""
   type: 0
   required: false
 - display: Timeframe for first fetch (in seconds)
+  section: Collect
   name: firstFetch
   defaultvalue: "600"
   type: 0
@@ -82,21 +98,25 @@ configuration:
   defaultvalue: 60
   type: 0
   required: false
+  section: Collect
 - display: Default max total wait for results (in milliseconds)
   name: maxTimeout
   defaultvalue: "600"
   type: 0
   required: false
+  section: Connect
 - display: Time zone of the collector to fetch from (see detailed description)
   name: timeZone
   defaultvalue: UTC
   type: 0
   required: false
+  section: Collect
 - display: Fetch aggregate records (instead of messages)
   name: fetchRecords
   defaultvalue: "false"
   type: 8
   required: false
+  section: Collect
 script:
   script: ''
   type: javascript
@@ -117,7 +137,7 @@ script:
       description: Maximum number of results to return from the query. Default is 100. The value specified will override the default set in the "limit" parameter.
       defaultValue: "100"
     - name: offset
-      description: Return results starting at this offset. should be int - by default is 0
+      description: Return results starting at this offset. should be int - by default is 0.
       defaultValue: "0"
     - name: timezone
       description: The time zone if from/to is not in milliseconds. Default is UTC. Please refer to the article at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of time zone codes.

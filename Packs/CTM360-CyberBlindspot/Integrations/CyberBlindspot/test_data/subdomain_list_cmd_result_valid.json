@@ -1,0 +1,56 @@
+[
+    {
+        "name": "RD-RA144D26C",
+        "occurred": "2024-12-28T17:33:36+00:00",
+        "externalstatus": "monitoring",
+        "severity": 3,
+        "CustomFields": {
+            "subject": "ww25.hose-monster.trybackme.up",
+            "cbs_type": "Subdomain Infringement",
+            "cbs_coa": "",
+            "cbs_updated_date": "2024-12-28T17:34:19+00:00",
+            "risks": [
+            "SSL issued on domain"
+            ],
+            "timestamp": 1735407216507
+        },
+        "rawJson": "{\"name\":\"RD-RA144D26C\",\"occurred\":\"2024-12-28T17:33:36+00:00\",\"type\":\"Subdomain Infringement\",\"externalstatus\":\"monitoring\",\"severity\":3,\"CustomFields\":{\"subject\":\"ww25.hose-monster.trybackme.up\",\"cbs_coa\":\"\",\"cbs_updated_date\":\"2024-12-28T17:34:19+00:00\",\"risks\":[\"SSL issued on domain\"],\"timestamp\":1735407216507}}"
+    },
+    {
+        "name": "RD-5049BCA31",
+        "occurred": "2024-12-27T03:27:49+00:00",
+        "externalstatus": "monitoring",
+        "severity": 3,
+        "CustomFields": {
+            "subject": "webemail.trybackme.io",
+            "cbs_type": "Subdomain Infringement",
+            "cbs_coa": "",
+            "cbs_updated_date": "2024-12-27T03:29:07+00:00",
+            "risks": [
+                "SSL issued on domain"
+            ],
+            "timestamp": 1735270069133
+        },
+        "rawJson": "{\"name\":\"RD-5049BCA31\",\"occurred\":\"2024-12-27T03:27:49+00:00\",\"type\":\"Subdomain Infringement\",\"externalstatus\":\"monitoring\",\"severity\":3,\"CustomFields\":{\"subject\":\"webemail.trybackme.io\",\"cbs_coa\":\"\",\"cbs_updated_date\":\"2024-12-27T03:29:07+00:00\",\"risks\":[\"SSL issued on domain\",\"Has MX Record\",\"Has A Record\",\"Has NS Record\",\"Has DNS Record\"],\"timestamp\":1735270069133}}"
+    },
+    {
+        "name": "RD-FBD354127",
+        "occurred": "2024-12-26T06:40:46+00:00",
+        "externalstatus": "monitoring",
+        "severity": 3,
+        "CustomFields": {
+            "subject": "signature-evasion-trybackme.brandifyo.cfd",
+            "cbs_type": "Subdomain Infringement",
+            "cbs_coa": "",
+            "cbs_updated_date": "2024-12-26T06:46:33+00:00",
+            "risks": [
+                "Has MX Record",
+                "Has DNS Record",
+                "SSL issued on domain",
+                "Has A Record"
+            ],
+            "timestamp": 1735195246025
+        },
+        "rawJson": "{\"name\":\"RD-FBD354127\",\"occurred\":\"2024-12-26T06:40:46+00:00\",\"type\":\"Subdomain Infringement\",\"externalstatus\":\"monitoring\",\"severity\":3,\"CustomFields\":{\"name\":\"signature-evasion-trybackme.brandifyo.cfd\",\"cbs_coa\":\"\",\"cbs_updated_date\":\"2024-12-26T06:46:33+00:00\",\"risks\":[\"Has NS Record\",\"Has MX Record\",\"Has DNS Record\",\"SSL issued on domain\",\"Has A Record\"],\"timestamp\":1735195246025}}"
+    }
+]
