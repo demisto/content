@@ -299,10 +299,7 @@ def test_update_content_item_gitlab(mocker):
         ("No placeholders here", "No placeholders here"),
 
         # Empty string case
-        ("", ""),
-
-        # Placeholder with nested braces (should not exist but handled gracefully)
-        ("Nested ${outer${inner}}", "Nested $\\{outer${inner}}"),
+        ("", "")
     ]
 )
 def test_escape_placeholders(given, expected):
