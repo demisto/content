@@ -5,7 +5,7 @@ name: ImportSigmaRulesFromZIP
 script: ''
 type: python
 tags: []
-comment: Deprecated. Ese CreateSigmaRuleIndicator instead.
+comment: Deprecated. Use CreateSigmaRuleIndicator instead.
 args:
 - name: entry_id
   required: true
