@@ -10,7 +10,9 @@
     "categories": [
         "Vulnerability Management"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "Asset Collection"
