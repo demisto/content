@@ -250,7 +250,7 @@ class PychromeEventHandler:
             self.tab.Page.navigate(url=self.path)
             time.sleep(2)  # Wait for the page to load
             frame_url = self.tab.Page.getFrameTree()['frameTree']['frame']['url']
-            if frame_url != 'chrome-error://chromewebdata/':
+            if "chrome-error" not in frame_url:
                 demisto.debug('Retry successful.')
                 self.tab_ready_event.set()
                 break
