@@ -1604,6 +1604,11 @@ tasks:
             value:
               simple: No Action
           ignorecase: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Remediation Approval.Answers.0
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
