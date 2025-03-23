@@ -12,6 +12,9 @@
         {
             "id": "Base",
             "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -30,6 +33,9 @@
         {
             "id": "CommonScripts",
             "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -86,6 +92,7 @@
         {
             "id": "DemistoRESTAPI",
             "supportedModules": [
+                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -111,7 +118,7 @@
             ]
         },
         {
-        "id": "FeedUnit42v2",
+            "id": "FeedUnit42v2",
             "supportedModules": [
                 "X1",
                 "X3",
@@ -122,6 +129,9 @@
         {
             "id": "FiltersAndTransformers",
             "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
                 "X1",
                 "X3",
                 "X5",
