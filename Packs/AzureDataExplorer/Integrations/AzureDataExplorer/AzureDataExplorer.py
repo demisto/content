@@ -46,7 +46,7 @@ class DataExplorerClient:
             set_integration_context(integration_context)
 
         if not cluster_url.startswith("https://"):
-            raise ValueError("Cluster URL parameter must contain " "'https://' as prefix (e.g. https://help.kusto.windows.net).")
+            raise ValueError("Cluster URL parameter must contain 'https://' as prefix (e.g. https://help.kusto.windows.net).")
 
         self.cluster_url = cluster_url
         self.host = cluster_url.split("https://")[1]
@@ -467,7 +467,7 @@ def format_header_for_list_commands(base_header: str, rows_count: int, page: int
     if page_size:
         total_pages = rows_count // page_size + (rows_count % page_size != 0)
         if rows_count > 0:
-            base_header += f" \nShowing page {page} out of {total_pages} total pages." f" Current page size: {page_size}."
+            base_header += f" \nShowing page {page} out of {total_pages} total pages. Current page size: {page_size}."
     else:
         base_header += f" \nShowing 0 to {limit} records out of {rows_count}."
     return base_header
@@ -662,7 +662,7 @@ def main() -> None:
         if "OneApiErrors" in error_text:
             error_text = "The execution of search query failed due a client cancel request."
         elif "Request execution timeout" in error_text:
-            error_text = "Search query execution took longer than the assigned timeout" " value and has been aborted."
+            error_text = "Search query execution took longer than the assigned timeout value and has been aborted."
 
         return_error(f"Failed to execute {command} command.\nError:\n{error_text}")
 

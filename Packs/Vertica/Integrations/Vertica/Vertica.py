@@ -154,7 +154,7 @@ def query_request(query, cursor):
 
 
 def main():
-    LOG("Command being called is %s" % (demisto.command()))
+    LOG(f"Command being called is {demisto.command()}")
     connection = None
     try:
         connection = connect_db()

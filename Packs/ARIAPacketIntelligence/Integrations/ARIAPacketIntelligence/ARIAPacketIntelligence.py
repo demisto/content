@@ -380,7 +380,7 @@ class RCS:
         while True:
             if rcs is None:
                 break
-            elif rcs == "":
+            if rcs == "":
                 break
 
             while True:
@@ -498,7 +498,7 @@ class RCS:
 
             if rcs is None:
                 break
-            elif rcs == "":
+            if rcs == "":
                 break
 
             rcsp = re.match("^,(.*)$", rcs)
@@ -510,9 +510,8 @@ class RCS:
                 return None, None, "failure: RDL , (empty)"
             rcs = rcsp.group(1)
 
-        if rcs is not None:
-            if rcs != "":
-                return None, "", "failure: RCS ended-!empty"
+        if rcs is not None and rcs != "":
+            return None, "", "failure: RCS ended-!empty"
 
         if len(RDL) <= 0:
             return None, None, "failure: RDL empty"
@@ -719,9 +718,8 @@ class RCS:
             return None, None, None, None, "failed: space character found in RCS"
 
         SDL, rcs_next, msg = self._parse_SDL(rcs)
-        if SDL is not None:
-            if len(SDL) <= 0:
-                return None, None, None, None, f"failed: SDL returned but is empty (msg={msg})"
+        if SDL is not None and len(SDL) <= 0:
+            return None, None, None, None, f"failed: SDL returned but is empty (msg={msg})"
         if rcs_next is None:
             return SDL, None, None, None, f"failed: RCS invalid parse after SDL (none) (msg={msg})"
         elif rcs_next == "":
@@ -742,9 +740,8 @@ class RCS:
             return SDL, RET, None, None, f"failed: RDL is none (msg={msg})"
         elif len(RDL) <= 0:
             return SDL, RET, None, None, f"failed: RDL is empty (msg={msg})"
-        elif rcs_next is not None:
-            if rcs_next != "":
-                return SDL, RET, RDL, None, f"failed: RCS invalid parse after RDL (not empty) (msg={msg})"
+        elif rcs_next is not None and rcs_next != "":
+            return SDL, RET, RDL, None, f"failed: RCS invalid parse after RDL (not empty) (msg={msg})"
 
         return SDL, RET, RDL, rcs_next, "success"
 
@@ -760,14 +757,11 @@ class RCS:
         # rcs_save = rcs
 
         SDL, RET, RDL, rcs, rmsg = self._parse(rcs)
-        if RDL is None:
-            # print("ARIA: remediation configuraton string (RCS) is invalid -- this will prevent remediation
-            # to ARIA PI devices from working (rcs={0}:: rmsg={1})".format(rcs_save, rmsg))
-            return False
+        # print("ARIA: remediation configuraton string (RCS) is invalid -- this will prevent remediation
+        # to ARIA PI devices from working (rcs={0}:: rmsg={1})".format(rcs_save, rmsg))
 
         # print("ARIA: remediation configuraton string (RCS) is valid (rcs={0})".format(rcs_save))
-
-        return True
+        return RDL is not None
 
     """
     Returns true if the RCS provided at object instantiation
@@ -775,10 +769,7 @@ class RCS:
     """
 
     def valid(self):
-        if not self._valid(self.rcs):
-            return False
-
-        return True
+        return self._valid(self.rcs)
 
     """
     Allows setting the RCS string to act on, this will only
@@ -896,11 +887,11 @@ class ARIA:
 
         if tti_index > 7 or tti_index < 0:
             # This is an ARIA PI Reaper production requirement
-            raise ValueError("Transport type info index(tti_index) out of range! " "Valid value must be in the range [0, 7].")
+            raise ValueError("Transport type info index(tti_index) out of range! Valid value must be in the range [0, 7].")
 
         if aio_index > 15 or aio_index < 0:
             # This is an ARIA PI Reaper production requirement
-            raise ValueError("Alert info object index(aio_index) out of range! " "Valid value must be in range [0, 15]")
+            raise ValueError("Alert info object index(aio_index) out of range! Valid value must be in range [0, 15]")
 
         trigger_type_list = ["one-shot", "re-trigger-count", "re-trigger-timed-ms", "re-trigger-timed-sec"]
 
@@ -1408,7 +1399,7 @@ class ARIA:
 
         protocol = protocol.upper()
 
-        rule = f"{target_ip} @ {target_port} & {src_ip} @ {src_port} <> {protocol} : " f"REDIRECT-VLAN {sia_interface} {vlan_id}"
+        rule = f"{target_ip} @ {target_port} & {src_ip} @ {src_port} <> {protocol} : REDIRECT-VLAN {sia_interface} {vlan_id}"
         if transport_type is not None:
             if tti_index is None or aio_index is None or trigger_type is None or trigger_value is None:
                 raise ParameterError(
@@ -2526,7 +2517,7 @@ def main():
     }
 
     command = demisto.command()
-    LOG("ARIA: command is %s" % (command,))
+    LOG(f"ARIA: command is {command}")
 
     if demisto.command() == "test-module":
         # Test if the ARIA PI Reaper is ready

@@ -332,7 +332,7 @@ def test_endace_get_input_arguments(args):
     app = Endace.EndaceApp(APPLIANCEURL, USERNAME, PASSWORD, INSECURE, HOSTNAME)
     with pytest.raises(ValueError) as excinfo:
         app.endace_get_input_arguments(args)
-    assert "Wrong" or "match" in str(excinfo.value)
+    assert "Wrong" or "match" in str(excinfo.value)  # noqa: SIM222
 
 
 @pytest.mark.parametrize(
@@ -349,7 +349,7 @@ def test_endace_get_search_status_args(args, monkeypatch):
     app = Endace.EndaceApp(APPLIANCEURL, USERNAME, PASSWORD, INSECURE, HOSTNAME)
     with pytest.raises(ValueError) as excinfo:
         Endace.endace_get_search_status_command(app, args)
-    assert "Wrong" or "match" in str(excinfo.value)
+    assert "Wrong" or "match" in str(excinfo.value)  # noqa: SIM222
 
 
 """COMMAND TEST FUNCTIONS"""
@@ -534,7 +534,7 @@ class TestEndaceAPPArchive:
         app = Endace.EndaceApp(APPLIANCEURL, USERNAME, PASSWORD, INSECURE, HOSTNAME)
         with pytest.raises(ValueError or TypeError) as excinfo:
             Endace.endace_create_archive_command(app, input_var)
-        assert "Wrong" or "match" in str(excinfo.value)
+        assert "Wrong" or "match" in str(excinfo.value)  # noqa: SIM222
 
     @pytest.mark.parametrize(
         "input_var, expected",
@@ -619,7 +619,7 @@ class TestEndaceAPPArchive:
 
         def mock_delete(*args):
             return mocked_requests_delete(
-                f"https://probe-1/vision2/data/files?_=01234567890" f"&files={input_var[0]}",
+                f"https://probe-1/vision2/data/files?_=01234567890&files={input_var[0]}",
                 input_var[1],
                 input_var[2],
                 input_var[3],
@@ -661,7 +661,7 @@ class TestEndaceAppDownload:
 
         def mock_get_pcap(*args, **kwargs):
             return mock_requests_get(
-                "https://probe-1/vision2/data/files/" "698a82fc-e954-c5f7-f691-19afe609bb18/stream?format=pcap", 200, 5
+                "https://probe-1/vision2/data/files/698a82fc-e954-c5f7-f691-19afe609bb18/stream?format=pcap", 200, 5
             )
 
         def mock_fileresult(*args, **kwargs):

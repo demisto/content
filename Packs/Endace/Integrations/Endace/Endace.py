@@ -299,7 +299,7 @@ class EndaceApp:
     wait_time = 5
 
     def __init__(self, *args):
-        self.args = dict()
+        self.args = {}
 
         self.applianceurl = args[0]
         self.username = args[1]
@@ -326,7 +326,7 @@ class EndaceApp:
             "1week": 604800,
         }
 
-        function_args = dict()
+        function_args = {}
 
         #  timestamps
         function_args["start"] = args.get("start")
@@ -375,9 +375,8 @@ class EndaceApp:
         elif (not function_args["start"] or not function_args["end"]) and not function_args["timeframe"]:
             raise ValueError("Wrong arguments - either StartTime or EndTime or Timeframe is invalid ")
 
-        if function_args["start"] and function_args["end"]:
-            if function_args["start"] == function_args["end"]:
-                raise ValueError("Wrong arguments - value of StartTime and EndTime argument - both are same")
+        if function_args["start"] and function_args["end"] and function_args["start"] == function_args["end"]:
+            raise ValueError("Wrong arguments - value of StartTime and EndTime argument - both are same")
 
         #   Logical options for search time:
         #   1) start and stop time is not provided: will work like search Last n seconds, n = timeframe
@@ -393,7 +392,7 @@ class EndaceApp:
             function_args["end"] = int(function_args["start"]) + int(function_args["timeframe"])
             if int(function_args["end"]) > (calendar.timegm(time.gmtime()) - 10):
                 raise ValueError(
-                    "Wrong argument - value of EndTime - adjust " "timeframe argument such that EndTime is not in future"
+                    "Wrong argument - value of EndTime - adjust timeframe argument such that EndTime is not in future"
                 )
         elif not function_args["start"] and function_args["end"]:
             if int(function_args["end"]) > (calendar.timegm(time.gmtime()) - 10):
@@ -429,7 +428,7 @@ class EndaceApp:
         }
 
         raise Exception(
-            error_dict.get(eperror, f"try again. contact support@endace.com and report {eperror} " f"if problem persists")
+            error_dict.get(eperror, f"try again. contact support@endace.com and report {eperror} if problem persists")
         )
 
     #  search
@@ -523,8 +522,8 @@ class EndaceApp:
         matching_data = 0
         keys = []
         values = []
-        id_to_key_dict = dict()
-        app_dict = dict()
+        id_to_key_dict = {}
+        app_dict = {}
 
         with EndaceWebSession(
             app_url=self.applianceurl, username=self.username, password=self.password, cert_verify=self.cert_verify
@@ -574,27 +573,26 @@ class EndaceApp:
                                                     #  if No, Wait and loop in to run another status check,
                                                     #   until "self.delta_time" has elapsed
                                                     payload_data = payload.get("data")
-                                                    if payload_data is not None:
-                                                        if int(progress) == 100:
-                                                            progress_status = False
-                                                            for data_map_dict in payload_data:
-                                                                id_to_key_dict[data_map_dict["id"]] = data_map_dict["name"]
+                                                    if payload_data is not None and int(progress) == 100:
+                                                        progress_status = False
+                                                        for data_map_dict in payload_data:
+                                                            id_to_key_dict[data_map_dict["id"]] = data_map_dict["name"]
 
-                                                            for top_key in payload["top_keys"]:
-                                                                keys.append(id_to_key_dict[top_key])
+                                                        for top_key in payload["top_keys"]:
+                                                            keys.append(id_to_key_dict[top_key])
 
-                                                            #   Calculate Total matching MBytes
-                                                            for top_value in payload["top_values"]:
-                                                                matching_data = matching_data + int(top_value)
-                                                                values.append(str(top_value))
+                                                        #   Calculate Total matching MBytes
+                                                        for top_value in payload["top_values"]:
+                                                            matching_data = matching_data + int(top_value)
+                                                            values.append(str(top_value))
 
-                                                            result["TotalBytes"] = int(matching_data)
+                                                        result["TotalBytes"] = int(matching_data)
 
-                                                            for index in range(len(keys)):
-                                                                app_dict[keys[index]] = values[index] + " Bytes"
+                                                        for index in range(len(keys)):
+                                                            app_dict[keys[index]] = values[index] + " Bytes"
 
-                                                            result["Status"] = str(payload["state"])
-                                                            result["DataSources"] = keys
+                                                        result["Status"] = str(payload["state"])
+                                                        result["DataSources"] = keys
                                             else:
                                                 progress_status = False
                                                 result["Status"] = "Failed"
@@ -643,10 +641,9 @@ class EndaceApp:
                         meta = response.get("meta", {})
                         if meta:
                             meta_error = meta.get("error")
-                            if meta_error is not None:
-                                if meta_error is not False:
-                                    result["Status"] = "complete"
-                                    result["Error"] = str(meta_error)
+                            if meta_error is not None and meta_error is not False:
+                                result["Status"] = "complete"
+                                result["Error"] = str(meta_error)
                         else:
                             result["Status"] = "Failed"
                             result["Error"] = f"ServerError - empty meta data from {path}"
@@ -890,10 +887,9 @@ class EndaceApp:
                         meta = response.get("meta", {})
                         if meta:
                             meta_error = meta.get("error")
-                            if meta_error is not None:
-                                if meta_error is not False:
-                                    result["Status"] = "complete"
-                                    result["Error"] = str(meta_error)
+                            if meta_error is not None and meta_error is not False:
+                                result["Status"] = "complete"
+                                result["Error"] = str(meta_error)
                         else:
                             result["Status"] = "Failed"
                             result["Error"] = f"ServerError - empty meta data from {path}"
@@ -941,27 +937,26 @@ class EndaceApp:
                             else:
                                 #   Delete archived File
                                 for file in payload:
-                                    if result["FileName"] == file["name"] and len(file["id"]):
+                                    if result["FileName"] == file["name"] and len(file["id"]) and file["type"] == "archive_file":
                                         #   File available to delete
-                                        if file["type"] == "archive_file":
-                                            archived_file_path = (
-                                                f'files?_={calendar.timegm(time.gmtime())!s}000' f'&files={file["id"]}'
-                                            )
-                                            df = api.delete(archived_file_path)
-                                            try:
-                                                response = df.json()
-                                            except json.decoder.JSONDecodeError:
-                                                raise
-                                            else:
-                                                meta = response.get("meta", {})
-                                                if df.status_code == 200:
-                                                    if meta["error"] is None:
-                                                        result["Status"] = "FileNotFound"
-                                                        result["Error"] = meta["error"]
-                                                    else:
-                                                        result["Status"] = "FileDeleted"
+                                        archived_file_path = (
+                                            f'files?_={calendar.timegm(time.gmtime())!s}000&files={file["id"]}'
+                                        )
+                                        df = api.delete(archived_file_path)
+                                        try:
+                                            response = df.json()
+                                        except json.decoder.JSONDecodeError:
+                                            raise
+                                        else:
+                                            meta = response.get("meta", {})
+                                            if df.status_code == 200:
+                                                if meta["error"] is None:
+                                                    result["Status"] = "FileNotFound"
+                                                    result["Error"] = meta["error"]
                                                 else:
-                                                    result["Error"] = f"ServerError - HTTP {rf.status_code} to /{path}"
+                                                    result["Status"] = "FileDeleted"
+                                            else:
+                                                result["Error"] = f"ServerError - HTTP {rf.status_code} to /{path}"
 
                     else:
                         result["Status"] = "Failed"
@@ -1031,7 +1026,7 @@ class EndaceApp:
                                             result["FileName"] = file["name"] + ".pcap"
                                             if not file["status"]["inUse"]:
                                                 #   File available to download
-                                                pcapfile_url_path = "files/%s/stream?format=pcap" % file["id"]
+                                                pcapfile_url_path = f"files/{file['id']}/stream?format=pcap"
                                                 d = api.get(pcapfile_url_path)
                                                 if d.status_code == 200:
                                                     demisto.results(
@@ -1254,7 +1249,7 @@ def endace_get_archive_status_command(app, args):
          ValueError: If input argument is in wrong format.
     """
     if len(args.values()):
-        function_args = dict()
+        function_args = {}
         #   archive file name
         if re.fullmatch(r"[\w0-9_-]+", args.get("archive_filename")) is None:
             raise ValueError("Wrong format of archive_filename. text, numbers, underscore or dash is supported")
@@ -1285,7 +1280,7 @@ def endace_delete_archived_file_command(app, args):
     """
 
     if len(args.values()):
-        function_arg = dict()
+        function_arg = {}
         #   archive file name
         function_arg["archived_filename"] = args.get("archived_filename")
 
