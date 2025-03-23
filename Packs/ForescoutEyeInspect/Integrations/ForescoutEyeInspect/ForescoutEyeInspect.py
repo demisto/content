@@ -1,11 +1,11 @@
 from copy import deepcopy
 from typing import Any
-from urllib.parse import urljoin  # type: ignore
+# from urllib.parse import urljoin  # type: ignore
 
 import demistomock as demisto  # noqa: F401
 import urllib3
-from CommonServerPython import *  # noqa: F401  # type: ignore[misc]
-
+from CommonServerPython import *  # noqa: F401  # pylint: disable=unused-wildcard-import
+from urllib.parse import urljoin  # type: ignore
 from CommonServerUserPython import *
 
 # disable insecure warnings

@@ -100,7 +100,7 @@ class GeneralFileReputationParser(abc.ABC):
             demisto.debug(f"Unexpected provider ID returned - {provider}")
             return UnknownReputationHandler()
 
-    @abstractmethod # noqa: B027
+    @abstractmethod  # noqa: B027
     def parse_attributes(self, attributes: Dict[str, Any]):
         """
         The abstract method that is in charge of parsing the vendor's unique attributes.

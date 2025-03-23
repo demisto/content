@@ -872,7 +872,7 @@ def find_incorrect_fields(populate_fields: list[str], incidents_df: pd.DataFrame
     """
     incorrect_fields = [i for i in populate_fields if i not in incidents_df.columns.tolist()]
     if incorrect_fields:
-        global_msg += f"{MESSAGE_INCORRECT_FIELD % " , ".join(incorrect_fields)} \n"
+        global_msg += "%s \n" % MESSAGE_INCORRECT_FIELD % " , ".join(incorrect_fields)  # noqa: UP031
     return global_msg, incorrect_fields
 
 

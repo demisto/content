@@ -750,8 +750,8 @@ def commandGetDetections(detectionClient: DetectionClient, args):
 
     # if there are more detections to be retrieved, pull the
     # remaining detections incrementally
-    if ("total_count" in result and int(result["total_count"]) > MAX_DETECTIONS and
-        ("limit" not in args or int(args["limit"]) > MAX_DETECTIONS)):
+    if ("total_count" in result and int(result["total_count"]) > MAX_DETECTIONS
+            and ("limit" not in args or int(args["limit"]) > MAX_DETECTIONS)):
         result = getDetectionsInc(detectionClient, result, args)
 
     # filter out training detections

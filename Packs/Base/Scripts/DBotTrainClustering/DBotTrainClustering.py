@@ -240,7 +240,7 @@ class PostProcessing:
                 dist_total[cluster_number] = {}
                 dist_total[cluster_number]["number_samples"] = sum(
                     self.clustering.raw_data[  # type: ignore
-                        self.clustering.model.labels_ == cluster_number # type: ignore[union-attr]
+                        self.clustering.model.labels_ == cluster_number  # type: ignore[union-attr]
                     ].label.isin(  # type: ignore
                         list(chosen.keys())
                     )
@@ -424,7 +424,7 @@ def get_all_incidents_for_time_window_and_type(
         msg += f"{MESSAGE_NO_INCIDENT_FETCHED} \n"
         return None, msg  # type: ignore
     if len(incidents) == limit:
-        msg += f"%s \n" % MESSAGE_WARNING_TRUNCATED % (str(len(incidents)), str(limit)) # noqa: UP031
+        msg += "%s \n" % MESSAGE_WARNING_TRUNCATED % (str(len(incidents)), str(limit))  # noqa: UP031
         return incidents, msg  # type: ignore
     return incidents, msg  # type: ignore
 
@@ -639,7 +639,7 @@ def find_incorrect_field(populate_fields: list[str], incidents_df: pd.DataFrame,
     """
     incorrect_fields = [i for i in populate_fields if i not in incidents_df.columns.tolist()]
     if incorrect_fields:
-        global_msg += f"{MESSAGE_INCORRECT_FIELD % " , ".join(incorrect_fields)} \n"
+        global_msg += "%s \n" % MESSAGE_INCORRECT_FIELD % " , ".join(incorrect_fields)  # noqa: UP031
     return global_msg, incorrect_fields
 
 
@@ -770,7 +770,7 @@ def remove_not_valid_field(
     valid_field = mask[mask].index.tolist()
     invalid_field = mask[~mask].index.tolist()
     if invalid_field:
-        global_msg += f"{MESSAGE_INVALID_FIELD % " , ".join(invalid_field)} \n"
+        global_msg += "%s \n" % MESSAGE_INVALID_FIELD % " , ".join(invalid_field)   # noqa: UP031
     return valid_field, global_msg
 
 
