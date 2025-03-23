@@ -600,8 +600,7 @@ def fetch_incidents(
             incident = {
                 "name": f"Proofpoint - Message Delivered - {event_guid}",
                 "rawJSON": raw_json,
-                "occurred": raw_event["messageTime"],
-                "haIntegrationEventID": str(event_guid)
+                "occurred": raw_event["messageTime"]
             }
             demisto.debug(f'Event Time: {incident.get("occurred")}')
             incidents.append(incident)
@@ -619,7 +618,6 @@ def fetch_incidents(
                 "name": f"Proofpoint - Message Blocked - {event_guid}",
                 "rawJSON": raw_json,
                 "occured": raw_event["messageTime"],
-                "haIntegrationEventID": str(event_guid)
             }
             demisto.debug(f'Event Time: {incident.get("occurred")}')
             incidents.append(incident)

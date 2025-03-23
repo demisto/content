@@ -907,8 +907,7 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
                     'name': incident.get('title') + " - " + incident.get('id'),
                     'occurred': incident.get('createdDateTime'),
                     'severity': severity_map.get(incident.get('severity', ''), 0),
-                    'rawJSON': json.dumps(incident),
-                    "haIntegrationEventID": str(incident.get('id'))
+                    'rawJSON': json.dumps(incident)
                 })
                 count += 1
         if demisto_incidents:
