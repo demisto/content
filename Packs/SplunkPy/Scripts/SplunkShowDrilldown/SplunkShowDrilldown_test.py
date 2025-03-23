@@ -1,7 +1,7 @@
 import json
 
 import SplunkShowDrilldown
-from pytest import raises
+from pytest import raises   # noqa: PT013
 
 
 def test_incident_with_empty_custom_fields(mocker):

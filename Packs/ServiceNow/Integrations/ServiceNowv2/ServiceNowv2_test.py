@@ -2491,7 +2491,7 @@ def test_multiple_query_params(requests_mock, command, args):
     )
     requests_mock.request(
         "GET",
-        f"{url}table/sc_task?sysparm_limit=50&sysparm_offset=0&" "sysparm_query=assigned_to%3D123^active%3Dtrue",
+        f"{url}table/sc_task?sysparm_limit=50&sysparm_offset=0&sysparm_query=assigned_to%3D123^active%3Dtrue",
         json=RESPONSE_TICKET_ASSIGNED,
     )
     human_readable, entry_context, result, bol = command(client, args)
@@ -2823,7 +2823,7 @@ def test_get_ticket_attachment_entries_with_oauth_token(mocker):
     ), "When An OAuth 2.0 client is configured the 'auth' argument shouldn't be passed to 'requests.get' function"
     assert (
         requests_get_mocker.call_args.kwargs.get("headers").get("Authorization") == f"Bearer {mock_res_for_get_access_token}"
-    ), "When An OAuth 2.0 client is configured the 'Authorization'" " Header argument should be passed to 'requests.get' function"
+    ), "When An OAuth 2.0 client is configured the 'Authorization' Header argument should be passed to 'requests.get' function"
 
 
 @pytest.mark.parametrize(

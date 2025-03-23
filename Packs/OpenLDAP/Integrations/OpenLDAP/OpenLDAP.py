@@ -244,7 +244,7 @@ class LdapClient:
         """
         if self._connection_type == "ssl":  # Secure connection (SSL\TLS)
             demisto.info(
-                f"Initializing LDAP sever with SSL/TLS (unsecure: {not self._verify})." f" port: {self._port or 'default(636)'}"
+                f"Initializing LDAP sever with SSL/TLS (unsecure: {not self._verify}). port: {self._port or 'default(636)'}"
             )
             tls = self._get_tls_object()
             server = Server(host=self._host, port=self._port, use_ssl=True, tls=tls, connect_timeout=LdapClient.TIMEOUT)
@@ -280,7 +280,7 @@ class LdapClient:
                 demisto.info(f"Determining LDAP vendor is {self._ldap_server_vendor}")
         except Exception as e:
             raise DemistoException(
-                f"Could not parse LDAP vendor automatically. Try to choose the vendor manually. " f"Error: str({e})"
+                f"Could not parse LDAP vendor automatically. Try to choose the vendor manually. Error: str({e})"
             )
 
     @staticmethod
@@ -607,7 +607,7 @@ class LdapClient:
             return "Done"
         else:
             raise Exception(
-                f"LDAP Authentication - authentication connection failed," f" server type is: {self._ldap_server_vendor}"
+                f"LDAP Authentication - authentication connection failed, server type is: {self._ldap_server_vendor}"
             )
 
     def search_user_data(self, username: str, attributes: list, search_user_by_dn: bool = False) -> tuple:
@@ -891,7 +891,7 @@ class LdapClient:
 
         if build_number != LdapClient.DEV_BUILD_NUMBER and int(build_number) < LdapClient.SUPPORTED_BUILD_NUMBER:
             raise Exception(
-                f"LDAP Authentication integration is supported from build number:" f" {LdapClient.SUPPORTED_BUILD_NUMBER}"
+                f"LDAP Authentication integration is supported from build number: {LdapClient.SUPPORTED_BUILD_NUMBER}"
             )
 
         if self._ldap_server_vendor == self.OPENLDAP:
@@ -965,7 +965,7 @@ def main():  # pragma: no coverage
             if not params.get("insecure", False):
                 msg += ' Try using: "Trust any certificate" option.\n'
         elif isinstance(e, LDAPInvalidPortError):
-            msg = "LDAP Authentication - Not valid ldap server input." " Check that server input is of form: ip or ldap://ip"
+            msg = "LDAP Authentication - Not valid ldap server input. Check that server input is of form: ip or ldap://ip"
         return_error(str(msg))
 
 

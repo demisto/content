@@ -81,10 +81,7 @@ def _is_reload_needed(client: Client, data: dict) -> bool:
         return True
     now = datetime.now()
 
-    if data.get("timestamp") <= date_to_timestamp(now - timedelta(hours=client.fetch_interval_hours)):
-        return True
-
-    return False
+    return data.get("timestamp") <= date_to_timestamp(now - timedelta(hours=client.fetch_interval_hours))
 
 
 def test_module(client: Client) -> str:
@@ -215,7 +212,7 @@ def main():
     except ValueError:
         return_error("Invalid parameter was given as database refresh interval.")
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s} \n " f"tracback: {traceback.format_exc()}")
+        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s} \n tracback: {traceback.format_exc()}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

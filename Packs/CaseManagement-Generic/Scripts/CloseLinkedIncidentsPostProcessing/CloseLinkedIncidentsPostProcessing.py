@@ -16,7 +16,7 @@ def main():
                 "command": "closeInvestigation",
                 "arguments": {
                     "closeReason": close_reason,
-                    "closeNotes": f"Closed from parent Incident {incident_id}\n" f"\nClose Notes:\n{close_notes}",
+                    "closeNotes": f"Closed from parent Incident {incident_id}\n\nClose Notes:\n{close_notes}",
                 },
                 "incidents": ",".join(linked_incidents),
             },

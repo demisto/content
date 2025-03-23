@@ -987,10 +987,9 @@ def test_get_pagination_args(args: dict[str, str], expected):
     with unittest.mock.patch(
         "CommonServerPython.arg_to_number",
         side_effect=lambda x: int(x) if x is not None else None,
-    ):
-        with unittest.mock.patch("CheckPointHarmonyEndpoint.validate_pagination_arguments") as mock_validate:
-            assert CheckPointHarmonyEndpoint.get_pagination_args(args) == expected
-            mock_validate.assert_called()
+    ), unittest.mock.patch("CheckPointHarmonyEndpoint.validate_pagination_arguments") as mock_validate:
+        assert CheckPointHarmonyEndpoint.get_pagination_args(args) == expected
+        mock_validate.assert_called()
 
 
 def test_validate_filter_arguments():

@@ -81,7 +81,7 @@ class Client(BaseClient):
         set_integration_context(context)
         self.set_request_headers()
         demisto.debug(
-            f"New access token that expires in : {expiration_timestamp.strftime(DATE_FORMAT)}" f" was set to integration_context."
+            f"New access token that expires in : {expiration_timestamp.strftime(DATE_FORMAT)} was set to integration_context."
         )
 
     def is_access_token_valid(self):

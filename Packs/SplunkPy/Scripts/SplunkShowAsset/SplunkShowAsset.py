@@ -8,7 +8,7 @@ def main():
     asset_results = []
     incident = demisto.incident()
     if not incident:
-        raise ValueError("Error - demisto.incident() expected to return current incident " "from context but returned None")
+        raise ValueError("Error - demisto.incident() expected to return current incident from context but returned None")
     labels = incident.get("labels", [])
 
     for label in labels:

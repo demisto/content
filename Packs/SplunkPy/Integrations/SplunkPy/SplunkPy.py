@@ -326,7 +326,7 @@ def remove_irrelevant_incident_ids(
             if incident_window_end_datetime >= window_start_datetime:
                 # We keep the incident, since it is still in the fetch window
                 extensive_log(
-                    f"[SplunkPy] Keeping {incident_id} as part of the last fetched IDs." f" {incident_window_end_datetime=}"
+                    f"[SplunkPy] Keeping {incident_id} as part of the last fetched IDs. {incident_window_end_datetime=}"
                 )
                 new_last_run_fetched_ids[incident_id] = incident_occurred_time
             else:
@@ -336,7 +336,7 @@ def remove_irrelevant_incident_ids(
             # Last fetched IDs held the epoch time of their appearance, they will now hold the
             # new format, with an occurred time equal to the end of the window
             extensive_log(
-                f"[SplunkPy] {incident_id} was saved using old implementation," f" with value {incident_occurred_time}, keeping"
+                f"[SplunkPy] {incident_id} was saved using old implementation, with value {incident_occurred_time}, keeping"
             )
             new_last_run_fetched_ids[incident_id] = {"occurred_time": window_end_time}
     return new_last_run_fetched_ids
@@ -494,7 +494,7 @@ def fetch_notables(
 
     # New way to remove IDs
     last_run_fetched_ids = remove_irrelevant_incident_ids(last_run_fetched_ids, occured_start_time, latest_time)
-    extensive_log("[SplunkPy] Size of last_run_fetched_ids after " f"removing old IDs: {len(last_run_fetched_ids)}")
+    extensive_log(f"[SplunkPy] Size of last_run_fetched_ids after removing old IDs: {len(last_run_fetched_ids)}")
     extensive_log(f"[SplunkPy] SplunkPy - incidents fetched on last run = {last_run_fetched_ids}")
 
     demisto.debug(f"SplunkPy - total number of new incidents found is: {len(incidents)}")
@@ -1786,7 +1786,7 @@ def handle_closed_notable(notable, notable_id, close_extra_labels, close_end_sta
 
     else:
         demisto.debug(
-            '"status_label" key could not be found on the returned data, ' f"skipping closure mirror for notable {notable_id}."
+            f'"status_label" key could not be found on the returned data, skipping closure mirror for notable {notable_id}.'
         )
 
 
@@ -2570,7 +2570,7 @@ def get_current_splunk_time(splunk_service: client.Service):
         "output_mode": OUTPUT_MODE_JSON,
     }
     searchquery_oneshot = (
-        '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S")' " | sort 1 -_time | table clock"
+        '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S") | sort 1 -_time | table clock'
     )
 
     oneshotsearch_results = splunk_service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
@@ -3124,7 +3124,7 @@ def parse_time_to_minutes():
         number_of_times = int(number_of_times)
     else:
         return_error(
-            "Error: Invalid fetch time, need to be a positive integer with the time unit afterwards" " e.g '2 months, 4 days'."
+            "Error: Invalid fetch time, need to be a positive integer with the time unit afterwards e.g '2 months, 4 days'."
         )
     # If the user input contains a plural of a time unit, for example 'hours', we remove the 's' as it doesn't
     # impact the minutes in that time unit
@@ -3312,7 +3312,7 @@ def splunk_submit_event_hec_command(params: dict, service, args: dict):
 
     if not event and not batch_event_data and not entry_id:
         raise DemistoException(
-            "Invalid input: Please specify one of the following arguments: `event`, " "`batch_event_data`, or `entry_id`."
+            "Invalid input: Please specify one of the following arguments: `event`, `batch_event_data`, or `entry_id`."
         )
 
     response_info = splunk_submit_event_hec(
@@ -3519,7 +3519,7 @@ def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_d
         return kv_data_service_client.insert(json_data.encode("utf-8"))
     else:
         raise DemistoException(
-            "kv_store_data argument should be in json format. " '(e.g. {"key": "value"} or [{"key": "value"}, {"key": "value"}]'
+            'kv_store_data argument should be in json format. (e.g. {"key": "value"} or [{"key": "value"}, {"key": "value"}]'
         )
 
 
@@ -3750,7 +3750,7 @@ def main():  # pragma: no cover
     comment_tag_to_splunk = params.get("comment_tag_to_splunk", "FROM XSOAR")
     comment_tag_from_splunk = params.get("comment_tag_from_splunk", "FROM SPLUNK")
     if comment_tag_to_splunk == comment_tag_from_splunk:
-        raise DemistoException("Comment Tag to Splunk and Comment Tag " "from Splunk cannot have the same value.")
+        raise DemistoException("Comment Tag to Splunk and Comment Tag from Splunk cannot have the same value.")
 
     connection_args["handler"] = requests_handler
 

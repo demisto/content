@@ -589,9 +589,7 @@ def fetch_incidents_command():
             last_fetched_id[state] = id
 
     demisto.debug(
-        "PTR: End of current fetch function with last_fetch {} and last_fetched_id {}".format(
-            str(last_fetch), str(last_fetched_id)
-        )
+        f"PTR: End of current fetch function with last_fetch {str(last_fetch)} and last_fetched_id {str(last_fetched_id)}"
     )
 
     demisto.setLastRun({"last_fetch": last_fetch})
@@ -648,7 +646,7 @@ def add_comment_to_incident_command():
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error(f"Add comment to incident command failed. URL: {fullurl}, " f"StatusCode: {incident_data.status_code}")
+        return_error(f"Add comment to incident command failed. URL: {fullurl}, StatusCode: {incident_data.status_code}")
 
     incident_data = incident_data.json()
     human_readable = create_add_comment_human_readable(incident_data)
@@ -677,7 +675,7 @@ def add_user_to_incident_command():
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error(f"Add comment to incident command failed. URL: {fullurl}, " f"StatusCode: {incident_data.status_code}")
+        return_error(f"Add comment to incident command failed. URL: {fullurl}, StatusCode: {incident_data.status_code}")
 
     return_outputs(f"The user was added successfully to incident {incident_id}", {}, {})
 
@@ -716,7 +714,7 @@ def ingest_alert_command():
 
     if not json_source_id:
         return_error(
-            "To ingest alert into TRAP, you mast specify a post_url_id," "either as an argument or as an integration parameter."
+            "To ingest alert into TRAP, you mast specify a post_url_id,either as an argument or as an integration parameter."
         )
 
     request_body = prepare_ingest_alert_request_body(assign_params(**args))
@@ -726,7 +724,7 @@ def ingest_alert_command():
     )
 
     if alert_data.status_code < 200 or alert_data.status_code >= 300:
-        return_error(f"Failed to ingest the alert into TRAP. URL: {fullurl}, " f"StatusCode: {alert_data.status_code}")
+        return_error(f"Failed to ingest the alert into TRAP. URL: {fullurl}, StatusCode: {alert_data.status_code}")
 
     return_outputs("The alert was successfully ingested to TRAP", {}, {})
 
@@ -747,7 +745,7 @@ def close_incident_command():
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error(f"Incident closure failed. URL: {fullurl}, " f"StatusCode: {incident_data.status_code}")
+        return_error(f"Incident closure failed. URL: {fullurl}, StatusCode: {incident_data.status_code}")
 
     return_outputs(f"The incident {incident_id} was successfully closed", {}, {})
 
@@ -796,7 +794,7 @@ def search_quarantine():
                         message_delivery_time = int(message_delivery_time.timestamp() * 1000)
                     else:
                         demisto.info(
-                            f'PTR: Could not parse time of incident {incident.get("id")}, got ' f'{message_delivery_time=}'
+                            f'PTR: Could not parse time of incident {incident.get("id")}, got {message_delivery_time=}'
                         )
                         continue
 

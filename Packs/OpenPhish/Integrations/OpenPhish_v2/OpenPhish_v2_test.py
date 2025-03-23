@@ -141,7 +141,7 @@ def test_reload_command(mocker):
 
 STANDARD_NOT_LOADED_MSG = "OpenPhish Database Status\nDatabase not loaded.\n"
 STANDARD_4_LOADED_MSG = (
-    "OpenPhish Database Status\n" "Total **4** URLs loaded.\n" "Last load time **Thu Oct 01 2020 06:00:00 (UTC)**\n"
+    "OpenPhish Database Status\nTotal **4** URLs loaded.\nLast load time **Thu Oct 01 2020 06:00:00 (UTC)**\n"
 )
 CONTEXT_MOCK_WITH_STATUS = [
     ({}, STANDARD_NOT_LOADED_MSG),  # case no data in memory

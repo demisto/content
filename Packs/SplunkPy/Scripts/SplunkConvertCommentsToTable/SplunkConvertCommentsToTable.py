@@ -6,7 +6,7 @@ def main():
     incident = demisto.incident()
     splunkComments = []
     if not incident:
-        raise ValueError("Error - demisto.incident() expected to return current incident " "from context but returned None")
+        raise ValueError("Error - demisto.incident() expected to return current incident from context but returned None")
     fields = incident.get("CustomFields", [])
     if fields:
         splunkComments_str = fields.get("splunkcomments", [])

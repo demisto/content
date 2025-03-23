@@ -270,7 +270,7 @@ def submit_urls_command(client: Client, args: dict[str, Any]) -> tuple[str, dict
     report_id = scan.get("report_id")
 
     readable_output = (
-        f"Started analysis of {urls} with FireEye Detection on Demand." f"Results will be published to report id: {report_id}"
+        f"Started analysis of {urls} with FireEye Detection on Demand.Results will be published to report id: {report_id}"
     )
     outputs = {"FireEyeDoD.Scan(val.report_id == obj.report_id)": scan}
     return (readable_output, outputs, scan)

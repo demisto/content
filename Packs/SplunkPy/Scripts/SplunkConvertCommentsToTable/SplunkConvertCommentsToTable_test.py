@@ -1,6 +1,6 @@
 import SplunkConvertCommentsToTable
 
-EXPECTED_TABLE = "|Comment|\n" "|---|\n" "| new comment |\n"
+EXPECTED_TABLE = "|Comment|\n|---|\n| new comment |\n"
 
 
 def test_convert_to_table(mocker):

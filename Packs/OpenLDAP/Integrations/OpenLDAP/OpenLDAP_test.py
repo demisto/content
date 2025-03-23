@@ -353,7 +353,7 @@ class TestLDAPAuthentication:
         with pytest.raises(Exception) as e:
             client._get_formatted_custom_attributes()
         assert e.value.args[0] == (
-            f'User defined attributes must be of the form "attrA=valA,attrB=valB,...", but got: ' f"{client.CUSTOM_ATTRIBUTE}"
+            f'User defined attributes must be of the form "attrA=valA,attrB=valB,...", but got: {client.CUSTOM_ATTRIBUTE}'
         )
 
     @pytest.mark.parametrize(

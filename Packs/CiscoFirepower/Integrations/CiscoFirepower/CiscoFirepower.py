@@ -1886,7 +1886,7 @@ def parse_results(
     command_headers_by_keys: dict[str, Any],
     command_title: str,
     command_context: str,
-    raw_responses: list | dict = None,
+    raw_responses: list | dict = None,  # type: ignore[assignment]
 ) -> CommandResults:
     """
     Create a CommandResults from a given response.
@@ -2007,7 +2007,7 @@ def list_zones_command(client: Client, args: dict) -> CommandResults:
                 "ID": item.get("id", ""),
                 "Name": item.get("name", ""),
                 "InterfaceMode": item.get("interfaceMode", ""),
-                "Interfaces": [{"Name": obj.get("name", ""), "ID": obj.get("id" "")} for obj in item.get("interfaces", {})],
+                "Interfaces": [{"Name": obj.get("name", ""), "ID": obj.get("id")} for obj in item.get("interfaces", {})],
             }
             for item in items
         ]
@@ -3561,7 +3561,7 @@ def list_intrusion_policy_command(client: Client, args: dict[str, Any]) -> Comma
         command_headers_by_keys=INTRUSION_POLICY_HEADERS_BY_KEYS,
         command_title=f"Fetched {INTRUSION_POLICY_TITLE}",
         command_context=INTRUSION_POLICY_CONTEXT,
-        raw_responses=raw_responses,
+        raw_responses=raw_responses,    # type: ignore[arg-type]
     )
 
 
@@ -3732,7 +3732,7 @@ def list_intrusion_rule_command(client: Client, args: dict[str, Any]) -> Command
         command_headers_by_keys=INTRUSION_RULE_HEADERS_BY_KEYS,
         command_title=f"Fetched {INTRUSION_RULE_TITLE}",
         command_context=INTRUSION_RULE_CONTEXT,
-        raw_responses=raw_responses,
+        raw_responses=raw_responses,    # type: ignore[arg-type]
     )
 
 
@@ -3955,7 +3955,7 @@ def list_intrusion_rule_group_command(client: Client, args: dict[str, Any]) -> C
         command_headers_by_keys=INTRUSION_RULE_GROUP_HEADERS_BY_KEYS,
         command_title=f"Fetched {INTRUSION_RULE_GROUP_TITLE}",
         command_context=INTRUSION_RULE_GROUP_CONTEXT,
-        raw_responses=raw_responses,
+        raw_responses=raw_responses,    # type: ignore[arg-type]
     )
 
 
@@ -4097,7 +4097,7 @@ def list_network_analysis_policy_command(client: Client, args: dict[str, Any]) -
         command_headers_by_keys=NETWORK_ANALYSIS_POLICY_HEADERS_BY_KEYS,
         command_title=f"Fetched {NETWORK_ANALYSIS_POLICY_TITLE}",
         command_context=NETWORK_ANALYSIS_POLICY_CONTEXT,
-        raw_responses=raw_responses,
+        raw_responses=raw_responses,    # type: ignore[arg-type]
     )
 
 

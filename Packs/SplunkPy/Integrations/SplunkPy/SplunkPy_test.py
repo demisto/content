@@ -352,7 +352,7 @@ def test_raw_to_dict():
     assert response == EXPECTED
     assert response_with_message == EXPECTED_WITH_MESSAGE_ID
     assert list_response == {}
-    assert raw_message.get("SCOPE[29]") == "autopay\/events\/payroll\/v1\/earning-configuration.configuration-tags" ".modify"
+    assert raw_message.get("SCOPE[29]") == "autopay\/events\/payroll\/v1\/earning-configuration.configuration-tags.modify"
     assert isinstance(raw_message, dict)
     assert empty == {}
     assert url_test == URL_TESTING_OUT
@@ -362,7 +362,7 @@ def test_raw_to_dict():
 
     assert splunk.rawToDict('drilldown_search="key IN ("test1","test2")') == {"drilldown_search": "key IN (test1,test2)"}
     assert splunk.rawToDict(
-        '123456, sample_account="sample1", ' 'sample_account="sample2", sample_account="sample3",' ' distinct_count_ac="5"'
+        '123456, sample_account="sample1", sample_account="sample2", sample_account="sample3", distinct_count_ac="5"'
     ) == {"sample_account": "sample1, sample2, sample3", "distinct_count_ac": "5"}
 
 
@@ -923,7 +923,7 @@ def test_fetch_incidents(mocker):
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 2
     assert (
-        incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " "Recurring Malware Infection - Rule"
+        incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - Recurring Malware Infection - Rule"
     )
     assert not incidents[0].get("owner")
 
@@ -996,7 +996,7 @@ def test_fetch_notables(mocker):
     incidents = demisto.incidents.call_args[0][0]
     assert len(incidents) == 2
     assert (
-        incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " "Recurring Malware Infection - Rule"
+        incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - Recurring Malware Infection - Rule"
     )
     assert not incidents[0].get("owner")
 
@@ -1838,8 +1838,8 @@ def test_drilldown_enrichment_main_condition(mocker, notable_data, expected_call
                     '{"name":"View related \'$signature$\' events for $dest$","search":"| from datamodel:\\"Malware\\".\\"Malwa'
                     're_Attacks\\" | search dest=$dest|s$ signature=$signature|s$","earliest":1714563300,"latest":1715168700}',
                     '{"name":"View related \'$category$\' events for $signature$","search":"| from datamodel:\\"Malware\\".\\"M'
-                    'alware_Attacks\\" \\n|  fields category, dest, signature | search dest=$dest|s$ signature=$signature|s$","ear'
-                    'liest":1714563300,"latest":1715168700}',
+                    'alware_Attacks\\" \\n|  fields category, dest, signature | search dest=$dest|s$ signature=$signature|s$",'
+                    '"earliest":1714563300,"latest":1715168700}',
                 ],
             },
             0,
@@ -3076,7 +3076,7 @@ def test_splunk_search_command(mocker, polling, status):
         assert search_result.scheduled_command._args["sid"] == "123456"
     else:
         assert search_result.outputs["Splunk.Result"] == []
-        assert search_result.readable_output == "### Splunk Search results for query:\n" "sid: 123456\n**No entries.**\n"
+        assert search_result.readable_output == "### Splunk Search results for query:\nsid: 123456\n**No entries.**\n"
 
 
 @pytest.mark.parametrize(
@@ -3366,7 +3366,8 @@ MAPPER_CASES_SPLUNK_TO_XSOAR = [
     (
         "unassigned",
         "",
-        "UserMapping: Could not find xsoar user matching splunk's unassigned. Consider adding it to the splunk_xsoar_users lookup.",
+        "UserMapping: Could not find xsoar user matching splunk's unassigned. Consider adding it to the"
+        " splunk_xsoar_users lookup.",
     ),
     (
         "not_in_table",
@@ -3794,7 +3795,7 @@ def test_splunk_submit_event_hec_command_no_required_arguments():
 
     with pytest.raises(
         DemistoException,
-        match=r"Invalid input: Please specify one of the following arguments: `event`, " r"`batch_event_data`, or `entry_id`.",
+        match=r"Invalid input: Please specify one of the following arguments: `event`, `batch_event_data`, or `entry_id`.",
     ):
         splunk_submit_event_hec_command({"hec_url": "hec_url"}, None, {})
 

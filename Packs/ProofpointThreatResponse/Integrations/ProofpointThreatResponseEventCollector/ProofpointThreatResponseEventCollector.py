@@ -313,7 +313,7 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
             ] + "Z"
             last_fetched_id[state] = id
 
-    demisto.debug(f"End of current fetch function with last_fetch {last_fetch!s} and last_fetched_id" f" {last_fetched_id!s}")
+    demisto.debug(f"End of current fetch function with last_fetch {last_fetch!s} and last_fetched_id {last_fetched_id!s}")
 
     last_run = {"last_fetch": last_fetch, "last_fetched_incident_id": last_fetched_id}
 

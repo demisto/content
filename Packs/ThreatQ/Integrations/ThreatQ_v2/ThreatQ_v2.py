@@ -742,7 +742,7 @@ def advance_search_command():
     try:
         search_results = res.json().get("data")
     except ValueError:
-        raise ValueError(f"Could not parse data from ThreatQ [Status code: {res.status_code}]" f"\n[Error Message: {res.text}]")
+        raise ValueError(f"Could not parse data from ThreatQ [Status code: {res.status_code}]\n[Error Message: {res.text}]")
 
     if not isinstance(search_results, list):
         search_results = [search_results]

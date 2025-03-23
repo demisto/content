@@ -16,7 +16,7 @@ RAW_RESPONSE_MOCK_2 = {
     "continent_name": "continent_name",
     "type": "type",
 }
-CONTEXT_PATH = "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor " "&& val.Type == obj.Type)"
+CONTEXT_PATH = "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
 CONTEXT_PATH_PRIOR_V5_5 = "DBotScore"
 
 
