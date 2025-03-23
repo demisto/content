@@ -326,28 +326,16 @@ def pan_os_push_to_device(args: dict) -> PollResult:
             outputs=context_output,
             readable_output=tableToMarkdown('Push to Device Group:', context_output, removeNull=True)
         )
+        demisto.setContext('Push.ID', job_id)
     else:
         push_cr = CommandResults(
             readable_output=res_push_to_device[0].get('Contents') or 'There are no changes to push.'
         )
         continue_to_poll = False
 
-    args_for_next_run = {
-        'push_job_id': job_id,
-        'polling': True,
-        'interval_in_seconds': 60,
-        'device_group': device_group
-    }
-    args_for_next_run = args | args_for_next_run
-    if args_for_next_run.get('commit_job_id'):
-        args_for_next_run.pop('commit_job_id')
-        args.pop('commit_job_id')
-        args['push_job_id'] = job_id
-    demisto.debug(f"The args for the next run of pan-os-push-to-device-group {args_for_next_run}")
     return PollResult(
         response=push_cr,
         continue_to_poll=continue_to_poll,
-        args_for_next_run=args_for_next_run,
         partial_result=CommandResults(
             readable_output=f'Waiting for Job-ID {job_id} to finish push changes to device-group {device_group}...'
         )
@@ -455,10 +443,11 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
             readable_output=f'Waiting for commit job ID {job_id} to finish...'
         )
     )
-    demisto.debug(f"{poll_result.continue_to_poll=} {isinstance(poll_result.continue_to_poll, bool)=}")
     return poll_result
 
 def manage_pan_os_flow(args: dict):
+    incident_context = demisto.context()
+    demisto.debug(f"The context in the beginning of manage_pan_os_flow {incident_context=}")
     auto_commit = args['auto_commit']
     push_job_id = None
     res_push_status = None
@@ -476,9 +465,10 @@ def manage_pan_os_flow(args: dict):
                 demisto.debug("Not a Panorama instance, not pushing to device. Continue to register the IP.")
         else:
             return poll_commit_status, None
-    elif push_job_id := args.get('push_job_id'):
+    elif push_job_id := demisto.get(demisto.context(), 'Push.ID'):
         demisto.debug(f"Has a {push_job_id=}")
-        res_push_status = pan_os_push_status(push_job_id)
+        args['push_job_id'] = push_job_id
+        res_push_status = pan_os_push_status(args)
         return_results(res_push_status)
 
     # check if we are in the initial run or should execute pan-os-register-ip-tag
