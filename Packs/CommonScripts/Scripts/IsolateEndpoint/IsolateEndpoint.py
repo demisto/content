@@ -144,7 +144,7 @@ class ModuleManager:
 """ PREPROCESS FUNCTIONS """
 
 
-def check_conditions_cybereason_isolate_machine(verbose: bool, endpoint_output: dict, human_readable_outputs: list, args: dict,
+def check_conditions_cybereason_isolate_machine(endpoint_output: dict, human_readable_outputs: list, args: dict,
                                                 endpoint_data: dict) -> bool:
     cybereason_is_probe_connected_command = Command(
         brand='Cybereason',
@@ -156,8 +156,7 @@ def check_conditions_cybereason_isolate_machine(verbose: bool, endpoint_output: 
                                          result='Fail',
                                          message='Missing args for cybereason-is-probe-connected command',
                                          endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs,
-                                         verbose=verbose)
+                                         human_readable_outputs=human_readable_outputs)
         return False
     mapped_args = map_args(cybereason_is_probe_connected_command, args)
     raw_response = execute_command(cybereason_is_probe_connected_command.name, mapped_args)
@@ -167,8 +166,7 @@ def check_conditions_cybereason_isolate_machine(verbose: bool, endpoint_output: 
                                          result='Fail',
                                          message='Could not execute cybereason-is-probe-connected command',
                                          endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs,
-                                         verbose=verbose)
+                                         human_readable_outputs=human_readable_outputs)
         return False
     if not argToBoolean(raw_response.get('isConnected', {}).get('Value')):
         create_message_to_context_and_hr(args=args,
@@ -176,13 +174,12 @@ def check_conditions_cybereason_isolate_machine(verbose: bool, endpoint_output: 
                                          message='Could not execute cybereason-is-probe-connected command because'
                                                  ' endpoint is not connected.',
                                          endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs,
-                                         verbose=verbose)
+                                         human_readable_outputs=human_readable_outputs)
         return False
     return True
 
 
-def check_conditions_microsoft_atp_isolate_machine(verbose: bool, endpoint_output: dict, human_readable_outputs: list, args: dict,
+def check_conditions_microsoft_atp_isolate_machine(endpoint_output: dict, human_readable_outputs: list, args: dict,
                                                    endpoint_data: dict) -> bool:
     status = endpoint_data.get('Status')
     agent_id = endpoint_data.get('ID', {}).get('Value', '')
@@ -191,8 +188,7 @@ def check_conditions_microsoft_atp_isolate_machine(verbose: bool, endpoint_outpu
                                          result='Fail',
                                          message='Can not execute microsoft-atp-isolate-machine command',
                                          endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs,
-                                         verbose=verbose)
+                                         human_readable_outputs=human_readable_outputs)
         return False
 
     if not args.get('agent_id'):   # Appending agent_id as it's required for microsoft-atp-isolate-machine.
@@ -203,14 +199,13 @@ def check_conditions_microsoft_atp_isolate_machine(verbose: bool, endpoint_outpu
 """ HELPER FUNCTIONS """
 
 
-def check_module_and_args_for_command(module_manager: ModuleManager, verbose: bool, command: Command, endpoint_output: dict,
+def check_module_and_args_for_command(module_manager: ModuleManager, command: Command, endpoint_output: dict,
                                       human_readable_outputs: list, args: dict) -> bool:
     """
     Validates whether a command can be executed by checking the brand's availability and required arguments.
 
     Args:
         module_manager (ModuleManager): The manager responsible for handling integrations and their availability.
-        verbose (bool): Whether to include detailed debug messages.
         command (Command): An instance containing the command's metadata and argument mapping.
         endpoint_output (dict): The dictionary to store output results.
         human_readable_outputs (list): The list to store human-readable messages.
@@ -225,8 +220,7 @@ def check_module_and_args_for_command(module_manager: ModuleManager, verbose: bo
                                          result='Fail',
                                          message=f'{command.brand} integration is available.',
                                          endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs,
-                                         verbose=verbose)
+                                         human_readable_outputs=human_readable_outputs)
         return False
 
     missing_args = are_there_missing_args(command, args)  # checks that there are not missing args
@@ -236,13 +230,12 @@ def check_module_and_args_for_command(module_manager: ModuleManager, verbose: bo
                                          result='Fail',
                                          message=f'Missing the next args: {missing_args} for {command.name}.',
                                          endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs,
-                                         verbose=verbose)
+                                         human_readable_outputs=human_readable_outputs)
         return False
     return True
 
 
-def is_endpoint_isolatable(endpoint_data: dict, args: dict, endpoint_output: dict, human_readable_outputs: list, verbose: bool) -> bool:
+def is_endpoint_isolatable(endpoint_data: dict, args: dict, endpoint_output: dict, human_readable_outputs: list) -> bool:
     """
     Determines whether an endpoint can be isolated based on its OS type, current isolation status, and connectivity.
 
@@ -251,7 +244,6 @@ def is_endpoint_isolatable(endpoint_data: dict, args: dict, endpoint_output: dic
         args (dict): The arguments used in the command execution.
         endpoint_output (dict): A list to store structured output results.
         human_readable_outputs (list): A list to store human-readable messages.
-        verbose (bool): Flag to control verbosity.
 
     Returns:
         bool: True if the endpoint is eligible for isolation, False otherwise.
@@ -273,18 +265,16 @@ def is_endpoint_isolatable(endpoint_data: dict, args: dict, endpoint_output: dic
         is_isolation_possible = False
 
     if not is_isolation_possible:
-        demisto.debug(f'Can not isolate endpoint: {message}.')
         create_message_to_context_and_hr(args=args,
                                          result='Fail',
                                          message=message,
                                          endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs,
-                                         verbose=verbose)
+                                         human_readable_outputs=human_readable_outputs)
     return is_isolation_possible
 
 
-def create_message_to_context_and_hr(args: dict, result: str, message: str, endpoint_output: dict, human_readable_outputs: list,
-                                     verbose: bool) -> None:
+def create_message_to_context_and_hr(args: dict, result: str, message: str, endpoint_output: dict,
+                                     human_readable_outputs: list) -> None:
     """
     Generates a structured message for context and human-readable outputs.
 
@@ -294,7 +284,6 @@ def create_message_to_context_and_hr(args: dict, result: str, message: str, endp
         message (str): A message explaining the result.
         endpoint_output (dict): A list to store the structured output for context.
         human_readable_outputs (list): A list to store human-readable messages.
-        verbose (bool): If True, includes human-readable output.
     """
     endpoint_name = args.get('agent_hostname') or args.get('agent_id') or args.get('agent_ip')
     brand = args.get('agent_brand', '')
@@ -365,8 +354,7 @@ def map_zipped_args(agent_ids: list, agent_ips: list, agent_hostnames: list) -> 
     ]
 
 
-def check_which_args_missing_in_output(zipped_args: list, valid_args: list, outputs: list, human_readable_outputs: list,
-                                       verbose: bool) -> None:
+def check_which_args_missing_in_output(zipped_args: list, valid_args: list, outputs: list, human_readable_outputs: list) -> None:
     """
     Checks if any of the given agent details (ID, IP, or hostname) exist in a list of valid arguments.
     If no match is found, a failure message is added to the context and human-readable outputs.
@@ -376,7 +364,6 @@ def check_which_args_missing_in_output(zipped_args: list, valid_args: list, outp
         valid_args (list): A list of dictionaries representing valid agents with corresponding details.
         outputs (list): A list to store structured output results.
         human_readable_outputs (list): A list to store human-readable messages.
-        verbose (bool): Flag to control verbosity.
     """
     for args in zipped_args:
         agent_id = args.get('agent_id', '')
@@ -389,12 +376,13 @@ def check_which_args_missing_in_output(zipped_args: list, valid_args: list, outp
                (agent_ip and entry.get('agent_ip') == agent_ip):  # Checks if any of the args exists in valid_args
                 are_args_found = True
         if not are_args_found:
+            endpoint_data = {}
             create_message_to_context_and_hr(args=args,
                                              result='Fail',
                                              message='Did not find information on endpoint in any available brand.',
-                                             endpoint_output={},
-                                             human_readable_outputs=human_readable_outputs,
-                                             verbose=verbose)
+                                             endpoint_output=endpoint_data,
+                                             human_readable_outputs=human_readable_outputs)
+            outputs.append(endpoint_data)
 
 
 def get_args_from_endpoint_data(endpoint_data: dict) -> dict:
@@ -425,7 +413,6 @@ def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> l
     Returns:
         list: A structured list containing the entry of the context, excluding None values.
     """
-    demisto.debug(f'These are the results from endpoint data: {get_endpoint_data_results}')
     if not get_endpoint_data_results:
         return []
 
@@ -443,7 +430,7 @@ def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> l
 
 
 def handle_raw_response_results(command: Command, raw_response: dict, args, endpoint_output: dict, human_readable_outputs: list,
-                                verbose: bool) -> None:
+                                verbose: bool) -> CommandResults | None:
     """
     Handles the raw response of a command execution by determining success or failure and updating outputs accordingly.
 
@@ -455,23 +442,72 @@ def handle_raw_response_results(command: Command, raw_response: dict, args, endp
         human_readable_outputs (list): A list to store human-readable messages.
         verbose (bool): Flag to control verbosity.
     """
+    entry_human_readable = []
     if is_error(raw_response):
         create_message_to_context_and_hr(args=args,
                                          result='Fail',
                                          message=f'Failed to execute command {command.name}.'
                                                  f' Error:{get_error(raw_response)}',
                                          endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs,
-                                         verbose=verbose)
+                                         human_readable_outputs=human_readable_outputs)
 
     else:
         create_message_to_context_and_hr(args=args,
                                          result='Success',
                                          message=f'Command {command.name} was executed successfully.',
                                          endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs,
-                                         verbose=verbose)
+                                         human_readable_outputs=human_readable_outputs)
 
+    if verbose:
+        for entry in raw_response:
+            entry_human_readable.append(entry.get("HumanReadable") or "")
+        command_human_readable = "\n".join(entry_human_readable)
+        result_type = EntryType.ERROR if is_error(raw_response) else EntryType.
+        command_title = f'!{command.name} {" ".join([f"{arg}={value}" for arg, value in args.items() if value])}'
+        result_message = f"#### {'Error' if is_error(raw_response) else 'Result'} for {command_title}\n{command_human_readable}"
+        return CommandResults(
+            readable_output=result_message,
+            entry_type=result_type,
+            mark_as_note=True
+        )
+
+
+def run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs, results, verbose):
+    """
+    Processes an endpoint by executing isolation commands and updating outputs accordingly.
+
+    Args:
+        commands (list): A list of available commands for isolation.
+        args (dict): The arguments provided for the isolation operation.
+        module_manager (ModuleManager): Manages available modules and their execution.
+        endpoint_data (dict): The endpoint data retrieved for processing.
+        endpoint_output (dict): A dictionary to store structured output results.
+        human_readable_outputs (list): A list to store human-readable messages.
+        results (list): A list to collect the final results from command execution.
+        verbose (bool): Flag to control verbosity of debugging information.
+    """
+    for command in commands:
+        if command.brand != args.get('agent_brand'):
+            demisto.debug(f'Skipping command {command.name} with {args=}, as its brand does not match the endpoint brand.')
+            continue
+
+        demisto.debug(f'Executing command {command.name} with {args=}')
+        if command.pre_command_check and not command.pre_command_check(endpoint_output, human_readable_outputs, args,
+                                                                       endpoint_data):
+            continue
+
+        if not check_module_and_args_for_command(module_manager, command, endpoint_output, human_readable_outputs, args):
+            continue
+
+        mapped_args = map_args(command, args)
+        raw_response = demisto.executeCommand(command.name, mapped_args)
+
+        demisto.debug(f'Got raw response for execute_command {command.name} with {args=}: {raw_response=}')
+        command_results = handle_raw_response_results(command, raw_response, args, endpoint_output, human_readable_outputs,
+                                                      verbose)
+
+        if command_results:
+            results.append(command_results)
 
 def main():
     try:
@@ -485,65 +521,48 @@ def main():
         commands = initialize_commands()
         zipped_args = map_zipped_args(agent_ids, agent_ips, agent_hostnames)
 
-        #TODO to change
-        endpoint_data_results = structure_endpoints_data(execute_command(command="get-endpoint-data-modified", args=args))
+        # TODO to change
+        endpoint_data_results = structure_endpoints_data(
+            execute_command(command="get-endpoint-data-modified", args=args)
+        )
 
         demisto.debug(f'These are the results from get_endpoint_data_results execute_command {endpoint_data_results}')
 
-        outputs: list = []
-        human_readable_outputs: list = []
-        args_from_endpoint_data: list = []
+        results, outputs, human_readable_outputs, args_from_endpoint_data = [], [], [], []
 
         for endpoint_data in endpoint_data_results:
-            endpoint_output = {}
+            endpoint_output: dict = {}
             args = get_args_from_endpoint_data(endpoint_data)
             args_from_endpoint_data.append(args)
-            if not is_endpoint_isolatable(endpoint_data, args, endpoint_output, human_readable_outputs, verbose):
+
+            if not is_endpoint_isolatable(endpoint_data, args, endpoint_output, human_readable_outputs):
                 outputs.append(endpoint_output)
                 continue
-            for command in commands:
-                if command.brand != args.get('agent_brand'):
-                    demisto.debug(f'Skipping command {command.name} with {args=},'
-                                  f'as its brand does not match the endpoint brand.')
-                    continue
-                demisto.debug(f'executing command {command.name} with {args=}')
-                if command.pre_command_check and not command.pre_command_check(verbose, endpoint_output, human_readable_outputs,
-                                                                               args, endpoint_data):
-                    outputs.append(endpoint_output)
-                    continue
-                if not check_module_and_args_for_command(module_manager, verbose, command, endpoint_output,
-                                                         human_readable_outputs, args):
-                    outputs.append(endpoint_output)
-                    continue
-                mapped_args = map_args(command, args)
-                raw_response = demisto.executeCommand(command.name, mapped_args)
-                demisto.debug(f'Got raw response for execute_command {command.name} with {args=}: {raw_response=}')
-                handle_raw_response_results(command, raw_response, args, endpoint_output, human_readable_outputs, verbose)
-
+            run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs,
+                                      results, verbose)
             outputs.append(endpoint_output)
 
-        check_which_args_missing_in_output(zipped_args, args_from_endpoint_data, outputs, human_readable_outputs, verbose)
+        check_which_args_missing_in_output(zipped_args, args_from_endpoint_data, outputs, human_readable_outputs)
 
         readable_output = tableToMarkdown(name='IsolateEndpoint Results', t=human_readable_outputs, removeNull=True)
-        results = CommandResults(
+        results.append(CommandResults(
             outputs_prefix='IsolateEndpoint',
             outputs_key_field='EndpointName',
             outputs=outputs,
             readable_output=readable_output,
-        )
+        ))
+        return_results(results)
 
     except Exception as e:
         demisto.debug(f"Failed to execute isolate-endpoint. Error: {str(e)}")
-        results = CommandResults(
+        return_results(CommandResults(
             outputs_prefix='IsolateEndpoint',
             outputs=[],
             readable_output='The Isolate Action did not succeed.'
                             ' Please validate your input or check if the machine is already in an Isolate state.'
                             ' The Device ID/s that were not Isolated',
 
-        )
-
-    return_results(results)
+        ))
 
 
 """ ENTRY POINT """
