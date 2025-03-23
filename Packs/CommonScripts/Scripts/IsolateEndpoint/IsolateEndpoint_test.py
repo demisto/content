@@ -130,7 +130,6 @@ def test_check_which_args_missing_in_output(mock_create_message):
     ]
     outputs = []
     human_readable_outputs = []
-    verbose = True
     zipped_args = [
         {'agent_id': '', 'agent_ip': '194', 'agent_hostname': 'host4'},
         {'agent_id': '555', 'agent_ip': '195', 'agent_hostname': ''},
@@ -335,10 +334,12 @@ def test_run_commands_for_endpoint():
         - A set of brands to run commands for, including valid and invalid brands.
         - Endpoint data and arguments related to a specific agent.
     When:
-        - Running the test_run_commands_for_endpoint function with different arguments, including those that match the brand and others that don't.
+        - Running the test_run_commands_for_endpoint function with different arguments, including those that match the brand
+         and others that don't.
     Then:
         - Ensure commands are only executed for matching brands (active modules).
-        - Verify that results are properly added when conditions match, and that no results are added for inactive modules or mismatched arguments.
+        - Verify that results are properly added when conditions match, and that no results are added for inactive modules
+         or mismatched arguments.
     """
     commands = [Command(brand="BrandA", name="command_name", arg_mapping={})]
     modules = {

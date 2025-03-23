@@ -292,9 +292,9 @@ def create_message_to_context_and_hr(args: dict, result: str, message: str, endp
         endpoint_output['Results'] = []
 
     endpoint_output['Results'].append({
-            'Result': result,
-            'Brand': brand,
-            'Message': message
+        'Result': result,
+        'Brand': brand,
+        'Message': message
     })
     human_readable_outputs.append({
         'Result': result,
@@ -376,7 +376,7 @@ def check_which_args_missing_in_output(zipped_args: list, valid_args: list, outp
                (agent_ip and entry.get('agent_ip') == agent_ip):  # Checks if any of the args exists in valid_args
                 are_args_found = True
         if not are_args_found:
-            endpoint_data = {}
+            endpoint_data: dict = {}
             create_message_to_context_and_hr(args=args,
                                              result='Fail',
                                              message='Did not find information on endpoint in any available brand.',
@@ -440,6 +440,8 @@ def handle_raw_response_results(command: Command, raw_response: dict, args, endp
         endpoint_output (dict): A list to store structured output results.
         human_readable_outputs (list): A list to store human-readable messages.
         verbose (bool): Flag to control verbosity.
+    Returns:
+        CommandResults | None: If verbose=true, returns the CommandResults for this executed command.
     """
     entry_human_readable = []
     if is_error(raw_response):
@@ -456,7 +458,6 @@ def handle_raw_response_results(command: Command, raw_response: dict, args, endp
                                          message=f'Command {command.name} was executed successfully.',
                                          endpoint_output=endpoint_output,
                                          human_readable_outputs=human_readable_outputs)
-
     if verbose:
         for entry in raw_response:
             entry_human_readable.append(entry.get("HumanReadable") or "")
@@ -469,6 +470,7 @@ def handle_raw_response_results(command: Command, raw_response: dict, args, endp
             entry_type=result_type,
             mark_as_note=True
         )
+    return None
 
 
 def run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs, results,
@@ -502,7 +504,6 @@ def run_commands_for_endpoint(commands, args, module_manager, endpoint_data, end
         demisto.debug(f'Got raw response for execute_command {command.name} with {args=}: {raw_response=}')
         command_results = handle_raw_response_results(command, raw_response, args, endpoint_output, human_readable_outputs,
                                                       verbose)
-
         if command_results:
             results.append(command_results)
 
@@ -542,7 +543,10 @@ def main():
 
         demisto.debug(f'These are the results from get_endpoint_data_results execute_command {endpoint_data_results}')
 
-        results, outputs, human_readable_outputs, args_from_endpoint_data = [], [], [], []
+        results: list = []
+        outputs: list = []
+        human_readable_outputs: list = []
+        args_from_endpoint_data: list = []
 
         for endpoint_data in endpoint_data_results:
             endpoint_output: dict = {}
@@ -575,7 +579,6 @@ def main():
             readable_output='The Isolate Action did not succeed.'
                             ' Please validate your input or check if the machine is already in an Isolate state.'
                             ' The Device ID/s that were not Isolated',
-
         ))
 
 
