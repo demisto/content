@@ -3336,6 +3336,7 @@ def main():   # pragma: no cover
         'test-module': test_module,
         'long-running-execution': long_running_loop,
         'send-notification': send_message,
+        'send-notification-quick-action': send_message,
         'mirror-investigation': mirror_investigation,
         'close-channel': close_channel,
         'microsoft-teams-integration-health': integration_health,
