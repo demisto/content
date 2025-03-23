@@ -271,3 +271,42 @@ def test_update_content_item_gitlab(mocker):
     mocker.patch.object(demisto, 'executeCommand')
     mocker.patch('CommitFiles.execute_command', return_value=(True, expected_str))
     commit_content_item_gitlab(branch_name, content_file, [], [])
+    
+  # Update with actual module name
+
+@pytest.mark.parametrize(
+    "given, expected",
+    [
+        # Basic placeholder escaping
+        ("Hello ${name}", "Hello $\\{name}"),
+        ("${key.value}", "$\\{key.value}"),
+
+        # Multiple placeholders
+        ("${user.name} and ${user.id}", "$\\{user.name} and $\\{user.id}"),
+
+        # Placeholders inside a sentence
+        ("User: ${user.name}, ID: ${user.id}", "User: $\\{user.name}, ID: $\\{user.id}"),
+
+        # Placeholder at the start of the string
+        ("${start} of string", "$\\{start} of string"),
+
+        # Placeholder at the end of the string
+        ("End of string ${end}", "End of string $\\{end}"),
+
+        # Placeholder with special characters inside
+        ("Value: ${some.key_with-dash}", "Value: $\\{some.key_with-dash}"),
+
+        # No placeholders - should remain unchanged
+        ("No placeholders here", "No placeholders here"),
+
+        # Empty string case
+        ("", ""),
+
+        # Placeholder with nested braces (should not exist but handled gracefully)
+        ("Nested ${outer${inner}}", "Nested $\\{outer${inner}}"),
+    ]
+)
+def test_escape_placeholders(given, expected):
+    import re
+    from CommitFiles import escape_placeholders
+    assert escape_placeholders(given) == expected
