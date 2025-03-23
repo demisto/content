@@ -1,15 +1,13 @@
-import uuid
-import dateparser
-import requests
-import urllib3
-import json
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-demisto.debug('pack name = Microsoft Sentinel, pack version = 1.5.59')
-
-
+import demistomock as demisto  # noqa
+from CommonServerPython import *  # noqa
+from CommonServerUserPython import *  # noqa
 # IMPORTS
 
+import json
+import urllib3
+import requests
+import dateparser
+import uuid
 
 from MicrosoftApiModule import *  # noqa: E402
 

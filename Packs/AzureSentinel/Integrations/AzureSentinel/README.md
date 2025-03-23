@@ -1142,6 +1142,7 @@ There is no context output for this command.
 ***
 Gets a list of an incident's related entities from Azure Sentinel.
 
+
 #### Base Command
 
 `azure-sentinel-list-incident-relations`
@@ -1154,9 +1155,10 @@ Gets a list of an incident's related entities from Azure Sentinel.
 | limit | The maximum number of related entities to return. Default is 50. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
 | entity_kinds | A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
-| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
-| subscription_id | The subscription ID. | Optional | 
-| resource_group_name | The resource group name. | Optional | 
+| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: <https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter>. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
+
 
 #### Context Output
 
@@ -1167,6 +1169,34 @@ Gets a list of an incident's related entities from Azure Sentinel.
 | AzureSentinel.NextLink.Description | String | The description about NextLink. | 
 | AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
 | AzureSentinel.IncidentRelatedResource.IncidentID | String | The incident ID. | 
+
+
+#### Command Example
+
+```!azure-sentinel-list-incident-relations incident_id=8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742```
+
+#### Context Example
+
+```json
+{
+    "AzureSentinel": {
+        "IncidentRelatedResource": {
+            "ID": "bfb02efc-12b7-4147-a8e8-961338b1b834",
+            "IncidentID": "8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742",
+            "Kind": "SecurityAlert"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Incident 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 Relations (1 results)
+>
+>|ID|Incident ID|Kind|
+>|---|---|---|
+>| bfb02efc-12b7-4147-a8e8-961338b1b834 | 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | SecurityAlert |
+
 
 ### azure-sentinel-list-incident-entities
 
@@ -2513,31 +2543,76 @@ There are no input arguments for this command.
 ```!azure-sentinel-subscriptions-list```
 
 #### Context Example
-### azure-sentinel-subscriptions-list
 
-***
-Lists all subscriptions.
+```json
+{
+    "AzureSentinel": {
+        "Subscription": {
+            "authorizationSource": "RoleBased",
+            "displayName": "Pay-As-You-Go",
+            "id": "/subscriptions/0000000000000",
+            "managedByTenants": [],
+            "state": "Enabled",
+            "subscriptionId": "0000000000000",
+            "subscriptionPolicies": {
+                "locationPlacementId": "Public_2014-09-01",
+                "quotaId": "PayAsYouGo_2014-09-01",
+                "spendingLimit": "Off"
+            },
+            "tenantId": "000000000000000"
+        }
+    }
+}
+```
 
-#### Base Command
+#### Human Readable Output
 
-`azure-sentinel-subscriptions-list`
+>### Azure Sentinel Subscriptions
 
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+>|Subscriptionid|Tenantid|Displayname|State|
+>|---|---|---|---|
+>| 0000000000000 | 000000000000000 | Pay-As-You-Go | Enabled |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSentinel.SubscriptionId | String | Fully qualified resource ID for the resource. | 
-| AzureSentinel.Subscription.displayName | String | The name of the resource. | 
-| AzureSentinel.Subscription.authorizationSource | String | The authorization source of the resource. | 
-| AzureSentinel.Subscription.managedByTenants | String | The subscriptions that are managed by tenants of the resource. | 
-| AzureSentinel.Subscription.tenetId | String | The tenet ID of the resource. | 
-| AzureSentinel.Subscription.state | String | The state of the resource. | 
-| AzureSentinel.Subscription.subscriptionPolicies | String | The subscription policies of the resource. | 
+| AzureSentinel.ResourceGroup.id | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.ResourceGroup.name | String | The name of the resource. | 
+| AzureSentinel.ResourceGroup.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
+| AzureSentinel.ResourceGroup.location | String | The location of the resource group. | 
+| AzureSentinel.ResourceGroup.tags | Dictionary | The tags of the resource group. | 
+| AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. | 
+
+### azure-sentinel-resource-group-list
+
+***
+Lists all resource groups.
+
+#### Base Command
+
+`azure-sentinel-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided. | Optional | 
+| tag | The tag name. Input should be `{“Tag Name:Tag Value”}``. Operator is “equals”. | Optional | 
+| limit | The maximum number of items to return. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.ResourceGroup.id | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.ResourceGroup.name | String | The name of the resource. | 
+| AzureSentinel.ResourceGroup.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
+| AzureSentinel.ResourceGroup.location | String | The location of the resource group. | 
+| AzureSentinel.ResourceGroup.tags | Dictionary | The tags of the resource group. | 
+| AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. | 
+
+#### Command example
 
 ```!azure-sentinel-resource-group-list```
 
@@ -2584,35 +2659,6 @@ Lists all subscriptions.
 
 ### azure-sentinel-auth-reset
 
-### azure-sentinel-resource-group-list
-
-***
-List all resource groups for a subscription.
-
-#### Base Command
-
-`azure-sentinel-resource-group-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided. | Optional | 
-| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
-| limit | The maximum number of resource groups to return. Default is 50. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSentinel.ResourceGroup.id | String | Fully qualified resource ID for the resource. | 
-| AzureSentinel.ResourceGroup.name | String | The name of the resource. | 
-| AzureSentinel.ResourceGroup.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". | 
-| AzureSentinel.ResourceGroup.location | String | The location of the resource group. | 
-| AzureSentinel.ResourceGroup.tags | Dictionary | The tags of the resource group. | 
-| AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. | 
-### azure-sentinel-auth-reset
-
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
@@ -2622,8 +2668,7 @@ Run this command if for some reason you need to rerun the authentication process
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
