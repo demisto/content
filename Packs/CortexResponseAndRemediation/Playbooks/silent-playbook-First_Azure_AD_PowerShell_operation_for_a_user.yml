@@ -29,8 +29,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 845,
-          "y": 671
+          "x": 434,
+          "y": 664
         }
       }
     note: false
@@ -66,8 +66,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1035,
-          "y": 789
+          "x": 643,
+          "y": 782
         }
       }
     note: false
@@ -107,8 +107,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 639,
-          "y": 789
+          "x": 221,
+          "y": 782
         }
       }
     note: false
@@ -150,7 +150,7 @@ tasks:
       {
         "position": {
           "x": 1848,
-          "y": 2938
+          "y": 2952
         }
       }
     note: false
@@ -186,8 +186,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1270,
-          "y": 3059
+          "x": 1297,
+          "y": 3073
         }
       }
     note: false
@@ -214,8 +214,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 845,
-          "y": 3187
+          "x": 762,
+          "y": 3223
         }
       }
     note: false
@@ -245,8 +245,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 845,
-          "y": 1039
+          "x": 434,
+          "y": 1032
         }
       }
     note: false
@@ -319,8 +319,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1068,
-          "y": 1672
+          "x": 1052,
+          "y": 1664
         }
       }
     note: false
@@ -357,7 +357,7 @@ tasks:
       includeinformational:
         simple: "true"
       query:
-        simple: (name:"Abnormal sign-in followed by suspicious activity in Azure AD" or name:"A suspicious Azure account deletion by a non-standard account" or name:"MFA was disabled for an Azure identity" or name:"Suspicious Azure AD Administrator Role assignment")  and caller_ip:${alert.hostip.[0]} and username:${Core.OriginalAlert.event.identity_normalized.username}
+        simple: (name:"Abnormal sign-in followed by suspicious activity in Azure AD" or name:"A suspicious Azure account deletion by a non-standard account" or name:"MFA was disabled for an Azure identity" or name:"Suspicious Azure AD Administrator Role assignment") and caller_ip:${alert.hostip.[0]} and username:${Core.OriginalAlert.event.identity_normalized.username}
       todate:
         simple: now
     separatecontext: false
@@ -365,7 +365,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1068,
+          "x": 1052,
           "y": 1422
         }
       }
@@ -420,7 +420,7 @@ tasks:
       id: 0717468e-c0e5-47c1-8057-afb2ebfb75fc
       version: -1
       name: Set risky user
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -438,8 +438,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1859,
-          "y": 1683
+          "x": 1835,
+          "y": 1693
         }
       }
     note: false
@@ -497,12 +497,13 @@ tasks:
       '#none#':
       - "15"
       - "27"
+      - "21"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 847,
+          "x": 845,
           "y": 1299
         }
       }
@@ -533,7 +534,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 846,
+          "x": 838,
           "y": 2037
         }
       }
@@ -616,8 +617,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1515,
-          "y": 1545
+          "x": 1467,
+          "y": 1563
         }
       }
     note: false
@@ -635,7 +636,7 @@ tasks:
       id: 3ecca9df-7ae6-4ed8-836c-e5ef133204ac
       version: -1
       name: Extract Azure user alerts
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex.x see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -657,8 +658,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1068,
-          "y": 1795
+          "x": 1052,
+          "y": 1784
         }
       }
     note: false
@@ -695,7 +696,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
+          "x": 643,
           "y": 1545
         }
       }
@@ -714,7 +715,7 @@ tasks:
       id: 68939018-dc3c-43f6-a798-762676302044
       version: -1
       name: Extract Azure user detections
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x ,see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex.x see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -764,8 +765,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 1672
+          "x": 643,
+          "y": 1784
         }
       }
     note: false
@@ -802,8 +803,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 1422
+          "x": 643,
+          "y": 1425
         }
       }
     note: false
@@ -843,7 +844,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1068,
+          "x": 1052,
           "y": 1545
         }
       }
@@ -875,7 +876,7 @@ tasks:
       {
         "position": {
           "x": 1678,
-          "y": 2662
+          "y": 2676
         }
       }
     note: false
@@ -1088,7 +1089,7 @@ tasks:
       {
         "position": {
           "x": 1678,
-          "y": 2792
+          "y": 2806
         }
       }
     note: false
@@ -1175,7 +1176,7 @@ tasks:
       {
         "position": {
           "x": 1678,
-          "y": 2534
+          "y": 2548
         }
       }
     note: false
@@ -1211,8 +1212,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 845,
-          "y": 3059
+          "x": 885,
+          "y": 3073
         }
       }
     note: false
@@ -1262,21 +1263,21 @@ tasks:
         ---
 
         ### Action Required:
-        - We recommend deleting the new authentication method that was added to the user before closing the alert.
-        - Please choose the action you want to perform.
+        - We recommend revoking the user session and disabling the user if needed.
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "9"
+      - "41"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1270,
-          "y": 2407
+          "x": 1297,
+          "y": 2410
         }
       }
     note: false
@@ -1312,7 +1313,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1270,
+          "x": 1297,
           "y": 2278
         }
       }
@@ -1351,8 +1352,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 845,
-          "y": 919
+          "x": 434,
+          "y": 912
         }
       }
     note: false
@@ -1383,7 +1384,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 237,
+          "x": 202,
           "y": 1299
         }
       }
@@ -1422,8 +1423,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 237,
-          "y": 1421
+          "x": 202,
+          "y": 1423
         }
       }
     note: false
@@ -1441,7 +1442,7 @@ tasks:
       id: cd7b438e-5596-448c-afd5-8e0ea4a29983
       version: -1
       name: Convert user creation date to epoch
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1463,8 +1464,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 237,
-          "y": 1664
+          "x": 202,
+          "y": 1666
         }
       }
     note: false
@@ -1499,8 +1500,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -165,
-          "y": 1784
+          "x": -200,
+          "y": 1786
         }
       }
     note: false
@@ -1518,7 +1519,7 @@ tasks:
       id: 205574e6-66c5-4c93-b2b5-87976a181fec
       version: -1
       name: Check if user is an admin
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1547,8 +1548,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -165,
-          "y": 1906
+          "x": -200,
+          "y": 1908
         }
       }
     note: false
@@ -1585,8 +1586,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -165,
-          "y": 1422
+          "x": -200,
+          "y": 1424
         }
       }
     note: false
@@ -1610,7 +1611,7 @@ tasks:
       description: ""
     nexttasks:
       '#default#':
-      - "43"
+      - "10"
       "yes":
       - "20"
       - "19"
@@ -1660,8 +1661,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 846,
-          "y": 1149
+          "x": 435,
+          "y": 1142
         }
       }
     note: false
@@ -1684,8 +1685,6 @@ tasks:
       brand: ""
       description: ""
     nexttasks:
-      '#default#':
-      - "21"
       "yes":
       - "53"
     separatecontext: false
@@ -1701,8 +1700,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 237,
-          "y": 1545
+          "x": 202,
+          "y": 1547
         }
       }
     note: false
@@ -1734,8 +1733,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 237,
-          "y": 1784
+          "x": 202,
+          "y": 1786
         }
       }
     note: false
@@ -1753,7 +1752,7 @@ tasks:
       id: 7af35502-4225-4ce5-b7e2-e7c4dcd485f5
       version: -1
       name: Check if user was created recently
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1787,8 +1786,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 237,
-          "y": 1906
+          "x": 202,
+          "y": 1908
         }
       }
     note: false
@@ -1824,8 +1823,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -165,
-          "y": 1545
+          "x": -200,
+          "y": 1547
         }
       }
     note: false
@@ -1840,7 +1839,7 @@ view: |-
     "linkLabelsPosition": {
       "22_18_yes": 0.52,
       "22_21_#default#": 0.1,
-      "34_43_#default#": 0.25,
+      "34_43_#default#": 0.14,
       "34_46_yes": 0.45,
       "35_8_Disable user": 0.47,
       "35_9_No Action": 0.28,
@@ -1848,16 +1847,16 @@ view: |-
       "41_9_#default#": 0.28,
       "46_40_yes": 0.57,
       "46_45_no": 0.53,
-      "57_19_yes": 0.59,
-      "57_43_#default#": 0.16,
-      "58_21_#default#": 0.32
+      "57_10_#default#": 0.21,
+      "57_19_yes": 0.79,
+      "57_20_yes": 0.53
     },
     "paper": {
       "dimensions": {
-        "height": 2576,
-        "width": 2405,
-        "x": -165,
-        "y": 671
+        "height": 2619,
+        "width": 2440,
+        "x": -200,
+        "y": 664
       }
     }
   }
