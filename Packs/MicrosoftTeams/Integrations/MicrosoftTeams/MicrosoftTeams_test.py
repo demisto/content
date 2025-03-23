@@ -2927,8 +2927,12 @@ def test_commands_required_includes_all_commands():
     from MicrosoftTeams import COMMANDS_REQUIRED_PERMISSIONS
     import yaml
 
-    with open('MicrosoftTeams.yml') as f:
-        yml = yaml.safe_load(f)
+    try:
+        with open('MicrosoftTeams.yml') as f:
+            yml = yaml.safe_load(f)
+
+    except FileNotFoundError:
+        pytest.skip('yml file is unavailable for testing in this environment')
 
     for command in yml['script']['commands']:
         assert command['name'] in COMMANDS_REQUIRED_PERMISSIONS
