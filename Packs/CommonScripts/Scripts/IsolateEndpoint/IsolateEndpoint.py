@@ -499,23 +499,25 @@ def main():
             args_from_endpoint_data.append(args)
             if not is_endpoint_isolatable(endpoint_data, args, outputs, human_readable_outputs, verbose):
                 continue
+            endpoint_output = []
             for command in commands:
                 if command.brand != args.get('agent_brand'):
                     demisto.debug(f'Skipping command {command.name} with {args=},'
                                   f'as its brand does not match the endpoint brand.')
                     continue
                 demisto.debug(f'executing command {command.name} with {args=}')
-                if command.pre_command_check and not command.pre_command_check(verbose, outputs, human_readable_outputs, args,
+                if command.pre_command_check and not command.pre_command_check(verbose, endpoint_output, human_readable_outputs, args,
                                                                                endpoint_data):
                     continue
-                if not check_module_and_args_for_command(module_manager, verbose, command, outputs, human_readable_outputs,
+                if not check_module_and_args_for_command(module_manager, verbose, command, endpoint_output, human_readable_outputs,
                                                          args):
                     continue
                 mapped_args = map_args(command, args)
                 raw_response = demisto.executeCommand(command.name, mapped_args)
                 demisto.debug(f'Got raw response for execute_command {command.name} with {args=}: {raw_response=}')
-                handle_raw_response_results(command, raw_response, args, outputs, human_readable_outputs, verbose)
+                handle_raw_response_results(command, raw_response, args, endpoint_output, human_readable_outputs, verbose)
 
+            outputs.append(endpoint_output)
         check_which_args_missing_in_output(zipped_args, args_from_endpoint_data, outputs, human_readable_outputs, verbose)
 
         readable_output = tableToMarkdown(name='IsolateEndpoint Results', t=human_readable_outputs, removeNull=True)
