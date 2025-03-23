@@ -23,13 +23,6 @@ ignore=GR103,LO107
 [file:layoutscontainer-Default_XDR_Alert.json]
 ignore=LO107
 
-# GR103 is temporary, see CIAC-11705
-[file:layoutscontainer-Default_Issue.json]
-ignore=GR103,LO107
-
-[file:layoutscontainer-Default_XDR_Issue.json]
-ignore=LO107
-
 [file:layoutscontainer-Identity_Analytics_Alerts.json]
 ignore=LO107
 
