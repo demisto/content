@@ -6,6 +6,7 @@ import datetime
 import json
 
 
+
 SECURITY_EVENT_START_TAG = '<SecurityEvent id="%s"'
 SECURITY_EVENT_END_TAG = '</SecurityEvent>'
 
