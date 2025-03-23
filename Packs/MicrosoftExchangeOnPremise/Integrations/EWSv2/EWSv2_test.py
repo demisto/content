@@ -753,13 +753,13 @@ def test_parse_item_as_dict_with_empty_field():
 def test_get_entry_for_object_empty():
     from EWSv2 import get_entry_for_object
     obj: dict = {}
-    assert get_entry_for_object("test", "keyTest", obj) == "There is no output results"
+    assert get_entry_for_object("test", "keyTest", obj).readable_output == "There is no output results"
 
 
 def test_get_entry_for_object():
     from EWSv2 import get_entry_for_object
     obj = {"a": 1, "b": 2}
-    assert get_entry_for_object("test", "keyTest", obj)['HumanReadable'] == '### test\n|a|b|\n|---|---|\n| 1 | 2 |\n'
+    assert get_entry_for_object("test", "keyTest", obj).readable_output == '### test\n|a|b|\n|---|---|\n| 1 | 2 |\n'
 
 
 def test_get_time_zone(mocker):
@@ -794,9 +794,10 @@ def test_resolve_names_command_no_contact(mocker):
 
     result = resolve_name_command(client, {'identifier': 'someIdentifier'})
 
-    assert email in result.get('HumanReadable', '')
-    assert email == list(result.get('EntryContext', {}).values())[0][0].get('email_address')
-    assert not list(result.get('EntryContext', {}).values())[0][0].get('FullContactInfo')
+    assert email in result.readable_output
+    assert isinstance(result.outputs, list)
+    assert email == list(result.outputs)[0].get('email_address')
+    assert not list(result.outputs)[0].get('FullContactInfo')
 
 
 def test_resolve_names_command_with_contact(mocker):
@@ -820,8 +821,9 @@ def test_resolve_names_command_with_contact(mocker):
 
     result = resolve_name_command(client, {'identifier': 'someIdentifier'})
 
-    assert email in result.get('HumanReadable', '')
-    context_output = list(result.get('EntryContext', {}).values())[0][0]
+    assert email in result.readable_output
+    assert isinstance(result.outputs, list)
+    context_output = result.outputs[0]
     assert email == context_output.get('email_address')
 
     assert any(number.get('label') == number_label for number in context_output.get('FullContactInfo').get('phoneNumbers'))

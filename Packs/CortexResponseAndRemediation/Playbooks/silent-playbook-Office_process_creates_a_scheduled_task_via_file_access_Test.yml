@@ -1,0 +1,1456 @@
+contentitemexportablefields:
+  contentitemfields: {}
+description: 'This playbook handles "Office process creates a scheduled task via file
+  access" alerts.
+
+
+  Playbook Stages:
+
+
+  Analysis:
+
+  During the analysis, the playbook will perform the following:
+
+
+  - Checks the Office file path for any suspicious locations.
+
+  - Checks the initiator process prevalence.
+
+  - Checks the initiator process reputation.
+
+  - Extracts the local path of the Office file and runs a script to calculate the
+  Office file hash.
+
+  - Checks if the hash of the Office file identified as malicious.
+
+  - Checks if the initiator process is non-prevalent with suspicious reputation or
+  path.
+
+
+  Investigation:
+
+  During the alert investigation, the playbook will perform the following:
+
+
+  - Searches for related Cortex XSIAM alerts and insights on the endpoint by specific
+  alert names or by the following MITRE techniques to identify malicious activity:
+  T1055 - Process Injection, T1566 - Phishing. If related alerts are found, the playbook
+  will automatically disable the malicious scheduled task.
+
+
+
+
+  Remediation:
+
+
+  - Automatically disable the malicious scheduled task.
+
+  - Automatically terminate the causality process.
+
+  - Quarantine the Office file (requires analyst approval).
+
+  - Automatically close the alert.'
+fromversion: 8.9.0
+id: silent-Office process creates a scheduled task via file access Test
+inputs: []
+issilent: true
+name: silent-Office process creates a scheduled task via file access Test
+outputs: []
+starttaskid: '0'
+tags:
+- TA0002 - Execution
+- T1053 - Scheduled Task/Job
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: e27de70b-ada6-422e-81fe-6950a566b050
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: e27de70b-ada6-422e-81fe-6950a566b050
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": -1140\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '47'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 6f7359e7-6ace-48a6-8f72-c30dc8bce825
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+    taskid: 6f7359e7-6ace-48a6-8f72-c30dc8bce825
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1070,\n    \"y\": 170\n  }\n}"
+  '100':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: status
+                root: Core.quarantineFiles.status
+          operator: isEqualString
+          right:
+            value:
+              simple: 'false'
+      - - left:
+            iscontext: true
+            value:
+              simple: OfficeSha256
+          operator: isNotEmpty
+      label: 'yes'
+    continueonerrortype: ''
+    id: '100'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '104'
+      'yes':
+      - '99'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Determines whether to quarantine the files based on their quarantine
+        status and the successful calculation of the file hash.
+      id: 5026fffb-0920-4962-8983-a81a40e3b2b5
+      iscommand: false
+      name: Should quarantine file?
+      type: condition
+      version: -1
+    taskid: 5026fffb-0920-4962-8983-a81a40e3b2b5
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 180,\n    \"y\": 1690\n  }\n}"
+  '101':
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: '101'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - '103'
+      '#none#':
+      - '104'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      endpoint_id_list:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${OfficeSha256}
+      file_path:
+        simple: ${OfficeFilePath}
+      interval_in_seconds:
+        simple: '20'
+      timeout_in_seconds:
+        simple: '120'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Quarantines a file on selected endpoints.
+      id: 988ce44c-092e-4426-87a1-b20de786f26a
+      iscommand: true
+      name: File quarantine
+      script: '|||core-quarantine-files'
+      type: regular
+      version: -1
+    taskid: 988ce44c-092e-4426-87a1-b20de786f26a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -210,\n    \"y\": 2055\n  }\n}"
+  '103':
+    continueonerrortype: ''
+    id: '103'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '104'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Dear Analyst,
+
+
+        The playbook was unable to quarantine the Office file due to the following
+        possible reasons:
+
+
+        - The Office file is not located on the local host.
+
+        - The endpoint is currently disconnected.
+
+        - The hash calculation was unsuccessful.
+
+
+        Please take manual action to terminate the causality process if needed and
+        quarantine the Office file.'
+      id: 591ff0f7-064f-4ea7-8c82-0830013d1a73
+      iscommand: false
+      name: "Manual action needed \u2013 Office file couldn't be quarantined"
+      type: regular
+      version: -1
+    taskid: 591ff0f7-064f-4ea7-8c82-0830013d1a73
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -450,\n    \"y\": 2230\n  }\n}"
+  '104':
+    continueonerrortype: ''
+    id: '104'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 9c8f803b-465f-4a27-8d97-85dc2c121d28
+      iscommand: false
+      name: Quarantine Office file  - Done
+      type: title
+      version: -1
+    taskid: 9c8f803b-465f-4a27-8d97-85dc2c121d28
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 180,\n    \"y\": 2410\n  }\n}"
+  '105':
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: '105'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '106'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      commands:
+        simple: certutil -hashfile "${OfficeFilePath}" sha256
+      endpoint_ids:
+        simple: ${alert.agentid}
+      extend-context:
+        simple: GetHashCommand=
+      ignore-outputs:
+        simple: 'true'
+      timeout:
+        simple: '120'
+      timeout_in_seconds:
+        simple: '120'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Calculate the Office file hash by executing shell commands.
+      id: 9e626d73-5635-4c35-8467-c98288a627b8
+      iscommand: true
+      name: Execute shell command to get the office file hash
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      version: -1
+    taskid: 9e626d73-5635-4c35-8467-c98288a627b8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -210,\n    \"y\": -675\n  }\n}"
+  '106':
+    continueonerrortype: ''
+    id: '106'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '107'
+    note: false
+    quietmode: 0
+    reputationcalc: 2
+    scriptarguments:
+      action_id:
+        complex:
+          accessor: action_id
+          root: GetHashCommand
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Retrieve the results of a script execution action.
+      id: fb1965c8-a114-449b-8bd5-1b117f06ef68
+      iscommand: true
+      name: Get script execution results
+      script: '|||core-get-script-execution-results'
+      type: regular
+      version: -1
+    taskid: fb1965c8-a114-449b-8bd5-1b117f06ef68
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -210,\n    \"y\": -510\n  }\n}"
+  '107':
+    continueonerrortype: ''
+    id: '107'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '108'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: OfficeSha256
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Core.ScriptResult.results.command_output
+              operator: stringHasLength
+              right:
+                value:
+                  simple: '64'
+          root: Core.ScriptResult.results.command_output
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: d56e6c57-7020-4d2f-834e-0b7c0372569e
+      iscommand: false
+      name: Set Office file hash
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: d56e6c57-7020-4d2f-834e-0b7c0372569e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -210,\n    \"y\": -350\n  }\n}"
+  '108':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: OfficeSha256
+          operator: isNotEmpty
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Indicator
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: OfficeSha256
+                root: DBotScore
+          operator: isEqualNumber
+          right:
+            value:
+              simple: '3'
+      label: 'Yes'
+    continueonerrortype: ''
+    id: '108'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '2'
+      'Yes':
+      - '3'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Determines the appropriate verdict if the reputation of the Office
+        file is malicious.
+      id: 2cccbe91-2249-4e64-80f3-68a2b7f91e8c
+      iscommand: false
+      name: Is the hash of the Office file identified as malicious?
+      type: condition
+      version: -1
+    taskid: 2cccbe91-2249-4e64-80f3-68a2b7f91e8c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": -170\n  }\n}"
+  '13':
+    continueonerrortype: ''
+    id: '13'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '26'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Malicious scheduled task detected
+      closeReason:
+        simple: Resolved - Handled by the playbook "Office process creates a scheduled
+          task via file access"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current alert.
+      id: a21b846c-8c2c-4985-8ecf-42e2cd965e46
+      iscommand: true
+      name: Close Alert - True Positive
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: a21b846c-8c2c-4985-8ecf-42e2cd965e46
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 2555\n  }\n}"
+  '14':
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - '22'
+      '#none#':
+      - '69'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      commands:
+        simple: powershell.exe schtasks /change /tn "${ScheduleTaskPath}" /disable
+      endpoint_ids:
+        simple: ${alert.agentid}
+      extend-context:
+        simple: DisableTaskOutput=
+      ignore-outputs:
+        simple: 'true'
+      timeout:
+        simple: '120'
+      timeout_in_seconds:
+        simple: '120'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Disable the malicious scheduled task by executing shell commands.
+      id: 319e9a81-924f-4c4b-8140-9ea93712bc75
+      iscommand: true
+      name: Disable the malicious scheduled task
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      version: -1
+    taskid: 319e9a81-924f-4c4b-8140-9ea93712bc75
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 1410\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Indicator
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: alert.initiatorsha256
+                root: DBotScore
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: '2'
+        - left:
+            iscontext: true
+            value:
+              simple: SuspiciousOfficeFilePath
+          operator: isNotEmpty
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Core.AnalyticsPrevalence.Process.value
+          operator: isEqualString
+          right:
+            value:
+              simple: 'False'
+      label: 'Yes'
+    continueonerrortype: ''
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '1'
+      'Yes':
+      - '3'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Determines the appropriate verdict if the scheduled task was created
+        by a non-prevalent initiator process with a suspicious reputation or path.
+
+
+        Scheduled tasks created by a non-prevalent process with a suspicious reputation
+        or path may indicate malicious activity.
+
+
+        If the task is created by a non-prevalent process with a suspicious reputation
+        or path, the playbook will proceed with remediation actions; otherwise, it
+        will continue investigating the alert.'
+      id: 32a49ae6-3caf-4680-8f02-18ea37bdf96b
+      iscommand: false
+      name: Non-prevalent initiator with suspicious reputation or path?
+      type: condition
+      version: -1
+    taskid: 32a49ae6-3caf-4680-8f02-18ea37bdf96b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 740,\n    \"y\": 0\n  }\n}"
+  '22':
+    continueonerrortype: ''
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '95'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Dear Analyst,
+
+
+        During the remediation process the playbook failed to disable the scheduled
+        task: ${ScheduleTaskPath}
+
+
+        Please manually disable this scheduled task.'
+      id: f92a5ca2-a659-401f-8045-1e333048a181
+      iscommand: false
+      name: Disable the malicious scheduled task manually
+      type: regular
+      version: -1
+    taskid: f92a5ca2-a659-401f-8045-1e333048a181
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1060,\n    \"y\": 1940\n  }\n}"
+  '26':
+    continueonerrortype: ''
+    id: '26'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: ff18f72c-0256-4776-823c-90dd05fdba39
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: ff18f72c-0256-4776-823c-90dd05fdba39
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 2720\n  }\n}"
+  '29':
+    continueonerrortype: ''
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '73'
+      - '74'
+      - '92'
+      - '108'
+      - '96'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: b6d11f6e-a28a-459a-8004-bec570e4b02a
+      iscommand: false
+      name: Analysis
+      type: title
+      version: -1
+    taskid: b6d11f6e-a28a-459a-8004-bec570e4b02a
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": -1000\n  }\n}"
+  '3':
+    continueonerrortype: ''
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '89'
+      - '86'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: ababf146-0f9f-4621-8323-18c3256738ee
+      iscommand: false
+      name: Remediation
+      type: title
+      version: -1
+    taskid: ababf146-0f9f-4621-8323-18c3256738ee
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 970\n  }\n}"
+  '46':
+    continueonerrortype: ''
+    id: '46'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: e9832b8f-c70f-45f0-8ba4-d7f746daa77b
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: e9832b8f-c70f-45f0-8ba4-d7f746daa77b
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1560,\n    \"y\": 1295\n  }\n}"
+  '47':
+    continueonerrortype: ''
+    id: '47'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      fromdate:
+        simple: 3 hours ago
+      query:
+        simple: (mitreattcktechnique:* T1055* or mitreattcktechnique:*T1566* or name:"Rare
+          Unsigned Process Spawned by Office Process Under Suspicious Directory" or
+          name:"Microsoft Office process spawns a commonly abused process" or name:"Office
+          process accessed an unusual .LNK file" or name:"*Malware Activity*" or name:"*Excel
+          Virus*" or name:"*Malicious Macro Activity*" or name:"WildFire Malware"
+          or name:"Local Analysis Malware") and agentid:${alert.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "This task searches by MITRE technique for suspicious related alerts\
+        \ that may indicate a compromised endpoint.\nFocus on identifying alerts associated\
+        \ with the following MITRE techniques from the last 3 hours:\n- T1055 - Process\
+        \ Injection\n- T1566 - Phishing\n\nAnd the following alert:\n - \"Malicious\
+        \ Macro Activity\"\n- \"Malware Activity\"\n- \"Excel Virus\"\n- \"WildFire\
+        \ Malware\"\n- \"Local Analysis Malware\"\n- \"Rare Unsigned Process Spawned\
+        \ by Office Process Under Suspicious Directory\" \n- \"Microsoft Office process\
+        \ spawns a commonly abused process\"\n- \"Office process accessed an unusual\
+        \ .LNK file\""
+      id: c0a8bb9f-6e27-44e1-8f64-14c2b9462a33
+      iscommand: false
+      name: Search for related alerts by name and MITRE Technique
+      scriptName: SearchIncidentsV2
+      type: regular
+      version: -1
+    taskid: c0a8bb9f-6e27-44e1-8f64-14c2b9462a33
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1070,\n    \"y\": 300\n  }\n}"
+  '5':
+    continueonerrortype: ''
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: a9b54583-a6b1-4d18-843d-c797cdbf30c7
+      iscommand: false
+      name: False Positive
+      type: title
+      version: -1
+    taskid: a9b54583-a6b1-4d18-843d-c797cdbf30c7
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1560,\n    \"y\": 970\n  }\n}"
+  '67':
+    continueonerrortype: ''
+    id: '67'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '95'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: "Dear Analyst,\n\nDuring the remediation process the playbook executed\
+          \ a shell command to disable the following scheduled task: \n${ScheduleTaskPath}\n\
+          \n"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints text to the War Room (markdown supported).
+      id: 06f5b183-5ce4-4e90-8f21-35ef293ce760
+      iscommand: false
+      name: Notify to War Room - Scheduled Task Disabled
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 06f5b183-5ce4-4e90-8f21-35ef293ce760
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 1940\n  }\n}"
+  '69':
+    continueonerrortype: ''
+    id: '69'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '70'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action_id:
+        complex:
+          accessor: action_id
+          root: DisableTaskOutput
+          transformers:
+          - operator: uniq
+      extend-context:
+        simple: DisableTaskScriptOutput=
+      ignore-outputs:
+        simple: 'true'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Retrieve the results of a script execution action.
+      id: 2e11172c-f35c-400c-8a98-e0afb150501f
+      iscommand: true
+      name: Get script execution results
+      script: '|||core-get-script-execution-results'
+      type: regular
+      version: -1
+    taskid: 2e11172c-f35c-400c-8a98-e0afb150501f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 1580\n  }\n}"
+  '70':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: DisableTaskScriptOutput.reply.results.standard_output
+          operator: AnyMatch
+          right:
+            value:
+              simple: SUCCESS
+      label: 'yes'
+    continueonerrortype: ''
+    id: '70'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '22'
+      'yes':
+      - '67'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Verify if the script successfully disabled the task.
+      id: e6023978-6f97-4ce2-88f6-c5bfa5b6d016
+      iscommand: false
+      name: Has the script disabled the task successfully?
+      type: condition
+      version: -1
+    taskid: e6023978-6f97-4ce2-88f6-c5bfa5b6d016
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 1740\n  }\n}"
+  '73':
+    continueonerrortype: ''
+    id: '73'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '108'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file:
+        simple: ${alert.initiatorsha256}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Retrieve results for a file hash using WildFire.
+      id: c3b19911-3945-4632-8ff9-5078275fe0e4
+      iscommand: true
+      name: Check the initiator process reputation
+      script: '|||file'
+      type: regular
+      version: -1
+    taskid: c3b19911-3945-4632-8ff9-5078275fe0e4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 200,\n    \"y\": -860\n  }\n}"
+  '74':
+    continueonerrortype: ''
+    id: '74'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '108'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      process_name:
+        simple: ${alert.initiatedby}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Get the prevalence of a process, identified by process_name.
+      id: b0909bb0-2dc0-4caa-8bc0-50b601ed289d
+      iscommand: true
+      name: Check the initiator process prevalence
+      script: '|||core-get-process-analytics-prevalence'
+      type: regular
+      version: -1
+    taskid: b0909bb0-2dc0-4caa-8bc0-50b601ed289d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": -860\n  }\n}"
+  '8':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: foundIncidents.name
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: 'yes'
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '90'
+      'yes':
+      - '3'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Determines whether the alert contains agent alerts indicating that
+        the alert was part of an attack pattern.
+      id: bc80adb3-df90-4078-871e-a70689beb388
+      iscommand: false
+      name: Found any alerts indicating this is a true positive?
+      type: condition
+      version: -1
+    taskid: bc80adb3-df90-4078-871e-a70689beb388
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1070,\n    \"y\": 460\n  }\n}"
+  '84':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '84'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      contextKey:
+        simple: ScheduleTaskPath
+      data:
+        simple: ${alert.filepath}
+      ignore-outputs:
+        simple: 'false'
+      regex:
+        simple: (?i)(?<=\\System32\\Tasks\\)(.*)
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Extracts regex data from the provided text. The script supports
+        groups and looping.
+      id: ba60bd40-48ed-4fb3-8237-7c01baeaa308
+      iscommand: false
+      name: Extract the schedule task path
+      scriptName: MatchRegexV2
+      type: regular
+      version: -1
+    taskid: ba60bd40-48ed-4fb3-8237-7c01baeaa308
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 1240\n  }\n}"
+  '86':
+    continueonerrortype: ''
+    id: '86'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '87'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: c0b40698-7a10-41aa-8aa0-52fc6f4d3485
+      iscommand: false
+      name: Terminate Process
+      type: title
+      version: -1
+    taskid: c0b40698-7a10-41aa-8aa0-52fc6f4d3485
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 180,\n    \"y\": 1110\n  }\n}"
+  '87':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '87'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '93'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: '180'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Terminate a process tree by its causality ID. Available for Cortex
+        XSIAM 2.4 and above.
+      id: ddc7820a-e843-4449-807f-e81131bd4fdf
+      iscommand: true
+      name: Terminate Causality (CGO)
+      script: '|||core-terminate-causality'
+      type: regular
+      version: -1
+    taskid: ddc7820a-e843-4449-807f-e81131bd4fdf
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 180,\n    \"y\": 1240\n  }\n}"
+  '89':
+    continueonerrortype: ''
+    id: '89'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '84'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: dbea2690-d326-43dd-8f08-d4a10377c9e6
+      iscommand: false
+      name: Disable schedule task
+      type: title
+      version: -1
+    taskid: dbea2690-d326-43dd-8f08-d4a10377c9e6
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 1110\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '46'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: False Positive
+      closeReason:
+        simple: Resolved - Handled by the playbook "Office process creates a scheduled
+          task via file access"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: d7f3a6f0-1c5d-4387-81f4-75611aa33230
+      iscommand: true
+      name: Close Alert - False Positive
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: d7f3a6f0-1c5d-4387-81f4-75611aa33230
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1560,\n    \"y\": 1120\n  }\n}"
+  '90':
+    continueonerrortype: ''
+    id: '90'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '91'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      fromdate:
+        simple: 5 hours ago
+      includeinformational:
+        simple: 'true'
+      query:
+        simple: (name:"Microsoft Office injects code into a process" or name:"Microsoft
+          Office process spawns a commonly abused process" or name:"Microsoft Office
+          executes an unsigned process in a suspicious directory" or name:"Compiler
+          process started by an Office process") and agentid:${alert.agentid}
+      todate:
+        simple: now
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "This task searches for suspicious insights related to alerts by\
+        \ their names, which may indicate malicious activity involving the Office\
+        \ file. Focus on identifying alerts associated with the following alert:\n\
+        - \"Microsoft Office injects code into a process\" \n- \"Microsoft Office\
+        \ process spawns a commonly abused process\" \n- \"Compiler process started\
+        \ by an Office process\" \n- \"Microsoft Office process spawns a commonly\
+        \ abused process\" "
+      id: 5c25c5ac-f418-4e8a-8dc2-d4903589525d
+      iscommand: false
+      name: Search for related insights by name
+      scriptName: SearchIncidentsV2
+      type: regular
+      version: -1
+    taskid: 5c25c5ac-f418-4e8a-8dc2-d4903589525d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1270,\n    \"y\": 630\n  }\n}"
+  '91':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: foundIncidents.name
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: 'yes'
+    continueonerrortype: ''
+    id: '91'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '3'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Determines whether the alert contains agent insights alerts indicating
+        that the alert was part of an attack pattern.
+      id: 15596e6d-3865-46eb-8b1d-987cf4257591
+      iscommand: false
+      name: Found any insights indicating this is a true positive?
+      type: condition
+      version: -1
+    taskid: 15596e6d-3865-46eb-8b1d-987cf4257591
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1270,\n    \"y\": 790\n  }\n}"
+  '92':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '92'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '108'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      contextKey:
+        simple: SuspiciousOfficeFilePath
+      data:
+        simple: ${alert.cgocmd}
+      ignore-outputs:
+        simple: 'false'
+      regex:
+        simple: (?i)(\\Downloads\\|\\INetCache\\Content.Outlook\\)
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Extracts regex data from the provided text. The script supports
+        groups and looping.
+      id: 06f81e84-ff8a-4271-8b33-740520540ce4
+      iscommand: false
+      name: Check the Office file path for any suspicious locations
+      scriptName: MatchRegexV2
+      type: regular
+      version: -1
+    taskid: 06f81e84-ff8a-4271-8b33-740520540ce4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1060,\n    \"y\": -860\n  }\n}"
+  '93':
+    continueonerrortype: ''
+    id: '93'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '97'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 27776082-8565-47a8-8ff4-68b4bde0e077
+      iscommand: false
+      name: Quarantine file
+      type: title
+      version: -1
+    taskid: 27776082-8565-47a8-8ff4-68b4bde0e077
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 180,\n    \"y\": 1400\n  }\n}"
+  '95':
+    continueonerrortype: ''
+    id: '95'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: e44c5025-8a82-4d39-8a3b-4e6b9ce99407
+      iscommand: false
+      name: Disable schedule task - Done
+      type: title
+      version: -1
+    taskid: e44c5025-8a82-4d39-8a3b-4e6b9ce99407
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 2120\n  }\n}"
+  '96':
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: '96'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - '108'
+      '#none#':
+      - '105'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      contextKey:
+        simple: OfficeFilePath
+      data:
+        simple: ${alert.cgocmd}
+      extend-context:
+        simple: OfficeFilePath=
+      ignore-outputs:
+        simple: 'true'
+      regex:
+        simple: (?i)([a-zA-Z]:[^\n\"]+?\.(?:docx?|xls|xlsx?|pptx?|docm|xlsm|pptm|dotx?|dotm|xltx?|xltm|xlsb|xlam|potx?|potm|ppsx?|ppsm|ppam|mdb|pdf|vsdx?|vsdm|vstx?|vstm|mpp|mpt))(?=\s|$|\")
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Extracts regex data from the provided text. The script supports
+        groups and looping.
+      id: 475f693e-0192-4d36-8ef0-ca609b63830a
+      iscommand: false
+      name: Extract the local path of the Office file
+      scriptName: MatchRegexV2
+      type: regular
+      version: -1
+    taskid: 475f693e-0192-4d36-8ef0-ca609b63830a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -210,\n    \"y\": -860\n  }\n}"
+  '97':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '97'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '100'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${OfficeSha256}
+      file_path:
+        simple: ${OfficeFilePath}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Retrieves the quarantine status for a selected file.
+      id: 4bf7c749-3366-4ace-8e4c-a7b6aea85111
+      iscommand: true
+      name: Get file quarantine status
+      script: '|||core-get-quarantine-status'
+      type: regular
+      version: -1
+    taskid: 4bf7c749-3366-4ace-8e4c-a7b6aea85111
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 180,\n    \"y\": 1530\n  }\n}"
+  '99':
+    continueonerrortype: ''
+    id: '99'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: 'Dear Analyst,
+
+          Should perform quarantine ot the Office file?
+
+          ${OfficeFilePath}'
+      cc: null
+      format: ''
+      methods: []
+      replyOptions:
+      - Quarantine
+      - No Quarantine
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      No Quarantine:
+      - '104'
+      Quarantine:
+      - '101'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Analyst approval to quarantine the Office file.
+      id: 9c4a2611-5ee3-4820-8b97-1e32f7125dc8
+      iscommand: false
+      name: Analyst approval to quarantine the Office file
+      type: condition
+      version: -1
+    taskid: 9c4a2611-5ee3-4820-8b97-1e32f7125dc8
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 1860\n  }\n}"
+tests:
+- No tests (auto formatted)
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"100_104_#default#\": 0.33,\n    \"100_99_yes\"\
+  : 0.47,\n    \"101_103_#error#\": 0.62,\n    \"108_3_Yes\": 0.2,\n    \"14_22_#error#\"\
+  : 0.37,\n    \"2_1_#default#\": 0.45,\n    \"2_3_Yes\": 0.24,\n    \"70_67_yes\"\
+  : 0.52,\n    \"8_3_yes\": 0.3,\n    \"91_3_yes\": 0.22,\n    \"99_101_Quarantine\"\
+  : 0.45,\n    \"99_104_No Quarantine\": 0.4\n  },\n  \"paper\": {\n    \"dimensions\"\
+  : {\n      \"height\": 3925,\n      \"width\": 2390,\n      \"x\": -450,\n     \
+  \ \"y\": -1140\n    }\n  }\n}"
