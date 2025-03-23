@@ -14,73 +14,62 @@ This integration was integrated and tested with Splunk Enterprise v9.0.4 and Ent
 Assign the following roles to the user: admin, ess_admin (for working with Splunk Enterprise Security).
 
 #### Option two:
-**When assigning admin is not an option.**
-    
+When assigning admin is not an option.  
 Define a custom role and include all necessary capabilities: (permissions)
-
-![image](../../doc_files/edit-role-non-admin-capabilities.png)  
-
+![image](../../doc_files/edit-role-non-admin-capabilities.png)
 Define the indexes configuration for the custom role:
+![image](../../doc_files/edit-role-non-admin-indexes.png)
+At the end of the process, the Splunk user (not admin user) should receive the previously created role. Following is the list of capabilities that covers both the Splunk UI access and using the SplunkPy integration including Enterprise security:  
 
-![image](../../doc_files/edit-role-non-admin-indexes.png)  
-
-At the end of the process, the Splunk user (not admin user) should receive the previously created role.
-
-Following is the list of capabilities that covers both the Splunk UI access and using the SplunkPy integration including Enterprise security:
-
-- accelerate_search  
-- admin_all_objects  
-- can_own_notable_events  
-- change_own_password  
-- edit_analyticstories  
-- edit_cam_queue  
-- edit_correlationsearches  
-- edit_lookups  
-- edit_notable_events  
-- edit_own_objects  
-- edit_tcp  
-- edit_tcp_stream  
-- edit_upload_and_index  
-- get_metadata  
-- get_typeahead  
-- input_file  
-- list_accelerate_search  
-- list_all_objects  
-- list_inputs  
-- list_introspection  
-- list_metrics_catalog  
-- list_search_head_clustering  
-- manage_all_investigations  
-- manage_behavioral_analytics  
-- output_file  
-- rest_access_server_endpoints  
-- rest_apps_view  
-- rest_properties_get  
-- rest_properties_set  
-- rtsearch  
-- run_collect  
-- run_mcollect  
-- run_msearch  
-- run_sendalert  
-- schedule_rtsearch  
-- schedule_search  
-- search  
-- search_process_config_refresh  
-- upload_lookup_files  
+accelerate_search  
+admin_all_objects  
+can_own_notable_events  
+change_own_password  
+edit_analyticstories  
+edit_cam_queue  
+edit_correlationsearches  
+edit_lookups  
+edit_notable_events  
+edit_own_objects  
+edit_tcp  
+edit_tcp_stream  
+edit_upload_and_index  
+get_metadata  
+get_typeahead  
+input_file  
+list_accelerate_search  
+list_all_objects  
+list_inputs  
+list_introspection  
+list_metrics_catalog  
+list_search_head_clustering  
+manage_all_investigations  
+manage_behavioral_analytics  
+output_file  
+rest_access_server_endpoints  
+rest_apps_view  
+rest_properties_get  
+rest_properties_set  
+rtsearch  
+run_collect  
+run_mcollect  
+run_msearch  
+run_sendalert  
+schedule_rtsearch  
+schedule_search  
+search  
+search_process_config_refresh  
+upload_lookup_files  
 
 #### SplunkPy command permissions by example:
 `splunk-notable-event-edit`
 
-custom roles required: (at least one)
-
-ess_analyst, ess_admin
-
+custom roles required: (at least one)  
+ess_analyst, ess_admin  
 Can replace the Splunk power role for ES users.
 
-User-Level Permissions:
-
-Read: Access to view resources (e.g., dashboards, reports).
-
+User-Level Permissions:  
+Read: Access to view resources (e.g., dashboards, reports).  
 Write: Ability to modify existing resources or create new ones.
 
 
@@ -88,19 +77,14 @@ Write: Ability to modify existing resources or create new ones.
 #### Mirroring
 
 When mirroring in enabled, 2-3 simultaneous queries are expected. 
-Each query can have more that one API call. On mirror out - API call for updating each notable event that changed.
-This also includes User mapping queries and mirroring queries.
+Each query can have more that one API call. On mirror out - API call for updating each notable event that changed. This also includes User mapping queries and mirroring queries.
 
 #### Enrichment
 
-Fetching notable event - for each fetch iteration 2 queries. 
-
-For each notable event that fetched - we have 3 enrichments(max).
-
-`<Amount of fetched notables> * <amount of defined enrichments>`
-
-In case of more that one drilldown - number of drilldown queries.
-
+Fetching notable event - for each fetch iteration 2 queries.  
+For each notable event that fetched - we have 3 enrichments(max).  
+`<Amount of fetched notables> * <amount of defined enrichments>`  
+In case of more that one drilldown - number of drilldown queries.  
 Each query can have more that one API call.
 
 #### Fetch
