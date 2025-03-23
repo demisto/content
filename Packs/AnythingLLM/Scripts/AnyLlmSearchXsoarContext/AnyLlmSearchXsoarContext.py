@@ -25,7 +25,7 @@ def main():
         text = ""
 
         for incid in ids:
-            context = execute_command("getContext", {'id': incid})['context']
+            context = execute_command("getContext", {"id": incid})["context"]
 
             if text != "":
                 text += "\n"
@@ -39,11 +39,11 @@ def main():
                         value = GetJsonByDot(value, k[1])
                     text += f"{key}:{value} "
 
-        execute_command("setIncident", {'customFields': {'anythingllmsearchresults': text}})
+        execute_command("setIncident", {"customFields": {"anythingllmsearchresults": text}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f'AnyLlmSearchXsoarContext: error is - {ex}')
+        return_error(f"AnyLlmSearchXsoarContext: error is - {ex}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
