@@ -2,7 +2,7 @@ id: silent-First Azure AD PowerShell operation for a user
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: First Azure AD PowerShell operation for a user
+name: silent-First Azure AD PowerShell operation for a user
 description: "**This playbook addresses the following alert**:\n- First Azure AD PowerShell operation for a user\n\n**Playbook Stages**:\n\n**Triage**:\n- Gather initial information about the user.\n- Check IP Reputation.\n- Check the User Agent.\n\n**Investigation**:\n- **Check for Azure Alerts**:\n  - Extract recent Azure security alerts for the user.\n- **Check if User is Risky**:\n  - Assess the user's risk score based on Core and Azure risk indicators.\n  - Investigate reasons behind any identified risks, including recent detections.\n- **Invesitage user data**:\n  - Check the user creation date to asses if the user is new.\n  - Check the role of the user.\n\n**Containment**:\n- The playbook checks If soft remediation is needed, if yes, it will check if the integration \"Microsoft Graph User\" is enabled, the playbook will revoke the sessions of the user.\n- The playbook checks if hard remediation is needed, if yes, \na manual task will be displayed for an analyst to review the findings and decide the next steps.\n- Possible actions:\n  - Disable the user.\n  - Take no action.\n\n**Requirements**:\nFor the best results, it's recommended to ensure these integrations are configured and working:\n- `Cortex Core - Investigation and Response` for Core user risk evaluation.\n- `Azure Risky Users` for retrieving user risk scores.\n- `Microsoft 365 Defender` for advanced hunting queries and Azure security alerts.\n- `Microsoft Graph User` is used to disable user and revoke session."
 tags:
 - T1078 - Valid Accounts
