@@ -984,10 +984,13 @@ def test_get_pagination_args(args: dict[str, str], expected):
         args (dict[str, str]): Pagination arguments.
         expected (tuple): Updated pagination arguments and pagination message.
     """
-    with unittest.mock.patch(
-        "CommonServerPython.arg_to_number",
-        side_effect=lambda x: int(x) if x is not None else None,
-    ), unittest.mock.patch("CheckPointHarmonyEndpoint.validate_pagination_arguments") as mock_validate:
+    with (
+        unittest.mock.patch(
+            "CommonServerPython.arg_to_number",
+            side_effect=lambda x: int(x) if x is not None else None,
+        ),
+        unittest.mock.patch("CheckPointHarmonyEndpoint.validate_pagination_arguments") as mock_validate,
+    ):
         assert CheckPointHarmonyEndpoint.get_pagination_args(args) == expected
         mock_validate.assert_called()
 

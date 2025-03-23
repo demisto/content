@@ -2569,9 +2569,7 @@ def get_current_splunk_time(splunk_service: client.Service):
         "earliest_time": time,
         "output_mode": OUTPUT_MODE_JSON,
     }
-    searchquery_oneshot = (
-        '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S") | sort 1 -_time | table clock'
-    )
+    searchquery_oneshot = '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S") | sort 1 -_time | table clock'
 
     oneshotsearch_results = splunk_service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
 

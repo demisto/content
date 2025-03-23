@@ -606,9 +606,7 @@ class LdapClient:
             ldap_conn.unbind()
             return "Done"
         else:
-            raise Exception(
-                f"LDAP Authentication - authentication connection failed, server type is: {self._ldap_server_vendor}"
-            )
+            raise Exception(f"LDAP Authentication - authentication connection failed, server type is: {self._ldap_server_vendor}")
 
     def search_user_data(self, username: str, attributes: list, search_user_by_dn: bool = False) -> tuple:
         """

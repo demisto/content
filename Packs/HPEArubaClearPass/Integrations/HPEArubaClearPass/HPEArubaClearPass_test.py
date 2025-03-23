@@ -4,7 +4,7 @@ import HPEArubaClearPass
 import pytest
 from freezegun import freeze_time
 from HPEArubaClearPass import *
-from pytest import raises   # noqa: PT013
+from pytest import raises  # noqa: PT013
 
 CLIENT_ID = "id123"
 CLIENT_SECRET = "secret123"

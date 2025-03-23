@@ -922,9 +922,7 @@ def test_fetch_incidents(mocker):
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 2
-    assert (
-        incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - Recurring Malware Infection - Rule"
-    )
+    assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - Recurring Malware Infection - Rule"
     assert not incidents[0].get("owner")
 
 
@@ -995,9 +993,7 @@ def test_fetch_notables(mocker):
     )
     incidents = demisto.incidents.call_args[0][0]
     assert len(incidents) == 2
-    assert (
-        incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - Recurring Malware Infection - Rule"
-    )
+    assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - Recurring Malware Infection - Rule"
     assert not incidents[0].get("owner")
 
 

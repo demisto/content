@@ -163,7 +163,7 @@ def main():
                 # Get the actual record
                 record = record_data["result"]
                 # Map fields according to fields_to_map that were defined earlier
-                mapped_record = dict(   # noqa: C402
+                mapped_record = dict(  # noqa: C402
                     (fields_to_map[key], value)
                     for (key, value) in [k_v for k_v in list(record.items()) if k_v[0] in list(fields_to_map.keys())]
                 )

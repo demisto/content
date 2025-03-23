@@ -793,9 +793,7 @@ def search_quarantine():
                     if message_delivery_time:
                         message_delivery_time = int(message_delivery_time.timestamp() * 1000)
                     else:
-                        demisto.info(
-                            f'PTR: Could not parse time of incident {incident.get("id")}, got {message_delivery_time=}'
-                        )
+                        demisto.info(f'PTR: Could not parse time of incident {incident.get("id")}, got {message_delivery_time=}')
                         continue
 
                 if email.get("messageId") == mid and email.get("recipient").get("email") == recipient and message_delivery_time:
