@@ -767,6 +767,30 @@ script:
         If your instance configuration involves a Cortex XSOAR engine, provide the engine's IP (or DNS name) and the port in use in the following format - `https://IP:port` or `http://IP:port`.
         For example - `https://my-engine.name:443`, `http://1.1.1.1:443`.   
       name: engine_url
+  - arguments:
+    - description: The channel to which to send messages. Supports only standard channels.
+      name: channel
+      prettyname: Channel
+      required: true
+    - description: 'The message to send to the channel. Use issue fields as variables to enrich the text. Example: “${issue.details}".'
+      name: message
+      prettyname: Message
+      required: true
+    description: |-
+      Sends a message to the specified teams.
+      To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;.
+
+      If sending a reply to a message, the message ID must be provided and the reply will be sent via the Graph API which means
+      the message will appear from the account used to authorize the integration instance and not the bot. Setting the account's name
+      and picture to match the bot will make it appear to be from the same source.
+    name: send-notification-quick-action
+    prettyname: Send Teams Message
+    hidden: true
+    quickaction: true
+    outputs:
+      - contextPath: MicrosoftTeams.Message.ID
+        description: ID of the message sent.
+        type: String
   dockerimage: demisto/teams:1.0.0.1860894
   longRunning: true
   longRunningPort: true
@@ -778,4 +802,5 @@ script:
   runonce: false
 tests:
 - Microsoft Teams - Test
+supportsquickactions: true
 fromversion: 5.0.0
