@@ -23,6 +23,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ### cloudflare-waf-firewall-rule-create
 ***
+*will be as deprecated, available until 2025-06-15*
 Create a new firewall rule that create new filter or use an exist filter.
 Permissions required for the API token:
 Account: Account Firewall Access Rules:Edit
@@ -94,6 +95,7 @@ Include all zones and accounts needed.
 
 ### cloudflare-waf-firewall-rule-update
 ***
+*will be as deprecated, available until 2025-06-15*
 Update firewall rule by the specified rule ID. Can update rule action, paused, description, priority, products and ref. Can not update or delete rule filter, ONLY add a new filter.
 Permissions required for the API token:
 Account: Account Firewall Access Rules:Edit
@@ -125,6 +127,7 @@ Include all zones and accounts needed.
 There is no context output for this command.
 ### cloudflare-waf-firewall-rule-delete
 ***
+*will be as deprecated, available until 2025-06-15*
 Delete firewall rule by the specified rule ID.
 Permissions required for the API token:
 Account: Account Firewall Access Rules:Edit
@@ -155,6 +158,7 @@ There is no context output for this command.
 
 ### cloudflare-waf-firewall-rule-list
 ***
+*will be as deprecated, available until 2025-06-15*
 List of firewall rules or details of individual rule by ID.
 Permissions required for the API token:
 Account: Account Firewall Access Rules:Read

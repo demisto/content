@@ -1245,7 +1245,7 @@ def get_headers(params: dict) -> str:
     """
     headers = {}
 
-    api_token = params.get('api_token', {}).get('password') or params.get('api_token')
+    api_token = params.get('credentials', {}).get('password') or params.get('credentials')
     global_api_key = params.get('global_api_key', {}).get('password') or params.get('global_api_key')
     email = params.get('email')
 
@@ -1305,19 +1305,16 @@ def main() -> None:
         if polling:
             return_results(run_polling_command(client, command, commands[command], args))
         elif command in commands:
-            # Convert dictionaries to formatted strings
-            params_str = json.dumps(params, indent=4)
-            args_str = json.dumps(args, indent=4)
-
-            # Print to War Room
-            demisto.results(f"**demisto.params():**\n```\n{params_str}\n```\n")
-            demisto.results(f"**demisto.args():**\n```\n{args_str}\n```\n")
             return_results(commands[command](client, args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
-        return_error(f'One or more of the specified fields are invalid. Please validate them. {e}')
+        error_str = str(e)
+        if 'Unable to authenticate request' in error_str:
+            return_error('Authentication failed. Please verify that your token has the necessary permissions and access to the required resources.')
+        else:
+            return_error(f'One or more of the specified fields are invalid. Please validate them. {error_str}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
