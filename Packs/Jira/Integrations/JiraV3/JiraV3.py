@@ -104,10 +104,12 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     AGILE_API_ENDPOINT = 'rest/agile/1.0'
 
     def __init__(self, base_url: str, proxy: bool, verify: bool,
-                 callback_url: str, api_version: str, username: str, api_key: str):
+                 callback_url: str, api_version: str, username: str, api_key: str, pat: str):
         self.username = username
         self.api_key = api_key
         self.is_basic_auth = bool(self.username and self.api_key)
+        self.pat = pat
+        self.is_pat_auth = bool(self.pat)
         headers: Dict[str, str] = {'Accept': 'application/json'}
         self.callback_url = callback_url
         self.api_version = api_version
@@ -160,6 +162,8 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         """This function is in charge of returning the access token stored in the integration's context. If the access token
         has expired, we try to retrieve another access token using a refresh token that is configured in the integration's context
 
+        If a personal access token is configured use it instead.
+
         Raises:
             DemistoException: If no access token was configured.
             DemistoException: If no refresh token was configured.
@@ -167,6 +171,9 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             str: The access token to send with the requests.
         """
+        if self.is_pat_auth:
+            return self.pat
+
         integration_context = get_integration_context()
         token = integration_context.get('token', '')
         if not token:
@@ -888,7 +895,7 @@ class JiraCloudClient(JiraBaseClient):
     ATLASSIAN_AUTH_URL = 'https://auth.atlassian.com'
 
     def __init__(self, proxy: bool, verify: bool, client_id: str, client_secret: str,
-                 callback_url: str, cloud_id: str, server_url: str, username: str, api_key: str):
+                 callback_url: str, cloud_id: str, server_url: str, username: str, api_key: str, pat: str):
         self.client_id = client_id
         self.client_secret = client_secret
         self.cloud_id = cloud_id
@@ -907,7 +914,7 @@ class JiraCloudClient(JiraBaseClient):
             'offline_access']
         super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
                          base_url=urljoin(server_url, cloud_id), api_version='3',
-                         username=username, api_key=api_key)
+                         username=username, api_key=api_key, pat=pat)
 
     def test_instance_connection(self) -> None:
         self.get_user_info()
@@ -1056,13 +1063,13 @@ class JiraOnPremClient(JiraBaseClient):
     """
 
     def __init__(self, proxy: bool, verify: bool, client_id: str, client_secret: str,
-                 callback_url: str, server_url: str, username: str, api_key: str):
+                 callback_url: str, server_url: str, username: str, api_key: str, pat: str):
         self.client_id = client_id
         self.client_secret = client_secret
         self.scopes = 'WRITE'
         super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
                          base_url=f'{server_url}', api_version='2',
-                         username=username, api_key=api_key)
+                         username=username, api_key=api_key, pat=pat)
 
     def oauth_start(self) -> str:
         return self.oauth2_start(scopes=self.scopes)
@@ -1296,10 +1303,14 @@ class JiraIssueFieldsParser:
         # (which holds nested dictionaries that includes the content and also metadata about it), we check if the response
         # returns the fields rendered in HTML format (by accessing the renderedFields).
         rendered_issue_fields = issue_data.get('renderedFields', {}) or {}
-        return {'Description': BeautifulSoup(rendered_issue_fields.get('description'),
-                                             features="html.parser").get_text()
-                if rendered_issue_fields
-                else (demisto.get(issue_data, 'fields.description', '') or '')}
+        description_raw: str = ''
+        description_text: str
+        if rendered_issue_fields:
+            description_raw = rendered_issue_fields.get('description', '')
+            description_text = BeautifulSoup(description_raw, features="html.parser").get_text()
+        else:
+            description_text = demisto.get(issue_data, 'fields.description', '') or ''
+        return {'Description': description_text, "RawDescription": description_raw}
 
     @staticmethod
     def get_attachments_context(issue_data: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
@@ -1622,7 +1633,7 @@ def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
             try:
                 parsed_value = json.loads(value)
             except (json.JSONDecodeError, TypeError):
-                pass    # Some values should not be in a JSON format so it maks sense for them to fail parsing.
+                pass    # Some values should not be in a JSON format so it makes sense for them to fail parsing.
         dotted_string = issue_fields_mapper.get(issue_arg, '')
         if not dotted_string and issue_arg.startswith('customfield'):
             # This is used to deal with the case when the user creates a custom incident field, using
@@ -2523,7 +2534,7 @@ def extract_comment_entry_from_raw_response(comment_response: Dict[str, Any]) ->
     Returns:
         Dict[str, Any]: The comment entry that will be used to return to the user.
     """
-    comment_body = BeautifulSoup(comment_response.get('renderedBody'), features="html.parser").get_text(
+    comment_body = BeautifulSoup(comment_response.get('renderedBody', ''), features="html.parser").get_text(
     ) if comment_response.get('renderedBody') else comment_response.get('body')
     return {
         'Id': comment_response.get('id'),
@@ -2562,7 +2573,7 @@ def edit_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
             "value": visibility
         }
     # The edit_comment actually returns the edited comment (the API returns the newly edited comment), but
-    # since I don't know if we have a way to append a CommanResults to a List of CommanResults in the context data,
+    # since I don't know if we have a way to append a CommandResults to a List of CommandResults in the context data,
     # I just call get_comments, which will also get the newly edited comment, and return them.
     client.edit_comment(issue_id_or_key=issue_id_or_key, comment_id=comment_id, json_data=payload)
     res = client.get_comments(issue_id_or_key=issue_id_or_key)
@@ -2608,7 +2619,7 @@ def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
         }
     res = client.add_comment(issue_id_or_key=issue_id_or_key, json_data=payload)
     markdown_dict = {
-        'Comment': BeautifulSoup(res.get('renderedBody'), features="html.parser").get_text()
+        'Comment': BeautifulSoup(res.get('renderedBody', ''), features="html.parser").get_text()
         if res.get('renderedBody')
         else res.get('body'),
         'Id': res.get('id', ''),
@@ -3427,7 +3438,7 @@ def test_module(client: JiraBaseClient) -> str:
     they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
     show them the steps in order to test the instance.
     """
-    if client.is_basic_auth:
+    if client.is_basic_auth or client.is_pat_auth:
         client.test_instance_connection()  # raises on failure
         return "ok"
     else:
@@ -3751,8 +3762,9 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     Returns:
         Dict[str, Any]: A dictionary that is represents an incident.
     """
-    issue_description: str = JiraIssueFieldsParser.get_description_context(issue_data=issue).get('Description') or ''
-
+    issue_description: dict = JiraIssueFieldsParser.get_description_context(issue_data=issue)
+    issue_parsed_description: str = issue_description.get('Description', '')
+    issue_raw_description: str = issue_description.get('RawDescription', '')
     issue_id = str(issue.get('id'))
     labels = [
         {'type': 'issue', 'value': json.dumps(issue)},
@@ -3766,9 +3778,10 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         {'type': 'reporteremail', 'value': str(demisto.get(issue, 'fields.reporter.emailAddress'))},
         {'type': 'created', 'value': str(demisto.get(issue, 'fields.created'))},
         {'type': 'summary', 'value': str(demisto.get(issue, 'fields.summary'))},
-        {'type': 'description', 'value': issue_description},
+        {'type': 'description', 'value': issue_parsed_description},
+        {'type': 'rawDescription', 'value': issue_raw_description},
     ]
-    issue['parsedDescription'] = issue_description
+    issue['parsedDescription'] = issue_parsed_description
     demisto.debug(f'Extracting extra data for {issue_id}.')
 
     issue |= add_extracted_data_to_incident(issue=issue)
@@ -3812,7 +3825,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     return {
         "name": incident_name,
         "labels": labels,
-        "details": issue_description,
+        "details": issue_parsed_description,
         "severity": severity,
         "attachment": attachments,
         "rawJSON": json.dumps(issue)
@@ -4172,7 +4185,7 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     was left in V3, and an extra condition was added to check if the issue was `resolved`.
 
     Args:
-        issue (Dict[str, Any]): The issue object returned from the API, which will be mirrored to XSAOR.
+        issue (Dict[str, Any]): The issue object returned from the API, which will be mirrored to XSOAR.
 
     Returns:
         Dict[str, Any]: An entry that indicates that the incident that corresponds to the issue will be closed.
@@ -4435,16 +4448,18 @@ def get_issue_id_or_key(issue_id: str = '', issue_key: str = '') -> str:
 
 
 def validate_auth_params(
-    username: str, api_key: str, client_id: str, client_secret: str
+    username: str, api_key: str, client_id: str, client_secret: str, pat: str
 ) -> None:
     is_basic_auth = bool(username or api_key)
     is_oauth2 = bool(client_id or client_secret)
+    is_pat_auth = bool(pat)
 
-    if (not is_basic_auth) and (not is_oauth2):
+    if (not is_basic_auth) and (not is_oauth2) and (not is_pat_auth):
         raise DemistoException("The required parameters were not provided. See the help window for more information.")
-    if is_basic_auth and is_oauth2:
+    if sum([is_basic_auth, is_oauth2, is_pat_auth]) > 1:
         raise DemistoException("The `User name` or `API key` parameters cannot be provided together"
-                               " with the `Client ID` or `Client Secret` parameters. See the help window for more information.")
+                               " with the `Client ID` or `Client Secret` parameters"
+                               " or with the `Personal Access Token` parameters. See the help window for more information.")
     if is_basic_auth and not (username and api_key):
         raise DemistoException(
             "To use basic authentication, the 'User name' and 'API key' parameters are mandatory."
@@ -4470,8 +4485,9 @@ def main():  # pragma: no cover
     client_id = params.get('credentials', {}).get('identifier', '')
     client_secret = params.get('credentials', {}).get('password', '')
     callback_url = params.get('callback_url', '')
+    personal_access_token = params.get('pat_credential', {}).get('password', '')
 
-    validate_auth_params(username, api_key, client_id, client_secret)
+    validate_auth_params(username, api_key, client_id, client_secret, personal_access_token)
 
     # Cloud configuration params
     cloud_id = params.get('cloud_id', '')
@@ -4556,7 +4572,8 @@ def main():  # pragma: no cover
                 callback_url=callback_url,
                 server_url=server_url,
                 username=username,
-                api_key=api_key)
+                api_key=api_key,
+                pat=personal_access_token)
         else:
             # Configure JiraOnPremClient
             client = JiraOnPremClient(
@@ -4567,7 +4584,8 @@ def main():  # pragma: no cover
                 callback_url=callback_url,
                 server_url=server_url,
                 username=username,
-                api_key=api_key)
+                api_key=api_key,
+                pat=personal_access_token)
         demisto.debug(f'The configured Jira client is: {type(client)}')
 
         if command == 'test-module':

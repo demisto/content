@@ -2,16 +2,23 @@
     "name": "Cisco ISR",
     "description": "Cisco Integrated Services Routers (ISRs) are high-performance routers designed to provide advanced security, multicloud access, and wireless capability in one device.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "cisco",
+        "isr",
+        "integrated service router"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]

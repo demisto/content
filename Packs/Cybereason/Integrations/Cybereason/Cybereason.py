@@ -35,6 +35,15 @@ STATUS_MAP = {
     'Not Relevant': 'FP',
     'Open': 'OPEN'
 }
+
+INVESTIGATION_STATUS_MAP = {
+    'Pending': 'Pending',
+    'Reopened': 'ReOpened',
+    'Under Investigation': 'UnderInvestigation',
+    'On Hold': 'OnHold',
+    'Closed': 'Closed'
+}
+
 # Field = the name as received from CR API, Header = The name which will be mapped to Demisto command,
 # Type = Data that is received from CR API
 PROCESS_INFO = [
@@ -2136,6 +2145,33 @@ def cybereason_process_attack_tree_command(client: Client, args: dict):
         outputs=outputs)
 
 
+def update_malop_investigation_status_command(client: Client, args: dict):
+    malop_guid = str(args.get('malopGuid'))
+    investigation_status = str(args.get('investigationStatus'))
+
+    if investigation_status not in INVESTIGATION_STATUS_MAP.keys():
+        raise Exception(f"Invalid investigation status. Must be one of: {', '.join(INVESTIGATION_STATUS_MAP.keys())}")
+
+    update_malop_investigation_status(client, malop_guid, investigation_status)
+
+    return CommandResults(
+        readable_output=f'Successfully updated malop {malop_guid} to investigation status "{investigation_status}"!',
+        outputs_prefix='Cybereason.Malops',
+        outputs_key_field='GUID',
+        outputs={
+            'GUID': malop_guid,
+            'InvestigationStatus': investigation_status
+        })
+
+
+def update_malop_investigation_status(client: Client, malop_guid: str, investigation_status: str) -> None:
+    json_body = {"investigationStatus": INVESTIGATION_STATUS_MAP[investigation_status]}
+
+    response = client.cybereason_api_call('PUT', f'/rest/mmng/v2/malops/{malop_guid}', json_body=json_body)
+    if response['status'] != 'SUCCESS':
+        raise DemistoException(f"Failed to update malop {malop_guid} to \"{investigation_status}\": {response['message']}")
+
+
 def get_machine_details_command_pagination_params(args: dict) -> dict:
     '''
         Generate pagination parameters for fetching machine details based on the given arguments.
@@ -2309,6 +2345,9 @@ def main():
 
         elif demisto.command() == 'cybereason-process-attack-tree':
             return_results(cybereason_process_attack_tree_command(client, args))
+
+        elif demisto.command() == 'cybereason-update-malop-investigation-status':
+            return_results(update_malop_investigation_status_command(client, args))
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented.')

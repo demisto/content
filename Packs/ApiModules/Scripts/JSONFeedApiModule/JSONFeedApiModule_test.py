@@ -367,7 +367,7 @@ def test_get_no_update_value_without_headers(mocker):
 
     no_update = get_no_update_value(MockResponse(), 'feed_name')
     assert not no_update
-    assert demisto.debug.call_args[0][0] == 'Last-Modified and Etag headers are not exists,' \
+    assert demisto.debug.call_args[0][0] == 'Last-Modified and Etag headers are not exists, ' \
                                             'createIndicators will be executed with noUpdate=False.'
 
 
@@ -624,3 +624,29 @@ def test_feed_main_enrichment_excluded(mocker):
 
         # Assertion - verify that enrichment_excluded is set to True
         assert fetch_indicators_command_mock.call_args.kwargs['enrichment_excluded'] is True
+
+
+def test_build_iterator__result_is_none(mocker):
+    """
+      Given
+          - A mock response of the JSONFeedApiModule.jmespath.search function with no indicators (response = None)
+      When
+          - Running the build_iterator method.
+      Then
+          - Verify that the returned result is an empty list and that a debug log of "no results found" is added.
+
+    """
+    feed_name = 'mock_feed_name'
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mocker.patch('JSONFeedApiModule.jmespath.search', return_value=None)
+
+    with requests_mock.Mocker() as m:
+        m.get('https://api.github.com/meta', status_code=200, json="{'test':'1'}")
+
+        client = Client(
+            url='https://api.github.com/meta'
+        )
+        result, _ = client.build_iterator(feed={'url': 'https://api.github.com/meta'}, feed_name=feed_name)
+        assert result == []
+        assert "No results found - retrieved data is: {'test':'1'}" in demisto.debug.call_args[0][0]

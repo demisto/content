@@ -2,7 +2,7 @@
     "name": "GitHub Feed",
     "description": "A feed to ingest indicators of compromise from Github repositories. The feed supports general extraction of IOCs, extracting from STIX data format and parsing of YARA Rules out of the box.",
     "support": "xsoar",
-    "currentVersion": "1.0.15",
+    "currentVersion": "1.0.16",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

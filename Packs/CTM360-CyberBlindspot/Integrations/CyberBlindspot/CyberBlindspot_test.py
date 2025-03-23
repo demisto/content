@@ -2,11 +2,65 @@ import pytest
 import logging
 from datetime import datetime
 from dateparser import parse
+from unittest.mock import patch
 from CommonServerPython import DemistoException, IncidentStatus
-from CyberBlindspot import LOGGING_PREFIX, CBS_INCOMING_DATE_FORMAT, CBS_OUTGOING_DATE_FORMAT, ABSOLUTE_MAX_FETCH
+from CyberBlindspot import (
+    LOGGING_PREFIX,
+    CBS_INCOMING_DATE_FORMAT,
+    CBS_OUTGOING_DATE_FORMAT,
+    ABSOLUTE_MAX_FETCH,
+    CBS_INCIDENT_FIELDS,
+    CBS_CARD_FIELDS,
+    CBS_CRED_FIELDS,
+    CBS_DOMAIN_INFRINGE_FIELDS,
+)
 
 """CONSTANTS"""
 BASE_URL = "https://example.com:443"
+
+
+STATUS_ENTRIES = {
+    "wip": "Incident is undergoing a process on CyberBlindspot. Actions will be unavailable until processing is done.",
+    "closed": "Incident was closed on CyberBlindspot.",
+    "monitoring": "Incident is being monitored on CyberBlindspot. Actions will be unavailable until monitoring is done.",
+    "resolved": "Incident was resolved by response team on CyberBlindspot. Not closed yet.",
+    "disregarded": "Incident was disregarded on CyberBlindspot. Not closed yet.",
+    "unconfirmed": "Incident was unconfirmed on CyberBlindspot. Not closed yet.",
+    "auto_resolved": "Incident was resolved through monitoring on CyberBlindspot. Not closed yet.",
+}
+
+MODULES = [
+    (
+        "incidents",
+        "CyberBlindspot.IncidentList",
+        "CyberBlindspot.RemoteIncident",
+        CBS_INCIDENT_FIELDS,
+    ),
+    (
+        "compromised_cards",
+        "CyberBlindspot.IncidentList",
+        "CyberBlindspot.RemoteIncident",
+        CBS_CARD_FIELDS,
+    ),
+    (
+        "breached_credentials",
+        "CyberBlindspot.IncidentList",
+        "CyberBlindspot.RemoteIncident",
+        CBS_CRED_FIELDS,
+    ),
+    (
+        "domain_infringement",
+        "CyberBlindspot.IncidentList",
+        "CyberBlindspot.RemoteIncident",
+        CBS_DOMAIN_INFRINGE_FIELDS,
+    ),
+    (
+        "subdomain_infringement",
+        "CyberBlindspot.IncidentList",
+        "CyberBlindspot.RemoteIncident",
+        CBS_DOMAIN_INFRINGE_FIELDS,
+    ),
+]
 
 
 def load_mock_response(file_name: str) -> dict | list:
@@ -50,19 +104,47 @@ def mock_client():
 
 
 @pytest.fixture()
-def mock_last_fetch_hashes():
+def mock_last_fetch_ids():
     """
     Given: Nothing
     When:
-        - mock_last_fetch_hashes is called.
+        - mock_last_fetch_ids is called.
     Then:
-        - Return a list of hashes.
+        - Return a list of ids.
     """
-    return [
-        "f43d58bad493b6fafc585c201f8e60f5bbf01044c4d5f41e430ca67888319e12",
-        "8afb8079dcf5c43c1d70ae5c737f2035e46645aef39adeba340d5c0c25d2cdba",
-        "be3018bd3a4702dbabe0520f9bcfc60e4d7ec504e6bd7d10b8d47c08a44093f7",
-    ]
+    def mock_ids(module_type: str):
+        match module_type:
+            case "compromised_cards":
+                return [
+                    "LC-A1E202F49",
+                    "LC-A1R252F49",
+                    "LC-A1CV42F49",
+                ]
+            case "breached_credentials":
+                return [
+                    "BC-7FPF679C6",
+                    "BC-2EL85279F",
+                    "BC-1EF22EW64",
+                ]
+            case "domain_infringement":
+                return [
+                    "RD-D7A4ABBC5",
+                    "RD-E4F5B5E7E",
+                    "RD-9F1AF54E4",
+                ]
+            case "subdomain_infringement":
+                return [
+                    "RD-FA144D66C",
+                    "RD-5049BCA31",
+                    "RD-FBD354127",
+                ]
+            case _:
+                return [
+                    "COMX123456123456",
+                    "COMX123456654321",
+                    "COMX987654",
+                ]
+    return mock_ids
 
 
 """ HELPER FUNCTION TESTS"""
@@ -230,12 +312,16 @@ def test_convert_time_string(mock_input, mock_args, mock_asserts, capfd, caplog)
 
 
 @pytest.mark.parametrize(
-    "mock_input_file,mock_assert_file",
+    "mock_input_file,mock_assert_file,mock_module",
     [
-        ("fetch_incidents_response_valid.json", "incident_list_cmd_result_valid.json"),
+        ("fetch_incidents_response_valid.json", "incident_list_cmd_result_valid.json", MODULES[0][0]),
+        ("fetch_cards_response_valid.json", "card_list_cmd_result_valid.json", MODULES[1][0]),
+        ("fetch_creds_response_valid.json", "cred_list_cmd_result_valid.json", MODULES[2][0]),
+        ("fetch_domains_response_valid.json", "domain_list_cmd_result_valid.json", MODULES[3][0]),
+        ("fetch_subdomains_response_valid.json", "subdomain_list_cmd_result_valid.json", MODULES[4][0]),
     ]
 )
-def test_map_and_create_incident(mock_input_file, mock_assert_file):
+def test_map_and_create_incident(mock_input_file, mock_assert_file, mock_module):
     """
     Given:
         - A dictionary of an unmapped incident.
@@ -249,20 +335,37 @@ def test_map_and_create_incident(mock_input_file, mock_assert_file):
     mock_fetched_incident = load_mock_response(mock_input_file)[0]
     mock_assert = load_mock_response(mock_assert_file)[0]
     del mock_assert['rawJson']
-    result = map_and_create_incident(mock_fetched_incident)
-    del result['rawJson']
-    assert result == mock_assert
+
+    with patch('CyberBlindspot.INSTANCE.module', new=mock_module):
+        result = map_and_create_incident(mock_fetched_incident)
+        del result['rawJson']
+        logging.debug(result)
+        logging.debug(mock_assert)
+        assert result == mock_assert
 
 
 @pytest.mark.parametrize(
-    "input_file_name,mock_input,mock_asserts",
+    "input_file_name,mock_input,mock_asserts,mock_module",
     [
-        ("", ([], []), ([], [])),
-        ("fetch_incidents_response_valid.json", 2, ([], [])),
-        ("fetch_incidents_response_valid.json", -2, ([], [])),
+        ("", ([], []), ([], []), MODULES[0][0]),
+        ("fetch_incidents_response_valid.json", 2, ([], []), MODULES[0][0]),
+        ("fetch_incidents_response_valid.json", -2, ([], []), MODULES[0][0]),
+        ("", ([], []), ([], []), MODULES[1][0]),
+        ("fetch_cards_response_valid.json", 2, ([], []), MODULES[1][0]),
+        ("fetch_cards_response_valid.json", -2, ([], []), MODULES[1][0]),
+        ("", ([], []), ([], []), MODULES[2][0]),
+        ("fetch_creds_response_valid.json", 2, ([], []), MODULES[2][0]),
+        ("fetch_creds_response_valid.json", -2, ([], []), MODULES[2][0]),
+        ("", ([], []), ([], []), MODULES[3][0]),
+        ("fetch_domains_response_valid.json", 2, ([], []), MODULES[3][0]),
+        ("fetch_domains_response_valid.json", -2, ([], []), MODULES[3][0]),
+        ("", ([], []), ([], []), MODULES[4][0]),
+        ("fetch_subdomains_response_valid.json", 2, ([], []), MODULES[4][0]),
+        ("fetch_subdomains_response_valid.json", -2, ([], []), MODULES[4][0]),
     ]
 )
-def test_deduplicate_and_create_incidents(input_file_name, mock_input, mock_asserts, mock_last_fetch_hashes, capfd, caplog):
+def test_deduplicate_and_create_incidents(
+        input_file_name, mock_input, mock_asserts, mock_module, mock_last_fetch_ids, capfd, caplog):
     """
     Given:
         - List of fetched incidents.
@@ -279,7 +382,7 @@ def test_deduplicate_and_create_incidents(input_file_name, mock_input, mock_asse
         if input_file_name:
             mock_input = [
                 load_mock_response(input_file_name),
-                mock_last_fetch_hashes[mock_input:] if mock_input != -2 else []
+                mock_last_fetch_ids(mock_module)[mock_input:] if mock_input != -2 else []
             ]
         new_hashes, unique_incidents = deduplicate_and_create_incidents(mock_input[1], mock_input[0])
         assert new_hashes == mock_asserts[0]
@@ -354,6 +457,14 @@ def test_to_snake_case(mock_input, mock_assert):
             },
             DemistoException('Invalid "API Key" Value')
         ),
+        (
+            {
+                'mirror_direction': 'None',
+                'api_key': {'password': 'test'},
+                'module_to_use': ''
+            },
+            DemistoException('Invalid "Module" Value')
+        ),
     ],
 )
 def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
@@ -379,7 +490,111 @@ def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
     assert str(e.value) == mock_side_effect.message
 
 
-def test_get_mapping_fields_command(mocker):
+@pytest.mark.parametrize(
+    "mock_module,expected_mappings",
+    [
+        (
+            MODULES[0][0],
+            {
+                "CyberBlindspot Incident": {
+                    "id": "Unique ID for the incident record",
+                    "subject": "Asset or title of incident",
+                    "severity": "The severity of the incident",
+                    "type": "Incident type",
+                    "class": "Subject class",
+                    "status": "Incident's current state of affairs",
+                    "coa": "The possible course of action",
+                    "remarks": "Remarks about the incident",
+                    "first_seen": "The creation date of the incident",
+                    "last_seen": "The date the incident got last updated",
+                    "brand": "The organization the incident belongs to",
+                    "timestamp": "The timestamp of when the record was created",
+                }
+            }
+        ),
+        (
+            MODULES[1][0],
+            {
+                "CyberBlindspot Incident": {
+                    'first_seen': 'The creation date of the incident',
+                    'last_seen': 'The date the incident got last updated',
+                    'timestamp': 'The timestamp of when the record was created',
+                    'brand': 'The organization the incident belongs to',
+                    'status': 'Incident\'s current state of affairs',
+                    'severity': 'The severity of the incident',
+                    'remarks': 'Remarks about the incident',
+                    'type': 'Incident type',
+                    'id': 'Unique ID for the incident record',
+                    'card_number': 'The compromised card\'s number.',
+                    'cvv': 'The compromised card\'s Card Verification Value (CVV).',
+                    'expiry_month': 'The compromised card\'s expiration month.',
+                    'expiry_year': 'The compromised card\'s expiration year.',
+                }
+            }
+        ),
+        (
+            MODULES[2][0],
+            {
+                "CyberBlindspot Incident": {
+                    'first_seen': 'The creation date of the incident',
+                    'last_seen': 'The date the incident got last updated',
+                    'timestamp': 'The timestamp of when the record was created',
+                    'brand': 'The organization the incident belongs to',
+                    'status': 'Incident\'s current state of affairs',
+                    'severity': 'The severity of the incident',
+                    'remarks': 'Remarks about the incident',
+                    'type': 'Incident type',
+                    'id': 'Unique ID for the incident record',
+                    'breach_source': 'The source of breached data.',
+                    'domain': 'The domain related to the breached data.',
+                    'email': 'Email found in the breached data.',
+                    'username': 'Username found in the breached data.',
+                    'executive_name': 'Executive member\'s name related to the breached data.',
+                    'password': 'Password found in the breached data.',
+                }
+            }
+        ),
+        (
+            MODULES[3][0],
+            {
+                "CyberBlindspot Incident": {
+                    'first_seen': 'The creation date of the incident',
+                    'last_seen': 'The date the incident got last updated',
+                    'timestamp': 'The timestamp of when the record was created',
+                    'brand': 'The organization the incident belongs to',
+                    'status': 'Incident\'s current state of affairs',
+                    'severity': 'The severity of the incident',
+                    'remarks': 'Remarks about the incident',
+                    'type': 'Incident type',
+                    'id': 'Unique ID for the incident record',
+                    'confirmation_time': 'The time of infringement confirmation.',
+                    'risks': 'The potential difficulties carried by the infringement.',
+                    'incident_status': 'The status of the infringement incident.',
+                }
+            }
+        ),
+        (
+            MODULES[4][0],
+            {
+                "CyberBlindspot Incident": {
+                    'first_seen': 'The creation date of the incident',
+                    'last_seen': 'The date the incident got last updated',
+                    'timestamp': 'The timestamp of when the record was created',
+                    'brand': 'The organization the incident belongs to',
+                    'status': 'Incident\'s current state of affairs',
+                    'severity': 'The severity of the incident',
+                    'remarks': 'Remarks about the incident',
+                    'type': 'Incident type',
+                    'id': 'Unique ID for the incident record',
+                    'confirmation_time': 'The time of infringement confirmation.',
+                    'risks': 'The potential difficulties carried by the infringement.',
+                    'incident_status': 'The status of the infringement incident.',
+                }
+            }
+        ),
+    ],
+)
+def test_get_mapping_fields_command(mock_module, expected_mappings):
     """
     Given: Nothing.
     When:
@@ -388,40 +603,28 @@ def test_get_mapping_fields_command(mocker):
     Then:
         - Ensure a GetMappingFieldsResponse object that contains the application fields is returned.
     """
-    from CyberBlindspot import get_mapping_fields_command
+    from CyberBlindspot import get_mapping_fields_command, Instance
 
-    mappings = get_mapping_fields_command()
-    expected_mappings = {
-        "CyberBlindspot Incident": {
-            "id": "Unique ID for the incident record",
-            "subject": "Asset or title of incident",
-            "severity": "The severity of the incident",
-            "type": "Incident type",
-            "class": "Subject class",
-            "status": "Incident's current state of affairs",
-            "coa": "The possible course of action",
-            "remarks": "Remarks about the incident",
-            "created_date": "The creation date of the incident",
-            "updated_date": "The date the incident got last updated",
-            "brand": "The organization the incident belongs to",
-            "timestamp": "The timestamp of when the record was created",
-        }
-    }
-    assert mappings.extract_mapping() == expected_mappings
+    mock_instance = Instance(module=mock_module)
+
+    with patch('CyberBlindspot.INSTANCE', new=mock_instance):
+        mappings = get_mapping_fields_command()
+        assert mappings.extract_mapping() == expected_mappings
 
 
 @pytest.mark.parametrize(
-    "response_files_names,mock_params",
+    "response_files_names,mock_params,mock_module",
     [
         (
             ["fetch_incidents_response_valid.json", "fetch_incidents_response_invalid.json"],
             {
                 "max_hits": "3",
             },
+            "incidents",
         ),
     ],
 )
-def test_fetch_incidents_command(response_files_names, mock_params, mock_last_fetch_hashes, mock_client, mocker):
+def test_fetch_incidents_command(response_files_names, mock_params, mock_module, mock_last_fetch_ids, mock_client, mocker):
     """
     Given:
         - CyberBlindspot Client
@@ -460,9 +663,9 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_last_fe
 
     # Not first run with 1 duplicate in the returned incidents
     mocker.patch.object(mock_client, "fetch_incidents", return_value=load_mock_response(response_files_names[0]))
-    next_run, incidents = fetch_incidents(mock_client, mock_last_fetch_hashes[:1], mock_params, {"not_empty": ""})
+    next_run, incidents = fetch_incidents(mock_client, mock_last_fetch_ids(mock_module)[:1], mock_params, {"not_empty": ""})
     assert len(incidents) == 2
-    assert len(next_run.get("last_fetch_hashes")) == 3
+    assert len(next_run.get("last_fetch_ids", [])) == 3
     if incidents and incidents[0].get("xsoar_mirroring", {}).get("mirror_direction"):
         assert (incidents[0].get("xsoar_mirroring", {}).get("mirror_id") == "COMX123456654321")
     assert incidents[0].get("name") == "New leaked_credential with severity High found"
@@ -473,7 +676,7 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_last_fe
     mocker.patch.object(mock_client, "fetch_incidents", return_value=load_mock_response(response_files_names[0]))
     next_run, incidents = fetch_incidents(mock_client, [], mock_params, {"not_empty": ""})
     assert len(incidents) == 3
-    assert next_run.get("last_fetch_hashes") == mock_last_fetch_hashes
+    assert next_run.get("last_fetch_ids") == mock_last_fetch_ids(mock_module)
     if incidents and incidents[0].get("xsoar_mirroring", {}).get("mirror_direction"):
         assert incidents[0].get("xsoar_mirroring", {}).get("mirror_id") != ""
     assert incidents[1].get("name") == "New leaked_credential with severity High found"
@@ -490,21 +693,83 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_last_fe
 
 
 @pytest.mark.parametrize(
-    "response_file_name,mock_args,mock_asserts_file",
+    "response_file_name,mock_args,mock_asserts_file,mock_module,mock_module_prefix",
     [
         (
             "fetch_incidents_response_valid.json",
             {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
             "incident_list_cmd_result_valid.json",
+            MODULES[0][0],
+            MODULES[0][1],
         ),
         (
             False,
             {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
             False,
+            MODULES[0][0],
+            MODULES[0][1],
+        ),
+        (
+            "fetch_cards_response_valid.json",
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            "card_list_cmd_result_valid.json",
+            MODULES[1][0],
+            MODULES[1][1],
+        ),
+        (
+            False,
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            False,
+            MODULES[1][0],
+            MODULES[1][1],
+        ),
+        (
+            "fetch_creds_response_valid.json",
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            "cred_list_cmd_result_valid.json",
+            MODULES[2][0],
+            MODULES[2][1],
+        ),
+        (
+            False,
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            False,
+            MODULES[2][0],
+            MODULES[2][1],
+        ),
+        (
+            "fetch_domains_response_valid.json",
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            "domain_list_cmd_result_valid.json",
+            MODULES[3][0],
+            MODULES[3][1],
+        ),
+        (
+            False,
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            False,
+            MODULES[3][0],
+            MODULES[3][1],
+        ),
+        (
+            "fetch_subdomains_response_valid.json",
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            "subdomain_list_cmd_result_valid.json",
+            MODULES[4][0],
+            MODULES[4][1],
+        ),
+        (
+            False,
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            False,
+            MODULES[4][0],
+            MODULES[4][1],
         ),
     ],
 )
-def test_ctm360_cbs_incident_list_command(response_file_name, mock_args, mock_asserts_file, mock_client, mocker):
+def test_ctm360_cbs_incident_list_command(
+        response_file_name, mock_args, mock_asserts_file,
+        mock_module, mock_module_prefix, mock_client, mocker, capfd, caplog):
     """
     Given:
         - CyberBlindspot Client.
@@ -514,20 +779,26 @@ def test_ctm360_cbs_incident_list_command(response_file_name, mock_args, mock_as
     Then:
         - Fetch the list of incidents from the remote server.
     """
-    from CyberBlindspot import ctm360_cbs_incident_list_command
+    from CyberBlindspot import ctm360_cbs_list_command, Instance
     patched_response = load_mock_response(response_file_name) if response_file_name else []
     mocker.patch.object(mock_client, "fetch_incidents", return_value=patched_response)
-    cmd_results = ctm360_cbs_incident_list_command(mock_client, mock_args)
-    expected_results = load_mock_response(mock_asserts_file) if mock_asserts_file else []
-    cmd_results = cmd_results.to_context().get('Contents')
-    if cmd_results and expected_results:
-        cmd_results = [{k: v for k, v in item.items() if k != 'rawJson'} for item in cmd_results]
-        expected_results = [{k: v for k, v in item.items() if k != 'rawJson'} for item in expected_results]
-    assert cmd_results == expected_results
+    mock_instance = Instance(module=mock_module)
+    with capfd.disabled():
+        caplog.set_level(logging.DEBUG)
+        with patch('CyberBlindspot.INSTANCE', new=mock_instance):
+            cmd_results = ctm360_cbs_list_command(mock_client, mock_args)
+            expected_results = load_mock_response(mock_asserts_file) if mock_asserts_file else []
+            cmd_results = cmd_results.to_context().get('Contents')
+            if cmd_results and expected_results:
+                cmd_results = [{k: v for k, v in item.items() if k != 'rawJson'} for item in cmd_results]
+                expected_results = [{k: v for k, v in item.items() if k != 'rawJson'} for item in expected_results]
+            logging.debug(cmd_results)
+            logging.debug(expected_results)
+            assert cmd_results == expected_results
 
 
 @pytest.mark.parametrize(
-    "response_file_name,mock_args,mock_asserts",
+    "response_file_name,mock_args,mock_asserts,mock_module",
     [
         (
             "incident_details_response_valid.json",
@@ -541,20 +812,132 @@ def test_ctm360_cbs_incident_list_command(response_file_name, mock_args, mock_as
                 "status": "Member Feedback",
                 "coa": "Member Side Action",
                 "remarks": "New leaked_credential with severity High found",
-                "created_date": "27-12-2023 05:42:18 AM",
-                "updated_date": "27-12-2023 05:42:18 AM",
+                "first_seen": "27-12-2023 05:42:18 AM",
+                "last_seen": "27-12-2023 05:42:18 AM",
                 "brand": "Mock Brand",
                 "timestamp": 1703655740964
             },
+            MODULES[0],
         ),
         (
             False,
             {"ticketId": "COMX165756654321"},
             {},
+            MODULES[0],
+        ),
+        (
+            "card_details_response_valid.json",
+            {"ticketId": "BC-0D7FDA777"},
+            {
+                "first_seen": "24-11-2024 09:23:11 PM",
+                "last_seen": "24-11-2024 09:23:11 PM",
+                "breach_source": [
+                    "Pure Incubation"
+                ],
+                "domain": "example.local",
+                "type": "",
+                "remarks": "Pure Incubation Breach - yash.abc@example.local",
+                "email": "yash.abc@example.local",
+                "username": "yser",
+                "password": "ypass123!",
+                "brand": "RiskAssess Demo",
+                "id": "BC-0D7FDA777",
+                "status": "new"
+            },
+            MODULES[1],
+        ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            {},
+            MODULES[1],
+        ),
+        (
+            "cred_details_response_valid.json",
+            {"ticketId": "LC-A1E4B2F49"},
+            {
+                "first_seen": "25-12-2024 09:16:59 AM",
+                "last_seen": "25-12-2024 09:16:59 AM",
+                "card_number": "0123456789012345",
+                "cvv": "123",
+                "expiry_month": 4,
+                "expiry_year": 2026,
+                "brand": "Demo Bank",
+                "id": "LC-A1E4B2F49",
+                "status": "new",
+                "timestamp": 1735107419000,
+                "severity": "Low",
+                "type": "Compromised Cards",
+                "remarks": "Compromised Card 0123456789012345"
+            },
+            MODULES[2],
+        ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            {},
+            MODULES[2],
+        ),
+        (
+            "domain_details_response_valid.json",
+            {"ticketId": "RD-0285ED4LA"},
+            {
+                "first_seen": "29-10-2024 09:58:25 PM",
+                "last_seen": "31-12-2024 03:51:58 AM",
+                "id": "RD-0285ED4LA",
+                "subject": "trybackme.xyz",
+                "severity": "High",
+                "type": "Domain Infringement",
+                "risks": [
+                    "Has A Record",
+                    "Has MX Record",
+                    "Newly registered when detected",
+                    "Has NS Record",
+                    "Has DNS Record"
+                ],
+                "status": "monitoring",
+                "incident_status": "member_feedback",
+                "brand": "RiskAssess Demo",
+                "timestamp": 1730239105000
+            },
+            MODULES[3],
+        ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            {},
+            MODULES[3],
+        ),
+        (
+            "subdomain_details_response_valid.json",
+            {"ticketId": "RD-C4G04E22B"},
+            {
+                "first_seen": "26-10-2024 01:06:43 AM",
+                "last_seen": "26-10-2024 01:09:07 AM",
+                "id": "RD-C4G04E22B",
+                "subject": "sse.host-master.trybackme.wo",
+                "severity": "High",
+                "type": "Subdomain Infringement",
+                "risks": [
+                    "SSL issued on domain",
+                    "Has DNS Record",
+                    "Has NS Record"
+                ],
+                "status": "monitoring",
+                "brand": "RiskAssess Demo",
+                "timestamp": 1729904803311
+            },
+            MODULES[4],
+        ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            {},
+            MODULES[4],
         ),
     ],
 )
-def test_ctm360_cbs_incident_details_command(response_file_name, mock_args, mock_asserts, mock_client, mocker):
+def test_ctm360_cbs_incident_details_command(response_file_name, mock_args, mock_asserts, mock_module, mock_client, mocker):
     """
     Given:
         - Ticket ID of incident.
@@ -563,12 +946,15 @@ def test_ctm360_cbs_incident_details_command(response_file_name, mock_args, mock
     Then:
         - Ensure result is as expected.
     """
-    from CyberBlindspot import ctm360_cbs_incident_details_command
+    from CyberBlindspot import ctm360_cbs_details_command, Instance
 
-    patched_response = load_mock_response(response_file_name) if response_file_name else {}
-    mocker.patch.object(mock_client, "fetch_incident", return_value=patched_response)
-    cmd_results = ctm360_cbs_incident_details_command(mock_client, mock_args)
-    assert cmd_results.to_context().get('Contents') == mock_asserts
+    mock_instance = Instance(module=mock_module)
+
+    with patch('CyberBlindspot.INSTANCE', new=mock_instance):
+        patched_response = load_mock_response(response_file_name) if response_file_name else {}
+        mocker.patch.object(mock_client, "fetch_incident", return_value=patched_response)
+        cmd_results = ctm360_cbs_details_command(mock_client, mock_args)
+        assert cmd_results.to_context().get('Contents') == mock_asserts
 
 
 @pytest.mark.parametrize(
@@ -584,6 +970,11 @@ def test_ctm360_cbs_incident_details_command(response_file_name, mock_args, mock
             {"ticketId": "COMX165756654321"},
             "Incident should be under Member Feedback or Monitoring to Close",
         ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            None,
+        ),
     ],
 )
 def test_ctm360_cbs_incident_close_command(response_file_name, mock_args, mock_asserts, mock_client, mocker):
@@ -597,7 +988,8 @@ def test_ctm360_cbs_incident_close_command(response_file_name, mock_args, mock_a
     """
     from CyberBlindspot import ctm360_cbs_incident_close_command
 
-    mocker.patch.object(mock_client, "close_incident", return_value=load_mock_response(response_file_name))
+    mock_response = load_mock_response(response_file_name) if response_file_name else {}
+    mocker.patch.object(mock_client, "close_incident", return_value=mock_response)
     cmd_results = ctm360_cbs_incident_close_command(mock_client, mock_args)
     assert cmd_results.to_context().get('HumanReadable') == mock_asserts
 
@@ -615,6 +1007,11 @@ def test_ctm360_cbs_incident_close_command(response_file_name, mock_args, mock_a
             {"ticketId": "COMX165756654321"},
             "Incident should be under Member Feedback for Takedown",
         ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            None,
+        ),
     ],
 )
 def test_ctm360_cbs_incident_request_takedown_command(response_file_name, mock_args, mock_asserts, mock_client, mocker):
@@ -628,22 +1025,52 @@ def test_ctm360_cbs_incident_request_takedown_command(response_file_name, mock_a
     """
     from CyberBlindspot import ctm360_cbs_incident_request_takedown_command
 
-    mocker.patch.object(mock_client, "request_takedown", return_value=load_mock_response(response_file_name))
+    mock_response = load_mock_response(response_file_name) if response_file_name else {}
+    mocker.patch.object(mock_client, "request_takedown", return_value=mock_response)
     cmd_results = ctm360_cbs_incident_request_takedown_command(mock_client, mock_args)
     assert cmd_results.to_context().get('HumanReadable') == mock_asserts
 
 
 @pytest.mark.parametrize(
-    "mock_status",
+    "mock_module,mock_response,mock_entry,mock_status",
     [
-        (""),
-        ("wip"),
-        ("closed"),
-        ("resolved"),
-        ("monitoring"),
+        (MODULES[0][0], "incident_details_response_valid.json", "", ""),
+        (MODULES[0][0], "incident_details_response_valid.json", STATUS_ENTRIES["wip"], "wip"),
+        (MODULES[0][0], "incident_details_response_valid.json", STATUS_ENTRIES["closed"], "closed"),
+        (MODULES[0][0], "incident_details_response_valid.json", STATUS_ENTRIES["resolved"], "resolved"),
+        (MODULES[0][0], "incident_details_response_valid.json", STATUS_ENTRIES["disregarded"], "disregarded"),
+        (MODULES[0][0], "incident_details_response_valid.json", STATUS_ENTRIES["unconfirmed"], "unconfirmed"),
+
+        (MODULES[1][0], "card_details_response_valid.json", "", ""),
+        (MODULES[1][0], "card_details_response_valid.json", STATUS_ENTRIES["wip"], "wip"),
+        (MODULES[1][0], "card_details_response_valid.json", STATUS_ENTRIES["closed"], "closed"),
+        (MODULES[1][0], "card_details_response_valid.json", STATUS_ENTRIES["resolved"], "resolved"),
+        (MODULES[1][0], "card_details_response_valid.json", STATUS_ENTRIES["disregarded"], "disregarded"),
+        (MODULES[1][0], "card_details_response_valid.json", STATUS_ENTRIES["unconfirmed"], "unconfirmed"),
+
+        (MODULES[2][0], "cred_details_response_valid.json", "", ""),
+        (MODULES[2][0], "cred_details_response_valid.json", STATUS_ENTRIES["wip"], "wip"),
+        (MODULES[2][0], "cred_details_response_valid.json", STATUS_ENTRIES["closed"], "closed"),
+        (MODULES[2][0], "cred_details_response_valid.json", STATUS_ENTRIES["resolved"], "resolved"),
+        (MODULES[2][0], "cred_details_response_valid.json", STATUS_ENTRIES["disregarded"], "disregarded"),
+        (MODULES[2][0], "cred_details_response_valid.json", STATUS_ENTRIES["unconfirmed"], "unconfirmed"),
+
+        (MODULES[3][0], "domain_details_response_valid.json", "", ""),
+        (MODULES[3][0], "domain_details_response_valid.json", STATUS_ENTRIES["wip"], "wip"),
+        (MODULES[3][0], "domain_details_response_valid.json", STATUS_ENTRIES["closed"], "closed"),
+        (MODULES[3][0], "domain_details_response_valid.json", STATUS_ENTRIES["resolved"], "resolved"),
+        (MODULES[3][0], "domain_details_response_valid.json", STATUS_ENTRIES["disregarded"], "disregarded"),
+        (MODULES[3][0], "domain_details_response_valid.json", STATUS_ENTRIES["unconfirmed"], "unconfirmed"),
+
+        (MODULES[4][0], "subdomain_details_response_valid.json", "", ""),
+        (MODULES[4][0], "subdomain_details_response_valid.json", STATUS_ENTRIES["wip"], "wip"),
+        (MODULES[4][0], "subdomain_details_response_valid.json", STATUS_ENTRIES["closed"], "closed"),
+        (MODULES[4][0], "subdomain_details_response_valid.json", STATUS_ENTRIES["resolved"], "resolved"),
+        (MODULES[4][0], "subdomain_details_response_valid.json", STATUS_ENTRIES["disregarded"], "disregarded"),
+        (MODULES[4][0], "subdomain_details_response_valid.json", STATUS_ENTRIES["unconfirmed"], "unconfirmed"),
     ],
 )
-def test_get_remote_data(mock_status, mock_client, mocker):
+def test_get_remote_data(mock_module, mock_response, mock_entry, mock_status, mock_client, mocker):
     """
     Given:
         - CyberBlindspot Client.
@@ -653,21 +1080,36 @@ def test_get_remote_data(mock_status, mock_client, mocker):
     Then:
         - Ensure result is as expected.
     """
-    from CyberBlindspot import get_remote_data_command, map_and_create_incident
+    from copy import deepcopy
+    from CyberBlindspot import get_remote_data_command, map_and_create_incident, Instance
 
     mock_args = {"id": "COMX165756654321", "lastUpdate": "2024-01-02T13:30:21.172707565Z"}
-    mock_result = load_mock_response("incident_details_response_valid.json")
-    if mock_status:
+    mock_result = load_mock_response(mock_response)
+    if type(mock_result) is dict:
         mock_result['status'] = mock_status
+
+    if type(mock_result) is dict:
+        mock_result2 = deepcopy(mock_result)
     mocker.patch.object(
         mock_client, 'fetch_incident',
         return_value=mock_result
     )
-    result = get_remote_data_command(mock_client, mock_args)
-    mock_result = map_and_create_incident(mock_result) if mock_status else []
-    # if isinstance(mock_result, dict):
-    #     del mock_result["occurred"]
-    assert result.mirrored_object == mock_result
+
+    mock_instance = Instance(module=mock_module)
+    with patch('CyberBlindspot.INSTANCE', new=mock_instance):
+        result = get_remote_data_command(mock_client, mock_args)
+        mock_result = map_and_create_incident(mock_result2) if mock_status else []
+        if isinstance(mock_result, dict):
+            del mock_result["rawJson"]
+        if isinstance(result.mirrored_object, dict):
+            del result.mirrored_object["rawJson"]
+        assert result.mirrored_object == mock_result
+        if mock_status == "":
+            assert result.entries == []
+        elif mock_status == "closed":
+            assert result.entries[0].get('Contents', {}).get('closeReason', '') == mock_entry
+        else:
+            assert result.entries[0].get('Contents', '') == mock_entry
 
 
 @pytest.mark.parametrize(
@@ -689,7 +1131,7 @@ def test_get_modified_remote_data(mock_input_file, mock_client, mocker):
     from CyberBlindspot import get_modified_remote_data_command
 
     mock_args = {
-        'date_field': 'incident.last_updated_date',
+        'date_field': 'last_seen',
         'order': 'asc',
         'date_from': '1704183134',
         'max_hits': 50,

@@ -679,5 +679,8 @@
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0",
-    "toVersion": "6.4.9"
+    "toVersion": "6.4.9",
+    "marketplaces": [
+        "xsoar"
+    ]
 }
