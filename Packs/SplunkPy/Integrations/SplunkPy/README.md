@@ -11,22 +11,22 @@ This integration was integrated and tested with Splunk Enterprise v9.0.4 and Ent
 ### User Configuration Requirements
 
 #### Option one:
-**Assign to the user following roles: admin, ess_admin (for working with Splunk Enterprise Security).**
+Assign the following roles to the user: admin, ess_admin (for working with Splunk Enterprise Security).
 
 #### Option two:
 **When assigning admin is not an option.**
     
-Custom Role should be defined and include all necessary capabilities: (permissions)
+Define a custom role and include all necessary capabilities: (permissions)
 
 ![image](../../doc_files/edit-role-non-admin-capabilities.png)  
 
-Indexes configuration for custom role:
+Define the indexes configuration for the custom role:
 
 ![image](../../doc_files/edit-role-non-admin-indexes.png)  
 
-At the end of the process Splunk user (not admin user) should receive the previously created role.
+At the end of the process, the Splunk user (not admin user) should receive the previously created role.
 
-Following list of capabilities covers both Splunk UI access and using SplunkPy integration including Enterprise security:
+Following is the list of capabilities that covers both the Splunk UI access and using the SplunkPy integration including Enterprise security:
 
 - accelerate_search  
 - admin_all_objects  
@@ -87,7 +87,7 @@ Write: Ability to modify existing resources or create new ones.
 ### Query Load Analysis
 #### Mirroring
 
-when mirroring in enabled, 2-3 simultaneous queries are expected. 
+When mirroring in enabled, 2-3 simultaneous queries are expected. 
 Each query can have more that one API call. On mirror out - API call for updating each notable event that changed.
 This also includes User mapping queries and mirroring queries.
 
