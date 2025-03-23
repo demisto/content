@@ -8,21 +8,21 @@ import pytz
 
 
 def convert_utctime_with_utc_offset(timestamp, time_format, utc_offset):
-
-    timedelta_data = utc_offset.strip('+').split(':')
-    converted_datetime = (
-        timestamp + timedelta(hours=int(timedelta_data[0]), minutes=int(timedelta_data[1]))).strftime(time_format)
+    timedelta_data = utc_offset.strip("+").split(":")
+    converted_datetime = (timestamp + timedelta(hours=int(timedelta_data[0]), minutes=int(timedelta_data[1]))).strftime(
+        time_format
+    )
     return converted_datetime
 
 
 def convert_utctime_with_timezone(timestamp, time_format, timezone):
-
     required_timezone = pytz.timezone(timezone)
 
     timedelta_data = (timestamp.astimezone(required_timezone)).utcoffset()
-    timedelta_data = (str(timedelta_data)).split(':')
-    converted_datetime = (
-        timestamp + timedelta(hours=int(timedelta_data[0]), minutes=int(timedelta_data[1]))).strftime(time_format)
+    timedelta_data = (str(timedelta_data)).split(":")
+    converted_datetime = (timestamp + timedelta(hours=int(timedelta_data[0]), minutes=int(timedelta_data[1]))).strftime(
+        time_format
+    )
     return converted_datetime
 
 
@@ -52,12 +52,12 @@ def datetime_conversions(date_timestamp, time_format, utc_offset, timezone):
 
 
 def main():
-    '''Input Arguments '''
-    timestamp_value = demisto.args().get('value')
+    """Input Arguments"""
+    timestamp_value = demisto.args().get("value")
 
-    time_format = demisto.args().get('format')
-    utc_offset = demisto.args().get('utcoffset')
-    timezone = demisto.args().get('timezone')
+    time_format = demisto.args().get("format")
+    utc_offset = demisto.args().get("utcoffset")
+    timezone = demisto.args().get("timezone")
 
     try:
         if isinstance(timestamp_value, int):
@@ -70,8 +70,8 @@ def main():
         else:
             raise DemistoException("Please select the timestamptype argument")
     except Exception as e:
-        return_error(f'Failed to execute ConvertUTCEpochTimeToTimeStamp. Error: {str(e)}')
+        return_error(f"Failed to execute ConvertUTCEpochTimeToTimeStamp. Error: {str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

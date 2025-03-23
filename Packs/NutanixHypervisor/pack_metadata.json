@@ -2,7 +2,7 @@
     "name": "Nutanix Hypervisor",
     "description": "Nutanix Hypervisor abstracts and isolates the VMs and their programs from the underlying server hardware, enabling a more efficient use of physical resources, simpler maintenance and operations, and reduced costs.",
     "support": "xsoar",
-    "currentVersion": "1.0.25",
+    "currentVersion": "1.0.26",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
