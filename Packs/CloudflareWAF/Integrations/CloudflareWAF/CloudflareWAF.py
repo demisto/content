@@ -1312,7 +1312,10 @@ def main() -> None:
     except Exception as e:
         error_str = str(e)
         if 'Unable to authenticate request' in error_str:
-            return_error('Authentication failed. Please verify that your token has the necessary permissions and access to the required resources.')
+            return_error(
+                'Authentication failed. Please verify that your token has the necessary '
+                'permissions and access to the required resources.'
+            )
         else:
             return_error(f'One or more of the specified fields are invalid. Please validate them. {error_str}')
 
