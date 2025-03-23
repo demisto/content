@@ -2493,7 +2493,7 @@ script:
   dockerimage: demisto/crypto:1.0.0.2787132
   isfetch: true
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
   ismappable: true
