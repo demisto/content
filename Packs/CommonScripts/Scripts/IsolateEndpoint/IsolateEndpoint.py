@@ -146,6 +146,19 @@ class ModuleManager:
 
 def check_conditions_cybereason_isolate_machine(endpoint_output: dict, human_readable_outputs: list, args: dict,
                                                 endpoint_data: dict) -> bool:
+    """
+    Validates if the Cybereason isolate machine command can be executed. Checks if required arguments are provided and verifies
+    the endpoint's connection using the 'cybereason-is-probe-connected' command..
+
+    Args:
+        endpoint_output (dict): Stores endpoint-related data.
+        human_readable_outputs (list): Stores human-readable messages.
+        args (dict): Command arguments.
+        endpoint_data (dict): Contains endpoint details.
+
+    Returns:
+        bool: True if execution is allowed, False otherwise.
+    """
     cybereason_is_probe_connected_command = Command(
         brand='Cybereason',
         name='cybereason-is-probe-connected',
@@ -181,6 +194,19 @@ def check_conditions_cybereason_isolate_machine(endpoint_output: dict, human_rea
 
 def check_conditions_microsoft_atp_isolate_machine(endpoint_output: dict, human_readable_outputs: list, args: dict,
                                                    endpoint_data: dict) -> bool:
+    """
+    Validates if the Microsoft ATP isolate machine command can be executed.
+    The command is allowed only if the endpoint is online and has a valid agent ID. Ensures 'agent_id' is set in args if missing.
+
+    Args:
+        endpoint_output (dict): Stores endpoint-related data.
+        human_readable_outputs (list): Stores human-readable messages.
+        args (dict): Command arguments, possibly updated with 'agent_id'.
+        endpoint_data (dict): Contains endpoint status and ID.
+
+    Returns:
+        bool: True if execution is allowed, False otherwise.
+    """
     status = endpoint_data.get('Status')
     agent_id = endpoint_data.get('ID', {}).get('Value', '')
     if status == 'Offline' or not agent_id:
@@ -223,7 +249,7 @@ def check_module_and_args_for_command(module_manager: ModuleManager, command: Co
                                          human_readable_outputs=human_readable_outputs)
         return False
 
-    missing_args = are_there_missing_args(command, args)  # checks that there are not missing args
+    missing_args = are_there_missing_args(command, args)  # checks if there are missing args
     if missing_args:
         demisto.debug(f'Missing the next args {missing_args} for command.name')
         create_message_to_context_and_hr(args=args,

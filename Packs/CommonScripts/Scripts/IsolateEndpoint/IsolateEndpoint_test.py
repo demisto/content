@@ -213,8 +213,6 @@ def test_map_args():
     expected_output = {"new_key1": "value1", "fixed_key": "fixed_value"}
     assert map_args(base_command, args) == expected_output
 
-    base_command.hard_coded_args = None
-
 
 def test_are_there_missing_args():
     """
