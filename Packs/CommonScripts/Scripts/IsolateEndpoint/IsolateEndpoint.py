@@ -422,7 +422,6 @@ def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> l
     # Remove None values
     structured_list = [item for item in get_endpoint_data_results if item is not None]
 
-    # Removing None values ensures we keep only the valid data inside a list.
     if structured_list and isinstance(structured_list[0], list):
         return structured_list[0]
 
@@ -472,7 +471,8 @@ def handle_raw_response_results(command: Command, raw_response: dict, args, endp
         )
 
 
-def run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs, results, verbose):
+def run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs, results,
+                              verbose) -> None:
     """
     Processes an endpoint by executing isolation commands and updating outputs accordingly.
 
@@ -490,24 +490,37 @@ def run_commands_for_endpoint(commands, args, module_manager, endpoint_data, end
         if command.brand != args.get('agent_brand'):
             demisto.debug(f'Skipping command {command.name} with {args=}, as its brand does not match the endpoint brand.')
             continue
-
         demisto.debug(f'Executing command {command.name} with {args=}')
         if command.pre_command_check and not command.pre_command_check(endpoint_output, human_readable_outputs, args,
                                                                        endpoint_data):
             continue
-
         if not check_module_and_args_for_command(module_manager, command, endpoint_output, human_readable_outputs, args):
             continue
 
         mapped_args = map_args(command, args)
         raw_response = demisto.executeCommand(command.name, mapped_args)
-
         demisto.debug(f'Got raw response for execute_command {command.name} with {args=}: {raw_response=}')
         command_results = handle_raw_response_results(command, raw_response, args, endpoint_output, human_readable_outputs,
                                                       verbose)
 
         if command_results:
             results.append(command_results)
+
+
+def search_and_add_endpoint_output(outputs, endpoint_output) -> None:
+    """
+    Updates the outputs list by adding or merging endpoint results.
+
+    Args:
+        outputs (list): A list of dictionaries containing endpoint output records.
+        endpoint_output (dict): A dictionary containing an endpoint name and results.
+
+    """
+    for output in outputs:
+        if output.get('EndpointName') == endpoint_output.get('EndpointName'):
+            output.get('Results', []).extend(endpoint_output.get('Results'))
+            return
+    outputs.append(endpoint_output)
 
 
 def main():
@@ -541,7 +554,7 @@ def main():
                 continue
             run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs,
                                       results, verbose)
-            outputs.append(endpoint_output)
+            search_and_add_endpoint_output(outputs, endpoint_output)
 
         check_which_args_missing_in_output(zipped_args, args_from_endpoint_data, outputs, human_readable_outputs)
 
