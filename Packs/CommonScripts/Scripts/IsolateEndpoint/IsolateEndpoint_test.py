@@ -141,7 +141,7 @@ def test_check_which_args_missing_in_output(mock_create_message):
         {'agent_id': '456', 'agent_ip': '', 'agent_hostname': 'host2'}
     ]
     check_which_args_missing_in_output(
-        zipped_args, valid_args, outputs, human_readable_outputs, verbose
+        zipped_args, valid_args, outputs, human_readable_outputs
     )
     assert mock_create_message.call_count == 3
 
@@ -261,19 +261,19 @@ def test_is_endpoint_isolatable():
         "Status": {"Value": "Online"}
     }
 
-    assert is_endpoint_isolatable(endpoint_data, args={}, outputs=[], human_readable_outputs=[],
-                                  verbose=False) is True
+    assert is_endpoint_isolatable(endpoint_data, args={}, endpoint_output={}, human_readable_outputs=[]) is True
 
     endpoint_data["IsIsolated"]["Value"] = "Yes"
-    assert is_endpoint_isolatable(endpoint_data, args={}, outputs=[], human_readable_outputs=[],
-                                  verbose=False) is False
+    assert is_endpoint_isolatable(endpoint_data, args={}, endpoint_output={}, human_readable_outputs=[]) is False
 
     endpoint_data["Status"]["Value"] = "Offline"
-    assert is_endpoint_isolatable(endpoint_data, args={}, outputs=[], human_readable_outputs=[],
-                                  verbose=False) is False
+    assert is_endpoint_isolatable(endpoint_data, args={}, endpoint_output={}, human_readable_outputs=[]) is False
 
 
-def test_handle_raw_response_results():
+@patch('IsolateEndpoint.is_error')
+@patch('IsolateEndpoint.get_error')
+@patch('IsolateEndpoint.create_message_to_context_and_hr')
+def test_handle_raw_response_results(mock_create_message, mock_get_error, mock_is_error):
     """
     Given:
         - Mocked raw response data and arguments.
@@ -285,44 +285,33 @@ def test_handle_raw_response_results():
     command = Command(brand="BrandA", name="TestCommand", arg_mapping={})
     raw_response = {'status': 'error'}
     args = {'arg1': 'value1'}
-    outputs = []
+    outputs = {}
     human_readable_outputs = []
-    verbose = True
+    verbose = False
 
-    with patch('IsolateEndpoint.is_error') as mock_is_error, \
-            patch('IsolateEndpoint.get_error') as mock_get_error, \
-            patch('IsolateEndpoint.create_message_to_context_and_hr') as mock_create_message:
+    mock_is_error.return_value = True
+    mock_get_error.return_value = 'Some error occurred'
 
-        mock_is_error.return_value = True
-        mock_get_error.return_value = 'Some error occurred'
+    handle_raw_response_results(command, raw_response, args, outputs, human_readable_outputs, verbose)
 
-        handle_raw_response_results(command, raw_response, args, outputs, human_readable_outputs, verbose)
-
-        mock_create_message.assert_called_once_with(
-            args=args,
-            result='Fail',
-            message='Failed to execute command TestCommand. Error:Some error occurred',
-            outputs=outputs,
-            human_readable_outputs=human_readable_outputs,
-            verbose=verbose
-        )
-
-        mock_is_error.return_value = False
-        mock_get_error.return_value = None
-
-        handle_raw_response_results(command, raw_response, args, outputs, human_readable_outputs, verbose)
-
-        mock_create_message.assert_called_with(
-            args=args,
-            result='Success',
-            message='Command TestCommand was executed successfully.',
-            outputs=outputs,
-            human_readable_outputs=human_readable_outputs,
-            verbose=verbose
-        )
+    mock_create_message.assert_called_once_with(
+        args=args,
+        result='Fail',
+        message='Failed to execute command TestCommand. Error:Some error occurred',
+        endpoint_output=outputs,
+        human_readable_outputs=human_readable_outputs,
+    )
 
 
 def test_initialize_commands():
+    """
+    Given:
+        - The initialize_commands function is called to initialize a list of command objects.
+    When:
+        - Running the test_initialize_commands function to validate the list of command names.
+    Then:
+        - Ensure the actual command names match the expected set of command names and that no commands are missing or unexpected.
+    """
     commands = initialize_commands()
     expected_command_names = {
         'core-isolate-endpoint',
@@ -337,3 +326,50 @@ def test_initialize_commands():
 
     assert actual_command_names == expected_command_names, f"Missing or unexpected commands: {actual_command_names}"
 
+
+def test_run_commands_for_endpoint():
+    """
+    Given:
+        - A list of command objects with specified brands and arguments.
+        - A module manager with modules in different states (active and inactive).
+        - A set of brands to run commands for, including valid and invalid brands.
+        - Endpoint data and arguments related to a specific agent.
+    When:
+        - Running the test_run_commands_for_endpoint function with different arguments, including those that match the brand and others that don't.
+    Then:
+        - Ensure commands are only executed for matching brands (active modules).
+        - Verify that results are properly added when conditions match, and that no results are added for inactive modules or mismatched arguments.
+    """
+    commands = [Command(brand="BrandA", name="command_name", arg_mapping={})]
+    modules = {
+        "module1": {"brand": "BrandA", "state": "active"},
+        "module2": {"brand": "BrandB", "state": "inactive"},
+    }
+    brands_to_run = ["BrandA", "BrandC"]
+    module_manager = ModuleManager(modules=modules, brands_to_run=brands_to_run)
+    endpoint_data = {"id": "1234"}
+    endpoint_output = {}
+    human_readable_outputs = []
+    results = []
+    verbose = True
+
+    args = {"agent_hostname": "host1", "agent_brand": "BrandB"}
+    run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs,
+                              results, verbose)
+    assert results == []
+
+    args = {"agent_hostname": "host1", "agent_brand": "BrandA"}
+    run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs,
+                              results, verbose)
+    assert len(results) == 1
+    assert "Result" in results[0].readable_output
+
+    commands = [Command(brand="BrandB", name="command1", arg_mapping={})]
+    run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs,
+                              results, verbose)
+    assert len(results) == 1  # No new results added because module is inactive
+
+    commands = [Command(brand="BrandA", name="command1", arg_mapping={"agent_id": "ida"})]
+    run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs,
+                              results, verbose)
+    assert len(results) == 1  # No new results added because not matching args

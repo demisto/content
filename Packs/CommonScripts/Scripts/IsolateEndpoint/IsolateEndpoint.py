@@ -462,7 +462,7 @@ def handle_raw_response_results(command: Command, raw_response: dict, args, endp
         for entry in raw_response:
             entry_human_readable.append(entry.get("HumanReadable") or "")
         command_human_readable = "\n".join(entry_human_readable)
-        result_type = EntryType.ERROR if is_error(raw_response) else EntryType.
+        result_type = EntryType.ERROR if is_error(raw_response) else EntryType.NOTE
         command_title = f'!{command.name} {" ".join([f"{arg}={value}" for arg, value in args.items() if value])}'
         result_message = f"#### {'Error' if is_error(raw_response) else 'Result'} for {command_title}\n{command_human_readable}"
         return CommandResults(
@@ -508,6 +508,7 @@ def run_commands_for_endpoint(commands, args, module_manager, endpoint_data, end
 
         if command_results:
             results.append(command_results)
+
 
 def main():
     try:
