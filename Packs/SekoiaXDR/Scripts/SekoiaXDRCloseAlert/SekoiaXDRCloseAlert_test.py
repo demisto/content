@@ -35,40 +35,22 @@ def test_close_alert(mocker):
     mocker.patch.object(SekoiaXDRCloseAlert, "post_closure_comment", return_value=None)
     mocker.patch.object(demisto, "results")
     close_alert("1", "false", "reason", "notes", "admin", "In", True)
-    assert (
-        demisto.results.call_args[0][0]["Contents"]
-        == "**** The alert 1 has been closed. ****"
-    )
+    assert demisto.results.call_args[0][0]["Contents"] == "**** The alert 1 has been closed. ****"
 
     close_alert("1", "false", "reason", "notes", "admin", None, True)
-    assert (
-        demisto.results.call_args[0][0]["Contents"]
-        == "**** The alert 1 has been closed. ****"
-    )
+    assert demisto.results.call_args[0][0]["Contents"] == "**** The alert 1 has been closed. ****"
 
     close_alert("1", "false", "reason", "notes", "admin", None, False)
-    assert (
-        demisto.results.call_args[0][0]["Contents"]
-        == "**** The alert 1 has been closed. ****"
-    )
+    assert demisto.results.call_args[0][0]["Contents"] == "**** The alert 1 has been closed. ****"
 
     close_alert("1", "true", "reason", "notes", "admin", "In", False)
-    assert (
-        demisto.results.call_args[0][0]["Contents"]
-        == "**** The alert 1 has been rejected. ****"
-    )
+    assert demisto.results.call_args[0][0]["Contents"] == "**** The alert 1 has been rejected. ****"
 
     close_alert("1", "true", "reason", "notes", "admin", None, True)
-    assert (
-        demisto.results.call_args[0][0]["Contents"]
-        == "**** The alert 1 has been rejected. ****"
-    )
+    assert demisto.results.call_args[0][0]["Contents"] == "**** The alert 1 has been rejected. ****"
 
     close_alert("1", "true", "reason", "notes", "admin", None, False)
-    assert (
-        demisto.results.call_args[0][0]["Contents"]
-        == "**** The alert 1 has been rejected. ****"
-    )
+    assert demisto.results.call_args[0][0]["Contents"] == "**** The alert 1 has been rejected. ****"
 
 
 def test_close_alert_closed_cond(mocker):
@@ -77,10 +59,7 @@ def test_close_alert_closed_cond(mocker):
     mocker.patch.object(demisto, "executeCommand", return_value=output_data)
     mocker.patch.object(demisto, "results")
     close_alert("1", "true", "reason", "notes", "admin", None, True)
-    assert (
-        demisto.results.call_args[0][0]["Contents"]
-        == "**** The alert 1 has been closed. ****"
-    )
+    assert demisto.results.call_args[0][0]["Contents"] == "**** The alert 1 has been closed. ****"
 
 
 def test_main(mocker):
