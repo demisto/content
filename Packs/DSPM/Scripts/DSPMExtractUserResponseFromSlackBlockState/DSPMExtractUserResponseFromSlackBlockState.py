@@ -29,9 +29,7 @@ def parse_slack_block_builder_res(SlackBlockState: Any) -> None:
         if user_input_data is None:
             raise TypeError("values in SlackBlockState is None or missing")
 
-        action_name = (
-            user_input_data.get("radio_buttons_0", {}).get("actionId-0", {}).get("selected_option", {}).get("value")
-        )
+        action_name = user_input_data.get("radio_buttons_0", {}).get("actionId-0", {}).get("selected_option", {}).get("value")
         if action_name is None:
             raise TypeError("selected_option value is None or missing")
 
