@@ -495,8 +495,8 @@ tasks:
       '#none#':
       - "32"
     scriptarguments:
-      KeepPlaceholdersInFiles:
-        simple: ${incident.keepplaceholdersinfiles}
+      CICDKeepPlaceholdersInFiles:
+        simple: ${incident.cicdkeepplaceholdersinfiles}
       MainBranch:
         complex:
           root: inputs.MainBranch

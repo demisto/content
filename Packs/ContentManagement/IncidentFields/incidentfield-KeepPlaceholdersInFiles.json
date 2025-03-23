@@ -1,5 +1,5 @@
 {
-	"id": "incident_keepplaceholdersinfiles",
+	"id": "incident_cicdkeepplaceholdersinfiles",
 	"version": -1,
     "fromVersion": "6.0.0",
 	"cacheVersn": 0,
@@ -16,7 +16,7 @@
 	"vcShouldKeepItemLegacyProdMachine": false,
 	"commitMessage": "",
 	"shouldCommit": false,
-	"name": "keep_placeholders_in_files",
+	"name": "CI/CD Keep Placeholders In Files",
 	"prevName": "",
 	"ownerOnly": false,
     "propagationLabels": [
@@ -25,7 +25,7 @@
 	"placeholder": "",
 	"template": "",
 	"description": "",
-	"cliName": "keepplaceholdersinfiles",
+	"cliName": "cicdkeepplaceholdersinfiles",
 	"type": "boolean",
 	"orgType": "",
 	"closeForm": false,
@@ -64,10 +64,8 @@
 	"validatedError": "",
 	"aliases": null,
 	"aliasTo": "",
-	"XDRBuiltInField": false,
 	"selectValuesMap": null,
 	"ipVersion": "",
-	"pretty_name": "keep_placeholders_in_files",
 	"XsiamIncidentFieldExtraData": {
 		"incidentsFilter": null,
 		"slaGoals": null,

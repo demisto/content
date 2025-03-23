@@ -80,17 +80,18 @@ def get_file_sha(branch_name: str, content_file: ContentFile, get_files_command:
 def escape_placeholders(content: str) -> str:
     """
     Escapes XSOAR-style placeholders ${somecontext.value} to prevent context substitution.
-    
+
     Args:
         content (str): The input string containing placeholders.
-    
+
     Returns:
         str: The string with placeholders escaped.
     """
     return re.sub(r"\$(\{[^}]+})", r"$\\\1", content)  # Prepend a backslash to preserve the placeholder
 
 
-def commit_content_item(branch_name: str, content_file: ContentFile, new_files: List, modified_files: List, keep_placeholders_in_files: bool = False):
+def commit_content_item(branch_name: str, content_file: ContentFile, new_files: List, modified_files: List,
+                        keep_placeholders_in_files: bool = False):
     commit_args = {'commit_message': f'Added {content_file.file_name}',
                    'path_to_file': f'{content_file.path_to_file}/{content_file.file_name}',
                    'branch_name': branch_name, 'file_text': content_file.file_text}
@@ -331,7 +332,7 @@ def main():
         comment = demisto.getArg('comment')
         template = demisto.getArg('template')
         git_integration = demisto.getArg('git_integration')
-        keep_placeholders_in_files = demisto.getArg('keep_placeholders_in_files') or False
+        keep_placeholders_in_files = demisto.getArg('cicd_keep_placeholders_in_files') or False
         new_files: List[str] = []
         modified_files: List[str] = []
 
@@ -357,7 +358,8 @@ def main():
                 # split automation file to yml and script files
                 content_files = split_yml_file(content_file)
                 for file_to_commit in content_files:
-                    commit_git(git_integration, branch_name, file_to_commit, new_files, modified_files, keep_placeholders_in_files)
+                    commit_git(git_integration, branch_name, file_to_commit,
+                               new_files, modified_files, keep_placeholders_in_files)
 
             else:
                 commit_git(git_integration, branch_name, content_file, new_files, modified_files, keep_placeholders_in_files)

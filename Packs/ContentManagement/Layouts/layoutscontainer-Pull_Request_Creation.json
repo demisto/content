@@ -265,7 +265,7 @@
                             {
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "keepplaceholdersinfiles",
+								"fieldId": "cicdkeepplaceholdersinfiles",
 								"height": 53,
 								"id": "ae93194e-ff9a-44cf-b2d3-8f539a9a03f2",
 								"index": 6,
@@ -352,11 +352,7 @@
                     {
                         "fieldId": "incident_details",
                         "isVisible": true
-                    },
-                    {
-						"fieldId": "incident_keepplaceholdersinfiles",
-						"isVisible": true
-					}
+                    }
                 ],
                 "isVisible": true,
                 "name": "Basic Information",
@@ -390,6 +386,10 @@
                     },
                     {
 						"fieldId": "incident_cicdazuredevopstargetref",
+						"isVisible": true
+					},
+                    {
+						"fieldId": "incident_cicdkeepplaceholdersinfiles",
 						"isVisible": true
 					}
                 ],

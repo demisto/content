@@ -1,7 +1,7 @@
 args:
 - description: Should the script keep all placeholders (${}) in the files or replace them with the data from the context.
   isArray: false
-  name: keep_placeholders_in_files
+  name: cicd_keep_placeholders_in_files
   defaultValue: true
 - description: The files to commit.
   isArray: true
