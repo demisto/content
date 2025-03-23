@@ -29,27 +29,33 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=f'cve/{cve_id}')
 
 
-def cve_to_context(cve) -> dict[str, str]:
+def cve_to_context(cve: dict) -> dict:
     """
-    Returning a cve structure with the following fields:
-    * ID: The cve ID.
-    * CVSS: The cve score scale/
-    * Published: The date the cve was published.
-    * Modified: The date the cve was modified.
-    * Description: the cve's description
+    Parses a CVE record in CVE 5.1 format and extracts key fields for context output.
 
     Args:
-        cve: The cve response from CVE-Search web site
+        cve (dict): A CVE record as returned from the CVE 5.1 API (e.g., VulDB or NVD).
+
     Returns:
-        The cve structure.
+        dict: A dictionary containing the CVE ID, description, publication and modification dates,
+              CVSS base score, and severity (based on CVSS v3.1 if available).
     """
-    cvss = cve.get('cvss')
+    metadata = cve.get("cveMetadata", {})
+    cna = cve.get("containers", {}).get("cna", {})
+    metrics = cna.get("metrics", [])
+    descriptions = cna.get("descriptions", [])
+    cvss: dict[str, Any] = next(
+        (m.get("cvssV3_1") for m in metrics if "cvssV3_1" in m),
+        {}
+    )
+
     return {
-        'ID': cve.get('id', ''),
-        'CVSS': cvss or 'N\\A',
-        'Published': cve.get('Published', '').rstrip('Z'),
-        'Modified': cve.get('Modified', '').rstrip('Z'),
-        'Description': cve.get('summary', '')
+        "ID": metadata.get("cveId"),
+        "Description": next((d["value"] for d in descriptions if d.get("lang") == "en"), ""),
+        "Published": metadata.get("datePublished"),
+        "Modified": metadata.get("dateUpdated"),
+        "CVSS": cvss.get("baseScore"),
+        "Severity": cvss.get("baseSeverity"),
     }
 
 
@@ -206,58 +212,47 @@ def parse_cpe(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelat
 
 def generate_indicator(data: dict) -> Common.CVE:
     """
-    Generating a single cve indicator with dbot score from cve data.
+    Generates a CVE indicator with enriched context fields from CVE 5.1 data.
 
     Args:
-        data: The cve data
+        data: CVE 5.1 structured response.
 
     Returns:
-        A CVE indicator with dbotScore
+        A CVE indicator for Cortex XSOAR.
     """
+    cve_id = data.get("cveMetadata", {}).get("cveId", "")
+    cna = data.get("containers", {}).get("cna", {})
+    descriptions = cna.get("descriptions", [])
+    metrics = cna.get("metrics", [])
+    references = cna.get("references", [])
+    description = next((d.get("value") for d in descriptions if d.get("lang") == "en"), "")
+    cvss: dict[str, Any] = {}
 
-    cve_id = data.get('id', '')
-    if cpe := data.get("vulnerable_product", ''):
-        tags, relationships = parse_cpe(cpe, cve_id)
+    for version in ("cvssV3_1", "cvssV3_0", "cvssV2_0"):
+        cvss = next((m.get(version, {}) for m in metrics if version in m), {})
+        if cvss:
+            break
 
-    else:
-        relationships = []
-        tags = []
+    cvss_vector = cvss.get("vectorString", "")
+    cvss_version = get_cvss_verion(cvss_vector)
 
-    cwe = data.get('cwe', '')
+    publications = [
+        Common.Publications(title=ref.get("name", cve_id), link=ref.get("url"), source="VulDB")
+        for ref in references if ref.get("url")
+    ]
 
-    if cwe and cwe != 'NVD-CWE-noinfo':
-        tags.append(cwe)
-
-    cvss_table = []
-
-    for category in ("impact", "access"):
-        for key, value in data.get(category, []).items():
-            cvss_table.append({"metrics": key, "value": value})
-
-    vulnerable_products = [Common.CPE(cpe) for cpe in data.get("vulnerable_product", [])]
-    vulnerable_configurations = [Common.CPE(cpe.get("id")) if isinstance(cpe, dict) else Common.CPE(cpe)
-                                 for cpe in data.get("vulnerable_configuration", [])]
-    cpes = set(vulnerable_products) | set(vulnerable_configurations)
-
-    cve_object = Common.CVE(
+    return Common.CVE(
         id=cve_id,
-        cvss=data.get('cvss'),
-        cvss_vector=data.get('cvss-vector'),
-        cvss_version=get_cvss_verion(data.get('cvss-vector', '')),
-        cvss_table=cvss_table,
-        published=data.get('Published'),
-        modified=data.get('Modified'),
-        description=data.get('summary'),
-        vulnerable_products=cpes,
-        publications=[Common.Publications(title=data.get('id'),
-                                          link=reference,
-                                          source="Circl.lu") for reference in data.get("references", [])],
-        tags=tags
+        cvss=str(cvss.get("baseScore")),
+        cvss_vector=cvss_vector,
+        cvss_version=cvss_version,
+        description=description,
+        published=data.get("cveMetadata", {}).get("datePublished", "").rstrip("Z"),
+        modified=data.get("cveMetadata", {}).get("dateUpdated", "").rstrip("Z"),
+        publications=publications,
+        tags=[],
+        vulnerable_products=[],
     )
-
-    if relationships:
-        cve_object.relationships = relationships
-    return cve_object
 
 
 def valid_cve_id_format(cve_id: str) -> bool:
