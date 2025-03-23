@@ -28,7 +28,7 @@ Each method has its own setup process and security implications. Below, you will
 When creating an API token, you must define:
 
 - Token Name – A descriptive name for reference.
-- Permissions – Defines what actions the token can perform.
+- Permissions – Defines what actions the token can perform - *Any user role can create user based API tokens and the permissions they can assign to a token is any subset of their existing user permissions*
 - Resources – Specifies which accounts/zones the token can access.
 
 # Token Permissions

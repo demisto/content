@@ -1262,8 +1262,6 @@ def get_headers(params: dict) -> str:
         }
     else:
         raise ValueError('Missing authentication parameters. Provide either API Token or Global API Key with Email.')
-    #except Exception as e:
-    #        raise ValueError('Missing authentication parameters. Provide either API Token or Global API Key with Email.')
 
     return json.dumps(headers)
 
