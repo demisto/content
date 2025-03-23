@@ -1,7 +1,6 @@
 # Reco
-Reco is an identity-first SaaS security solution. 
-It empowers organizations with full visibility into every app, identity, and their actions to seamlessly prioritize and control risks in the SaaS ecosystem. Their AI-based graph technology connects in minutes and provides immediate value to security teams to continuously discover all SaaS applications including sanctioned and unsanctioned apps, associated identities from both humans and machines, their permission level, and actions. Reco uses advanced analytics around persona, actions, interactions and relationships to other users, and then alerts on exposure from misconfigurations, over-permission users, compromised accounts, and risky user behavior. This comprehensive picture is generated continuously using the Reco Identities Interaction Graph and empowers security teams to take swift action to effectively prioritize their most critical points of risk.
-Reco helps organizations secure the identities and data of core SaaS applications including Salesforce, Microsoft 365 (including SharePoint, Teams, and OneDrive), Google Workspace, Workday, ServiceNow, Slack, Zoom, Okta, Monday.com, NetApp, Wiz, GitLab, Confluence, and Box.
+Reco is the leader in Dynamic SaaS Security — the only approach that eliminates the SaaS Security Gap (the growing gap between what you can protect and what’s outpacing your security). 
+This gap is driven by SaaS Sprawl — the proliferation of apps, AI, and identities; the challenge of keeping their configurations secure amidst constant updates, and the challenge of finding threats hidden within an ever-growing number of events. Dynamic SaaS Security by Reco keeps pace with this sprawl, no matter how fast it evolves.
 The Reco and Palo Alto Networks Cortex XSOAR integration empower organizations to automate SaaS threat detection and remediation workflows for enhanced protection. Reco integrates with over 985 Cortex XSOAR content packs, the market’s leading SOAR platform. 
 
 
@@ -9,6 +8,8 @@ The Reco and Palo Alto Networks Cortex XSOAR integration empower organizations t
 • Assess over 100 configuration rules unified across SaaS applications.  
 • Access Reco data risk alerts
 • Trigger automatic remediation flows to discover SaaS misconfigurations
+• Access to AI alerts summary and detailed information
+• Tag Risky / Leaving Employeees
 • Seamlessly integrate alerts into Cortex XSOAR's incident management system
 • Leverage prebuilt playbooks within Cortex XSOAR to automate the entire process of identifying and remediating SaaS misconfigurations and data exposure risks
 
@@ -37,6 +38,7 @@ The Reco and Palo Alto Networks Cortex XSOAR integration empower organizations t
 - **reco-get-sensitive-assets-with-public-link** - Get sensitive assets publicly exposed
 - **reco-get-user-context-by-email-address** - Get user context by email address
 - **reco-get-private-email-list-with-access** - Get private email list with access
+- **reco-get-alert-ai-summary** - Get alert AI summary
 
 
 For more information on Reco, please visit www.reco.ai

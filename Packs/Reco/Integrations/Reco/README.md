@@ -462,3 +462,25 @@ Get all assets from Reco by id
 | Reco.SensitiveAssets.location | String | The path of the asset | 
 | Reco.SensitiveAssets.source | String | SaaS tool source of the asset | 
 | Reco.SensitiveAssets.sensitivity_level | Number | The sensitivity level of the asset | 
+
+### reco-get-alert-ai-summary
+
+***
+Get alert AI summary
+
+#### Base Command
+
+`reco-get-alert-ai-summary`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | Alert id to get. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description**   |
+| --- | --- |-------------------|
+| Reco.AlertSummary.alert_id | String | The alert id      |
+| Reco.AlertSummary | String | The alert summary |
