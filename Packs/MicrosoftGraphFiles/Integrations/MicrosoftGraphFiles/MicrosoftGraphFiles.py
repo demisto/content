@@ -50,9 +50,7 @@ def parse_key_to_context(obj: dict) -> dict:
     if "CreatedBy" in list(context_entry.keys()):
         context_entry["CreatedBy"] = remove_identity_key(context_entry["CreatedBy"])
     if "LastModifiedBy" in list(context_entry.keys()):
-        context_entry["LastModifiedBy"] = remove_identity_key(
-            context_entry["LastModifiedBy"]
-        )
+        context_entry["LastModifiedBy"] = remove_identity_key(context_entry["LastModifiedBy"])
     return context_entry
 
 
@@ -93,9 +91,7 @@ def url_validation(url: str) -> str:
     # test if exits $skiptoken
     url_parameters = parse_qs(parsed_url.query)
     if not url_parameters.get("$skiptoken") or not url_parameters["$skiptoken"]:
-        raise DemistoException(
-            f"Url: {url} is not valid. Please provide another one. missing $skiptoken"
-        )
+        raise DemistoException(f"Url: {url} is not valid. Please provide another one. missing $skiptoken")
     return url
 
 
@@ -103,33 +99,63 @@ class MsGraphClient:
     """
     Microsoft Graph Client enables authorized access to organization's files in OneDrive, SharePoint, and MS Teams.
     """
-    MAX_ATTACHMENT_SIZE = 3145728   # 3mb = 3145728 bytes
+
+    MAX_ATTACHMENT_SIZE = 3145728  # 3mb = 3145728 bytes
     MAX_ATTACHMENT_UPLOAD = 327680  # 320 KiB = 327680 bytes
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes, redirect_uri,
-                 auth_code, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None):
-
+    def __init__(
+        self,
+        tenant_id,
+        auth_id,
+        enc_key,
+        app_name,
+        base_url,
+        verify,
+        proxy,
+        self_deployed,
+        ok_codes,
+        redirect_uri,
+        auth_code,
+        certificate_thumbprint: Optional[str] = None,
+        private_key: Optional[str] = None,
+        managed_identities_client_id: Optional[str] = None,
+    ):
         if not managed_identities_client_id:
             if not self_deployed and not enc_key:
-                raise DemistoException('Key must be provided. For further information see '
-                                       'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+                raise DemistoException(
+                    "Key must be provided. For further information see "
+                    "https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication"
+                )
             if self_deployed and (not enc_key and not (certificate_thumbprint and private_key)):
-                raise DemistoException('Either Key or (Certificate Thumbprint and Private Key) must be provided. For further '
-                                       'information see '
-                                       'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+                raise DemistoException(
+                    "Either Key or (Certificate Thumbprint and Private Key) must be provided. For further "
+                    "information see "
+                    "https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication"
+                )
             elif self_deployed and auth_code and not redirect_uri:
-                raise DemistoException('Please provide both Application redirect URI and Authorization code '
-                                       'for Authorization Code flow, or None for the Client Credentials flow')
+                raise DemistoException(
+                    "Please provide both Application redirect URI and Authorization code "
+                    "for Authorization Code flow, or None for the Client Credentials flow"
+                )
 
         grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
         self.ms_client = MicrosoftClient(
-            tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes,
-            certificate_thumbprint=certificate_thumbprint, private_key=private_key,
+            tenant_id=tenant_id,
+            auth_id=auth_id,
+            enc_key=enc_key,
+            app_name=app_name,
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            self_deployed=self_deployed,
+            ok_codes=ok_codes,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.graph,
-            redirect_uri=redirect_uri, auth_code=auth_code, grant_type=grant_type,
+            redirect_uri=redirect_uri,
+            auth_code=auth_code,
+            grant_type=grant_type,
             command_prefix="msgraph-files",
         )
 
@@ -191,23 +217,12 @@ class MsGraphClient:
 
     def create_site_permission(self, site_id: str, app_id: str, display_name: str, role: list[str]) -> dict:
         url_suffix = f"sites/{site_id}/permissions"
-        body = {
-            "roles": role,
-            "grantedToIdentities": [{
-                "application": {
-                    "id": app_id,
-                    "displayName": display_name
-                }
-            }]
-        }
+        body = {"roles": role, "grantedToIdentities": [{"application": {"id": app_id, "displayName": display_name}}]}
         return self.ms_client.http_request(method="POST", url_suffix=url_suffix, json_data=body)
 
     def update_site_permission(self, site_id: str, permission_id: str, role: list[str]) -> dict:
-
         url_suffix = f"sites/{site_id}/permissions/{permission_id}"
-        body = {
-            "roles": role
-        }
+        body = {"roles": role}
         return self.ms_client.http_request(method="PATCH", url_suffix=url_suffix, json_data=body)
 
     def delete_site_permission(self, site_id: str, permission_id: str) -> requests.Response:
@@ -229,7 +244,7 @@ class MsGraphClient:
         :return: graph api raw response
         """
         params = {"$top": limit} if limit else ""
-        uri = ''
+        uri = ""
         if next_page_url:
             url = url_validation(next_page_url)
             return self.ms_client.http_request(method="GET", full_url=url, params=params)
@@ -258,8 +273,7 @@ class MsGraphClient:
         file_path = demisto.getFilePath(entry_id).get("path", None)
         if not file_path:
             raise DemistoException(
-                f"Could not find file path to the next entry id: {entry_id}. \n"
-                f"Please provide another one."
+                f"Could not find file path to the next entry id: {entry_id}. \nPlease provide another one."
             )
         if object_type == "drives":
             uri = f"{object_type}/{object_type_id}/items/{item_id}/content"
@@ -268,13 +282,11 @@ class MsGraphClient:
             uri = f"{object_type}/{object_type_id}/drive/items/{item_id}/content"
         with open(file_path, "rb") as file:
             headers = {"Content-Type": "application/octet-stream"}
-            return self.ms_client.http_request(
-                method="PUT", data=file, headers=headers, url_suffix=uri
-            )
+            return self.ms_client.http_request(method="PUT", data=file, headers=headers, url_suffix=uri)
 
-    def replace_existing_file_with_upload_session(self, object_type: str,
-                                                  object_type_id: str, item_id: str, entry_id: str, file_data: bytes,
-                                                  file_size: int, file_name: str) -> requests.Response:
+    def replace_existing_file_with_upload_session(
+        self, object_type: str, object_type_id: str, item_id: str, entry_id: str, file_data: bytes, file_size: int, file_name: str
+    ) -> requests.Response:
         """
         Replace a file with upload session.
 
@@ -290,22 +302,21 @@ class MsGraphClient:
         file_path = demisto.getFilePath(entry_id).get("path", None)
         if not file_path:
             raise DemistoException(
-                f"Could not find file path to the next entry id: {entry_id}. \n"
-                f"Please provide another one."
+                f"Could not find file path to the next entry id: {entry_id}. \nPlease provide another one."
             )
         uri = ""
         # create suitable upload session
-        if object_type == 'drives':
-            uri = f'/drives/{object_type_id}/items/{item_id}/createUploadSession'
-        elif object_type == 'groups':
-            uri = f'/groups/{object_type_id}/drive/items/{item_id}/createUploadSession'
-        elif object_type == 'sites':
-            uri = f'/sites/{object_type_id}/drive/items/{item_id}/createUploadSession'
-        elif object_type == 'users':
-            uri = f'/users/{object_type_id}/drive/items/{item_id}/createUploadSession'
+        if object_type == "drives":
+            uri = f"/drives/{object_type_id}/items/{item_id}/createUploadSession"
+        elif object_type == "groups":
+            uri = f"/groups/{object_type_id}/drive/items/{item_id}/createUploadSession"
+        elif object_type == "sites":
+            uri = f"/sites/{object_type_id}/drive/items/{item_id}/createUploadSession"
+        elif object_type == "users":
+            uri = f"/users/{object_type_id}/drive/items/{item_id}/createUploadSession"
         response, upload_url = self.create_an_upload_session(uri)
         if not upload_url:
-            raise Exception(f'Cannot get upload URL for attachment {file_name}')
+            raise Exception(f"Cannot get upload URL for attachment {file_name}")
         demisto.debug(f'response of "create_an_upload_session": {response}')
         response_file_upload = self.upload_file_with_upload_session(upload_url, file_data, file_size)
         demisto.debug(f'response of "upload_file_with_upload_session": {response_file_upload}')
@@ -319,7 +330,7 @@ class MsGraphClient:
         :param item_id: ms graph item_id.
         :return: graph api raw response
         """
-        uri = ''
+        uri = ""
         if object_type == "drives":
             uri = f"{object_type}/{object_type_id}/items/{item_id}"
 
@@ -327,17 +338,12 @@ class MsGraphClient:
             uri = f"{object_type}/{object_type_id}/drive/items/{item_id}"
 
         # send request
-        self.ms_client.http_request(
-            method="DELETE",
-            url_suffix=uri,
-            resp_type="text")
+        self.ms_client.http_request(method="DELETE", url_suffix=uri, resp_type="text")
 
         return "Item was deleted successfully"
 
     @staticmethod
-    def upload_attachment(
-            upload_url, start_chunk_idx, end_chunk_idx, chunk_data, attachment_size
-    ) -> requests.Response:
+    def upload_attachment(upload_url, start_chunk_idx, end_chunk_idx, chunk_data, attachment_size) -> requests.Response:
         """
         Upload an attachment to the upload URL.
 
@@ -354,9 +360,9 @@ class MsGraphClient:
         """
         chunk_size = len(chunk_data)
         headers = {
-            "Content-Length": f'{chunk_size}',
+            "Content-Length": f"{chunk_size}",
             "Content-Range": f"bytes {start_chunk_idx}-{end_chunk_idx - 1}/{attachment_size}",
-            "Content-Type": "application/octet-stream"
+            "Content-Type": "application/octet-stream",
         }
         try:
             response = requests.put(url=upload_url, data=chunk_data, headers=headers)
@@ -381,31 +387,31 @@ class MsGraphClient:
         start_chunk_index = 0
         end_chunk_index = self.MAX_ATTACHMENT_UPLOAD
 
-        chunk_data = file_data[start_chunk_index: end_chunk_index]
+        chunk_data = file_data[start_chunk_index:end_chunk_index]
 
         response = self.upload_attachment(
             upload_url=upload_url,
             start_chunk_idx=start_chunk_index,
             end_chunk_idx=end_chunk_index,
             chunk_data=chunk_data,
-            attachment_size=file_size
+            attachment_size=file_size,
         )
         demisto.debug(f"start_chunk_idx:{start_chunk_index}, end_chunk_idx:{end_chunk_index}")
         while response.status_code not in [201, 200]:  # the api returns 201 when the file is created
             start_chunk_index = end_chunk_index
             next_chunk = end_chunk_index + self.MAX_ATTACHMENT_UPLOAD
             end_chunk_index = min(next_chunk, file_size)
-            chunk_data = file_data[start_chunk_index: end_chunk_index]
+            chunk_data = file_data[start_chunk_index:end_chunk_index]
             demisto.debug(f"start_chunk_idx:{start_chunk_index}, end_chunk_idx:{end_chunk_index}")
             response = self.upload_attachment(
                 upload_url=upload_url,
                 start_chunk_idx=start_chunk_index,
                 end_chunk_idx=end_chunk_index,
                 chunk_data=chunk_data,
-                attachment_size=file_size
+                attachment_size=file_size,
             )
             if response.status_code not in (201, 200, 202):
-                raise Exception(f'{response.json()}')
+                raise Exception(f"{response.json()}")
         return response
 
     def create_an_upload_session(self, uri: str) -> tuple:
@@ -422,11 +428,12 @@ class MsGraphClient:
             Upload_url: A url upload resource.
         """
         request_body = {"item": {"@microsoft.graph.conflictBehavior": "replace"}}
-        response = self.ms_client.http_request(method='POST', json_data=request_body, url_suffix=uri)
+        response = self.ms_client.http_request(method="POST", json_data=request_body, url_suffix=uri)
         return response, response.get("uploadUrl")
 
-    def upload_file_with_upload_session_flow(self, object_type: str, object_type_id: str, parent_id: str, file_name: str,
-                                             file_data: bytes, file_size: int) -> requests.Response:
+    def upload_file_with_upload_session_flow(
+        self, object_type: str, object_type_id: str, parent_id: str, file_name: str, file_data: bytes, file_size: int
+    ) -> requests.Response:
         """
         Uploads a file with the upload session flow, this is used only when the file is larger
         than 3 MB.
@@ -444,17 +451,17 @@ class MsGraphClient:
         """
         # create suitable upload session
         uri = ""
-        if object_type == 'drives':
-            uri = f'/drives/{object_type_id}/items/{parent_id}:/{file_name}:/createUploadSession'
-        elif object_type == 'groups':
-            uri = f'/groups/{object_type_id}/drive/items/{parent_id}:/{file_name}:/createUploadSession'
-        elif object_type == 'sites':
-            uri = f'/sites/{object_type_id}/drive/items/{parent_id}:/{file_name}:/createUploadSession'
-        elif object_type == 'users':
-            uri = f'/users/{object_type_id}/drive/items/{parent_id}:/{file_name}:/createUploadSession'
+        if object_type == "drives":
+            uri = f"/drives/{object_type_id}/items/{parent_id}:/{file_name}:/createUploadSession"
+        elif object_type == "groups":
+            uri = f"/groups/{object_type_id}/drive/items/{parent_id}:/{file_name}:/createUploadSession"
+        elif object_type == "sites":
+            uri = f"/sites/{object_type_id}/drive/items/{parent_id}:/{file_name}:/createUploadSession"
+        elif object_type == "users":
+            uri = f"/users/{object_type_id}/drive/items/{parent_id}:/{file_name}:/createUploadSession"
         response, upload_url = self.create_an_upload_session(uri)
         if not upload_url:
-            raise Exception(f'Cannot get upload URL for attachment {file_name}')
+            raise Exception(f"Cannot get upload URL for attachment {file_name}")
         demisto.debug(f'Create upload session response": {response}')
         response_file_upload = self.upload_file_with_upload_session(upload_url, file_data, file_size)
         demisto.debug(f'response of "upload_file_with_upload_session": {response}')
@@ -480,8 +487,7 @@ class MsGraphClient:
 
         with open(file_path, "rb") as file:
             headers = {"Content-Type": "application/octet-stream"}
-            return self.ms_client.http_request(
-                method="PUT", headers=headers, url_suffix=uri, data=file)
+            return self.ms_client.http_request(method="PUT", headers=headers, url_suffix=uri, data=file)
 
     def download_file(self, object_type: str, object_type_id: str, item_id: str) -> requests.Response:
         """
@@ -491,14 +497,14 @@ class MsGraphClient:
         :param item_id: ms graph item_id.
         :return: graph api raw response
         """
-        uri = ''
+        uri = ""
         if object_type == "drives":
             uri = f"{object_type}/{object_type_id}/items/{item_id}/content"
 
         elif object_type in {"groups", "sites", "users"}:
             uri = f"{object_type}/{object_type_id}/drive/items/{item_id}/content"
 
-        return self.ms_client.http_request(method="GET", url_suffix=uri, resp_type='response')
+        return self.ms_client.http_request(method="GET", url_suffix=uri, resp_type="response")
 
     def create_new_folder(self, object_type: str, object_type_id: str, parent_id: str, folder_name: str) -> dict:
         """
@@ -530,13 +536,16 @@ def test_function(client: MsGraphClient) -> str:
     """
     Performs basic get request to get item samples
     """
-    response = 'ok' if demisto.command() == 'test-module' else '```✅ Success!```'
-    if demisto.params().get('self_deployed', False) and demisto.command() == 'test-module':
-        if (client.ms_client.grant_type == AUTHORIZATION_CODE
-                or demisto.params().get('redirect_uri') or demisto.params().get('auth_code_creds', {}).get('password', '')):
-            raise DemistoException("The *Test* button is not available for the `self-deployed - Authorization Code Flow`.\n "
-                                   "Use the !msgraph-files-auth-test command instead "
-                                   "once all relevant parameters have been entered.")
+    response = "ok" if demisto.command() == "test-module" else "```✅ Success!```"
+    if (demisto.params().get("self_deployed", False) and demisto.command() == "test-module"
+        and (client.ms_client.grant_type == AUTHORIZATION_CODE
+             or demisto.params().get("redirect_uri")
+             or demisto.params().get("auth_code_creds", {}).get("password", ""))):
+        raise DemistoException(
+            "The *Test* button is not available for the `self-deployed - Authorization Code Flow`.\n "
+            "Use the !msgraph-files-auth-test command instead "
+            "once all relevant parameters have been entered."
+        )
 
     client.ms_client.http_request(url_suffix="sites", timeout=7, method="GET")
     return response
@@ -552,9 +561,7 @@ def download_file_command(client: MsGraphClient, args: dict[str, str]) -> dict:
     item_id = args["item_id"]
     file_name = args.get("file_name") or item_id
 
-    result = client.download_file(
-        object_type=object_type, object_type_id=object_type_id, item_id=item_id
-    )
+    result = client.download_file(object_type=object_type, object_type_id=object_type_id, item_id=item_id)
     return fileResult(file_name, result.content)
 
 
@@ -597,12 +604,8 @@ def list_drive_content_command(client: MsGraphClient, args: dict[str, str]) -> t
     title = f"{INTEGRATION_NAME} - drivesItems information:"
 
     parsed_drive_items = [parse_key_to_context(item) for item in result.get("value", [{}])]
-    human_readable_content = [
-        list_drive_content_human_readable_object(item) for item in parsed_drive_items
-    ]
-    human_readable = tableToMarkdown(
-        title, human_readable_content, headerTransform=pascalToSpace
-    )
+    human_readable_content = [list_drive_content_human_readable_object(item) for item in parsed_drive_items]
+    human_readable = tableToMarkdown(title, human_readable_content, headerTransform=pascalToSpace)
 
     drive_items_outputs = {
         "OdataContext": result["@odata.context"],
@@ -612,7 +615,7 @@ def list_drive_content_command(client: MsGraphClient, args: dict[str, str]) -> t
         f"{INTEGRATION_NAME}.ListChildren(val.ItemID == obj.ItemID)": {
             "ParentID": item_id,
             "Children": drive_items_outputs,
-            "NextToken": result.get("@odata.nextLink")
+            "NextToken": result.get("@odata.nextLink"),
         }
     }
 
@@ -638,10 +641,7 @@ def list_sharepoint_sites_command(client: MsGraphClient, args: dict[str, str]) -
     result = client.list_sharepoint_sites(keyword)
     parsed_sites_items = [parse_key_to_context(item) for item in result["value"]]
 
-    human_readable_content = [
-        list_share_point_sites_human_readable_object(item)
-        for item in parsed_sites_items
-    ]
+    human_readable_content = [list_share_point_sites_human_readable_object(item) for item in parsed_sites_items]
 
     context_entry = {
         "OdataContext": result.get("@odata.context"),
@@ -650,9 +650,7 @@ def list_sharepoint_sites_command(client: MsGraphClient, args: dict[str, str]) -
     context = {f"{INTEGRATION_NAME}.ListSites(val.ID === obj.ID)": context_entry}
 
     title = "List Sites:"
-    human_readable = tableToMarkdown(
-        title, human_readable_content, headerTransform=pascalToSpace
-    )
+    human_readable = tableToMarkdown(title, human_readable_content, headerTransform=pascalToSpace)
 
     return human_readable, context, result
 
@@ -682,26 +680,20 @@ def list_drives_in_site_command(client: MsGraphClient, args: dict[str, str]) -> 
     if next_page_url:
         url_validation(next_page_url)
 
-    result = client.list_drives_in_site(
-        site_id=site_id, limit=limit, next_page_url=next_page_url
-    )
+    result = client.list_drives_in_site(site_id=site_id, limit=limit, next_page_url=next_page_url)
     parsed_drive_items = [parse_key_to_context(item) for item in result["value"]]
 
-    human_readable_content = [
-        list_drives_human_readable_object(item) for item in parsed_drive_items
-    ]
+    human_readable_content = [list_drives_human_readable_object(item) for item in parsed_drive_items]
 
     context_entry = {
         "OdataContext": result.get("@odata.context"),
         "Value": parsed_drive_items,
-        "NextToken": result.get("@odata.nextLink")
+        "NextToken": result.get("@odata.nextLink"),
     }
 
     title = f"{INTEGRATION_NAME} - Drives information:"
     # Creating human readable for War room
-    human_readable = tableToMarkdown(
-        title, human_readable_content, headerTransform=pascalToSpace
-    )
+    human_readable = tableToMarkdown(title, human_readable_content, headerTransform=pascalToSpace)
 
     # context == output
     context = {f"{INTEGRATION_NAME}.ListDrives(val.ID === obj.ID)": context_entry}
@@ -720,8 +712,7 @@ def replace_an_existing_file_command(client: MsGraphClient, args: dict[str, str]
     object_type_id = args["object_type_id"]
     file_data, file_size, file_name = read_file(entry_id)
     if file_size < client.MAX_ATTACHMENT_SIZE:
-        result = client.replace_existing_file(
-            object_type, object_type_id, item_id, entry_id)
+        result = client.replace_existing_file(object_type, object_type_id, item_id, entry_id)
     else:
         result = client.replace_existing_file_with_upload_session(
             object_type, object_type_id, item_id, entry_id, file_data, file_size, file_name
@@ -742,9 +733,7 @@ def replace_an_existing_file_command(client: MsGraphClient, args: dict[str, str]
     remove_nulls_from_dictionary(human_readable_content)
     title = f"{INTEGRATION_NAME} - File information:"
     # Creating human readable for War room
-    human_readable = tableToMarkdown(
-        title, human_readable_content, headerTransform=pascalToSpace
-    )
+    human_readable = tableToMarkdown(title, human_readable_content, headerTransform=pascalToSpace)
 
     # context == output
     context = {f"{INTEGRATION_NAME}.ReplacedFiles(val.ID === obj.ID)": context_entry}
@@ -754,26 +743,24 @@ def replace_an_existing_file_command(client: MsGraphClient, args: dict[str, str]
 
 def read_file(attach_id: str) -> tuple[bytes, int, str]:
     """
-        Reads file that was uploaded to War Room.
+    Reads file that was uploaded to War Room.
 
-        Args:
-            attach_id (str): The id of uploaded file to War Room.
+    Args:
+        attach_id (str): The id of uploaded file to War Room.
 
-        Returns:
-            file_data (bytes): The file data.
-            file_size (int): The size of the file in bytes.
-            file_name (str): Uploaded file name.
+    Returns:
+        file_data (bytes): The file data.
+        file_size (int): The size of the file in bytes.
+        file_name (str): Uploaded file name.
     """
     try:
         file_info = demisto.getFilePath(attach_id)
-        with open(file_info['path'], 'rb') as file_data:
+        with open(file_info["path"], "rb") as file_data:
             file_data_read = file_data.read()
-            file_size = os.path.getsize(file_info['path'])
-            return file_data_read, file_size, file_info['name']
+            file_size = os.path.getsize(file_info["path"])
+            return file_data_read, file_size, file_info["name"]
     except Exception as e:
-        raise Exception(
-            f'Unable to read and decode in base 64 file with id {attach_id}', e
-        ) from e
+        raise Exception(f"Unable to read and decode in base 64 file with id {attach_id}", e) from e
 
 
 def upload_new_file_command(client: MsGraphClient, args: dict[str, str]) -> tuple[str, dict, dict]:
@@ -789,12 +776,11 @@ def upload_new_file_command(client: MsGraphClient, args: dict[str, str]) -> tupl
     file_name = args["file_name"]
 
     if file_size < client.MAX_ATTACHMENT_SIZE:
-        result = client.upload_new_file(
-            object_type, object_type_id, parent_id, file_name, entry_id
-        )
+        result = client.upload_new_file(object_type, object_type_id, parent_id, file_name, entry_id)
     else:
-        result = client.upload_file_with_upload_session_flow(object_type, object_type_id,
-                                                             parent_id, file_name, file_data, file_size)
+        result = client.upload_file_with_upload_session_flow(
+            object_type, object_type_id, parent_id, file_name, file_data, file_size
+        )
         result = result.json()
         demisto.debug(f"Response large file upload: \n {result} \n")
     context_entry = parse_key_to_context(result)
@@ -827,9 +813,7 @@ def create_new_folder_command(client: MsGraphClient, args: dict[str, str]) -> tu
     folder_name = args["folder_name"]
     object_type_id = args["object_type_id"]
 
-    result = client.create_new_folder(
-        object_type, object_type_id, parent_id, folder_name
-    )
+    result = client.create_new_folder(object_type, object_type_id, parent_id, folder_name)
 
     context_entry = parse_key_to_context(result)
 
@@ -846,9 +830,7 @@ def create_new_folder_command(client: MsGraphClient, args: dict[str, str]) -> tu
     title = f"{INTEGRATION_NAME} - Folder information:"
     # Creating human readable for War room
 
-    human_readable = tableToMarkdown(
-        title, human_readable_content, headerTransform=pascalToSpace
-    )
+    human_readable = tableToMarkdown(title, human_readable_content, headerTransform=pascalToSpace)
 
     # context == output
     context = {f"{INTEGRATION_NAME}.CreatedFolders(val.ID === obj.ID)": context_entry}
@@ -977,10 +959,7 @@ def list_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -
             outputs_prefix="MsGraphFiles.SitePermission",
             outputs_key_field="id",
             outputs=results,
-            readable_output=tableToMarkdown(
-                name="Site Permission",
-                t=_md_parse_permission(results)
-            )
+            readable_output=tableToMarkdown(name="Site Permission", t=_md_parse_permission(results)),
         )
 
     list_permissions = results.get("value", [])
@@ -989,10 +968,8 @@ def list_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -
         outputs_key_field="id",
         outputs=list_permissions if all_results else list_permissions[:limit],
         readable_output=tableToMarkdown(
-            name="Site Permission",
-            t=[_md_parse_permission(permission) for permission in list_permissions],
-            removeNull=True
-        )
+            name="Site Permission", t=[_md_parse_permission(permission) for permission in list_permissions], removeNull=True
+        ),
     )
 
 
@@ -1024,7 +1001,7 @@ def create_site_permissions_command(client: MsGraphClient, args: dict[str, str])
         outputs_prefix="MsGraphFiles.SitePermission",
         outputs_key_field="id",
         outputs=results,
-        readable_output=tableToMarkdown("Site Permission", t=_md_parse_permission(results))
+        readable_output=tableToMarkdown("Site Permission", t=_md_parse_permission(results)),
     )
 
 
@@ -1074,9 +1051,7 @@ def delete_site_permission_command(client: MsGraphClient, args: dict[str, str]) 
     site_id = args.get("site_id") or get_site_id_from_site_name(client, args.get("site_name"))
 
     client.delete_site_permission(site_id, permission_id)
-    return CommandResults(
-        readable_output="Site permission was deleted."
-    )
+    return CommandResults(readable_output="Site permission was deleted.")
 
 
 def main():
@@ -1084,27 +1059,39 @@ def main():
     args = demisto.args()
     command = demisto.command()
 
-    base_url: str = params.get('host', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('credentials_tenant_id', {}).get('password') or params.get('tenant_id')
-    auth_id = params.get('credentials_auth_id', {}).get('password') or params.get('auth_id')
-    enc_key = params.get('credentials_enc_key', {}).get('password') or params.get('enc_key')
-    use_ssl: bool = not params.get('insecure', False)
-    proxy: bool = params.get('proxy', False)
+    base_url: str = params.get("host", "").rstrip("/") + "/v1.0/"
+    tenant = params.get("credentials_tenant_id", {}).get("password") or params.get("tenant_id")
+    auth_id = params.get("credentials_auth_id", {}).get("password") or params.get("auth_id")
+    enc_key = params.get("credentials_enc_key", {}).get("password") or params.get("enc_key")
+    use_ssl: bool = not params.get("insecure", False)
+    proxy: bool = params.get("proxy", False)
     ok_codes: tuple = (200, 204, 201)
-    certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get(
-        'password') or params.get('certificate_thumbprint')
-    private_key = params.get('private_key')
+    certificate_thumbprint = params.get("credentials_certificate_thumbprint", {}).get("password") or params.get(
+        "certificate_thumbprint"
+    )
+    private_key = params.get("private_key")
     managed_identities_client_id: Optional[str] = get_azure_managed_identities_client_id(params)
-    self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
-    auth_code = params.get('auth_code_creds', {}).get('password', '')
-    redirect_uri = params.get('redirect_uri', '')
+    self_deployed: bool = params.get("self_deployed", False) or managed_identities_client_id is not None
+    auth_code = params.get("auth_code_creds", {}).get("password", "")
+    redirect_uri = params.get("redirect_uri", "")
 
     try:
-        client = MsGraphClient(base_url=base_url, tenant_id=tenant, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME,
-                               verify=use_ssl, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes,
-                               certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-                               managed_identities_client_id=managed_identities_client_id,
-                               redirect_uri=redirect_uri, auth_code=auth_code)
+        client = MsGraphClient(
+            base_url=base_url,
+            tenant_id=tenant,
+            auth_id=auth_id,
+            enc_key=enc_key,
+            app_name=APP_NAME,
+            verify=use_ssl,
+            proxy=proxy,
+            self_deployed=self_deployed,
+            ok_codes=ok_codes,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
+            managed_identities_client_id=managed_identities_client_id,
+            redirect_uri=redirect_uri,
+            auth_code=auth_code,
+        )
 
         demisto.debug(f"Command being called is {command}")
 
