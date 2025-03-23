@@ -4074,37 +4074,37 @@ def main():
     }
 
     commands: Dict[str, Dict[str, Callable]] = {
-        'common': {
-            'sentinelone-get-activities': get_activities_command,
-            'sentinelone-get-threats': get_threats_command,
-            'sentinelone-mitigate-threat': mitigate_threat_command,
-            'sentinelone-get-hash': get_hash_command,
-            'sentinelone-get-white-list': get_white_list_command,
-            'sentinelone-create-white-list-item': create_white_item_command,
-            'sentinelone-get-sites': get_sites_command,
-            'sentinelone-get-site': get_site_command,
-            'sentinelone-reactivate-site': reactivate_site_command,
-            'sentinelone-list-agents': list_agents_command,
-            'sentinelone-get-agent': get_agent_command,
-            'sentinelone-get-agent-mac': get_agent_mac_command,
-            'sentinelone-get-groups': get_groups_command,
-            'sentinelone-move-agent': move_agent_to_group_command,
-            'sentinelone-delete-group': delete_group,
-            'sentinelone-connect-agent': connect_agent_to_network,
-            'sentinelone-disconnect-agent': disconnect_agent_from_network,
-            'sentinelone-broadcast-message': broadcast_message,
-            'sentinelone-get-events': get_events,
-            'sentinelone-create-query': create_query,
-            'sentinelone-get-dv-query-status': get_dv_query_status,
-            'sentinelone-get-processes': get_processes,
-            'sentinelone-shutdown-agent': shutdown_agents,
-            'sentinelone-uninstall-agent': uninstall_agent,
-            'sentinelone-expire-site': expire_site,
-            'sentinelone-fetch-threat-file': fetch_threat_file,
-            'sentinelone-get-installed-applications': get_installed_applications,
-            'sentinelone-initiate-endpoint-scan': initiate_endpoint_scan,
-            'get-modified-remote-data': get_modified_remote_data_command,
-            'update-remote-system': update_remote_system_command,
+        "common": {
+            "sentinelone-get-activities": get_activities_command,
+            "sentinelone-get-threats": get_threats_command,
+            "sentinelone-mitigate-threat": mitigate_threat_command,
+            "sentinelone-get-hash": get_hash_command,
+            "sentinelone-get-white-list": get_white_list_command,
+            "sentinelone-create-white-list-item": create_white_item_command,
+            "sentinelone-get-sites": get_sites_command,
+            "sentinelone-get-site": get_site_command,
+            "sentinelone-reactivate-site": reactivate_site_command,
+            "sentinelone-list-agents": list_agents_command,
+            "sentinelone-get-agent": get_agent_command,
+            "sentinelone-get-agent-mac": get_agent_mac_command,
+            "sentinelone-get-groups": get_groups_command,
+            "sentinelone-move-agent": move_agent_to_group_command,
+            "sentinelone-delete-group": delete_group,
+            "sentinelone-connect-agent": connect_agent_to_network,
+            "sentinelone-disconnect-agent": disconnect_agent_from_network,
+            "sentinelone-broadcast-message": broadcast_message,
+            "sentinelone-get-events": get_events,
+            "sentinelone-create-query": create_query,
+            "sentinelone-get-dv-query-status": get_dv_query_status,
+            "sentinelone-get-processes": get_processes,
+            "sentinelone-shutdown-agent": shutdown_agents,
+            "sentinelone-uninstall-agent": uninstall_agent,
+            "sentinelone-expire-site": expire_site,
+            "sentinelone-fetch-threat-file": fetch_threat_file,
+            "sentinelone-get-installed-applications": get_installed_applications,
+            "sentinelone-initiate-endpoint-scan": initiate_endpoint_scan,
+            "get-modified-remote-data": get_modified_remote_data_command,
+            "update-remote-system": update_remote_system_command,
         },
         "2.0": {
             "sentinelone-mark-as-threat": mark_as_threat_command,
@@ -4149,8 +4149,8 @@ def main():
         "commands_with_params": {
             "get-remote-data": get_remote_data_command,
         },
-        'commands_without_params': {
-            'get-mapping-fields': get_mapping_fields_command,
+        "commands_without_params": {
+            "get-mapping-fields": get_mapping_fields_command,
         },
 
     }
@@ -4193,10 +4193,10 @@ def main():
                 return_results(commands["common"][command](client, demisto.args()))
             elif command in commands[api_version]:
                 return_results(commands[api_version][command](client, demisto.args()))
-            elif command in commands['commands_with_params']:
-                return_results(commands['commands_with_params'][command](client, demisto.args(), params))
-            elif command in commands['commands_without_params']:
-                return_results(commands['commands_without_params'][command]())
+            elif command in commands["commands_with_params"]:
+                return_results(commands["commands_with_params"][command](client, demisto.args(), params))
+            elif command in commands["commands_without_params"]:
+                return_results(commands["commands_without_params"][command]())
             else:
                 raise NotImplementedError(f"The {command} command is not supported for API version {api_version}")
 
