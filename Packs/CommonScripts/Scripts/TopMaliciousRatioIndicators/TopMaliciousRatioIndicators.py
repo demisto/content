@@ -6,7 +6,7 @@ def select_indicator_columns(indicator: dict) -> Dict:
     display_indicator = {}
     display_indicator["ID"] = indicator["id"]
     display_indicator["Type"] = indicator["indicator_type"]
-    display_indicator["Malicious Ratio"] = f"{float(indicator['maliciousRatio'])}"
+    display_indicator["Malicious Ratio"] = "%.2f" % float(indicator["maliciousRatio"])  # noqa: UP031
     display_indicator["Value"] = indicator["value"]
     display_indicator["Last Seen"] = indicator["lastSeen"]
     return display_indicator

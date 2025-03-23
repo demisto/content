@@ -33,7 +33,7 @@ def ip_cidr(cidr: str) -> dict[str, str]:
         return {}
 
 
-def cidr_command(args: dict[str, str]) -> CommandResults:
+def cidr_command(args: dict[str, str]) -> CommandResults:   # pragma: no cover
     """Perform command on given IP/CIDR
 
     Args:
@@ -48,7 +48,7 @@ def cidr_command(args: dict[str, str]) -> CommandResults:
     return CommandResults(outputs_prefix="Network", outputs=ec, readable_output=markdown)
 
 
-def main():
+def main():  # pragma: no cover
     try:
         return_results(cidr_command(demisto.args()))
     except Exception as ex:

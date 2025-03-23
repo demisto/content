@@ -1306,7 +1306,7 @@ def prepare_hr_for_quarantine_job_get(response: dict[str, Any]) -> str:
             COMPLETED_DATE: None
             if not response.get("quarantineJobRuns", [])[-1].get("completedDate")
             else arg_to_datetime(response.get("quarantineJobRuns", [])[-1].get(
-                "completedDate")).strftime(HR_DATE_FORMAT), # type: ignore
+                "completedDate")).strftime(HR_DATE_FORMAT),  # type: ignore
             "Messages": response.get("emailCount"),
             MATCHING_IOCS: response.get("matchingIOCs"),
             MATCHING_SOURCES: response.get("matchingSources"),

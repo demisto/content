@@ -1,8 +1,6 @@
 import pytest
 from ContentPackInstaller import *
 
-from Packs.CommonScripts.Scripts.ContentPackInstaller.ContentPackInstaller import ContentPackInstaller
-
 
 def get_content_pack_installer(mocker):
     mocker.patch(

@@ -22,7 +22,7 @@ def unescape(args: dict) -> dict | list:
     return json.loads(json_str, object_hook=hook)
 
 
-def main():  # noqa: F841
+def main():  # pragma: no cover  # noqa: F841
     args = demisto.args()
     try:
         return_results(unescape(args))

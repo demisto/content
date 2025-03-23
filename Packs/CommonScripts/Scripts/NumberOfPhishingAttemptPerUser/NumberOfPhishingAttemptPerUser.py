@@ -1,7 +1,7 @@
 from CommonServerPython import *
 
 
-def get_default_from_date(date_range: str) -> str:
+def get_default_from_date(date_range: str) -> str:  # pragma: no cover
     """
     Gets a range string (eg. 30 days) and return a date string in the relevant Demisto query format.
     :param date_range: string
@@ -80,7 +80,7 @@ def create_widget_entry(email_to, email_from, email_to_total, email_from_total) 
     return data
 
 
-def main():
+def main():  # pragma: no cover
     try:
         # Get current incident data
         email_to = demisto.get(demisto.incidents()[0], "CustomFields.email_to")

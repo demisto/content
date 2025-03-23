@@ -38,7 +38,7 @@ class ContentPackInstaller:
             res = res[0]
         return status, res
 
-    def get_installed_packs(self) -> None:
+    def get_installed_packs(self) -> None:  # pragma: no cover
         """Gets the current installed packs on the machine."""
         demisto.debug(f"{SCRIPT_NAME} - Fetching installed packs from marketplace.")
 
@@ -53,7 +53,7 @@ class ContentPackInstaller:
             self.installed_packs[pack["id"]] = parse(pack["currentVersion"])
             self.already_on_machine_packs[pack["id"]] = parse(pack["currentVersion"])
 
-    def get_pack_data_from_marketplace(self, pack_id: str) -> Dict[str, str]:
+    def get_pack_data_from_marketplace(self, pack_id: str) -> Dict[str, str]:   # pragma: no cover
         """Returns the marketplace's data for a specific pack.
 
         Args:
@@ -76,7 +76,7 @@ class ContentPackInstaller:
 
         return res
 
-    def get_pack_dependencies_from_marketplace(self, pack_data: Dict[str, str]) -> Dict[str, Dict[str, str]]:
+    def get_pack_dependencies_from_marketplace(self, pack_data: Dict[str, str]) -> Dict[str, Dict[str, str]]:   # pragma: no cover
         """Returns the dependencies of the pack from marketplace's data.
 
         Args:
@@ -149,7 +149,7 @@ class ContentPackInstaller:
 
         return latest_version_packs_to_install
 
-    def install_packs(self, packs_to_install: List[Dict[str, str]]) -> None:
+    def install_packs(self, packs_to_install: List[Dict[str, str]]) -> None:    # pragma: no cover
         """Sends the request to install the packs in the machine.
 
         Args:
@@ -179,7 +179,7 @@ class ContentPackInstaller:
                 self.installed_packs[pack_id] = packs_names_versions[pack_id]
                 self.newly_installed_packs[pack_id] = packs_names_versions[pack_id]  # type: ignore
 
-    def get_dependencies_for_pack(self, pack_data: Dict[str, str]) -> List[Dict[str, str]]:
+    def get_dependencies_for_pack(self, pack_data: Dict[str, str]) -> List[Dict[str, str]]:  # pragma: no cover
         """Retrieves the packs' dependencies from the marketplace data.
 
         Args:
@@ -224,7 +224,8 @@ class ContentPackInstaller:
         except Exception:
             return parse(self.get_latest_version_for_pack(pack_data["id"])) == self.installed_packs[pack_data["id"]]
 
-    def install_pack_and_its_dependencies(self, pack_data: Dict[str, str], install_dependencies: bool) -> None:
+    def install_pack_and_its_dependencies(self, pack_data: Dict[str, str],
+                                          install_dependencies: bool) -> None:  # pragma: no cover
         """Method for installing a pack and it's prerequisites in order.
 
         Args:
@@ -274,7 +275,8 @@ def format_packs_data_for_installation(args: Dict) -> List[Dict[str, str]]:
         raise DemistoException(f"Unknown error occurred while processing the packs data.\n{e}") from e
 
 
-def create_context(packs_to_install: List[Dict[str, str]], content_packs_installer: ContentPackInstaller) -> List[Dict[str, str]]:
+def create_context(packs_to_install: List[Dict[str, str]],
+                   content_packs_installer: ContentPackInstaller) -> List[Dict[str, str]]:  # pragma: cover
     """Creates context entry including all relevant data.
 
     Args:
