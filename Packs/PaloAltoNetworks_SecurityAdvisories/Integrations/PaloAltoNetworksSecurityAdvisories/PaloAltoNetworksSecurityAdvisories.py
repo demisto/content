@@ -9,11 +9,11 @@ OUTPUT_PREFIX = "PANSecurityAdvisory."
 
 class Client(BaseClient):
     """The client that conects to the advisories API"""
+
     PRODUCTS_ENDPOINT = "/products"
     ADVISORIES_ENDPOINT = "/advisories"
 
-    def __init__(self, base_url, api_timeout=60, verify=True, proxy=False,
-                 ok_codes=(), headers=None):
+    def __init__(self, base_url, api_timeout=60, verify=True, proxy=False, ok_codes=(), headers=None):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
         self.api_timeout = api_timeout
 
@@ -21,11 +21,7 @@ class Client(BaseClient):
         """
         Gets the list of Supported Products by the Advisories API
         """
-        return self._http_request(
-            method='GET',
-            url_suffix=Client.PRODUCTS_ENDPOINT,
-            timeout=self.api_timeout
-        )
+        return self._http_request(method="GET", url_suffix=Client.PRODUCTS_ENDPOINT, timeout=self.api_timeout)
 
     def get_advisories(self, product: str, params: dict):
         """
@@ -35,10 +31,10 @@ class Client(BaseClient):
         """
         params = params or {}
         return self._http_request(
-            method='GET',
+            method="GET",
             url_suffix=f"{Client.PRODUCTS_ENDPOINT}/{product}{Client.ADVISORIES_ENDPOINT}",
             timeout=self.api_timeout,
-            params=params
+            params=params,
         )
 
 
@@ -68,11 +64,7 @@ def dataclass_to_command_results(result: Any, raw_response: Union[list, dict]) -
 
     readable_output = tableToMarkdown(title, summary_list)
     command_result = CommandResults(
-        outputs_prefix=output_prefix,
-        outputs=outputs,
-        readable_output=readable_output,
-        raw_response=raw_response,
-        **extra_args
+        outputs_prefix=output_prefix, outputs=outputs, readable_output=readable_output, raw_response=raw_response, **extra_args
     )
     return command_result
 
@@ -89,6 +81,7 @@ class Advisory:
     :param description: Human readable description of Advisory
     :param affected_version_list: List of affected versions strings
     """
+
     data_type: str
     data_format: str
     cve_id: str
@@ -135,7 +128,7 @@ def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
         cvss_score=cvss_info.get("baseScore", 0),
         cvss_severity=cvss_info.get("baseSeverity", ""),
         cvss_vector_string=cvss_info.get("vectorString", ""),
-        affected_version_list=cna.get("x_affectedList", [])
+        affected_version_list=cna.get("x_affectedList", []),
     )
 
 
@@ -147,8 +140,9 @@ def test_module(client: Client):
     return None
 
 
-def get_advisories(client: Client, product: str, sort: str = "-date", severity: SeverityEnum = None, q: str = "") \
-        -> CommandResults:
+def get_advisories(
+    client: Client, product: str, sort: str = "-date", severity: SeverityEnum = None, q: str = ""
+) -> CommandResults:
     """
     Gets all the advisories for the given product.
     :param client: HTTP Client !no-auto-argument
@@ -157,13 +151,9 @@ def get_advisories(client: Client, product: str, sort: str = "-date", severity: 
     :param severity: Filter advisories to this severity level only.
     :param q: Text search query
     """
-    params_dict = {
-        "severity": severity,
-        "sort": sort,
-        "product": product
-    }
+    params_dict = {"severity": severity, "sort": sort, "product": product}
     if q:
-        params_dict["q"] = f"\"{q}\""
+        params_dict["q"] = f'"{q}"'
 
     advisory_data = client.get_advisories(product, params_dict).get("data", {})
 
@@ -194,50 +184,42 @@ def advisory_to_indicator(advisory_dict: dict) -> dict:
             for description in problem_type.get("descriptions"):
                 tags.append(description.get("cweId"))
 
-        fields['tags'] = tags
+        fields["tags"] = tags
 
     if references := containers_cna.get("references", {}):
-        fields['publications'] = [
-            {
-                "link": x.get('url')
-            } for x in references]
+        fields["publications"] = [{"link": x.get("url")} for x in references]
 
-    impacts: list = containers_cna.get('impacts', [{}])
-    cvss: dict = containers_cna.get('metrics', [{}])[0].get("cvssV4_0", {})
+    impacts: list = containers_cna.get("impacts", [{}])
+    cvss: dict = containers_cna.get("metrics", [{}])[0].get("cvssV4_0", {})
     # score mirrored to both fields so that default cve layout displays with full data
-    fields['cvss'] = cvss.get("baseScore", "")
-    fields['cvssscore'] = cvss.get("baseScore", "")
-    fields['cvssvector'] = cvss.get("vectorString", "")
-    fields['sourceoriginalseverity'] = cvss.get("baseSeverity", "")
+    fields["cvss"] = cvss.get("baseScore", "")
+    fields["cvssscore"] = cvss.get("baseScore", "")
+    fields["cvssvector"] = cvss.get("vectorString", "")
+    fields["sourceoriginalseverity"] = cvss.get("baseSeverity", "")
     # mirror data in these fields so default CVE layout does not need to be changed
     # cvedescription not in default cve layout
     advisory_description = containers_cna.get("descriptions", [{}])[0].get("value", "")
-    fields['cvedescription'] = advisory_description
+    fields["cvedescription"] = advisory_description
     # description in default cve layout
-    fields['description'] = advisory_description
-    fields['published'] = containers_cna.get("datePublic", "")
-    fields['name'] = containers_cna.get("title", "")
+    fields["description"] = advisory_description
+    fields["published"] = containers_cna.get("datePublic", "")
+    fields["name"] = containers_cna.get("title", "")
 
-    if impacts and cvss.get("version") in ['3.1', '4.0']:
-        fields['cvssversion'] = cvss.get("version", "")
+    if impacts and cvss.get("version") in ["3.1", "4.0"]:
+        fields["cvssversion"] = cvss.get("version", "")
 
         # is this v3/v4 cvss?
         # fills out the cvsstable in default cve layout - different table column names
         cvss_data = []
         for k, v in cvss.items():
-            cvss_data.append(
-                {
-                    "metrics": camel_case_to_underscore(k).replace("_", " ").title(),
-                    "value": v
-                }
-            )
-        fields['cvsstable'] = cvss_data
+            cvss_data.append({"metrics": camel_case_to_underscore(k).replace("_", " ").title(), "value": v})
+        fields["cvsstable"] = cvss_data
 
     return {
         "value": advisory_dict.get("cveMetadata", {}).get("cveId"),
         "type": FeedIndicatorType.CVE,
         "rawJSON": advisory_dict,
-        "fields": fields
+        "fields": fields,
     }
 
 
@@ -257,11 +239,9 @@ def fetch_indicators(client: Client, fetch_product_name="PAN-OS") -> list[dict]:
 def main():
     """Main entrypoint for script"""
 
-    client = Client(
-        base_url=demisto.params().get("url")
-    )
+    client = Client(base_url=demisto.params().get("url"))
     command_name = demisto.command()
-    demisto.info(f'Command being called is {command_name}')
+    demisto.info(f"Command being called is {command_name}")
 
     try:
         if command_name == "test-module":
@@ -278,5 +258,5 @@ def main():
         return_error(str(err))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

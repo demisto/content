@@ -15,11 +15,11 @@ def test_create_slack_block():
         "cloudProvider": "AWS",
         "serviceType": "S3",
         "firstDetectedOn": "2024-10-01",
-        "remediateInstruction": "Restrict access to this asset."
+        "remediateInstruction": "Restrict access to this asset.",
     }
     rule_names_dict = {
         "Sensitive asset open to world": "Block public access to storage assets based on cloud provider.",
-        "Empty storage asset": "Delete empty storage assets based on cloud provider."
+        "Empty storage asset": "Delete empty storage assets based on cloud provider.",
     }
     incidentLink = "https://example.com/incident/12345"
 
@@ -61,11 +61,11 @@ def test_create_slack_block_without_remediate_option():
         "cloudProvider": "GCP",
         "serviceType": "Compute",
         "firstDetectedOn": "2024-10-01",
-        "remediateInstruction": "No remediation needed."
+        "remediateInstruction": "No remediation needed.",
     }
     rule_names_dict = {
         "Sensitive asset open to world": "Block public access to storage assets based on cloud provider.",
-        "Empty storage asset": "Delete empty storage assets based on cloud provider."
+        "Empty storage asset": "Delete empty storage assets based on cloud provider.",
     }
     incidentLink = "https://example.com/incident/12345"
 
