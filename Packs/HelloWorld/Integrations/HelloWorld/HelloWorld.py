@@ -271,8 +271,8 @@ class Client(BaseClient):
         # 4. If the URL parameters are complex (filters, etc.) -
         #   it is possible to pass them using the ``params`` argument.
 
-        url = f"/api/endpoint/{param1}/{param2}"
-        response = self._http_request(method="GET", url=url)
+        url_suffix = f"/api/endpoint/{param1}/{param2}"
+        response = self._http_request(method="GET", url_suffix=url_suffix)
 
         return response
 
