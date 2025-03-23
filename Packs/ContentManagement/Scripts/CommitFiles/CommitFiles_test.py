@@ -271,8 +271,7 @@ def test_update_content_item_gitlab(mocker):
     mocker.patch.object(demisto, 'executeCommand')
     mocker.patch('CommitFiles.execute_command', return_value=(True, expected_str))
     commit_content_item_gitlab(branch_name, content_file, [], [])
-    
-  # Update with actual module name
+
 
 @pytest.mark.parametrize(
     "given, expected",
@@ -307,6 +306,5 @@ def test_update_content_item_gitlab(mocker):
     ]
 )
 def test_escape_placeholders(given, expected):
-    import re
     from CommitFiles import escape_placeholders
     assert escape_placeholders(given) == expected

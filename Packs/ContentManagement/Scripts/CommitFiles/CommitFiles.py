@@ -323,7 +323,7 @@ def commit_git(git_integration: str, branch_name: str, content_file: ContentFile
 ''' MAIN FUNCTION '''
 
 
-def main(): # pragma: no cover
+def main():  # pragma: no cover
     try:
         files = demisto.getArg('files')
         branch_name = demisto.getArg('branch')
