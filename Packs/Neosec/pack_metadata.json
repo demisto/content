@@ -14,8 +14,15 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [],
-    "created": "2022-11-27T09:39:30Z"
+    "created": "2022-11-27T09:39:30Z",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

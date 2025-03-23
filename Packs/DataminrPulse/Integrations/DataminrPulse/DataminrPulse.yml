@@ -720,5 +720,6 @@ tests:
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 fromversion: 6.5.0
 defaultmapperin: Dataminr Pulse - Incoming Mapper
