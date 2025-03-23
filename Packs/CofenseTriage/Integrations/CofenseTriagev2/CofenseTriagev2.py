@@ -357,7 +357,7 @@ def test_function(triage_instance) -> None:
         else:
             raise TriageRequestFailedError(
                 response.status_code,
-                "API call to Cofense Triage failed. Please check integration configuration.\n" "Reason: {response.reason}",
+                "API call to Cofense Triage failed. Please check integration configuration.\nReason: {response.reason}",
             )
     except Exception as err:
         demisto.debug(str(err))

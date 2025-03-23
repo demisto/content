@@ -1744,7 +1744,7 @@ def get_alarm_events(data_args):
     if fields:
         fields = fields.split(",")
         for event in events:
-            for key in event.keys():
+            for key in event:
                 if key not in fields:
                     del event[key]
 
@@ -1945,7 +1945,7 @@ def lr_get_query_result(data_args):
 
 
 def main():
-    LOG("Command being called is %s" % (demisto.command()))
+    LOG(f"Command being called is {demisto.command()}")
     if not TOKEN:
         raise DemistoException("API token must be provided.")
     try:

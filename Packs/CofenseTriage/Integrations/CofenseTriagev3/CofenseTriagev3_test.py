@@ -52,7 +52,7 @@ def test_http_request_when_valid_response_is_returned(mocker, requests_mock, cli
     mocker.patch("CofenseTriagev3.Client.set_integration_context", new=lambda x, y: "token")
     requests_mock.get(BASE_URL + URL_SUFFIX["SYSTEM_STATUS"], json={"status": True}, status_code=200)
     requests_mock.post(
-        BASE_URL + "/oauth/token?client_id=client_id&client_secret=client_secret&grant_type" "=client_credentials",
+        BASE_URL + "/oauth/token?client_id=client_id&client_secret=client_secret&grant_type=client_credentials",
         json={"access_token": "token"},
         status_code=200,
     )
@@ -109,7 +109,7 @@ def test_get_api_token_when_not_found_in_integration_context(mocker_set_context,
 
     api_token = client.get_api_token()
 
-    assert api_token == False
+    assert not api_token
 
 
 @patch(MOCKER_HTTP_METHOD)

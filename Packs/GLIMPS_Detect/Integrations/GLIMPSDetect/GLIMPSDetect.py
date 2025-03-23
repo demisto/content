@@ -243,7 +243,7 @@ def gdetect_get_threats_command(client, args):  # TO TEST
         link = f"{url}/lite/analysis/response/{response.get('uuid')}"
 
     if "threats" not in response:
-        raw_response = dict()
+        raw_response = {}
         raw_response["link"] = link
         raw_response["uuid"] = uuid
         raw_response["result"] = "None"

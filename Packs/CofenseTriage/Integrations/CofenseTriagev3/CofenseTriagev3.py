@@ -75,7 +75,7 @@ MESSAGES = {
     "INVALID_LOCATION_FOR_TAGS": "If Tags are provided in fetch incident parameters, the Report Location "
     "must be 'Reconnaissance'.",
     "BODY_FORMAT": "Invalid value for body format. Body format must be text or json.",
-    "INTEGRATION_SUBMISSION_TYPE": "Invalid value for integration submission type. Type must be urls or " "attachment_payloads.",
+    "INTEGRATION_SUBMISSION_TYPE": "Invalid value for integration submission type. Type must be urls or attachment_payloads.",
     "INVALID_IMAGE_TYPE": "Invalid value for type. Type must be png or jpg.",
 }
 
@@ -255,7 +255,7 @@ def validate_filter_by_argument(args: dict[str, Any], custom_args: List[str]) ->
                 key, value = key.strip(), value.strip()
                 if not key or not value:
                     continue
-                if all([False if key.startswith(arg) else True for arg in custom_args]):
+                if all(not key.startswith(arg) for arg in custom_args):
                     params[f"filter[{key}]"] = value
 
         except (json.JSONDecodeError, json.decoder.JSONDecodeError, AttributeError):
@@ -848,7 +848,7 @@ def validate_create_threat_indicator_args(args: dict[str, str]) -> dict[str, Any
     :return: Parameters to send in request
     :rtype: ``Dict[str, str]``
     """
-    params = dict()
+    params = {}
     if not args.get("threat_level"):
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("threat_level"))
     params["threat_level"] = args["threat_level"]
@@ -1211,7 +1211,7 @@ def check_fetch_incident_configuration(fetch_params, params):
     if not location:
         return
 
-    for key, value in fetch_params.items():
+    for key, _value in fetch_params.items():
         if key.startswith("filter[tags") and ("Inbox" not in location and "Reconnaissance" not in location):
             raise ValueError(MESSAGES["INVALID_LOCATION_FOR_TAGS"])
 
@@ -1232,7 +1232,7 @@ def validate_update_threat_indicator_args(args: dict[str, str]) -> dict[str, Any
     :return: Parameters to send in request
     :rtype: ``Dict[str, str]``
     """
-    params = dict()
+    params = {}
 
     if not args.get("id", ""):
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("id"))
@@ -2126,7 +2126,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, str]) -> Ge
     params = {"filter[updated_at_gt]": last_update_utc}
     raw_incidents = client.http_request(URL_SUFFIX["REPORTS"], params=params)
     results = raw_incidents.get("data", [])
-    modified_incident_ids = list()
+    modified_incident_ids = []
     for result in results:
         incident_id = result.get("id")
         modified_incident_ids.append(incident_id)

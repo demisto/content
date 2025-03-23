@@ -688,7 +688,7 @@ def local_ca_list_markdown(raw_response: dict[str, Any]) -> str:
 
     hr_title = "### Local Certificate Authorities \n"
     hr_skip_limit_title = hr_skip_limit_to_markdown(
-        raw_response.get("skip", 0), raw_response.get("limit", 0), raw_response.get("total", 0), "Local " "CAs"
+        raw_response.get("skip", 0), raw_response.get("limit", 0), raw_response.get("total", 0), "Local CAs"
     )
 
     return f"{hr_title}{active_cas}\n{pending_cas}\n{expired_cas}\n{hr_skip_limit_title}"
@@ -885,7 +885,7 @@ def user_to_group_add_command(client: CipherTrustClient, args: dict[str, Any]) -
 
 def user_to_group_remove_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     client.remove_user_from_group(group_name=args.get(GROUP_NAME, ""), user_id=args.get(USER_ID, ""))
-    return CommandResults(readable_output=f"{args.get(USER_ID)} has been deleted successfully from " f"{args.get(GROUP_NAME)}")
+    return CommandResults(readable_output=f"{args.get(USER_ID)} has been deleted successfully from {args.get(GROUP_NAME)}")
 
 
 def users_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:

@@ -965,12 +965,11 @@ def test_module(
                     return "The given URL for 'Server URL - Quarantine' is invalid"
                 raise exc
     except DemistoException as exc:
-        if exc.res is not None:
-            if exc.res.status_code == http.HTTPStatus.UNAUTHORIZED:
-                return (
-                    "Authorization Error: Invalid Credentials."
-                    f" Please verify the {'Quarantine ' if client_passed else ''}credentials."
-                )
+        if exc.res is not None and exc.res.status_code == http.HTTPStatus.UNAUTHORIZED:
+            return (
+                "Authorization Error: Invalid Credentials."
+                f" Please verify the {'Quarantine ' if client_passed else ''}credentials."
+            )
 
         raise exc
 

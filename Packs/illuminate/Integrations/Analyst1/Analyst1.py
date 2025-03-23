@@ -60,7 +60,8 @@ class EnrichmentOutput:
 
     def build_analyst1_context(self) -> dict:
         return {
-            f"{INTEGRATION_CONTEXT_BRAND}.{self.indicator_type.capitalize()}(val.ID && val.ID === obj.ID)": self.analyst1_context_data
+            f"{INTEGRATION_CONTEXT_BRAND}.{self.indicator_type.capitalize()}(val.ID && val.ID === obj.ID)":
+                self.analyst1_context_data
         }
 
     def generate_reputation_context(
@@ -237,7 +238,7 @@ class Client(BaseClient):
 
     @staticmethod
     def get_data_key(data: dict, key: str) -> Any | None:
-        return None if key not in data else data[key]
+        return data.get(key, None)
 
     @staticmethod
     def get_nested_data_key(data: dict, key: str, nested_key: str) -> Any | None:

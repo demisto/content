@@ -139,7 +139,7 @@ get_exact_search_request_outputs = {
     "Request_ID": "fc4db762-288c-40cc-5f4f-4f19b65649a",
     "Status": "done",
 }
-get_exact_search_request_hr = "| 1080320 | PE32 | " "07c95170772e76b7e8d87f5b3535fb3a65a57a468cf9b0a42664fcd3813d21cd |"
+get_exact_search_request_hr = "| 1080320 | PE32 | 07c95170772e76b7e8d87f5b3535fb3a65a57a468cf9b0a42664fcd3813d21cd |"
 
 get_request_status_inprogress_raw = {
     "meta": {"query_time": 0.1, "powered_by": "malquery-api", "trace_id": "def-456", "reqid": "abc-123", "status": "inprogress"},
@@ -223,7 +223,7 @@ def test_exact_search_command_(mocker):
     mocker.patch.object(client, "exact_search", return_value=exact_search_raw_response)
     result = exact_search_command(client, args)
     assert "ac1403c0-d095-4934-5bd2-4cd45f365a45" in result.readable_output
-    assert {"Request_ID": "ac1403c0-d095-4934-5bd2-4cd45f365a45"} == result.outputs
+    assert result.outputs == {"Request_ID": "ac1403c0-d095-4934-5bd2-4cd45f365a45"}
 
 
 @pytest.mark.xfail(raises=DemistoException, reason="Must provide a query to search")
@@ -265,7 +265,7 @@ def test_fuzzy_search_command(mocker):
         {"sha256": "9dd98c144cb29cf3ab6dfa26514b8d10ed414e32a66dd4777eae5f03c502197c", "filesize": 2673152, "filetype": "PE32"},
     ]
     assert "|filesize|filetype|sha256|" in result.readable_output
-    assert "| 2673152 | PE32 | " "9dd98c144cb29cf3ab6dfa26514b8d10ed414e32a66dd4777eae5f03c502197c |" in result.readable_output
+    assert "| 2673152 | PE32 | 9dd98c144cb29cf3ab6dfa26514b8d10ed414e32a66dd4777eae5f03c502197c |" in result.readable_output
     assert expected_context == result.outputs
 
 
@@ -283,7 +283,7 @@ def test_hunt_command(mocker):
     mocker.patch.object(client, "hunt", return_value=hunt_raw_response)
     result = hunt_command(client, args)
     assert "096f6aa5-f245-4b09-790f-133bc89d4d26" in result.readable_output
-    assert {"Request_ID": "096f6aa5-f245-4b09-790f-133bc89d4d26"} == result.outputs
+    assert result.outputs == {"Request_ID": "096f6aa5-f245-4b09-790f-133bc89d4d26"}
 
 
 @pytest.mark.parametrize(
@@ -353,7 +353,7 @@ def test_get_file_metadata_command(mocker):
     ]
     mocker.patch.object(client, "get_files_metadata", return_value=util_load_json("test_data/get_metadata_raw_response.json"))
     result = get_file_metadata_command(client, {"file": "accc6794951290467e01b7676e8b4ba177076d54f836589ea7d3298cdf6fc995"})
-    assert 3 == result[0].indicator.dbot_score.score
+    assert result[0].indicator.dbot_score.score == 3
     assert hr in result[0].readable_output
     assert outputs[0] == result[0].outputs
 
@@ -370,7 +370,7 @@ def test_samples_multidownload_command(mocker):
     mocker.patch.object(client, "samples_multidownload", return_value=util_load_json("test_data/multidownload_raw_response.json"))
     result = samples_multidownload_command(client, {"samples": "samples"})
     assert "93b55373-3b69-43cb-6ea1-2870a44e1c1e" in result.readable_output
-    assert {"Request_ID": "93b55373-3b69-43cb-6ea1-2870a44e1c1e"} == result.outputs
+    assert result.outputs == {"Request_ID": "93b55373-3b69-43cb-6ea1-2870a44e1c1e"}
 
 
 def test_get_ratelimit_command(mocker):
@@ -384,7 +384,7 @@ def test_get_ratelimit_command(mocker):
 
     mocker.patch.object(client, "get_quotas", return_value=util_load_json("test_data/get_ratelimit_raw_respose.json"))
     result = get_ratelimit_command(client, {})
-    expected_hr = "|hunt_count|download_count|monitor_count|hunt_limit|download_limit|monitor_limit|refresh_time" "|days_left|"
+    expected_hr = "|hunt_count|download_count|monitor_count|hunt_limit|download_limit|monitor_limit|refresh_time|days_left|"
     expected_outputs = {
         "hunt_count": 45,
         "download_count": 48,

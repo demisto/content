@@ -484,7 +484,7 @@ class TestCofenseTriage:
 
         demisto_results = CofenseTriagev2.demisto.results.call_args_list
         assert demisto_results[0][0][0]["HumanReadable"] == (
-            "### Cofense HTML Report:\n" "HTML report download request has been completed"
+            "### Cofense HTML Report:\nHTML report download request has been completed"
         )
         assert (
             demisto_results[1][0][0]["HumanReadable"]
@@ -657,7 +657,7 @@ class TestTriageReport:
         )
         stubbed_triagereporter_init = mocker.patch("CofenseTriagev2.TriageReporter")
 
-        TriageReport.fetch(triage_instance, "6").reporter
+        TriageReport.fetch(triage_instance, "6").reporter   # noqa: B018
 
         stubbed_triagereporter_init.assert_called_once_with(triage_instance, 5331)
 

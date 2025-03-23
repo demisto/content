@@ -117,14 +117,14 @@ def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: s
     iiq_oauth_body = f"grant_type={grant_type}"
     iiq_oauth_headers = {
         "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Basic %s" % base64.b64encode(auth_cred.encode()).decode(),
+        "Authorization": f"Basic {base64.b64encode(auth_cred.encode()).decode()}",
     }
     oauth_response = requests.request(
         "POST", url=f"{base_url}{IIQ_OAUTH_EXT}", data=iiq_oauth_body, headers=iiq_oauth_headers, verify=verify
     )
     if oauth_response is not None and 200 <= oauth_response.status_code < 300:
         return {
-            "Authorization": "Bearer %s" % oauth_response.json().get("access_token", None),
+            "Authorization": f"Bearer {oauth_response.json().get('access_token', None)}",
             "Content-Type": "application/json",
         }
     else:

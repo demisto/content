@@ -377,7 +377,7 @@ class MockedResponse:
         self.reason = reason
         self.url = url
         self.request = requests.Request("GET")
-        self.ok = True if self.status_code == 200 else False
+        self.ok = self.status_code == 200
         self.headers = ""
 
     def json(self):

@@ -83,7 +83,7 @@ class Client(BaseClient):
 
         if "per_page" not in params:
             demisto.info(
-                "Fetching 500 CVEs per request by default. " 'You can override this by specifying the "per_page" parameter'
+                'Fetching 500 CVEs per request by default. You can override this by specifying the "per_page" parameter'
             )
             params["per_page"] = 500
 
@@ -100,7 +100,7 @@ class Client(BaseClient):
             response = self._http_request(method="GET", url_suffix=path, params=params)
         # if no page is given, we will fetch all the cves
         else:
-            demisto.info("Fetching all CVEs by default. " 'You can override this by specifying the "page" parameter')
+            demisto.info('Fetching all CVEs by default. You can override this by specifying the "page" parameter')
             response = []
             # we start at page 1
             curr_page = 1
@@ -313,7 +313,7 @@ class Client(BaseClient):
             response = self._http_request(method="GET", url_suffix=path, params=params)
         # if no page is given, we will fetch all the assets
         else:
-            demisto.info("Fetching all CVEs by default. " 'You can override this by specifying the "page" parameter')
+            demisto.info('Fetching all CVEs by default. You can override this by specifying the "page" parameter')
             response = []
             # we start at page 1
             curr_page = 1
@@ -495,7 +495,7 @@ class Client(BaseClient):
             response = self._http_request(method="GET", url_suffix=path, params=params)
         # if no page is given, we will fetch all the Security Issues
         else:
-            demisto.info("Fetching all Security Issues by default. " 'You can override this by specifying the "page" parameter')
+            demisto.info('Fetching all Security Issues by default. You can override this by specifying the "page" parameter')
             response = []
             # we start at page 1
             curr_page = 1

@@ -588,7 +588,11 @@ def test_helpers(method):
 
     elif method == "headers":
         res = get_headers("some_user", "some_passwd")
-        assert res and isinstance(res, dict) and res["Authorization"]
+        assert res
+        assert isinstance(res, dict)
+        assert res["Authorization"]
 
         res = get_headers(None, None, None, "some_bearer")
-        assert res and isinstance(res, dict) and res["Authorization"]
+        assert res
+        assert isinstance(res, dict)
+        assert res["Authorization"]

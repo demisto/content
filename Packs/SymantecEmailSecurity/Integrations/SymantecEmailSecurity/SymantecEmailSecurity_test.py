@@ -246,7 +246,7 @@ def test_determine_clients(
 
 
 @pytest.mark.parametrize(
-    ("username," "password," "url_regular," "quarantine_username," "quarantine_password," "url_quarantine," "expected_message"),
+    ("username,password,url_regular,quarantine_username,quarantine_password,url_quarantine,expected_message"),
     [
         # Test for mismatched credentials (only username is provided)
         (
@@ -1176,7 +1176,7 @@ def test_automatic_pagination_commands(
     number_of_calls = args["limit"] // SymantecEmailSecurity.QUARANTINE_API_MAX_LIMIT
 
     for i in range(number_of_calls + 1):
-        expected_output = mock_response[outputs_key][number_of_calls * i : number_of_calls * (i + 1)]
+        expected_output = mock_response[outputs_key][number_of_calls * i: number_of_calls * (i + 1)]
 
         if not expected_output:
             break

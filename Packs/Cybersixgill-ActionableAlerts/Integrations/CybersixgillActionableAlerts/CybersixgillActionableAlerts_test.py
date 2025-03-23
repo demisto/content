@@ -49,7 +49,7 @@ incidents_list = [
         "sub_alerts": [],
         "threat_level": "imminent",
         "threats": ["Compromised Accounts"],
-        "title": "Access to your organization's Assets was Compromised and Offered for Sale on a Compromised Endpoint " "Market",
+        "title": "Access to your organization's Assets was Compromised and Offered for Sale on a Compromised Endpoint Market",
         "user_id": "5d233575f8db38787dbe24b6",
     },
 ]
@@ -176,7 +176,7 @@ expected_alert_output = [
             "cybersixgillthreattype": ["Brand Protection", "Data Leak"],
             "cybersixgillassessment": "text",
             "cybersixgillrecommendations": "",
-            "incidentlink": "https://portal.cybersixgill.com" "/#/?actionable_alert=6188bd21017198385e228437",
+            "incidentlink": "https://portal.cybersixgill.com/#/?actionable_alert=6188bd21017198385e228437",
             "cybersixgillstatus": "In Treatment",
             "cybersixgillsite": "rw_everest",
             "cybersixgillactor": None,

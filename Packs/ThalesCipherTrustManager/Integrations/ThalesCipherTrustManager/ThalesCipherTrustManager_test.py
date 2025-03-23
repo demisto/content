@@ -320,7 +320,7 @@ LOCAL_CA_SELF_SIGN_TEST_ARGS = [
         {
             LOCAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000",
             "duration": "365",
-            "not_before": "2023-01-01T00:00" ":00Z",
+            "not_before": "2023-01-01T00:00:00Z",
             "not_after": "two weeks",
         }
     ),
@@ -658,7 +658,7 @@ def test_user_to_group_remove_command(mock_remove_user_from_group, args):
     assert result.outputs_prefix is None
     assert result.outputs == mock_remove_user_from_group.return_value
     assert result.raw_response == mock_remove_user_from_group.return_value
-    assert result.readable_output == (f"{args[USER_ID]} has been deleted successfully from" f" {args[GROUP_NAME]}")
+    assert result.readable_output == (f"{args[USER_ID]} has been deleted successfully from {args[GROUP_NAME]}")
 
 
 @pytest.mark.parametrize("args", USERS_LIST_TEST_ARGS)

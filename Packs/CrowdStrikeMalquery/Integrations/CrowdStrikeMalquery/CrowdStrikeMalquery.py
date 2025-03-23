@@ -177,7 +177,7 @@ def exact_search_command(client: Client, args: dict) -> CommandResults:
 
     # must provide a pattern (hex, ascii ot wide string)
     if not patterns:
-        raise DemistoException("You must provide a query to search in one of the following patterns: Hex, ASCII, " "Wide string")
+        raise DemistoException("You must provide a query to search in one of the following patterns: Hex, ASCII, Wide string")
 
     # dates format: YYYY/MM/DD
     query_filters = assign_params(
