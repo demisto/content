@@ -1,13 +1,16 @@
 This integration enables the management of VMware vCenter and ESXi hosts directly from XSOAR using Ansible modules. The Ansible engine is self-contained and pre-configured as part of this pack onto your XSOAR server, all you need to do is provide credentials you are ready to use the feature rich commands. This integration functions without any agents or additional software installed on the hosts by utilising VMware APIs.
 
 ## Requirements
+
 * vCenter or ESXi Server 6.5 and above
 * Paid License on vCenter or ESXi Server. Free vSphere Hypervistor will be read-only
 
 ## Networking
+
 By default, TCP port 443 will be used to initiate a REST API connection to the vSphere host.
 
 The connection will be initiated from the XSOAR engine/server specified in the instance settings.
+
 ## Configure Ansible VMware in Cortex
 
 
@@ -21,10 +24,13 @@ The connection will be initiated from the XSOAR engine/server specified in the i
 
 
 ## Idempotence
+
 The action commands in this integration are idempotent. This means that the result of performing it once is exactly the same as the result of performing it repeatedly without any intervening actions.
 
 ## State Arguement
+
 Some of the commands in this integration take a state argument. These define the desired end state of the object being managed. As a result these commands are able to perform multiple management operations depending on the desired state value. Common state values are:
+
 | **State** | **Result** |
 | --- | --- |
 | present | Object should exist. If not present, the object will be created with the provided parameters. If present but not with correct parameters, it will be modified to met provided parameters. |
@@ -34,21 +40,27 @@ Some of the commands in this integration take a state argument. These define the
 | absent | Object should not exist. If it it exists it will be deleted. |
 
 ## Complex Command Inputs
+
 Some commands may require structured input arguments such as `lists` or `dictionary`, these can be provided in standard JSON notation wrapped in double curly braces. For example a argument called `dns_servers` that accepts a list of server IPs 8.8.8.8 and 8.8.4.4 would be entered as `dns_servers="{{ ['8.8.8.8', '8.8.4.4'] }}"`.
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
+
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### vmware-about-info
+
 ***
 Provides information about VMware server to which user is connecting to
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_about_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_about_info_module.html>
 
 
 #### Base Command
 
 `vmware-about-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -63,9 +75,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-about-info ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -97,34 +111,39 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## About_Info
->    * api_type: VirtualCenter
->    * api_version: 6.5
->    * build: 8024368
->    * instance_uuid: a2ed9f62-9d30-4ee8-90d0-0f8f830448b4
->    * license_product_name: VMware VirtualCenter Server
->    * license_product_version: 6.0
->    * locale_build: 000
->    * locale_version: INTL
->    * os_type: linux-x64
->    * product_full_name: VMware vCenter Server 6.5.0 build-8024368
->    * product_line_id: vpx
->    * product_name: VMware vCenter Server
->    * vendor: VMware, Inc.
->    * version: 6.5.0
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## About_Info
+>
+>   * api_type: VirtualCenter
+>   * api_version: 6.5
+>   * build: 8024368
+>   * instance_uuid: a2ed9f62-9d30-4ee8-90d0-0f8f830448b4
+>   * license_product_name: VMware VirtualCenter Server
+>   * license_product_version: 6.0
+>   * locale_build: 000
+>   * locale_version: INTL
+>   * os_type: linux-x64
+>   * product_full_name: VMware vCenter Server 6.5.0 build-8024368
+>   * product_line_id: vpx
+>   * product_name: VMware vCenter Server
+>   * vendor: VMware, Inc.
+>   * version: 6.5.0
 
 
 ### vmware-category
+
 ***
 Manage VMware categories
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_category_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_category_module.html>
 
 
 #### Base Command
 
 `vmware-category`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -147,14 +166,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-category-info
+
 ***
 Gather info about VMware tag categories
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_category_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_category_info_module.html>
 
 
 #### Base Command
 
 `vmware-category-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -172,14 +193,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-cfg-backup
+
 ***
 Backup / Restore / Reset ESXi host configuration
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_cfg_backup_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_cfg_backup_module.html>
 
 
 #### Base Command
 
 `vmware-cfg-backup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -198,9 +221,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-cfg-backup state="saved" dest="/tmp/" esxi_hostname="esxi01"```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -217,20 +242,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * dest_file: /tmp/configBundle-esxi01.tgz
+># CHANGED 
+>
+> * changed: True
+> * dest_file: /tmp/configBundle-esxi01.tgz
 
 
 ### vmware-cluster
+
 ***
 Manage VMware vSphere clusters
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_module.html>
 
 
 #### Base Command
 
 `vmware-cluster`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -266,9 +294,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-cluster datacenter="DC1" cluster_name="cluster" enable_ha="False" enable_drs="False" enable_vsan="False" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -285,20 +315,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * result: None
+># SUCCESS 
+>
+> * changed: False
+> * result: None
 
 
 ### vmware-cluster-drs
+
 ***
 Manage Distributed Resource Scheduler (DRS) on VMware vSphere clusters
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_drs_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_drs_module.html>
 
 
 #### Base Command
 
 `vmware-cluster-drs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -318,9 +351,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-cluster-drs datacenter="DC1" cluster_name="cluster" enable_drs="False" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -337,20 +372,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * result: None
+># SUCCESS 
+>
+> * changed: False
+> * result: None
 
 
 ### vmware-cluster-ha
+
 ***
 Manage High Availability (HA) on VMware vSphere clusters
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_ha_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_ha_module.html>
 
 
 #### Base Command
 
 `vmware-cluster-ha`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -378,9 +416,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-cluster-ha datacenter="DC1" cluster_name="cluster" enable_ha="False" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -397,20 +437,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * result: None
+># SUCCESS 
+>
+> * changed: False
+> * result: None
 
 
 ### vmware-cluster-info
+
 ***
 Gather info about clusters available in given vCenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_info_module.html>
 
 
 #### Base Command
 
 `vmware-cluster-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -428,9 +471,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-cluster-info datacenter="DC1" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -498,60 +543,84 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Clusters
->    * ### Cluster
->      * datacenter: DC1
->      * drs_default_vm_behavior: fullyAutomated
->      * drs_enable_vm_behavior_overrides: True
->      * drs_vmotion_rate: 3
->      * enable_ha: False
->      * enabled_drs: False
->      * enabled_vsan: False
->      * ha_admission_control_enabled: True
->      * ha_failover_level: 2
->      * ha_host_monitoring: enabled
->      * ha_vm_monitoring: vmMonitoringDisabled
->      * moid: domain-c7
->      * vsan_auto_claim_storage: False
->      * #### Ha_Restart_Priority
->        * 0: medium
->      * #### Ha_Vm_Failure_Interval
->        * 0: 30
->      * #### Ha_Vm_Max_Failure_Window
->        * 0: -1
->      * #### Ha_Vm_Max_Failures
->        * 0: 3
->      * #### Ha_Vm_Min_Up_Time
->        * 0: 120
->      * #### Ha_Vm_Tools_Monitoring
->        * 0: vmMonitoringDisabled
->      * #### Hosts
->      * #### esxi01
->        * folder: /DC1/host/cluster
->        * name: esxi01
->      * #### Resource_Summary
->        * cpuCapacityMHz: 5330
->        * cpuUsedMHz: 32
->        * memCapacityMB: 6143
->        * memUsedMB: 1487
->        * pMemAvailableMB: None
->        * pMemCapacityMB: None
->        * storageCapacityMB: 7936
->        * storageUsedMB: 1439
->      * #### Tags
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Clusters
+>
+>   * ### Cluster
+>
+>     * datacenter: DC1
+>     * drs_default_vm_behavior: fullyAutomated
+>     * drs_enable_vm_behavior_overrides: True
+>     * drs_vmotion_rate: 3
+>     * enable_ha: False
+>     * enabled_drs: False
+>     * enabled_vsan: False
+>     * ha_admission_control_enabled: True
+>     * ha_failover_level: 2
+>     * ha_host_monitoring: enabled
+>     * ha_vm_monitoring: vmMonitoringDisabled
+>     * moid: domain-c7
+>     * vsan_auto_claim_storage: False
+>
+>     * #### Ha_Restart_Priority
+>
+>       * 0: medium
+>
+>     * #### Ha_Vm_Failure_Interval
+>
+>       * 0: 30
+>
+>     * #### Ha_Vm_Max_Failure_Window
+>
+>       * 0: -1
+>
+>     * #### Ha_Vm_Max_Failures
+>
+>       * 0: 3
+>
+>     * #### Ha_Vm_Min_Up_Time
+>
+>       * 0: 120
+>
+>     * #### Ha_Vm_Tools_Monitoring
+>
+>       * 0: vmMonitoringDisabled
+>
+>     * #### Hosts
+>
+>     * #### esxi01
+>
+>       * folder: /DC1/host/cluster
+>       * name: esxi01
+>
+>     * #### Resource_Summary
+>
+>       * cpuCapacityMHz: 5330
+>       * cpuUsedMHz: 32
+>       * memCapacityMB: 6143
+>       * memUsedMB: 1487
+>       * pMemAvailableMB: None
+>       * pMemCapacityMB: None
+>       * storageCapacityMB: 7936
+>       * storageUsedMB: 1439
+>
+>     * #### Tags
 
 
 ### vmware-cluster-vsan
+
 ***
 Manages virtual storage area network (vSAN) configuration on VMware vSphere clusters
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_vsan_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_vsan_module.html>
 
 
 #### Base Command
 
 `vmware-cluster-vsan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -571,14 +640,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-content-deploy-template
+
 ***
 Deploy Virtual Machine from template stored in content library.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_content_deploy_template_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_content_deploy_template_module.html>
 
 
 #### Base Command
 
 `vmware-content-deploy-template`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -605,14 +676,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-content-library-info
+
 ***
 Gather information about VMware Content Library
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_content_library_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_content_library_info_module.html>
 
 
 #### Base Command
 
 `vmware-content-library-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -632,14 +705,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-content-library-manager
+
 ***
 Create, update and delete VMware content library
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_content_library_manager_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_content_library_manager_module.html>
 
 
 #### Base Command
 
 `vmware-content-library-manager`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -662,14 +737,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-datacenter
+
 ***
 Manage VMware vSphere Datacenters
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_datacenter_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_datacenter_module.html>
 
 
 #### Base Command
 
 `vmware-datacenter`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -685,9 +762,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-datacenter datacenter_name="DC1" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -703,19 +782,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
+># SUCCESS 
+>
+> * changed: False
 
 
 ### vmware-datastore-cluster
+
 ***
 Manage VMware vSphere datastore clusters
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_cluster_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_cluster_module.html>
 
 
 #### Base Command
 
 `vmware-datastore-cluster`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -734,9 +816,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-datastore-cluster datacenter_name="DC1" datastore_cluster_name="Storage_Cluster" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -753,20 +837,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * result: Datastore cluster 'Storage_Cluster' created successfully.
+># CHANGED 
+>
+> * changed: True
+> * result: Datastore cluster 'Storage_Cluster' created successfully.
 
 
 ### vmware-datastore-info
+
 ***
 Gather info about datastores available in given vCenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_info_module.html>
 
 
 #### Base Command
 
 `vmware-datastore-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -786,9 +873,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-datastore-info datacenter_name="DC1" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -819,32 +908,38 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Datastores
->  * ## Datastore1
->    * accessible: True
->    * capacity: 8321499136
->    * datastore_cluster: N/A
->    * freeSpace: 6812598272
->    * maintenanceMode: normal
->    * multipleHostAccess: False
->    * name: datastore1
->    * provisioned: 1508900864
->    * type: VMFS
->    * uncommitted: 0
->    * url: ds:///vmfs/volumes/60eafb85-4b6578d0-c0a8-000c29d92704/
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Datastores
+>
+> * ## Datastore1
+>
+>   * accessible: True
+>   * capacity: 8321499136
+>   * datastore_cluster: N/A
+>   * freeSpace: 6812598272
+>   * maintenanceMode: normal
+>   * multipleHostAccess: False
+>   * name: datastore1
+>   * provisioned: 1508900864
+>   * type: VMFS
+>   * uncommitted: 0
+>   * url: ds:///vmfs/volumes/60eafb85-4b6578d0-c0a8-000c29d92704/
 
 
 ### vmware-datastore-maintenancemode
+
 ***
 Place a datastore into maintenance mode
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_maintenancemode_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_maintenancemode_module.html>
 
 
 #### Base Command
 
 `vmware-datastore-maintenancemode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -863,9 +958,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-datastore-maintenancemode datastore="datastore1" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -884,21 +981,26 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Datastore_Status
->    * datastore1: Datastore 'datastore1' entered in maintenance mode.
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Datastore_Status
+>
+>   * datastore1: Datastore 'datastore1' entered in maintenance mode.
 
 
 ### vmware-dns-config
+
 ***
 Manage VMware ESXi DNS Configuration
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dns_config_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_dns_config_module.html>
 
 
 #### Base Command
 
 `vmware-dns-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -915,9 +1017,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-dns-config change_hostname_to="esxi01" domainname="foo.org" dns_servers="{{ ['8.8.8.8', '8.8.4.4'] }}" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -933,18 +1037,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
+># SUCCESS 
+>
+> * changed: False
 
 ### vmware-drs-group
+
 ***
 Creates vm/host group in a given cluster.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_group_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_drs_group_module.html>
 
 
 #### Base Command
 
 `vmware-drs-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -965,9 +1072,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-drs-group cluster_name="cluster" datacenter_name="DC1" group_name="TEST_VM_01" vms="Sample_VM" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -995,27 +1104,36 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * msg: Updated vm group TEST_VM_01 successfully
->  * ## Result
->    * ### Cluster
->    * ### Test_Vm_01
->      * group_name: TEST_VM_01
->      * type: vm
->      * #### Vms
->        * 0: Sample_VM
+># SUCCESS 
+>
+> * changed: False
+> * msg: Updated vm group TEST_VM_01 successfully
+>
+> * ## Result
+>
+>   * ### Cluster
+>
+>   * ### Test_Vm_01
+>
+>     * group_name: TEST_VM_01
+>     * type: vm
+>
+>     * #### Vms
+>
+>       * 0: Sample_VM
 
 
 ### vmware-drs-group-info
+
 ***
 Gathers info about DRS VM/Host groups on the given cluster
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_group_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_drs_group_info_module.html>
 
 
 #### Base Command
 
 `vmware-drs-group-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1032,9 +1150,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-drs-group-info datacenter="DC1" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -1061,25 +1181,34 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Drs_Group_Info
->    * ### Cluster
->    * ### Test_Vm_01
->      * group_name: TEST_VM_01
->      * type: vm
->      * #### Vms
->        * 0: Sample_VM
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Drs_Group_Info
+>
+>   * ### Cluster
+>
+>   * ### Test_Vm_01
+>
+>     * group_name: TEST_VM_01
+>     * type: vm
+>
+>     * #### Vms
+>
+>       * 0: Sample_VM
 
 ### vmware-drs-rule-info
+
 ***
 Gathers info about DRS rule on the given cluster
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_rule_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_drs_rule_info_module.html>
 
 
 #### Base Command
 
 `vmware-drs-rule-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1096,9 +1225,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-drs-rule-info cluster_name="cluster" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -1117,21 +1248,26 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Drs_Rule_Info
->    * ### Cluster
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Drs_Rule_Info
+>
+>   * ### Cluster
 
 
 ### vmware-dvs-host
+
 ***
 Add or remove a host from distributed virtual switch
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_host_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_host_module.html>
 
 
 #### Base Command
 
 `vmware-dvs-host`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1152,14 +1288,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-dvs-portgroup
+
 ***
 Create or remove a Distributed vSwitch portgroup.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_module.html>
 
 
 #### Base Command
 
 `vmware-dvs-portgroup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1183,9 +1321,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-dvs-portgroup portgroup_name="vlan-123-portrgoup" switch_name="dvSwitch" vlan_id="123" num_ports="120" portgroup_type="earlyBinding" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -1202,19 +1342,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * result: None
+># CHANGED 
+>
+> * changed: True
+> * result: None
 
 ### vmware-dvs-portgroup-find
+
 ***
 Find portgroup(s) in a VMware environment
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_find_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_find_module.html>
 
 
 #### Base Command
 
 `vmware-dvs-portgroup-find`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1233,9 +1376,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-dvs-portgroup-find dvswitch="dvSwitch" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -1267,32 +1412,40 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Dvs_Portgroups
->  * ## Vlan-123-Portrgoup
->    * dvswitch: dvSwitch
->    * name: vlan-123-portrgoup
->    * pvlan: False
->    * trunk: False
->    * vlan_id: 123
->  * ## Dvswitch-Dvuplinks-23
->    * dvswitch: dvSwitch
->    * name: dvSwitch-DVUplinks-23
->    * pvlan: False
->    * trunk: True
->    * vlan_id: 0-4094
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Dvs_Portgroups
+>
+> * ## Vlan-123-Portrgoup
+>
+>   * dvswitch: dvSwitch
+>   * name: vlan-123-portrgoup
+>   * pvlan: False
+>   * trunk: False
+>   * vlan_id: 123
+>
+> * ## Dvswitch-Dvuplinks-23
+>
+>   * dvswitch: dvSwitch
+>   * name: dvSwitch-DVUplinks-23
+>   * pvlan: False
+>   * trunk: True
+>   * vlan_id: 0-4094
 
 
 ### vmware-dvs-portgroup-info
+
 ***
 Gathers info DVS portgroup configurations
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_info_module.html>
 
 
 #### Base Command
 
 `vmware-dvs-portgroup-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1313,9 +1466,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-dvs-portgroup-info datacenter="DC1"```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -1401,79 +1556,102 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Dvs_Portgroup_Info
->    * ### Dvswitch
->    * ### Dvswitch
->      * description: None
->      * dvswitch_name: dvSwitch
->      * key: dvportgroup-25
->      * num_ports: 120
->      * portgroup_name: vlan-123-portrgoup
->      * type: earlyBinding
->      * #### Network_Policy
->        * forged_transmits: False
->        * mac_changes: False
->        * promiscuous: False
->      * #### Port_Policy
->        * block_override: True
->        * ipfix_override: False
->        * live_port_move: False
->        * network_rp_override: False
->        * port_config_reset_at_disconnect: True
->        * security_override: False
->        * shaping_override: False
->        * traffic_filter_override: False
->        * uplink_teaming_override: False
->        * vendor_config_override: False
->        * vlan_override: False
->      * #### Teaming_Policy
->        * inbound_policy: False
->        * notify_switches: True
->        * policy: loadbalance_srcid
->        * rolling_order: False
->      * #### Vlan_Info
->    * ### Dvswitch
->      * description: None
->      * dvswitch_name: dvSwitch
->      * key: dvportgroup-24
->      * num_ports: 0
->      * portgroup_name: dvSwitch-DVUplinks-23
->      * type: earlyBinding
->      * #### Network_Policy
->        * forged_transmits: True
->        * mac_changes: False
->        * promiscuous: False
->      * #### Port_Policy
->        * block_override: True
->        * ipfix_override: False
->        * live_port_move: False
->        * network_rp_override: False
->        * port_config_reset_at_disconnect: True
->        * security_override: False
->        * shaping_override: False
->        * traffic_filter_override: False
->        * uplink_teaming_override: False
->        * vendor_config_override: False
->        * vlan_override: False
->      * #### Teaming_Policy
->        * inbound_policy: True
->        * notify_switches: True
->        * policy: loadbalance_srcid
->        * rolling_order: False
->      * #### Vlan_Info
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Dvs_Portgroup_Info
+>
+>   * ### Dvswitch
+>
+>   * ### Dvswitch
+>
+>     * description: None
+>     * dvswitch_name: dvSwitch
+>     * key: dvportgroup-25
+>     * num_ports: 120
+>     * portgroup_name: vlan-123-portrgoup
+>     * type: earlyBinding
+>
+>     * #### Network_Policy
+>
+>       * forged_transmits: False
+>       * mac_changes: False
+>       * promiscuous: False
+>
+>     * #### Port_Policy
+>
+>       * block_override: True
+>       * ipfix_override: False
+>       * live_port_move: False
+>       * network_rp_override: False
+>       * port_config_reset_at_disconnect: True
+>       * security_override: False
+>       * shaping_override: False
+>       * traffic_filter_override: False
+>       * uplink_teaming_override: False
+>       * vendor_config_override: False
+>       * vlan_override: False
+>
+>     * #### Teaming_Policy
+>
+>       * inbound_policy: False
+>       * notify_switches: True
+>       * policy: loadbalance_srcid
+>       * rolling_order: False
+>
+>     * #### Vlan_Info
+>
+>   * ### Dvswitch
+>
+>     * description: None
+>     * dvswitch_name: dvSwitch
+>     * key: dvportgroup-24
+>     * num_ports: 0
+>     * portgroup_name: dvSwitch-DVUplinks-23
+>     * type: earlyBinding
+>
+>     * #### Network_Policy
+>
+>       * forged_transmits: True
+>       * mac_changes: False
+>       * promiscuous: False
+>
+>     * #### Port_Policy
+>
+>       * block_override: True
+>       * ipfix_override: False
+>       * live_port_move: False
+>       * network_rp_override: False
+>       * port_config_reset_at_disconnect: True
+>       * security_override: False
+>       * shaping_override: False
+>       * traffic_filter_override: False
+>       * uplink_teaming_override: False
+>       * vendor_config_override: False
+>       * vlan_override: False
+>
+>     * #### Teaming_Policy
+>
+>       * inbound_policy: True
+>       * notify_switches: True
+>       * policy: loadbalance_srcid
+>       * rolling_order: False
+>
+>     * #### Vlan_Info
 
 
 ### vmware-dvswitch
+
 ***
 Create or remove a Distributed Switch
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_module.html>
 
 
 #### Base Command
 
 `vmware-dvswitch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1502,9 +1680,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-dvswitch datacenter="DC1" switch_name="dvSwitch" version="6.0.0" mtu="9000" uplink_quantity="2" discovery_protocol="lldp" discovery_operation="both" state="present"  datacenter_name="DC1"```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -1521,19 +1701,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * result: DVS created
+># CHANGED 
+>
+> * changed: True
+> * result: DVS created
 
 ### vmware-dvswitch-lacp
+
 ***
 Manage LACP configuration on a Distributed Switch
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_lacp_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_lacp_module.html>
 
 
 #### Base Command
 
 `vmware-dvswitch-lacp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1551,9 +1734,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-dvswitch-lacp switch="dvSwitch" support_mode="enhanced" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -1574,23 +1759,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * dvswitch: dvSwitch
->  * result: support mode changed
->  * support_mode: enhanced
->  * support_mode_previous: basic
->  * ## Link_Aggregation_Groups
+># CHANGED 
+>
+> * changed: True
+> * dvswitch: dvSwitch
+> * result: support mode changed
+> * support_mode: enhanced
+> * support_mode_previous: basic
+>
+> * ## Link_Aggregation_Groups
 
 ### vmware-dvswitch-nioc
+
 ***
 Manage distributed switch Network IO Control
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_nioc_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_nioc_module.html>
 
 
 #### Base Command
 
 `vmware-dvswitch-nioc`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1610,9 +1799,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-dvswitch-nioc switch="dvSwitch" version="version3" resources="{{ [{'name': 'vmotion', 'limit': -1, 'reservation': 128, 'shares_level': 'normal'}, {'name': 'vsan', 'limit': -1, 'shares_level': 'custom', 'shares': 99, 'reservation': 256}] }}" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -1633,22 +1824,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * dvswitch_nioc_status: Enabled NIOC with version version3
->  * ## Resources_Changed
->    * 0: vmotion
->    * 1: vsan
+># CHANGED 
+>
+> * changed: True
+> * dvswitch_nioc_status: Enabled NIOC with version version3
+>
+> * ## Resources_Changed
+>
+>   * 0: vmotion
+>   * 1: vsan
 
 ### vmware-dvswitch-pvlans
+
 ***
 Manage Private VLAN configuration of a Distributed Switch
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_pvlans_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_pvlans_module.html>
 
 
 #### Base Command
 
 `vmware-dvswitch-pvlans`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1668,14 +1864,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-dvswitch-uplink-pg
+
 ***
 Manage uplink portproup configuration of a Distributed Switch
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_uplink_pg_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_uplink_pg_module.html>
 
 
 #### Base Command
 
 `vmware-dvswitch-uplink-pg`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1698,9 +1896,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-dvswitch-uplink-pg switch="dvSwitch" name="dvSwitch-DVUplinks" advanced="{{ {'port_config_reset_at_disconnect': True, 'block_override': True, 'vendor_config_override': False, 'vlan_override': False, 'netflow_override': False, 'traffic_filter_override': False} }}" vlan_trunk_range="0-4094" netflow_enabled="False" block_all_ports="False" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -1732,33 +1932,38 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * adv_block_ports: True
->  * adv_netflow: False
->  * adv_reset_at_disconnect: True
->  * adv_traffic_filtering: False
->  * adv_vendor_conf: False
->  * adv_vlan: False
->  * block_all_ports: False
->  * changed: True
->  * description: None
->  * dvswitch: dvSwitch
->  * name: dvSwitch-DVUplinks
->  * name_previous: dvSwitch-DVUplinks-23
->  * netflow_enabled: False
->  * result: name changed
->  * ## Vlan_Trunk_Range
->    * 0: 0-4094
+># CHANGED 
+>
+> * adv_block_ports: True
+> * adv_netflow: False
+> * adv_reset_at_disconnect: True
+> * adv_traffic_filtering: False
+> * adv_vendor_conf: False
+> * adv_vlan: False
+> * block_all_ports: False
+> * changed: True
+> * description: None
+> * dvswitch: dvSwitch
+> * name: dvSwitch-DVUplinks
+> * name_previous: dvSwitch-DVUplinks-23
+> * netflow_enabled: False
+> * result: name changed
+>
+> * ## Vlan_Trunk_Range
+>
+>   * 0: 0-4094
 
 ### vmware-evc-mode
+
 ***
 Enable/Disable EVC mode on vCenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_evc_mode_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_evc_mode_module.html>
 
 
 #### Base Command
 
 `vmware-evc-mode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1777,9 +1982,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-evc-mode datacenter_name="DC1" cluster_name="cluster" evc_mode="intel-merom" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -1796,21 +2003,24 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * msg: EVC Mode is already set to 'intel-merom' on 'cluster'.
+># SUCCESS 
+>
+> * changed: False
+> * msg: EVC Mode is already set to 'intel-merom' on 'cluster'.
 
 
 
 ### vmware-folder-info
+
 ***
 Provides information about folders in a datacenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_folder_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_folder_info_module.html>
 
 
 #### Base Command
 
 `vmware-folder-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1826,9 +2036,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-folder-info datacenter="DC1" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -1884,48 +2096,73 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Flat_Folder_Info
->  * ## Group-V3
->    * moid: group-v3
->    * path: /DC1/vm
->  * ## Folder_Info
->    * ### Datastorefolders
->      * moid: group-s5
->      * path: /DC1/datastore
->      * #### Subfolders
->        * ##### Storage_Cluster
->          * moid: group-p13
->          * path: /DC1/datastore/Storage_Cluster
->          * ###### Subfolders
->    * ### Hostfolders
->      * moid: group-h4
->      * path: /DC1/host
->      * #### Subfolders
->    * ### Networkfolders
->      * moid: group-n6
->      * path: /DC1/network
->      * #### Subfolders
->    * ### Vmfolders
->      * moid: group-v3
->      * path: /DC1/vm
->      * #### Subfolders
->        * ##### Discovered Virtual Machine
->          * moid: group-v9
->          * path: /DC1/vm/Discovered virtual machine
->          * ###### Subfolders
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Flat_Folder_Info
+>
+> * ## Group-V3
+>
+>   * moid: group-v3
+>   * path: /DC1/vm
+>
+> * ## Folder_Info
+>
+>   * ### Datastorefolders
+>
+>     * moid: group-s5
+>     * path: /DC1/datastore
+>
+>     * #### Subfolders
+>
+>       * ##### Storage_Cluster
+>
+>         * moid: group-p13
+>         * path: /DC1/datastore/Storage_Cluster
+>
+>         * ###### Subfolders
+>
+>   * ### Hostfolders
+>
+>     * moid: group-h4
+>     * path: /DC1/host
+>
+>     * #### Subfolders
+>
+>   * ### Networkfolders
+>
+>     * moid: group-n6
+>     * path: /DC1/network
+>
+>     * #### Subfolders
+>
+>   * ### Vmfolders
+>
+>     * moid: group-v3
+>     * path: /DC1/vm
+>
+>     * #### Subfolders
+>
+>       * ##### Discovered Virtual Machine
+>
+>         * moid: group-v9
+>         * path: /DC1/vm/Discovered virtual machine
+>
+>         * ###### Subfolders
 
 
 ### vmware-guest
+
 ***
 Manages virtual machines in vCenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_module.html>
 
 
 #### Base Command
 
 `vmware-guest`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1972,14 +2209,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-guest-boot-info
+
 ***
 Gather info about boot options for the given virtual machine
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_boot_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_boot_info_module.html>
 
 
 #### Base Command
 
 `vmware-guest-boot-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2001,14 +2240,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-guest-boot-manager
+
 ***
 Manage boot options for the given virtual machine
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_boot_manager_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_boot_manager_module.html>
 
 
 #### Base Command
 
 `vmware-guest-boot-manager`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2037,14 +2278,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-guest-custom-attribute-defs
+
 ***
 Manage custom attributes definitions for virtual machine from VMware
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_custom_attribute_defs_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_custom_attribute_defs_module.html>
 
 
 #### Base Command
 
 `vmware-guest-custom-attribute-defs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2061,9 +2304,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-guest-custom-attribute-defs state="present" attribute_key="custom_attr_def_1" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -2086,25 +2331,30 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Custom_Attribute_Defs
->    * 0: AutoDeploy.MachineIdentity
->    * 1: com.vmware.vcIntegrity.customField.scheduledTask.action
->    * 2: com.vmware.vcIntegrity.customField.scheduledTask.signature
->    * 3: com.vmware.vcIntegrity.customField.scheduledTask.target
->    * 4: custom_attr_def_1
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Custom_Attribute_Defs
+>
+>   * 0: AutoDeploy.MachineIdentity
+>   * 1: com.vmware.vcIntegrity.customField.scheduledTask.action
+>   * 2: com.vmware.vcIntegrity.customField.scheduledTask.signature
+>   * 3: com.vmware.vcIntegrity.customField.scheduledTask.target
+>   * 4: custom_attr_def_1
 
 
 ### vmware-guest-custom-attributes
+
 ***
 Manage custom attributes from VMware for the given virtual machine
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_custom_attributes_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_custom_attributes_module.html>
 
 
 #### Base Command
 
 `vmware-guest-custom-attributes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2129,14 +2379,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-guest-customization-info
+
 ***
 Gather info about VM customization specifications
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_customization_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_customization_info_module.html>
 
 
 #### Base Command
 
 `vmware-guest-customization-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2152,9 +2404,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-guest-customization-info ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -2171,20 +2425,24 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Custom_Spec_Info
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Custom_Spec_Info
 
 
 ### vmware-guest-disk
+
 ***
 Manage disks related to virtual machine in given vCenter infrastructure
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_disk_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_disk_module.html>
 
 
 #### Base Command
 
 `vmware-guest-disk`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2208,14 +2466,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-guest-disk-info
+
 ***
 Gather info about disks of given virtual machine
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_disk_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_disk_info_module.html>
 
 
 #### Base Command
 
 `vmware-guest-disk-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2236,9 +2496,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-guest-disk-info datacenter="DC1" name="test_vm_0001" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -2276,39 +2538,45 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Guest_Disk_Info
->    * ### 0
->      * backing_datastore: datastore1
->      * backing_disk_mode: persistent
->      * backing_diskmode: persistent
->      * backing_eagerlyscrub: False
->      * backing_filename: [datastore1] test_vm_0001/test_vm_0001.vmdk
->      * backing_thinprovisioned: True
->      * backing_type: FlatVer2
->      * backing_uuid: 6000C294-3cd2-f966-9fb7-556870ae6bdf
->      * backing_writethrough: False
->      * capacity_in_bytes: 1073741824
->      * capacity_in_kb: 1048576
->      * controller_bus_number: 0
->      * controller_key: 1000
->      * controller_type: paravirtual
->      * key: 2000
->      * label: Hard disk 1
->      * summary: 1,048,576 KB
->      * unit_number: 0
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Guest_Disk_Info
+>
+>   * ### 0
+>
+>     * backing_datastore: datastore1
+>     * backing_disk_mode: persistent
+>     * backing_diskmode: persistent
+>     * backing_eagerlyscrub: False
+>     * backing_filename: [datastore1] test_vm_0001/test_vm_0001.vmdk
+>     * backing_thinprovisioned: True
+>     * backing_type: FlatVer2
+>     * backing_uuid: 6000C294-3cd2-f966-9fb7-556870ae6bdf
+>     * backing_writethrough: False
+>     * capacity_in_bytes: 1073741824
+>     * capacity_in_kb: 1048576
+>     * controller_bus_number: 0
+>     * controller_key: 1000
+>     * controller_type: paravirtual
+>     * key: 2000
+>     * label: Hard disk 1
+>     * summary: 1,048,576 KB
+>     * unit_number: 0
 
 
 ### vmware-guest-find
+
 ***
 Find the folder path(s) for a virtual machine by name or UUID
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_find_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_find_module.html>
 
 
 #### Base Command
 
 `vmware-guest-find`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2327,9 +2595,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-guest-find name="test_vm_0001" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -2348,21 +2618,26 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Folders
->    * 0: /DC1/vm
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Folders
+>
+>   * 0: /DC1/vm
 
 
 ### vmware-guest-info
+
 ***
 Gather info about a single VM
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_info_module.html>
 
 
 #### Base Command
 
 `vmware-guest-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2387,9 +2662,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-guest-info datacenter="DC1" name="test_vm_0001" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -2457,65 +2734,81 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Instance
->    * annotation: 
->    * current_snapshot: None
->    * guest_consolidation_needed: False
->    * guest_question: None
->    * guest_tools_status: guestToolsNotRunning
->    * guest_tools_version: 0
->    * hw_cluster: cluster
->    * hw_cores_per_socket: 1
->    * hw_esxi_host: esxi01
->    * hw_folder: /DC1/vm
->    * hw_guest_full_name: None
->    * hw_guest_ha_state: None
->    * hw_guest_id: None
->    * hw_is_template: False
->    * hw_memtotal_mb: 512
->    * hw_name: test_vm_0001
->    * hw_power_status: poweredOff
->    * hw_processor_count: 4
->    * hw_product_uuid: 42166c31-2bd1-6ac0-1ebb-a6db907f529e
->    * hw_version: vmx-13
->    * instance_uuid: 5016ea58-ccce-5688-f16b-82ca0b25e513
->    * ipv4: None
->    * ipv6: None
->    * module_hw: True
->    * moid: vm-21
->    * vimref: vim.VirtualMachine:vm-21
->    * ### Customvalues
->    * ### Hw_Datastores
->      * 0: datastore1
->    * ### Hw_Eth0
->      * addresstype: manual
->      * ipaddresses: None
->      * label: Network adapter 1
->      * macaddress: aa:bb:dd:aa:00:14
->      * macaddress_dash: aa-bb-dd-aa-00-14
->      * portgroup_key: None
->      * portgroup_portkey: None
->      * summary: VM Network
->    * ### Hw_Files
->      * 0: [datastore1] test_vm_0001/test_vm_0001.vmx
->      * 1: [datastore1] test_vm_0001/test_vm_0001.vmsd
->      * 2: [datastore1] test_vm_0001/test_vm_0001.vmdk
->    * ### Hw_Interfaces
->      * 0: eth0
->    * ### Snapshots
->    * ### Vnc
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Instance
+>
+>   * annotation: 
+>   * current_snapshot: None
+>   * guest_consolidation_needed: False
+>   * guest_question: None
+>   * guest_tools_status: guestToolsNotRunning
+>   * guest_tools_version: 0
+>   * hw_cluster: cluster
+>   * hw_cores_per_socket: 1
+>   * hw_esxi_host: esxi01
+>   * hw_folder: /DC1/vm
+>   * hw_guest_full_name: None
+>   * hw_guest_ha_state: None
+>   * hw_guest_id: None
+>   * hw_is_template: False
+>   * hw_memtotal_mb: 512
+>   * hw_name: test_vm_0001
+>   * hw_power_status: poweredOff
+>   * hw_processor_count: 4
+>   * hw_product_uuid: 42166c31-2bd1-6ac0-1ebb-a6db907f529e
+>   * hw_version: vmx-13
+>   * instance_uuid: 5016ea58-ccce-5688-f16b-82ca0b25e513
+>   * ipv4: None
+>   * ipv6: None
+>   * module_hw: True
+>   * moid: vm-21
+>   * vimref: vim.VirtualMachine:vm-21
+>
+>   * ### Customvalues
+>
+>   * ### Hw_Datastores
+>
+>     * 0: datastore1
+>
+>   * ### Hw_Eth0
+>
+>     * addresstype: manual
+>     * ipaddresses: None
+>     * label: Network adapter 1
+>     * macaddress: aa:bb:dd:aa:00:14
+>     * macaddress_dash: aa-bb-dd-aa-00-14
+>     * portgroup_key: None
+>     * portgroup_portkey: None
+>     * summary: VM Network
+>
+>   * ### Hw_Files
+>
+>     * 0: [datastore1] test_vm_0001/test_vm_0001.vmx
+>     * 1: [datastore1] test_vm_0001/test_vm_0001.vmsd
+>     * 2: [datastore1] test_vm_0001/test_vm_0001.vmdk
+>
+>   * ### Hw_Interfaces
+>
+>     * 0: eth0
+>
+>   * ### Snapshots
+>
+>   * ### Vnc
 
 ### vmware-guest-move
+
 ***
 Moves virtual machines in vCenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_move_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_move_module.html>
 
 
 #### Base Command
 
 `vmware-guest-move`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2537,9 +2830,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-guest-move datacenter="DC1" name="test_vm_0001" dest_folder="/DC1/vm" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -2607,66 +2902,82 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Instance
->    * annotation: 
->    * current_snapshot: None
->    * guest_consolidation_needed: False
->    * guest_question: None
->    * guest_tools_status: guestToolsNotRunning
->    * guest_tools_version: 0
->    * hw_cluster: cluster
->    * hw_cores_per_socket: 1
->    * hw_esxi_host: esxi01
->    * hw_folder: /DC1/vm
->    * hw_guest_full_name: None
->    * hw_guest_ha_state: None
->    * hw_guest_id: None
->    * hw_is_template: False
->    * hw_memtotal_mb: 512
->    * hw_name: test_vm_0001
->    * hw_power_status: poweredOff
->    * hw_processor_count: 4
->    * hw_product_uuid: 42166c31-2bd1-6ac0-1ebb-a6db907f529e
->    * hw_version: vmx-13
->    * instance_uuid: 5016ea58-ccce-5688-f16b-82ca0b25e513
->    * ipv4: None
->    * ipv6: None
->    * module_hw: True
->    * moid: vm-21
->    * vimref: vim.VirtualMachine:vm-21
->    * ### Customvalues
->    * ### Hw_Datastores
->      * 0: datastore1
->    * ### Hw_Eth0
->      * addresstype: manual
->      * ipaddresses: None
->      * label: Network adapter 1
->      * macaddress: aa:bb:dd:aa:00:14
->      * macaddress_dash: aa-bb-dd-aa-00-14
->      * portgroup_key: None
->      * portgroup_portkey: None
->      * summary: VM Network
->    * ### Hw_Files
->      * 0: [datastore1] test_vm_0001/test_vm_0001.vmx
->      * 1: [datastore1] test_vm_0001/test_vm_0001.vmsd
->      * 2: [datastore1] test_vm_0001/test_vm_0001.vmdk
->    * ### Hw_Interfaces
->      * 0: eth0
->    * ### Snapshots
->    * ### Vnc
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Instance
+>
+>   * annotation: 
+>   * current_snapshot: None
+>   * guest_consolidation_needed: False
+>   * guest_question: None
+>   * guest_tools_status: guestToolsNotRunning
+>   * guest_tools_version: 0
+>   * hw_cluster: cluster
+>   * hw_cores_per_socket: 1
+>   * hw_esxi_host: esxi01
+>   * hw_folder: /DC1/vm
+>   * hw_guest_full_name: None
+>   * hw_guest_ha_state: None
+>   * hw_guest_id: None
+>   * hw_is_template: False
+>   * hw_memtotal_mb: 512
+>   * hw_name: test_vm_0001
+>   * hw_power_status: poweredOff
+>   * hw_processor_count: 4
+>   * hw_product_uuid: 42166c31-2bd1-6ac0-1ebb-a6db907f529e
+>   * hw_version: vmx-13
+>   * instance_uuid: 5016ea58-ccce-5688-f16b-82ca0b25e513
+>   * ipv4: None
+>   * ipv6: None
+>   * module_hw: True
+>   * moid: vm-21
+>   * vimref: vim.VirtualMachine:vm-21
+>
+>   * ### Customvalues
+>
+>   * ### Hw_Datastores
+>
+>     * 0: datastore1
+>
+>   * ### Hw_Eth0
+>
+>     * addresstype: manual
+>     * ipaddresses: None
+>     * label: Network adapter 1
+>     * macaddress: aa:bb:dd:aa:00:14
+>     * macaddress_dash: aa-bb-dd-aa-00-14
+>     * portgroup_key: None
+>     * portgroup_portkey: None
+>     * summary: VM Network
+>
+>   * ### Hw_Files
+>
+>     * 0: [datastore1] test_vm_0001/test_vm_0001.vmx
+>     * 1: [datastore1] test_vm_0001/test_vm_0001.vmsd
+>     * 2: [datastore1] test_vm_0001/test_vm_0001.vmdk
+>
+>   * ### Hw_Interfaces
+>
+>     * 0: eth0
+>
+>   * ### Snapshots
+>
+>   * ### Vnc
 
 
 ### vmware-guest-network
+
 ***
 Manage network adapters of specified virtual machine in given vCenter infrastructure
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_network_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_network_module.html>
 
 
 #### Base Command
 
 `vmware-guest-network`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2692,14 +3003,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-guest-powerstate
+
 ***
 Manages power states of virtual machines in vCenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_powerstate_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_powerstate_module.html>
 
 
 #### Base Command
 
 `vmware-guest-powerstate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2728,14 +3041,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-guest-screenshot
+
 ***
 Create a screenshot of the Virtual Machine console.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_screenshot_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_screenshot_module.html>
 
 
 #### Base Command
 
 `vmware-guest-screenshot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2760,14 +3075,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-guest-sendkey
+
 ***
 Send USB HID codes to the Virtual Machine's keyboard.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_sendkey_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_sendkey_module.html>
 
 
 #### Base Command
 
 `vmware-guest-sendkey`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2793,14 +3110,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-guest-snapshot
+
 ***
 Manages virtual machines snapshots in vCenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_snapshot_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_snapshot_module.html>
 
 
 #### Base Command
 
 `vmware-guest-snapshot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2830,9 +3149,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-guest-snapshot datacenter="DC1" folder="/DC1/vm/" name="test_vm_0001" state="present" snapshot_name="snap1" description="snap1_description" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -2866,32 +3187,41 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Snapshot_Results
->    * ### Current_Snapshot
->      * creation_time: 2021-07-11T17:02:28.131433+00:00
->      * description: snap1_description
->      * id: 1
->      * name: snap1
->      * state: poweredOff
->    * ### Snapshots
->    * ### Snap1
->      * creation_time: 2021-07-11T17:02:28.131433+00:00
->      * description: snap1_description
->      * id: 1
->      * name: snap1
->      * state: poweredOff
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Snapshot_Results
+>
+>   * ### Current_Snapshot
+>
+>     * creation_time: 2021-07-11T17:02:28.131433+00:00
+>     * description: snap1_description
+>     * id: 1
+>     * name: snap1
+>     * state: poweredOff
+>
+>   * ### Snapshots
+>
+>   * ### Snap1
+>
+>     * creation_time: 2021-07-11T17:02:28.131433+00:00
+>     * description: snap1_description
+>     * id: 1
+>     * name: snap1
+>     * state: poweredOff
 
 ### vmware-guest-snapshot-info
+
 ***
 Gather info about virtual machine's snapshots in vCenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_snapshot_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_snapshot_info_module.html>
 
 
 #### Base Command
 
 `vmware-guest-snapshot-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2914,14 +3244,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-guest-tools-upgrade
+
 ***
 Module to upgrade VMTools
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_tools_upgrade_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_tools_upgrade_module.html>
 
 
 #### Base Command
 
 `vmware-guest-tools-upgrade`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2943,14 +3275,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-guest-tools-wait
+
 ***
 Wait for VMware tools to become available
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_tools_wait_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_tools_wait_module.html>
 
 
 #### Base Command
 
 `vmware-guest-tools-wait`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2973,14 +3307,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-guest-video
+
 ***
 Modify video card configurations of specified virtual machine in given vCenter infrastructure
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_video_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_video_module.html>
 
 
 #### Base Command
 
 `vmware-guest-video`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3009,14 +3345,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-guest-vnc
+
 ***
 Manages VNC remote display on virtual machines in vCenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_vnc_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_guest_vnc_module.html>
 
 
 #### Base Command
 
 `vmware-guest-vnc`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3043,9 +3381,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-guest-vnc folder="/DC1/vm" name="test_vm_0001" vnc_port="5990" vnc_password="vNc5ecr3t" datacenter="DC1" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -3134,82 +3474,103 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Instance
->    * annotation: 
->    * guest_consolidation_needed: False
->    * guest_question: None
->    * guest_tools_status: guestToolsNotRunning
->    * guest_tools_version: 0
->    * hw_cluster: cluster
->    * hw_cores_per_socket: 1
->    * hw_esxi_host: esxi01
->    * hw_folder: /DC1/vm
->    * hw_guest_full_name: None
->    * hw_guest_ha_state: None
->    * hw_guest_id: None
->    * hw_is_template: False
->    * hw_memtotal_mb: 512
->    * hw_name: test_vm_0001
->    * hw_power_status: poweredOff
->    * hw_processor_count: 4
->    * hw_product_uuid: 42166c31-2bd1-6ac0-1ebb-a6db907f529e
->    * hw_version: vmx-13
->    * instance_uuid: 5016ea58-ccce-5688-f16b-82ca0b25e513
->    * ipv4: None
->    * ipv6: None
->    * module_hw: True
->    * moid: vm-21
->    * vimref: vim.VirtualMachine:vm-21
->    * ### Current_Snapshot
->      * creation_time: 2021-07-11T17:02:28.131433+00:00
->      * description: snap1_description
->      * id: 1
->      * name: snap1
->      * state: poweredOff
->    * ### Customvalues
->    * ### Hw_Datastores
->      * 0: datastore1
->    * ### Hw_Eth0
->      * addresstype: manual
->      * ipaddresses: None
->      * label: Network adapter 1
->      * macaddress: aa:bb:dd:aa:00:14
->      * macaddress_dash: aa-bb-dd-aa-00-14
->      * portgroup_key: None
->      * portgroup_portkey: None
->      * summary: VM Network
->    * ### Hw_Files
->      * 0: [datastore1] test_vm_0001/test_vm_0001.vmx
->      * 1: [datastore1] test_vm_0001/test_vm_0001-Snapshot1.vmsn
->      * 2: [datastore1] test_vm_0001/test_vm_0001.vmsd
->      * 3: [datastore1] test_vm_0001/test_vm_0001.vmdk
->      * 4: [datastore1] test_vm_0001/test_vm_0001-000001.vmdk
->    * ### Hw_Interfaces
->      * 0: eth0
->    * ### Snapshots
->    * ### Snap1
->      * creation_time: 2021-07-11T17:02:28.131433+00:00
->      * description: snap1_description
->      * id: 1
->      * name: snap1
->      * state: poweredOff
->    * ### Vnc
->      * enabled: TRUE
->      * ip: 0.0.0.0
->      * password: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
->      * port: 5990
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Instance
+>
+>   * annotation: 
+>   * guest_consolidation_needed: False
+>   * guest_question: None
+>   * guest_tools_status: guestToolsNotRunning
+>   * guest_tools_version: 0
+>   * hw_cluster: cluster
+>   * hw_cores_per_socket: 1
+>   * hw_esxi_host: esxi01
+>   * hw_folder: /DC1/vm
+>   * hw_guest_full_name: None
+>   * hw_guest_ha_state: None
+>   * hw_guest_id: None
+>   * hw_is_template: False
+>   * hw_memtotal_mb: 512
+>   * hw_name: test_vm_0001
+>   * hw_power_status: poweredOff
+>   * hw_processor_count: 4
+>   * hw_product_uuid: 42166c31-2bd1-6ac0-1ebb-a6db907f529e
+>   * hw_version: vmx-13
+>   * instance_uuid: 5016ea58-ccce-5688-f16b-82ca0b25e513
+>   * ipv4: None
+>   * ipv6: None
+>   * module_hw: True
+>   * moid: vm-21
+>   * vimref: vim.VirtualMachine:vm-21
+>
+>   * ### Current_Snapshot
+>
+>     * creation_time: 2021-07-11T17:02:28.131433+00:00
+>     * description: snap1_description
+>     * id: 1
+>     * name: snap1
+>     * state: poweredOff
+>
+>   * ### Customvalues
+>
+>   * ### Hw_Datastores
+>
+>     * 0: datastore1
+>
+>   * ### Hw_Eth0
+>
+>     * addresstype: manual
+>     * ipaddresses: None
+>     * label: Network adapter 1
+>     * macaddress: aa:bb:dd:aa:00:14
+>     * macaddress_dash: aa-bb-dd-aa-00-14
+>     * portgroup_key: None
+>     * portgroup_portkey: None
+>     * summary: VM Network
+>
+>   * ### Hw_Files
+>
+>     * 0: [datastore1] test_vm_0001/test_vm_0001.vmx
+>     * 1: [datastore1] test_vm_0001/test_vm_0001-Snapshot1.vmsn
+>     * 2: [datastore1] test_vm_0001/test_vm_0001.vmsd
+>     * 3: [datastore1] test_vm_0001/test_vm_0001.vmdk
+>     * 4: [datastore1] test_vm_0001/test_vm_0001-000001.vmdk
+>
+>   * ### Hw_Interfaces
+>
+>     * 0: eth0
+>
+>   * ### Snapshots
+>
+>   * ### Snap1
+>
+>     * creation_time: 2021-07-11T17:02:28.131433+00:00
+>     * description: snap1_description
+>     * id: 1
+>     * name: snap1
+>     * state: poweredOff
+>
+>   * ### Vnc
+>
+>     * enabled: TRUE
+>     * ip: 0.0.0.0
+>     * password: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+>     * port: 5990
 
 ### vmware-host
+
 ***
 Add, remove, or move an ESXi host to, from, or within vCenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_module.html>
 
 
 #### Base Command
 
 `vmware-host`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3236,9 +3597,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host datacenter_name="DC1" cluster_name="cluster" esxi_hostname="esxi01" esxi_username="root" esxi_password="PASSWORD" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -3255,20 +3618,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * result: Host already connected to vCenter 'vcenter' in cluster 'cluster'
+># SUCCESS 
+>
+> * changed: False
+> * result: Host already connected to vCenter 'vcenter' in cluster 'cluster'
 
 
 ### vmware-host-acceptance
+
 ***
 Manage the host acceptance level of an ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_acceptance_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_acceptance_module.html>
 
 
 #### Base Command
 
 `vmware-host-acceptance`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3287,9 +3653,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-acceptance cluster_name="cluster" acceptance_level="community" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -3311,23 +3679,29 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Facts
->    * ### esxi01
->      * error: NA
->      * level: community
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Facts
+>
+>   * ### esxi01
+>
+>     * error: NA
+>     * level: community
 
 
 ### vmware-host-active-directory
+
 ***
 Joins an ESXi host system to an Active Directory domain or leaves it
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_active_directory_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_active_directory_module.html>
 
 
 #### Base Command
 
 `vmware-host-active-directory`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3350,14 +3724,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-host-capability-info
+
 ***
 Gathers info about an ESXi host's capability information
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_capability_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_capability_info_module.html>
 
 
 #### Base Command
 
 `vmware-host-capability-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3374,9 +3750,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-capability-info cluster_name="cluster" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -3514,134 +3892,151 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Hosts_Capability_Info
->    * ### esxi01
->      * accel3dSupported: False
->      * backgroundSnapshotsSupported: False
->      * checkpointFtSupported: False
->      * cloneFromSnapshotSupported: True
->      * cpuHwMmuSupported: True
->      * cpuMemoryResourceConfigurationSupported: True
->      * cryptoSupported: True
->      * datastorePrincipalSupported: False
->      * deltaDiskBackingsSupported: True
->      * eightPlusHostVmfsSharedAccessSupported: True
->      * encryptedVMotionSupported: True
->      * encryptionCBRCSupported: False
->      * encryptionChangeOnAddRemoveSupported: False
->      * encryptionFaultToleranceSupported: False
->      * encryptionHBRSupported: False
->      * encryptionHotOperationSupported: False
->      * encryptionMemorySaveSupported: False
->      * encryptionRDMSupported: False
->      * encryptionVFlashSupported: False
->      * encryptionWithSnapshotsSupported: False
->      * featureCapabilitiesSupported: True
->      * firewallIpRulesSupported: True
->      * ftSupported: False
->      * gatewayOnNicSupported: True
->      * hbrNicSelectionSupported: True
->      * highGuestMemSupported: True
->      * hostAccessManagerSupported: True
->      * interVMCommunicationThroughVMCISupported: False
->      * ipmiSupported: True
->      * iscsiSupported: True
->      * latencySensitivitySupported: True
->      * localSwapDatastoreSupported: True
->      * loginBySSLThumbprintSupported: True
->      * maintenanceModeSupported: True
->      * markAsLocalSupported: True
->      * markAsSsdSupported: True
->      * maxHostRunningVms: 19
->      * maxHostSupportedVcpus: 64
->      * maxNumDisksSVMotion: 248
->      * maxRegisteredVMs: 76
->      * maxRunningVMs: 0
->      * maxSupportedVMs: None
->      * maxSupportedVcpus: None
->      * maxVcpusPerFtVm: 4
->      * messageBusProxySupported: True
->      * multipleNetworkStackInstanceSupported: True
->      * nestedHVSupported: True
->      * nfs41Krb5iSupported: True
->      * nfs41Supported: True
->      * nfsSupported: True
->      * nicTeamingSupported: True
->      * oneKVolumeAPIsSupported: True
->      * perVMNetworkTrafficShapingSupported: False
->      * perVmSwapFiles: True
->      * preAssignedPCIUnitNumbersSupported: True
->      * provisioningNicSelectionSupported: True
->      * rebootSupported: True
->      * recordReplaySupported: False
->      * recursiveResourcePoolsSupported: True
->      * reliableMemoryAware: True
->      * replayUnsupportedReason: incompatibleCpu
->      * restrictedSnapshotRelocateSupported: True
->      * sanSupported: True
->      * scaledScreenshotSupported: True
->      * scheduledHardwareUpgradeSupported: True
->      * screenshotSupported: True
->      * servicePackageInfoSupported: True
->      * shutdownSupported: True
->      * smartCardAuthenticationSupported: True
->      * smpFtSupported: False
->      * snapshotRelayoutSupported: True
->      * standbySupported: True
->      * storageIORMSupported: True
->      * storagePolicySupported: True
->      * storageVMotionSupported: True
->      * suspendedRelocateSupported: True
->      * tpmSupported: False
->      * turnDiskLocatorLedSupported: True
->      * unsharedSwapVMotionSupported: True
->      * upitSupported: None
->      * vFlashSupported: True
->      * vPMCSupported: False
->      * vStorageCapable: True
->      * virtualExecUsageSupported: True
->      * virtualVolumeDatastoreSupported: True
->      * vlanTaggingSupported: True
->      * vmDirectPathGen2Supported: False
->      * vmDirectPathGen2UnsupportedReasonExtended: None
->      * vmfsDatastoreMountCapable: True
->      * vmotionAcrossNetworkSupported: True
->      * vmotionSupported: True
->      * vmotionWithStorageVMotionSupported: True
->      * vrNfcNicSelectionSupported: True
->      * vsanSupported: True
->      * #### Checkpointftcompatibilityissues
->        * 0: haAgentIssue
->        * 1: missingFTLoggingNic
->        * 2: missingVMotionNic
->      * #### Ftcompatibilityissues
->        * 0: haAgentIssue
->        * 1: incompatibleCpu
->        * 2: missingFTLoggingNic
->        * 3: missingVMotionNic
->      * #### Replaycompatibilityissues
->      * #### Smpftcompatibilityissues
->        * 0: haAgentIssue
->        * 1: missingFTLoggingNic
->        * 2: missingVMotionNic
->      * #### Supportedvmfsmajorversion
->        * 0: 5
->        * 1: 6
->      * #### Vmdirectpathgen2Unsupportedreason
->        * 0: hostNptIncompatibleHardware
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Hosts_Capability_Info
+>
+>   * ### esxi01
+>
+>     * accel3dSupported: False
+>     * backgroundSnapshotsSupported: False
+>     * checkpointFtSupported: False
+>     * cloneFromSnapshotSupported: True
+>     * cpuHwMmuSupported: True
+>     * cpuMemoryResourceConfigurationSupported: True
+>     * cryptoSupported: True
+>     * datastorePrincipalSupported: False
+>     * deltaDiskBackingsSupported: True
+>     * eightPlusHostVmfsSharedAccessSupported: True
+>     * encryptedVMotionSupported: True
+>     * encryptionCBRCSupported: False
+>     * encryptionChangeOnAddRemoveSupported: False
+>     * encryptionFaultToleranceSupported: False
+>     * encryptionHBRSupported: False
+>     * encryptionHotOperationSupported: False
+>     * encryptionMemorySaveSupported: False
+>     * encryptionRDMSupported: False
+>     * encryptionVFlashSupported: False
+>     * encryptionWithSnapshotsSupported: False
+>     * featureCapabilitiesSupported: True
+>     * firewallIpRulesSupported: True
+>     * ftSupported: False
+>     * gatewayOnNicSupported: True
+>     * hbrNicSelectionSupported: True
+>     * highGuestMemSupported: True
+>     * hostAccessManagerSupported: True
+>     * interVMCommunicationThroughVMCISupported: False
+>     * ipmiSupported: True
+>     * iscsiSupported: True
+>     * latencySensitivitySupported: True
+>     * localSwapDatastoreSupported: True
+>     * loginBySSLThumbprintSupported: True
+>     * maintenanceModeSupported: True
+>     * markAsLocalSupported: True
+>     * markAsSsdSupported: True
+>     * maxHostRunningVms: 19
+>     * maxHostSupportedVcpus: 64
+>     * maxNumDisksSVMotion: 248
+>     * maxRegisteredVMs: 76
+>     * maxRunningVMs: 0
+>     * maxSupportedVMs: None
+>     * maxSupportedVcpus: None
+>     * maxVcpusPerFtVm: 4
+>     * messageBusProxySupported: True
+>     * multipleNetworkStackInstanceSupported: True
+>     * nestedHVSupported: True
+>     * nfs41Krb5iSupported: True
+>     * nfs41Supported: True
+>     * nfsSupported: True
+>     * nicTeamingSupported: True
+>     * oneKVolumeAPIsSupported: True
+>     * perVMNetworkTrafficShapingSupported: False
+>     * perVmSwapFiles: True
+>     * preAssignedPCIUnitNumbersSupported: True
+>     * provisioningNicSelectionSupported: True
+>     * rebootSupported: True
+>     * recordReplaySupported: False
+>     * recursiveResourcePoolsSupported: True
+>     * reliableMemoryAware: True
+>     * replayUnsupportedReason: incompatibleCpu
+>     * restrictedSnapshotRelocateSupported: True
+>     * sanSupported: True
+>     * scaledScreenshotSupported: True
+>     * scheduledHardwareUpgradeSupported: True
+>     * screenshotSupported: True
+>     * servicePackageInfoSupported: True
+>     * shutdownSupported: True
+>     * smartCardAuthenticationSupported: True
+>     * smpFtSupported: False
+>     * snapshotRelayoutSupported: True
+>     * standbySupported: True
+>     * storageIORMSupported: True
+>     * storagePolicySupported: True
+>     * storageVMotionSupported: True
+>     * suspendedRelocateSupported: True
+>     * tpmSupported: False
+>     * turnDiskLocatorLedSupported: True
+>     * unsharedSwapVMotionSupported: True
+>     * upitSupported: None
+>     * vFlashSupported: True
+>     * vPMCSupported: False
+>     * vStorageCapable: True
+>     * virtualExecUsageSupported: True
+>     * virtualVolumeDatastoreSupported: True
+>     * vlanTaggingSupported: True
+>     * vmDirectPathGen2Supported: False
+>     * vmDirectPathGen2UnsupportedReasonExtended: None
+>     * vmfsDatastoreMountCapable: True
+>     * vmotionAcrossNetworkSupported: True
+>     * vmotionSupported: True
+>     * vmotionWithStorageVMotionSupported: True
+>     * vrNfcNicSelectionSupported: True
+>     * vsanSupported: True
+>
+>     * #### Checkpointftcompatibilityissues
+>
+>       * 0: haAgentIssue
+>       * 1: missingFTLoggingNic
+>       * 2: missingVMotionNic
+>
+>     * #### Ftcompatibilityissues
+>
+>       * 0: haAgentIssue
+>       * 1: incompatibleCpu
+>       * 2: missingFTLoggingNic
+>       * 3: missingVMotionNic
+>
+>     * #### Replaycompatibilityissues
+>
+>     * #### Smpftcompatibilityissues
+>
+>       * 0: haAgentIssue
+>       * 1: missingFTLoggingNic
+>       * 2: missingVMotionNic
+>
+>     * #### Supportedvmfsmajorversion
+>
+>       * 0: 5
+>       * 1: 6
+>
+>     * #### Vmdirectpathgen2Unsupportedreason
+>
+>       * 0: hostNptIncompatibleHardware
 
 
 ### vmware-host-config-info
+
 ***
 Gathers info about an ESXi host's advance configuration information
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_config_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_config_info_module.html>
 
 
 #### Base Command
 
 `vmware-host-config-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3658,9 +4053,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-config-info cluster_name="cluster" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -4799,83 +5196,87 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Hosts_Info
->    * ### esxi01
->      * Annotations.WelcomeMessage: 
->      * BufferCache.FlushInterval: 30000
->      * BufferCache.HardMaxDirty: 95
->      * BufferCache.PerFileHardMaxDirty: 50
->      * BufferCache.SoftMaxDirty: 15
->      * CBRC.DCacheMemReserved: 400
->      * CBRC.DCacheSize: 32768
->      * CBRC.DigestJournalBootInterval: 10
->      * CBRC.Enable: False
->      * COW.COWMaxHeapSizeMB: 192
->      * COW.COWMaxREPageCacheszMB: 256
->      * COW.COWMinREPageCacheszMB: 0
->      * COW.COWREPageCacheEviction: 1
->      * Config.Defaults.cpuidMask.mode.0.eax: disable
->      * Config.Defaults.cpuidMask.mode.0.ebx: disable
->      * Config.Defaults.cpuidMask.mode.0.ecx: disable
->      * Config.Defaults.cpuidMask.mode.0.edx: disable
->      * Config.Defaults.cpuidMask.mode.1.eax: disable
->      * Config.Defaults.cpuidMask.mode.1.ebx: disable
->      * Config.Defaults.cpuidMask.mode.1.ecx: disable
->      * Config.Defaults.cpuidMask.mode.1.edx: disable
->      * Config.Defaults.cpuidMask.mode.80000000.eax: disable
->      * Config.Defaults.cpuidMask.mode.80000000.ebx: disable
->      * Config.Defaults.cpuidMask.mode.80000000.ecx: disable
->      * Config.Defaults.cpuidMask.mode.80000000.edx: disable
->      * Config.Defaults.cpuidMask.mode.80000001.eax: disable
->      * Config.Defaults.cpuidMask.mode.80000001.ebx: disable
->      * Config.Defaults.cpuidMask.mode.80000001.ecx: disable
->      * Config.Defaults.cpuidMask.mode.80000001.edx: disable
->      * Config.Defaults.cpuidMask.mode.80000008.eax: disable
->      * Config.Defaults.cpuidMask.mode.80000008.ebx: disable
->      * Config.Defaults.cpuidMask.mode.80000008.ecx: disable
->      * Config.Defaults.cpuidMask.mode.80000008.edx: disable
->      * Config.Defaults.cpuidMask.mode.8000000A.eax: disable
->      * Config.Defaults.cpuidMask.mode.8000000A.ebx: disable
->      * Config.Defaults.cpuidMask.mode.8000000A.ecx: disable
->      * Config.Defaults.cpuidMask.mode.8000000A.edx: disable
->      * Config.Defaults.cpuidMask.mode.d.eax: disable
->      * Config.Defaults.cpuidMask.mode.d.ebx: disable
->      * Config.Defaults.cpuidMask.mode.d.ecx: disable
->      * Config.Defaults.cpuidMask.mode.d.edx: disable
->      * Config.Defaults.cpuidMask.val.0.eax: 
->      * Config.Defaults.cpuidMask.val.0.ebx: 
->      * Config.Defaults.cpuidMask.val.0.ecx: 
->      * Config.Defaults.cpuidMask.val.0.edx: 
->      * Config.Defaults.cpuidMask.val.1.eax: 
->      * Config.Defaults.cpuidMask.val.1.ebx: 
->      * Config.Defaults.cpuidMask.val.1.ecx: 
->      * Config.Defaults.cpuidMask.val.1.edx: 
->      * Config.Defaults.cpuidMask.val.80000000.eax: 
->      * Config.Defaults.cpuidMask.val.80000000.ebx: 
->      * Config.Defaults.cpuidMask.val.80000000.ecx: 
->      * Config.Defaults.cpuidMask.val.80000000.edx: 
->      * Config.Defaults.cpuidMask.val.80000001.eax: 
->      * Config.Defaults.cpuidMask.val.80000001.ebx: 
->      * Config.Defaults.cpuidMask.val.80000001.ecx: 
->      * Config.Defaults.cpuidMask.val.80000001.edx: 
->      * Config.Defaults.cpuidMask.val.80000008.eax: 
->      * Config.Defaults.cpuidMask.val.80000008.ebx: 
->      * Config.Defaults.cpuidMask.val.80000008.ecx: 
->      * Config.Defaults.cpuidMask.val.80000008.edx: 
->      * Config.Defaults.cpuidMask.val.8000000A.eax: 
->      * Config.Defaults.cpuidMask.val.8000000A.ebx: 
->      * Config.Defaults.cpuidMask.val.8000000A.ecx: 
->      * Config.Defaults.cpuidMask.val.8000000A.edx: 
->      * Config.Defaults.cpuidMask.val.d.eax: 
->      * Config.Defaults.cpuidMask.val.d.ebx: 
->      * Config.Defaults.cpuidMask.val.d.ecx: 
->      * Config.Defaults.cpuidMask.val.d.edx: 
->      * Config.Defaults.security.host.ruissl: True
->      * Config.Defaults.vGPU.consolidation: False
->      * Config.Etc.issue: 
->      * Config.Etc.motd: The time and date of this login have been sent to the system logs.
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Hosts_Info
+>
+>   * ### esxi01
+>
+>     * Annotations.WelcomeMessage: 
+>     * BufferCache.FlushInterval: 30000
+>     * BufferCache.HardMaxDirty: 95
+>     * BufferCache.PerFileHardMaxDirty: 50
+>     * BufferCache.SoftMaxDirty: 15
+>     * CBRC.DCacheMemReserved: 400
+>     * CBRC.DCacheSize: 32768
+>     * CBRC.DigestJournalBootInterval: 10
+>     * CBRC.Enable: False
+>     * COW.COWMaxHeapSizeMB: 192
+>     * COW.COWMaxREPageCacheszMB: 256
+>     * COW.COWMinREPageCacheszMB: 0
+>     * COW.COWREPageCacheEviction: 1
+>     * Config.Defaults.cpuidMask.mode.0.eax: disable
+>     * Config.Defaults.cpuidMask.mode.0.ebx: disable
+>     * Config.Defaults.cpuidMask.mode.0.ecx: disable
+>     * Config.Defaults.cpuidMask.mode.0.edx: disable
+>     * Config.Defaults.cpuidMask.mode.1.eax: disable
+>     * Config.Defaults.cpuidMask.mode.1.ebx: disable
+>     * Config.Defaults.cpuidMask.mode.1.ecx: disable
+>     * Config.Defaults.cpuidMask.mode.1.edx: disable
+>     * Config.Defaults.cpuidMask.mode.80000000.eax: disable
+>     * Config.Defaults.cpuidMask.mode.80000000.ebx: disable
+>     * Config.Defaults.cpuidMask.mode.80000000.ecx: disable
+>     * Config.Defaults.cpuidMask.mode.80000000.edx: disable
+>     * Config.Defaults.cpuidMask.mode.80000001.eax: disable
+>     * Config.Defaults.cpuidMask.mode.80000001.ebx: disable
+>     * Config.Defaults.cpuidMask.mode.80000001.ecx: disable
+>     * Config.Defaults.cpuidMask.mode.80000001.edx: disable
+>     * Config.Defaults.cpuidMask.mode.80000008.eax: disable
+>     * Config.Defaults.cpuidMask.mode.80000008.ebx: disable
+>     * Config.Defaults.cpuidMask.mode.80000008.ecx: disable
+>     * Config.Defaults.cpuidMask.mode.80000008.edx: disable
+>     * Config.Defaults.cpuidMask.mode.8000000A.eax: disable
+>     * Config.Defaults.cpuidMask.mode.8000000A.ebx: disable
+>     * Config.Defaults.cpuidMask.mode.8000000A.ecx: disable
+>     * Config.Defaults.cpuidMask.mode.8000000A.edx: disable
+>     * Config.Defaults.cpuidMask.mode.d.eax: disable
+>     * Config.Defaults.cpuidMask.mode.d.ebx: disable
+>     * Config.Defaults.cpuidMask.mode.d.ecx: disable
+>     * Config.Defaults.cpuidMask.mode.d.edx: disable
+>     * Config.Defaults.cpuidMask.val.0.eax: 
+>     * Config.Defaults.cpuidMask.val.0.ebx: 
+>     * Config.Defaults.cpuidMask.val.0.ecx: 
+>     * Config.Defaults.cpuidMask.val.0.edx: 
+>     * Config.Defaults.cpuidMask.val.1.eax: 
+>     * Config.Defaults.cpuidMask.val.1.ebx: 
+>     * Config.Defaults.cpuidMask.val.1.ecx: 
+>     * Config.Defaults.cpuidMask.val.1.edx: 
+>     * Config.Defaults.cpuidMask.val.80000000.eax: 
+>     * Config.Defaults.cpuidMask.val.80000000.ebx: 
+>     * Config.Defaults.cpuidMask.val.80000000.ecx: 
+>     * Config.Defaults.cpuidMask.val.80000000.edx: 
+>     * Config.Defaults.cpuidMask.val.80000001.eax: 
+>     * Config.Defaults.cpuidMask.val.80000001.ebx: 
+>     * Config.Defaults.cpuidMask.val.80000001.ecx: 
+>     * Config.Defaults.cpuidMask.val.80000001.edx: 
+>     * Config.Defaults.cpuidMask.val.80000008.eax: 
+>     * Config.Defaults.cpuidMask.val.80000008.ebx: 
+>     * Config.Defaults.cpuidMask.val.80000008.ecx: 
+>     * Config.Defaults.cpuidMask.val.80000008.edx: 
+>     * Config.Defaults.cpuidMask.val.8000000A.eax: 
+>     * Config.Defaults.cpuidMask.val.8000000A.ebx: 
+>     * Config.Defaults.cpuidMask.val.8000000A.ecx: 
+>     * Config.Defaults.cpuidMask.val.8000000A.edx: 
+>     * Config.Defaults.cpuidMask.val.d.eax: 
+>     * Config.Defaults.cpuidMask.val.d.ebx: 
+>     * Config.Defaults.cpuidMask.val.d.ecx: 
+>     * Config.Defaults.cpuidMask.val.d.edx: 
+>     * Config.Defaults.security.host.ruissl: True
+>     * Config.Defaults.vGPU.consolidation: False
+>     * Config.Etc.issue: 
+>     * Config.Etc.motd: The time and date of this login have been sent to the system logs.
 >
 >WARNING:
 >   All commands run on the ESXi shell are logged and may be included in
@@ -5937,14 +6338,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-host-config-manager
+
 ***
 Manage advanced system settings of an ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_config_manager_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_config_manager_module.html>
 
 
 #### Base Command
 
 `vmware-host-config-manager`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5961,9 +6364,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-config-manager cluster_name="cluster" options="{'Config.HostAgent.log.level': 'info'}" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -5980,20 +6385,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * msg: All settings are already configured.
+># SUCCESS 
+>
+> * changed: False
+> * msg: All settings are already configured.
 
 
 ### vmware-host-datastore
+
 ***
 Manage a datastore on ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_datastore_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_datastore_module.html>
 
 
 #### Base Command
 
 `vmware-host-datastore`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6017,9 +6425,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-datastore datastore_name="datastore1" datastore_type="vmfs" vmfs_device_name="naa.6000c29d140dea19fc681e3e1b190c46" vmfs_version="6" esxi_hostname="esxi01" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6035,18 +6445,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
+># SUCCESS 
+>
+> * changed: False
 
 ### vmware-host-dns-info
+
 ***
 Gathers info about an ESXi host's DNS configuration information
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_dns_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_dns_info_module.html>
 
 
 #### Base Command
 
 `vmware-host-dns-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6063,9 +6476,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-dns-info cluster_name="cluster" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6093,28 +6508,37 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Hosts_Dns_Info
->    * ### esxi01
->      * dhcp: False
->      * domain_name: 
->      * host_name: esxi01
->      * virtual_nic_device: None
->      * #### Ip_Address
->      * #### Search_Domain
->        * 0: null
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Hosts_Dns_Info
+>
+>   * ### esxi01
+>
+>     * dhcp: False
+>     * domain_name: 
+>     * host_name: esxi01
+>     * virtual_nic_device: None
+>
+>     * #### Ip_Address
+>
+>     * #### Search_Domain
+>
+>       * 0: null
 
 
 ### vmware-host-facts
+
 ***
 Gathers facts about remote ESXi hostsystem
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_facts_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_facts_module.html>
 
 
 #### Base Command
 
 `vmware-host-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6133,14 +6557,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-host-feature-info
+
 ***
 Gathers info about an ESXi host's feature capability information
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_feature_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_feature_info_module.html>
 
 
 #### Base Command
 
 `vmware-host-feature-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6157,9 +6583,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-feature-info cluster_name="cluster" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6184,25 +6612,32 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Hosts_Feature_Info
->    * ### esxi01
->    * ### Cpuid.3Dnow
->      * feature_name: cpuid.3DNOW
->      * key: cpuid.3DNOW
->      * value: 0
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Hosts_Feature_Info
+>
+>   * ### esxi01
+>
+>   * ### Cpuid.3Dnow
+>
+>     * feature_name: cpuid.3DNOW
+>     * key: cpuid.3DNOW
+>     * value: 0
 
 
 ### vmware-host-firewall-info
+
 ***
 Gathers info about an ESXi host's firewall configuration information
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_firewall_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_firewall_info_module.html>
 
 
 #### Base Command
 
 `vmware-host-firewall-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6219,9 +6654,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-firewall-info cluster_name="cluster" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6260,40 +6697,56 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Hosts_Firewall_Info
->    * ### esxi01
->    * ### List
->      * enabled: True
->      * key: CIMHttpServer
->      * service: sfcbd-watchdog
->      * #### Allowed_Hosts
->        * all_ip: True
->        * ##### Ip_Address
->        * ##### Ip_Network
->      * #### Rule
->      * #### List
->        * direction: inbound
->        * end_port: None
->        * port: 5988
->        * port_type: dst
->        * protocol: tcp
->    * ### List
->      * enabled: True
->      * key: CIMHttpsServer
->      * service: sfcbd-watchdog
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Hosts_Firewall_Info
+>
+>   * ### esxi01
+>
+>   * ### List
+>
+>     * enabled: True
+>     * key: CIMHttpServer
+>     * service: sfcbd-watchdog
+>
+>     * #### Allowed_Hosts
+>
+>       * all_ip: True
+>
+>       * ##### Ip_Address
+>
+>       * ##### Ip_Network
+>
+>     * #### Rule
+>
+>     * #### List
+>
+>       * direction: inbound
+>       * end_port: None
+>       * port: 5988
+>       * port_type: dst
+>       * protocol: tcp
+>
+>   * ### List
+>
+>     * enabled: True
+>     * key: CIMHttpsServer
+>     * service: sfcbd-watchdog
 
 
 ### vmware-host-firewall-manager
+
 ***
 Manage firewall configurations about an ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_firewall_manager_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_firewall_manager_module.html>
 
 
 #### Base Command
 
 `vmware-host-firewall-manager`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6311,9 +6764,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-firewall-manager cluster_name="cluster" rules="{{ [{'name': 'vvold', 'enabled': True}] }}" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6349,35 +6804,50 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Rule_Set_State
->    * ### esxi01
->      * #### Vvold
->        * current_state: True
->        * desired_state: True
->        * previous_state: False
->        * ##### Allowed_Hosts
->          * current_allowed_all: False
->          * desired_allowed_all: False
->          * previous_allowed_all: True
->          * ###### Current_Allowed_Ip
->          * ###### Current_Allowed_Networks
->          * ###### Desired_Allowed_Ip
->          * ###### Desired_Allowed_Networks
->          * ###### Previous_Allowed_Ip
->          * ###### Previous_Allowed_Networks
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Rule_Set_State
+>
+>   * ### esxi01
+>
+>     * #### Vvold
+>
+>       * current_state: True
+>       * desired_state: True
+>       * previous_state: False
+>
+>       * ##### Allowed_Hosts
+>
+>         * current_allowed_all: False
+>         * desired_allowed_all: False
+>         * previous_allowed_all: True
+>
+>         * ###### Current_Allowed_Ip
+>
+>         * ###### Current_Allowed_Networks
+>
+>         * ###### Desired_Allowed_Ip
+>
+>         * ###### Desired_Allowed_Networks
+>
+>         * ###### Previous_Allowed_Ip
+>
+>         * ###### Previous_Allowed_Networks
 
 
 ### vmware-host-hyperthreading
+
 ***
 Enables/Disables Hyperthreading optimization for an ESXi host system
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_hyperthreading_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_hyperthreading_module.html>
 
 
 #### Base Command
 
 `vmware-host-hyperthreading`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6395,9 +6865,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-hyperthreading esxi_hostname="esxi01" state="enabled" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6421,25 +6893,31 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Result
->    * ### esxi01
->      * changed: True
->      * msg: Hyperthreading is enabled, but not active. A reboot is required!
->      * state: enabled
->      * state_current: enabled
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Result
+>
+>   * ### esxi01
+>
+>     * changed: True
+>     * msg: Hyperthreading is enabled, but not active. A reboot is required!
+>     * state: enabled
+>     * state_current: enabled
 
 
 ### vmware-host-ipv6
+
 ***
 Enables/Disables IPv6 support for an ESXi host system
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ipv6_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_ipv6_module.html>
 
 
 #### Base Command
 
 `vmware-host-ipv6`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6457,9 +6935,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-ipv6 esxi_hostname="esxi01" state="enabled" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6480,22 +6960,28 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Result
->    * ### esxi01
->      * msg: IPv6 is already enabled and active for host 'esxi01'
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Result
+>
+>   * ### esxi01
+>
+>     * msg: IPv6 is already enabled and active for host 'esxi01'
 
 
 ### vmware-host-kernel-manager
+
 ***
 Manage kernel module options on ESXi hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_kernel_manager_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_kernel_manager_module.html>
 
 
 #### Base Command
 
 `vmware-host-kernel-manager`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6514,9 +7000,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-kernel-manager esxi_hostname="esxi01" kernel_module_name="tcpip4" kernel_module_option="ipv6=0" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6540,25 +7028,31 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Host_Kernel_Status
->    * ### esxi01
->      * changed: True
->      * configured_options: ipv6=0
->      * msg: Options have been changed on the kernel module
->      * original_options: ipv6=1
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Host_Kernel_Status
+>
+>   * ### esxi01
+>
+>     * changed: True
+>     * configured_options: ipv6=0
+>     * msg: Options have been changed on the kernel module
+>     * original_options: ipv6=1
 
 
 ### vmware-host-lockdown
+
 ***
 Manage administrator permission for the local administrative account for the ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_lockdown_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_lockdown_module.html>
 
 
 #### Base Command
 
 `vmware-host-lockdown`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6576,9 +7070,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-lockdown esxi_hostname="esxi01" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6601,24 +7097,30 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Host_Lockdown_State
->    * ### esxi01
->      * current_state: present
->      * desired_state: present
->      * previous_state: absent
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Host_Lockdown_State
+>
+>   * ### esxi01
+>
+>     * current_state: present
+>     * desired_state: present
+>     * previous_state: absent
 
 
 ### vmware-host-ntp
+
 ***
 Manage NTP server configuration of an ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ntp_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_ntp_module.html>
 
 
 #### Base Command
 
 `vmware-host-ntp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6638,9 +7140,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-ntp esxi_hostname="esxi01" ntp_servers="{{ ['0.pool.ntp.org', '1.pool.ntp.org'] }}" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6665,24 +7169,32 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Host_Ntp_Status
->    * ### esxi01
->      * changed: False
->      * #### Ntp_Servers
->        * 0: 0.pool.ntp.org
->        * 1: 1.pool.ntp.org
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Host_Ntp_Status
+>
+>   * ### esxi01
+>
+>     * changed: False
+>
+>     * #### Ntp_Servers
+>
+>       * 0: 0.pool.ntp.org
+>       * 1: 1.pool.ntp.org
 
 ### vmware-host-ntp-info
+
 ***
 Gathers info about NTP configuration on an ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ntp_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_ntp_info_module.html>
 
 
 #### Base Command
 
 `vmware-host-ntp-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6699,9 +7211,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-ntp-info cluster_name="cluster" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6731,29 +7245,38 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Hosts_Ntp_Info
->    * ### esxi01
->    * ### Utc
->      * time_zone_description: UTC
->      * time_zone_gmt_offset: 0
->      * time_zone_identifier: UTC
->      * time_zone_name: UTC
->      * #### Ntp_Servers
->        * 0: 0.pool.ntp.org
->        * 1: 1.pool.ntp.org
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Hosts_Ntp_Info
+>
+>   * ### esxi01
+>
+>   * ### Utc
+>
+>     * time_zone_description: UTC
+>     * time_zone_gmt_offset: 0
+>     * time_zone_identifier: UTC
+>     * time_zone_name: UTC
+>
+>     * #### Ntp_Servers
+>
+>       * 0: 0.pool.ntp.org
+>       * 1: 1.pool.ntp.org
 
 
 ### vmware-host-package-info
+
 ***
 Gathers info about available packages on an ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_package_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_package_info_module.html>
 
 
 #### Base Command
 
 `vmware-host-package-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6770,9 +7293,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-package-info cluster_name="cluster" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6802,30 +7327,37 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Hosts_Package_Info
->    * ### esxi01
->    * ### Block-Cciss
->      * acceptance_level: vmware_certified
->      * creation_date: 2019-07-04T20:27:48.211267+00:00
->      * description: Driver for HP/Compaq Smart Array Controllers
->      * maintenance_mode_required: True
->      * name: block-cciss
->      * summary: cciss: block driver for VMware ESX
->      * vendor: VMW
->      * version: 3.6.14-10vmw.650.0.0.4564106
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Hosts_Package_Info
+>
+>   * ### esxi01
+>
+>   * ### Block-Cciss
+>
+>     * acceptance_level: vmware_certified
+>     * creation_date: 2019-07-04T20:27:48.211267+00:00
+>     * description: Driver for HP/Compaq Smart Array Controllers
+>     * maintenance_mode_required: True
+>     * name: block-cciss
+>     * summary: cciss: block driver for VMware ESX
+>     * vendor: VMW
+>     * version: 3.6.14-10vmw.650.0.0.4564106
 
 
 ### vmware-host-powermgmt-policy
+
 ***
 Manages the Power Management Policy of an ESXI host system
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_powermgmt_policy_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_powermgmt_policy_module.html>
 
 
 #### Base Command
 
 `vmware-host-powermgmt-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6843,9 +7375,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-powermgmt-policy esxi_hostname="esxi01" policy="high-performance" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6870,26 +7404,32 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Result
->    * ### esxi01
->      * changed: True
->      * current_state: high-performance
->      * desired_state: high-performance
->      * msg: Power policy changed
->      * previous_state: balanced
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Result
+>
+>   * ### esxi01
+>
+>     * changed: True
+>     * current_state: high-performance
+>     * desired_state: high-performance
+>     * msg: Power policy changed
+>     * previous_state: balanced
 
 
 ### vmware-host-powerstate
+
 ***
 Manages power states of host systems in vCenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_powerstate_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_powerstate_module.html>
 
 
 #### Base Command
 
 `vmware-host-powerstate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6911,14 +7451,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-host-scanhba
+
 ***
 Rescan host HBA's and optionally refresh the storage system
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_scanhba_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_scanhba_module.html>
 
 
 #### Base Command
 
 `vmware-host-scanhba`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6936,9 +7478,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-scanhba esxi_hostname="esxi01" refresh_storage="True" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -6960,23 +7504,29 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Result
->    * ### esxi01
->      * refreshed_storage: True
->      * rescaned_hba: True
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Result
+>
+>   * ### esxi01
+>
+>     * refreshed_storage: True
+>     * rescaned_hba: True
 
 
 ### vmware-host-service-info
+
 ***
 Gathers info about an ESXi host's services
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_service_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_service_info_module.html>
 
 
 #### Base Command
 
 `vmware-host-service-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6993,9 +7543,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-service-info cluster_name="cluster" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -7025,30 +7577,37 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Host_Service_Info
->    * ### esxi01
->    * ### Esx-Base
->      * key: DCUI
->      * label: Direct Console UI
->      * policy: on
->      * required: False
->      * running: True
->      * source_package_desc: This VIB contains all of the base functionality of vSphere ESXi.
->      * source_package_name: esx-base
->      * uninstallable: False
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Host_Service_Info
+>
+>   * ### esxi01
+>
+>   * ### Esx-Base
+>
+>     * key: DCUI
+>     * label: Direct Console UI
+>     * policy: on
+>     * required: False
+>     * running: True
+>     * source_package_desc: This VIB contains all of the base functionality of vSphere ESXi.
+>     * source_package_name: esx-base
+>     * uninstallable: False
 
 
 ### vmware-host-service-manager
+
 ***
 Manage services on a given ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_service_manager_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_service_manager_module.html>
 
 
 #### Base Command
 
 `vmware-host-service-manager`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7067,9 +7626,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-service-manager cluster_name="cluster" service_name="ntpd" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -7096,28 +7657,34 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Host_Service_Status
->    * ### esxi01
->      * actual_service_policy: off
->      * actual_service_state: stopped
->      * changed: True
->      * desired_service_policy: None
->      * desired_service_state: present
->      * error: 
->      * service_name: ntpd
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Host_Service_Status
+>
+>   * ### esxi01
+>
+>     * actual_service_policy: off
+>     * actual_service_state: stopped
+>     * changed: True
+>     * desired_service_policy: None
+>     * desired_service_state: present
+>     * error: 
+>     * service_name: ntpd
 
 
 ### vmware-host-snmp
+
 ***
 Configures SNMP on an ESXi host system
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_snmp_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_snmp_module.html>
 
 
 #### Base Command
 
 `vmware-host-snmp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7142,14 +7709,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-host-ssl-info
+
 ***
 Gather info of ESXi host system about SSL
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ssl_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_ssl_info_module.html>
 
 
 #### Base Command
 
 `vmware-host-ssl-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7166,9 +7735,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-ssl-info cluster_name="cluster" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -7191,24 +7762,31 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Host_Ssl_Info
->    * ### esxi01
->      * owner_tag: 
->      * principal: 
->      * #### Ssl_Thumbprints
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Host_Ssl_Info
+>
+>   * ### esxi01
+>
+>     * owner_tag: 
+>     * principal: 
+>
+>     * #### Ssl_Thumbprints
 
 
 ### vmware-host-vmhba-info
+
 ***
 Gathers info about vmhbas available on the given ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_vmhba_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_vmhba_info_module.html>
 
 
 #### Base Command
 
 `vmware-host-vmhba-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7225,9 +7803,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-vmhba-info cluster_name="cluster" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -7259,31 +7839,39 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Hosts_Vmhbas_Info
->    * ### esxi01
->      * #### Vmhba_Details
->      * #### List
->        * adapter: VMware Inc. PVSCSI SCSI Controller
->        * bus: 3
->        * device: vmhba0
->        * driver: pvscsi
->        * location: 0000:03:00.0
->        * model: PVSCSI SCSI Controller
->        * status: unknown
->        * type: ParallelScsiHba
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Hosts_Vmhbas_Info
+>
+>   * ### esxi01
+>
+>     * #### Vmhba_Details
+>
+>     * #### List
+>
+>       * adapter: VMware Inc. PVSCSI SCSI Controller
+>       * bus: 3
+>       * device: vmhba0
+>       * driver: pvscsi
+>       * location: 0000:03:00.0
+>       * model: PVSCSI SCSI Controller
+>       * status: unknown
+>       * type: ParallelScsiHba
 
 
 ### vmware-host-vmnic-info
+
 ***
 Gathers info about vmnics available on the given ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_vmnic_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_host_vmnic_info_module.html>
 
 
 #### Base Command
 
 `vmware-host-vmnic-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7303,9 +7891,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-host-vmnic-info cluster_name="cluster"```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -7368,56 +7958,77 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Hosts_Vmnics_Info
->    * ### esxi01
->      * num_vmnics: 2
->      * #### All
->        * 0: vmnic0
->        * 1: vmnic1
->      * #### Available
->        * 0: vmnic1
->      * #### Dvswitch
->      * #### Used
->        * 0: vmnic0
->      * #### Vmnic_Details
->      * #### List
->        * actual_duplex: Full Duplex
->        * actual_speed: 10000
->        * adapter: VMware Inc. vmxnet3 Virtual Ethernet Controller
->        * configured_duplex: Full Duplex
->        * configured_speed: 10000
->        * device: vmnic0
->        * driver: nvmxnet3
->        * location: 0000:0b:00.0
->        * mac: 00:0c:29:d9:27:04
->        * status: Connected
->      * #### List
->        * actual_duplex: Full Duplex
->        * actual_speed: 10000
->        * adapter: VMware Inc. vmxnet3 Virtual Ethernet Controller
->        * configured_duplex: Full Duplex
->        * configured_speed: 10000
->        * device: vmnic1
->        * driver: nvmxnet3
->        * location: 0000:13:00.0
->        * mac: 00:0c:29:d9:27:0e
->        * status: Connected
->      * #### Vswitch
->        * ##### Vswitch0
->          * 0: vmnic0
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Hosts_Vmnics_Info
+>
+>   * ### esxi01
+>
+>     * num_vmnics: 2
+>
+>     * #### All
+>
+>       * 0: vmnic0
+>       * 1: vmnic1
+>
+>     * #### Available
+>
+>       * 0: vmnic1
+>
+>     * #### Dvswitch
+>
+>     * #### Used
+>
+>       * 0: vmnic0
+>
+>     * #### Vmnic_Details
+>
+>     * #### List
+>
+>       * actual_duplex: Full Duplex
+>       * actual_speed: 10000
+>       * adapter: VMware Inc. vmxnet3 Virtual Ethernet Controller
+>       * configured_duplex: Full Duplex
+>       * configured_speed: 10000
+>       * device: vmnic0
+>       * driver: nvmxnet3
+>       * location: 0000:0b:00.0
+>       * mac: 00:0c:29:d9:27:04
+>       * status: Connected
+>
+>     * #### List
+>
+>       * actual_duplex: Full Duplex
+>       * actual_speed: 10000
+>       * adapter: VMware Inc. vmxnet3 Virtual Ethernet Controller
+>       * configured_duplex: Full Duplex
+>       * configured_speed: 10000
+>       * device: vmnic1
+>       * driver: nvmxnet3
+>       * location: 0000:13:00.0
+>       * mac: 00:0c:29:d9:27:0e
+>       * status: Connected
+>
+>     * #### Vswitch
+>
+>       * ##### Vswitch0
+>
+>         * 0: vmnic0
 
 
 ### vmware-local-role-info
+
 ***
 Gather info about local roles on an ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_local_role_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_local_role_info_module.html>
 
 
 #### Base Command
 
 `vmware-local-role-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7432,9 +8043,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-local-role-info ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -7463,29 +8076,37 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Local_Role_Info
->  * ## Nocryptoadmin
->    * role_id: -6
->    * role_info_label: No cryptography administrator
->    * role_info_summary: Full access without Cryptographic operations privileges
->    * role_name: NoCryptoAdmin
->    * role_system: True
->    * ### Privileges
->      * 0: Alarm.Acknowledge
->      * 1: Alarm.Create
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Local_Role_Info
+>
+> * ## Nocryptoadmin
+>
+>   * role_id: -6
+>   * role_info_label: No cryptography administrator
+>   * role_info_summary: Full access without Cryptographic operations privileges
+>   * role_name: NoCryptoAdmin
+>   * role_system: True
+>
+>   * ### Privileges
+>
+>     * 0: Alarm.Acknowledge
+>     * 1: Alarm.Create
 
 
 ### vmware-local-role-manager
+
 ***
 Manage local roles on an ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_local_role_manager_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_local_role_manager_module.html>
 
 
 #### Base Command
 
 `vmware-local-role-manager`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7511,9 +8132,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-local-role-manager local_role_name="vmware_qa" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -7537,26 +8160,33 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Result
->    * local_role_name: vmware_qa
->    * msg: Role created
->    * role_id: 55981884
->    * role_name: vmware_qa
->    * ### New_Privileges
->    * ### Privileges
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Result
+>
+>   * local_role_name: vmware_qa
+>   * msg: Role created
+>   * role_id: 55981884
+>   * role_name: vmware_qa
+>
+>   * ### New_Privileges
+>
+>   * ### Privileges
 
 
 ### vmware-local-user-info
+
 ***
 Gather info about users on the given ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_local_user_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_local_user_info_module.html>
 
 
 #### Base Command
 
 `vmware-local-user-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7573,14 +8203,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-local-user-manager
+
 ***
 Manage local users on an ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_local_user_manager_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_local_user_manager_module.html>
 
 
 #### Base Command
 
 `vmware-local-user-manager`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7600,14 +8232,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-maintenancemode
+
 ***
 Place a host into maintenance mode
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_maintenancemode_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_maintenancemode_module.html>
 
 
 #### Base Command
 
 `vmware-maintenancemode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7629,9 +8263,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-maintenancemode esxi_hostname="esxi01" vsan="ensureObjectAccessibility" evacuate="True" timeout="3600" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -7650,23 +8286,26 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * hostname: esxi01
->  * hostsystem: 'vim.HostSystem:host-10'
->  * msg: Host esxi01 entered maintenance mode
->  * status: ENTER
+># CHANGED 
+>
+> * changed: True
+> * hostname: esxi01
+> * hostsystem: 'vim.HostSystem:host-10'
+> * msg: Host esxi01 entered maintenance mode
+> * status: ENTER
 
 
 ### vmware-migrate-vmk
+
 ***
 Migrate a VMK interface from VSS to VDS
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_migrate_vmk_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_migrate_vmk_module.html>
 
 
 #### Base Command
 
 `vmware-migrate-vmk`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7688,14 +8327,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-object-role-permission
+
 ***
 Manage local roles on an ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_object_role_permission_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_object_role_permission_module.html>
 
 
 #### Base Command
 
 `vmware-object-role-permission`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7719,14 +8360,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-portgroup
+
 ***
 Create a VMware portgroup
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_portgroup_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_portgroup_module.html>
 
 
 #### Base Command
 
 `vmware-portgroup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7750,9 +8393,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-portgroup switch="vSwitch0" portgroup="test" vlan_id="123" cluster_name=cluster```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -7784,33 +8429,39 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Result
->    * ### esxi01
->      * changed: True
->      * msg: Security changed
->      * portgroup: test
->      * sec_forged_transmits: No override
->      * sec_forged_transmits_previous: No override
->      * sec_mac_changes: No override
->      * sec_mac_changes_previous: No override
->      * sec_promiscuous_mode: No override
->      * sec_promiscuous_mode_previous: No override
->      * traffic_shaping: No override
->      * vlan_id: 123
->      * vswitch: vSwitch0
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Result
+>
+>   * ### esxi01
+>
+>     * changed: True
+>     * msg: Security changed
+>     * portgroup: test
+>     * sec_forged_transmits: No override
+>     * sec_forged_transmits_previous: No override
+>     * sec_mac_changes: No override
+>     * sec_mac_changes_previous: No override
+>     * sec_promiscuous_mode: No override
+>     * sec_promiscuous_mode_previous: No override
+>     * traffic_shaping: No override
+>     * vlan_id: 123
+>     * vswitch: vSwitch0
 
 
 ### vmware-portgroup-info
+
 ***
 Gathers info about an ESXi host's Port Group configuration
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_portgroup_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_portgroup_info_module.html>
 
 
 #### Base Command
 
 `vmware-portgroup-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7830,14 +8481,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-resource-pool
+
 ***
 Add/remove resource pools to/from vCenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_resource_pool_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_resource_pool_module.html>
 
 
 #### Base Command
 
 `vmware-resource-pool`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7866,14 +8519,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-resource-pool-info
+
 ***
 Gathers info about resource pool information
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_resource_pool_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_resource_pool_info_module.html>
 
 
 #### Base Command
 
 `vmware-resource-pool-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7888,9 +8543,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-resource-pool-info ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -7937,48 +8594,54 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Resource_Pool_Info
->  * ## Resources
->    * cpu_allocation_expandable_reservation: True
->    * cpu_allocation_limit: 0
->    * cpu_allocation_overhead_limit: None
->    * cpu_allocation_reservation: 0
->    * cpu_allocation_shares: 4000
->    * cpu_allocation_shares_level: normal
->    * mem_allocation_expandable_reservation: True
->    * mem_allocation_limit: 0
->    * mem_allocation_overhead_limit: None
->    * mem_allocation_reservation: 0
->    * mem_allocation_shares: 163840
->    * mem_allocation_shares_level: normal
->    * name: Resources
->    * overall_status: green
->    * owner: cluster
->    * runtime_cpu_max_usage: 0
->    * runtime_cpu_overall_usage: 0
->    * runtime_cpu_reservation_used: 0
->    * runtime_cpu_reservation_used_vm: 0
->    * runtime_cpu_unreserved_for_pool: 0
->    * runtime_cpu_unreserved_for_vm: 0
->    * runtime_memory_max_usage: 0
->    * runtime_memory_overall_usage: 0
->    * runtime_memory_reservation_used: 0
->    * runtime_memory_reservation_used_vm: 0
->    * runtime_memory_unreserved_for_pool: 0
->    * runtime_memory_unreserved_for_vm: 0
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Resource_Pool_Info
+>
+> * ## Resources
+>
+>   * cpu_allocation_expandable_reservation: True
+>   * cpu_allocation_limit: 0
+>   * cpu_allocation_overhead_limit: None
+>   * cpu_allocation_reservation: 0
+>   * cpu_allocation_shares: 4000
+>   * cpu_allocation_shares_level: normal
+>   * mem_allocation_expandable_reservation: True
+>   * mem_allocation_limit: 0
+>   * mem_allocation_overhead_limit: None
+>   * mem_allocation_reservation: 0
+>   * mem_allocation_shares: 163840
+>   * mem_allocation_shares_level: normal
+>   * name: Resources
+>   * overall_status: green
+>   * owner: cluster
+>   * runtime_cpu_max_usage: 0
+>   * runtime_cpu_overall_usage: 0
+>   * runtime_cpu_reservation_used: 0
+>   * runtime_cpu_reservation_used_vm: 0
+>   * runtime_cpu_unreserved_for_pool: 0
+>   * runtime_cpu_unreserved_for_vm: 0
+>   * runtime_memory_max_usage: 0
+>   * runtime_memory_overall_usage: 0
+>   * runtime_memory_reservation_used: 0
+>   * runtime_memory_reservation_used_vm: 0
+>   * runtime_memory_unreserved_for_pool: 0
+>   * runtime_memory_unreserved_for_vm: 0
 
 
 ### vmware-tag
+
 ***
 Manage VMware tags
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_tag_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_tag_module.html>
 
 
 #### Base Command
 
 `vmware-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8000,14 +8663,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-tag-info
+
 ***
 Manage VMware tag info
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_tag_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_tag_info_module.html>
 
 
 #### Base Command
 
 `vmware-tag-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8025,14 +8690,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-tag-manager
+
 ***
 Manage association of VMware tags with VMware objects
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_tag_manager_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_tag_manager_module.html>
 
 
 #### Base Command
 
 `vmware-tag-manager`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8054,14 +8721,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-target-canonical-info
+
 ***
 Return canonical (NAA) from an ESXi host system
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_target_canonical_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_target_canonical_info_module.html>
 
 
 #### Base Command
 
 `vmware-target-canonical-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8080,9 +8749,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-target-canonical-info target_id="7" esxi_hostname="esxi01" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -8099,19 +8770,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * canonical: 
->  * changed: False
+># SUCCESS 
+>
+> * canonical: 
+> * changed: False
 
 ### vmware-vcenter-settings
+
 ***
 Configures general settings on a vCenter server
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vcenter_settings_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vcenter_settings_module.html>
 
 
 #### Base Command
 
 `vmware-vcenter-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8135,14 +8809,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-vcenter-statistics
+
 ***
 Configures statistics on a vCenter server
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vcenter_statistics_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vcenter_statistics_module.html>
 
 
 #### Base Command
 
 `vmware-vcenter-statistics`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8161,9 +8837,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-vcenter-statistics interval_past_day="{'enabled': True, 'interval_minutes': 5, 'save_for_days': 1, 'level': 1}" interval_past_week="{'enabled': True, 'level': 1}" interval_past_month="{'enabled': True, 'level': 1}" interval_past_year="{'enabled': True, 'save_for_years': 1, 'level': 1}" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -8196,36 +8874,39 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * msg: vCenter statistics already configured properly
->  * past_day_enabled: True
->  * past_day_interval: 5
->  * past_day_level: 1
->  * past_day_save_for: 1
->  * past_month_enabled: True
->  * past_month_interval: 2
->  * past_month_level: 1
->  * past_month_save_for: 1
->  * past_week_enabled: True
->  * past_week_interval: 30
->  * past_week_level: 1
->  * past_week_save_for: 1
->  * past_year_enabled: True
->  * past_year_interval: 1
->  * past_year_level: 1
->  * past_year_save_for: 1
+># SUCCESS 
+>
+> * changed: False
+> * msg: vCenter statistics already configured properly
+> * past_day_enabled: True
+> * past_day_interval: 5
+> * past_day_level: 1
+> * past_day_save_for: 1
+> * past_month_enabled: True
+> * past_month_interval: 2
+> * past_month_level: 1
+> * past_month_save_for: 1
+> * past_week_enabled: True
+> * past_week_interval: 30
+> * past_week_level: 1
+> * past_week_save_for: 1
+> * past_year_enabled: True
+> * past_year_interval: 1
+> * past_year_level: 1
+> * past_year_save_for: 1
 
 
 ### vmware-vm-host-drs-rule
+
 ***
 Creates vm/host group in a given cluster
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_host_drs_rule_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vm_host_drs_rule_module.html>
 
 
 #### Base Command
 
 `vmware-vm-host-drs-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8250,14 +8931,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-vm-info
+
 ***
 Return basic info pertaining to a VMware machine guest
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vm_info_module.html>
 
 
 #### Base Command
 
 `vmware-vm-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8276,9 +8959,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-vm-info```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -8314,36 +8999,47 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Virtual_Machines
->  * ## esxi01
->    * cluster: cluster
->    * datacenter: DC1
->    * esxi_hostname: esxi01
->    * folder: /DC1/vm
->    * guest_fullname: CentOS 4/5 or later (64-bit)
->    * guest_name: test_vm_0001
->    * ip_address: 
->    * moid: vm-21
->    * power_state: poweredOff
->    * uuid: 42166c31-2bd1-6ac0-1ebb-a6db907f529e
->    * ### Attributes
->    * ### Mac_Address
->      * 0: aa:bb:dd:aa:00:14
->    * ### Tags
->    * ### Vm_Network
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Virtual_Machines
+>
+> * ## esxi01
+>
+>   * cluster: cluster
+>   * datacenter: DC1
+>   * esxi_hostname: esxi01
+>   * folder: /DC1/vm
+>   * guest_fullname: CentOS 4/5 or later (64-bit)
+>   * guest_name: test_vm_0001
+>   * ip_address: 
+>   * moid: vm-21
+>   * power_state: poweredOff
+>   * uuid: 42166c31-2bd1-6ac0-1ebb-a6db907f529e
+>
+>   * ### Attributes
+>
+>   * ### Mac_Address
+>
+>     * 0: aa:bb:dd:aa:00:14
+>
+>   * ### Tags
+>
+>   * ### Vm_Network
 
 
 ### vmware-vm-shell
+
 ***
 Run commands in a VMware guest operating system
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_shell_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vm_shell_module.html>
 
 
 #### Base Command
 
 `vmware-vm-shell`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8373,14 +9069,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-vm-storage-policy-info
+
 ***
 Gather information about vSphere storage profile defined storage policy information.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_storage_policy_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vm_storage_policy_info_module.html>
 
 
 #### Base Command
 
 `vmware-vm-storage-policy-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8395,9 +9093,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-vm-storage-policy-info ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -8469,59 +9169,90 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Spbm_Profiles
->  * ## Vsan Default Storage Policy
->    * description: Storage policy used as default for vSAN datastores
->    * id: aa6d5a82-1c88-45da-85d3-3d74b91a5bad
->    * name: vSAN Default Storage Policy
->    * ### Constraints_Sub_Profiles
->    * ### Vsan Sub-Profile
->      * rule_set_name: VSAN sub-profile
->      * #### Rule_Set_Info
->      * #### Hostfailurestotolerate
->        * id: hostFailuresToTolerate
->        * value: 1
->      * #### Stripewidth
->        * id: stripeWidth
->        * value: 1
->      * #### Forceprovisioning
->        * id: forceProvisioning
->        * value: False
->      * #### Proportionalcapacity
->        * id: proportionalCapacity
->        * value: 0
->      * #### Cachereservation
->        * id: cacheReservation
->        * value: 0
->  * ## Vm Encryption Policy
->    * description: Sample storage policy for VMware's VM and virtual disk encryption
->    * id: 4d5f673c-536f-11e6-beb8-9e71128cae77
->    * name: VM Encryption Policy
->    * ### Constraints_Sub_Profiles
->    * ### Sp-1
->      * rule_set_name: sp-1
->      * #### Rule_Set_Info
->      * #### Ad5A249D-Cbc2-43Af-9366-694D7664Fa52
->        * id: ad5a249d-cbc2-43af-9366-694d7664fa52
->        * value: ad5a249d-cbc2-43af-9366-694d7664fa52
->  * ## Vvol No Requirements Policy
->    * description: Allow the datastore to determine the best placement strategy for storage objects
->    * id: f4e5bade-15a2-4805-bf8e-52318c4ce443
->    * name: VVol No Requirements Policy
->    * ### Constraints_Sub_Profiles
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Spbm_Profiles
+>
+> * ## Vsan Default Storage Policy
+>
+>   * description: Storage policy used as default for vSAN datastores
+>   * id: aa6d5a82-1c88-45da-85d3-3d74b91a5bad
+>   * name: vSAN Default Storage Policy
+>
+>   * ### Constraints_Sub_Profiles
+>
+>   * ### Vsan Sub-Profile
+>
+>     * rule_set_name: VSAN sub-profile
+>
+>     * #### Rule_Set_Info
+>
+>     * #### Hostfailurestotolerate
+>
+>       * id: hostFailuresToTolerate
+>       * value: 1
+>
+>     * #### Stripewidth
+>
+>       * id: stripeWidth
+>       * value: 1
+>
+>     * #### Forceprovisioning
+>
+>       * id: forceProvisioning
+>       * value: False
+>
+>     * #### Proportionalcapacity
+>
+>       * id: proportionalCapacity
+>       * value: 0
+>
+>     * #### Cachereservation
+>
+>       * id: cacheReservation
+>       * value: 0
+>
+> * ## Vm Encryption Policy
+>
+>   * description: Sample storage policy for VMware's VM and virtual disk encryption
+>   * id: 4d5f673c-536f-11e6-beb8-9e71128cae77
+>   * name: VM Encryption Policy
+>
+>   * ### Constraints_Sub_Profiles
+>
+>   * ### Sp-1
+>
+>     * rule_set_name: sp-1
+>
+>     * #### Rule_Set_Info
+>
+>     * #### Ad5A249D-Cbc2-43Af-9366-694D7664Fa52
+>
+>       * id: ad5a249d-cbc2-43af-9366-694d7664fa52
+>       * value: ad5a249d-cbc2-43af-9366-694d7664fa52
+>
+> * ## Vvol No Requirements Policy
+>
+>   * description: Allow the datastore to determine the best placement strategy for storage objects
+>   * id: f4e5bade-15a2-4805-bf8e-52318c4ce443
+>   * name: VVol No Requirements Policy
+>
+>   * ### Constraints_Sub_Profiles
 
 
 ### vmware-vm-vm-drs-rule
+
 ***
 Configure VMware DRS Affinity rule for virtual machine in given cluster
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_vm_drs_rule_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vm_vm_drs_rule_module.html>
 
 
 #### Base Command
 
 `vmware-vm-vm-drs-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8545,14 +9276,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-vm-vss-dvs-migrate
+
 ***
 Migrates a virtual machine from a standard vswitch to distributed
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_vss_dvs_migrate_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vm_vss_dvs_migrate_module.html>
 
 
 #### Base Command
 
 `vmware-vm-vss-dvs-migrate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8570,14 +9303,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-vmkernel
+
 ***
 Manages a VMware VMkernel Adapter of an ESXi host.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_module.html>
 
 
 #### Base Command
 
 `vmware-vmkernel`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8611,14 +9346,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-vmkernel-info
+
 ***
 Gathers VMKernel info about an ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_info_module.html>
 
 
 #### Base Command
 
 `vmware-vmkernel-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8635,9 +9372,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-vmkernel-info cluster_name="cluster" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -8672,35 +9411,42 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Host_Vmk_Info
->    * ### esxi01
->    * ### List
->      * device: vmk0
->      * dhcp: True
->      * enable_ft: False
->      * enable_management: True
->      * enable_vmotion: False
->      * enable_vsan: False
->      * ipv4_address: esxi01
->      * ipv4_subnet_mask: 255.255.255.0
->      * key: key-vim.host.VirtualNic-vmk0
->      * mac: 00:0c:29:d9:27:04
->      * mtu: 1500
->      * portgroup: Management Network
->      * stack: defaultTcpipStack
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Host_Vmk_Info
+>
+>   * ### esxi01
+>
+>   * ### List
+>
+>     * device: vmk0
+>     * dhcp: True
+>     * enable_ft: False
+>     * enable_management: True
+>     * enable_vmotion: False
+>     * enable_vsan: False
+>     * ipv4_address: esxi01
+>     * ipv4_subnet_mask: 255.255.255.0
+>     * key: key-vim.host.VirtualNic-vmk0
+>     * mac: 00:0c:29:d9:27:04
+>     * mtu: 1500
+>     * portgroup: Management Network
+>     * stack: defaultTcpipStack
 
 
 ### vmware-vmkernel-ip-config
+
 ***
 Configure the VMkernel IP Address
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_ip_config_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_ip_config_module.html>
 
 
 #### Base Command
 
 `vmware-vmkernel-ip-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8719,14 +9465,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-vmotion
+
 ***
 Move a virtual machine using vMotion, and/or its vmdks using storage vMotion.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vmotion_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vmotion_module.html>
 
 
 #### Base Command
 
 `vmware-vmotion`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8749,14 +9497,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-vsan-cluster
+
 ***
 Configure VSAN clustering on an ESXi host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vsan_cluster_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vsan_cluster_module.html>
 
 
 #### Base Command
 
 `vmware-vsan-cluster`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8771,9 +9521,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-vsan-cluster ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -8791,21 +9543,24 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * cluster_uuid: 525e42db-3df5-4184-b178-874f4ef18006
->  * result: None
+># CHANGED 
+>
+> * changed: True
+> * cluster_uuid: 525e42db-3df5-4184-b178-874f4ef18006
+> * result: None
 
 
 ### vmware-vspan-session
+
 ***
 Create or remove a Port Mirroring session.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vspan_session_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vspan_session_module.html>
 
 
 #### Base Command
 
 `vmware-vspan-session`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8838,14 +9593,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-vswitch
+
 ***
 Manage a VMware Standard Switch to an ESXi host.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vswitch_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vswitch_module.html>
 
 
 #### Base Command
 
 `vmware-vswitch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8866,9 +9623,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-vswitch switch="vswitch_name" nics="vmnic1" mtu="9000" esxi_hostname="esxi01"```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -8885,20 +9644,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * result: No change in vSwitch 'vswitch_name'
+># SUCCESS 
+>
+> * changed: False
+> * result: No change in vSwitch 'vswitch_name'
 
 
 ### vmware-vswitch-info
+
 ***
 Gathers info about an ESXi host's vswitch configurations
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vswitch_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vmware_vswitch_info_module.html>
 
 
 #### Base Command
 
 `vmware-vswitch-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8915,9 +9677,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-vswitch-info cluster_name="cluster"```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -8951,31 +9715,44 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Hosts_Vswitch_Info
->    * ### esxi01
->      * #### Vswitch0
->        * mtu: 1500
->        * num_ports: 128
->        * ##### Pnics
->          * 0: vmnic0
->      * #### Vswitch_Name
->        * mtu: 9000
->        * num_ports: 128
->        * ##### Pnics
->          * 0: vmnic1
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Hosts_Vswitch_Info
+>
+>   * ### esxi01
+>
+>     * #### Vswitch0
+>
+>       * mtu: 1500
+>       * num_ports: 128
+>
+>       * ##### Pnics
+>
+>         * 0: vmnic0
+>
+>     * #### Vswitch_Name
+>
+>       * mtu: 9000
+>       * num_ports: 128
+>
+>       * ##### Pnics
+>
+>         * 0: vmnic1
 
 
 ### vmware-vsphere-file
+
 ***
 Manage files on a vCenter datastore
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vsphere_file_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vsphere_file_module.html>
 
 
 #### Base Command
 
 `vmware-vsphere-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8997,14 +9774,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-vcenter-extension
+
 ***
 Register/deregister vCenter Extensions
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vcenter_extension_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vcenter_extension_module.html>
 
 
 #### Base Command
 
 `vmware-vcenter-extension`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9033,14 +9812,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### vmware-vcenter-extension-info
+
 ***
 Gather info vCenter extensions
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vcenter_extension_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vcenter_extension_info_module.html>
 
 
 #### Base Command
 
 `vmware-vcenter-extension-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9055,9 +9836,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-vcenter-extension-info ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -9085,29 +9868,35 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Extension_Info
->  * ## 
->    * extension_company: VMware Inc.
->    * extension_key: com.vmware.vim.sms
->    * extension_label: VMware vCenter Storage Monitoring Service
->    * extension_last_heartbeat_time: 2021-07-11T15:21:08.666734+00:00
->    * extension_subject_name: 
->    * extension_summary: Storage Monitoring and Reporting
->    * extension_type: 
->    * extension_version: 5.5
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Extension_Info
+>
+> * ## 
+>
+>   * extension_company: VMware Inc.
+>   * extension_key: com.vmware.vim.sms
+>   * extension_label: VMware vCenter Storage Monitoring Service
+>   * extension_last_heartbeat_time: 2021-07-11T15:21:08.666734+00:00
+>   * extension_subject_name: 
+>   * extension_summary: Storage Monitoring and Reporting
+>   * extension_type: 
+>   * extension_version: 5.5
 
 
 ### vmware-vcenter-folder
+
 ***
 Manage folders on given datacenter
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vcenter_folder_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vcenter_folder_module.html>
 
 
 #### Base Command
 
 `vmware-vcenter-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9127,9 +9916,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!vmware-vcenter-folder datacenter="DC1" folder_name="sample_vm_folder" folder_type="vm" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "VMware": {
@@ -9149,21 +9940,26 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Result
->    * msg: Folder sample_vm_folder already exists
->    * path: /DC1/vm/sample_vm_folder
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Result
+>
+>   * msg: Folder sample_vm_folder already exists
+>   * path: /DC1/vm/sample_vm_folder
 
 ### vmware-vcenter-license
+
 ***
 Manage VMware vCenter license keys
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vcenter_license_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/vcenter_license_module.html>
 
 
 #### Base Command
 
 `vmware-vcenter-license`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9184,6 +9980,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### Troubleshooting
+
 The Ansible-Runner container is not suitable for running as a non-root user.
 Therefore, the Ansible integrations will fail if you follow the instructions in [Cortex XSOAR 6.13 Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administator-Guide/Docker-Hardening-Guide). and [Cortex XSOAR 8 Cloud Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide). 
 
@@ -9191,7 +9988,7 @@ The `docker.run.internal.asuser` server configuration causes the software that i
 
 The Ansible-Runner software is required to run as root as it applies its own isolation via bwrap to the Ansible execution environment. 
 
-This is a limitation of the Ansible-Runner software itself https://github.com/ansible/ansible-runner/issues/611.
+This is a limitation of the Ansible-Runner software itself <https://github.com/ansible/ansible-runner/issues/611>.
 
 A workaround is to use the `docker.run.internal.asuser.ignore` server setting and to configure Cortex XSOAR to ignore the Ansible container image by setting the value of `demisto/ansible-runner` and afterwards running /reset_containers to reload any containers that might be running to ensure they receive the configuration.
 

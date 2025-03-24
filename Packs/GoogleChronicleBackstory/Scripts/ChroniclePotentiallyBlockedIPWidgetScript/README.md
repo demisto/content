@@ -1,5 +1,7 @@
 Notifies if the IP address associated with the ChronicleAsset is potentially blocked or not.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,9 +11,11 @@ Notifies if the IP address associated with the ChronicleAsset is potentially blo
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

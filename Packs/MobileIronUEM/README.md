@@ -9,12 +9,14 @@ MobileIron’s zero trust approach ensures that only authorized users, devices, 
 ##### Platform compatibility
 
 This MobileIron UEM content pack contains the integration with both UEM platforms that MobileIron offers:
+
 - **MobileIron Core** - an on-premise solution.
 - **MobileIron Cloud** - a SAAS offering for device management.
 
 The pack contains the corresponding custom MobileIron UEM incident fields, mappers, and layouts to facilitate analyst investigation.
 
 ##### Requesting a trial
+
 Anyone interested in trying the MobileIron platform and this integration can request a **free trial** through the [mobileiron website](https://mobileiron.com).
 
 #### What does this pack provide?
@@ -27,6 +29,7 @@ Anyone interested in trying the MobileIron platform and this integration can req
 - Custom layout and incident mapper to better show the relevant data when using fetch incidents.
 
 More information on the different ways to query the API can be found inside the platform specific API documentation:
+
 - [Documentation for MobileIron Core](https://forums.ivanti.com/s/mobileiron-core)
 - [Documentation for MobileIron Cloud](https://forums.ivanti.com/s/mobileiron-cloud)
 

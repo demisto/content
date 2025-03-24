@@ -2,6 +2,7 @@ Automate your XSOAR marketplace content update process using the playbooks in th
 
 
 ## What Does This Pack Do?
+
 The playbook in this pack checks for any available content updates for selected installed content packs and notifies users via e-mail or Slack. 
 It also contains an auto-update flow that lets users decide via playbook inputs or communication tasks if they want to trigger an auto-update process to install all updates that were found.
 

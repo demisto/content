@@ -1,19 +1,23 @@
 Use the Imperva WAF integration to manage IP groups and Web security policies in Imperva WAF.
 This integration was integrated and tested with version 14.2 of Imperva WAF and based on Imperva On-Premises WAF (SecureSphere) REST API.
+
 ## Configure Imperva WAF in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://example.net\) | True |
+| url | Server URL \(e.g. <https://example.net\>) | True |
 | credentials | Username | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### imperva-waf-ip-group-list
+
 ***
 Get a list of existing IP Group names.
 
@@ -21,6 +25,7 @@ Get a list of existing IP Group names.
 #### Base Command
 
 `imperva-waf-ip-group-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -33,9 +38,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!imperva-waf-ip-group-list```
 
 #### Context Example
+
 ```
 {
     "ImpervaWAF": {
@@ -60,6 +67,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### IP groups
+>
 >|Name|
 >|---|
 >| All Search Engines |
@@ -69,6 +77,7 @@ There are no input arguments for this command.
 
 
 ### imperva-waf-ip-group-list-entries
+
 ***
 Get a list of the entries in the requested IP group.
 
@@ -76,6 +85,7 @@ Get a list of the entries in the requested IP group.
 #### Base Command
 
 `imperva-waf-ip-group-list-entries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -95,9 +105,11 @@ Get a list of the entries in the requested IP group.
 
 
 #### Command Example
+
 ```!imperva-waf-ip-group-list-entries ip-group-name=`Google IP Addresses````
 
 #### Context Example
+
 ```
 {
     "ImpervaWAF": {
@@ -134,6 +146,7 @@ Get a list of the entries in the requested IP group.
 #### Human Readable Output
 
 >### IP group entries for Google IP Addresses
+>
 >|Type|IpAddressFrom|IpAddressTo|
 >|---|---|---|
 >| range | 1.2.3.4 | 2.3.4.5 |
@@ -142,6 +155,7 @@ Get a list of the entries in the requested IP group.
 
 
 ### imperva-waf-ip-group-remove-entries
+
 ***
 Remove all the entries from an IP Group indicated by group name.
 
@@ -149,6 +163,7 @@ Remove all the entries from an IP Group indicated by group name.
 #### Base Command
 
 `imperva-waf-ip-group-remove-entries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -161,9 +176,11 @@ Remove all the entries from an IP Group indicated by group name.
 There is no context output for this command.
 
 #### Command Example
+
 ```!imperva-waf-ip-group-remove-entries ip-group-name=`test_policy````
 
 #### Context Example
+
 ```
 {}
 ```
@@ -173,6 +190,7 @@ There is no context output for this command.
 >The IP group test_policy is now empty
 
 ### imperva-waf-sites-list
+
 ***
 Returns a list of the names of all sites in the system.
 
@@ -180,6 +198,7 @@ Returns a list of the names of all sites in the system.
 #### Base Command
 
 `imperva-waf-sites-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -192,9 +211,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!imperva-waf-sites-list```
 
 #### Context Example
+
 ```
 {
     "ImpervaWAF": {
@@ -208,12 +229,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### All sites in the system
+>
 >|Name|
 >|---|
 >| Default Site |
 
 
 ### imperva-waf-server-group-list
+
 ***
 Returns a list of all server group names under the site.
 
@@ -221,6 +244,7 @@ Returns a list of all server group names under the site.
 #### Base Command
 
 `imperva-waf-server-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -237,9 +261,11 @@ Returns a list of all server group names under the site.
 
 
 #### Command Example
+
 ```!imperva-waf-server-group-list site-name=`Default Site````
 
 #### Context Example
+
 ```
 {
     "ImpervaWAF": {
@@ -254,12 +280,14 @@ Returns a list of all server group names under the site.
 #### Human Readable Output
 
 >### Server groups in Default Site
+>
 >|Name|SiteName|
 >|---|---|
 >| Tel Aviv | Default Site |
 
 
 ### imperva-waf-server-group-list-policies
+
 ***
 Get server groups applied web security policies.
 
@@ -267,6 +295,7 @@ Get server groups applied web security policies.
 #### Base Command
 
 `imperva-waf-server-group-list-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -287,9 +316,11 @@ Get server groups applied web security policies.
 
 
 #### Command Example
+
 ```!imperva-waf-server-group-list-policies site-name=`Default Site` server-group-name=`Tel Aviv````
 
 #### Context Example
+
 ```
 {
     "ImpervaWAF": {
@@ -316,6 +347,7 @@ Get server groups applied web security policies.
 #### Human Readable Output
 
 >### Policies for Tel Aviv
+>
 >|PolicyName|PolicyType|ServerGroup|SiteName|System|
 >|---|---|---|---|---|
 >| Network Protocol Violations Policy | NetworkProtocolViolations | Tel Aviv | Default Site | true |
@@ -323,6 +355,7 @@ Get server groups applied web security policies.
 
 
 ### imperva-waf-web-service-custom-policy-list
+
 ***
 Returns a list of names of all Web Application Custom Policies in the system.
 
@@ -330,6 +363,7 @@ Returns a list of names of all Web Application Custom Policies in the system.
 #### Base Command
 
 `imperva-waf-web-service-custom-policy-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -342,9 +376,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!imperva-waf-web-service-custom-policy-list```
 
 #### Context Example
+
 ```
 {
     "ImpervaWAF": {
@@ -378,6 +414,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Custom web policies
+>
 >|Name|
 >|---|
 >| HTML Injection |
@@ -391,6 +428,7 @@ There are no input arguments for this command.
 
 
 ### imperva-waf-web-service-custom-policy-get
+
 ***
 Returns a Web Application Custom Policy indicated by policy name.
 
@@ -398,6 +436,7 @@ Returns a Web Application Custom Policy indicated by policy name.
 #### Base Command
 
 `imperva-waf-web-service-custom-policy-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -427,9 +466,11 @@ Returns a Web Application Custom Policy indicated by policy name.
 
 
 #### Command Example
+
 ```!imperva-waf-web-service-custom-policy-get policy-name=`Suspicious File Extension Access````
 
 #### Context Example
+
 ```
 {
     "ImpervaWAF": {
@@ -482,18 +523,21 @@ Returns a Web Application Custom Policy indicated by policy name.
 #### Human Readable Output
 
 >### Policy data for Suspicious File Extension Access
+>
 >|Action|DisplayResponsePage|Enabled|Name|OneAlertPerSession|Severity|
 >|---|---|---|---|---|---|
 >| none | false | true | Suspicious File Extension Access | false | high |
 >
 >
 >### Services to apply the policy to
+>
 >|serverGroupName|siteName|webServiceName|
 >|---|---|---|
 >| Tel Aviv | Default Site | Orders |
 
 
 ### imperva-waf-ip-group-create
+
 ***
 Create an IP Group.
 
@@ -501,6 +545,7 @@ Create an IP Group.
 #### Base Command
 
 `imperva-waf-ip-group-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -522,9 +567,11 @@ Create an IP Group.
 
 
 #### Command Example
+
 ```!imperva-waf-ip-group-create group-name=`test_policy` entry-type=range ip-address-from=127.0.0.1 ip-address-to=127.0.0.2```
 
 #### Context Example
+
 ```
 {
     "ImpervaWAF": {
@@ -540,6 +587,7 @@ Create an IP Group.
 >Group test_policy created successfully
 
 ### imperva-waf-ip-group-update-entries
+
 ***
 Add or remove rows in an IP Group indicated by ip Group Name.
 
@@ -547,6 +595,7 @@ Add or remove rows in an IP Group indicated by ip Group Name.
 #### Base Command
 
 `imperva-waf-ip-group-update-entries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -566,9 +615,11 @@ Add or remove rows in an IP Group indicated by ip Group Name.
 There is no context output for this command.
 
 #### Command Example
+
 ```!imperva-waf-ip-group-update-entries group-name=test_policy entry-type=range ip-address-from=10.0.0.1 ip-address-to=10.0.0.2 operation=add```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -578,6 +629,7 @@ There is no context output for this command.
 >Group test_policy updated successfully
 
 ### imperva-waf-ip-group-delete
+
 ***
 Delete a IP Group indicated by group name.
 
@@ -585,6 +637,7 @@ Delete a IP Group indicated by group name.
 #### Base Command
 
 `imperva-waf-ip-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -597,9 +650,11 @@ Delete a IP Group indicated by group name.
 There is no context output for this command.
 
 #### Command Example
+
 ```!imperva-waf-ip-group-delete group-name=test_policy```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -609,6 +664,7 @@ There is no context output for this command.
 >Group test_policy deleted successfully
 
 ### imperva-waf-web-service-custom-policy-create
+
 ***
 Create a Web Service Custom Policy.
 
@@ -616,6 +672,7 @@ Create a Web Service Custom Policy.
 #### Base Command
 
 `imperva-waf-web-service-custom-policy-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -660,9 +717,11 @@ Create a Web Service Custom Policy.
 
 
 #### Command Example
+
 ```!imperva-waf-web-service-custom-policy-create policy-name=test_policy server-group-name-to-apply=`Tel Aviv` site-name-to-apply=`Default Site` web-service-name-to-apply=Orders followed-action=`Long IP Block````
 
 #### Context Example
+
 ```
 {}
 ```
@@ -672,6 +731,7 @@ Create a Web Service Custom Policy.
 >Policy test_policy created successfully
 
 ### imperva-waf-web-service-custom-policy-update
+
 ***
 Update a Web Service Custom Policy.
 
@@ -679,6 +739,7 @@ Update a Web Service Custom Policy.
 #### Base Command
 
 `imperva-waf-web-service-custom-policy-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -707,9 +768,11 @@ Update a Web Service Custom Policy.
 There is no context output for this command.
 
 #### Command Example
+
 ```!imperva-waf-web-service-custom-policy-update policy-name=test_policy enabled=False```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -719,6 +782,7 @@ There is no context output for this command.
 >Policy test_policy updated successfully
 
 ### imperva-waf-web-service-custom-policy-delete
+
 ***
 Delete a Web Service Custom Policy indicated by policy name.
 
@@ -726,6 +790,7 @@ Delete a Web Service Custom Policy indicated by policy name.
 #### Base Command
 
 `imperva-waf-web-service-custom-policy-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -738,9 +803,11 @@ Delete a Web Service Custom Policy indicated by policy name.
 There is no context output for this command.
 
 #### Command Example
+
 ```!imperva-waf-web-service-custom-policy-delete policy-name=`test_policy````
 
 #### Context Example
+
 ```
 {}
 ```

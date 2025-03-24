@@ -2,6 +2,7 @@ Enables a clients application to receive a list of all managed and unmanaged end
 
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,14 +12,18 @@ Enables a clients application to receive a list of all managed and unmanaged end
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * imp-sf-list-endpoints
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

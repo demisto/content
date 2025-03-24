@@ -1,12 +1,15 @@
 # ArcSight ESM
+
 ArcSight ESM is a security information and event management (SIEM) product.
 It collects security log data from an enterprise’s security technologies, operating systems, applications and other log sources, and analyzes that data for signs of compromise, attacks or other malicious activity.
 The product generates cases to security administrators and analysts.
 
 ##### NOTE: 
+
 ArcSight XML is no longer supported. Use the ArcSight ESM integration instead.
 
 ## Use Cases
+
 1. Fetching events and cases based on a query viewer.
 2. Getting additional information by event or case ID.
 3. Searching for events.
@@ -14,6 +17,7 @@ ArcSight XML is no longer supported. Use the ArcSight ESM integration instead.
 5. Getting all entries from an active list, updating an entry and clearing the list.
 
 ## Set up ArcSight ESM to work with Cortex XSOAR
+
 The set up for using ArcSight ESM to work with Cortex XSOAR depends on whether you will be using the integration to fetch events or cases.
 
 #### For fetching Events/Cases:
@@ -31,7 +35,9 @@ The set up for using ArcSight ESM to work with Cortex XSOAR depends on whether y
     - Select additional fields of your choice.
     - Add conditions if needed (malicious/suspicious behavior such as malware found, failed login,
       access to a known malicious site and/or conditions like severity, criticality, assets etc).
+
 #### Note: 
+
 Cortex XSOAR is designed for an automatic response, so make sure to define conditions for actionable/sever/critical events only.
 
 5.Create a query viewer based on the query.
@@ -44,11 +50,12 @@ Cortex XSOAR is designed for an automatic response, so make sure to define condi
 
 
 # Configure ArcSight ESM on Cortex XSOAR
+
 1. Navigate to Settings>Integrations>Servers & Services.
 2. Search for ArcSight ESM.
 3. Click **Add instance** to create and configure a new integration instance.
     - **Name**: a textual name for the integration instance.
-    - **Server URL (e.g. https://192.168.0.1:8443)**: The hostname or IP address of the appliance being used, for example, `https://your_arcsight_esm:port`.
+    - **Server URL (e.g. <https://192.168.0.1:8443>)**: The hostname or IP address of the appliance being used, for example, `https://your_arcsight_esm:port`.
     - **Credentials and Password**: Use the username and password used to access the ArcSight ESM account. By default, a user with the admin role will have all the necessary permissions to run all integration commands. For more granular authorization, refer to the ESM documentation on how to create custom roles.
     - **Fetch Events as incidents via Query Viewer ID**: Must have Start Time and Event ID fields.
     - **Fetch Cases as incidents via Query Viewer ID**: Must have Create Time and ID fields.
@@ -60,16 +67,18 @@ Cortex XSOAR is designed for an automatic response, so make sure to define condi
     - **Product Version**: Select the ArcSight ESM version. 7.4 above using the new Swagger detect-api. Note - not all the commands are using the new API at the moment.
     - **Use REST Endpoints**: Mark this checkbox to use REST endpoints for the commands related to 'entries' instead of the default legacy SOAP endpoints.
 4. Click **Test** to validate the URLs, token, and connection.
-    If you are experiencing issues with the service configuration, please contact Cortex XSOAR support at support@paloaltonetworks.com.
+    If you are experiencing issues with the service configuration, please contact Cortex XSOAR support at <support@paloaltonetworks.com>.
 5. After completing the test successfully, press the ‘Done’ button.
 
 ## Use-Cases
+
 - **Fetch events** - New events that match the predefined condition will be fetched to Cortex XSOAR as an incident and will trigger playbooks for automation and response. Such events could be any kind of security events.
 - **Fetch cases** - New cases that match the predefined condition will be fetched to Cortex XSOAR as an incident and will trigger playbooks for automation and response. Such cases could include any kind of security events. The final step of the playbook could be updating, closing or deleting the case.
 - **Search events** - Query specific events based on an existing query viewer.
 - **Getting active** list entries - Returning active list entries (such as “Block list IPS”, “Malicious MD5s”, etc) by using as-get-entries and providing the resource ID of the active list. The entries can be added as a list in Cortex XSOAR for cross-platform usage, additional automation, and data enrichment.
 
 ## Fetched Incidents Data
+
 The integration can fetch events and cases.
 
 - When first turned on, the integration fetches all events/cases from the query viewer.
@@ -77,6 +86,7 @@ The integration can fetch events and cases.
 - In case of slowness, timeouts or crashes try reducing the max fetch parameter.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -97,6 +107,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 ### as-get-all-cases
+
 ***
 (Deprecated) Retrieves all case resource IDs.
 
@@ -104,6 +115,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 #### Base Command
 
 `as-get-all-cases`
+
 #### Input
 
 There are no input arguments for this command.
@@ -116,9 +128,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!as-get-all-cases ```
 
 #### Context Example
+
 ```
 {
     "ArcSightESM": {
@@ -134,6 +148,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### All cases
+>
 >|caseID|
 >|---|
 >| 1234DfGkBABCenF0601F2Ww== |
@@ -143,6 +158,7 @@ There are no input arguments for this command.
 
 
 ### as-get-case
+
 ***
 Gets information about a single case.
 
@@ -150,6 +166,7 @@ Gets information about a single case.
 #### Base Command
 
 `as-get-case`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -189,9 +206,11 @@ Gets information about a single case.
 
 
 #### Command Example
+
 ```!as-get-case resourceId="12ax-uGgBABCWb2puJdY8ZA=="```
 
 #### Context Example
+
 ```
 {
     "ArcSightESM": {
@@ -299,12 +318,14 @@ Gets information about a single case.
 #### Human Readable Output
 
 >### Case 12ax-uGgBABCWb2puJdY8ZA==
+>
 >|Action|CaseID|CreatedTime|EventIDs|Name|Severity|Stage|
 >|---|---|---|---|---|---|---|
 >| BLOCK_OR_SHUTDOWN | 12ax-uGgBABCWb2puJdY8ZA== | 2019-02-04 12:33:21 | 12395741, 45696713, 7896719 | test | INSIGNIFICANT | QUEUED |
 
 
 ### as-get-matrix-data
+
 ***
 Retrieves query viewer results (query viewer must be configured to be refreshed every minute, see documentation)
 
@@ -312,6 +333,7 @@ Retrieves query viewer results (query viewer must be configured to be refreshed 
 #### Base Command
 
 `as-get-matrix-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -325,9 +347,11 @@ Retrieves query viewer results (query viewer must be configured to be refreshed 
 There is no context output for this command.
 
 #### Command Example
+
 ```!as-get-matrix-data id=aBBnu5XEBABCJHuGRQA-nwg== ```
 
 #### Context Example
+
 ```
 {
   "ArcSightESM.QueryViewerResults": [
@@ -394,6 +418,7 @@ There is no context output for this command.
 | 1588004035004 | 30002 | ArcSight User Login | 123lqvHEBABDmMHb-MM+jnA== | test4 |
 
 ### as-add-entries
+
 ***
 Adds new entries to the Active List.
 
@@ -401,6 +426,7 @@ Adds new entries to the Active List.
 #### Base Command
 
 `as-add-entries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -414,9 +440,11 @@ Adds new entries to the Active List.
 There is no context output for this command.
 
 #### Command Example
+
 ```!as-add-entries resourceId="A1LvlmWgBABCA5+HbRyHZoQ==" entries="[{\"name\": \"t3\", \"EventID\": \"9\"},{\"name\": \"t4\", \"EventID\": \"9\"}]"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -426,6 +454,7 @@ There is no context output for this command.
 >Success
 
 ### as-clear-entries
+
 ***
 Deletes all entries in the Active List.
 
@@ -433,6 +462,7 @@ Deletes all entries in the Active List.
 #### Base Command
 
 `as-clear-entries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -445,9 +475,11 @@ Deletes all entries in the Active List.
 There is no context output for this command.
 
 #### Command Example
+
 ```!as-clear-entries resourceId="A1LvlmWgBABCA5+HbRyHZoQ=="```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -457,16 +489,19 @@ There is no context output for this command.
 >Success
 
 ### as-get-entries
+
 ***
 Returns all entries in the Active List
 
 
 ### Limitations
+
 Returns up to 2000 entries.
 
 #### Base Command
 
 `as-get-entries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -485,9 +520,11 @@ Returns up to 2000 entries.
 
 
 #### Command Example
+
 ```!as-get-entries resourceId=A1LvlmWgBABCA5+HbRyHZoQ==```
 
 #### Context Example
+
 ```
 {
     "ArcSightESM": {
@@ -521,6 +558,7 @@ Returns up to 2000 entries.
 >Active List has no entries
 
 ### as-get-security-events
+
 ***
 Returns the security event details
 
@@ -528,6 +566,7 @@ Returns the security event details
 #### Base Command
 
 `as-get-security-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -551,9 +590,11 @@ Returns the security event details
 
 
 #### Command Example
+
 ```!as-get-security-events ids=12352349,45652798```
 
 #### Context Example
+
 ```
 {
     "ArcSightESM": {
@@ -1089,6 +1130,7 @@ Returns the security event details
 
 
 ### as-get-case-event-ids
+
 ***
 Returns all case event IDs.
 
@@ -1096,6 +1138,7 @@ Returns all case event IDs.
 #### Base Command
 
 `as-get-case-event-ids`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1113,9 +1156,11 @@ Returns all case event IDs.
 
 
 #### Command Example
+
 ```!as-get-case-event-ids caseId="12ax-uGgBABCWb2puJdY8ZA==" withCorrelatedEvents="true"```
 
 #### Context Example
+
 ```
 {
     "ArcSightESM": {
@@ -1138,6 +1183,7 @@ Returns all case event IDs.
 
 
 ### as-update-case
+
 ***
 Updates a specific case.
 
@@ -1145,6 +1191,7 @@ Updates a specific case.
 #### Base Command
 
 `as-update-case`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1165,9 +1212,11 @@ Updates a specific case.
 
 
 #### Command Example
+
 ```!as-update-case caseId="12ax-uGgBABCWb2puJdY8ZA==" stage="QUEUED" severity="INSIGNIFICANT"```
 
 #### Context Example
+
 ```
 {
     "ArcSightESM": {
@@ -1275,12 +1324,14 @@ Updates a specific case.
 #### Human Readable Output
 
 >### Case 12ax-uGgBABCWb2puJdY8ZA==
+>
 >|Action|CaseID|CreatedTime|EventIDs|Name|Severity|Stage|
 >|---|---|---|---|---|---|---|
 >| BLOCK_OR_SHUTDOWN | 12ax-uGgBABCWb2puJdY8ZA== | 2019-02-04 12:33:21 | 12395741, 45696713, 78996719 | test | INSIGNIFICANT | QUEUED |
 
 
 ### as-get-all-query-viewers
+
 ***
 Returns all the query viewer IDs.
 
@@ -1288,6 +1339,7 @@ Returns all the query viewer IDs.
 #### Base Command
 
 `as-get-all-query-viewers`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1300,9 +1352,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!as-get-all-query-viewers```
 
 #### Context Example
+
 ```
 {
     "ArcSightESM": {
@@ -1326,6 +1380,7 @@ There are no input arguments for this command.
 
 
 ### as-case-delete
+
 ***
 Deletes a case
 
@@ -1333,6 +1388,7 @@ Deletes a case
 #### Base Command
 
 `as-case-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1349,9 +1405,11 @@ Deletes a case
 
 
 #### Command Example
+
 ```!as-case-delete caseId=123WHEWcBABD6VdKLNcKE2Q==```
 
 #### Context Example
+
 ```
 {
     "ArcSightESM": {
@@ -1368,6 +1426,7 @@ Deletes a case
 >Case 123WHEWcBABD6VdKLNcKE2Q== successfully deleted
 
 ### as-get-query-viewer-results
+
 ***
 Retrieves query viewer results (query viewer must be configured to be refreshed every minute, see documentation)
 
@@ -1375,6 +1434,7 @@ Retrieves query viewer results (query viewer must be configured to be refreshed 
 #### Base Command
 
 `as-get-query-viewer-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1391,9 +1451,11 @@ Retrieves query viewer results (query viewer must be configured to be refreshed 
 
 
 #### Command Example
+
 ```!as-get-query-viewer-results id="123457WYBABCw9lZRkCjVIQ=="```
 
 #### Context Example
+
 ```
 {
     "ArcSightESM": {
@@ -1437,7 +1499,9 @@ Retrieves query viewer results (query viewer must be configured to be refreshed 
 >| Attacker Address |
 >| Event ID |
 >| Start Time |
+>
 >### Query Viewer Results: 123457WYBABCw9lZRkCjVIQ==
+>
 >|Attacker Address|Attacker Zone URI|End Time|Event ID|Name|Start Time|
 >|---|---|---|---|---|---|
 >| 1.1.1.1 | /All Zones/ArcSight System/Public Address Space Zones/E.I. duPont de Nemours and Co. Inc. | 1589028174502 | 12345678 | Login succeeded for user name 'admin' | 1589028174502 |
@@ -1446,6 +1510,7 @@ Retrieves query viewer results (query viewer must be configured to be refreshed 
 
 
 ### as-fetch-incidents
+
 ***
 Fetches incidents
 
@@ -1453,6 +1518,7 @@ Fetches incidents
 #### Base Command
 
 `as-fetch-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1465,15 +1531,18 @@ Fetches incidents
 There is no context output for this command.
 
 #### Command Example
+
 ```!as-fetch-incidents```
 
 #### Context Example
+
 ```
 {}
 ```
 
 
 ### as-delete-entries
+
 ***
 Delete entries from the Active List.
 
@@ -1481,6 +1550,7 @@ Delete entries from the Active List.
 #### Base Command
 
 `as-delete-entries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1494,9 +1564,11 @@ Delete entries from the Active List.
 There is no context output for this command.
 
 #### Command Example
+
 ```!as-delete-entries resourceId="A1LvlmWgBABCA5+HbRyHZoQ==" entries="[{\"name\": \"t3\", \"EventID\": \"9\"},{\"name\": \"t4\", \"EventID\": \"9\"}]" ```
 
 #### Context Example
+
 ```
 {}
 ```

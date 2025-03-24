@@ -11,7 +11,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | For example: https://192.168.1.1 | True |
+| Server URL | For example: <https://192.168.1.1> | True |
 | Username |  | True |
 | Password |  | True |
 | Maximum incidents per fetch. | Default is 20. Maximum is 200. Setting a value greater than 20 may harm performance, if used with 'Fetch With Events' mode. | False |
@@ -25,9 +25,12 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | Fetch incidents |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fortisiem-event-search
+
 ***
 Initiate search process on events. Events are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, an 'AND' operator is used between them. If the query argument is provided, it overrides the values in the filtering arguments.
 
@@ -35,6 +38,7 @@ Initiate search process on events. Events are retrieved according to a constrain
 #### Base Command
 
 `fortisiem-event-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -69,10 +73,13 @@ Initiate search process on events. Events are retrieved according to a constrain
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiSIEM.EventsSearchInit.search_id | String | The ID of the search query that executed against the events. | 
+
 #### Command Example
+
 ```!fortisiem-event-search query="eventType='ASA-Built-Conn'" from_time=2022-02-10 to_time=2022-02-14```
 
 #### Context Example
+
 ```json
 {
     "FortiSIEM": {
@@ -86,12 +93,14 @@ Initiate search process on events. Events are retrieved according to a constrain
 #### Human Readable Output
 
 >### Successfully Initiated search query
+>
 >|Search Id|
 >|---|
 >| 46367,1644934487413 |
 
 
 ### fortisiem-incident-update
+
 ***
 Update attributes of the specified incident. Only the provided attributes are overwritten.
 
@@ -99,6 +108,7 @@ Update attributes of the specified incident. Only the provided attributes are ov
 #### Base Command
 
 `fortisiem-incident-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -117,6 +127,7 @@ Update attributes of the specified incident. Only the provided attributes are ov
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortisiem-incident-update incident_id=102 comment=demo-comment```
 
 #### Human Readable Output
@@ -124,6 +135,7 @@ There is no context output for this command.
 >The incident: 102 was successfully updated.
 
 ### fortisiem-cmdb-devices-list
+
 ***
 List CMDB (Centralized Management Database) devices with short information for each device. If you provide one of the exclude arguments, their values are excluded from the provided include arguments. For example, to list all devices in the range 192.168.20.1-192.168.20.100, but exclude 192.168.20.20, 192.168.20.25, use include_ip_range='192.168.20.1-192.168.20.100' and exclude_ip='192.168.20.20, 192.168.20.25'. If no argument is provided, the command retrieves all devices.
 
@@ -131,6 +143,7 @@ List CMDB (Centralized Management Database) devices with short information for e
 #### Base Command
 
 `fortisiem-cmdb-devices-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -156,9 +169,11 @@ List CMDB (Centralized Management Database) devices with short information for e
 
 
 #### Command Example
+
 ```!fortisiem-cmdb-devices-list limit=2 page=1```
 
 #### Context Example
+
 ```json
 {
     "FortiSIEM": {
@@ -203,6 +218,7 @@ List CMDB (Centralized Management Database) devices with short information for e
 #### Human Readable Output
 
 >### List CMDB devices 
+>
 >Showing page 1 out of 1 total pages. Current page size: 2.
 >
 >|Name|Access Ip|Approved|Unmanaged|Device Type|
@@ -212,6 +228,7 @@ List CMDB (Centralized Management Database) devices with short information for e
 
 
 ### fortisiem-cmdb-device-get
+
 ***
 Retrieve full information of the specified devices.
 
@@ -219,6 +236,7 @@ Retrieve full information of the specified devices.
 #### Base Command
 
 `fortisiem-cmdb-device-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -244,9 +262,11 @@ Retrieve full information of the specified devices.
 
 
 #### Command Example
+
 ```!fortisiem-cmdb-device-get ips=192.168.30.254```
 
 #### Context Example
+
 ```json
 {
     "FortiSIEM": {
@@ -286,12 +306,14 @@ Retrieve full information of the specified devices.
 #### Human Readable Output
 
 >### CMDB device 192.168.30.254
+>
 >|Name|Access Ip|Approved|Unmanaged|Device Type|Discover Time|Discover Method|
 >|---|---|---|---|---|---|---|
 >| Palo Alto | 192.168.30.254 | true | false | accessProtocols: TELNET,SSH<br/>category: Appliance<br/>jobWeight: 10<br/>model: PAN-OS<br/>vendor: Palo Alto<br/>version: ANY | 2021-11-23T07:58:48 | LOG |
 
 
 ### fortisiem-monitored-organizations-list
+
 ***
 List of monitored organizations in service provider deployments.
 
@@ -299,6 +321,7 @@ List of monitored organizations in service provider deployments.
 #### Base Command
 
 `fortisiem-monitored-organizations-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -318,9 +341,11 @@ List of monitored organizations in service provider deployments.
 | FortiSIEM.Organization.initialized | Unknown | Whether or not the organization is initialized. | 
 
 #### Command Example
+
 ```!fortisiem-monitored-organizations-list limit=2 page=1```
 
 #### Context Example
+
 ```json
 {
     "FortiSIEM": {
@@ -351,6 +376,7 @@ List of monitored organizations in service provider deployments.
 #### Human Readable Output
 
 >### List Monitored Organizations 
+>
 >Showing page 1 out of 1 total pages. Current page size: 2.
 >
 >|Domain Id|Name|Cust Id|Creation Time|Last Modified|Disabled|
@@ -366,6 +392,7 @@ Lists events by the specified incident ID. Available for FortiSiem version 6.6 a
 #### Base Command
 
 `fortisiem-event-list-by-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -388,9 +415,11 @@ Lists events by the specified incident ID. Available for FortiSiem version 6.6 a
 | FortiSIEM.Event.custId | Number | The customer ID the event is related to. | 
 
 #### Command Example
+
 ```!fortisiem-event-list-by-incident incident_id=102 limit=1 page=1```
 
 #### Context Example
+
 ```json
 {
     "FortiSIEM": {
@@ -439,6 +468,7 @@ Lists events by the specified incident ID. Available for FortiSiem version 6.6 a
 #### Human Readable Output
 
 >### List Events Of incident: 102 
+>
 >Showing page 1 out of others that may exist. Current page size: 1.
 > 
 >|Id|Cust Id|Index|Event Type|Receive Time|
@@ -446,6 +476,7 @@ Lists events by the specified incident ID. Available for FortiSiem version 6.6 a
 >| 9071234812238930440 | 1 | 0 | ASA-Built-Conn | 2021-12-21T11:12:32 || 
 
 ### fortisiem-watchlist-list
+
 ***
 List all watchlists from FortiSIEM database.
 
@@ -453,6 +484,7 @@ List all watchlists from FortiSIEM database.
 #### Base Command
 
 `fortisiem-watchlist-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -480,9 +512,11 @@ List all watchlists from FortiSIEM database.
 | FortiSIEM.Watchlist.id | Number | Watchlist ID. | 
 
 #### Command Example
+
 ```!fortisiem-watchlist-list limit=1 page=1```
 
 #### Context Example
+
 ```json
 {
     "FortiSIEM": {
@@ -524,6 +558,7 @@ List all watchlists from FortiSIEM database.
 #### Human Readable Output
 
 >### List Watchlist Groups 
+>
 >Showing page 1 out of 34 total pages. Current page size: 1.
 > >
 >|Id|Name|Display Name|Description|Value Type|
@@ -532,6 +567,7 @@ List all watchlists from FortiSIEM database.
 
 
 ### fortisiem-watchlist-get
+
 ***
 Get watchlist by the specified watchlist or entry ID.
 
@@ -539,6 +575,7 @@ Get watchlist by the specified watchlist or entry ID.
 #### Base Command
 
 `fortisiem-watchlist-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -565,9 +602,11 @@ Get watchlist by the specified watchlist or entry ID.
 | FortiSIEM.Watchlist.id | Number | Watchlist ID. | 
 
 #### Command Example
+
 ```!fortisiem-watchlist-get watchlist_ids=500504```
 
 #### Context Example
+
 ```json
 {
     "FortiSIEM": {
@@ -669,11 +708,13 @@ Get watchlist by the specified watchlist or entry ID.
 #### Human Readable Output
 
 >### Get Watchlist 500504
+>
 >|Id|Name|Display Name|Description|Value Type|
 >|---|---|---|---|---|
 >| 500504 | PH_DYNLIST_POL_VIOLATION_ISSUE | Policy Violators | End nodes that are triggered violations - such as visiting unauthorized websites, failed Anti-Virus updates, P2P traffic, etc. | IP |
 >
 >### Watchlist Entries
+>
 >|Id|State|Entry Value|Triggering Rules|Count|First Seen|Last Seen|
 >|---|---|---|---|---|---|---|
 >| 1576443 | Enabled | 10.10.10.10 |  | 2 | 2022-01-01T00:00:00 | 2022-01-10T00:00:00 |
@@ -684,6 +725,7 @@ Get watchlist by the specified watchlist or entry ID.
 
 
 ### fortisiem-watchlist-add
+
 ***
 Add a watchlist group. You can also add an entry to the watchlist.
 
@@ -691,6 +733,7 @@ Add a watchlist group. You can also add an entry to the watchlist.
 #### Base Command
 
 `fortisiem-watchlist-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -728,9 +771,11 @@ Add a watchlist group. You can also add an entry to the watchlist.
 | FortiSIEM.Watchlist.id | Number | Watchlist ID. | 
 
 #### Command Example
+
 ```!fortisiem-watchlist-add display_name=readme-demo data_creation_type=SYSTEM description="readme-watchlist" value_type=IP```
 
 #### Context Example
+
 ```json
 {
     "FortiSIEM": {
@@ -756,12 +801,14 @@ Add a watchlist group. You can also add an entry to the watchlist.
 #### Human Readable Output
 
 >### Added new Watchlist group: readme-demo
+>
 >|id|name|displayName|description|valueType|
 >|---|---|---|---|---|
 >| 1244296 | PH_SYS_Group_DyWatchList_1644929683070 | readme-demo | readme-watchlist | IP |
 
 
 ### fortisiem-watchlist-entry-add
+
 ***
 Add watchlist entry to one or more watchlist groups.
 
@@ -769,6 +816,7 @@ Add watchlist entry to one or more watchlist groups.
 #### Base Command
 
 `fortisiem-watchlist-entry-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -790,6 +838,7 @@ Add watchlist entry to one or more watchlist groups.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortisiem-watchlist-entry-add value=10.10.10.10 watchlist_id=500504 count=2 description=test-add-entry first_seen=2022-01-01 last_seen=2022-01-10```
 
 #### Human Readable Output
@@ -797,6 +846,7 @@ There is no context output for this command.
 >Successfully added Entry: 10.10.10.10 to Watchlist: 500504.
 
 ### fortisiem-watchlist-entry-update
+
 ***
 Update watchlist entry. This command overrides all existing values in the entry's attribute. Fill in all relevant arguments to avoid deletion of data.
 
@@ -804,6 +854,7 @@ Update watchlist entry. This command overrides all existing values in the entry'
 #### Base Command
 
 `fortisiem-watchlist-entry-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -839,9 +890,11 @@ Update watchlist entry. This command overrides all existing values in the entry'
 | FortiSIEM.WatchlistEntry.ageOut | String | Expiration date of the entry. | 
 
 #### Command Example
+
 ```!fortisiem-watchlist-entry-update entry_id=1488255 value=5.5.5.7 count=5```
 
 #### Context Example
+
 ```json
 {
     "FortiSIEM": {
@@ -867,12 +920,14 @@ Update watchlist entry. This command overrides all existing values in the entry'
 #### Human Readable Output
 
 >### Successfully Updated Entry: 1488255.
+>
 >|Id|State|Entry Value|Triggering Rules|Count|First Seen|Last Seen|
 >|---|---|---|---|---|---|---|
 >| 1488255 | Enabled | 5.5.5.7 |  | 5 |  |  |
 
 
 ### fortisiem-watchlist-entry-delete
+
 ***
 Delete entry of watchlist.
 
@@ -880,6 +935,7 @@ Delete entry of watchlist.
 #### Base Command
 
 `fortisiem-watchlist-entry-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -892,6 +948,7 @@ Delete entry of watchlist.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortisiem-watchlist-entry-delete entry_ids=1488255```
 
 #### Human Readable Output
@@ -899,6 +956,7 @@ There is no context output for this command.
 >The entry 1488255 were deleted successfully.
 
 ### fortisiem-watchlist-delete
+
 ***
 Delete watchlist.
 
@@ -906,6 +964,7 @@ Delete watchlist.
 #### Base Command
 
 `fortisiem-watchlist-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -918,6 +977,7 @@ Delete watchlist.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortisiem-watchlist-delete watchlist_id=1244273```
 
 #### Human Readable Output
@@ -925,6 +985,7 @@ There is no context output for this command.
 >The watchlist 1244273 was deleted successfully.
 
 ### fortisiem-watchlist-entry-get
+
 ***
 Get entry by the specified entry ID.
 
@@ -932,6 +993,7 @@ Get entry by the specified entry ID.
 #### Base Command
 
 `fortisiem-watchlist-entry-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -957,9 +1019,11 @@ Get entry by the specified entry ID.
 | FortiSIEM.WatchlistEntry.ageOut | String | Expiration date of the entry. | 
 
 #### Command Example
+
 ```!fortisiem-watchlist-entry-get entry_ids=1576423```
 
 #### Context Example
+
 ```json
 {
     "FortiSIEM": {
@@ -985,12 +1049,14 @@ Get entry by the specified entry ID.
 #### Human Readable Output
 
 >### Get Watchlist Entry: 1576423
+>
 >|Id|State|Entry Value|Triggering Rules|Count|First Seen|Last Seen|
 >|---|---|---|---|---|---|---|
 >| 1576423 | Enabled | 192.168.91.3 | Sudden Increase in ICMP Requests From A Host | 1 | 2022-01-04T12:43:00 | 2022-02-13T10:42:30 |
 
 
 ### fortisiem-event-search-results
+
 ***
 The results of the specified search ID.
 
@@ -998,6 +1064,7 @@ The results of the specified search ID.
 #### Base Command
 
 `fortisiem-event-search-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1021,10 +1088,13 @@ The results of the specified search ID.
 
 
 ## Breaking changes from the previous version of this integration - FortiSIEM v2
+
 The following sections list the changes in this version.
 
 ### Commands
+
 #### The following commands were removed in this version:
+
 ***fortisiem-get-events-by-incident*** - this command was replaced by ***fortisiem-event-list-by-incident***.
 ***fortisiem-clear-incident*** - this command was replaced by ***fortisiem-incident-update***.
 ***fortisiem-get-events-by-filter*** - this command was replaced by ***fortisiem-event-search-status***.
@@ -1036,7 +1106,9 @@ The following sections list the changes in this version.
 ***fortisiem-get-resource-list***.
 
 ## Additional Considerations for this version
+
 #### The following commands were added in this version:
+
 ***fortisiem-watchlist-list***
 ***fortisiem-watchlist-get***
 ***fortisiem-watchlist-add***

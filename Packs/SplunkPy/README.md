@@ -6,11 +6,14 @@ We strongly recommend you to use the SplunkPy pre-release version, specifically 
 
 
 ## What does this pack do?
+
 Using the SplunkPy integration, you can fetch Splunk notable events. The events contain details such as:
+
 - The name of the alert that was triggered.
 - The objects that make up the alert, such as the IP address, hashes, and user names.
 
 Besides fetching notable events, the SplunkPy integration enables you to run drill down searches to retrieve additional data from other tables in Splunk such as:
+
 - Data about the users (department, role, and geographical location)
 - Data about the assets (such as hostname, IP address, geographical location, and department)
 

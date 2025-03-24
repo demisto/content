@@ -77,8 +77,11 @@ There are no input arguments for this command.
 | TeamCymruScout.QueryUsage.foundation_api_usage.query_limit | Number | The total number of queries allowed for the Foundation API. | 
 
 #### Command example
+
 ```!scout-api-usage```
+
 #### Context Example
+
 ```json
 {
     "TeamCymruScout": {
@@ -100,6 +103,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### API Usage
+>
 >|Used Queries|Remaining Queries|Query Limit|Foundation Used Queries|Foundation Remaining Queries|Foundation Query Limit|
 >|---|---|---|---|---|---|
 >| 166 | 49834 | 50000 | 9 | 0 | 0 |
@@ -436,8 +440,11 @@ Return all the detailed information available for the given IP address.
 | TeamCymruScout.IP.summary.fingerprints.top_fingerprints.count | Number | The count of the fingerprint. | 
 
 #### Command example
+
 ```!ip ip=0.0.0.1```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -889,34 +896,40 @@ Return all the detailed information available for the given IP address.
 #### Human Readable Output
 
 >### Summary Information For The Given Suspicious IP: [0.0.0.1](https://scout.cymru.com/scout/details?query=0.0.0.1)
+>
 >|Country Code|Whois|Tags|Insights|
 >|---|---|---|---|
 >| US | ***asn***: 15133<br>***as_name***: test_name<br>***net_name***: test_name-data-03<br>***org_name***: test_name Inc. | **-**	***id***: 176<br>	***name***: cdn<br>	**children**:<br>		**-**	***id***: 206<br>			***name***: test_name | **-**	***rating***: no_rating<br>	***message***: x509 subject "CN=www.example.org, O=Internet Corporation for Assigned Names and Numbers. |
 >
 >### Top PDNS
+>
 >|Domain|Event Count|First Seen|Last Seen|
 >|---|---|---|---|
 >| test1.aaa | 78 | 2024-05-27 | 2024-06-25 |
 >
 >### Top Peers
+>
 >|Proto|Client IP|Client Country Code(s)|Client Services|Server IP|Server Country Code(s)|Server Tag(s)|Server Services|Event Count|First Seen|Last Seen|Client AS Name|Server AS Name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| TCP | 0.0.0.2 | ZA | **-**	***port***: 64552<br>	***proto_number***: 6 | 0.0.0.1 | US | cdn: (test_name) | **-**	***service_name***: http<br>	***port***: 80<br>	***proto_number***: 6<br>	***description***: World Wide Web HTTP | 6040 | 2024-06-04 | 2024-06-04 | Interworks-Wireless-Solutions, ZA | test_name, US |
 >
 >### Top Open Ports
+>
 >|Event Count|Port|Protocol|Protocol Text|Service|First Seen|Last Seen|
 >|---|---|---|---|---|---|---|
 >| 53 | 80 | 6 | TCP | http | 2024-05-27 | 2024-06-25 |
 >
 >### Top Fingerprints
+>
 >|Count|First Seen|Last Seen|Port|Signature|Type|
 >|---|---|---|---|---|---|
 >| 5 | 2024-05-30 | 2024-06-21 | 443 | testsignature | jarm |
 >
 >### Top Certificates
+>
 >|Common Name|First Seen|Issuer|Issuer Common Name|Last Seen|Md5|Not After|Not Before|Port|Self Signed|Sha1|Sha256|Subject|Valid Days|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| www.example.org | 2024-05-30 | CN=DigiCert Global G2 TLS RSA SHA256 2020 CA1, O=DigiCert Inc, C=US | DigiCert Global G2 TLS RSA SHA256 2020 CA1 | 2024-06-21 | testmd5 | 2025-03-01 | 2024-01-30 | 443 | false | testsha1 | testsha256 | CN=www.example.org, O=Internet Corporation for Assigned Names and Numbers. | 397 |
+>| <www.example.org> | 2024-05-30 | CN=DigiCert Global G2 TLS RSA SHA256 2020 CA1, O=DigiCert Inc, C=US | DigiCert Global G2 TLS RSA SHA256 2020 CA1 | 2024-06-21 | testmd5 | 2025-03-01 | 2024-01-30 | 443 | false | testsha1 | testsha256 | CN=www.example.org, O=Internet Corporation for Assigned Names and Numbers. | 397 |
 
 ### scout-indicator-search
 
@@ -1049,8 +1062,11 @@ Return the summary information available for the given domain or IP address usin
 | DBotScore.Score | Number | The reputation score \(0: Unknown, 1: Good, 2: Suspicious, 3: Bad\). | 
 
 #### Command example
+
 ```!scout-indicator-search query="0.0.0.1" size=1 start_date="30 days" end_date="now"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1276,29 +1292,34 @@ Return the summary information available for the given domain or IP address usin
 #### Human Readable Output
 
 >### Summary Information for the given indicator: [0.0.0.1](https://scout.cymru.com/scout/details?query=0.0.0.1)
+>
 >|Country Code(S)|Whois|Event Count|Tags|Last Seen|
 >|---|---|---|---|---|
 >| US | ***asn***: 15169<br>***as_name***: DUMMY<br>***net_name***: DUMMY<br>***org_name***: Dummy LLC | 164273621518 | **-**	***id***: 176<br>	***name***: cdn<br>	**children**:<br>		**-**	***id***: 210<br>			***name***: cloudflare | 2024-06-27 |
 >
 >### PDNS Information
+>
 >|Domain|Event Count|IP|
 >|---|---|---|
 >| dns.dummy | 53408038 | 0.0.0.1 |
 >| dns.dummy.com | 2791811 | 0.0.0.1 |
 >
 >### Open Ports Information
+>
 >|Event Count|IP|Port|Protocol|Protocol Text|Service|
 >|---|---|---|---|---|---|
 >| 296728 | 0.0.0.1 | 53 | 17 | UDP | domain |
 >| 257 | 0.0.0.1 | 443 | 6 | TCP | https |
 >
 >### Top Peers Information
+>
 >|Source IP|Event Count|IP|
 >|---|---|---|
 >| 0.0.0.1 | 2784287448 | 0.0.0.2 |
 >| 0.0.0.1 | 1469283767 | 0.0.0.3 |
 >
 >### Service Counts Information
+>
 >|Source IP|Event Count|Port|Proto|Service|
 >|---|---|---|---|---|
 >| 0.0.0.1 | 141248029324 | 53 | 17 | service_name: domain<br>port: 53<br>proto_number: 17<br>description: Domain Name Server |
@@ -1306,18 +1327,21 @@ Return the summary information available for the given domain or IP address usin
 >| 0.0.0.1 | 4130470538 | 443 | 6 | service_name: https<br>port: 443<br>proto_number: 6<br>description: http protocol over TLS/SSL |
 >
 >### Fingerprints Information
+>
 >|Event Count|IP|Signature|Type|
 >|---|---|---|---|
 >| 144337 | 0.0.0.1 | 00000000000000000000000000000001 | ja3s |
 >| 40708 | 0.0.0.1 | 00000000000000000000000000000001 | ja3 |
 >
 >### Certs Information
+>
 >|Common Name|Event Count|IP|Issuer|Issuer Common Name|Port|
 >|---|---|---|---|---|---|
 >| dns.dummy | 418 | 0.0.0.1 | CN=WR2, O=Dummy Trust Services, C=US | WR2 | 853 |
 >| dns.dummy | 372 | 0.0.0.1 | CN=WR2, O=Dummy Trust Services, C=US | WR2 | 443 |
 >
 >### API Usage
+>
 >|Used Queries|Remaining Queries|Query Limit|Foundation Used Queries|Foundation Remaining Queries|Foundation Query Limit|
 >|---|---|---|---|---|---|
 >| 261 | 49739 | 50000 | 15 | 0 | 0 |
@@ -1412,8 +1436,11 @@ Returns the summary information available for the given list of IP addresses.
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 #### Command example
+
 ```!scout-ip-list ip_addresses="0.0.0.1"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -1497,11 +1524,13 @@ Returns the summary information available for the given list of IP addresses.
 #### Human Readable Output
 
 >### Summary Information for the given Suspicious IP: [0.0.0.1](https://scout.cymru.com/scout/details?query=0.0.0.1)
+>
 >|Country Code|AS Info|Insights|Tags|
 >|---|---|---|---|
 >| US | **-**	***asn***: 13335<br>	***as_name***: NET, US | ***overall_rating***: suspicious<br>**insights**:<br>	**-**	***rating***: suspicious<br>		***message***: 0.0.0.1 has been identified as a "cdn", indicating private and reserved addresses defined by RFC 1918, RFC 5735, and RFC 6598, as well as net that have not been allocated to a Regional Internet Registry (RIR) by the Internet Assigned Numbers Authority. | **-**	***id***: 81<br>	***name***: cdn<br>	**children**:<br>		**-**	***id***: 210<br>			***name***: cloudflare |
 >
 >### API Usage
+>
 >|Used Queries|Remaining Queries|Query Limit|Foundation Used Queries|Foundation Remaining Queries|Foundation Query Limit|
 >|---|---|---|---|---|---|
 >| 160 | 49840 | 50000 | 3 | 0 | 0 |

@@ -42,8 +42,11 @@ An API key for this feed can be obtained at [the NIST NVD Developer Website](htt
     Current Total Fetched Indicator Count: 4184
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
+
 ### nvd-get-indicators
+
 ***
 Manually retrieve CVEs from NVD using the history parameter for the duration back to fetch.
 
@@ -52,6 +55,7 @@ Manually retrieve CVEs from NVD using the history parameter for the duration bac
 `!nvd-get-indicators history="7 days"`
 
 #### Input
+
 |**Argument Name**|**Description**|**Required**|
 |---|---|---|
 | History | Time back to retrieve CVEs, e.g. `7 days` | True |

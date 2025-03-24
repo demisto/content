@@ -9,6 +9,7 @@ Proofpoint TAP detects, analyzes and blocks advanced threats before they reach y
 To configure the collector for Proofpoint TAP, follow the XDR documentation [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Ingest-Logs-from-Proofpoint-Targeted-Attack-Protection).
 
 ## What does this pack do?
+
 - Fetches events for all clicks and messages relating to known threats within a specified time period.
 - Returns forensics evidence.
 - Fetches events for clicks to malicious URLs in a specified time period. 

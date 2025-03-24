@@ -66,7 +66,7 @@ The need for this permission is specified in each relevant command's Permission 
 To set this permission follow these steps:
 
 1. Navigate to **Home** > **App registrations**.
-2. Search for your app under *all applications*.
+2. Search for your app under _all applications_.
 3. Click **API permissions** > **Add permission**.
 4. Search for `Office 365 Exchange Online` API > `Application Permission`> `full_access_as_app` permission.
 
@@ -82,7 +82,7 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 | Token / Tenant ID | Token can be received after following the System Integration Setup (Device side steps). | False |
 | Key / Application Secret | Key can be received after following the System Integration Setup (Device side steps). | False |
 | Azure Cloud | Azure Cloud environment. Options are: _Worldwide_ (The publicly accessible Azure Cloud), _US GCC_ (Azure cloud for the USA Government Cloud Community), _US GCC-High_ (Azure cloud for the USA Government Cloud Community High), _DoD_ (Azure cloud for the USA Department of Defense), _Germany_ (Azure cloud for the German Government), _China_ (Azure cloud for the Chinese Government ) | False|
-| Email Address | Mailbox to run commands on and to fetch incidents from. To use this functionality, your account must have delegation for the account specified. For more information, see https://xsoar.pan.dev/docs/reference/integrations/ewso365/#additional-information | True |
+| Email Address | Mailbox to run commands on and to fetch incidents from. To use this functionality, your account must have delegation for the account specified. For more information, see <https://xsoar.pan.dev/docs/reference/integrations/ewso365/#additional-information> | True |
 | UPN Address | When provided, the target mailbox if it's different from the Email Address. Otherwise, the Email Address is used. | False |
 | Name of the folder from which to fetch incidents | Supports Exchange Folder ID and sub-folders, e.g., Inbox/Phishing. | True |
 | Access Type | Run the commands using `Delegate` or `Impersonation` access types. | False |
@@ -113,8 +113,8 @@ When set to get a long period of time, the `Timeout` field might need to be set 
 
 Pay special attention to the following fields in the instance settings:
 
-- `Email Address` – mailbox to fetch incidents from.  
-- `Name of the folder from which to fetch incidents` – use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder.
+* `Email Address` – mailbox to fetch incidents from.  
+* `Name of the folder from which to fetch incidents` – use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder.
 
 #### Permissions
 
@@ -327,7 +327,7 @@ There are no input arguments for this command.
 
 >|displayName|isExternal|mailbox|mailboxId|
 >|--- |--- |--- |--- |
->|test|false|test@demistodev.onmicrosoft.com|/o=Exchange\*\*\*/ou=Exchange Administrative Group ()/cn=\*\*/cn=\*\\*-*\*|
+>|test|false|<test@demistodev.onmicrosoft.com>|/o=Exchange\*\*\*/ou=Exchange Administrative Group ()/cn=\*\*/cn=\*\\_-_\*|
 
 ##### Context Example
 
@@ -472,6 +472,7 @@ No known limitations.
 }
 
 ```
+
 </details>
 
 
@@ -534,7 +535,7 @@ No known limitations.
 
 >|sender|subject|hasAttachments|datetimeReceived|receivedBy|author|toRecipients|
 >|--- |--- |--- |--- |--- |--- |--- |
->|test2@demistodev.onmicrosoft.com|Get Attachment Email|true|2019-08-11T10:57:37Z|test@demistodev.onmicrosoft.com|test2@demistodev.onmicrosoft.com|test@demistodev.onmicrosoft.com|
+>|<test2@demistodev.onmicrosoft.com>|Get Attachment Email|true|2019-08-11T10:57:37Z|<test@demistodev.onmicrosoft.com>|<test2@demistodev.onmicrosoft.com>|<test@demistodev.onmicrosoft.com>|
 
 ##### Context Example
 
@@ -636,7 +637,7 @@ No known limitations.
 
 >|changekey|culture|datetimeCreated|datetimeReceived|datetimeSent|displayName|emailAddresses|fileAs|fileAsMapping|givenName|id|importance|itemClass|lastModifiedName|lastModifiedTime|postalAddressIndex|sensitivity|subject|uniqueBody|webClientReadFormQueryString|
 >|--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
->|EABYACAADcsxRwRjq/zTrN6vWSzKAK1Dl3N|en-US|2019-08-05T12:35:36Z|2019-08-05T12:35:36Z|2019-08-05T12:35:36Z|Contact Name|some@dev.microsoft.com|Contact Name|LastCommaFirst|Contact Name|AHSNNK3NQNcasnc3SAS/zTrN6vWSzK4OWAAAAAAEOAADrxRwRjq/zTrNFSsfsfVWAAK1KsF3AAA=|Normal|IPM.Contact|John Smith|2019-08-05T12:35:36Z|None|Normal|Contact Name||<https://outlook.office365.com/owa/?ItemID>=***|
+>|EABYACAADcsxRwRjq/zTrN6vWSzKAK1Dl3N|en-US|2019-08-05T12:35:36Z|2019-08-05T12:35:36Z|2019-08-05T12:35:36Z|Contact Name|<some@dev.microsoft.com>|Contact Name|LastCommaFirst|Contact Name|AHSNNK3NQNcasnc3SAS/zTrN6vWSzK4OWAAAAAAEOAADrxRwRjq/zTrNFSsfsfVWAAK1KsF3AAA=|Normal|IPM.Contact|John Smith|2019-08-05T12:35:36Z|None|Normal|Contact Name||<https://outlook.office365.com/owa/?ItemID>=***|
 
 ##### Context Example
 
@@ -720,7 +721,7 @@ No known limitations.
 
 >|end|externalAudience|mailbox|start|state|
 >|--- |--- |--- |--- |--- |
->|2019-08-12T13:00:00Z|All|test@demistodev.onmicrosoft.com|2019-08-11T13:00:00Z|Disabled|
+>|2019-08-12T13:00:00Z|All|<test@demistodev.onmicrosoft.com>|2019-08-11T13:00:00Z|Disabled|
 
 ###### Context Example
 
@@ -1072,7 +1073,7 @@ No known limitations.
 
 >|sender|subject|hasAttachments|datetimeReceived|receivedBy|author|toRecipients|itemId|
 >|--- |--- |--- |--- |--- |--- |--- |--- |
->|test2@demistodev.onmicrosoft.com|Get Attachment Email|true|2019-08-11T10:57:37Z|test@demistodev.onmicrosoft.com|test2@demistodev.onmicrosoft.com|test@demistodev.onmicrosoft.com|AAFSFSFFtlsUQZfBJebinpkUAAABjKMGAACyyVyFtlsUQZfBJebinpkUAAAsfw+jAAA=|
+>|<test2@demistodev.onmicrosoft.com>|Get Attachment Email|true|2019-08-11T10:57:37Z|<test@demistodev.onmicrosoft.com>|<test2@demistodev.onmicrosoft.com>|<test@demistodev.onmicrosoft.com>|AAFSFSFFtlsUQZfBJebinpkUAAABjKMGAACyyVyFtlsUQZfBJebinpkUAAAsfw+jAAA=|
 
 ##### Context Example
 
@@ -1364,7 +1365,7 @@ There is no context output for this command.
 
 >|displayName|mailbox|mailboxType|
 >|--- |--- |--- |
->|John Wick|john@wick.com|Mailbox|
+>|John Wick|<john@wick.com>|Mailbox|
 
 ##### Context Example
 
@@ -1480,9 +1481,9 @@ When sending the email to an Outlook account, Outlook UI fails to display custom
 | attachIDs | A comma-separated list of War Room entry IDs that contain the files to attach to the email. | Optional |
 | attachNames | A comma-separated list to rename file names of corresponding attachment IDs. For example, rename the first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3. | Optional |
 | attachCIDs | A comma-separated list of CIDs to embed attachments inside the email itself. | Optional |
-| transientFile | A name for the attached file. You can pass multiple files in a comma-separated list, e.g., transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional |
-| transientFileContent | Content for the attached file. You can pass multiple files in a comma-separated list, e.g., transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional |
-| transientFileCID | CID for the attached file if it's inline. You can pass multiple files in a comma-separated list, e.g., transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional |
+| transientFile | A name for the attached file. You can pass multiple files in a comma-separated list, e.g., transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="<t1.txt@xxx.yyy>,<t2.txt@xxx.zzz>". | Optional |
+| transientFileContent | Content for the attached file. You can pass multiple files in a comma-separated list, e.g., transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="<t1.txt@xxx.yyy>,<t2.txt@xxx.zzz>". | Optional |
+| transientFileCID | CID for the attached file if it's inline. You can pass multiple files in a comma-separated list, e.g., transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="<t1.txt@xxx.yyy>,<t2.txt@xxx.zzz>". | Optional |
 | templateParams | Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document, such ase {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key from which to retrieve the value. Note that only context data is accessible for this argument, while incident fields are not. | Optional |
 | additionalHeader | A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional |
 | raw_message | Raw email message. If provided, all other arguments will be ignored except "to", "cc", and "bcc". | Optional |
@@ -1598,7 +1599,7 @@ There is no context output for this command.
 
 >|attachments|from|subject|to|
 >|---|---|---|---|
->|  | avishai@demistodev.onmicrosoft.com | hi | avishai@demistodev.onmicrosoft.com |
+>|  | <avishai@demistodev.onmicrosoft.com> | hi | <avishai@demistodev.onmicrosoft.com> |
 
 
 </details>
@@ -1647,8 +1648,8 @@ There is no context output for this command.
 <details><summary><h3 style={{display: 'inline'}}> Fetching Incidents crash due to unparsable emails </h3></summary>
 If you find that your fetch incidents command is unable to parse a specific invalid email due to various parsing issues, you can follow these steps:
 
-1. In the instance configuration, navigate to the *Collect* section and click on *Advanced Settings*.
-2. Check the box labeled *Skip unparsable emails during fetch incidents*.
+1. In the instance configuration, navigate to the _Collect_ section and click on _Advanced Settings_.
+2. Check the box labeled _Skip unparsable emails during fetch incidents_.
 
 By enabling this option, the integration can catch and skip unparsable emails without causing the fetch incidents command to crash.
 When this parameter is active, a message will appear in the "Fetch History" panel of the instance whenever an unparsable email is recognized and skipped.

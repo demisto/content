@@ -6,7 +6,7 @@ This integration was integrated and tested with version 2024.6.2 of Bitwarden Pa
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g., https://example.bitwarden.com) | True |
+| Server URL (e.g., <https://example.bitwarden.com>) | True |
 | Client ID | True |
 | Client Secret | True |
 | Trust any certificate (not secure) | False |

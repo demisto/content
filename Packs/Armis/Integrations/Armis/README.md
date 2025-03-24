@@ -1,5 +1,6 @@
 Use the Armis integration to search alerts and devices, tag and untag devices, and set alert statuses.
 This integration was integrated and tested with the latest version of Armis.
+
 ## Configure Armis in Cortex
 
 
@@ -19,9 +20,12 @@ This integration was integrated and tested with the latest version of Armis.
 | Proxy | Whether to use the System proxy | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### armis-search-alerts
+
 ***
 Search Armis Alerts.
 
@@ -29,6 +33,7 @@ Search Armis Alerts.
 #### Base Command
 
 `armis-search-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -59,9 +64,11 @@ Search Armis Alerts.
 
 
 #### Command Example
+
 ```!armis-search-alerts status=RESOLVED max_results=10```
 
 #### Context Example
+
 ```json
 {
     "Armis": {
@@ -106,12 +113,14 @@ Search Armis Alerts.
 #### Human Readable Output
 
 >### Alerts
+>
 >|Severity|Type|Time|Status|Title|Description|Activity Ids|Activity UUI Ds|Alert Id|Connection Ids|Device Ids|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Medium | System Policy Violation | 2021-03-09T01:28:44.032944+00:00 | Resolved | Smart TV connected to Corporate network | Smart TV started connection to Corporate Network | 23314066,<br/>23316462,<br/>23317202,<br/>23326470,<br/>23341779,<br/>23342441 | enyZFHgBAAAC-vCT9nJG,<br/>0Hy2FHgBAAAC-vCTGnJB,<br/>3Hy_FHgBAAAC-vCTp3Kz,<br/>v3wSFXgBAAAC-vCTFnNL,<br/>_nxOGHgBAAAC-vCTUnc2,<br/>2HxpGHgBAAAC-vCT03jo | 3984 | 923419,<br/>923501,<br/>924451 | 165722,<br/>532 |
 
 
 ### armis-update-alert-status
+
 ***
 Updates the status for an alert.
 
@@ -119,6 +128,7 @@ Updates the status for an alert.
 #### Base Command
 
 `armis-update-alert-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -132,6 +142,7 @@ Updates the status for an alert.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -139,6 +150,7 @@ There is no context output for this command.
 
 
 ### armis-search-alerts-by-aql-string
+
 ***
 Searches the alerts with a raw AQL string.
 
@@ -146,6 +158,7 @@ Searches the alerts with a raw AQL string.
 #### Base Command
 
 `armis-search-alerts-by-aql-string`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -172,9 +185,11 @@ Searches the alerts with a raw AQL string.
 
 
 #### Command Example
+
 ```!armis-search-alerts-by-aql-string aql_string="alertId:(3821)"```
 
 #### Context Example
+
 ```json
 {
     "Armis": {
@@ -204,12 +219,14 @@ Searches the alerts with a raw AQL string.
 #### Human Readable Output
 
 >### Alerts
+>
 >|Alert Id|Description|Type|Title|Severity|Status|Time|Activity Ids|Activity UUI Ds|Device Ids|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 3821 | The Armis security platform has detected a violation of a policy and generated an alert. | System Policy Violation | Unencrypted Traffic: SMB | Medium | Resolved | 2021-02-16T06:23:02.101479+00:00 | 22060159 | nTiGqXcBAAAC-vCTfzPN | 199808 |
 
 
 ### armis-tag-device
+
 ***
 Adds a tag to a device.
 
@@ -217,6 +234,7 @@ Adds a tag to a device.
 #### Base Command
 
 `armis-tag-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -230,6 +248,7 @@ Adds a tag to a device.
 There is no context output for this command.
 
 #### Command Example
+
 ```!armis-tag-device device_id=165722 tags=test```
 
 #### Human Readable Output
@@ -237,6 +256,7 @@ There is no context output for this command.
 >Successfully Tagged device: 165722 with tags: ['test']
 
 ### armis-untag-device
+
 ***
 Removes a tag from a device.
 
@@ -244,6 +264,7 @@ Removes a tag from a device.
 #### Base Command
 
 `armis-untag-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -257,6 +278,7 @@ Removes a tag from a device.
 There is no context output for this command.
 
 #### Command Example
+
 ```!armis-untag-device device_id=165722 tags=test```
 
 #### Human Readable Output
@@ -264,6 +286,7 @@ There is no context output for this command.
 >Successfully Untagged device: 165722 with tags: ['test']
 
 ### armis-search-devices
+
 ***
 Search devices by identifiers.
 
@@ -271,6 +294,7 @@ Search devices by identifiers.
 #### Base Command
 
 `armis-search-devices`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -312,8 +336,11 @@ Search devices by identifiers.
 | Armis.Device.visibility | String | The visibility of the device. | 
 
 #### Command example
+
 ```!armis-search-devices device_id=2172```
+
 #### Context Example
+
 ```json
 {
     "Armis": {
@@ -447,12 +474,14 @@ Search devices by identifiers.
 #### Human Readable Output
 
 ### Devices
+>
 >|Risk Level|Id|Name|Type|Ip Address|Ipv 6|Mac Address|Operating System|Operating System Version|Manufacturer|Model|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 5 | 2172 | 000000731194pc.corporate.acme.com | Laptops | 10.77.27.183 | fe80::647b:ba0f:9628:6014 | 50:76:AF:D3:3F:AB | Windows | 10 | Lenovo | ThinkPad X1 Yoga 3rd Gen | Corporate,<br>ServiceNow,<br>SCCM |
 
 
 ### armis-search-devices-by-aql
+
 ***
 Searches devices with a custom AQL search string.
 
@@ -460,6 +489,7 @@ Searches devices with a custom AQL search string.
 #### Base Command
 
 `armis-search-devices-by-aql`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -496,9 +526,11 @@ Searches devices with a custom AQL search string.
 
 
 #### Command Example
+
 ```!armis-search-devices-by-aql aql_string="macAddress:(a4:5d:36:c5:32:69)"```
 
 #### Context Example
+
 ```json
 {
     "Armis": {
@@ -566,6 +598,7 @@ Searches devices with a custom AQL search string.
 #### Human Readable Output
 
 >### Devices
+>
 >|Risk Level|Name|Type|Ip Address|Tags|Id|
 >|---|---|---|---|---|---|
 >| 10 | wc-shoretel.winslow.local | Servers | 10.0.100.10 | MERAKI_NETWORK=Winslow Campbellfield | 74745 |

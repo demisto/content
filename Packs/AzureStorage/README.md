@@ -3,6 +3,7 @@ The Azure Storage content pack enables you to manage storage accounts and blob s
 ## What does this pack do?
 
 The integration in this pack enables you to:
+
 - Get storage account details 
 - Create or update a storage account
 - Get the blob service properties of a specific account storage. 
@@ -13,6 +14,7 @@ The integration in this pack enables you to:
 - Delete a blob container
 
 ## Authorization
+
 To connect to the Azure Storage Accounts and the Blob Service, you will need to run the commands for the azure storage authorization process
 and then log in to the Cortex XSOAR Azure App or Self-Deployed Azure App.
 

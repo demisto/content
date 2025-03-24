@@ -1,4 +1,5 @@
 ## Overview
+
 ---
 
 Security Hub collects security data from across AWS accounts, services, and supported third-party partner products and helps you analyze your security trends and identify the highest priority security issues.
@@ -18,6 +19,7 @@ For more information regarding the AWS SecurityHub service, please visit the off
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
 ## Configure AWS - Security Hub on Cortex XSOAR
+
 ---
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -59,17 +61,21 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
 
 ## Known Limitations
+
 ---
 The following throttling limits apply to using Security Hub API operations:
+
 * GetFindings - RateLimit of 3 requests per second, and a BurstLimit of 6 requests per second.
 * UpdateFindings - RateLimit of 1 request per second, and a BurstLimit of 5 requests per second.
 * All other operations - RateLimit of 10 request per second, and a BurstLimit of 30 requests per second.
 
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. aws-securityhub-disable-security-hub
 2. aws-securityhub-batch-update-findings
 3. aws-securityhub-enable-security-hub
@@ -79,6 +85,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 7. aws-securityhub-update-findings (deprecated)
 
 ### 1. aws-securityhub-disable-security-hub
+
 ***
 Disables Security Hub in your account only in the current Region. To disable Security Hub in all Regions, you must submit one request per Region where you have enabled Security Hub. When you disable Security Hub for a master account, it doesn't disable Security Hub for any associated member accounts. When you disable Security Hub, your existing findings and insights and any Security Hub configuration settings are deleted after 90 days and can't be recovered. Any standards that were enabled are disabled, and your master and member account associations are removed. If you want to save your existing findings, you must export them before you disable Security Hub.
 
@@ -86,6 +93,7 @@ Disables Security Hub in your account only in the current Region. To disable Sec
 #### Base Command
 
 `aws-securityhub-disable-security-hub`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -100,9 +108,13 @@ Disables Security Hub in your account only in the current Region. To disable Sec
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-securityhub-disable-security-hub```
+
 #### Context Example
+
 ```json
 {
     "AWS-SecurityHub": {}
@@ -112,6 +124,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### AWS SecurityHub DisableSecurityHub
+>
 >**No entries.**
 
 ### 2. aws-securityhub-batch-update-findings
@@ -123,6 +136,7 @@ Used by Security Hub customers to update information about their investigation i
 #### Base Command
 
 `aws-securityhub-batch-update-findings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -161,9 +175,11 @@ Used by Security Hub customers to update information about their investigation i
 
 
 ##### Command Example
+
 ```!aws-securityhub-batch-update-findings finding_identifiers_id='arn:aws:securityhub:eu-west-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/S3.1/finding/a2ee641f-aec2-4356-a1b6-656cce03be4e' finding_identifiers_product_arn='arn:aws:securityhub:eu-west-1::product/aws/securityhub' note_text=test note_updated_by=Demisto```
 
 ##### Context Example
+
 ```
 {
     "AWS-SecurityHub.ProcessedFindings": []
@@ -171,7 +187,9 @@ Used by Security Hub customers to update information about their investigation i
 ```
 
 ##### Human Readable Output
+
 ### AWS SecurityHub BatchUpdateFindings
+
 |ProcessedFindings|UnprocessedFindings|
 |---|---|
 |  | {'FindingIdentifier': {'Id': "'arn:aws:securityhub:eu-west-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/S3.1/finding/a2ee641f-aec2-4356-a1b6-656cce03be4e'", 'ProductArn': "'arn:aws:securityhub:eu-west-1::product/aws/securityhub'"}, 'ErrorCode': 'FindingNotFound', 'ErrorMessage': 'Finding Not Found'} |
@@ -186,6 +204,7 @@ Enables Security Hub for your account in the current Region or the Region you sp
 #### Base Command
 
 `aws-securityhub-enable-security-hub`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -201,9 +220,13 @@ Enables Security Hub for your account in the current Region or the Region you sp
 #### Context Output
 
 There is no context output for this command.
+
 #### Command Example
+
 ```!aws-securityhub-enable-security-hub```
+
 #### Context Example
+
 ```json
 {
     "AWS-SecurityHub": {}
@@ -213,9 +236,11 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### AWS SecurityHub EnableSecurityHub
+>
 >**No entries.**
 
 ### 4. aws-securityhub-get-findings
+
 ---
 Returns a list of findings that match the specified criteria.
 
@@ -223,6 +248,7 @@ Returns a list of findings that match the specified criteria.
 #### Base Command
 
 `aws-securityhub-get-findings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -584,9 +610,11 @@ Returns a list of findings that match the specified criteria.
 | AWS-SecurityHub.NextToken | string | The token that is required for pagination. | 
 
 #### Command example
+
 ```!aws-securityhub-get-findings```
 
 ##### Context Example
+
 ```
 {
     "AWS-SecurityHub": [
@@ -659,12 +687,15 @@ Returns a list of findings that match the specified criteria.
 ```
 
 ##### Human Readable Output
+
 ### AWS SecurityHub GetFindings
+
 |AwsAccountId|Compliance|CreatedAt|Description|FirstObservedAt|GeneratorId|Id|LastObservedAt|ProductArn|ProductFields|RecordState|Remediation|Resources|SchemaVersion|Severity|Title|Types|UpdatedAt|Workflow|WorkflowState|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 123456789012 | Status: WARNING,StatusReasons: {'ReasonCode': 'CONFIG_ACCESS_DENIED', 'Description': 'Unable to describe the supporting AWS Config Rule, Please verify that you have enabled AWS Config.'} | 2020-07-05T13:14:29.111Z | Password policies are, in part, used to enforce password complexity requirements. IAM password policies can be used to ensure passwords are comprised of different character sets. It is recommended that the password policy require at least one number. | 2020-07-05T13:14:29.111Z | arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0/rule/1.8 | arn:aws:securityhub:eu-west-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.8/finding/d1d15683-7fbd-4b82-8eed-3af50785cdf6 | 2020-07-22T11:30:13.952Z | arn:aws:securityhub:eu-west-1::product/aws/securityhub | StandardsGuideArn: arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0,StandardsGuideSubscriptionArn: arn:aws:securityhub:eu-west-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0,RuleId: 1.8,RecommendationUrl: https://docs.aws.amazon.com/console/securityhub/standards-cis-1.8/remediation,RelatedAWSResources:0/name: securityhub-iam-password-policy-number-check-a08618e1,RelatedAWSResources:0/type: AWS::Config::ConfigRule,StandardsControlArn: arn:aws:securityhub:eu-west-1:123456789012:control/cis-aws-foundations-benchmark/v/1.2.0/1.8,aws/securityhub/SeverityLabel: MEDIUM,aws/securityhub/ProductName: Security Hub,aws/securityhub/CompanyName: AWS,aws/securityhub/annotation: Unable to describe the supporting AWS Config Rule, Please verify that you have enabled AWS Config.,aws/securityhub/FindingId: arn:aws:securityhub:eu-west-1::product/aws/securityhub/arn:aws:securityhub:eu-west-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.8/finding/d1d15683-7fbd-4b82-8eed-3af50785cdf6 | ACTIVE | Recommendation: {"Text": "For directions on how to fix this issue, please consult the AWS Security Hub CIS documentation.", "Url": "https://docs.aws.amazon.com/console/securityhub/standards-cis-1.8/remediation"} | {'Type': 'AwsAccount', 'Id': 'AWS::::Account:123456789012', 'Partition': 'aws', 'Region': 'eu-west-1'} | 2018-10-08 | Product: 40,Label: MEDIUM,Normalized: 40,Original: MEDIUM | 1.8 Ensure IAM password policy requires at least one number | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | 2020-07-22T11:28:46.637Z | Status: NEW | NEW |
+| 123456789012 | Status: WARNING,StatusReasons: {'ReasonCode': 'CONFIG_ACCESS_DENIED', 'Description': 'Unable to describe the supporting AWS Config Rule, Please verify that you have enabled AWS Config.'} | 2020-07-05T13:14:29.111Z | Password policies are, in part, used to enforce password complexity requirements. IAM password policies can be used to ensure passwords are comprised of different character sets. It is recommended that the password policy require at least one number. | 2020-07-05T13:14:29.111Z | arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0/rule/1.8 | arn:aws:securityhub:eu-west-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.8/finding/d1d15683-7fbd-4b82-8eed-3af50785cdf6 | 2020-07-22T11:30:13.952Z | arn:aws:securityhub:eu-west-1::product/aws/securityhub | StandardsGuideArn: arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0,StandardsGuideSubscriptionArn: arn:aws:securityhub:eu-west-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0,RuleId: 1.8,RecommendationUrl: <https://docs.aws.amazon.com/console/securityhub/standards-cis-1.8/remediation,RelatedAWSResources:0/name>: securityhub-iam-password-policy-number-check-a08618e1,RelatedAWSResources:0/type: AWS::Config::ConfigRule,StandardsControlArn: arn:aws:securityhub:eu-west-1:123456789012:control/cis-aws-foundations-benchmark/v/1.2.0/1.8,aws/securityhub/SeverityLabel: MEDIUM,aws/securityhub/ProductName: Security Hub,aws/securityhub/CompanyName: AWS,aws/securityhub/annotation: Unable to describe the supporting AWS Config Rule, Please verify that you have enabled AWS Config.,aws/securityhub/FindingId: arn:aws:securityhub:eu-west-1::product/aws/securityhub/arn:aws:securityhub:eu-west-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.8/finding/d1d15683-7fbd-4b82-8eed-3af50785cdf6 | ACTIVE | Recommendation: {"Text": "For directions on how to fix this issue, please consult the AWS Security Hub CIS documentation.", "Url": "<https://docs.aws.amazon.com/console/securityhub/standards-cis-1.8/remediation"}> | {'Type': 'AwsAccount', 'Id': 'AWS::::Account:123456789012', 'Partition': 'aws', 'Region': 'eu-west-1'} | 2018-10-08 | Product: 40,Label: MEDIUM,Normalized: 40,Original: MEDIUM | 1.8 Ensure IAM password policy requires at least one number | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | 2020-07-22T11:28:46.637Z | Status: NEW | NEW |
 
 ### 5. aws-securityhub-get-master-account
+
 ---
 Provides the details for the Security Hub master account to the current member account.
 
@@ -672,6 +703,7 @@ Provides the details for the Security Hub master account to the current member a
 #### Base Command
 
 `aws-securityhub-get-master-account`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -694,8 +726,11 @@ Provides the details for the Security Hub master account to the current member a
 | AWS-SecurityHub.Master | Unknown | A list of details about the Security Hub master account for the current member account.  | 
 
 #### Command Example
+
 ```!aws-securityhub-get-master-account```
+
 #### Context Example
+
 ```json
 {
     "AWS-SecurityHub": {}
@@ -705,9 +740,11 @@ Provides the details for the Security Hub master account to the current member a
 #### Human Readable Output
 
 >### AWS SecurityHub GetMasterAccount
+>
 >**No entries.**
 
 ### 6. aws-securityhub-list-members
+
 ---
 Lists details about all member accounts for the current Security Hub master account.
 
@@ -715,6 +752,7 @@ Lists details about all member accounts for the current Security Hub master acco
 #### Base Command
 
 `aws-securityhub-list-members`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -742,8 +780,11 @@ Lists details about all member accounts for the current Security Hub master acco
 | AWS-SecurityHub.NextToken | string | The token that is required for pagination. | 
 
 #### Command example
+
 ```!aws-securityhub-list-members```
+
 #### Context Example
+
 ```json
 {
     "AWS-SecurityHub": {
@@ -755,10 +796,12 @@ Lists details about all member accounts for the current Security Hub master acco
 #### Human Readable Output
 
 >### AWS SecurityHub ListMembers
+>
 >**No entries.**
 
 
 ### get-remote-data
+
 ***
 Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
 
@@ -766,6 +809,7 @@ Get remote data from a remote incident. This method does not update the current 
 #### Base Command
 
 `get-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -777,7 +821,9 @@ Get remote data from a remote incident. This method does not update the current 
 #### Context Output
 
 There is no context output for this command.
+
 ### get-mapping-fields
+
 ***
 Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
 
@@ -785,6 +831,7 @@ Returns the list of fields to map in outgoing mirroring. This command is only us
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 There are no input arguments for this command.
@@ -797,6 +844,7 @@ There is no context output for this command.
 
 You can enable incident mirroring between Cortex XSOAR incidents and AWS - Security Hub corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
@@ -813,17 +861,20 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 
 
 ### Mirroring In Notes
+
 The mirroring in works when the security-findings provider last updated the finding record. 
 If a user updated an incident it won't show in the Cortex XSOAR incident.
 
 ### Mirroring Out Notes
+
 The supported fields in the mirroring out process are:
-- AWS Security Hub Confidence.
-- Risk Score
-- Comment
-- Severity
-- AWS Security Hub Verification State
-- AWS Security Hub Workflow Status
+
+* AWS Security Hub Confidence.
+* Risk Score
+* Comment
+* Severity
+* AWS Security Hub Verification State
+* AWS Security Hub Workflow Status
 
 **Important Note:**Mirroring out updates do not affect the value of UpdatedAt for a finding. These updates can be overwritten by the security-findings provider.
 

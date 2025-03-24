@@ -1,6 +1,7 @@
 An automation script to return subnet addresses
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ An automation script to return subnet addresses
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ An automation script to return subnet addresses
 | subnet | Subnet to use |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -25,9 +28,11 @@ An automation script to return subnet addresses
 
 
 ## Script Example
+
 ```!IPCalcReturnSubnetAddresses subnet=192.168.20.90/28```
 
 ## Context Example
+
 ```json
 {
     "IPCalc": {
@@ -56,6 +61,7 @@ An automation script to return subnet addresses
 ## Human Readable Output
 
 >### List Addresses
+>
 >|IP Addresses:|
 >|---|
 >| 192.168.20.81 |

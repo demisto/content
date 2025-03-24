@@ -3,7 +3,9 @@ This integration enables the management of Alibaba Cloud Elastic Compute Service
 To use this integration, configure an instance of this integration. This will associate a credential to be used to manage a Alibaba tenancy. Create separate instances for each region being managed.
 
 ## Authorize Cortex XSOAR for Alibaba Cloud
+
 To use this integration you must generate an Access/Secret token for your Aliyun tenancy.
+
 1. Navigate to the [Resource Access Management](https://ram.console.aliyun.com/users)
 2. Create a service account dedicated for XSOAR with Programmatic Access enabled
 3. Record the Access and Secret tokens
@@ -20,10 +22,13 @@ To use this integration you must generate an Access/Secret token for your Aliyun
 
 
 ## Idempotence
+
 The action commands in this integration are idempotent. This means that the result of performing it once is exactly the same as the result of performing it repeatedly without any intervening actions.
 
 ## State Arguement
+
 Some of the commands in this integration take a state argument. These define the desired end state of the object being managed. As a result these commands are able to perform multiple management operations depending on the desired state value. Common state values are:
+
 | **State** | **Result** |
 | --- | --- |
 | present | Object should exist. If not present, the object will be created with the provided parameters. If present but not with correct parameters, it will be modified to met provided parameters. |
@@ -34,22 +39,27 @@ Some of the commands in this integration take a state argument. These define the
 
 
 ## Complex Command Inputs
+
 Some commands may require structured input arguments such as `lists` or `dictionary`, these can be provided in standard JSON notation wrapped in double curly braces. For example a argument called `dns_servers` that accepts a list of server IPs 8.8.8.8 and 8.8.4.4 would be entered as `dns_servers="{{ ['8.8.8.8', '8.8.4.4'] }}"`.
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ali-instance
+
 ***
 Create, Start, Stop, Restart or Terminate an Instance in ECS. Add or Remove Instance to/from a Security Group.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/ali_instance_module.html>
 
 
 #### Base Command
 
 `ali-instance`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -94,9 +104,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ali-instance image_id=ubuntu_20_04_x64_20G_alibase_20210420.vhd instance_type=ecs.n4.small vswitch_id=vsw-bp1aclhyjkdy98ujfzspt host_name=testserver security_groups=sg-bp1fy1o431n7m0hta5tt ```
 
 #### Context Example
+
 ```json
 {
     "AlibabaCloud": {
@@ -113,20 +125,24 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  CHANGED 
->  * changed: True
->  * ## Instances
+># CHANGED 
+>
+> * changed: True
+>
+> * ## Instances
 
 
 ### ali-instance-info
+
 ***
 Gather information on instances of Alibaba Cloud ECS.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_info_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/ali_instance_info_module.html>
 
 
 #### Base Command
 
 `ali-instance-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -146,9 +162,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!ali-instance-info ```
 
 #### Context Example
+
 ```json
 {
     "AlibabaCloud": {
@@ -260,90 +278,122 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 
->#  SUCCESS 
->  * changed: False
->  * ## Ids
->    * 0: i-bp17uguykg2l5jkktagl
->  * ## Instances
->  * ## Testserver
->    * auto_release_time: 
->    * availability_zone: cn-hangzhou-b
->    * cpu: 1
->    * creation_time: 2021-06-14T00:11Z
->    * credit_specification: 
->    * deletion_protection: False
->    * deployment_set_id: 
->    * description: 
->    * expired_time: 2099-12-31T15:59Z
->    * host_name: testserver
->    * id: i-bp17uguykg2l5jkktagl
->    * image_id: ubuntu_20_04_x64_20G_alibase_20210420.vhd
->    * inner_ip_address: 
->    * instance_charge_type: PostPaid
->    * instance_id: i-bp17uguykg2l5jkktagl
->    * instance_name: testserver
->    * instance_type: ecs.n4.small
->    * instance_type_family: ecs.n4
->    * internet_charge_type: PayByBandwidth
->    * internet_max_bandwidth_in: -1
->    * internet_max_bandwidth_out: 0
->    * io_optimized: True
->    * memory: 2048
->    * osname: Ubuntu  20.04 64位
->    * osname_en: Ubuntu  20.04 64 bit
->    * ostype: linux
->    * private_ip_address: 1.1.1.1
->    * public_ip_address: 
->    * resource_group_id: 
->    * status: running
->    * user_data: 
->    * vpc_id: vpc-bp179mi6isco5xen2wojd
->    * vswitch_id: vsw-bp1aclhyjkdy98ujfzspt
->    * ### Block_Device_Mappings
->    * ### /Dev/Xvda
->      * attach_time: 2021-06-14T00:11:06Z
->      * delete_on_termination: True
->      * device_name: /dev/xvda
->      * status: in_use
->      * volume_id: d-bp12fxlqjtnmbzluop4s
->    * ### Cpu_Options
->      * core_count: 1
->      * numa: 
->      * threads_per_core: 1
->    * ### Dedicated_Instance_Attribute
->      * affinity: 
->      * tenancy: 
->    * ### Ecs_Capacity_Reservation_Attr
->      * capacity_reservation_id: 
->      * capacity_reservation_preference: 
->    * ### Eip
->      * allocation_id: 
->      * internet_charge_type: 
->      * ip_address: 
->    * ### Gpu
->      * amount: 0
->      * spec: 
->      * specification: 
->    * ### Hibernation_Options
->      * configured: False
->    * ### Metadata_Options
->      * http_endpoint: 
->      * http_tokens: 
->    * ### Network_Interfaces
->    * ### Eni-Bp129Akowq29D0Ocv18Q
->      * mac_address: 00:16:3e:11:bb:a2
->      * network_interface_id: eni-bp129akowq29d0ocv18q
->      * primary_ip_address: 1.1.1.1
->      * type: Primary
->      * #### Private_Ip_Sets
->        * ##### Private_Ip_Set
->        * ##### List
->          * primary: True
->          * private_ip_address: 1.1.1.1
->    * ### Tags
+># SUCCESS 
+>
+> * changed: False
+>
+> * ## Ids
+>
+>   * 0: i-bp17uguykg2l5jkktagl
+>
+> * ## Instances
+>
+> * ## Testserver
+>
+>   * auto_release_time: 
+>   * availability_zone: cn-hangzhou-b
+>   * cpu: 1
+>   * creation_time: 2021-06-14T00:11Z
+>   * credit_specification: 
+>   * deletion_protection: False
+>   * deployment_set_id: 
+>   * description: 
+>   * expired_time: 2099-12-31T15:59Z
+>   * host_name: testserver
+>   * id: i-bp17uguykg2l5jkktagl
+>   * image_id: ubuntu_20_04_x64_20G_alibase_20210420.vhd
+>   * inner_ip_address: 
+>   * instance_charge_type: PostPaid
+>   * instance_id: i-bp17uguykg2l5jkktagl
+>   * instance_name: testserver
+>   * instance_type: ecs.n4.small
+>   * instance_type_family: ecs.n4
+>   * internet_charge_type: PayByBandwidth
+>   * internet_max_bandwidth_in: -1
+>   * internet_max_bandwidth_out: 0
+>   * io_optimized: True
+>   * memory: 2048
+>   * osname: Ubuntu  20.04 64位
+>   * osname_en: Ubuntu  20.04 64 bit
+>   * ostype: linux
+>   * private_ip_address: 1.1.1.1
+>   * public_ip_address: 
+>   * resource_group_id: 
+>   * status: running
+>   * user_data: 
+>   * vpc_id: vpc-bp179mi6isco5xen2wojd
+>   * vswitch_id: vsw-bp1aclhyjkdy98ujfzspt
+>
+>   * ### Block_Device_Mappings
+>
+>   * ### /Dev/Xvda
+>
+>     * attach_time: 2021-06-14T00:11:06Z
+>     * delete_on_termination: True
+>     * device_name: /dev/xvda
+>     * status: in_use
+>     * volume_id: d-bp12fxlqjtnmbzluop4s
+>
+>   * ### Cpu_Options
+>
+>     * core_count: 1
+>     * numa: 
+>     * threads_per_core: 1
+>
+>   * ### Dedicated_Instance_Attribute
+>
+>     * affinity: 
+>     * tenancy: 
+>
+>   * ### Ecs_Capacity_Reservation_Attr
+>
+>     * capacity_reservation_id: 
+>     * capacity_reservation_preference: 
+>
+>   * ### Eip
+>
+>     * allocation_id: 
+>     * internet_charge_type: 
+>     * ip_address: 
+>
+>   * ### Gpu
+>
+>     * amount: 0
+>     * spec: 
+>     * specification: 
+>
+>   * ### Hibernation_Options
+>
+>     * configured: False
+>
+>   * ### Metadata_Options
+>
+>     * http_endpoint: 
+>     * http_tokens: 
+>
+>   * ### Network_Interfaces
+>
+>   * ### Eni-Bp129Akowq29D0Ocv18Q
+>
+>     * mac_address: 00:16:3e:11:bb:a2
+>     * network_interface_id: eni-bp129akowq29d0ocv18q
+>     * primary_ip_address: 1.1.1.1
+>     * type: Primary
+>
+>     * #### Private_Ip_Sets
+>
+>       * ##### Private_Ip_Set
+>
+>       * ##### List
+>
+>         * primary: True
+>         * private_ip_address: 1.1.1.1
+>
+>   * ### Tags
 
 
 ### Troubleshooting
+
 The Ansible-Runner container is not suitable for running as a non-root user.
 Therefore, the Ansible integrations will fail if you follow the instructions in [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide). 
 
@@ -351,7 +401,7 @@ The `docker.run.internal.asuser` server configuration causes the software that i
 
 The Ansible-Runner software is required to run as root as it applies its own isolation via bwrap to the Ansible execution environment. 
 
-This is a limitation of the Ansible-Runner software itself https://github.com/ansible/ansible-runner/issues/611.
+This is a limitation of the Ansible-Runner software itself <https://github.com/ansible/ansible-runner/issues/611>.
 
 A workaround is to use the `docker.run.internal.asuser.ignore` server setting and to configure Cortex XSOAR to ignore the Ansible container image by setting the value of `demisto/ansible-runner` and afterwards running /reset_containers to reload any containers that might be running to ensure they receive the configuration.
 

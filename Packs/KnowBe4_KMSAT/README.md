@@ -5,6 +5,7 @@ Cortex XSOAR is a comprehensive security orchestration, automation, and response
 This “KnowBe4 KMSAT Event Collector” content pack contains the KMSAT integration, which allows you to send your users' KMSAT security awareness training and simulated phishing data directly to XSOAR and XSIAM. 
 
 ## What does this pack do?
+
 This pack can help you streamline your security processes by allowing you to use KMSAT user and event data in automation, playbooks, and reports. For more details, see the list below:
 
 - Pull KMSAT data into XSOAR and XSIAM. 

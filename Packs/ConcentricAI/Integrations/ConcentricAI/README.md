@@ -66,6 +66,7 @@ Get overview of Users involved
 #### Context Output
 
 There is no context output for this command.
+
 ### concentricai-get-user-details
 
 ***
@@ -84,6 +85,7 @@ Get's user details
 #### Context Output
 
 There is no context output for this command.
+
 ### concentricai-get-file-sharing-details
 
 ***

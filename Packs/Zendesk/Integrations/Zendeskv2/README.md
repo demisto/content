@@ -6,8 +6,8 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://demisto.zendesk.com) |  | True |
-| Username (or '&lt;username&gt;/token' when using API key). | example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key. | True |
+| Server URL (e.g., <https://demisto.zendesk.com>) |  | True |
+| Username (or '&lt;username&gt;/token' when using API key). | example '<admin@org.com>' when using the password, or '<admin@org.com>/token' when using an API key. | True |
 | Password/API key |  | True |
 | Fetch incidents |  | False |
 | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Zendesk to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Zendesk\), or both \*\*Incoming And Outgoing\*\*. | False |
@@ -26,17 +26,21 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | Trust any certificate (not secure) |  | False |
 
     (The test does not ensure sufficient permissions for all integration commands.)
+
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ## Required permissions
+
 This integration enables executing commands with different permission levels. See the commands' descriptions for more information on the required permission. 
 To learn more on Zendesk roles refer to:
 [Understanding Zendesk Support user roles](https://support.zendesk.com/hc/en-us/articles/4408883763866-Understanding-Zendesk-Support-user-roles#topic_ibd_fdq_cc)
 [About team member product roles and access](https://support.zendesk.com/hc/en-us/articles/4408832171034)
 
 ### zendesk-user-list
+
 ***
 Gets the specified user's data. 
 Required permissions: Admins, Agents and Light Agents.
@@ -45,6 +49,7 @@ Required permissions: Admins, Agents and Light Agents.
 #### Base Command
 
 `zendesk-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -100,6 +105,7 @@ Required permissions: Admins, Agents and Light Agents.
 | Zendesk.User.verified | boolean | Whether any of the user's identities is verified. | 
 
 ### zendesk-user-create
+
 ***
 Creates a new Zendesk user. 
 Required permissions: Agents, with restrictions on certain actions.
@@ -108,6 +114,7 @@ Required permissions: Agents, with restrictions on certain actions.
 #### Base Command
 
 `zendesk-user-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -175,6 +182,7 @@ Required permissions: Agents, with restrictions on certain actions.
 | Zendesk.User.verified | boolean | Whether any of the user's identities is verified. | 
 
 ### zendesk-user-update
+
 ***
 Update user data. 
 Required permissions: Agents, with restrictions on certain actions.
@@ -183,6 +191,7 @@ Required permissions: Agents, with restrictions on certain actions.
 #### Base Command
 
 `zendesk-user-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -251,6 +260,7 @@ Required permissions: Agents, with restrictions on certain actions.
 | Zendesk.User.verified | boolean | Whether any of the user's identities is verified. | 
 
 ### zendesk-user-delete
+
 ***
 Delete a user. 
 Required permissions: Admins.
@@ -259,6 +269,7 @@ Required permissions: Admins.
 #### Base Command
 
 `zendesk-user-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -269,7 +280,9 @@ Required permissions: Admins.
 #### Context Output
 
 There is no context output for this command.
+
 ### zendesk-organization-list
+
 ***
 Get organization's data. 
 Required permissions: Agents, with certain restrictions. 
@@ -280,6 +293,7 @@ a 403 Forbidden error is returned. See Creating custom agent roles in Zendesk he
 #### Base Command
 
 `zendesk-organization-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -309,6 +323,7 @@ a 403 Forbidden error is returned. See Creating custom agent roles in Zendesk he
 | Zendesk.Organization.url | string | The API URL of this organization. | 
 
 ### zendesk-ticket-list
+
 ***
 List Zendesk tickets. 
 Required permissions: Agents. 
@@ -317,11 +332,12 @@ Required permissions: Agents.
 #### Base Command
 
 `zendesk-ticket-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search. . | Optional | 
+| query | Query to search for tickets. For more information about the search syntax, see <https://developer.zendesk.com/rest_api/docs/core/search>. . | Optional | 
 | ticket_id | The ID of a specific ticket. | Optional | 
 | filter | Filter tickets for which the specified user is relevant. Possible values are: assigned, requested, ccd, followed, recent. | Optional | 
 | user_id | The agent ID associated with tickets filtered. | Optional | 
@@ -375,6 +391,7 @@ Required permissions: Agents.
 | Zendesk.Ticket.url | string | The API URL of this ticket. | 
 
 ### zendesk-ticket-create
+
 ***
 Create a new zendesk ticket.
 Required permissions: Agents.
@@ -383,6 +400,7 @@ Required permissions: Agents.
 #### Base Command
 
 `zendesk-ticket-create`
+
 #### Input
 
 | **Argument Name**      | **Description** | **Required** |
@@ -397,16 +415,16 @@ Required permissions: Agents.
 | status                 | The state of the ticket. Possible values are: new, open, pending, hold, solved, closed. | Optional | 
 | priority               | The urgency with which the ticket should be addressed. Possible values are: urgent, high, normal, low. Default is normal. | Optional | 
 | due_at                 | If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format. | Optional | 
-| email_ccs              | An array of agents or end users email CCs to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'. | Optional | 
+| email_ccs              | An array of agents or end users email CCs to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,<example@example.com>:delete'. | Optional | 
 | external_id            | An ID you can use to link Zendesk Support tickets to local records. | Optional | 
 | forum_topic_id         | The topic in the Zendesk Web portal this ticket originated from, if any. | Optional | 
-| followers              | An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'. | Optional | 
+| followers              | An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,<example@example.com>:delete'. | Optional | 
 | group_id               | The group this ticket is assigned to. | Optional | 
 | organization_id        | The organization of the requester. | Optional | 
 | problem_id             | For tickets of type "incident", the ID of the problem the incident is linked to. | Optional | 
 | tags                   | The tags applied to this ticket. | Optional | 
 | via_followup_source_id | The ID of a closed ticket when creating a follow-up ticket. | Optional | 
-| custom_fields          | Custom fields for the ticket (this is a JSON-formatted argument, see: https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values). | Optional | 
+| custom_fields          | Custom fields for the ticket (this is a JSON-formatted argument, see: <https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values>). | Optional | 
 | brand_id               | Enterprise only. The ID of the brand this ticket is associated with. | Optional | 
 | comment                | A comment to add to the ticket. | Optional | 
 | html_comment           | An HTML comment to add to the ticket. | Optional | 
@@ -457,6 +475,7 @@ Required permissions: Agents.
 | Zendesk.Ticket.url | string | The API URL of this ticket. | 
 
 ### zendesk-ticket-update
+
 ***
 Updates a Zendesk ticket.
 Required permissions: Agents.
@@ -465,6 +484,7 @@ Required permissions: Agents.
 #### Base Command
 
 `zendesk-ticket-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -482,14 +502,14 @@ Required permissions: Agents.
 | status | The state of the ticket. Possible values are: open, pending, hold, solved, closed. | Optional | 
 | priority | The urgency with which the ticket should be addressed. Possible values are: urgent, high, normal, low. | Optional | 
 | due_at | If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format. | Optional | 
-| email_ccs | An array of agents or end users email CC's to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'. | Optional | 
+| email_ccs | An array of agents or end users email CC's to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,<example@example.com>:delete'. | Optional | 
 | external_id | An ID you can use to link Zendesk Support tickets to local records. | Optional | 
-| followers | An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'. | Optional | 
+| followers | An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,<example@example.com>:delete'. | Optional | 
 | group_id | The ID of the group this ticket is assigned to. | Optional | 
 | organization | The ID of the organization of the requester. | Optional | 
 | problem_id | For tickets of type "incident", the ID of the problem the incident is linked to. | Optional | 
 | tags | The tags applied to this ticket. | Optional | 
-| custom_fields | Custom fields for the ticket (this is a JSON-formatted argument see: https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values). | Optional | 
+| custom_fields | Custom fields for the ticket (this is a JSON-formatted argument see: <https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values>). | Optional | 
 | brand_id | Enterprise only. The ID of the brand this ticket is associated with. | Optional | 
 
 
@@ -533,6 +553,7 @@ Required permissions: Agents.
 | Zendesk.Ticket.url | string | The API URL of this ticket. | 
 
 ### zendesk-ticket-delete
+
 ***
 Delete ticket. 
 Required permissions: Admins, Agents with permission to delete tickets.
@@ -543,6 +564,7 @@ See Deleting tickets in the Zendesk Support Help Center.
 #### Base Command
 
 `zendesk-ticket-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -553,7 +575,9 @@ See Deleting tickets in the Zendesk Support Help Center.
 #### Context Output
 
 There is no context output for this command.
+
 ### zendesk-ticket-comment-list
+
 ***
 List comments for a given ticket.
 Required permissions: Agents.
@@ -562,6 +586,7 @@ Required permissions: Agents.
 #### Base Command
 
 `zendesk-ticket-comment-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -599,6 +624,7 @@ Required permissions: Agents.
 | Zendesk.Ticket.Comment.type | string | Comment or VoiceComment. | 
 
 ### zendesk-ticket-attachment-add
+
 ***
 Attach file to ticket.
 Required permissions: End users.
@@ -607,6 +633,7 @@ Required permissions: End users.
 #### Base Command
 
 `zendesk-ticket-attachment-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -620,7 +647,9 @@ Required permissions: End users.
 #### Context Output
 
 There is no context output for this command.
+
 ### zendesk-attachment-get
+
 ***
 Get attachment.
 Required permissions: Admins.
@@ -629,6 +658,7 @@ Required permissions: Admins.
 #### Base Command
 
 `zendesk-attachment-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -639,7 +669,9 @@ Required permissions: Admins.
 #### Context Output
 
 There is no context output for this command.
+
 ### zendesk-search
+
 ***
 Search in Zendesk.
 
@@ -647,6 +679,7 @@ Search in Zendesk.
 #### Base Command
 
 `zendesk-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -664,6 +697,7 @@ Search in Zendesk.
 | Zendesk.Search | unknown | The search results. | 
 
 ### zendesk-article-list
+
 ***
 List all available articles.
 Required permissions: Agents, End users, Anonymous users.
@@ -672,6 +706,7 @@ Required permissions: Agents, End users, Anonymous users.
 #### Base Command
 
 `zendesk-article-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -686,7 +721,9 @@ Required permissions: Agents, End users, Anonymous users.
 #### Context Output
 
 There is no context output for this command.
+
 ### zendesk-clear-cache
+
 ***
 Clears the Zendesk integration cache.
 
@@ -694,6 +731,7 @@ Clears the Zendesk integration cache.
 #### Base Command
 
 `zendesk-clear-cache`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -703,7 +741,9 @@ Clears the Zendesk integration cache.
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
+
 ***
 Get remote data from a remote incident. Note that this method will not update the current incident. It's used for debugging purposes.
 
@@ -711,6 +751,7 @@ Get remote data from a remote incident. Note that this method will not update th
 #### Base Command
 
 `get-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -722,7 +763,9 @@ Get remote data from a remote incident. Note that this method will not update th
 #### Context Output
 
 There is no context output for this command.
+
 ### get-mapping-fields
+
 ***
 Returns the list of fields for an incident type.
 
@@ -730,6 +773,7 @@ Returns the list of fields for an incident type.
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 There are no input arguments for this command.
@@ -737,7 +781,9 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
+
 ***
 Get the list of incidents that were modified since the last update. Note that this method is used for debugging purposes. get-modified-remote-data is used as part of a Mirroring feature, which is available since version 6.1.
 
@@ -745,6 +791,7 @@ Get the list of incidents that were modified since the last update. Note that th
 #### Base Command
 
 `get-modified-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -755,7 +802,9 @@ Get the list of incidents that were modified since the last update. Note that th
 #### Context Output
 
 There is no context output for this command.
+
 ### update-remote-system
+
 ***
 Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
 
@@ -763,6 +812,7 @@ Updates local incident changes in the remote incident. This method is only used 
 #### Base Command
 
 `update-remote-system`
+
 #### Input
 
 There are no input arguments for this command.
@@ -836,8 +886,11 @@ Allowed for: Admins, Agents and Light Agents.
 | Zendesk.UserGroup.verified | Boolean | Whether any of the user's identities is verified. | 
 
 #### Command example
+
 ```!zendesk-group-user-list group_id=12345 limit=1```
+
 #### Context Example
+
 ```json
 {
     "Zendesk": {
@@ -889,9 +942,10 @@ Allowed for: Admins, Agents and Light Agents.
 #### Human Readable Output
 
 >### Zendesk Group Users:
+>
 >|Id|Name|Email|Role|CreatedAt|
 >|---|---|---|---|---|
->| 1908275070333 | Admin | test@user.com | admin | 2022-03-27T08:42:06Z |
+>| 1908275070333 | Admin | <test@user.com> | admin | 2022-03-27T08:42:06Z |
 
 ### zendesk-group-list
 
@@ -926,8 +980,11 @@ Allowed for: Admins, Agents.
 | Zendesk.Group.url | String | The API URL of the group. | 
 
 #### Command example
+
 ```!zendesk-group-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Zendesk": {
@@ -951,6 +1008,7 @@ Allowed for: Admins, Agents.
 #### Human Readable Output
 
 >### Zendesk groups:
+>
 >|Id| Name |IsPublic|CreatedAt|UpdatedAt|
 >|------|---|---|---|---|
 >| 11395818128925 | Test Group | true | 2023-06-06T07:44:20Z | 2023-06-06T07:44:20Z |
@@ -960,6 +1018,7 @@ Allowed for: Admins, Agents.
 
 You can enable incident mirroring between Cortex XSOAR incidents and Zendesk v2 corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
@@ -976,5 +1035,6 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 
 
 **Important Notes:** 
+
 - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zendesk v2.
 - Required permissions: Admins

@@ -7,7 +7,7 @@ Supported Cortex XSOAR versions: 6.0.0 and later.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| identityiq_url | IdentityIQ Server URL \(e.g. https://identityiq-server.com/identityiq) | True |
+| identityiq_url | IdentityIQ Server URL \(e.g. <https://identityiq-server.com/identityiq>) | True |
 | client_id | Client Id \(for OAuth 2.0\) | True |
 | client_secret | Client Secret \(for OAuth 2.0\) | True |
 | isFetch | Fetch incidents | False |
@@ -18,9 +18,12 @@ Supported Cortex XSOAR versions: 6.0.0 and later.
 | first_fetch | First fetch time | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### identityiq-search-identities
+
 ***
 Search identities by search/filter parameters (id, email, risk & active) using IdentityIQ SCIM API's.
 
@@ -28,6 +31,7 @@ Search identities by search/filter parameters (id, email, risk & active) using I
 #### Base Command
 
 `identityiq-search-identities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -61,6 +65,7 @@ Search identities by search/filter parameters (id, email, risk & active) using I
 
 
 #### Command Examples
+
 ```
 !identityiq-search-identities
 !identityiq-search-identities id=8a8080824df45873014df45bd97400c9
@@ -73,14 +78,17 @@ Search identities by search/filter parameters (id, email, risk & active) using I
 #### Human Readable Output
 
 ### Results:
+
 ### Identity
+
 |id|userName|displayName|name|emails|sailpointUser|extendedUser|entitlements|roles|capabilities|active|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 8a8080824df45873014df45bd97400c9 | Adam.Kennedy | Adam Kennedy | formatted: Adam Kennedy<br/>familyName: Kennedy<br/>givenName: Adam | {'type': 'work', 'value': 'Adam.Kennedy@sailpointdemo.com', 'primary': True} | capabilities: <br/>lastRefresh: 2020-10-08T15:45:47.034-05:00<br/>jobTitle: Payroll Analyst II<br/>employeeId: 1b2c3a4e<br/>administrator: {}<br/>employeeType: Employee<br/>phone: 5124152339<br/>isManager: false<br/>location: London<br/>accounts: {'displayName': '1b2c3a4e', 'value': '8a8080824df45873014df45bd97500ca', '$ref': 'http://localhost:8088/iiq/scim/v2/Accounts/8a8080824df45873014df45bd97500ca'},<br/>{'displayName': 'Adam.Kennedy', 'value': '8a8080824df45873014df45c164601d8', '$ref': 'http://localhost:8088/iiq/scim/v2/Accounts/8a8080824df45873014df45c164601d8'},<br/>{'displayName': 'AKENNE', 'value': '8a8080824df45873014df45d012705ae', '$ref': 'http://localhost:8088/iiq/scim/v2/Accounts/8a8080824df45873014df45d012705ae'},<br/>{'displayName': 'Adam.Kennedy', 'value': '8a8080824df45873014df45da06308b0', '$ref': 'http://localhost:8088/iiq/scim/v2/Accounts/8a8080824df45873014df45da06308b0'}<br/>riskScore: 82<br/>department: Accounting<br/>region: GB | manager: {"displayName": "Douglas Flores", "value": "8a8080824df45873014df45bcfab008d", "$ref": "http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bcfab008d"} |  |  |  | true |
+| 8a8080824df45873014df45bd97400c9 | Adam.Kennedy | Adam Kennedy | formatted: Adam Kennedy<br/>familyName: Kennedy<br/>givenName: Adam | {'type': 'work', 'value': '<Adam.Kennedy@sailpointdemo.com>', 'primary': True} | capabilities: <br/>lastRefresh: 2020-10-08T15:45:47.034-05:00<br/>jobTitle: Payroll Analyst II<br/>employeeId: 1b2c3a4e<br/>administrator: {}<br/>employeeType: Employee<br/>phone: 5124152339<br/>isManager: false<br/>location: London<br/>accounts: {'displayName': '1b2c3a4e', 'value': '8a8080824df45873014df45bd97500ca', '$ref': 'http://localhost:8088/iiq/scim/v2/Accounts/8a8080824df45873014df45bd97500ca'},<br/>{'displayName': 'Adam.Kennedy', 'value': '8a8080824df45873014df45c164601d8', '$ref': '<http://localhost:8088/iiq/scim/v2/Accounts/8a8080824df45873014df45c164601d8'}>,<br/>{'displayName': 'AKENNE', 'value': '8a8080824df45873014df45d012705ae', '$ref': 'http://localhost:8088/iiq/scim/v2/Accounts/8a8080824df45873014df45d012705ae'},<br/>{'displayName': 'Adam.Kennedy', 'value': '8a8080824df45873014df45da06308b0', '$ref': '<http://localhost:8088/iiq/scim/v2/Accounts/8a8080824df45873014df45da06308b0'}><br/>riskScore: 82<br/>department: Accounting<br/>region: GB | manager: {"displayName": "Douglas Flores", "value": "8a8080824df45873014df45bcfab008d", "$ref": "<http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bcfab008d"}> |  |  |  | true |
 
 
 
 ### identityiq-get-policyviolations
+
 ***
 Fetch policy violation by id or all policy violations using IdentityIQ SCIM API's.
 
@@ -88,6 +96,7 @@ Fetch policy violation by id or all policy violations using IdentityIQ SCIM API'
 #### Base Command
 
 `identityiq-get-policyviolations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -109,6 +118,7 @@ Fetch policy violation by id or all policy violations using IdentityIQ SCIM API'
 
 
 #### Command Example
+
 ```
 !identityiq-get-policyviolations
 !identityiq-get-policyviolations id=8a8080824df45873014df46036521328
@@ -117,14 +127,17 @@ Fetch policy violation by id or all policy violations using IdentityIQ SCIM API'
 #### Human Readable Output
 
 ### Results:
+
 ### PolicyViolation
+
 |id|policyName|constraintName|status|description|identity|owner|
 |---|---|---|---|---|---|---|
-| 8a8080824df45873014df46036521328 | SOD Policy Accounts Payable Access-Accounts Receivable Access | Accounts Payable Access - Accounts Receivable Access constraint | Open |  | displayName: Frank Rivera<br/>value: 8a8080824df45873014df45bc8480065<br/>$ref: http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bc8480065 | displayName: Richard Jackson<br/>value: 8a8080824df45873014df45bbbb9002b<br/>$ref: http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bbbb9002b |
+| 8a8080824df45873014df46036521328 | SOD Policy Accounts Payable Access-Accounts Receivable Access | Accounts Payable Access - Accounts Receivable Access constraint | Open |  | displayName: Frank Rivera<br/>value: 8a8080824df45873014df45bc8480065<br/>$ref: <http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bc8480065> | displayName: Richard Jackson<br/>value: 8a8080824df45873014df45bbbb9002b<br/>$ref: <http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bbbb9002b> |
 
 
 
 ### identityiq-get-taskresults
+
 ***
 Fetch task result by id or all task results using IdentityIQ SCIM API's.
 
@@ -132,6 +145,7 @@ Fetch task result by id or all task results using IdentityIQ SCIM API's.
 #### Base Command
 
 `identityiq-get-taskresults`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -157,6 +171,7 @@ Fetch task result by id or all task results using IdentityIQ SCIM API's.
 
 
 #### Command Example
+
 ```
 !identityiq-get-taskresults
 !identityiq-get-taskresults id=0a0000016b951ded816bb41351e901b3
@@ -165,7 +180,9 @@ Fetch task result by id or all task results using IdentityIQ SCIM API's.
 #### Human Readable Output
 
 ### Results:
+
 ### TaskResult
+
 |id|name|type|host|progress|completionStatus|launched|taskDefinition|pendingSignoffs|launcher|completed|taskSchedule|partitioned|terminated|messages|attributes|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0a0000016b951ded816bb41351e901b3 | Joiner: DannyFieldsPS | Workflow |  |  | Success | 2019-07-02T14:04:53.471-05:00 | Workflow Launcher | 0 | Scheduler | 2019-07-02T14:04:53.480-05:00 |  | false | false |  | {'value': '<WorkflowSummary step="Stop"/>\n', 'key': 'workflowSummary'} |
@@ -173,6 +190,7 @@ Fetch task result by id or all task results using IdentityIQ SCIM API's.
 
 
 ### identityiq-get-accounts
+
 ***
 Fetch accounts by search/filter parameters (id, display_name, last_refresh, native_identity, last_target_agg, identity_name & application_name) using IdentityIQ SCIM API's.
 
@@ -180,6 +198,7 @@ Fetch accounts by search/filter parameters (id, display_name, last_refresh, nati
 #### Base Command
 
 `identityiq-get-accounts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -208,6 +227,7 @@ Fetch accounts by search/filter parameters (id, display_name, last_refresh, nati
 
 
 #### Command Example
+
 ```
 !identityiq-get-accounts
 !identityiq-get-accounts id=8a8080824df45873014df45bb504000e
@@ -222,14 +242,17 @@ Fetch accounts by search/filter parameters (id, display_name, last_refresh, nati
 #### Human Readable Output
 
 ### Results:
+
 ### Account
+
 |id|displayName|identity|hasEntitlements|application|nativeIdentity|active|lastRefresh|manuallyCorrelated|application|locked|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 8a8080824df45873014df45bb504000e | 1b | displayName: Jerry Bennett<br/>userName: Jerry.Bennett<br/>value: 8a8080824df45873014df45bb503000d<br/>$ref: http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bb503000d | false | displayName: Human Resources<br/>value: 8a8080824df44d48014df4542d7402aa<br/>$ref: http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df4542d7402aa | 1b | true | 2015-06-14T18:16:00.389-05:00 | false | displayName: Human Resources<br/>value: 8a8080824df44d48014df4542d7402aa<br/>$ref: http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df4542d7402aa | false |
+| 8a8080824df45873014df45bb504000e | 1b | displayName: Jerry Bennett<br/>userName: Jerry.Bennett<br/>value: 8a8080824df45873014df45bb503000d<br/>$ref: <http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bb503000d> | false | displayName: Human Resources<br/>value: 8a8080824df44d48014df4542d7402aa<br/>$ref: <http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df4542d7402aa> | 1b | true | 2015-06-14T18:16:00.389-05:00 | false | displayName: Human Resources<br/>value: 8a8080824df44d48014df4542d7402aa<br/>$ref: <http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df4542d7402aa> | false |
 
 
 
 ### identityiq-disable-account
+
 ***
 Disable account's active status by id using IdentityIQ SCIM API's.
 
@@ -237,6 +260,7 @@ Disable account's active status by id using IdentityIQ SCIM API's.
 #### Base Command
 
 `identityiq-disable-account`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -252,6 +276,7 @@ Disable account's active status by id using IdentityIQ SCIM API's.
 
 
 #### Command Example
+
 ```
 !identityiq-disable-account id=8a8080824df45873014df45c719f038c
 ```
@@ -259,14 +284,17 @@ Disable account's active status by id using IdentityIQ SCIM API's.
 #### Human Readable Output
 
 ### Results:
+
 ### Account
+
 |id|displayName|identity|hasEntitlements|application|nativeIdentity|active|lastRefresh|manuallyCorrelated|application|locked|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 8a8080824df45873014df45c719f038c | Jerry.Bennett | displayName: Jerry Bennett<br/>userName: Jerry.Bennett<br/>value: 8a8080824df45873014df45bb503000d<br/>$ref: http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bb503000d | true | displayName: Active Directory<br/>value: 8a8080824df44d48014df45440d502cf<br/>$ref: http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df45440d502cf | CN=Jerry Bennett,OU=Brussels,OU=Europe,OU=Demo,DC=seri,DC=sailpointdemo,DC=com | false | 2020-12-16T16:39:56.638-06:00 | false | displayName: Active Directory<br/>value: 8a8080824df44d48014df45440d502cf<br/>$ref: http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df45440d502cf | false |
+| 8a8080824df45873014df45c719f038c | Jerry.Bennett | displayName: Jerry Bennett<br/>userName: Jerry.Bennett<br/>value: 8a8080824df45873014df45bb503000d<br/>$ref: <http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bb503000d> | true | displayName: Active Directory<br/>value: 8a8080824df44d48014df45440d502cf<br/>$ref: <http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df45440d502cf> | CN=Jerry Bennett,OU=Brussels,OU=Europe,OU=Demo,DC=seri,DC=sailpointdemo,DC=com | false | 2020-12-16T16:39:56.638-06:00 | false | displayName: Active Directory<br/>value: 8a8080824df44d48014df45440d502cf<br/>$ref: <http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df45440d502cf> | false |
 
 
 
 ### identityiq-enable-account
+
 ***
 Enable account's active status by id using IdentityIQ SCIM API's.
 
@@ -274,6 +302,7 @@ Enable account's active status by id using IdentityIQ SCIM API's.
 #### Base Command
 
 `identityiq-enable-account`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -289,6 +318,7 @@ Enable account's active status by id using IdentityIQ SCIM API's.
 
 
 #### Command Example
+
 ```
 !identityiq-enable-account id=8a8080824df45873014df45c719f038c
 ```
@@ -296,14 +326,17 @@ Enable account's active status by id using IdentityIQ SCIM API's.
 #### Human Readable Output
 
 ### Results:
+
 ### Account
+
 |id|displayName|identity|hasEntitlements|application|nativeIdentity|active|lastRefresh|manuallyCorrelated|application|locked|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 8a8080824df45873014df45c719f038c | Jerry.Bennett | displayName: Jerry Bennett<br/>userName: Jerry.Bennett<br/>value: 8a8080824df45873014df45bb503000d<br/>$ref: http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bb503000d | true | displayName: Active Directory<br/>value: 8a8080824df44d48014df45440d502cf<br/>$ref: http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df45440d502cf | CN=Jerry Bennett,OU=Brussels,OU=Europe,OU=Demo,DC=seri,DC=sailpointdemo,DC=com | true | 2020-12-16T16:39:56.638-06:00 | false | displayName: Active Directory<br/>value: 8a8080824df44d48014df45440d502cf<br/>$ref: http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df45440d502cf | false |
+| 8a8080824df45873014df45c719f038c | Jerry.Bennett | displayName: Jerry Bennett<br/>userName: Jerry.Bennett<br/>value: 8a8080824df45873014df45bb503000d<br/>$ref: <http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bb503000d> | true | displayName: Active Directory<br/>value: 8a8080824df44d48014df45440d502cf<br/>$ref: <http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df45440d502cf> | CN=Jerry Bennett,OU=Brussels,OU=Europe,OU=Demo,DC=seri,DC=sailpointdemo,DC=com | true | 2020-12-16T16:39:56.638-06:00 | false | displayName: Active Directory<br/>value: 8a8080824df44d48014df45440d502cf<br/>$ref: <http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df45440d502cf> | false |
 
 
 
 ### identityiq-delete-account
+
 ***
 Delete account by id using IdentityIQ SCIM API's.
 
@@ -311,6 +344,7 @@ Delete account by id using IdentityIQ SCIM API's.
 #### Base Command
 
 `identityiq-delete-account`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -323,16 +357,19 @@ Delete account by id using IdentityIQ SCIM API's.
 There is no context output for this command.
 
 #### Command Example
+
 ```
 !identityiq-delete-account id=8a8080824df45873014df45bb335000c
 ```
 
 #### Human Readable Output
+
 Account deleted successfully!
 
 
 
 ### identitytiq-get-launched-workflows
+
 ***
 Fetch launched workflow by id or all launched workflows using IdentityIQ SCIM API's.
 
@@ -340,6 +377,7 @@ Fetch launched workflow by id or all launched workflows using IdentityIQ SCIM AP
 #### Base Command
 
 `identitytiq-get-launched-workflows`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -368,6 +406,7 @@ Fetch launched workflow by id or all launched workflows using IdentityIQ SCIM AP
 
 
 #### Command Example
+
 ```
 !identitytiq-get-launched-workflows
 !identitytiq-get-launched-workflows id=0a0000016b951ded816bb41348e20197
@@ -376,7 +415,9 @@ Fetch launched workflow by id or all launched workflows using IdentityIQ SCIM AP
 #### Human Readable Output
 
 ### Results:
+
 ### Workflow
+
 |id|name|workflowName|identityRequestId|workflowCaseId|launched|targetClass|targetName|type|completionStatus|launcher|terminated|attributes|partitioned|completed|pendingSignoffs|taskDefinition|launchedWorkflow|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0a0000016b951ded816bb41348e20197 | Joiner: Nick |  |  |  | 2019-07-02T14:04:51.148-05:00 |  |  | Workflow | Success | Scheduler | false | {'value': '<WorkflowSummary step="Stop"/>\n', 'key': 'workflowSummary'} | false | 2019-07-02T14:04:51.169-05:00 | 0 | Workflow Launcher | output: {'type': 'application/xml', 'value': '<WorkflowSummary step="Stop"/>\n', 'key': 'workflowSummary'}<br/>input: {}<br/>workflowSummary: <WorkflowSummary step="Stop"/><br/><br/>workflowName: Joiner: Nick |
@@ -384,6 +425,7 @@ Fetch launched workflow by id or all launched workflows using IdentityIQ SCIM AP
 
 
 ### identityiq-get-roles
+
 ***
 Fetch role by id or all roles using IdentityIQ SCIM API's.
 
@@ -391,6 +433,7 @@ Fetch role by id or all roles using IdentityIQ SCIM API's.
 #### Base Command
 
 `identityiq-get-roles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -416,6 +459,7 @@ Fetch role by id or all roles using IdentityIQ SCIM API's.
 
 
 #### Command Example
+
 ```
 !identityiq-get-roles
 !identityiq-get-roles id=8a8080824df45873014df45f8b6810e9
@@ -424,14 +468,17 @@ Fetch role by id or all roles using IdentityIQ SCIM API's.
 #### Human Readable Output
 
 ### Results:
+
 ### Role
+
 |id|name|owner|active|displayableName|permits|type|descriptions|requirements|
 |---|---|---|---|---|---|---|---|---|
-| 8a8080824df45873014df45f8b6810e9 | All Users | displayName: The Administrator<br/>value: 8a8080824df44d48014df44def7100dd<br/>$ref: http://localhost:8088/iiq/scim/v2/Users/8a8080824df44d48014df44def7100dd | true | All Users |  | iiq: false<br/>requirements: true<br/>permits: true<br/>displayName: Business<br/>manualAssignment: true<br/>name: business<br/>autoAssignment: true<br/>assignmentSelector: true | {'locale': 'en_US', 'value': 'Role that grants access all users should have'} | {'displayName': 'User Basic', 'value': '8a8080824df45873014df45f8b1810e6', '$ref': 'http://localhost:8088/iiq/scim/v2/Roles/8a8080824df45873014df45f8b1810e6'} |
+| 8a8080824df45873014df45f8b6810e9 | All Users | displayName: The Administrator<br/>value: 8a8080824df44d48014df44def7100dd<br/>$ref: <http://localhost:8088/iiq/scim/v2/Users/8a8080824df44d48014df44def7100dd> | true | All Users |  | iiq: false<br/>requirements: true<br/>permits: true<br/>displayName: Business<br/>manualAssignment: true<br/>name: business<br/>autoAssignment: true<br/>assignmentSelector: true | {'locale': 'en_US', 'value': 'Role that grants access all users should have'} | {'displayName': 'User Basic', 'value': '8a8080824df45873014df45f8b1810e6', '$ref': '<http://localhost:8088/iiq/scim/v2/Roles/8a8080824df45873014df45f8b1810e6'}> |
 
 
 
 ### identityiq-get-entitlements
+
 ***
 Fetch entitlement by id or all entitlements using IdentityIQ SCIM API's.
 
@@ -439,6 +486,7 @@ Fetch entitlement by id or all entitlements using IdentityIQ SCIM API's.
 #### Base Command
 
 `identityiq-get-entitlements`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -464,6 +512,7 @@ Fetch entitlement by id or all entitlements using IdentityIQ SCIM API's.
 
 
 #### Command Example
+
 ```
 !identityiq-get-entitlements
 !identityiq-get-entitlements id=8a8080824df45873014df45d9f9008a8
@@ -472,14 +521,17 @@ Fetch entitlement by id or all entitlements using IdentityIQ SCIM API's.
 #### Human Readable Output
 
 ### Results:
+
 ### Entitlement
+
 |id|displayableName|type|attribute|value|owner|application|descriptions|requestable|aggregated|created|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 8a8080824df45873014df45d9f9008a8 | input | Entitlement | capability | input |  | displayName: TRAKK<br/>value: 8a8080824df44d48014df45444c002da<br/>$ref: http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df45444c002da |  | true | false |  |
+| 8a8080824df45873014df45d9f9008a8 | input | Entitlement | capability | input |  | displayName: TRAKK<br/>value: 8a8080824df44d48014df45444c002da<br/>$ref: <http://localhost:8088/iiq/scim/v2/Applications/8a8080824df44d48014df45444c002da> |  | true | false |  |
 
 
 
 ### identityiq-get-alerts
+
 ***
 Fetch alert by id or all alerts using IdentityIQ SCIM API's.
 
@@ -487,6 +539,7 @@ Fetch alert by id or all alerts using IdentityIQ SCIM API's.
 #### Base Command
 
 `identityiq-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -509,6 +562,7 @@ Fetch alert by id or all alerts using IdentityIQ SCIM API's.
 
 
 #### Command Example
+
 ```
 !identityiq-get-alerts
 !identityiq-get-alerts id=0a000001764519c981766dbd2bd518ad
@@ -517,7 +571,9 @@ Fetch alert by id or all alerts using IdentityIQ SCIM API's.
 #### Human Readable Output
 
 ### Results:
+
 ### Alert
+
 |id|name|displayName|type|targetId|targetDisplayName|targetType|alertInput|actions|application|attributes|lastProcessed|
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 0a000001764519c981766dbd2bd518ad | 0000000015 | Test Alert | PAN XSOAR |  |  |  | input: <br/>processorTaskInput: <br/>aggregationTaskInput:  |  |  |  | 2020-12-16T16:48:02.773-06:00 |
@@ -525,6 +581,7 @@ Fetch alert by id or all alerts using IdentityIQ SCIM API's.
 
 
 ### identityiq-create-alert
+
 ***
 Create an alert using IdentityIQ SCIM API's.
 
@@ -532,6 +589,7 @@ Create an alert using IdentityIQ SCIM API's.
 #### Base Command
 
 `identityiq-create-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -555,6 +613,7 @@ Create an alert using IdentityIQ SCIM API's.
 
 
 #### Command Example
+
 ```
 !identityiq-create-alert display_name=Testing-Via-XSOAR
 ```
@@ -562,7 +621,9 @@ Create an alert using IdentityIQ SCIM API's.
 #### Human Readable Output
 
 ### Results:
+
 ### Alert
+
 |id|name|displayName|type|targetId|targetDisplayName|targetType|alertInput|actions|application|attributes|lastProcessed|
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 0a000001764519c981767209e7491c04 | 0000000016 | XSOAR-Alert | PAN XSOAR |  |  |  | input: <br/>processorTaskInput: <br/>aggregationTaskInput:  |  |  |  | 2020-12-17T12:50:20.369-06:00 |

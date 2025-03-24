@@ -9,6 +9,7 @@ It is possible that a password of length zero could be generated. It is therefor
 The debug parameter will print certain properties of the command into the War Room for easy diagnostics.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -18,6 +19,7 @@ The debug parameter will print certain properties of the command into the War Ro
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -37,6 +39,7 @@ The debug parameter will print certain properties of the command into the War Ro
 At least one of the following arguments should be above 0: min_uppercase, min_lowercase, min_digits, min_symbols
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

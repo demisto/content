@@ -5,7 +5,7 @@ Continuous Breach And Attack Simulation
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| PICUS URL | For example : https://192.168.100.100/ | True |
+| PICUS URL | For example : <https://192.168.100.100/> | True |
 | API Key - Refresh Token | Picus Interface  - SETTINGS -  ADVANCED - API TOKEN - Generate and Show Token | True |
 | Trust any certificate (not secure) |  |  |
 | Use system proxy settings |  |  |
@@ -37,6 +37,7 @@ Attack Result - Makes a comparison of the given vector's results. Example Comman
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-attack-result-list
 
 ***
@@ -64,6 +65,7 @@ Returns the list of the attack results have optional parameters for pagination a
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-specific-threats-results
 
 ***
@@ -87,6 +89,7 @@ Returns the list of the attack results of a single threat have optional paramete
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-peer-list
 
 ***
@@ -104,6 +107,7 @@ Returns the peer list with current statuses
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-attack-all-vectors
 
 ***
@@ -122,6 +126,7 @@ Schedules given attack on all possible vectors
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-attack-single
 
 ***
@@ -143,6 +148,7 @@ Schedules a single attack on requested vector
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-trigger-update
 
 ***
@@ -160,6 +166,7 @@ Triggers the update mechanism manually, returns if the update-command is taken s
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-version
 
 ***
@@ -177,6 +184,7 @@ Returns the current version and the update time config
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-mitigation-list
 
 ***
@@ -201,6 +209,7 @@ Returns the list of the mitigations of threats\nhave optional parameters for pag
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-mitre-matrix
 
 ***
@@ -218,6 +227,7 @@ Returns the mitre matrix metadata takes no parameters
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-sigma-rules-list
 
 ***
@@ -237,6 +247,7 @@ Returns the list of the sigma rules of scenario actions have optional parameters
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-vector-list
 
 ***

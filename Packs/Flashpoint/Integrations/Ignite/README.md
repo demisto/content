@@ -2,6 +2,7 @@ Use the Flashpoint Ignite integration to reduce business risk. Ignite allows use
 This integration was integrated and tested with API v1 of Ignite.
 
 ### Auto Extract Indicator
+
 Both incident types **Ignite Alert** and **Flashpoint Compromised Credentials** support the auto extraction feature by default. This feature extracts indicators and enriches their reputations using commands and scripts defined for the indicator type (Refer to [Indicator extraction (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Indicator-Extraction) or [Indicator extraction (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Indicator-extraction) or [Indicator extraction (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Indicator-extraction) for more details).
 
 If you are upgrading from a Flashpoint integration, please refer to the [Migration Guide](#migration-guide) for guidance.
@@ -101,9 +102,11 @@ Search for the Intelligence Reports using a keyword.
 | Ignite.Report.ReportId | string | Unique ID of the report. | 
 
 #### Command example
+
 ```!flashpoint-ignite-intelligence-report-search report_search=ChatGpt```
 
 #### Context Example
+
 ```json
 {
     "Ignite": {
@@ -125,7 +128,9 @@ Search for the Intelligence Reports using a keyword.
 #### Human Readable Output
 
 >### Ignite Intelligence reports related to search: ChatGpt
+>
 >Top 5 reports:
+>
 >1) [Artificial Intelligence Threat Landscape](https:<span>//</span>app.flashpoint.io/cti/intelligence/report/00000000000000000001)
 >   Summary: This report covers evolving events that impact the advancement of AI technology and highlights notable developments that impact safety for users and organizations. 
 >
@@ -202,9 +207,11 @@ Retrieves the compromised credentials based on the filter values provided in the
 | Ignite.CompromisedCredential.sort | Unknown | Sort value of the IoC. | 
 
 #### Command example
+
 ```!flashpoint-ignite-compromised-credentials-list start_date="2 weeks" end_date="1 days" filter_date=created_at is_fresh=true page_number=2 page_size=1 sort_date=created_at sort_order=asc```
 
 #### Context Example
+
 ```json
 {
     "Ignite": {
@@ -281,9 +288,10 @@ Retrieves the compromised credentials based on the filter values provided in the
 >#### Total number of records found: 150
 >
 >### Compromised Credential(s)
+>
 >|FPID|Email|Username|Breach Source|Breach Source Type|Password|Created Date (UTC)|First Observed Date (UTC)|
 >|---|---|---|---|---|---|---|---|
->| sample_fpid | someone@example.com | someone@example.com | Analyst Research | Credential Stealer | pass_123 | May 10, 2024  16:13 | May 10, 2024  16:13 |
+>| sample_fpid | <someone@example.com> | <someone@example.com> | Analyst Research | Credential Stealer | pass_123 | May 10, 2024  16:13 | May 10, 2024  16:13 |
 
 
 ### flashpoint-ignite-event-list
@@ -318,8 +326,11 @@ Searches for events within the specified time period, the Flashpoint report ID, 
 | Ignite.Event.Tags | string | The tags of the event. | 
 
 #### Command example
+
 ```!flashpoint-ignite-event-list limit="2" attack_ids=T1001```
+
 #### Context Example
+
 ```json
 {
     "Ignite": {
@@ -354,6 +365,7 @@ Searches for events within the specified time period, the Flashpoint report ID, 
 >### Ignite Events
 >
 >### Below are the detail found:
+>
 >|Observed time (UTC)|Name|Tags|Malware Description|
 >|---|---|---|---|
 >| May 31, 2024  04:03 | [Observation: strike "0000000000000000000000000000000000000000000000000000000000000001" [2024-05-31 03:49:12]](https://mock_dummy.com/cti/malware/iocs?query=00000000-0000-0000-0000-0001&sort_date=All+Time) | mitre:T1001 | This malicious adoption has caused difficulties in determining whether observed activity is related to an ongoing criminal attack. |
@@ -391,8 +403,11 @@ Retrieves the details of a single event using event FPID or UUID.
 | Ignite.Event.Tags | string | The tags of the event. | 
 
 #### Command example
+
 ```!flashpoint-ignite-event-get event_id=0000000000000000000001```
+
 #### Context Example
+
 ```json
 {
     "Ignite": {
@@ -413,7 +428,9 @@ Retrieves the details of a single event using event FPID or UUID.
 #### Human Readable Output
 
 >### Ignite Event details
+>
 >### Below are the detail found:
+>
 >|Observed time (UTC)|Name|Tags|Malware Description|
 >|---|---|---|---|
 >| May 31, 2024  04:03 | [Observation: strike "0000000000000000000000000000000000000000000000000000000000000001" [2024-05-31 03:49:12]](https://mock_dummy.com/cti/malware/iocs?query=00000000-0000-0000-0000-0001&sort_date=All+Time) | mitre:T1001 | This malicious adoption has caused difficulties in determining whether observed activity is related to an ongoing criminal attack. |
@@ -448,8 +465,11 @@ Get single report details using the report id.
 | Ignite.Report.Tags | string | Tags of the report. | 
 
 #### Command example
+
 ```!flashpoint-ignite-intelligence-report-get report_id=00000000000000000001```
+
 #### Context Example
+
 ```json
 {
     "Ignite": {
@@ -470,7 +490,9 @@ Get single report details using the report id.
 #### Human Readable Output
 
 >### Ignite Intelligence Report details
+>
 >### Below are the details found:
+>
 >|Title|Date Published (UTC)|Summary|Tags|
 >|---|---|---|---|
 >| [Key Developments: XYZ (February 3-10, 2022)](https:<span>//</span>app.flashpoint.io/cti/intelligence/report/00000000000000000001) | Feb 10, 2022  22:25 | A weekly update on major developments in XYZ. | Energy, Government & Policymakers, XYZ, Law Enforcement & Military, Intelligence Report, Technology & Internet, Right-Wing Extremist, Media & Telecom, Protests, Cyber Threats, Physical Threats, Government, Technology, Right-wing extremism, Media, Direct action and protests, Key Developments: XYZ |
@@ -505,8 +527,11 @@ List related reports for a particular report using the report ID.
 | Ignite.Report.ReportId | string | Unique ID of the report. | 
 
 #### Command example
+
 ```!flashpoint-ignite-intelligence-related-report-list report_id=00000000000000000003```
+
 #### Context Example
+
 ```json
 {
     "Ignite": {
@@ -528,6 +553,7 @@ List related reports for a particular report using the report ID.
 #### Human Readable Output
 
 >### Ignite Intelligence related reports:
+>
 >Top 5 related reports:
 >
 >1) [Key Developments: XYZ (April 7-13, 2023)](https:<span>//</span>app.flashpoint.io/cti/intelligence/report/00000000000000000003)
@@ -644,8 +670,11 @@ Retrieves a list of alerts based on the filter values provided in the command ar
 
 
 #### Command example
+
 ```!flashpoint-ignite-alert-list created_after="2024-06-11T05:54:25Z" created_before="2024-06-12T05:54:27Z" size=1```
+
 #### Context Example
+
 ```json
 {
     "Ignite": {
@@ -759,12 +788,14 @@ Retrieves a list of alerts based on the filter values provided in the command ar
 #### Human Readable Output
 
 >### Alerts
+>
 >|ID|Created at (UTC)|Query|Source|Resource URL|Site Title|Shodan Host|Repository|Owner|Origin|Ports|Services|Highlight Text|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 00000000-0000-0000-0000-000000000001 | Jun 17, 2024  05:54 | facebook | data_exposure__github | [https://dummyurl.com/naive-gabrie-white](https://dummyurl.com/naive-gabrie-white) |  |  | naive-gabrie-white.github.io | naive-gabrie-white | searches |  |  | data\-image="https://i.dummyurl.net/2021/02/24/000000000000001.png" data\-sites="<x\-fp\-highlight>facebook</x\-fp\-highlight>,twitter,wechat,weibo,qq"><link rel="stylesheet" href="https:...> |
->| 00000000-0000-0000-0000-000000000005 | Jul 02, 2024  16:43 | 0.0.0.1 |  |  |  | ***asn***: AS0001<br>***country***: United States<br>***org***: Company LLC<br>***shodan_url***: [https://www.shodan.io/host/0.0.0.1](https://www.shodan.io/host/0.0.0.1) |  |  | assets | 53, 443 | Unknown Service (Port 01), Unknown Service (Port 02) | <x\-fp\-highlight>53</x\-fp\-highlight> |
+>| 00000000-0000-0000-0000-000000000001 | Jun 17, 2024  05:54 | facebook | data_exposure__github | [https://dummyurl.com/naive-gabrie-white](https://dummyurl.com/naive-gabrie-white) |  |  | naive-gabrie-white.github.io | naive-gabrie-white | searches |  |  | data\-image="<https://i.dummyurl.net/2021/02/24/000000000000001.png>" data\-sites="<x\-fp\-highlight>facebook</x\-fp\-highlight>,twitter,wechat,weibo,qq"><link rel="stylesheet" href="https:...> |
+>| 00000000-0000-0000-0000-000000000005 | Jul 02, 2024  16:43 | 0.0.0.1 |  |  |  | _**asn**_: AS0001<br>_**country**_: United States<br>_**org**_: Company LLC<br>_**shodan_url**_: [https://www.shodan.io/host/0.0.0.1](https://www.shodan.io/host/0.0.0.1) |  |  | assets | 53, 443 | Unknown Service (Port 01), Unknown Service (Port 02) | <x\-fp\-highlight>53</x\-fp\-highlight> |
 >
 >#### To retrieve the next set of result use,
+>
 >created_after = 2024-06-14T05:54:25Z
 >created_before = 2024-06-17T05:54:25Z
 >size = 1
@@ -807,11 +838,13 @@ Looks up the "Email" type indicator details. The reputation of Email is consider
 | Account.Email.Name | string | Name of indicator. | 
 
 #### Command Example
+
 ```
 !email email="dummy@dummy.com"
 ```
 
 #### Context Example
+
 ``` json
 {
   "DBotScore": {
@@ -851,10 +884,12 @@ Looks up the "Email" type indicator details. The reputation of Email is consider
 
 #### Human Readable Output
 
->##### Ignite Email reputation for dummy@dummy.com
+>##### Ignite Email reputation for <dummy@dummy.com>
+>
 >Reputation: Malicious
 >
 >##### Events in which this IOC observed
+>
 >|Date Observed (UTC)|Name|Tags|
 >|---|---|---|
 >| Jan 01, 1970  00:00 | sample info | sample_tags |
@@ -901,11 +936,13 @@ Looks up the "Filename" type indicator details. The reputation of Filename is co
 | Filename.Description | string | The description of the indicator. | 
 
 #### Command Example
+
 ```
 !filename filename="dummy.log"
 ```
 
 #### Context Example
+
 ```json
 {
   "DBotScore": {
@@ -952,9 +989,11 @@ Looks up the "Filename" type indicator details. The reputation of Filename is co
 #### Human Readable Output
 
 >##### Ignite Filename reputation for dummy.log
+>
 >Reputation: Malicious
 >
 >##### Events in which this IOC observed
+>
 >|Date Observed (UTC)|Name|Tags|
 >|---|---|---|
 >| Jan 01, 1970  00:00 | test info | sample_tags |
@@ -1058,8 +1097,11 @@ Looks up details of an IP indicator. The reputation of the IP address is conside
 | Ignite.IP.type | String | Type of the document. | 
 
 #### Command example
+
 ```!ip ip=0.0.0.1```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1126,9 +1168,11 @@ Looks up details of an IP indicator. The reputation of the IP address is conside
 #### Human Readable Output
 
 >### Ignite IP Address reputation for 0.0.0.1
+>
 >Reputation: Malicious
 >
 >### Events in which this IOC observed
+>
 >|Date Observed (UTC)|Name|Tags|
 >|---|---|---
 >| Jun 09, 2024  20:16 | Observation: CobaltStrikeVariant [2024-06-09 14:08:21] | asn:as11878, infrastructure:c2, mitre:T1071, source:masscan, tool:cobaltstrike |
@@ -1162,8 +1206,11 @@ Looks up any type of indicator.
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 
 #### Command example
+
 ```!flashpoint-ignite-common-lookup indicator="dummy@dummy.com"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -1180,10 +1227,12 @@ Looks up any type of indicator.
 
 #### Human Readable Output
 
->### Ignite reputation for dummy@dummy.com
+>### Ignite reputation for <dummy@dummy.com>
+>
 >Reputation: Malicious
 >
 >### Events in which this IOC observed
+>
 >|Date Observed (UTC)|Name|Tags|
 >|---|---|---|
 >| Feb 06, 2021  01:29 | Observation: reported BazarLoader iocs [2021-02-05 15:30:30] | event:observation, malware:bazar, source:osint, type:64bit, misp-galaxy:mitre-enterprise-attack-attack-pattern="Exfiltration Over Command and Control Channel - 00001" |
@@ -1235,11 +1284,13 @@ Looks up the "URL" type indicator details. The reputation of the URL is consider
 | URL.Description | string | The description of the indicator. | 
 
 #### Command Example
+
 ```
 !url url="http://dummy.com"
 ```
 
 #### Context Example
+
 ``` json
 {
     "URL": [
@@ -1308,10 +1359,12 @@ Looks up the "URL" type indicator details. The reputation of the URL is consider
 
 #### Human Readable Output
 
->##### Ignite URL reputation for http://dummy.com
+>##### Ignite URL reputation for <http://dummy.com>
+>
 >Reputation: Malicious
 >
 >##### Events in which this IOC observed
+>
 >| Date Observed (UTC) |Name|Tags|
 >|---------------------|---|---|
 >| Jan 01, 2001  12:00 | Sample info | sample_tags |
@@ -1363,8 +1416,11 @@ Looks up the "Domain" type indicator details. The reputation of Domain is consid
 | Domain.Relationships.EntityBType | string | The type of the destination of the relationship. | 
 
 #### Command example
+
 ```!domain domain="dummy.com"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1417,9 +1473,11 @@ Looks up the "Domain" type indicator details. The reputation of Domain is consid
 #### Human Readable Output
 
 >### Ignite Domain reputation for dummy.com
+>
 >Reputation: Malicious
 >
 >### Events in which this IOC observed
+>
 >|Date Observed (UTC)|Name|Tags|
 >|---|---|---|
 >| Sep 25, 2019  19:51 | Observation: APT Lazarus Reported IOCs [2021-07-28 21:10:34] | actor:APT, actor:Lazarus, event:observation, source:osint |
@@ -1477,11 +1535,13 @@ Looks up the "File" type indicator details. The reputation of File hash is consi
 | File.Relationships.EntityBType | string | The type of the destination of the relationship. | 
 
 #### Command Example
+
 ```
 !file file="00000000000000000000000000000001"
 ```
 
 #### Context Example
+
 ``` json
 {
     "File": [
@@ -1557,9 +1617,11 @@ Looks up the "File" type indicator details. The reputation of File hash is consi
 #### Human Readable Output
 
 >##### Ignite File reputation for 00000000000000000000000000000001
+>
 >Reputation: Malicious
 >
 >##### Events in which this IOC observed
+>
 >|Date Observed (UTC)|Name|Tags|
 >|---|---|---|
 >| Jan 01, 1970  00:00 | Observation: test_info ["00000000000000000000000000000001"] | sample_tags |

@@ -1,4 +1,5 @@
 ## Overview
+
 ---
 
 Palo Alto Networks Strata Logging Service XSOAR Connector provides cloud-based, centralized log storage and aggregation for your on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
@@ -7,6 +8,7 @@ This integration was integrated and tested with version 2 of Strata Logging Serv
 ---
 
 ## Configure Strata Logging Service XSOAR Connector on Cortex XSOAR
+
 ---
 
 1. Go to the Palo Alto Networks [HUB](https://apps.paloaltonetworks.com/apps) and select and add the **Cortex XSOAR** app as described [here](https://docs.paloaltonetworks.com/hub/hub-getting-started/get-started/accessing-applications.html).
@@ -16,59 +18,62 @@ The following screen will appear:
 
 2. In the Palo Alto Networks Cortex XSOAR Playground or War Room, run the ***!GetLicenseID*** command to get the License ID.
 The License ID will be used in Step 4.
-3. (Cortex XOAR 6.x) Go to __Settings__ > __ABOUT__ > __License__ and get the value in the license field Customer name. 
+3. (Cortex XOAR 6.x) Go to **Settings** > **ABOUT** > **License** and get the value in the license field Customer name. 
    
-   (Cortex xSOAR 8, Administrators only ) Go to __Profile__ > __ABOUT__ and get the value in the license field Customer name.
+   (Cortex xSOAR 8, Administrators only ) Go to **Profile** > **ABOUT** and get the value in the license field Customer name.
 
    The Customer name will be used in Step 4.
    
 5. In the Palo Alto Networks HUB, enter the License ID and the Customer name in the screen obtained in Step 1. The License ID and Customer name were obtained in Steps 2 and 3. Click **Start Authorization Process** to get the Authentication Token, Registration ID, and Encryption Key - these three fields will be used in the Palo Alto Networks Cortex v2 integration instance in Step 7 below.
-6. In Palo Alto Networks Cortex XSOAR, navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+6. In Palo Alto Networks Cortex XSOAR, navigate to **Settings** > **Integrations** > **Servers & Services**.
 7. Search for Strata Logging Service XSOAR Connector.
-8. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __Authentication Token__: Retrieved in the authentication process in Step 4.
-    * __Registration ID__: Retrieved in the authentication process in Step 4.
-    * __Encryption Key__: Retrieved in the authentication process in Step 4.
-    * __Fetch incidents__: Whether to fetch incidents or not.
-    * __first_fetch_timestamp__: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year).
-    * __Fetch Table__: Choose the table from which incidents will be fetched.
-    * __Severity of events to fetch (Firewall)__: Select from all, Critical, High, Medium,Low, Informational, Unused.
-    * __Subtype of events to fetch (Firewall)__: Select from all, attack, url, virus, spyware, vulnerability, file, scan, flood, packet, resource, data, url-content, wildfire, extpcap, wildfire-virus, http-hdr-insert, http-hdr, email-hdr, spyware-dns, spyware-wildfire-dns, spyware-wpc-dns, spyware-custom-dns, spyware-cloud-dns, spyware-raven, spyware-wildfire-raven, spyware-wpc-raven, wpc-virus,sctp
-    * __Fetch Fields__: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id". Enter "*" for all possible fields.
-    * __Fetch Filter__: Specify the filter that should be used to fetch incidents. Can not be used in combination with the Subtype and Severity parameters.
-    * __Incidents fetched per query__: How many incidents will be fetched per query. Caution: high number could create overload. Default is 10.
-    * __proxy__: Use system proxy settings.
-    * __insecure__: Trust any certificate (not secure).
-4. Click __Test__ to validate the URLs, token, and connection.
+8. Click **Add instance** to create and configure a new integration instance.
+    * **Name**: a textual name for the integration instance.
+    * **Authentication Token**: Retrieved in the authentication process in Step 4.
+    * **Registration ID**: Retrieved in the authentication process in Step 4.
+    * **Encryption Key**: Retrieved in the authentication process in Step 4.
+    * **Fetch incidents**: Whether to fetch incidents or not.
+    * **first_fetch_timestamp**: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year).
+    * **Fetch Table**: Choose the table from which incidents will be fetched.
+    * **Severity of events to fetch (Firewall)**: Select from all, Critical, High, Medium,Low, Informational, Unused.
+    * **Subtype of events to fetch (Firewall)**: Select from all, attack, url, virus, spyware, vulnerability, file, scan, flood, packet, resource, data, url-content, wildfire, extpcap, wildfire-virus, http-hdr-insert, http-hdr, email-hdr, spyware-dns, spyware-wildfire-dns, spyware-wpc-dns, spyware-custom-dns, spyware-cloud-dns, spyware-raven, spyware-wildfire-raven, spyware-wpc-raven, wpc-virus,sctp
+    * **Fetch Fields**: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id". Enter "*" for all possible fields.
+    * **Fetch Filter**: Specify the filter that should be used to fetch incidents. Can not be used in combination with the Subtype and Severity parameters.
+    * **Incidents fetched per query**: How many incidents will be fetched per query. Caution: high number could create overload. Default is 10.
+    * **proxy**: Use system proxy settings.
+    * **insecure**: Trust any certificate (not secure).
+4. Click **Test** to validate the URLs, token, and connection.
 
 In order for the integration to work, the following URLs need to be accessible:
 
- - For authentication: 
-   - `oproxy.demisto.ninja`
-   - `api.paloaltonetworks.com `
- - For API requests, one of the following:
-   - US: `api.us.cdl.paloaltonetworks.com`
-   - EU: `api.nl.cdl.paloaltonetworks.com`
+* For authentication: 
+  * `oproxy.demisto.ninja`
+  * `api.paloaltonetworks.com `
+* For API requests, one of the following:
+  * US: `api.us.cdl.paloaltonetworks.com`
+  * EU: `api.nl.cdl.paloaltonetworks.com`
 
 ## Fetched Incidents Data
+
 The integration can fetch incidents from the following tables:
-- firewall.auth
-- firewall.decryption
-- firewall.extpcap
-- firewall.file_data
-- firewall.globalprotect
-- firewall.hipmatch
-- firewall.iptag
-- firewall.threat
-- firewall.traffic
-- firewall.url
-- firewall.userid
-- log.system
-- log.config
+
+* firewall.auth
+* firewall.decryption
+* firewall.extpcap
+* firewall.file_data
+* firewall.globalprotect
+* firewall.hipmatch
+* firewall.iptag
+* firewall.threat
+* firewall.traffic
+* firewall.url
+* firewall.userid
+* log.system
+* log.config
 
 
 ## CDL Server - API Calls Caching Mechanism
+
 The integration implements a caching mechanism for repetitive error when requesting access token from CDL server.
 When the integration reaches the limit of allowed calls, the following error will be shown:
 
@@ -84,10 +89,12 @@ If you wish to try authenticating again, run the 'cdl-reset-authentication-timeo
 
 
 ---
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. cdl-query-logs
 2. cdl-get-critical-threat-logs
 3. cdl-get-social-applications
@@ -104,6 +111,7 @@ Runs a query on the Cortex logging service.
 ##### Base Command
 
 `cdl-query-logs`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -141,9 +149,11 @@ Runs a query on the Cortex logging service.
 
 
 ##### Command Example
+
 ```!cdl-query-logs query="SELECT * FROM `firewall.traffic` limit 1"```
 
 ##### Context Example
+
 ```
 {
   "CDL.Logging": [
@@ -175,7 +185,9 @@ Runs a query on the Cortex logging service.
 ```
 
 ##### Human Readable Output
+
 ### Logs traffic table
+
 |Action|App|AppCategory|CharacteristicOfApp|DestinationIP|DestinationLocation|LogSourceName|NatDestination|NatSource|Protocol|RuleMatched|SourceIP|SourceLocation|TimeGenerated|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | allow | smtp | collaboration | 3,4,5,6,7,8 | 206.116.22.23 | CA | gw | 0.0.0.0 | 0.0.0.0 | tcp | taplog | 10.154.1.20 | 10.0.0.0-10.255.255.255 | 2020-03-18T19:36:37 |
@@ -188,6 +200,7 @@ Runs a query on the Cortex logging service, according to preset queries.
 ##### Base Command
 
 `cdl-get-critical-threat-logs`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -255,7 +268,9 @@ Runs a query on the Cortex logging service, according to preset queries.
 
 
 ##### Command Example
+
 ```!cdl-get-critical-threat-logs limit="1" time_range="10 days"```
+
 ##### Context Example
 
 ```
@@ -312,19 +327,24 @@ Runs a query on the Cortex logging service, according to preset queries.
   ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Logs threat table
+
 |Action|App|AppCategory|CharacteristicOfApp|DestinationIP|DestinationLocation|DestinationPort|Direction|FileName|Flags|FromZone|IsNat|IsPhishing|IsURLDenied|LogSourceID|LogSourceName|LogTime|NatDestination|NatDestinationPort|NatSource|NatSourcePort|PcapID|Protocol|RiskOfApp|RuleMatched|SessionID|SourceIP|SourceLocation|SourcePort|SubcategoryOfApp|Subtype|ThreatCategory|ThreatID|TimeGenerated|ToZone|URLCategory|URLDomain|Users|VendorSeverity|Vsys|VsysID|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | reset-both | imap | collaboration | 3,4,5,8 | 84.74.104.27 | CH | 143 | server to client | iZJvnxT27.PpT | 8192 | TapZone | false | false | false | 007251000070976 | gw | 2020-03-18T15:46:37 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 0 | tcp | 4 | taplog | 103986 | 10.154.10.88 | 10.0.0.0-10.255.255.255 | 14484 | email | vulnerability | overflow | 30663 | 2020-03-18T15:46:10 | TapZone | any |  | 10.154.10.88 | Critical | vsys1 | 1 |
 
 ### 3. cdl-get-social-applications
+
 ___
 Runs a query on the Cortex logging service, according to preset queries.
 
 ##### Base Command
 
 `cdl-get-social-applications`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -382,8 +402,11 @@ Runs a query on the Cortex logging service, according to preset queries.
 
 
 ##### Command Example
+
 ```!cdl-get-social-applications limit="2" time_range="10 days"```
+
 ##### Context Example
+
 ```
 {
   "CDL.Logging.Traffic": [
@@ -473,9 +496,13 @@ Runs a query on the Cortex logging service, according to preset queries.
   ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Logs traffic table
+
 ### Logs traffic table
+
 |Action|App|AppCategory|CharacteristicOfApp|DestinationIP|DestinationLocation|DestinationPort|LogSourceID|LogSourceName|LogTime|NatDestination|NatSource|Packets|Protocol|RiskOfApp|RuleMatched|SessionEndReason|SessionID|SessionStartIP|SourceIP|SourceLocation|SourcePort|SubcategoryOfApp|Subtype|TimeGenerated|ToZone|TotalBytes|Tunnel|TunneledApp|URLCategory|Users|Vsys|VsysID|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | allow | facebook-base | collaboration | 3,4,5,6,8 | 131.130.159.25 | AT | 80 | 007251000070976 | gw | 2020-03-18T15:54:40 | 0.0.0.0 | 0.0.0.0 | 7 | tcp | 4 | taplog | n-a | 108356 | 2020-03-18T15:54:14 | 10.154.230.43 | 10.0.0.0-10.255.255.255 | 37252 | social-networking | start | 2020-03-18T15:54:16 | TapZone | 946 | N/A | tunneled-app | social-networking | 10.154.230.43 | vsys1 | 1 |
@@ -489,6 +516,7 @@ Runs a query on the threat table with the query 'SELECT * FROM `firewall.threat`
 ##### Base Command
 
 `cdl-search-by-file-hash`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -557,8 +585,11 @@ Runs a query on the threat table with the query 'SELECT * FROM `firewall.threat`
 
 
 ##### Command Example
+
 ```!cdl-search-by-file-hash SHA256="cbdf1f3cccd949e6e96c425b3d7ccc463b956f002f694472e4d24a12ff2cea4d" limit=1 time_range="10 days"```
+
 ##### Context Example
+
 ```
 {
   "CDL.Logging.Threat": [
@@ -616,19 +647,25 @@ Runs a query on the threat table with the query 'SELECT * FROM `firewall.threat`
   ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Logs threat table
+
 |Action|App|AppCategory|CharacteristicOfApp|DestinationIP|DestinationLocation|DestinationPort|Direction|FileName|FileSHA256|Flags|FromZone|IsNat|IsPhishing|IsURLDenied|LogSourceID|LogSourceName|LogTime|NatDestination|NatDestinationPort|NatSource|NatSourcePort|PcapID|Protocol|RiskOfApp|RuleMatched|SessionID|SourceIP|SourceLocation|SourcePort|SubcategoryOfApp|Subtype|ThreatCategory|ThreatID|TimeGenerated|ToZone|URLCategory|URLDomain|Users|VendorSeverity|Vsys|VsysID|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | block | smtp | collaboration | 3,4,5,6,7,8 | 67.53.137.201 | US | 25 | client to server | o93yr.ECr | cbdf1f3cccd949e6e96c425b3d7ccc463b956f002f694472e4d24a12ff2cea4d | 8192 | TapZone | false | false | false | 007251000070976 | gw | 2020-03-25T15:42:13 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 0 | tcp | 5 | taplog | 784600 | 10.154.246.167 | 10.0.0.0-10.255.255.255 | 51819 | email | wildfire |  | 52033 | 2020-03-25T15:42:08 | TapZone |  |  | 10.154.246.167 | Informational | vsys1 | 1 |
+
 ### 5. cdl-query-traffic-logs
 
 ___
 
 Searches the Cortex firewall.traffic table. Traffic logs contain entries for the end of each network session
+
 ##### Base Command
 
 `cdl-query-traffic-logs`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -699,10 +736,13 @@ Searches the Cortex firewall.traffic table. Traffic logs contain entries for the
 
 
 ##### Command Example
+
 ```!cdl-query-traffic-logs action="allow" fields="vendor_name,log_source,rule_matched,dest_location,log_time" time_range="10 days" limit="5"```
 
 ```!cdl-query-traffic-logs query="log_source_id = '{firewall_target}'" fields=all limit=5 start_time="2018-07-13 00:00:00"```
+
 ##### Context Example
+
 ```
 {
     "CDL.Logging.Traffic": [
@@ -741,6 +781,7 @@ Searches the Cortex firewall.traffic table. Traffic logs contain entries for the
 ```
 
 ##### Human Readable Output
+
 |dest_location|log_source|log_time|rule_matched|vendor_name|
 |---|---|---|---|---|
 | TH |  firewall | 1584809418000000 | taplog | Palo Alto Networks |
@@ -758,6 +799,7 @@ Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS
 ##### Base Command
 
 `cdl-query-threat-logs`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -841,10 +883,12 @@ Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS
 
 
 ##### Command Examples
+
 ```!cdl-query-threat-logs query="is_packet_capture = true AND severity = \"Critical\"" fields=pcap limit=10```
 ```!cdl-query-threat-logs action="allow" fields="vendor_name,log_source,rule_matched,dest_location,log_time" time_range="10 days" limit="1"```
 
 ##### Context Example
+
 ```
 {
     "CDL.Logging.Threat": [
@@ -896,7 +940,9 @@ Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS
 ```
 
 ##### Human Readable Output
+
 ### Logs threat table
+
 |dest_location|log_source|log_time|rule_matched|vendor_name|
 |---|---|---|---|---|
 | AE | firewall | 1582390223000000 | taplog | Palo Alto Networks |
@@ -911,6 +957,7 @@ Searches the URL table
 #### Base Command
 
 `cdl-query-url-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -933,7 +980,7 @@ Searches the URL table
 | page_size | Number of entries per page. Defaults to 50 (in case only page was provided). | Optional | 
 | ip | IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. | Optional | 
 | port | Port utilized by the session. Enter a port or array of ports to search. | Optional | 
-| url | This argument allows to perform a LIKE search of the specified values on the Url and Uri fields An example value will be paloaltonetworks.com,demisto which will provide results like https://apps.paloaltonetworks.com and https://demisto.com | Optional | 
+| url | This argument allows to perform a LIKE search of the specified values on the Url and Uri fields An example value will be paloaltonetworks.com,demisto which will provide results like <https://apps.paloaltonetworks.com> and <https://demisto.com> | Optional | 
 
 #### Context Output
 
@@ -985,9 +1032,11 @@ header field. |
 
 
 #### Command Example
+
 ```!cdl-query-url-logs action="alert" ip=1.1.1.1 limit="1"```
 
 #### Context Example
+
 ```
 {
     "CDL": {
@@ -1042,6 +1091,7 @@ header field. |
 #### Human Readable Output
 
 >### Logs url table
+>
 >|Action|Application|Destination Address|RuleMatched|Source Address|TimeGenerated|
 >|---|---|---|---|---|---|
 >| alert | web-browsing | 1.1.1.1 | taplog | 2.2.2.2 | 2019-11-04T02:00:04 |
@@ -1189,9 +1239,11 @@ its standard port. |
 
 
 #### Command Example
+
 ```!cdl-query-file-data source_ip="10.10.10.101" time_range="6 months" limit="1"```
 
 #### Context Example
+
 ```
 {
     "CDL": {
@@ -1291,12 +1343,14 @@ its standard port. |
 #### Human Readable Output
 
 >### Logs file_data table
+>
 >|Action|Application|Destination Address|FileID|FileName|FileType|RuleMatched|Source Address|TimeGenerated|
 >|---|---|---|---|---|---|---|---|---|
 >| alert | web-browsing | 2.2.2.2 | 52270 | ANindV94kHC673w9zWXj8TY | Google Chrome Extension File | INTERNET | 10.10.10.101 | 2020-04-21T18:47:12 |
 
 
 ### cdl-reset-authentication-timeout
+
 ***
 Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
 
@@ -1306,14 +1360,17 @@ Use this command in case your authentication calls fail due to internal call-lim
 `cdl-reset-authentication-timeout`
 
 #### Command Example
+
 ```!cdl-reset-authentication-timeout```
 
 #### Human Readable Output
+
 ```Caching mechanism failure time counters have been successfully reset.```
 
 ## Additional Information
 
 ---
+
 * In the documented CDL v2, You must now specify the customer's instance ID when you identify the log type that you want to query
 against. That is, log types must be fully qualified and the instance ID is a part of the fully qualified name:
 `<instanceID>.firewall.traffic`

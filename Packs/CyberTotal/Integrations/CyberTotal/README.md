@@ -1,5 +1,6 @@
 CyberTotal is a cloud-based threat intelligence service developed by CyCraft.
 This integration was integrated and tested with version 1.6.4 of CyberTotal
+
 ## Configure CyberTotal in Cortex
 
 
@@ -16,9 +17,12 @@ This integration was integrated and tested with version 1.6.4 of CyberTotal
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Return IP information and reputation
 
@@ -26,6 +30,7 @@ Return IP information and reputation
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -61,9 +66,11 @@ Return IP information and reputation
 
 
 #### Command Example
+
 ```!ip ip=1.1.1.1```
 
 #### Context Example
+
 ```
 {
     "CyberTotal": {
@@ -98,12 +105,14 @@ Return IP information and reputation
 #### Human Readable Output
 
 >### IP List
+>
 >|confidence|detection_engines|detection_ratio|message|permalink|positive_detections|resource|scan_date|severity|task_id|threat|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 3 | 87 | 4/87 | search success | https://cybertotal.cycraft.com/app/intelligence/5a2601d575ea44058efeb1aba995dc8d | 4 | 1.1.1.1 | 2020-07-28T14:11:19+00:00 | 9 | 5a2601d575ea44058efeb1aba995dc8d | High |
+>| 3 | 87 | 4/87 | search success | <https://cybertotal.cycraft.com/app/intelligence/5a2601d575ea44058efeb1aba995dc8d> | 4 | 1.1.1.1 | 2020-07-28T14:11:19+00:00 | 9 | 5a2601d575ea44058efeb1aba995dc8d | High |
 
 
 ### file
+
 ***
 Return file's information and reputation
 
@@ -111,6 +120,7 @@ Return file's information and reputation
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -153,9 +163,11 @@ Return file's information and reputation
 
 
 #### Command Example
+
 ```!file file=b5e8793b216cf2e63c47af4ac424ac9a77601405c131c32a2eaa22812306123e```
 
 #### Context Example
+
 ```
 {
     "CyberTotal": {
@@ -203,12 +215,14 @@ Return file's information and reputation
 #### Human Readable Output
 
 >### File List
+>
 >|confidence|detection_engines|detection_ratio|extension|md5|message|name|permalink|positive_detections|resource|scan_date|severity|sha1|sha256|size|task_id|threat|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 10 | 70 | 58/70 | exe | 19063b2a1b1a7930aef31678903b7088 | search success | 19063b2a1b1a7930aef31678903b7088.virus | https://cybertotal.cycraft.com/app/intelligence/7a37a8d7a32847c9b3eee5a4431c9ab5 | 58 | b5e8793b216cf2e63c47af4ac424ac9a77601405c131c32a2eaa22812306123e | 2020-07-09T15:11:56+00:00 | 10 | c771b33f4f3867f95721d0eceed5c4040c78d3ee | b5e8793b216cf2e63c47af4ac424ac9a77601405c131c32a2eaa22812306123e | 28672 | 7a37a8d7a32847c9b3eee5a4431c9ab5 | High |
+>| 10 | 70 | 58/70 | exe | 19063b2a1b1a7930aef31678903b7088 | search success | 19063b2a1b1a7930aef31678903b7088.virus | <https://cybertotal.cycraft.com/app/intelligence/7a37a8d7a32847c9b3eee5a4431c9ab5> | 58 | b5e8793b216cf2e63c47af4ac424ac9a77601405c131c32a2eaa22812306123e | 2020-07-09T15:11:56+00:00 | 10 | c771b33f4f3867f95721d0eceed5c4040c78d3ee | b5e8793b216cf2e63c47af4ac424ac9a77601405c131c32a2eaa22812306123e | 28672 | 7a37a8d7a32847c9b3eee5a4431c9ab5 | High |
 
 
 ### domain
+
 ***
 Return domain information and reputation
 
@@ -216,6 +230,7 @@ Return domain information and reputation
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -250,9 +265,11 @@ Return domain information and reputation
 
 
 #### Command Example
+
 ```!domain domain=abc.com```
 
 #### Context Example
+
 ```
 {
     "CyberTotal": {
@@ -286,12 +303,14 @@ Return domain information and reputation
 #### Human Readable Output
 
 >### Domain List
+>
 >|confidence|detection_engines|detection_ratio|message|permalink|positive_detections|resource|scan_date|severity|task_id|threat|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 7 | 79 | 0/79 | search success | https://cybertotal.cycraft.com/app/intelligence/79ca1bd740564c36a7a4a78df5dc719d | 0 | abc.com | 2020-06-18T03:19:48+00:00 | 6 | 79ca1bd740564c36a7a4a78df5dc719d | Medium |
+>| 7 | 79 | 0/79 | search success | <https://cybertotal.cycraft.com/app/intelligence/79ca1bd740564c36a7a4a78df5dc719d> | 0 | abc.com | 2020-06-18T03:19:48+00:00 | 6 | 79ca1bd740564c36a7a4a78df5dc719d | Medium |
 
 
 ### url
+
 ***
 Return domain information and reputation
 
@@ -299,6 +318,7 @@ Return domain information and reputation
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -334,9 +354,11 @@ Return domain information and reputation
 
 
 #### Command Example
+
 ```!url url=http://abc.com```
 
 #### Context Example
+
 ```
 {
     "CyberTotal": {
@@ -370,12 +392,14 @@ Return domain information and reputation
 #### Human Readable Output
 
 >### URL List
+>
 >|confidence|detection_engines|detection_ratio|message|permalink|positive_detections|resource|scan_date|severity|task_id|threat|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 1 | 79 | 0/79 | search success | https://cybertotal.cycraft.com/app/intelligence/61bbc65f5c034930b8a659c39e745d96 | 0 | http://abc.com | 2020-06-22T07:24:16+00:00 | 5 | 61bbc65f5c034930b8a659c39e745d96 | Medium |
+>| 1 | 79 | 0/79 | search success | <https://cybertotal.cycraft.com/app/intelligence/61bbc65f5c034930b8a659c39e745d96> | 0 | <http://abc.com> | 2020-06-22T07:24:16+00:00 | 5 | 61bbc65f5c034930b8a659c39e745d96 | Medium |
 
 
 ### cybertotal-ip-whois
+
 ***
 Return ip whois information
 
@@ -383,6 +407,7 @@ Return ip whois information
 #### Base Command
 
 `cybertotal-ip-whois`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -447,9 +472,11 @@ Return ip whois information
 
 
 #### Command Example
+
 ```!cybertotal-ip-whois ip=1.1.1.1```
 
 #### Context Example
+
 ```
 {
     "CyberTotal": {
@@ -565,12 +592,14 @@ Return ip whois information
 #### Human Readable Output
 
 >### Results
+>
 >|abuse|admin|auditCreatedAt|auditUpdatedAt|compositeParseCode|contactCountries|contactEmails|contactNames|contactOrganizations|contacts|createdAt|domain|domainAvailable|domainMd5|domainUnicode|expired|id|message|nameservers|netRange|noRecord|permalink|registrarName|registrarParseCode|registrarUpdatedAt|resource|scan_date|status|task_id|technical|tld|updatedAt|whoisID|whoisServer|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| whoisContactID: 0<br/>email: xxx@xxx.net<br/>name: IRT-APNICRANDNET-AU<br/>street: po box 3646<br/>state: qld<br/>zip: 4101<br/>country: australia<br/>address: po box 3646<br/>4101<br/>qld<br/>australia<br/><br/>id: 0 | whoisContactID: 0<br/>email: research@apnic.net<br/>name: APNIC RESEARCH<br/>street: po box 3646<br/>state: qld<br/>zip: 4101<br/>country: australia<br/>phone: +61-7-3858-3188<br/>fax: +61-7-3858-3199<br/>address: po box 3646<br/>4101<br/>qld<br/>australia<br/><br/>id: 0 | 2020-07-18T02:07:02+00:00 | 2020-07-18T02:07:02+00:00 | 10528 | australia | research@apnic.net | APNIC RESEARCH |  | {'whoisContactID': 0, 'email': 'research@apnic.net', 'name': 'APNIC RESEARCH', 'street': 'po box 3646', 'state': 'qld', 'zip': '4101', 'country': 'australia', 'phone': '+61-7-3858-3188', 'fax': '+61-7-3858-3199', 'address': 'po box 3646\n4101\nqld\naustralia\n', 'id': 0} | 2020-07-18T02:07:02+00:00 | 1.1.1.0 | false | ede514d996ecdf82a0abf5356ff6a13c | 1.1.1.0 | false | 6690074356934458403 | search success |  | status: INACTIVE<br/>whoisNetRangeID: 0<br/>netRange: 1.1.1.0 - 1.1.1.255<br/>netName: APNIC-LABS<br/>ipStart: 1.1.1.0<br/>ipEnd: 1.1.1.255<br/>numericEnd: 16843263<br/>numericStart: 16843008 | false | ["https://cybertotal.cycraft.com/app/intelligence/5a2601d575ea44058efeb1aba995dc8d"] | APNIC | 10528 | 2020-07-15T13:10:57+00:00 | ["1.1.1.1"] | ["2020-07-28 14:11:19"] | ACTIVE | 5a2601d575ea44058efeb1aba995dc8d | whoisContactID: 0<br/>email: research@apnic.net<br/>name: APNIC RESEARCH<br/>street: po box 3646<br/>state: qld<br/>zip: 4101<br/>country: australia<br/>phone: +61-7-3858-3188<br/>fax: +61-7-3858-3199<br/>address: po box 3646<br/>4101<br/>qld<br/>australia<br/><br/>id: 0 | ipv4 | 2020-07-18T02:07:02+00:00 | 6690074356934458403 | rdap.apnic.net |
+>| whoisContactID: 0<br/>email: <xxx@xxx.net><br/>name: IRT-APNICRANDNET-AU<br/>street: po box 3646<br/>state: qld<br/>zip: 4101<br/>country: australia<br/>address: po box 3646<br/>4101<br/>qld<br/>australia<br/><br/>id: 0 | whoisContactID: 0<br/>email: <research@apnic.net><br/>name: APNIC RESEARCH<br/>street: po box 3646<br/>state: qld<br/>zip: 4101<br/>country: australia<br/>phone: +61-7-3858-3188<br/>fax: +61-7-3858-3199<br/>address: po box 3646<br/>4101<br/>qld<br/>australia<br/><br/>id: 0 | 2020-07-18T02:07:02+00:00 | 2020-07-18T02:07:02+00:00 | 10528 | australia | <research@apnic.net> | APNIC RESEARCH |  | {'whoisContactID': 0, 'email': '<research@apnic.net>', 'name': 'APNIC RESEARCH', 'street': 'po box 3646', 'state': 'qld', 'zip': '4101', 'country': 'australia', 'phone': '+61-7-3858-3188', 'fax': '+61-7-3858-3199', 'address': 'po box 3646\n4101\nqld\naustralia\n', 'id': 0} | 2020-07-18T02:07:02+00:00 | 1.1.1.0 | false | ede514d996ecdf82a0abf5356ff6a13c | 1.1.1.0 | false | 6690074356934458403 | search success |  | status: INACTIVE<br/>whoisNetRangeID: 0<br/>netRange: 1.1.1.0 - 1.1.1.255<br/>netName: APNIC-LABS<br/>ipStart: 1.1.1.0<br/>ipEnd: 1.1.1.255<br/>numericEnd: 16843263<br/>numericStart: 16843008 | false | ["https://cybertotal.cycraft.com/app/intelligence/5a2601d575ea44058efeb1aba995dc8d"] | APNIC | 10528 | 2020-07-15T13:10:57+00:00 | ["1.1.1.1"] | ["2020-07-28 14:11:19"] | ACTIVE | 5a2601d575ea44058efeb1aba995dc8d | whoisContactID: 0<br/>email: <research@apnic.net><br/>name: APNIC RESEARCH<br/>street: po box 3646<br/>state: qld<br/>zip: 4101<br/>country: australia<br/>phone: +61-7-3858-3188<br/>fax: +61-7-3858-3199<br/>address: po box 3646<br/>4101<br/>qld<br/>australia<br/><br/>id: 0 | ipv4 | 2020-07-18T02:07:02+00:00 | 6690074356934458403 | rdap.apnic.net |
 
 
 ### cybertotal-url-whois
+
 ***
 Return url whois information
 
@@ -578,6 +607,7 @@ Return url whois information
 #### Base Command
 
 `cybertotal-url-whois`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -642,9 +672,11 @@ Return url whois information
 
 
 #### Command Example
+
 ```!cybertotal-url-whois url=http://abc.com```
 
 #### Context Example
+
 ```
 {
     "CyberTotal": {
@@ -770,12 +802,14 @@ Return url whois information
 #### Human Readable Output
 
 >### Results
+>
 >|admin|auditCreatedAt|auditUpdatedAt|compositeParseCode|contactCountries|contactEmails|contactNames|contactOrganizations|contacts|createdAt|domain|domainAvailable|domainMd5|domainStatus|domainUnicode|expired|id|message|nameservers|noRecord|permalink|registrant|registrarCreatedAt|registrarEmail|registrarExpiresAt|registrarIanaID|registrarName|registrarParseCode|registrarPhone|registrarUpdatedAt|registryParseCode|resource|scan_date|status|task_id|technical|tld|updatedAt|whoisID|whoisServer|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| whoisContactID: 0<br/>email: xxx@xxx.net<br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | 2020-04-09T07:17:45+00:00 | 2020-04-09T07:17:45+00:00 | 3579 | US | corp.dns.domains@disney.com | ABC, Inc.; Domain Administrator | ABC, Inc. | {'whoisContactID': 0, 'email': 'xxx@xxx.net', 'name': 'ABC, Inc.; Domain Administrator', 'organization': 'ABC, Inc.', 'city': 'New York', 'state': 'NY', 'zip': '10023-6298', 'country': 'US', 'phone': '18182384694', 'fax': '18182384694', 'address': 'New York\n10023-6298\nNY\nUS\n', 'id': 0} | 2020-04-09T07:17:45+00:00 | abc.com | false | 929ba26f492f86d4a9d66a080849865a | clientTransferProhibited serverDeleteProhibited serverTransferProhibited serverUpdateProhibited | abc.com | false | 6653913764397840884 | search success | ns-1368.awsdns-43.org,<br/>ns-1869.awsdns-41.co.uk,<br/>ns-318.awsdns-39.com,<br/>ns-736.awsdns-28.net | false | ["https://cybertotal.cycraft.com/app/intelligence/61bbc65f5c034930b8a659c39e745d96"] | whoisContactID: 0<br/>email: xxx@xxx.net<br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | 1996-05-22T04:00:00+00:00 | domainabuse@cscglobal.com | 2021-05-23T04:00:00+00:00 | 299 | CSC Corporate Domains, Inc. | 3579 | +1.8887802723 | 2020-04-08T07:06:06+00:00 | 251 | ["http://abc.com"] | ["2020-06-22 07:24:16"] | ACTIVE | 61bbc65f5c034930b8a659c39e745d96 | whoisContactID: 0<br/>email: xxx@xxx.net<br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | com | 2020-04-09T07:17:45+00:00 | 6653913764397840884 | whois.corporatedomains.com |
+>| whoisContactID: 0<br/>email: <xxx@xxx.net><br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | 2020-04-09T07:17:45+00:00 | 2020-04-09T07:17:45+00:00 | 3579 | US | <corp.dns.domains@disney.com> | ABC, Inc.; Domain Administrator | ABC, Inc. | {'whoisContactID': 0, 'email': '<xxx@xxx.net>', 'name': 'ABC, Inc.; Domain Administrator', 'organization': 'ABC, Inc.', 'city': 'New York', 'state': 'NY', 'zip': '10023-6298', 'country': 'US', 'phone': '18182384694', 'fax': '18182384694', 'address': 'New York\n10023-6298\nNY\nUS\n', 'id': 0} | 2020-04-09T07:17:45+00:00 | abc.com | false | 929ba26f492f86d4a9d66a080849865a | clientTransferProhibited serverDeleteProhibited serverTransferProhibited serverUpdateProhibited | abc.com | false | 6653913764397840884 | search success | ns-1368.awsdns-43.org,<br/>ns-1869.awsdns-41.co.uk,<br/>ns-318.awsdns-39.com,<br/>ns-736.awsdns-28.net | false | ["https://cybertotal.cycraft.com/app/intelligence/61bbc65f5c034930b8a659c39e745d96"] | whoisContactID: 0<br/>email: <xxx@xxx.net><br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | 1996-05-22T04:00:00+00:00 | <domainabuse@cscglobal.com> | 2021-05-23T04:00:00+00:00 | 299 | CSC Corporate Domains, Inc. | 3579 | +1.8887802723 | 2020-04-08T07:06:06+00:00 | 251 | ["http://abc.com"] | ["2020-06-22 07:24:16"] | ACTIVE | 61bbc65f5c034930b8a659c39e745d96 | whoisContactID: 0<br/>email: <xxx@xxx.net><br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | com | 2020-04-09T07:17:45+00:00 | 6653913764397840884 | whois.corporatedomains.com |
 
 
 ### cybertotal-domain-whois
+
 ***
 Return domain whois information
 
@@ -783,6 +817,7 @@ Return domain whois information
 #### Base Command
 
 `cybertotal-domain-whois`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -847,9 +882,11 @@ Return domain whois information
 
 
 #### Command Example
+
 ```!cybertotal-domain-whois domain=abc.com```
 
 #### Context Example
+
 ```
 {
     "CyberTotal": {
@@ -975,6 +1012,7 @@ Return domain whois information
 #### Human Readable Output
 
 >### Results
+>
 >|admin|auditCreatedAt|auditUpdatedAt|compositeParseCode|contactCountries|contactEmails|contactNames|contactOrganizations|contacts|createdAt|domain|domainAvailable|domainMd5|domainStatus|domainUnicode|expired|id|message|nameservers|noRecord|permalink|registrant|registrarCreatedAt|registrarEmail|registrarExpiresAt|registrarIanaID|registrarName|registrarParseCode|registrarPhone|registrarUpdatedAt|registryParseCode|resource|scan_date|status|task_id|technical|tld|updatedAt|whoisID|whoisServer|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| whoisContactID: 0<br/>email: xxx@xxx.net<br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | 2020-04-09T07:17:45+00:00 | 2020-04-09T07:17:45+00:00 | 3579 | US | corp.dns.domains@disney.com | ABC, Inc.; Domain Administrator | ABC, Inc. | {'whoisContactID': 0, 'email': 'xxx@xxx.net', 'name': 'ABC, Inc.; Domain Administrator', 'organization': 'ABC, Inc.', 'city': 'New York', 'state': 'NY', 'zip': '10023-6298', 'country': 'US', 'phone': '18182384694', 'fax': '18182384694', 'address': 'New York\n10023-6298\nNY\nUS\n', 'id': 0} | 2020-04-09T07:17:45+00:00 | abc.com | false | 929ba26f492f86d4a9d66a080849865a | clientTransferProhibited serverDeleteProhibited serverTransferProhibited serverUpdateProhibited | abc.com | false | 6653913764397840884 | search success | ns-1368.awsdns-43.org,<br/>ns-1869.awsdns-41.co.uk,<br/>ns-318.awsdns-39.com,<br/>ns-736.awsdns-28.net | false | ["https://cybertotal.cycraft.com/app/intelligence/79ca1bd740564c36a7a4a78df5dc719d"] | whoisContactID: 0<br/>email: xxx@xxx.net<br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | 1996-05-22T04:00:00+00:00 | domainabuse@cscglobal.com | 2021-05-23T04:00:00+00:00 | 299 | CSC Corporate Domains, Inc. | 3579 | +1.8887802723 | 2020-04-08T07:06:06+00:00 | 251 | ["abc.com"] | ["2020-06-18 03:19:48"] | ACTIVE | 79ca1bd740564c36a7a4a78df5dc719d | whoisContactID: 0<br/>email: xxx@xxx.net<br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | com | 2020-04-09T07:17:45+00:00 | 6653913764397840884 | whois.corporatedomains.com |
+>| whoisContactID: 0<br/>email: <xxx@xxx.net><br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | 2020-04-09T07:17:45+00:00 | 2020-04-09T07:17:45+00:00 | 3579 | US | <corp.dns.domains@disney.com> | ABC, Inc.; Domain Administrator | ABC, Inc. | {'whoisContactID': 0, 'email': '<xxx@xxx.net>', 'name': 'ABC, Inc.; Domain Administrator', 'organization': 'ABC, Inc.', 'city': 'New York', 'state': 'NY', 'zip': '10023-6298', 'country': 'US', 'phone': '18182384694', 'fax': '18182384694', 'address': 'New York\n10023-6298\nNY\nUS\n', 'id': 0} | 2020-04-09T07:17:45+00:00 | abc.com | false | 929ba26f492f86d4a9d66a080849865a | clientTransferProhibited serverDeleteProhibited serverTransferProhibited serverUpdateProhibited | abc.com | false | 6653913764397840884 | search success | ns-1368.awsdns-43.org,<br/>ns-1869.awsdns-41.co.uk,<br/>ns-318.awsdns-39.com,<br/>ns-736.awsdns-28.net | false | ["https://cybertotal.cycraft.com/app/intelligence/79ca1bd740564c36a7a4a78df5dc719d"] | whoisContactID: 0<br/>email: <xxx@xxx.net><br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | 1996-05-22T04:00:00+00:00 | <domainabuse@cscglobal.com> | 2021-05-23T04:00:00+00:00 | 299 | CSC Corporate Domains, Inc. | 3579 | +1.8887802723 | 2020-04-08T07:06:06+00:00 | 251 | ["abc.com"] | ["2020-06-18 03:19:48"] | ACTIVE | 79ca1bd740564c36a7a4a78df5dc719d | whoisContactID: 0<br/>email: <xxx@xxx.net><br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | com | 2020-04-09T07:17:45+00:00 | 6653913764397840884 | whois.corporatedomains.com |

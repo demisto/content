@@ -1,7 +1,9 @@
 The AWS content enables you to integrate with AWS EC2. AWS EC2 is a web service from which you rent virtual computers on which to run your own computer applications. This integration enables you to access information about your AWS EC2 virtual servers and create new AWS EC2 virtual servers. You can launch virtual servers, configure security and networking, and manage storage.
 
 ## What does this pack do
+
 This integration enables you to:
+
 - Obtain descriptions about your AWS EC2 instances, images, regions, addresses, snapshots, etc.
 - Allocate an elastic IP address and associate it with an instance or a network interface.
 - Create a snapshot of an EBS volume and stores it in Amazon S3

@@ -2,6 +2,7 @@ Sends an email informing the user of an SLA breach. The email is sent to the use
 In order to run successfully, the script should be configured to trigger on a SLA breach, through field edit mode.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,9 +12,11 @@ In order to run successfully, the script should be configured to trigger on a SL
 
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

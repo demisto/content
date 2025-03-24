@@ -13,7 +13,7 @@ Dynamically retrieve and allow IPs Prisma Access uses to egress traffic to the i
 | location | Location | False |
 | feedReputation | Indicator Reputation | False |
 | feedReliability | Source Reliability | True |
-| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at <https://us-cert.cisa.gov/tlp> | False |
 | feedExpirationPolicy |  | False |
 | feedExpirationInterval |  | False |
 | feedFetchInterval | Feed Fetch Interval | False |
@@ -22,9 +22,12 @@ Dynamically retrieve and allow IPs Prisma Access uses to egress traffic to the i
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### prisma-access-get-indicators
+
 ***
 Gets indicators from the feed.
 
@@ -32,6 +35,7 @@ Gets indicators from the feed.
 ##### Base Command
 
 `prisma-access-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -48,4 +52,5 @@ Gets indicators from the feed.
 
 
 ##### Command Example
+
 ```!prisma-access-get-indicators limit=300```

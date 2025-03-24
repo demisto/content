@@ -20,7 +20,9 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -28,6 +30,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 ### joe-is-online
+
 ***
 Check if the Joe Sandbox analysis server is online or in maintenance mode.
 
@@ -35,6 +38,7 @@ Check if the Joe Sandbox analysis server is online or in maintenance mode.
 #### Base Command
 
 `joe-is-online`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -48,8 +52,11 @@ Check if the Joe Sandbox analysis server is online or in maintenance mode.
 | Joe.ServerStatus.Online | Boolean | The server status. | 
 
 #### Command example
+
 ```!joe-is-online```
+
 #### Context Example
+
 ```json
 {
     "Joe": {
@@ -65,6 +72,7 @@ Check if the Joe Sandbox analysis server is online or in maintenance mode.
 >Joe server is online
 
 ### joe-analysis-info
+
 ***
 Get information about an analysis.
 
@@ -72,6 +80,7 @@ Get information about an analysis.
 #### Base Command
 
 `joe-analysis-info`
+
 #### Input
 
 | **Argument Name** | **Description**  | **Required** |
@@ -121,8 +130,11 @@ Get information about an analysis.
 | Joe.Analysis.webid | String | The web ID from Joe Security. | 
 
 #### Command example
+
 ```!joe-analysis-info webid=2722073```
+
 #### Context Example
+
 ```json
 {
     "Joe": {
@@ -174,12 +186,14 @@ Get information about an analysis.
 #### Human Readable Output
 
 >### Analysis Result:
+>
 >|Id|SampleName|Status|Time|MD5|SHA1|SHA256|Systems|Result|Errors|Comments|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >|1| test_file.txt | finished | 2022-09-15T10:57:20+02:00 | 11111111111111111111111111111111 | 1111111111111111111111111111111111111111 | 1111111111111111111111111111111111111111111111111111111111111111 | w7x64_office,<br/>w10x64_21h1_office | clean | None | (example) |
 
 
 ### joe-list-analysis
+
 ***
 Lists all analyses.
 
@@ -187,6 +201,7 @@ Lists all analyses.
 #### Base Command
 
 `joe-list-analysis`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -238,8 +253,11 @@ Lists all analyses.
 | Joe.Analysis.webid | String | The web ID from Joe Security. | 
 
 #### Command example
+
 ```!joe-list-analysis limit=1```
+
 #### Context Example
+
 ```json
 {
     "Joe": {
@@ -291,12 +309,14 @@ Lists all analyses.
 #### Human Readable Output
 
 >### Analysis Result:
+>
 >|Id|SampleName|Status|Time|MD5|SHA1|SHA256|Systems|Result|Errors|Comments|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >|1| test_file.txt | finished | 2022-09-15T10:57:20+02:00 | 11111111111111111111111111111111 | 1111111111111111111111111111111111111111 | 1111111111111111111111111111111111111111111111111111111111111111 | w7x64_office,<br/>w10x64_21h1_office | clean | None | (example) |
 
 
 ### joe-download-report
+
 ***
 Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See the integration README for the full list of supported report types.
 
@@ -304,6 +324,7 @@ Download a resource belonging to a report. This can be the full report, dropped 
 #### Base Command
 
 `joe-download-report`
+
 #### Input
 
 | **Argument Name** | **Description**     | **Required** |
@@ -324,8 +345,11 @@ Download a resource belonging to a report. This can be the full report, dropped 
 | File.Extension | string | File extension. | 
 
 #### Command example
+
 ```!joe-download-report webid=1```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -345,6 +369,7 @@ Download a resource belonging to a report. This can be the full report, dropped 
 
 
 ### joe-download-sample
+
 ***
 Download a sample.
 
@@ -352,6 +377,7 @@ Download a sample.
 #### Base Command
 
 `joe-download-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -375,8 +401,11 @@ Download a sample.
 | File.Extension | string | File extension. | 
 
 #### Command example
+
 ```!joe-download-sample webid=2722073```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -401,6 +430,7 @@ Download a sample.
 
 
 ### file
+
 ***
 Retrieves files information from Joe Security.
 
@@ -408,6 +438,7 @@ Retrieves files information from Joe Security.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -436,8 +467,11 @@ Retrieves files information from Joe Security.
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 #### Command example
+
 ```!file file=example```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -481,12 +515,14 @@ Retrieves files information from Joe Security.
 #### Human Readable Output
 
 >### File Result:
+>
 >|File Name| Sha1 |Sha256|Md5|
 >|---|---|---|---|
 >|example| 1111111111111111111111111111111111111111 | 1111111111111111111111111111111111111111111111111111111111111111 | 11111111111111111111111111111111 |
 
 
 ### url
+
 ***
 Retrieves URL information from Joe Security.
 
@@ -496,6 +532,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -516,8 +553,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 #### Command example
+
 ```!url url=http://google.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -541,12 +581,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### Url Result:
+>
 >|Url|
 >|---|
 >| http:<span>//</span>google.com |
 
 
 ### joe-list–lia-countries
+
 ***
 Retrieve a list of localized internet anonymization countries.
 
@@ -554,6 +596,7 @@ Retrieve a list of localized internet anonymization countries.
 #### Base Command
 
 `joe-list–lia-countries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -567,8 +610,11 @@ Retrieve a list of localized internet anonymization countries.
 | Joe.LIACountry | String | A list of localized internet anonymization countries. | 
 
 #### Command example
+
 ```!joe-list–lia-countries```
+
 #### Context Example
+
 ```json
 {
     "Joe": {
@@ -586,6 +632,7 @@ Retrieve a list of localized internet anonymization countries.
 #### Human Readable Output
 
 >### Results:
+>
 >|Name|
 >|---|
 >| Argentina |
@@ -597,6 +644,7 @@ Retrieve a list of localized internet anonymization countries.
 
 
 ### joe-list-lang-locales
+
 ***
 Retrieve a list of available language and locale combinations.
 
@@ -604,6 +652,7 @@ Retrieve a list of available language and locale combinations.
 #### Base Command
 
 `joe-list-lang-locales`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -617,8 +666,11 @@ Retrieve a list of available language and locale combinations.
 | Joe.LangLocale | String | A list of available language and locale combinations. | 
 
 #### Command example
+
 ```!joe-list-lang-locales```
+
 #### Context Example
+
 ```json
 {
     "Joe": {
@@ -637,6 +689,7 @@ Retrieve a list of available language and locale combinations.
 #### Human Readable Output
 
 >### Results:
+>
 >|Name|
 >|---|
 >| Arabic - Egypt |
@@ -648,6 +701,7 @@ Retrieve a list of available language and locale combinations.
 
 
 ### joe-get-account-quota
+
 ***
 Retrieve the account quota.
 
@@ -655,6 +709,7 @@ Retrieve the account quota.
 #### Base Command
 
 `joe-get-account-quota`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -675,8 +730,11 @@ Retrieve the account quota.
 | Joe.AccountQuota.type | String | The quota type. | 
 
 #### Command example
+
 ```!joe-get-account-quota```
+
 #### Context Example
+
 ```json
 {
     "Joe": {
@@ -702,12 +760,14 @@ Retrieve the account quota.
 #### Human Readable Output
 
 >### Results:
+>
 >|Quota Type|Daily Quota Current|Daily Quota Limit|Daily Quote Remaining| Monthly Quota Current |Monthly Quota Limit| Monthly Quota Remaining |
 >|---|---|---|---|---|---|---|
 >| ultimate | 0 | 100 | 100 | 150 | 250 | 100 |
 
 
 ### joe-submission-info
+
 ***
 Retrieve the submission info.
 
@@ -715,6 +775,7 @@ Retrieve the submission info.
 #### Base Command
 
 `joe-submission-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -768,8 +829,11 @@ Retrieve the submission info.
 | Joe.Submission.time | Date | The time. | 
 
 #### Command example
+
 ```!joe-submission-info submission_ids=1111111```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -863,12 +927,14 @@ Retrieve the submission info.
 #### Human Readable Output
 
 >### Submission Results:
+>
 >|Submission Id|Sample Name|Time|Status|Web Id|Encrypted|Analysis Id|Classification|Threat Name|Score|Detection|SHA256|MD5|SHA1|File Name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | example.zip | 2022-09-15T10:57:14+02:00 | finished | 1 | false | 1 |  | Unknown | 1 | clean | 1111111111111111111111111111111111111111111111111111111111111111 | 11111111111111111111111111111111 | 1111111111111111111111111111111111111111 | example.txt |
 
 
 ### joe-submit-sample
+
 ***
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
  
@@ -877,6 +943,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `joe-submit-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -963,8 +1030,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command example
+
 ```!joe-submit-sample entry_id=1111@1111111111-1111-1111-1111-1 systems=w10x64```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -1049,12 +1119,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### Submission Results:
+>
 >|Submission Id|Sample Name|Time|Status|Web Id|Encrypted|Analysis Id|Classification|Threat Name|Score|Detection|SHA256|MD5|SHA1|File Name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | example.zip | 2022-09-15T10:57:14+02:00 | finished | 1 | false | 1 |  | Unknown | 1 | clean | 1111111111111111111111111111111111111111111111111111111111111111 | 11111111111111111111111111111111 | 1111111111111111111111111111111111111111 | example.txt |
 
 
 ### joe-submit-url
+
 ***
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
@@ -1062,6 +1134,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `joe-submit-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1143,7 +1216,9 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command example
+
 ```!joe-submit-url url=http://example.com```
+
 #### Context Example
 
 ```json
@@ -1213,21 +1288,26 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### Submission Results:
+>
 >|Submission Id|Sample Name|Time|Status|Web Id|Encrypted|Analysis Id|Classification|Threat Name|Score|Detection|URL|
 > |---|---|---|---|---|---|---|---|---|---|---|---|
-> | 1 | http://example.com | 2022-09-15T10:57:14+02:00 | finished | 1 | false | 1 | | Unknown | 1 | clean | http://example.com |
+> | 1 | <http://example.com> | 2022-09-15T10:57:14+02:00 | finished | 1 | false | 1 | | Unknown | 1 | clean | <http://example.com> |
 
 ## Breaking Changes
 
 ### Commands
+
 #### The following commands were removed in this version:
+
 * ***joe-analysis-submit-sample*** - this command was replaced by ***joe-submit-sample***.
 * ***joe-analysis-submit-url*** - this command was replaced by ***joe-submit-url***.
 * ***joe-search*** command, the *query* argument now supports comma-separated values.
 
 
 ### Playbooks
+
 #### The following playbooks were deprecated:
+
 **Detonate File - JoeSecurity** - Use the ***joe-submit-sample*** command instead.
 **Detonate File From URL - JoeSecurity** - Use the ***joe-submit-sample*** command instead.
 **Detonate URL - JoeSecurity** - Use the ***joe-submit-url*** command instead.

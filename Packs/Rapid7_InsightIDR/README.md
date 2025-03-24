@@ -1,5 +1,6 @@
 Overview
 -
+
 Rapid7 InsightIDR is a cloud-based SIEM that provides real-time alerting and investigation tools to detect and respond to security incidents.
 The Rapid7 InsightIDR integration can significantly improve your organization's incident response capabilities and overall security posture. 
 

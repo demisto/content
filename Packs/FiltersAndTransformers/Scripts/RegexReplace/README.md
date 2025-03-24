@@ -13,6 +13,7 @@ Example 2:
  -> output value: xxx=yyy
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -22,6 +23,7 @@ Example 2:
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -30,10 +32,11 @@ Example 2:
 | regex | Regex pattern to search |
 | output_format | Template string to format patterns matched with regex |
 | ignore_case | Whether character matching will be case-insensitive. Default is "false". |
-| multi_line | Process value in multiline mode.  See more information on re.MULTILINE, see https://docs.python.org/3/library/re.html. |
+| multi_line | Process value in multiline mode.  See more information on re.MULTILINE, see <https://docs.python.org/3/library/re.html>. |
 | period_matches_newline | Whether to make the '.' character also match a new line. Default is "false". |
 | action_dt | The last action for each matched value to transform |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

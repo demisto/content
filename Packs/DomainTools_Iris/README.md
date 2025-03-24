@@ -8,6 +8,6 @@ With the **DomainTools Iris** App for Cortex XSOAR, the Iris dataset is availabl
 - Gathers email addresses extracted from DNS SOA records.
 - Provides DomainTools Risk Score with components and evidence.
 
-This app requires an Iris Investigate API key. Please contact sales@domaintools.com for a trial.
+This app requires an Iris Investigate API key. Please contact <sales@domaintools.com> for a trial.
 
 For more information, visit [DomainTools Iris App for Cortex XSOAR](https://www.domaintools.com/resources/blog/domaintools-app-for-demisto-comprehensive-contextual-and-automated-incident)

@@ -1,6 +1,7 @@
 ANY.RUN is a cloud-based sanbox with interactive access.
 
 ## Use Cases
+
 1. Submit a file, remote file, or URL to ANY.RUN for analysis.
 2. Retrieve report details for a given analysis task ID.
 3. View history of analysis tasks.
@@ -25,11 +26,13 @@ ANY.RUN is a cloud-based sanbox with interactive access.
 5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 The commands allow you to launch and download only your own tasks, public submissions are not available at this point.
 
 ### anyrun-get-history
+
 ***
 Get analysis history.
 
@@ -37,6 +40,7 @@ Get analysis history.
 #### Base Command
 
 `anyrun-get-history`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -68,6 +72,7 @@ Get analysis history.
 ```anyrun-get-history skip=0 team=false filter=scribbles2.txt.zip```
 
 #### Context Example
+
 ```
 {
     "ANYRUN.Task": [
@@ -149,18 +154,21 @@ Get analysis history.
     ]
 }
 ```
+
 #### Human Readable Output
 
 >### Results
+>
 >|Name|ID|File|Hash|Verdict|Related|Date|
 >|---|---|---|---|---|---|---|
->|scribbles2.txt.zip|892455a2-8c96-45fb-9f2a-18ca4ef184f9|https://content.any.run/tasks/892455a2-8c96-45fb-9f2a-18ca4ef184f9/download/files/afca4a63-9fe0-461c-8e73-c8fd784cf90e|MD5: e61fcc6a06420106fa6642ef833b9c38<br> SHA1: 475d7efc7983357e51ea780e350b0efe6a5ba2e2<br> SHA256: 1832caedd2f87b3c2d5c7dcc5c5f844a1479d3a7868570241656b1516607dbb1<br> HeadHash: e61fcc6a06420106fa6642ef833b9c38<br> SSDeep: 24:9YQxEcNJQGgrtSuJDWDRzvu4H2ANvg0JvWH2Rb:9xNJKrtSuxOT9|No threats detected|https://app.any.run/tasks/892455a2-8c96-45fb-9f2a-18ca4ef184f9">https://app.any.run/tasks/892455a2-8c96-45fb-9f2a-18ca4ef184f9|2019-04-24T07:13:06.087Z|
->|scribbles2.txt.zip|fe7c63ef-2b7f-4e70-b50c-996ae34b28ef|https://content.any.run/tasks/fe7c63ef-2b7f-4e70-b50c-996ae34b28ef/download/files/227a7bd4-5baa-477b-b319-58d7619b79ef|MD5: e61fcc6a06420106fa6642ef833b9c38<br> SHA1: 475d7efc7983357e51ea780e350b0efe6a5ba2e2<br> SHA256: 1832caedd2f87b3c2d5c7dcc5c5f844a1479d3a7868570241656b1516607dbb1<br> HeadHash: e61fcc6a06420106fa6642ef833b9c38<br> SSDeep: 24:9YQxEcNJQGgrtSuJDWDRzvu4H2ANvg0JvWH2Rb:9xNJKrtSuxOT9|No threats detected|https://app.any.run/tasks/fe7c63ef-2b7f-4e70-b50c-996ae34b28ef">https://app.any.run/tasks/fe7c63ef-2b7f-4e70-b50c-996ae34b28ef|2019-04-24T07:02:38.747Z|
->|scribbles2.txt.zip|81bb80cd-3bcf-41b3-aac5-c3e35a39ba0d|https://content.any.run/tasks/81bb80cd-3bcf-41b3-aac5-c3e35a39ba0d/download/files/0c5c1527-b50b-483e-84e1-7b4b8f82d26b|MD5: e61fcc6a06420106fa6642ef833b9c38<br> SHA1: 475d7efc7983357e51ea780e350b0efe6a5ba2e2<br> SHA256: 1832caedd2f87b3c2d5c7dcc5c5f844a1479d3a7868570241656b1516607dbb1<br> HeadHash: e61fcc6a06420106fa6642ef833b9c38<br> SSDeep: 24:9YQxEcNJQGgrtSuJDWDRzvu4H2ANvg0JvWH2Rb:9xNJKrtSuxOT9|No threats detected|https://app.any.run/tasks/81bb80cd-3bcf-41b3-aac5-c3e35a39ba0d">https://app.any.run/tasks/81bb80cd-3bcf-41b3-aac5-c3e35a39ba0d|2019-04-23T13:46:47.372Z|
->|scribbles2.txt.zip|07d4d230-9638-4f04-a226-c7b18a81c329|https://content.any.run/tasks/07d4d230-9638-4f04-a226-c7b18a81c329/download/files/69dcf7f0-69c2-432e-8d30-3e2f630e0aae|MD5: e61fcc6a06420106fa6642ef833b9c38<br> SHA1: 475d7efc7983357e51ea780e350b0efe6a5ba2e2<br> SHA256: 1832caedd2f87b3c2d5c7dcc5c5f844a1479d3a7868570241656b1516607dbb1<br> HeadHash: e61fcc6a06420106fa6642ef833b9c38<br> SSDeep: 24:9YQxEcNJQGgrtSuJDWDRzvu4H2ANvg0JvWH2Rb:9xNJKrtSuxOT9|No threats detected|https://app.any.run/tasks/07d4d230-9638-4f04-a226-c7b18a81c329">https://app.any.run/tasks/07d4d230-9638-4f04-a226-c7b18a81c329|2019-04-23T08:11:17.460Z|
->|scribbles2.txt.zip|411fe6a6-ca36-4322-8f1d-f5ec67c6346d|https://content.any.run/tasks/411fe6a6-ca36-4322-8f1d-f5ec67c6346d/download/files/a006642b-956b-4a9d-a72c-0affdd2dd6c8|MD5: e61fcc6a06420106fa6642ef833b9c38<br> SHA1: 475d7efc7983357e51ea780e350b0efe6a5ba2e2<br> SHA256: 1832caedd2f87b3c2d5c7dcc5c5f844a1479d3a7868570241656b1516607dbb1<br> HeadHash: e61fcc6a06420106fa6642ef833b9c38<br> SSDeep: 24:9YQxEcNJQGgrtSuJDWDRzvu4H2ANvg0JvWH2Rb:9xNJKrtSuxOT9|No threats detected|https://app.any.run/tasks/411fe6a6-ca36-4322-8f1d-f5ec67c6346d">https://app.any.run/tasks/411fe6a6-ca36-4322-8f1d-f5ec67c6346d|2019-04-22T12:16:13.302Z|
+>|scribbles2.txt.zip|892455a2-8c96-45fb-9f2a-18ca4ef184f9|<https://content.any.run/tasks/892455a2-8c96-45fb-9f2a-18ca4ef184f9/download/files/afca4a63-9fe0-461c-8e73-c8fd784cf90e>|MD5: e61fcc6a06420106fa6642ef833b9c38<br> SHA1: 475d7efc7983357e51ea780e350b0efe6a5ba2e2<br> SHA256: 1832caedd2f87b3c2d5c7dcc5c5f844a1479d3a7868570241656b1516607dbb1<br> HeadHash: e61fcc6a06420106fa6642ef833b9c38<br> SSDeep: 24:9YQxEcNJQGgrtSuJDWDRzvu4H2ANvg0JvWH2Rb:9xNJKrtSuxOT9|No threats detected|<https://app.any.run/tasks/892455a2-8c96-45fb-9f2a-18ca4ef184f9"><https://app.any.run/tasks/892455a2-8c96-45fb-9f2a-18ca4ef184f9>>|2019-04-24T07:13:06.087Z|
+>|scribbles2.txt.zip|fe7c63ef-2b7f-4e70-b50c-996ae34b28ef|<https://content.any.run/tasks/fe7c63ef-2b7f-4e70-b50c-996ae34b28ef/download/files/227a7bd4-5baa-477b-b319-58d7619b79ef>|MD5: e61fcc6a06420106fa6642ef833b9c38<br> SHA1: 475d7efc7983357e51ea780e350b0efe6a5ba2e2<br> SHA256: 1832caedd2f87b3c2d5c7dcc5c5f844a1479d3a7868570241656b1516607dbb1<br> HeadHash: e61fcc6a06420106fa6642ef833b9c38<br> SSDeep: 24:9YQxEcNJQGgrtSuJDWDRzvu4H2ANvg0JvWH2Rb:9xNJKrtSuxOT9|No threats detected|<https://app.any.run/tasks/fe7c63ef-2b7f-4e70-b50c-996ae34b28ef"><https://app.any.run/tasks/fe7c63ef-2b7f-4e70-b50c-996ae34b28ef>>|2019-04-24T07:02:38.747Z|
+>|scribbles2.txt.zip|81bb80cd-3bcf-41b3-aac5-c3e35a39ba0d|<https://content.any.run/tasks/81bb80cd-3bcf-41b3-aac5-c3e35a39ba0d/download/files/0c5c1527-b50b-483e-84e1-7b4b8f82d26b>|MD5: e61fcc6a06420106fa6642ef833b9c38<br> SHA1: 475d7efc7983357e51ea780e350b0efe6a5ba2e2<br> SHA256: 1832caedd2f87b3c2d5c7dcc5c5f844a1479d3a7868570241656b1516607dbb1<br> HeadHash: e61fcc6a06420106fa6642ef833b9c38<br> SSDeep: 24:9YQxEcNJQGgrtSuJDWDRzvu4H2ANvg0JvWH2Rb:9xNJKrtSuxOT9|No threats detected|<https://app.any.run/tasks/81bb80cd-3bcf-41b3-aac5-c3e35a39ba0d"><https://app.any.run/tasks/81bb80cd-3bcf-41b3-aac5-c3e35a39ba0d>>|2019-04-23T13:46:47.372Z|
+>|scribbles2.txt.zip|07d4d230-9638-4f04-a226-c7b18a81c329|<https://content.any.run/tasks/07d4d230-9638-4f04-a226-c7b18a81c329/download/files/69dcf7f0-69c2-432e-8d30-3e2f630e0aae>|MD5: e61fcc6a06420106fa6642ef833b9c38<br> SHA1: 475d7efc7983357e51ea780e350b0efe6a5ba2e2<br> SHA256: 1832caedd2f87b3c2d5c7dcc5c5f844a1479d3a7868570241656b1516607dbb1<br> HeadHash: e61fcc6a06420106fa6642ef833b9c38<br> SSDeep: 24:9YQxEcNJQGgrtSuJDWDRzvu4H2ANvg0JvWH2Rb:9xNJKrtSuxOT9|No threats detected|<https://app.any.run/tasks/07d4d230-9638-4f04-a226-c7b18a81c329"><https://app.any.run/tasks/07d4d230-9638-4f04-a226-c7b18a81c329>>|2019-04-23T08:11:17.460Z|
+>|scribbles2.txt.zip|411fe6a6-ca36-4322-8f1d-f5ec67c6346d|<https://content.any.run/tasks/411fe6a6-ca36-4322-8f1d-f5ec67c6346d/download/files/a006642b-956b-4a9d-a72c-0affdd2dd6c8>|MD5: e61fcc6a06420106fa6642ef833b9c38<br> SHA1: 475d7efc7983357e51ea780e350b0efe6a5ba2e2<br> SHA256: 1832caedd2f87b3c2d5c7dcc5c5f844a1479d3a7868570241656b1516607dbb1<br> HeadHash: e61fcc6a06420106fa6642ef833b9c38<br> SSDeep: 24:9YQxEcNJQGgrtSuJDWDRzvu4H2ANvg0JvWH2Rb:9xNJKrtSuxOT9|No threats detected|<https://app.any.run/tasks/411fe6a6-ca36-4322-8f1d-f5ec67c6346d"><https://app.any.run/tasks/411fe6a6-ca36-4322-8f1d-f5ec67c6346d>>|2019-04-22T12:16:13.302Z|
 
 ### anyrun-get-report
+
 ***
 Gets the report of a task created for a submitted file or URL. 
 
@@ -171,6 +179,7 @@ Gets the report of a task created for a submitted file or URL.
 #### Base Command
 
 `anyrun-get-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -261,6 +270,7 @@ Gets the report of a task created for a submitted file or URL.
 ```anyrun-get-report task=fe7c63ef-2b7f-4e70-b50c-996ae34b28ef```
 
 #### Context Example
+
 ```
 {
     "ANYRUN.Task": {
@@ -320,11 +330,13 @@ Gets the report of a task created for a submitted file or URL.
 #### Human Readable Output
 
 >### Results
+>
 >|OS|AnalysisDate|Verdict|MIME|FileInfo|Process|Status|MD5|SHA1|SHA256|SSDeep|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >|Windows 7 Professional Service Pack 1 (build: 7601, 32 bit)|2019-04-24T07:02:38.747Z |No threats detected|application/zip|Zip archive data, at least v2.0 to extract| FileName: WinRAR.exe, PID: 916, PPID: 2044, ProcessUUID: 8834c75a-ceba-4ae3-83e6-87b8b460ff82, CMD: \C:\Program Files\WinRAR\WinRAR.exe\ \C:\Users\admin\AppData\Local\Temp\scribbles2.txt.zip, Path: C:\Program Files\WinRAR\WinRAR.exe, User: admin, IntegrityLevel: MEDIUM, ExitCode: null, MainProcess: true, Version: {Company: Alexander Roshal, Description: WinRAR archiver, Version: 5.60.0|done|e61fcc6a06420106fa6642ef833b9c38|475d7efc7983357e51ea780e350b0efe6a5ba2e2|1832caedd2f87b3c2d5c7dcc5c5f844a1479d3a7868570241656b1516607dbb1|24:9YQxEcNJQGgrtSuJDWDRzvu4H2ANvg0JvWH2Rb:9xNJKrtSuxOT9|
 
 ### anyrun-run-analysis
+
 ***
 Submit a file or url for analysis.
 
@@ -332,6 +344,7 @@ Submit a file or url for analysis.
 #### Base Command
 
 `anyrun-run-analysis`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -357,9 +370,11 @@ Submit a file or url for analysis.
 
 
 #### Command Example
+
 ```anyrun-run-analysis obj_type=file file=693@66884384-c643-4343-8cf7-26f59e62a88e env_bitness=64```
 
 #### Context Example
+
 ```
 {
     "ANYRUN.Task": {
@@ -371,6 +386,7 @@ Submit a file or url for analysis.
 #### Human Readable Output
 
 >### Results
+>
 >|Task|
 >|---|
 >| e04b401f-9396-4183-ad00-b6ed34c023e3 |

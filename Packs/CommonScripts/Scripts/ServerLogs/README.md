@@ -1,6 +1,7 @@
 Uses the ssh integration to grab the host server logs
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,9 +12,11 @@ Uses the ssh integration to grab the host server logs
 
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

@@ -3,6 +3,7 @@ Parse an email from an eml or msg file and populate all relevant context data to
 This script is based on the [parse-emails XSOAR python package](https://github.com/demisto/parse-emails), check the script documentation for more info.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +12,7 @@ This script is based on the [parse-emails XSOAR python package](https://github.c
 | Tags | email, phishing, enhancement, file |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +23,7 @@ This script is based on the [parse-emails XSOAR python package](https://github.c
 | nesting_level_to_return | In case of nested email files (for instance, an EML file inside an EML file), determines which of the email files to return as an output. "All files" - will return all nested email files as output, "Outer file" - will return only the "outer" email file as output, "Inner file" - will return only the most "inner" email file as output. In case "Inner file" was chosen together with the 'max_depth' argument, the inner email will be considered as the email in the depth of the `max_size` argument. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -41,7 +44,7 @@ This script is based on the [parse-emails XSOAR python package](https://github.c
 | Email.HeadersMap.CC | Email 'cc' addresses | Unknown |
 | Email.HeadersMap.Reply-To | The email address for return mail | String |
 | Email.HeadersMap.Received | List of all the servers/computers through which the message traveled | String |
-| Email.HeadersMap.Message-ID | A unique string assigned by the mail system when the message is first created. These can easily be forged. \(e.g. 5c530c1b.1c69fb81.bd826.0eff@mx.google.com\) | String |
+| Email.HeadersMap.Message-ID | A unique string assigned by the mail system when the message is first created. These can easily be forged. \(e.g. <5c530c1b.1c69fb81.bd826.0eff@mx.google.com>\) | String |
 | Email.AttachmentsData.Name | The name of the attachment | String |
 | Email.AttachmentsData.Content-ID | The content-id of the attachment | String |
 | Email.AttachmentsData.Content-Disposition | The content-disposition of the attachment | String |
@@ -50,6 +53,8 @@ This script is based on the [parse-emails XSOAR python package](https://github.c
 | Email.Format | The format of the email if available | string |
 
 #### Notes
+
 We handle EML and MSG parsing differently when the email contains HTML. 
+
 - If it's an EML and it has the **content-type** of *text/html*, the content of the body will be stored in the html field.
 - If it's an MSG, we store the text inside the HTML in the text field and the HTML in the html field.

@@ -13,9 +13,12 @@ This integration was integrated and tested with appNovi v2.0
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### search-appnovi-components
+
 ***
 Search for Components by name or value
 
@@ -23,6 +26,7 @@ Search for Components by name or value
 #### Base Command
 
 `search-appnovi-components`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -51,6 +55,7 @@ Search for Components by name or value
 | appnovi.time | Number | Query time \(for diagnostics\) | 
 
 ### search-appnovi-connected
+
 ***
 Search for Components connected to supplied identity
 
@@ -58,6 +63,7 @@ Search for Components connected to supplied identity
 #### Base Command
 
 `search-appnovi-connected`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -88,6 +94,7 @@ Search for Components connected to supplied identity
 | appnovi.applications | String | List of applications | 
 
 ### search-appnovi-cve
+
 ***
 Search for servers with matching CVE
 
@@ -95,6 +102,7 @@ Search for servers with matching CVE
 #### Base Command
 
 `search-appnovi-cve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -122,6 +130,7 @@ Search for servers with matching CVE
 | appnovi.applications | String | List of applications | 
 
 ### search-appnovi-component-property
+
 ***
 Search for Components by property and value
 
@@ -129,6 +138,7 @@ Search for Components by property and value
 #### Base Command
 
 `search-appnovi-component-property`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -158,6 +168,7 @@ Search for Components by property and value
 | appnovi.time | Number | Query time \(for diagnostics\) | 
 
 ### search-appnovi-server-by-ip
+
 ***
 Search for servers using IP address
 
@@ -165,6 +176,7 @@ Search for servers using IP address
 #### Base Command
 
 `search-appnovi-server-by-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

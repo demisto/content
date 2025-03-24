@@ -6,7 +6,7 @@ This integration was integrated and tested with version 6.0.0 of Darktrace
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://example.net\) | True |
+| url | Server URL \(e.g. <https://example.net\>) | True |
 | isFetch | Fetch incidents | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |

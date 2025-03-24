@@ -1,6 +1,7 @@
 Search entries in the war room for the pattern text, and mark as note to the entries found.
 
 ---
+
 ## Script Data
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Search entries in the war room for the pattern text, and mark as note to the ent
 
 
 ---
+
 ## Inputs
 
 | **Argument Name** | **Description** |
@@ -30,6 +32,7 @@ Search entries in the war room for the pattern text, and mark as note to the ent
 | summary | The flag to control the output of results |
 
 --
+
 ## Outputs
 
 There are no outputs for this script.

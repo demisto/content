@@ -7,15 +7,17 @@ The vulnerability described in CVE-2022-3602 allows an attacker to obtain a 4-by
 Both vulnerabilities are “triggered through X.509 certificate verification, specifically, name constraint checking. Note that this occurs after certificate chain signature verification and requires either a CA to have signed the malicious certificate or for the application to continue certificate verification despite failure to construct a path to a trusted issuer.” 
 
 **The playbook includes the following tasks:**
+
 * Hunting for active processes running OpenSSL vulnerable versions using:
-    * Cortex XDR
-    * Splunk
-    * Azure Sentinel
-    * Cortex Xpanse
-    * Prisma
-    * PANOS
+  * Cortex XDR
+  * Splunk
+  * Azure Sentinel
+  * Cortex Xpanse
+  * Prisma
+  * PANOS
   
 **Mitigations:**
+
 * OpenSSL official patch
 
 More information:

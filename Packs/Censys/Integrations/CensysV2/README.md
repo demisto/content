@@ -21,9 +21,12 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cen-view
+
 ***
 Returns detailed information for an IP address or SHA256 within the specified index.
 
@@ -31,6 +34,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
 #### Base Command
 
 `cen-view`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -129,8 +133,11 @@ Returns detailed information for an IP address or SHA256 within the specified in
 | DBotScore.Score | Number | The actual score. | 
 
 #### Command example
+
 ```!cen-view index=ipv4 query=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "Censys": {
@@ -447,12 +454,14 @@ Returns detailed information for an IP address or SHA256 within the specified in
 #### Human Readable Output
 
 >### Information for IP 8.8.8.8
+>
 >|ASN|Routing|Last Updated|Network|Protocols|
 >|---|---|---|---|---|
 >| 15169 | 8.8.8.0/24 | 2022-08-30T06:39:12.356Z | GOOGLE | {'Port': 53, 'Service Name': 'DNS'},<br/>{'Port': 443, 'Service Name': 'HTTP'},<br/>{'Port': 853, 'Service Name': 'UNKNOWN'} |
 
 
 ### cen-search
+
 ***
 Returns previews of hosts matching a specified search query, or a list of certificates that match the given query.
 
@@ -460,6 +469,7 @@ Returns previews of hosts matching a specified search query, or a list of certif
 #### Base Command
 
 `cen-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -502,9 +512,11 @@ Returns previews of hosts matching a specified search query, or a list of certif
 
 
 #### Command Example
+
 ```!cen-search index=certificates query="parsed.issuer.common_name: \"Let's Encrypt\"" limit=1```
 
 #### Context Example
+
 ```json
 {
     "Censys": {
@@ -535,12 +547,14 @@ Returns previews of hosts matching a specified search query, or a list of certif
 #### Human Readable Output
 
 >### Search results for query "parsed.issuer.common_name: "Let's Encrypt""
+>
 >|Issuer|Issuer DN|Names|SHA256|Subject DN|Validity|
 >|---|---|---|---|---|---|
 >| organization: Let's Encrypt | C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3 | *.45g4rg43g4fr3434g.gb.net,<br/>45g4rg43g4fr3434g.gb.net | f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b442ec | CN=45g4rg43g4fr3434g.gb.net | start: 2020-10-12T14:46:11Z<br/>end: 2021-01-10T14:46:11Z |
 
 
 ## Additional Considerations for this Version
+
 * This version supports API v2 from Censys. 
 * Breaking backward compatibility: The Censys v2 integration does not support *websites* searches.
 
@@ -671,6 +685,7 @@ Runs reputation on IPs.
 #### Human Readable Output
 
 >### censys results for IP: 8.8.8.8
+>
 >| **Asn** | **Geo Country** | **Geo Latitude** | **Geo Longitude** | **Ip** | **Port** | **Reputation** | **Updated** |
 >| --- | --- | --- | --- | --- | --- | --- |  --- |
 >| 15169 | United States | 37.4056 | -122.0775 | 8.8.8.8 | 53, 443, 443, 853 | 0 | 2024-04-14T08:03:28.159Z |

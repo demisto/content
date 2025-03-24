@@ -2,6 +2,7 @@ IBM Security Verify provides a secure and scalable solution for collecting and m
 
 
 ## Set up the Third Party System
+
 To obtain the **Client ID** and **Client Secret**, follow these steps:
 
 1. Log in to the IBM Security Verify UI.  
@@ -23,7 +24,7 @@ To obtain the **Client ID** and **Client Secret**, follow these steps:
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL | For example: https://tenant.verify.ibm.com | True |
+    | Server URL | For example: <https://tenant.verify.ibm.com> | True |
     | Client ID |  | True |
     | Client Secret |  | True |
     | The maximum number of events per fetch | The maximum is 50,000. | True |

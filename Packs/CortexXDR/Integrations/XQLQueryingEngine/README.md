@@ -16,9 +16,12 @@ For additional information see [Predefined User Roles for Cortex XDR](https://do
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### xdr-xql-generic-query
+
 ***
 Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised. When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file, unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
 
@@ -27,6 +30,7 @@ Execute an XQL query and retrieve results of an executed XQL query API. The comm
 #### Base Command
 
 `xdr-xql-generic-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -83,16 +87,19 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
+
 ```!xdr-xql-generic-query query=`dataset = xdr_data | fields action_evtlog_message, event_id | limit 10```
 
 #### Human Readable Output
 
 >### General Results
+>
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|
 >|---|---|---|---|---|---|
 >| 12345678_inv | 10 | dataset = xdr_data &#124; fields action_evtlog_message, event_id &#124; limit 10 | 376699223: 0.0002125 | 999.9994905555556 | SUCCESS |
 
 >### Data Results
+>
 >|Product|Time|Vendor|Action Evtlog Message|Event Id|Insert Timestamp|
 >|---|---|---|---|---|---|
 >| P1 | 2021-08-28T09:15:56.000Z | PANW |  | test1 | 2021-08-28T09:22:39.000Z |
@@ -108,6 +115,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 ### xdr-xql-get-quota
+
 ***
 Retrieve the amount of query quota available and used.
 
@@ -115,6 +123,7 @@ Retrieve the amount of query quota available and used.
 #### Base Command
 
 `xdr-xql-get-quota`
+
 #### Input
 
 There are no input arguments for this command.
@@ -130,9 +139,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!xdr-xql-get-quota```
 
 #### Context Example
+
 ```json
 {
     "PaloAltoNetworksXQL": {
@@ -149,12 +160,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Quota Results
+>
 >|Additional Purchased Quota|Eval Quota|License Quota|Used Quota|
 >|---|---|---|---|
 >| 0.0 | 0.0 | 1000 | 0.00299 |
 
 
 ### xdr-xql-get-query-results
+
 ***
 Retrieve results of an executed XQL query API. When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file, unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
 
@@ -163,6 +176,7 @@ Retrieve results of an executed XQL query API. When more than 1000 results are r
 #### Base Command
 
 `xdr-xql-get-query-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -215,14 +229,19 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
+
 ``` !xdr-xql-get-query-results query_id=12345678_inv ```
 
 #### Human Readable Output
+>
 >### General Results
+>
 >|Execution Id|Number Of Results|Query Cost|Remaining Quota|Status|
 >|---|---|---|---|---|
 >| 12345678_inv | 2 | 376699223: 0.0007208333333333333 | 999.9845016666667 | SUCCESS |
+>
 >### Data Results
+>
 >|Product|Time|Vendor|Event Id|Insert Timestamp|
 >|---|---|---|---|---|
 >| XDR agent | 2021-08-29T07:40:07.000Z | PANW | test1 | 2021-08-29T07:45:08.000Z |
@@ -230,6 +249,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 ### xdr-xql-file-event-query
+
 ***
 Query file events by the SHA256 file.
 
@@ -237,6 +257,7 @@ Query file events by the SHA256 file.
 #### Base Command
 
 `xdr-xql-file-event-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -276,20 +297,26 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
+
 ```!xdr-xql-file-event-query file_sha256=12345,6789 endpoint_id=test1,test2 time_frame="1 month" ```
 
 #### Human Readable Output
+>
 >### General Results
+>
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|Time Frame|
 >|---|---|---|---|---|---|---|
 >| 12345678_inv | 1 | dataset = xdr_data &#124; filter agent_id in ("test1","test2")<br>           and event_type = FILE and action_file_sha256 in ("12345","6789")&#124;<br>           fields agent_hostname, agent_ip_addresses, agent_id, action_file_path,<br>           action_file_sha256, actor_process_file_create_time &#124; limit 200 | 376699223: 0.002704166666666667 | 999.9795586111111 | SUCCESS | 1 month |
+>
 >### Data Results
+>
 >|Product|Time|Vendor|Action File Path|Action File Sha256|Actor Process File Create Time|Agent Hostname|Agent Id|Agent Ip Addresses|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-08-04T10:57:09.000Z | PANW | C:\Users\test1\test2 | Action File SHA | 2021-05-21T11:20:52.000Z | WIN10X64 | AgentID | IP | 2021-08-04T11:01:08.000Z |
 
 
 ### xdr-xql-process-event-query
+
 ***
 Query process events by the SHA256 process.
 
@@ -297,6 +324,7 @@ Query process events by the SHA256 process.
 #### Base Command
 
 `xdr-xql-process-event-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -345,14 +373,19 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
+
 ```!xdr-xql-process-event-query process_sha256=12345,6789 endpoint_id=test1,test2 time_frame="1 month" ```
 
 #### Human Readable Output
+>
 >### General Results
+>
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|Time Frame|
 >|---|---|---|---|---|---|---|
 >| 2743_inv | 3 | dataset = xdr_data &#124; filter agent_id in ("1234","2345") and event_type = PROCESS and<br>            action_process_image_sha256 in ("abcd","acdb") &#124; fields agent_hostname, agent_ip_addresses,<br>            agent_id, action_process_image_sha256, action_process_image_name,<br>            action_process_image_path, action_process_instance_id, action_process_causality_id,<br>            action_process_signature_vendor, action_process_signature_product,<br>            action_process_image_command_line, actor_process_image_name, actor_process_image_path,<br>            actor_process_instance_id, actor_process_causality_id &#124; limit 200 | 376699223: 0.0013455555555555556 | 999.9782130555556 | SUCCESS | 1 month |
+>
 >### Data Results
+>
 >|Product|Time|Vendor|Action Process Causality Id|Action Process Image Command Line|Action Process Image Name|Action Process Image Path|Action Process Image Sha256|Action Process Instance Id|Action Process Signature Product|Action Process Signature Vendor|Actor Process Causality Id|Actor Process Image Name|Actor Process Image Path|Actor Process Instance Id|Agent Hostname|Agent Id|Agent Ip Addresses|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-08-01T12:39:04.000Z | PANW | test1 | C:\Windows\test1\test1.exe | test1.exe | C:\Windows\test1\test1.exe | test1 Action Process Image Sha256 | test1_id | Microsoft Windows | Microsoft Corporation | test1 ID | test.exe | C:\Windows\test.exe | ID | WIN10X64 | Agent ID | IP | 2021-08-01T12:43:59.000Z |
@@ -362,6 +395,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 ### xdr-xql-dll-module-query
+
 ***
 Query DLL module events by the SHA256 DLL.
 
@@ -369,6 +403,7 @@ Query DLL module events by the SHA256 DLL.
 #### Base Command
 
 `xdr-xql-dll-module-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -416,14 +451,19 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
+
 ```!xdr-xql-dll-module-query loaded_module_sha256=1234,2345 endpoint_id=test1,test2```
 
 #### Human Readable Output
+
 ### General Results
+>
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|
 >|---|---|---|---|---|---|
 >| 1234_inv | 3 | dataset = xdr_data &#124; filter agent_id in ("test1","test2")<br>           and event_type = LOAD_IMAGE and action_module_sha256 in ("1234","2345")&#124;<br>           fields agent_hostname, agent_ip_addresses, agent_id, actor_effective_username, action_module_sha256,<br>           action_module_path, action_module_file_info, action_module_file_create_time, actor_process_image_name,<br>           actor_process_image_path, actor_process_command_line, actor_process_image_sha256, actor_process_instance_id,<br>           actor_process_causality_id &#124; limit 200 | 376699223: 0.001661388888888889 | 999.9754347222222 | SUCCESS |
+>
 >### Data Results
+>
 >|Product|Time|Vendor|Action Module File Create Time|Action Module File Info|Action Module Path|Action Module Sha256|Actor Effective Username|Actor Process Causality Id|Actor Process Command Line|Actor Process Image Name|Actor Process Image Path|Actor Process Image Sha256|Actor Process Instance Id|Agent Hostname|Agent Id|Agent Ip Addresses|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-08-28T11:52:12.000Z | PANW | 2020-10-14T03:12:11.000Z | {"company":"Test Corporation","description":"" | 1234 | NT AUTHORITY\SYSTEM | id_test | "C:\Program Files (x86)\test1" | test1.exe | "C:\Program Files (x86)\test1" | ID_1 | ID_1 | WIN10X64 | 1234 | IP Addr | 2021-08-28T11:54:02.000Z |
@@ -433,6 +473,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 ### xdr-xql-network-connection-query
+
 ***
 Query network connections between a source IP, destination IP and port.
 
@@ -440,6 +481,7 @@ Query network connections between a source IP, destination IP and port.
 #### Base Command
 
 `xdr-xql-network-connection-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -490,14 +532,19 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
+
 ```!xdr-xql-network-connection-query endpoint_id=1234,2345 local_ip=test_ip_1,test_ip_2 remote_ip=test_remote_ip_1,test_remote_ip_2 port=test_port1,test_port2 limit=2```
 
 #### Human Readable Output
+>
 >### General Results
+>
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|
 >|---|---|---|---|---|---|
 >| 2758_inv | 2 | dataset = xdr_data &#124; filter agent_id in ("1234","2345") and event_type = STORY and<br>           action_local_ip in("test_ip1","test_ip2") and action_remote_ip in("test_remote_ip_1","test_remote_ip2") and<br>           action_remote_port in(test_port_1,test_port_2) &#124; fields agent_hostname, agent_ip_addresses, agent_id,<br>           actor_effective_username, action_local_ip, action_remote_ip, action_remote_port,<br>           dst_action_external_hostname, action_country, actor_process_image_name, actor_process_image_path,<br>           actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id &#124; limit 2 | 376699223: 0.0004875 | 999.9737266666667 | SUCCESS |
+>
 >### Data Results
+>
 >|Product|Time|Vendor|Action Country|Action Local Ip|Action Remote Ip|Action Remote Port|Actor Effective Username|Actor Process Causality Id|Actor Process Command Line|Actor Process Image Name|Actor Process Image Path|Actor Process Image Sha256|Actor Process Instance Id|Agent Hostname|Agent Id|Agent Ip Addresses|Dst Action External Hostname|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| P1 | 2021-08-28T12:08:23.000Z | PANW | UNKNOWN | Action Local Ip 1 | Action Remote Ip 1 | port1 |  |  |  |  |  |  |  | WIN10X64 | Agent1 |  |  | 2021-08-28T12:15:26.000Z |
@@ -506,6 +553,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 ### xdr-xql-registry-query
+
 ***
 Query windows registry by registry key name.
 
@@ -513,6 +561,7 @@ Query windows registry by registry key name.
 #### Base Command
 
 `xdr-xql-registry-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -556,15 +605,19 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
+
 ```!xdr-xql-registry-query endpoint_id=1234,2345 reg_key_name=<reg_key_name> limit=2  time_frame="1 month"```
 
 #### Human Readable Output
 
 >### General Results
+>
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|Time Frame|
 >|---|---|---|---|---|---|---|
 >| 2767_inv | 2 | dataset = xdr_data &#124; filter agent_id in ("1234","2345") and event_type = REGISTRY and<br>           action_registry_key_name in ("reg_key_name") &#124; fields agent_hostname, agent_id, agent_ip_addresses,<br>           agent_os_type, agent_os_sub_type, event_type, event_sub_type, action_registry_key_name,<br>           action_registry_value_name, action_registry_data &#124; limit 2 | 376699223: 0.0012475 | 999.9699388888889 | SUCCESS | 1 month |
+>
 >### Data Results
+>
 >|Product|Time|Vendor|Action Registry Data|Action Registry Key Name|Action Registry Value Name|Agent Hostname|Agent Id|Agent Ip Addresses|Agent Os Sub Type|Agent Os Type|Event Sub Type|Event Type|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-08-04T06:27:44.000Z | PANW | Action Registry Data | Action Registry Data |  | WIN10X64 | ID | IP | Windows 10 | AGENT_OS_WINDOWS | REGISTRY_SET_VALUE | REGISTRY | 2021-08-04T06:30:22.000Z |
@@ -572,6 +625,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 ### xdr-xql-event-log-query
+
 ***
 Query event logs by event ID.
 
@@ -579,6 +633,7 @@ Query event logs by event ID.
 #### Base Command
 
 `xdr-xql-event-log-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -622,14 +677,19 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
+
 ```!xdr-xql-event-log-query endpoint_id=1234,2345 event_id=4444,5555 limit=2```
 
 #### Human Readable Output
+>
 >### General Results
+>
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|
 >|---|---|---|---|---|---|
 >| 2773_inv | 2 | dataset = xdr_data &#124; filter agent_id in ("1234","2345") and event_type = EVENT_LOG and<br>           action_evtlog_event_id in (4444,5555) &#124; fields agent_hostname, agent_id, agent_ip_addresses,<br>           agent_os_type, agent_os_sub_type, action_evtlog_event_id, event_type, event_sub_type,<br>           action_evtlog_message, action_evtlog_provider_name &#124; limit 2 | 376699223: 0.0009633333333333333 | 999.9677783333333 | SUCCESS |
+>
 >### Data Results
+>
 >|Product|Time|Vendor|Action Evtlog Event Id|Action Evtlog Message|Action Evtlog Provider Name|Agent Hostname|Agent Id|Agent Ip Addresses|Agent Os Sub Type|Agent Os Type|Event Sub Type|Event Type|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-08-28T12:31:24.000Z | PANW | 4444 | Message  | Microsoft-Windows-Security-Auditing | DESKTOP-11 | ID | IP | Windows 10 | AGENT_OS_WINDOWS | EVENT_LOG_AGENT_EVENT_LOG | EVENT_LOG | 2021-08-28T12:36:21.000Z |
@@ -637,6 +697,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 ### xdr-xql-dns-query
+
 ***
 Query by DNS query or domain name.
 
@@ -644,6 +705,7 @@ Query by DNS query or domain name.
 #### Base Command
 
 `xdr-xql-dns-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -697,14 +759,19 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
+
 ```!xdr-xql-dns-query endpoint_id=1234,2345 external_domain=<external_domain> limit=2```
 
 #### Human Readable Output
+>
 >### General Results
+>
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|
 >|---|---|---|---|---|---|
 >| 2782_inv | 2 | dataset = xdr_data &#124; filter agent_id in ("1234","2345") and event_type = STORY and<br>           dst_action_external_hostname in ("<external_domain>") or dns_query_name in ("*")<br>           &#124; fields agent_hostname, agent_id, agent_ip_addresses, agent_os_type, agent_os_sub_type, action_local_ip,<br>           action_remote_ip, action_remote_port, dst_action_external_hostname, dns_query_name, action_app_id_transitions,<br>           action_total_download, action_total_upload, action_country, action_as_data, os_actor_process_image_path,<br>           os_actor_process_command_line, os_actor_process_instance_id, os_actor_process_causality_id &#124; limit 2 | 376699223: 0.0009897222222222221 | 999.9651905555555 | SUCCESS |
+>
 >### Data Results
+>
 >|Product|Time|Vendor|Action App Id Transitions|Action As Data|Action Country|Action Local Ip|Action Remote Ip|Action Remote Port|Action Total Download|Action Total Upload|Agent Hostname|Agent Id|Agent Ip Addresses|Agent Os Sub Type|Agent Os Type|Dns Query Name|Dst Action External Hostname|Insert Timestamp|Os Actor Process Causality Id|Os Actor Process Command Line|Os Actor Process Image Path|Os Actor Process Instance Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| P1 | 2021-08-29T00:01:18.000Z | PANW | ip,<br>tcp |  | UNKNOWN | LOCAL_IP | REMOTE_IP | 443 | 3101 | 1413 | DESKTOP | ID | IP | Windows 10 | AGENT_OS_WINDOWS |  | array812.prod.do.dsp.mp.microsoft.com | 2021-08-29T00:07:38.000Z | ID_1 |  |  |
@@ -713,6 +780,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 ### xdr-xql-file-dropper-query
+
 ***
 Search for the process that wrote the given file, by its SHA256 or file path.
 
@@ -720,6 +788,7 @@ Search for the process that wrote the given file, by its SHA256 or file path.
 #### Base Command
 
 `xdr-xql-file-dropper-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -774,15 +843,19 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
+
 ```!xdr-xql-file-dropper-query endpoint_id=1234,2345 file_path=<file_path> file_sha256=<file_SHA> limit=2 time_frame="1 month"```
 
 #### Human Readable Output
 
 >### General Results
+>
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|Time Frame|
 >|---|---|---|---|---|---|---|
 >| 2788_inv | 2 | dataset = xdr_data &#124; filter agent_id in ("1234","2345") and event_type = FILE and<br>           event_sub_type in (FILE_WRITE, FILE_RENAME) and action_file_path in ("<file_path>") or<br>           action_file_sha256 in ("<file_SHA>") &#124; fields agent_hostname, agent_ip_addresses, agent_id,<br>           action_file_sha256, action_file_path, actor_process_image_name, actor_process_image_path,<br>           actor_process_image_path, actor_process_command_line, actor_process_signature_vendor,<br>           actor_process_signature_product, actor_process_image_sha256, actor_primary_normalized_user,<br>           os_actor_process_image_path, os_actor_process_command_line, os_actor_process_signature_vendor,<br>           os_actor_process_signature_product, os_actor_process_image_sha256, os_actor_effective_username,<br>           causality_actor_remote_host,causality_actor_remote_ip &#124; limit 2 | 376699223: 0.0014269444444444444 | 999.9627805555556 | SUCCESS | 1 month |
+>
 >### Data Results
+>
 >|Product|Time|Vendor|Action File Path|Action File Sha256|Actor Primary Normalized User|Actor Process Command Line|Actor Process Image Name|Actor Process Image Path|Actor Process Image Sha256|Actor Process Signature Product|Actor Process Signature Vendor|Agent Hostname|Agent Id|Agent Ip Addresses|Causality Actor Remote Host|Causality Actor Remote Ip|Insert Timestamp|Os Actor Effective Username|Os Actor Process Command Line|Os Actor Process Image Path|Os Actor Process Image Sha256|Os Actor Process Signature Product|Os Actor Process Signature Vendor|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-08-04T10:57:09.000Z | PANW | Path1 |  |  |  |  |  | X Corporation | WIN10X64 | ID | IP |  |  | 2021-08-04T11:01:08.000Z |  |  |  | ID | X Corporation | X Corporation |
@@ -790,6 +863,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 ### xdr-xql-process-instance-network-activity-query
+
 ***
 Search for network connection created by a given process instance ID.
 
@@ -797,6 +871,7 @@ Search for network connection created by a given process instance ID.
 #### Base Command
 
 `xdr-xql-process-instance-network-activity-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -851,20 +926,26 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
+
 ```!xdr-xql-process-instance-network-activity-query endpoint_id=1234,2345 process_instance_id=<process_instance_id> limit=2 time_frame="1 month"```
 
 #### Human Readable Output
+>
 >### General Results
+>
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|Time Frame|
 >|---|---|---|---|---|---|---|
 >| 2791_inv | 2 | dataset = xdr_data &#124; filter agent_id in ("1234","2345") and event_type = NETWORK and<br>           actor_process_instance_id in ("<process_instance_id>") &#124; fields agent_hostname, agent_ip_addresses,<br>           agent_id, action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname,<br>           dns_query_name, action_app_id_transitions, action_total_download, action_total_upload, action_country,<br>           action_as_data, actor_process_image_sha256, actor_process_image_name , actor_process_image_path,<br>           actor_process_signature_vendor, actor_process_signature_product, actor_causality_id,<br>           actor_process_image_command_line, actor_process_instance_id &#124; limit 2 | 376699223: 0.0008680555555555555 | 999.9619125 | SUCCESS | 1 month |
+>
 >### Data Results
+>
 >|Product|Time|Vendor|Action App Id Transitions|Action As Data|Action Country|Action Local Ip|Action Remote Ip|Action Remote Port|Action Total Download|Action Total Upload|Actor Causality Id|Actor Process Image Command Line|Actor Process Image Name|Actor Process Image Path|Actor Process Image Sha256|Actor Process Instance Id|Actor Process Signature Product|Actor Process Signature Vendor|Agent Hostname|Agent Id|Agent Ip Addresses|Dns Query Name|Dst Action External Hostname|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-08-11T06:08:47.000Z | PANW |  |  | UNITED_KINGDOM | LOCAL_IP | REMOTE_IP | 443 |  |  | ID |  | x.exe |  |  |  |  Windows Publisher | X Corporation | WIN10X64 |  |  |  |  | 2021-08-11T06:09:34.000Z |
 
 
 ### xdr-xql-process-causality-network-activity-query
+
 ***
 Search for network connection created by a given process causality ID.
 
@@ -872,6 +953,7 @@ Search for network connection created by a given process causality ID.
 #### Base Command
 
 `xdr-xql-process-causality-network-activity-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -926,14 +1008,19 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
+
 ```!xdr-xql-process-causality-network-activity-query endpoint_id=1234,2345  process_causality_id=<process_causality_id> limit=1 time_frame="1 month"```
 
 #### Human Readable Output
+>
 >### General Results
+>
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|Time Frame|
 >|---|---|---|---|---|---|---|
 >| 2794_inv | 1 | dataset = xdr_data &#124; filter agent_id in ("1234","2345") and event_type = NETWORK and<br>           actor_process_causality_id in ("<process_causality_id>") &#124; fields agent_hostname, agent_ip_addresses,<br>           agent_id, action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname,<br>           dns_query_name, action_app_id_transitions, action_total_download, action_total_upload, action_country,<br>           action_as_data, actor_process_image_sha256, actor_process_image_name , actor_process_image_path,<br>           actor_process_signature_vendor, actor_process_signature_product, actor_causality_id,<br>           actor_process_image_command_line, actor_process_instance_id &#124; limit 1 | 376699223: 0.0007380555555555556 | 999.9611744444444 | SUCCESS | 1 month |
+>
 >### Data Results
+>
 >|Product|Time|Vendor|Action App Id Transitions|Action As Data|Action Country|Action Local Ip|Action Remote Ip|Action Remote Port|Action Total Download|Action Total Upload|Actor Causality Id|Actor Process Image Command Line|Actor Process Image Name|Actor Process Image Path|Actor Process Image Sha256|Actor Process Instance Id|Actor Process Signature Product|Actor Process Signature Vendor|Agent Hostname|Agent Id|Agent Ip Addresses|Dns Query Name|Dst Action External Hostname|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-07-31T01:47:07.000Z | PANW |  |  | ISRAEL | LOCAL_IP | REMOTE_IP | 80 |  |  |  |  | x.exe |  |  |  |  Windows Publisher | X Corporation | WIN10X64 |  | IP |  |  | 2021-07-31T01:48:03.000Z |

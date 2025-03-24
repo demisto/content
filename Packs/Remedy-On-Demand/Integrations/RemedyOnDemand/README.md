@@ -1,12 +1,13 @@
 Deprecated. use BMC Helix ITSM instead.
 
 This integration was integrated and tested with version 9.1 of Remedy On-Demand
+
 ## Configure Remedy On-Demand in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. 'https://myurl.com', 'http://41.79.151.82'\) | True |
+| url | Server URL \(e.g. '<https://myurl.com>', '<http://41.79.151.82'\>) | True |
 | port | Port | False |
 | credentials | Username | True |
 | proxy | Use system proxy settings | False |
@@ -15,9 +16,12 @@ This integration was integrated and tested with version 9.1 of Remedy On-Demand
 | incidentType | Incident type | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### remedy-incident-create
+
 ***
 Create new ticket incident.<br/>
 <br/>
@@ -26,6 +30,7 @@ Note: according to Remedy AR API documentation it is recommended to provide all 
 #### Base Command
 
 `remedy-incident-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -57,16 +62,19 @@ Note: according to Remedy AR API documentation it is recommended to provide all 
 
 
 #### Command Example
+
 ```!remedy-incident-create first-name=App last-name=admin description="hola mundo" impact="1-Extensive/Widespread" service-type="User Service Request" source="Direct Input" status=New urgency="3-Medium"```
 
 #### Human Readable Output
 
 >### Incident created:
+>
 >|Client Sensitivity|Client Type|Company|Contact_Company|Create Date|DatasetId|Default City|Default Country|Description|First_Name|Impact Incident|Number|InfrastructureEventType|InstanceId|Last Modified By|Modified Date|Person Instance ID|Priority|Weight|ReconciliationIdentity|Region Reported|Date Reported|Source Request ID|Description|Site|Site Group|Site ID|State Province|Status|History|Street|Submitter|Time Zone|Urgency VIP|Zip/Postal Code|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|Standard|Office-Based Employee|Calbro Services|Calbro Services|2019-02-07T11:42:58.000+0000|0|New York| United States|hola mundo|App|1-Extensive/Widespread|INC123| None       | AGGA5B9BGBHP4APMKA9MPLNHKM0GM4 | admin         | 2019-02-07T11:42:58.000+0000 | AG0050560C63F2E1pSRAl5svAA5h4A | High   | 19                     | 0               | Americas      | 2019-02-07T11:42:58.000+0000 | Direct Input 000000000000012 | User Service Request | Headquarters, Building 1.31 | United States | STE_SOLN0002846 | New York | New     | {"New":{"user":"admin","timestamp":"2019-02-07T11:42:58.000+0000"}} | 1114 Eighth Avenue, 31st Floor | admin     | (GMT-05:00) Eastern Time (US &amp; Canada) | 3-Medium No     | 10036 |
 
 ### remedy-get-incident
+
 ***
 Get one incident by ID
 
@@ -74,6 +82,7 @@ Get one incident by ID
 #### Base Command
 
 `remedy-get-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -96,17 +105,20 @@ Get one incident by ID
 
 
 #### Command Example
+
 ```!remedy-get-incident ID=9```
 
 #### Human Readable Output
 
 >### Incident:
+>
 >|Client Sensitivity|Client Type|Company|Contact_Company|Create Date|DatasetId|Default City|Default Country|Description|First_Name|Impact Incident|Number|InfrastructureEventType|InstanceId|Last Modified By|Modified Date|Person Instance ID|Priority|Weight|ReconciliationIdentity|Region Reported|Date Reported|Source Request ID|Description|Site|Site Group|Site ID|State Province|Status|History|Street|Submitter|Time Zone|Urgency VIP|Zip/Postal Code|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|Standard|Office-Based Employee|Calbro Services|Calbro Services|2019-02-07T11:42:58.000+0000|0|New York| United States|hola mundo|App|1-Extensive/Widespread|INC123| None       | AGGA5B9BGBHP4APMKA9MPLNHKM0GM4 | admin         | 2019-02-07T11:42:58.000+0000 | AG0050560C63F2E1pSRAl5svAA5h4A | High   | 19                     | 0               | Americas      | 2019-02-07T11:42:58.000+0000 | Direct Input 000000000000012 | User Service Request | Headquarters, Building 1.31 | United States | STE_SOLN0002846 | New York | New     | {"New":{"user":"admin","timestamp":"2019-02-07T11:42:58.000+0000"}} | 1114 Eighth Avenue, 31st Floor | admin     | (GMT-05:00) Eastern Time (US &amp; Canada) | 3-Medium No     | 10036 |
 
 
 ### remedy-fetch-incidents
+
 ***
 Fetch all incidents
 
@@ -114,6 +126,7 @@ Fetch all incidents
 #### Base Command
 
 `remedy-fetch-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -145,17 +158,20 @@ Fetch all incidents
 
 
 #### Command Example
+
 ```!remedy-fetch-incidents```
 
 #### Human Readable Output
 
 >### Incidents:
+>
 >|Client Sensitivity|Client Type|Company|Contact_Company|Create Date|DatasetId|Default City|Default Country|Description|First_Name|Impact Incident|Number|InfrastructureEventType|InstanceId|Last Modified By|Modified Date|Person Instance ID|Priority|Weight|ReconciliationIdentity|Region Reported|Date Reported|Source Request ID|Description|Site|Site Group|Site ID|State Province|Status|History|Street|Submitter|Time Zone|Urgency VIP|Zip/Postal Code|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|Standard|Office-Based Employee|Calbro Services|Calbro Services|2019-02-07T11:42:58.000+0000|0|New York| United States|hola mundo|App|1-Extensive/Widespread|INC123| None       | AGGA5B9BGBHP4APMKA9MPLNHKM0GM4 | admin         | 2019-02-07T11:42:58.000+0000 | AG0050560C63F2E1pSRAl5svAA5h4A | High   | 19                     | 0               | Americas      | 2019-02-07T11:42:58.000+0000 | Direct Input 000000000000012 | User Service Request | Headquarters, Building 1.31 | United States | STE_SOLN0002846 | New York | New     | {"New":{"user":"admin","timestamp":"2019-02-07T11:42:58.000+0000"}} | 1114 Eighth Avenue, 31st Floor | admin     | (GMT-05:00) Eastern Time (US &amp; Canada) | 3-Medium No     | 10036 |
 
 
 ### remedy-incident-update
+
 ***
 Update exiting incident
 
@@ -163,6 +179,7 @@ Update exiting incident
 #### Base Command
 
 `remedy-incident-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -191,11 +208,13 @@ Update exiting incident
 
 
 #### Command Example
+
 ```!remedy-incident-update ID=9 description="Turns out it wasn't so bad after all!" impact="4-Minor/Localized" urgency="4-Low"```
 
 #### Human Readable Output
 
 >### Updated incident::
+>
 >|Client Sensitivity|Client Type|Company|Contact_Company|Create Date|DatasetId|Default City|Default Country|Description|First_Name|Impact Incident|Number|InfrastructureEventType|InstanceId|Last Modified By|Modified Date|Person Instance ID|Priority|Weight|ReconciliationIdentity|Region Reported|Date Reported|Source Request ID|Description|Site|Site Group|Site ID|State Province|Status|History|Street|Submitter|Time Zone|Urgency VIP|Zip/Postal Code|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|Standard|Office-Based Employee|Calbro Services|Calbro Services|2019-02-07T11:42:58.000+0000|0|New York| United States|hola mundo|App|1-Extensive/Widespread|INC123| None       | AGGA5B9BGBHP4APMKA9MPLNHKM0GM4 | admin         | 2019-02-07T11:42:58.000+0000 | AG0050560C63F2E1pSRAl5svAA5h4A | High   | 19                     | 0               | Americas      | 2019-02-07T11:42:58.000+0000 | Direct Input 000000000000012 | User Service Request | Headquarters, Building 1.31 | United States | STE_SOLN0002846 | New York | New     | {"New":{"user":"admin","timestamp":"2019-02-07T11:42:58.000+0000"}} | 1114 Eighth Avenue, 31st Floor | admin     | (GMT-05:00) Eastern Time (US &amp; Canada) | 3-Medium No     | 10036 |

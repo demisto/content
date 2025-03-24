@@ -1,12 +1,16 @@
 ## Overview
+
 ---
 
 Append HyperContext™ insights to your SIEM data and feed them into your orchestration workflows.
 This integration was integrated and tested with version 1.0 of WootCloud
+
 ## WootCloud Playbook
+
 ---
 
 ## Configure WootCloud on XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -20,28 +24,36 @@ This integration was integrated and tested with version 1.0 of WootCloud
     * __Severity Type__
     * __ Trust any certificate (not secure)__
 4. Click __Test__ to validate the URLs, token, and connection.
+
 ## Fetched Incidents Data
+
 ---
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. wootcloud-get-pkt-alerts
 2. wootcloud-get-bt-alerts
 3. wootcloud-get-anomaly-alerts
 4. wootcloud-fetch-packet-alert
 5. wootcloud-fetch-bluetooth-alert
 6. wootcloud-fetch-anomaly-alert
+
 ### 1. wootcloud-get-pkt-alerts
+
 ---
 list packet alerts generated in requested time span
+
 ##### Base Command
 
 `wootcloud-get-pkt-alerts`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | date_range | Examples are (2 hours, 4 minutes, 6 month, 1 day, etc.) | Required | 
 | severity | severity with values of 'notice', 'warning', 'critical' | Optional | 
@@ -52,7 +64,7 @@ list packet alerts generated in requested time span
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | WootCloud.PacketAlert.id | String | ID of alert | 
 | WootCloud.PacketAlert.address | String | Mac Address of device | 
@@ -131,9 +143,11 @@ list packet alerts generated in requested time span
 
 
 ##### Command Example
+
 ```!wootcloud-get-pkt-alerts date_range="30 days" severity="info" limit="1"```
 
 ##### Context Example
+
 ```
 {
     "WootCloud.PacketAlert": {
@@ -225,22 +239,26 @@ list packet alerts generated in requested time span
 ```
 
 ##### Human Readable Output
+
 ### Results for alerts
+
 |id|severity|signature|timestamp|
 |---|---|---|---|
 | eyJpIjoiU05XT09UQVBQUFJPRDAxXzQxMTYzXzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDUifQ== | info | ET POLICY Dropbox.com Offsite File Backup in Use | 2020-10-05T13:24:27Z |
 
 
 ### 2. wootcloud-get-bt-alerts
+
 ---
 list bluetooth alerts generated in requested time span
 
 ##### Base Command
 
 `wootcloud-get-bt-alerts`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | date_range | Examples are (2 hours, 4 minutes, 6 month, 1 day, etc.) | Required | 
 | severity | severity with values of 'notice', 'warning', 'critical' | Optional | 
@@ -251,7 +269,7 @@ list bluetooth alerts generated in requested time span
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | WootCloud.BluetoothAlert.id | String | ID | 
 | WootCloud.BluetoothAlert.timestamp | Date | timestamp | 
@@ -279,9 +297,11 @@ list bluetooth alerts generated in requested time span
 
 
 ##### Command Example
+
 ```!wootcloud-get-bt-alerts date_range="30 days" limit="1"```
 
 ##### Context Example
+
 ```
 {
     "WootCloud.BluetoothAlert": {
@@ -292,22 +312,26 @@ list bluetooth alerts generated in requested time span
 ```
 
 ##### Human Readable Output
+
 ### Results
+
 |alerts|total|
 |---|---|
 |  | 0 |
 
 
 ### 3. wootcloud-get-anomaly-alerts
+
 ---
 list anomaly alerts generated in requested time span
 
 ##### Base Command
 
 `wootcloud-get-anomaly-alerts`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | date_range | Examples are (2 hours, 4 minutes, 6 month, 1 day, etc.) | Required | 
 | severity | severity with values of 'info, ''notice', 'warning', 'critical' | Optional | 
@@ -318,7 +342,7 @@ list anomaly alerts generated in requested time span
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | WootCloud.AnomalyAlert.id | String | ID | 
 | WootCloud.AnomalyAlert.timestamp | Date | timestamp | 
@@ -359,9 +383,11 @@ list anomaly alerts generated in requested time span
 
 
 ##### Command Example
+
 ```!wootcloud-get-anomaly-alerts date_range="30 days" limit="5"```
 
 ##### Context Example
+
 ```
 {
     "WootCloud.AnomalyAlert": {
@@ -653,7 +679,9 @@ list anomaly alerts generated in requested time span
 ```
 
 ##### Human Readable Output
+
 ### Results for alerts
+
 |id|severity|signature|timestamp|
 |---|---|---|---|
 | eyJpIjoiU05XT09UQVBQUFJPRDAxX3JlYWx0aW1lX3AwMDIscGt0c3RhdHMzLDNjOmE5OmY0OjY0OjA2OmUwLDE2MDE3NDQ4OTcuNzg0NTg0LDI2ODkzXzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDMifQ== | low | realtime_p002:pktstats3\|1-min\| | 2020-10-03T17:08:17Z |
@@ -664,21 +692,24 @@ list anomaly alerts generated in requested time span
 
 
 ### 4. wootcloud-fetch-packet-alert
+
 ---
 retrieve single packet alert given packet id
+
 ##### Base Command
 
 `wootcloud-fetch-packet-alert`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | alert_id | the ID of the packet alert | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | WootCloud.PacketAlert.id | String | ID of alert | 
 | WootCloud.PacketAlert.address | String | Mac Address of device | 
@@ -757,9 +788,11 @@ retrieve single packet alert given packet id
 
 
 ##### Command Example
+
 ```!wootcloud-fetch-packet-alert alert_id="eyJpIjoiU05XT09UQVBQUFJPRDAxXzI2MzY1XzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDQifQ=="```
 
 ##### Context Example
+
 ```
 {
     "WootCloud.PacketAlert": {
@@ -856,29 +889,33 @@ retrieve single packet alert given packet id
 ```
 
 ##### Human Readable Output
+
 ### Results
+
 |address|category|description|destination|group|http|id|payload|references|severity|signature|source|subtype|timestamp|title|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 3c:a9:f4:64:06:e0 | Generic Protocol Command Decode | ET INFO WinHttp AutoProxy Request wpad.dat Possible BadTunnel | city: Boardman<br/>continent: North America<br/>country: United States<br/>ip: 3.3.3.3<br/>latitude: 45.8696<br/>longitude: -119.688<br/>mac: c4:24:56:87:ef:11<br/>network: external<br/>port: 80<br/>state: Oregon<br/>subnet: <br/>time_zone: America/Los_Angeles<br/>zip: 97818<br/>inferred: {"device_id": "5d73f6a3c250255491ce3839", "asset": "unmanaged", "managed": false, "category": "networking_equipment", "control": "auto", "host_name": "", "os": "linux", "os_version": "", "ownership": "corporate-unmanaged", "total_risk": 0, "type": "network infrastructure", "username": "", "managed_info": {"host_name": ""}} | alert | hostname: api-wootuno-1606049077.us-west-2.elb.amazonaws.com<br/>http_method: GET<br/>http_user_agent: WinHttp-Autoproxy-Service/5.1<br/>length: 134<br/>protocol: HTTP/1.1<br/>redirect: https://api-wootuno-1606049077.us-west-2.elb.amazonaws.com:443/wpad.dat<br/>http_refer: <br/>status: 301<br/>url: /wpad.dat | eyJpIjoiU05XT09UQVBQUFJPRDAxXzI2MzY1XzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDQifQ== | R0VUIC93cGFkLmRhdCBIVFRQLzEuMQ0KQ29ubmVjdGlvbjogS2VlcC1BbGl2ZQ0KQWNjZXB0OiAqLyoNClVzZXItQWdlbnQ6IFdpbkh0dHAtQXV0b3Byb3h5LVNlcnZpY2UvNS4xDQpIb3N0OiBhcGktd29vdHVuby0xNjA2MDQ5MDc3LnVzLXdlc3QtMi5lbGIuYW1hem9uYXdzLmNvbQ0KDQo= |  | info | ET INFO WinHttp AutoProxy Request wpad.dat Possible BadTunnel | city: Unknown<br/>continent: Unknown<br/>country: Unknown<br/>ip: 10.10.10.10<br/>latitude: -1<br/>longitude: -1<br/>mac: 3c:a9:f4:64:06:e0<br/>network: internal<br/>port: 63202<br/>state: Unknown<br/>subnet: 10.10.10.10/24<br/>time_zone: Unknown<br/>zip: Unknown<br/>inferred: {"device_id": "5b4c3c91072c98142d308b29", "asset": "managed", "managed": true, "category": "computer", "control": "auto", "host_name": "DESKTOP-EV607JG", "os": "windows", "os_version": "10", "ownership": "corporate", "total_risk": 0, "type": "computer", "username": "3ca9f46406e0", "managed_info": {"host_name": "DESKTOP-EV607JG"}} | protocol-command-decode | 2020-10-04T04:09:05Z | Generic Protocol Command Decode | pkt_alert |
+| 3c:a9:f4:64:06:e0 | Generic Protocol Command Decode | ET INFO WinHttp AutoProxy Request wpad.dat Possible BadTunnel | city: Boardman<br/>continent: North America<br/>country: United States<br/>ip: 3.3.3.3<br/>latitude: 45.8696<br/>longitude: -119.688<br/>mac: c4:24:56:87:ef:11<br/>network: external<br/>port: 80<br/>state: Oregon<br/>subnet: <br/>time_zone: America/Los_Angeles<br/>zip: 97818<br/>inferred: {"device_id": "5d73f6a3c250255491ce3839", "asset": "unmanaged", "managed": false, "category": "networking_equipment", "control": "auto", "host_name": "", "os": "linux", "os_version": "", "ownership": "corporate-unmanaged", "total_risk": 0, "type": "network infrastructure", "username": "", "managed_info": {"host_name": ""}} | alert | hostname: api-wootuno-1606049077.us-west-2.elb.amazonaws.com<br/>http_method: GET<br/>http_user_agent: WinHttp-Autoproxy-Service/5.1<br/>length: 134<br/>protocol: HTTP/1.1<br/>redirect: <https://api-wootuno-1606049077.us-west-2.elb.amazonaws.com:443/wpad.dat><br/>http_refer: <br/>status: 301<br/>url: /wpad.dat | eyJpIjoiU05XT09UQVBQUFJPRDAxXzI2MzY1XzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDQifQ== | R0VUIC93cGFkLmRhdCBIVFRQLzEuMQ0KQ29ubmVjdGlvbjogS2VlcC1BbGl2ZQ0KQWNjZXB0OiAqLyoNClVzZXItQWdlbnQ6IFdpbkh0dHAtQXV0b3Byb3h5LVNlcnZpY2UvNS4xDQpIb3N0OiBhcGktd29vdHVuby0xNjA2MDQ5MDc3LnVzLXdlc3QtMi5lbGIuYW1hem9uYXdzLmNvbQ0KDQo= |  | info | ET INFO WinHttp AutoProxy Request wpad.dat Possible BadTunnel | city: Unknown<br/>continent: Unknown<br/>country: Unknown<br/>ip: 10.10.10.10<br/>latitude: -1<br/>longitude: -1<br/>mac: 3c:a9:f4:64:06:e0<br/>network: internal<br/>port: 63202<br/>state: Unknown<br/>subnet: 10.10.10.10/24<br/>time_zone: Unknown<br/>zip: Unknown<br/>inferred: {"device_id": "5b4c3c91072c98142d308b29", "asset": "managed", "managed": true, "category": "computer", "control": "auto", "host_name": "DESKTOP-EV607JG", "os": "windows", "os_version": "10", "ownership": "corporate", "total_risk": 0, "type": "computer", "username": "3ca9f46406e0", "managed_info": {"host_name": "DESKTOP-EV607JG"}} | protocol-command-decode | 2020-10-04T04:09:05Z | Generic Protocol Command Decode | pkt_alert |
 
 
 ### 5. wootcloud-fetch-bluetooth-alert
+
 ---
 retrieve single bluetooth alert given packet id
 
 ##### Base Command
 
 `wootcloud-fetch-bluetooth-alert`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | alert_id | the ID of the bluetooth alert | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | WootCloud.BluetoothAlert.id | String | ID | 
 | WootCloud.BluetoothAlert.timestamp | Date | timestamp | 
@@ -906,28 +943,31 @@ retrieve single bluetooth alert given packet id
 
 
 ##### Command Example
+
 ```!wootcloud-fetch-bluetooth-alert alert_id="EXMP001"```
 
 ##### Human Readable Output
 
 
 ### 6. wootcloud-fetch-anomaly-alert
+
 ---
 retrieve single anomaly alert given packet id
 
 ##### Base Command
 
 `wootcloud-fetch-anomaly-alert`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | alert_id | the ID of the anomaly alert | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | WootCloud.AnomalyAlert.id | String | ID | 
 | WootCloud.AnomalyAlert.timestamp | Date | timestamp | 
@@ -968,9 +1008,11 @@ retrieve single anomaly alert given packet id
 
 
 ##### Command Example
+
 ```!wootcloud-fetch-anomaly-alert alert_id="eyJpIjoiU05XT09UQVBQUFJPRDAxX3JlYWx0aW1lX3AwMDIscGt0c3RhdHMzLDNjOmE5OmY0OjY0OjA2OmUwLDE2MDE3NDQ4OTcuNzg0NTg0LDI2ODkzXzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDMifQ=="	"```
 
 ##### Context Example
+
 ```
 {
     "WootCloud.AnomalyAlert": {
@@ -1033,7 +1075,9 @@ retrieve single anomaly alert given packet id
 ```
 
 ##### Human Readable Output
+
 ### Results
+
 |address|anomaly_score|anomaly_type|average|connections|count|description|deviation_from_norm|device_details|group|id|maximum|minimum|observed_value|severity|signature|standard_deviation|subtype|timestamp|title|type|units|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 3c:a9:f4:64:06:e0 | 0.41364444218713525 | Connection | 0 | {'ip': '2.2.2.2', 'port': 443, 'connection_count': 0},<br/>{'ip': '3.3.3.3', 'port': 443, 'connection_count': 0},<br/>{'ip': '4.4.4.4', 'port': 443, 'connection_count': 0},<br/>{'ip': '2.2.2.2', 'port': 443, 'connection_count': 0} | 26893 | Realtime Connection anomaly (1-min) triggered based on combination of 3 attributes:<br/>number of connections:15 (normally:2.44+/-1.40)<br/>number of destination ips:14 (normally:1.93+/-1.05)<br/>number of destination ports:3 (normally:1.89+/-0.96)<br/>normal is based on 26,893 observations. | 2 | device_id: 5b4c3c91072c98142d308b29<br/>asset: managed<br/>managed: true<br/>category: computer<br/>control: auto<br/>host_name: DESKTOP-EV607JG<br/>os: windows<br/>os_version: 10<br/>ownership: corporate<br/>total_risk: 0<br/>type: computer<br/>username: 3ca9f46406e0<br/>managed_info: {"host_name": "DESKTOP-EV607JG"} | anomaly | eyJpIjoiU05XT09UQVBQUFJPRDAxX3JlYWx0aW1lX3AwMDIscGt0c3RhdHMzLDNjOmE5OmY0OjY0OjA2OmUwLDE2MDE3NDQ4OTcuNzg0NTg0LDI2ODkzXzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDMifQ== | 0 | 0 | 0 | low | realtime_p002:pktstats3\|1-min\| | 0 | realtime_p002 | 2020-10-03T17:08:17Z | Connection Anomaly | realtime-anomaly |  |

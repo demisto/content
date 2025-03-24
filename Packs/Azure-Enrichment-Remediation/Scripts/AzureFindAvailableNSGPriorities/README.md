@@ -13,6 +13,7 @@ This script takes in a list of numbers that represent Azure priorities for NSG r
 
 ---
 This script is used in the following playbooks and scripts.
+
 - Azure - Network Security Group Remediation
 
 ## Inputs

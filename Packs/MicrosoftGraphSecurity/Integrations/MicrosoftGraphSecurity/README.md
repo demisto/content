@@ -9,13 +9,14 @@ For more details about the authentication used in this integration, see [Microso
 When using the `Authorization Code flow` for this integration, you should log in as an administrator or a user with administrative privileges (`Security Reader` or `Security Administrator`) after running the ***msg-generate-login-url*** command and the login window appears. For more information, see [here](https://learn.microsoft.com/en-us/graph/security-authorization).
 
 ## Important Notes:
+
 - Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
-For more information, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
+For more information, see: <https://github.com/microsoftgraph/security-api-solutions/issues/56>.
 - When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
 - As of July 2023, Microsoft Graph API does **not support** a solution to search for and delete emails. To do this, refer to the [Security & Compliance](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance) integration. 
 - When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
 - When using Threat Assessment, for information protection, The following limits apply to any request on /informationProtection:
-    - For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
+  - For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
      
   | **Operation** | **Limit per tenant** | **Limit per resource (email, URL, file)** |
     | --- | --- | --- |
@@ -162,7 +163,7 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 | MsGraph.Alert.DetectionSource | String | Relevant only for Alerts v2. Alert detection source. | 
 | MsGraph.Alert.DetectorId | String | Relevant only for Alerts v2. Alert detector ID. | 
 | MsGraph.Alert.Determination | Unknown | Relevant only for Alerts v2. Alert determination. | 
-| MsGraph.Alert.Evidence.@odata.Type | String | Relevant only for Alerts v2. Alert evidence. | 
+| <MsGraph.Alert.Evidence.@odata.Type> | String | Relevant only for Alerts v2. Alert evidence. | 
 | MsGraph.Alert.Evidence.AzureAdDeviceId | String | Relevant only for Alerts v2. Evidence Azure device ID. | 
 | MsGraph.Alert.Evidence.CreatedDate | Date | Relevant only for Alerts v2. Evidence creation time. | 
 | MsGraph.Alert.Evidence.DefenderAvStatus | String | Relevant only for Alerts v2. Evidence Defender AV status. | 
@@ -242,7 +243,7 @@ Get details for a specific alert.
 | MsGraph.Alert.Status | string | Alert status. | 
 | MsGraph.Alert.Vendor | string | Relevant only for Legacy Alerts. Alert vendor. | 
 | MsGraph.Alert.Provider | string | Relevant only for Legacy Alerts. Alert provider. | 
-| MsGraph.Alert.@odata.Context | String | Relevant only for Alerts v2. Alert odata context. | 
+| <MsGraph.Alert.@odata.Context> | String | Relevant only for Alerts v2. Alert odata context. | 
 | MsGraph.Alert.ActorDisplayName | Unknown | Relevant only for Alerts v2. Alert actor name. | 
 | MsGraph.Alert.AlertWebUrl | String | Relevant only for Alerts v2. Alert web URL. | 
 | MsGraph.Alert.AssignedTo | Unknown | Relevant only for Alerts v2. Alert assignee. | 
@@ -255,7 +256,7 @@ Get details for a specific alert.
 | MsGraph.Alert.DetectionSource | String | Relevant only for Alerts v2. Alert detection source. | 
 | MsGraph.Alert.DetectorId | String | Relevant only for Alerts v2. Alert detector ID. | 
 | MsGraph.Alert.Determination | Unknown | Relevant only for Alerts v2. Alert determination. | 
-| MsGraph.Alert.Evidence.@odata.Type | String | Relevant only for Alerts v2. Alert evidence. | 
+| <MsGraph.Alert.Evidence.@odata.Type> | String | Relevant only for Alerts v2. Alert evidence. | 
 | MsGraph.Alert.Evidence.CreatedDate | Date | Relevant only for Alerts v2. Evidence creation time. | 
 | MsGraph.Alert.Evidence.DetectionStatus | Unknown | Relevant only for Alerts v2. Evidence detection status. | 
 | MsGraph.Alert.Evidence.ImageFile.FileName | String | Relevant only for Alerts v2. Evidence image file name. | 
@@ -461,6 +462,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ### eDiscovery Commands
+
 ### msg-list-ediscovery-cases
 
 ***
@@ -846,7 +848,7 @@ Create a new ediscoveryCustodian object. After the custodian object is created, 
 
 >|Display Name| Email                             |Custodian Status|Custodian Id|Created Date Time|Last Modified Date Time|Hold Status|
 >|-----------------------------------|---|---|---|---|---|---|
->| testbox2 | yourmail@yoursite.onmicrosoft.com | active | 0af7ca2b84bc4cff930d5d301cc4caf3 | 2023-07-06T07:53:36.9441479Z | 2023-07-06T07:53:36.9441479Z | notApplied |
+>| testbox2 | <yourmail@yoursite.onmicrosoft.com> | active | 0af7ca2b84bc4cff930d5d301cc4caf3 | 2023-07-06T07:53:36.9441479Z | 2023-07-06T07:53:36.9441479Z | notApplied |
 
 ### msg-list-ediscovery-custodians
 
@@ -907,7 +909,7 @@ List custodians on a given eDiscovery case.
 
 >|Display Name| Email                         |Custodian Status|Custodian Id|Created Date Time|Last Modified Date Time|Hold Status|
 >|-------------------------------|---|---|---|---|---|---|
->| testbox2 | mail@yoursite.onmicrosoft.com | active | 0af7ca2b84bc4cff930d5d301cc4caf3 | 2023-07-06T07:53:36.9441479Z | 2023-07-06T07:53:36.9441479Z | notApplied |
+>| testbox2 | <mail@yoursite.onmicrosoft.com> | active | 0af7ca2b84bc4cff930d5d301cc4caf3 | 2023-07-06T07:53:36.9441479Z | 2023-07-06T07:53:36.9441479Z | notApplied |
 
 ### msg-activate-ediscovery-custodian
 
@@ -1032,7 +1034,7 @@ Create a new siteSource object associated with an eDiscovery custodian. Use the 
 
 >|Display Name|Site Source Id|Hold Status|Created Date Time|Created By Name|Created By UPN|Created By App Name|
 >|---|---|---|---|---|---|---|
->| site_test_1 | 862f0a64-e7db-46e0-a97f-9156b4f693ee | notApplied | 0001-01-01T00:00:00Z | Content Test | ContentTest@yoursite.onmicrosoft.com | Cortex XSOAR - MS Graph Security Dev |
+>| site_test_1 | 862f0a64-e7db-46e0-a97f-9156b4f693ee | notApplied | 0001-01-01T00:00:00Z | Content Test | <ContentTest@yoursite.onmicrosoft.com> | Cortex XSOAR - MS Graph Security Dev |
 
 ### msg-create-ediscovery-custodian-user-source
 
@@ -1106,7 +1108,7 @@ Create a new userSource object associated with an eDiscovery custodian. Use the 
 
 >|Display Name|Email|User Source Id|Hold Status|Created Date Time|Created By Name|Created By UPN|Created By App Name|Included Sources|
 >|---|---|---|---|---|---|---|---|---|
->| testbox2 | testbox2@yoursite.onmicrosoft.com | 0af7ca2b-84bc-4cff-930d-5d301cc4caf3 | notApplied | 0001-01-01T00:00:00Z | Content Test | ContentTest@yoursite.onmicrosoft.com | Cortex XSOAR - MS Graph Security Dev | mailbox,site |
+>| testbox2 | <testbox2@yoursite.onmicrosoft.com> | 0af7ca2b-84bc-4cff-930d-5d301cc4caf3 | notApplied | 0001-01-01T00:00:00Z | Content Test | <ContentTest@yoursite.onmicrosoft.com> | Cortex XSOAR - MS Graph Security Dev | mailbox,site |
 
 ### msg-list-ediscovery-custodian-user-sources
 
@@ -1183,7 +1185,7 @@ Get a list of the userSource objects associated with an eDiscoveryCustodian. Use
 
 >|Display Name|Email|User Source Id|Hold Status|Created Date Time|Created By Name|Created By UPN|Created By App Name|Site Web Url|Included Sources|
 >|---|---|---|---|---|---|---|---|---|---|
->| testbox2 | testbox2@yoursite.onmicrosoft.com | 0af7ca2b-84bc-4cff-930d-5d301cc4caf3 | notApplied | 2023-07-06T08:04:21.1548801Z | Content Test | ContentTest@yoursite.onmicrosoft.com | Cortex XSOAR - MS Graph Security Dev | https://yourdev-my.sharepoint.com/personal/testbox2_yourdev_onmicrosoft_com | mailbox,site |
+>| testbox2 | <testbox2@yoursite.onmicrosoft.com> | 0af7ca2b-84bc-4cff-930d-5d301cc4caf3 | notApplied | 2023-07-06T08:04:21.1548801Z | Content Test | <ContentTest@yoursite.onmicrosoft.com> | Cortex XSOAR - MS Graph Security Dev | <https://yourdev-my.sharepoint.com/personal/testbox2_yourdev_onmicrosoft_com> | mailbox,site |
 
 ### msg-list-ediscovery-custodian-site-sources
 
@@ -1515,7 +1517,7 @@ Create a new eDiscoverySearch object.
 
 >|Display Name|Data Source Scopes|Search Id|Created By Name|Created By App Name|Created By UPN|Created Date Time|Last Modified Date Time|
 >|---|---|---|---|---|---|---|---|
->| my search | allCaseNoncustodialDataSources | e7282eff-ba81-43cb-9027-522a343f6692 | Content Test | Cortex XSOAR - MS Graph Security Dev | ContentTest@yoursite.onmicrosoft.com | 2023-07-06T08:25:36.9874937Z | 2023-07-06T08:25:36.9874937Z |
+>| my search | allCaseNoncustodialDataSources | e7282eff-ba81-43cb-9027-522a343f6692 | Content Test | Cortex XSOAR - MS Graph Security Dev | <ContentTest@yoursite.onmicrosoft.com> | 2023-07-06T08:25:36.9874937Z | 2023-07-06T08:25:36.9874937Z |
 
 ### msg-update-ediscovery-search
 
@@ -1639,7 +1641,7 @@ Get the list of eDiscoverySearch resources from an eDiscovery case.
 
 >|Display Name|Data Source Scopes|Search Id|Created By Name|Created By App Name|Created By UPN|Created Date Time|Last Modified Date Time|
 >|---|---|---|---|---|---|---|---|
->| newname | allCaseNoncustodialDataSources | e7282eff-ba81-43cb-9027-522a343f6692 | Content Test | Cortex XSOAR - MS Graph Security Dev | ContentTest@yoursite.onmicrosoft.com | 2023-07-06T08:25:36.9874937Z | 2023-07-06T08:27:51.5611704Z |
+>| newname | allCaseNoncustodialDataSources | e7282eff-ba81-43cb-9027-522a343f6692 | Content Test | Cortex XSOAR - MS Graph Security Dev | <ContentTest@yoursite.onmicrosoft.com> | 2023-07-06T08:25:36.9874937Z | 2023-07-06T08:27:51.5611704Z |
 
 ### msg-purge-ediscovery-data
 
@@ -1710,12 +1712,14 @@ There is no context output for this command.
 
 
 ### Threat Assessment Commands
+
 ### msg-create-mail-assessment-request
 
 ***
 Create and retrieve a mail threat assessment.
 
 Note:
+
 - The message given in the command's argument *message_id* has to contain *X-MS-Exchange-Organization-Network-Message-Id* header in the message or in the *X-MS-Office365-Filtering-Correlation-Id* header in quarantined messages.
 - Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to access the mail received by the user (recipient email and message user), which means that if the authenticated user is different from the user specified in the recipient_email and message_user, then *Read and manage permissions* on behalf of the given user need to be added for the authenticated user via [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
 
@@ -1809,7 +1813,7 @@ Note:
 
 >|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Destination Routing Reason|Created User ID|Created Username|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 11922306-b25b-4605-ff0d-08d772fcf996 | "2019-11-27T05:45:14.0962061Z"| mail | unblock| spam| completed | administrator | avishai@demistodev.onmicrosoft.com |notJunk|63798129-a62c-4f9e-2c6d-08d772fcfb0e|No policy was hit.|
+>| 11922306-b25b-4605-ff0d-08d772fcf996 | "2019-11-27T05:45:14.0962061Z"| mail | unblock| spam| completed | administrator | <avishai@demistodev.onmicrosoft.com> |notJunk|63798129-a62c-4f9e-2c6d-08d772fcfb0e|No policy was hit.|
 
 
 ### msg-create-email-file-assessment-request
@@ -1892,7 +1896,7 @@ Note: File has to contain X-MS-Exchange-Organization-Network-Message-Id header i
 
 >|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Destination Routing Reason|Created User ID|Created Username|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 76598306-b25b-4605-ff0d-03kgmtfcf996 | "2019-11-27T05:45:14.0962061Z"| mail | unblock| phishing| completed | administrator | avishai@demistodev.onmicrosoft.com |notJunk|63798129-a62c-4f9e-2c6d-08d772fcfb0e|Phishing attempt.|
+>| 76598306-b25b-4605-ff0d-03kgmtfcf996 | "2019-11-27T05:45:14.0962061Z"| mail | unblock| phishing| completed | administrator | <avishai@demistodev.onmicrosoft.com> |notJunk|63798129-a62c-4f9e-2c6d-08d772fcfb0e|Phishing attempt.|
 
 
 ### msg-create-file-assessment-request
@@ -2148,13 +2152,15 @@ Retrieve all threat assessment requests.
 ```
 
 #### Human Readable Output
+>
 >###Next Token is: eyJQYWdlQ29va2llIjoiPHJvdyBpZF9JZGVudGl
+>
 >### Mail assessment request:
 
 >|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Created User ID|Created Username|destinationRoutingReason|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 49c5ef5b-1f65-444a-e6b9-08d772ea2059 | "2019-11-27T03:30:18.6890937Z"| mail | block| spam| pending| administrator | avishaibrandies@microsoft.com |63798129-a62c-4f9e-2c6d-08d772fcfb0e|spam attempt.|notJunk|
->| ab2ad9b3-2213-4091-ae0c-08d76ddbcacf | 2019-11-20T17:05:06.4088076Z| mail | block| malware| pending| administrator | avishaibrandies@microsoft.com |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Malware attempt.|notJunk|
+>| 49c5ef5b-1f65-444a-e6b9-08d772ea2059 | "2019-11-27T03:30:18.6890937Z"| mail | block| spam| pending| administrator | <avishaibrandies@microsoft.com> |63798129-a62c-4f9e-2c6d-08d772fcfb0e|spam attempt.|notJunk|
+>| ab2ad9b3-2213-4091-ae0c-08d76ddbcacf | 2019-11-20T17:05:06.4088076Z| mail | block| malware| pending| administrator | <avishaibrandies@microsoft.com> |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Malware attempt.|notJunk|
 
 
 ### msg-generate-login-url
@@ -2176,7 +2182,9 @@ Generate the login URL used for the authorization code flow.
 There is no context output for this command.
 
 #### Human Readable Output
+>
 >### Authorization instructions
+>
 >1. Click on the login URL to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 >```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -2211,8 +2219,11 @@ To save result in context to 'Microsoft365Defender' as well, you can check the '
 | Microsoft365Defender.Hunt.results | Unknown | The results of the query. | 
 
 #### Command example
+
 ```!msg-advanced-hunting query=AlertInfo limit=1```
+
 #### Context Example
+
 ```json
 {
     "Microsoft365Defender": {
@@ -2301,8 +2312,11 @@ Get a list of incident objects that Microsoft 365 Defender created to track atta
 | MsGraph.Incident.systemTags | string | The system tags associated with the incident. | 
 
 #### Command example
+
 ```!msg-list-security-incident limit=1```
+
 #### Context Example
+
 ```json
 {
     "MsGraph": {
@@ -2331,6 +2345,7 @@ Get a list of incident objects that Microsoft 365 Defender created to track atta
 #### Human Readable Output
 
 >### Incidents:
+>
 >|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min) involving one user | 12345 | medium | active |  |  |  | unknown | unknown | 2024-03-19T08:08:33.2533333Z | 2024-03-19T08:08:33.36Z |
@@ -2380,8 +2395,11 @@ Update the incident with the given ID.
 | MsGraph.Incident.systemTags | String collection | The system tags associated with the incident. | 
 
 #### Command example
+
 ```!msg-update-security-incident incident_id=12345```
+
 #### Context Example
+
 ```json
 {
     "MsGraph": {
@@ -2411,6 +2429,7 @@ Update the incident with the given ID.
 #### Human Readable Output
 
 >### Updated incident No. 12345:
+>
 >|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Exfiltration incident involving one user | 12345 | medium | active | test5 |  |  | unknown | unknown | 2024-03-17T15:50:31.9033333Z | 2024-03-19T07:24:34.7066667Z |

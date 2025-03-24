@@ -1,6 +1,7 @@
 Entry widget that shows the number of techniques that were already handled by the CoA playbooks.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,9 +11,11 @@ Entry widget that shows the number of techniques that were already handled by th
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

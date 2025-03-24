@@ -87,13 +87,17 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Supported query filters
+
 - To see supported query filters, refer to the link mentioned [here](https://developers.google.com/admin-sdk/alertcenter/reference/filter-fields#alerts.list).
 - To see the syntax of the filters, refer to the link mentioned [here](https://developers.google.com/admin-sdk/alertcenter/guides/query-filters).
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### gsac-alert-list
+
 ***
 Lists the alerts. Use the filter to filter the list by various alert types.
 Note: The alerts that have been marked for deletion in the past 30 days will still be visible.
@@ -102,6 +106,7 @@ Note: The alerts that have been marked for deletion in the past 30 days will sti
 #### Base Command
 
 `gsac-alert-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -202,9 +207,11 @@ Note: The alerts that have been marked for deletion in the past 30 days will sti
 
 
 #### Command Example
+
 ```!gsac-alert-list page_size=2```
 
 #### Context Example
+
 ```json
 {
     "GSuiteSecurityAlert": {
@@ -320,14 +327,18 @@ Note: The alerts that have been marked for deletion in the past 30 days will sti
 #### Human Readable Output
 
 >### Alerts
+>
 >|Alert Id|Alert Type|Source|Severity|Status|Create Time|Update Time|
 >|---|---|---|---|---|---|---|
 >| dummy_alert_id1 | User reported phishing | Gmail phishing | HIGH | NOT_STARTED | 2021-01-21T13:49:06.315483Z | 2021-01-21T13:49:06.315483Z |
 >| dummy_alert_id2 | User reported phishing | Gmail phishing | HIGH | NOT_STARTED | 2020-12-30T09:50:22.824822Z | 2020-12-30T09:50:22.824822Z |
+>
 >### Next Page Token:
+>
 >ChAKDmIMCIKp9IAGEIjg2ABCDxNaWNJbmNpZGVudHMiADoIMDNwdWVraGQ
 
 ### gsac-alert-get
+
 ***
 Gets the specified alert. 
 Note: To get the alert_id, execute the gsac-alert-list command.
@@ -336,6 +347,7 @@ Note: To get the alert_id, execute the gsac-alert-list command.
 #### Base Command
 
 `gsac-alert-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -431,9 +443,11 @@ Note: To get the alert_id, execute the gsac-alert-list command.
 
 
 #### Command Example
+
 ```!gsac-alert-get alert_id=dummy_alert_id4```
 
 #### Context Example
+
 ```json
 {
     "GSuiteSecurityAlert": {
@@ -470,12 +484,14 @@ Note: To get the alert_id, execute the gsac-alert-list command.
 #### Human Readable Output
 
 >### Alert
+>
 >|Alert Id|Alert Type|Source|Severity|Status|Create Time|Update Time|
 >|---|---|---|---|---|---|---|
 >| dummy_alert_id4 | Suspicious login | Google identity | LOW | NOT_STARTED | 2020-10-28T20:43:34.381Z | 2020-10-28T20:43:34.381Z |
 
 
 ### gsac-alert-feedback-create
+
 ***
 Creates new feedback for an alert.
 
@@ -483,6 +499,7 @@ Creates new feedback for an alert.
 #### Base Command
 
 `gsac-alert-feedback-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -504,9 +521,11 @@ Creates new feedback for an alert.
 
 
 #### Command Example
+
 ```!gsac-alert-feedback-create alert_id=dummy_alert_id4 feedback_type=VERY_USEFUL```
 
 #### Context Example
+
 ```json
 {
     "GSuiteSecurityAlert": {
@@ -525,12 +544,14 @@ Creates new feedback for an alert.
 #### Human Readable Output
 
 >### Feedback details
+>
 >|Feedback ID|Alert ID|Create Time|Feedback Type|Email|
 >|---|---|---|---|---|
->| dummy_feedback_id | dummy_alert_id4 | 2021-02-01T11:56:27.455114Z | VERY_USEFUL | dummy@abc.io |
+>| dummy_feedback_id | dummy_alert_id4 | 2021-02-01T11:56:27.455114Z | VERY_USEFUL | <dummy@abc.io> |
 
 
 ### gsac-alert-feedback-list
+
 ***
 Lists all the feedback for an alert.
 
@@ -538,6 +559,7 @@ Lists all the feedback for an alert.
 #### Base Command
 
 `gsac-alert-feedback-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -560,9 +582,11 @@ Lists all the feedback for an alert.
 
 
 #### Command Example
+
 ```!gsac-alert-feedback-list alert_id=dummy_alert_id5```
 
 #### Context Example
+
 ```json
 {
     "GSuiteSecurityAlert": {
@@ -599,14 +623,16 @@ Lists all the feedback for an alert.
 #### Human Readable Output
 
 >### Feedback details
+>
 >|Feedback ID|Alert ID|Create Time|Feedback Type|Email|
 >|---|---|---|---|---|
->| dummy_feedback_id1 | dummy_alert_id5 | 2021-01-21T12:06:22.350408Z | NOT_USEFUL | dummy@abc.io |
->| dummy_feedback_id2 | dummy_alert_id5 | 2021-01-21T11:56:53.489471Z | NOT_USEFUL | dummy@abc.io |
->| dummy_feedback_id3 | dummy_alert_id5 | 2021-01-20T20:11:20.343391Z | VERY_USEFUL | dummy@abc.io |
+>| dummy_feedback_id1 | dummy_alert_id5 | 2021-01-21T12:06:22.350408Z | NOT_USEFUL | <dummy@abc.io> |
+>| dummy_feedback_id2 | dummy_alert_id5 | 2021-01-21T11:56:53.489471Z | NOT_USEFUL | <dummy@abc.io> |
+>| dummy_feedback_id3 | dummy_alert_id5 | 2021-01-20T20:11:20.343391Z | VERY_USEFUL | <dummy@abc.io> |
 
 
 ### gsac-alert-delete
+
 ***
 Performs delete operation on alerts.
 Note: The alerts that are marked for deletion will be removed from the Alert Center after 30 days.
@@ -615,6 +641,7 @@ Note: The alerts that are marked for deletion will be removed from the Alert Cen
 #### Base Command
 
 `gsac-alert-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -636,9 +663,11 @@ Note: The alerts that are marked for deletion will be removed from the Alert Cen
 Note: The gsac-alert-delete command returns a custom context that contains the status key that shows the status of the alert ID marked for deletion.
 
 #### Command Example
+
 ```!gsac-alert-delete alert_id="dummy_alert_id1,dummy_alert_id2"```
 
 #### Context Example
+
 ```json
 {
     "GSuiteSecurityAlert": {
@@ -661,6 +690,7 @@ Note: The gsac-alert-delete command returns a custom context that contains the s
 #### Human Readable Output
 
 >### Delete Alerts
+>
 >|Alert ID|Status|
 >|---|---|
 >| dummy_alert_id1 | Success |
@@ -668,6 +698,7 @@ Note: The gsac-alert-delete command returns a custom context that contains the s
 
 
 ### gsac-alert-recover
+
 ***
 Performs a recover operation on alerts.
 Note: Recovers the alerts that were marked for deletion within the past 30 days.
@@ -676,6 +707,7 @@ Note: Recovers the alerts that were marked for deletion within the past 30 days.
 #### Base Command
 
 `gsac-alert-recover`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -697,10 +729,12 @@ Note: Recovers the alerts that were marked for deletion within the past 30 days.
 Note: The gsac-alert-recover command returns a custom context that contains the status key that shows the status of the alert ID marked for recovery.
 
 #### Command Example
+
 ```!gsac-alert-recover alert_id="dummy_alert_id1,dummy_alert_id2"```
 
 
 #### Context Example
+
 ```json
 {
     "GSuiteSecurityAlert": {
@@ -723,6 +757,7 @@ Note: The gsac-alert-recover command returns a custom context that contains the 
 #### Human Readable Output
 
 >### Recover Alerts
+>
 >|Alert ID|Status|
 >|---|---|
 >| dummy_alert_id1 | Success |

@@ -1,5 +1,6 @@
 Scale IT automation, manage complex deployments, and speed productivity.
 This integration was integrated and tested with version v3.8.0 of Ansible Automation Platform and with API version v2.
+
 ## Configure Ansible Automation Platform in Cortex
 
 
@@ -11,9 +12,12 @@ This integration was integrated and tested with version v3.8.0 of Ansible Automa
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ansible-tower-inventories-list
+
 ***
 Retrieves the list of inventories.
 
@@ -21,6 +25,7 @@ Retrieves the list of inventories.
 #### Base Command
 
 `ansible-tower-inventories-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -53,9 +58,11 @@ Retrieves the list of inventories.
 
 
 #### Command Example
+
 ```!ansible-tower-inventories-list page_number=1 page_size=50```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -84,12 +91,14 @@ Retrieves the list of inventories.
 #### Human Readable Output
 
 >### Inventories List
+>
 >|name|id|type|url|created|modified|organization|groups_with_active_failures|total_inventory_sources|inventory_sources_with_failures|pending_deletion|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Example Inventory | 1 | inventory | /api/v2/inventories/1/ | 2019-11-19 11:53:43.325946 | 2021-01-11 10:41:31.234370 | 1 | 0 | 0 | 0 | false |
 
 
 ### ansible-tower-hosts-list
+
 ***
 Retrieves the list of hosts. If an inventory ID is specified, retrieve the host located under the specific inventory.
 
@@ -97,6 +106,7 @@ Retrieves the list of hosts. If an inventory ID is specified, retrieve the host 
 #### Base Command
 
 `ansible-tower-hosts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -129,9 +139,11 @@ Retrieves the list of hosts. If an inventory ID is specified, retrieve the host 
 
 
 #### Command Example
+
 ```!ansible-tower-hosts-list inventory_id=1```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -160,12 +172,14 @@ Retrieves the list of hosts. If an inventory ID is specified, retrieve the host 
 #### Human Readable Output
 
 >### Hosts List
+>
 >|name|id|type|url|created|modified|inventory|enabled|variables|last_job|
 >|---|---|---|---|---|---|---|---|---|---|
 >| test | 1 | host | /api/v2/hosts/1/ | 2021-01-07 11:42:29.655768 | 2021-01-13 07:46:49.267924 | 1 | true |  | 700 |
 
 
 ### ansible-tower-host-create
+
 ***
 Creates a host under the specified inventory ID and with the specified name.
 
@@ -173,6 +187,7 @@ Creates a host under the specified inventory ID and with the specified name.
 #### Base Command
 
 `ansible-tower-host-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -205,9 +220,11 @@ Creates a host under the specified inventory ID and with the specified name.
 
 
 #### Command Example
+
 ```!ansible-tower-host-create host_name=example inventory_id=1```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -234,12 +251,14 @@ Creates a host under the specified inventory ID and with the specified name.
 #### Human Readable Output
 
 >### Created Host
+>
 >|name|id|enabled|inventory|modified|created|type|url|
 >|---|---|---|---|---|---|---|---|
 >| example | 3 | true |  1 | 2021-01-14 09:22:01.427272 | 2021-01-14 09:22:01.427258 | host | /api/v2/hosts/3/ |
 
 
 ### ansible-tower-host-delete
+
 ***
 Deletes the specified host.
 
@@ -247,6 +266,7 @@ Deletes the specified host.
 #### Base Command
 
 `ansible-tower-host-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -263,6 +283,7 @@ Deletes the specified host.
 
 
 #### Command Example
+
 ``` !ansible-tower-host-delete host_id=30 ```
 
 #### Human Readable Output
@@ -271,6 +292,7 @@ Removed host id: 30
 
 
 ### ansible-tower-job-templates-list
+
 ***
 Retrieves the list of job templates.
 
@@ -278,6 +300,7 @@ Retrieves the list of job templates.
 #### Base Command
 
 `ansible-tower-job-templates-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -321,9 +344,11 @@ Retrieves the list of job templates.
 
 
 #### Command Example
+
 ```!ansible-tower-job-templates-list```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -362,12 +387,14 @@ Retrieves the list of job templates.
 #### Human Readable Output
 
 >### Job Templates List
+>
 >|name|id|type|url|created|modified|inventory|project|playbook|timeout|last_job_run|last_job_failed|status|survey_enabled|become_enabled|credential|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Demo Job Template | 5 | job_template | /api/v2/job_templates/5/ | 2019-11-19 11:53:43.446968 | 2021-01-13 07:46:49.462160 | run | 1 | 4 | hello_world.yml | 0 | 2021-01-13T07:46:49.418371Z | true | failed | false | false |  | 1 |  |
 
 
 ### ansible-tower-credentials-list
+
 ***
 Retrieves the list of credentials. If an ID is specified, retrieve the specific credential.
 
@@ -375,6 +402,7 @@ Retrieves the list of credentials. If an ID is specified, retrieve the specific 
 #### Base Command
 
 `ansible-tower-credentials-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -402,9 +430,11 @@ Retrieves the list of credentials. If an ID is specified, retrieve the specific 
 
 
 #### Command Example
+
 ```!ansible-tower-credentials-list```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -429,12 +459,14 @@ Retrieves the list of credentials. If an ID is specified, retrieve the specific 
 #### Human Readable Output
 
 >### Credentials List
+>
 >|name|id|type|url|created|modified|credential_type|inputs|
 >|---|---|---|---|---|---|---|---|
 >| Demo Credential | 1 | credential | /api/v2/credentials/1/ | 2019-11-19 11:53:43.220855 | 2019-11-19 11:53:43.289192 | 1 | username: admin |
 
 
 ### ansible-tower-job-launch
+
 ***
 Launches the job template.
 
@@ -442,6 +474,7 @@ Launches the job template.
 #### Base Command
 
 `ansible-tower-job-launch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -491,9 +524,11 @@ Launches the job template.
 
 
 #### Command Example
+
 ```!ansible-tower-job-launch job_template_id=5```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -542,12 +577,14 @@ Launches the job template.
 #### Human Readable Output
 
 >### Job: 1 status is: pending
+>
 >|name|id|type|url|created|modified|job_type|inventory|project|playbook|extra_vars|timeout|launch_type|status|failed|elapsed|job_template|credential|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Example Job Template | 1 | job | /api/v2/jobs/1/ | 2021-01-14 09:22:07.965061 | 2021-01-14 09:22:08.080092 | run | 1 | 4 | hello_world.yml | {} | 0 | manual | pending | false | 0.0 | 5 | 1 |
 
 
 ### ansible-tower-job-relaunch
+
 ***
 Relaunch a job.
 
@@ -555,6 +592,7 @@ Relaunch a job.
 #### Base Command
 
 `ansible-tower-job-relaunch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -603,9 +641,11 @@ Relaunch a job.
 
 
 #### Command Example
+
 ```!ansible-tower-job-relaunch job_id=1```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -655,6 +695,7 @@ Relaunch a job.
 
 
 ### ansible-tower-job-cancel
+
 ***
 Cancels a pending or running job.
 
@@ -662,6 +703,7 @@ Cancels a pending or running job.
 #### Base Command
 
 `ansible-tower-job-cancel`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -708,9 +750,11 @@ Cancels a pending or running job.
 
 
 #### Command Example
+
 ```!ansible-tower-job-cancel job_id=2```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -758,6 +802,7 @@ Cancels a pending or running job.
 #### Human Readable Output
 
 >### Job 2 status canceled
+>
 >|name|id|type|url|created|modified|job_type|inventory|project|playbook|extra_vars|timeout|launch_type|status|failed|finished|elapsed|job_template|credential|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Example Job Template | 2 | job | /api/v2/jobs/2/ | 2021-01-14 12:11:11.430693 | 2021-01-14 12:11:17.297511 | run | 1 | 4 | hello_world.yml | {} | 0 | manual | canceled | true | 2021-01-14T12:11:17.297156Z | 0.0 | 5 | 1 |
@@ -767,6 +812,7 @@ Cancels a pending or running job.
 
 
 ### ansible-tower-job-stdout
+
 ***
 Retrieves the standard output by running the provided job.
 
@@ -774,6 +820,7 @@ Retrieves the standard output by running the provided job.
 #### Base Command
 
 `ansible-tower-job-stdout`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -792,9 +839,11 @@ Retrieves the standard output by running the provided job.
 
 
 #### Command Example
+
 ```!ansible-tower-job-stdout job_id=3```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -831,6 +880,7 @@ Retrieves the standard output by running the provided job.
 
 
 ### ansible-tower-job-status
+
 ***
 Retrieves the job status.
 
@@ -838,6 +888,7 @@ Retrieves the job status.
 #### Base Command
 
 `ansible-tower-job-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -885,9 +936,11 @@ Retrieves the job status.
 
 
 #### Command Example
+
 ```!ansible-tower-job-status job_id=2```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -935,12 +988,14 @@ Retrieves the job status.
 #### Human Readable Output
 
 >### Job 2 status failed
+>
 >|name|id|type|url|created|modified|job_type|inventory|project|playbook|extra_vars|timeout|launch_type|status|failed|finished|elapsed|job_template|credential|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Demo Job Template | 2 | job | /api/v2/jobs/2/ | 2020-12-30 16:12:05.529479 | 2020-12-30 16:12:08.435262 | run | 1 | 4 | hello_world.yml | {} | 0 | manual | failed | true | 2020-12-30T16:12:08.434925Z | 0.0 | 5 | 1 |
 
 
 ### ansible-tower-job-events-list
+
 ***
 Retrieves the list of job events.
 
@@ -948,6 +1003,7 @@ Retrieves the list of job events.
 #### Base Command
 
 `ansible-tower-job-events-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -985,9 +1041,11 @@ Retrieves the list of job events.
 | AnsibleAWX.JobEvents.end_line | Number | Ending line number of the execution.                                                                      |
 
 #### Command Example
+
 ```!ansible-tower-job-events-list```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -1022,11 +1080,13 @@ Retrieves the list of job events.
 #### Human Readable Output
 
 >### Results
+>
 >|type|id|url|created|modified|event|counter|event_display|event_level|failed|changed|uuid|parent_uuid|host|host_name|playbook|task|stdout|start_line|end_line|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| job_event | 1 | /api/v2/job_events/1/ | 2020-12-20 15:27:19.104059 | 2020-12-20 15:27:19.137215 | playbook_on_start | 1 | Playbook Started | 0 | false | false | 331e9ca5-56e2-4c2e-b77c-40fef9b95502 |  |  |  | hello_world.yml |  |  | 0 | 0 |
 
 ### ansible-tower-adhoc-command-launch
+
 ***
 Creates new ad hoc commands.
 
@@ -1034,6 +1094,7 @@ Creates new ad hoc commands.
 #### Base Command
 
 `ansible-tower-adhoc-command-launch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1074,9 +1135,11 @@ Creates new ad hoc commands.
 
 
 #### Command Example
+
 ```!ansible-tower-adhoc-command-launch credential_id=1 inventory_id=1 module_name=ping```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -1112,12 +1175,14 @@ Creates new ad hoc commands.
 #### Human Readable Output
 
 >### Ad hoc command - 1 status - new
+>
 >|name|id|type|url|created|modified|launch_type|status|failed|elapsed|job_type|inventory|credential|module_name|become_enabled|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| ping | 1 | ad_hoc_command | /api/v2/ad_hoc_commands/1/ | 2021-01-14 09:22:18.554364 | 2021-01-14 09:22:18.585043 | manual | new | false | 0.0 | run | 1 | 1 | ping | false |
 
 
 ### ansible-tower-adhoc-command-relaunch
+
 ***
 Launch a new job to run the ad hoc command.
 
@@ -1125,6 +1190,7 @@ Launch a new job to run the ad hoc command.
 #### Base Command
 
 `ansible-tower-adhoc-command-relaunch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1162,9 +1228,11 @@ Launch a new job to run the ad hoc command.
 
 
 #### Command Example
+
 ```!ansible-tower-adhoc-command-relaunch command_id=1```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -1204,12 +1272,14 @@ Launch a new job to run the ad hoc command.
 #### Human Readable Output
 
 >### Ad hoc command - 2 status - pending
+>
 >|name|id|type|url|created|modified|launch_type|status|failed|elapsed|job_type|inventory|credential|module_name|become_enabled|ad_hoc_command|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| ping | 2 | ad_hoc_command | /api/v2/ad_hoc_commands/2/ | 2021-01-14 09:22:20.700721 | 2021-01-14 09:22:20.748133 | manual | pending | false | 0.0 | run | 1 | 1 | ping | false | 2 |
 
 
 ### ansible-tower-adhoc-command-cancel
+
 ***
 Cancel a job of the specified ad hoc command.
 
@@ -1217,6 +1287,7 @@ Cancel a job of the specified ad hoc command.
 #### Base Command
 
 `ansible-tower-adhoc-command-cancel`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1257,9 +1328,11 @@ Cancel a job of the specified ad hoc command.
 
 
 #### Command Example
+
 ```!ansible-tower-adhoc-command-cancel command_id=2```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -1298,6 +1371,7 @@ Cancel a job of the specified ad hoc command.
 #### Human Readable Output
 
 >### Ad hoc command - 2 status - canceled
+>
 >|name|id|type|url|created|modified|launch_type|status|failed|started|elapsed|job_args|job_cwd|execution_node|job_type|inventory|credential|module_name|become_enabled|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| ping | 2 | ad_hoc_command | /api/v2/ad_hoc_commands/2/ | 2021-01-14 12:21:28.382292 | 2021-01-14 12:21:30.557684 | manual | canceled | false | 2021-01-14T12:21:28.668796Z | 2.280328 | [] |  | awx | run | 1 | 1 | ping | false |
@@ -1306,6 +1380,7 @@ Cancel a job of the specified ad hoc command.
 
 
 ### ansible-tower-adhoc-command-stdout
+
 ***
 Retrieves the standard output from running this ad hoc command.
 
@@ -1313,6 +1388,7 @@ Retrieves the standard output from running this ad hoc command.
 #### Base Command
 
 `ansible-tower-adhoc-command-stdout`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1330,9 +1406,11 @@ Retrieves the standard output from running this ad hoc command.
 
 
 #### Command Example
+
 ```!ansible-tower-adhoc-command-stdout command_id=1```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -1358,6 +1436,7 @@ Retrieves the standard output from running this ad hoc command.
 
 
 ### ansible-tower-adhoc-command-status
+
 ***
 Retrieves a single ad hoc command status.
 
@@ -1365,6 +1444,7 @@ Retrieves a single ad hoc command status.
 #### Base Command
 
 `ansible-tower-adhoc-command-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1405,9 +1485,11 @@ Retrieves a single ad hoc command status.
 
 
 #### Command Example
+
 ```!ansible-tower-adhoc-command-status command_id=1```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -1446,11 +1528,13 @@ Retrieves a single ad hoc command status.
 #### Human Readable Output
 
 >### Ad hoc command - 1 status - failed
+>
 >|name|id|type|url|created|modified|launch_type|status|failed|started|finished|elapsed|job_args|job_cwd|execution_node|job_type|inventory|credential|module_name|become_enabled|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| ping | 1 | ad_hoc_command | /api/v2/ad_hoc_commands/1/ | 2020-12-29 13:28:21.538400 | 2020-12-29 13:28:21.763189 | manual | failed | true | 2020-12-29T13:28:21.829663Z | 2020-12-29T13:28:24.029843Z | 2.2 | [] |  | awx | run | 1 | 1 | ping | false |
 
 ### ansible-tower-job-events-list-by-id
+
 ***
 Retrieves the list of job events of specific job.
 
@@ -1458,6 +1542,7 @@ Retrieves the list of job events of specific job.
 #### Base Command
 
 `ansible-tower-job-events-list-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1496,9 +1581,11 @@ Retrieves the list of job events of specific job.
 | AnsibleAWX.JobEvents.event_data | String | Job's raw event data.                                                                                     | 
 
 #### Command Example
+
 ```!ansible-tower-job-events-list-by-id job_id=69```
 
 #### Context Example
+
 ```json
 {
     "AnsibleAWX": {
@@ -1534,6 +1621,7 @@ Retrieves the list of job events of specific job.
 #### Human Readable Output
 
 >### Results
+>
 >|type|id|url|created|modified|event|counter|event_display|event_level|failed|changed|uuid|parent_uuid|host|host_name|playbook|task|stdout|start_line|end_line|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| job_event | 1 | /api/v2/job_events/1/ | 2020-12-20 15:27:19.104059 | 2020-12-20 15:27:19.137215 | playbook_on_start | 1 | Playbook Started | 0 | false | false | 331e9ca5-56e2-4c2e-b77c-40fef9b95502 |  |  |  | hello_world.yml |  |  | 0 | 0 |

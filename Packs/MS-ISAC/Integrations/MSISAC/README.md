@@ -12,9 +12,12 @@ This integration was integrated and tested with version 1.1 of MS-ISAC
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### msisac-get-event
+
 ***
 Retrieve alert data by its ID
 
@@ -22,6 +25,7 @@ Retrieve alert data by its ID
 #### Base Command
 
 `msisac-get-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -68,6 +72,7 @@ Retrieve alert data by its ID
 
 
 ### msisac-retrieve-events
+
 ***
 Retrieves a list of MS-ISAC events for a given number of days (one or greater)
 
@@ -75,6 +80,7 @@ Retrieves a list of MS-ISAC events for a given number of days (one or greater)
 #### Base Command
 
 `msisac-retrieve-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

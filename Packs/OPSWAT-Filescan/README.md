@@ -2,7 +2,10 @@ OPSWAT Filescan Sandbox is a unique adaptive threat analysis technology, enablin
 
 
 ## What does this pack do?
+
 This pack includes the OPSWAT Filescan Sandbox basic integration that do the following:
+
 ### OPSWAT Filescan Sandbox integration:
+
 - Upload a file or URL resource for scan and get the results.
 - Search for reports with a query parameter.

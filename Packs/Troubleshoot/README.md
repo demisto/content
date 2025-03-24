@@ -14,18 +14,19 @@ that you can later submit to the [Cortex XSOAR support site](https://support.pal
 ## How to use 
 
 ---
+
 * Configure a [Core REST API integration](https://xsoar.pan.dev/docs/reference/packs/integrations-and-incident-health-check#1-core-rest-api-integration) instance.
 * Create a new incident of type "Integration Troubleshooting"
 * **Troubleshoot type**:
-    * Use ***I'm unable to configure an instance*** if you fail to configure an integration (the test button returns an error). 
+  * Use ***I'm unable to configure an instance*** if you fail to configure an integration (the test button returns an error). 
     Note you must save this integration even if the test button fails.
-    * Use ***I have a problem with running a command*** if you fail to run a particular command.
+  * Use ***I have a problem with running a command*** if you fail to run a particular command.
 * **Instance Name**: The name of the instance to troubleshoot.
 * **Command Line**: Fill if you used the ***command*** as the **troubleshoot type**. (The command name with all its arguments.)
 * Create the incident.
 * The playbook will collect the following information:
-    * Instance configuration (without sensitive information such as the password or api keys).
-    * Logs of running the Test button with several configurations.
-    * Logs of executing the command (if you picked ***command*** in **Troubleshoot type**).
+  * Instance configuration (without sensitive information such as the password or api keys).
+  * Logs of running the Test button with several configurations.
+  * Logs of executing the command (if you picked ***command*** in **Troubleshoot type**).
 * A summary will be posted to the War Room alongside a zip file that will contain all collected information.
 * With this information you can submit a bug to the [Cortex XSOAR support site](https://support.paloaltonetworks.com).

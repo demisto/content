@@ -18,13 +18,16 @@ This integration was integrated and tested with version 7.21.0 of Bitbucket
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 * Note: The test button uses the 'bitbucket-project-list' command. In order to perform it, add to the **app password**, **Read** permissions to **Projects**.  
 
 ### bitbucket-project-list
+
 ***
 If a project_key is given, returns the requested project. Else, returns a list of the projects in the workspace.
 
@@ -32,6 +35,7 @@ If a project_key is given, returns the requested project. Else, returns a list o
 #### Base Command
 
 `bitbucket-project-list`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                          | **Required** |
@@ -69,8 +73,11 @@ If a project_key is given, returns the requested project. Else, returns a list o
 | Bitbucket.Project.has_publicly_visible_repos | Boolean | Whether the project has publicly visible repositories. | 
 
 #### Command example
+
 ```!bitbucket-project-list```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -203,6 +210,7 @@ If a project_key is given, returns the requested project. Else, returns a list o
 #### Human Readable Output
 
 >### List of projects in workspace
+>
 >|Key|Name|Description|IsPrivate|
 >|---|---|---|---|
 >| AP | Another Project | description | true |
@@ -210,6 +218,7 @@ If a project_key is given, returns the requested project. Else, returns a list o
 
 
 ### bitbucket-open-branch-list
+
 ***
 Returns a list of the open branches.
 
@@ -217,6 +226,7 @@ Returns a list of the open branches.
 #### Base Command
 
 `bitbucket-open-branch-list`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                          | **Required** |
@@ -259,8 +269,11 @@ Returns a list of the open branches.
 | Bitbucket.Branch.default_merge_strategy | String | The default merge strategy in the branch. | 
 
 #### Command example
+
 ```!bitbucket-open-branch-list```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -479,6 +492,7 @@ Returns a list of the open branches.
 #### Human Readable Output
 
 >### Open Branches
+>
 >|Name|LastCommitCreatedBy|LastCommitCreatedAt|LastCommitHash|
 >|---|---|---|---|
 >| master | Some User | 2022-09-18T08:00:00+00:00 | 1111111111111111111111111111111111111111 |
@@ -486,6 +500,7 @@ Returns a list of the open branches.
 
 
 ### bitbucket-branch-get
+
 ***
 Returns the information of the requested branch.
 
@@ -493,6 +508,7 @@ Returns the information of the requested branch.
 #### Base Command
 
 `bitbucket-branch-get`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                          | **Required** |
@@ -534,8 +550,11 @@ Returns the information of the requested branch.
 | Bitbucket.Branch.default_merge_strategy | String | The default merge strategy. | 
 
 #### Command example
+
 ```!bitbucket-branch-get branch_name=master```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -649,12 +668,14 @@ Returns the information of the requested branch.
 #### Human Readable Output
 
 >### Information about the branch: master
+>
 >|Name|LastCommitCreatedAt|LastCommitHash|
 >|---|---|---|
 >| master | Some User | 2022-09-18T08:07:00+00:00 | 1111111111111111111111111111111111111111 |
 
 
 ### bitbucket-branch-create
+
 ***
 Creates a new branch in Bitbucket.
 
@@ -662,6 +683,7 @@ Creates a new branch in Bitbucket.
 #### Base Command
 
 `bitbucket-branch-create`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                          | **Required** |
@@ -704,8 +726,11 @@ Creates a new branch in Bitbucket.
 | Bitbucket.Branch.default_merge_strategy | String | The default merge strategy in the new branch. | 
 
 #### Command example
+
 ```!bitbucket-branch-create name=testing target_branch=master```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -821,6 +846,7 @@ Creates a new branch in Bitbucket.
 >The branch "testing" was created successfully.
 
 ### bitbucket-branch-delete
+
 ***
 Deletes the given branch from Bitbucket.
 
@@ -828,6 +854,7 @@ Deletes the given branch from Bitbucket.
 #### Base Command
 
 `bitbucket-branch-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -839,13 +866,17 @@ Deletes the given branch from Bitbucket.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!bitbucket-branch-delete branch_name=testing```
+
 #### Human Readable Output
 
 >The branch testing was deleted successfully.
 
 ### bitbucket-commit-create
+
 ***
 Creates a new commit in Bitbucket.
 
@@ -853,6 +884,7 @@ Creates a new commit in Bitbucket.
 #### Base Command
 
 `bitbucket-commit-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -870,13 +902,17 @@ Creates a new commit in Bitbucket.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!bitbucket-commit-create branch=master message="checking master" file_name="new_file.txt" file_content="some new content"```
+
 #### Human Readable Output
 
 >The commit was created successfully.
 
 ### bitbucket-commit-list
+
 ***
 Returns a list of the commit in accordance with the included and excluded branches.
 
@@ -884,6 +920,7 @@ Returns a list of the commit in accordance with the included and excluded branch
 #### Base Command
 
 `bitbucket-commit-list`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                          | **Required** |
@@ -928,8 +965,11 @@ Returns a list of the commit in accordance with the included and excluded branch
 | Bitbucket.Commit.repository.uuid | String | The unique ID of the repository. | 
 
 #### Command example
+
 ```!bitbucket-commit-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -1134,6 +1174,7 @@ Returns a list of the commit in accordance with the included and excluded branch
 #### Human Readable Output
 
 >### The list of commits
+>
 >|Author|Commit|Message|CreatedAt|
 >|---|---|---|---|
 >| Some User <someuser@gmail.com> | 1111111111111111111111111111111111111111 | checking master | 2022-09-18T08:56:51+00:00 |
@@ -1141,6 +1182,7 @@ Returns a list of the commit in accordance with the included and excluded branch
 
 
 ### bitbucket-file-delete
+
 ***
 Deletes the given file from Bitbucket.
 
@@ -1148,6 +1190,7 @@ Deletes the given file from Bitbucket.
 #### Base Command
 
 `bitbucket-file-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1163,13 +1206,17 @@ Deletes the given file from Bitbucket.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!bitbucket-file-delete branch=master file_name=new_file.txt message="delete the new file"```
+
 #### Human Readable Output
 
 >The file was deleted successfully.
 
 ### bitbucket-raw-file-get
+
 ***
 Returns the content of the given file, along with the option to download it.
 
@@ -1177,6 +1224,7 @@ Returns the content of the given file, along with the option to download it.
 #### Base Command
 
 `bitbucket-raw-file-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1199,8 +1247,11 @@ Returns the content of the given file, along with the option to download it.
 | InfoFile.Type | String | The file type. |
 
 #### Command example
+
 ```!bitbucket-raw-file-get file_path=new.txt branch=branch```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -1230,15 +1281,18 @@ Returns the content of the given file, along with the option to download it.
 >The content of the file "new.txt" is: Hi I am a new file.
 
 ### bitbucket-issue-create
+
 ***
 Creates an issue in Bitbucket.
 
 ##### Required Permissions
+
 In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker
 
 #### Base Command
 
 `bitbucket-issue-create`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                       | **Required** |
@@ -1296,8 +1350,11 @@ In order to perform this command, please create an issue tracker by clicking on 
 | Bitbucket.Issue.watches | Unknown | The watchers of the issue. | 
 
 #### Command example
+
 ```!bitbucket-issue-create title="a new issue"```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -1373,6 +1430,7 @@ In order to perform this command, please create an issue tracker by clicking on 
 >The issue "a new issue" was created successfully
 
 ### bitbucket-issue-list
+
 ***
 If an issue_id is given, returns the information about it. Otherwise, returns a list of all the issues, according to the limit parameter.
 
@@ -1380,6 +1438,7 @@ If an issue_id is given, returns the information about it. Otherwise, returns a 
 #### Base Command
 
 `bitbucket-issue-list`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                          | **Required** |
@@ -1433,8 +1492,11 @@ If an issue_id is given, returns the information about it. Otherwise, returns a 
 | Bitbucket.Issue.watches | Number | The watchers of the issue. | 
 
 #### Command example
+
 ```!bitbucket-issue-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -1603,6 +1665,7 @@ If an issue_id is given, returns the information about it. Otherwise, returns a 
 #### Human Readable Output
 
 >### Issues List
+>
 >|Id|Title|Type|Priority|Status|Votes|CreatedAt|UpdatedAt|
 >|---|---|---|---|---|---|---|---|
 >| 92 | a new issue | bug | major | new | 0 | 2022-09-18T08:00:00.000000+00:00 | 2022-09-18T08:00:00.000000+00:00 |
@@ -1610,15 +1673,18 @@ If an issue_id is given, returns the information about it. Otherwise, returns a 
 
 
 ### bitbucket-issue-update
+
 ***
 Updates an issue in Bitbucket.
 
 ##### Required Permissions
+
 In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker.
 
 #### Base Command
 
 `bitbucket-issue-update`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                       | **Required** |
@@ -1677,8 +1743,11 @@ In order to perform this command, please create an issue tracker by clicking on 
 | Bitbucket.Issue.watches | Number | The watchers of the issue. | 
 
 #### Command example
+
 ```!bitbucket-issue-update issue_id=91 title="a new issue" state=resolved```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -1769,6 +1838,7 @@ In order to perform this command, please create an issue tracker by clicking on 
 >The issue with id "91" was updated successfully
 
 ### bitbucket-pull-request-create
+
 ***
 Creates a pull request in Bitbucket.
 
@@ -1776,6 +1846,7 @@ Creates a pull request in Bitbucket.
 #### Base Command
 
 `bitbucket-pull-request-create`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                        | **Required** |
@@ -1864,8 +1935,11 @@ Creates a pull request in Bitbucket.
 | Bitbucket.PullRequest.summary.html | String   | The description of the pull request in HTML format.                                     | 
 
 #### Command example
+
 ```!bitbucket-pull-request-create source_branch=test title="pull_request"```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -2084,6 +2158,7 @@ Creates a pull request in Bitbucket.
 >The pull request was created successfully
 
 ### bitbucket-pull-request-update
+
 ***
 Updates a pull request in Bitbucket.
 
@@ -2091,6 +2166,7 @@ Updates a pull request in Bitbucket.
 #### Base Command
 
 `bitbucket-pull-request-update`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                       | **Required** |
@@ -2178,8 +2254,11 @@ Updates a pull request in Bitbucket.
 | Bitbucket.PullRequest.summary.html | String   | The description of the pull request in HTML format. | 
 
 #### Command example
+
 ```!bitbucket-pull-request-update pull_request_id=8 description="updating description"```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -2394,6 +2473,7 @@ Updates a pull request in Bitbucket.
 ```
 
 ### bitbucket-pull-request-list
+
 ***
 Returns a list of the pull requests. If a state is provided than the list will contain only PRs with the wanted status. If a state is not provided, by default a list of the open pull requests will return.
 
@@ -2401,6 +2481,7 @@ Returns a list of the pull requests. If a state is provided than the list will c
 #### Base Command
 
 `bitbucket-pull-request-list`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                          | **Required** |
@@ -2485,8 +2566,11 @@ Returns a list of the pull requests. If a state is provided than the list will c
 | Bitbucket.PullRequest.summary.html | String   | The description of the pull request in HTML format. | 
 
 #### Command example
+
 ```!bitbucket-pull-request-list```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -2836,6 +2920,7 @@ Returns a list of the pull requests. If a state is provided than the list will c
 #### Human Readable Output
 
 >### List of the pull requests
+>
 >|Id|Title|Description|SourceBranch|DestinationBranch|State|CreatedBy|CreatedAt|UpdatedAt|
 >|---|---|---|---|---|---|---|---|---|
 >| 8 | pull_request |  | test | master | OPEN | Some User | 2022-09-12T09:51:55.458494+00:00 | 2022-09-18T08:57:20.815479+00:00 |
@@ -2843,6 +2928,7 @@ Returns a list of the pull requests. If a state is provided than the list will c
 
 
 ### bitbucket-issue-comment-create
+
 ***
 Creates a comment on an issue in Bitbucket.
 
@@ -2850,6 +2936,7 @@ Creates a comment on an issue in Bitbucket.
 #### Base Command
 
 `bitbucket-issue-comment-create`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                          | **Required** |
@@ -2890,8 +2977,11 @@ Creates a comment on an issue in Bitbucket.
 | Bitbucket.IssueComment.links | String | Links to information about the comment. | 
 
 #### Command example
+
 ```!bitbucket-issue-comment-create content="some comment" issue_id=1```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -2969,6 +3059,7 @@ Creates a comment on an issue in Bitbucket.
 >The comment was created successfully
 
 ### bitbucket-issue-comment-delete
+
 ***
 Deletes a comment on an issue in Bitbucket.
 
@@ -2976,6 +3067,7 @@ Deletes a comment on an issue in Bitbucket.
 #### Base Command
 
 `bitbucket-issue-comment-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2994,6 +3086,7 @@ There is no context output for this command.
 >The comment was deleted successfully
 
 ### bitbucket-issue-comment-list
+
 ***
 Returns a list of comments on a specific issue. If a comment_id is given it will return information only about the specific comment.
 
@@ -3001,6 +3094,7 @@ Returns a list of comments on a specific issue. If a comment_id is given it will
 #### Base Command
 
 `bitbucket-issue-comment-list`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                               | **Required** |
@@ -3043,8 +3137,11 @@ Returns a list of comments on a specific issue. If a comment_id is given it will
 | Bitbucket.IssueComment.links | String | Links to information about the comment. | 
 
 #### Command example
+
 ```!bitbucket-issue-comment-list issue_id=1```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -3187,6 +3284,7 @@ Returns a list of comments on a specific issue. If a comment_id is given it will
 #### Human Readable Output
 
 >### List of the comments on issue "1"
+>
 >|Id|Content|CreatedBy|CreatedAt|UpdatedAt|IssueId|IssueTitle|
 >|---|---|---|---|---|---|---|
 >| 11111111 | new bug | Some User | 2022-09-06T14:23:03.776275+00:00 |  | 1 | new issue |
@@ -3194,6 +3292,7 @@ Returns a list of comments on a specific issue. If a comment_id is given it will
 
 
 ### bitbucket-issue-comment-update
+
 ***
 Updates a specific comment on a given issue.
 
@@ -3201,6 +3300,7 @@ Updates a specific comment on a given issue.
 #### Base Command
 
 `bitbucket-issue-comment-update`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                          | **Required** |
@@ -3242,8 +3342,11 @@ Updates a specific comment on a given issue.
 | Bitbucket.IssueComment.links | String | Links to information about the comment. | 
 
 #### Command example
+
 ```!bitbucket-issue-comment-update issue_id=1 comment_id=11111111 content="updating content info"```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -3321,6 +3424,7 @@ Updates a specific comment on a given issue.
 >The comment "11111111" on issue "1" was updated successfully
 
 ### bitbucket-pull-request-comment-create
+
 ***
 Creates a new comment on a pull request.
 
@@ -3328,6 +3432,7 @@ Creates a new comment on a pull request.
 #### Base Command
 
 `bitbucket-pull-request-comment-create`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                          | **Required** |
@@ -3364,8 +3469,11 @@ Creates a new comment on a pull request.
 | Bitbucket.PullRequestComment.pullrequest.links | String | Links to information about the pull request. | 
 
 #### Command example
+
 ```!bitbucket-pull-request-comment-create content="new comment on a pull request" pull_request_id=1```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -3432,6 +3540,7 @@ Creates a new comment on a pull request.
 >The comment was created successfully
 
 ### bitbucket-pull-request-comment-list
+
 ***
 Returns a list of comments of a specific pull request.
 
@@ -3439,6 +3548,7 @@ Returns a list of comments of a specific pull request.
 #### Base Command
 
 `bitbucket-pull-request-comment-list`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                          | **Required** |
@@ -3477,8 +3587,11 @@ Returns a list of comments of a specific pull request.
 | Bitbucket.PullRequestComment.pullrequest.links | String | Links to information about the pull request. | 
 
 #### Command example
+
 ```!bitbucket-pull-request-comment-list pull_request_id=1```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -3543,12 +3656,14 @@ Returns a list of comments of a specific pull request.
 #### Human Readable Output
 
 >### List of the comments on pull request "1"
+>
 >|Id|Content|CreatedBy|CreatedAt|UpdatedAt|
 >|---|---|---|---|---|
 >| 11111111 | new comment on a pull request | Some User | 2022-09-18T08:57:13.848266+00:00 | 2022-09-18T08:57:13.848309+00:00 |
 
 
 ### bitbucket-pull-request-comment-update
+
 ***
 Updates a specific comment in a specific pull request.
 
@@ -3556,6 +3671,7 @@ Updates a specific comment in a specific pull request.
 #### Base Command
 
 `bitbucket-pull-request-comment-update`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                          | **Required** |
@@ -3593,8 +3709,11 @@ Updates a specific comment in a specific pull request.
 | Bitbucket.PullRequestComment.pullrequest.links | String | Links to information about the pull request. | 
 
 #### Command example
+
 ```!bitbucket-pull-request-comment-update comment_id=111111111 content="hi you" pull_request_id=1```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -3661,6 +3780,7 @@ Updates a specific comment in a specific pull request.
 >### The comment was updated successfully
 
 ### bitbucket-pull-request-comment-delete
+
 ***
 Deletes a specific comment in a specific pull request.
 
@@ -3668,6 +3788,7 @@ Deletes a specific comment in a specific pull request.
 #### Base Command
 
 `bitbucket-pull-request-comment-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3680,13 +3801,17 @@ Deletes a specific comment in a specific pull request.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!bitbucket-pull-request-comment-delete comment_id=331372169 pull_request_id=1```
+
 #### Human Readable Output
 
 >The comment was deleted successfully.
 
 ### bitbucket-workspace-member-list
+
 ***
 Returns a list of all the members in the workspace.
 
@@ -3694,6 +3819,7 @@ Returns a list of all the members in the workspace.
 #### Base Command
 
 `bitbucket-workspace-member-list`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                          | **Required** |
@@ -3721,8 +3847,11 @@ Returns a list of all the members in the workspace.
 | Bitbucket.WorkspaceMember.workspace.links | String | Links to information about the workspace. | 
 
 #### Command example
+
 ```!bitbucket-workspace-member-list```
+
 #### Context Example
+
 ```json
 {
     "Bitbucket": {
@@ -3821,6 +3950,7 @@ Returns a list of all the members in the workspace.
 #### Human Readable Output
 
 >### The list of all the workspace members
+>
 >| Name         |AccountId|
 --------------|---|---|
 >| Some User | 111111111111111111111111 |

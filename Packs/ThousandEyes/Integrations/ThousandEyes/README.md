@@ -17,9 +17,12 @@ It was integrated and tested with API v6 of ThousandEyes.
 | Minimum Severity to filter out the fetched alerts (only applicable for incidents) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### thousandeyes-get-alerts
+
 ***
 Fetches all the alerts.
 
@@ -27,6 +30,7 @@ Fetches all the alerts.
 #### Base Command
 
 `thousandeyes-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -58,6 +62,7 @@ Fetches all the alerts.
 
 
 ### thousandeyes-get-alert
+
 ***
 Fetches a given alert.
 
@@ -65,6 +70,7 @@ Fetches a given alert.
 #### Base Command
 
 `thousandeyes-get-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -77,6 +83,7 @@ Fetches a given alert.
 There is no context output for this command.
 
 ### thousandeyes-get-agents
+
 ***
 Fetches all agents.
 
@@ -84,6 +91,7 @@ Fetches all agents.
 #### Base Command
 
 `thousandeyes-get-agents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -117,6 +125,7 @@ Fetches all agents.
 
 
 ### thousandeyes-get-agent
+
 ***
 Fetches a given agent.
 
@@ -124,6 +133,7 @@ Fetches a given agent.
 #### Base Command
 
 `thousandeyes-get-agent`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

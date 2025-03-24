@@ -3,6 +3,7 @@ Generates the URL for a Data Collection Task into Context.  Can be used to get t
 To generate links for specific users, add an array of users in the users argument.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +12,7 @@ To generate links for specific users, add an array of users in the users argumen
 | Tags | Utility |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +21,7 @@ To generate links for specific users, add an array of users in the users argumen
 | users | The array of users the data collection task was sent to, or that you want to send to \(If using by task only\) |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

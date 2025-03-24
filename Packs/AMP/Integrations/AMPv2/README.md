@@ -18,9 +18,12 @@ This integration was integrated and tested with version 1 of CiscoAMP.
 | Create relationships | Create relationships between indicators as part of Enrichment. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cisco-amp-computer-list
+
 ***
 Fetch computers to shows information about them. Can be filtered by a variety of criteria.
 
@@ -28,6 +31,7 @@ Fetch computers to shows information about them. Can be filtered by a variety of
 #### Base Command
 
 `cisco-amp-computer-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -82,8 +86,11 @@ Fetch computers to shows information about them. Can be filtered by a variety of
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 #### Command example
+
 ```!cisco-amp-computer-list limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -343,10 +350,13 @@ Fetch computers to shows information about them. Can be filtered by a variety of
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 5 | 0 | 5 | 32 |
+>
 >### Computer Information
+>
 >|Host Name|Connector GUID|Operating System|External IP|Group GUID|Policy GUID|
 >|---|---|---|---|---|---|
 >| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | Windows 10 (Build 10.0.19044.1466) | IP | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 | 91c7894d-dd69-4a21-8cf6-5ebfc57ef4df |
@@ -357,6 +367,7 @@ Fetch computers to shows information about them. Can be filtered by a variety of
 
 
 ### cisco-amp-computer-trajectory-list
+
 ***
 Provides a list of all activities associated with a particular computer. This is analogous to the Device Trajectory on the FireAMP console.
 
@@ -364,6 +375,7 @@ Provides a list of all activities associated with a particular computer. This is
 #### Base Command
 
 `cisco-amp-computer-trajectory-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -407,8 +419,11 @@ Provides a list of all activities associated with a particular computer. This is
 | CiscoAMP.ComputerTrajectory.scan.malicious_detections | Number | Number of malicious detections. | 
 
 #### Command example
+
 ```!cisco-amp-computer-trajectory-list connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0 limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -490,10 +505,13 @@ Provides a list of all activities associated with a particular computer. This is
 #### Human Readable Output
 
 >### Computer Information
+>
 >|Host Name|Connector GUID|Operating System|External IP|Group GUID|Policy GUID|
 >|---|---|---|---|---|---|
 >| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | Windows 10 (Build 10.0.19044.1466) | IP | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 | 91c7894d-dd69-4a21-8cf6-5ebfc57ef4df |
+>
 >### Event Information
+>
 >|ID|Date|Event Type|Group GUIDs|
 >|---|---|---|---|
 >| 1667217305855411965 | 2022-10-31T11:55:05+00:00 | Endpoint Isolation Stop Success | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 |
@@ -504,6 +522,7 @@ Provides a list of all activities associated with a particular computer. This is
 
 
 ### cisco-amp-computer-user-activity-list
+
 ***
 Fetch a list of computers that have observed activity by given username.
 
@@ -511,6 +530,7 @@ Fetch a list of computers that have observed activity by given username.
 #### Base Command
 
 `cisco-amp-computer-user-activity-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -530,8 +550,11 @@ Fetch a list of computers that have observed activity by given username.
 | CiscoAMP.ComputerUserActivity.active | Boolean | Whether the computer is active. | 
 
 #### Command example
+
 ```!cisco-amp-computer-user-activity-list username=johndoe```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -584,10 +607,13 @@ Fetch a list of computers that have observed activity by given username.
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 8 | 0 | 100 | 8 |
+>
 >### Activity Information
+>
 >|Connector GUID|Host Name|Active|
 >|---|---|---|
 >| 113c1a8e-8e66-409e-92a8-41b7d586be5d | Demo_AMP_Exploit_Prevention | true |
@@ -601,6 +627,7 @@ Fetch a list of computers that have observed activity by given username.
 
 
 ### cisco-amp-computer-user-trajectory-list
+
 ***
 Fetch a specific computer's trajectory with a given connector_guid and filter for events with user name activity.
 
@@ -608,6 +635,7 @@ Fetch a specific computer's trajectory with a given connector_guid and filter fo
 #### Base Command
 
 `cisco-amp-computer-user-trajectory-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -651,8 +679,11 @@ Fetch a specific computer's trajectory with a given connector_guid and filter fo
 | CiscoAMP.ComputerUserTrajectory.scan.malicious_detections | Number | Number of malicious detections. | 
 
 #### Command example
+
 ```!cisco-amp-computer-user-trajectory-list connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0 limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -734,10 +765,13 @@ Fetch a specific computer's trajectory with a given connector_guid and filter fo
 #### Human Readable Output
 
 >### Computer Information
+>
 >|Host Name|Connector GUID|Operating System|
 >|---|---|---|
 >| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | None (Build None) |
+>
 >### Event Information
+>
 >|ID|Date|Event Type|Group GUIDs|
 >|---|---|---|---|
 >| 1667217305855411965 | 2022-10-31T11:55:05+00:00 | Endpoint Isolation Stop Success | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 |
@@ -748,6 +782,7 @@ Fetch a specific computer's trajectory with a given connector_guid and filter fo
 
 
 ### cisco-amp-computer-vulnerabilities-list
+
 ***
 Provides a list of vulnerabilities observed on a specific computer. The vulnerabilities can be filtered to show only vulnerable applications observed for a specific time range.
 
@@ -755,6 +790,7 @@ Provides a list of vulnerabilities observed on a specific computer. The vulnerab
 #### Base Command
 
 `cisco-amp-computer-vulnerabilities-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -785,8 +821,11 @@ Provides a list of vulnerabilities observed on a specific computer. The vulnerab
 | CiscoAMP.ComputerVulnerability.latest_date | Date | Vulnerability latest date. | 
 
 #### Command example
+
 ```!cisco-amp-computer-vulnerabilities-list connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -887,20 +926,26 @@ Provides a list of vulnerabilities observed on a specific computer. The vulnerab
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 1 | 0 | 100 | 1 |
+>
 >### Computer Information
+>
 >|Host Name|Connector GUID|Operating System|Group GUID|
 >|---|---|---|---|
 >| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | None (Build None) | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 |
+>
 >### Vulnerabilities Information
+>
 >|Application|Version|Latest Date|File Name|SHA-256|
 >|---|---|---|---|---|
 >| Microsoft Office | 2013 | 2022-10-23T12:37:33+00:00 | WINWORD.EXE | 3D46E95284F93BBB76B3B7E1BF0E1B2D51E8A9411C2B6E649112F22F92DE63C2 |
 
 
 ### cisco-amp-computer-move
+
 ***
 Moves a computer to a group with a given connector_guid and group_guid.
 
@@ -908,6 +953,7 @@ Moves a computer to a group with a given connector_guid and group_guid.
 #### Base Command
 
 `cisco-amp-computer-move`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -946,8 +992,11 @@ Moves a computer to a group with a given connector_guid and group_guid.
 | CiscoAMP.Computer.orbital.status | String | Status of the orbital. | 
 
 #### Command example
+
 ```!cisco-amp-computer-move connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0 group_guid=bb5a9f90-d6fa-4fe7-99c8-e91060b49a98```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -996,12 +1045,14 @@ Moves a computer to a group with a given connector_guid and group_guid.
 #### Human Readable Output
 
 >### Computer Information
+>
 >|Host Name|Connector GUID|Operating System|External IP|Group GUID|Policy GUID|
 >|---|---|---|---|---|---|
 >| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | Windows 10 (Build 10.0.19044.1466) | IP | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 | 91c7894d-dd69-4a21-8cf6-5ebfc57ef4df |
 
 
 ### cisco-amp-computer-delete
+
 ***
 Deletes a specific computer with given connector GUID.
 
@@ -1009,6 +1060,7 @@ Deletes a specific computer with given connector GUID.
 #### Base Command
 
 `cisco-amp-computer-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1019,14 +1071,18 @@ Deletes a specific computer with given connector GUID.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-amp-computer-delete connector_guid=dddd4ceb-4ce1-4f81-a7a7-04d13cc1df43```
+
 #### Human Readable Output
 
 >Connector GUID: "dddd4ceb-4ce1-4f81-a7a7-04d13cc1df43"
 >Successfully deleted.
 
 ### cisco-amp-computer-activity-list
+
 ***
 Fetch a list of computers that have observed files with a given file name. Provides the ability to search all computers across an organization for any events or activities associated with a file or network operation, and returns computers matching those criteria. There is a hard limit of 5000 historical entries searched.
 
@@ -1034,6 +1090,7 @@ Fetch a list of computers that have observed files with a given file name. Provi
 #### Base Command
 
 `cisco-amp-computer-activity-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1054,8 +1111,11 @@ Fetch a list of computers that have observed files with a given file name. Provi
 | CiscoAMP.ComputerActivity.active | Boolean | Whether the computer is active. | 
 
 #### Command example
+
 ```!cisco-amp-computer-activity-list query_string=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1098,10 +1158,13 @@ Fetch a list of computers that have observed files with a given file name. Provi
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 5 | 0 | 100 | 5 |
+>
 >### Activity Information
+>
 >|Connector GUID|Host Name|Windows Processor ID|Active|
 >|---|---|---|---|
 >| 1e104704-0b8f-4703-a49f-ec3d13e1e079 | Demo_Dyre | 346b8f2ad9e5107 | true |
@@ -1112,6 +1175,7 @@ Fetch a list of computers that have observed files with a given file name. Provi
 
 
 ### cisco-amp-computer-isolation-feature-availability-get
+
 ***
 Performs a feature availability request on a computer. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
 
@@ -1119,6 +1183,7 @@ Performs a feature availability request on a computer. Isolation must be enabled
 #### Base Command
 
 `cisco-amp-computer-isolation-feature-availability-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1129,8 +1194,11 @@ Performs a feature availability request on a computer. Isolation must be enabled
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-amp-computer-isolation-feature-availability-get connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0```
+
 #### Human Readable Output
 
 >Can get information about an isolation with computer-isolation-get
@@ -1138,6 +1206,7 @@ There is no context output for this command.
 
 
 ### cisco-amp-computer-isolation-get
+
 ***
 Returns a fine-grained isolation status for a computer. The available flag is set to true if isolation can be performed on the computer. Status will be set to one of - not_isolated, pending_start, isolated and pending_stop. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
 
@@ -1145,6 +1214,7 @@ Returns a fine-grained isolation status for a computer. The available flag is se
 #### Base Command
 
 `cisco-amp-computer-isolation-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1165,8 +1235,11 @@ Returns a fine-grained isolation status for a computer. The available flag is se
 | CiscoAMP.ComputerIsolation.ccms_job_guid | String | Cisco Cluster Management Suite job GUID. | 
 
 #### Command example
+
 ```!cisco-amp-computer-isolation-get connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1184,12 +1257,14 @@ Returns a fine-grained isolation status for a computer. The available flag is se
 #### Human Readable Output
 
 >### Isolation Information
+>
 >|Available|Status|Unlock Code|Comment|
 >|---|---|---|---|
 >| true | not_isolated | unlockme | End readme test |
 
 
 ### cisco-amp-computer-isolation-create
+
 ***
 Request isolation for a computer. Supports polling. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
 
@@ -1197,6 +1272,7 @@ Request isolation for a computer. Supports polling. Isolation must be enabled wi
 #### Base Command
 
 `cisco-amp-computer-isolation-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1221,8 +1297,11 @@ Request isolation for a computer. Supports polling. Isolation must be enabled wi
 | CiscoAMP.ComputerIsolation.isolated_by | String | Isolation initiator. | 
 
 #### Command example
+
 ```!cisco-amp-computer-isolation-create connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0 comment="readme generate test" unlock_code=unlockme interval_in_seconds=5 timeout_in_seconds=20```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1241,12 +1320,14 @@ Request isolation for a computer. Supports polling. Isolation must be enabled wi
 #### Human Readable Output
 
 >### Isolation Information
+>
 >|Available|Status|Unlock Code|Comment|Isolated By|
 >|---|---|---|---|---|
 >| true | isolated | unlockme | readme generate test | Lior Sabri |
 
 
 ### cisco-amp-computer-isolation-delete
+
 ***
 Request isolation stop for a computer. Supports polling. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
 
@@ -1254,6 +1335,7 @@ Request isolation stop for a computer. Supports polling. Isolation must be enabl
 #### Base Command
 
 `cisco-amp-computer-isolation-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1276,12 +1358,15 @@ Request isolation stop for a computer. Supports polling. Isolation must be enabl
 | CiscoAMP.ComputerIsolation.isolated_by | String | Isolation initiator. | 
 
 #### Command example
+
 ```!cisco-amp-computer-isolation-delete connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0 comment="End readme test" interval_in_seconds=5 timeout_in_seconds=20```
+
 #### Human Readable Output
 
 >Fetching Results:
 
 ### cisco-amp-event-list
+
 ***
 Fetch a list of events that can be filtered by a variety of criteria. Each criteria type is logically ANDed with the other criteria, each selection of a criteria is logically ORed. This is analogous to the Events view on the FireAMP Console.
 
@@ -1289,6 +1374,7 @@ Fetch a list of events that can be filtered by a variety of criteria. Each crite
 #### Base Command
 
 `cisco-amp-event-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1359,8 +1445,11 @@ Fetch a list of events that can be filtered by a variety of criteria. Each crite
 | DBotScore.Score | Number | The actual score. | 
 
 #### Command example
+
 ```!cisco-amp-event-list limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1502,10 +1591,13 @@ Fetch a list of events that can be filtered by a variety of criteria. Each crite
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 5 | 0 | 5 | 1228 |
+>
 >### Event Information
+>
 >|ID|Date|Event Type|Connector GUID|
 >|---|---|---|---|
 >| 1667218513509436397 | 2022-10-31T12:15:13+00:00 | Endpoint Isolation Stop Success | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 |
@@ -1516,6 +1608,7 @@ Fetch a list of events that can be filtered by a variety of criteria. Each crite
 
 
 ### cisco-amp-event-type-list
+
 ***
 Fetches a list of event types. Events are identified and filtered by a unique ID.
 
@@ -1523,6 +1616,7 @@ Fetches a list of event types. Events are identified and filtered by a unique ID
 #### Base Command
 
 `cisco-amp-event-type-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1541,8 +1635,11 @@ Fetches a list of event types. Events are identified and filtered by a unique ID
 | CiscoAMP.EventType.description | String | Event type description. | 
 
 #### Command example
+
 ```!cisco-amp-event-type-list limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1580,10 +1677,13 @@ Fetches a list of event types. Events are identified and filtered by a unique ID
 #### Human Readable Output
 
 >### Results
+>
 >|Total|
 >|---|
 >| 106 |
+>
 >### Event Type Information
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 50331649 | Initial Agent Registration | A new agent has registered with the system. |
@@ -1594,6 +1694,7 @@ Fetches a list of event types. Events are identified and filtered by a unique ID
 
 
 ### cisco-amp-file-list-list
+
 ***
 Returns a particular file list for application blocking or simple custom detection. file_list_guid must be provided to retrieve information about a particular file_list. Can fetch an application_blocking or simple_custom_detection file list. Defaults to application_blocking.
 
@@ -1601,6 +1702,7 @@ Returns a particular file list for application blocking or simple custom detecti
 #### Base Command
 
 `cisco-amp-file-list-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1622,8 +1724,11 @@ Returns a particular file list for application blocking or simple custom detecti
 | CiscoAMP.FileList.type | String | Type of blocking. | 
 
 #### Command example
+
 ```!cisco-amp-file-list-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1639,16 +1744,20 @@ Returns a particular file list for application blocking or simple custom detecti
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 1 | 0 | 100 | 1 |
+>
 >### File List Information
+>
 >|GUID|Name|Type|
 >|---|---|---|
 >| 1bb5a8e3-fb59-4b3d-a106-d90b2a02ac12 | Blocked Application List | application_blocking |
 
 
 ### cisco-amp-file-list-item-list
+
 ***
 Returns a list of items for a particular file_list. file_list_guid must be provided to retrieve these items. A particular item can be returned by providing a SHA-256.
 
@@ -1656,6 +1765,7 @@ Returns a list of items for a particular file_list. file_list_guid must be provi
 #### Base Command
 
 `cisco-amp-file-list-item-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1679,8 +1789,11 @@ Returns a list of items for a particular file_list. file_list_guid must be provi
 | CiscoAMP.FileListItem.items.source | String | Item source. | 
 
 #### Command example
+
 ```!cisco-amp-file-list-item-list file_list_guid=1bb5a8e3-fb59-4b3d-a106-d90b2a02ac12```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1738,12 +1851,17 @@ Returns a list of items for a particular file_list. file_list_guid must be provi
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 0 | 0 | 100 | 0 |
+>
 >### File List Item Information
+>
 >**No entries.**
+>
 >### Related Policy Information
+>
 >|Name|Guid|
 >|---|---|
 >| Audit | be84e169-0830-4b95-915b-1e203a82ed58 |
@@ -1759,6 +1877,7 @@ Returns a list of items for a particular file_list. file_list_guid must be provi
 
 
 ### cisco-amp-file-list-item-create
+
 ***
 Creates a file list item with a given SHA-256 for a specific file list with a given file_list_guid.
 
@@ -1766,6 +1885,7 @@ Creates a file list item with a given SHA-256 for a specific file list with a gi
 #### Base Command
 
 `cisco-amp-file-list-item-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1784,8 +1904,11 @@ Creates a file list item with a given SHA-256 for a specific file list with a gi
 | CiscoAMP.FileListItem.source | String | Item source. | 
 
 #### Command example
+
 ```!cisco-amp-file-list-item-create file_list_guid=1bb5a8e3-fb59-4b3d-a106-d90b2a02ac12 sha256=ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1800,12 +1923,14 @@ Creates a file list item with a given SHA-256 for a specific file list with a gi
 #### Human Readable Output
 
 >### File List Item Information
+>
 >|SHA-256|Source|
 >|---|---|
 >| ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad | Created by entering SHA-256 via Public api. |
 
 
 ### cisco-amp-file-list-item-delete
+
 ***
 Deletes a file list item with a given SHA-256 and associated to a file list with a given file_list_guid.
 
@@ -1813,6 +1938,7 @@ Deletes a file list item with a given SHA-256 and associated to a file list with
 #### Base Command
 
 `cisco-amp-file-list-item-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1824,13 +1950,17 @@ Deletes a file list item with a given SHA-256 and associated to a file list with
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-amp-file-list-item-delete file_list_guid=1bb5a8e3-fb59-4b3d-a106-d90b2a02ac12 sha256=ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad```
+
 #### Human Readable Output
 
 >SHA-256: "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad" Successfully deleted from File List GUID: "1bb5a8e3-fb59-4b3d-a106-d90b2a02ac12".
 
 ### cisco-amp-group-list
+
 ***
 Provides information about groups in an organization.
 
@@ -1838,6 +1968,7 @@ Provides information about groups in an organization.
 #### Base Command
 
 `cisco-amp-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1886,8 +2017,11 @@ Provides information about groups in an organization.
 | CiscoAMP.Group.policies.used_in_groups.source | String | Creation source of the group it is used in. | 
 
 #### Command example
+
 ```!cisco-amp-group-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1960,10 +2094,13 @@ Provides information about groups in an organization.
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 9 | 0 | 100 | 9 |
+>
 >### Group Information
+>
 >|Name|Description|GUID|Source|
 >|---|---|---|---|
 >| Audit | Audit Group for QMASTERS SECURITY SERVICES LTD | fedd82f8-c74f-49f4-a463-e576d3beee92 |  |
@@ -1978,6 +2115,7 @@ Provides information about groups in an organization.
 
 
 ### cisco-amp-group-policy-update
+
 ***
 Updates a group to a given policy and returns all the policies in that group.
 
@@ -1985,6 +2123,7 @@ Updates a group to a given policy and returns all the policies in that group.
 #### Base Command
 
 `cisco-amp-group-policy-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2033,8 +2172,11 @@ Updates a group to a given policy and returns all the policies in that group.
 | CiscoAMP.Group.policies.used_in_groups.source | String | Creation source of the group the policy is used in. | 
 
 #### Command example
+
 ```!cisco-amp-group-policy-update group_guid=bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 windows_policy_guid=91c7894d-dd69-4a21-8cf6-5ebfc57ef4df```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -2246,12 +2388,14 @@ Updates a group to a given policy and returns all the policies in that group.
 #### Human Readable Output
 
 >### Group Information
+>
 >|Name|Description|Creator|Created At|Computers Count|Descendant Computers Count|
 >|---|---|---|---|---|---|
 >| Lior-Group | Test group | Email | 2022-10-25 13:42:36 | 1 | 0 |
 
 
 ### cisco-amp-group-parent-update
+
 ***
 Converts an existing group to a child of another group or an existing child group to a root group (that is, one with no parent groups).
 
@@ -2259,6 +2403,7 @@ Converts an existing group to a child of another group or an existing child grou
 #### Base Command
 
 `cisco-amp-group-parent-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2304,8 +2449,11 @@ Converts an existing group to a child of another group or an existing child grou
 | CiscoAMP.Group.policies.used_in_groups.source | String | Creation source of the group it is used in. | 
 
 #### Command example
+
 ```!cisco-amp-group-parent-update child_guid=bb5a9f90-d6fa-4fe7-99c8-e91060b49a98```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -2517,12 +2665,14 @@ Converts an existing group to a child of another group or an existing child grou
 #### Human Readable Output
 
 >### Group Information
+>
 >|Name|Description|Creator|Created At|Computers Count|Descendant Computers Count|
 >|---|---|---|---|---|---|
 >| Lior-Group | Test group | Email | 2022-10-25 13:42:36 | 1 | 0 |
 
 
 ### cisco-amp-group-create
+
 ***
 Creates a new group along with a group name or description.
 
@@ -2530,6 +2680,7 @@ Creates a new group along with a group name or description.
 #### Base Command
 
 `cisco-amp-group-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2571,8 +2722,11 @@ Creates a new group along with a group name or description.
 | CiscoAMP.Group.policies.used_in_groups.source | String | Creation source of the group it is used in. | 
 
 #### Command example
+
 ```!cisco-amp-group-create description="readme test group to be deleted" name="readme group"```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -2851,12 +3005,14 @@ Creates a new group along with a group name or description.
 #### Human Readable Output
 
 >### Group Information
+>
 >|Name|Description|Created At|Computers Count|Descendant Computers Count|
 >|---|---|---|---|---|
 >| readme group | readme test group to be deleted | 2022-10-31 12:16:25 | 0 | 0 |
 
 
 ### cisco-amp-group-delete
+
 ***
 Destroys a group with a given GUID.
 
@@ -2864,6 +3020,7 @@ Destroys a group with a given GUID.
 #### Base Command
 
 `cisco-amp-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2874,14 +3031,18 @@ Destroys a group with a given GUID.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-amp-group-delete group_guid=d088adeb-7cb4-48e4-807b-edcb828f4d29```
+
 #### Human Readable Output
 
 >Group GUID: "d088adeb-7cb4-48e4-807b-edcb828f4d29"
 >Successfully deleted.
 
 ### cisco-amp-indicator-list
+
 ***
 Show information about indicators.
 
@@ -2889,6 +3050,7 @@ Show information about indicators.
 #### Base Command
 
 `cisco-amp-indicator-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2919,8 +3081,11 @@ Show information about indicators.
 | CiscoAMP.Indicator.observed_compromises.resolved | Number | Number of resolved compromises. | 
 
 #### Command example
+
 ```!cisco-amp-indicator-list limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -2968,10 +3133,13 @@ Show information about indicators.
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 5 | 0 | 5 | 910 |
+>
 >### Indicator Information
+>
 >|GUID|Name|Description|Severity|Observed Compromises|
 >|---|---|---|---|---|
 >| 5593ab7e-1db5-4759-9785-96c55824b675 | Crossrider.ioc | Crossrider is a an Adware variant that targets Mac with the intent of displaying ads. It also changes the default home page of Safari and Chrome browsers. | Medium | 0 |
@@ -2982,6 +3150,7 @@ Show information about indicators.
 
 
 ### cisco-amp-policy-list
+
 ***
 Gets information about policies by filtering with a product and name of a specific policy with a policy_guid.
 
@@ -2989,6 +3158,7 @@ Gets information about policies by filtering with a product and name of a specif
 #### Base Command
 
 `cisco-amp-policy-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3024,8 +3194,11 @@ Gets information about policies by filtering with a product and name of a specif
 | CiscoAMP.Policy.used_in_groups.guid | String | Group GUID. | 
 
 #### Command example
+
 ```!cisco-amp-policy-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -3150,10 +3323,13 @@ Gets information about policies by filtering with a product and name of a specif
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 14 | 0 | 100 | 14 |
+>
 >### Policy Information
+>
 >|GUID|Name|Description|Product|Serial Number|
 >|---|---|---|---|---|
 >| 082bc9a3-b73a-4f42-8cc5-de1cd3748700 | Protect | This is the standard policy for the Secure Endpoint Connector that will quarantine malicious files and block malicious network connections. | android | 11 |
@@ -3173,6 +3349,7 @@ Gets information about policies by filtering with a product and name of a specif
 
 
 ### cisco-amp-app-trajectory-query-list
+
 ***
 Retrieve app_trajectory queries for a given ios bundle id.
 
@@ -3180,6 +3357,7 @@ Retrieve app_trajectory queries for a given ios bundle id.
 #### Base Command
 
 `cisco-amp-app-trajectory-query-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3212,8 +3390,11 @@ Retrieve app_trajectory queries for a given ios bundle id.
 | CiscoAMP.AppTrajectoryQuery.ver | String | Version. | 
 
 #### Command example
+
 ```!cisco-amp-app-trajectory-query-list ios_bid=com.apple.Safari.SafeBrowsing limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -3292,6 +3473,7 @@ Retrieve app_trajectory queries for a given ios bundle id.
 #### Human Readable Output
 
 >### App Trajectory Information
+>
 >|Connector GUID|Date|Query Type|Dirty URL|
 >|---|---|---|---|
 >| dddd4ceb-4ce1-4f81-a7a7-04d13cc1df43 | 2022-10-24T12:01:59+00:00 | Network Query | https:<span>//</span>configuration.apple.com/configurations/internetservices/safari/SafeBrowsingRemoteConfiguration-0.plist |
@@ -3302,6 +3484,7 @@ Retrieve app_trajectory queries for a given ios bundle id.
 
 
 ### cisco-amp-version-get
+
 ***
 Get API version.
 
@@ -3309,6 +3492,7 @@ Get API version.
 #### Base Command
 
 `cisco-amp-version-get`
+
 #### Input
 
 There are no input arguments for this command.
@@ -3320,8 +3504,11 @@ There are no input arguments for this command.
 | CiscoAMP.Version.version | String | API version. | 
 
 #### Command example
+
 ```!cisco-amp-version-get```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -3337,6 +3524,7 @@ There are no input arguments for this command.
 >Version: v1.2.0
 
 ### cisco-amp-vulnerability-list
+
 ***
 Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software view on the AMP for Endpoints Console. The list can be filtered to show only the vulnerable programs detected for a specific time range. Provide a list of computers on which the vulnerability has been observed with a given SHA-256. The list item contains a summary of information on the vulnerability, including: application name and version, SHA-256 value for the executable file, connectors on which the vulnerable application was observed and the most recent CVSS score. IMPORTANT: The computer's key returns information about the last 1000 connectors on which the vulnerable application was observed.
 
@@ -3344,6 +3532,7 @@ Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software vi
 #### Base Command
 
 `cisco-amp-vulnerability-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3386,8 +3575,11 @@ Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software vi
 | CiscoAMP.Vulnerability.computers.active | Boolean | Whether the computer is active. | 
 
 #### Command example
+
 ```!cisco-amp-vulnerability-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -4861,10 +5053,13 @@ Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software vi
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 8 | 0 | 100 | 8 |
+>
 >### Vulnerabilities Information
+>
 >|Application|Version|Latest Date|File Name|SHA-256|
 >|---|---|---|---|---|
 >| Mozilla Firefox | 41.0 | 2022-10-25T12:20:00+00:00 | firefox.exe | 4312CDB2EAD8FD8D2DD6D8D716F3B6E9717B3D7167A2A0495E4391312102170F |
@@ -4878,6 +5073,7 @@ Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software vi
 
 
 ### endpoint
+
 ***
 Returns information about an endpoint.
 
@@ -4885,6 +5081,7 @@ Returns information about an endpoint.
 #### Base Command
 
 `endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4908,8 +5105,11 @@ Returns information about an endpoint.
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 #### Command example
+
 ```!endpoint id=22d4a486-1732-4f8b-9a6f-18f172fe7af0```
+
 #### Context Example
+
 ```json
 {
     "Endpoint": {
@@ -4928,12 +5128,14 @@ Returns information about an endpoint.
 #### Human Readable Output
 
 >### CiscoAMP - Endpoint Demo_AMP
+>
 >|Hostname|ID|IPAddress|MACAddress|OS|OSVersion|Status|Vendor|
 >|---|---|---|---|---|---|---|---|
 >| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | IP | e6:80:50:1e:e5:20 | Windows 10 | 10.0.19044.1466 | Online | CiscoAMP Response |
 
 
 ### file
+
 ***
 Runs reputation on files.
 
@@ -4941,6 +5143,7 @@ Runs reputation on files.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4967,8 +5170,11 @@ Runs reputation on files.
 | DBotScore.Score | Number | The actual score. | 
 
 #### Command example
+
 ```!file file=ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -5052,6 +5258,7 @@ Runs reputation on files.
 #### Human Readable Output
 
 ### Cisco AMP - Hash Reputation for: 4312CDB2EAD8FD8D2DD6D8D716F3B6E9717B3D7167A2A0495E4391312102170F
+>
 >|Hashes|Hostname|Name|SHA256|
 >|---|---|---|---|
 >| {'type': 'SHA256', 'value': '4312CDB2EAD8FD8D2DD6D8D716F3B6E9717B3D7167A2A0495E4391312102170F'} | Demo_AMP_Exploit_Prevention | firefox.exe | 4312CDB2EAD8FD8D2DD6D8D716F3B6E9717B3D7167A2A0495E4391312102170F |

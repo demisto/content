@@ -1,4 +1,5 @@
 A feed of known benign IPs of public DNS servers.
+
 ## Configure Public DNS Feed in Cortex
 
 
@@ -19,9 +20,12 @@ A feed of known benign IPs of public DNS servers.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### public-dns-get-indicators
+
 ***
 Gets indicators from the feed.
 
@@ -29,6 +33,7 @@ Gets indicators from the feed.
 #### Base Command
 
 `public-dns-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,9 +46,11 @@ Gets indicators from the feed.
 There is no context output for this command.
 
 #### Command Example
+
 ```!public-dns-get-indicators limit=2```
 
 #### Context Example
+
 ```json
 {
     "Indicator": [
@@ -72,6 +79,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Public DNS Feed:
+>
 >|value|type|
 >|---|---|
 >| 2607:5300:203:1797::53 | IPv6 |

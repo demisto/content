@@ -1776,6 +1776,7 @@
 
 
 ### tn-get-all-sensors
+
 ***
 Gets all sensors
 
@@ -1783,6 +1784,7 @@ Gets all sensors
 #### Base Command
 
 `tn-get-all-sensors`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1790,7 +1792,9 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### tn-get-action
+
 ***
 Get detailed information about a given action.
 
@@ -1798,6 +1802,7 @@ Get detailed information about a given action.
 #### Base Command
 
 `tn-get-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

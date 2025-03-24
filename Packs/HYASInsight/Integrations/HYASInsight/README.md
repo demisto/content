@@ -5,13 +5,17 @@ HYAS Insight is a threat investigation and attribution solution that uses exclus
 Use the HYAS Insight integration to interactively lookup  PassiveDNS, DynamicDNS, WHOIS, Sample Malware Records, C2 Attribution, Passive Hash, SSL Certificate, Open Source Indicators, Device Geo, Sinkhole, Malware Sample Information.
 
 ## How to get a HYAS API Key
-In order to obtain a HYAS Insight API key to use with Cortex XSOAR, please contact your HYAS Insight Admin. If you are unsure who your Admin is, you can also contact HYAS Support via email at support@hyas.com, by visiting the HYAS website https://www.hyas.com/contact, or by using the HYAS Insight web UI by clicking the ‘help’ icon at the top right of the screen, to request a key.
+
+In order to obtain a HYAS Insight API key to use with Cortex XSOAR, please contact your HYAS Insight Admin. If you are unsure who your Admin is, you can also contact HYAS Support via email at <support@hyas.com>, by visiting the HYAS website <https://www.hyas.com/contact>, or by using the HYAS Insight web UI by clicking the ‘help’ icon at the top right of the screen, to request a key.
 
 ## Partner Contributed Integration
+
 ### Integration Author: HYAS
+
 Support and maintenance for this integration are provided by the author. Please use the following contact details:
-    **Email:** support@hyas.com
-    **URL:** https://support.hyas.com
+    **Email:** <support@hyas.com>
+    **URL:** <https://support.hyas.com>
+
 ## Configure HYASInsight in Cortex
 
 
@@ -68,8 +72,11 @@ Returns PassiveDNS records for the provided indicator value.
 | HYAS.PassiveDNS.sources | Unknown | A list of pDNS providers which the data came from | 
 
 #### Command example
+
 ```!hyas-get-passive-dns-records-by-indicator indicator_type="domain" indicator_value="domain.org" limit="3"```
+
 #### Context Example
+
 ```json
 {
     "HYAS": {
@@ -167,6 +174,7 @@ Returns PassiveDNS records for the provided indicator value.
 #### Human Readable Output
 
 >### HYAS PassiveDNS records for domain : domain.org
+>
 >|Count|Domain|First seen|City Name|Country Code|Country Name|Latitude|Longitude|Postal Code|IP|ISP ASN|ISP ASN Organization|ISP IP Address|ISP|ISP Organization|IPV4|Last Seen|Sources|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 310833 | domain.org | 2015-06-08T19:16:18Z | Boston | US | United States | 42.3584 | -71.0598 | 02108 | 65.254.244.180 | AS29873 | Newfold Digital, Inc. | 65.254.244.180 | Newfold Digital, Inc. | Newfold Digital, Inc. | 65.254.244.180 | 2023-06-30T02:05:29Z | hyas,<br/>farsight |
@@ -204,8 +212,11 @@ Returns DynamicDNS records for the provided indicator value.
 | HYAS.DynamicDNS.email | String | The email address connected to the domain | 
 
 #### Command example
+
 ```!hyas-get-dynamic-dns-records-by-indicator indicator_type="ip" indicator_value="4.4.4.4" limit="3"```
+
 #### Context Example
+
 ```json
 {
     "HYAS": {
@@ -380,6 +391,7 @@ Returns DynamicDNS records for the provided indicator value.
 #### Human Readable Output
 
 >### HYAS DynamicDNS records for ip : 4.4.4.4
+>
 >|A Record|Account|Created Date|Account Holder IP Address|Domain|Domain Creator IP Address| Email Address |
 >|---|---|---|---|---|---|--------------|
 >| 4.4.4.4 | free | 2022-03-14T11:05:14Z | 4.4.4.4 | block-make.duckdns.org | 4.4.4.4 | DarkMagicSource@github |
@@ -427,8 +439,11 @@ Returns WHOIS records for the provided indicator value.
 | HYAS.WHOIS.registrar | String | The domain registrar | 
 
 #### Command example
+
 ```!hyas-get-whois-records-by-indicator indicator_type="domain" indicator_value="edubolivia.org" limit="3"```
+
 #### Context Example
+
 ```json
 {
     "HYAS": {
@@ -525,6 +540,7 @@ Returns WHOIS records for the provided indicator value.
 #### Human Readable Output
 
 >### HYAS WHOIS records for domain : edubolivia.org
+>
 >|Country|Domain|Domain_2tld|Domain Created Time|Domain Expires Time|Domain Updated Time|Email Address|IDN Name|Nameserver|Privacy_punch|Registrar|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| BO | edubolivia.org | edubolivia.org | 2010-04-08T13:24:40Z | 2022-04-08T13:24:40Z | 2021-03-26T13:55:53Z | xyz | None | ns1.solucionesrmc.com,<br/>ns2.solucionesrmc.com | false | pdr ltd. d/b/a publicdomainregistry.com |
@@ -569,8 +585,11 @@ Returns WHOIS Current records for the provided indicator value.
 | HYAS.WHOISCurrent.state | Unknown | The state | 
 
 #### Command example
+
 ```!hyas-get-whois-current-records-by-domain domain="edubolivia.org"```
+
 #### Context Example
+
 ```json
 {
     "HYAS": {
@@ -646,9 +665,10 @@ Returns WHOIS Current records for the provided indicator value.
 #### Human Readable Output
 
 >### HYAS WHOISCurrent records for domain : edubolivia.org
+>
 >|Abuse Emails|Country|Domain|Domain_2tld|Domain Created Time|Domain Expires Time|Domain Updated Time|Email Address|IDN Name|Nameserver|Phone Info|Registrar|State|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| abuse@publicdomainregistry.com | Bolivia | edubolivia.org | edubolivia.org | 2010-04-08T13:24:40Z | 2024-04-08T13:24:40Z | 2023-03-26T12:56:44Z | please query the rdds service of the registrar of record identified in this output for information on how to contact the registrant, admin, or tech contact of the queried domain name. | None | ns1.dns-parking.com,<br/>ns2.dns-parking.com | {'phone': 'REDACTED FOR PRIVACY ext. REDACTED FOR PRIVACY'} | pdr ltd. d/b/a publicdomainregistry.com | la Paz |
+>| <abuse@publicdomainregistry.com> | Bolivia | edubolivia.org | edubolivia.org | 2010-04-08T13:24:40Z | 2024-04-08T13:24:40Z | 2023-03-26T12:56:44Z | please query the rdds service of the registrar of record identified in this output for information on how to contact the registrant, admin, or tech contact of the queried domain name. | None | ns1.dns-parking.com,<br/>ns2.dns-parking.com | {'phone': 'REDACTED FOR PRIVACY ext. REDACTED FOR PRIVACY'} | pdr ltd. d/b/a publicdomainregistry.com | la Paz |
 
 
 ### hyas-get-malware-samples-records-by-indicator
@@ -681,8 +701,11 @@ Returns Malware Sample records for the provided indicator value.
 | HYAS.MalwareSamples.sha256 | String | The sha256 of the sample | 
 
 #### Command example
+
 ```!hyas-get-malware-samples-records-by-indicator indicator_type="domain" indicator_value="chennaigastrosurgeon.com" limit="3"```
+
 #### Context Example
+
 ```json
 {
     "HYAS": {
@@ -713,6 +736,7 @@ Returns Malware Sample records for the provided indicator value.
 #### Human Readable Output
 
 >### HYAS MalwareSamples records for domain : chennaigastrosurgeon.com
+>
 >|Datetime|Domain|IPV4 Address|MD5 Value|
 >|---|---|---|---|
 >| 2022-09-28T00:00:00Z | chennaigastrosurgeon.com | 4.4.4.4 | 0268fb20d9143c429138034969e06833 |
@@ -754,8 +778,11 @@ Return C2 Attribution records for the provided indicator value.
 | HYAS.C2_Attribution.sha256 | String | The sha256 malware hash | 
 
 #### Command example
+
 ```!hyas-get-c2attribution-records-by-indicator indicator_type=domain indicator_value=himionsa.com limit=3```
+
 #### Context Example
+
 ```json
 {
     "HYAS": {
@@ -773,6 +800,7 @@ Return C2 Attribution records for the provided indicator value.
 #### Human Readable Output
 
 >### HYAS C2_Attribution records for domain : himionsa.com
+>
 >|Actor IPv4|C2 Domain|C2 IP|C2 URL|Datetime|
 >|--|---|---|---|---|
 >| 4.4.4.4 | himionsa.com | 89.208.229.55 | http:<span>//</span>himionsa.com/rich/panel/pvqdq929bsx_a_d_m1n_a.php?mazm=report | 2020-02-25T21:49:27Z |
@@ -805,8 +833,11 @@ Return passive hash records for the provided indicator value.
 | HYAS.Passive_Hash.md5_count | String | The passive dns count | 
 
 #### Command example
+
 ```!hyas-get-passive-hash-records-by-indicator indicator_type="domain" indicator_value="edubolivia.org" limit="3"```
+
 #### Context Example
+
 ```json
 {
     "HYAS": {
@@ -831,6 +862,7 @@ Return passive hash records for the provided indicator value.
 #### Human Readable Output
 
 >### HYAS Passive_Hash records for domain : edubolivia.org
+>
 >|Domain|MD5 Count|
 >|---|---|
 >| edubolivia.org | 457 |
@@ -921,10 +953,13 @@ Return Open Source intel records for the provided indicator value.
 | HYAS.OS_Indicators.uri | String | The source uri value. | 
 
 #### Command example
+
 ```!hyas-get-opensource-indicator-records-by-indicator indicator_type=domain indicator_value=kidd16.blinn.edu limit="3"```
+
 #### Human Readable Output
 
 >### HYAS OS_Indicators records for domain : kidd16.blinn.edu
+>
 >**No entries.**
 
 
@@ -960,8 +995,11 @@ Returns a list of mobile geolocation information
 | HYAS.Device_Geo.wifi_bssid | String | The BSSID \(MAC address\) of the wifi router that the device communicated through. | 
 
 #### Command example
+
 ```!hyas-get-device-geo-records-by-ip-address indicator_type=ipv4 indicator_value=4.4.4.4 limit="3"```
+
 #### Context Example
+
 ```json
 {
     "HYAS": {
@@ -1004,6 +1042,7 @@ Returns a list of mobile geolocation information
 #### Human Readable Output
 
 >### HYAS Device_Geo records for ipv4 : 4.4.4.4
+>
 >|Date Time|Device User Agent|Geo Country Alpha 2|Geo Horizontal Accuracy|IPV4|Latitude|Longitude|
 >|---|---|---|---|---|---|---|
 >| 2022-03-01T16:07:07Z | 15.3.1 | AU | 20.0 | 4.4.4.4 | -33 | 150 |
@@ -1041,8 +1080,11 @@ Returns sinkhole information.
 | HYAS.Sinkhole.sink_source | String | The ipv4 of the sink source | 
 
 #### Command example
+
 ```!hyas-get-sinkhole-records-by-ipv4-address ipv4=4.4.4.4 limit="3"```
+
 #### Context Example
+
 ```json
 {
     "HYAS": {
@@ -1088,6 +1130,7 @@ Returns sinkhole information.
 #### Human Readable Output
 
 >### HYAS Sinkhole records for ipv4 : 4.4.4.4
+>
 >|Count|Country Name|Data Port|Date Time|IPV4|Last Seen|Organization Name|Sink Source|
 >|---|---|---|---|---|---|---|---|
 >| 18 | United Kingdom | 5552 | 2020-12-23T14:06:56Z | 4.4.4.4 | 2020-12-23T14:06:56Z | Shahkar Towse'e Tejarat Mana PJSC | 4.4.4.4 |
@@ -1125,8 +1168,11 @@ Returns malware information.
 | HYAS.Malware_Information.sha512 | String | The sha512 hash | 
 
 #### Command example
+
 ```!hyas-get-malware-sample-information-by-hash hash=1d0a97c41afe5540edd0a8c1fb9a0f1c limit="3"```
+
 #### Context Example
+
 ```json
 {
     "HYAS": {
@@ -1152,6 +1198,7 @@ Returns malware information.
 #### Human Readable Output
 
 >### HYAS Malware_Information records for hash : 1d0a97c41afe5540edd0a8c1fb9a0f1c
+>
 >|AV Scan Score|MD5|AV Name|AV DateTime| Source    |Scan Time|SHA1|SHA256|SHA512|
 >|---|---|---|---|-----------|---|---|---|---|
 >| 1/9 | 1d0a97c41afe5540edd0a8c1fb9a0f1c | Cyren | 2023-02-13T09:49:00Z | abc | 2023-02-21T07:36:35Z | 9f3ae27d3d071b1cd0a220ec2d5944cde44af91a | 3e3f900e6ab9e03f93fee334d357336f8ae67633420a462d0662fd51bc5004ab | 956ab65f8119e9060cc955db31284bc99e6bf82bcd1b0dfcf29457cdf61acacf884209191692f8173970c6b28128e3c79d3126fd9f50df8c71612ee9b47710f9 |
@@ -1180,8 +1227,11 @@ Returns associated IP's for the provided hash value.
 | HYAS.HASH-IP.ips | Unknown | Associated IPS  for the provided MD5 value | 
 
 #### Command example
+
 ```!hyas-get-associated-ips-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f1c"```
+
 #### Context Example
+
 ```json
 {
     "HYAS": {
@@ -1198,6 +1248,7 @@ Returns associated IP's for the provided hash value.
 #### Human Readable Output
 
 >### HYAS HASH-IP records for md5 : 1d0a97c41afe5540edd0a8c1fb9a0f1c
+>
 >|Associated IPs|
 >|---|
 >| 106.187.43.98 |
@@ -1226,8 +1277,11 @@ Returns associated Domain's for the provided hash value.
 | HYAS.HASH-DOMAIN.md5 | String | The provided MD5 value | 
 
 #### Command example
+
 ```!hyas-get-associated-domains-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f1c"```
+
 #### Context Example
+
 ```json
 {
     "HYAS": {
@@ -1246,6 +1300,7 @@ Returns associated Domain's for the provided hash value.
 #### Human Readable Output
 
 >### HYAS HASH-DOMAIN records for md5 : 1d0a97c41afe5540edd0a8c1fb9a0f1c
+>
 >|Associated Domains|
 >|---|
 >| qwertasdfg.sinip.es |

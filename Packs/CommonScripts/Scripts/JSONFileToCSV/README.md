@@ -1,6 +1,7 @@
 Script to convert a War Room output JSON File to a CSV file.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Script to convert a War Room output JSON File to a CSV file.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Script to convert a War Room output JSON File to a CSV file.
 | delimiter | CSV delimiter. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

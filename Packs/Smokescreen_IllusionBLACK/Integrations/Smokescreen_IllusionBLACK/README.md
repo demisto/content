@@ -1,5 +1,6 @@
 Smokescreen IllusionBLACK is a deception-based threat defense platform designed to accurately and efficiently detect targeted threats including reconnaissance, lateral movement, malware-less attacks, social engineering, Man-in-the-Middle attacks, and ransomware in real-time.
 This integration was integrated and tested with version v3.10.7.4 of Smokescreen IllusionBLACK
+
 ## Permissions
 
 ## Configure Smokescreen IllusionBLACK in Cortex
@@ -7,7 +8,7 @@ This integration was integrated and tested with version v3.10.7.4 of Smokescreen
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://example.net\) | True |
+| url | Server URL \(e.g. <https://example.net\>) | True |
 | client_id | IllusionBLACK API Client Id | True |
 | token | IllusionBLACK External API Token | True |
 | insecure | Trust any certificate \(not secure\) | False |
@@ -15,9 +16,12 @@ This integration was integrated and tested with version v3.10.7.4 of Smokescreen
 | first_fetch | First fetch time for fetching incidents \(2 days, 3 weeks, etc\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### illusionblack-get-ad-decoys
+
 ***
 Gets a list of Active Directory decoys.
 
@@ -25,6 +29,7 @@ Gets a list of Active Directory decoys.
 ##### Base Command
 
 `illusionblack-get-ad-decoys`
+
 ##### Input
 
 There are no input arguments for this command.
@@ -37,9 +42,11 @@ There are no input arguments for this command.
 
 
 ##### Command Example
+
 ```!illusionblack-get-ad-decoys```
 
 ##### Context Example
+
 ```
 {
     "IllusionBlack": {
@@ -55,13 +62,16 @@ There are no input arguments for this command.
 ```
 
 ##### Human Readable Output
+
 ### IllusionBLACK AD Decoys
+
 |First Name|Last Name|Ou|State|User Name|
 |---|---|---|---|---|
 | felix | hunt | mumbai | added | sqladmin |
 
 
 ### illusionblack-get-network-decoys
+
 ***
 Gets a list of Network decoys.
 
@@ -69,6 +79,7 @@ Gets a list of Network decoys.
 ##### Base Command
 
 `illusionblack-get-network-decoys`
+
 ##### Input
 
 There are no input arguments for this command.
@@ -81,9 +92,11 @@ There are no input arguments for this command.
 
 
 ##### Command Example
+
 ```!illusionblack-get-network-decoys```
 
 ##### Context Example
+
 ```
 {
     "IllusionBlack": {
@@ -130,7 +143,9 @@ There are no input arguments for this command.
 ```
 
 ##### Human Readable Output
+
 ### IllusionBLACK Network Decoys
+
 |Ip|Mac|Name|Services|
 |---|---|---|---|
 | 10.20.23.61 | d0:43:1e:cd:cb:c2 | CTX-BACKUPS31 | web |
@@ -142,6 +157,7 @@ There are no input arguments for this command.
 
 
 ### illusionblack-get-ti-decoys
+
 ***
 Gets a list of Threat Intel decoys.
 
@@ -149,6 +165,7 @@ Gets a list of Threat Intel decoys.
 ##### Base Command
 
 `illusionblack-get-ti-decoys`
+
 ##### Input
 
 There are no input arguments for this command.
@@ -161,9 +178,11 @@ There are no input arguments for this command.
 
 
 ##### Command Example
+
 ```!illusionblack-get-ti-decoys```
 
 ##### Context Example
+
 ```
 {
     "IllusionBlack": {
@@ -178,13 +197,16 @@ There are no input arguments for this command.
 ```
 
 ##### Human Readable Output
+
 ### IllusionBLACK TI Decoys
+
 |Dataset|Ip|Name|Server Type|
 |---|---|---|---|
 | Finacle | 10.20.23.67 | dev.smokescreen.io | nginx/1.14.0 (Ubuntu) |
 
 
 ### illusionblack-is-host-decoy
+
 ***
 Checks if a host or IP address is a network decoy.
 
@@ -192,6 +214,7 @@ Checks if a host or IP address is a network decoy.
 ##### Base Command
 
 `illusionblack-is-host-decoy`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -208,9 +231,11 @@ Checks if a host or IP address is a network decoy.
 
 
 ##### Command Example
+
 ```!illusionblack-is-host-decoy host="SAP44"```
 
 ##### Context Example
+
 ```
 {
     "IllusionBlack": {
@@ -223,9 +248,11 @@ Checks if a host or IP address is a network decoy.
 ```
 
 ##### Human Readable Output
+
 True
 
 ### illusionblack-is-user-decoy
+
 ***
 Checks if an Active Directory user is a decoy.
 
@@ -233,6 +260,7 @@ Checks if an Active Directory user is a decoy.
 ##### Base Command
 
 `illusionblack-is-user-decoy`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -249,9 +277,11 @@ Checks if an Active Directory user is a decoy.
 
 
 ##### Command Example
+
 ```!illusionblack-is-user-decoy user="sqladmin"```
 
 ##### Context Example
+
 ```
 {
     "IllusionBlack": {
@@ -264,9 +294,11 @@ Checks if an Active Directory user is a decoy.
 ```
 
 ##### Human Readable Output
+
 True
 
 ### illusionblack-is-subdomain-decoy
+
 ***
 Checks if a subdomain is a Threat Intel decoy.
 
@@ -274,6 +306,7 @@ Checks if a subdomain is a Threat Intel decoy.
 ##### Base Command
 
 `illusionblack-is-subdomain-decoy`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -290,9 +323,11 @@ Checks if a subdomain is a Threat Intel decoy.
 
 
 ##### Command Example
+
 ```!illusionblack-is-subdomain-decoy subdomain="experience.illusionblack.com"```
 
 ##### Context Example
+
 ```
 {
     "IllusionBlack": {
@@ -305,9 +340,11 @@ Checks if a subdomain is a Threat Intel decoy.
 ```
 
 ##### Human Readable Output
+
 False
 
 ### illusionblack-get-events
+
 ***
 Gets events from IllusionBLACK.
 
@@ -315,6 +352,7 @@ Gets events from IllusionBLACK.
 ##### Base Command
 
 `illusionblack-get-events`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -333,9 +371,11 @@ Gets events from IllusionBLACK.
 
 
 ##### Command Example
+
 ```!illusionblack-get-events limit=3```
 
 ##### Context Example
+
 ```
 {
     "IllusionBlack": {
@@ -473,7 +513,9 @@ Gets events from IllusionBLACK.
 ```
 
 ##### Human Readable Output
+
 ### IllusionBLACK Events
+
 |attacker.id|attacker.name|attacker.score|attacker.threat_parse_ids|decoy.appliance.id|decoy.appliance.name|decoy.client.id|decoy.client.name|decoy.group|decoy.id|decoy.name|decoy.type|file.name|file.operation|file.operation_string|file.process.command_line|file.process.domain_name|file.process.exit_code|file.process.id|file.process.image_name|file.process.user_name|file.process.user_sid|file.thread_id|id|kill_chain_phase|mitre_ids|record_type|severity|sub_type|threat_parse_ids|timestamp|type|whitelisted|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | ADMIN-PC-001\admin | ADMIN-PC-001\admin | 175 | lm_file_open,<br/>lm_file_active_monitoring | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read | "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -executionpolicy bypass | ADMIN-PC-001 | -1 | 10228 | powershell.exe | admin | S-1-5-21-399445878-2258755057-882339928-1000 | 8588 | 2020-02-25T09:49:15Z-76c99a22-03b9-439e-8638-37306c2d8e7f | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-12T08:57:01Z | endpoint | false |
@@ -482,6 +524,7 @@ Gets events from IllusionBLACK.
 
 
 ### illusionblack-get-event-by-id
+
 ***
 Gets a single event by the event ID.
 
@@ -489,6 +532,7 @@ Gets a single event by the event ID.
 ##### Base Command
 
 `illusionblack-get-event-by-id`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -509,9 +553,11 @@ Gets a single event by the event ID.
 
 
 ##### Command Example
+
 ```!illusionblack-get-event-by-id id="2020-02-25T09:49:15Z-0950f80f-7571-4382-b4b8-5e04c160c4c0"```
 
 ##### Context Example
+
 ```
 {
     "IllusionBlack": {
@@ -563,7 +609,9 @@ Gets a single event by the event ID.
 ```
 
 ##### Human Readable Output
+
 ### IllusionBLACK Single Event
+
 |attacker.id|attacker.name|attacker.score|attacker.threat_parse_ids|decoy.appliance.id|decoy.appliance.name|decoy.client.id|decoy.client.name|decoy.group|decoy.id|decoy.name|decoy.type|file.name|file.operation|file.operation_string|file.process.command_line|file.process.domain_name|file.process.exit_code|file.process.id|file.process.image_name|file.process.user_name|file.process.user_sid|file.thread_id|id|kill_chain_phase|mitre_ids|record_type|severity|sub_type|threat_parse_ids|timestamp|type|whitelisted|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | NT AUTHORITY\SYSTEM | NT AUTHORITY\SYSTEM | 250 | filetheft_unattend,<br/>lm_file_active_monitoring,<br/>lm_file_open | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read |  | NT AUTHORITY | -1 | 2824 | MsMpEng.exe | SYSTEM | S-1-5-18 | 724 | 2020-02-25T09:49:15Z-0950f80f-7571-4382-b4b8-5e04c160c4c0 | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-12T08:57:01Z | endpoint | false |

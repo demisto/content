@@ -1,6 +1,7 @@
 Get emails from multiple folders of an account all at once.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Get emails from multiple folders of an account all at once.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |

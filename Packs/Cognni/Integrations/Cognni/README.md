@@ -23,9 +23,12 @@ This integration was integrated and tested with version 1.0 of Cognni
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cognni-get-event
+
 ***
 Fetches a single event by ID.
 
@@ -33,6 +36,7 @@ Fetches a single event by ID.
 #### Base Command
 
 `cognni-get-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,9 +56,11 @@ Fetches a single event by ID.
 
 
 #### Command Example
+
 ```!cognni-get-event event_id="9ba7fb56-8ace-4b3d-a1e9-08c466668e57"```
 
 #### Context Example
+
 ```json
 {
     "Cognni": {
@@ -71,11 +77,13 @@ Fetches a single event by ID.
 #### Human Readable Output
 
 >### Cognni event 9ba7fb56-8ace-4b3d-a1e9-08c466668e57
+>
 >|date|description|id|sourceApplication|
 >|---|---|---|---|
 >| 2020-11-25T00:46:14.000Z | N/A | 9ba7fb56-8ace-4b3d-a1e9-08c466668e57 | Exchange |
 
 ### cognni-get-insight
+
 ***
 Fetches a single insight by ID.
 
@@ -83,6 +91,7 @@ Fetches a single insight by ID.
 #### Base Command
 
 `cognni-get-insight`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -101,9 +110,11 @@ Fetches a single insight by ID.
 
 
 #### Command Example
+
 ```!cognni-get-insight insight_id="74a53ab3-3e75-4444-9e7c-0be1e1bc26a9"```
 
 #### Context Example
+
 ```json
 {
     "Cognni": {
@@ -120,11 +131,13 @@ Fetches a single insight by ID.
 #### Human Readable Output
 
 >### Cognni 1 insight
+>
 >|description|id|name|severity|
 >|---|---|---|---|
 >|  | c24405d5-49f5-48b8-b15c-1a1aba540979 | Medium sensitivity content, Shared to private email address | 2 |
 
 ### cognni-fetch-insights
+
 ***
 Fetches insights according to severity.
 
@@ -132,6 +145,7 @@ Fetches insights according to severity.
 #### Base Command
 
 `cognni-fetch-insights`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -150,9 +164,11 @@ Fetches insights according to severity.
 
 
 #### Command Example
+
 ```!cognni-fetch-insights min_severity=2```
 
 #### Context Example
+
 ```json
 {
     "Cognni": {
@@ -231,6 +247,7 @@ Fetches insights according to severity.
 #### Human Readable Output
 
 >### Cognni 11 insights
+>
 >|description|id|name|severity|
 >|---|---|---|---|
 >|  | 4539ff6d-c58b-4a2a-a509-f121edbe97d7 | High sensitive Anonymous share | 3 |

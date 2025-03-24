@@ -65,7 +65,8 @@ Outputs
 
 ## Human Readable Output
 
- ### Docker Images In use:
+### Docker Images In use:
+
 |Docker Image|Content Item|
 |---|---|
 | demisto/ldap:1.0.0.23980 | Active Directory Query v2| 

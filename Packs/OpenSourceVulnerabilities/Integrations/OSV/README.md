@@ -5,7 +5,7 @@ OSV (Open Source Vulnerability) is a vulnerability database for open source proj
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. https://api.osv.dev) | True |
+| Server URL (e.g. <https://api.osv.dev>) | True |
 | Trust any certificate (not secure) |  |
 | Use system proxy settings |  |
 
@@ -18,7 +18,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### osv-get-vuln-by-id
 
 ***
-Return a `Vulnerability` object for a given OSV ID. All list of vulnerabilities can be found at https://osv.dev/list
+Return a `Vulnerability` object for a given OSV ID. All list of vulnerabilities can be found at <https://osv.dev/list>
 
 #### Base Command
 

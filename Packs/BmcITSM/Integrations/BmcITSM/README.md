@@ -6,7 +6,7 @@ This integration was integrated and tested with version 22.1.05 of BmcITSM
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | For Example: https://localhost:8008 | True |
+| Server URL | For Example: <https://localhost:8008> | True |
 | User Name |  | True |
 | Password |  | True |
 | Maximum Number of Incidents per Fetch | Default is 50. Maximum is 200. | False |
@@ -25,9 +25,12 @@ This integration was integrated and tested with version 22.1.05 of BmcITSM
 | Fetch incidents |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### bmc-itsm-user-list
+
 ***
 Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
@@ -35,6 +38,7 @@ Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved
 #### Base Command
 
 `bmc-itsm-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -60,8 +64,11 @@ Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved
 | BmcITSM.User.LastName | String | The user last name. |
 
 #### Command example
+
 ```!bmc-itsm-user-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -96,7 +103,9 @@ Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved
 #### Human Readable Output
 
 >### List Users.
+>
 >Showing 2 records out of 12.
+>
 >|Id|First Name|Last Name|Company|Department|Site Group|Region|Site|Organization|
 >|---|---|---|---|---|---|---|---|---|
 >| PPL000000000005 | App | Admin | Calbro Services |  | United States | Americas | Headquarters, Building 1.31 |  |
@@ -104,6 +113,7 @@ Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved
 
 
 ### bmc-itsm-company-list
+
 ***
 Retrieves a list of companies from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
@@ -111,6 +121,7 @@ Retrieves a list of companies from BMC Helix ITSM. The records are retrieved by 
 #### Base Command
 
 `bmc-itsm-company-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -133,8 +144,11 @@ Retrieves a list of companies from BMC Helix ITSM. The records are retrieved by 
 | BmcITSM.Company.Type | String | The company type. |
 
 #### Command example
+
 ```!bmc-itsm-company-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -157,7 +171,9 @@ Retrieves a list of companies from BMC Helix ITSM. The records are retrieved by 
 #### Human Readable Output
 
 >### List Companies.
+>
 >Showing 2 records out of 28.
+>
 >|Id|Name|Type|
 >|---|---|---|
 >| CPY000000000015 | - Global - | - System - |
@@ -165,6 +181,7 @@ Retrieves a list of companies from BMC Helix ITSM. The records are retrieved by 
 
 
 ### bmc-itsm-service-request-definition-list
+
 ***
 Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
@@ -172,6 +189,7 @@ Retrieves a list of service request definitions. The records are retrieved by th
 #### Base Command
 
 `bmc-itsm-service-request-definition-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -193,8 +211,11 @@ Retrieves a list of service request definitions. The records are retrieved by th
 | BmcITSM.ServiceRequestDefinition.InstanceID | String | The service request ticket instance ID. Used for creating service requests. |
 
 #### Command example
+
 ```!bmc-itsm-service-request-definition-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -217,7 +238,9 @@ Retrieves a list of service request definitions. The records are retrieved by th
 #### Human Readable Output
 
 >### List service request definitions.
+>
 >Showing 2 records out of 157.
+>
 >|Id|Description|Instance ID|
 >|---|---|---|
 >| 000000000000382\|000000000000382 | Other request to facilities that isn't specifically listed. | SRGAA5V0GENAWAO6U31IO5YO03KYL3 |
@@ -225,6 +248,7 @@ Retrieves a list of service request definitions. The records are retrieved by th
 
 
 ### bmc-itsm-ticket-list
+
 ***
 Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
@@ -232,6 +256,7 @@ Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the que
 #### Base Command
 
 `bmc-itsm-ticket-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -276,8 +301,11 @@ Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the que
 | BmcITSM.Ticket.LastModifiedDate | Date | The ticket last update date time in UTC. |
 
 #### Command example
+
 ```!bmc-itsm-ticket-list ticket_type="service request" limit=2```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -374,7 +402,9 @@ Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the que
 #### Human Readable Output
 
 >### List Tickets.
+>
 >Showing 2 records out of 227.
+>
 >|Type|Request ID|Display ID|Summary|Status|Urgency|Impact|Create Date|Last Modified Date|
 >|---|---|---|---|---|---|---|---|---|
 >| service request | 000000000000396 | REQ000000000398 | Add user access to network | Planning | 2-High | 1-Extensive/Widespread | 2022-06-29T14:38:36 | 2022-07-11T07:27:05 |
@@ -382,6 +412,7 @@ Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the que
 
 
 ### bmc-itsm-service-request-create
+
 ***
 Creates a new service request ticket. A service request ticket is the request record that is generated from the service request definition to manage and track the execution. To create it, you need to provide the srd_instance_id argument, which can be retrieved by by executing the bmc-itsm-service-request-definition-list command and extracting the instanceID field. User and company arguments can be retrieved by executing the bmc-itsm-user-list and bmc-itsm-company-list. To see the entire JSON, you can use the raw_response=true at the end of the command.
 
@@ -389,6 +420,7 @@ Creates a new service request ticket. A service request ticket is the request re
 #### Base Command
 
 `bmc-itsm-service-request-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -413,8 +445,11 @@ Creates a new service request ticket. A service request ticket is the request re
 | BmcITSM.ServiceRequest.CreateDate | Date | The service request ticket create date time in UTC. |
 
 #### Command example
+
 ```!bmc-itsm-service-request-create service_request_definition_id=SRGAA5V0GENAWAO6ZQWYO6EBWDOUAU```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -430,10 +465,13 @@ Creates a new service request ticket. A service request ticket is the request re
 #### Human Readable Output
 
 >### Task ticket successfully Created.
+>
 >|Create Date|Display ID|Request ID|
 >|---|---|---|
 >| 2022-07-27T08:44:43 | TAS000000000413 | TAS000000000413 |
+>
 ### bmc-itsm-service-request-update
+
 ***
 Updates the details of a service request ticket for a given request ID. User and company related arguments can be retrieved by executing the bmc-itsm-user-list and bmc-itsm-company-list commands.
 
@@ -441,6 +479,7 @@ Updates the details of a service request ticket for a given request ID. User and
 #### Base Command
 
 `bmc-itsm-service-request-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -463,13 +502,17 @@ Updates the details of a service request ticket for a given request ID. User and
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!bmc-itsm-service-request-update service_request_id=000000000000259 status=Cancelled status_reason=Cancelled```
+
 #### Human Readable Output
 
 >Service Request: 000000000000259 was successfully updated.
 
 ### bmc-itsm-incident-update
+
 ***
 Update incident ticket.
 
@@ -477,6 +520,7 @@ Update incident ticket.
 #### Base Command
 
 `bmc-itsm-incident-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -508,13 +552,17 @@ Update incident ticket.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!bmc-itsm-incident-update request_id=INC000000000532 assignee="Mary Mann" assignee_login_id=Mary impact="2-Significant/Large" urgency="1-Critical"```
+
 #### Human Readable Output
 
 >Incident: INC000000000532 was successfully updated.
 
 ### bmc-itsm-ticket-delete
+
 ***
 Deletes a ticket by its request ID. Only admin users can perform this command.
 
@@ -522,6 +570,7 @@ Deletes a ticket by its request ID. Only admin users can perform this command.
 #### Base Command
 
 `bmc-itsm-ticket-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -533,13 +582,17 @@ Deletes a ticket by its request ID. Only admin users can perform this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!bmc-itsm-ticket-delete ticket_ids=TAS000000000260 ticket_type=task```
+
 #### Human Readable Output
 
 >task TAS000000000260 was deleted successfully
 
 ### bmc-itsm-incident-create
+
 ***
 Creates a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service.
 
@@ -547,6 +600,7 @@ Creates a new incident ticket. An incident is any event that is not part of the 
 #### Base Command
 
 `bmc-itsm-incident-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -582,8 +636,11 @@ Creates a new incident ticket. An incident is any event that is not part of the 
 | BmcITSM.Incident.CreateDate | Date | The incident ticket create date time in UTC. |
 
 #### Command example
+
 ```!bmc-itsm-incident-create first_name=Allen last_name=Allbrook impact="1-Extensive/Widespread" status=Assigned urgency="1-Critical" template_instance_id=AG00123F73CF5EKnsTSQ5rvrAAZfQA```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -599,12 +656,14 @@ Creates a new incident ticket. An incident is any event that is not part of the 
 #### Human Readable Output
 
 >### Incident ticket successfully Created
+>
 >|Create Date|Display ID|Request ID|
 >|---|---|---|
 >| 2022-07-27T08:44:51 | INC000000000505 | INC000000000606 |
 
 
 ### bmc-itsm-change-request-create
+
 ***
 Creates a change request ticket in BMC Helix ITSM. The ticket is created by using a template or from scratch.
 
@@ -612,6 +671,7 @@ Creates a change request ticket in BMC Helix ITSM. The ticket is created by usin
 #### Base Command
 
 `bmc-itsm-change-request-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -641,8 +701,11 @@ Creates a change request ticket in BMC Helix ITSM. The ticket is created by usin
 | BmcITSM.ChangeRequest.CreateDate | Date | The change request ticket create date time. |
 
 #### Command example
+
 ```!bmc-itsm-change-request-create template_id=AG00123F73CF5EK3sTSQTb3rAAbfQA first_name=Allen last_name=Allbrook summary="Change request for README"```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -658,12 +721,14 @@ Creates a change request ticket in BMC Helix ITSM. The ticket is created by usin
 #### Human Readable Output
 
 >### Change Request ticket successfully Created
+>
 >|Create Date|Display ID|Request ID|
 >|---|---|---|
 >| 2022-07-27T08:44:24 | CRQ000000000404 | CRQ000000000406 |
 
 
 ### bmc-itsm-change-request-update
+
 ***
 Updates the details of change request ticket for the specified request ID.
 
@@ -671,6 +736,7 @@ Updates the details of change request ticket for the specified request ID.
 #### Base Command
 
 `bmc-itsm-change-request-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -702,12 +768,17 @@ Updates the details of change request ticket for the specified request ID.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!bmc-itsm-change-request-update reuqest_id=CRQ000000000313 status="Request For Authorization" details="more details" status_reason=Accepted ```
+
 #### Human Readable Output
 
 >Incident: CRQ000000000313 was successfully updated.
+>
 ### bmc-itsm-task-create
+
 ***
 Creates a new task ticket. By splitting cases into individual tasks (assignments), you can focus on one assignment at a time to resolve cases more efficiently. Task ticket type can be attached only to the following ticket types: change request, incident, problem investigation, known error and work order.
 
@@ -715,6 +786,7 @@ Creates a new task ticket. By splitting cases into individual tasks (assignments
 #### Base Command
 
 `bmc-itsm-task-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -751,8 +823,11 @@ Creates a new task ticket. By splitting cases into individual tasks (assignments
 | BmcITSM.Task.CreateDate | Date | The task ticket creation date time in UTC. |
 
 #### Command example
+
 ```!bmc-itsm-task-create location_company="Calbro Services" details="Details" priority=Critical root_request_id=PBI000000000322 root_request_name=error root_ticket_type="problem investigation" status=Assigned summary="Summary task" assigned_support_group="Service Desk" assigned_support_organization="IT Support"  support_company="Calbro Services" task_type=Manual assignee="Francie Stafford" scedulded_end_date="in 10 days" scedulded_start_date="in 2 days"```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -768,12 +843,14 @@ Creates a new task ticket. By splitting cases into individual tasks (assignments
 #### Human Readable Output
 
 >### Task ticket successfully Created.
+>
 >|Create Date|Display ID|Request ID|
 >|---|---|---|
 >| 2022-07-27T08:44:43 | TAS000000000413 | TAS000000000413 |
 
 
 ### bmc-itsm-task-update
+
 ***
 Updates the task ticket.
 
@@ -781,6 +858,7 @@ Updates the task ticket.
 #### Base Command
 
 `bmc-itsm-task-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -807,13 +885,17 @@ Updates the task ticket.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!bmc-itsm-task-update task_id=TAS000000000305 company=test priority=High status="Work In Progress" status_reason="Task Rule" summary="Updated summary for demo" details="Updated details for demo" ```
+
 #### Human Readable Output
 
 >Task: TAS000000000305 was successfully updated.
 
 ### bmc-itsm-problem-investigation-create
+
 ***
 Creates a problem investigation ticket.
 
@@ -821,6 +903,7 @@ Creates a problem investigation ticket.
 #### Base Command
 
 `bmc-itsm-problem-investigation-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -861,8 +944,11 @@ Creates a problem investigation ticket.
 | BmcITSM.ProblemInvestigation.CreateDate | Date | The problem investigation ticket creation date time in UTC. |
 
 #### Command example
+
 ```!bmc-itsm-problem-investigation-create first_name=Allen last_name=Allbrook summary=Test-create-prob urgency="1-Critical" impact="4-Minor/Localized" details="Problem details" status=Assigned target_resolution_date="in 3 days" assigned_support_company="Calbro Services" assigned_support_organization="IT Support" assigned_group="Backoffice Support" investigation_driver="High Impact Incident"```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -878,12 +964,14 @@ Creates a problem investigation ticket.
 #### Human Readable Output
 
 >### Problem Investigation  ticket successfully Created
+>
 >|Create Date|Display ID|Request ID|
 >|---|---|---|
 >| 2022-07-27T08:44:33 | PBI000000000404 | PBI000000000404 |
 
 
 ### bmc-itsm-problem-investigation-update
+
 ***
 Updates The problem investigation ticket type.
 
@@ -891,6 +979,7 @@ Updates The problem investigation ticket type.
 #### Base Command
 
 `bmc-itsm-problem-investigation-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -923,13 +1012,17 @@ Updates The problem investigation ticket type.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!bmc-itsm-problem-investigation-update problem_investigation_id=PBI000000000322 details="updated problem details" status="Under Investigation" status_reason=Publish```
+
 #### Human Readable Output
 
 >Problem Investigation: PBI000000000322 was successfully updated.
 
 ### bmc-itsm-known-error-create
+
 ***
 Create known error ticket.
 
@@ -937,6 +1030,7 @@ Create known error ticket.
 #### Base Command
 
 `bmc-itsm-known-error-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -972,8 +1066,11 @@ Create known error ticket.
 | BmcITSM.KnownError.CreateDate | Date | KnownError Create time in UTC. |
 
 #### Command example
+
 ```!bmc-itsm-known-error-create summary="New Error API" details="New Error API Details" target_resolution_date=" in 5 days" company="Calbro Services" resolution="error resolution" investigation_justification=look assignee="Bob Baxter" assigned_support_company="Calbro Services" assigned_support_organization="IT Support" assigned_group="Backoffice Support" impact="2-Significant/Large" status=Assigned urgency="2-High" view_access=Internal ```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -989,12 +1086,14 @@ Create known error ticket.
 #### Human Readable Output
 
 >### Known Error ticket successfully Created
+>
 >|Create Date|Display ID|Request ID|
 >|---|---|---|
 >| 2022-07-27T08:44:37 | PKE000000000303 | PKE000000000303 |
 
 
 ### bmc-itsm-known-error-update
+
 ***
 Update Known Error ticket type.
 
@@ -1002,6 +1101,7 @@ Update Known Error ticket type.
 #### Base Command
 
 `bmc-itsm-known-error-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1032,13 +1132,17 @@ Update Known Error ticket type.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!bmc-itsm-known-error-update known_error_id=PKE000000000226 impact="2-Significant/Large" details="UPDATED KNOWN ERROR DETAILS" resolution="Updated resolution" temporary_workaround="Updated workaround" summary="Updated summary" status="Assigned To Vendor" status_reason="Pending PIR" target_resolution_date="In 20 days"    ```
+
 #### Human Readable Output
 
 >Known Error: PKE000000000226 was successfully updated.
 
 ### bmc-itsm-change-request-template-list
+
 ***
 Lists all change requests ticket templates. Useful for creating change request tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
@@ -1046,6 +1150,7 @@ Lists all change requests ticket templates. Useful for creating change request t
 #### Base Command
 
 `bmc-itsm-change-request-template-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1067,8 +1172,11 @@ Lists all change requests ticket templates. Useful for creating change request t
 | BmcITSM.ChangeRequestTemplate.InstanceID | String | The change request ticket template instance ID. Useful for creating change request tickets. |
 
 #### Command example
+
 ```!bmc-itsm-change-request-template-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -1091,7 +1199,9 @@ Lists all change requests ticket templates. Useful for creating change request t
 #### Human Readable Output
 
 >### List change request templates.
+>
 >Showing 2 records out of 13.
+>
 >|Id|Description|Instance ID|
 >|---|---|---|
 >| CTP000000000002 | Add New Employee | AG00123F73CF5EK3sTSQD73rAAa_QA |
@@ -1099,6 +1209,7 @@ Lists all change requests ticket templates. Useful for creating change request t
 
 
 ### bmc-itsm-incident-template-list
+
 ***
 Lists all incident requests ticket templates. Useful for create incident tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
@@ -1106,6 +1217,7 @@ Lists all incident requests ticket templates. Useful for create incident tickets
 #### Base Command
 
 `bmc-itsm-incident-template-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1127,8 +1239,11 @@ Lists all incident requests ticket templates. Useful for create incident tickets
 | BmcITSM.IncidentTemplate.InstanceID | String | The incident ticket template ID. Useful for creating change request tickets. |
 
 #### Command example
+
 ```!bmc-itsm-incident-template-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -1151,7 +1266,9 @@ Lists all incident requests ticket templates. Useful for create incident tickets
 #### Human Readable Output
 
 >### List incident templates.
+>
 >Showing 2 records out of 2.
+>
 >|Id|Description|Instance ID|
 >|---|---|---|
 >| HTP000000000001 | Email Password Reset | AG00123F73CF5EKnsTSQSrvrAAYvQA |
@@ -1159,6 +1276,7 @@ Lists all incident requests ticket templates. Useful for create incident tickets
 
 
 ### bmc-itsm-task-template-list
+
 ***
 Lists all task ticket templates. Useful for creating task tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
 
@@ -1166,6 +1284,7 @@ Lists all task ticket templates. Useful for creating task tickets. The records a
 #### Base Command
 
 `bmc-itsm-task-template-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1187,8 +1306,11 @@ Lists all task ticket templates. Useful for creating task tickets. The records a
 | BmcITSM.TaskTemplate.InstanceID | String | The task ticket template ID. Useful for creating change request tickets. |
 
 #### Command example
+
 ```!bmc-itsm-task-template-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -1211,7 +1333,9 @@ Lists all task ticket templates. Useful for creating task tickets. The records a
 #### Human Readable Output
 
 >### List task templates.
+>
 >Showing 2 records out of 25.
+>
 >|Id|Task Name|Instance ID|
 >|---|---|---|
 >| 14 | Backup System | TM00123F73CF5EK3sTSQ877rAAhfQA |
@@ -1219,6 +1343,7 @@ Lists all task ticket templates. Useful for creating task tickets. The records a
 
 
 ### get-mapping-fields
+
 ***
 Returns the list of fields for an incident type.
 
@@ -1226,6 +1351,7 @@ Returns the list of fields for an incident type.
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1235,7 +1361,9 @@ Returns the list of fields for an incident type.
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
+
 ***
 Gets remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
 
@@ -1243,6 +1371,7 @@ Gets remote data from a remote incident. This method does not update the current
 #### Base Command
 
 `get-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1256,6 +1385,7 @@ Gets remote data from a remote incident. This method does not update the current
 There is no context output for this command.
 
 ### get-modified-remote-data
+
 ***
 Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
 
@@ -1263,6 +1393,7 @@ Gets the list of incidents that were modified since the last update time. Note t
 #### Base Command
 
 `get-modified-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1304,8 +1435,11 @@ Lists all support groups. Useful for getting possible (Company, Support Organiza
 | BmcITSM.SupportGroup.SupportGroupName | String | The support group. |
 
 #### Command example
+
 ```!bmc-itsm-support-group-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -1330,7 +1464,9 @@ Lists all support groups. Useful for getting possible (Company, Support Organiza
 #### Human Readable Output
 
 >### List support groups.
+>
 >Showing 2 records out of 15.
+>
 >|Support Group ID|Company|Support Organization|Support Group Name|
 >|---|---|---|---|
 >| APX990000000029 | Apex Global | Facilities Support | Apex Global - Facilities |
@@ -1366,8 +1502,11 @@ Lists all work order templates. Useful for creating work orders. The records are
 | BmcITSM.WorkOrderTemplate.GUID | String | The work order template GUID. |
 
 #### Command example
+
 ```!bmc-itsm-work-order-template-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -1390,7 +1529,9 @@ Lists all work order templates. Useful for creating work orders. The records are
 #### Human Readable Output
 
 >### List work order templates.
+>
 >Showing 2 records out of 9.
+>
 >|Id|Name|GUID|
 >|---|---|---|
 >| 000000000000002 | Share Folder Access | IDGCWH5RDMNSBARVRM5ERVRM5EKP11 |
@@ -1436,8 +1577,11 @@ Creates a new work order ticket.
 | BmcITSM.WorkOrder.CreateDate | Date | The work order ticket creation date time in UTC. |
 
 #### Command example
+
 ```!bmc-itsm-work-order-create customer_company="Calbro Services" customer_first_name="Scully" customer_last_name="Agent" detailed_description="Easy peasy work order" location_company="Calbro Services" priority=Low status=Pending summary="Easy peasy work order. No, really." customer_person_id=PPL000000000607 additional_fields="Support Company=Calbro Services;Support Organization=IT Support;Support Group Name=Service Desk;Request Assignee=Scully Agent"```
+
 #### Context Example
+
 ```json
 {
     "BmcITSM": {
@@ -1453,6 +1597,7 @@ Creates a new work order ticket.
 #### Human Readable Output
 
 >### Work order ticket successfully created.
+>
 >|Create Date|Display ID|Request ID|
 >|---|---|---|
 >| 2024-02-07T08:08:23 | WO0000000001002 | WO0000000000702 |
@@ -1490,8 +1635,11 @@ Updates the work order ticket.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!bmc-itsm-work-order-update request_id=WO0000000000701 summary="Updated summary" status="In Progress" support_organization="IT Support" support_group="Service Desk"```
+
 #### Human Readable Output
 
 >Work Order: WO0000000000701 was successfully updated.
@@ -1502,6 +1650,7 @@ There is no context output for this command.
 
 You can enable incident mirroring between Cortex XSOAR incidents and BMC Helix ITSM corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 

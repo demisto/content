@@ -55,8 +55,11 @@ Create a new IP set.
 | AWS.Waf.IpSet.ARN | String | The IP set Amazon Resource Name. | 
 
 #### Command example
+
 ```!aws-waf-ip-set-create ip_version=IPV4 name=name addresses="1.1.1.1/32"```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -107,8 +110,11 @@ Get a specific IP set.
 | AWS.Waf.IpSet.ARN | String | The IP set Amazon Resource Name. | 
 
 #### Command example
+
 ```!aws-waf-ip-set-get id=id name=name```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -131,6 +137,7 @@ Get a specific IP set.
 #### Human Readable Output
 
 >### IP Set
+>
 >|ARN|Addresses|Description|IPAddressVersion| Id  | Name |
 >|---|---|---|-----|------|---|
 >| arn | 1.1.2.2/32 |  | IPV4 | id  | name |
@@ -160,6 +167,7 @@ Update an IP set.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-ip-set-list
 
 ***
@@ -190,8 +198,11 @@ Lists IP sets.
 | AWS.Waf.IpSetNextToken | String | The token for the next page. | 
 
 #### Command example
+
 ```!aws-waf-ip-set-list```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -221,6 +232,7 @@ Lists IP sets.
 #### Human Readable Output
 
 >### List IP Sets
+>
 >|Name|Id|ARN|Description|
 >|---|---|---|---|
 >| name | id| arn |  |
@@ -248,6 +260,7 @@ Delete a specific IP set.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-regex-set-create
 
 ***
@@ -280,8 +293,11 @@ Create a new regex set.
 | AWS.Waf.RegexSet.ARN | String | The regex set Amazon Resource Name. | 
 
 #### Command example
+
 ```!aws-waf-regex-set-create name=name regex_pattern="pattern"```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -331,8 +347,11 @@ Get a specific regex set.
 | AWS.Waf.RegexSet.ARN | String | The regex set Amazon Resource Name. | 
 
 #### Command example
+
 ```!aws-waf-regex-set-get id=id name=name```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -356,6 +375,7 @@ Get a specific regex set.
 #### Human Readable Output
 
 >### Regex Set
+>
 >|ARN|Description| Id  |Name|RegularExpressionList|
 >|---|-----|---|---|---|
 >| arn |  | id  | name | {'RegexString': '^dog'} |
@@ -385,6 +405,7 @@ Update a regex set.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-regex-set-list
 
 ***
@@ -415,8 +436,11 @@ Lists regex sets.
 | AWS.Waf.RegexSetNextToken | String | The token for the next page. | 
 
 #### Command example
+
 ```!aws-waf-regex-set-list```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -446,6 +470,7 @@ Lists regex sets.
 #### Human Readable Output
 
 >### List regex Sets
+>
 >|Name|Id|ARN|Description|
 >|---|---|---|---|
 >| name | id | arn |  |
@@ -473,6 +498,7 @@ Delete a specific regex set.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-rule-group-list
 
 ***
@@ -503,8 +529,11 @@ Lists rule groups.
 | AWS.Waf.RuleGroupNextToken | String | The token for the next page. | 
 
 #### Command example
+
 ```!aws-waf-rule-group-list```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -534,6 +563,7 @@ Lists rule groups.
 #### Human Readable Output
 
 >### List rule groups
+>
 >|Name|Id|ARN|Description|
 >|---|---|---|---|
 >| name | id | arn |  |
@@ -569,8 +599,11 @@ Get a specific rule group.
 | AWS.Waf.RuleGroup.ARN | String | The rule group Amazon Resource Name. | 
 
 #### Command example
+
 ```!aws-waf-rule-group-get id=id name=name```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -736,6 +769,7 @@ Get a specific rule group.
 #### Human Readable Output
 
 >### Rule group
+>
 >|Id|Name|Description|
 >|---|---|---|
 >| Id | name |  |
@@ -762,6 +796,7 @@ Delete a specific rule group.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-rule-group-create
 
 ***
@@ -797,8 +832,11 @@ Create a new rule group.
 | AWS.Waf.RuleGroup.ARN | String | The rule group Amazon Resource Name. | 
 
 #### Command example
+
 ```!aws-waf-rule-group-create capacity=1500 name=name```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -845,6 +883,7 @@ Create an IP rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-country-rule-create
 
 ***
@@ -870,6 +909,7 @@ Create a country rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-string-match-rule-create
 
 ***
@@ -900,6 +940,7 @@ Create a string match rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-rule-delete
 
 ***
@@ -922,6 +963,7 @@ Delete a specific rule from a rule group.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-ip-statement-add
 
 ***
@@ -946,6 +988,7 @@ Adds an IP statement to an existing rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-country-statement-add
 
 ***
@@ -970,6 +1013,7 @@ Adds a country statement to an existing rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-string-match-statement-add
 
 ***
@@ -999,6 +1043,7 @@ Adds a string match statement to an existing rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-statement-json-add
 
 ***
@@ -1023,6 +1068,7 @@ Adds a generic statement to an existing rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-statement-json-template-get
 
 ***

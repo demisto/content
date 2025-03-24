@@ -3,7 +3,9 @@ This US Breach Notification content pack includes playbooks that help to determi
 With this package, it will be possible to understand whether a breach occurred and whether the notification is required. In addition, you can shorten the notification time in case of breach according to the state law.
 
 ##### What does this pack do?
+
 The playbooks included in this pack help you automate repetitive tasks associated with US breach notification incidents:
+
 - Checks whether the breached data was encrypted or if the encryption key was compromised.
 - Checks the types of PII that were compromised, however, each state determines what is considered PII, and which PII requires notification.
 - Checks if the PII that was compromised contained living residents in the selected state.

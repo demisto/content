@@ -8,6 +8,7 @@ McAfee ePO has a highly flexible and powerful permissions system. The permission
 More information about McAfee ePO's permissions model is available [here](https://docs.mcafee.com/bundle/epolicy-orchestrator-5.10.0-product-guide/page/GUID-1AEFA219-0726-4090-A8C2-BCAA1CAA7B37.html).
 
 Example `!epo-help` outputs with permission information: 
+
 * `!epo-help command="repository.findPackages"`:
 ![](../../doc_files/epo-help-find-pkg.png)
 * `!epo-help command="repository.deletePackage"`:
@@ -26,9 +27,12 @@ Example `!epo-help` outputs with permission information:
 | HTTP Timeout | The timeout of the HTTP requests sent to McAfee ePO API \(in seconds\). | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### epo-help
+
 ***
 Displays help (information) for ePO commands. If no command argument is specified, returns all ePO commands.
 
@@ -36,6 +40,7 @@ Displays help (information) for ePO commands. If no command argument is specifie
 #### Base Command
 
 `epo-help`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,11 +55,13 @@ Displays help (information) for ePO commands. If no command argument is specifie
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-help command="core.help"```
 
 #### Human Readable Output
 
 >#### ePO Help - core.help 
+>
 > core.help [command] [prefix=<>]
 > Lists all registered commands and displays help strings.  Returns the list of
 > commands or throws on error.
@@ -66,6 +73,7 @@ There is no context output for this command.
 > 'command' argument is specified.
 
 ### epo-get-latest-dat
+
 ***
 Checks the latest available DAT file version in the public McAfee repository.
 
@@ -73,6 +81,7 @@ Checks the latest available DAT file version in the public McAfee repository.
 #### Base Command
 
 `epo-get-latest-dat`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -87,9 +96,11 @@ Checks the latest available DAT file version in the public McAfee repository.
 
 
 #### Command Example
+
 ```!epo-get-latest-dat```
 
 #### Context Example
+
 ```json
 {
     "McAfee": {
@@ -106,6 +117,7 @@ Checks the latest available DAT file version in the public McAfee repository.
 
 
 ### epo-get-current-dat
+
 ***
 Checks the existing DAT file version in the ePO repository.
 
@@ -113,6 +125,7 @@ Checks the existing DAT file version in the ePO repository.
 #### Base Command
 
 `epo-get-current-dat`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -127,9 +140,11 @@ Checks the existing DAT file version in the ePO repository.
 
 
 #### Command Example
+
 ```!epo-get-current-dat```
 
 #### Context Example
+
 ```json
 {
     "McAfee": {
@@ -146,6 +161,7 @@ Checks the existing DAT file version in the ePO repository.
 
 
 ### epo-command
+
 ***
 Executes the ePO command. Receives the mandatory 'command' argument, and other optional arguments. Run the 'epo-help' command to get a list of available commands. You can control the response format to be text instead of the default json format using resp_type=text, You can also specify the 'headers' argument to filter table headers. Example/:/ !epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName
 
@@ -153,6 +169,7 @@ Executes the ePO command. Receives the mandatory 'command' argument, and other o
 #### Base Command
 
 `epo-command`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -164,11 +181,13 @@ Executes the ePO command. Receives the mandatory 'command' argument, and other o
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-command command="system.find" searchText="10.0.0.1" headers="EPOBranchNode.AutoID,EPOComputerProperties.ComputerName"```
 
 #### Human Readable Output
 
 >### ePO command *system.find* results:
+>
 >|EPOBranchNode.AutoID|EPOComputerProperties.ComputerName|
 >|---|---|
 >| 2 | 10.0.0.1 |
@@ -176,6 +195,7 @@ There is no context output for this command.
 
 
 ### epo-update-client-dat
+
 ***
 Runs a client task to update the DAT file on the given endpoints.
 
@@ -183,6 +203,7 @@ Runs a client task to update the DAT file on the given endpoints.
 #### Base Command
 
 `epo-update-client-dat`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -200,6 +221,7 @@ Runs a client task to update the DAT file on the given endpoints.
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-update-client-dat systems="TIE"```
 
 #### Human Readable Output
@@ -207,6 +229,7 @@ There is no context output for this command.
 >ePO client DAT update task started: Succeeded
 
 ### epo-update-repository
+
 ***
 Triggers a server task in specific ePO servers to retrieve the latest signatures from the updated server.
 
@@ -214,6 +237,7 @@ Triggers a server task in specific ePO servers to retrieve the latest signatures
 #### Base Command
 
 `epo-update-repository`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -225,6 +249,7 @@ Triggers a server task in specific ePO servers to retrieve the latest signatures
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-update-repository```
 
 #### Human Readable Output
@@ -248,6 +273,7 @@ There is no context output for this command.
 >skipped: Current\ENCPTCNT6000\8.0.0.11953\DAT\0000
 
 ### epo-get-system-tree-group
+
 ***
 Returns a system tree group.
 
@@ -255,6 +281,7 @@ Returns a system tree group.
 #### Base Command
 
 `epo-get-system-tree-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -271,9 +298,11 @@ Returns a system tree group.
 
 
 #### Command Example
+
 ```!epo-get-system-tree-group search="Lost"```
 
 #### Context Example
+
 ```json
 {
     "McAfee": {
@@ -290,12 +319,14 @@ Returns a system tree group.
 #### Human Readable Output
 
 >#### ePO System Tree groups
+>
 >Group ID | Group path
 >-|-
 >3  | My Organization\Lost&Found 
 
 
 ### epo-find-systems
+
 ***
 Finds computers within a specified group in the McAfee ePO system tree.
 
@@ -303,6 +334,7 @@ Finds computers within a specified group in the McAfee ePO system tree.
 #### Base Command
 
 `epo-find-systems`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -372,9 +404,11 @@ Finds computers within a specified group in the McAfee ePO system tree.
 
 
 #### Command Example
+
 ```!epo-find-systems groupId="2"```
 
 #### Context Example
+
 ```json
 {
     "Endpoint": [
@@ -493,12 +527,14 @@ Finds computers within a specified group in the McAfee ePO system tree.
 #### Human Readable Output
 
 >### Endpoint information:
+>
 >|Memory|Name|Processors|
 >|---|---|---|
 >| 0 | 10.0.0.1 | 0 |
 
 
 ### epo-find-system
+
 ***
 Finds systems in the McAfee ePO system tree.
 
@@ -506,6 +542,7 @@ Finds systems in the McAfee ePO system tree.
 #### Base Command
 
 `epo-find-system`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -575,9 +612,11 @@ Finds systems in the McAfee ePO system tree.
 
 
 #### Command Example
+
 ```!epo-find-system searchText="TIE"```
 
 #### Context Example
+
 ```json
 {
     "Endpoint": {
@@ -642,12 +681,14 @@ Finds systems in the McAfee ePO system tree.
 #### Human Readable Output
 
 >#### Systems in the System Tree
+>
 >|Name|Domain|Hostname|IPAddress|OS|OSVersion|Processor|Processors|Memory| 
 > |-|-|-|-|-|-|-|-|-| 
 >|tie |(none) |tie |192.168.1.102 |Linux |4.9 |Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz |8 |8364199936 |
 
 
 ### epo-wakeup-agent
+
 ***
 Wakes up an agent.
 
@@ -655,6 +696,7 @@ Wakes up an agent.
 #### Base Command
 
 `epo-wakeup-agent`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -667,16 +709,19 @@ Wakes up an agent.
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-wakeup-agent names="TIE"```
 
 #### Human Readable Output
 
 >#### ePO agents was awaken.
+>
 >| Completed | Failed | Expired |
 >|-|-|-|
 >|1|0|0|
 
 ### epo-apply-tag
+
 ***
 Applies a tag to the specified host names.
 
@@ -684,6 +729,7 @@ Applies a tag to the specified host names.
 #### Base Command
 
 `epo-apply-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -697,6 +743,7 @@ Applies a tag to the specified host names.
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-apply-tag names="TIE" tagName="Server"```
 
 #### Human Readable Output
@@ -705,6 +752,7 @@ There is no context output for this command.
 
 
 ### epo-clear-tag
+
 ***
 Clears a tag from the specified host names.
 
@@ -712,6 +760,7 @@ Clears a tag from the specified host names.
 #### Base Command
 
 `epo-clear-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -725,6 +774,7 @@ Clears a tag from the specified host names.
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-clear-tag names="TIE" tagName="MARSERVER"```
 
 #### Human Readable Output
@@ -733,6 +783,7 @@ There is no context output for this command.
 
 
 ### epo-list-tag
+
 ***
 List tags that contain the searchText. If no searchText is specified, list all tags available in the ePO system.
 
@@ -740,6 +791,7 @@ List tags that contain the searchText. If no searchText is specified, list all t
 #### Base Command
 
 `epo-list-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -757,9 +809,11 @@ List tags that contain the searchText. If no searchText is specified, list all t
 
 
 #### Command Example
+
 ```!epo-list-tag searchText="server"```
 
 #### Context Example
+
 ```json
 {
     "McAfee": {
@@ -789,6 +843,7 @@ List tags that contain the searchText. If no searchText is specified, list all t
 #### Human Readable Output
 
 >### ePO Tags
+>
 >|tagId|tagName|tagNotes|
 >|---|---|---|
 >| 1 | Server | Default tag for systems identified as a Server |
@@ -797,6 +852,7 @@ List tags that contain the searchText. If no searchText is specified, list all t
 
 
 ### epo-get-tables
+
 ***
 Returns the ePO table of the table argument that is specified. If no table argument is specified, returns all ePO tables.
 
@@ -804,6 +860,7 @@ Returns the ePO table of the table argument that is specified. If no table argum
 #### Base Command
 
 `epo-get-tables`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -816,17 +873,20 @@ Returns the ePO table of the table argument that is specified. If no table argum
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-get-tables table="Client Events"```
 
 #### Human Readable Output
 
 >### ePO tables:
+>
 >|name|target|type|databaseType|description|columns|relatedTables|foreignKeys|
 >|---|---|---|---|---|---|---|---|
 >| Client Events | EPOProductEvents | target |  | Retrieves information on client events from managed systems. | <br/>    Name          Type           Select? Condition? GroupBy? Order? Number? <br/>    ------------- -------------- ------- ---------- -------- ------ -------<br/>    AutoID        long           False   False      False    True   True   <br/>    AgentGUID     string         True    False      False    True   False  <br/>    NodeID        int            False   False      False    True   True   <br/>    TVDEventID    eventIdInt     True    True       True     True   True   <br/>    TVDSeverity   enum           True    True       True     True   False  <br/>    ReceivedUTC   timestamp      True    True       True     True   False  <br/>    DetectedUTC   timestamp      True    True       True     True   False  <br/>    HostName      string         True    True       True     True   False  <br/>    UserName      string         True    True       True     True   False  <br/>    IPV6          ipv6           True    True       True     True   False  <br/>    ProductCode   string         False   False      False    True   False  <br/>    version       productVersion True    True       True     True   False  <br/>    SPHotFix      string         True    True       True     True   False  <br/>    ExtraDATNames string         True    True       True     True   False  <br/>    Type          string_lookup  True    True       True     True   False  <br/>    Error         enum           True    True       True     True   False  <br/>    Locale        int            True    True       True     True   True   <br/>    SiteName      string         True    True       True     True   False  <br/>    InitiatorID   string         True    True       True     True   False  <br/>    InitiatorType string_lookup  True    True       True     True   False  <br/>    TenantId      int            False   False      False    True   True   <br/> | <br/>    Name<br/>    ------------------<br/>    EPOLeafNode<br/>    EPOSoftwareView<br/>    EPOEventFilterDesc<br/> | <br/>    Source table     Source Columns Destination table Destination columns Allows inverse? One-to-one? Many-to-one? <br/>    ---------------- -------------- ----------------- ------------------- --------------- ----------- ------------<br/>    EPOProductEvents AgentGUID      EPOLeafNode       AgentGUID           False           False       True        <br/>    EPOProductEvents TVDEventID     EPOEventFilterDesc EventId             False           False       True        <br/>    EPOProductEvents ProductCode    EPOSoftwareView   ProductCode         False           False       True        <br/> |
 
 
 ### epo-query-table
+
 ***
 Queries an ePO table.
 
@@ -834,6 +894,7 @@ Queries an ePO table.
 #### Base Command
 
 `epo-query-table`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -855,9 +916,11 @@ Queries an ePO table.
 
 
 #### Command Example
+
 ```!epo-query-table target="FW_Rule" query_name="Test Query"```
 
 #### Context Example
+
 ```json
 {
     "McAfee": {
@@ -929,6 +992,7 @@ Queries an ePO table.
 #### Human Readable Output
 
 >### ePO Table Query:
+>
 >|FW_Rule.localServiceList|FW_Rule.trafficLogged|FW_Rule.lastModifyingUsername|FW_Rule.transportProtocol|FW_Rule.remoteServiceList|FW_Rule.name|FW_Rule.schedule_offHours|FW_Rule.note|FW_Rule.schedule_start|FW_Rule.mediaFlags|FW_Rule.intrusion|FW_Rule.schedule_end|FW_Rule.action|FW_Rule.direction|FW_Rule.lastModified|FW_Rule.enabled|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | false | system | 1024 |  | Outlook | NONE |  | 0:00 | 7 | false | 0:00 | JUMP | EITHER | 2014-06-20T11:42:38-07:00 | 1 |
@@ -937,6 +1001,7 @@ Queries an ePO table.
 
 
 ### epo-get-version
+
 ***
 Returns the ePO version.
 
@@ -944,6 +1009,7 @@ Returns the ePO version.
 #### Base Command
 
 `epo-get-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -958,9 +1024,11 @@ Returns the ePO version.
 
 
 #### Command Example
+
 ```!epo-get-version```
 
 #### Context Example
+
 ```json
 {
     "McAfee": {
@@ -976,6 +1044,7 @@ Returns the ePO version.
 >### ePO version is: 5.3.2
 
 ### epo-move-system
+
 ***
 Moves a system to a different group in the McAfee ePO.
 
@@ -983,6 +1052,7 @@ Moves a system to a different group in the McAfee ePO.
 #### Base Command
 
 `epo-move-system`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -996,6 +1066,7 @@ Moves a system to a different group in the McAfee ePO.
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-move-system names="TIE" parentGroupId="3"```
 
 #### Human Readable Output
@@ -1003,6 +1074,7 @@ There is no context output for this command.
 >System(s) TIE moved successfully to GroupId 3
 
 ### epo-advanced-command
+
 ***
 Executes the ePO command. Run the 'epo-help' command to get a list of available commands. For example/:/  !epo-advanced-command command=clienttask.find commandArgs=searchText:On-Demand. You can specify the 'headers' argument to filter table headers, for example/:/ !epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName.
 
@@ -1010,6 +1082,7 @@ Executes the ePO command. Run the 'epo-help' command to get a list of available 
 #### Base Command
 
 `epo-advanced-command`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1023,11 +1096,13 @@ Executes the ePO command. Run the 'epo-help' command to get a list of available 
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-advanced-command command="clienttask.find" commandArgs="searchText:On-Demand"```
 
 #### Human Readable Output
 
 >### ePO command *clienttask.find* results:
+>
 >|objectName|productId|productName|objectId|typeName|typeId|
 >|---|---|---|---|---|---|
 >| On-Demand Scan - Full Scan | ENDP_AM_1000 | Endpoint Security Threat Prevention  | 26 | Endpoint Security Threat Prevention: Policy Based On-Demand Scan | 11 |
@@ -1035,6 +1110,7 @@ There is no context output for this command.
 
 
 ### epo-find-client-task
+
 ***
 Finds client tasks.
 
@@ -1042,6 +1118,7 @@ Finds client tasks.
 #### Base Command
 
 `epo-find-client-task`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1062,9 +1139,11 @@ Finds client tasks.
 
 
 #### Command Example
+
 ```!epo-find-client-task searchText="On-Demand"```
 
 #### Context Example
+
 ```json
 {
     "McAfee": {
@@ -1095,6 +1174,7 @@ Finds client tasks.
 #### Human Readable Output
 
 >### ePO Client Tasks:
+>
 >|productName|objectName|productId|typeId|objectId|typeName|
 >|---|---|---|---|---|---|
 >| Endpoint Security Threat Prevention  | On-Demand Scan - Full Scan | ENDP_AM_1000 | 11 | 26 | Endpoint Security Threat Prevention: Policy Based On-Demand Scan |
@@ -1102,6 +1182,7 @@ Finds client tasks.
 
 
 ### epo-find-policy
+
 ***
 Finds policy.
 
@@ -1109,6 +1190,7 @@ Finds policy.
 #### Base Command
 
 `epo-find-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1121,9 +1203,11 @@ Finds policy.
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-find-policy searchText="On-Access"```
 
 #### Context Example
+
 ```json
 {
     "McAfee": {
@@ -1171,6 +1255,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### ePO Policies:
+>
 >|objectName|featureName|productId|productName|objectId|typeName|featureId|typeId|
 >|---|---|---|---|---|---|---|---|
 >| McAfee Default |  Policy Category | ENDP_AM_1000 | Endpoint Security Threat Prevention  | 84 | On-Access Scan | ENDP_AM_1000 | 40 |
@@ -1179,6 +1264,7 @@ There is no context output for this command.
 
 
 ### epo-assign-policy-to-group
+
 ***
 Assigns a policy to the specified group or resets the group's inheritance for the specified policy.
 
@@ -1186,6 +1272,7 @@ Assigns a policy to the specified group or resets the group's inheritance for th
 #### Base Command
 
 `epo-assign-policy-to-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1201,6 +1288,7 @@ Assigns a policy to the specified group or resets the group's inheritance for th
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-assign-policy-to-group groupId="2" productId="ENDP_AM_1000" objectId="86"```
 
 #### Human Readable Output
@@ -1208,6 +1296,7 @@ There is no context output for this command.
 >Policy productId:ENDP_AM_1000 objectId:86 assigned successfully to GroupId 2
 
 ### epo-assign-policy-to-system
+
 ***
 Assigns a policy to a supplied list of systems or resets the systems' inheritance for the specified policy.
 
@@ -1215,6 +1304,7 @@ Assigns a policy to a supplied list of systems or resets the systems' inheritanc
 #### Base Command
 
 `epo-assign-policy-to-system`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1231,17 +1321,20 @@ Assigns a policy to a supplied list of systems or resets the systems' inheritanc
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-assign-policy-to-system names="TIE" productId="ENDP_AM_1000" typeId="40" objectId="84"```
 
 #### Human Readable Output
 
 >### ePO Policies:
+>
 >|status|name|message|id|
 >|---|---|---|---|
 >| 0 | TIE | Assign policy succeeded | 2 |
 
 
 ### epo-list-issues
+
 ***
 List the issue for the ID that is specified. If no ID is specified, list all issues in the McAfee ePO system.
 
@@ -1249,6 +1342,7 @@ List the issue for the ID that is specified. If no ID is specified, list all iss
 #### Base Command
 
 `epo-list-issues`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1284,9 +1378,11 @@ List the issue for the ID that is specified. If no ID is specified, list all iss
 
 
 #### Command Example
+
 ```!epo-list-issues```
 
 #### Context Example
+
 ```json
 {
     "McAfee": {
@@ -1373,6 +1469,7 @@ List the issue for the ID that is specified. If no ID is specified, list all iss
 #### Human Readable Output
 
 >### ePO Issue List:
+>
 >|ticketId|dueDate|createdDate|creatorName|resolution|subtype|assigneeName|description|priority|type|ticketServerName|name|assignee|severity|activityLog|id|state|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  |  | 2021-05-09T03:36:56-07:00 | admin | NONE |  | dxl | aaaa | MEDIUM | issue.type.untyped |  | aaaa |  | LOWEST | {'date': '2021-05-09T03:36:56-07:00', 'details': '', 'id': 1, 'issueId': 1, 'title': 'Issue Created', 'username': 'admin'} | 1 | NEW |
@@ -1380,6 +1477,7 @@ List the issue for the ID that is specified. If no ID is specified, list all iss
 
 
 ### epo-delete-issue
+
 ***
 Delete an issue.
 
@@ -1387,6 +1485,7 @@ Delete an issue.
 #### Base Command
 
 `epo-delete-issue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1399,6 +1498,7 @@ Delete an issue.
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-delete-issue id=8```
 
 #### Human Readable Output
@@ -1406,6 +1506,7 @@ There is no context output for this command.
 >Issue with id=0 was deleted
 
 ### epo-create-issue
+
 ***
 Create an issue.
 
@@ -1413,6 +1514,7 @@ Create an issue.
 #### Base Command
 
 `epo-create-issue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1441,9 +1543,11 @@ Create an issue.
 
 
 #### Command Example
+
 ```!epo-create-issue name="test-epo-integration" description="automatically generated by epo integration" assignee_name="admin"```
 
 #### Context Example
+
 ```json
 {
     "McAfee": {
@@ -1464,6 +1568,7 @@ Create an issue.
 >Issue with the following ID: 35 was created successfully
 
 ### epo-update-issue
+
 ***
 Update an issue.
 
@@ -1471,6 +1576,7 @@ Update an issue.
 #### Base Command
 
 `epo-update-issue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1494,6 +1600,7 @@ Update an issue.
 There is no context output for this command.
 
 #### Command Example
+
 ```!epo-update-issue id=10 name="test" description="testing epo integration" state="NEW"```
 
 #### Human Readable Output

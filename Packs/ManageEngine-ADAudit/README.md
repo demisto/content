@@ -1,9 +1,13 @@
 # ManageEngine ADAudit Plus
+
 This pack includes Cortex XSIAM content. 
+
 ## Configuration on Server Side
+
 You need to configure ManageEngine ADAudit Plus to forward Syslog messages in **CEF format**.
 
 Steps to enable Syslog Logging in ADAuditPlus:
+
 1. Navigate to **Admin** tab > **SIEM Integration**.
 2. Select the **Enable** checkbox and the **Syslog** radio button.
 3. Enter the Syslog server name. Ensure that the Syslog server is reachable from the ADAuditPlus server.
@@ -18,6 +22,7 @@ Steps to enable Syslog Logging in ADAuditPlus:
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.

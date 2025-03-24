@@ -1,10 +1,11 @@
 Analyze suspicious hashes, URLs, domains, and IP addresses.
+
 ## Configure VirusTotal in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://192.168.0.1) |  | True |
+| Server URL (e.g. <https://192.168.0.1>) |  | True |
 | API Key |  | True |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Use system proxy settings |  | False |
@@ -22,9 +23,12 @@ Analyze suspicious hashes, URLs, domains, and IP addresses.
 | File Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### file
+
 ***
 Checks the file reputation of the specified hash.
 
@@ -32,6 +36,7 @@ Checks the file reputation of the specified hash.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -68,6 +73,7 @@ Checks the file reputation of the specified hash.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -75,6 +81,7 @@ Checks the file reputation of the specified hash.
 
 
 ### ip
+
 ***
 Checks the reputation of an IP address.
 
@@ -82,6 +89,7 @@ Checks the reputation of an IP address.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -121,6 +129,7 @@ Checks the reputation of an IP address.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -128,6 +137,7 @@ Checks the reputation of an IP address.
 
 
 ### url
+
 ***
 Checks the reputation of a URL.
 
@@ -135,6 +145,7 @@ Checks the reputation of a URL.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -170,9 +181,11 @@ Checks the reputation of a URL.
 
 
 #### Command Example
+
 ```!url url=https://example.com using=vt```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -196,14 +209,16 @@ Checks the reputation of a URL.
 
 #### Human Readable Output
 
->## VirusTotal URL Reputation for: https://example.com
->Last scan date: *2021-04-13 12:06:32*
+>## VirusTotal URL Reputation for: <https://example.com>
+>
+>Last scan date: _2021-04-13 12:06:32_
 >Total scans: **87**
 >Positive scans: **2**
 >VT Link: [https://example.com](https://www.virustotal.com/gui/url/0f115db062b7c0dd030b16878c99dea5c354b49dc37b38eb8846179c7783e9d7/detection/u-0f115db062b7c0dd030b16878c99dea5c354b49dc37b38eb8846179c7783e9d7-1618315592)
 
 
 ### domain
+
 ***
 Checks the reputation of a domain.
 
@@ -211,6 +226,7 @@ Checks the reputation of a domain.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -250,9 +266,11 @@ Checks the reputation of a domain.
 
 
 #### Command Example
+
 ```!domain domain=example.com using=vt```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1775,7 +1793,9 @@ Checks the reputation of a domain.
 #### Human Readable Output
 
 >## VirusTotal Domain Reputation for: example.com
->#### Domain categories: *undefined*
+>
+>#### Domain categories: _undefined_
+>
 >VT Link: [example.com](https://www.virustotal.com/en/search?query=example.com)
 >Detected URL count: **100**
 >Detected downloaded sample count: **0**
@@ -1785,17 +1805,19 @@ Checks the reputation of a domain.
 >Detected referrer sample count: **100**
 >Undetected referrer sample count: **100**
 >Resolutions count: **4**
+>
 >### Whois Lookup
+>
 >**Creation Date**: 1995-08-14T04:00:00Z
 >**DNSSEC**: signedDelegation
 >**Domain Name**: EXAMPLE.COM
->**Domain Status**: clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited
->**Domain Status**: clientTransferProhibited https://icann.org/epp#clientTransferProhibited
->**Domain Status**: clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited
+>**Domain Status**: clientDeleteProhibited <https://icann.org/epp#clientDeleteProhibited>
+>**Domain Status**: clientTransferProhibited <https://icann.org/epp#clientTransferProhibited>
+>**Domain Status**: clientUpdateProhibited <https://icann.org/epp#clientUpdateProhibited>
 >**Name Server**: A.IANA-SERVERS.NET
 >**Name Server**: B.IANA-SERVERS.NET
 >**Registrar IANA ID**: 376
->**Registrar URL**: http://example.example.org
+>**Registrar URL**: <http://example.example.org>
 >**Registrar WHOIS Server**: whois.iana.org
 >**Registrar**: RESERVED-Internet Assigned Numbers Authority
 >**Registry Domain ID**: 2336799_DOMAIN_COM-VRSN
@@ -1808,6 +1830,7 @@ Checks the reputation of a domain.
 
 
 ### file-scan
+
 ***
 Submits a file for scanning.
 
@@ -1815,6 +1838,7 @@ Submits a file for scanning.
 #### Base Command
 
 `file-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1832,6 +1856,7 @@ Submits a file for scanning.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -1839,6 +1864,7 @@ Submits a file for scanning.
 
 
 ### file-rescan
+
 ***
 Re-scans an already submitted file. This avoids having to upload the file again.
 
@@ -1846,6 +1872,7 @@ Re-scans an already submitted file. This avoids having to upload the file again.
 #### Base Command
 
 `file-rescan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1862,6 +1889,7 @@ Re-scans an already submitted file. This avoids having to upload the file again.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -1869,6 +1897,7 @@ Re-scans an already submitted file. This avoids having to upload the file again.
 
 
 ### url-scan
+
 ***
 Scans a specified URL.
 
@@ -1876,6 +1905,7 @@ Scans a specified URL.
 #### Base Command
 
 `url-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1892,9 +1922,11 @@ Scans a specified URL.
 
 
 #### Command Example
+
 ```!url-scan url=https://example.com using=vt```
 
 #### Context Example
+
 ```json
 {
     "vtLink": [
@@ -1909,12 +1941,14 @@ Scans a specified URL.
 #### Human Readable Output
 
 >## VirusTotal URL scan for: [https://example.com/](https://www.virustotal.com/gui/url/0f115db062b7c0dd030b16878c99dea5c354b49dc37b38eb8846179c7783e9d7/detection/u-0f115db062b7c0dd030b16878c99dea5c354b49dc37b38eb8846179c7783e9d7-1618315592)
+>
 >Scan ID: **0f115db062b7c0dd030b16878c99dea5c354b49dc37b38eb8846179c7783e9d7-1618315592**
 >Scan Date: **2021-04-13 12:16:00**
 >
 
 
 ### vt-comments-add
+
 ***
 Adds comments to files and URLs.
 
@@ -1922,6 +1956,7 @@ Adds comments to files and URLs.
 #### Base Command
 
 `vt-comments-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1935,6 +1970,7 @@ Adds comments to files and URLs.
 There is no context output for this command.
 
 #### Command Example
+
 ```!vt-comments-add resource=paloaltonetworks.com resource_type=domain comment="this is a comment" using=vt```
 
 #### Human Readable Output
@@ -1942,6 +1978,7 @@ There is no context output for this command.
 >Invalid resource
 
 ### vt-file-scan-upload-url
+
 ***
 Private API. Get a special URL for files larger than 32 MB.
 
@@ -1949,6 +1986,7 @@ Private API. Get a special URL for files larger than 32 MB.
 #### Base Command
 
 `vt-file-scan-upload-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1963,6 +2001,7 @@ Private API. Get a special URL for files larger than 32 MB.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -1970,6 +2009,7 @@ Private API. Get a special URL for files larger than 32 MB.
 
 
 ### vt-comments-get
+
 ***
 Private API. Retrieves comments for a given resource.
 
@@ -1977,6 +2017,7 @@ Private API. Retrieves comments for a given resource.
 #### Base Command
 
 `vt-comments-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1990,6 +2031,7 @@ Private API. Retrieves comments for a given resource.
 There is no context output for this command.
 
 #### Command Example
+
 ```!vt-comments-get resource=https://paloaltonetworks.com using=vt```
 
 #### Human Readable Output

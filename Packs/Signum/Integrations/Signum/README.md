@@ -1,10 +1,11 @@
 Signum password expiry notification.
+
 ## Configure Signum in Cortex
 
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Signum URL, in the format https://signmum.keyfactorsaas.com | True |
+| Signum URL, in the format <https://signmum.keyfactorsaas.com> | True |
 | Username | True |
 | Password | True |
 | verify certificate | False |
@@ -20,6 +21,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ***
 List domain users by domain ID.
+
 #### Base Command
 
 `signum-list-domain-users`

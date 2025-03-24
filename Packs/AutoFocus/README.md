@@ -3,6 +3,7 @@ Use AutoFocus to export threat intelligence data produced by AutoFocus and conne
 
 
 ## What does this pack do?
+
 - Query samples / sessions.
 - Get sample analysis.
 - Get session details.
@@ -12,12 +13,13 @@ Use AutoFocus to export threat intelligence data produced by AutoFocus and conne
 
 
 This content pack includes:
+
 - Integrations:
-   - **AutoFocus Daily Feed**: Fetch new, daily additions to the list created by the AutoFocus feed.
-   - **AutoFocus Feed**: Fetch a list from AutoFocus which includes IP addresses, domains, URLs, and hash indicators 
-   - **Palo Alto AutoFocus**: (Deprecated)
+  - **AutoFocus Daily Feed**: Fetch new, daily additions to the list created by the AutoFocus feed.
+  - **AutoFocus Feed**: Fetch a list from AutoFocus which includes IP addresses, domains, URLs, and hash indicators 
+  - **Palo Alto AutoFocus**: (Deprecated)
 Use the Palo Alto Networks AutoFocus v2 integration instead. 
-   - **Palo Alto Networks AutoFocus v2**:
+  - **Palo Alto Networks AutoFocus v2**:
 Distinguish the most important threats from everyday commodity attacks.
 
 - Playbooks:
@@ -25,4 +27,4 @@ Distinguish the most important threats from everyday commodity attacks.
 Query the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IPs, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. 
   - **AutoFocusPolling**: A sub-playbook to query PANW Autofocus Threat intelligence system. This sub-playbook is the same as the generic polling sub-playbook except that it provides outputs in the playbook. 
 
-For information about AutoFocus feeds, see https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html
+For information about AutoFocus feeds, see <https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html>

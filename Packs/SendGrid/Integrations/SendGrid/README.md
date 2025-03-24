@@ -42,11 +42,11 @@ Send an email.
 | GAnalytics | Allows you to enable tracking provided by Google Analytics. For ex: {"enable": "True","utm_campaign": "[NAME OF YOUR REFERRER SOURCE]","utm_content": "[USE THIS SPACE TO DIFFERENTIATE YOUR EMAIL FROM ADS]","utm_medium": "[NAME OF YOUR MARKETING MEDIUM e.g. email]","utm_name": "[NAME OF YOUR CAMPAIGN]","utm_term": "[IDENTIFY PAID KEYWORDS HERE]","utm_source":"[Name of the referrer source]"}. | Optional | 
 | OpenTracking | Allows you to track if the email was opened by including a single pixel image in the body of the content. When the pixel is loaded, Twilio SendGrid can log that the email was opened. For ex: {"enable": "True","substitution_tag": "%opentrack"}. | Optional | 
 | SubscriptionTracking | Allows you to insert a subscription management link at the bottom of the text and HTML bodies of your email. If you would like to specify the location of the link within your email, you may use the substitution_tag. For ex: {"enable": "True","html": "If you would like to unsubscribe and stop receiving these emails &lt;% clickhere %&gt;.","substitution_tag": "&lt;%click here%&gt;","text": "If you would like to unsubscribe and stop receiving these emails &lt;% click here %&gt;."}. | Optional | 
-| BccSettings | Bcc email settings. For ex: {"email": "ben.doe@example.com", "enable": True }. | Optional | 
+| BccSettings | Bcc email settings. For ex: {"email": "<ben.doe@example.com>", "enable": True }. | Optional | 
 | BypassListManagement | Allows you to bypass all unsubscribe groups and suppressions to ensure that the email is delivered to every single recipient. Possible values are: True, False. | Optional | 
 | SandboxMode | Sandbox Mode allows you to send a test email to ensure that your request body is valid and formatted correctly. Possible values are: True, False. | Optional | 
 | Footer | The default footer that you would like included on every email. For ex: {"enable": "True","html": "&lt;p&gt;Thanks&lt;/br&gt;The SendGrid Team&lt;/p&gt;","text": "Thanks,/n The SendGrid Team"}. | Optional | 
-| SpamCheck | Spam Check allows you to test the content of your email for spam. For ex: {"enable": "True","post_to_url": "http://example.com/compliance","threshold": 3}. | Optional | 
+| SpamCheck | Spam Check allows you to test the content of your email for spam. For ex: {"enable": "True","post_to_url": "<http://example.com/compliance","threshold>": 3}. | Optional | 
 | Headers | A collection of JSON key/value pairs allowing you to specify handling instructions for your email. You may not overwrite the following headers: x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding, To, From, Subject, Reply-To, CC, BCC. For ex: {"key1":"value1","key2":"value2","key3":"value3"}. | Optional | 
 | TemplateID | An email template ID. A template that contains a subject and content — either text or html — will override any subject and content values specified at the personalisations or message level. | Optional | 
 | CustomArgs | Values that are specific to this personalization that will be carried along with the email and its activity data. Substitutions will not be made on custom arguments, so any string that is entered into this parameter will be assumed to be the custom argument that you would like to be used. This field may not exceed 10,000 bytes. For Ex: {"marketing": "true","activationAttempt": "1","customerAccountNumber": "1234"}. | Optional | 
@@ -58,6 +58,7 @@ Send an email.
 #### Context Output
 
 There is no context output for this command.
+
 ### sg-get-global-email-stats
 
 ***
@@ -264,6 +265,7 @@ Update the status of a scheduled send for the given batch id.
 #### Context Output
 
 There is no context output for this command.
+
 ### sg-delete-scheduled-send
 
 ***
@@ -282,6 +284,7 @@ Delete the cancellation/pause of a scheduled send.
 #### Context Output
 
 There is no context output for this command.
+
 ### sg-get-email-activity-list
 
 ***
@@ -296,7 +299,7 @@ Retrieves the email activity list associated with the messages matching your que
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The number of messages returned. This parameter must be greater than 0 and less than or equal to 1000. Default is 10. | Required | 
-| query | Use the query syntax to filter your email activity.     For example: query to get email list for category - "Last Login": query=`(Contains(categories,"Last Login"))`     Document link for query samples: https://docs.sendgrid.com/for-developers/sending-email/getting-started-email-activity-api#query-reference. | Optional | 
+| query | Use the query syntax to filter your email activity.     For example: query to get email list for category - "Last Login": query=`(Contains(categories,"Last Login"))`     Document link for query samples: <https://docs.sendgrid.com/for-developers/sending-email/getting-started-email-activity-api#query-reference>. | Optional | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers). Available headers: clicks_count,from_email,last_event_time,msg_id,opens_count,status,subject,to_email. | Optional | 
 
 #### Context Output

@@ -4,6 +4,7 @@ In order to create indicators from STIX files using an automation, use **CreateI
 
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -13,6 +14,7 @@ In order to create indicators from STIX files using an automation, use **CreateI
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,5 +23,6 @@ In order to create indicators from STIX files using an automation, use **CreateI
 | entry_id          | IOC file entry ID. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

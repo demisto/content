@@ -9,7 +9,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. https://192.168.0.1:3000) | True |
+| Server URL (e.g. <https://192.168.0.1:3000>) | True |
 | User Name | True |
 | Password | True |
 | Trust any certificate (not secure) | False |
@@ -21,9 +21,12 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | Incidents Fetch Interval | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fireeye-hx-get-host-information
+
 ***
 Returns information on a host associated with an agent.
 
@@ -31,6 +34,7 @@ Returns information on a host associated with an agent.
 #### Base Command
 
 `fireeye-hx-get-host-information`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -67,8 +71,11 @@ Returns information on a host associated with an agent.
 | FireEyeHX.Hosts.primary_mac | String | The MAC address of the host. | 
 
 #### Command example
+
 ```!fireeye-hx-get-host-information hostName=XXX```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -130,12 +137,14 @@ Returns information on a host associated with an agent.
 #### Human Readable Output
 
 >### FireEye HX Get Host Information
+>
 >|Host Name|Host IP|Agent ID|Agent Version|OS|Last Poll|Containment State|Domain|Last Alert|
 >|---|---|---|---|---|---|---|---|---|
 >| XXX | xx.xx.xx.xx | YYYXXXYYY | 31.28.17 | win | 2022-02-23T09:08:31.000Z | normal | WORKGROUP | _id: 365<br/>url: /hx/api/v3/alerts/365 |
 
 
 ### fireeye-hx-get-all-hosts-information
+
 ***
 Returns information on all hosts.
 
@@ -143,6 +152,7 @@ Returns information on all hosts.
 #### Base Command
 
 `fireeye-hx-get-all-hosts-information`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -179,8 +189,11 @@ Returns information on all hosts.
 | FireEyeHX.Hosts.primary_mac | String | The host MAC address. | 
 
 #### Command example
+
 ```!fireeye-hx-get-all-hosts-information limit=1```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -205,12 +218,14 @@ Returns information on all hosts.
 #### Human Readable Output
 
 >### FireEye HX Get Hosts Information
+>
 >|Host Name|Host IP|Agent ID|Agent Version|OS|Last Poll|Containment State|Domain|Last Alert|
 >|---|---|---|---|---|---|---|---|---|
 >| XXX | xx.xx.xx.xx | YYYXXXYYY | 31.28.17 | win | 2022-02-23T09:08:31.000Z | normal | WORKGROUP | _id: 365<br/>url: /hx/api/v3/alerts/365 |
 
 
 ### fireeye-hx-host-containment
+
 ***
 Applies containment for a specific host, so that it no longer has access to other systems. If the user does not have the necessary permissions, the command will not approve the request. The permission required to approve the request is api_admin role.
 
@@ -218,6 +233,7 @@ Applies containment for a specific host, so that it no longer has access to othe
 #### Base Command
 
 `fireeye-hx-host-containment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -254,8 +270,11 @@ Applies containment for a specific host, so that it no longer has access to othe
 | FireEyeHX.Hosts.primary_mac | String | The host MAC address. | 
 
 #### Command example
+
 ```!fireeye-hx-host-containment hostName=XXX```
+
 #### Context Example
+
 ```json
 {
     "Endpoint": {
@@ -326,12 +345,14 @@ Applies containment for a specific host, so that it no longer has access to othe
 #### Human Readable Output
 
 >### Results
+>
 >|Domain|Hostname|ID|IPAddress|MACAddress|OS|OSVersion|
 >|---|---|---|---|---|---|---|
 >| WORKGROUP | XXX | YYYXXXYYY | xx.xx.xx.xx | xx-xx-xx-xx-xx-xx | win | Windows 10 Pro |
 
 
 ### fireeye-hx-cancel-containment
+
 ***
 Releases a specific host from containment.
 
@@ -339,6 +360,7 @@ Releases a specific host from containment.
 #### Base Command
 
 `fireeye-hx-cancel-containment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -350,13 +372,17 @@ Releases a specific host from containment.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fireeye-hx-cancel-containment hostName=XXX```
+
 #### Human Readable Output
 
 >Success
 
 ### fireeye-hx-initiate-data-acquisition
+
 ***
 Initiates a data acquisition process to collect artifacts from the system disk and memory.
 
@@ -364,6 +390,7 @@ Initiates a data acquisition process to collect artifacts from the system disk a
 #### Base Command
 
 `fireeye-hx-initiate-data-acquisition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -388,6 +415,7 @@ Initiates a data acquisition process to collect artifacts from the system disk a
 | FireEyeHX.Acquisitions.Data.finish_time | date | The time when the acquisition finished. | 
 
 ### fireeye-hx-get-host-set-information
+
 ***
 Returns a list of all host sets known to your HX Series appliance.
 
@@ -395,6 +423,7 @@ Returns a list of all host sets known to your HX Series appliance.
 #### Base Command
 
 `fireeye-hx-get-host-set-information`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -420,8 +449,11 @@ Returns a list of all host sets known to your HX Series appliance.
 | FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
+
 ```!fireeye-hx-get-host-set-information hostSetID=1001```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -440,12 +472,14 @@ Returns a list of all host sets known to your HX Series appliance.
 #### Human Readable Output
 
 >### FireEye HX Get Host Sets Information
+>
 >|Name|ID|Type|
 >|---|---|---|
 >| Test | 1001 | venn |
 
 
 ### fireeye-hx-list-policy
+
 ***
 Returns a list of all policies.
 
@@ -453,6 +487,7 @@ Returns a list of all policies.
 #### Base Command
 
 `fireeye-hx-list-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -484,8 +519,11 @@ Returns a list of all policies.
 | FireEyeHX.Policy.display_updated_at | String | The time since the display was last updated. | 
 
 #### Command example
+
 ```!fireeye-hx-list-policy limit=2 policyName=Test```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -513,10 +551,12 @@ Returns a list of all policies.
 #### Human Readable Output
 
 >### FireEye HX List Policies
+>
 >**No entries.**
 
 
 ### fireeye-hx-list-host-set-policy
+
 ***
 Returns a list of all policies for all host sets.
 
@@ -524,6 +564,7 @@ Returns a list of all policies for all host sets.
 #### Base Command
 
 `fireeye-hx-list-host-set-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -542,8 +583,11 @@ Returns a list of all policies for all host sets.
 | FireEyeHX.HostSets.Policy.persist_id | Number | The ID of the host set. | 
 
 #### Command example
+
 ```!fireeye-hx-list-host-set-policy limit=1```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -574,6 +618,7 @@ Returns a list of all policies for all host sets.
 #### Human Readable Output
 
 >### FireEye HX Host Set Policies
+>
 >|Policy Id|Host Set Id|
 >|---|---|
 >| YYYXXXYYY | 1001 |
@@ -583,6 +628,7 @@ Returns a list of all policies for all host sets.
 
 
 ### fireeye-hx-list-containment
+
 ***
 Fetches all containment states across known hosts.
 
@@ -590,6 +636,7 @@ Fetches all containment states across known hosts.
 #### Base Command
 
 `fireeye-hx-list-containment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -618,8 +665,11 @@ Fetches all containment states across known hosts.
 | FireEyeHX.Hosts.url | String | The URL of the hosts. | 
 
 #### Command example
+
 ```!fireeye-hx-list-containment limit=2```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -662,6 +712,7 @@ Fetches all containment states across known hosts.
 #### Human Readable Output
 
 >### List Containment
+>
 >|Id|State|Request Origin|Request Date|Containment Origin|Containment Date|Last System information date|
 >|---|---|---|---|---|---|---|
 >| YYYXXXYYY | normal |  |  |  |  | 2022-02-23T07:28:33.969Z |
@@ -669,6 +720,7 @@ Fetches all containment states across known hosts.
 
 
 ### fireeye-hx-search-list
+
 ***
 Fetches all enterprise searches.
 
@@ -676,6 +728,7 @@ Fetches all enterprise searches.
 #### Base Command
 
 `fireeye-hx-search-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -719,8 +772,11 @@ Fetches all enterprise searches.
 | FireEyeHX.Search.stats.settings.displayname | String | The name of the search. | 
 
 #### Command example
+
 ```!fireeye-hx-search-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -806,6 +862,7 @@ Fetches all enterprise searches.
 
 
 ### fireeye-hx-search-stop
+
 ***
 Stops a specific running search.
 
@@ -813,6 +870,7 @@ Stops a specific running search.
 #### Base Command
 
 `fireeye-hx-search-stop`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -850,8 +908,11 @@ Stops a specific running search.
 | FireEyeHX.Search.stats.settings.displayname | String | The name of the search. | 
 
 #### Command example
+
 ```!fireeye-hx-search-stop searchId=141```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -935,6 +996,7 @@ Stops a specific running search.
 >Search Id 141: Success
 
 ### fireeye-hx-search-result-get
+
 ***
 Fetches the results for a specific enterprise search.
 
@@ -942,6 +1004,7 @@ Fetches the results for a specific enterprise search.
 #### Base Command
 
 `fireeye-hx-search-result-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -961,8 +1024,11 @@ Fetches the results for a specific enterprise search.
 | FireEyeHX.Search.results.data | Unknown | The object containing data relating to the search result for the host. | 
 
 #### Command example
+
 ```!fireeye-hx-search-result-get searchId=141```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -1135,7 +1201,9 @@ Fetches the results for a specific enterprise search.
 #### Human Readable Output
 
 >### Host Id YYYXXXYYY
+>
 >Host Name XXX
+>
 >|Item Type|Summary|
 >|---|---|
 >| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** xx.xx.xx.xx,<br/>**Remote IP Address:** xx.xx.xx.xx,<br/>**IP Address:** xx.xx.xx.xx,<br/>**Port:** 443,<br/>**Local Port:** 64924,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-01-20T09:41:51.470Z,<br/>**Timestamp - Accessed:** 2022-01-20T09:41:51.470Z |
@@ -1150,6 +1218,7 @@ Fetches the results for a specific enterprise search.
 
 
 ### fireeye-hx-search
+
 ***
 Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
 
@@ -1157,6 +1226,7 @@ Searches endpoints to check all hosts or a subset of hosts for a specific file o
 #### Base Command
 
 `fireeye-hx-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1220,13 +1290,16 @@ Searches endpoints to check all hosts or a subset of hosts for a specific file o
 | FireEyeHX.Search.results.id | string | The ID of the result. | 
 
 #### Command example
+
 ```!fireeye-hx-search hostsNames=XXX ipAddress=xx.xx.xx.xx ipAddressOperator=equals polling=false```
+
 #### Human Readable Output
 
 >Search started,
 >Search ID: 143
 
 ### fireeye-hx-get-alert
+
 ***
 Get details of a specific alert.
 
@@ -1234,6 +1307,7 @@ Get details of a specific alert.
 #### Base Command
 
 `fireeye-hx-get-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1261,8 +1335,11 @@ Get details of a specific alert.
 | FireEyeHX.Alerts.event_type | String | The type of the event. | 
 
 #### Command example
+
 ```!fireeye-hx-get-alert alertId=8```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1344,12 +1421,14 @@ Get details of a specific alert.
 #### Human Readable Output
 
 >### File
+>
 >|Name|md5|Extension|Path|
 >|---|---|---|---|
 >| feyeqatest.exe |  | exe | C:\Users\User\Desktop\㟋\feyeqatest.exe |
 
 
 ### fireeye-hx-suppress-alert
+
 ***
 Suppresses an alert by ID.
 
@@ -1357,6 +1436,7 @@ Suppresses an alert by ID.
 #### Base Command
 
 `fireeye-hx-suppress-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1367,13 +1447,17 @@ Suppresses an alert by ID.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fireeye-hx-suppress-alert alertId=18```
+
 #### Human Readable Output
 
 >Alert 18 suppressed successfully.
 
 ### fireeye-hx-get-indicators
+
 ***
 Get a list of indicators.
 
@@ -1381,6 +1465,7 @@ Get a list of indicators.
 #### Base Command
 
 `fireeye-hx-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1411,8 +1496,11 @@ Get a list of indicators.
 | FireEyeHX.Indicators.category.uri_name | String | The URI name of the category. | 
 
 #### Command example
+
 ```!fireeye-hx-get-indicators limit=2```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -1503,6 +1591,7 @@ Get a list of indicators.
 #### Human Readable Output
 
 >### FireEye HX Get Indicator- None
+>
 >|OS|Name|Created By|Active Since|Category|Signature|Active Condition|Hosts With Alerts|Source Alerts|
 >|---|---|---|---|---|---|---|---|---|
 >| win, osx, linux | YYYXXXYYY | test | 2022-02-23T09:18:09.012Z | Custom |  | 0 | 0 | 0 |
@@ -1510,6 +1599,7 @@ Get a list of indicators.
 
 
 ### fireeye-hx-get-indicator
+
 ***
 Get details of a specific indicator.
 
@@ -1517,6 +1607,7 @@ Get details of a specific indicator.
 #### Base Command
 
 `fireeye-hx-get-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1543,8 +1634,11 @@ Get details of a specific indicator.
 | FireEyeHX.Conditions.enabled | Unknown | Indicates whether the condition is enabled. | 
 
 #### Command example
+
 ```!fireeye-hx-get-indicator category=Custom name=YYYXXXYYY```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -1594,10 +1688,12 @@ Get details of a specific indicator.
 #### Human Readable Output
 
 >### Indicator 'YYYXXXYYY' Alerts on
+>
 >**No entries.**
 
 
 ### fireeye-hx-append-conditions
+
 ***
 Add conditions to an indicator. Conditions can be MD5, hash values, domain names and IP addresses.
 
@@ -1605,6 +1701,7 @@ Add conditions to an indicator. Conditions can be MD5, hash values, domain names
 #### Base Command
 
 `fireeye-hx-append-conditions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1617,9 +1714,13 @@ Add conditions to an indicator. Conditions can be MD5, hash values, domain names
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fireeye-hx-append-conditions category=Custom name=YYYXXXYYY condition=exsmple.com```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -1635,12 +1736,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### The conditions were added successfully
+>
 >|Category|Conditions|Name|
 >|---|---|---|
 >| Custom | exsmple.com | YYYXXXYYY |
 
 
 ### fireeye-hx-search-delete
+
 ***
 Deletes the search by ID.
 
@@ -1648,6 +1751,7 @@ Deletes the search by ID.
 #### Base Command
 
 `fireeye-hx-search-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1658,14 +1762,18 @@ Deletes the search by ID.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fireeye-hx-search-delete searchId=142```
+
 #### Human Readable Output
 
 >Results
 >Search Id 142: Deleted successfully
 
 ### fireeye-hx-delete-file-acquisition
+
 ***
 Deletes the file acquisition by ID.
 
@@ -1673,6 +1781,7 @@ Deletes the file acquisition by ID.
 #### Base Command
 
 `fireeye-hx-delete-file-acquisition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1683,7 +1792,9 @@ Deletes the file acquisition by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### fireeye-hx-approve-containment
+
 ***
 Approves pending containment requests made by other components or users. The required permission is api_admin role.
 
@@ -1691,6 +1802,7 @@ Approves pending containment requests made by other components or users. The req
 #### Base Command
 
 `fireeye-hx-approve-containment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1701,7 +1813,9 @@ Approves pending containment requests made by other components or users. The req
 #### Context Output
 
 There is no context output for this command.
+
 ### fireeye-hx-assign-host-set-policy
+
 ***
 Inserts a new host set policy on your Endpoint Security server.
 
@@ -1709,6 +1823,7 @@ Inserts a new host set policy on your Endpoint Security server.
 #### Base Command
 
 `fireeye-hx-assign-host-set-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1720,13 +1835,17 @@ Inserts a new host set policy on your Endpoint Security server.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fireeye-hx-assign-host-set-policy hostSetId=1005 policyId=YYYXXXYYY```
+
 #### Human Readable Output
 
 >This hostset may already be included in this policy
 
 ### fireeye-hx-get-data-acquisition
+
 ***
 Collects artifacts from the system disk and memory for the given acquisition ID (the data is fetched as a MANS file).
 
@@ -1734,6 +1853,7 @@ Collects artifacts from the system disk and memory for the given acquisition ID 
 #### Base Command
 
 `fireeye-hx-get-data-acquisition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1754,8 +1874,11 @@ Collects artifacts from the system disk and memory for the given acquisition ID 
 | FireEyeHX.Acquisitions.Data.instance | date | The FireEye HX instance. | 
 
 #### Command example
+
 ```!fireeye-hx-get-data-acquisition acquisitionId=102```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -1815,6 +1938,7 @@ Collects artifacts from the system disk and memory for the given acquisition ID 
 >acquisition ID: 102
 
 ### fireeye-hx-data-acquisition
+
 ***
 Start a data acquisition process to gather artifacts from the system disk and memory (the data is fetched as mans file).
 
@@ -1822,6 +1946,7 @@ Start a data acquisition process to gather artifacts from the system disk and me
 #### Base Command
 
 `fireeye-hx-data-acquisition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1847,13 +1972,16 @@ Start a data acquisition process to gather artifacts from the system disk and me
 | FireEyeHX.Acquisitions.Data.host._id | unknown | The ID of the agent. | 
 
 #### Command example
+
 ```!fireeye-hx-data-acquisition hostName=XXX defaultSystemScript=osx```
+
 #### Human Readable Output
 
 >Acquisition request was successful
 >Acquisition ID: 104
 
 ### fireeye-hx-get-alerts
+
 ***
 Returns a list of alerts. Use the different arguments to filter the results returned.
 
@@ -1861,6 +1989,7 @@ Returns a list of alerts. Use the different arguments to filter the results retu
 #### Base Command
 
 `fireeye-hx-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1902,8 +2031,11 @@ Returns a list of alerts. Use the different arguments to filter the results retu
 | FireEyeHX.Alerts.event_type | String | The type of the event. | 
 
 #### Command example
+
 ```!fireeye-hx-get-alerts limit=2 sort=alertId```
+
 #### Context Example
+
 ```json
 {
     "File": [
@@ -2053,6 +2185,7 @@ Returns a list of alerts. Use the different arguments to filter the results retu
 #### Human Readable Output
 
 >### FireEye HX Get Alerts
+>
 >|Alert ID|Reported|Event Type|Agent ID|
 >|---|---|---|---|
 >| 7 | 2022-01-24T10:37:51.306Z | fileWriteEvent | YYYXXXYYY |
@@ -2060,6 +2193,7 @@ Returns a list of alerts. Use the different arguments to filter the results retu
 
 
 ### fireeye-hx-file-acquisition
+
 ***
 Acquires a specific file as a password protected zip file. The password for unlocking the zip file is 'unzip-me'.
 
@@ -2067,6 +2201,7 @@ Acquires a specific file as a password protected zip file. The password for unlo
 #### Base Command
 
 `fireeye-hx-file-acquisition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2093,6 +2228,7 @@ Acquires a specific file as a password protected zip file. The password for unlo
 | FireEyeHX.Acquisitions.Files.host._id | String | The ID of the FireEye HX agent. | 
 
 ### fireeye-hx-create-indicator
+
 ***
 Create a new indicator.
 
@@ -2100,6 +2236,7 @@ Create a new indicator.
 #### Base Command
 
 `fireeye-hx-create-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2141,8 +2278,11 @@ Create a new indicator.
 | FireEyeHX.Indicators.update_actor.username | string | The updated name of the actor. | 
 
 #### Command example
+
 ```!fireeye-hx-create-indicator category=Custom```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -2192,12 +2332,14 @@ Create a new indicator.
 #### Human Readable Output
 
 >### FireEye HX New Indicator created successfully
+>
 >|ID|
 >|---|
 >| YYYXXXYYY |
 
 
 ### fireeye-hx-delete-host-set-policy
+
 ***
 Deletes a Host Set policy.
 
@@ -2205,6 +2347,7 @@ Deletes a Host Set policy.
 #### Base Command
 
 `fireeye-hx-delete-host-set-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2215,13 +2358,18 @@ Deletes a Host Set policy.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fireeye-hx-delete-host-set-policy hostSetId=1005 policyId=YYYXXXYYY```
+
 #### Human Readable Output
+>
 >Success
 
 
 ### fireeye-hx-delete-data-acquisition
+
 ***
 Deletes data acquisition.
 
@@ -2229,6 +2377,7 @@ Deletes data acquisition.
 #### Base Command
 
 `fireeye-hx-delete-data-acquisition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2239,13 +2388,17 @@ Deletes data acquisition.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fireeye-hx-delete-data-acquisition acquisitionId=102```
+
 #### Human Readable Output
 
 >data acquisition 102 deleted successfully
 
 ### fireeye-hx-delete-indicator-condition
+
 ***
 Delete an indicator condition.
 
@@ -2253,6 +2406,7 @@ Delete an indicator condition.
 #### Base Command
 
 `fireeye-hx-delete-indicator-condition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2266,14 +2420,18 @@ Delete an indicator condition.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fireeye-hx-delete-indicator-condition category=Custom condition_id=myFIAYoWKoWqaaYQ7CxHVA== indicator_name=7f49e4c6-14d5-4b06-8d17-843fd17f79de type=execution```
+
 #### Human Readable Output
 
 >Successfully deleted condition myFIAYoWKoWqaaYQ7CxHVA== (execution) of indicator 7f49e4c6-14d5-4b06-8d17-843fd17f79de (Custom)
 
 
 ### fireeye-hx-list-indicator-category
+
 ***
 Lists the indicator categories.
 
@@ -2281,6 +2439,7 @@ Lists the indicator categories.
 #### Base Command
 
 `fireeye-hx-list-indicator-category`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2312,8 +2471,11 @@ Lists the indicator categories.
 | FireEyeHX.IndicatorCategory.share_mode | string | The share mode of the indicator category. | 
 
 #### Command example
+
 ```!fireeye-hx-list-indicator-category search=fireEye```
+
 #### Context Example
+
 ```json
 {
     "FireEyeHX": {
@@ -2365,6 +2527,7 @@ Lists the indicator categories.
 #### Human Readable Output
 
 >### 3 Indicator categories found
+>
 >|Name|Policy ID|
 >|---|---|
 >| FireEye | 4 |
@@ -2373,6 +2536,7 @@ Lists the indicator categories.
 
 
 ### fireeye-hx-delete-indicator
+
 ***
 Delete an indicator.
 
@@ -2380,6 +2544,7 @@ Delete an indicator.
 #### Base Command
 
 `fireeye-hx-delete-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2391,13 +2556,17 @@ Delete an indicator.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fireeye-hx-delete-indicator category=Custom indicator_name=7f49e4c6-14d5-4b06-8d17-843fd17f79de```
+
 #### Human Readable Output
 
 >Successfully deleted indicator 7f49e4c6-14d5-4b06-8d17-843fd17f79de from the Custom category
 
 ### fireeye-hx-create-host-set-static
+
 ***
 Creates static host set.
 
@@ -2405,6 +2574,7 @@ Creates static host set.
 #### Base Command
 
 `fireeye-hx-create-host-set-static`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2424,11 +2594,15 @@ Creates static host set.
 | FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
+
 ```!fireeye-hx-create-host-set-static host_set_name=demisto_test hosts_ids=Hqb2ns3oui1fpzg0BxI1Ch```
+
 #### Human Readable Output
 
 >Static Host Set demisto_test with id 1001 was created successfully.
+>
 ### fireeye-hx-update-host-set-static
+
 ***
 Updates a static host set.
 
@@ -2436,6 +2610,7 @@ Updates a static host set.
 #### Base Command
 
 `fireeye-hx-update-host-set-static`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2457,11 +2632,15 @@ Updates a static host set.
 | FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
+
 ```!fireeye-hx-update-host-set-static host_set_name=demisto_test host_set_id=1036 add_host_ids=GfLI00Q4zpidezw9I11rV6 remove_host_ids=Hqb2ns3oui1fpzg0BxI1Ch```
+
 #### Human Readable Output
 
 >Static Host Set demisto_test was updated successfully.
+>
 ### fireeye-hx-create-host-set-dynamic
+
 ***
 Creates dynamic host set.
 
@@ -2469,6 +2648,7 @@ Creates dynamic host set.
 #### Base Command
 
 `fireeye-hx-create-host-set-dynamic`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2491,12 +2671,16 @@ Creates dynamic host set.
 | FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
+
 ```!fireeye-hx-create-host-set-dynamic host_set_name=demisto_test query_key=Bitlevel query_operator=eq query_value=64-bit```
 ```!fireeye-hx-update-host-set-dynamic host_set_name=MoreTestyay query=`{"key": "AgentVersion","value": "31.28.17","operator": "gte"}` ```
+
 #### Human Readable Output
 
 >Dynamic Host Set demisto_test with id 1068 was created successfully.
+>
 ### fireeye-hx-update-host-set-dynamic
+
 ***
 Updates dynamic host set.
 
@@ -2504,6 +2688,7 @@ Updates dynamic host set.
 #### Base Command
 
 `fireeye-hx-update-host-set-dynamic`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2527,12 +2712,16 @@ Updates dynamic host set.
 | FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
+
 ```!fireeye-hx-update-host-set-dynamic host_set_name=demisto_test query_key=Bitlevel query_operator=eq query_value=64-bit host_set_id=1061```
 ```!fireeye-hx-update-host-set-dynamic host_set_name=MoreTestyay query=`{"key": "AgentVersion","value": "31.28.17","operator": "gte"}` host_set_id=1061```
+
 #### Human Readable Output
 
 >Dynamic Host Set Demisto_test was updated successfully.
+>
 ### fireeye-hx-delete-host-set
+
 ***
 Deletes a host set.
 
@@ -2540,6 +2729,7 @@ Deletes a host set.
 #### Base Command
 
 `fireeye-hx-delete-host-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2555,7 +2745,9 @@ Deletes a host set.
 | FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
+
 ```!fireeye-hx-delete-host-set host_set_id=1001```
+
 #### Human Readable Output
 
 >Host set 1001 was deleted successfully.

@@ -15,9 +15,12 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### twitter-tweet-search
+
 ***
 This command will search for Tweets from the last 7 days and return all information available.
 
@@ -25,6 +28,7 @@ This command will search for Tweets from the last 7 days and return all informat
 #### Base Command
 
 `twitter-tweet-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -63,8 +67,11 @@ This command will search for Tweets from the last 7 days and return all informat
 | Twitter.TweetNextToken | String | A value that encodes the next 'page' of results that can be requested, via the next_token request parameter. | 
 
 #### Command example
+
 ```!twitter-tweet-search query="twitter" limit="10"```
+
 #### Context Example
+
 ```json
 {
     "Twitter": {
@@ -339,24 +346,28 @@ This command will search for Tweets from the last 7 days and return all informat
 #### Human Readable Output
 
 >### Tweet Next Token:
+>
 >|next_token|
 >|---|
 >| xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
 
 >### Tweets search results:
+>
 >|Tweet ID|Text|Created At|Author Name|Author Username|Likes Count|Attachments URL|
 >|---|---|---|---|---|---|---|
 >| 2323232323232323232 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_1 | some_username_1 | 0 |  |
 >| 1010101010101010101 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_2 | some_username_2 | 0 |  |
->| 1515151515151515151 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_3 | some_username_3 | 0 | https://url.jpg |
+>| 1515151515151515151 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_3 | some_username_3 | 0 | <https://url.jpg> |
 >| 1212121212121212121 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_5 | some_username_5 | 0 |  |
->| 0808080808080808080 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_4 | some_username_4 | 0 | https://url.jpg |
->| 0707070707070707070 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_6 | some_username_6 | 0 | https://url.jpg |
+>| 0808080808080808080 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_4 | some_username_4 | 0 | <https://url.jpg> |
+>| 0707070707070707070 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_6 | some_username_6 | 0 | <https://url.jpg> |
 >| 5050505050505050505 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_7 | some_username_7 | 0 |  |
 >| 3030303030303030303 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_8 | some_username_8 | 0 |  |
 >| 2626262626262626262 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_9 | some_username_9 | 0 |  |
 >| 2525252525252525252 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_10 | some_username_10 | 0 |  |
+>
 ### twitter-user-get
+
 ***
 Lookup users by name to display information about them. Search multiple users simultaneously by separating them by commas. Ex: 'name='user1,user2,user3'
 
@@ -364,6 +375,7 @@ Lookup users by name to display information about them. Search multiple users si
 #### Base Command
 
 `twitter-user-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -406,8 +418,11 @@ Lookup users by name to display information about them. Search multiple users si
 | Twitter.User.pinned_tweets.quote_count | Number | Number of times this Tweet has been Retweeted with a comment. | 
 
 #### Command example
+
 ```!twitter-user-get user_name="Twitter"```
+
 #### Context Example
+
 ```json
 {
     "Twitter": {
@@ -443,19 +458,24 @@ Lookup users by name to display information about them. Search multiple users si
 #### Human Readable Output
 
 >### twitter user get results:
+>
 >|Name|User name|Created At|Description|Followers Count|Tweet Count|verified|
 >|---|---|---|---|---|---|---|
 >| Twitter | Twitter | 2006-06-15T14:35:54.000Z | description | 11111111 | 15046 | true |
 
 
 ## Breaking changes from the previous version of this integration - Twitter v2
+
 The following sections lists the changes in this version.
 
 ### Commands
+
 #### The following commands were removed in this version:
+
 * ***twitter-get-user-info*** - this command was removed.
 * ***twitter-get-users*** - this command was replaced by ***twitter-user-get***.
 * ***twitter-get-tweets*** - this command was replaced by ***twitter-tweet-search***.
 
 ## Additional Considerations for this version
+
 Only a Bearer Token is needed in order to configure this integration.

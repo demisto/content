@@ -25,9 +25,12 @@ CRM Services
 | Incidents Fetch Interval |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### salesforce-search
+
 ***
 Search records that contain values with the defined pattern.
 
@@ -35,6 +38,7 @@ Search records that contain values with the defined pattern.
 #### Base Command
 
 `salesforce-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -92,6 +96,7 @@ Search records that contain values with the defined pattern.
 | SalesForceV2.Case.AccountId | string | Case account ID. | 
 
 ### salesforce-query
+
 ***
 Queries Salesforce in SOQL format.
 
@@ -99,6 +104,7 @@ Queries Salesforce in SOQL format.
 #### Base Command
 
 `salesforce-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -109,7 +115,9 @@ Queries Salesforce in SOQL format.
 #### Context Output
 
 There is no context output for this command.
+
 ### salesforce-get-object
+
 ***
 Returns an object by its path.
 
@@ -117,6 +125,7 @@ Returns an object by its path.
 #### Base Command
 
 `salesforce-get-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -169,6 +178,7 @@ Returns an object by its path.
 | SalesForceV2.User.Email | string | The email address of the user. | 
 
 ### salesforce-update-object
+
 ***
 Updates object fields.
 
@@ -176,6 +186,7 @@ Updates object fields.
 #### Base Command
 
 `salesforce-update-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -228,6 +239,7 @@ Updates object fields.
 | SalesForceV2.User.Email | string | The email address of the user. | 
 
 ### salesforce-create-object
+
 ***
 Creates a new object.
 
@@ -235,6 +247,7 @@ Creates a new object.
 #### Base Command
 
 `salesforce-create-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -287,6 +300,7 @@ Creates a new object.
 | SalesForceV2.User.Email | string | The email address of the user. | 
 
 ### salesforce-push-comment
+
 ***
 Adds a comment to Chatter.
 
@@ -294,6 +308,7 @@ Adds a comment to Chatter.
 #### Base Command
 
 `salesforce-push-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -316,6 +331,7 @@ Adds a comment to Chatter.
 | SalesForceV2.Comment.Visibility | string | The visibility of the comment. | 
 
 ### salesforce-get-case
+
 ***
 Returns information on a case. All arguments are optional, but you must specify at least one argument for the command to execute successfully.
 
@@ -323,6 +339,7 @@ Returns information on a case. All arguments are optional, but you must specify 
 #### Base Command
 
 `salesforce-get-case`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -348,6 +365,7 @@ Returns information on a case. All arguments are optional, but you must specify 
 | SalesForceV2.Case.Reason | string | The reason for the case creation. | 
 
 ### salesforce-create-case
+
 ***
 Creates a new case.
 
@@ -355,6 +373,7 @@ Creates a new case.
 #### Base Command
 
 `salesforce-create-case`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -384,6 +403,7 @@ Creates a new case.
 | SalesForceV2.Case.Reason | string | The reason for the case creation. | 
 
 ### salesforce-update-case
+
 ***
 Updates case fields.
 
@@ -391,6 +411,7 @@ Updates case fields.
 #### Base Command
 
 `salesforce-update-case`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -422,6 +443,7 @@ Updates case fields.
 | SalesForceV2.Case.Reason | string | Reason for the case creation. | 
 
 ### salesforce-get-cases
+
 ***
 Returns all cases.
 
@@ -429,6 +451,7 @@ Returns all cases.
 #### Base Command
 
 `salesforce-get-cases`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -438,7 +461,9 @@ Returns all cases.
 #### Context Output
 
 There is no context output for this command.
+
 ### salesforce-close-case
+
 ***
 Close a case
 
@@ -446,6 +471,7 @@ Close a case
 #### Base Command
 
 `salesforce-close-case`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -471,6 +497,7 @@ Close a case
 | SalesForceV2.Case.Reason | string | Reason the case was created. | 
 
 ### salesforce-push-comment-threads
+
 ***
 Add the comment to the Chatter thread. Use this command only after salesforce-push-comment.
 
@@ -478,6 +505,7 @@ Add the comment to the Chatter thread. Use this command only after salesforce-pu
 #### Base Command
 
 `salesforce-push-comment-threads`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -495,6 +523,7 @@ Add the comment to the Chatter thread. Use this command only after salesforce-pu
 | SalesForceV2.Comment.Reply.URL | string | Reply URL link. | 
 
 ### salesforce-delete-case
+
 ***
 Deletes a case.
 
@@ -502,6 +531,7 @@ Deletes a case.
 #### Base Command
 
 `salesforce-delete-case`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -513,7 +543,9 @@ Deletes a case.
 #### Context Output
 
 There is no context output for this command.
+
 ### salesforce-get-casecomment
+
 ***
 Returns a comment through the case number.
 
@@ -521,6 +553,7 @@ Returns a comment through the case number.
 #### Base Command
 
 `salesforce-get-casecomment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -545,6 +578,7 @@ Returns a comment through the case number.
 | IsDeleted | boolean | Whether the object has been moved to the Recycle Bin \(true\). | 
 
 ### salesforce-post-casecomment
+
 ***
 The post comment through the case number.
 
@@ -552,6 +586,7 @@ The post comment through the case number.
 #### Base Command
 
 `salesforce-post-casecomment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -565,7 +600,9 @@ The post comment through the case number.
 #### Context Output
 
 There is no context output for this command.
+
 ### salesforce-get-user
+
 ***
 Returns the user name through the case number.
 
@@ -573,6 +610,7 @@ Returns the user name through the case number.
 #### Base Command
 
 `salesforce-get-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -598,6 +636,7 @@ Returns the user name through the case number.
 | UserRoleId | string | The ID of the user's UserRole. | 
 
 ### salesforce-get-org
+
 ***
 Returns organization details from the case number.
 
@@ -605,6 +644,7 @@ Returns organization details from the case number.
 #### Base Command
 
 `salesforce-get-org`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -620,6 +660,7 @@ Returns organization details from the case number.
 | Name | string | Name of the account. If the account has a record type of Person Account, this value is the concatenation of the FirstName, MiddleName, LastName, and Suffix of the associated person contact. | 
 
 ### get-remote-data
+
 ***
 Gets remote data from a remote incident. This method is only used for debugging purposes and will not update the current incident.
 
@@ -627,6 +668,7 @@ Gets remote data from a remote incident. This method is only used for debugging 
 #### Base Command
 
 `get-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -640,6 +682,7 @@ Gets remote data from a remote incident. This method is only used for debugging 
 There is no context output for this command.
 
 ### get-modified-remote-data
+
 ***
 Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging purposes.
 
@@ -647,6 +690,7 @@ Available from Cortex XSOAR version 6.1.0. This command queries for incidents th
 #### Base Command
 
 `get-modified-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -659,6 +703,7 @@ Available from Cortex XSOAR version 6.1.0. This command queries for incidents th
 There is no context output for this command.
 
 ### update-remote-system
+
 ***
 Available from Cortex XSOAR version 6.1.0. This command pushes local changes to the remote system.
 
@@ -666,6 +711,7 @@ Available from Cortex XSOAR version 6.1.0. This command pushes local changes to 
 #### Base Command
 
 `update-remote-system`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -681,6 +727,7 @@ Available from Cortex XSOAR version 6.1.0. This command pushes local changes to 
 There is no context output for this command.
 
 ### get-mapping-fields
+
 ***
 Returns the list of fields for an incident type.
 
@@ -688,6 +735,7 @@ Returns the list of fields for an incident type.
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -697,7 +745,9 @@ Returns the list of fields for an incident type.
 #### Context Output
 
 There is no context output for this command.
+
 ### salesforce-describe-sobject-field
+
 ***
 Describe Salesforce object field.
 
@@ -705,6 +755,7 @@ Describe Salesforce object field.
 #### Base Command
 
 `salesforce-describe-sobject-field`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -716,7 +767,9 @@ Describe Salesforce object field.
 #### Context Output
 
 There is no context output for this command.
+
 ### salesforce-list-case-files
+
 ***
 Return the list of files attached to the case.
 
@@ -724,6 +777,7 @@ Return the list of files attached to the case.
 #### Base Command
 
 `salesforce-list-case-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -735,7 +789,9 @@ Return the list of files attached to the case.
 #### Context Output
 
 There is no context output for this command.
+
 ### salesforce-get-case-file-by-id
+
 ***
 Retrieve a case file by file ID.
 
@@ -743,6 +799,7 @@ Retrieve a case file by file ID.
 #### Base Command
 
 `salesforce-get-case-file-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -754,10 +811,12 @@ Retrieve a case file by file ID.
 #### Context Output
 
 There is no context output for this command.
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Salesforce V2 corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 

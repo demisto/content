@@ -1,6 +1,7 @@
 Use the Azure Active Directory Applications integration to manage authorized applications.
 Use the Azure Active Directory Applications integration to manage authorized application.
 This integration was integrated and tested with version v1.0 of Microsoft Graph Services API.
+
 ## Configure Azure Active Directory Applications in Cortex
 
 
@@ -16,26 +17,33 @@ This integration was integrated and tested with version v1.0 of Microsoft Graph 
 | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### msgraph-apps-auth-start
+
 ***
 Run this command to start the authorization process and follow the instructions in the command results.
 
 ### msgraph-apps-auth-complete
+
 ***
 Run this command to complete the authorization process. Should be used after running the msgraph-apps-auth-start command.
 
 ### msgraph-apps-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
 ### msgraph-apps-auth-test
+
 ***
 Tests connectivity to Microsoft.
 
 
 ### msgraph-apps-service-principal-list
+
 ***
 Retrieves a list of applications.
 
@@ -43,6 +51,7 @@ Retrieves a list of applications.
 #### Base Command
 
 `msgraph-apps-service-principal-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -105,9 +114,11 @@ Retrieves a list of applications.
 
 
 #### Command Example
+
 ```!msgraph-apps-service-principal-list limit=1```
 
 #### Context Example
+
 ```json
 {
     "MSGraphApplication": {
@@ -182,12 +193,14 @@ Retrieves a list of applications.
 #### Human Readable Output
 
 >### Available services (applications):
+>
 >|id|appId|appDisplayName|accountEnabled|
 >|---|---|---|---|
 >| :id: | 00000007-0000-0000-c000-000000000000 | Common Data Service | true |
 
 
 ### msgraph-apps-service-principal-remove
+
 ***
 Removes an application from the directory.
 
@@ -208,9 +221,11 @@ Removes an application from the directory.
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-apps-service-principal-remove id=ID_TEST```
 
 #### Human Readable Output
+>
 >Service ID_TEST was deleted.
 
 
@@ -284,9 +299,11 @@ Retrieve the properties and relationships of a servicePrincipal object.
 | MSGraphApplication.verifiedPublisher.verifiedPublisherId | String | The ID of the verified publisher from the application publisher's Partner Center account. | 
 
 #### Command Example
+
 ```!msgraph-apps-service-principal-get id=TEST```
 
 ##### Context Example
+
 ```
 {'@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#servicePrincipals/$entity',
                                   'id': 'XXXX', 'deletedDateTime': None, 'accountEnabled': True, 'alternativeNames': [],
@@ -344,9 +361,11 @@ Update the properties of servicePrincipal object.
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-apps-service-principal-update id=TEST account_enabled=true```
 
 #### Human Readable Output
+>
 >Service TEST was updated successfully.
 
 ### msgraph-apps-service-principal-password-add
@@ -381,9 +400,11 @@ Add a strong password or secret to a service principal.
 | MSGraphApplication.keyCredentials.hint | String | The secretText prefix. | 
 
 #### Command Example
+
 ```!msgraph-apps-service-principal-password-add id=TEST display_name='TEST'```
 
 ##### Context Example
+
 ```
 {'@odata.context': '',
  'customKeyIdentifier': None,
@@ -396,6 +417,7 @@ Add a strong password or secret to a service principal.
 ```
 
 #### Human Readable Output
+>
 >A password was added to application TEST successfully.
 
 ### msgraph-apps-service-principal-password-remove
@@ -420,9 +442,11 @@ Remove a password from a service principal.
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-apps-service-principal-password-remove id=TEST key_id=KEY_TEST```
 
 #### Human Readable Output
+>
 >The password of the unique identifier KEY_TEST was removed successfully.
 
 
@@ -447,9 +471,11 @@ There is no context output for this command.
 
 
 #### Command Example
+
 ```!msgraph-apps-service-principal-unlock-configuration id=TEST```
 
 #### Human Readable Output
+>
 >The configuration of TEST was unlocked successfully.
 
 
@@ -475,7 +501,9 @@ There is no context output for this command.
 
 
 #### Command Example
+
 ```!msgraph-apps-service-principal-lock-configuration id=TEST```
 
 #### Human Readable Output
+>
 >The configuration of TEST was locked successfully.

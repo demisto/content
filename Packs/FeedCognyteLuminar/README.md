@@ -14,4 +14,5 @@ uncover malicious activity in its earliest stages on all layers of the Web.
 This connector allows integration of intelligence-based IOC data and customer-related leaked records identified by Luminar
 
 ## How to get Luminar Credentials
-For registration and more details please contact luminar@cognyte.com
+
+For registration and more details please contact <luminar@cognyte.com>

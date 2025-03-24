@@ -4,6 +4,7 @@ Version numbers need to have at least a major and minor version component to be 
 
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,6 +13,7 @@ Version numbers need to have at least a major and minor version component to be 
 | Tags | Utilities, filter |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -20,5 +22,6 @@ Version numbers need to have at least a major and minor version component to be 
 | right | Version number to compare against left side |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

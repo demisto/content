@@ -1,6 +1,7 @@
 # Google Vertex AI
 
 ## Integration Author: Sameh El-Hakim
+
 ***
 Fine-tuned to conduct natural conversation. Using Google Vertex Ai (PaLM API for Chat)
 
@@ -13,7 +14,9 @@ Model Development
 
 Once the New API for (PaLM for Chat & Text) is released to the public from Google, then this integration will be modified to support quick integration. This integration is using an early version of Generative AI API from Google. So, you are expected to face some challenges.
 ***
+
 ## The setup steps as following:
+
 1. Create a new project on Google Cloud (Recommended instead of using existing project)
 2. Enable Vertex AI API
 3. Configure Consent Page
@@ -31,7 +34,7 @@ If you have a knowledge of Google Cloud Administration, you can configure the pr
 In this step, you will need to have permission to create a new project in your GCP console
 
 1.  Login to GCP Console:
-	https://console.cloud.google.com/
+	<https://console.cloud.google.com/>
 
 2.  Click on Create Project
 
@@ -98,7 +101,7 @@ Application Type: Web application
 
 Name: XSOAR-VertexAI
 
-In Authorized redirect URIs: https://oproxy.demisto.ninja/authcode
+In Authorized redirect URIs: <https://oproxy.demisto.ninja/authcode>
 
 This one will be easy as a user experience to generate the auth code; Please see Step 4
 
@@ -112,9 +115,9 @@ This one will be easy as a user experience to generate the auth code; Please see
 
 In this step, we will use the created client ID & secret to generate OAuth Code so, the integration can generate access token for authentication & authorization to Google APIs. For more information about Tokens: please check the following URL from Google:
 
-https://developers.google.com/identity/protocols/oauth2
+<https://developers.google.com/identity/protocols/oauth2>
 
-https://cloud.google.com/docs/authentication/token-types
+<https://cloud.google.com/docs/authentication/token-types>
 
 1.  There are two ways to generate the required URL, you can create an instance of the integration and add all information except for auth code as still we don’t have it
 
@@ -138,15 +141,15 @@ First get the project id by clicking on the project name from top left then it w
 
 URL Format:
 
-https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&prompt=consent&response_type=code&state=state_parameter_passthrough_value&redirect_uri={REDIRECT_URI}&client_id={CLIENT_ID}
+<https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&prompt=consent&response_type=code&state=state_parameter_passthrough_value&redirect_uri={REDIRECT_URI}&client_id={CLIENT_ID}>
 
-{REDIRECT\_URI) replace it with: https://oproxy.demisto.ninja/authcode
+{REDIRECT\_URI) replace it with: <https://oproxy.demisto.ninja/authcode>
 
 {CLIENT\_ID} replace it with: You Client ID that is generated in step 3
 
 So, final URL should like that:
 
-https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&prompt=consent&response_type=code&state=state_parameter_passthrough_value&redirect_uri=https://oproxy.demisto.ninja/authcode&client_id=223432736531-aqebta31ip0t35vr07gldb4qj9egj2na.apps.googleusercontent.com
+<https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&prompt=consent&response_type=code&state=state_parameter_passthrough_value&redirect_uri=https://oproxy.demisto.ninja/authcode&client_id=223432736531-aqebta31ip0t35vr07gldb4qj9egj2na.apps.googleusercontent.com>
 
 6.  Choose your account or Sign in
 
@@ -158,13 +161,13 @@ https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?scope=https://www.g
 
 8.  It will redirect you to the REDIRECT\_URI domain
 
-https://oproxy.demisto.ninja/authcode
+<https://oproxy.demisto.ninja/authcode>
 
 The beauty of using the OProxy is to make it easier for users to copy paste the code instead of using manual way from Browser Address bar in case of using localhost as a redirect uri.
 
 For more information about OProxy from Palo Alto Networks; check the following link:
 
-https://xsoar.pan.dev/docs/reference/articles/o-proxy
+<https://xsoar.pan.dev/docs/reference/articles/o-proxy>
 
 9.  Copy the auth code to your configured XSOAR instance; the final look for XSOAR Instance should look like Step 5
 
@@ -185,6 +188,7 @@ Now it is time to put the integration in test.
 ![commandOutput](../../doc_files/commandOutput.png)
 
 ***
+
 ## Troubleshooting
 
 In case of any failure it will be related to authentication code expired or reset somehow. In that case, you will need to repeat steps of generating a new auth code and adding it to XSOAR. BUT before that most important to reset the cache to the integration as following:

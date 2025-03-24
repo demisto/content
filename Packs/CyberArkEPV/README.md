@@ -10,13 +10,16 @@ This pack includes Cortex XSIAM content.
 This section describes the steps required to configure Syslog forwarding of vault audit logs, such as user activity and safe activity events, from CyberArk PAM Self-Hosted Vault to Cortex XSIAM.
 
 ### General Overview
+
 The CyberArk vault event logs are generated in [XML](https://en.wikipedia.org/wiki/XML) format. 
 In order to forward the logs via Syslog to Cortex XSIAM, 
 the XML event records must be converted to suitable [CEF](https://www.microfocus.com/documentation/arcsight/arcsight-smartconnectors-8.3/cef-implementation-standard/Content/CEF/Chapter%201%20What%20is%20CEF.htm) messages. 
 
 ### Set up the XSL Translator
+
 This transformation from XML event records to CEF messages is done though a suitable [XSL](https://en.wikipedia.org/wiki/XSL) translator file. 
 The following is an example for an XSL file. This file can be used directly within the target vault;
+
 ``` xml
 <?xml version="1.0"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -201,9 +204,11 @@ The following is an example for an XSL file. This file can be used directly with
 
 
 #### Set up the Syslog Configuration
+
 1. Navigate to the *Conf* subfolder under the CyberArk Vault server installation folder (*PrivateArk\Server\Conf*).
 2. Copy the *\[SYSLOG\]* section from the *DBParm.sample.ini* sample file, and paste it at the bottom of the *DBParm.ini* file. 
 3. Set the following parameters under the copied *\[SYSLOG\]* section in the *DBParm.ini* file
+
    | Parameter                       | Description    
    | :---                            | :---                    
    | `SyslogServerIP`                | IP address of the Cortex XSIAM Broker VM Syslog Server.  
@@ -228,23 +233,28 @@ The following is an example for an XSL file. This file can be used directly with
             UseLegacySyslogFormat=No
             SendMonitoringMessage=no
 ``` 
+
 4. Restart the Vault server to apply the configuration changes. 
 
 ### Remarks
+
 CyberArk Vault supports additional syslog configuration settings such as forwarding audit events to *multiple* syslog servers, each server with it's own unique set of syslog parameters. For additional details, refer to the [CyberArk Vault documentation](https://docs.cyberark.com/PAS/Latest/en/Content/PASIMP/Integrating-with-SIEM-Applications.htm?tocpath=End%20user%7CReports%20and%20Audits%7C_____6).
 
 
 ## Collect Events from Vendor
+
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
 2. Go to the apps tab and add the **Syslog** app. If it already exists, click the **Syslog** app and then click **Configure**.
 3. Click **Add New**.
 4. Set the following parameters for the Syslog configuration:
+
    | Parameter     | Value    
    | :---          | :---                    
    | `Protocol`    | Should be aligned with the protocol defined in the *SyslogServerProtocol* parameter in the `[SYSLOG]` section of the *DBParm.ini* configuration file on the CyberArk Vault server (see [Set up the Syslog Configuration](#set-up-the-syslog-configuration)).   

@@ -12,5 +12,5 @@ For more information, existing customers can visit our [Integrations Documentati
 
 Contact information:
 
-Sales: contactus@qintel.com
-Support: integrations-support@qintel.com
+Sales: <contactus@qintel.com>
+Support: <integrations-support@qintel.com>

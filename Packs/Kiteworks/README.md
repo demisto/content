@@ -4,9 +4,11 @@
 This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
+
 This section describes the configuration that needs to be done on the Kiteworks administration console in order to forward Syslog messages from Kiteworks to Cortex XSIAM. 
 
 Follow the steps below from your Kiteworks admin console web interface:
+
 1. Go to the **Locations** page (https://\<your_kiteworks_instance_domain\>/admin/#/locations).  
    - If you are using the *legacy* admin user interface, navigate to **System** &rarr; **Locations**.
    - If you are using the *new* admin user interface, navigate to **System Setup** &rarr; **Locations**. 
@@ -24,6 +26,7 @@ Follow the steps below from your Kiteworks admin console web interface:
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
+
 You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
@@ -32,6 +35,7 @@ You can configure the specific vendor and product for this instance.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
 3. Click **Add New**.
 3. When configuring the Syslog Collector, set the following parameters:
+
    | Parameter     | Value    
    | :---          | :---                    
    | `Protocol`    | Select the relevant protocol in correspondence to the protocol that was defined in the syslog configuration on Kiteworks - **UDP**, **TCP**, or **Secure TCP** if the syslog forwarding on Kiteworks was defined with the *Use TLS* option.  
@@ -40,6 +44,7 @@ You can configure the specific vendor and product for this instance.
    | `Product`     | Enter **Kiteworks**. 
 
 ### Remarks
+
 The timestamp on the Kiteworks forwarded messages is interpreted in the GMT 0 timezone. 
    
 </~XSIAM>

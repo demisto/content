@@ -38,6 +38,7 @@ approve or deny authorization requests for BT.
 #### Context Output
 
 There is no context output for this command.
+
 ### bt-get-ticket
 
 ***

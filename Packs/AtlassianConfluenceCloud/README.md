@@ -4,6 +4,7 @@ Confluence is a collaboration tool that brings people, knowledge, and ideas toge
 **What does this pack do?**
 
 The Atlassian Confluence Cloud content pack provides the following capabilities:
+
 - Create space to organize content into meaningful categories.
 - Manage space permissions while creating space.
 - Create a new piece of content or publish a draft.

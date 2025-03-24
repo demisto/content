@@ -6,16 +6,19 @@ This integration was integrated and tested with version 1.37.0 of DelineaDSV
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. https://example.com) | True |
+| Server URL (e.g. <https://example.com>) | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 | Client ID | True |
 | Client Secret | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### dsv-secret-get
+
 ***
 Getting a secret fom DSV
 
@@ -23,6 +26,7 @@ Getting a secret fom DSV
 #### Base Command
 
 `dsv-secret-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -37,9 +41,11 @@ Getting a secret fom DSV
 | secret | String | Received JSON object secret | 
 
 #### Command Example
+
 ```!dsv-secret-get name="accounts/xsoar"```
 
 #### Context Example
+
 ```json
 {
     "DSV": {

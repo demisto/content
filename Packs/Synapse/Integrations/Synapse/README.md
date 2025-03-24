@@ -6,7 +6,7 @@ This integration was integrated and tested with version `2.7.0` of Synapse
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://synapse.vertex.link\) | True |
+| url | Server URL \(e.g. <https://synapse.vertex.link\>) | True |
 | port | REST API Port \(default is 4443\). | True |
 | credentials | Username and password to user to authenticate to Synapse. | True |
 | insecure | Trust any certificate \(not secure\) | False |

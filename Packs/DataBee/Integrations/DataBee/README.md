@@ -72,8 +72,11 @@ Search for devices based on filters.
 | DataBee.Device.modified_time | String | The time when the device was modified. |
 
 #### Command example
+
 ```!databee-device-search hostname=a limit=1```
+
 #### Context Example
+
 ```json
 {
     "DataBee": {
@@ -235,6 +238,7 @@ Search for devices based on filters.
 #### Human Readable Output
 
 >### Device List
+>
 >|Uid|Type|Name|Ip|Interface Uid|Interface Name|Instance Uid|Hostname|Start Time|Modified Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 143795e5-741a-4914-b29c-186a060d430f | Browser | GDFE654-FAKE | test | skin | follow | especially | secret | 2024-06-09T14:39:18.801072 | 2024-06-11T19:08:41.429310 |
@@ -257,7 +261,7 @@ Search for users based on filters.
 | page_size | The optional 0-based index of the page to retrieve. Must be an integer greater than or equal to 0. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 | search_operator | The search operator applied to filter criteria such as the email address, full name, and name. It accommodates list objects for filter values, enabling the specification of multiple filter values separated by commas. Specifically, when using the "In" or "Not In" operators, you can input values in formats like "test" for a single entry or "test,test2" for multiple entries. Possible values are: In, Not In. | Optional |
-| email_address | Filter users based on their email address, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single hostname such as "test@test.com" is acceptable. For "In" or "Not In," you can specify a single email address or a list of email addresses separated by commas, such as "test@test.com" or "test@test.com,test2@test.com". | Optional |
+| email_address | Filter users based on their email address, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single hostname such as "<test@test.com>" is acceptable. For "In" or "Not In," you can specify a single email address or a list of email addresses separated by commas, such as "<test@test.com>" or "<test@test.com>,<test2@test.com>". | Optional |
 | full_name | Filter users based on their full name, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single hostname such as "Bob Dan" is acceptable. For "In" or "Not In," you can specify a single full name or a list of full names separated by commas, such as "Bob Dan" or "Bob Dan,Alice Dan". | Optional |
 | name | Filter users based on their name, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single hostname such as "Bob" is acceptable. For "In" or "Not In," you can specify a single name or a list of names separated by commas, such as "Bob" or "Bob,Alice". | Optional |
 | query | Insert a query instead of using the filters. The format should be {filter} {operator} {value}. “and” separates between queries. Wrap with brackets when the value has special letters. Using this argument overrides the other filter arguments. For example, hostname contains test and mac in (00-00-00-00-00-00). | Optional |
@@ -277,8 +281,11 @@ Search for users based on filters.
 | DataBee.User.modified_time | String | The time when the user was modified. |
 
 #### Command example
+
 ```!databee-user-search full_name=a limit=1```
+
 #### Context Example
+
 ```json
 {
     "DataBee": {
@@ -296,6 +303,7 @@ Search for users based on filters.
 #### Human Readable Output
 
 >### User List
+>
 >|Uid|Type|Name|Start Time|Modified Time|
 >|---|---|---|---|---|
 >| 4c12656e73b90df215e63ca7e3317ace78b8e21540961831b207e69313d7dc5a | User | bradley459 | 2024-06-10T06:58:37.202327 | 2024-06-13T13:17:51.025057 |
@@ -427,8 +435,11 @@ Search for security findings based on filters.
 | DataBee.Finding.User | Unkonwn | Information about the user associated with the finding, if applicable. |
 
 #### Command example
+
 ```!databee-finding-search impact=High limit=1```
+
 #### Context Example
+
 ```json
 {
     "DataBee": {
@@ -840,6 +851,7 @@ Search for security findings based on filters.
 #### Human Readable Output
 
 >### Finding List
+>
 >|Time|Activity Name|Impact|State|Severity|Confidence|
 >|---|---|---|---|---|---|
 >| 2024-06-16T06:24:02.639735 | Create | High | Completed | High | Medium |
@@ -875,8 +887,11 @@ Returns information about an endpoint.
 | Endpoint.OSVersion | String | The endpoint's operation system version. |
 
 #### Command example
+
 ```!endpoint ip=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "Endpoint": {
@@ -894,6 +909,7 @@ Returns information about an endpoint.
 #### Human Readable Output
 
 >### DataBee Endpoint
+>
 >|Hostname|ID|IPAddress|MACAddress|OS|OSVersion|Vendor|
 >|---|---|---|---|---|---|---|
 >| test.com | ed3437c2-a938-419e-95ea-15c04e8bdb98 | 8.8.8.8 | aa-fa-fd-37-0a-de | Linux | 1.4 | DataBee |

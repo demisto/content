@@ -5,6 +5,7 @@ The last pandemic taught us that learning to work remotely and keeping close con
 This pack provides the necessary configurations and checks for managing a crisis event such as communicating with employees working remotely and engaging on work or health issues, and takes the appropriate steps to ensure employee safety and wellbeing.
 
 ##### What does this pack do?
+
 - Gathers information about a group of employees reporting to the same manager.
 - Sends out a questionnaire to all employees, asking them to answer questions. about their health and whether they require any IT or HR assistance.
 - Processes questionnaire responses, creating Employee indicators in Cortex. XSOAR. The indicators provide insight into the answers that every employee replied.

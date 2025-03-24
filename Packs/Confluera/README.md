@@ -1,4 +1,5 @@
 ## Overview
+
 This pack enables you to fetch real time data ( detections, progressions) from confluera's central brain called IQ-Hub portal.
 
 ## What does this pack do?
@@ -8,6 +9,7 @@ This pack enables you to fetch real time data ( detections, progressions) from c
 - Get details of any specific progression needed by the user
 
 This pack includes the :
+
 - **Confluera** integration 
 - The **IQ-HUB Automation** playbook
 - **Confluera Incident** incident type
@@ -24,10 +26,13 @@ This pack includes the :
 -- **IqHubLog** : Logs detections & progression counts along with respective links to confluera Iq-Hub portal.   
 
 ## How does this pack work 
+
 Create an instance of the **Confluera** integration by providing the Iq-Hub url and login credential and start fetching real time data from IQ-Hub portal.  
 
 ## Integrations
+
 This pack includes **Confluera** integration that implements the following Command.
+
 - **confluera-fetch-detections** - Fetches list of detections present in confluera's Iq-Hub portal for past x hours. This command accpets **hours** as an argument which has default value set as **72 hours**.
 - **confluera-fetch-progressions** - Fetches list of progressions present in confluera's Iq-Hub portal for past x hours.This command accpets **hours** as an argument which has default value set as **72 hours**.
 - **confluera-fetch-trail-details** - Fetches progression details, present in confluera's Iq-Hub portal, of which provided trailId is a part of.This command accpets **trail_id** as an argument.

@@ -5,16 +5,19 @@ Malwation AIMA malware analysis sandboxing.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://aima.malwation.com) |  | True |
+| Server URL (e.g. <https://aima.malwation.com>) |  | True |
 | AIMA API Key |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | CAP API Key | It is additional for MALWATION Content Analysis Platform. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### aima-upload-sample
+
 ***
 Submits a sample to AIMA for analysis.
 
@@ -22,6 +25,7 @@ Submits a sample to AIMA for analysis.
 #### Base Command
 
 `aima-upload-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -48,11 +52,13 @@ Submits a sample to AIMA for analysis.
 | AIMA.Analysis.URL | String | URL of analysis of sample. | 
 
 #### Command Example
+
 ```
 aima-upload-sample environment=win7x64 isPublic=true  entry_id=79@4 
 ```
 
 #### Context Example
+
 ```json
 {
     "message": "File successfully uploaded, now you can track your submissions progress from /checkSubmissionStatus/2661ca6d-8989-45b1-b912-203fa2c60a21 or /getSubmission/2661ca6d-8989-45b1-b912-203fa2c60a21",
@@ -62,6 +68,7 @@ aima-upload-sample environment=win7x64 isPublic=true  entry_id=79@4
 ```
 
 ### aima-get-result
+
 ***
 Retrive the analysis result from AIMA Sandbox.
 
@@ -69,6 +76,7 @@ Retrive the analysis result from AIMA Sandbox.
 #### Base Command
 
 `aima-get-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -90,11 +98,13 @@ Retrive the analysis result from AIMA Sandbox.
 | AIMA.Result.ID | String | The ID of the submission | 
 
 #### Command Example
+
 ```
 aima-get-result uuid=79@4 
 ```
 
 #### Context Example
+
 ```json
 {
     "submission": {
@@ -133,6 +143,7 @@ aima-get-result uuid=79@4
 ```
 
 ### aima-cap-static-upload-sample
+
 ***
 Submits sample to Malwation CAP for static analysis.
 
@@ -140,6 +151,7 @@ Submits sample to Malwation CAP for static analysis.
 #### Base Command
 
 `aima-cap-static-upload-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -154,11 +166,13 @@ Submits sample to Malwation CAP for static analysis.
 | CAP.Static.UUID | String | The uuid value of the submission. | 
 
 #### Command Example
+
 ```
 aima-cap-static-upload-sample entry_id=571@7d
 ```
 
 #### Context Example
+
 ```json
 {
     "message": "File successfully uploaded d25d3ae7-78b4-4608-838e-beac5dacb39c.exe",
@@ -167,6 +181,7 @@ aima-cap-static-upload-sample entry_id=571@7d
 ```
 
 ### aima-cap-mav-upload-sample
+
 ***
 Submits sample to Malwation CAP for mav analysis.
 
@@ -174,6 +189,7 @@ Submits sample to Malwation CAP for mav analysis.
 #### Base Command
 
 `aima-cap-mav-upload-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -188,11 +204,13 @@ Submits sample to Malwation CAP for mav analysis.
 | CAP.Mav.UUID | String | The uuid value of the submission. | 
 
 #### Command Example
+
 ```
 aima-cap-mav-upload-sample entry_id=571@7d
 ```
 
 #### Context Example
+
 ```json
 {
     "message": "File successfully uploaded d25d3ae7-78b4-4608-838e-beac5dacb39c.exe",
@@ -201,6 +219,7 @@ aima-cap-mav-upload-sample entry_id=571@7d
 ```
 
 ### aima-cap-static-get-submission
+
 ***
 Retrive static analysis result from Malwation CAP.
 
@@ -208,6 +227,7 @@ Retrive static analysis result from Malwation CAP.
 #### Base Command
 
 `aima-cap-static-get-submission`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -227,11 +247,13 @@ Retrive static analysis result from Malwation CAP.
 
 
 #### Command Example
+
 ```
 aima-cap-static-get-submission uuid=407aa78e-cd1c-4568-b1e2-616fce50cacc 
 ```
 
 #### Context Example
+
 ```json
 {
     "Score": [
@@ -369,6 +391,7 @@ aima-cap-static-get-submission uuid=407aa78e-cd1c-4568-b1e2-616fce50cacc
 ```
 
 ### aima-cap-mav-get-submission
+
 ***
 Retrive mav analysis result from Malwation CAP.
 
@@ -376,6 +399,7 @@ Retrive mav analysis result from Malwation CAP.
 #### Base Command
 
 `aima-cap-mav-get-submission`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -393,11 +417,13 @@ Retrive mav analysis result from Malwation CAP.
 | CAP.Mav.STATUS | String | The status of the submission scanning process. | 
 
 #### Command Example
+
 ```
 aima-cap-mav-upload-sample entry_id=571@7d
 ```
 
 #### Context Example
+
 ```json
 {
     "scan_results": [

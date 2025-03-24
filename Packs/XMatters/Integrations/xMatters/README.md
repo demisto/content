@@ -1,5 +1,6 @@
 This is an integration for using xMatters.
 This integration was integrated and tested with version 1 of xMatters
+
 ## Configure xMatters in Cortex
 
 
@@ -22,9 +23,12 @@ This integration was integrated and tested with version 1 of xMatters
 | max_fetch |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### xm-trigger-workflow
+
 ***
 sends the event to xMatters
 
@@ -32,6 +36,7 @@ sends the event to xMatters
 #### Base Command
 
 `xm-trigger-workflow`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -51,9 +56,11 @@ sends the event to xMatters
 
 
 #### Command Example
+
 ```!xm-trigger-workflow recipients="Joey" subject="Major Emu Issue" body="The emu has escaped!"```
 
 #### Context Example
+
 ```json
 {
     "request_id": "93e6b331-2108-424d-872b-8200b476907b"
@@ -65,6 +72,7 @@ sends the event to xMatters
 >Successfully sent a message to xMatters.
 
 ### xm-get-events
+
 ***
 Get events from xMatters.
 
@@ -72,6 +80,7 @@ Get events from xMatters.
 #### Base Command
 
 `xm-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -95,9 +104,11 @@ Get events from xMatters.
 
 
 #### Command Example
+
 ```!xm-get-events status=ACTIVE```
 
 #### Context Example
+
 ```json
 {
     "Events": [
@@ -134,6 +145,7 @@ Get events from xMatters.
 >Retrieved Events from xMatters.
 
 ### xm-get-event
+
 ***
 Get a single event from xMatters.
 
@@ -141,6 +153,7 @@ Get a single event from xMatters.
 #### Base Command
 
 `xm-get-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -156,9 +169,11 @@ Get a single event from xMatters.
 
 
 #### Command Example
+
 ```!xm-get-event event_id=33999001```
 
 #### Context Example
+
 ```json
 {
     "Event": {

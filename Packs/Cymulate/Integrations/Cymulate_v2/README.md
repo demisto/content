@@ -20,11 +20,13 @@ This is the default integration for this content pack when configured by the Dat
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
 ## Fetch Incidents command
+
 Retrieves new incidents every interval (default is 1 minute).
 The fetch incident command will retrieve incidents from all selected modules chosen in the configuration page by the user.
 The next run will be calculated by the latest timestamp of all modules, to avoid duplications.
@@ -32,6 +34,7 @@ NOTE: We fetch only one module per fetch call.
 
 
 ### cymulate-exfiltration-template-list
+
 ***
 Retrieve the exfiltration template list.
 
@@ -39,6 +42,7 @@ Retrieve the exfiltration template list.
 #### Base Command
 
 `cymulate-exfiltration-template-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -52,9 +56,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cymulate-exfiltration-template-list```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -89,6 +95,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Exfiltration templates list:
+>
 >|id|name|
 >|---|---|
 >| 5df0e79b85a00138dc648e75 | Cymulate Best Practice |
@@ -99,6 +106,7 @@ There are no input arguments for this command.
 
 
 ### cymulate-exfiltration-start
+
 ***
 Create a new exfiltration assessment.
 
@@ -106,6 +114,7 @@ Create a new exfiltration assessment.
 #### Base Command
 
 `cymulate-exfiltration-start`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -126,9 +135,11 @@ Create a new exfiltration assessment.
 
 
 #### Command Example
+
 ```!cymulate-exfiltration-start template_id="5df0e79b85a00138dc648e75" agent_name="Cymulate_agent" schedule="false" schedule_loop="one-time"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -143,12 +154,14 @@ Create a new exfiltration assessment.
 #### Human Readable Output
 
 >### Starting exfiltration assessment:
+>
 >|id|success|
 >|---|---|
 >| id_1 | true |
 
 
 ### cymulate-exfiltration-stop
+
 ***
 Stop a running exfiltration assessment.
 
@@ -156,6 +169,7 @@ Stop a running exfiltration assessment.
 #### Base Command
 
 `cymulate-exfiltration-stop`
+
 #### Input
 
 There are no input arguments for this command.
@@ -169,9 +183,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cymulate-exfiltration-stop```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -186,12 +202,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Stopping exfiltration assessment:
+>
 >|data|success|
 >|---|---|
 >| ok | true |
 
 
 ### cymulate-exfiltration-status
+
 ***
 Get exfiltration assessment status.
 
@@ -199,6 +217,7 @@ Get exfiltration assessment status.
 #### Base Command
 
 `cymulate-exfiltration-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -217,9 +236,11 @@ Get exfiltration assessment status.
 
 
 #### Command Example
+
 ```!cymulate-exfiltration-status assessment_id="id_2"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -259,12 +280,14 @@ Get exfiltration assessment status.
 #### Human Readable Output
 
 >### Exfiltration assessment status:
+>
 >|categories|id|inProgress|progress|
 >|---|---|---|---|
 >| http,<br/>https,<br/>dns,<br/>dns-tunneling,<br/>icmp,<br/>outlook,<br/>device,<br/>telnet,<br/>sftp,<br/>slack,<br/>googledrive,<br/>onedrive,<br/>port_scanning,<br/>msteams,<br/>gmail,<br/>gitlab,<br/>azure_blob,<br/>aws_s3_bucket,<br/>github,<br/>googlestorage,<br/>browsinghttps,<br/>browsinghttp | id_2 | false | 0 |
 
 
 ### cymulate-email-gateway-template-list
+
 ***
 Retrieve the email gateway template list.
 
@@ -272,6 +295,7 @@ Retrieve the email gateway template list.
 #### Base Command
 
 `cymulate-email-gateway-template-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -285,9 +309,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cymulate-email-gateway-template-list```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -334,6 +360,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Email gateway templates list:
+>
 >|id|name|
 >|---|---|
 >| 5c6920853659191ccf6858fc | free assessment |
@@ -347,6 +374,7 @@ There are no input arguments for this command.
 
 
 ### cymulate-email-gateway-start
+
 ***
 Create a new email gateway assessment.
 
@@ -354,6 +382,7 @@ Create a new email gateway assessment.
 #### Base Command
 
 `cymulate-email-gateway-start`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -373,9 +402,11 @@ Create a new email gateway assessment.
 
 
 #### Command Example
+
 ```!cymulate-email-gateway-start template_id="5c6920853659191ccf6858fc" agent_email="test@cymulate.com" schedule="false" schedule_loop="one-time"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -390,12 +421,14 @@ Create a new email gateway assessment.
 #### Human Readable Output
 
 >### Starting email gateway assessment:
+>
 >|id|success|
 >|---|---|
 >| id_3 | true |
 
 
 ### cymulate-email-gateway-stop
+
 ***
 Stop a running exfiltration assessment.
 
@@ -403,6 +436,7 @@ Stop a running exfiltration assessment.
 #### Base Command
 
 `cymulate-email-gateway-stop`
+
 #### Input
 
 There are no input arguments for this command.
@@ -416,9 +450,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cymulate-email-gateway-stop```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -433,12 +469,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Stopping email gateway assessment:
+>
 >|data|success|
 >|---|---|
 >| ok | true |
 
 
 ### cymulate-email-gateway-status
+
 ***
 Get the email gateway assessment status.
 
@@ -446,6 +484,7 @@ Get the email gateway assessment status.
 #### Base Command
 
 `cymulate-email-gateway-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -465,9 +504,11 @@ Get the email gateway assessment status.
 
 
 #### Command Example
+
 ```!cymulate-email-gateway-status assessment_id="id_4"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -489,12 +530,14 @@ Get the email gateway assessment status.
 #### Human Readable Output
 
 >### Email gateway assessment status:
+>
 >|addresses|categories|id|inProgress|progress|
 >|---|---|---|---|---|
->| test@cymulate.com | worm | id_4 | false | 0 |
+>| <test@cymulate.com> | worm | id_4 | false | 0 |
 
 
 ### cymulate-endpoint-security-template-list
+
 ***
 Retrieve the endpoint security template list.
 
@@ -502,6 +545,7 @@ Retrieve the endpoint security template list.
 #### Base Command
 
 `cymulate-endpoint-security-template-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -515,9 +559,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cymulate-endpoint-security-template-list```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -552,6 +598,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Endpoint security templates list:
+>
 >|id|name|
 >|---|---|
 >| 5c87a26f548a3c7c4c184a5e | Free Assessment |
@@ -562,6 +609,7 @@ There are no input arguments for this command.
 
 
 ### cymulate-endpoint-security-start
+
 ***
 Create a new endpoint security assessment.
 
@@ -569,6 +617,7 @@ Create a new endpoint security assessment.
 #### Base Command
 
 `cymulate-endpoint-security-start`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -589,9 +638,11 @@ Create a new endpoint security assessment.
 
 
 #### Command Example
+
 ```!cymulate-endpoint-security-start template_id="5e98461d312a740ee4839700" agent_name="Cymulate_agent" schedule="false" schedule_loop="one-time"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -606,12 +657,14 @@ Create a new endpoint security assessment.
 #### Human Readable Output
 
 >### Starting endpoint security assessment:
+>
 >|id|success|
 >|---|---|
 >| id_5 | true |
 
 
 ### cymulate-endpoint-security-stop
+
 ***
 Stop a running endpoint security assessment.
 
@@ -619,6 +672,7 @@ Stop a running endpoint security assessment.
 #### Base Command
 
 `cymulate-endpoint-security-stop`
+
 #### Input
 
 There are no input arguments for this command.
@@ -632,9 +686,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cymulate-endpoint-security-stop```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -649,12 +705,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Stopping endpoint security assessment:
+>
 >|data|success|
 >|---|---|
 >| ok | true |
 
 
 ### cymulate-endpoint-security-status
+
 ***
 Get the endpoint security assessment status.
 
@@ -662,6 +720,7 @@ Get the endpoint security assessment status.
 #### Base Command
 
 `cymulate-endpoint-security-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -680,9 +739,11 @@ Get the endpoint security assessment status.
 
 
 #### Command Example
+
 ```!cymulate-endpoint-security-status assessment_id="id_6"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -701,12 +762,14 @@ Get the endpoint security assessment status.
 #### Human Readable Output
 
 >### Endpoint security assessment status:
+>
 >|categories|id|inProgress|progress|
 >|---|---|---|---|
 >| ransomware | id_6 | false | 0 |
 
 
 ### cymulate-waf-template-list
+
 ***
 Retrieve the WAF template list.
 
@@ -714,6 +777,7 @@ Retrieve the WAF template list.
 #### Base Command
 
 `cymulate-waf-template-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -727,9 +791,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cymulate-waf-template-list```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -776,6 +842,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### WAF templates list:
+>
 >|id|name|
 >|---|---|
 >| 5edf7ddfef621bbc252498f3 | free assessment |
@@ -789,6 +856,7 @@ There are no input arguments for this command.
 
 
 ### cymulate-waf-start
+
 ***
 Create a new web application firewall assessment.
 
@@ -796,6 +864,7 @@ Create a new web application firewall assessment.
 #### Base Command
 
 `cymulate-waf-start`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -815,9 +884,11 @@ Create a new web application firewall assessment.
 
 
 #### Command Example
+
 ```!cymulate-waf-start template_id="5ee0726cef621bbc25251d7a" sites="http://cymulatelabs.com" schedule="false" schedule_loop="one-time"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -832,12 +903,14 @@ Create a new web application firewall assessment.
 #### Human Readable Output
 
 >### Starting WAF assessment:
+>
 >|id|success|
 >|---|---|
 >| 604630cbb9eb930a0fa86ab5 | true |
 
 
 ### cymulate-waf-stop
+
 ***
 Stop a running web application firewall assessment.
 
@@ -845,6 +918,7 @@ Stop a running web application firewall assessment.
 #### Base Command
 
 `cymulate-waf-stop`
+
 #### Input
 
 There are no input arguments for this command.
@@ -858,9 +932,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cymulate-waf-stop```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -875,12 +951,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Stopping WAF assessment:
+>
 >|data|success|
 >|---|---|
 >| no running attack | true |
 
 
 ### cymulate-waf-status
+
 ***
 Get the web application firewall assessment status.
 
@@ -888,6 +966,7 @@ Get the web application firewall assessment status.
 #### Base Command
 
 `cymulate-waf-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -906,9 +985,11 @@ Get the web application firewall assessment status.
 
 
 #### Command Example
+
 ```!cymulate-waf-status assessment_id="5ff31ef451647c20338bd235"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -932,12 +1013,14 @@ Get the web application firewall assessment status.
 #### Human Readable Output
 
 >### WAF assessment status:
+>
 >|categories|id|inProgress|progress|
 >|---|---|---|---|
 >| XML Injection,<br/>Command Injection,<br/>File Inclusion,<br/>XSS,<br/>XML Injection,<br/>SQL Injection | 5ff31ef451647c20338bd235 | false | 0 |
 
 
 ### cymulate-immediate-threat-start
+
 ***
 Create a new immediate threats assessment.
 
@@ -945,6 +1028,7 @@ Create a new immediate threats assessment.
 #### Base Command
 
 `cymulate-immediate-threat-start`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -966,9 +1050,11 @@ Create a new immediate threats assessment.
 
 
 #### Command Example
+
 ```!cymulate-immediate-threat-start edr_address="Cymulate_agent" template_id="603270ce63aa15930631b938"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -985,12 +1071,14 @@ Create a new immediate threats assessment.
 #### Human Readable Output
 
 >### Starting immediate-threats assessment:
+>
 >|id|success|
 >|---|---|
 >| id_7 | true |
 
 
 ### cymulate-immediate-threat-stop
+
 ***
 Stop a running immediate threats assessment.
 
@@ -998,6 +1086,7 @@ Stop a running immediate threats assessment.
 #### Base Command
 
 `cymulate-immediate-threat-stop`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1011,9 +1100,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cymulate-immediate-threat-stop```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -1028,12 +1119,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Stop immediate-threats assessment:
+>
 >|data|success|
 >|---|---|
 >| ok | true |
 
 
 ### cymulate-immediate-threat-status
+
 ***
 Get immediate threats assessment status.
 
@@ -1041,6 +1134,7 @@ Get immediate threats assessment status.
 #### Base Command
 
 `cymulate-immediate-threat-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1059,9 +1153,11 @@ Get immediate threats assessment status.
 
 
 #### Command Example
+
 ```!cymulate-immediate-threat-status assessment_id="id_8"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -1080,12 +1176,14 @@ Get immediate threats assessment status.
 #### Human Readable Output
 
 >### Immediate-threats assessment status:
+>
 >|categories|id|inProgress|progress|
 >|---|---|---|---|
 >| antivirus | id_8 | true | 90 |
 
 
 ### cymulate-phishing-awareness-contacts-group-list
+
 ***
 Get a list of contact groups.
 
@@ -1093,6 +1191,7 @@ Get a list of contact groups.
 #### Base Command
 
 `cymulate-phishing-awareness-contacts-group-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1108,9 +1207,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cymulate-phishing-awareness-contacts-group-list```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -1160,6 +1261,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Phishing awareness contact groups:
+>
 >|__v|canDelete|client|id|name|
 >|---|---|---|---|---|
 >| 0 | true | Cymulate | id_a | qmasters_01 |
@@ -1170,6 +1272,7 @@ There are no input arguments for this command.
 
 
 ### cymulate-phishing-awareness-contacts-group-create
+
 ***
 Create new contacts group.
 
@@ -1177,6 +1280,7 @@ Create new contacts group.
 #### Base Command
 
 `cymulate-phishing-awareness-contacts-group-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1193,9 +1297,11 @@ Create new contacts group.
 
 
 #### Command Example
+
 ```!cymulate-phishing-awareness-contacts-group-create group_name="test_group_01"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -1212,12 +1318,14 @@ Create new contacts group.
 #### Human Readable Output
 
 >### Phishing awareness contact group created:
+>
 >|id|success|
 >|---|---|
 >| id_9 | true |
 
 
 ### cymulate-phishing-awareness-contacts-get
+
 ***
 Get contacts group using a group ID.
 
@@ -1225,6 +1333,7 @@ Get contacts group using a group ID.
 #### Base Command
 
 `cymulate-phishing-awareness-contacts-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1243,9 +1352,11 @@ Get contacts group using a group ID.
 
 
 #### Command Example
+
 ```!cymulate-phishing-awareness-contacts-get group_id="id_abcd"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -1281,14 +1392,16 @@ Get contacts group using a group ID.
 #### Human Readable Output
 
 >### Phishing awareness contact groups:
+>
 >|address|color|firstName|id|lastName|
 >|---|---|---|---|---|
->| jamesb@cymulate.com | #ffbb00 | James | id_1a | Bond |
->| Billg@cymulate.com | #34a853 | Bill | id_a2 | Gates |
->| davidb@cymulate.com | #00a1f1 | David  | id_a3 | Ben-Gurion |
+>| <jamesb@cymulate.com> | #ffbb00 | James | id_1a | Bond |
+>| <Billg@cymulate.com> | #34a853 | Bill | id_a2 | Gates |
+>| <davidb@cymulate.com> | #00a1f1 | David  | id_a3 | Ben-Gurion |
 
 
 ### cymulate-lateral-movement-template-list
+
 ***
 Retrieve lateral movement template list.
 
@@ -1296,6 +1409,7 @@ Retrieve lateral movement template list.
 #### Base Command
 
 `cymulate-lateral-movement-template-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1309,9 +1423,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cymulate-lateral-movement-template-list```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -1354,6 +1470,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Lateral movement templates list:
+>
 >|id|name|
 >|---|---|
 >| 5e2f0c1054d53d6b115eefa7 | SMB Pass The Hash |
@@ -1366,6 +1483,7 @@ There are no input arguments for this command.
 
 
 ### cymulate-lateral-movement-start
+
 ***
 Create a new lateral movement assessment.
 
@@ -1373,6 +1491,7 @@ Create a new lateral movement assessment.
 #### Base Command
 
 `cymulate-lateral-movement-start`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1394,9 +1513,11 @@ Create a new lateral movement assessment.
 
 
 #### Command Example
+
 ```!cymulate-lateral-movement-start agent_name="Cymulate_agent" template_id="5e41746171895006ef394607" upload_to_cymulate="false" schedule="false" schedule_loop="one-time"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -1411,12 +1532,14 @@ Create a new lateral movement assessment.
 #### Human Readable Output
 
 >### Starting lateral movement assessment:
+>
 >|id|success|
 >|---|---|
 >| id_987 | true |
 
 
 ### cymulate-lateral-movement-stop
+
 ***
 Stop a running lateral movement assessment.
 
@@ -1424,6 +1547,7 @@ Stop a running lateral movement assessment.
 #### Base Command
 
 `cymulate-lateral-movement-stop`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1436,9 +1560,11 @@ There are no input arguments for this command.
 | Cymulate.LateralMovement.success | Boolean | Lateral Movement assessment creation success status. | 
 
 #### Command Example
+
 ```!cymulate-lateral-movement-stop```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -1453,12 +1579,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Stopping lateral movement assessment:
+>
 >|data|success|
 >|---|---|
 >| ok | true |
 
 
 ### cymulate-lateral-movement-status
+
 ***
 Get lateral movement assessment status.
 
@@ -1466,6 +1594,7 @@ Get lateral movement assessment status.
 #### Base Command
 
 `cymulate-lateral-movement-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1482,9 +1611,11 @@ Get lateral movement assessment status.
 
 
 #### Command Example
+
 ```!cymulate-lateral-movement-status assessment_id="id_876"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -1499,12 +1630,14 @@ Get lateral movement assessment status.
 #### Human Readable Output
 
 >### Lateral movement assessment status:
+>
 >|id|inProgress|
 >|---|---|
 >| id_876 | false |
 
 
 ### cymulate-agent-list
+
 ***
 Retrieve all agents.
 
@@ -1512,6 +1645,7 @@ Retrieve all agents.
 #### Base Command
 
 `cymulate-agent-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1527,9 +1661,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!cymulate-agent-list```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -1553,13 +1689,15 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Agents list:
+>
 >|agentAddress|agentMethod|agentName|
 >|---|---|---|
->| test@cymulate.com | smtp |  |
+>| <test@cymulate.com> | smtp |  |
 >| Cymulate_agent  | http | Cymulate_agent |
 
 
 ### cymulate-simulations-list
+
 ***
 Retrieve a list of all simulations by ID.
 
@@ -1567,6 +1705,7 @@ Retrieve a list of all simulations by ID.
 #### Base Command
 
 `cymulate-simulations-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1602,9 +1741,11 @@ Retrieve a list of all simulations by ID.
 
 
 #### Command Example
+
 ```!cymulate-simulations-list module="waf" attack_id="id_001"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -1637,31 +1778,33 @@ Retrieve a list of all simulations by ID.
 #### Human Readable Output
 
 >### Displaying 20/193 simulations:
+>
 >|Action|Category|Database|Display_Url|FullRequest|Id|Input|Method|Mitigation|Module|Payload|Platform|PrevStatus|Risk|Source|Status|SubCategoryType|Timestamp|Url|date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| http://Google.com/signup | SQL Injection | DB Agnostic | http://Google.com/signup | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains. Validate that the specific input/url is protected with the Oracle SQL Injection signature pack (SQL Injection) | Web Application Firewall | AND 1=utl_inaddr.get_host_address((SELECT DISTINCT(table_name) FROM (SELECT DISTINCT(table_name), ROWNUM AS LIMIT FROM sys.all_tables) WHERE LIMIT=3)) AND 'i'='i | OS Agnostic | blocked | high | http://Google.com | blocked | Oracle SQL Injection | 2021-02-28 16:33:41 | http://Google.com/signup | 2021-02-28T14:33:41.475Z |
->| http://Google.com/team/dudi | SQL Injection | DB Agnostic | http://Google.com/team/dudi | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.. The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input url is protected with the Generic Blind Injection signature pack (SQL Injection) | Web Application Firewall | 1) or benchmark(10000000,MD5(1))# | OS Agnostic | blocked | high | http://Google.com | blocked | Generic Blind Injection | 2021-02-28 16:33:41 | http://Google.com/team/dudi | 2021-02-28T14:33:41.476Z |
->| http://Google.com/ | SQL Injection | DB Agnostic | http://Google.com/ | N/A | id_001 | tel | post | Create a WAF Security rule to block incoming requests that contains:1.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the General SQL Injection signature pack (SQL Injection) | Web Application Firewall | 1' and non_existant_table = '1 | OS Agnostic | blocked | high | http://Google.com | blocked | General SQL Injection | 2021-02-28 16:33:41 | http://Google.com/ | 2021-02-28T14:33:41.478Z |
->| http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | SQL Injection | DB Agnostic | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains:..The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' or 1=1 / | OS Agnostic | blocked | high | http://Google.com | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | 2021-02-28T14:33:41.478Z |
->| http://Google.com/contact | SQL Injection | DB Agnostic | http://Google.com/contact | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains..The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' group by userid having 1=1-- | OS Agnostic | blocked | high | http://Google.com | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | http://Google.com/contact | 2021-02-28T14:33:41.476Z |
->| http://Google.com/ | SQL Injection | DB Agnostic | http://Google.com/ | N/A | id_001 | tel | post | Create a WAF Security rule to block incoming requests that contains.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | ) waitfor delay '0:0:20' | OS Agnostic | blocked | high | http://Google.com | blocked | MSSQL Injection | 2021-02-28 16:33:41 | http://Google.com/ | 2021-02-28T14:33:41.479Z |
->| http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | SQL Injection | DB Agnostic | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' or 1=1-- | OS Agnostic | blocked | high | http://Google.com | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | 2021-02-28T14:33:41.481Z |
->| http://Google.com/ | SQL Injection | DB Agnostic | http://Google.com/ | N/A | id_001 | hidden | post | Create a WAF Security rule to block incoming requests that contains:.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' OR 'something' like 'some%' | OS Agnostic | blocked | high | http://Google.com | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | http://Google.com/ | 2021-02-28T14:33:41.480Z |
->| http://Google.com/team/ruba | SQL Injection | DB Agnostic | http://Google.com/team/ruba | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' union select from users where login = char(114,111,111,116); | OS Agnostic | blocked | high | http://Google.com | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/ruba | 2021-02-28T14:33:41.481Z |
->| http://Google.com/team/ruba | SQL Injection | DB Agnostic | http://Google.com/team/ruba | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains. The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the General SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' AND 1=utl_inaddr.get_host_address((SELECT SYS.DATABASE_NAME FROM DUAL)) AND 'i'='i | OS Agnostic | blocked | high | http://Google.com | blocked | General SQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/ruba | 2021-02-28T14:33:41.479Z |
->| http://Google.com/contact | SQL Injection | DB Agnostic | http://Google.com/contact | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the Generic Blind Injection signature pack (SQL Injection) | Web Application Firewall | ;waitfor delay '0:0:__TIME__'-- | OS Agnostic | blocked | high | http://Google.com | blocked | Generic Blind Injection | 2021-02-28 16:33:41 | http://Google.com/contact | 2021-02-28T14:33:41.480Z |
->| http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | SQL Injection | DB Agnostic | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains. The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | waitfor delay '0:0:20' / | OS Agnostic | blocked | high | http://Google.com | blocked | MSSQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | 2021-02-28T14:33:41.481Z |
->| http://Google.com/team/dudi | SQL Injection | DB Agnostic | http://Google.com/team/dudi | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains:.Validate that the specific input/url is protected with the Mysql Injection signature pack (SQL Injection) | Web Application Firewall | 1or1=1 | OS Agnostic | blocked | high | http://Google.com | blocked | Mysql Injection | 2021-02-28 16:33:41 | http://Google.com/team/dudi | 2021-02-28T14:33:41.483Z |
->| http://Google.com/team/dudi | SQL Injection | DB Agnostic | http://Google.com/team/dudi | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the Generic Blind Injection signature pack (SQL Injection) | Web Application Firewall | ) or sleep(__TIME__)=' | OS Agnostic | blocked | high | http://Google.com | blocked | Generic Blind Injection | 2021-02-28 16:33:41 | http://Google.com/team/dudi | 2021-02-28T14:33:41.483Z |
->| http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | SQL Injection | DB Agnostic | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall |  @var select @var as var into temp end -- | OS Agnostic | blocked | high | http://Google.com | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | 2021-02-28T14:33:41.485Z |
->| http://Google.com/team/ruba | SQL Injection | DB Agnostic | http://Google.com/team/ruba | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the Oracle SQL Injection signature pack (SQL Injection) | Web Application Firewall | AND 1=utl_inaddr.get_host_address((SELECT DISTINCT(granted_role) FROM (SELECT DISTINCT(granted_role), ROWNUM AS LIMIT FROM dba_role_privs WHERE GRANTEE=SYS.LOGINUSER) WHERE LIMIT=1)) AND 'i'='i | OS Agnostic | blocked | high | http://Google.com | blocked | Oracle SQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/ruba | 2021-02-28T14:33:41.482Z |
->| http://Google.com/signup | SQL Injection | DB Agnostic | http://Google.com/signup | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the Mysql Injection signature pack (SQL Injection) | Web Application Firewall | create table myfile (input TEXT); load data infile filepath into table myfile | OS Agnostic | blocked | high | http://Google.com | blocked | Mysql Injection | 2021-02-28 16:33:41 | http://Google.com/signup | 2021-02-28T14:33:41.484Z |
->| http://Google.com/contact | SQL Injection | DB Agnostic | http://Google.com/contact | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains. The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | and 0=benchmark | OS Agnostic | blocked | high | http://Google.com | blocked | MSSQL Injection | 2021-02-28 16:33:41 | http://Google.com/contact | 2021-02-28T14:33:41.486Z |
->| http://Google.com/ | SQL Injection | DB Agnostic | http://Google.com/ | N/A | id_001 | tel | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | ; exec master..xp_cmdshell 'ping 1.2.3.4'-- | OS Agnostic | blocked | high | http://Google.com | blocked | MSSQL Injection | 2021-02-28 16:33:41 | http://Google.com/ | 2021-02-28T14:33:41.485Z |
->| http://Google.com/signup | SQL Injection | DB Agnostic | http://Google.com/signup | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | insert into mysql.user (user, host, password) values ('name', 'localhost', password('pass123')) -- | OS Agnostic | N/A | high | http://Google.com | blocked | MSSQL Injection | 2021-02-28 16:33:41 | http://Google.com/signup | 2021-02-28T14:33:41.487Z |
+>| <http://Google.com/signup> | SQL Injection | DB Agnostic | <http://Google.com/signup> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains. Validate that the specific input/url is protected with the Oracle SQL Injection signature pack (SQL Injection) | Web Application Firewall | AND 1=utl_inaddr.get_host_address((SELECT DISTINCT(table_name) FROM (SELECT DISTINCT(table_name), ROWNUM AS LIMIT FROM sys.all_tables) WHERE LIMIT=3)) AND 'i'='i | OS Agnostic | blocked | high | <http://Google.com> | blocked | Oracle SQL Injection | 2021-02-28 16:33:41 | <http://Google.com/signup> | 2021-02-28T14:33:41.475Z |
+>| <http://Google.com/team/dudi> | SQL Injection | DB Agnostic | <http://Google.com/team/dudi> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.. The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input url is protected with the Generic Blind Injection signature pack (SQL Injection) | Web Application Firewall | 1) or benchmark(10000000,MD5(1))# | OS Agnostic | blocked | high | <http://Google.com> | blocked | Generic Blind Injection | 2021-02-28 16:33:41 | <http://Google.com/team/dudi> | 2021-02-28T14:33:41.476Z |
+>| <http://Google.com/> | SQL Injection | DB Agnostic | <http://Google.com/> | N/A | id_001 | tel | post | Create a WAF Security rule to block incoming requests that contains:1.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the General SQL Injection signature pack (SQL Injection) | Web Application Firewall | 1' and non_existant_table = '1 | OS Agnostic | blocked | high | <http://Google.com> | blocked | General SQL Injection | 2021-02-28 16:33:41 | <http://Google.com/> | 2021-02-28T14:33:41.478Z |
+>| <http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95> | SQL Injection | DB Agnostic | <http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains:..The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' or 1=1 / | OS Agnostic | blocked | high | <http://Google.com> | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | <http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95> | 2021-02-28T14:33:41.478Z |
+>| <http://Google.com/contact> | SQL Injection | DB Agnostic | <http://Google.com/contact> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains..The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' group by userid having 1=1-- | OS Agnostic | blocked | high | <http://Google.com> | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | <http://Google.com/contact> | 2021-02-28T14:33:41.476Z |
+>| <http://Google.com/> | SQL Injection | DB Agnostic | <http://Google.com/> | N/A | id_001 | tel | post | Create a WAF Security rule to block incoming requests that contains.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | ) waitfor delay '0:0:20' | OS Agnostic | blocked | high | <http://Google.com> | blocked | MSSQL Injection | 2021-02-28 16:33:41 | <http://Google.com/> | 2021-02-28T14:33:41.479Z |
+>| <http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95> | SQL Injection | DB Agnostic | <http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' or 1=1-- | OS Agnostic | blocked | high | <http://Google.com> | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | <http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95> | 2021-02-28T14:33:41.481Z |
+>| <http://Google.com/> | SQL Injection | DB Agnostic | <http://Google.com/> | N/A | id_001 | hidden | post | Create a WAF Security rule to block incoming requests that contains:.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' OR 'something' like 'some%' | OS Agnostic | blocked | high | <http://Google.com> | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | <http://Google.com/> | 2021-02-28T14:33:41.480Z |
+>| <http://Google.com/team/ruba> | SQL Injection | DB Agnostic | <http://Google.com/team/ruba> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' union select from users where login = char(114,111,111,116); | OS Agnostic | blocked | high | <http://Google.com> | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | <http://Google.com/team/ruba> | 2021-02-28T14:33:41.481Z |
+>| <http://Google.com/team/ruba> | SQL Injection | DB Agnostic | <http://Google.com/team/ruba> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains. The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the General SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' AND 1=utl_inaddr.get_host_address((SELECT SYS.DATABASE_NAME FROM DUAL)) AND 'i'='i | OS Agnostic | blocked | high | <http://Google.com> | blocked | General SQL Injection | 2021-02-28 16:33:41 | <http://Google.com/team/ruba> | 2021-02-28T14:33:41.479Z |
+>| <http://Google.com/contact> | SQL Injection | DB Agnostic | <http://Google.com/contact> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the Generic Blind Injection signature pack (SQL Injection) | Web Application Firewall | ;waitfor delay '0:0:**TIME**'-- | OS Agnostic | blocked | high | <http://Google.com> | blocked | Generic Blind Injection | 2021-02-28 16:33:41 | <http://Google.com/contact> | 2021-02-28T14:33:41.480Z |
+>| <http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95> | SQL Injection | DB Agnostic | <http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains. The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | waitfor delay '0:0:20' / | OS Agnostic | blocked | high | <http://Google.com> | blocked | MSSQL Injection | 2021-02-28 16:33:41 | <http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95> | 2021-02-28T14:33:41.481Z |
+>| <http://Google.com/team/dudi> | SQL Injection | DB Agnostic | <http://Google.com/team/dudi> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains:.Validate that the specific input/url is protected with the Mysql Injection signature pack (SQL Injection) | Web Application Firewall | 1or1=1 | OS Agnostic | blocked | high | <http://Google.com> | blocked | Mysql Injection | 2021-02-28 16:33:41 | <http://Google.com/team/dudi> | 2021-02-28T14:33:41.483Z |
+>| <http://Google.com/team/dudi> | SQL Injection | DB Agnostic | <http://Google.com/team/dudi> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the Generic Blind Injection signature pack (SQL Injection) | Web Application Firewall | ) or sleep(**TIME**)=' | OS Agnostic | blocked | high | <http://Google.com> | blocked | Generic Blind Injection | 2021-02-28 16:33:41 | <http://Google.com/team/dudi> | 2021-02-28T14:33:41.483Z |
+>| <http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95> | SQL Injection | DB Agnostic | <http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall |  @var select @var as var into temp end -- | OS Agnostic | blocked | high | <http://Google.com> | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | <http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95> | 2021-02-28T14:33:41.485Z |
+>| <http://Google.com/team/ruba> | SQL Injection | DB Agnostic | <http://Google.com/team/ruba> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the Oracle SQL Injection signature pack (SQL Injection) | Web Application Firewall | AND 1=utl_inaddr.get_host_address((SELECT DISTINCT(granted_role) FROM (SELECT DISTINCT(granted_role), ROWNUM AS LIMIT FROM dba_role_privs WHERE GRANTEE=SYS.LOGINUSER) WHERE LIMIT=1)) AND 'i'='i | OS Agnostic | blocked | high | <http://Google.com> | blocked | Oracle SQL Injection | 2021-02-28 16:33:41 | <http://Google.com/team/ruba> | 2021-02-28T14:33:41.482Z |
+>| <http://Google.com/signup> | SQL Injection | DB Agnostic | <http://Google.com/signup> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the Mysql Injection signature pack (SQL Injection) | Web Application Firewall | create table myfile (input TEXT); load data infile filepath into table myfile | OS Agnostic | blocked | high | <http://Google.com> | blocked | Mysql Injection | 2021-02-28 16:33:41 | <http://Google.com/signup> | 2021-02-28T14:33:41.484Z |
+>| <http://Google.com/contact> | SQL Injection | DB Agnostic | <http://Google.com/contact> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains. The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | and 0=benchmark | OS Agnostic | blocked | high | <http://Google.com> | blocked | MSSQL Injection | 2021-02-28 16:33:41 | <http://Google.com/contact> | 2021-02-28T14:33:41.486Z |
+>| <http://Google.com/> | SQL Injection | DB Agnostic | <http://Google.com/> | N/A | id_001 | tel | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | ; exec master..xp_cmdshell 'ping 1.2.3.4'-- | OS Agnostic | blocked | high | <http://Google.com> | blocked | MSSQL Injection | 2021-02-28 16:33:41 | <http://Google.com/> | 2021-02-28T14:33:41.485Z |
+>| <http://Google.com/signup> | SQL Injection | DB Agnostic | <http://Google.com/signup> | N/A | id_001 | password | post | Create a WAF Security rule to block incoming requests that contains.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | insert into mysql.user (user, host, password) values ('name', 'localhost', password('pass123')) -- | OS Agnostic | N/A | high | <http://Google.com> | blocked | MSSQL Injection | 2021-02-28 16:33:41 | <http://Google.com/signup> | 2021-02-28T14:33:41.487Z |
 
 
 ### cymulate-simulations-id-list
+
 ***
 Retrieve a list of all simulations IDs.
 
@@ -1669,6 +1812,7 @@ Retrieve a list of all simulations IDs.
 #### Base Command
 
 `cymulate-simulations-id-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1689,9 +1833,11 @@ Retrieve a list of all simulations IDs.
 
 
 #### Command Example
+
 ```!cymulate-simulations-id-list module="kill-chain" from_date="2021-01-01"```
 
 #### Context Example
+
 ```json
 {
     "Cymulate": {
@@ -1722,8 +1868,9 @@ Retrieve a list of all simulations IDs.
 #### Human Readable Output
 
 >### Displaying 3/3 Attack IDs:
+>
 >|Agent|ID|Template|Timestamp|
 >|---|---|---|---|
 >| Cymulate_agent_2 | id_b1 | Cobalt Group | 2021-03-01 10:15:58.230000 |
 >| Cymulate_agent_2 | id_b2 | Cobalt Group | 2021-02-25 16:56:33.871000 |
->| info@cymulate.com | id_b3 | Cobalt Group | 2021-02-23 11:00:50.988000 |
+>| <info@cymulate.com> | id_b3 | Cobalt Group | 2021-02-23 11:00:50.988000 |

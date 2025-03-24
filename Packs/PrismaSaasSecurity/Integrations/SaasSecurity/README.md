@@ -1,4 +1,5 @@
 Use the SaaS Security integration to protect against cloud‑based threats by:
+
 - Scanning and analyzing all your assets.
 - Applying Security policy to identify exposures, external collaborators, risky user behavior, and sensitive documents.
 - Identifying the potential risks associated with each asset.
@@ -11,7 +12,7 @@ Use the SaaS Security integration to protect against cloud‑based threats by:
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL | The instance configuration URL based on the server location: https://api.aperture.paloaltonetworks.com (US)<br/>https://api.aperture-eu.paloaltonetworks.com (EU)<br/>https://api.aperture-apac.paloaltonetworks.com (APAC) | True |
+    | Server URL | The instance configuration URL based on the server location: <https://api.aperture.paloaltonetworks.com> (US)<br/><https://api.aperture-eu.paloaltonetworks.com> (EU)<br/><https://api.aperture-apac.paloaltonetworks.com> (APAC) | True |
     | Client ID | The SaaS Security Client ID. See instructions below. | True |
     | Client Secret | The SaaS Security Client Secret. See instructions below. | True |
     | Fetch incidents | If selected, fetches incidents from SaaS Security. | False |
@@ -31,11 +32,13 @@ Use the SaaS Security integration to protect against cloud‑based threats by:
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Configure SaaS Security Incident Mirroring
+
 You can enable incident mirroring between Cortex XSOAR incidents and SaaS Security notables (available from Cortex XSOAR version 6.0.0).
 To set up mirroring.<br/>
 
 To configure mirroring:
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for **SaaS Security** and select your integration instance.
 3. Enable **Fetches incidents**.
 4. In the *Incident Mirroring Direction* integration parameter, select which direction you want the incidents to be mirrored:
@@ -48,23 +51,26 @@ To configure mirroring:
 Newly fetched incidents will be mirrored in the direction you select. However, this selection does not affect existing incidents.
 
 **Important Notes**
- - For mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
- - To ensure mirroring works as expected, mappers are required for both **Incoming** and **Outgoing** to map the expected fields in Cortex XSOAR and SaaS Security.
- - The only fields that can be *mirrored in* from SaaS Security to Cortex XSOAR are:
-     - *state*
-     - *category*
-     - *status*
-     - *assigned_to*
-     - *resolved_by*
-     - *asset_sha256*
- - The only fields that can be *mirrored out* from XSOAR to SaaS Security are:
-     - *state*
-     - *category* The supported categories for closing incidents are: "misidentified", "no_reason", and "business_justified".
+
+- For mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
+- To ensure mirroring works as expected, mappers are required for both **Incoming** and **Outgoing** to map the expected fields in Cortex XSOAR and SaaS Security.
+- The only fields that can be *mirrored in* from SaaS Security to Cortex XSOAR are:
+  - *state*
+  - *category*
+  - *status*
+  - *assigned_to*
+  - *resolved_by*
+  - *asset_sha256*
+- The only fields that can be *mirrored out* from XSOAR to SaaS Security are:
+  - *state*
+  - *category* The supported categories for closing incidents are: "misidentified", "no_reason", and "business_justified".
     **Note**: Mirroring out works only for closed incidents due to an API limitation.
 
 
 ## Create the Client ID and Client Secret on SaaS Security
+
 In the SaaS Security UI, do the following:
+
 1. Navigate to **Settings** > **External Service**.
 2. Click **Add API Client**.
 3. Specify a unique name for the API client.
@@ -79,9 +85,12 @@ Note: For more information see the [SaaS Security Administrator's Guide](https:/
 
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI as part of an automation or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### saas-security-incidents-get
+
 ***
 Retrieves incidents from the SaaS Security platform.
 
@@ -89,6 +98,7 @@ Retrieves incidents from the SaaS Security platform.
 #### Base Command
 
 `saas-security-incidents-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -139,8 +149,11 @@ Retrieves incidents from the SaaS Security platform.
 
 
 #### Command Example
+
 ```!saas-security-incidents-get limit=11 app_ids=acf49b2389c09f26ad0ccd2b1a603328 from=2021-08-23T20:25:17.495Z state=open```
+
 #### Context Example
+
 ```json
 {
     "SaasSecurity": {
@@ -217,6 +230,7 @@ Retrieves incidents from the SaaS Security platform.
 #### Human Readable Output
 
 >### Incidents
+>
 >|Incident Id|App Id|App Name|Asset Name|Exposure Level|Severity|Category|Created At|Updated At|
 >|---|---|---|---|---|---|---|---|---|
 >| 4 | acf49b2389c09f26ad0ccd2b1a603328 | Box 1 | SP0605 copy 6.java | internal | Low | business_justified | 2021-08-03T20:25:15.417Z | 2021-08-24T07:44:21.608Z |
@@ -227,6 +241,7 @@ Retrieves incidents from the SaaS Security platform.
 
 
 ### saas-security-incident-get-by-id
+
 ***
 Gets an incident by its ID.
 
@@ -234,6 +249,7 @@ Gets an incident by its ID.
 #### Base Command
 
 `saas-security-incident-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -276,9 +292,11 @@ Gets an incident by its ID.
 
 
 #### Command Example
+
 ```!saas-security-incident-get-by-id id=4```
 
 #### Context Example
+
 ```json
 {
     "SaasSecurity": {
@@ -320,6 +338,7 @@ Gets an incident by its ID.
 #### Human Readable Output
 
 >### Incident 4 details
+>
 >|Incident Id|App Id|App Name|Asset Name|Exposure Level|Severity|State|Category|Created At|Updated At|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 4 | acf49b2389c09f26ad0ccd2b1a603328 | Box 1 | SP0605 copy 6.java | internal | 1.0 | closed | business_justified | 2021-08-03T20:25:15.417Z | 2021-08-26T07:04:14.598Z |
@@ -327,6 +346,7 @@ Gets an incident by its ID.
 
 
 ### saas-security-incident-state-update
+
 ***
 Closes an incident and updates its category.
 
@@ -334,6 +354,7 @@ Closes an incident and updates its category.
 #### Base Command
 
 `saas-security-incident-state-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -354,9 +375,11 @@ Closes an incident and updates its category.
 
 
 #### Command Example
+
 ```!saas-security-incident-state-update category="Business Justified" id=4```
 
 #### Context Example
+
 ```json
 {
     "SaasSecurity": {
@@ -374,12 +397,14 @@ Closes an incident and updates its category.
 #### Human Readable Output
 
 >### Incident 4 status details
+>
 >|Category|Incident Id|Resolution Date|Resolved By|State|
 >|---|---|---|---|---|
 >| business_justified | 4 | 2021-08-26T07:04:14.598Z | api | closed |
 
 
 ### saas-security-get-apps
+
 ***
 Returns the Application ID, Name, and Type for all applications.
 
@@ -387,6 +412,7 @@ Returns the Application ID, Name, and Type for all applications.
 #### Base Command
 
 `saas-security-get-apps`
+
 #### Input
 
 No inputs.
@@ -401,9 +427,11 @@ No inputs.
 
 
 #### Command Example
+
 ```!saas-security-get-apps```
 
 #### Context Example
+
 ```json
 {
     "SaasSecurity": {
@@ -426,6 +454,7 @@ No inputs.
 #### Human Readable Output
 
 >### Apps Info
+>
 >|App Id|App Name|App Type|
 >|---|---|---|
 >| acf49b2389c09f26ad0ccd2b1a603328 | Box 1 | box |
@@ -433,6 +462,7 @@ No inputs.
 
 
 ### saas-security-asset-remediate
+
 ***
 Remediates an asset.
 
@@ -440,6 +470,7 @@ Remediates an asset.
 #### Base Command
 
 `saas-security-asset-remediate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -459,9 +490,11 @@ Remediates an asset.
 
 
 #### Command Example
+
 ```!saas-security-asset-remediate asset_id=61099dc46b544e38fa3ce89a remediation_type=Quarantine```
 
 #### Context Example
+
 ```json
 {
     "SaasSecurity": {
@@ -477,12 +510,14 @@ Remediates an asset.
 #### Human Readable Output
 
 >### Remediation details for asset: 61099dc46b544e38fa3ce89a
+>
 >|Asset Id|Remediation Type|Status|
 >|---|---|---|
 >| 61099dc46b544e38fa3ce89a | system_quarantine | pending |
 
 
 ### saas-security-remediation-status-get
+
 ***
 Gets the remediation status for a given asset ID.
 
@@ -490,6 +525,7 @@ Gets the remediation status for a given asset ID.
 #### Base Command
 
 `saas-security-remediation-status-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -511,8 +547,11 @@ Gets the remediation status for a given asset ID.
 
 
 #### Command Example
+
 ```!saas-security-remediation-status-get asset_id=61099dc46b544e38fa3ce89a remediation_type=Quarantine```
+
 #### Context Example
+
 ```json
 {
     "SaasSecurity": {
@@ -531,6 +570,7 @@ Gets the remediation status for a given asset ID.
 #### Human Readable Output
 
 >### Asset 61099dc46b544e38fa3ce89a remediation details
+>
 >|Action Date|Action Taker|Asset Id|Asset Name|Remediation Type|Status|
 >|---|---|---|---|---|---|
 >| 2021-08-25T21:18:37.148+0000 | api | 61099dc46b544e38fa3ce89a | SP0605 copy.java | system_quarantine | success |

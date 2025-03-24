@@ -1,6 +1,7 @@
 Returns a list of all the users marked as away in Cortex XSOAR
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,10 +11,12 @@ Returns a list of all the users marked as away in Cortex XSOAR
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -27,9 +30,11 @@ There are no inputs for this script.
 
 
 ## Script Example
+
 ```!GetAwayUsers```
 
 ## Context Example
+
 ```json
 {
     "CortexXSOAR": {
@@ -52,7 +57,8 @@ There are no inputs for this script.
 ## Human Readable Output
 
 >### Away Users
+>
 >|Email|Id|Name|Phone|Roles|Username|
 >|---|---|---|---|---|---|
->| admintest@demisto.com | admin | Admin Dude | +650-123456 | demisto: Administrator | admin |
+>| <admintest@demisto.com> | admin | Admin Dude | +650-123456 | demisto: Administrator | admin |
 

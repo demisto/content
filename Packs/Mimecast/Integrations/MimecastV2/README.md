@@ -2,7 +2,8 @@ Mimecast unified email management offers cloud email services for email security
 Please read detailed instructions in order to understand how to set the integration's parameters.
 
 ## Rate Limiting
-https://developer.services.mimecast.com/api-overview#rate-limiting
+
+<https://developer.services.mimecast.com/api-overview#rate-limiting>
 Mimecast uses quotas per period of time (i.e. rate limits) that apply to every API function, per registered App. A typical quota is a number of API calls per unit of time (but could also be expressed as the size of data returned, etc.). When the quota has been exhausted, further requests will fail until the new time period restarts the count of API calls. The rate limit reset value is the length of time in milliseconds before a minimum of 1 API will be permitted.
 
 ## Configure Mimecast v2 in Cortex
@@ -10,7 +11,7 @@ Mimecast uses quotas per period of time (i.e. rate limits) that apply to every A
 
    | **Parameter** | **Required** |
    | --- | --- |
-   | BaseUrl - API url including region, For example https://api.services.mimecast.com | True |
+   | BaseUrl - API url including region, For example <https://api.services.mimecast.com> | True |
    | Client ID | False |
    | Client Secret | False |
    | App ID | False |
@@ -56,7 +57,7 @@ Query Mimecast emails. This is an archive search command.
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | **Required** |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| queryXml          | The query string xml for the search using Mimecast Unified Search Experience (MUSE) - read more on https://community.mimecast.com/docs/DOC-2262, using this will override other query arguments.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Optional     | 
+| queryXml          | The query string xml for the search using Mimecast Unified Search Experience (MUSE) - read more on <https://community.mimecast.com/docs/DOC-2262>, using this will override other query arguments.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Optional     | 
 | text              | Search for this text in messages.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Optional     | 
 | dryRun            | Will not execute the query, but just return the query string built. Possible values are: true, false. Default is false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Optional     | 
 | date              | Search in specific dates only. Possible values are: today, yesterday, last_week, last_month, last_year.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Optional     | 
@@ -180,8 +181,11 @@ Get a policy by ID.
 | Mimecast.AddressAlterationPolicy.Todate | date | Policy expiration date. | 
 
 #### Command example
+
 ```!mimecast-get-policy policyType=blockedsenders policyID=eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {
@@ -228,14 +232,18 @@ Get a policy by ID.
 #### Human Readable Output
 
 >### Mimecast Get blockedsenders Policy
+>
 >|Policy ID|Sender|Reciever|Bidirectional|Start|End|
 >|---|---|---|---|---|---|
 >| eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
 
 
 #### Command example
+
 ```!mimecast-get-policy policyType="address-alteration" policyID=eNoVjr0OgjAYAN-lKw5QoAqJQ5H4AwZQUBM2hKJV5IutFcX47uJ8yd19kGSlEoxXyEXqLNMl8frQfnVci4Mrk8XFwunCq09G3h5MvVknETV4crYK_6htaTaZZw7gFXO4jTecxHcVBTYmmh4WqnprPQ1Fv4jpdkxMv4Z83wDsu3QGUzRCpZIPuDFRQsWG-myXUkPHFJtkgE8mJIcWucYI1dBUTPwXiWUN9u8P87s5UQ```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {
@@ -282,6 +290,7 @@ Get a policy by ID.
 #### Human Readable Output
 
 >### Mimecast Get address-alteration Policy
+>
 >|Policy ID|Sender|Reciever|Bidirectional|Start|End|
 >|---|---|---|---|---|---|
 >| eNoVzs2OgjAUQOF3uVtY0IKdkcRFxfiHgwqIhh3S4tRU70wrGjS--zD7k5zvBVbWrZFKQAiHMrrbtMvPQUy_dLSaJx0lC5rNxs2JlNe97-nVJuFEbb6DanJ0Up5_TvMh0oUcqgHdKrb-bZPlgDLHi6tWdM6Tx-Y5W_P0g_mTBstCIxaPLMIRuKBF9QNhU2krXahbe8OLNDUK2VOiXcaJRzn1WV_epbEKrxASFxrUQpp_LwuCfvX-A6m-PQc | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: null | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: null |  |  |  |
@@ -291,6 +300,7 @@ Get a policy by ID.
 
 ***
 Deprecated. Please use mimecast-create-block-sender-policy
+
 #### Base Command
 
 `mimecast-create-policy`
@@ -1449,6 +1459,7 @@ Get the count of the inbound and outbound email queues at specified times.
 #### Human Readable Output
 
 > ### Inbound Email Queue
+>
 >| Inbound Email Queue Count | Inbound Email Queue Date |
 >|---------------------------|--------------------------|
 >| 2                         | 2022-07-19T08:10:00+0000 |
@@ -1486,8 +1497,11 @@ Retrieves archived search logs.
 | Mimecast.ArchiveSearchLog.logs.description | String | The description of the search if any. | 
 
 #### Command example
+
 ```!mimecast-get-archive-search-logs query="Message Tracking Search" limit=1```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {
@@ -1508,9 +1522,10 @@ Retrieves archived search logs.
 #### Human Readable Output
 
 >### Results
+>
 >|createTime|description|emailAddr|searchReason|searchText|source|
 >|---|---|---|---|---|---|
->| 2024-03-20T11:39:36+0000 | Message Tracking Search | example@test.com |  | eNo1jrs12345 | archive |
+>| 2024-03-20T11:39:36+0000 | Message Tracking Search | <example@test.com> |  | eNo1jrs12345 | archive |
 
 
 ### mimecast-get-search-logs
@@ -1552,8 +1567,11 @@ Retrieves the search logs.
 | Mimecast.SearchLog.description | String | The description of the search, if any. | 
 
 #### Command example
+
 ```!mimecast-get-search-logs start="1 year" limit=1 end=now query="Message Tracking Search"```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {
@@ -1572,6 +1590,7 @@ Retrieves the search logs.
 #### Human Readable Output
 
 >### Results
+>
 >|createTime|description|emailAddr|searchReason|searchText|source|
 >|---|---|---|---|---|---|
 >| 2024-03-20T11:39:36+0000 | Message Tracking Search | mime.integration.com |  | eNo1jrs12345 | archive |
@@ -1612,8 +1631,11 @@ Retrieves the email view logs.
 | Mimecast.ViewLog.discoveryCase | Boolean | Indicates if the viewed message is a part of an existing discovery case. | 
 
 #### Command example
+
 ```!mimecast-get-view-logs limit=1 start="1 year" end=now```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {
@@ -1637,9 +1659,10 @@ Retrieves the email view logs.
 #### Human Readable Output
 
 >### Results
+>
 >|contentViewed|discoveryCase|from|messageDate|source|subject|to|viewed|viewer|
 >|---|---|---|---|---|---|---|---|---|
->| false | false | example@test.com | 2023-08-03T10:59:31+0000 | Message Tracking | Re | example@test.com.mime.integration.com | 2023-08-03T12:06:01+0000 | example@test.com |
+>| false | false | <example@test.com> | 2023-08-03T10:59:31+0000 | Message Tracking | Re | <example@test.com.mime.integration.com> | 2023-08-03T12:06:01+0000 | <example@test.com> |
 
 
 ### mimecast-list-account
@@ -1700,8 +1723,11 @@ This endpoint returns the summary details for an account in Mimecast.
 | Mimecast.Account.packages | String | An array of packages enabled on the customer account. | 
 
 #### Command example
+
 ```!mimecast-list-account limit=1```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {
@@ -1775,9 +1801,10 @@ This endpoint returns the summary details for an account in Mimecast.
 #### Human Readable Output
 
 >### Results
+>
 >|accountCode|accountName|adminEmail|adminSessionTimeout|archive|automatedSegmentPurge|contactEmail|contactName|contentAdministratorDefaultView|cybergraphV2Enabled|databaseCode|domain|exgestAllowExtraction|exgestAllowQuery|exportApi|expressAccount|gateway|maxRetention|maxRetentionConfirmed|mimecastId|minRetentionEnabled|packages|passphrase|policyInheritance|region|searchReason|supportCode|telephone|type|userCount|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| CUSA102A236 | API Alliance - Palo Alto Networks |  | 60 | false | true | example@test.com.com | Adnan Kharuf | Metadata | false | usterm13 |  | true | false | false | false | true | 30 | true | 01-0102-00236 | false | Attachment Management (Site) [1004],<br/>Attachment Protection (Site) [1056],<br/>Threat Remediation [1075],<br/>Journal Services [1053],<br/>Mimecast Platform [1033],<br/>Internal Email Protect [1064],<br/>Desktop Apps - Outlook (Pro) [1016],<br/>Desktop Apps - Mac (Pro) [1051],<br/>BYO: Threat Intelligence [1089],<br/>Enhanced Logging [1061],<br/>Message Recovery Service - User [1058],<br/>Branding [1003],<br/>Mobile Apps (Pro) [1036],<br/>Content Control and Data Leak Prevention (Site) [1013],<br/>Advanced MTA (Site) [1002],<br/>Email Encryption and Privacy (Site) [1023],<br/>Metadata Track and Trace (Site) [1032],<br/>Configuration Backup & Restore [1106],<br/>Attachment Protection (Pro) [1059],<br/>Stationery 1.0 (Site) [1042],<br/>URL Protection (Site) [1043],<br/>Secure Email Gateway (Site) [1039],<br/>Content Control and Data Leak Prevention (Pro) [1015],<br/>Impersonation Protection [1060],<br/>Auto Responders (Site) [1005],<br/>Message Recovery Service (Site) [1031],<br/>Mimecast Mobile Pro (Pro) [1055],<br/>Analysis and Response [1110] |  | false | us | false | D7F8 | 4088307584 | full | 10 |
+>| CUSA102A236 | API Alliance - Palo Alto Networks |  | 60 | false | true | <example@test.com.com> | Adnan Kharuf | Metadata | false | usterm13 |  | true | false | false | false | true | 30 | true | 01-0102-00236 | false | Attachment Management (Site) [1004],<br/>Attachment Protection (Site) [1056],<br/>Threat Remediation [1075],<br/>Journal Services [1053],<br/>Mimecast Platform [1033],<br/>Internal Email Protect [1064],<br/>Desktop Apps - Outlook (Pro) [1016],<br/>Desktop Apps - Mac (Pro) [1051],<br/>BYO: Threat Intelligence [1089],<br/>Enhanced Logging [1061],<br/>Message Recovery Service - User [1058],<br/>Branding [1003],<br/>Mobile Apps (Pro) [1036],<br/>Content Control and Data Leak Prevention (Site) [1013],<br/>Advanced MTA (Site) [1002],<br/>Email Encryption and Privacy (Site) [1023],<br/>Metadata Track and Trace (Site) [1032],<br/>Configuration Backup & Restore [1106],<br/>Attachment Protection (Pro) [1059],<br/>Stationery 1.0 (Site) [1042],<br/>URL Protection (Site) [1043],<br/>Secure Email Gateway (Site) [1039],<br/>Content Control and Data Leak Prevention (Pro) [1015],<br/>Impersonation Protection [1060],<br/>Auto Responders (Site) [1005],<br/>Message Recovery Service (Site) [1031],<br/>Mimecast Mobile Pro (Pro) [1055],<br/>Analysis and Response [1110] |  | false | us | false | D7F8 | 4088307584 | full | 10 |
 
 
 ### mimecast-list-policies
@@ -1867,8 +1894,11 @@ List all existing Mimecast blocked sender policies.
 | Mimecast.AntispoofingBypassPolicy.policy.lastUpdated | Date | The date and time when the policy was last updated. | 
 
 #### Command example
+
 ```!mimecast-list-policies policyType=blockedsenders limit=1```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {
@@ -1908,15 +1938,20 @@ List all existing Mimecast blocked sender policies.
 #### Human Readable Output
 
 >### Mimecast list antispoofing-bypass policies: 
+>
 > These are the existing antispoofing-bypass Policies:
+>
 >|Policy ID|Sender|Reciever|Bidirectional|Start|End|
 >|---|---|---|---|---|---|
 >| eNo1jksOgjAUAO_SNYmFFn-JCyN-iEJERNS4wfKEIlAsIEHj3cWF-5nMvFEJrJbAQzRGR4OAHvEmcy89C-w4SZzn5uQ7PjP1ZNB4FdlK3SgZ3nrGwZ-bVxF56zygQ01NZRafSXCKYP8QK92vuBMUzWhJ8oRaD0pvO1Lbhzs_zl_hbrGR1gQpqBApZ-0vrVKCiYJYXVYiA8lECN3PzHOnKtamGul39BNkyUXewX9z3xZg_myMsfr5AuuvQdE | Group: null<br/>Email Address: null<br/>Domain: google.com<br/>Type: email_domain | Group: null<br/>Email Address: null<br/>Domain: amazon.com<br/>Type: email_domain | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
 
 
 #### Command example
+
 ```!mimecast-list-policies policyType="address-alteration" limit=1```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {
@@ -1962,7 +1997,9 @@ List all existing Mimecast blocked sender policies.
 #### Human Readable Output
 
 >### Mimecast list address-alteration policies: 
+>
 > These are the existing address-alteration Policies:
+>
 >|Policy ID|Sender|Reciever|Bidirectional|Start|End|
 >|---|---|---|---|---|---|
 >| eNo1jk0TgUAAQP_Lns3Y2l1hxsEo5CPCCuOSbWWptrbSxPjvcnB_b957g5yzUnERgD6gzsyI2crn1ITntnMIXTuLUOx6zCZ3o6IFWiti5gyuqbn3LPsiQzpPfNzVtUjFtxPyjyHfZXJKvEK4flr1Jii542WG8XWDSmf_EAfrFWzGC7UcgBZIZSRY_UtrGBPSAqzMCxlzxWTAm58R3Q41qA911GnoJ1e5kEkD_81dnXL7Z0Mdws8XmjlBYQ | Group: null<br/>Email Address: null<br/>Domain: google.com<br/>Type: email_domain | Group: null<br/>Email Address: null<br/>Domain: google.com<br/>Type: email_domain | true | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
@@ -2007,8 +2044,11 @@ Create a Blocked Sender Policy.
 | Mimecast.BlockedSendersPolicy.Receiver.Type | String | The receiver type. | 
 
 #### Command example
+
 ```!mimecast-create-block-sender-policy description=test fromType=everyone option=block_sender toType=everyone```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {
@@ -2044,7 +2084,9 @@ Create a Blocked Sender Policy.
 #### Human Readable Output
 
 >### Mimecast Create block sender Policy: 
+>
 > Policy Was Created Successfully!
+>
 >|Policy ID|Description|Sender|Receiver|Bidirectional|Start|End|
 >|---|---|---|---|---|---|---|
 >| eNo1jrsOgjAAAP-l1234 | test | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
@@ -2090,8 +2132,11 @@ Updates the specified policy.
 | Mimecast.BlockedSendersPolicy.Receiver.Type | String | The receiver type. | 
 
 #### Command example
+
 ```!mimecast-update-block-sender-policy policy_id=eNo1jrsOgjAAAP-1234 description=test fromPart=both fromType=email_domain fromValue=google.com option=block_sender toType=everyone```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {
@@ -2121,7 +2166,9 @@ Updates the specified policy.
 #### Human Readable Output
 
 >### Mimecast Update Policy: 
+>
 > Policy Was Updated Successfully!
+>
 >|Policy ID|Description|Sender|Receiver|Bidirectional|Start|End|
 >|---|---|---|---|---|---|---|
 >| eNo1jrsOgjAAAP-1234 | test | Group: null<br/>Email Address: null<br/>Domain: google.com<br/>Type: email_domain | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
@@ -2186,8 +2233,11 @@ Create a new Anti-Spoofing SPF based Bypass policy.
 | Mimecast.AntispoofingBypassPolicy.policy.lastUpdated | String | The most recent modification timestamp of the Antispoofing Bypass policy. | 
 
 #### Command example
+
 ```!mimecast-create-antispoofing-bypass-policy description=test from_type=email_domain from_value=mail.google.com option=disable_bypass to_type=everyone spf_domain=google.com bidirectional=no comment=test```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {
@@ -2282,8 +2332,11 @@ Update an existing Anti-Spoofing SPF based Bypass policy.
 | Mimecast.AntispoofingBypassPolicy.policy.lastUpdated | Date | The most recent modification timestamp of the policy. | 
 
 #### Command example
+
 ```!mimecast-update-antispoofing-bypass-policy option=disable_bypass policy_id=eNo1jrs12345 bidirectional=no description=test enabled=no from_date="3 year" from_eternal=no from_part=both to_date=now to_eternal=no```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {
@@ -2381,8 +2434,11 @@ This API endpoint can be used to create a new Address Alteration policy to apply
 | Mimecast.AddressAlterationPolicy.policy.lastUpdated | String | The most recent modification timestamp of the policy. | 
 
 #### Command example
+
 ```!mimecast-create-address-alteration-policy folder_id=eNo1jrs12345 from_type=everyone to_type=everyone policy_description=test```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {
@@ -2473,8 +2529,11 @@ Update an existing Address Alteration policy.
 | Mimecast.AddressAlterationPolicy.policy.lastUpdated | String | The most recent modification timestamp of the policy. | 
 
 #### Command example
+
 ```!mimecast-update-address-alteration-policy policy_id=eNo1jrs12345 bidirectional=no comment=test conditions=8.8.8.8/24 enabled=no enforced=no from_date="3 year" from_eternal=no from_part=both override=no policy_description=test to_date=now to_eternal=no```
+
 #### Context Example
+
 ```json
 {
     "Mimecast": {

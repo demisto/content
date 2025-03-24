@@ -847,7 +847,7 @@ Returns all Systems Manager (SSM) documents in the current Amazon Web Services a
 | AWS.SSM.Document.DocumentType | String | The document type. | 
 | AWS.SSM.Document.SchemaVersion | String | The schema version. | 
 | AWS.SSM.Document.DocumentFormat | String | The document format, either JSON or YAML. | 
-| AWS.SSM.Document.TargetType | String | The target type which defines the kinds of resources the document can run on. For example, /AWS:EC2:Instance. For a list of valid resource types, see Amazon Web Services resource and property types reference in the \[CloudFormation User Guide\]\(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html\). | 
+| AWS.SSM.Document.TargetType | String | The target type which defines the kinds of resources the document can run on. For example, /AWS:EC2:Instance. For a list of valid resource types, see Amazon Web Services resource and property types reference in the \[CloudFormation User Guide\]\(<https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html\>). | 
 | AWS.SSM.Document.Tags.Key | String | The name of the tag. | 
 | AWS.SSM.Document.Tags.Value | String | The value of the tag. | 
 | AWS.SSM.Document.Requires.Name | String | The name of the required SSM document. The name can be an Amazon Resource Name \(ARN\). | 

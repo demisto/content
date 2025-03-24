@@ -7,7 +7,7 @@ This is the default integration for this content pack when configured by the Dat
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g., https://api.us.code42.com, see help section) | True |
+| Server URL (e.g., <https://api.us.code42.com>, see help section) | True |
 | API Client ID | True |
 | API Client Secret | True |
 | Maximum number of file events per fetch | True |
@@ -35,12 +35,14 @@ For each request sent to the API, a bearer token will be requested to authentica
 You can retrieve your API credentials by following the instructions in the [Code 42 documentation](https://support.code42.com/hc/en-us/articles/14827617150231).
 
 ## Code42 Event Collector Rate Limits
+
 The Code42 API can handle up to 120 requests per minute. After that the API will start to decline client's requests.
 
 The integration with the default configuration should not raise any rate-limits.
 
 
 ## Code42 Event Collector Required Scopes
+
 To use the Code42 Event Collector, make sure you have the correct [product plan](https://support.code42.com/hc/en-us/articles/14827648467351-About-Code42-product-plans) which must include full Code42 API access.
 
 

@@ -34,7 +34,9 @@ To get up and running with this pack, you must have a valid API token on your Ve
 Be sure that the user has a role with sufficient permissions to do all the actions.
 
 <~XSIAM>
+
 ## Collect Events from Vendor
+
 ### REST API
 
 The integration uses the 2.2 API version of `detections` and `audits` endpoints to collect events.

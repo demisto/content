@@ -16,15 +16,18 @@ Google Compute Engine delivers virtual machines running in Google's innovative d
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Create a Service Account
+
 1. Go to the [Google documentation](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) and follow the procedure in the Creating a Service Account section. After you create a service account, a Service Account Private Key file is downloaded. You will need this file when configuring an instance of the integration.
 2. Grant the Compute Admin permission to the Service Account to enable the Service Account to perform certain Google Cloud API commands.
 3. In Cortex XSOAR, configure an instance of the Google Cloud Compute integration. For the Service Account Private Key parameter, add the Service Account Private Key file contents (JSON).
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### gcp-compute-insert-instance
+
 ***
 Creates an instance resource in the specified project using the data included in the request.
 
@@ -32,6 +35,7 @@ Creates an instance resource in the specified project using the data included in
 ##### Base Command
 
 `gcp-compute-insert-instance`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -62,7 +66,7 @@ Creates an instance resource in the specified project using the data included in
 | initializeParamsDiskName | Specifies the disk name. If not specified, the default is to use the name of the instance. If the disk with the instance name exists already in the given zone/region, a new name will be automatically generated. | Optional | 
 | initializeParamsSourceImage | The source image to create this disk. When creating a new instance, one of initializeParams.sourceImage or disks.source is required except for local SSD.  To create a disk with one of the public operating system images, specify the image by its family name. For example, specify family/debian-9 to use the latest Debian 9 image:  projects/debian-cloud/global/images/family/debian-9  Alternatively, use a specific version of a public operating system image:  projects/debian-cloud/global/images/debian-9-stretch-vYYYYMMDD | Optional | 
 | initializeParamsdiskSizeGb | Specifies the size of the disk in base-2 GB. | Optional | 
-| initializeParamsDiskType | Specifies the disk type to use to create the instance. If not specified, the default is pd-standard, specified using the full URL. For example:  https://www.googleapis.com/compute/v1/projects/project/zones/zone/diskTypes/pd-standard  Other values include pd-ssd and local-ssd. If you define this field, you can provide either the full or partial URL.  | Optional | 
+| initializeParamsDiskType | Specifies the disk type to use to create the instance. If not specified, the default is pd-standard, specified using the full URL. For example:  <https://www.googleapis.com/compute/v1/projects/project/zones/zone/diskTypes/pd-standard>  Other values include pd-ssd and local-ssd. If you define this field, you can provide either the full or partial URL.  | Optional | 
 | initializeParamsSourceImageEncryptionKeyRawKey | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. | Optional | 
 | initializeParamsSourceImageEncryptionKeykmsKeyName | The name of the encryption key that is stored in Google Cloud KMS. | Optional | 
 | initializeParamsDiskLabels | Labels to apply to this disk. These can be later modified by the disks.setLabels method. This field is only applicable for persistent disks. EX: key=abc,value=123;key=abc,value=123 | Optional | 
@@ -124,12 +128,14 @@ Creates an instance resource in the specified project using the data included in
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-get-image-from-family
+
 ***
 Returns the latest image that is part of an image family and is not deprecated.
 
@@ -137,6 +143,7 @@ Returns the latest image that is part of an image family and is not deprecated.
 ##### Base Command
 
 `gcp-compute-get-image-from-family`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -167,7 +174,7 @@ Returns the latest image that is part of an image family and is not deprecated.
 | GoogleCloudCompute.Images.status | string | The status of the image. An image can be used to create other resources, such as instances, only after the image has been successfully created and the status is set to READY. Possible values are FAILED, PENDING, or READY. | 
 | GoogleCloudCompute.Images.archiveSizeBytes | string | Size of the image tar.gz archive stored in Google Cloud Storage \(in bytes\). | 
 | GoogleCloudCompute.Images.diskSizeGb | string | Size of the image when restored onto a persistent disk \(in GB\). | 
-| GoogleCloudCompute.Images.sourceDisk | string | URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values: https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk , projects/project/zones/zone/disks/disk , zones/zone/disks/disk | 
+| GoogleCloudCompute.Images.sourceDisk | string | URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values: <https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk> , projects/project/zones/zone/disks/disk , zones/zone/disks/disk | 
 | GoogleCloudCompute.Images.sourceDiskId | string | The ID value of the disk used to create this image. This value may be used to determine whether the image was taken from the current or a previous instance of a given disk name. | 
 | GoogleCloudCompute.Images.licenses | string | Any applicable license URI. | 
 | GoogleCloudCompute.Images.family | string | The name of the image family to which this image belongs. You can create disks by specifying an image family instead of a specific image name. The image family always returns its latest image that is not deprecated. The name of the image family must comply with RFC1035. | 
@@ -201,12 +208,14 @@ Returns the latest image that is part of an image family and is not deprecated.
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-get-network
+
 ***
 Returns the specified network.
 
@@ -214,6 +223,7 @@ Returns the specified network.
 ##### Base Command
 
 `gcp-compute-get-network`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -246,9 +256,11 @@ Returns the specified network.
 
 
 ##### Command Example
+
 ```!gcp-compute-get-network network=default```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -272,13 +284,16 @@ Returns the specified network.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Networks
+
 |id|name|
 |---|---|
 | 42 | default |
 
 
 ### gcp-compute-list-instances
+
 ***
 Retrieves the list of instances contained within the specified zone.
 
@@ -286,6 +301,7 @@ Retrieves the list of instances contained within the specified zone.
 ##### Base Command
 
 `gcp-compute-list-instances`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -395,9 +411,11 @@ Retrieves the list of instances contained within the specified zone.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-instances zone=europe-west2-a```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -513,12 +531,15 @@ Retrieves the list of instances contained within the specified zone.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Instances
+
 |id|machineType|name|zone|
 |---|---|---|---|
-| 42 | https://www.mockapi.com/zones//machineTypes/mock-machine | mock-disk | https://www.mockapi.com/zones/ |
+| 42 | <https://www.mockapi.com/zones//machineTypes/mock-machine> | mock-disk | <https://www.mockapi.com/zones/> |
 
 ### gcp-compute-aggregated-list-instances
+
 ***
 Retrieves aggregated list of all of the instances in your project across all regions and zones.
 
@@ -526,6 +547,7 @@ Retrieves aggregated list of all of the instances in your project across all reg
 ##### Base Command
 
 `gcp-compute-aggregated-list-instances`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -634,9 +656,11 @@ Retrieves aggregated list of all of the instances in your project across all reg
 
 
 ##### Command Example
+
 ```!gcp-compute-aggregated-list-instances```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -745,19 +769,22 @@ Retrieves aggregated list of all of the instances in your project across all reg
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Instances
+
 |id|machineType|name|zone|
 |---|---|---|---|
-| 42 | machineType | test01 | https://www.mockapi.com/zones/europe-west2-c |
-| 42 | https://www.mockapi.com/zones//machineTypes/mock-machine | mock-disk | https://www.mockapi.com/zones/ |
-| 42 | https://www.mockapi.com/zones//machineTypes/mock-machine | mock_instance-8vkj | https://www.mockapi.com/zones/ |
-| 42 | https://www.mockapi.com/zones//machineTypes/mock-machine | mock_instance-g4pt | https://www.mockapi.com/zones/ |
-| 42 | https://www.mockapi.com/zones//machineTypes/mock-machine | mock_instance-j381 | https://www.mockapi.com/zones/ |
-| 42 | https://www.mockapi.com/zones//machineTypes/mock-machine | mock_instance-j48z | https://www.mockapi.com/zones/ |
-| 42 | https://www.mockapi.com/zones//machineTypes/mock-machine | mock_instance-wb7s | https://www.mockapi.com/zones/ |
+| 42 | machineType | test01 | <https://www.mockapi.com/zones/europe-west2-c> |
+| 42 | <https://www.mockapi.com/zones//machineTypes/mock-machine> | mock-disk | <https://www.mockapi.com/zones/> |
+| 42 | <https://www.mockapi.com/zones//machineTypes/mock-machine> | mock_instance-8vkj | <https://www.mockapi.com/zones/> |
+| 42 | <https://www.mockapi.com/zones//machineTypes/mock-machine> | mock_instance-g4pt | <https://www.mockapi.com/zones/> |
+| 42 | <https://www.mockapi.com/zones//machineTypes/mock-machine> | mock_instance-j381 | <https://www.mockapi.com/zones/> |
+| 42 | <https://www.mockapi.com/zones//machineTypes/mock-machine> | mock_instance-j48z | <https://www.mockapi.com/zones/> |
+| 42 | <https://www.mockapi.com/zones//machineTypes/mock-machine> | mock_instance-wb7s | <https://www.mockapi.com/zones/> |
 
 
 ### gcp-compute-get-global-operation
+
 ***
 Retrieves the specified Operations resource. Gets a list of operations by making a list() request.
 
@@ -765,6 +792,7 @@ Retrieves the specified Operations resource. Gets a list of operations by making
 ##### Base Command
 
 `gcp-compute-get-global-operation`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -810,9 +838,11 @@ Retrieves the specified Operations resource. Gets a list of operations by making
 
 
 ##### Command Example
+
 ```!gcp-compute-get-global-operation name=mock-operation```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -836,13 +866,16 @@ Retrieves the specified Operations resource. Gets a list of operations by making
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | compute.projects.setCommonInstanceMetadata | 100 | DONE |
 
 
 ### gcp-compute-get-zone-operation
+
 ***
 Retrieves the specified zone-specific Operations resource.
 
@@ -850,6 +883,7 @@ Retrieves the specified zone-specific Operations resource.
 ##### Base Command
 
 `gcp-compute-get-zone-operation`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -896,12 +930,14 @@ Retrieves the specified zone-specific Operations resource.
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-list-zone-operation
+
 ***
 Retrieves a list of Operation resources contained within the specified zone.
 
@@ -909,6 +945,7 @@ Retrieves a list of Operation resources contained within the specified zone.
 ##### Base Command
 
 `gcp-compute-list-zone-operation`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -958,9 +995,11 @@ Retrieves a list of Operation resources contained within the specified zone.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-zone-operation zone=europe-west2-a```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -987,7 +1026,9 @@ Retrieves a list of Operation resources contained within the specified zone.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|startTime|status|
 |---|---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | compute.instanceGroupManagers.insert | 100 | 2020-04-21T02:13:05.694-07:00 | DONE |
@@ -1020,6 +1061,7 @@ Retrieves a list of Operation resources contained within the specified zone.
 
 
 ### gcp-compute-delete-zone-operation
+
 ***
 Deletes the specified zone-specific Operations resource.
 
@@ -1027,6 +1069,7 @@ Deletes the specified zone-specific Operations resource.
 ##### Base Command
 
 `gcp-compute-delete-zone-operation`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1040,12 +1083,14 @@ Deletes the specified zone-specific Operations resource.
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-get-instance
+
 ***
 Returns the specified Instance resource. Gets a list of available instances by making a list() request.
 
@@ -1053,6 +1098,7 @@ Returns the specified Instance resource. Gets a list of available instances by m
 ##### Base Command
 
 `gcp-compute-get-instance`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1159,9 +1205,11 @@ Returns the specified Instance resource. Gets a list of available instances by m
 
 
 ##### Command Example
+
 ```!gcp-compute-get-instance instance=test01 zone=europe-west2-c```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -1273,13 +1321,16 @@ Returns the specified Instance resource. Gets a list of available instances by m
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Instances
+
 |id|machineType|name|zone|
 |---|---|---|---|
-| 42 | machineType | test01 | https://www.mockapi.com/zones/europe-west2-c |
+| 42 | machineType | test01 | <https://www.mockapi.com/zones/europe-west2-c> |
 
 
 ### gcp-compute-delete-instance
+
 ***
 Deletes the specified Instance resource. For more information, see Stopping or Deleting an Instance.
 
@@ -1287,6 +1338,7 @@ Deletes the specified Instance resource. For more information, see Stopping or D
 ##### Base Command
 
 `gcp-compute-delete-instance`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1333,12 +1385,14 @@ Deletes the specified Instance resource. For more information, see Stopping or D
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-start-instance
+
 ***
 Starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
 
@@ -1346,6 +1400,7 @@ Starts an instance that was stopped using the instances().stop method. For more 
 ##### Base Command
 
 `gcp-compute-start-instance`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1392,9 +1447,11 @@ Starts an instance that was stopped using the instances().stop method. For more 
 
 
 ##### Command Example
+
 ```!gcp-compute-start-instance instance=test01 zone=europe-west2-c```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -1418,13 +1475,16 @@ Starts an instance that was stopped using the instances().stop method. For more 
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | start | 0 | RUNNING |
 
 
 ### gcp-compute-stop-instance
+
 ***
 Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
 
@@ -1432,6 +1492,7 @@ Stops a running instance, shutting it down cleanly, and allows you to restart th
 ##### Base Command
 
 `gcp-compute-stop-instance`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1478,9 +1539,11 @@ Stops a running instance, shutting it down cleanly, and allows you to restart th
 
 
 ##### Command Example
+
 ```!gcp-compute-stop-instance instance=test01 zone=europe-west2-c```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -1503,13 +1566,16 @@ Stops a running instance, shutting it down cleanly, and allows you to restart th
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | stop | 0 | PENDING |
 
 
 ### gcp-compute-reset-instance
+
 ***
 Performs a reset on the instance. This is a hard reset the VM does not do a graceful shutdown. For more information, see Resetting an instance.
 
@@ -1517,6 +1583,7 @@ Performs a reset on the instance. This is a hard reset the VM does not do a grac
 ##### Base Command
 
 `gcp-compute-reset-instance`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1563,12 +1630,14 @@ Performs a reset on the instance. This is a hard reset the VM does not do a grac
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-set-instance-labels
+
 ***
 Sets labels on an instance. To learn more about labels, read the Labeling Resources documentation.
 
@@ -1576,6 +1645,7 @@ Sets labels on an instance. To learn more about labels, read the Labeling Resour
 ##### Base Command
 
 `gcp-compute-set-instance-labels`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1624,12 +1694,14 @@ Sets labels on an instance. To learn more about labels, read the Labeling Resour
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-set-instance-metadata
+
 ***
 Sets metadata for the specified instance to the data included in the request.
 
@@ -1637,6 +1709,7 @@ Sets metadata for the specified instance to the data included in the request.
 ##### Base Command
 
 `gcp-compute-set-instance-metadata`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1685,12 +1758,14 @@ Sets metadata for the specified instance to the data included in the request.
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-set-instance-machine-type
+
 ***
 Changes the machine type for a stopped instance to the machine type specified in the request.
 
@@ -1698,6 +1773,7 @@ Changes the machine type for a stopped instance to the machine type specified in
 ##### Base Command
 
 `gcp-compute-set-instance-machine-type`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1745,9 +1821,11 @@ Changes the machine type for a stopped instance to the machine type specified in
 
 
 ##### Command Example
+
 ```!gcp-compute-set-instance-machine-type instance=test01 machineType=machineType zone=europe-west2-c```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -1771,13 +1849,16 @@ Changes the machine type for a stopped instance to the machine type specified in
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | setMachineType | 0 | RUNNING |
 
 
 ### gcp-compute-get-region-operation
+
 ***
 Retrieves the specified region-specific Operations resource.
 
@@ -1785,6 +1866,7 @@ Retrieves the specified region-specific Operations resource.
 ##### Base Command
 
 `gcp-compute-get-region-operation`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1831,12 +1913,14 @@ Retrieves the specified region-specific Operations resource.
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-list-region-operation
+
 ***
 Retrieves a list of Operation resources contained within the specified region.
 
@@ -1844,6 +1928,7 @@ Retrieves a list of Operation resources contained within the specified region.
 ##### Base Command
 
 `gcp-compute-list-region-operation`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1893,9 +1978,11 @@ Retrieves a list of Operation resources contained within the specified region.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-region-operation region=europe-west2```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -1922,13 +2009,16 @@ Retrieves a list of Operation resources contained within the specified region.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|startTime|status|
 |---|---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | compute.subnetworks.patch | 100 | 2020-04-21T02:12:37.901-07:00 | DONE |
 
 
 ### gcp-compute-delete-region-operation
+
 ***
 Deletes the specified region-specific Operations resource.
 
@@ -1936,6 +2026,7 @@ Deletes the specified region-specific Operations resource.
 ##### Base Command
 
 `gcp-compute-delete-region-operation`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1949,12 +2040,14 @@ Deletes the specified region-specific Operations resource.
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-list-global-operation
+
 ***
 Retrieves a list of Operation resources contained within the specified project.
 
@@ -1962,6 +2055,7 @@ Retrieves a list of Operation resources contained within the specified project.
 ##### Base Command
 
 `gcp-compute-list-global-operation`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2010,9 +2104,11 @@ Retrieves a list of Operation resources contained within the specified project.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-global-operation maxResults=5```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -2038,12 +2134,15 @@ Retrieves a list of Operation resources contained within the specified project.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|startTime|status|
 |---|---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | insert | 100 | 2020-04-21T01:48:24.798-07:00 | DONE |
 
 ### gcp-compute-delete-global-operation
+
 ***
 Deletes the specified Operations resource.
 
@@ -2051,6 +2150,7 @@ Deletes the specified Operations resource.
 ##### Base Command
 
 `gcp-compute-delete-global-operation`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2063,12 +2163,14 @@ Deletes the specified Operations resource.
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-delete-address
+
 ***
 Deletes the specified address resource.
 
@@ -2076,6 +2178,7 @@ Deletes the specified address resource.
 ##### Base Command
 
 `gcp-compute-delete-address`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2122,9 +2225,11 @@ Deletes the specified address resource.
 
 
 ##### Command Example
+
 ```!gcp-compute-delete-address address=testaddress region=europe-west2```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -2148,13 +2253,16 @@ Deletes the specified address resource.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | delete | 0 | RUNNING |
 
 
 ### gcp-compute-get-address
+
 ***
 Returns the specified address resource.
 
@@ -2162,6 +2270,7 @@ Returns the specified address resource.
 ##### Base Command
 
 `gcp-compute-get-address`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2194,9 +2303,11 @@ Returns the specified address resource.
 
 
 ##### Command Example
+
 ```!gcp-compute-get-address address=testaddress region=europe-west2```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -2218,13 +2329,16 @@ Returns the specified address resource.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Addresses
+
 |address|id|name|
 |---|---|---|
 | 8.8.8.8 | 42 | testaddress |
 
 
 ### gcp-compute-insert-address
+
 ***
 Creates an address resource in the specified project using the data included in the request.
 
@@ -2232,6 +2346,7 @@ Creates an address resource in the specified project using the data included in 
 ##### Base Command
 
 `gcp-compute-insert-address`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2286,9 +2401,11 @@ Creates an address resource in the specified project using the data included in 
 
 
 ##### Command Example
+
 ```!gcp-compute-insert-address name=testaddress region=europe-west2```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -2312,13 +2429,16 @@ Creates an address resource in the specified project using the data included in 
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | insert | 0 | RUNNING |
 
 
 ### gcp-compute-list-addresses
+
 ***
 Retrieves a list of addresses contained within the specified region.
 
@@ -2326,6 +2446,7 @@ Retrieves a list of addresses contained within the specified region.
 ##### Base Command
 
 `gcp-compute-list-addresses`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2361,9 +2482,11 @@ Retrieves a list of addresses contained within the specified region.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-addresses region=europe-west2```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -2385,13 +2508,16 @@ Retrieves a list of addresses contained within the specified region.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Addresses
+
 |address|id|name|
 |---|---|---|
 | 8.8.8.8 | 42 | testaddress |
 
 
 ### gcp-compute-aggregated-list-addresses
+
 ***
 Retrieves an aggregated list of addresses.
 
@@ -2399,6 +2525,7 @@ Retrieves an aggregated list of addresses.
 ##### Base Command
 
 `gcp-compute-aggregated-list-addresses`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2433,9 +2560,11 @@ Retrieves an aggregated list of addresses.
 
 
 ##### Command Example
+
 ```!gcp-compute-aggregated-list-addresses```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -2459,7 +2588,9 @@ Retrieves an aggregated list of addresses.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Addresses
+
 |address|id|name|
 |---|---|---|
 | 8.8.8.8 | 42 | a-b-c-1 |
@@ -2467,6 +2598,7 @@ Retrieves an aggregated list of addresses.
 
 
 ### gcp-compute-delete-global-address
+
 ***
 Deletes the specified address resource.
 
@@ -2474,6 +2606,7 @@ Deletes the specified address resource.
 ##### Base Command
 
 `gcp-compute-delete-global-address`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2519,9 +2652,11 @@ Deletes the specified address resource.
 
 
 ##### Command Example
+
 ```!gcp-compute-delete-global-address address=a-b-c-1```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -2544,13 +2679,16 @@ Deletes the specified address resource.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | delete | 0 | RUNNING |
 
 
 ### gcp-compute-get-global-address
+
 ***
 Deletes the specified address resource.
 
@@ -2558,6 +2696,7 @@ Deletes the specified address resource.
 ##### Base Command
 
 `gcp-compute-get-global-address`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2589,9 +2728,11 @@ Deletes the specified address resource.
 
 
 ##### Command Example
+
 ```!gcp-compute-get-global-address address=a-b-c-1```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -2613,13 +2754,16 @@ Deletes the specified address resource.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Addresses
+
 |address|id|name|
 |---|---|---|
 | 8.8.8.8 | 42 | a-b-c-1 |
 
 
 ### gcp-compute-insert-global-address
+
 ***
 Creates an address resource in the specified project using the data included in the request.
 
@@ -2627,6 +2771,7 @@ Creates an address resource in the specified project using the data included in 
 ##### Base Command
 
 `gcp-compute-insert-global-address`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2681,9 +2826,11 @@ Creates an address resource in the specified project using the data included in 
 
 
 ##### Command Example
+
 ```!gcp-compute-insert-global-address ipVersion=IPV4 name=a-b-c-1```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -2706,13 +2853,16 @@ Creates an address resource in the specified project using the data included in 
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | insert | 0 | RUNNING |
 
 
 ### gcp-compute-list-global-addresses
+
 ***
 Retrieves a list of global addresses.
 
@@ -2720,6 +2870,7 @@ Retrieves a list of global addresses.
 ##### Base Command
 
 `gcp-compute-list-global-addresses`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2754,9 +2905,11 @@ Retrieves a list of global addresses.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-global-addresses```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -2778,13 +2931,16 @@ Retrieves a list of global addresses.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Addresses
+
 |address|id|name|
 |---|---|---|
 | 8.8.8.8 | 42 | a-b-c-1 |
 
 
 ### gcp-compute-aggregated-list-disks
+
 ***
 Retrieves an aggregated list of persistent disks.
 
@@ -2792,6 +2948,7 @@ Retrieves an aggregated list of persistent disks.
 ##### Base Command
 
 `gcp-compute-aggregated-list-disks`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2850,9 +3007,11 @@ Retrieves an aggregated list of persistent disks.
 
 
 ##### Command Example
+
 ```!gcp-compute-aggregated-list-disks```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -2893,13 +3052,16 @@ Retrieves an aggregated list of persistent disks.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Disks
+
 |id|name|sizeGb|status|type|zone|
 |---|---|---|---|---|---|
-| 42 | test01 | 100 | READY | https://www.mockapi.com/zones/europe-west2-c/diskTypes/pd-standard | https://www.mockapi.com/zones/europe-west2-c |
+| 42 | test01 | 100 | READY | <https://www.mockapi.com/zones/europe-west2-c/diskTypes/pd-standard> | <https://www.mockapi.com/zones/europe-west2-c> |
 
 
 ### gcp-compute-create-disk-snapshot
+
 ***
 Creates a snapshot of a specified persistent disk.
 
@@ -2907,6 +3069,7 @@ Creates a snapshot of a specified persistent disk.
 ##### Base Command
 
 `gcp-compute-create-disk-snapshot`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2961,9 +3124,11 @@ Creates a snapshot of a specified persistent disk.
 
 
 ##### Command Example
+
 ```!gcp-compute-create-disk-snapshot disk=mock-disk zone=europe-west2-a name=testsnap1```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -2987,13 +3152,16 @@ Creates a snapshot of a specified persistent disk.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | createSnapshot | 0 | RUNNING |
 
 
 ### gcp-compute-delete-disk
+
 ***
 Deletes the specified persistent disk. Deleting a disk removes its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
 
@@ -3001,6 +3169,7 @@ Deletes the specified persistent disk. Deleting a disk removes its data permanen
 ##### Base Command
 
 `gcp-compute-delete-disk`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3047,9 +3216,11 @@ Deletes the specified persistent disk. Deleting a disk removes its data permanen
 
 
 ##### Command Example
+
 ```!gcp-compute-delete-disk disk=testdisk zone=europe-west2-c```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -3073,13 +3244,16 @@ Deletes the specified persistent disk. Deleting a disk removes its data permanen
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | delete | 0 | RUNNING |
 
 
 ### gcp-compute-get-disk
+
 ***
 Returns a specified persistent disk. Gets a list of available persistent disks by making a list() request.
 
@@ -3087,6 +3261,7 @@ Returns a specified persistent disk. Gets a list of available persistent disks b
 ##### Base Command
 
 `gcp-compute-get-disk`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3143,9 +3318,11 @@ Returns a specified persistent disk. Gets a list of available persistent disks b
 
 
 ##### Command Example
+
 ```!gcp-compute-get-disk disk=testdisk zone=europe-west2-c```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -3167,13 +3344,16 @@ Returns a specified persistent disk. Gets a list of available persistent disks b
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Disks
+
 |id|name|sizeGb|status|type|zone|
 |---|---|---|---|---|---|
-| 42 | testdisk | 1 | READY | https://www.mockapi.com/zones/europe-west2-c/diskTypes/pd-standard | https://www.mockapi.com/zones/europe-west2-c |
+| 42 | testdisk | 1 | READY | <https://www.mockapi.com/zones/europe-west2-c/diskTypes/pd-standard> | <https://www.mockapi.com/zones/europe-west2-c> |
 
 
 ### gcp-compute-insert-disk
+
 ***
 Creates a persistent disk in the specified project using the data in the request. You can create a disk with a sourceImage, a sourceSnapshot, or create an empty 500 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
 
@@ -3181,6 +3361,7 @@ Creates a persistent disk in the specified project using the data in the request
 ##### Base Command
 
 `gcp-compute-insert-disk`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3245,9 +3426,11 @@ Creates a persistent disk in the specified project using the data in the request
 
 
 ##### Command Example
+
 ```!gcp-compute-insert-disk disktype=https://www.mockapi.com/zones/europe-west2-c/diskTypes/pd-standard name=testdisk sizeGb=1 zone=europe-west2-c```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -3271,13 +3454,16 @@ Creates a persistent disk in the specified project using the data in the request
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | insert | 0 | RUNNING |
 
 
 ### gcp-compute-list-disks
+
 ***
 Retrieves a list of persistent disks contained within the specified zone.
 
@@ -3285,6 +3471,7 @@ Retrieves a list of persistent disks contained within the specified zone.
 ##### Base Command
 
 `gcp-compute-list-disks`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3344,9 +3531,11 @@ Retrieves a list of persistent disks contained within the specified zone.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-disks zone=europe-west2-c```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -3387,14 +3576,17 @@ Retrieves a list of persistent disks contained within the specified zone.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Disks
+
 |id|name|sizeGb|status|type|zone|
 |---|---|---|---|---|---|
-| 42 | test01 | 100 | READY | https://www.mockapi.com/zones/europe-west2-c/diskTypes/pd-standard | https://www.mockapi.com/zones/europe-west2-c |
-| 42 | testdisk | 1 | READY | https://www.mockapi.com/zones/europe-west2-c/diskTypes/pd-standard | https://www.mockapi.com/zones/europe-west2-c |
+| 42 | test01 | 100 | READY | <https://www.mockapi.com/zones/europe-west2-c/diskTypes/pd-standard> | <https://www.mockapi.com/zones/europe-west2-c> |
+| 42 | testdisk | 1 | READY | <https://www.mockapi.com/zones/europe-west2-c/diskTypes/pd-standard> | <https://www.mockapi.com/zones/europe-west2-c> |
 
 
 ### gcp-compute-resize-disk
+
 ***
 Resizes the specified persistent disk. You can only increase the size of the disk.
 
@@ -3402,6 +3594,7 @@ Resizes the specified persistent disk. You can only increase the size of the dis
 ##### Base Command
 
 `gcp-compute-resize-disk`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3449,9 +3642,11 @@ Resizes the specified persistent disk. You can only increase the size of the dis
 
 
 ##### Command Example
+
 ```!gcp-compute-resize-disk disk=disk-1 sizeGb=501 zone=europe-west2-a```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -3475,13 +3670,16 @@ Resizes the specified persistent disk. You can only increase the size of the dis
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | resizeDisk | 0 | RUNNING |
 
 
 ### gcp-compute-set-disk-labels
+
 ***
 Sets the labels on a disk.
 
@@ -3489,6 +3687,7 @@ Sets the labels on a disk.
 ##### Base Command
 
 `gcp-compute-set-disk-labels`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3537,12 +3736,14 @@ Sets the labels on a disk.
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-aggregated-list-disk-types
+
 ***
 Retrieves an aggregated list of disk types.
 
@@ -3550,6 +3751,7 @@ Retrieves an aggregated list of disk types.
 ##### Base Command
 
 `gcp-compute-aggregated-list-disk-types`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3583,9 +3785,11 @@ Retrieves an aggregated list of disk types.
 
 
 ##### Command Example
+
 ```!gcp-compute-aggregated-list-disk-types```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -3605,13 +3809,16 @@ Retrieves an aggregated list of disk types.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute DiskTypes
+
 |name|validDiskSize|
 |---|---|
 | pd-standard | 10GB-42GB |
 
 
 ### gcp-compute-get-disk-type
+
 ***
 Returns the specified disk type. Gets a list of available disk types by making a list() request.
 
@@ -3619,6 +3826,7 @@ Returns the specified disk type. Gets a list of available disk types by making a
 ##### Base Command
 
 `gcp-compute-get-disk-type`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3650,9 +3858,11 @@ Returns the specified disk type. Gets a list of available disk types by making a
 
 
 ##### Command Example
+
 ```!gcp-compute-get-disk-type disktype=pd-ssd zone=europe-west2-c```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -3671,13 +3881,16 @@ Returns the specified disk type. Gets a list of available disk types by making a
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute DiskTypes
+
 |name|validDiskSize|zone|
 |---|---|---|
-| pd-ssd | 10GB-42GB | https://www.mockapi.com/zones/europe-west2-c |
+| pd-ssd | 10GB-42GB | <https://www.mockapi.com/zones/europe-west2-c> |
 
 
 ### gcp-compute-list-disk-types
+
 ***
 Retrieves a list of disk types available to the specified project.
 
@@ -3685,6 +3898,7 @@ Retrieves a list of disk types available to the specified project.
 ##### Base Command
 
 `gcp-compute-list-disk-types`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3719,9 +3933,11 @@ Retrieves a list of disk types available to the specified project.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-disk-types zone=europe-west2-c```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -3740,7 +3956,9 @@ Retrieves a list of disk types available to the specified project.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute DiskTypes
+
 |name|validDiskSize|
 |---|---|
 | local-ssd | 375GB-375GB |
@@ -3749,6 +3967,7 @@ Retrieves a list of disk types available to the specified project.
 
 
 ### gcp-compute-get-image
+
 ***
 Returns the specified image. Gets a list of available images by making a list() request.
 
@@ -3756,6 +3975,7 @@ Returns the specified image. Gets a list of available images by making a list() 
 ##### Base Command
 
 `gcp-compute-get-image`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3786,7 +4006,7 @@ Returns the specified image. Gets a list of available images by making a list() 
 | GoogleCloudCompute.Images.status | string | The status of the image. An image can be used to create other resources, such as instances, only after the image has been successfully created and the status is set to READY. Possible values are FAILED, PENDING, or READY. | 
 | GoogleCloudCompute.Images.archiveSizeBytes | string | Size of the image tar.gz archive stored in Google Cloud Storage \(in bytes\). | 
 | GoogleCloudCompute.Images.diskSizeGb | string | Size of the image when restored onto a persistent disk \(in GB\). | 
-| GoogleCloudCompute.Images.sourceDisk | string | URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values: https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk , projects/project/zones/zone/disks/disk , zones/zone/disks/disk | 
+| GoogleCloudCompute.Images.sourceDisk | string | URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values: <https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk> , projects/project/zones/zone/disks/disk , zones/zone/disks/disk | 
 | GoogleCloudCompute.Images.sourceDiskId | string | The ID value of the disk used to create this image. This value may be used to determine whether the image was taken from the current or a previous instance of a given disk name. | 
 | GoogleCloudCompute.Images.licenses | string | Any applicable license URI. | 
 | GoogleCloudCompute.Images.family | string | The name of the image family to which this image belongs. You can create disks by specifying an image family instead of a specific image name. The image family always returns its latest image that is not deprecated. The name of the image family must comply with RFC1035. | 
@@ -3820,12 +4040,14 @@ Returns the specified image. Gets a list of available images by making a list() 
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-list-images
+
 ***
 Retrieves the list of custom images available to the specified project. Custom images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
 
@@ -3833,6 +4055,7 @@ Retrieves the list of custom images available to the specified project. Custom i
 ##### Base Command
 
 `gcp-compute-list-images`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3866,7 +4089,7 @@ Retrieves the list of custom images available to the specified project. Custom i
 | GoogleCloudCompute.Images.status | string | The status of the image. An image can be used to create other resources, such as instances, only after the image has been successfully created and the status is set to READY. Possible values are FAILED, PENDING, or READY. | 
 | GoogleCloudCompute.Images.archiveSizeBytes | string | Size of the image tar.gz archive stored in Google Cloud Storage \(in bytes\). | 
 | GoogleCloudCompute.Images.diskSizeGb | string | Size of the image when restored onto a persistent disk \(in GB\). | 
-| GoogleCloudCompute.Images.sourceDisk | string | URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values: https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk , projects/project/zones/zone/disks/disk , zones/zone/disks/disk | 
+| GoogleCloudCompute.Images.sourceDisk | string | URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values: <https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk> , projects/project/zones/zone/disks/disk , zones/zone/disks/disk | 
 | GoogleCloudCompute.Images.sourceDiskId | string | The ID value of the disk used to create this image. This value may be used to determine whether the image was taken from the current or a previous instance of a given disk name. | 
 | GoogleCloudCompute.Images.licenses | string | Any applicable license URI. | 
 | GoogleCloudCompute.Images.family | string | The name of the image family to which this image belongs. You can create disks by specifying an image family instead of a specific image name. The image family always returns its latest image that is not deprecated. The name of the image family must comply with RFC1035. | 
@@ -3900,9 +4123,11 @@ Retrieves the list of custom images available to the specified project. Custom i
 
 
 ##### Command Example
+
 ```!gcp-compute-list-images```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -3912,11 +4137,14 @@ Retrieves the list of custom images available to the specified project. Custom i
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Images
+
 **No entries.**
 
 
 ### gcp-compute-delete-image
+
 ***
 Deletes the specified image.
 
@@ -3924,6 +4152,7 @@ Deletes the specified image.
 ##### Base Command
 
 `gcp-compute-delete-image`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3969,12 +4198,14 @@ Deletes the specified image.
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-set-image-labels
+
 ***
 Sets the labels on an image.
 
@@ -3982,6 +4213,7 @@ Sets the labels on an image.
 ##### Base Command
 
 `gcp-compute-set-image-labels`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4029,12 +4261,14 @@ Sets the labels on an image.
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-insert-image
+
 ***
 Creates an image in the specified project using the data included in the request.
 
@@ -4042,6 +4276,7 @@ Creates an image in the specified project using the data included in the request
 ##### Base Command
 
 `gcp-compute-insert-image`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4055,7 +4290,7 @@ Creates an image in the specified project using the data included in the request
 | deprecatedReplacement | The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource. | Optional | 
 | archiveSizeBytes | Size of the image tar.gz archive stored in Google Cloud Storage (in bytes). | Optional | 
 | diskSizeGb | Size of the image when restored onto a persistent disk (in GB). | Optional | 
-| sourceDisk | URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values:  https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk projects/project/zones/zone/disks/disk zones/zone/disks/disk Authorization requires the following Google IAM permission on the specified resource sourceDisk:  compute.disks.useReadOnly | Optional | 
+| sourceDisk | URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values:  <https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk> projects/project/zones/zone/disks/disk zones/zone/disks/disk Authorization requires the following Google IAM permission on the specified resource sourceDisk:  compute.disks.useReadOnly | Optional | 
 | licenses | Any applicable license URI.  Authorization requires the following Google IAM permission on the specified resource licenses:  compute.licenseCodes.use | Optional | 
 | family | The name of the image family to which this image belongs. You can create disks by specifying an image family instead of a specific image name. The image family always returns its latest image that is not deprecated. The name of the image family must comply with RFC1035. | Optional | 
 | imageEncryptionKeyRawKey | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. | Optional | 
@@ -4113,12 +4348,14 @@ Creates an image in the specified project using the data included in the request
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-instance-groups-add-instances
+
 ***
 Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read Adding instances for more information.
 
@@ -4126,6 +4363,7 @@ Adds a list of instances to the specified instance group. All of the instances i
 ##### Base Command
 
 `gcp-compute-instance-groups-add-instances`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4173,12 +4411,14 @@ Adds a list of instances to the specified instance group. All of the instances i
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-aggregated-list-instance-groups
+
 ***
 Retrieves the list of instance groups and sorts them by zone.
 
@@ -4186,6 +4426,7 @@ Retrieves the list of instance groups and sorts them by zone.
 ##### Base Command
 
 `gcp-compute-aggregated-list-instance-groups`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4201,9 +4442,11 @@ Retrieves the list of instance groups and sorts them by zone.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!gcp-compute-aggregated-list-instance-groups```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -4233,14 +4476,17 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Instance Groups
+
 |id|name|network|zone|
 |---|---|---|---|
-| 42 | mock_instance-grp | network | https://www.mockapi.com/zones/ |
-| 42 | test01 |  | https://www.mockapi.com/zones/ |
+| 42 | mock_instance-grp | network | <https://www.mockapi.com/zones/> |
+| 42 | test01 |  | <https://www.mockapi.com/zones/> |
 
 
 ### gcp-compute-delete-instance-group
+
 ***
 Deletes the specified instance group. The instances in the group are not deleted. Note that instance group must not belong to a backend service. Read Deleting an instance group for more information.  HTTP
 
@@ -4248,6 +4494,7 @@ Deletes the specified instance group. The instances in the group are not deleted
 ##### Base Command
 
 `gcp-compute-delete-instance-group`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4294,12 +4541,14 @@ Deletes the specified instance group. The instances in the group are not deleted
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-get-instance-group
+
 ***
 Returns the specified instance group. Gets a list of available instance groups by making a list() request.
 
@@ -4307,6 +4556,7 @@ Returns the specified instance group. Gets a list of available instance groups b
 ##### Base Command
 
 `gcp-compute-get-instance-group`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4337,9 +4587,11 @@ Returns the specified instance group. Gets a list of available instance groups b
 
 
 ##### Command Example
+
 ```!gcp-compute-get-instance-group instanceGroup=mock_instance-grp zone=europe-west2-a```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -4367,13 +4619,16 @@ Returns the specified instance group. Gets a list of available instance groups b
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Instance Groups
+
 |id|name|network|zone|
 |---|---|---|---|
-| 42 | mock_instance-grp | network | https://www.mockapi.com/zones/ |
+| 42 | mock_instance-grp | network | <https://www.mockapi.com/zones/> |
 
 
 ### gcp-compute-insert-instance-group
+
 ***
 Creates an instance group in the specified project using the parameters that are included in the request.
 
@@ -4381,6 +4636,7 @@ Creates an instance group in the specified project using the parameters that are
 ##### Base Command
 
 `gcp-compute-insert-instance-group`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4429,12 +4685,14 @@ Creates an instance group in the specified project using the parameters that are
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-list-instance-groups
+
 ***
 Retrieves the list of instance groups that are located in the specified project and zone.
 
@@ -4442,6 +4700,7 @@ Retrieves the list of instance groups that are located in the specified project 
 ##### Base Command
 
 `gcp-compute-list-instance-groups`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4475,9 +4734,11 @@ Retrieves the list of instance groups that are located in the specified project 
 
 
 ##### Command Example
+
 ```!gcp-compute-list-instance-groups zone=europe-west2-a```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -4518,14 +4779,17 @@ Retrieves the list of instance groups that are located in the specified project 
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Instance Groups
+
 |creationTimestamp|description|fingerprint|id|kind|name|namedPorts|network|selfLink|size|subnetwork|zone|
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2020-04-21T02:13:05.599-07:00 | This instance group is controlled by Instance Group Manager 'mock_instance-grp'. To modify instances in this group, use the Instance Group Manager API: https://cloud.google.com/compute/docs/reference/latest/instanceGroupManagers | tH9xjDSGfNw= | 42 | compute#instanceGroup | mock_instance-grp | {u'name': u'abc', u'port': 123} | network | https://www.mockapi.com/zones//instanceGroups/mock_instance-grp | 6 | subnetwork | https://www.mockapi.com/zones/ |
-| 2020-04-30T05:49:45.272-07:00 |  | 42WmSpB8rSM= | 42 | compute#instanceGroup | test01 |  |  | https://www.mockapi.com/zones//instanceGroups/test01 | 0 |  | https://www.mockapi.com/zones/ |
+| 2020-04-21T02:13:05.599-07:00 | This instance group is controlled by Instance Group Manager 'mock_instance-grp'. To modify instances in this group, use the Instance Group Manager API: <https://cloud.google.com/compute/docs/reference/latest/instanceGroupManagers> | tH9xjDSGfNw= | 42 | compute#instanceGroup | mock_instance-grp | {u'name': u'abc', u'port': 123} | network | <https://www.mockapi.com/zones//instanceGroups/mock_instance-grp> | 6 | subnetwork | <https://www.mockapi.com/zones/> |
+| 2020-04-30T05:49:45.272-07:00 |  | 42WmSpB8rSM= | 42 | compute#instanceGroup | test01 |  |  | <https://www.mockapi.com/zones//instanceGroups/test01> | 0 |  | <https://www.mockapi.com/zones/> |
 
 
 ### gcp-compute-list-instance-group-instances
+
 ***
 Lists the instances in the specified instance group.
 
@@ -4533,6 +4797,7 @@ Lists the instances in the specified instance group.
 ##### Base Command
 
 `gcp-compute-list-instance-group-instances`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4559,9 +4824,11 @@ Lists the instances in the specified instance group.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-instance-group-instances instanceGroup=mock_instance-grp zone=europe-west2-a```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -4585,13 +4852,16 @@ Lists the instances in the specified instance group.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Instance Groups
+
 |instance|status|
 |---|---|
-| https://www.mockapi.com/zones/instances/mock-disk | RUNNING |
+| <https://www.mockapi.com/zones/instances/mock-disk> | RUNNING |
 
 
 ### gcp-compute-instance-groups-remove-instances
+
 ***
 Removes one or more instances from the specified instance group, but does not delete those instances.  If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
 
@@ -4599,6 +4869,7 @@ Removes one or more instances from the specified instance group, but does not de
 ##### Base Command
 
 `gcp-compute-instance-groups-remove-instances`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4646,12 +4917,14 @@ Removes one or more instances from the specified instance group, but does not de
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-set-group-instance-named-ports
+
 ***
 Sets the named ports for the specified instance group.
 
@@ -4659,6 +4932,7 @@ Sets the named ports for the specified instance group.
 ##### Base Command
 
 `gcp-compute-set-group-instance-named-ports`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4707,9 +4981,11 @@ Sets the named ports for the specified instance group.
 
 
 ##### Command Example
+
 ```!gcp-compute-set-group-instance-named-ports instanceGroup=mock_instance-grp namedPorts=name=abc,port=123 zone=europe-west2-a```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -4733,13 +5009,16 @@ Sets the named ports for the specified instance group.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | compute.instanceGroups.setNamedPorts | 0 | RUNNING |
 
 
 ### gcp-compute-get-region
+
 ***
 Returns the specified Region resource. Gets a list of available regions by making a list() request.
 
@@ -4747,6 +5026,7 @@ Returns the specified Region resource. Gets a list of available regions by makin
 ##### Base Command
 
 `gcp-compute-get-region`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4780,9 +5060,11 @@ Returns the specified Region resource. Gets a list of available regions by makin
 
 
 ##### Command Example
+
 ```!gcp-compute-get-region region=europe-west2```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -4810,13 +5092,16 @@ Returns the specified Region resource. Gets a list of available regions by makin
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Regions
+
 |id|name|status|
 |---|---|---|
 | 1290 | europe-west2 | UP |
 
 
 ### gcp-compute-list-regions
+
 ***
 Retrieves the list of region resources available to the specified project.
 
@@ -4824,6 +5109,7 @@ Retrieves the list of region resources available to the specified project.
 ##### Base Command
 
 `gcp-compute-list-regions`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4860,9 +5146,11 @@ Retrieves the list of region resources available to the specified project.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-regions```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -4894,7 +5182,9 @@ Retrieves the list of region resources available to the specified project.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Regions
+
 |id|name|status|
 |---|---|---|
 | 1220 | asia-east1 | UP |
@@ -4923,6 +5213,7 @@ Retrieves the list of region resources available to the specified project.
 
 
 ### gcp-compute-get-zone
+
 ***
 Returns the specified Zone resource. Gets a list of available zones by making a list() request.
 
@@ -4930,6 +5221,7 @@ Returns the specified Zone resource. Gets a list of available zones by making a 
 ##### Base Command
 
 `gcp-compute-get-zone`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4959,9 +5251,11 @@ Returns the specified Zone resource. Gets a list of available zones by making a 
 
 
 ##### Command Example
+
 ```!gcp-compute-get-zone zone=europe-west2-c```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -4988,13 +5282,16 @@ Returns the specified Zone resource. Gets a list of available zones by making a 
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Zones
+
 |id|name|status|
 |---|---|---|
 | 2292 | europe-west2-c | UP |
 
 
 ### gcp-compute-list-zones
+
 ***
 Retrieves the list of Zone resources available to the specified project.
 
@@ -5002,6 +5299,7 @@ Retrieves the list of Zone resources available to the specified project.
 ##### Base Command
 
 `gcp-compute-list-zones`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5034,9 +5332,11 @@ Retrieves the list of Zone resources available to the specified project.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-zones```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -5065,7 +5365,9 @@ Retrieves the list of Zone resources available to the specified project.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Zones
+
 |id|name|status|
 |---|---|---|
 | 2231 | us-east1-b | UP |
@@ -5141,6 +5443,7 @@ Retrieves the list of Zone resources available to the specified project.
 
 
 ### gcp-compute-aggregated-list-machine-types
+
 ***
 Retrieves an aggregated list of machine types.
 
@@ -5148,6 +5451,7 @@ Retrieves an aggregated list of machine types.
 ##### Base Command
 
 `gcp-compute-aggregated-list-machine-types`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5186,12 +5490,14 @@ Retrieves an aggregated list of machine types.
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-get-machine-type
+
 ***
 Returns the specified machine type. Gets a list of available machine types by making a list() request.
 
@@ -5199,6 +5505,7 @@ Returns the specified machine type. Gets a list of available machine types by ma
 ##### Base Command
 
 `gcp-compute-get-machine-type`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5235,9 +5542,11 @@ Returns the specified machine type. Gets a list of available machine types by ma
 
 
 ##### Command Example
+
 ```!gcp-compute-get-machine-type machineType=c2-standard-16 zone=europe-west2-a```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -5261,13 +5570,16 @@ Returns the specified machine type. Gets a list of available machine types by ma
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Machine Types
+
 |guestCpus|id|memoryMb|name|
 |---|---|---|---|
 | 16 | 42 | 42 | c2-standard-16 |
 
 
 ### gcp-compute-list-machine-types
+
 ***
 Retrieves a list of machine types available to the specified project.
 
@@ -5275,6 +5587,7 @@ Retrieves a list of machine types available to the specified project.
 ##### Base Command
 
 `gcp-compute-list-machine-types`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5314,9 +5627,11 @@ Retrieves a list of machine types available to the specified project.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-machine-types zone=europe-west2-a```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -5342,13 +5657,16 @@ Retrieves a list of machine types available to the specified project.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Machine Types
+
 |guestCpus|id|memoryMb|name|
 |---|---|---|---|
 | 16 | 42 | 42 | c2-standard-16 |
 
 
 ### gcp-compute-networks-add-peering
+
 ***
 Adds a peering to the specified network.
 
@@ -5356,6 +5674,7 @@ Adds a peering to the specified network.
 ##### Base Command
 
 `gcp-compute-networks-add-peering`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5406,12 +5725,14 @@ Adds a peering to the specified network.
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-delete-network
+
 ***
 Deletes the specified network.
 
@@ -5419,6 +5740,7 @@ Deletes the specified network.
 ##### Base Command
 
 `gcp-compute-delete-network`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5464,9 +5786,11 @@ Deletes the specified network.
 
 
 ##### Command Example
+
 ```!gcp-compute-delete-network network=a-1-2```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -5489,13 +5813,16 @@ Deletes the specified network.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | delete | 0 | RUNNING |
 
 
 ### gcp-compute-insert-network
+
 ***
 Creates a network in the specified project using the data included in the request.
 
@@ -5503,6 +5830,7 @@ Creates a network in the specified project using the data included in the reques
 ##### Base Command
 
 `gcp-compute-insert-network`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5551,9 +5879,11 @@ Creates a network in the specified project using the data included in the reques
 
 
 ##### Command Example
+
 ```!gcp-compute-insert-network name=a-1-2```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -5576,13 +5906,16 @@ Creates a network in the specified project using the data included in the reques
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | insert | 0 | RUNNING |
 
 
 ### gcp-compute-list-networks
+
 ***
 Retrieves the list of networks available to the specified project.
 
@@ -5590,6 +5923,7 @@ Retrieves the list of networks available to the specified project.
 ##### Base Command
 
 `gcp-compute-list-networks`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5625,9 +5959,11 @@ Retrieves the list of networks available to the specified project.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-networks```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -5650,12 +5986,15 @@ Retrieves the list of networks available to the specified project.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Networks
+
 |id|name|
 |---|---|
 | 42 | a-1-2 |
 
 ### gcp-compute-networks-remove-peering
+
 ***
 Removes a peering from the specified network.
 
@@ -5663,6 +6002,7 @@ Removes a peering from the specified network.
 ##### Base Command
 
 `gcp-compute-networks-remove-peering`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5709,12 +6049,14 @@ Removes a peering from the specified network.
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-wait-for-zone-operation
+
 ***
 Wait for a zone operation to complete ,NOTE this command will occupy a system resource
 
@@ -5722,6 +6064,7 @@ Wait for a zone operation to complete ,NOTE this command will occupy a system re
 ##### Base Command
 
 `gcp-compute-wait-for-zone-operation`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5735,12 +6078,14 @@ Wait for a zone operation to complete ,NOTE this command will occupy a system re
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-wait-for-region-operation
+
 ***
 Wait for a region operation to complete ,NOTE this command will occupy a system resource
 
@@ -5748,6 +6093,7 @@ Wait for a region operation to complete ,NOTE this command will occupy a system 
 ##### Base Command
 
 `gcp-compute-wait-for-region-operation`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5761,12 +6107,14 @@ Wait for a region operation to complete ,NOTE this command will occupy a system 
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-wait-for-global-operation
+
 ***
 Wait for a global operation to complete ,NOTE this command will occupy a system resource
 
@@ -5774,6 +6122,7 @@ Wait for a global operation to complete ,NOTE this command will occupy a system 
 ##### Base Command
 
 `gcp-compute-wait-for-global-operation`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5786,12 +6135,14 @@ Wait for a global operation to complete ,NOTE this command will occupy a system 
 There is no context output for this command.
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-insert-firewall
+
 ***
 Creates a firewall rule in the specified project using the data included in the request.
 
@@ -5799,6 +6150,7 @@ Creates a firewall rule in the specified project using the data included in the 
 ##### Base Command
 
 `gcp-compute-insert-firewall`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5859,9 +6211,11 @@ Creates a firewall rule in the specified project using the data included in the 
 
 
 ##### Command Example
+
 ```!gcp-compute-insert-firewall name=a-1-2-3 allowed=ipprotocol=tcp,ports=22,443```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -5884,13 +6238,16 @@ Creates a firewall rule in the specified project using the data included in the 
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | insert | 0 | RUNNING |
 
 
 ### gcp-compute-patch-firewall
+
 ***
 Updates the specified firewall rule with the data included in the request.
 
@@ -5898,6 +6255,7 @@ Updates the specified firewall rule with the data included in the request.
 ##### Base Command
 
 `gcp-compute-patch-firewall`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5957,9 +6315,11 @@ Updates the specified firewall rule with the data included in the request.
 
 
 ##### Command Example
+
 ```!gcp-compute-patch-firewall name=default-allow-https```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -5982,13 +6342,16 @@ Updates the specified firewall rule with the data included in the request.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | patch | 0 | RUNNING |
 
 
 ### gcp-compute-list-firewall
+
 ***
 Retrieves the list of firewall rules available to the specified project.
 
@@ -5996,6 +6359,7 @@ Retrieves the list of firewall rules available to the specified project.
 ##### Base Command
 
 `gcp-compute-list-firewall`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6038,9 +6402,11 @@ Retrieves the list of firewall rules available to the specified project.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-firewall```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -6078,13 +6444,16 @@ Retrieves the list of firewall rules available to the specified project.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Firewalls
+
 |name|network|priority|
 |---|---|---|
 | a-1-2-3 | network | 1000 |
 
 
 ### gcp-compute-get-firewall
+
 ***
 Returns the specified firewall.
 
@@ -6092,6 +6461,7 @@ Returns the specified firewall.
 ##### Base Command
 
 `gcp-compute-get-firewall`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6130,9 +6500,11 @@ Returns the specified firewall.
 
 
 ##### Command Example
+
 ```!gcp-compute-get-firewall name=default-allow-https```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -6170,13 +6542,16 @@ Returns the specified firewall.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Firewalls
+
 |name|network|priority|
 |---|---|---|
 | default-allow-https | network | 1000 |
 
 
 ### gcp-compute-delete-firewall
+
 ***
 Deletes the specified firewall.
 
@@ -6184,6 +6559,7 @@ Deletes the specified firewall.
 ##### Base Command
 
 `gcp-compute-delete-firewall`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6229,12 +6605,14 @@ Deletes the specified firewall.
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-set-snapshot-labels
+
 ***
 Sets the labels on a snapshot.
 
@@ -6242,6 +6620,7 @@ Sets the labels on a snapshot.
 ##### Base Command
 
 `gcp-compute-set-snapshot-labels`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6289,12 +6668,14 @@ Sets the labels on a snapshot.
 
 
 ##### Command Example
+
 ``` ```
 
 ##### Human Readable Output
 
 
 ### gcp-compute-list-snapshots
+
 ***
 Retrieves the list of Snapshot resources contained within the specified project.
 
@@ -6302,6 +6683,7 @@ Retrieves the list of Snapshot resources contained within the specified project.
 ##### Base Command
 
 `gcp-compute-list-snapshots`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6345,9 +6727,11 @@ Retrieves the list of Snapshot resources contained within the specified project.
 
 
 ##### Command Example
+
 ```!gcp-compute-list-snapshots```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -6381,13 +6765,16 @@ Retrieves the list of Snapshot resources contained within the specified project.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Snapshots
+
 |creationTimestamp|name|status|
 |---|---|---|
 | 2020-05-03T01:13:24.244-07:00 | testsnap1 | READY |
 
 
 ### gcp-compute-get-snapshot
+
 ***
 Returns the specified Snapshot resource.
 
@@ -6395,6 +6782,7 @@ Returns the specified Snapshot resource.
 ##### Base Command
 
 `gcp-compute-get-snapshot`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6435,9 +6823,11 @@ Returns the specified Snapshot resource.
 
 
 ##### Command Example
+
 ```!gcp-compute-get-snapshot name=testsnap1```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -6476,13 +6866,16 @@ Returns the specified Snapshot resource.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Snapshots
+
 |creationTimestamp|name|status|
 |---|---|---|
 | 2020-05-03T01:13:24.244-07:00 | testsnap1 | READY |
 
 
 ### gcp-compute-delete-snapshot
+
 ***
 Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.
 
@@ -6490,6 +6883,7 @@ Deletes the specified Snapshot resource. Keep in mind that deleting a single sna
 ##### Base Command
 
 `gcp-compute-delete-snapshot`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6535,9 +6929,11 @@ Deletes the specified Snapshot resource. Keep in mind that deleting a single sna
 
 
 ##### Command Example
+
 ```!gcp-compute-delete-snapshot name=testsnap1```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -6560,13 +6956,16 @@ Deletes the specified Snapshot resource. Keep in mind that deleting a single sna
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | delete | 0 | RUNNING |
 
 
 ### gcp-compute-project-info-add-metadata
+
 ***
 Add or update project wide metadata.
 
@@ -6574,6 +6973,7 @@ Add or update project wide metadata.
 ##### Base Command
 
 `gcp-compute-project-info-add-metadata`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6586,6 +6986,7 @@ Add or update project wide metadata.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!gcp-compute-project-info-add-metadata metadata=key=abc,value=123```
 
 ##### Context Output
@@ -6604,6 +7005,7 @@ There is no context output for this command.
 | GoogleCloudCompute.ProjectMetadata.kind | string | Type of the resource. Always compute#operation. | 
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -6626,13 +7028,16 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Project Metadata Update Operation Started Successfully
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | compute.projects.setCommonInstanceMetadata | 0 | RUNNING |
 
 
 ### gcp-compute-aggregated-list-instances-by-ip
+
 ***
 Retrieves instance information based on public IP in your project across all regions and zones.
 
@@ -6640,6 +7045,7 @@ Retrieves instance information based on public IP in your project across all reg
 ##### Base Command
 
 `gcp-compute-aggregated-list-instances-by-ip`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6745,9 +7151,11 @@ Retrieves instance information based on public IP in your project across all reg
 
 
 ##### Command Example
+
 ```!gcp-compute-aggregated-list-instances-by-ip ip=8.8.8.8```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -6857,13 +7265,16 @@ Retrieves instance information based on public IP in your project across all reg
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Instances
+
 |id|machineType|name|zone|
 |---|---|---|---|
-| 42 | machineType | test01 | https://www.mockapi.com/zones/europe-west2-c |
+| 42 | machineType | test01 | <https://www.mockapi.com/zones/europe-west2-c> |
 
 
 ### gcp-compute-add-network-tag
+
 ***
 Add network tag for the specified instance.
 
@@ -6871,6 +7282,7 @@ Add network tag for the specified instance.
 ##### Base Command
 
 `gcp-compute-add-network-tag`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6919,8 +7331,11 @@ Add network tag for the specified instance.
 
 
 ##### Command Example
+
 ```!gcp-compute-add-network-tag tag="example-tag" zone="europe-west2-c" instance="test01"```
+
 ##### Context Example
+
 ```
 {
     "GoogleCloudCompute": {
@@ -6943,7 +7358,9 @@ Add network tag for the specified instance.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud Compute Operations
+
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | setTags | 0 | RUNNING |

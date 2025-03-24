@@ -25,47 +25,63 @@ This integration was integrated and tested with version 7.3.2 of QRadar.
 
 
 ## Troubleshooting 
+
 This section provides information for troubleshooting performance and fetching issues.
 
 ### Performance Issues
+
 In some cases, you might encounter performance issues when running QRadar AQL queries from Cortex XSOAR. This issue is caused by QRadar API limitations. We recommend that you test the QRadar API performance by running several cURL scripts.
+
 #### 1. Creating a search
+
 Run the following command to use the QRadar API to create a new search.Save the QUERY ID that is attached to the response for the next step.
+
 ```
 curl -H "SEC: <API KEY>" -X POST <QRADAR INSTANCE>/api/ariel/searches?query_expression=<QUERY IN URL SAFE ENCODING>
 ```
+
 #### 2. Check if the search status is Complete or Executing
+
 Use the following command to use the QRadar API to check the query status (EXECUTE, COMPLETED, or ERROR).
+
 ```
 curl -H "SEC: <API KEY>" -X GET <QRADAR INSTANCE>/api/ariel/searches?<QUERY ID>
 ```
 
 ### Fetching Issues
+
 If the integration fails to fetch with on a Docker timeout error and the enrichment is enabled within the integration configuration, the cause might be releated to a permissions issue with the enrichment.
 
 Adding the following advanced parameter might resolve this issue: `DOMAIN_ENRCH_FLG=False`
 
 ## Using API Token authentication
+
 In order to use the integration with an API token you'll first need to change the `Username / API Key (see '?')` field to `_api_token_key`. Following this step, you can now enter the API Token into the `Password` field - this value will be used as an API key.
 
 ## Fetch incidents
+
 To start fetching incidents, enable the parameter `Long running instance` - this will start a long running process that'll fetch incidents periodically.
 Depending on the system load, **the initial fetch might take a long time**.
 
 #### Field (Schema) Mapping
+
 The scheme is divided to 4 sections. Offense (root), Events: Builtins, Events: Custom Fields, and Assets.
 For more details, see the [Classification & Mapping documentation (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper) or [Classification & Mapping documentation (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-an-incident-mapper) or [Classification & Mapping documentation (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-an-incident-mapper).
 
 #### Query to fetch offenses
+
 You can apply additional (optional) filters for the fetch-incident query using the `Query to fetch offenses` integration parameter. For more information on how to use the filter syntax, see the [QRadar filter documentation](https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.3/com.ibm.qradar.doc/c_rest_api_filtering.html) and [QRadar offense documentation](https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.2/com.ibm.qradar.doc/11.0--siem-offenses-GET.html).
+
 * Incident IP Enrichment - When enabled, fetched incidents IP values (local source addresses and local destination addresses) will be fetched from QRadar instead of their ID values.
 * Incident Asset Enrichment - When enabled, fetched offenses will also contain correlated assets.
 
 #### Reset the "last run" timestamp
+
 To reset fetch incidents, run `qradar-reset-last-run` - this will reset the fetch to its initial state (will try to fetch first available offense).
 **Please Note**: It is recommended to *disable* and then *enable* the QRadar instance for the reset to take effect immediately.
 
 ## Required Permissions
+
 * Assets - Vulnerability Management *or* Assets
 * Domains - Admin
 * Offenses (Manage Closing Reason) - Manage Offense Closing Reasons
@@ -75,21 +91,25 @@ To reset fetch incidents, run `qradar-reset-last-run` - this will reset the fetc
 * References (Read) - View Reference Data
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### qradar-offenses
+
 ***
 Gets offenses from QRadar
 
 #### Base Command
 
 `qradar-offenses`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Query to filter offenses. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html | Optional | 
+| filter | Query to filter offenses. For reference please consult: <https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html> | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html> | Optional | 
 | range | Range of results to return. e.g.: 0-20 | Optional | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers) | Optional | 
 
@@ -112,9 +132,11 @@ Gets offenses from QRadar
 
 
 #### Command Example
+
 ```!qradar-offenses range=0-1 filter="follow_up=false"```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -161,6 +183,7 @@ Gets offenses from QRadar
 #### Human Readable Output
 
 >### QRadar offenses
+>
 >|ID|Description|Followup|SourceAddress|DestinationAddress|RemoteDestinationCount|StartTime|EventCount|Magnitude|LastUpdatedTime|OffenseType|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 477 | Outbound port scan<br/> | false | 8.8.8.8| 8.8.8.8<br/>8.8.8.8<br/>8.8.8.8| 4 | 2020-08-04T08:34:21.690000Z | 22 | 2 | 2020-08-04T08:37:49.416000Z | Source IP |
@@ -168,6 +191,7 @@ Gets offenses from QRadar
 
 
 ### qradar-offense-by-id
+
 ***
 Gets offense with matching offense ID from qradar
 
@@ -175,13 +199,14 @@ Gets offense with matching offense ID from qradar
 #### Base Command
 
 `qradar-offense-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | offense_id | Offense ID | Required | 
-| filter | Query to filter offense. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html | Optional | 
+| filter | Query to filter offense. For refernce please consult: <https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html> | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html> | Optional | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers) | Optional | 
 
 
@@ -216,9 +241,11 @@ Gets offense with matching offense ID from qradar
 
 
 #### Command Example
+
 ```!qradar-offense-by-id offense_id=450```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -260,12 +287,14 @@ Gets offense with matching offense ID from qradar
 #### Human Readable Output
 
 >### QRadar Offenses
+>
 >|Categories|Credibility|Description|DestinationAddress|DestinationHostname|EventCount|FlowCount|Followup|ID|LastUpdatedTime|Magnitude|OffenseSource|OffenseType|Protected|Relevance|RemoteDestinationCount|Severity|SourceAddress|StartTime|Status|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Firewall Session Closed,<br/>Host Port Scan | 3 | Outbound port scan<br/> | 8.8.8.8| Net-10-172-192.Net_10_0_0_0 | 5 | 0 | false | 450 | 2020-07-22T14:45:39.082000Z | 2 | 8.8.8.8| Source IP | false | 0 | 0 | 5 | 8.8.8.8| 2020-07-22T14:40:43.870000Z | OPEN |
 
 
 ### qradar-searches
+
 ***
 Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRadarFullSearch' instead of this command - it will execute the search, and will return the result.
 
@@ -273,11 +302,12 @@ Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRad
 #### Base Command
 
 `qradar-searches`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_expression | The query expressions in AQL (for more information about Ariel Query Language please review: https://www.ibm.com/docs/en/qsip/7.3.2?topic=qradar-ariel-query-language-aql ) | Required | 
+| query_expression | The query expressions in AQL (for more information about Ariel Query Language please review: <https://www.ibm.com/docs/en/qsip/7.3.2?topic=qradar-ariel-query-language-aql> ) | Required | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers) | Optional | 
 
 
@@ -290,9 +320,11 @@ Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRad
 
 
 #### Command Example
+
 ```!qradar-searches query_expression="SELECT sourceip AS 'MY Source IPs' FROM events"```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -307,12 +339,14 @@ Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRad
 #### Human Readable Output
 
 >### QRadar Search
+>
 >|ID|Status|
 >|---|---|
 >| ddd8ef78-4bff-4453-ab10-24f0fe1fa763 | WAIT |
 
 
 ### qradar-get-search
+
 ***
 Gets a specific search id and status
 
@@ -320,6 +354,7 @@ Gets a specific search id and status
 #### Base Command
 
 `qradar-get-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -337,9 +372,11 @@ Gets a specific search id and status
 
 
 #### Command Example
+
 ```!qradar-get-search search_id=6212b614-074e-41c1-8fcf-1492834576b8```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -354,12 +391,14 @@ Gets a specific search id and status
 #### Human Readable Output
 
 >### QRadar Search Info
+>
 >|ID|Status|
 >|---|---|
 >| 6212b614-074e-41c1-8fcf-1492834576b8 | COMPLETED |
 
 
 ### qradar-get-search-results
+
 ***
 Gets search results
 
@@ -367,6 +406,7 @@ Gets search results
 #### Base Command
 
 `qradar-get-search-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -385,9 +425,11 @@ Gets search results
 
 
 #### Command Example
+
 ```!qradar-get-search-results search_id=6212b614-074e-41c1-8fcf-1492834576b8```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -407,6 +449,7 @@ Gets search results
 #### Human Readable Output
 
 >### QRadar Search Results from events
+>
 >|MY Source IPs|
 >|---|
 >| 8.8.8.8|
@@ -414,6 +457,7 @@ Gets search results
 
 
 ### qradar-update-offense
+
 ***
 Update an offense
 
@@ -421,6 +465,7 @@ Update an offense
 #### Base Command
 
 `qradar-update-offense`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -432,7 +477,7 @@ Update an offense
 | closing_reason_id | The id of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default  closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation | Optional | 
 | closing_reason_name | The name of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default  closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation | Optional | 
 | assigned_to | A user to assign the offense to | Optional | 
-| fields | Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. Please consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html | Optional | 
+| fields | Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. Please consult - <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html> | Optional | 
 
 
 #### Context Output
@@ -465,9 +510,11 @@ Update an offense
 
 
 #### Command Example
+
 ```!qradar-update-offense offense_id=450 protected=false```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -509,12 +556,14 @@ Update an offense
 #### Human Readable Output
 
 >### QRadar Offense
+>
 >|Categories|Credibility|Description|DestinationAddress|DestinationHostname|EventCount|FlowCount|Followup|ID|LastUpdatedTime|Magnitude|OffenseSource|OffenseType|Protected|Relevance|RemoteDestinationCount|Severity|SourceAddress|StartTime|Status|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Firewall Session Closed,<br/>Host Port Scan | 3 | Outbound port scan<br/> | 8.8.8.8| Net-10-172-192.Net_10_0_0_0 | 5 | 0 | false | 450 | 2020-07-22T14:45:39.082000Z | 2 | 8.8.8.8| Source IP | false | 0 | 0 | 5 | 8.8.8.8| 2020-07-22T14:40:43.870000Z | OPEN |
 
 
 ### qradar-get-assets
+
 ***
 List all assets found in the model
 
@@ -522,12 +571,13 @@ List all assets found in the model
 #### Base Command
 
 `qradar-get-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Query to filter assets. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html | Optional | 
+| filter | Query to filter assets. For refernce please consult: <https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html> | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html> | Optional | 
 | range | Range of results to return. e.g.: 0-20 | Optional | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers) | Optional | 
 
@@ -548,9 +598,11 @@ List all assets found in the model
 
 
 #### Command Example
+
 ```!qradar-get-assets range=0-1```
 
 #### Context Example
+
 ```
 {
     "Endpoint": {
@@ -585,21 +637,28 @@ List all assets found in the model
 #### Human Readable Output
 
 >### QRadar Assets
+>
 >### Asset(ID:1914)
+>
 >|LastUser|Property Name|Value|
 >|---|---|---|
 >| IDENTITY:0 | Name | ec2.us.compute-1.amazonaws.com |
+>
 >### Asset(ID:1928)
+>
 >|LastUser|Property Name|Value|
 >|---|---|---|
 >| IDENTITY:0 | Name | ec2.us.compute-1.amazonaws.com |
+>
 >### Endpoint
+>
 >|IPAddress|
 >|---|
 >| 8.8.8.8<br/>8.8.8.8|
 
 
 ### qradar-get-asset-by-id
+
 ***
 Retrieves the asset by id
 
@@ -607,6 +666,7 @@ Retrieves the asset by id
 #### Base Command
 
 `qradar-get-asset-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -645,9 +705,11 @@ Retrieves the asset by id
 
 
 #### Command Example
+
 ```!qradar-get-asset-by-id asset_id=1928```
 
 #### Context Example
+
 ```
 {
     "Endpoint": {
@@ -674,17 +736,22 @@ Retrieves the asset by id
 #### Human Readable Output
 
 >### QRadar Asset
+>
 >### Asset(ID:1928)
+>
 >|LastUser|Property Name|Value|
 >|---|---|---|
 >| IDENTITY:0 | Name | ec2.us.compute-1.amazonaws.com |
+>
 >### Endpoint
+>
 >|IPAddress|MACAddress|
 >|---|---|
 >| 8.8.8.8| Unknown NIC |
 
 
 ### qradar-get-closing-reasons
+
 ***
 Get closing reasons
 
@@ -692,14 +759,15 @@ Get closing reasons
 #### Base Command
 
 `qradar-get-closing-reasons`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | include_reserved | If true, reserved closing reasons are included in the response | Optional | 
 | include_deleted | If true, deleted closing reasons are included in the response | Optional | 
-| filter | Query to filter results. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html | Optional | 
+| filter | Query to filter results. For refernce please consult: <https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html> | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html> | Optional | 
 | range | Range of results to return. e.g.: 0-20 | Optional | 
 
 
@@ -712,9 +780,11 @@ Get closing reasons
 
 
 #### Command Example
+
 ```!qradar-get-closing-reasons include_reserved=false```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -747,6 +817,7 @@ Get closing reasons
 #### Human Readable Output
 
 >### Offense Closing Reasons
+>
 >|ID|Name|IsReserved|IsDeleted|
 >|---|---|---|---|
 >| 2 | False-Positive, Tuned | false | false |
@@ -755,6 +826,7 @@ Get closing reasons
 
 
 ### qradar-create-note
+
 ***
 Create a note on an offense
 
@@ -762,13 +834,14 @@ Create a note on an offense
 #### Base Command
 
 `qradar-create-note`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | offense_id | The offense ID to add the note to | Required | 
 | note_text | The note text | Required | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html> | Optional | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers) | Optional | 
 
 
@@ -783,9 +856,11 @@ Create a note on an offense
 
 
 #### Command Example
+
 ```!qradar-create-note offense_id=450 note_text="XSOAR has the best documentation!"```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -802,12 +877,14 @@ Create a note on an offense
 #### Human Readable Output
 
 >### QRadar Note
+>
 >|CreateTime|CreatedBy|ID|Text|
 >|---|---|---|---|
 >| 2020-09-02T08:12:47.314000Z | API_user: admin | 1238 | XSOAR has the best documentation! |
 
 
 ### qradar-get-note
+
 ***
 Retrieve a note for an offense
 
@@ -815,13 +892,14 @@ Retrieve a note for an offense
 #### Base Command
 
 `qradar-get-note`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | offense_id | The offense ID to retrieve the note from | Required | 
 | note_id | The note ID | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html> | Optional | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers) | Optional | 
 
 
@@ -836,9 +914,11 @@ Retrieve a note for an offense
 
 
 #### Command Example
+
 ```!qradar-get-note offense_id=450 note_id=1232```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -855,12 +935,14 @@ Retrieve a note for an offense
 #### Human Readable Output
 
 >### QRadar note for offense: 450
+>
 >|CreateTime|CreatedBy|ID|Text|
 >|---|---|---|---|
 >| 2020-09-02T06:39:24.601000Z | API_user: admin | 1232 | XSOAR has the best documentation! |
 
 
 ### qradar-get-reference-by-name
+
 ***
 Information about the reference set that had data added or updated. This returns information set but not the contained data. This feature is supported from version 8.1 and upward.
 
@@ -868,6 +950,7 @@ Information about the reference set that had data added or updated. This returns
 #### Base Command
 
 `qradar-get-reference-by-name`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -891,9 +974,11 @@ Information about the reference set that had data added or updated. This returns
 
 
 #### Command Example
+
 ```!qradar-get-reference-by-name ref_name=Date date_value=True```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -911,12 +996,14 @@ Information about the reference set that had data added or updated. This returns
 #### Human Readable Output
 
 >### QRadar References
+>
 >|CreationTime|ElementType|Name|NumberOfElements|TimeoutType|
 >|---|---|---|---|---|
 >| 2020-09-02T08:12:49.020000Z | DATE | Date | 0 | UNKNOWN |
 
 
 ### qradar-create-reference-set
+
 ***
 Creates a new reference set. If the provided name is already in use, this command will fail
 
@@ -924,6 +1011,7 @@ Creates a new reference set. If the provided name is already in use, this comman
 #### Base Command
 
 `qradar-create-reference-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -946,9 +1034,11 @@ Creates a new reference set. If the provided name is already in use, this comman
 
 
 #### Command Example
+
 ```!qradar-create-reference-set ref_name=Date element_type=DATE```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -966,12 +1056,14 @@ Creates a new reference set. If the provided name is already in use, this comman
 #### Human Readable Output
 
 >### QRadar References
+>
 >|CreationTime|ElementType|Name|NumberOfElements|TimeoutType|
 >|---|---|---|---|---|
 >| 2020-09-02T08:12:49.020000Z | DATE | Date | 0 | UNKNOWN |
 
 
 ### qradar-delete-reference-set
+
 ***
 Deletes a reference set corresponding to the name provided.
 
@@ -979,6 +1071,7 @@ Deletes a reference set corresponding to the name provided.
 #### Base Command
 
 `qradar-delete-reference-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -991,9 +1084,11 @@ Deletes a reference set corresponding to the name provided.
 There is no context output for this command.
 
 #### Command Example
+
 ```!qradar-delete-reference-set ref_name=Date```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -1003,6 +1098,7 @@ There is no context output for this command.
 >Reference Data Deletion Task for 'Date' was initiated. Reference set 'Date' should be deleted shortly.
 
 ### qradar-create-reference-set-value
+
 ***
 Add or update a value in a reference set.
 
@@ -1010,6 +1106,7 @@ Add or update a value in a reference set.
 #### Base Command
 
 `qradar-create-reference-set-value`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1032,9 +1129,11 @@ Add or update a value in a reference set.
 
 
 #### Command Example
+
 ```!qradar-create-reference-set-value ref_name=Date value=2018-11-27T11:34:23.110000Z date_value=True```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -1052,12 +1151,14 @@ Add or update a value in a reference set.
 #### Human Readable Output
 
 >### Element value was updated successfully in reference set:
+>
 >|CreationTime|ElementType|Name|NumberOfElements|TimeoutType|
 >|---|---|---|---|---|
 >| 2020-09-02T08:12:49.020000Z | DATE | Date | 1 | UNKNOWN |
 
 
 ### qradar-update-reference-set-value
+
 ***
 Adds or updates a value in a reference set.
 
@@ -1065,6 +1166,7 @@ Adds or updates a value in a reference set.
 #### Base Command
 
 `qradar-update-reference-set-value`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1087,9 +1189,11 @@ Adds or updates a value in a reference set.
 
 
 #### Command Example
+
 ```!qradar-update-reference-set-value ref_name="Documentation Reference" value="Important information" source="Documentation"```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -1107,12 +1211,14 @@ Adds or updates a value in a reference set.
 #### Human Readable Output
 
 >### Element value was updated successfully in reference set:
+>
 >|CreationTime|ElementType|Name|NumberOfElements|TimeoutType|
 >|---|---|---|---|---|
 >| 2020-09-02T06:45:52.294000Z | ALNIC | Documentation Reference | 1 | UNKNOWN |
 
 
 ### qradar-delete-reference-set-value
+
 ***
 Deletes a value in a reference set.
 
@@ -1120,6 +1226,7 @@ Deletes a value in a reference set.
 #### Base Command
 
 `qradar-delete-reference-set-value`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1141,9 +1248,11 @@ Deletes a value in a reference set.
 
 
 #### Command Example
+
 ```!qradar-delete-reference-set-value ref_name=Date value=1543318463000```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -1161,12 +1270,14 @@ Deletes a value in a reference set.
 #### Human Readable Output
 
 >### Element value was deleted successfully in reference set:
+>
 >|CreationTime|ElementType|Name|NumberOfElements|TimeoutType|
 >|---|---|---|---|---|
 >| 2020-09-02T08:12:49.020000Z | DATE | Date | 0 | UNKNOWN |
 
 
 ### qradar-get-domains
+
 ***
 Retrieve all Domains
 
@@ -1174,11 +1285,12 @@ Retrieve all Domains
 #### Base Command
 
 `qradar-get-domains`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html> | Optional | 
 | range | Number of results in return | Optional | 
 | filter | Query to filter offenses | Optional | 
 
@@ -1203,9 +1315,11 @@ Retrieve all Domains
 
 
 #### Command Example
+
 ```!qradar-get-domains```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -1229,6 +1343,7 @@ Retrieve all Domains
 #### Human Readable Output
 
 >### Domains Found
+>
 >|AssetScannerIDs|CustomProperties|Deleted|Description|EventCollectorIDs|FlowCollectorIDs|FlowSourceIDs|ID|LogSourceGroupIDs|LogSourceIDs|Name|QVMScannerIDs|TenantID|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  |  | false |  |  |  |  | 0 |  |  |  |  | 0 |
@@ -1236,6 +1351,7 @@ Retrieve all Domains
 
 
 ### qradar-get-domain-by-id
+
 ***
 Retrieves Domain information By ID
 
@@ -1243,12 +1359,13 @@ Retrieves Domain information By ID
 #### Base Command
 
 `qradar-get-domain-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of the domain | Required | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html> | Optional | 
 
 
 #### Context Output
@@ -1271,9 +1388,11 @@ Retrieves Domain information By ID
 
 
 #### Command Example
+
 ```!qradar-get-domain-by-id id=0```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -1289,12 +1408,14 @@ Retrieves Domain information By ID
 #### Human Readable Output
 
 >### Domains Found
+>
 >|Deleted|ID|TenantID|
 >|---|---|---|
 >| false | 0 | 0 |
 
 
 ### qradar-upload-indicators
+
 ***
 Uploads indicators from Cortex XSOAR to Qradar.
 
@@ -1302,6 +1423,7 @@ Uploads indicators from Cortex XSOAR to Qradar.
 #### Base Command
 
 `qradar-upload-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1320,9 +1442,11 @@ Uploads indicators from Cortex XSOAR to Qradar.
 There is no context output for this command.
 
 #### Command Example
+
 ```!qradar-upload-indicators query=type:IP ref_name="XSOAR IP Indicators"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -1330,15 +1454,19 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### reference set XSOAR IP Indicators was updated
+>
 >|Name|ElementType|TimeoutType|CreationTime|NumberOfElements|
 >|---|---|---|---|---|
 >| XSOAR IP Indicators | ALNIC | UNKNOWN | 2020-09-02T06:59:41.266000Z | 276 |
+>
 >### Indicators list
+>
 >|Value|Type|
 >|---|---|
 >| 8.8.8.8| IP |
 
 ### qradar-reset-last-run
+
 ***
 Reset fetch incidents last run value, which resets the fetch to its initial fetch state (will try to fetch first available offense).
 
@@ -1346,6 +1474,7 @@ Reset fetch incidents last run value, which resets the fetch to its initial fetc
 #### Base Command
 
 `qradar-reset-last-run`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1355,9 +1484,11 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!qradar-reset-last-run```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -1367,6 +1498,7 @@ There is no context output for this command.
 >fetch-incidents was reset successfully.
 
 ### get-mapping-fields
+
 ***
 Returns the list of fields for an incident type. This command is for debugging purposes.
 
@@ -1374,6 +1506,7 @@ Returns the list of fields for an incident type. This command is for debugging p
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1381,7 +1514,9 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### qradar-get-custom-properties
+
 ***
 Retrieves a list of event regex properties.
 
@@ -1389,6 +1524,7 @@ Retrieves a list of event regex properties.
 #### Base Command
 
 `qradar-get-custom-properties`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1419,9 +1555,11 @@ Retrieves a list of event regex properties.
 
 
 #### Command Example
+
 ```!qradar-get-custom-properties field_name="AVT-App-Name" like_name="rule" limit=2```
 
 #### Context Example
+
 ```
 {
     "QRadar": {
@@ -1462,6 +1600,7 @@ Retrieves a list of event regex properties.
 #### Human Readable Output
 
 >### QRadar: Custom Properties:
+>
 >|auto_discovered|creation_date|description|id|identifier|modification_date|name|property_type|use_for_rule_engine|username|
 >|---|---|---|---|---|---|---|---|---|---|
 >| false | 2012-07-04 17:05:02 |  | 213 | DEFAULT_ACF2_RULE_KEY | 2012-07-04 17:05:02 | ACF2 rule key | string | true | admin |
