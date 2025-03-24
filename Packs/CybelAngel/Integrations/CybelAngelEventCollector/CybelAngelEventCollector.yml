@@ -204,5 +204,6 @@ fromversion: 8.0.0
 marketplaces:
   - xsoar
   - marketplacev2
+  - platform
 tests:
 - CybelAngel Test Playbook
