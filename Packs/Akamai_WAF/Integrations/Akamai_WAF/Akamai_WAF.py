@@ -2322,7 +2322,8 @@ class Client(BaseClient):
 
         Args:
             stream_id: integer. Uniquely identifies the stream.
-            version: integer. Identifies the version of the stream. If omitted, the operation returns the latest version of the stream.
+            version: integer. Identifies the version of the stream. If omitted, the operation returns the latest version of the
+            stream.
 
         Returns:
             <Response [200]>
@@ -2432,11 +2433,11 @@ class Client(BaseClient):
                                  contract_id: str,
                                  ) -> dict:
         """
-        Bulk activate a set of property versions. Alternately, perform a bulk fallback to the previous activation within an hour of
-        the previous bulk activation. Base the set of versions to activate on the results of a bulk patch operation, which you use
-        in this operation's request. This operation launches an asynchronous process to update properties. To check its progress,
-        run the List bulk-activated properties operation, whose link is available in the Location header or bulkActivationLink
-        member of this operation's response. See Bulk Search and Update for overall guidance on this feature.
+        Bulk activate a set of property versions. Alternately, perform a bulk fallback to the previous activation within an hour
+        of the previous bulk activation. Base the set of versions to activate on the results of a bulk patch operation, which you
+        use in this operation's request. This operation launches an asynchronous process to update properties. To check its
+        progress, run the List bulk-activated properties operation, whose link is available in the Location header or
+        bulkActivationLink member of this operation's response. See Bulk Search and Update for overall guidance on this feature.
 
         Args:
             properties: Properties to be activated.
@@ -7042,11 +7043,11 @@ def bulk_property_activation_command(client: Client,
                                      contract_id: str,
                                      ) -> tuple[str, dict, Union[list, dict]]:
     """
-        Bulk activate a set of property versions. Alternately, perform a bulk fallback to the previous activation within an hour of
-        the previous bulk activation. Base the set of versions to activate on the results of a bulk patch operation, which you use
-        in this operation's request. This operation launches an asynchronous process to update properties. To check its progress,
-        run the List bulk-activated properties operation, whose link is available in the Location header or bulkActivationLink
-        member of this operation's response. See Bulk Search and Update for overall guidance on this feature.
+        Bulk activate a set of property versions. Alternately, perform a bulk fallback to the previous activation within an hour
+        of the previous bulk activation. Base the set of versions to activate on the results of a bulk patch operation, which you
+        use in this operation's request. This operation launches an asynchronous process to update properties. To check its
+        progress, run the List bulk-activated properties operation, whose link is available in the Location header or
+        bulkActivationLink member of this operation's response. See Bulk Search and Update for overall guidance on this feature.
 
     Args:
         properties: Properties to be activated.
