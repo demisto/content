@@ -939,9 +939,7 @@ class EndaceApp:
                                 for file in payload:
                                     if result["FileName"] == file["name"] and len(file["id"]) and file["type"] == "archive_file":
                                         #   File available to delete
-                                        archived_file_path = (
-                                            f'files?_={calendar.timegm(time.gmtime())!s}000&files={file["id"]}'
-                                        )
+                                        archived_file_path = f'files?_={calendar.timegm(time.gmtime())!s}000&files={file["id"]}'
                                         df = api.delete(archived_file_path)
                                         try:
                                             response = df.json()
