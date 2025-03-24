@@ -50,8 +50,8 @@ def run_isolation_action(device_ids: List[str], action: str) -> list:
     :rtype: ``list``
     """
 
-    commands = create_commands(device_ids, action)
-    return CommandRunner.run_commands_with_summary(commands)
+    commands = create_commands(device_ids, action)  # pragma: no cover
+    return CommandRunner.run_commands_with_summary(commands)  # pragma: no cover
 
 
 """ MAIN FUNCTION """

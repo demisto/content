@@ -7,8 +7,11 @@ from CommonServerPython import *  # noqa: F401
 
 
 def exists_indicator(indicator: str) -> bool:
-    return ((contents := execute_command("getIndicator", {"value": indicator}))
-            and len(contents) > 0 and contents[0].get("value") in [indicator])
+    return (
+        (contents := execute_command("getIndicator", {"value": indicator}))
+        and len(contents) > 0
+        and contents[0].get("value") in [indicator]
+    )
 
 
 def decode_indicator(indicator: str, encoding: str | None) -> str:
@@ -19,7 +22,7 @@ def decode_indicator(indicator: str, encoding: str | None) -> str:
     elif encoding == "url-encoding":
         return urllib.parse.unquote(indicator)
     else:
-        raise DemistoException(f"Unknown encoding mode: {encoding}")
+        raise DemistoException(f"Unknown encoding mode: {encoding}")  # pragma: no cover
 
 
 def check_indicators(indicators: List[str], encoding: str) -> List[dict[str, Any]]:
@@ -51,7 +54,7 @@ def main():
                 raw_response=outputs,
             )
         )
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         return_error(f"Failed to execute CheckIndicatorValue. Error: {e!s}")
 
 

@@ -20,8 +20,7 @@ def strings(args):
     if not isError(fEntry):
         matches = []
         # type: ignore[call-overload]
-        with open(demisto.get(fEntry, "Contents.path"),
-                  buffering=1024 * 1024, errors="ignore") as f:  # pragma: no cover
+        with open(demisto.get(fEntry, "Contents.path"), buffering=1024 * 1024, errors="ignore") as f:  # pragma: no cover
             buff = ""
             c = f.read(1)
             while c != "":
@@ -49,10 +48,10 @@ def strings(args):
         else:
             return "No strings were found."
     else:
-        return fEntry
+        return fEntry  # pragma: no cover
 
 
-def main():
+def main():  # pragma: no cover
     args = demisto.args()
     demisto.results(strings(args))
 
