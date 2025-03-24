@@ -1,13 +1,13 @@
+from collections.abc import Callable
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from typing import Any, Callable, Dict, List, Tuple, Optional
-
 import urllib3
-
+from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
 urllib3.disable_warnings()
-INTEGRATION_NAME = 'Prisma Access'
+INTEGRATION_NAME = "Prisma Access"
 
 
 class Client(BaseClient):
@@ -17,8 +17,15 @@ class Client(BaseClient):
     https://docs.paloaltonetworks.com/prisma/prisma-access/prisma-access-panorama-admin/prisma-access-overview/retrieve-ip-addresses-for-prisma-access
     """
 
-    def __init__(self, clientConfigs: list, api_key: str, insecure: bool = False, proxy: bool = False,
-                 tags: Optional[list] = [], tlp_color: Optional[str] = None):
+    def __init__(
+        self,
+        clientConfigs: list,
+        api_key: str,
+        insecure: bool = False,
+        proxy: bool = False,
+        tags: list | None = [],
+        tlp_color: str | None = None,
+    ):
         """
         Implements class for Prisma Access feed.
         :param clientConfigs: config data
@@ -31,7 +38,7 @@ class Client(BaseClient):
         self.tlp_color = tlp_color
         super().__init__(base_url=clientConfigs, verify=not insecure, proxy=proxy)
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
 
         Returns:
@@ -39,62 +46,52 @@ class Client(BaseClient):
         """
         result = []
         for feed_obj in self._base_url:
-            feed_url = feed_obj.get('FeedURL')
-            postData = feed_obj.get('feedParams',
-                                    {"serviceType": 'all',
-                                     "addrType": 'all',
-                                     "location": 'all'})
+            feed_url = feed_obj.get("FeedURL")
+            postData = feed_obj.get("feedParams", {"serviceType": "all", "addrType": "all", "location": "all"})
 
             try:
                 response = requests.post(
-                    url=feed_url,
-                    verify=self._verify,
-                    headers={
-                        'header-api-key': self._apiKey
-                    },
-                    data=json.dumps(postData)
+                    url=feed_url, verify=self._verify, headers={"header-api-key": self._apiKey}, data=json.dumps(postData)
                 )
                 response.raise_for_status()
                 responseData = response.json()
-                prismaStatus = responseData.get('status', '')
-                if 'success' == prismaStatus:
-                    zones = responseData.get('result', [])
+                prismaStatus = responseData.get("status", "")
+                if prismaStatus == "success":
+                    zones = responseData.get("result", [])
                     for z in zones:
-                        zoneName = z.get('zone', '')
-                        addresses = z.get('addresses', [])
+                        zoneName = z.get("zone", "")
+                        addresses = z.get("addresses", [])
                         for addr in addresses:
-                            indicator = {
-                                "zone": zoneName,
-                                "value": addr,
-                                "FeedURL": feed_url
-                            }
-                            if postData['serviceType'] != 'all':
-                                indicator['serviceType'] = postData['serviceType']
-                            if postData['addrType'] != 'all':
-                                indicator['addrType'] = postData['addrType']
+                            indicator = {"zone": zoneName, "value": addr, "FeedURL": feed_url}
+                            if postData["serviceType"] != "all":
+                                indicator["serviceType"] = postData["serviceType"]
+                            if postData["addrType"] != "all":
+                                indicator["addrType"] = postData["addrType"]
                             result.append(indicator)
                 else:
                     demisto.debug(str(prismaStatus))
-                    raise Exception(f'Non-success status returned from call to {INTEGRATION_NAME}.\n'
-                                    f'Raw response: ' + json.dumps(responseData, indent=2))
+                    raise Exception(
+                        f"Non-success status returned from call to {INTEGRATION_NAME}.\n"
+                        f"Raw response: " + json.dumps(responseData, indent=2)
+                    )
             except requests.exceptions.SSLError as err:
                 demisto.debug(str(err))
-                raise Exception(f'SSL error in the API call to {INTEGRATION_NAME}.\n'
-                                f'Check your not secure parameter.\n\n{err}')
+                raise Exception(f"SSL error in the API call to {INTEGRATION_NAME}.\nCheck your not secure parameter.\n\n{err}")
             except requests.ConnectionError as err:
                 demisto.debug(str(err))
-                raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                                f'Check your Server URL parameter.\n\n{err}')
+                raise Exception(
+                    f"Connection error in the API call to {INTEGRATION_NAME}.\nCheck your Server URL parameter.\n\n{err}"
+                )
             except requests.exceptions.HTTPError as err:
                 demisto.debug(str(err))
-                raise Exception(f'HTTP error in the API call to {INTEGRATION_NAME}:\n\n' + str(err))
+                raise Exception(f"HTTP error in the API call to {INTEGRATION_NAME}:\n\n" + str(err))
             except ValueError as err:
                 demisto.debug(str(err))
-                raise ValueError(f'Could not parse returned data to Json. \n\nError message: {err}')
+                raise ValueError(f"Could not parse returned data to Json. \n\nError message: {err}")
         return result
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -103,10 +100,10 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
         Outputs.
     """
     client.build_iterator()
-    return 'ok', {}, {}
+    return "ok", {}, {}
 
 
-def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
+def fetch_indicators(client: Client, limit: int = -1) -> list[dict]:
     """Retrieves indicators from the feed
 
     Args:
@@ -122,32 +119,34 @@ def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
         iterator = iterator[:limit]
 
     for item in iterator:
-        value = item.get('value')
+        value = item.get("value")
         raw_data = {
             "value": value,
-            "serviceType": item.get('serviceType', ''),
-            "addrType": item.get('addrType', ''),
-            "zone": item.get('zone', '')
+            "serviceType": item.get("serviceType", ""),
+            "addrType": item.get("addrType", ""),
+            "zone": item.get("zone", ""),
         }
         indicator_mapping_fields = {}
-        indicator_mapping_fields['geocountry'] = item.get('zone', '')
-        indicator_mapping_fields["description"] = 'IP from Prisma Access Egress API'
-        indicator_mapping_fields['tags'] = client.tags
+        indicator_mapping_fields["geocountry"] = item.get("zone", "")
+        indicator_mapping_fields["description"] = "IP from Prisma Access Egress API"
+        indicator_mapping_fields["tags"] = client.tags
         if client.tlp_color:
-            indicator_mapping_fields['trafficlightprotocol'] = client.tlp_color
+            indicator_mapping_fields["trafficlightprotocol"] = client.tlp_color
 
-        indicators.append({
-            "value": value,
-            "type": FeedIndicatorType.IP,
-            "rawJSON": raw_data,
-            "fields": indicator_mapping_fields,
-            "zone": item.get('zone', '')
-        })
+        indicators.append(
+            {
+                "value": value,
+                "type": FeedIndicatorType.IP,
+                "rawJSON": raw_data,
+                "fields": indicator_mapping_fields,
+                "zone": item.get("zone", ""),
+            }
+        )
 
     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def get_indicators_command(client: Client, args: dict[str, str]) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
@@ -157,27 +156,18 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     Returns:
         Outputs.
     """
-    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 0
+    limit = int(demisto.args().get("limit")) if "limit" in demisto.args() else 0
     indicators = fetch_indicators(client, limit)
-    human_readable = tableToMarkdown('Prisma Access Egress IPs:', indicators,
-                                     headers=['zone', 'value'], removeNull=True)
+    human_readable = tableToMarkdown("Prisma Access Egress IPs:", indicators, headers=["zone", "value"], removeNull=True)
 
-    outputs = {
-        'PrismaAccess.Egress.IP':
-            [
-                {
-                    'Address': ip.get('value', ''),
-                    'Zone': ip.get('zone', '')
-                } for ip in indicators
-            ]
-    }
+    outputs = {"PrismaAccess.Egress.IP": [{"Address": ip.get("value", ""), "Zone": ip.get("zone", "")} for ip in indicators]}
 
-    retIndicators = {'raw_response': indicators}
+    retIndicators = {"raw_response": indicators}
 
     return human_readable, outputs, retIndicators
 
 
-def fetch_indicators_command(client: Client) -> List[Dict]:
+def fetch_indicators_command(client: Client) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
@@ -191,54 +181,53 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
 
 
 def main():
-    PRISMA_ACCESS_EGRESS_V2_URI = 'getPrismaAccessIP/v2'
+    PRISMA_ACCESS_EGRESS_V2_URI = "getPrismaAccessIP/v2"
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    param_api_key = params.get('api_key') or (params.get('credentials') or {}).get('password')
+    param_api_key = params.get("api_key") or (params.get("credentials") or {}).get("password")
     if not param_api_key:
-        raise Exception('API Key must be provided.')
-    insecure = params.get('insecure', False)
-    proxy = params.get('proxy')
-    tags = argToList(params.get('feedTags'))
-    tlp_color = params.get('tlp_color')
-    baseURL = params.get('URL')
-    if baseURL[-1] != '/':
-        baseURL += '/'
+        raise Exception("API Key must be provided.")
+    insecure = params.get("insecure", False)
+    proxy = params.get("proxy")
+    tags = argToList(params.get("feedTags"))
+    tlp_color = params.get("tlp_color")
+    baseURL = params.get("URL")
+    if baseURL[-1] != "/":
+        baseURL += "/"
     feedURL = baseURL + PRISMA_ACCESS_EGRESS_V2_URI
 
     feedParams = {
-        "serviceType": demisto.params().get('serviceType', 'all'),
-        "addrType": demisto.params().get('addrType', 'all'),
-        "location": demisto.params().get('location', 'all')
+        "serviceType": demisto.params().get("serviceType", "all"),
+        "addrType": demisto.params().get("addrType", "all"),
+        "location": demisto.params().get("location", "all"),
     }
-    clientConfigs = [{'FeedURL': feedURL,
-                      'feedParams': feedParams}]
+    clientConfigs = [{"FeedURL": feedURL, "feedParams": feedParams}]
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.info(f"Command being called is {command}")
 
     try:
         client = Client(clientConfigs, param_api_key, insecure, proxy, tags, tlp_color)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
-            'test-module': test_module,
-            'prisma-access-get-indicators': get_indicators_command
+        commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any]]]] = {
+            "test-module": test_module,
+            "prisma-access-get-indicators": get_indicators_command,
         }
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
 
-        elif command == 'fetch-indicators':
+        elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
         else:
-            raise NotImplementedError(f'Command {command} is not implemented.')
+            raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as err:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration. [{err}]'
+        err_msg = f"Error in {INTEGRATION_NAME} Integration. [{err}]"
         return_error(err_msg)
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()
