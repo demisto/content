@@ -13,9 +13,16 @@
     "keywords": [],
     "marketplaces": [
         "xsoar_saas",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "cheersmann"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
