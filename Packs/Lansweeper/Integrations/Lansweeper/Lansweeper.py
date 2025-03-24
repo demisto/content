@@ -7,7 +7,7 @@ import urllib3
 from CommonServerUserPython import *  # noq
 
 # Disable insecure warnings
-urllib3.disable_warnings()n
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
