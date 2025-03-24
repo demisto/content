@@ -21,5 +21,9 @@
     ],
     "keywords": [
         "Analytics & SIEM"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

@@ -16,14 +16,14 @@ This integration was integrated and tested with version 1.0 of Anomali_SA_Alerts
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### security-analytics-search-job-create
+### anomali-security-analytics-alerts-search-job-create
 
 ***
 create a new search job
 
 #### Base Command
 
-`security-analytics-search-job-create`
+`anomali-security-analytics-alerts-search-job-create`
 
 #### Input
 
@@ -41,14 +41,14 @@ create a new search job
 |job_id|status|
 |---|---|
 | 7af7bc62c807446fa4bf7ad12dfbe64b | in progress |
-### security-analytics-search-job-status
+### anomali-security-analytics-alerts-search-job-status
 
 ***
 query a search job status
 
 #### Base Command
 
-`security-analytics-search-job-status`
+`anomali-security-analytics-alerts-search-job-status`
 
 #### Input
 
@@ -62,14 +62,14 @@ query a search job status
 |job_id|status|
 |---|---|
 | 7af7bc62c807446fa4bf7ad12dfbe64b | DONE |
-### security-analytics-search-job-results
+### anomali-security-analytics-alerts-search-job-results
 
 ***
 get search job results
 
 #### Base Command
 
-`security-analytics-search-job-results`
+`anomali-security-analytics-alerts-search-job-results`
 
 #### Input
 
@@ -86,14 +86,14 @@ get search job results
 | 905 | AlertTriageDemo | test@anomali.com | new    | high     | 1741867250299   | 7af7bc62c807446fa4bf7ad12dfbe64b         |
 
 
-### security-analytics-update-alert-status
+### anomali-security-analytics-alerts-update-alert-status
 
 ***
 update status of alert
 
 #### Base Command
 
-`security-analytics-update-alert-status`
+`anomali-security-analytics-alerts-update-alert-status`
 
 #### Input
 
@@ -108,14 +108,14 @@ update status of alert
 |message|
 |---|
 | Table (alert) was successfully updated. |
-### security-analytics-update-alert-comment
+### anomali-security-analytics-alerts-update-alert-comment
 
 ***
 update comment of alert
 
 #### Base Command
 
-`security-analytics-update-alert-comment`
+`anomali-security-analytics-alerts-update-alert-comment`
 
 #### Input
 

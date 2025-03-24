@@ -1,8 +1,7 @@
 """
-Anomali Security Analysis Alerts Integration
+Anomali Security Analytics Alerts Integration
 """
 
-from typing import Dict, List
 from datetime import datetime
 import urllib3
 import demistomock as demisto
@@ -15,14 +14,14 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-VENDOR_NAME = 'Threatstream SA Alerts'
+VENDOR_NAME = 'Anomali Security Analytics Alerts'
 
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
     """
-    Client to use in the Threatstream Alerts integration.
+    Client to use in the Anomali Security Analytics Alerts integration.
     """
 
     def __init__(self, server_url: str, username: str, api_key: str, verify: bool, proxy: bool):
@@ -108,25 +107,23 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
     """
     query = str(args.get('query', ''))
     source = str(args.get('source', ''))
-    from_ = str(args.get('from', '1 day'))
-    to_ = str(args.get('to', ''))
-    timezone = str(args.get('timezone', 'UTC'))
+    from_datetime = arg_to_datetime(args.get('from', '1 day'), 
+                                    arg_name='from', 
+                                    is_utc=True, 
+                                    required=False)
 
-    from_iso = parse_date_range(from_, date_format=DATE_FORMAT)[0]
-    if to_:
-        to_iso = parse_date_range(to_, date_format=DATE_FORMAT)[0]
+    if args.get('to'):
+        to_datetime = arg_to_datetime(args.get('to'), 
+                                      arg_name='to', 
+                                      is_utc=True, 
+                                      required=False)
     else:
-        to_iso = datetime.now().strftime(DATE_FORMAT)
+        to_datetime = datetime.now(tz=timezone.utc)
 
-    try:
-        dt_from = datetime.strptime(from_iso, DATE_FORMAT)
-        dt_to = datetime.strptime(to_iso, DATE_FORMAT)
-    except Exception as e:
-        raise Exception(f"Error parsing dates with format {DATE_FORMAT}: {str(e)}")
-
-    time_from_ms = int(dt_from.timestamp() * 1000)
-    time_to_ms = int(dt_to.timestamp() * 1000)
-
+    time_from_ms = int(from_datetime.timestamp() * 1000)
+    time_to_ms = int(to_datetime.timestamp() * 1000)
+    timezone = str(args.get('timezone', 'UTC'))
+    
     time_range = {
         "from": time_from_ms,
         "to": time_to_ms,
@@ -148,22 +145,26 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
     )
 
 
-def command_get_search_job_status(client: Client, args: Dict) -> List[CommandResults]:
+def command_get_search_job_status(client: Client, args: dict) -> list[CommandResults]:
     """Get the search job status.
 
     Args:
         client (Client): Client object with request
-        args (Dict): Usually demisto.args()
+        args (dict): Usually demisto.args()
 
     Returns:
-        List[CommandResults]: A list of command results containing the job status.
+        list[CommandResults]: A list of command results containing the job status.
     """
-    job_ids = argToList(str(args.get('job_id')))
-    command_results: List[CommandResults] = []
+    job_ids = argTolist(str(args.get('job_id')))
+    command_results: list[CommandResults] = []
     for job_id in job_ids:
         response = client.get_search_job_status(job_id)
         if 'error' in response:
-            raise Exception(f"{str(response.get('error'))}. Job ID might have expired.")
+            raise Exception(
+                f"Unable to retrieve search job status: {response.get('error')}. "
+                f"This may happen if the Job ID has expired or is incorrect. "
+                f"Please verify the Job ID and try again."
+            )
 
         status_value = response.get('status')
         outputs = {"job_id": job_id, "status": status_value}
@@ -180,18 +181,18 @@ def command_get_search_job_status(client: Client, args: Dict) -> List[CommandRes
     return command_results
 
 
-def command_get_search_job_results(client: Client, args: Dict) -> List[CommandResults]:
+def command_get_search_job_results(client: Client, args: dict) -> list[CommandResults]:
     """Get the search job results.
 
     Args:
         client (Client): Client object with request
-        args (Dict): Usually demisto.args()
+        args (dict): Usually demisto.args()
 
     Returns:
-        List[CommandResults]: A list of command results for each job id.
+        list[CommandResults]: A list of command results for each job id.
     """
-    job_ids = argToList(str(args.get('job_id')))
-    command_results: List[CommandResults] = []
+    job_ids = argTolist(str(args.get('job_id')))
+    command_results: list[CommandResults] = []
     for job_id in job_ids:
         response = client.get_search_job_results(job_id)
 
@@ -297,7 +298,13 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        client.get_search_job_status("test")
+        client.create_search_job(
+            query="alert",
+            time_range={
+                "from": 1738681620000,
+                "to": 1738706820000
+            }
+        )
         return "ok"
     except Exception as e:
         raise Exception(f"Test failed: {str(e)}")
@@ -328,16 +335,16 @@ def main():
         )
         args = demisto.args()
         commands = {
-            'security-analytics-search-job-create': command_create_search_job,
-            'security-analytics-search-job-status': command_get_search_job_status,
-            'security-analytics-search-job-results': command_get_search_job_results,
-            'security-analytics-update-alert-status': command_update_alert_status,
-            'security-analytics-update-alert-comment': command_update_alert_comment,
+            'anomali-security-analytics-alerts-search-job-create': command_create_search_job,
+            'anomali-security-analytics-alerts-search-job-status': command_get_search_job_status,
+            'anomali-security-analytics-alerts-search-job-results': command_get_search_job_results,
+            'anomali-security-analytics-alerts-update-alert-status': command_update_alert_status,
+            'anomali-security-analytics-alerts-update-alert-comment': command_update_alert_comment,
         }
         if command == 'test-module':
             return_results(test_module(client))
         elif command in commands:
-            return_results(commands[command](client, demisto.args()))
+            return_results(commands[command](client, args))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 

@@ -1,10 +1,11 @@
 import pytest
-from AnomaliSecurityAnalysisAlerts import *
+from content.Packs.AnomaliSecurityAnalytics.Integrations.AnomaliSecurityAnalytics.AnomaliSecurityAnalytics import *
 import demistomock as demisto
 from CommonServerPython import * 
 from CommonServerUserPython import * 
+from freezegun import freeze_time
 
-VENDOR_NAME = 'Anomali Security Analysis Alerts'
+VENDOR_NAME = 'Anomali Security Analytics Alerts'
 
 
 @pytest.fixture(autouse=True)
@@ -12,6 +13,7 @@ def handle_calling_context(mocker):
     mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': VENDOR_NAME}})
 
 
+@freeze_time("2025-03-01")
 def test_command_create_search_job(mocker):
     """
     Given:
@@ -37,8 +39,7 @@ def test_command_create_search_job(mocker):
     args = {
         'query': 'alert',
         'source': 'source',
-        'from': '10 day',
-        'to': '1 day'
+        'from': '1 day',
     }
 
     result = command_create_search_job(client, args)
@@ -84,6 +85,37 @@ def test_command_get_search_job_status(mocker):
     assert "Search Job Status" in results[0].readable_output
 
 
+def test_command_get_search_job_status_invalid(mocker):
+    """
+    Given:
+        - An invalid job_id
+    
+    When:
+        - client.get_search_job_status returns a response with an error.
+    
+    Then:
+        - Validate that command_get_search_job_status raises an Exception indicating 
+          that the Job ID might be expired or incorrect.
+    """
+    client = Client(
+        server_url='https://test.com',
+        username='test_user',
+        api_key='test_api_key',
+        verify=True,
+        proxy=False
+    )
+
+    return_data = {'error': 'Invalid Job ID'}
+    mocker.patch.object(client, 'get_search_job_status', return_value=return_data)
+
+    args = {
+        'job_id': 'invalid_job'
+    }
+
+    with pytest.raises(Exception, match="Unable to retrieve search job status"):
+        command_get_search_job_status(client, args)
+
+
 def test_command_get_search_job_results(mocker):
     """
     Given:
@@ -127,6 +159,49 @@ def test_command_get_search_job_results(mocker):
     for header in return_data['fields']:
         assert header in human_readable
     assert "record1" in human_readable
+
+
+def test_command_get_search_job_results_no_fields_records(mocker):
+    """
+    Given:
+
+        - A valid job_id
+    
+    When:
+        - client.get_search_job_results returns a response without 'fields' and 'records'
+    
+    Then:
+        - Validate that command_get_search_job_results returns a list of CommandResults
+          with the expected output from the fallback branch
+    """
+    client = Client(
+        server_url='https://test.com',
+        username='test_user',
+        api_key='test_api_key',
+        verify=True,
+        proxy=False
+    )
+
+    return_data = {
+        'result': 'raw data',
+        'complete': True
+    }
+    mocker.patch.object(client, 'get_search_job_results', return_value=return_data)
+
+    args = {
+        'job_id': 'job_no_fields'
+    }
+
+    results = command_get_search_job_results(client, args)
+
+    assert isinstance(results, list)
+    assert len(results) == 1
+    outputs = results[0].outputs
+    assert outputs == return_data
+
+    human_readable = results[0].readable_output
+    assert "Search Job Results" in human_readable
+    assert "raw data" in human_readable
 
 
 def test_command_update_alert_status(mocker):
