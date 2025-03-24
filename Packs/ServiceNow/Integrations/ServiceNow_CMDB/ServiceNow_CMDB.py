@@ -191,7 +191,10 @@ def create_human_readable(title: str, result: dict, fields: str) -> str:
             relation_output = {
                 "SysID": list(map(itemgetter("sys_id"), relations)),
                 "Target Display Value": list(
-                    map(itemgetter("display_value"), list(map(itemgetter("target"), result.get(relation_type))))  # type: ignore[arg-type]
+                    map(
+                        itemgetter("display_value"),
+                        list(map(itemgetter("target"), result.get(relation_type))),  # type: ignore[arg-type]
+                    )
                 ),  # type: ignore
                 "Type Display Value": list(
                     map(
