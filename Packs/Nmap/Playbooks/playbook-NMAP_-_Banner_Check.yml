@@ -504,7 +504,6 @@ tests:
 - Nmap - Test
 fromversion: 6.5.0
 marketplaces:
-- xsoar
-- marketplacev2
-- xpanse
-- platform
+  - xsoar
+  - marketplacev2
+  - xpanse

@@ -13,8 +13,5 @@
             ]
         }
     },
-    "fromVersion": "6.10.0",
-    "marketplaces":[
-        "marketplacev2"
-    ]
+    "fromVersion": "6.10.0"
 }

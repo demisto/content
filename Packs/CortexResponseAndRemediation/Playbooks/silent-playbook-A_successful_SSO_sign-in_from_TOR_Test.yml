@@ -26,7 +26,6 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
-- platform
 name: silent-A successful SSO sign-in from TOR Test
 outputSections:
 - description: Generic group for outputs.

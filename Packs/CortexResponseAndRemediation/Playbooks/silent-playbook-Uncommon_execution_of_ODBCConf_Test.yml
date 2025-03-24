@@ -27,7 +27,6 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
-- platform
 name: silent-Uncommon execution of ODBCConf Test
 outputs: []
 starttaskid: '0'

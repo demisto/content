@@ -19,8 +19,7 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "dependencies": {
         "CommonScripts": {
@@ -45,11 +44,5 @@
         "CoreAlertFields",
         "CommonTypes",
         "CommonPlaybooks"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
     ]
 }

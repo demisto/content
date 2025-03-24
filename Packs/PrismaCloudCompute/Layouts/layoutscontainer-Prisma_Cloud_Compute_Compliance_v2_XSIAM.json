@@ -903,8 +903,7 @@
     "system": false,
     "version": -1,
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "fromVersion": "6.10.0",
     "description": ""

@@ -841,5 +841,4 @@ defaultmapperin: CyCognito - Incoming Mapper
 marketplaces:
 - xsoar
 - marketplacev2
-- platform
 fromversion: 6.2.0

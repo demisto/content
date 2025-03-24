@@ -28,10 +28,3 @@ tests:
 marketplaces:
 - xsoar
 - marketplacev2
-- platform
-supportedModules:
-- X0
-- X1
-- X3
-- X5
-- ENT_PLUS

@@ -41,8 +41,7 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "dependencies": {
         "CommonScripts": {
@@ -73,11 +72,5 @@
         "Digital Shadows",
         "SearchLight"
     ],
-    "defaultDataSource": "ReliaQuest GreyMatter DRP Incidents",
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "defaultDataSource": "ReliaQuest GreyMatter DRP Incidents"
 }

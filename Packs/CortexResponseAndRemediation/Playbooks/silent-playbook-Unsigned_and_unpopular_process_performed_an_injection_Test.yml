@@ -31,7 +31,6 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
-- platform
 name: silent-Unsigned and unpopular process performed an injection Test
 outputs: []
 starttaskid: '0'

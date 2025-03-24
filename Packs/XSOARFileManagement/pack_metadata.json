@@ -17,16 +17,9 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "githubUser": [
         "Winultimatum"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
     ]
 }

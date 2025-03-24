@@ -55,7 +55,6 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
-- platform
 name: silent-Suspicious Hidden User Created Test
 outputs: []
 starttaskid: '0'

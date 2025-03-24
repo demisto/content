@@ -854,6 +854,5 @@ contentitemexportablefields:
     propagationLabels:
     - all
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2

@@ -19,6 +19,5 @@ fromversion: 6.0.0
 marketplaces:
 - xsoar
 - marketplacev2
-- platform
 tests:
 - No tests (auto formatted)

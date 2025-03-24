@@ -20,8 +20,7 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "devEmail": [
         "eparra@lumu.io"
@@ -31,11 +30,5 @@
         "Shellyber",
         "xsoar-bot",
         "content-bot"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
     ]
 }

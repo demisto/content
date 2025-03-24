@@ -56,8 +56,8 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - "audit"
-      - "file"
+        - "audit"
+        - "file"
     description: 'Manual command to get events, used mainly for debugging'
     name: code42-get-events
     outputs: []
@@ -69,7 +69,6 @@ script:
   isfetchevents: true
 fromversion: 8.4.0
 marketplaces:
-- marketplacev2
-- platform
+  - marketplacev2
 tests:
 - No tests (auto formatted)

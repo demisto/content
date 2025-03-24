@@ -22,19 +22,12 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "dependencies": {
         "ContentInstallation": {
             "mandatory": false,
             "display_name": "Content Installation"
         }
-    },
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    }
 }

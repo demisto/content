@@ -30,7 +30,6 @@
     "x2_fields": "user_agent",
     "marketplaces": [
         "marketplacev2",
-        "platform",
         "xpanse"
     ],
     "Aliases": [

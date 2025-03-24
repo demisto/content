@@ -515,8 +515,3 @@ tests:
 - PAN-OS - Block IP - Static Address Group Test
 - PAN-OS DAG Configuration Test
 fromversion: 6.10.0
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS

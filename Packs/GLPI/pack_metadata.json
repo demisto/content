@@ -14,8 +14,7 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "devEmail": [
         "support@secinfra.fr"
@@ -41,11 +40,5 @@
         "CoreAlertFields",
         "CommonTypes",
         "CommonScripts"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
     ]
 }

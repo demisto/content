@@ -26,7 +26,6 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
-- platform
 name: silent-Compromise Accounts - User rejected numerous SSO MFA attempts Test
 outputs: []
 starttaskid: '0'

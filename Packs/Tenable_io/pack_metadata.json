@@ -18,13 +18,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
+        "xpanse"
     ]
 }

@@ -65,7 +65,6 @@ script:
   isfetchevents: true
 marketplaces:
 - marketplacev2
-- platform
 tests:
 - No tests
 fromversion: 6.6.0

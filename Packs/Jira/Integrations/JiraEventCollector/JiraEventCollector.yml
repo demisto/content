@@ -1,7 +1,4 @@
 category: Analytics & SIEM
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Jira Event Collector
   version: -1
@@ -54,10 +51,9 @@ script:
   isfetchevents: true
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.2072021
+  dockerimage: demisto/py3-tools:1.0.0.114656
 marketplaces:
 - marketplacev2
-- platform
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

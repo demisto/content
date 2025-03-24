@@ -27,14 +27,7 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
-    "defaultDataSource": "Darktrace Event Collector",
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "defaultDataSource": "Darktrace Event Collector"
 }

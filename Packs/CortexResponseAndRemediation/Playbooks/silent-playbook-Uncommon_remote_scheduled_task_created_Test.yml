@@ -18,7 +18,6 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
-- platform
 name: silent-Uncommon remote scheduled task created Test
 outputs: []
 starttaskid: '0'

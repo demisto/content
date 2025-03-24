@@ -31,7 +31,6 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
-- platform
 name: silent-Exchange forwarding rule configured Test
 outputSections:
 - description: Generic group for outputs.

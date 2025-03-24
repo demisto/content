@@ -1032,5 +1032,3 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.8.0
-
-

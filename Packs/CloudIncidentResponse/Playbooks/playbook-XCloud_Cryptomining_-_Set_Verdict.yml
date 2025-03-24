@@ -541,7 +541,5 @@ outputs:
   type: string
 tests:
 - No tests (auto formatted)
-marketplaces: 
-- marketplacev2
-- platform
+marketplaces: ["marketplacev2"]
 fromversion: 6.6.0

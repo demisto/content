@@ -1467,8 +1467,5 @@ outputSections:
 outputs: []
 tests:
 - Test Playbook - IOC Alert
-marketplaces: 
-- marketplacev2
-- platform
+marketplaces: ["marketplacev2"]
 fromversion: 6.6.0
-

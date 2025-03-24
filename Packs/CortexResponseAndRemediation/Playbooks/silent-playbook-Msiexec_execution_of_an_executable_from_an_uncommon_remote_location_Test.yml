@@ -25,7 +25,6 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
-- platform
 name: silent-Msiexec execution of an executable from an uncommon remote location Test
 outputs: []
 starttaskid: '0'

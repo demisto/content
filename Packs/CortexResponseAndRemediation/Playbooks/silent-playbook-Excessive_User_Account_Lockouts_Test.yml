@@ -51,7 +51,6 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
-- platform
 name: silent-Excessive User Account Lockouts Test
 outputs: []
 starttaskid: '0'

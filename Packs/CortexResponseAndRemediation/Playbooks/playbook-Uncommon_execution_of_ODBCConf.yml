@@ -733,7 +733,7 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.8.0
-marketplaces: ["marketplacev2", "platform"]
+marketplaces: ["marketplacev2"]
 contentitemexportablefields:
   contentitemfields: {}
 system: true

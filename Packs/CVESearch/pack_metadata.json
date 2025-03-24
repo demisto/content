@@ -20,14 +20,7 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
-    "hidden": true,
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "hidden": true
 }

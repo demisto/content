@@ -1561,7 +1561,6 @@ script:
   type: python
 marketplaces:
 - marketplacev2
-- platform
 tests:
 - XQL Query Engine - Test
 fromversion: 8.7.0

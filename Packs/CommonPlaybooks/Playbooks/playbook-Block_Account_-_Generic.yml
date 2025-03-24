@@ -373,5 +373,4 @@ tests:
 marketplaces:
   - xsoar
   - marketplacev2
-  - platform
 deprecated: true

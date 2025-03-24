@@ -137,6 +137,5 @@ script:
 fromversion: 8.4.0
 marketplaces:
 - marketplacev2
-- platform
 tests:
 - No tests

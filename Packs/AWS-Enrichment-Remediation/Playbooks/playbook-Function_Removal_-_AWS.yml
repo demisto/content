@@ -484,7 +484,6 @@ outputs: []
 tests:
 - No tests (auto formatted)
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2
 fromversion: 6.10.0
