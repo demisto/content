@@ -7,19 +7,27 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-ERROR_CODES_TO_SKIP = [
-    404
-]
+ERROR_CODES_TO_SKIP = [404]
 
-'''CLIENT CLASS'''
+"""CLIENT CLASS"""
 
 
 class Client(BaseClient):
-    """ A client class that implements logic to authenticate with the application. """
+    """A client class that implements logic to authenticate with the application."""
 
-    def __init__(self, base_url: str, verify: bool = True, proxy: bool = False, ok_codes: tuple = None,
-                 headers: dict = None, auth: tuple = None, deactivate_uri: str = None, user_id: str = None,
-                 email: str = None, user_name: str = None):
+    def __init__(
+        self,
+        base_url: str,
+        verify: bool = True,
+        proxy: bool = False,
+        ok_codes: tuple = None,
+        headers: dict = None,
+        auth: tuple = None,
+        deactivate_uri: str = None,
+        user_id: str = None,
+        email: str = None,
+        user_name: str = None,
+    ):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self.deactivate_uri = deactivate_uri
         self.id = user_id
@@ -27,13 +35,13 @@ class Client(BaseClient):
         self.user_name = user_name
 
     def test(self, params):
-        """ Tests connectivity with the application. """
+        """Tests connectivity with the application."""
 
-        uri = params.get('deactivate_uri')
-        return self._http_request(method='GET', url_suffix=uri, resp_type='response')
+        uri = params.get("deactivate_uri")
+        return self._http_request(method="GET", url_suffix=uri, resp_type="response")
 
     def get_user(self, _, user_name: str) -> Optional[IAMUserAppData]:
-        """ Returns an IAMUserAppData object
+        """Returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
         :type user_name: ``str``
@@ -43,17 +51,17 @@ class Client(BaseClient):
         :rtype: ``Optional[IAMUserAppData]``
         """
 
-        user_id = self.id if self.id else user_name.split('@')[0]
+        user_id = self.id if self.id else user_name.split("@")[0]
         is_active = True
         try:
             self.test(demisto.params())
         except Exception as exc:
-            raise DemistoException(f'Something went Wrong! Please check the credentials. {exc}')
+            raise DemistoException(f"Something went Wrong! Please check the credentials. {exc}")
 
         return IAMUserAppData(user_id, user_name, is_active, {})
 
     def disable_user(self, user_id: str) -> IAMUserAppData:
-        """ Disables a user in the application using REST API.
+        """Disables a user in the application using REST API.
 
         :type user_id: ``str``
         :param user_id: The ID of the user in the app
@@ -65,44 +73,35 @@ class Client(BaseClient):
         uri = self.deactivate_uri
         user_id = user_id if user_id else self.user_name
 
-        body = {
-            'id': user_id,
-            'email': self.email,
-            'termdate': datetime.now().strftime("%Y/%m/%d")
-        }
+        body = {"id": user_id, "email": self.email, "termdate": datetime.now().strftime("%Y/%m/%d")}
 
         res = self._http_request(
-            method='POST',
+            method="POST",
             url_suffix=uri,
             data=body,
         )
 
-        user_app_data = res.get('MT_Account_Terminate_Response')
-        is_active = user_app_data.get('IsActive')
+        user_app_data = res.get("MT_Account_Terminate_Response")
+        is_active = user_app_data.get("IsActive")
 
         return IAMUserAppData(user_id, self.user_name, is_active, res)
 
     def get_app_fields(self) -> Dict[str, Any]:
-        """ Gets a dictionary of the user schema fields in the application and their description.
+        """Gets a dictionary of the user schema fields in the application and their description.
 
         :return: The user schema fields dictionary
         :rtype: ``Dict[str, str]``
         """
 
-        uri = '/schema'  # TODO: replace to the correct GET Schema API endpoint
-        res = self._http_request(
-            method='GET',
-            url_suffix=uri
-        )
+        uri = "/schema"  # TODO: replace to the correct GET Schema API endpoint
+        res = self._http_request(method="GET", url_suffix=uri)
 
-        fields = res.get('result', [])
-        return {field.get('name'): field.get('description') for field in fields}
+        fields = res.get("result", [])
+        return {field.get("name"): field.get("description") for field in fields}
 
     @staticmethod
-    def handle_exception(user_profile: IAMUserProfile,
-                         e: Union[DemistoException, Exception],
-                         action: IAMActions):
-        """ Handles failed responses from the application API by setting the User Profile object with the result.
+    def handle_exception(user_profile: IAMUserProfile, e: Union[DemistoException, Exception], action: IAMActions):
+        """Handles failed responses from the application API by setting the User Profile object with the result.
             The result entity should contain the following data:
             1. action        (``IAMActions``)       The failed action                       Required
             2. success       (``bool``)             The success status                      Optional (by default, True)
@@ -128,10 +127,8 @@ class Client(BaseClient):
             error_code = e.res.status_code
 
             if action == IAMActions.DISABLE_USER and error_code in ERROR_CODES_TO_SKIP:
-                skip_message = 'Users is already disabled or does not exist in the system.'
-                user_profile.set_result(action=action,
-                                        skip=True,
-                                        skip_reason=skip_message)
+                skip_message = "Users is already disabled or does not exist in the system."
+                user_profile.set_result(action=action, skip=True, skip_reason=skip_message)
 
             try:
                 resp = e.res.json()
@@ -139,22 +136,19 @@ class Client(BaseClient):
             except ValueError:
                 error_message = str(e)
         else:
-            error_code = ''
+            error_code = ""
             error_message = str(e)
 
-        user_profile.set_result(action=action,
-                                success=False,
-                                error_code=error_code,
-                                error_message=error_message)
+        user_profile.set_result(action=action, success=False, error_code=error_code, error_message=error_message)
 
         demisto.error(traceback.format_exc())
 
 
-'''HELPER FUNCTIONS'''
+"""HELPER FUNCTIONS"""
 
 
 def get_error_details(res: Dict[str, Any]) -> str:
-    """ Parses the error details retrieved from the application and outputs the resulted string.
+    """Parses the error details retrieved from the application and outputs the resulted string.
 
     :type res: ``Dict[str, Any]``
     :param res: The error data retrieved from the application.
@@ -162,26 +156,26 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :return: The parsed error details.
     :rtype: ``str``
     """
-    message = res.get('error', {}).get('message')  # TODO: make sure you parse the error details correctly
-    details = res.get('error', {}).get('detail')
-    return f'{message}: {details}'
+    message = res.get("error", {}).get("message")  # TODO: make sure you parse the error details correctly
+    details = res.get("error", {}).get("detail")
+    return f"{message}: {details}"
 
 
-'''COMMAND FUNCTIONS'''
+"""COMMAND FUNCTIONS"""
 
 
 def test_module(client: Client, params: dict):
-    """ Tests connectivity with the client. """
+    """Tests connectivity with the client."""
 
     res = client.test(params)
     if res.status_code == 200:
-        return_results('ok')
+        return_results("ok")
     else:
         return_results(res)
 
 
 def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
-    """ Creates and returns a GetMappingFieldsResponse object of the user schema in the application
+    """Creates and returns a GetMappingFieldsResponse object of the user schema in the application
 
     :param client: (Client) The integration Client object that implements a get_app_fields() method
     :return: (GetMappingFieldsResponse) An object that represents the user schema
@@ -197,39 +191,41 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
 
 def main():
     params = demisto.params()
-    base_url = params.get('url').strip('/')
-    deactivate_uri = params.get('deactivate_uri')
-    identifier = params.get('credentials', {}).get('identifier')
-    password = params.get('credentials', {}).get('password')
-    mapper_in = params.get('mapper_in')
-    mapper_out = params.get('mapper_out')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    base_url = params.get("url").strip("/")
+    deactivate_uri = params.get("deactivate_uri")
+    identifier = params.get("credentials", {}).get("identifier")
+    password = params.get("credentials", {}).get("password")
+    mapper_in = params.get("mapper_in")
+    mapper_out = params.get("mapper_out")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
     command = demisto.command()
     args = demisto.args()
 
     user_profile: Optional[IAMUserProfile] = None
-    user_id, email, user_name = '', '', ''
+    user_id, email, user_name = "", "", ""
 
     # Extracting the user ID, email and username to pass to Client. This is needed because IAM Command uses the client
     # get-user When get-user is not supported by the api. So get-user here just returns the fields to allow disable
     # Command to work as expected.
-    if args.get('user-profile'):
-        incident_type: str = IAMUserProfile.CREATE_INCIDENT_TYPE if command == 'iam-create-user' else \
-            IAMUserProfile.UPDATE_INCIDENT_TYPE
-        if user_profile := IAMUserProfile(args.get('user-profile'), mapper=mapper_out, incident_type=incident_type):
-            user_id = user_profile.get_attribute('id')
-            email = user_profile.get_attribute('email')
-            user_name = user_profile.get_attribute('username')
+    if args.get("user-profile"):
+        incident_type: str = (
+            IAMUserProfile.CREATE_INCIDENT_TYPE if command == "iam-create-user" else IAMUserProfile.UPDATE_INCIDENT_TYPE
+        )
+        if user_profile := IAMUserProfile(args.get("user-profile"), mapper=mapper_out, incident_type=incident_type):
+            user_id = user_profile.get_attribute("id")
+            email = user_profile.get_attribute("email")
+            user_name = user_profile.get_attribute("username")
 
     is_disable_enabled = params.get("disable_user_enabled")
 
-    iam_command = IAMCommand(is_disable_enabled=is_disable_enabled, mapper_in=mapper_in, mapper_out=mapper_out,
-                             get_user_iam_attrs=['username'])
+    iam_command = IAMCommand(
+        is_disable_enabled=is_disable_enabled, mapper_in=mapper_in, mapper_out=mapper_out, get_user_iam_attrs=["username"]
+    )
 
     headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        "Content-Type": "application/json",
+        "Accept": "application/json",
     }
 
     client = Client(
@@ -242,35 +238,35 @@ def main():
         deactivate_uri=deactivate_uri,
         user_id=user_id,
         email=email,
-        user_name=user_name
+        user_name=user_name,
     )
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
 
-    '''CRUD commands'''
+    """CRUD commands"""
 
-    if command == 'iam-get-user':
+    if command == "iam-get-user":
         user_profile = iam_command.get_user(client, args)
 
-    elif command == 'iam-disable-user':
+    elif command == "iam-disable-user":
         user_profile = iam_command.disable_user(client, args)
 
     if user_profile:
         return_results(user_profile)
 
-    '''non-CRUD commands'''
+    """non-CRUD commands"""
 
     try:
-        if command == 'test-module':
+        if command == "test-module":
             test_module(client, params)
 
-        elif command == 'get-mapping-fields':
+        elif command == "get-mapping-fields":
             return_results(get_mapping_fields(client))
 
     except Exception as exc:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Error:\n{exc}', error=exc)
+        return_error(f"Failed to execute {command} command. Error:\n{exc}", error=exc)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()
