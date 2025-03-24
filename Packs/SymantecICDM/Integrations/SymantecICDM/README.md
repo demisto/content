@@ -1,5 +1,5 @@
 Query the Symantec Endpoint Security Cloud Portal (ICDM).
-This integration was integrated and tested with version 1 of SymantecICDM.
+This integration was integrated and tested with version xx of SymantecICDM.
 
 ## Configure Symantec Endpoint Security (ICDM) in Cortex
 
@@ -7,7 +7,7 @@ This integration was integrated and tested with version 1 of SymantecICDM.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
-| Server URL (e.g. <https://api.sep.securitycloud.symantec.com>) |  | True |
+| Server URL (e.g. https://api.sep.securitycloud.symantec.com) |  | True |
 | Fetch incidents |  | False |
 | Incident type |  | False |
 | Maximum number of incidents per fetch |  | False |
@@ -147,10 +147,10 @@ Get information whether a given file has been blocked by any Symantec technologi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Symantec.Protection.file | String | input file sha256. | 
-| Symantec.Protection.state.technology | String | Symantec technology providing protection. | 
-| Symantec.Protection.state.firstDefsetVersion | String | The first definition version with protection. | 
-| Symantec.Protection.state.threatName | String | The name of the threat the file is detected as. | 
+| Symantec.Protection.File.file | String | input file sha256. | 
+| Symantec.Protection.File.state.technology | String | Symantec technology providing protection. | 
+| Symantec.Protection.File.state.firstDefsetVersion | String | The first definition version with protection. | 
+| Symantec.Protection.File.state.threatName | String | The name of the threat the file is detected as. | 
 
 ### symantec-protection-network
 
@@ -171,10 +171,10 @@ Get  information whether given domain or ip has been blocked by any Symantec tec
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Symantec.Protection.network | String | input domain or ip. | 
-| Symantec.Protection.state.technology | String | Symantec technology providing protection. | 
-| Symantec.Protection.state.firstDefsetVersion | String | The first definition version with protections. | 
-| Symantec.Protection.state.threatName | String | The name of the threat the domain or is detected as. | 
+| Symantec.Protection.Network.network | String | input domain or ip. | 
+| Symantec.Protection.Network.state.technology | String | Symantec technology providing protection. | 
+| Symantec.Protection.Network.state.firstDefsetVersion | String | The first definition version with protections. | 
+| Symantec.Protection.Network.state.threatName | String | The name of the threat the domain or is detected as. | 
 
 ### symantec-protection-cve
 
@@ -195,7 +195,7 @@ Get returns information whether a given CVE has been blocked by any Symantec tec
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Symantec.Protection.file | String | input CVE. | 
-| Symantec.Protection.state.technology | String | Symantec technology providing protection. | 
-| Symantec.Protection.state.firstDefsetVersion | String | The first definition version with protections. | 
-| Symantec.Protection.state.threatName | String | The name of the threat the domain or is detected as. | 
+| Symantec.Protection.CVE.cve | String | input CVE. | 
+| Symantec.Protection.CVE.state.technology | String | Symantec technology providing protection. | 
+| Symantec.Protection.CVE.state.firstDefsetVersion | String | The first definition version with protections. | 
+| Symantec.Protection.CVE.state.threatName | String | The name of the threat the domain or is detected as. | 
