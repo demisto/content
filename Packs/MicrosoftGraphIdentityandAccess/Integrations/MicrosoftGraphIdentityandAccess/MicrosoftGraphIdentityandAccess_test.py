@@ -182,8 +182,9 @@ def test_list_role_members_command(mocker):
     - Ensure the Exception is caught and a CommandResults with an informative readable_output is returned
     """
     from MicrosoftGraphIdentityandAccess import Client, list_role_members_command
+
     client = Client("", False, False)
     message = "Resource '0000c00f' does not exist or one of its queried reference-property objects are not present."
-    mocker.patch.object(Client, 'get_role_members', side_effect=NotFoundError(message=message))
-    result = list_role_members_command(ms_client=client, args={'role_id': '0000c00f', 'limit': 1})
-    assert result.readable_output == 'Role ID: 0000c00f, was not found or invalid'
+    mocker.patch.object(Client, "get_role_members", side_effect=NotFoundError(message=message))
+    result = list_role_members_command(ms_client=client, args={"role_id": "0000c00f", "limit": 1})
+    assert result.readable_output == "Role ID: 0000c00f, was not found or invalid"

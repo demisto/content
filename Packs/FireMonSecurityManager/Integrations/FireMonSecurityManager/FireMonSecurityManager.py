@@ -103,7 +103,7 @@ class Client(BaseClient):
             parameters = {"includeDisabled": False, "pageSize": count_of_workflow}
             list_of_workflow = self.get_list_of_workflow(auth_token, domain_id, parameters)
 
-        for workflow in list_of_workflow.get("results"):    # noqa: RET503
+        for workflow in list_of_workflow.get("results"):  # noqa: RET503
             if (workflow["workflow"]["pluginArtifactId"] == "access-request") and (workflow["workflow"]["name"] == workflow_name):
                 workflow_id = workflow["workflow"]["id"]
                 return workflow_id

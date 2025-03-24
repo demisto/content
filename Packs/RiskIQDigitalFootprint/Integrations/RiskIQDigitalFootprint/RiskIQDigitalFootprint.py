@@ -800,9 +800,7 @@ def prepare_deep_link_for_asset_changes(last_run_date: str, asset_type: str, mea
     deep_link = f'{DEEP_LINK_PREFIX["ASSET_CHANGES"]}/date={last_run_date}&measure={measure}&range=1&type={asset_type}'
 
     if date_arg and range_arg:
-        deep_link = (
-            f'{DEEP_LINK_PREFIX["ASSET_CHANGES"]}/date={date_arg}&measure={measure}&range={range_arg}&type={asset_type}'
-        )
+        deep_link = f'{DEEP_LINK_PREFIX["ASSET_CHANGES"]}/date={date_arg}&measure={measure}&range={range_arg}&type={asset_type}'
     elif date_arg:
         deep_link = f'{DEEP_LINK_PREFIX["ASSET_CHANGES"]}/date={date_arg}&measure={measure}&range=1&type={asset_type}'
     elif range_arg:
@@ -2184,9 +2182,7 @@ def validate_required_keys_for_update_asset(
     :param required_keys_for_bulk_update: The required keys for bulk updating assets
     :return: True if the required values are present else false
     """
-    return all(key in valid_json for key in required_keys) or all(
-        key in valid_json for key in required_keys_for_bulk_update
-    )
+    return all(key in valid_json for key in required_keys) or all(key in valid_json for key in required_keys_for_bulk_update)
 
 
 def validate_required_keys_for_assets_key(assets: list[dict[str, Any]], asset_required_keys: set) -> bool:

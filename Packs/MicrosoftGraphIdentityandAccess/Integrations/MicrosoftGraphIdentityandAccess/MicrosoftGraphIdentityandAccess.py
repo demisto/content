@@ -404,23 +404,17 @@ def list_role_members_command(ms_client: Client, args: dict) -> CommandResults: 
         limit = int(limit_str)
     except ValueError:
         raise DemistoException(f'Limit must be an integer, not "{limit_str}"')
-    role_id = args.get('role_id')
+    role_id = args.get("role_id")
     try:
         if results := ms_client.get_role_members(role_id, limit):  # type: ignore
-            ids = [member['id'] for member in results]
-            context = {
-                'role_id': role_id,
-                'user_id': ids
-            }
+            ids = [member["id"] for member in results]
+            context = {"role_id": role_id, "user_id": ids}
             return CommandResults(
-                'MSGraphIdentity.RoleMember',
-                'role_id',
+                "MSGraphIdentity.RoleMember",
+                "role_id",
                 outputs=context,
                 raw_response=results,
-                readable_output=tableToMarkdown(
-                    f'Role \'{role_id}\' members:',
-                    context
-                )
+                readable_output=tableToMarkdown(f"Role '{role_id}' members:", context),
             )
         else:
             return CommandResults(readable_output=f"No members found in {role_id}")

@@ -324,7 +324,7 @@ class EventCollector:
 
         # Got all results from API, taking only the last #max_limit.
         if len(res) > event_type.client_max_fetch:
-            res = res[-event_type.client_max_fetch:]
+            res = res[-event_type.client_max_fetch :]
 
         # Getting last_run_time
         next_run = res[0]["attributes"]["time"] if res else iso_start_time
@@ -482,7 +482,7 @@ def parse_special_iso_format(datetime_str: str) -> datetime:
             # getting length of milliseconds part, as API only return with 'Z' of both tz and 'Z'.
             end_index = tz_index if tz_index else len(datetime_str) - 1
 
-            if len(datetime_str[decimal_index + 1: end_index]) < 6:
+            if len(datetime_str[decimal_index + 1 : end_index]) < 6:
                 datetime_str = f"{datetime_str[:decimal_index+1]}000{datetime_str[decimal_index+1:]}"
         date_obj = dateparser.parse(datetime_str, settings={"TIMEZONE": "UTC"})
 

@@ -11,9 +11,7 @@ def test_ec_key():
     assert ec_key("Foo.Bar.Baz", "ID") == "Foo.Bar.Baz(val.ID && val.ID === obj.ID)"
 
     # Merge entries by multiple ID fields
-    assert (
-        ec_key("Foo.Bar.Baz", "ID1", "ID2") == "Foo.Bar.Baz(val.ID1 && val.ID1 === obj.ID1 && val.ID2 && val.ID2 === obj.ID2)"
-    )
+    assert ec_key("Foo.Bar.Baz", "ID1", "ID2") == "Foo.Bar.Baz(val.ID1 && val.ID1 === obj.ID1 && val.ID2 && val.ID2 === obj.ID2)"
 
     assert (
         ec_key("Foo.Bar.Baz", "ID1", "ID2", "ID3") == "Foo.Bar.Baz(val.ID1 && val.ID1 === obj.ID1"

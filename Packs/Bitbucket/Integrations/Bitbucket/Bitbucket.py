@@ -438,7 +438,7 @@ def create_pull_request_body(
     if title:
         body["title"] = title
     if source_branch:
-        body["source"] = {"branch": {"name": source_branch}}    # type: ignore[assignment]
+        body["source"] = {"branch": {"name": source_branch}}  # type: ignore[assignment]
     if destination_branch:
         body["destination"] = {"branch": {"name": destination_branch}}  # type: ignore[assignment]
     if reviewer_id:

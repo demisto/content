@@ -86,7 +86,7 @@ USERS_SQS = [
         },
         "query_type": "saved",
         "updated_by": '{"user_name": "dummy", "source": "saml", "first_name": "Dummy", "last_name": "Dummy",'
-                      ' "deleted": False, "permanent": False, "is_first_login": False, "last_updated": None}',
+        ' "deleted": False, "permanent": False, "is_first_login": False, "last_updated": None}',
         "user_id": "61144d0d3fd2a928746d2ba8",
         "uuid": "61b0ef77749934fad94f121a",
         "date_fetched": "61b0ef77749934fad94f121a",
@@ -180,7 +180,7 @@ USERS_SQS = [
         },
         "query_type": "saved",
         "updated_by": '{"user_name": "dummy", "source": "saml", "first_name": "Dummy", "last_name": "Dummy",'
-                      ' "deleted": False, "permanent": False, "is_first_login": False, "last_updated": None}',
+        ' "deleted": False, "permanent": False, "is_first_login": False, "last_updated": None}',
         "user_id": "61144d0d3fd2a928746d2ba8",
         "uuid": "61afa9fd749934fad94f1178",
         "date_fetched": "61afa9fd749934fad94f1178",

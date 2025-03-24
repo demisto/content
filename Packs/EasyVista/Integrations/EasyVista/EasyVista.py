@@ -96,7 +96,7 @@ def search_command():
         context.append(context_record)
     if records:
         title = "EasyVista Search Results"
-        demisto.results(    # noqa: RET503
+        demisto.results(  # noqa: RET503
             {
                 "Type": entryTypes["note"],
                 "Contents": records,

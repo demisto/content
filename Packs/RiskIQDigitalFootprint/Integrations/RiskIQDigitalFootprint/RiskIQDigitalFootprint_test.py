@@ -168,8 +168,10 @@ def test_init():
     """
     import RiskIQDigitalFootprint
 
-    with (mock.patch.object(RiskIQDigitalFootprint, "main", return_value=42),
-          mock.patch.object(RiskIQDigitalFootprint, "__name__", "__main__")):
+    with (
+        mock.patch.object(RiskIQDigitalFootprint, "main", return_value=42),
+        mock.patch.object(RiskIQDigitalFootprint, "__name__", "__main__"),
+    ):
         RiskIQDigitalFootprint.init()
 
 
@@ -515,9 +517,10 @@ def test_asset_changes_summary_invalid_range(client):
     with pytest.raises(ValueError) as e:
         validate_asset_changes_summary_args(args["date"], args["range"])
 
-    assert str(
-        e.value
-    ) == "The given value for range is invalid. Valid values: 1, 7, 30. This argument supports a single value only."
+    assert (
+        str(e.value)
+        == "The given value for range is invalid. Valid values: 1, 7, 30. This argument supports a single value only."
+    )
 
 
 @patch("RiskIQDigitalFootprint.Client.http_request")
@@ -705,9 +708,10 @@ def test_asset_changes_invalid_range_for_asset_type(client):
             args={"range": "5", "tag": "dummy", "brand": "dummy", "organization": "dummy", "type": "DOMAIN", "date": "2020-05-20"}
         )
 
-    assert str(
-        e.value
-    ) == "The given value for range is invalid. Valid values: 1, 7, 30. This argument supports a single value only."
+    assert (
+        str(e.value)
+        == "The given value for range is invalid. Valid values: 1, 7, 30. This argument supports a single value only."
+    )
 
 
 def test_asset_changes_invalid_range_for_asset_detail_type(client):
@@ -723,7 +727,7 @@ def test_asset_changes_invalid_range_for_asset_detail_type(client):
 
     assert (
         str(e.value) == "The given value for range is invalid. Only single day changes can be"
-                        " shown for Self Hosted Resource type. Valid value: 1. This argument supports a single value only."
+        " shown for Self Hosted Resource type. Valid value: 1. This argument supports a single value only."
     )
 
 
@@ -1634,9 +1638,8 @@ def test_update_asset_required_keys_in_asset_json(client):
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation="update")
     assert (
-        str(
-            e.value) == "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']."
-                        " One or more of them are not present in the asset JSON."
+        str(e.value) == "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']."
+        " One or more of them are not present in the asset JSON."
     )
 
 
@@ -1664,9 +1667,8 @@ def test_add_and_update_asset_required_keys_in_asset_json(client):
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation="update")
     assert (
-        str(
-            e.value) == "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']."
-                        " One or more of them are not present in the asset JSON."
+        str(e.value) == "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']."
+        " One or more of them are not present in the asset JSON."
     )
 
 
