@@ -137,7 +137,7 @@ def get_credentials(additional_scopes=None, delegated_user=None):
     """Gets valid user credentials from storage.
 
     If nothing has been stored, or if the stored credentials are invalid,
-    the OAuth2 flow is completed to obtain the new credentials.
+    the OAuth2 flow is completed to obtain the new credentials. test
 
     Returns:
         Credentials, the obtained credential.
