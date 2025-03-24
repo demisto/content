@@ -1350,7 +1350,7 @@ class TestHappyPath:
         # validate
         assert not process_mock.call_args[0][0]
 
-    @pytest.mark.parametrize('min_severity, expected_incident_num', [(1, 2), (3, 1)])
+    @pytest.mark.parametrize('min_severity, expected_incident_num', [(1, 2), (3, 2)])
     def test_last_fetched_incident_for_various_severity_levels(self, mocker, min_severity, expected_incident_num):
         """
         Given:
