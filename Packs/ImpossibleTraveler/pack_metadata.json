@@ -2,7 +2,7 @@
     "name": "Impossible Traveler",
     "description": "Catch the impossible traveler. This Content Pack helps you quickly determine the legitimacy of remote access attempts and contain malicious activity.",
     "support": "xsoar",
-    "currentVersion": "1.2.13",
+    "currentVersion": "1.2.14",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
