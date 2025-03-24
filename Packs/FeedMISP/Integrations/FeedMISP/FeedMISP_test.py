@@ -2,7 +2,6 @@ import json
 from unittest.mock import Mock
 import pytest
 import demistomock as demisto
-import pytest
 from CommonServerPython import DemistoException, FeedIndicatorType, ThreatIntel
 from FeedMISP import (
     Client,

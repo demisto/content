@@ -7,8 +7,6 @@ import pytest
 from CommonServerPython import DemistoException
 from freezegun import freeze_time
 from WorkdaySignOnEventCollector import (
-    PRODUCT,
-    VENDOR,
     Client,
     convert_to_json,
     fetch_sign_on_events_command,
@@ -353,7 +351,7 @@ def test_generate_test_payload_with_version(api_version, from_time, to_time, exp
 
     # Given: Initialize a Client object with sample data
     mock_params = {
-        "base_url": "https://something.test",
+        "base_url": "https://something.test",   # disable-secrets-detection
         "verify_certificate": True,
         "proxy": False,
         "tenant_name": "test_tenant",
