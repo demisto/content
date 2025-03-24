@@ -23,8 +23,12 @@
     "Details": {
       "type": "string",
       "is_array": false
+    },
+    "event_type": {
+      "type": "string",
+      "is_array": false
     }
-  },
+    },
     "qualys_assets_raw":{
         "ID": {
           "type": "string",
