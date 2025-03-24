@@ -21,45 +21,48 @@ Define the indexes configuration for the custom role:
 ![image](../../doc_files/edit-role-non-admin-indexes.png)
 At the end of the process, the Splunk user (not admin user) should receive the previously created role. Following is the list of capabilities that covers both the Splunk UI access and using the SplunkPy integration including Enterprise security:  
 
-accelerate_search  
-admin_all_objects  
-can_own_notable_events  
-change_own_password  
-edit_analyticstories  
-edit_cam_queue  
-edit_correlationsearches  
-edit_lookups  
-edit_notable_events  
-edit_own_objects  
-edit_tcp  
-edit_tcp_stream  
-edit_upload_and_index  
-get_metadata  
-get_typeahead  
-input_file  
-list_accelerate_search  
-list_all_objects  
-list_inputs  
-list_introspection  
-list_metrics_catalog  
-list_search_head_clustering  
-manage_all_investigations  
-manage_behavioral_analytics  
-output_file  
-rest_access_server_endpoints  
-rest_apps_view  
-rest_properties_get  
-rest_properties_set  
-rtsearch  
-run_collect  
-run_mcollect  
-run_msearch  
-run_sendalert  
-schedule_rtsearch  
-schedule_search  
-search  
-search_process_config_refresh  
-upload_lookup_files  
+<ul class="bullet-list">
+  <li>accelerate_search</li>
+  <li>admin_all_objects</li>
+  <li>can_own_notable_events</li>
+  <li>change_own_password</li>
+  <li>edit_analyticstories</li>
+  <li>edit_cam_queue</li>
+  <li>edit_correlationsearches</li>
+  <li>edit_lookups</li>
+  <li>edit_notable_events</li>
+  <li>edit_own_objects</li>
+  <li>edit_tcp</li>
+  <li>edit_tcp_stream</li>
+  <li>edit_upload_and_index</li>
+  <li>get_metadata</li>
+  <li>get_typeahead</li>
+  <li>input_file</li>
+  <li>list_accelerate_search</li>
+  <li>list_all_objects</li>
+  <li>list_inputs</li>
+  <li>list_introspection</li>
+  <li>list_metrics_catalog</li>
+  <li>list_search_head_clustering</li>
+  <li>manage_all_investigations</li>
+  <li>manage_behavioral_analytics</li>
+  <li>output_file</li>
+  <li>rest_access_server_endpoints</li>
+  <li>rest_apps_view</li>
+  <li>rest_properties_get</li>
+  <li>rest_properties_set</li>
+  <li>rtsearch</li>
+  <li>run_collect</li>
+  <li>run_mcollect</li>
+  <li>run_msearch</li>
+  <li>run_sendalert</li>
+  <li>schedule_rtsearch</li>
+  <li>schedule_search</li>
+  <li>search</li>
+  <li>search_process_config_refresh</li>
+  <li>upload_lookup_files</li>
+</ul>
+
 
 #### SplunkPy command permissions by example:
 `splunk-notable-event-edit`
