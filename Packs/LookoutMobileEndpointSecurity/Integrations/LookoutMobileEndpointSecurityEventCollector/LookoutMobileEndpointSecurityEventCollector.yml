@@ -1,18 +1,18 @@
+commonfields:
+  id: LookoutMobileEndpointSecurityEventCollector
+  version: -1
 category: Analytics & SIEM
 sectionOrder:
 - Connect
 - Collect
-commonfields:
-  id: Lookout_Mobile_Endpoint_SecurityEventCollector
-  version: -1
 configuration:
-- defaultvalue: https://test.com
+- defaultvalue: https://api.lookout.com/
   display: Server URL
-  name: url
+  name: server_url
   required: false
   type: 0
   section: Connect
-- display: Application Key
+- displaypassword: Application Key
   name: app_key
   hiddenusername: true
   required: false
@@ -28,6 +28,13 @@ configuration:
   required: false
   type: 8
   section: Connect
+- display: Fetch interval in seconds
+  name: fetch_interval
+  type: 0
+  defaultvalue: 60
+  required: true
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Long Running Instance
   hidden: true
@@ -43,11 +50,12 @@ configuration:
   - Audit
   - All
   required: true
-  type: 15
-  section: Collect - Advanced
+  type: 16
+  advanced: true
+  section: Collect
 description: Lookout Mobile Endpoint Security (MES) provides visibility and protection against mobile threats with AI-driven mobile security dataset.
 display: Lookout Mobile Endpoint Security Event Collector
-name: Lookout_Mobile_Endpoint_SecurityEventCollector
+name: LookoutMobileEndpointSecurityEventCollector
 script:
   commands:
   - arguments:
@@ -69,12 +77,11 @@ script:
       required: false
     description: Gets events from Lookout Mobile Endpoint Security.
     name: lookout_mobile_endpoint_security-get-events
-  dockerimage: demisto/python3:3.11.10.115186
-  isfetchevents: true
-  runonce: false
+  dockerimage: devdemisto/sse-client:1.0.0.2913487
   script: '-'
   subtype: python3
   type: python
+  longRunning: true
 marketplaces:
 - marketplacev2
 fromversion: 8.4.0
