@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     try:
-        llmupload = demisto.incident()['CustomFields'].get("anythingllmupload", "").strip()
+        llmupload = demisto.incident()["CustomFields"].get("anythingllmupload", "").strip()
         if llmupload == "":
             raise Exception("No processed document found in anythingllmupload incident field ready for upload")
 
@@ -18,10 +18,10 @@ def main():
             files = [files]
 
         for ff in files:
-            if ff['Name'] == title:
-                args['title'] = f"{ff['EntryID']}_{title}"
+            if ff["Name"] == title:
+                args["title"] = f"{ff['EntryID']}_{title}"
                 execute_command("anyllm-document-upload-text", args)
-                execute_command("setIncident", {'customFields': {'anythingllmupload': ""}, 'version': -1})
+                execute_command("setIncident", {"customFields": {"anythingllmupload": ""}, "version": -1})
                 return
 
         raise Exception(f"Processed document {title} not found in File context key")
@@ -30,5 +30,5 @@ def main():
         return_error(f"AnyLlmUploadDocument: error is - {ex}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
