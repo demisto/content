@@ -31,8 +31,8 @@
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @altmannyarden
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
-/Packs/ApiModules/Scripts/MicrosoftApiModule @michal-dagan
-/Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan
+/Packs/ApiModules/Scripts/MicrosoftApiModule @michal-dagan @inbalapt1
+/Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan @inbalapt1
 /Packs/ApiModules/Scripts/TAXII2ApiModule/* @Ni-Knight
 /Packs/CommonScripts/Scripts/StixCreator/* @Ni-Knight
 /Packs/Base/Scripts/CommonServerPython/CommonServerPython.py @RosenbergYehuda @demisto/content-leaders
