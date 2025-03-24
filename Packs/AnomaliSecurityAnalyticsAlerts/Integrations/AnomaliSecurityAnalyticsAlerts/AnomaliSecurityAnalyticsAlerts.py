@@ -2,7 +2,7 @@
 Anomali Security Analytics Alerts Integration
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 import urllib3
 import demistomock as demisto
 from CommonServerPython import * 
@@ -107,6 +107,7 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
     """
     query = str(args.get('query', ''))
     source = str(args.get('source', ''))
+    tz_str = str(args.get('timezone', 'UTC'))
     from_datetime = arg_to_datetime(args.get('from', '1 day'), 
                                     arg_name='from', 
                                     is_utc=True, 
@@ -114,20 +115,19 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
 
     if args.get('to'):
         to_datetime = arg_to_datetime(args.get('to'), 
-                                      arg_name='to', 
-                                      is_utc=True, 
-                                      required=False)
+                                    arg_name='to', 
+                                    is_utc=True, 
+                                    required=False)
     else:
         to_datetime = datetime.now(tz=timezone.utc)
 
     time_from_ms = int(from_datetime.timestamp() * 1000)
     time_to_ms = int(to_datetime.timestamp() * 1000)
-    timezone = str(args.get('timezone', 'UTC'))
-    
+
     time_range = {
         "from": time_from_ms,
         "to": time_to_ms,
-        "timezone": timezone
+        "timezone": tz_str
     }
 
     response = client.create_search_job(query, source, time_range)
