@@ -20,7 +20,6 @@
     ],
     "defaultDataSource": "Okta Event Collector",
     "supportedModules": [
-        "identity_threat",
         "C1",
         "C3",
         "X0",
