@@ -1411,7 +1411,8 @@
     "version": -1,
     "fromVersion": "6.8.0",
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "description": ""
 }

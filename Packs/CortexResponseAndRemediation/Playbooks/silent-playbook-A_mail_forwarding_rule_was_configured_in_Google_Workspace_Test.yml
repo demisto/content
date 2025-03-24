@@ -35,6 +35,7 @@ inputs:
 issilent: true
 marketplaces:
 - marketplacev2
+- platform
 name: silent-A mail forwarding rule was configured in Google Workspace Test
 outputSections:
 - description: Generic group for outputs

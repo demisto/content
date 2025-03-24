@@ -29,8 +29,8 @@ configuration:
   type: 16  # Multi Select
   defaultvalue: defaultExportProfile
   options:
-    - defaultExportProfile
-    - demisto
+  - defaultExportProfile
+  - demisto
   section: Collect
 - display: Number of Export Requests per Fetch
   additionalinfo: Number of API calls per fetch to export events for each configured Digital Guardian ARC export profile. Use with extreme caution as this might impact data ingestion quota limits and performance. Consult with the engineering team before changing this value.
@@ -87,6 +87,7 @@ script:
   type: python
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
