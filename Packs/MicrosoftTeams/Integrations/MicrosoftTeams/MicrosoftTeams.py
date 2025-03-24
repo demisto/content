@@ -1159,7 +1159,7 @@ def get_chat_id_and_type(chat: str, create_dm_chat: bool = True) -> tuple[str, s
         chat_id = get_oneonone_chat_id(user_data[0].get('id'))
         if not chat_id:
             raise ValueError(f'Could not find chat: {chat}')
-        chat_type = 'oneOneOne'
+        chat_type = 'oneOnOne'
 
     return chat_id, chat_type
 
