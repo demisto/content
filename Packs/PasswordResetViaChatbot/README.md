@@ -10,6 +10,7 @@ Furthermore, it can improve the user experience by providing a simple and intuit
 By automating password resets, organizations can also ensure that password policies are consistently enforced, reducing the risk of security breaches. 
 
 ##### What does this pack do?
+
 1. Ingests an incident created by a user message on Slack or Microsoft Teams to reset their password.
 2. Seeks approval for password resets from the relevant stakeholder.
 3. Verifies the user using 2-factor authentication.

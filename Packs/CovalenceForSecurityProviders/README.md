@@ -13,9 +13,9 @@ This pack collects the alerts generated, which are generated as incidents within
 - Lists monitored organization, of interest for MSPs or equivalent who are managing alerts for multiple organizations
 - Within the XSOAR War Room, you can query Covalence for its configuration, including internal networks and sensors
 - Query Covalence for information about the network, endpoints and alerts, specifically:
-   - Alerts (in and ad-hoc manner - this is in addition to the automatic generation of incidents from alerts) allowing you to see a list of alerts by status, for example
-   - Connections summary by IP or port
-   - DNS resolutions
+  - Alerts (in and ad-hoc manner - this is in addition to the automatic generation of incidents from alerts) allowing you to see a list of alerts by status, for example
+  - Connections summary by IP or port
+  - DNS resolutions
 - Query Covalence for additional detail about a user or process of interest
 
 Note this pack should not be executed alongside the Covalence Managed Security pack, or duplicate incidents will be generated.    

@@ -10,9 +10,9 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
-| Discovery Service URL (e.g., https://ais2.cisa.dhs.gov/taxii2/) |  | True |
-| Key File as Text | For more information, visit https://us-cert.cisa.gov/ais. | True |
-| Certificate File as Text | For more information, visit https://us-cert.cisa.gov/ais. | True |
+| Discovery Service URL (e.g., <https://ais2.cisa.dhs.gov/taxii2/>) |  | True |
+| Key File as Text | For more information, visit <https://us-cert.cisa.gov/ais>. | True |
+| Certificate File as Text | For more information, visit <https://us-cert.cisa.gov/ais>. | True |
 | Default API Root to use | The default API root to use \(e.g., default, public\). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead. The user must be authorized to reach the selected API root. | False |
 | Collection Name To Fetch Indicators From | Indicators will be fetched from this collection. Run the "dhs-get-collections" command to get a valid value. If left empty, the instance will try to fetch from all the collections in the given discovery service. | False |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
@@ -31,6 +31,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -171,7 +172,9 @@ To overcome this issue increase the [execution-timeout](https://xsoar.pan.dev/do
 #### Human Readable Output
 
 > Found 3 results added after 2022-12-07T10:29:13.079493Z UTC:
+>
 >### DHS Indicators
+>
 >|value|type|
 >|---|---|
 >| coronashop.jp | Domain |
@@ -218,6 +221,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 > ### DHS Server Collections
+>
 >|Name|ID|
 >|---|---|
 >| Public Collection | 3 |
@@ -251,5 +255,6 @@ In the *dhs-get-indicators* command:
 Use this version if your certificate supports TAXII 2 protocol.
 
 ## Known Limitations
+
 "First Fetch Time" parameter can be configured for a maximum of 48 hours, due to limitations in DHS TAXII2 API. 
 Therefore, it is not possible to fetch indicators that last appeared in the feed more than 48 hours ago.

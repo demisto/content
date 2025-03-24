@@ -8,6 +8,7 @@ Threat InDepth's correlated and contextualized intelligence helps enterprises im
 - Improved threat detection for existing security products such as SIEM and SOAR solutions
 
 ##### Feeds included in Cyren Threat InDepth content pack
+
 The Cyren Threat InDepth content pack includes access to these streams of indicators:
 
 - IP Reputation Intelligence
@@ -27,7 +28,7 @@ The Cyren Threat InDepth content pack includes access to these streams of indica
 | feedIncremental | Is incremental or not | False |
 | feedReputation | The reputation to apply to the fetched indicators. | False |
 | feedReliability | The reliability of the this feed. | True |
-| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at <https://us-cert.cisa.gov/tlp> | False |
 | feedExpirationPolicy | | False |
 | feedExpirationInterval | | False |
 | feedFetchInterval | Feed Fetch Interval | False |
@@ -74,6 +75,7 @@ Fetching Cyren Threat InDepth indicators
 There is no context output for this command.
 
 ##### Command Example
+
 `!cyren-threat-indepth-get-indicators max_indicators=2`
 
 ##### Human Readable Output
@@ -82,7 +84,7 @@ Indicators from Cyren Threat InDepth:
 
 |value|type|rawJSON|score|
 |---|---|---|---|
-| http://nu4vs0m.u5jkzm4r.i2wd30t.bpbp9c7d.b7ni2cio.auz8x15h.freshoff.eu | URL | `payload: {"action": "+", "type": "url", "identifier": "f59ef036-a790-5193-b942-24a8618c936a", "first_seen": "2020-10-25T13:41:36.000Z", "last_seen": "2021-01-05T13:54:41.000Z", "detection": {"category": ["phishing"], "detection_ts": "2020-10-25T13:41:36.000Z"}, "meta": {"port": 80, "protocol": "http"}, "relationships": [{"relationship_type": "resolves to", "relationship_ts": "2020-10-25T13:41:36.000Z", "ip": "217.70.142.108", "related_entity_category": "phishing", "relationship_description": "resolves to phishing ip"}], "detection_methods": ["URL Categorization"], "url": "http://nu4vs0m.u5jkzm4r.i2wd30t.bpbp9c7d.b7ni2cio.auz8x15h.freshoff.eu"} offset: 57006380 timestamp: 2021-01-05T14:00:48.919Z` | 3 |
+| <http://nu4vs0m.u5jkzm4r.i2wd30t.bpbp9c7d.b7ni2cio.auz8x15h.freshoff.eu> | URL | `payload: {"action": "+", "type": "url", "identifier": "f59ef036-a790-5193-b942-24a8618c936a", "first_seen": "2020-10-25T13:41:36.000Z", "last_seen": "2021-01-05T13:54:41.000Z", "detection": {"category": ["phishing"], "detection_ts": "2020-10-25T13:41:36.000Z"}, "meta": {"port": 80, "protocol": "http"}, "relationships": [{"relationship_type": "resolves to", "relationship_ts": "2020-10-25T13:41:36.000Z", "ip": "217.70.142.108", "related_entity_category": "phishing", "relationship_description": "resolves to phishing ip"}], "detection_methods": ["URL Categorization"], "url": "http://nu4vs0m.u5jkzm4r.i2wd30t.bpbp9c7d.b7ni2cio.auz8x15h.freshoff.eu"} offset: 57006380 timestamp: 2021-01-05T14:00:48.919Z` | 3 |
 
 ### Reset Client Offset
 
@@ -107,6 +109,7 @@ This command allows you to update the stored client offset for the feed API.
 There is no context output for this command.
 
 ##### Command Example
+
 `!cyren-threat-indepth-reset-client-offset`
 `!cyren-threat-indepth-reset-client-offset offset = 34234234`
 
@@ -135,6 +138,7 @@ There is not input for this command.
 There is no context output for this command.
 
 ##### Command Example
+
 `!cyren-threat-indepth-get-client-offset`
 
 ##### Human Readable Output
@@ -143,4 +147,4 @@ Cyren Threat InDepth ip_reputation feed client offset is 500 (API provided max o
 
 ## Additional Information
 
-Contact us: support@cyren.com
+Contact us: <support@cyren.com>

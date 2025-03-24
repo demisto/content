@@ -1,6 +1,7 @@
 This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ This automation outputs the indicator relationships to context according to the 
 | Cortex XSOAR Version | 6.2.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +24,7 @@ This automation outputs the indicator relationships to context according to the 
 | revoked | The status of the relationships to return. Default is false. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -43,9 +46,13 @@ This automation outputs the indicator relationships to context according to the 
 
 
 ## Script Examples
+
 ### Example command
+
 ```!SearchIndicatorRelationships entities=google.com entities_types=IP```
+
 ### Context Example
+
 ```json
 {
     "Relationships": [
@@ -74,6 +81,7 @@ This automation outputs the indicator relationships to context according to the 
 ### Human Readable Output
 
 >### Relationships
+>
 >|Entity A|Entity A Type|Entity B|Entity B Type|Relationship|
 >|---|---|---|---|---|
 >| 4.4.4.4 | IP | google.com | Domain | related-to |

@@ -1,6 +1,7 @@
 Performs a batch traffic simulation query using Firewall Analyzer.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Performs a batch traffic simulation query using Firewall Analyzer.
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * algosec-query
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -26,5 +30,6 @@ This script uses the following commands and scripts.
 | application | The application for the query. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

@@ -18,9 +18,12 @@ This integration was integrated and tested with version 3976 of Picus
 ![image](./../../doc_files/test_integration.png)
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### picus-get-access-token
+
 ***
 Generates an access token for API usage. This function used for other functions inner authentication mechanism. Looks for X-Refresh-Token on the header or refresh-token cookie.
 
@@ -30,6 +33,7 @@ Generates an access token for API usage. This function used for other functions 
 #### Base Command
 
 `picus-get-access-token`
+
 #### Input
 
 There are no input arguments for this command.
@@ -41,6 +45,7 @@ There is no context output for this command.
 
 
 ### picus-get-vector-list
+
 ***
 Returns the vector list from PICUS. These vectors can be used for automation processes.
 
@@ -48,6 +53,7 @@ Returns the vector list from PICUS. These vectors can be used for automation pro
 #### Base Command
 
 `picus-get-vector-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -75,6 +81,7 @@ Returns the vector list from PICUS. These vectors can be used for automation pro
 
 
 #### Command Example
+
 ```!picus-get-vector-list```
 
 #### Human Readable Output
@@ -87,6 +94,7 @@ Returns the vector list from PICUS. These vectors can be used for automation pro
 
 
 ### picus-get-peer-list
+
 ***
 Returns the peer list with current statuses. These peers also can be seen on the **PICUS Panel ->Settings-> Peers**.
 
@@ -96,6 +104,7 @@ Returns the peer list with current statuses. These peers also can be seen on the
 #### Base Command
 
 `picus-get-peer-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -112,6 +121,7 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!picus-get-peer-list```
 
 #### Human Readable Output
@@ -125,6 +135,7 @@ There are no input arguments for this command.
 
 
 ### picus-get-attack-results
+
 ***
 In the Picus, all attacks are carried out with the logic of the attacker and the victim. This command returns the list of the attack results on specified peers. Time range and result status can be given.
 
@@ -132,6 +143,7 @@ In the Picus, all attacks are carried out with the logic of the attacker and the
 #### Base Command
 
 `picus-get-attack-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -169,6 +181,7 @@ In the Picus, all attacks are carried out with the logic of the attacker and the
 
 
 #### Command Example
+
 ```!picus-get-attack-results attacker_peer="Picus_Attacker_1" victim_peer="net1-det1" days=1 result="insecure"```
 
 #### Human Readable Output
@@ -181,6 +194,7 @@ In the Picus, all attacks are carried out with the logic of the attacker and the
 
 
 ### picus-run-attacks
+
 ***
 In the Picus, all attacks are carried out with the logic of the attacker and the victim. This command schedules a single attack on the requested vector.
 
@@ -188,6 +202,7 @@ In the Picus, all attacks are carried out with the logic of the attacker and the
 #### Base Command
 
 `picus-run-attacks`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -206,6 +221,7 @@ In the Picus, all attacks are carried out with the logic of the attacker and the
 
 
 #### Command Example
+
 ```!picus-run-attacks attacker_peer="Picus_Attacker_1" victim_peer="net1-det1" threat_ids="881728,879812,798283" variant="HTTP"```
 
 #### Human Readable Output
@@ -219,6 +235,7 @@ In the Picus, all attacks are carried out with the logic of the attacker and the
 
 
 ### picus-get-threat-results
+
 ***
 Returns the list of the attack results of a single threat have optional parameters for filtration.
 
@@ -226,6 +243,7 @@ Returns the list of the attack results of a single threat have optional paramete
 #### Base Command
 
 `picus-get-threat-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -249,6 +267,7 @@ Returns the list of the attack results of a single threat have optional paramete
 
 
 #### Command Example
+
 ```!picus-get-threat-results attacker_peer="Picus_Attacker_1" victim_peer="net1-det1" variant="HTTP" threat_ids="562172"```
 
 #### Human Readable Output
@@ -260,6 +279,7 @@ Returns the list of the attack results of a single threat have optional paramete
 
 
 ### picus-set-paramPB
+
 ***
 Set parameter on the playbook. (This command is only used on playbook)
 
@@ -267,6 +287,7 @@ Set parameter on the playbook. (This command is only used on playbook)
 #### Base Command
 
 `picus-set-paramPB`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -291,6 +312,7 @@ Set parameter on the playbook. (This command is only used on playbook)
 
 
 ### filter-insecure-attacks
+
 ***
 Filter insecure attacks on the playbook. (This command is only used on playbook)
 
@@ -298,6 +320,7 @@ Filter insecure attacks on the playbook. (This command is only used on playbook)
 #### Base Command
 
 `picus-filter-insecure-attacks`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -314,6 +337,7 @@ Filter insecure attacks on the playbook. (This command is only used on playbook)
 
 
 ### picus-get-mitigation-list
+
 ***
 Returns the list of the mitigations of threats have optional parameters for filtration, this route may not be used associated with your license.
 
@@ -321,6 +345,7 @@ Returns the list of the mitigations of threats have optional parameters for filt
 #### Base Command
 
 `picus-get-mitigation-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -340,6 +365,7 @@ Returns the list of the mitigations of threats have optional parameters for filt
 
 
 #### Command Example
+
 ```!picus-get-mitigation-list threat_ids="103847" product="Snort"```
 
 #### Human Readable Output
@@ -352,6 +378,7 @@ Returns the list of the mitigations of threats have optional parameters for filt
 
 
 ### picus-get-vector-compare
+
 ***
 Makes a comparison of the given vector's results.
 
@@ -359,6 +386,7 @@ Makes a comparison of the given vector's results.
 #### Base Command
 
 `picus-get-vector-compare`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -378,6 +406,7 @@ Makes a comparison of the given vector's results.
 
 
 #### Command Example
+
 ```!picus-get-vector-compare attacker_peer="Picus_Attacker_1" victim_peer="net1-det1"```
 
 #### Human Readable Output
@@ -392,6 +421,7 @@ Makes a comparison of the given vector's results.
 
 
 ### picus-version
+
 ***
 Returns the current Picus version and the update time config.
 
@@ -399,6 +429,7 @@ Returns the current Picus version and the update time config.
 #### Base Command
 
 `picus-version`
+
 #### Input
 
 There are no input arguments for this command.
@@ -413,6 +444,7 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!picus-version```
 
 #### Human Readable Output
@@ -424,6 +456,7 @@ There are no input arguments for this command.
 
 
 ### picus-trigger-update
+
 ***
 Triggers the Picus product update mechanism manually.
 
@@ -431,6 +464,7 @@ Triggers the Picus product update mechanism manually.
 #### Base Command
 
 `picus-trigger-update`
+
 #### Input
 
 There are no input arguments for this command.
@@ -444,6 +478,7 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!picus-trigger-update```
 
 #### Human Readable Output

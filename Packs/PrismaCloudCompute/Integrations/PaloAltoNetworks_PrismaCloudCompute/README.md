@@ -26,7 +26,7 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
    | **Prisma Cloud Compute Console URL**                  | URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute. | https:/<span></span>/proxyserver.com |
    | **Prisma Cloud Compute Project Name (if applicable)** | Copy the project name from the alert profile created in Prisma Cloud Compute and paste in this field. | N/A |
    | **Trust any certificate (not secure)**                | Skips verification of the CA certificate (not recommended). | N/A |
-   | **Use system proxy settings**                         | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | <span></span>https://proxyserver.com |
+   | **Use system proxy settings**                         | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | <span></span><https://proxyserver.com> |
    | **Username**                                          | Prisma Cloud Compute login credentials. | N/A |
    | **Prisma Cloud Compute CA Certificate**               | CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute. | N/A |
    | **Source Reliability**                                   | Reliability of the source providing the intelligence data. | False |
@@ -47,6 +47,7 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 ![User Roles Configuration](../../doc_files/user-roles-configuration.png)
 
 ## Required User Roles
+
 In order to use the entire integration commands a user must have the permissions of the following user roles:
 
 * devSecOps
@@ -67,6 +68,7 @@ Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### prisma-cloud-compute-profile-host-list
+
 ***
 Get information about the hosts and their profile events. This command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring.
 
@@ -76,6 +78,7 @@ Get information about the hosts and their profile events. This command supports 
 `prisma-cloud-compute-profile-host-list`
 
 #### Requires Role
+
 devSecOps
 
 #### Input
@@ -140,9 +143,11 @@ devSecOps
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-profile-host-list hostname=*163*```
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -249,23 +254,31 @@ devSecOps
 ```
 
 #### Human Readable Output - One Host
+>
 >### Host Description
+>
 >|Hostname|Distribution|Collections|
 >|---|---|---|
 >| host163 | amzn 2 | All,<br>123 |
+>
 >### Apps
+>
 >|AppName|StartupProcess|User|LaunchTime|
 >|---|---|---|---|
 >| auditd | /usr/sbin/auditd | root | November 10, 2020 09:37:30 AM |
 >| atd | /usr/sbin/atd | root | November 10, 2020 09:37:30 AM |
+>
 >### SSH Events
+>
 >|User|Ip|ProcessPath|Command|Time|
 >|---|---|---|---|---|
 >| user123 | 1.2.3.4 | /usr/bin/grep | grep twistlock_data - High rate of events, throttling started | December 10, 2021 11:06:03 AM |
 >| user123 | 1.1.1.1 | /usr/bin/docker | docker -H unix:///var/run/docker.sock ps -a --format {{ .Names }} | December 10, 2021 11:06:03 AM |
 
 #### Human Readable Output - Multiple Hosts
+>
 >### Host Description
+>
 >|Hostname|Distribution|Collections|
 >|---|---|---|
 >| host163 | amzn 2 | All,<br>123 |
@@ -274,13 +287,16 @@ devSecOps
 
 
 ### prisma-cloud-compute-profile-container-list
+
 ***
 Get information about the containers and their profile events. This command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring.
 
 #### Base Command
+
 `prisma-cloud-compute-profile-container-list`
 
 #### Requires Role
+
 devSecOps
 
 #### Input
@@ -388,9 +404,11 @@ devSecOps
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-profile-container-list image=*defender* limit=1```
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -521,11 +539,15 @@ devSecOps
 ```
 
 #### Human Readable Output - One Container
+>
 >### Container Description
+>
 >|ContainerID|Image|Os|State|Created|EntryPoint|
 >|---|---|---|---|---|---|
 >| container123 | twistlock/private:defender_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2020 11:05:08 AM | /usr/local/bin/defender |
+>
 >### Processes
+>
 >|Type|Path|DetectionTime|
 >|---|---|---|
 >| static | /usr/bin/mongodump | January 01, 2021 00:00:00 AM |
@@ -534,13 +556,16 @@ devSecOps
 >| behavioral | /usr/lib/apt/methods/gpgv | November 24, 2021 15:12:28 PM |
 
 #### Human Readable Output - Multiple Containers
+>
 >### Container Description
+>
 >|ContainerID|Image|Os|State|Created|EntryPoint|
 >|---|---|---|---|---|---|
 >| container123 | twistlock/private:defender_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2021 11:05:08 AM | /usr/local/bin/defender |
 >| container1234 | twistlock/private:console_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2021 11:05:08 AM | /app/server |
 
 ### prisma-cloud-compute-profile-container-hosts-list
+
 ***
 Get the hosts where a specific container is running.
 
@@ -550,6 +575,7 @@ Get the hosts where a specific container is running.
 `prisma-cloud-compute-profile-container-hosts-list`
 
 #### Requires Role
+
 devSecOps
 
 #### Input
@@ -570,9 +596,11 @@ devSecOps
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-profile-container-hosts-list id=container123```
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -588,12 +616,15 @@ devSecOps
 ```
 
 #### Human Readable Output
+>
 >### Hosts
+>
 >|HostsIDs|
 >|---|
 >| host1,<br>host2 |
 
 ### prisma-cloud-compute-profile-container-forensic-list
+
 ***
 Get runtime forensics data for a specific container on a specific host.
 
@@ -601,6 +632,7 @@ Get runtime forensics data for a specific container on a specific host.
 #### Base Command
 
 `prisma-cloud-compute-profile-container-forensic-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -646,9 +678,11 @@ Get runtime forensics data for a specific container on a specific host.
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-profile-container-forensic-list id=container123 hostname=host123 limit=2```
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -685,7 +719,9 @@ Get runtime forensics data for a specific container on a specific host.
 ```
 
 #### Human Readable Output
+>
 >### Containers forensic report
+>
 >|Type|Path|User|Pid|ContainerId|Timestamp|Command|
 >|---|---|---|---|---|---|---|
 >| Process spawned | /usr/bin/mongodump | twistlock | 1341 | a6f769dd | December 10, 2021 11:49:50 AM | mongodump --out=/var/lib/twistlock-backup/dump |
@@ -693,14 +729,17 @@ Get runtime forensics data for a specific container on a specific host.
 
 
 ### prisma-cloud-compute-host-forensic-list
+
 ***
 Get forensics on a specific host.
 
 
 #### Base Command
+
 `prisma-cloud-compute-host-forensic-list`
 
 #### Requires Role
+
 devSecOps
 
 #### Input
@@ -741,9 +780,11 @@ devSecOps
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-host-forensic-list id=hostname123 limit=3 offset=5```
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -796,7 +837,9 @@ devSecOps
 ```
 
 #### Human Readable Output
+>
 >### Host forensics report
+>
 >|Type|Path|User|Pid|Timestamp|Command|App|
 >|---|---|---|---|---|---|---|
 >| Process spawned | /usr/bin/gawk | cakeagent | 17411 | December 10, 2021 21:34:03 PM | awk {gsub("%", "%%", $0);printf  $1 "\|" $2 "\|" $3 "\|" $4 "\|" $5 "\|" $6 "\|" $11 ":::"} | cron |
@@ -805,14 +848,17 @@ devSecOps
 
 
 ### prisma-cloud-compute-console-version-info
+
 ***
 Get the console version.
 
 
 #### Base Command
+
 `prisma-cloud-compute-console-version-info`
 
 #### Requires Role
+
 ci
 
 #### Input
@@ -829,9 +875,11 @@ ci
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-console-version-info```
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -843,21 +891,26 @@ ci
 ```
 
 #### Human Readable Output
+>
 >### Console version
+>
 >|Version|
 >|---|
 >| 21.04.439 |
 
 
 ### prisma-cloud-compute-custom-feeds-ip-list
+
 ***
 Get all the blacklisted IP addresses in the system.
 
 
 #### Base Command
+
 `prisma-cloud-compute-custom-feeds-ip-list`
 
 #### Requires Role
+
 auditor
 
 #### Input
@@ -876,9 +929,11 @@ auditor
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-custom-feeds-ip-list```
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -895,20 +950,25 @@ auditor
 ```
 
 #### Human Readable Output
+>
 >### IP Feeds
+>
 >|Modified|Feed|
 >|---|---|
 >| December 10, 2021 21:12:32 PM | 2.2.2.2,<br>1.1.1.1 |
 
 
 ### prisma-cloud-compute-custom-feeds-ip-add
+
 ***
 Add a list of banned IP addresses to be blocked by the system.
 
 #### Base Command
+
 `prisma-cloud-compute-custom-feeds-ip-add`
 
 #### Requires Role
+
 operator
 
 #### Input
@@ -923,9 +983,11 @@ operator
 There is no context output for this command.
 
 #### Command Example
+
 ```!prisma-cloud-compute-custom-feeds-ip-add IP=1.1.1.1,2.2.2.2```
 
 #### Human Readable Output
+>
 >Successfully updated the custom IP feeds
 
 ### prisma-cloud-compute-custom-feeds-ip-remove
@@ -946,22 +1008,28 @@ Remove a list of IPs from the system's block list.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!prisma-cloud-compute-custom-feeds-ip-remove ip=2.2.2.2,5.6.7.8```
+
 #### Human Readable Output
 
 >Successfully removed {'2.2.2.2'} from the custom IP feeds.
 >        Could not find {'5.6.7.8'} in the custom IP feeds.
 
 ### prisma-cloud-compute-custom-feeds-malware-list
+
 ***
 List all custom uploaded md5 malwares.
 
 
 #### Base Command
+
 `prisma-cloud-compute-custom-feeds-malware-list`
 
 #### Requires Role
+
 auditor
 
 #### Input
@@ -983,9 +1051,11 @@ auditor
 
 
 #### Command Example
+
 ```prisma-cloud-compute-custom-feeds-malware-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -1010,7 +1080,9 @@ auditor
 ```
 
 #### Human Readable Output
+>
 >### Malware Feeds
+>
 >|Name|Md5|Allowed|
 >|---|---|---|
 >| first_md5_hash | md5_hash1 | false |
@@ -1018,13 +1090,16 @@ auditor
 
 
 ### prisma-cloud-compute-custom-feeds-malware-add
+
 ***
 Add custom md5 malware hashes.
 
 #### Base Command
+
 `prisma-cloud-compute-custom-feeds-malware-add`
 
 #### Requires Role
+
 operator
 
 #### Input
@@ -1040,21 +1115,26 @@ operator
 There is no context output for this command.
 
 #### Command Example
+
 ```!prisma-cloud-compute-custom-feeds-malware-add name=test md5=md5_hash1,md5_hash2,md5_hash3```
 
 #### Human Readable Output
+>
 >Successfully updated the custom md5 malware feeds
 
 
 ### cve
+
 ***
 Get information about the CVEs in the system. Will return a maximum of 50 records. It is possible to query for a partial CVE description such as cve-2020 or cve-2014 or by severity/distro/package.
 
 
 #### Base Command
+
 `cve`
 
 #### Requires Role
+
 devOps
 
 #### Input
@@ -1080,9 +1160,11 @@ devOps
 
 
 #### Command Example
+
 ```!cve cve=CVE-2021-4333```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -1117,24 +1199,31 @@ devOps
 ```
 
 #### Human Readable Output
+>
 >### CVE-2021-43332
+>
 >|CVSS|Description|ID|Modified|
 >|---|---|---|---|
 >| 6.1 | In GNU Mailman before 2.1.36, the CSRF token for the Cgi/admindb.py admindb page contains an encrypted version of the list admin password. This could potentially be cracked by a moderator via an offline brute-force attack. | CVE-2021-43332 | November 19, 2021 08:40:01 AM |
+>
 >### CVE-2021-43337
+>
 >|CVSS|Description|ID|Modified|
 >|---|---|---|---|
 >| 6.5 | SchedMD Slurm 21.08.* before 21.08.4 has Incorrect Access Control. On sites using the new AccountingStoreFlags=job_script and/or job_env options, the access control rules in SlurmDBD may permit users to request job scripts and environment files to which they should not have access. | CVE-2021-43337 | November 18, 2021 08:40:01 AM |
 
 
 ### prisma-cloud-compute-defenders-list
+
 ***
 Retrieve a list of defenders and their information.
 
 #### Base Command
+
 `prisma-cloud-compute-defenders-list`
 
 #### Requires Role
+
 vulnerabilityManager
 
 #### Input
@@ -1177,9 +1266,11 @@ vulnerabilityManager
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-defenders-list connected=true limit=1```
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -1282,21 +1373,26 @@ vulnerabilityManager
 ```
 
 #### Human Readable Output
+>
 >### Defenders Information
+>
 >|Hostname|Version|Status|Listener|
 >|---|---|---|---|
 >| host1 | 21.04.439 | Connected since September 02, 2021 11:05:08 AM | none
 
 
 ### prisma-cloud-compute-collections-list
+
 ***
 Retrieves a list of all collections.
 
 
 #### Base Command
+
 `prisma-cloud-compute-collections-list`
 
 #### Requires Role
+
 auditor
 
 #### Input
@@ -1329,10 +1425,12 @@ auditor
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-collections-list limit=1```
 
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -1380,7 +1478,9 @@ auditor
 ```
 
 #### Human Readable Output
+>
 >### Collections Information
+>
 >|Name|Description|Owner|Modified|
 >|---|---|---|---|
 >| All | System - all resources collection | system | September 02, 2021 11:05:06 AM |
@@ -1388,6 +1488,7 @@ auditor
 
 
 ### prisma-cloud-compute-container-namespace-list
+
 ***
 Get the containers namespaces names.
 
@@ -1397,6 +1498,7 @@ Get the containers namespaces names.
 `prisma-cloud-compute-container-namespace-list`
 
 #### Requires Role
+
 devSecOps
 
 #### Input
@@ -1416,9 +1518,11 @@ devSecOps
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-container-namespace-list limit=3```
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -1432,7 +1536,9 @@ devSecOps
 ```
 
 #### Human Readable Output
+>
 >### Collections Information
+>
 >|Name|
 >|---|
 >| namespace1 |
@@ -1441,14 +1547,17 @@ devSecOps
 
 
 ### prisma-cloud-compute-images-scan-list
+
 ***
 Get images scan report. The report includes vulnerabilities, compliance issues, binaries, etc.
 
 
 #### Base Command
+
 `prisma-cloud-compute-images-scan-list`
 
 #### Requires Role
+
 vulnerabilityManager
 
 #### Input
@@ -1535,10 +1644,12 @@ vulnerabilityManager
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-images-scan-list id=image123 limit_stats=2 compact=false```
 
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -1861,16 +1972,22 @@ vulnerabilityManager
 ```
 
 #### Human Readable Output
+>
 >### Image description
+>
 >|ID|Image|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
 >|---|---|---|---|---|
 >| image123 | demisto/python:1.3-alpine | Alpine Linux v3.7 | 60 | 1 |
+>
 >### Vulnerabilities
+>
 >|Cve|Description|Severity|Package Name|Status|Fix Date|
 >|---|---|---|---|---|---|
 >| CVE-2018-20679 | An issue was discovered in BusyBox before 1.30.0. An out of bounds read in udhcp components (consumed by the DHCP server, client, and relay) allows a remote attacker to leak sensitive information from the stack by sending a crafted DHCP message. This is related to verification in udhcp_get_option() in networking/udhcp/common.c that 4-byte options are indeed 4 bytes. | high | busybox | fixed in 1.30.1-r5 | January 09, 2019 16:29:00 PM |
 >| CVE-2018-1000517 | BusyBox project BusyBox wget version prior to commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e contains a Buffer Overflow vulnerability in Busybox wget that can result in heap buffer overflow. This attack appear to be exploitable via network connectivity. This vulnerability appears to have been fixed in after commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e. | critical | busybox | fixed in 1.29.3-r10 | June 26, 2018 16:29:00 PM |
+>
 >### Compliances
+>
 >|Id|Severity|Description|
 >|---|---|---|
 >| 41 | high | It is a good practice to run the container as a non-root user, if possible. Though user<br>namespace mapping is now available, if a user is already defined in the container image, the<br>container is run as that user by default and specific user namespace remapping is not<br>required |
@@ -1878,10 +1995,12 @@ vulnerabilityManager
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-images-scan-list id=image123 limit_stats=2 compact=true```
 
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -2004,29 +2123,38 @@ vulnerabilityManager
 ```
 
 #### Human Readable Output
+>
 >### Image description
+>
 >|ID|Image|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
 >|---|---|---|---|---|
 >| image123 | demisto/python:1.3-alpine | Alpine Linux v3.7 | 60 | 1 |
+>
 >### Vulnerability Statistics
+>
 >|Critical|High|Medium|Low|
 >|---|---|---|---|
 >| 12 | 28 | 20 | 0 |
+>
 >### Compliance Statistics
+>
 >|Critical|High|Medium|Low|
 >|---|---|---|---|
 >| 0 | 1 | 0 | 0 |
 
 
 ### prisma-cloud-compute-hosts-scan-list
+
 ***
 Get hosts scan report. The report includes vulnerabilities, compliance issues, binaries, etc.
 
 
 #### Base Command
+
 `prisma-cloud-compute-hosts-scan-list`
 
 #### Requires Role
+
 vulnerabilityManager
 
 #### Input
@@ -2101,9 +2229,11 @@ vulnerabilityManager
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-hosts-scan-list hostname=host123 compact=false limit_stats=2```
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -2383,16 +2513,22 @@ vulnerabilityManager
 ```
 
 #### Human Readable Output
+>
 >### Host description
+>
 >|Hostname|Docker Version|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
 >|---|---|---|---|---|
 >| host123 | 17.06.0-ce | Ubuntu 16.04.2 LTS | 191 | 17 |
+>
 >### Vulnerabilities
+>
 >|Cve|Description|Severity|Package Name|Status|
 >|---|---|---|---|---|
 >| CVE-2020-8037 | The ppp decapsulator in tcpdump 4.9.3 can be convinced to allocate a large amount of memory. | low | tcpdump | needed |
 >| CVE-2021-31879 | GNU Wget through 1.21.1 does not omit the Authorization header upon a redirect to a different origin, a related issue to CVE-2018-1000007. | medium | wget | deferred |
+>
 >### Compliances
+>
 >|Id|Severity|Description|
 >|---|---|---|
 >| 16 | high | Docker allows you to share a directory between the Docker host and a guest container<br>without limiting the access rights of the container. This means that you can start a<br>container and map the / directory on your host to the container. The container will then be<br>able to alter your host file system without any restrictions. In simple terms, it means that<br>you can attain elevated privileges with just being a member of the docker group and then<br>starting a container with mapped / directory on the host |
@@ -2400,9 +2536,11 @@ vulnerabilityManager
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-hosts-scan-list hostname=host123 compact=true limit_stats=2```
 
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -2508,29 +2646,38 @@ vulnerabilityManager
 ```
 
 #### Human Readable Output
+>
 >### Host description
+>
 >|Hostname|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
 >|---|---|---|---|
 >| host123 | Ubuntu 16.04.2 LTS | 191 | 17 |
+>
 >### Vulnerability Statistics
+>
 >|Critical|High|Medium|Low|
 >|---|---|---|---|
 >| 0 | 4 | 78 | 109 |
+>
 >### Compliance Statistics
+>
 >|Critical|High|Medium|Low|
 >|---|---|---|---|
 >| 1 | 16 | 0 | 0 |
 
 
 ### prisma-cloud-compute-vulnerabilities-impacted-resources-list
+
 ***
 Get the list of Prisma Cloud Compute vulnerabilities resources.
 
 
 #### Base Command
+
 `prisma-cloud-compute-vulnerabilities-impacted-resources-list`
 
 #### Requires Role
+
 vulnerabilityManager
 
 #### Input
@@ -2553,6 +2700,7 @@ vulnerabilityManager
 
 
 #### Command Example
+
 ```!prisma-cloud-compute-vulnerabilities-impacted-resources-list cve=CVE-2021-31535,CVE-2018-14600```
 
 #### Context Example
@@ -2604,20 +2752,25 @@ vulnerabilityManager
 ```
 
 #### Human Readable Output
+>
 >### Impacted Images
+>
 >|Cve|Image|
 >|---|---|
 >| CVE-2021-31535 | image1 |
 >| CVE-2021-31535 | image2 |
 >| CVE-2018-14600 | image3 |
 >| CVE-2018-14600 | image4 |
+>
 >### Impacted Hosts
+>
 >|Cve|Hostname|
 >|---|---|
 >| CVE-2021-31535 | host1 |
 
 
 ### prisma-cloud-compute-get-waas-policies
+
 ***
 Get the Waas Container Policies from Defend >> WAAS >> Containers
 
@@ -2625,6 +2778,7 @@ Get the Waas Container Policies from Defend >> WAAS >> Containers
 #### Base Command
 
 `prisma-cloud-compute-get-waas-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2632,6 +2786,7 @@ Get the Waas Container Policies from Defend >> WAAS >> Containers
 
 
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaCloudCompute.Policies.Name | String | The WaaS policy Name. | 
@@ -2647,8 +2802,11 @@ Get the Waas Container Policies from Defend >> WAAS >> Containers
 | PrismaCloudCompute.Policies.WaasPolicy.MalformedHTTPRequest | String | The list of Waas Policies and there current setting. | 
 
 #### Command example
+
 ```!prisma-cloud-compute-get-waas-policies```
+
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -2676,12 +2834,14 @@ Get the Waas Container Policies from Defend >> WAAS >> Containers
 #### Human Readable Output
 
 >### dvwa
+>
 >|ATP|AttackToolsAndVulnScanners|CodeInjection|CrossSiteScriptingXSS|DetectInformationLeakage|LocalFileInclusion|MalformedHTTPRequest|OSCommandInjetion|SQLInjection|Shellshock|
 >|---|---|---|---|---|---|---|---|---|---|
 >| alert | alert | alert | alert | alert | alert | alert | alert | ban | alert |
 
 
 ### prisma-cloud-compute-update-waas-policies
+
 ***
 Update the Waas Policy for containers
 
@@ -2689,6 +2849,7 @@ Update the Waas Policy for containers
 #### Base Command
 
 `prisma-cloud-compute-update-waas-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2704,9 +2865,11 @@ Update the Waas Policy for containers
 There is no context output for this command.
 
 ### Human Readable Output
+>
 > Successfully updated the WaaS policy
 
 ### prisma-cloud-compute-get-audit-firewall-container-alerts
+
 ***
 Get the audits for the firewall container policies
 
@@ -2714,6 +2877,7 @@ Get the audits for the firewall container policies
 #### Base Command
 
 `prisma-cloud-compute-get-audit-firewall-container-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2726,15 +2890,20 @@ Get the audits for the firewall container policies
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!prisma-cloud-compute-get-audit-firewall-container-alerts audit_type=lfi ImageName=`vulnerables/web-dvwa:latest````
+
 #### Human Readable Output
 
 >### Audits
+>
 >**No entries.**
 
 
 ## Known limitations:
+
 When fetching an incident from the Prisma Cloud Compute platform, the platform will delete the fetched incident.
 Therefore, it is recommended to configure only one instance per user to fetch incidents.
 
@@ -2866,8 +3035,11 @@ Get the available alert alert profiles from a specific project.
 | PrismaCloudCompute.AlertProfiles._Id | String | The alert profile ID. | 
 
 #### Command example
+
 ```!prisma-cloud-compute-get-alert-profiles```
+
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -3101,6 +3273,7 @@ Get the available alert alert profiles from a specific project.
 #### Human Readable Output
 
 >### Alert Profiles
+>
 >|admission|agentlessAppFirewall|appEmbeddedAppFirewall|appEmbeddedRuntime|cloudDiscovery|codeRepoVulnerability|containerAppFirewall|containerCompliance|containerComplianceScan|containerRuntime|containerVulnerability|defender|docker|hostAppFirewall|hostCompliance|hostComplianceScan|hostRuntime|hostVulnerability|incident|kubernetesAudit|networkFirewall|registryVulnerability|serverlessAppFirewall|serverlessRuntime|vmCompliance|vmVulnerability|waasHealth|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| enabled: false<br/>allRules: true<br/>rules:  | enabled: true<br/>allRules: true<br/>rules:  | enabled: true<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: true<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: true<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: true<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: true<br/>allRules: true<br/>rules:  |
@@ -3134,8 +3307,11 @@ Get the Defender settings.
 | PrismaCloudCompute.DefenderSettings.ListeningPort | Number | The defender listening port. | 
 
 #### Command example
+
 ```!prisma-cloud-compute-get-settings-defender```
+
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -3155,6 +3331,7 @@ Get the Defender settings.
 #### Human Readable Output
 
 >### Results
+>
 >|AdmissionControlEnabled|AdmissionControlWebhookSuffix|AppEmbeddedFileSystemTracingEnabled|AutomaticUpgrade|DisconnectPeriodDays|HostCustomComplianceEnabled|ListeningPort|
 >|---|---|---|---|---|---|---|
 >| false | sdgfskdjfbsdkfbsdkjfbsdkfbksdjbf | false | false | 1 | false | 9998 |
@@ -3186,8 +3363,11 @@ Download the Defender logs.
 | PrismaCloudCompute.Defenders.Logs.Time | Date | The time of the log. | 
 
 #### Command example
+
 ```!prisma-cloud-compute-logs-defender hostname=test-host.internal lines=2```
+
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -3213,6 +3393,7 @@ Download the Defender logs.
 #### Human Readable Output
 
 >### Logs
+>
 >|level|log|time|
 >|---|---|---|
 >| DEBUG | defender.go:2042 Received upload logs message: &{DestLogs:defender_1681221297.tar.gz Lines:2} | 2023-04-11T13:54:57.862Z |
@@ -3248,8 +3429,11 @@ Download a zip of all Defender logs.
 
 
 #### Command example
+
 ```!prisma-cloud-compute-logs-defender-download hostname=`test-host.internal` lines=2```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -3288,8 +3472,11 @@ Returns the available backups.
 | PrismaCloudCompute.Backups.Time | Date | The time of the backup. | 
 
 #### Command example
+
 ```!prisma-cloud-compute-get-backups```
+
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -3320,6 +3507,7 @@ Returns the available backups.
 #### Human Readable Output
 
 >### Results
+>
 >|Id|Name|Release|Time|
 >|---|---|---|---|
 >| daily-22.12.585-1681184909.tar.gz | daily | 22.12.585 | 2023-04-11T03:48:29Z |
@@ -3363,8 +3551,11 @@ Returns the available backups.
 | PrismaCloudCompute.FileIntegrity.Description | unknown | A human readable description of the action performed on the path. | 
 
 #### Command example
+
 ```!prisma-cloud-compute-get-file-integrity-events hostname=host123 limit=3```
+
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -3434,6 +3625,7 @@ Returns the available backups.
 #### Human Readable Output
 
 >### Results
+>
 >|AccountID|Cluster|Collections|Description|EventType|FileType|Fqdn|Hostname|Path|ProcessName|RuleName|Time|User|_Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 123 |  | All,<br/>123 | Process touch wrote to path (user: root) | write | 2 |  | host123 | /tmp/alert/test1 | touch | Default - alert on suspicious runtime behavior | 2023-08-30T01:16:01.037Z | root | 64ee985138b8ac44a6f3d468 |
@@ -3452,13 +3644,14 @@ Use this command to unstuck the fetch stream in case it's getting duplicated inc
 
 #### Input
 
-- No input.
+* No input.
 
 #### Context Output
 
-- No context output for this command.
+* No context output for this command.
 
 #### Command example
+
 ```!prisma-cloud-compute-unstuck-fetch-stream```
 
 
@@ -3560,8 +3753,11 @@ Retrieves all scan reports for images scanned by the Jenkins plugin or twistcli.
 | PrismaCloudCompute.CIScan.entityInfo.malwareAnalyzedTime | String | Malware analyzed time. | 
 
 #### Command example
+
 ```!prisma-cloud-compute-ci-scan-results-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -3896,6 +4092,7 @@ Retrieves all scan reports for images scanned by the Jenkins plugin or twistcli.
 #### Human Readable Output
 
 >### CI Scan Information
+>
 >|Image|ID|OS Distribution|OS Release|Scan Status|Scan Time|
 >|---|---|---|---|---|---|
 >| 1.dkr.ecr.eu-central-1.amazonaws.com/pythonscript:tag | sha256:a6 | ubuntu | jammy | true | 2023-09-20T12:53:37.229Z |
@@ -3937,8 +4134,11 @@ There are no input arguments for this command.
 | PrismaCloudCompute.TrustedImage.groups.images | Unknown | The images in the trusted image group. | 
 
 #### Command example
+
 ```!prisma-cloud-compute-trusted-images-list```
+
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -4091,17 +4291,21 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >## Trusted Images Details
+>
 >### Policy Rules Information
+>
 >|Rule Name|Effect|Owner|Allowed Groups|Modified|
 >|---|---|---|---|---|
->| test | alert | test@paloaltonetworks.com | test | 2023-06-08T12:28:46.723Z |
->| Default - alert all | alert | test@paloaltonetworks.com |  | 2022-04-27T19:24:00.987Z |
+>| test | alert | <test@paloaltonetworks.com> | test | 2023-06-08T12:28:46.723Z |
+>| Default - alert all | alert | <test@paloaltonetworks.com> |  | 2022-04-27T19:24:00.987Z |
+>
 >### Trust Groups Information
+>
 >|ID|Owner|Modified|
 >|---|---|---|
->| Deny All | test@paloaltonetworks.com | 2022-04-27T17:30:02.803Z |
->| TRUSTED IMAGES | test@paloaltonetworks.com | 2023-02-27T21:35:49.697Z |
->| test | test@paloaltonetworks.com | 2023-02-28T19:53:44.491Z |
+>| Deny All | <test@paloaltonetworks.com> | 2022-04-27T17:30:02.803Z |
+>| TRUSTED IMAGES | <test@paloaltonetworks.com> | 2023-02-27T21:35:49.697Z |
+>| test | <test@paloaltonetworks.com> | 2023-02-28T19:53:44.491Z |
 
 
 ### prisma-cloud-compute-trusted-images-update
@@ -4122,6 +4326,7 @@ Updates a trusted image to the system. Specify trusted images using either the i
 #### Context Output
 
 There is no context output for this command.
+
 ### prisma-cloud-compute-container-scan-results-list
 
 ***
@@ -4188,8 +4393,11 @@ Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deploy
 | PrismaCloudCompute.ContainersScanResults.info.startTime | Date | Container start time. | 
 
 #### Command example
+
 ```!prisma-cloud-compute-container-scan-results-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -4384,6 +4592,7 @@ Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deploy
 #### Human Readable Output
 
 >### CI Scan Information
+>
 >|ID|Hostname|Scan Time|Image ID|Image Name|Name|App|
 >|---|---|---|---|---|---|---|
 >| a1 | a1 | 2023-09-26T01:46:44.579Z | sha256:a1 | img5 | hhh | a2 |
@@ -4438,8 +4647,11 @@ Returns minimal information that includes hostname, distro, distro-release, coll
 | PrismaCloudCompute.Hosts.agentless | Boolean | Whether the host was scanned agentlessly. | 
 
 #### Command example
+
 ```!prisma-cloud-compute-hosts-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -4596,6 +4808,7 @@ Returns minimal information that includes hostname, distro, distro-release, coll
 #### Human Readable Output
 
 >### Hosts Information
+>
 >|ID|Hostname|Scan Time|Distro|Distro Release|
 >|---|---|---|---|---|
 >| a9 | a9 | 0001-01-01T00:00:00Z | Ubuntu 20.04.4 LTS | focal |
@@ -4672,8 +4885,11 @@ Retrieves all container audit events when a runtime sensor such as process, netw
 | PrismaCloudCompute.RuntimeContainerAuditEvents.provider | String | The provider of the container. | 
 
 #### Command example
+
 ```!prisma-cloud-compute-runtime-container-audit-events-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -4754,6 +4970,7 @@ Retrieves all container audit events when a runtime sensor such as process, netw
 #### Human Readable Output
 
 >### Runtime Container Audit Events Information
+>
 >|ID|Hostname|Container Name|Image Name|Effect|Type|Attack Type|Severity|
 >|---|---|---|---|---|---|---|---|
 >| a9 | hostname4 | python-server-app | r6 | block | filesystem | malwareFileFeed | high |
@@ -4777,7 +4994,9 @@ Acknowledges an incident and moves it to an archived state.
 | action | Action for the command. archive - incident will be archived, unarchive - incident will be unarchived. Possible values are: archive, unarchive. Default is archive. | Optional | 
 
 #### Command example
+
 ```!prisma-cloud-compute-archive-audit-incident incident_id="1111"```
+
 #### Human Readable Output
 
 >Incident 1111 was successfully archived
@@ -4845,8 +5064,11 @@ Retrieves the runtime host audit events.
 | PrismaCloudCompute.RuntimeHostAuditEvents.user | String | The audited event user. | 
 
 #### Command example
+
 ```!prisma-cloud-compute-runtime-host-audit-events-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -4887,6 +5109,7 @@ Retrieves the runtime host audit events.
 #### Human Readable Output
 
 >### Runtime Host Audit Events Information
+>
 >|ID|Hostname|User|Type|AttackType|Message|Severity|Effect|
 >|---|---|---|---|---|---|---|---|
 >| 2222 | ip-10-10-10-76.ec2.internal | root | filesystem | unknownOriginBinary | /usr/bin/python3.6, which is not a known OS distribution package manager wrote the binary /var/log/amazon/ssm/patch-baseline-operations/simplejson/_speedups.so. MD5: 038ebdb3fb23a04fc288b2eb01a7da70. Command: python3 | high | alert |
@@ -4918,8 +5141,11 @@ Retrieves the runtime policy for containers protected by Defender. A policy cons
 | PrismaCloudCompute.Policies.RuntimeContainerPolicy.modified | Date | The audited event modified time. | 
 
 #### Command example
+
 ```!prisma-cloud-compute-runtime-container-policy-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "PrismaCloudCompute": {
@@ -5052,11 +5278,12 @@ Retrieves the runtime policy for containers protected by Defender. A policy cons
 #### Human Readable Output
 
 >### Runtime Container Policy Events Information
+>
 >|Name|Owner|Modified|
 >|---|---|---|
->| rke-monitor-rule | avega@paloaltonetworks.com | 2024-01-12T16:52:25.358Z |
+>| rke-monitor-rule | <avega@paloaltonetworks.com> | 2024-01-12T16:52:25.358Z |
 
 
 ## General Note:
-- Do not use the reset last run button as it will cause incidents duplications to the instance. 
-- In case you pressed reset last run button and you get duplicated incidents, run **prisma-cloud-compute-unstuck-fetch-stream** command.
+* Do not use the reset last run button as it will cause incidents duplications to the instance. 
+* In case you pressed reset last run button and you get duplicated incidents, run **prisma-cloud-compute-unstuck-fetch-stream** command.

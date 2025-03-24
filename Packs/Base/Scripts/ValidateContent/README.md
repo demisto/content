@@ -25,6 +25,7 @@ This automation script is used as part of the content validation that runs as pa
 ## Outputs
 
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | -- | --- |
 | ValidationResult.Name| Name of validated item. | String |

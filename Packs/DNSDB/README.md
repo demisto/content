@@ -1,11 +1,13 @@
 Increase Incident Response Speed and Accuracy with Cortex XSOAR and Farsight Security DNSDB®.
 
 ##### Overview
+
 Farsight Security DNSDB® is the world’s largest DNS intelligence database that provides a unique, fact-based, multifaceted view of the configuration of the global Internet infrastructure. DNSDB leverages the richness of Farsight’s Security Information Exchange (SIE) data-sharing platform and is engineered and operated by leading DNS experts. Farsight collects Passive DNS data from its global sensor array. It then filters and verifies the DNS transactions before inserting them into the DNSDB, along with ICANN-sponsored zone file access download data. 
 
 To measurably improve the speed and accuracy of incident response, security analysts need to uncover and gain context for all connected DNS-related digital artifacts, in seconds, using a comprehensive, intelligent search process. By leveraging the Cortex XSOAR Farsight DNSDB integration, security practitioners can automate critical tasks to gain actionable insights into existing threat indicators and avoid dead time by coordinating actions across security projects on a single console. Add to existing Cortex XSOAR workflows to auto generate the query and populate the contextual information for all IPs and domain names.
 
 ##### Integration Features:
+
 - **IP Enrichment**: Enable the retrieval of hostnames that resolve to IP addresses to infer the reason the victim connected to a given IP address.
 - **Hostname Enrichment**: Find all IPs that a hostname has been observed resolving to around the time of observation to identify flows to command-and-control systems that change their IP addresses to avoid detection.
 - **Find Related Hostnames**: Find other hostnames that have resolved to the same IP address as the target hostname to expand on threat intelligence by identifying alternative command-and-control hostnames that may be using common infrastructure.

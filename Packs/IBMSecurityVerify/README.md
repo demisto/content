@@ -19,6 +19,7 @@ Identity and access management is a crucial part of maintaining security in mode
 <~XSIAM>
 
 #### This modeling rule supports the following event types:
+
 - Authentication
 - Access Request
 - SSO

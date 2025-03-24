@@ -1,6 +1,7 @@
 Creates a new FireFlow change request. 
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Creates a new FireFlow change request.
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * algosec-create-ticket
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -31,5 +35,6 @@ This script uses the following commands and scripts.
 | application | The application for the connection. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

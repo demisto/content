@@ -19,9 +19,12 @@ This integration was integrated and tested with version v2 of Envoy SCIM API.
 | Outgoing Mapper |  | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### iam-create-user
+
 ***
 Creates a user.
 
@@ -29,6 +32,7 @@ Creates a user.
 #### Base Command
 
 `iam-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -54,6 +58,7 @@ Creates a user.
 
 
 #### Command Example
+
 ``` !iam-create-user user-profile=`{"email": "john.doe@example.com", "givenname": "test", "surname": "test"}` ```
 
 #### Human Readable Output
@@ -61,6 +66,7 @@ Creates a user.
 
 
 ### iam-update-user
+
 ***
 Updates an existing user with the data passed in the user-profile argument.
 
@@ -68,6 +74,7 @@ Updates an existing user with the data passed in the user-profile argument.
 #### Base Command
 
 `iam-update-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -93,6 +100,7 @@ Updates an existing user with the data passed in the user-profile argument.
 
 
 #### Command Example
+
 ``` !iam-update-user user-profile=`{"email": "john.doe@example.com", "givenname": "John"}` ```
 
 #### Human Readable Output
@@ -100,6 +108,7 @@ Updates an existing user with the data passed in the user-profile argument.
 
 
 ### iam-get-user
+
 ***
 Retrieves a single user resource.
 
@@ -107,6 +116,7 @@ Retrieves a single user resource.
 #### Base Command
 
 `iam-get-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -131,6 +141,7 @@ Retrieves a single user resource.
 
 
 #### Command Example
+
 ``` !iam-get-user user-profile=`{"email": "john.doe@example.com"}` ```
 
 #### Human Readable Output
@@ -138,6 +149,7 @@ Retrieves a single user resource.
 
 
 ### iam-disable-user
+
 ***
 Disable an active user.
 
@@ -145,6 +157,7 @@ Disable an active user.
 #### Base Command
 
 `iam-disable-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -169,6 +182,7 @@ Disable an active user.
 
 
 #### Command Example
+
 ``` !iam-disable-user user-profile=`{"email": "john.doe@example.com", "givenname": "John"}` ```
 
 #### Human Readable Output

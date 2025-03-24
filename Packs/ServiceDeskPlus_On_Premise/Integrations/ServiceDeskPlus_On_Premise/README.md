@@ -14,6 +14,7 @@ Follow the next steps to create an instance:
 3. Click the **Test** button to validate the instance.
 
 **NOTES**
+
 - For more details about generating a technician key please refer to the [help documentation](https://help.servicedeskplus.com/api/rest-api.html$key)
 
 
@@ -31,9 +32,12 @@ Follow the next steps to create an instance:
 | fetch_filter | Use this field to filter the incidents that are being fetched according to any of the request properties.  Please see additional information for exact filter format. Overrides the status filter, if given. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### service-desk-plus-requests-list
+
 ***
 View the details of requests. If no parameters are given the details of all requests will be shown.
 
@@ -41,6 +45,7 @@ View the details of requests. If no parameters are given the details of all requ
 #### Base Command
 
 `service-desk-plus-requests-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -72,9 +77,11 @@ View the details of requests. If no parameters are given the details of all requ
 
 
 #### Command Example
+
 ```!service-desk-plus-requests-list start_index=32 page_size=2```
 
 #### Context Example
+
 ```
 {
     "ServiceDeskPlus": {
@@ -139,6 +146,7 @@ View the details of requests. If no parameters are given the details of all requ
 #### Human Readable Output
 
 >### Requests
+>
 >|CreatedTime|Id|Requester|Status|Subject|
 >|---|---|---|---|---|
 >| 2020-06-30T15:27:33.000Z | 123640000000279007 | First Last | Open | Update Existing Request |
@@ -146,12 +154,14 @@ View the details of requests. If no parameters are given the details of all requ
 
 
 ### service-desk-plus-request-delete
+
 ***
 Deletes the request with the specified ID. To delete multiple IDs, pass a comma-separated list (string) of the IDs of the requests.
 
 #### Base Command
 
 `service-desk-plus-request-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -164,6 +174,7 @@ Deletes the request with the specified ID. To delete multiple IDs, pass a comma-
 There is no context output for this command.
 
 #### Command Example
+
 ```!service-desk-plus-request-delete request_id=123640000000279019```
 
 #### Human Readable Output
@@ -171,6 +182,7 @@ There is no context output for this command.
 >### Successfully deleted request(s) 123640000000279019
 
 ### service-desk-plus-request-create
+
 ***
 Create new requests
 
@@ -178,6 +190,7 @@ Create new requests
 #### Base Command
 
 `service-desk-plus-request-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -207,7 +220,7 @@ Create new requests
 
 **Note:**
 >Fields that represent an object can be filled either by providing the name only or the entire object. For example, the technician parameter can be defined either by filling
->*technician="First Last"* or *technician="{'name':'First Last', 'id':'12345', 'email_id':'email@paloaltonetworks.com'}"*
+>*technician="First Last"* or *technician="{'name':'First Last', 'id':'12345', 'email_id':'<email@paloaltonetworks.com>'}"*
 
 #### Context Output
 
@@ -229,9 +242,11 @@ Create new requests
 
 
 #### Command Example
+
 ```!service-desk-plus-request-create subject="Create New Request" requester="{'name':'First Last'}"```
 
 #### Context Example
+
 ```
 {
     "ServiceDeskPlus": {
@@ -298,12 +313,14 @@ Create new requests
 #### Human Readable Output
 
 >### Service Desk Plus request was successfully created
+>
 >|CreatedTime|Id|Requester|Status|Subject|
 >|---|---|---|---|---|
 >| 2020-07-01T08:17:06.000Z | 123640000000276021 | First Last | Open | Create New Request |
 
 
 ### service-desk-plus-request-update
+
 ***
 Update the request with the given request id.
 
@@ -311,6 +328,7 @@ Update the request with the given request id.
 #### Base Command
 
 `service-desk-plus-request-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -362,9 +380,11 @@ Update the request with the given request id.
 
 
 #### Command Example
+
 ```!service-desk-plus-request-update request_id=123640000000284007 subject="Update Existing Request"```
 
 #### Context Example
+
 ```
 {
     "ServiceDeskPlus": {
@@ -441,12 +461,14 @@ Update the request with the given request id.
 #### Human Readable Output
 
 >### Service Desk Plus request was successfully updated
+>
 >|CreatedTime|Id|Requester|Status|Subject|
 >|---|---|---|---|---|
 >| 2020-07-01T07:41:14.000Z | 123640000000284007 | First Last | Open | Update Existing Request |
 
 
 ### service-desk-plus-request-assign
+
 ***
 Assigns the request with the given request id to a technician/group
 
@@ -454,6 +476,7 @@ Assigns the request with the given request id to a technician/group
 #### Base Command
 
 `service-desk-plus-request-assign`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -468,9 +491,11 @@ Assigns the request with the given request id to a technician/group
 There is no context output for this command.
 
 #### Command Example
+
 ```!service-desk-plus-request-assign request_id=123640000000284007 group="Network"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -480,6 +505,7 @@ There is no context output for this command.
 >### Service Desk Plus request 123640000000284007 was successfully assigned
 
 ### service-desk-plus-request-pickup
+
 ***
 Allows the technician to pickup the request with the given request id on his name.
 
@@ -487,6 +513,7 @@ Allows the technician to pickup the request with the given request id on his nam
 #### Base Command
 
 `service-desk-plus-request-pickup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -499,9 +526,11 @@ Allows the technician to pickup the request with the given request id on his nam
 There is no context output for this command.
 
 #### Command Example
+
 ```!service-desk-plus-request-pickup request_id=123640000000279001```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -511,6 +540,7 @@ There is no context output for this command.
 >### Service Desk Plus request 123640000000279001 was successfully picked up
 
 ### service-desk-plus-linked-request-list
+
 ***
 Gets a list with all the linked requests under a request
 
@@ -518,6 +548,7 @@ Gets a list with all the linked requests under a request
 #### Base Command
 
 `service-desk-plus-linked-request-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -534,9 +565,11 @@ Gets a list with all the linked requests under a request
 
 
 #### Command Example
+
 ```!service-desk-plus-linked-request-list request_id=123640000000284007```
 
 #### Context Example
+
 ```
 {
     "ServiceDeskPlus": {
@@ -563,12 +596,14 @@ Gets a list with all the linked requests under a request
 #### Human Readable Output
 
 >### Linked requests to request 123640000000284007
+>
 >|LinkedRequest|
 >|---|
 >| subject: Request for List<br/>id: 123640000000288001<br/>udf_fields: {"udf_char1": null, "udf_char2": "def test", "udf_char3": null}<br/>display_id: 179 |
 
 
 ### service-desk-plus-request-resolution-add
+
 ***
 Adds a resolution to the given request
 
@@ -576,6 +611,7 @@ Adds a resolution to the given request
 #### Base Command
 
 `service-desk-plus-request-resolution-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -590,9 +626,11 @@ Adds a resolution to the given request
 There is no context output for this command.
 
 #### Command Example
+
 ```!service-desk-plus-request-resolution-add request_id=123640000000284007 resolution_content="Resolution Content"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -602,6 +640,7 @@ There is no context output for this command.
 >### Resolution was successfully added to 123640000000284007
 
 ### service-desk-plus-request-resolutions-list
+
 ***
 Gets the resolution to the given request
 
@@ -609,6 +648,7 @@ Gets the resolution to the given request
 #### Base Command
 
 `service-desk-plus-request-resolutions-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -627,9 +667,11 @@ Gets the resolution to the given request
 
 
 #### Command Example
+
 ```!service-desk-plus-request-resolutions-list request_id=123640000000284007```
 
 #### Context Example
+
 ```
 {
     "ServiceDeskPlus": {
@@ -658,11 +700,13 @@ Gets the resolution to the given request
 #### Human Readable Output
 
 >### Resolution of request 123640000000284007
+>
 >|Content|SubmittedBy|SubmittedOn|
 >|---|---|---|
 >| Resolution Content | First Last | 2020-07-01T08:12:31.000Z |
 
 ### service-desk-plus-link-request-modify
+
 ***
 Link or Unlink multiple commands
 
@@ -670,6 +714,7 @@ Link or Unlink multiple commands
 #### Base Command
 
 `service-desk-plus-link-request-modify`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -685,9 +730,11 @@ Link or Unlink multiple commands
 There is no context output for this command.
 
 #### Command Example
+
 ```!service-desk-plus-link-request-modify action=Link request_id=123640000000284007 linked_requests_id=123640000000288001```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -697,6 +744,7 @@ There is no context output for this command.
 >## Request successfully linked
 
 ### service-desk-plus-request-close
+
 ***
 Closes the specified request.
 
@@ -704,6 +752,7 @@ Closes the specified request.
 #### Base Command
 
 `service-desk-plus-request-close`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -720,9 +769,11 @@ Closes the specified request.
 There is no context output for this command.
 
 #### Command Example
+
 ```!service-desk-plus-request-close request_id=123640000000288001```
 
 #### Context Example
+
 ```
 {}
 ```

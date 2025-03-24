@@ -19,9 +19,12 @@ This integration was integrated and tested with version 5.1.15 of Pulsedive
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Return IP information and reputation
 
@@ -29,6 +32,7 @@ Return IP information and reputation
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -80,6 +84,7 @@ Return IP information and reputation
 | IP.ASN | String | The autonomous system name for the IP address. | 
 
 ### domain
+
 ***
 Returns Domain information and reputation.
 
@@ -89,6 +94,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -142,6 +148,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | Pulsedive.Domain.zipcode | Unknown | Domain admin zipcode. | 
 
 ### url
+
 ***
 Returns URL information and reputation.
 
@@ -151,6 +158,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -173,6 +181,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | URL.PositiveDetections | string | The number of engines that positively detected the indicator as malicious. | 
 
 ### pulsedive-scan
+
 ***
 Scan an indicator (IP/URL/Domain)
 
@@ -180,6 +189,7 @@ Scan an indicator (IP/URL/Domain)
 #### Base Command
 
 `pulsedive-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -197,6 +207,7 @@ Scan an indicator (IP/URL/Domain)
 | Pulsedive.Scan.success | string | The success message. | 
 
 ### pulsedive-scan-result
+
 ***
 Retrieve the Result
 
@@ -204,6 +215,7 @@ Retrieve the Result
 #### Base Command
 
 `pulsedive-scan-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

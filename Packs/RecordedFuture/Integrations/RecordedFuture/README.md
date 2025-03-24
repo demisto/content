@@ -9,7 +9,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://api.recordedfuture.com/gw/xsoar/) |  | True |
+| Server URL (e.g., <https://api.recordedfuture.com/gw/xsoar/>) |  | True |
 | API Token |  | True |
 | File Threshold | Minimum risk score from Recorded Future to consider the file malicious. | False |
 | CVE Threshold | Minimum risk score from Recorded Future to consider the CVE malicious. | False |
@@ -1244,6 +1244,7 @@ Search for a malware by specified filters.
 `recordedfuture-collective-insight`
 
 #### Input
+
 #### Input
 
 | **Argument Name**  | **Description**                                                                                     | **Required** |

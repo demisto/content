@@ -15,9 +15,12 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Return IP Details.
 
@@ -25,6 +28,7 @@ Return IP Details.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -97,9 +101,11 @@ Return IP Details.
 
 
 #### Command Example
+
 ```!ip ip="8.8.8.8" enhanced=True```
 
 #### Context Example
+
 ```json
 {
     "CTIX": {
@@ -220,12 +226,14 @@ Return IP Details.
 #### Human Readable Output
 
 >### IP List
+>
 >|asn|blocked|blocked_time|country|criticality|custom_score|deprecated|first_seen|geo_details|indicator_type|is_false_positive|is_following|last_seen|name2|object_type|package_id|related_fields|reviewed|reviewed_time|risk_severity|score|source|source_data|stix_object_id|tenant_id|tlp_data|type|under_review|under_reviewed_time|value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| AS3356 | false | 0 | United States | 0 | 0.0 | false | | 1608281585 | country: {"country_code": "US", "country_name": "United States"}<br/>city: {"city": null, "continent_code": "NA", "continent_name": "North America", "country_code": "US", "country_name": "United States", "dma_code": null, "latitude": 37.751, "longitude": -97.822, "postal_code": null, "region": null, "time_zone": "America/Chicago"} | ipv4-addr | false | false | 1608281585 | 8.8.8.8 | indicator | package-4a183313-81cb-42bf-b3ed-f163662c2fcd | attack_pattern: <br/>campaign: <br/>intrusion_set: <br/>malware: <br/>threat_actor: <br/>tool: <br/>indicator: <br/>ttp: <br/>kill_chain_phases: <br/>course_of_action:  | false | 0 | 0 | 62.5 | Import | {'name': 'Import', 'id': 'd1d3b628-346f-43c3-a369-235661ac6277'} | indicator--b09b6649-56ba-4acd-88fd-f84aadf85b55 | 0a834138-cc59-4107-aa69-46e6080f06af | GREEN | Indicator | false | 0 | 8.8.8.8 |
 
 
 ### domain
+
 ***
 Return Domain Details.
 
@@ -235,6 +243,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -306,9 +315,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!domain domain="google.com" enhanced=True```
 
 #### Context Example
+
 ```json
 {
     "CTIX": {
@@ -407,12 +418,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### Domain List
+>
 >|blocked|blocked_time|criticality|custom_score|deprecated|domain_tld|first_seen|indicator_type|is_false_positive|is_following|last_seen|name2|object_type|package_id|registered_domain|related_fields|reviewed|reviewed_time|risk_severity|score|source|source_data|stix_object_id|tenant_id|tlp_data|type|under_review|under_reviewed_time|value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | 0 | 0 | 0.0 | false | .com | 1606486346 | domain | false | false | 1607004096 | google.com | indicator | package-caffb979-5a33-4787-8813-07319fa365df | google.com | attack_pattern: <br/>campaign: <br/>intrusion_set: <br/>malware: <br/>threat_actor: <br/>tool: <br/>indicator: <br/>ttp: <br/>kill_chain_phases: <br/>course_of_action:  | false | 0 | 0 | 62.5 | pop3,<br/>PoP3 | {'name': 'PoP3', 'id': '2e29c86a-fb67-4ead-88ff-396ed3cef3e4'},<br/>{'name': 'pop3', 'id': 'da862993-bf78-4bdd-a715-83dbfb685a6c'} | indicator--9949458d-0dd0-4f52-8d29-01f741359f58 | 0a834138-cc59-4107-aa69-46e6080f06af | GREEN | Indicator | false | 0 | google.com |
 
 
 ### url
+
 ***
 Return URL Details.
 
@@ -422,6 +435,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -493,9 +507,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!url url="https://www.test.com/" enhanced=True```
 
 #### Context Example
+
 ```json
 {
     "CTIX": {
@@ -613,12 +629,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### URL List
+>
 >|blocked|blocked_time|criticality|custom_score|deprecated|domain_tld|first_seen|indicator_type|is_false_positive|is_following|labels|last_seen|name2|object_type|package_id|published_collections|published_package_id|registered_domain|related_fields|reviewed|reviewed_time|risk_severity|score|source|source_data|stix_object_id|tenant_id|tlp_data|type|under_review|under_reviewed_time|value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| false | 0 | 3 | 0.0 | false | .com | 1605768210 | url | false | false | {'id': '23ccc391-6968-4734-b93e-d4985e23dcfd', 'name': 'anomalous-activity', 'colour_code': None, 'created_by': 'system@default.tld', 'created': 1605030281, 'modified_by': 'system@default.tld', 'modified': 1605030281}<br/> | 1605894588 | https://test.com | indicator | package-fd79e1a4-db90-4748-b9cb-f72264bf3ffe,<br/>package-63f2228a-7037-4e56-a3df-23644ba3be64 | inbox & polling,<br/>adsa,<br/>newtestcollection1 - edited | 5df96375-1e0d-494b-870f-3f029d5cc565,<br/>bbb62de5-f71f-4ca9-81b7-c4e94e3640cf,<br/>96c58eb5-5784-4de5-8aa7-b4292525914c | test.com | attack_pattern: <br/>campaign: <br/>intrusion_set: <br/>malware: <br/>threat_actor: <br/>tool: <br/>indicator: <br/>ttp: <br/>kill_chain_phases: <br/>course_of_action:  | false | 0 | 5 | 58.18 | customsource1.x,<br/>Import | {'name': 'Import', 'id': 'd1d3b628-346f-43c3-a369-235661ac6277'},<br/>{'name': 'customsource1.x', 'id': '012072c9-1421-4960-ab01-2bb541596374'} | indicator--70414571-660b-4360-b064-f0cf58caf903 | 0a834138-cc59-4107-aa69-46e6080f06af | GREEN | Indicator | false | 0 | https://test.com/ |
+>| false | 0 | 3 | 0.0 | false | .com | 1605768210 | url | false | false | {'id': '23ccc391-6968-4734-b93e-d4985e23dcfd', 'name': 'anomalous-activity', 'colour_code': None, 'created_by': '<system@default.tld>', 'created': 1605030281, 'modified_by': '<system@default.tld>', 'modified': 1605030281}<br/> | 1605894588 | <https://test.com> | indicator | package-fd79e1a4-db90-4748-b9cb-f72264bf3ffe,<br/>package-63f2228a-7037-4e56-a3df-23644ba3be64 | inbox & polling,<br/>adsa,<br/>newtestcollection1 - edited | 5df96375-1e0d-494b-870f-3f029d5cc565,<br/>bbb62de5-f71f-4ca9-81b7-c4e94e3640cf,<br/>96c58eb5-5784-4de5-8aa7-b4292525914c | test.com | attack_pattern: <br/>campaign: <br/>intrusion_set: <br/>malware: <br/>threat_actor: <br/>tool: <br/>indicator: <br/>ttp: <br/>kill_chain_phases: <br/>course_of_action:  | false | 0 | 5 | 58.18 | customsource1.x,<br/>Import | {'name': 'Import', 'id': 'd1d3b628-346f-43c3-a369-235661ac6277'},<br/>{'name': 'customsource1.x', 'id': '012072c9-1421-4960-ab01-2bb541596374'} | indicator--70414571-660b-4360-b064-f0cf58caf903 | 0a834138-cc59-4107-aa69-46e6080f06af | GREEN | Indicator | false | 0 | <https://test.com/> |
 
 
 ### file
+
 ***
 Return File Details.
 
@@ -626,6 +644,7 @@ Return File Details.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -701,9 +720,11 @@ Return File Details.
 
 
 #### Command Example
+
 ```!file file="4ebb2b00a11f9361cf3757e96f14ad4b" enhanced=True```
 
 #### Context Example
+
 ```json
 {
     "CTIX": {
@@ -818,11 +839,13 @@ Return File Details.
 #### Human Readable Output
 
 >### File List
+>
 >|blocked|blocked_time|criticality|custom_score|deprecated|deprecated_time|first_seen|indicator_type|is_false_positive|is_following|labels|last_seen|name2|object_type|package_id|published_collections|published_package_id|related_fields|reviewed|reviewed_time|risk_severity|score|source|source_data|stix_object_id|tenant_id|type|under_review|under_reviewed_time|value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| false | 0 | 3 | 0.0 | true | 1588854933 | 1586262933 | MD5 | false | false | {'id': '23ccc391-6968-4734-b93e-d4985e23dcfd', 'name': 'anomalous-activity', 'colour_code': None, 'created_by': 'system@default.tld', 'created': 1605030281, 'modified_by': 'system@default.tld', 'modified': 1605030281}| 1605791028 | 4ebb2b00a11f9361cf3757e96f14ad4b | indicator | package-d54892d8-b495-4331-b361-17ffbeacdaed,<br/>package-09be25b9-5d6b-4320-b512-4dc0e088f434,<br/>bundle--87151b50-31a4-4f0a-9f5f-282b0f1d1285 | adsa,<br/>newtestcollection1 - edited | 1557df73-68b4-485b-9821-e3036e5fb7a4,<br/>a1eb2b29-fed4-4635-8e5c-a74f4339b8ab | attack_pattern: <br/>campaign: <br/>intrusion_set: <br/>malware: <br/>threat_actor: <br/>tool: <br/>indicator: <br/>ttp: <br/>kill_chain_phases: <br/>course_of_action:  | false | 0 | 5 | 50.0 | Import | {'name': 'Import', 'id': 'd1d3b628-346f-43c3-a369-235661ac6277'} | indicator--2e35588f-cde1-4492-a720-ab0aee7fafaa | 0a834138-cc59-4107-aa69-46e6080f06af | Indicator | false | 0 | 4ebb2b00a11f9361cf3757e96f14ad4b |
+>| false | 0 | 3 | 0.0 | true | 1588854933 | 1586262933 | MD5 | false | false | {'id': '23ccc391-6968-4734-b93e-d4985e23dcfd', 'name': 'anomalous-activity', 'colour_code': None, 'created_by': '<system@default.tld>', 'created': 1605030281, 'modified_by': '<system@default.tld>', 'modified': 1605030281}| 1605791028 | 4ebb2b00a11f9361cf3757e96f14ad4b | indicator | package-d54892d8-b495-4331-b361-17ffbeacdaed,<br/>package-09be25b9-5d6b-4320-b512-4dc0e088f434,<br/>bundle--87151b50-31a4-4f0a-9f5f-282b0f1d1285 | adsa,<br/>newtestcollection1 - edited | 1557df73-68b4-485b-9821-e3036e5fb7a4,<br/>a1eb2b29-fed4-4635-8e5c-a74f4339b8ab | attack_pattern: <br/>campaign: <br/>intrusion_set: <br/>malware: <br/>threat_actor: <br/>tool: <br/>indicator: <br/>ttp: <br/>kill_chain_phases: <br/>course_of_action:  | false | 0 | 5 | 50.0 | Import | {'name': 'Import', 'id': 'd1d3b628-346f-43c3-a369-235661ac6277'} | indicator--2e35588f-cde1-4492-a720-ab0aee7fafaa | 0a834138-cc59-4107-aa69-46e6080f06af | Indicator | false | 0 | 4ebb2b00a11f9361cf3757e96f14ad4b |
 
 ### ctix-create-intel
+
 ***
 Creates Intel in CTIX platform.
 
@@ -830,6 +853,7 @@ Creates Intel in CTIX platform.
 #### Base Command
 
 `ctix-create-intel`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -857,9 +881,11 @@ Creates Intel in CTIX platform.
 
 
 #### Command Example
+
 ```ctix-create-intel ips=1.2.3.4,3.45.56.78 urls=https://ioc_test.com,https://test_ioc.com files=8e7fad44308af9d1d60aac4fafcecdf2f66aa0315eb5f092fafa5bb03a5c2e3e emails=ioc@gmail.com,malicious@gmail.com malwares=dridex,spambot threat_actors=everest,grief attack_patterns=phishing,ddos title=title_xsoar_intel_creation description=xsoar_description tlp=green confidence=70```
 
 #### Context Example
+
 ```json
 {
     "CTIX": {

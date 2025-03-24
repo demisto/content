@@ -1,4 +1,5 @@
 ## Overview
+
 ---
 
 Use the Cisco Firepower integration for unified management of firewalls, application control, intrusion prevention, URL filtering, and advanced malware protection.
@@ -7,21 +8,25 @@ Supports FMC 7.2.0 and above
 
 Authentication from a REST API Client
 Cisco recommends that you use different accounts for interfacing with the API and the Firepower User Interface. Credentials cannot be used for both interfaces simultaneously, and will be logged out without warning if used for both.
+
 ## Configure Cisco Firepower in Cortex
+
 ---
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g., https://192.168.0.1) | True |
+| Server URL (e.g., <https://192.168.0.1>) | True |
 | Username | True |
 | Password | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 
 ## Commands
+
 ---
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. ciscofp-list-zones
 2. ciscofp-list-ports
 3. ciscofp-list-url-categories
@@ -78,6 +83,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 54. ciscofp-delete-network-analysis-policy
 
 ### 1. ciscofp-list-zones
+
 ***
 Retrieves a list of all security zone objects.
 
@@ -85,6 +91,7 @@ Retrieves a list of all security zone objects.
 #### Base Command
 
 `ciscofp-list-zones`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -104,9 +111,11 @@ Retrieves a list of all security zone objects.
 | CiscoFP.Zone.Interfaces.ID | String | The ID of interfaces belonging to the security zone. | 
 
 #### Command Example
+
 ```!ciscofp-list-zones```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Zone": [
@@ -165,7 +174,9 @@ Retrieves a list of all security zone objects.
 ```
 
 ##### Human Readable Output
+
 ### Cisco Firepower - List zones:
+
 |ID|Name|InterfaceMode|Interfaces|
 |---|---|---|---|
 | e5156ab2-c736-11e8-bacb-8d7a1cfa386e | Trust | ROUTED | 1 |
@@ -176,6 +187,7 @@ Retrieves a list of all security zone objects.
 
 
 ### 2. ciscofp-list-ports
+
 ***
 Retrieves a list of all port objects.
 
@@ -183,6 +195,7 @@ Retrieves a list of all port objects.
 #### Base Command
 
 `ciscofp-list-ports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -202,9 +215,11 @@ Retrieves a list of all port objects.
 
 
 #### Command Example
+
 ```!ciscofp-list-ports```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Port": [
@@ -399,7 +414,9 @@ Retrieves a list of all port objects.
 ```
 
 ##### Human Readable Output
+
 ### Cisco Firepower - List ports:
+
 |ID|Name|Protocol|Port|
 |---|---|---|---|
 | 1834d812-38bb-11e2-86aa-62f0c593a59a | AOL | TCP | 5190 |
@@ -436,6 +453,7 @@ Retrieves a list of all port objects.
 
 
 ### 3. ciscofp-list-url-categories
+
 ***
 Retrieves a list of all URL category objects.
 
@@ -443,6 +461,7 @@ Retrieves a list of all URL category objects.
 #### Base Command
 
 `ciscofp-list-url-categories`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -460,9 +479,11 @@ Retrieves a list of all URL category objects.
 
 
 #### Command Example
+
 ```!ciscofp-list-url-categories```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Category": [
@@ -671,7 +692,9 @@ Retrieves a list of all URL category objects.
 ```
 
 ##### Human Readable Output
+
 ### Cisco Firepower - List url categories:
+
 |ID|Name|
 |---|---|
 | abba9b63-bb10-4729-b901-2e2aa0f02054 | Pornography |
@@ -727,6 +750,7 @@ Retrieves a list of all URL category objects.
 
 
 ### 4. ciscofp-get-network-object
+
 ***
 Retrieves the network objects associated with the specified ID. If no ID is supplied, retrieves a list of all network objects.
 
@@ -734,6 +758,7 @@ Retrieves the network objects associated with the specified ID. If no ID is supp
 #### Base Command
 
 `ciscofp-get-network-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -755,9 +780,11 @@ Retrieves the network objects associated with the specified ID. If no ID is supp
 
 
 #### Command Example
+
 ```!ciscofp-get-network-object ```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Network": [
@@ -927,7 +954,9 @@ Retrieves the network objects associated with the specified ID. If no ID is supp
 ```
 
 ##### Human Readable Output
+
 ### Cisco Firepower - List network objects:
+
 |ID|Name|Value|Overridable|Description|
 |---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-124554053261 | 0 | 1.0.0.0/24 | false |   |
@@ -956,6 +985,7 @@ Retrieves the network objects associated with the specified ID. If no ID is supp
 
 
 ### 5. ciscofp-create-network-object
+
 ***
 Creates a network object.
 
@@ -963,6 +993,7 @@ Creates a network object.
 #### Base Command
 
 `ciscofp-create-network-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -985,9 +1016,11 @@ Creates a network object.
 
 
 #### Command Example
+
 ```!ciscofp-create-network-object name=newTest232 value=10.0.0.0/22 description=test overridable=false```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Network": {
@@ -1001,13 +1034,16 @@ Creates a network object.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - network object has been created.
+
 |ID|Name|Value|Overridable|Description|
 |---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-133143990579 | newTest232 | 10.0.0.0/22 | false | test |
 
 
 ### 6. ciscofp-update-network-object
+
 ***
 Updates the specified network object.
 
@@ -1015,6 +1051,7 @@ Updates the specified network object.
 #### Base Command
 
 `ciscofp-update-network-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1038,9 +1075,11 @@ Updates the specified network object.
 
 
 #### Command Example
+
 ```!ciscofp-update-network-object id=000C29A8-BA3B-0ed3-0000-124554053327 name=playbookTestUpdate value=10.0.0.0/23 description=my playbook test overridable=true```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Network": {
@@ -1054,13 +1093,16 @@ Updates the specified network object.
 ```
 
 ##### Human Readable Output
+
 ### Cisco Firepower - network object has been updated.
+
 |ID|Name|Value|Overridable|Description|
 |---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-124554053327 | playbookTestUpdate | 10.0.0.0/23 | true | my |
 
 
 ### 7. ciscofp-get-network-groups-object
+
 ***
 Retrieves the groups of network objects and addresses associated with the specified ID. If no ID is supplied, retrieves a list of all network objects.
 
@@ -1068,6 +1110,7 @@ Retrieves the groups of network objects and addresses associated with the specif
 #### Base Command
 
 `ciscofp-get-network-groups-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1093,9 +1136,11 @@ Retrieves the groups of network objects and addresses associated with the specif
 
 
 #### Command Example
+
 ```!ciscofp-get-network-groups-object```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.NetworkGroups": [
@@ -1200,7 +1245,9 @@ Retrieves the groups of network objects and addresses associated with the specif
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - List of network groups object:
+
 |ID|Name|Overridable|Description|Addresses|Objects|
 |---|---|---|---|---|---|
 | 69fa2a3a-4487-4e3c-816f-4098f684826e | any | false |   | 2 | 0 |
@@ -1211,6 +1258,7 @@ Retrieves the groups of network objects and addresses associated with the specif
 
 
 ### 8. ciscofp-create-network-groups-objects
+
 ***
 Creates a group of network objects.
 
@@ -1218,6 +1266,7 @@ Creates a group of network objects.
 #### Base Command
 
 `ciscofp-create-network-groups-objects`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1245,9 +1294,11 @@ Creates a group of network objects.
 
 
 #### Command Example
+
 ```!ciscofp-create-network-groups-objects name=playbookTest3 network_address_list=8.8.8.8,4.4.4.4 description=my playbook test overridable=true```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.NetworkGroups": {
@@ -1271,13 +1322,16 @@ Creates a group of network objects.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - network group has been created.
+
 |ID|Name|Overridable|Description|Addresses|Objects|
 |---|---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-133143990785 | playbookTest3 | true | my | 2 | 0 |
 
 
 ### 9. ciscofp-update-network-groups-objects
+
 ***
 Updates a group of network objects.
 
@@ -1285,6 +1339,7 @@ Updates a group of network objects.
 #### Base Command
 
 `ciscofp-update-network-groups-objects`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1314,9 +1369,11 @@ Updates a group of network objects.
 
 
 #### Command Example
+
 ```!ciscofp-update-network-groups-objects id=000C29A8-BA3B-0ed3-0000-124554053470 network_address_list=1.2.3.4,1.2.3.5 description=my playbook test overridable=true name=rrrff```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.NetworkGroups": {
@@ -1340,13 +1397,16 @@ Updates a group of network objects.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - network group has been updated.
+
 |ID|Name|Overridable|Description|Addresses|Objects|
 |---|---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-124554053470 | rrrff | true | my | 2 | 0 |
 
 
 ### 10. ciscofp-delete-network-groups-objects
+
 ***
 Deletes a group of network objects.
 
@@ -1354,6 +1414,7 @@ Deletes a group of network objects.
 #### Base Command
 
 `ciscofp-delete-network-groups-objects`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1377,9 +1438,11 @@ Deletes a group of network objects.
 
 
 #### Command Example
+
 ```!ciscofp-delete-network-groups-objects id=000C29A8-BA3B-0ed3-0000-124554053489```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.NetworkGroups": {
@@ -1403,13 +1466,16 @@ Deletes a group of network objects.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - network group - 000C29A8-BA3B-0ed3-0000-124554053489 - has been delete.
+
 |ID|Name|Overridable|Description|Addresses|Objects|
 |---|---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-124554053489 | eee | false |   | 2 | 0 |
 
 
 ### 11. ciscofp-get-host-object
+
 ***
 Retrieves the groups of host objects associated with the specified ID. If no ID is passed, retrieves a list of all network objects.
 
@@ -1417,6 +1483,7 @@ Retrieves the groups of host objects associated with the specified ID. If no ID 
 #### Base Command
 
 `ciscofp-get-host-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1438,9 +1505,11 @@ Retrieves the groups of host objects associated with the specified ID. If no ID 
 
 
 #### Command Example
+
 ```!ciscofp-get-host-object```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Host": [
@@ -1477,7 +1546,9 @@ Retrieves the groups of host objects associated with the specified ID. If no ID 
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - List host objects:
+
 |ID|Name|Value|Overridable|Description|
 |---|---|---|---|---|
 | dde11d62-288b-4b4c-92e0-1dad0496f14b | any-ipv6 | ::/0 | false |   |
@@ -1487,6 +1558,7 @@ Retrieves the groups of host objects associated with the specified ID. If no ID 
 
 
 ### 12. ciscofp-create-host-object
+
 ***
 Creates a host object.
 
@@ -1494,6 +1566,7 @@ Creates a host object.
 #### Base Command
 
 `ciscofp-create-host-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1516,9 +1589,11 @@ Creates a host object.
 
 
 #### Command Example
+
 ```!ciscofp-create-host-object name=newTest322 value=1.2.3.4 description=test overridable=false```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Host": {
@@ -1532,13 +1607,16 @@ Creates a host object.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - host object has been created.
+
 |ID|Name|Value|Overridable|Description|
 |---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-133143990598 | newTest322 | 1.2.3.4 | false | test |
 
 
 ### 13. ciscofp-update-host-object
+
 ***
 Updates the specified host object.
 
@@ -1546,6 +1624,7 @@ Updates the specified host object.
 #### Base Command
 
 `ciscofp-update-host-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1569,9 +1648,11 @@ Updates the specified host object.
 
 
 #### Command Example
+
 ```!ciscofp-update-host-object id=000C29A8-BA3B-0ed3-0000-124554052144 name=playbookTestUpdate2 value=1.2.3.5 description=my playbook test overridable=true```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Host": {
@@ -1585,13 +1666,16 @@ Updates the specified host object.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - host object has been updated.
+
 |ID|Name|Value|Overridable|Description|
 |---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-124554052144 | playbookTestUpdate2 | 1.2.3.5 | true | my |
 
 
 ### 14. ciscofp-delete-network-object
+
 ***
 Deletes the specified network object.
 
@@ -1599,6 +1683,7 @@ Deletes the specified network object.
 #### Base Command
 
 `ciscofp-delete-network-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1618,9 +1703,11 @@ Deletes the specified network object.
 
 
 #### Command Example
+
 ```!ciscofp-delete-network-object id=000C29A8-BA3B-0ed3-0000-124554053327```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Network": {
@@ -1634,13 +1721,16 @@ Deletes the specified network object.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - network object has been deleted.
+
 |ID|Name|Value|Overridable|Description|
 |---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-124554053327 | playbookTestUpdate | 10.0.0.0/23 | true | my |
 
 
 ### 15. ciscofp-delete-host-object
+
 ***
 Deletes the specified host object.
 
@@ -1648,6 +1738,7 @@ Deletes the specified host object.
 #### Base Command
 
 `ciscofp-delete-host-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1667,9 +1758,11 @@ Deletes the specified host object.
 
 
 #### Command Example
+
 ```!ciscofp-delete-host-object id=000C29A8-BA3B-0ed3-0000-133143990598```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Host": {
@@ -1683,13 +1776,16 @@ Deletes the specified host object.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - host object has been deleted.
+
 |ID|Name|Value|Overridable|Description|
 |---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-133143990598 | newTest322 | 1.2.3.4 | false | test |
 
 
 ### 16. ciscofp-get-access-policy
+
 ***
 Retrieves the access control policy associated with the specified ID. If no access policy ID is passed, all access control policies are returned.
 
@@ -1697,6 +1793,7 @@ Retrieves the access control policy associated with the specified ID. If no acce
 #### Base Command
 
 `ciscofp-get-access-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1716,9 +1813,11 @@ Retrieves the access control policy associated with the specified ID. If no acce
 
 
 #### Command Example
+
 ```!ciscofp-get-access-policy```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Policy": [
@@ -1747,7 +1846,9 @@ Retrieves the access control policy associated with the specified ID. If no acce
 ```
 
 ##### Human Readable Output
+
 ### Cisco Firepower - List access policy:
+
 |ID|Name|DefaultActionID|
 |---|---|---|
 | 000C29A8-BA3B-0ed3-0000-133143987627 | BPS tst | 000C29A8-BA3B-0ed3-0000-000268444674 |
@@ -1757,6 +1858,7 @@ Retrieves the access control policy associated with the specified ID. If no acce
 
 
 ### 17. ciscofp-create-access-policy
+
 ***
 Creates an access control policy.
 
@@ -1764,6 +1866,7 @@ Creates an access control policy.
 #### Base Command
 
 `ciscofp-create-access-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1782,9 +1885,11 @@ Creates an access control policy.
 
 
 #### Command Example
+
 ```!ciscofp-create-access-policy name=newTest232 action=BLOCK```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Policy": {
@@ -1796,13 +1901,16 @@ Creates an access control policy.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - access policy has been created.
+
 |ID|Name|DefaultActionID|
 |---|---|---|
 | 000C29A8-BA3B-0ed3-0000-133143990627 | newTest232 |  |
 
 
 ### 18. ciscofp-update-access-policy
+
 ***
 Updates the specified access control policy.
 
@@ -1810,6 +1918,7 @@ Updates the specified access control policy.
 #### Base Command
 
 `ciscofp-update-access-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1830,9 +1939,11 @@ Updates the specified access control policy.
 
 
 #### Command Example
+
 ```!ciscofp-update-access-policy action=BLOCK default_action_id=000C29A8-BA3B-0ed3-0000-000268444682 name=jj id=000C29A8-BA3B-0ed3-0000-133143991123```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Policy": {
@@ -1844,13 +1955,16 @@ Updates the specified access control policy.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - access policy has been updated.
+
 |ID|Name|DefaultActionID|
 |---|---|---|
 | 000C29A8-BA3B-0ed3-0000-133143991123 | jj | 000C29A8-BA3B-0ed3-0000-000268444682 |
 
 
 ### 19. ciscofp-delete-access-policy
+
 ***
 Deletes the specified access control policy.
 
@@ -1858,6 +1972,7 @@ Deletes the specified access control policy.
 #### Base Command
 
 `ciscofp-delete-access-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1875,9 +1990,11 @@ Deletes the specified access control policy.
 
 
 #### Command Example
+
 ```!ciscofp-delete-access-policy id=000C29A8-BA3B-0ed3-0000-133143990869```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Policy": {
@@ -1889,13 +2006,16 @@ Deletes the specified access control policy.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - access policy deleted.
+
 |ID|Name|DefaultActionID|
 |---|---|---|
 | 000C29A8-BA3B-0ed3-0000-133143990869 | qq | 000C29A8-BA3B-0ed3-0000-000268444680 |
 
 
 ### 20. ciscofp-list-security-group-tags
+
 ***
 Retrieves a list of all custom security group tag objects.
 
@@ -1903,6 +2023,7 @@ Retrieves a list of all custom security group tag objects.
 #### Base Command
 
 `ciscofp-list-security-group-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1921,9 +2042,11 @@ Retrieves a list of all custom security group tag objects.
 
 
 #### Command Example
+
 ```!ciscofp-list-security-group-tags```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.SecurityGroupTags": [
@@ -1942,7 +2065,9 @@ Retrieves a list of all custom security group tag objects.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - List security group tags:
+
 |ID|Name|Tag|
 |---|---|---|
 | 8d9813aa-32c1-11ea-9d47-eda81976c864 | sample_tag | 1000 |
@@ -1950,6 +2075,7 @@ Retrieves a list of all custom security group tag objects.
 
 
 ### 21. ciscofp-list-ise-security-group-tag
+
 ***
 Retrieves a list of all ISE security group tag objects.
 
@@ -1957,6 +2083,7 @@ Retrieves a list of all ISE security group tag objects.
 #### Base Command
 
 `ciscofp-list-ise-security-group-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1975,9 +2102,11 @@ Retrieves a list of all ISE security group tag objects.
 
 
 #### Command Example
+
 ```!ciscofp-list-ise-security-group-tag```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.IseSecurityGroupTags": [
@@ -1996,7 +2125,9 @@ Retrieves a list of all ISE security group tag objects.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - List ise security group tags:
+
 |ID|Name|Tag|
 |---|---|---|
 | 8d9813aa-32c1-11ea-9d47-eda81976c864 | sample_tag | 1000 |
@@ -2004,6 +2135,7 @@ Retrieves a list of all ISE security group tag objects.
 
 
 ### 22. ciscofp-list-vlan-tags
+
 ***
 Retrieves a list of all VLAN tag objects.
 
@@ -2011,6 +2143,7 @@ Retrieves a list of all VLAN tag objects.
 #### Base Command
 
 `ciscofp-list-vlan-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2032,9 +2165,11 @@ Retrieves a list of all VLAN tag objects.
 
 
 #### Command Example
+
 ```!ciscofp-list-vlan-tags```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.VlanTags": [
@@ -2051,13 +2186,16 @@ Retrieves a list of all VLAN tag objects.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - List vlan tags:
+
 |ID|Name|Overridable|Description|StartTag|EndTag|
 |---|---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-124554052529 | aaaa | false |   | 2013 | 2013 |
 
 
 ### 23. ciscofp-list-vlan-tags-group
+
 ***
 Retrieves a list of all VLAN group tag objects.
 
@@ -2065,6 +2203,7 @@ Retrieves a list of all VLAN group tag objects.
 #### Base Command
 
 `ciscofp-list-vlan-tags-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2090,9 +2229,11 @@ Retrieves a list of all VLAN group tag objects.
 
 
 #### Command Example
+
 ```!ciscofp-list-vlan-tags-group```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.VlanTagsGroup": [
@@ -2108,13 +2249,16 @@ Retrieves a list of all VLAN group tag objects.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - List of vlan tags groups objects:
+
 |ID|Name|Overridable|Description|Objects|
 |---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-124554057022 | forPlaybookTest | false |   | 0 |
 
 
 ### 24. ciscofp-list-applications
+
 ***
 Retrieves a list of all application objects.
 
@@ -2122,6 +2266,7 @@ Retrieves a list of all application objects.
 #### Base Command
 
 `ciscofp-list-applications`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2145,9 +2290,11 @@ Retrieves a list of all application objects.
 
 
 #### Command Example
+
 ```!ciscofp-list-applications```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Applications": [
@@ -3242,7 +3389,9 @@ Retrieves a list of all application objects.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - List of applications objects:
+
 |ID|Name|Risk|AppProductivity|ApplicationTypes|AppCategories|
 |---|---|---|---|---|---|
 | 2325 | 050plus | Medium | Medium | 2 | 2 |
@@ -3298,6 +3447,7 @@ Retrieves a list of all application objects.
 
 
 ### 25. ciscofp-get-access-rules
+
 ***
 Retrieves the access control rule associated with the specified policy ID and rule ID. If no rule ID is specified, retrieves a list of all access rules associated with the specified policy ID.
 
@@ -3305,6 +3455,7 @@ Retrieves the access control rule associated with the specified policy ID and ru
 #### Base Command
 
 `ciscofp-get-access-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3369,9 +3520,11 @@ Retrieves the access control rule associated with the specified policy ID and ru
 
 
 #### Command Example
+
 ```!ciscofp-get-access-rules policy_id=000C29A8-BA3B-0ed3-0000-085899346038```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Rule": [
@@ -3825,7 +3978,9 @@ Retrieves the access control rule associated with the specified policy ID and ru
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - List of access rules:
+
 |ID|Name|Action|Enabled|SendEventsToFMC|RuleIndex|Section|Category|Urls|VlanTags|SourceZones|Applications|DestinationZones|SourceNetworks|DestinationNetworks|SourcePorts|DestinationPorts|SourceSecurityGroupTags|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-000268440577 | IP Any Any Any | ALLOW | true | true | 1 | Mandatory | --Undefined-- | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -3837,6 +3992,7 @@ Retrieves the access control rule associated with the specified policy ID and ru
 
 
 ### 26. ciscofp-create-access-rules
+
 ***
 Creates an access control rule.
 
@@ -3844,6 +4000,7 @@ Creates an access control rule.
 #### Base Command
 
 `ciscofp-create-access-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3922,9 +4079,11 @@ Creates an access control rule.
 | CiscoFP.Rule.VlanTags.Objects.Type | String | The object type. | 
 
 #### Command Example
+
 ```!ciscofp-create-access-rules action=ALLOW rule_name=newTest222322 enabled=true source_network_addresses=1.2.3.4 destination_network_addresses=1.2.3.5 url_addresses=www.google.com policy_id=000C29A8-BA3B-0ed3-0000-085899346038```
 
 ##### Context Example
+
 ```
 {
     "CiscoFP.Rule": {
@@ -3989,13 +4148,16 @@ Creates an access control rule.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - the new access rule:
+
 |ID|Name|Action|Enabled|SendEventsToFMC|RuleIndex|Section|Category|Urls|VlanTags|SourceZones|Applications|DestinationZones|SourceNetworks|DestinationNetworks|SourcePorts|DestinationPorts|SourceSecurityGroupTags|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-000268444679 | newTest222322 | ALLOW | true | false | 1 | Default | --Undefined-- | 1 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 |
 
 
 ### 27. ciscofp-update-access-rules
+
 ***
 Updates the specified access control rule.
 
@@ -4003,6 +4165,7 @@ Updates the specified access control rule.
 #### Base Command
 
 `ciscofp-update-access-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4084,9 +4247,11 @@ Updates the specified access control rule.
 
 
 #### Command Example
+
 ```!ciscofp-update-access-rules policy_id=000C29A8-BA3B-0ed3-0000-133143987627 rule_id=000C29A8-BA3B-0ed3-0000-000268444675 update_strategy=merge enabled=false```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Rule": {
@@ -4137,12 +4302,15 @@ Updates the specified access control rule.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - access rule:
+
 |ID|Name|Action|Enabled|SendEventsToFMC|RuleIndex|Section|Category|Urls|VlanTags|SourceZones|Applications|DestinationZones|SourceNetworks|DestinationNetworks|SourcePorts|DestinationPorts|SourceSecurityGroupTags|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-000268444675 | BPS-access-policy | ALLOW | false | true | 1 | Default | --Undefined-- | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ### 28. ciscofp-delete-access-rules
+
 ***
 Deletes the specified access control rule.
 
@@ -4150,6 +4318,7 @@ Deletes the specified access control rule.
 #### Base Command
 
 `ciscofp-delete-access-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4214,9 +4383,11 @@ Deletes the specified access control rule.
 
 
 #### Command Example
+
 ```!ciscofp-delete-access-rules policy_id=000C29A8-BA3B-0ed3-0000-133143991123 rule_id=000C29A8-BA3B-0ed3-0000-000268444684```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Rule": {
@@ -4267,13 +4438,16 @@ Deletes the specified access control rule.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - deleted access rule:
+
 |ID|Name|Action|Enabled|SendEventsToFMC|RuleIndex|Section|Category|Urls|VlanTags|SourceZones|Applications|DestinationZones|SourceNetworks|DestinationNetworks|SourcePorts|DestinationPorts|SourceSecurityGroupTags|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-000268444684 | hgf | ALLOW | false | false |  | Default | --Undefined-- | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 
 ### 29. ciscofp-list-policy-assignments
+
 ***
 Retrieves the policy assignment associated with the specified ID. If no ID is specified, retrieves a list of all policy assignments to target devices.
 
@@ -4281,6 +4455,7 @@ Retrieves the policy assignment associated with the specified ID. If no ID is sp
 #### Base Command
 
 `ciscofp-list-policy-assignments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4305,9 +4480,11 @@ Retrieves the policy assignment associated with the specified ID. If no ID is sp
 
 
 #### Command Example
+
 ```!ciscofp-list-policy-assignments```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.PolicyAssignments": [
@@ -4330,13 +4507,16 @@ Retrieves the policy assignment associated with the specified ID. If no ID is sp
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - List of policy assignments:
+
 |ID|Name|PolicyName|PolicyID|PolicyDescription|Targets|
 |---|---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-133143987627 | BPS tst | BPS tst | 000C29A8-BA3B-0ed3-0000-133143987627 |  | 1 |
 
 
 ### 30. ciscofp-create-policy-assignments
+
 ***
 Creates policy assignments to target devices.
 
@@ -4344,6 +4524,7 @@ Creates policy assignments to target devices.
 #### Base Command
 
 `ciscofp-create-policy-assignments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4368,9 +4549,11 @@ Creates policy assignments to target devices.
 
 
 #### Command Example
+
 ```!ciscofp-create-policy-assignments policy_id=000C29A8-BA3B-0ed3-0000-085899346038```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.PolicyAssignments": {
@@ -4385,13 +4568,16 @@ Creates policy assignments to target devices.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - Policy assignments has been done.
+
 |ID|Name|PolicyName|PolicyID|PolicyDescription|Targets|
 |---|---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-085899346038 | Performance Test Policy without AMP | Performance Test Policy without AMP | 000C29A8-BA3B-0ed3-0000-085899346038 |  | 0 |
 
 
 ### 31. ciscofp-update-policy-assignments
+
 ***
 Updates the specified policy assignments to target devices.
 
@@ -4399,6 +4585,7 @@ Updates the specified policy assignments to target devices.
 #### Base Command
 
 `ciscofp-update-policy-assignments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4424,9 +4611,11 @@ Updates the specified policy assignments to target devices.
 
 
 #### Command Example
+
 ```!ciscofp-update-policy-assignments policy_id=000C29A8-BA3B-0ed3-0000-085899346038```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.PolicyAssignments": {
@@ -4441,13 +4630,16 @@ Updates the specified policy assignments to target devices.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - Policy assignments has been done.
+
 |ID|Name|PolicyName|PolicyID|PolicyDescription|Targets|
 |---|---|---|---|---|---|
 | 000C29A8-BA3B-0ed3-0000-085899346038 | Performance Test Policy without AMP | Performance Test Policy without AMP | 000C29A8-BA3B-0ed3-0000-085899346038 |  | 0 |
 
 
 ### 32. ciscofp-get-deployable-devices
+
 ***
 Retrieves a list of all devices with configuration changes that are ready to deploy.
 
@@ -4455,6 +4647,7 @@ Retrieves a list of all devices with configuration changes that are ready to dep
 #### Base Command
 
 `ciscofp-get-deployable-devices`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4483,16 +4676,20 @@ Retrieves a list of all devices with configuration changes that are ready to dep
 
 
 #### Command Example
+
 ``` !ciscofp-get-deployable-devices container_uuid=a24eca98-7a3a-11eb-999c-cdd9570e11cf ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - List of devices status pending deployment:
+
 |EndTime|ID|Name|StartTime|Status|Type|
 |---|---|---|---|---|---|
 | 1618225761 | 00224867-78A7-0ed3-0000-128849018939 | api_user_job_2021-04-12 11:08:43.523 | 1618225723 | PARTIALLY_SUCCEEDED | Deployment |
 
 
 ### 33. ciscofp-get-device-records
+
 ***
 Retrieves a list of all device records.
 
@@ -4500,6 +4697,7 @@ Retrieves a list of all device records.
 #### Base Command
 
 `ciscofp-get-device-records`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4520,9 +4718,11 @@ Retrieves a list of all device records.
 
 
 #### Command Example
+
 ```!ciscofp-get-device-records```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.DeviceRecords": [
@@ -4538,13 +4738,16 @@ Retrieves a list of all device records.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - List of device records:
+
 |ID|Name|HostName|Type|DeviceGroupID|
 |---|---|---|---|---|
 | 43e032dc-07c5-11ea-b83d-d5fdc079bf65 | FTD_10.8.49.209 | 10.8.49.209 | Device | 31b082e4-32c5-11ea-9d47-eda81976c864 |
 
 
 ### 34. ciscofp-deploy-to-devices
+
 ***
 Creates a request for deploying configuration changes to devices.
 
@@ -4552,6 +4755,7 @@ Creates a request for deploying configuration changes to devices.
 #### Base Command
 
 `ciscofp-deploy-to-devices`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4574,9 +4778,11 @@ Creates a request for deploying configuration changes to devices.
 
 
 #### Command Example
+
 ```!ciscofp-deploy-to-devices device_ids=43e032dc-07c5-11ea-b83d-d5fdc079bf65 force_deploy=false ignore_warning=false version=1585679109082```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.Deploy": {
@@ -4592,13 +4798,16 @@ Creates a request for deploying configuration changes to devices.
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - devices requests to deploy.
+
 |TaskID|ForceDeploy|IgnoreWarning|Version|DeviceList|
 |---|---|---|---|---|
 | 133143991633 | false | false | 1585679109082 | 1 |
 
 
 ### ciscofp-get-task-status
+
 ***
 Retrieves information about a previously submitted pending job or task with the specified ID. Used for deploying.
 
@@ -4606,6 +4815,7 @@ Retrieves information about a previously submitted pending job or task with the 
 #### Base Command
 
 `ciscofp-get-task-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4621,9 +4831,11 @@ Retrieves information about a previously submitted pending job or task with the 
 
 
 #### Command Example
+
 ```!ciscofp-get-task-status task_id=133143991633```
 
 #### Context Example
+
 ```
 {
     "CiscoFP.TaskStatus": {
@@ -4633,13 +4845,16 @@ Retrieves information about a previously submitted pending job or task with the 
 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - 133143991633 status:
+
 |Status|
 |---|
 | Deployed |
 
 
 ### 36. ciscofp-get-url-groups-object
+
 ***
 Retrieves the groups of URL objects and addresses associated with the specified ID. If not supplied, retrieves a list of all URL objects.
 
@@ -4647,6 +4862,7 @@ Retrieves the groups of URL objects and addresses associated with the specified 
 #### Base Command
 
 `ciscofp-get-url-groups-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4669,16 +4885,20 @@ Retrieves the groups of URL objects and addresses associated with the specified 
 
 
 #### Command Example
+
 ``` !ciscofp-get-url-groups-object id=00224867-78A7-0ed3-0000-004294969111 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - url group object:
+
 |ID|Name|Overridable|Description|Addresses|Objects|
 |---|---|---|---|---|---|
 | 00224867-78A7-0ed3-0000-004294969111 | xxx_Proactive_Response_URL | true |   | 2000 | 0 |
 
 
 ### 37. ciscofp-update-url-groups-objects
+
 ***
 Updates the ID of a group of URL objects.
 
@@ -4686,6 +4906,7 @@ Updates the ID of a group of URL objects.
 #### Base Command
 
 `ciscofp-update-url-groups-objects`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4713,16 +4934,20 @@ Updates the ID of a group of URL objects.
 
 
 #### Command Example
+
 ``` !ciscofp-update-url-groups-objects id=00224867-78A7-0ed3-0000-004294969111 name=XXX_Proactive_Response_URL url_list=1.1.1.1 ```
 
 #### Human Readable Output
+
 ### Cisco Firepower - url group has been updated.
+
 |ID|Name|Overridable|Description|Addresses|Objects|
 |---|---|---|---|---|---|
 | 00224867-78A7-0ed3-0000-004294969111 | XXX_Proactive_Response_URL | false |  | 1 | 0 |
 
 
 ### 38. ciscofp-upload-intrusion-rule-file
+
 ***
 Imports or validates custom Snort 3 intrusion rules within a file. Import arguments: rule_import_mode, rule_group_ids.
 
@@ -4730,6 +4955,7 @@ Imports or validates custom Snort 3 intrusion rules within a file. Import argume
 #### Base Command
 
 `ciscofp-upload-intrusion-rule-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4772,8 +4998,11 @@ Imports or validates custom Snort 3 intrusion rules within a file. Import argume
 | CiscoFP.IntrusionRuleUpload.ruleGroups.type | String | Type of the response object. This value is always IntrusionRuleGroup. | 
 
 #### Command example
+
 ```!ciscofp-upload-intrusion-rule-file validate_only=True entry_id=7110@117def34-6ca2-4db3-86eb-c9378ad46e65```
+
 #### Context Example
+
 ```json
 {
     "CiscoFP": {
@@ -4820,12 +5049,14 @@ Imports or validates custom Snort 3 intrusion rules within a file. Import argume
 #### Human Readable Output
 
 >### Intrusion Rule Upload Information
+>
 >|Added Count|Added Rules|Updated Count|Deleted Count|Skipped Count|Unassociated Count|
 >|---|---|---|---|---|---|
 >| 2 | 2000:1011234,<br/>2000:1011233 | 0 | 0 | 0 | 0 |
 
 
 ### 39. ciscofp-list-intrusion-rule
+
 ***
 Retrieves the Snort3 Intrusion rule group. If no ID is specified, it retrieves a list of all Snort3 Intrusion rule groups. Default list size is 50. GET argument: intrusion_rule_id | LIST arguments: sort, filter, expanded_response, limit, page, page_size.
 
@@ -4833,6 +5064,7 @@ Retrieves the Snort3 Intrusion rule group. If no ID is specified, it retrieves a
 #### Base Command
 
 `ciscofp-list-intrusion-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4877,8 +5109,11 @@ Retrieves the Snort3 Intrusion rule group. If no ID is specified, it retrieves a
 
 
 #### Command example
+
 ```!ciscofp-list-intrusion-rule limit=3```
+
 #### Context Example
+
 ```json
 {
     "CiscoFP": {
@@ -4906,6 +5141,7 @@ Retrieves the Snort3 Intrusion rule group. If no ID is specified, it retrieves a
 #### Human Readable Output
 
 >### Fetched Intrusion Rule Information
+>
 >|ID|Name|
 >|---|---|
 >| c45009b0-b6c7-5573-af40-971531d4513c | 116:109 |
@@ -4914,18 +5150,20 @@ Retrieves the Snort3 Intrusion rule group. If no ID is specified, it retrieves a
 
 
 ### 40. ciscofp-create-intrusion-rule
+
 ***
-Creates or overrides the Snort 3 Intrusion rule group with the specified parameters. Guide to Snort 3 rule writing: https://docs.snort.org/welcome.
+Creates or overrides the Snort 3 Intrusion rule group with the specified parameters. Guide to Snort 3 rule writing: <https://docs.snort.org/welcome>.
 
 
 #### Base Command
 
 `ciscofp-create-intrusion-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_data | The Snort Rule structure data. Guide to Snort rule structure: https://docs.snort.org/rules/. | Required | 
+| rule_data | The Snort Rule structure data. Guide to Snort rule structure: <https://docs.snort.org/rules/>. | Required | 
 | rule_group_ids | Rule group IDs in a comma-separated list. Can be acquired from: ciscofp-list-intrusion-rule-group. | Required | 
 
 
@@ -4959,8 +5197,11 @@ Creates or overrides the Snort 3 Intrusion rule group with the specified paramet
 | CiscoFP.IntrusionRule.ruleGroups.type | String | The resource response object. | 
 
 #### Command example
+
 ```!ciscofp-create-intrusion-rule rule_data="alert ( gid:1; sid:1011226; rev:1; msg:\"This is a test rule\";)" rule_group_ids="005056A6-3FB1-0ed3-0000-004294971373"```
+
 #### Context Example
+
 ```json
 {
     "CiscoFP": {
@@ -4996,12 +5237,14 @@ Creates or overrides the Snort 3 Intrusion rule group with the specified paramet
 #### Human Readable Output
 
 >### Created Intrusion Rule Information
+>
 >|ID|Name|Snort ID|Revision|Rule Data|Rule Group|
 >|---|---|---|---|---|---|
 >| 005056A6-3FB1-0ed3-0000-004294995730 | 2000:1011226 | 1011226 | 1 | alert ( gid:2000; sid:1011226; rev:1; msg:"This is a test rule"; classtype:unknown;  ) | {'name': 'TestGroupUpdate12', 'id': '005056A6-3FB1-0ed3-0000-004294971373', 'type': 'IntrusionRuleGroup'} |
 
 
 ### 41. ciscofp-update-intrusion-rule
+
 ***
 Modifies the Snort3 Intrusion rule group with the specified ID. You must enter one or both of the following: rule_data | rule_group_ids. The variable that was not entered will remain the same. If merging, rule_group_ids must be entered.
 
@@ -5009,12 +5252,13 @@ Modifies the Snort3 Intrusion rule group with the specified ID. You must enter o
 #### Base Command
 
 `ciscofp-update-intrusion-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | intrusion_rule_id | The Snort 3 intrusion rule ID. | Required | 
-| rule_data | The Snort rule structure data. Guide to Snort rule structure: https://docs.snort.org/rules/. | Optional | 
+| rule_data | The Snort rule structure data. Guide to Snort rule structure: <https://docs.snort.org/rules/>. | Optional | 
 | rule_group_ids | Rule group IDs in a comma-separated list. Can be acquired from: ciscofp-list-intrusion-rule-group. | Optional | 
 | update_strategy | The update method to use in the command. Can be "MERGE" or "OVERRIDE". If "MERGE" is used, new rule groups will be appended. If "OVERRIDE" is used, old rule groups will be overwritten. Possible values are: MERGE, OVERRIDE. | Optional | 
 
@@ -5049,8 +5293,11 @@ Modifies the Snort3 Intrusion rule group with the specified ID. You must enter o
 | CiscoFP.IntrusionRule.ruleGroups.type | String | The resource response object. | 
 
 #### Command example
+
 ```!ciscofp-update-intrusion-rule intrusion_rule_id=005056A6-3FB1-0ed3-0000-004294994716 rule_group_ids="005056A6-3FB1-0ed3-0000-004294971373"```
+
 #### Context Example
+
 ```json
 {
     "CiscoFP": {
@@ -5086,12 +5333,14 @@ Modifies the Snort3 Intrusion rule group with the specified ID. You must enter o
 #### Human Readable Output
 
 >### Updated Intrusion Rule Information
+>
 >|ID|Name|Snort ID|Revision|Rule Data|Rule Group|
 >|---|---|---|---|---|---|
 >| 005056A6-3FB1-0ed3-0000-004294994716 | 2000:1011225 | 1011225 | 1 | alert ( gid:2000; sid:1011225; rev:1; msg:"This is a test rule"; classtype:unknown; ) | {'name': 'TestGroupUpdate12', 'id': '005056A6-3FB1-0ed3-0000-004294971373', 'type': 'IntrusionRuleGroup'} |
 
 
 ### 42. ciscofp-delete-intrusion-rule
+
 ***
 Deletes the specified Snort3 rule.
 
@@ -5099,6 +5348,7 @@ Deletes the specified Snort3 rule.
 #### Base Command
 
 `ciscofp-delete-intrusion-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5109,17 +5359,22 @@ Deletes the specified Snort3 rule.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!ciscofp-delete-intrusion-rule intrusion_rule_id=005056A6-3FB1-0ed3-0000-004294994716```
+
 #### Human Readable Output
 
 >### Deleted Intrusion Rule Information
+>
 >|ID|Name|Snort ID|Revision|Rule Data|Rule Group|
 >|---|---|---|---|---|---|
 >| 005056A6-3FB1-0ed3-0000-004294994716 | 2000:1011225 | 1011225 | 1 | alert ( gid:2000; sid:1011225; rev:1; msg:"This is a test rule"; classtype:unknown; ) | {'name': 'TestGroupUpdate12', 'id': '005056A6-3FB1-0ed3-0000-004294971373', 'type': 'IntrusionRuleGroup'} |
 
 
 ### 43. ciscofp-list-intrusion-policy
+
 ***
 Retrieves the intrusion policy associated with the specified ID. If no ID is specified, retrieves a list of all intrusion policies. Default list size is 50. GET arguments: intrusion_policy_id, include_count | LIST arguments: expanded_response, limit, page, page_size.
 
@@ -5127,6 +5382,7 @@ Retrieves the intrusion policy associated with the specified ID. If no ID is spe
 #### Base Command
 
 `ciscofp-list-intrusion-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5176,8 +5432,11 @@ Retrieves the intrusion policy associated with the specified ID. If no ID is spe
 | CiscoFP.IntrusionPolicy.basePolicy.type | String | The resource response object. | 
 
 #### Command example
+
 ```!ciscofp-list-intrusion-policy limit=3```
+
 #### Context Example
+
 ```json
 {
     "CiscoFP": {
@@ -5205,6 +5464,7 @@ Retrieves the intrusion policy associated with the specified ID. If no ID is spe
 #### Human Readable Output
 
 >### Fetched Intrusion Policy Information
+>
 >|ID|Name|
 >|---|---|
 >| 6c66b83c-bc23-55b6-879d-c4d847443503 | Balanced Security and Connectivity |
@@ -5213,6 +5473,7 @@ Retrieves the intrusion policy associated with the specified ID. If no ID is spe
 
 
 ### 44. ciscofp-create-intrusion-policy
+
 ***
 Creates an intrusion policy with the specified parameters. This command may take a while, you can set the "execution-timeout" field if necessary (X > 300).
 
@@ -5220,6 +5481,7 @@ Creates an intrusion policy with the specified parameters. This command may take
 #### Base Command
 
 `ciscofp-create-intrusion-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5267,8 +5529,11 @@ Creates an intrusion policy with the specified parameters. This command may take
 | CiscoFP.IntrusionPolicy.basePolicy.type | String | The resource response object. | 
 
 #### Command example
+
 ```!ciscofp-create-intrusion-policy name=TestDocs2IntrusionPolicy basepolicy_id=005056A6-3FB1-0ed3-0000-004294969533```
+
 #### Context Example
+
 ```json
 {
     "CiscoFP": {
@@ -5319,12 +5584,14 @@ Creates an intrusion policy with the specified parameters. This command may take
 #### Human Readable Output
 
 >### Created Intrusion Policy Information
+>
 >|ID|Name|Inspection Mode|Base Policy ID|
 >|---|---|---|---|
 >| 005056A6-3FB1-0ed3-0000-004294995587 | TestDocs2IntrusionPolicy | DETECTION | 005056A6-3FB1-0ed3-0000-004294969533 |
 
 
 ### 45. ciscofp-update-intrusion-policy
+
 ***
 Modifies the intrusion policy associated with the specified ID. This command may take a while, you can set the "execution-timeout" field if necessary (X > 300).
 
@@ -5332,6 +5599,7 @@ Modifies the intrusion policy associated with the specified ID. This command may
 #### Base Command
 
 `ciscofp-update-intrusion-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5381,8 +5649,11 @@ Modifies the intrusion policy associated with the specified ID. This command may
 | CiscoFP.IntrusionPolicy.basePolicy.type | String | The resource response object. | 
 
 #### Command example
+
 ```!ciscofp-update-intrusion-policy intrusion_policy_id=005056A6-3FB1-0ed3-0000-004294994664 name=TestIntrusionPolicyToDelete```
+
 #### Context Example
+
 ```json
 {
     "CiscoFP": {
@@ -5420,12 +5691,14 @@ Modifies the intrusion policy associated with the specified ID. This command may
 #### Human Readable Output
 
 >### Updated Intrusion Policy Information
+>
 >|ID|Name|Inspection Mode|Base Policy ID|
 >|---|---|---|---|
 >| 005056A6-3FB1-0ed3-0000-004294994664 | TestIntrusionPolicyToDelete | DETECTION | 005056A6-3FB1-0ed3-0000-004294969533 |
 
 
 ### 46. ciscofp-delete-intrusion-policy
+
 ***
 Deletes the intrusion policy associated with the specified ID.
 
@@ -5433,6 +5706,7 @@ Deletes the intrusion policy associated with the specified ID.
 #### Base Command
 
 `ciscofp-delete-intrusion-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5445,16 +5719,20 @@ Deletes the intrusion policy associated with the specified ID.
 There is no context output for this command.
 
 #### Command example
+
 ```!ciscofp-delete-intrusion-policy intrusion_policy_id=005056A6-3FB1-0ed3-0000-004294994664```
+
 #### Human Readable Output
 
 >### Deleted Intrusion Policy Information
+>
 >|ID|Name|Inspection Mode|Base Policy ID|
 >|---|---|---|---|
 >| 005056A6-3FB1-0ed3-0000-004294994664 | TestIntrusionPolicyToDelete | DETECTION | 005056A6-3FB1-0ed3-0000-004294969533 |
 
 
 ### 47. ciscofp-list-intrusion-rule-group
+
 ***
 Retrieves the Snort 3 intrusion rule group. If no ID is specified, retrieves a list of all Snort 3 Intrusion rule groups. The default list size is 50. GET arguments: rule_group_id | LIST arguments: expanded_response, filter, limit, page, page_size.
 
@@ -5462,6 +5740,7 @@ Retrieves the Snort 3 intrusion rule group. If no ID is specified, retrieves a l
 #### Base Command
 
 `ciscofp-list-intrusion-rule-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5509,8 +5788,11 @@ Retrieves the Snort 3 intrusion rule group. If no ID is specified, retrieves a l
 | CiscoFP.IntrusionRuleGroup.metadata.domain.type | String | The domain type. | 
 
 #### Command example
+
 ```!ciscofp-list-intrusion-rule-group limit=3```
+
 #### Context Example
+
 ```json
 {
     "CiscoFP": {
@@ -5538,6 +5820,7 @@ Retrieves the Snort 3 intrusion rule group. If no ID is specified, retrieves a l
 #### Human Readable Output
 
 >### Fetched Intrusion Rule Group Information
+>
 >|ID|Name|
 >|---|---|
 >| a836656c-4557-11ed-887b-6a7885e25dab | Local Rules |
@@ -5546,6 +5829,7 @@ Retrieves the Snort 3 intrusion rule group. If no ID is specified, retrieves a l
 
 
 ### 48. ciscofp-create-intrusion-rule-group
+
 ***
 Creates or overrides the Snort 3 intrusion rule group with the specified parameters.
 
@@ -5553,6 +5837,7 @@ Creates or overrides the Snort 3 intrusion rule group with the specified paramet
 #### Base Command
 
 `ciscofp-create-intrusion-rule-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5596,8 +5881,11 @@ Creates or overrides the Snort 3 intrusion rule group with the specified paramet
 | CiscoFP.IntrusionRuleGroup.metadata.domain.type | String | The domain type. | 
 
 #### Command example
+
 ```!ciscofp-create-intrusion-rule-group name=TestRuleGroupDocs2```
+
 #### Context Example
+
 ```json
 {
     "CiscoFP": {
@@ -5614,12 +5902,14 @@ Creates or overrides the Snort 3 intrusion rule group with the specified paramet
 #### Human Readable Output
 
 >### Created Intrusion Rule Group Information
+>
 >|ID|Name|
 >|---|---|
 >| 005056A6-3FB1-0ed3-0000-004294995782 | TestRuleGroupDocs2 |
 
 
 ### 49. ciscofp-update-intrusion-rule-group
+
 ***
 Modifies the Snort 3 intrusion rule group with the specified ID.
 
@@ -5627,6 +5917,7 @@ Modifies the Snort 3 intrusion rule group with the specified ID.
 #### Base Command
 
 `ciscofp-update-intrusion-rule-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5671,8 +5962,11 @@ Modifies the Snort 3 intrusion rule group with the specified ID.
 | CiscoFP.IntrusionRuleGroup.metadata.domain.type | String | The domain type. | 
 
 #### Command example
+
 ```!ciscofp-update-intrusion-rule-group rule_group_id=005056A6-3FB1-0ed3-0000-004294994731 name=TestRuleGroupToDelete```
+
 #### Context Example
+
 ```json
 {
     "CiscoFP": {
@@ -5690,12 +5984,14 @@ Modifies the Snort 3 intrusion rule group with the specified ID.
 #### Human Readable Output
 
 >### Updated Intrusion Rule Group Information
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 005056A6-3FB1-0ed3-0000-004294994731 | TestRuleGroupToDelete |   |
 
 
 ### 50. ciscofp-delete-intrusion-rule-group
+
 ***
 Deletes the specified Snort 3 intrusion rule group.
 
@@ -5703,6 +5999,7 @@ Deletes the specified Snort 3 intrusion rule group.
 #### Base Command
 
 `ciscofp-delete-intrusion-rule-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5716,16 +6013,20 @@ Deletes the specified Snort 3 intrusion rule group.
 There is no context output for this command.
 
 #### Command example
+
 ```!ciscofp-delete-intrusion-rule-group rule_group_id=005056A6-3FB1-0ed3-0000-004294994731```
+
 #### Human Readable Output
 
 >### Deleted Intrusion Rule Group Information
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 005056A6-3FB1-0ed3-0000-004294994731 | TestRuleGroupToDelete |   |
 
 
 ### 51. ciscofp-list-network-analysis-policy
+
 ***
 Retrieves the network analysis policy with the specified ID. If no ID is specified, retrieves a list of all network analysis policies. The default list size is 50. GET arguments: network_analysis_policy_id | LIST arguments: expanded_response, limit, page, page_size.
 
@@ -5733,6 +6034,7 @@ Retrieves the network analysis policy with the specified ID. If no ID is specifi
 #### Base Command
 
 `ciscofp-list-network-analysis-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5789,8 +6091,11 @@ Retrieves the network analysis policy with the specified ID. If no ID is specifi
 | CiscoFP.NetworkAnalysisPolicy.basePolicy.type | String | The resource response object. | 
 
 #### Command example
+
 ```!ciscofp-list-network-analysis-policy limit=3```
+
 #### Context Example
+
 ```json
 {
     "CiscoFP": {
@@ -5818,6 +6123,7 @@ Retrieves the network analysis policy with the specified ID. If no ID is specifi
 #### Human Readable Output
 
 >### Fetched Network Analysis Policy Information
+>
 >|ID|Name|
 >|---|---|
 >| db7dc865-16b5-5eab-8b5a-c85f3a61690b | Balanced Security and Connectivity |
@@ -5826,6 +6132,7 @@ Retrieves the network analysis policy with the specified ID. If no ID is specifi
 
 
 ### 52. ciscofp-create-network-analysis-policy
+
 ***
 Creates a network analysis policy. This command may take a while, you can set the "execution-timeout" field if necessary (X > 300).
 
@@ -5833,6 +6140,7 @@ Creates a network analysis policy. This command may take a while, you can set th
 #### Base Command
 
 `ciscofp-create-network-analysis-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5888,8 +6196,11 @@ Creates a network analysis policy. This command may take a while, you can set th
 | CiscoFP.NetworkAnalysisPolicy.basePolicy.type | String | The resource response object. | 
 
 #### Command example
+
 ```!ciscofp-create-network-analysis-policy basepolicy_id=005056A6-3FB1-0ed3-0000-004294973459 name=TestNetworkAnalysisDocs2```
+
 #### Context Example
+
 ```json
 {
     "CiscoFP": {
@@ -5933,12 +6244,14 @@ Creates a network analysis policy. This command may take a while, you can set th
 #### Human Readable Output
 
 >### Created Network Analysis Policy Information
+>
 >|ID|Name|Inspection Mode|Base Policy ID|Base Policy Name|
 >|---|---|---|---|---|
 >| 005056A6-3FB1-0ed3-0000-004294995834 | TestNetworkAnalysisDocs2 | PREVENTION | 005056A6-3FB1-0ed3-0000-004294973459 | Test2 |
 
 
 ### 53. ciscofp-update-network-analysis-policy
+
 ***
 Modifies the network analysis policy associated with the specified ID. This command may take a while, you can set the "execution-timeout" field if necessary (X > 300).
 
@@ -5946,6 +6259,7 @@ Modifies the network analysis policy associated with the specified ID. This comm
 #### Base Command
 
 `ciscofp-update-network-analysis-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6003,8 +6317,11 @@ Modifies the network analysis policy associated with the specified ID. This comm
 | CiscoFP.NetworkAnalysisPolicy.basePolicy.type | String | The resource response object. | 
 
 #### Command example
+
 ```!ciscofp-update-network-analysis-policy network_analysis_policy_id=005056A6-3FB1-0ed3-0000-004294994745 name=TestNetworkAnalysisToDelete```
+
 #### Context Example
+
 ```json
 {
     "CiscoFP": {
@@ -6042,12 +6359,14 @@ Modifies the network analysis policy associated with the specified ID. This comm
 #### Human Readable Output
 
 >### Updated Network Analysis Policy Information
+>
 >|ID|Name|Inspection Mode|Base Policy ID|Base Policy Name|
 >|---|---|---|---|---|
 >| 005056A6-3FB1-0ed3-0000-004294994745 | TestNetworkAnalysisToDelete | PREVENTION | 005056A6-3FB1-0ed3-0000-004294973459 | Test2 |
 
 
 ### 54. ciscofp-delete-network-analysis-policy
+
 ***
 Deletes the network analysis policy associated with the specified ID.
 
@@ -6055,6 +6374,7 @@ Deletes the network analysis policy associated with the specified ID.
 #### Base Command
 
 `ciscofp-delete-network-analysis-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6067,10 +6387,13 @@ Deletes the network analysis policy associated with the specified ID.
 There is no context output for this command.
 
 #### Command example
+
 ```!ciscofp-delete-network-analysis-policy network_analysis_policy_id=005056A6-3FB1-0ed3-0000-004294994745```
+
 #### Human Readable Output
 
 >### Deleted Network Analysis Policy Information
+>
 >|ID|Name|Inspection Mode|Base Policy ID|Base Policy Name|
 >|---|---|---|---|---|
 >| 005056A6-3FB1-0ed3-0000-004294994745 | TestNetworkAnalysisToDelete | PREVENTION | 005056A6-3FB1-0ed3-0000-004294973459 | Test2 |

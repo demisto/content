@@ -58,8 +58,11 @@ Retrieves a limited number of indicators.
 | LOLBAS.Indicators.URL | String | The URL to the indicator. | 
 
 #### Command example
+
 ```!lolbas-get-indicators limit=2```
+
 #### Context Example
+
 ```json
 {
     "LOLBAS": {
@@ -135,6 +138,7 @@ Retrieves a limited number of indicators.
 #### Human Readable Output
 
 >### LOLBAS indicators
+>
 >|Name|Description|
 >|---|---|
 >| AppInstaller.exe | Tool used for installation of AppX/MSIX applications on Windows 10 |

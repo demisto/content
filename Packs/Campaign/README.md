@@ -3,6 +3,7 @@ When a suspicious email is detected, you can use this pack to determine whether 
 ## What does this pack do?
 
 The pack includes the **FindEmailCampaign** script which enables you to: 
+
 - Filter past email incidents according to multiple search criteria such as incident types, email body and/or subject, email sender and more.
 - Define criteria for a collection of related email incidents to be considered a campaign: minimum number of incidents, minimum number of unique recipients and machine-learning driven similarity threshold between emails.
 

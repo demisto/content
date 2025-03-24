@@ -2,6 +2,7 @@ You can use this integration to create and manage Azure Virtual Machines.
 This integration was integrated and tested with Azure Compute API Version: 2017-12-01.
 
 ## Authentication
+
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
 - After authorizing the Demisto App or the Self-Deployed Application, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
@@ -20,7 +21,7 @@ For more details about the authentication used in this integration, see [Microso
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Host URL (e.g. https://management.azure.com) |  | True |
+| Host URL (e.g. <https://management.azure.com>) |  | True |
 | ID (received from the admin consent - see Detailed Instructions (?) |  | True |
 | Token (received from the admin consent - see Detailed Instructions (?) section) |  | True |
 | Key (received from the admin consent - see Detailed Instructions (?) |  | False |
@@ -72,8 +73,11 @@ Lists the virtual machine instances in the given resource group.
 | Azure.Compute.OS | string | The OS running on the virtual machine. | 
 
 #### Command example
+
 ```!azure-vm-list-instances resource_group=Compute-Labs```
+
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -113,6 +117,7 @@ Lists the virtual machine instances in the given resource group.
 #### Human Readable Output
 
 >### Microsoft Azure - List of Virtual Machines in Resource Group "Compute-Labs"
+>
 >|Name|ID|Size|OS|Location|ProvisioningState|ResourceGroup|
 >|---|---|---|---|---|---|---|
 >| test12 | d25e7ce9-258b-4d8d-a516-c2206eef08ef | 127 | Windows | eastus | Succeeded | Compute-Labs |
@@ -146,8 +151,11 @@ Powers on a given virtual machine.
 | Azure.Compute.PowerState | string | Whether the VM instance is powered on or off. | 
 
 #### Command example
+
 ```!azure-vm-start-instance resource_group="Compute-Labs" virtual_machine_name="webserver"```
+
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -163,6 +171,7 @@ Powers on a given virtual machine.
 #### Human Readable Output
 
 >### Power-on of Virtual Machine "webserver" Successfully Initiated
+>
 >|Name|PowerState|ResourceGroup|
 >|---|---|---|
 >| webserver | VM starting | Compute-Labs |
@@ -195,8 +204,11 @@ Powers off a given virtual machine.
 | Azure.Compute.PowerState | string | Whether the virtual machine instance is powered on or off. | 
 
 #### Command example
+
 ```!azure-vm-poweroff-instance resource_group=Compute-Labs virtual_machine_name=test12```
+
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -212,6 +224,7 @@ Powers off a given virtual machine.
 #### Human Readable Output
 
 >### Power-off of Virtual Machine "test12" Successfully Initiated
+>
 >|Name|PowerState|ResourceGroup|
 >|---|---|---|
 >| test12 | VM stopping | Compute-Labs |
@@ -252,8 +265,11 @@ Gets the properties of a given virtual machine.
 | Azure.Compute.Tags | string | Tags associated with the VM. | 
 
 #### Command example
+
 ```!azure-vm-get-instance-details resource_group=Compute-Labs virtual_machine_name=webserver```
+
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -286,6 +302,7 @@ Gets the properties of a given virtual machine.
 #### Human Readable Output
 
 >### Properties of VM "webserver"
+>
 >|Name|ID|Size|OS|ProvisioningState|Location|PowerState|
 >|---|---|---|---|---|---|---|
 >| webserver | xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx | 127 | Windows | Succeeded | eastus | VM running |
@@ -309,7 +326,7 @@ Creates a virtual machine instance with the specified OS image.
 | virtual_machine_name | The name of the virtual machine to create. | Required | 
 | virtual_machine_location | The location in which to create the virtual machine. Possible values are: westus2, westus, westindia, westeurope, westcentralus, uksouth, ukwest, southeastasia, northcentralus, northeurope, southcentralus, southindia, francesouth, francecentral, japaneast, japanwest, koreacentral, koreasouth, brazilsouth, canadacentral, canadaeast, centralindia, eastus2, eastasia, westus, centralus, eastus, australiacentral, australiacentral2, australiaeast, australiasoutheast. | Required | 
 | nic_name | The name of the Network Interface to link the virtual machine with. Note that the virtual machine's location property must match that of the Network Interface you choose to link it to. To see a list of available Network Interfaces visit the Azure Web Portal, navigate to the search bar at the top of the page, type "network interfaces", and in the dynamic drop-down menu that appears, click the 'Network interfaces' option that appears under the 'Services' category. If none are present, you will need to create a new Network Interface. | Required | 
-| vm_size | The name of a VirtualMachineSize, which determines the size of the deployed virtual machine. For more information, see the Azure documentation at https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/listavailablesizes#virtualmachinesize. Possible values are: Standard_D1_v2, Standard_D2_v2, Standard_D2s_v3, Standard_B1ms, Standard_B1s, Standard_B2s, Standard_B4ms, Standard_D4s_v3, Standard_DS1_v2, Standard_DS2_v2, Standard_DS3_v2, Promo_DS2_v2, Promo_DS3_v2. | Required | 
+| vm_size | The name of a VirtualMachineSize, which determines the size of the deployed virtual machine. For more information, see the Azure documentation at <https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/listavailablesizes#virtualmachinesize>. Possible values are: Standard_D1_v2, Standard_D2_v2, Standard_D2s_v3, Standard_B1ms, Standard_B1s, Standard_B2s, Standard_B4ms, Standard_D4s_v3, Standard_DS1_v2, Standard_DS2_v2, Standard_DS3_v2, Promo_DS2_v2, Promo_DS3_v2. | Required | 
 | os_image | The base operating system image of the virtual machine. Possible values are: Ubuntu Server 14.04 LTS, Ubuntu Server 16.04 LTS, Ubuntu Server 18.04 LTS, Red Hat Enterprise Linux 7.6, CentOS-based 7.5, Windows Server 2012 R2 Datacenter, Windows Server 2016 Datacenter, Windows 10 Pro Version 1803, Windows 10 Pro Version 1809. | Optional | 
 | sku | SKU of the OS image to be used. To see a list of available SKUs, visit your Azure Web Portal, click the symbol that looks similar to a '&gt;' on the top bar of the page. This should open a cloud shell, make sure it is a bash shell. At the command prompt enter `az vm image list-skus` along with the appropriate arguments that it will prompt you with to display the list of VM image SKUs available in the Azure Marketplace. Default is 2016-Datacenter. | Optional | 
 | publisher | Name of the publisher of the OS image. To see a list of available publishers, visit your Azure Web Portal, click the symbol that looks similar to a '&gt;' on the top bar of the page which should open a cloud shell, make sure it is a bash shell. At the command prompt enter `az vm image list-publishers` along with the appropriate arguments that it will prompt you with to display the list of VM image publishers available in the Azure Marketplace. Default is MicrosoftWindowsServer. | Optional | 
@@ -331,8 +348,11 @@ Creates a virtual machine instance with the specified OS image.
 | Azure.Compute.Location | string | The region in which the virtual machine is hosted. | 
 
 #### Command example
+
 ```!azure-vm-create-instance nic_name=test_nic3 resource_group=Compute-Labs virtual_machine_location=eastus virtual_machine_name=test567 vm_size=Standard_D1_v2```
+
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -353,6 +373,7 @@ Creates a virtual machine instance with the specified OS image.
 #### Human Readable Output
 
 >### List of Resource Groups
+>
 >|ID|Location|Name|OS|ProvisioningState|ResourceGroup|Size|
 >|---|---|---|---|---|---|---|
 >| 	xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx | eastus | test567 | Windows | Creating | Compute-Labs | 127 |
@@ -385,8 +406,11 @@ Lists all resource groups that belong to your Azure subscription.
 | Azure.ResourceGroup.ProvisioningState | string | The provisioning state of the resource group. | 
 
 #### Command example
+
 ```!azure-list-resource-groups```
+
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -411,6 +435,7 @@ Lists all resource groups that belong to your Azure subscription.
 #### Human Readable Output
 
 >### List of Resource Groups
+>
 >|ID|Location|Name|ProvisioningState|
 >|---|---|---|---|
 >| /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs | ukwest | Compute-Labs | Succeeded |
@@ -437,8 +462,11 @@ Deletes a specified virtual machine.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!azure-vm-delete-instance resource_group=Compute-Labs virtual_machine_name=test1234```
+
 #### Human Readable Output
 
 >"test1234" VM Deletion Successfully Initiated
@@ -465,8 +493,11 @@ There are no input arguments for this command.
 | Azure.Subscription.State | String | The state of the subscription. | 
 
 #### Command example
+
 ```!azure-list-subscriptions```
+
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -482,6 +513,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### List of Subscriptions
+>
 >|ID|Name|State|
 >|---|---|---|
 >| /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx | Azure subscription 1 | Enabled |
@@ -523,8 +555,11 @@ Gets the properties of a given network interface.
 | Azure.Network.Interfaces.ID | String | The interface ID. | 
 
 #### Command example
+
 ```!azure-vm-get-nic-details resource_group=Compute-Labs nic_name=webserver729```
+
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -559,6 +594,7 @@ Gets the properties of a given network interface.
 #### Human Readable Output
 
 >### Properties of Network Interface "webserver729"
+>
 >|Name|ID|MACAddress|NetworkSecurityGroup|NICType|PrivateIPAddresses|AttachedVirtualMachine|
 >|---|---|---|---|---|---|---|
 >| webserver729 | /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729 | 00-22-48-1C-73-AF | id: /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkSecurityGroups/webserver-nsg | NA | 10.0.0.4|sample-webserver|
@@ -597,10 +633,13 @@ Gets the properties of a given public IP address.
 | Azure.Network.IPConfigurations.PublicIPAddressID | String | The address ID. | 
 
 #### Command examples
+
 ```!azure-vm-get-public-ip-details resource_group=Compute-Labs address_name=webserver-ip```
 
 ```!azure-vm-get-public-ip-details address_name=xx.xx.xx.xx```
+
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -624,12 +663,14 @@ Gets the properties of a given public IP address.
 
 
 ### azure-vm-get-all-public-ip-details
+
 ***
 Gets the properties of all public ip address in a subscription.
 
 #### Base Command
 
 `azure-vm-get-all-public-ip-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -652,8 +693,11 @@ Gets the properties of all public ip address in a subscription.
 | Azure.Network.IPConfigurations.PublicIPAddressID | String | The address ID. | 
 
 #### Command example
+
 ```!azure-vm-get-all-public-ip-details```
+
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -704,6 +748,7 @@ Gets the properties of all public ip address in a subscription.
 #### Human Readable Output
 
 >### Properties of Public Address "webserver-ip"
+>
 >|PublicConfigName|PublicIPAddress| Location |PublicIPAddressVersion|PublicIPAddressAllocationMethod|
 >|-----------|--------|---|------|--------|
 >| test-publicip1|xx.xx.xx.xx| ukwest | IPv4|Static|
@@ -748,8 +793,11 @@ Creates a virtual machine network interface.
 | Azure.Network.Interfaces.ID | String | The interface ID. | 
 
 #### Command example
+
 ```!azure-vm-create-nic nic_location=eastus nic_name=test_nic2 resource_group=Compute-Labs subnet_name=default vnet_name=Compute-Labs-vnet ip_config_name=ipconfigtest```
+
 #### Context Example
+
 ```json
 {
     "Azure": {
@@ -780,6 +828,7 @@ Creates a virtual machine network interface.
 #### Human Readable Output
 
 >### Created Network Interface "test_nic2"
+>
 >|ID|PrivateIPAddresses|Location|Name|NetworkSecurityGroup|
 >|---|---|---|---|---|
 >| /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/test_nic2 | 10.0.0.13 | eastus | test_nic2 | NA |

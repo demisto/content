@@ -35,6 +35,7 @@ Returns the scan list
 | NessusFolder.Type | unknown | The type of the folder \(main, trash, custom\). | 
 | NessusFolder.Name | unknown | The name of the folder. | 
 | NessusFolder.ID | unknown | The unique id of the folder. | 
+
 ### nessus-launch-scan
 
 ***
@@ -56,6 +57,7 @@ Launches a new vulnerability scan
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ScanUUID | unknown | The uuid of the launched scan. | 
+
 ### nessus-scan-details
 
 ***
@@ -128,6 +130,7 @@ Returns details for the given scan
 | NessusScan.Remediations.NumCVEs | unknown | Number of CVE's | 
 | NessusScan.Remediations.NumImpactedHosts | unknown | Number of impacted hosts | 
 | NessusScan.Remediations.NumRemediatedCVEs | unknown | Number of Remediated CVE's | 
+
 ### nessus-scan-host-details
 
 ***
@@ -163,6 +166,7 @@ Returns details for the given host.
 | Endpoint.ScanProgressTotal | unknown | The total scan progress for the host. | 
 | Endpoint.ScanProgressCurrent | unknown | The current scan progress for the host. | 
 | Endpoint.Score | unknown | The overall score for the host. | 
+
 ### nessus-scan-export
 
 ***
@@ -187,6 +191,7 @@ Export the given scan (Nessus, HTML, PDF, CSV, or DB format)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ScanReportID | unknown | ID of the scan report. | 
+
 ### nessus-scan-report-download
 
 ***
@@ -206,6 +211,7 @@ Download an exported scan
 #### Context Output
 
 There is no context output for this command.
+
 ### nessus-scan-create
 
 ***
@@ -249,6 +255,7 @@ Creates a new scan
 | NessusScan.LastModificationDate | unknown | The last modification date for the scan in unixtime. | 
 | NessusScan.Type | unknown | The type of scan \(local, remote, or agent\). | 
 | NessusScan.Policy | unknown | The policy if the scan. | 
+
 ### nessus-get-scans-editors
 
 ***
@@ -266,6 +273,7 @@ Returns all scan editors template list
 #### Context Output
 
 There is no context output for this command.
+
 ### nessus-scan-export-status
 
 ***
@@ -287,6 +295,7 @@ Check the file status of an exported scan
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NessusScan.ScanReportStatus | unknown | The status of the scan report. | 
+
 ### nessus-scan-status
 
 ***

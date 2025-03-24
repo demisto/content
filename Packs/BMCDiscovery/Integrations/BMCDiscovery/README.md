@@ -15,6 +15,7 @@ This integration was integrated and tested with BMC Discovery v.22.1.
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -68,6 +69,7 @@ Base Command
 | BmcDiscovery.Scan.Status.consolidation_source                 | String   | Consolidation source                      |
 
 ***
+
 #### bmc-discovery-scan-create
 
 Create a new snapshot scan (run)
@@ -84,9 +86,9 @@ Base Command
 | ranges            | IP range        | Yes          |
 
 **Note**: The following run parameters are predefined: 
-- Kind = IP
-- Level = Full Discovery
-- Type = Snapshot
+* Kind = IP
+* Level = Full Discovery
+* Type = Snapshot
 
 #### Context Output
 
@@ -96,6 +98,7 @@ Base Command
 | BmcDiscovery.Scan.Create.uuid | String   | New scan UUID   |
 
 ***
+
 #### bmc-discovery-scan-summary
 
 Retrieve scan (run) results summary
@@ -111,9 +114,9 @@ Base Command
 | run_id            | An ID of the scan | Yes          |
 
 **Note**: The following run parameters are predefined: 
-- Kind = IP
-- Level = Full Discovery
-- Type = Snapshot
+* Kind = IP
+* Level = Full Discovery
+* Type = Snapshot
 
 #### Context Output
 
@@ -127,6 +130,7 @@ Base Command
 | BmcDiscovery.Scan.Summary.Dropped    | Number   | Number of dropped entities              |
 
 ***
+
 #### bmc-discovery-scan-stop
 
 Cancel a currently running scan
@@ -142,9 +146,9 @@ Base Command
 | run_id            | An ID of the scan | Yes          |
 
 **Note**: The following run parameters are predefined: 
-- Kind = IP
-- Level = Full Discovery
-- Type = Snapshot
+* Kind = IP
+* Level = Full Discovery
+* Type = Snapshot
 
 #### Context Output
 
@@ -153,6 +157,7 @@ Base Command
 | BmcDiscovery.Scan.Stop.cancelled    | Boolean  | Scan cancel status |
 
 ***
+
 #### bmc-discovery-scan-results-list
 
 Get a list of hosts by specific result type
@@ -183,6 +188,7 @@ Base Command
 | BmcDiscovery.Scan.Result.results     | Unknown  | The actual scan result data        |
 
 ***
+
 #### bmc-discovery-search
 
 Search for a node by IP address or hostname
@@ -209,6 +215,7 @@ Base Command
 | BmcDiscovery.Search.name  | String   | Name of the search         |
 
 ***
+
 #### bmc-discovery-search-custom
 
 Run a user defined query

@@ -14,15 +14,18 @@ Detailed feed of domains and ips classified in different categories. You need a 
 |  |  | False |
 | Feed Fetch Interval |  | False |
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-| Indicator Type | The indicator type in the feed to fetch. Domain is referring to "https://rules.emergingthreats.net/auth_code/reputation/detailed-iprepdata.txt", IP is referring to "https://rules.emergingthreats.net/auth_code/reputation/detailed-domainrepdata.txt". | True |
+| Indicator Type | The indicator type in the feed to fetch. Domain is referring to "<https://rules.emergingthreats.net/auth_code/reputation/detailed-iprepdata.txt>", IP is referring to "<https://rules.emergingthreats.net/auth_code/reputation/detailed-domainrepdata.txt>". | True |
 | Tags | Supports CSV values. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### proofpoint-get-indicators
+
 ***
 Gets indicators from the feed.
 
@@ -30,6 +33,7 @@ Gets indicators from the feed.
 #### Base Command
 
 `proofpoint-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

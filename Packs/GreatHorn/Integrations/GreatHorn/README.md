@@ -1,5 +1,6 @@
 The only cloud-native security platform that stops targeted social engineering and phishing attacks on cloud email platforms like Office 365 and G Suite.
 This integration was integrated and tested with version 2.0 of GreatHorn
+
 ## Configure GreatHorn in Cortex
 
 
@@ -12,9 +13,12 @@ This integration was integrated and tested with version 2.0 of GreatHorn
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### gh-get-message
+
 ***
 Return message details for the specified event
 
@@ -22,6 +26,7 @@ Return message details for the specified event
 #### Base Command
 
 `gh-get-message`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -85,9 +90,11 @@ Return message details for the specified event
 
 
 #### Command Example
+
 ```!gh-get-message id="12345" includeheaders="true"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -97,6 +104,7 @@ Return message details for the specified event
 >GreatHorn event not found
 
 ### gh-search-message
+
 ***
 Search for message based on filtering input
 
@@ -104,6 +112,7 @@ Search for message based on filtering input
 #### Base Command
 
 `gh-search-message`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -170,9 +179,11 @@ Search for message based on filtering input
 
 
 #### Command Example
+
 ```!gh-search-message filters="[{\"targets\": [\"penguin@scuftysails.com\"], \"origin\": [\"action@ifttt.com\"]}]"```
 
 #### Context Example
+
 ```json
 {
     "GreatHorn": {
@@ -187,10 +198,12 @@ Search for message based on filtering input
 #### Human Readable Output
 
 >### Events
+>
 >**No entries.**
 
 
 ### gh-remediate-message
+
 ***
 Perform the specified remediation action on message
 
@@ -198,6 +211,7 @@ Perform the specified remediation action on message
 #### Base Command
 
 `gh-remediate-message`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -221,9 +235,11 @@ Perform the specified remediation action on message
 
 
 #### Command Example
+
 ```!gh-remediate-message action="banner" message="This email may be a phishing attempt" eventId="20128"```
 
 #### Context Example
+
 ```json
 {
     "GreatHorn": {
@@ -242,6 +258,7 @@ Perform the specified remediation action on message
 >Remediate action banner applied successfully to message 20128
 
 ### gh-revert-remediate-message
+
 ***
 Revert the specified remediation action on the given message
 
@@ -249,6 +266,7 @@ Revert the specified remediation action on the given message
 #### Base Command
 
 `gh-revert-remediate-message`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -268,9 +286,11 @@ Revert the specified remediation action on the given message
 
 
 #### Command Example
+
 ```!gh-revert-remediate-message action="banner" eventId="20128"```
 
 #### Context Example
+
 ```json
 {
     "GreatHorn": {
@@ -289,6 +309,7 @@ Revert the specified remediation action on the given message
 >Revert action banner applied successfully to message 20128
 
 ### gh-get-policy
+
 ***
 Retrieve details about the policy specified
 
@@ -296,6 +317,7 @@ Retrieve details about the policy specified
 #### Base Command
 
 `gh-get-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -315,9 +337,11 @@ Retrieve details about the policy specified
 
 
 #### Command Example
+
 ```!gh-get-policy policyid="16567"```
 
 #### Context Example
+
 ```json
 {
     "GreatHorn": {
@@ -358,12 +382,14 @@ Retrieve details about the policy specified
 #### Human Readable Output
 
 >### Policy
+>
 >|ID|Name|Enabled|Description|Actions|
 >|---|---|---|---|---|
 >| 16567 | Penalty box policy | true |  | quarantine |
 
 
 ### gh-set-policy
+
 ***
 Retrieve details about the policy specified.
 
@@ -371,6 +397,7 @@ Retrieve details about the policy specified.
 #### Base Command
 
 `gh-set-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -388,9 +415,11 @@ Retrieve details about the policy specified.
 
 
 #### Command Example
+
 ```!gh-set-policy policyid="16567" updatemethod="patch" policyjson="{\"config\": [\"or\", [\"and\", {\"opt\": \"from\", \"values\": [\"asdf@asdf.com\",\"asdf2@asdf2.com\"], \"type\": \"regex\"}]]}"```
 
 #### Context Example
+
 ```json
 {
     "GreatHorn": {

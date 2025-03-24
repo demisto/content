@@ -8,7 +8,7 @@ This is the default integration for this content pack when configured by the Dat
 
 | **Parameter** | **Description** | **Required** |
 | --- | -- | --- |
-| Server URL | \(e.g., https://1.1.1.1\) | True |
+| Server URL | \(e.g., <https://1.1.1.1\>) | True |
 | Username |  | True |
 | Password |  | True |
 | QRadar API Version | API version of QRadar \(e.g., '12.0'\). Minimum API version is 10.1. | True |
@@ -20,8 +20,8 @@ This is the default integration for this content pack when configured by the Dat
 | Number of offenses to pull per API call (max 50) | In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value. | False |
 | Query to fetch offenses. | Define a query to determine which offenses to fetch. E.g., "severity &gt;= 4 AND id &gt; 5". | False |
 | Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
-| Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html | False |
-| Mirroring Options | How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev. | False |
+| Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: <https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html> | False |
+| Mirroring Options | How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at <https://xsoar.pan.dev>. | False |
 | Close Mirrored XSOAR Incident | When selected, closing the QRadar offense is mirrored in Cortex XSOAR. | False |
 | The number of incoming incidents to mirror each time | Maximum number of incoming incidents to mirror each time. | False |
 | Advanced Parameters | Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5 | False |
@@ -31,6 +31,7 @@ This is the default integration for this content pack when configured by the Dat
 | Fetch Incidents Interval | The fetch interval between before each fetch-incidents execution. (seconds) | False |
 
 ## Required Permissions
+
 | Component | Permission |
 | --- | --- |
 | Assets | Vulnerability Management *or* Assets |
@@ -40,21 +41,30 @@ This is the default integration for this content pack when configured by the Dat
 | Offenses (Read) | Offenses |
 | References (Create/Update) | Admin |
 | References (Read) | View Reference Data |
+
 ## Mapping Limitation for Cortex XSOAR Versions below 6.0.0
+
 The *Pull from instance* option to create a new mapper is not supported in Cortex XSOAR versions below 6.0.0. 
 
 ## Creating a Classifier Using the *Pull from instance* Parameter
+
 QRadar fetches incidents using a long-running execution, not in real time. Therefore, *Pull from instance* pulls incidents from the QRadar service to create a classifier using samples, not real time data. This results in seeing the latest sample stored, and not the latest offense that was fetched.  
 
 ## Important Note Regarding the *Query to fetch offenses* Parameter
+
 The *Query to fetch offenses* feature enables defining a specific query for offenses to be retrieved, e.g., **'status = OPEN and id = 5'**. The QRadar integration keeps track of IDs that have already been fetched in order to avoid duplicate fetching.   
 If you change the *Query to fetch offenses* value, it will not re-fetch offenses that have already been fetched. To re-fetch those offenses, run the ***qradar-reset-last-run*** command.  
 **Note:**  
 The list of QRadar IDs that were already fetched will be reset and duplicate offenses could be re-fetched, depending on the user query.  
+
 ## Migration from QRadar v2 to QRadar v3
+
 Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adjustments are required.
+
 ### Additions and Changes from QRadar v2 to QRadar v3
+
 ### New Commands
+
 - ***qradar-rule-groups-list***
 - ***qradar-searches-list***
 - ***qradar-geolocations-for-ip***
@@ -63,6 +73,7 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 - ***get-modified-remote-data***
 
 ### Command Name Changes
+
 | QRadar v2 command | QRadar V3 command | Notes
 | --- | --- | --- |
 | qradar-offenses | qradar-offenses-list | |
@@ -87,27 +98,34 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 
 
 ## Mirroring
+
 This integration supports in mirroring from QRadar offenses to Cortex XSOAR.  
 When a field of an offense is updated in QRadar services, the update is mirrored in Cortex XSOAR.
+
 ### Mirroring Events
-* Mirroring events from QRadar to Cortex XSOAR is supported via the **Mirror Offense and Events** option.
-* Events will only be mirrored in the incoming direction.
-* Mirroring events will only work when the **Long running instance** parameter is enabled.
-* Filtering events using the  *events_limit* and *events_columns* options for mirrored incidents will be the same as in the fetched incidents.
-* The integration will always mirror the events that occurred first in each offense.
+- Mirroring events from QRadar to Cortex XSOAR is supported via the **Mirror Offense and Events** option.
+- Events will only be mirrored in the incoming direction.
+- Mirroring events will only work when the **Long running instance** parameter is enabled.
+- Filtering events using the  *events_limit* and *events_columns* options for mirrored incidents will be the same as in the fetched incidents.
+- The integration will always mirror the events that occurred first in each offense.
 
 For more information about mirroring configurations, see [here](https://xsoar.pan.dev/docs/integrations/mirroring_integration).  
 
 ## Use the API Token Instead of Username and Password
+
 - In the **Username / API Key** field, type **_api_token_key**.  
 - In the **Password** field, type your API token.
+
 ## Choose Your API Version
+
 1. Visit the [QRadar API versions page](https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_getting_started.html) for a full list of available API versions according to the QRadar version.
 2. Choose one of the API versions listed under the **Supported REST API versions** column in the line corresponding to your QRadar version.
 
 **Note:**  
 If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version.
+
 ## View Your QRadar Version
+
 1. Enter QRadar service.
 2. Click the **Menu** toolbar. A scrolling toolbar will appear.
 3. Click **About**. A new window will appear with the details of your QRadar version.
@@ -117,9 +135,11 @@ If you're uncertain which API version to use, it is recommended to use the lates
 When *Fetch with events* is configured, the integration will fetch the offense events from `QRadar`.
 Nevertheless, some events may not be available when trying to fetch them during an incident creation. If **Retry events fetch** is enabled, the integration tries to fetch more events when the number fetched is less than the expected `event_count`. In the default setting, the integration will try 3 times, with a wait time of 100 seconds between retries.
 In order to change the default values, configure the following **Advanced Parameters** in the instance configuration:
+
 ```
 EVENTS_SEARCH_TRIES=<amount of tries for events search> (default 3),EVENTS_SEARCH_RETRY_SECONDS=<amount of seconds to wait between tries> (default 100),EVENTS_POLLING_TRIES=<number of times to poll for one search> (default 10),
 ```
+
 It is recommended to enable [mirroring](#mirroring-events), as it should fetch previously missed events when the offense is updated.
 Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can be used to retrieve the `events` immediately.
 If the command takes too long to finish executing, try setting the `interval_in_seconds` to a lower value (down to a minimum of 10 seconds).
@@ -154,8 +174,8 @@ Gets offenses from QRadar.
 | offense_id | The offense ID to retrieve its details. Specify offense_id to get details about a specific offense. | Optional | 
 | enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. Possible values are: IPs, IPs And Assets, None. Default is None. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter offenses, e.g., "severity &gt;= 4 AND id &gt; 5 AND status=OPEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,severity,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offenses-GET.html. | Optional | 
+| filter | Query to filter offenses, e.g., "severity &gt;= 4 AND id &gt; 5 AND status=OPEN". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,severity,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offenses-GET.html>. | Optional | 
 
 #### Context Output
 
@@ -192,8 +212,11 @@ Gets offenses from QRadar.
 | QRadar.Offense.Assets | String | Assets correlated to the offense, if enrichment was requested. | 
 
 #### Command example
+
 ```!qradar-offenses-list enrichment=IPs filter="status=OPEN" range=0-2```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -362,11 +385,12 @@ Gets offenses from QRadar.
 #### Human Readable Output
 
 >### Offenses List
+>
 >|ID|Description|OffenseType|Status|Severity|DestinationHostname|LastUpdatedTime|Credibility|Rules|SourceAddress|AssignedTo|OffenseSource|Followup|EventCount|StartTime|FlowCount|DestinationAddress|LinkToOffense|RemoteDestinationCount|Relevance|Categories|Magnitude|Protected|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 14 | Detected A Successful Login From Different Geographies For the Same Username - AWSCloud (Exp Center)<br/> preceded by An AWS API Has Been Invoked From Kali - AWSCloud (Exp Center)<br/> preceded by Microsoft Word Launc<br/> preceded by Detected a Massive Creation of EC2 Instances - AWSCloud (Exp Center)<br/> containing Mail Server Info Message<br/> | Username | OPEN | 10 | other,<br/>Net-10-172-192.Net_192_168_0_0 | 2023-07-26T15:31:11.839000+00:00 | 4 | {'id': 102539, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender'},<br/>{'id': 102589, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Microsoft Word Launched a Command Shell'},<br/>{'id': 102639, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected A Successful Login From Different Geographies For the Same Username'},<br/>{'id': 102389, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - An AWS API Has Been Invoked From Kali'},<br/>{'id': 102439, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket'},<br/>{'id': 102489, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected a Massive Creation of EC2 Instances'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | admin | userD | true | 35651 | 2023-07-26T14:31:13.387000+00:00 | 0 | 1.1.1.1,<br/>1.1.1.1 | https://ec2.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14 | 1 | 0 | Information,<br/>Suspicious Activity,<br/>Process Creation Success,<br/>Suspicious Windows Events,<br/>User Login Attempt,<br/>Misc Login Succeeded,<br/>Virtual Machine Creation Attempt,<br/>Read Activity Attempted,<br/>Object Download Attempt | 4 | false |
->| 13 | Flow Source/Interface Stopped Sending Flows<br/> | Rule | OPEN | 1 | Net-10-172-192.Net_10_0_0_0 | 2023-06-12T08:49:50.145000+00:00 | 2 | {'id': 100270, 'type': 'CRE_RULE', 'name': 'Flow Source Stopped Sending Flows'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 |  | Flow Source Stopped Sending Flows | true | 2 | 2023-06-12T08:19:02.020000+00:00 | 6026 | 1.1.1.1 | https://ec2-1.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=13 | 0 | 0 | Mail,<br/>System Failure | 1 | true |
->| 12 | User Account Created and Used and Deleted within a short time frame (Exp Center)<br/> | Username | OPEN | 5 | Net-10-172-192.Net_172_16_0_0 | 2023-06-12T08:17:33.008000+00:00 | 3 | {'id': 102989, 'type': 'CRE_RULE', 'name': 'EC: User Account Created and Used and Removed'} | 1.1.1.1 |  | badadmin | true | 8 | 2023-06-12T08:15:54.740000+00:00 | 0 | 1.1.1.1 | https://ec2-3.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=12 | 0 | 0 | User Activity | 2 | true |
+>| 14 | Detected A Successful Login From Different Geographies For the Same Username - AWSCloud (Exp Center)<br/> preceded by An AWS API Has Been Invoked From Kali - AWSCloud (Exp Center)<br/> preceded by Microsoft Word Launc<br/> preceded by Detected a Massive Creation of EC2 Instances - AWSCloud (Exp Center)<br/> containing Mail Server Info Message<br/> | Username | OPEN | 10 | other,<br/>Net-10-172-192.Net_192_168_0_0 | 2023-07-26T15:31:11.839000+00:00 | 4 | {'id': 102539, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender'},<br/>{'id': 102589, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Microsoft Word Launched a Command Shell'},<br/>{'id': 102639, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected A Successful Login From Different Geographies For the Same Username'},<br/>{'id': 102389, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - An AWS API Has Been Invoked From Kali'},<br/>{'id': 102439, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket'},<br/>{'id': 102489, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected a Massive Creation of EC2 Instances'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | admin | userD | true | 35651 | 2023-07-26T14:31:13.387000+00:00 | 0 | 1.1.1.1,<br/>1.1.1.1 | <https://ec2.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14> | 1 | 0 | Information,<br/>Suspicious Activity,<br/>Process Creation Success,<br/>Suspicious Windows Events,<br/>User Login Attempt,<br/>Misc Login Succeeded,<br/>Virtual Machine Creation Attempt,<br/>Read Activity Attempted,<br/>Object Download Attempt | 4 | false |
+>| 13 | Flow Source/Interface Stopped Sending Flows<br/> | Rule | OPEN | 1 | Net-10-172-192.Net_10_0_0_0 | 2023-06-12T08:49:50.145000+00:00 | 2 | {'id': 100270, 'type': 'CRE_RULE', 'name': 'Flow Source Stopped Sending Flows'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 |  | Flow Source Stopped Sending Flows | true | 2 | 2023-06-12T08:19:02.020000+00:00 | 6026 | 1.1.1.1 | <https://ec2-1.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=13> | 0 | 0 | Mail,<br/>System Failure | 1 | true |
+>| 12 | User Account Created and Used and Deleted within a short time frame (Exp Center)<br/> | Username | OPEN | 5 | Net-10-172-192.Net_172_16_0_0 | 2023-06-12T08:17:33.008000+00:00 | 3 | {'id': 102989, 'type': 'CRE_RULE', 'name': 'EC: User Account Created and Used and Removed'} | 1.1.1.1 |  | badadmin | true | 8 | 2023-06-12T08:15:54.740000+00:00 | 0 | 1.1.1.1 | <https://ec2-3.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=12> | 0 | 0 | User Activity | 2 | true |
 
 
 ### qradar-offense-update
@@ -390,7 +414,7 @@ Updates an offense.
 | closing_reason_id | The ID of a closing reason. You must provide a valid closing_reason_id when you close an offense. For a full list of closing reason IDs, use the 'qradar-closing-reasons' command. | Optional | 
 | closing_reason_name | The name of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation. | Optional | 
 | assigned_to | User to assign the offense to. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,severity,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offenses-offense_id-POST.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,severity,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offenses-offense_id-POST.html>. | Optional | 
 
 #### Context Output
 
@@ -427,8 +451,11 @@ Updates an offense.
 | QRadar.Offense.Assets | String | Assets correlated to the offense, if enrichment was requested. | 
 
 #### Command example
+
 ```!qradar-offense-update offense_id=14 assigned_to=admin enrichment="IPs And Assets" follow_up=true status=OPEN protected=false```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -516,9 +543,10 @@ Updates an offense.
 #### Human Readable Output
 
 >### offense Update
+>
 >|ID|Description|OffenseType|Status|Severity|DestinationHostname|LastUpdatedTime|Credibility|Rules|SourceAddress|AssignedTo|OffenseSource|Followup|EventCount|StartTime|FlowCount|DestinationAddress|LinkToOffense|RemoteDestinationCount|Relevance|Categories|Magnitude|Protected|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 14 | Detected A Successful Login From Different Geographies For the Same Username - AWSCloud (Exp Center)<br/> preceded by An AWS API Has Been Invoked From Kali - AWSCloud (Exp Center)<br/> preceded by Microsoft Word Launc<br/> preceded by Detected a Massive Creation of EC2 Instances - AWSCloud (Exp Center)<br/> containing Mail Server Info Message<br/> | Username | OPEN | 10 | other,<br/>Net-10-172-192.Net_192_168_0_0 | 2023-07-26T15:31:11.839000+00:00 | 4 | {'id': 102539, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender'},<br/>{'id': 102589, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Microsoft Word Launched a Command Shell'},<br/>{'id': 102639, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected A Successful Login From Different Geographies For the Same Username'},<br/>{'id': 102389, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - An AWS API Has Been Invoked From Kali'},<br/>{'id': 102439, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket'},<br/>{'id': 102489, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected a Massive Creation of EC2 Instances'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | admin | userD | true | 35651 | 2023-07-26T14:31:13.387000+00:00 | 0 | 1.1.1.1,<br/>1.1.1.1 | https://ec2-1.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14 | 1 | 0 | Information,<br/>Suspicious Activity,<br/>Process Creation Success,<br/>Suspicious Windows Events,<br/>User Login Attempt,<br/>Misc Login Succeeded,<br/>Virtual Machine Creation Attempt,<br/>Read Activity Attempted,<br/>Object Download Attempt | 4 | false |
+>| 14 | Detected A Successful Login From Different Geographies For the Same Username - AWSCloud (Exp Center)<br/> preceded by An AWS API Has Been Invoked From Kali - AWSCloud (Exp Center)<br/> preceded by Microsoft Word Launc<br/> preceded by Detected a Massive Creation of EC2 Instances - AWSCloud (Exp Center)<br/> containing Mail Server Info Message<br/> | Username | OPEN | 10 | other,<br/>Net-10-172-192.Net_192_168_0_0 | 2023-07-26T15:31:11.839000+00:00 | 4 | {'id': 102539, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender'},<br/>{'id': 102589, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Microsoft Word Launched a Command Shell'},<br/>{'id': 102639, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected A Successful Login From Different Geographies For the Same Username'},<br/>{'id': 102389, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - An AWS API Has Been Invoked From Kali'},<br/>{'id': 102439, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket'},<br/>{'id': 102489, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected a Massive Creation of EC2 Instances'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | admin | userD | true | 35651 | 2023-07-26T14:31:13.387000+00:00 | 0 | 1.1.1.1,<br/>1.1.1.1 | <https://ec2-1.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14> | 1 | 0 | Information,<br/>Suspicious Activity,<br/>Process Creation Success,<br/>Suspicious Windows Events,<br/>User Login Attempt,<br/>Misc Login Succeeded,<br/>Virtual Machine Creation Attempt,<br/>Read Activity Attempted,<br/>Object Download Attempt | 4 | false |
 
 
 ### qradar-closing-reasons
@@ -538,8 +566,8 @@ Retrieves a list of offense closing reasons.
 | include_reserved | If true, reserved closing reasons are included in the response. Possible values are: true, false. Default is false. | Optional | 
 | include_deleted | If true, deleted closing reasons are included in the response. Possible values are: true, false. Default is false. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter closing reasons, e.g. "id &gt; 5". For reference see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offense_closing_reasons-GET.html. | Optional | 
+| filter | Query to filter closing reasons, e.g. "id &gt; 5". For reference see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offense_closing_reasons-GET.html>. | Optional | 
 
 #### Context Output
 
@@ -551,8 +579,11 @@ Retrieves a list of offense closing reasons.
 | QRadar.Offense.ClosingReasons.ID | Number | ID of the closing reason. | 
 
 #### Command example
+
 ```!qradar-closing-reasons include_deleted=true include_reserved=true```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -591,6 +622,7 @@ Retrieves a list of offense closing reasons.
 #### Human Readable Output
 
 >### Closing Reasons
+>
 >|ID|Name|IsReserved|IsDeleted|
 >|---|---|---|---|
 >| 2 | False-Positive, Tuned | false | false |
@@ -615,8 +647,8 @@ Retrieves a list of notes for an offense.
 | offense_id | The offense ID to retrieve the notes for. | Required | 
 | note_id | The note ID for which to retrieve its details. Specify note_id to get details about a specific note. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter offense notes, e.g., "username=admin". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "username,note_text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offenses-offense_id-notes-GET.html. | Optional | 
+| filter | Query to filter offense notes, e.g., "username=admin". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "username,note_text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offenses-offense_id-notes-GET.html>. | Optional | 
 
 #### Context Output
 
@@ -628,8 +660,11 @@ Retrieves a list of notes for an offense.
 | QRadar.Note.CreatedBy | String | The user who created the note. | 
 
 #### Command example
+
 ```!qradar-offense-notes-list offense_id=14 filter="username='API_user: admin'" range=0-1```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -654,6 +689,7 @@ Retrieves a list of notes for an offense.
 #### Human Readable Output
 
 >### Offense Notes List For Offense ID 14
+>
 >|ID|Text|CreatedBy|CreateTime|
 >|---|---|---|---|
 >| 53 | Note Regarding The Offense | API_user: admin | 2023-07-27T13:58:46.428000+00:00 |
@@ -675,7 +711,7 @@ Creates a note on an offense.
 | --- | --- | --- |
 | offense_id | The offense ID to add the note to. | Required | 
 | note_text | The text of the note. | Required | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "username,note_text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offenses-offense_id-notes-POST.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "username,note_text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offenses-offense_id-notes-POST.html>. | Optional | 
 
 #### Context Output
 
@@ -687,8 +723,11 @@ Creates a note on an offense.
 | QRadar.Note.CreatedBy | String | The user who created the note. | 
 
 #### Command example
+
 ```!qradar-offense-note-create note_text="Note Regarding The Offense" offense_id=14```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -705,6 +744,7 @@ Creates a note on an offense.
 #### Human Readable Output
 
 >### Create Note
+>
 >|ID|Text|CreatedBy|CreateTime|
 >|---|---|---|---|
 >| 65 | Note Regarding The Offense | API_user: admin | 2023-08-02T08:39:15.813000+00:00 |
@@ -726,8 +766,8 @@ Retrieves a list of rules.
 | rule_id | The rule ID for which to retrieve its details. Specify rule_id to get details about a specific rule. | Optional | 
 | rule_type | Retrieves rules corresponding to the specified rule type. Possible values are: EVENT, FLOW, COMMON, USER. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter rules, e.g., "type=EVENT". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "owner,identifier,origin". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--analytics-rules-GET.html. | Optional | 
+| filter | Query by which to filter rules, e.g., "type=EVENT". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "owner,identifier,origin". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--analytics-rules-GET.html>. | Optional | 
 
 #### Context Output
 
@@ -747,8 +787,11 @@ Retrieves a list of rules.
 | QRadar.Rule.BaseCapacity | Number | Base capacity of the rule in events per second. | 
 
 #### Command example
+
 ```!qradar-rules-list rule_type=COMMON range=0-2```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -803,6 +846,7 @@ Retrieves a list of rules.
 #### Human Readable Output
 
 >### Rules List
+>
 >|ID|Name|Type|Enabled|BaseHostID|Origin|ModificationDate|CreationDate|BaseCapacity|AverageCapacity|Owner|CapacityTimestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 100068 | Login Successful After Scan Attempt | COMMON | true | 0 | SYSTEM | 2022-11-21T18:44:32.696000+00:00 | 2007-10-14T20:12:00.374000+00:00 | 0 | 0 | admin | 0 |
@@ -825,8 +869,8 @@ Retrieves a list of the rule groups.
 | --- | --- | --- |
 | rule_group_id | The rule group ID for which to retrieve its details. Specify rule_group_id to get details about a specific rule group. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter rules, e.g., "id &gt;= 125". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "owner,parent_id". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--analytics-rule_groups-GET.html. | Optional | 
+| filter | Query by which to filter rules, e.g., "id &gt;= 125". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "owner,parent_id". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--analytics-rule_groups-GET.html>. | Optional | 
 
 #### Context Output
 
@@ -844,8 +888,11 @@ Retrieves a list of the rule groups.
 | QRadar.RuleGroup.ParentID | Number | ID of the parent group. | 
 
 #### Command example
+
 ```!qradar-rule-groups-list range=0-2```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -939,6 +986,7 @@ Retrieves a list of the rule groups.
 #### Human Readable Output
 
 >### Rules Group List
+>
 >|ID|Name|Description|Owner|ModifiedTime|ParentID|Type|ChildItems|Level|
 >|---|---|---|---|---|---|---|---|---|
 >| 125 | Asset Reconciliation Exclusion | Rules focused on detection of suspicious asset reconciliation behavior. | admin | 2014-01-06T15:23:26.060000+00:00 | 3 | RULE_GROUP | 100045,<br/>100046,<br/>100047,<br/>100048,<br/>100049,<br/>100050,<br/>100051,<br/>100052,<br/>100053,<br/>100054,<br/>100055,<br/>100056,<br/>1607,<br/>1608,<br/>1609,<br/>1610,<br/>1611,<br/>1612,<br/>1613,<br/>1614,<br/>1615,<br/>1616,<br/>1617,<br/>1618 | 2 |
@@ -961,8 +1009,8 @@ Retrieves assets list.
 | --- | --- | --- |
 | asset_id | The asset ID for which to retrieve its details. Specify asset_id to get details about a specific asset. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter assets, e.g., "domain_id=0". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,interfaces,users,properties". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--asset_model-assets-GET.html. | Optional | 
+| filter | Query by which to filter assets, e.g., "domain_id=0". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,interfaces,users,properties". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--asset_model-assets-GET.html>. | Optional | 
 
 #### Context Output
 
@@ -1015,8 +1063,11 @@ Retrieves assets list.
 | QRadar.Asset.Properties.value | String | Property value. | 
 
 #### Command example
+
 ```!qradar-assets-list filter="id<1100" range=0-2```
+
 #### Context Example
+
 ```json
 {
     "Endpoint": [
@@ -1065,10 +1116,13 @@ Retrieves assets list.
 #### Human Readable Output
 
 >### Assets List
+>
 >|DomainID|ID|Interfaces|Properties|RiskScoreSum|VulnerabilityCount|
 >|---|---|---|---|---|---|
 >| 0 | 1003 | {'created': '2023-07-26T14:32:01.789000+00:00', 'ip_addresses': [{'created': '2023-07-26T14:32:01.789000+00:00', 'network_id': 2, 'id': 1003, 'type': 'IPV4', 'value': '1.1.1.1'}], 'id': 1003} | {'last_reported': '2023-07-26T14:32:01.802000+00:00', 'name': 'Unified Name', 'type_id': 1002, 'id': 1020, 'last_reported_by': 'USER:admin', 'value': '1.1.1.1'} | 0.0 | 0 |
+>
 >### Endpoints
+>
 >|IPAddress|
 >|---|
 >| 1.1.1.1 |
@@ -1090,8 +1144,8 @@ Retrieves a list of Ariel saved searches.
 | saved_search_id | The saved search ID for which to retrieve its details. Specify saved_search_id to get details about a specific saved search. | Optional | 
 | timeout | Number of seconds until timeout for the specified command. Default is 35. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter saved searches, e.g., "database=EVENTS and is_dashboard=true". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,owner,description". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--ariel-saved_searches-GET.html. | Optional | 
+| filter | Query by which to filter saved searches, e.g., "database=EVENTS and is_dashboard=true". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,owner,description". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--ariel-saved_searches-GET.html>. | Optional | 
 
 #### Context Output
 
@@ -1110,8 +1164,11 @@ Retrieves a list of Ariel saved searches.
 | QRadar.SavedSearch.IsShared | Boolean | Whether the saved search is shared with other users. | 
 
 #### Command example
+
 ```!qradar-saved-searches-list range=0-1```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -1150,6 +1207,7 @@ Retrieves a list of Ariel saved searches.
 #### Human Readable Output
 
 >### Saved Searches List
+>
 >|ID|Name|IsShared|AQL|UID|QuickSearch|ModifiedDate|CreationDate|Database|Owner|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2817 | EC: AWS Cloud Attack Events | false | select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',"eventCount" as 'Event Count',"startTime" as 'Time',categoryname(category) as 'Low Level Category',"sourceIP" as 'Source IP',"sourcePort" as 'Source Port',"destinationIP" as 'Destination IP',"destinationPort" as 'Destination Port',"userName" as 'Username',"magnitude" as 'Magnitude' from events where "Experience Center" ilike '%AWSCloud%' order by "startTime" desc LIMIT 1000 start '2023-08-02 08:34' stop '2023-08-02 08:39' | 0144c7d8-a3fe-47c1-b16b-12721a34077e | false | 2023-02-23T14:12:52.611000+00:00 | 2019-04-02T17:39:08.493000+00:00 | EVENTS | admin |
@@ -1178,8 +1236,11 @@ Retrieves the list of Ariel searches IDs. Search status and results can be polle
 | QRadar.SearchID.SearchID | String | ID of the search. | 
 
 #### Command example
+
 ```!qradar-searches-list```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -1342,6 +1403,7 @@ Retrieves the list of Ariel searches IDs. Search status and results can be polle
 #### Human Readable Output
 
 >### Search ID List
+>
 >|SearchID|
 >|---|
 >| 111e7107-48da-4645-8c2c-a8285d113eac |
@@ -1425,8 +1487,11 @@ Creates a new asynchronous Ariel search. Returns the search ID. Search status an
 | QRadar.Search.ID | String | ID of the newly created search. | 
 
 #### Command example
+
 ```!qradar-search-create query_expression="""SELECT "destinationPort" AS 'Destination Port', UniqueCount("sourceIP") AS 'Source IP (Unique Count)', UniqueCount("destinationIP") AS 'Destination IP (Unique Count)', UniqueCount(qid) AS 'Event Name (Unique Count)', UniqueCount(logSourceId) AS 'Log Source (Unique Count)', UniqueCount(category) AS 'Low Level Category (Unique Count)', UniqueCount("protocolId") AS 'Protocol (Unique Count)', UniqueCount("userName") AS 'Username (Unique Count)', MAX("magnitude") AS 'Magnitude (Maximum)', SUM("eventCount") AS 'Event Count (Sum)', COUNT(*) AS 'Count' from events where ( ("creEventList"='100120') or ("creEventList"='100122') or ("creEventList"='100135') AND "eventDirection"='R2L' ) GROUP BY "destinationPort" order by "Event Count (Sum)" desc last 6 hours"""```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -1441,6 +1506,7 @@ Creates a new asynchronous Ariel search. Returns the search ID. Search status an
 #### Human Readable Output
 
 >### Create Search
+>
 >|ID|Status|
 >|---|---|
 >| 68d4e4e6-f512-4171-b130-d671334cb47d | WAIT |
@@ -1541,8 +1607,8 @@ Retrieves a list of reference sets.
 | ref_name | The reference name of the reference set for which to retrieve its details. Specify ref_name to get details about a specific reference set. | Optional | 
 | date_value | If set to true will try to convert the data values to ISO-8601 string. Possible values are: True, False. Default is False. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter reference sets, e.g., "timeout_type=FIRST_SEEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-GET.html. | Optional | 
+| filter | Query by which to filter reference sets, e.g., "timeout_type=FIRST_SEEN". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-GET.html>. | Optional | 
 
 #### Context Output
 
@@ -1560,8 +1626,11 @@ Retrieves a list of reference sets.
 | QRadar.Reference.ElementType | String | Type of the elements in the reference set. | 
 
 #### Command example
+
 ```!qradar-reference-sets-list filter="timeout_type=FIRST_SEEN" range=0-2```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -1595,6 +1664,7 @@ Retrieves a list of reference sets.
 #### Human Readable Output
 
 >### Reference Sets List
+>
 >|Name|ElementType|TimeoutType|CreationTime|NumberOfElements|
 >|---|---|---|---|---|
 >| Critical Assets | IP | FIRST_SEEN | 2015-08-27T17:15:40.583000+00:00 | 0 |
@@ -1619,7 +1689,7 @@ Creates a new reference set.
 | element_type | The element type for the values allowed in the reference set. Possible values are: ALN, ALNIC, NUM, IP, PORT, DATE. | Required | 
 | timeout_type | Indicates if the time_to_live interval is based on when the data was first seen or last seen. Possible values are: FIRST_SEEN, LAST_SEEN, UNKNOWN. Default is UNKNOWN. | Optional | 
 | time_to_live | The time to live interval, time range. for example: '1 month' or '5 minutes'. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-POST.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-POST.html>. | Optional | 
 
 #### Context Output
 
@@ -1637,8 +1707,11 @@ Creates a new reference set.
 | QRadar.Reference.ElementType | String | Type of the elements in the reference set. | 
 
 #### Command example
+
 ```!qradar-reference-set-create element_type=IP ref_name="Malicious IPs" time_to_live="1 year" timeout_type=FIRST_SEEN```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -1657,6 +1730,7 @@ Creates a new reference set.
 #### Human Readable Output
 
 >### Reference Set Create
+>
 >|Name|ElementType|TimeToLive|TimeoutType|CreationTime|NumberOfElements|
 >|---|---|---|---|---|---|
 >| Malicious IPs | IP | 1 years 0 mons 0 days 0 hours 0 mins 0.0 secs | FIRST_SEEN | 2023-08-02T08:39:30.887000+00:00 | 0 |
@@ -1681,8 +1755,11 @@ Removes a reference set or purges its contents.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!qradar-reference-set-delete ref_name="Malicious IPs"```
+
 #### Human Readable Output
 
 >Request to delete reference Malicious IPs was submitted. Current deletion status: QUEUED
@@ -1704,7 +1781,7 @@ Adds or updates an element in a reference set.
 | value | Comma-separated list of the values to add or update in the reference set. If the values are dates, the supported date formats are: epoch, ISO, and time range (&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days.). | Required | 
 | source | An indication of where the data originated. Default is reference data api. | Optional | 
 | date_value | True if the specified value  type was date. Possible values are: true, false. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-name-POST.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-name-POST.html>. | Optional | 
 | quiet_mode | If true, does not output the updated reference set data. This argument helps avoid large outputs when the reference set is large. Possible values are: true, false. | Optional | 
 
 #### Context Output
@@ -1723,8 +1800,11 @@ Adds or updates an element in a reference set.
 | QRadar.Reference.ElementType | String | Type of the elements in the reference set. | 
 
 #### Command example
+
 ```!qradar-reference-set-value-upsert ref_name="Malicious IPs" value="1.1.1.1,1.1.1.1,1.1.1.1"```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -1763,6 +1843,7 @@ Adds or updates an element in a reference set.
 #### Human Readable Output
 
 >### Reference Update Create
+>
 >|CreationTime|Data|ElementType|Name|NumberOfElements|TimeToLive|TimeoutType|
 >|---|---|---|---|---|---|---|
 >| 2023-08-02T08:39:30.887000+00:00 | {'last_seen': 1690965572017, 'first_seen': 1690965572017, 'source': 'reference data api', 'value': '1.1.1.1'},<br/>{'last_seen': 1690965572017, 'first_seen': 1690965572017, 'source': 'reference data api', 'value': '1.1.1.1'},<br/>{'last_seen': 1690965572017, 'first_seen': 1690965572017, 'source': 'reference data api', 'value': '1.1.1.1'} | IP | Malicious IPs | 3 | 1 years 0 mons 0 days 0 hours 0 mins 0.0 secs | FIRST_SEEN |
@@ -1788,8 +1869,11 @@ Removes a value from a reference set.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!qradar-reference-set-value-delete ref_name="Malicious IPs" value="1.1.1.1"```
+
 #### Human Readable Output
 
 >### value: 1.1.1.1 of reference: Malicious IPs was deleted successfully
@@ -1809,8 +1893,8 @@ Gets the list of domains. You must have System Administrator or Security Adminis
 | --- | --- | --- |
 | domain_id | The domain ID from which to retrieve its details. Specify domain_id to get details about a specific domain. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter domains, e.g., "id &gt; 3". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--config-domain_management-domains-GET.html. | Optional | 
+| filter | Query by which to filter domains, e.g., "id &gt; 3". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--config-domain_management-domains-GET.html>. | Optional | 
 
 #### Context Output
 
@@ -1831,8 +1915,11 @@ Gets the list of domains. You must have System Administrator or Security Adminis
 | QRadar.Domains.TenantID | Number | ID of the tenant that this domain belongs to. | 
 
 #### Command example
+
 ```!qradar-domains-list```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -1850,6 +1937,7 @@ Gets the list of domains. You must have System Administrator or Security Adminis
 #### Human Readable Output
 
 >### Domains List
+>
 >|Deleted|ID|TenantID|
 >|---|---|---|
 >| false | 0 | 0 |
@@ -1872,7 +1960,7 @@ Uploads indicators to QRadar.
 | query | The query for getting indicators from Cortex XSOAR. | Optional | 
 | limit | The maximum number of indicators to fetch from Cortex XSOAR. Default is 50. | Optional | 
 | page | The page from which to get the indicators. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-maps-bulk_load-namespace-name-domain_id-POST.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-maps-bulk_load-namespace-name-domain_id-POST.html>. | Optional | 
 | quiet_mode | If true, does not output the updated reference set data. This argument helps avoid large outputs when the reference set is large. Possible values are: true, false. | Optional | 
 
 #### Context Output
@@ -1904,7 +1992,7 @@ Retrieves the MaxMind GeoIP data for the specified IP address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | Comma-separated list of IPs fro which to retrieve their geolocation. | Required | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "continent,ip_address". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--services-geolocations-GET.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "continent,ip_address". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--services-geolocations-GET.html>. | Optional | 
 
 #### Context Output
 
@@ -1938,8 +2026,11 @@ Retrieves the MaxMind GeoIP data for the specified IP address.
 | QRadar.GeoForIP.PostalCodeConfidence | Number | Value between 0-100 that represents MaxMind's confidence that the postal code is correct. | 
 
 #### Command example
+
 ```!qradar-geolocations-for-ip ip="1.1.1.1,1.1.1.1" range=0-1```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -1990,6 +2081,7 @@ Retrieves the MaxMind GeoIP data for the specified IP address.
 #### Human Readable Output
 
 >### Geolocation For IP
+>
 >|CityName|ContinentName|Coordinates|IPAddress|LocationAccuracyRadius|LocationLatitude|LocationLongitude|LocationMetroCode|LocationTimezone|PhysicalCountryIsoCode|PhysicalCountryName|PostalCode|RegisteredCountryIsoCode|RegisteredCountryName|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Mukilteo | NorthAmerica | 47.913,<br/>-122.3042 | 1.1.1.1 | 1000 | 47.913 | -122.3042 | 819 | America/Los_Angeles | US | United States | 98275 | US | United States |
@@ -2012,8 +2104,8 @@ Retrieves a list of log sources.
 | qrd_encryption_algorithm | The algorithm to use for encrypting the sensitive data of this endpoint. Possible values are: AES128, AES256. Default is AES128. | Required | 
 | qrd_encryption_password | The password to use for encrypting the sensitive data of this endpoint. If password was not given, random password will be generated. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter log sources, e.g., "auto_discovered=false". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--config-event_sources-log_source_management-log_sources-GET.html. | Optional | 
+| filter | Query by which to filter log sources, e.g., "auto_discovered=false". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--config-event_sources-log_source_management-log_sources-GET.html>. | Optional | 
 | id | ID of a specific log source. | Optional | 
 
 #### Context Output
@@ -2040,8 +2132,11 @@ Retrieves a list of log sources.
 
 
 #### Command example
+
 ```!qradar-log-sources-list qrd_encryption_algorithm=AES128 range=0-2```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -2162,6 +2257,7 @@ Retrieves a list of log sources.
 #### Human Readable Output
 
 >### Log Sources List
+>
 >|ID|Name|Description|Internal|ProtocolParameters|Credibility|GroupIDs|CreationDate|Status|Enabled|ProtocolTypeID|AutoDiscovered|Gateway|TypeID|ModifiedDate|LastEventTime|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 68 | Search Results-2 :: ip-172-31-17-10 | Search Results | true | {'name': 'identifier', 'id': 0, 'value': '1.1.1.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 10 | 0 | 2022-11-21T18:45:24.624000+00:00 | last_updated: 0<br/>status: NA | true | 0 | false | false | 355 | 2022-11-21T18:45:24.624000+00:00 | 1970-01-01T00:00:00+00:00 |
@@ -2186,8 +2282,8 @@ Retrieves a list of event regex properties.
 | limit | The maximum number of regex event properties to fetch. Default is 25. | Optional | 
 | like_name | A comma-separated list names of a properties to search for. Values are case insensitive. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter regex properties, e.g., "auto_discovered=false". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,gateway". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--config-event_sources-custom_properties-regex_properties-GET.html. | Optional | 
+| filter | Query by which to filter regex properties, e.g., "auto_discovered=false". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,gateway". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--config-event_sources-custom_properties-regex_properties-GET.html>. | Optional | 
 
 #### Context Output
 
@@ -2207,8 +2303,11 @@ Retrieves a list of event regex properties.
 | QRadar.Properties.username | String | The owner of the event regex property. | 
 
 #### Command example
+
 ```!qradar-get-custom-properties filter="id between 90 and 100" range=1-1231```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -2263,6 +2362,7 @@ Retrieves a list of event regex properties.
 #### Human Readable Output
 
 >### Custom Properties
+>
 >|auto_discovered|creation_date|datetime_format|description|id|identifier|locale|modification_date|name|property_type|use_for_rule_engine|username|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | 2012-07-04T17:05:02+00:00 |  | Default custom extraction of Event Summary from DSM payload. | 97 | DEFAULT_EVENT_SUMMARY | en-US | 2022-11-21T18:44:07.572000+00:00 | Event Summary | string | true | admin |
@@ -2286,6 +2386,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### get-mapping-fields
 
 ***
@@ -2302,6 +2403,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
 
 ***
@@ -2321,6 +2423,7 @@ Gets remote data from a remote incident. This method does not update the current
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
 
 ***
@@ -2339,6 +2442,7 @@ Returns the list of incidents IDs that were modified since the last update time.
 #### Context Output
 
 There is no context output for this command.
+
 ### qradar-offenses
 
 ***
@@ -2352,8 +2456,8 @@ Gets offenses from QRadar.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Query by which to filter offenses. For reference, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named, are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html. | Optional | 
+| filter | Query by which to filter offenses. For reference, consult: <https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named, are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html>. | Optional | 
 | range | Range of results to return. e.g.: 0-20. | Optional | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers). | Optional | 
 
@@ -2401,8 +2505,8 @@ Gets offense with matching offense ID from qradar.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | offense_id | Offense ID. | Required | 
-| filter | Query to filter offense. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html. | Optional | 
+| filter | Query to filter offense. For reference please consult: <https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html>. | Optional | 
 | headers | Table headers to use in the human readable output (if none provided, will show all table headers). | Optional | 
 
 #### Context Output
@@ -2450,7 +2554,7 @@ Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRad
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_expression | The query expressions in AQL (for more information about Ariel Query Language, review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html"). | Required | 
+| query_expression | The query expressions in AQL (for more information about Ariel Query Language, review "<https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html>"). | Required | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers). | Optional | 
 
 #### Context Output
@@ -2520,8 +2624,8 @@ List all assets found in the model.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Query to filter assets. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html. | Optional | 
+| filter | Query to filter assets. For reference please consult: <https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html>. | Optional | 
 | range | Range of results to return. e.g.: 0-20. | Optional | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers). | Optional | 
 
@@ -2598,8 +2702,8 @@ Get closing reasons.
 | --- | --- | --- |
 | include_reserved | If true, reserved closing reasons are included in the response. Possible values are: true, false. Default is true. | Optional | 
 | include_deleted | If true, deleted closing reasons are included in the response. Possible values are: true, false. Default is true. | Optional | 
-| filter | Query to filter results. For reference, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html. | Optional | 
+| filter | Query to filter results. For reference, consult: <https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html>. | Optional | 
 | range | Range of results to return. e.g.: 0-20. | Optional | 
 
 #### Context Output
@@ -2624,7 +2728,7 @@ Retrieve a note for an offense.
 | --- | --- | --- |
 | offense_id | The offense ID to retrieve the note from. | Required | 
 | note_id | The note ID. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html. | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html>. | Optional | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers). | Optional | 
 
 #### Context Output
@@ -2651,7 +2755,7 @@ Create a note on an offense.
 | --- | --- | --- |
 | offense_id | The offense ID to add the note to. | Required | 
 | note_text | The note text. | Required | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html. | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html>. | Optional | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers). | Optional | 
 
 #### Context Output
@@ -2739,6 +2843,7 @@ Deletes a reference set corresponding to the name provided.
 #### Context Output
 
 There is no context output for this command.
+
 ### qradar-create-reference-set-value
 
 ***
@@ -2862,7 +2967,7 @@ Retrieve all Domains.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html. | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html>. | Optional | 
 | range | Number of results in return. | Optional | 
 | filter | Query to filter offenses. | Optional | 
 
@@ -2898,7 +3003,7 @@ Retrieves Domain information By ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of the domain. | Required | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html. | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: <https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html>. | Optional | 
 
 #### Context Output
 
@@ -2942,6 +3047,7 @@ Uploads indicators from Demisto to QRadar.
 #### Context Output
 
 There is no context output for this command.
+
 ### qradar-ips-source-get
 
 ***
@@ -2956,8 +3062,8 @@ Get Source IPs
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | source_ip | Comma separated list. Source IPs to retrieve their data, E.g "1.1.1.1,1.1.1.1". | Optional | 
-| filter | Query to filter IPs. E.g, filter=`source_ip="1.1.1.1"`. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-source_addresses-GET.html. | Optional | 
+| filter | Query to filter IPs. E.g, filter=`source_ip="1.1.1.1"`. For reference please consult: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-source_addresses-GET.html>. | Optional | 
 | range | Range of results to return. e.g.: 0-20. | Optional | 
 
 #### Context Output
@@ -2976,8 +3082,11 @@ Get Source IPs
 | QRadar.SourceIP.LocalDestinationAddressIDs | Unknown | List of local destination address IDs associated with the source address. | 
 
 #### Command example
+
 ```!qradar-ips-source-get filter=`source_ip="1.1.1.1"` range=0-2```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -3004,6 +3113,7 @@ Get Source IPs
 #### Human Readable Output
 
 >### Source IPs
+>
 >|DomainID|EventFlowCount|FirstEventFlowSeen|ID|LastEventFlowSeen|LocalDestinationAddressIDs|Magnitude|Network|OffenseIDs|SourceIP|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 654 | 2023-07-26T14:31:44.753000+00:00 | 31 | 2023-07-26T15:31:06.386000+00:00 | 64 | 0 | Net-10-172-192.Net_192_168_0_0 | 14 | 1.1.1.1 |
@@ -3023,8 +3133,8 @@ Get Source IPs
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | local_destination_ip | Comma separated list. Local destination IPs to retrieve their data, E.g "1.1.1.1,1.1.1.1". | Optional | 
-| filter | Query to filter IPs. E.g, filter=`local_destination_ip="1.1.1.1"` For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-local_destination_addresses-GET.html. | Optional | 
+| filter | Query to filter IPs. E.g, filter=`local_destination_ip="1.1.1.1"` For reference please consult: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: <https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-local_destination_addresses-GET.html>. | Optional | 
 | range | Range of results to return. e.g.: 0-20. | Optional | 
 
 #### Context Output
@@ -3043,10 +3153,13 @@ Get Source IPs
 | QRadar.LocalDestinationIP.SourceAddressIDs | Unknown | List of source address IDs associated with the destination address. | 
 
 #### Command example
+
 ```!qradar-ips-local-destination-get filter=`local_destination_ip="1.1.1.1"````
+
 #### Human Readable Output
 
 >### Local Destination IPs
+>
 >**No entries.**
 
 
@@ -3083,8 +3196,11 @@ Polling command to search for events of a specific offense.
 | QRadar.SearchEvents.Status | Unknown | The status of the search \('wait', 'partial', 'success'\). | 
 
 #### Command example
+
 ```!qradar-search-retrieve-events offense_id=14```
+
 #### Context Example
+
 ```json
 {
     "QRadar": {
@@ -3123,6 +3239,7 @@ Create remote network CIDRs.
 #### Context Output
 
 There is no context output for this command.
+
 ### qradar-remote-network-cidr-list
 
 ***
@@ -3172,6 +3289,7 @@ Deletes an existing staged remote network.
 #### Context Output
 
 There is no context output for this command.
+
 ### qradar-remote-network-cidr-update
 
 ***
@@ -3227,6 +3345,7 @@ Potentially harmful: This API command executes any waiting system deployments in
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QRadar.deploy.status | String | The deployment status \(INITIALIZING, IN_PROGRESS, COMPLETE\). | 
+
 ### qradar-log-source-extensions-list
 
 ***
@@ -3241,8 +3360,8 @@ Retrieves a list of log source extensions.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_extensions-GET.html. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_extensions-GET.html>. | Optional | 
 | id | ID of a specific disconnected log collector. | Optional | 
 
 #### Context Output
@@ -3273,6 +3392,7 @@ Deletes a log source by ID or name. One of the arguments must be provided.
 #### Context Output
 
 There is no context output for this command.
+
 ### qradar-wincollect-destinations-list
 
 ***
@@ -3289,8 +3409,8 @@ In order to get wincollect_external_destination_ids - filter internal=false need
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter wincollect destinations, e.g., "internal=true". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,host". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-wincollect-wincollect_destinations-GET.html. | Optional | 
+| filter | Query by which to filter wincollect destinations, e.g., "internal=true". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,host". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-wincollect-wincollect_destinations-GET.html>. | Optional | 
 | id | ID of a specific WinCollect destination. | Optional | 
 
 #### Context Output
@@ -3329,7 +3449,7 @@ Creates a new log source.
 | coalesce_events | Determines if events collected by this log source are coalesced based on common properties. If each individual event is stored, then the condition is set to false. Defaults to true. | Optional | 
 | enabled | Determines if the log source is enabled. Defaults to true. | Optional | 
 | parsing_order | The order in which log sources will parse if multiples exist with a common identifier. | Optional | 
-| group_ids | The set of log source group IDs this log source is a member of. Each ID must correspond to an existing log source group. The command qradar-log-sources-groups-list can be used to list all available groups. See the Log Source Group API (https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html). | Optional | 
+| group_ids | The set of log source group IDs this log source is a member of. Each ID must correspond to an existing log source group. The command qradar-log-sources-groups-list can be used to list all available groups. See the Log Source Group API (<https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html>). | Optional | 
 | credibility | On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source. | Optional | 
 | store_event_payload | If the payloads of events that are collected by this log source are stored, the condition is set to 'true'. If only the normalized event records are stored, then the condition is set to 'false'. | Optional | 
 | disconnected_log_collector_id | The ID of the disconnected log collector where this log source will run. The ID must correspond to an existing disconnected log collector. | Optional | 
@@ -3376,8 +3496,8 @@ Retrieves a list of log source languages.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_languages-GET.html. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_languages-GET.html>. | Optional | 
 | id | ID of a specific disconnected log collector. | Optional | 
 
 #### Context Output
@@ -3401,8 +3521,8 @@ Retrieves the list of protocol types.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol_parameters". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol_parameters". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html>. | Optional | 
 | id | ID of a specific disconnected log collector. | Optional | 
 
 #### Context Output
@@ -3432,8 +3552,8 @@ Retrieves the list of protocol types.
 | QRadar.LogSourceProtocolType.Parameters.pattern | String | An optional Java regex pattern restriction on the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD. | 
 | QRadar.LogSourceProtocolType.Parameters.pattern_description | String | The description of the pattern of the parameter. | 
 | QRadar.LogSourceProtocolType.Parameters.required | Boolean | If the parameter is mandatory, the condition is set to true; otherwise, the condition is set to false. | 
-| QRadar.LogSourceProtocolType.Parameters.rules.affected_property | String | The affected property. For possible values visit: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html | 
-| QRadar.LogSourceProtocolType.Parameters.rules.affected_property_value | String | The value to be applied to the affected parameter when the rule is triggered. For further info visit: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html | 
+| QRadar.LogSourceProtocolType.Parameters.rules.affected_property | String | The affected property. For possible values visit: <https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html> | 
+| QRadar.LogSourceProtocolType.Parameters.rules.affected_property_value | String | The value to be applied to the affected parameter when the rule is triggered. For further info visit: <https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html> | 
 | QRadar.LogSourceProtocolType.Parameters.rules.parameter_id | Number | The ID of the parameter affected by the rule. | 
 | QRadar.LogSourceProtocolType.Parameters.rules.trigger_parameter_id | Number | The ID of the trigger parameter. | 
 | QRadar.LogSourceProtocolType.Parameters.rules.trigger_pattern | String | The pattern that triggers the rule. For example, if the value of trigger_parameter_id matches the regular expression of this field, the rule triggers. | 
@@ -3457,8 +3577,8 @@ Retrieves a list of disconnected log collectors.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-disconnected_log_collectors-GET.html. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-disconnected_log_collectors-GET.html>. | Optional | 
 | id | ID of a specific disconnected log collector. | Optional | 
 
 #### Context Output
@@ -3496,7 +3616,7 @@ Updates an exising log source.
 | coalesce_events | Determines if events collected by this log source are coalesced based on common properties. If each individual event is stored, then the condition is set to false. Defaults to true. | Optional | 
 | enabled | Determines if the log source is enabled. Defaults to true. | Optional | 
 | parsing_order | The order in which log sources will parse if multiples exist with a common identifier. | Optional | 
-| group_ids | The set of log source group IDs this log source is a member of. Each ID must correspond to an existing log source group. The command qradar-log-sources-groups-list can be used to list all available groups. See the Log Source Group API (https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html). | Optional | 
+| group_ids | The set of log source group IDs this log source is a member of. Each ID must correspond to an existing log source group. The command qradar-log-sources-groups-list can be used to list all available groups. See the Log Source Group API (<https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html>). | Optional | 
 | credibility | On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source. | Optional | 
 | store_event_payload | If the payloads of events that are collected by this log source are stored, the condition is set to 'true'. If only the normalized event records are stored, then the condition is set to 'false'. | Optional | 
 | disconnected_log_collector_id | The ID of the disconnected log collector where this log source will run. The ID must correspond to an existing disconnected log collector. | Optional | 
@@ -3509,6 +3629,7 @@ Updates an exising log source.
 #### Context Output
 
 There is no context output for this command.
+
 ### qradar-log-source-types-list
 
 ***
@@ -3523,8 +3644,8 @@ Retrieves a list of log sources types.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_types-GET.html. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_types-GET.html>. | Optional | 
 | id | ID of a specific disconnected log collector. | Optional | 
 
 #### Context Output
@@ -3540,7 +3661,7 @@ Retrieves a list of log sources types.
 | QRadar.LogSourceTypesList.Name | String | The unique name of the log source type. The name is not localized. | 
 | QRadar.LogSourceTypesList.protocol_types.documented | Boolean | Indicates whether the protocol is documented/fully supported for this log source type. | 
 | QRadar.LogSourceTypesList.protocol_types.protocol_id | Number | ID of the protocol type. | 
-| QRadar.LogSourceTypesList.supported_language_ids | List | The IDs of the languages supported by this log source type. Each ID must correspond to an existing log source language. See the Log Source Language API: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_languages-id-GET.html | 
+| QRadar.LogSourceTypesList.supported_language_ids | List | The IDs of the languages supported by this log source type. Each ID must correspond to an existing log source language. See the Log Source Language API: <https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_languages-id-GET.html> | 
 | QRadar.LogSourceTypesList.uuid | String | A UUID string of the log source type. | 
 | QRadar.LogSourceTypesList.version | String | The log source type plugin version. | 
 
@@ -3558,8 +3679,8 @@ Retrieves a list of log source languages.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-GET.html. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-GET.html>. | Optional | 
 | id | ID of a specific disconnected log collector. | Optional | 
 
 #### Context Output
@@ -3589,8 +3710,8 @@ Retrieves a list of event collectors.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query by which to filter event collectors, e.g., "auto_discovered=false". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-event_collectors-GET.html. | Optional | 
+| filter | Query by which to filter event collectors, e.g., "auto_discovered=false". For reference, see: <https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html>. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  <https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-event_collectors-GET.html>. | Optional | 
 | id | ID of a specific event collector. | Optional | 
 
 #### Context Output

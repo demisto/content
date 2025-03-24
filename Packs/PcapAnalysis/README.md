@@ -6,6 +6,7 @@ The PCAP Analysis playbook is meant to demonstrate the full range of PCAP analys
 ##### What does this pack do?
 
 The script and playbooks included in this pack help you automate repetitive tasks associated with PCAP files:
+
 - Search PCAP files for common objects such as IP addresses, ports, protocols, or custom search filters just like in Wireshark.
 - Search for specific regex patterns with the payload.
 - Parse and extract protocol-specific data for several common protocols such as DNS, HTTP, and many more.
@@ -16,5 +17,6 @@ The script and playbooks included in this pack help you automate repetitive task
 _We encourage you to [learn more about the PCAP Analysis playbook](https://xsoar.pan.dev/docs/reference/playbooks/pcap-analysis)_
 
 ## Demo Video
+
 [![PCAP Analysis in Cortex XSOAR](doc_files/PCAP_Analysis_in_Cortex_XSOAR.jpg)](https://www.youtube.com/watch?v=VDUdBmGuVYQ "PCAP Analysis in Cortex XSOAR")
 

@@ -1,4 +1,5 @@
 OpenPhish uses proprietary Artificial Intelligence algorithms to automatically identify zero-day phishing sites and provide comprehensive, actionable, real-time threat intelligence.
+
 ## Configure OpenPhish_v2 in Cortex
 
 
@@ -10,9 +11,12 @@ OpenPhish uses proprietary Artificial Intelligence algorithms to automatically i
 | insecure | Trust any certificate \(not secure\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### url
+
 ***
 Checks the reputation of a URL.
 
@@ -22,6 +26,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -43,9 +48,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!url using-brand=OpenPhish_v2 url="google.com, hxxp://hang3clip.ddns.net/"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -80,11 +87,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### OpenPhish Database - URL Query
+>
 >#### No matches for URL google.com
+>
 >#### Found matches for given URL hxxp://hang3clip.ddns.net/
 
 
 ### openphish-reload
+
 ***
 Reload OpenPhish database
 
@@ -92,6 +102,7 @@ Reload OpenPhish database
 #### Base Command
 
 `openphish-reload`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -99,6 +110,7 @@ Reload OpenPhish database
 
 
 #### Command Example
+
 ```!openphish-reload```
 
 
@@ -107,6 +119,7 @@ Reload OpenPhish database
 >updated successfully
 
 ### openphish-status
+
 ***
 Show OpenPhish database status
 
@@ -114,6 +127,7 @@ Show OpenPhish database status
 #### Base Command
 
 `openphish-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -125,6 +139,7 @@ Show OpenPhish database status
 There is no context output for this command.
 
 #### Command Example
+
 ```!openphish-status```
 
 

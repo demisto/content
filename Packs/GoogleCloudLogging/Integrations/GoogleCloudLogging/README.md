@@ -23,12 +23,14 @@ Lists log entries. Use this method to retrieve log entries that originated from 
 ##### Required Permissions
 
 This command requires one of the following OAuth scopes:
+
 * `https://www.googleapis.com/auth/logging.read`
 * `https://www.googleapis.com/auth/logging.admin`
 * `https://www.googleapis.com/auth/cloud-platform.read-only`
 * `https://www.googleapis.com/auth/cloud-platform`
     
 The command requires one or more of the following IAM permissions on the specified resource:
+
 * `logging.logEntries.list`
 * `logging.privateLogEntries.list`
 * `logging.views.access`
@@ -100,8 +102,11 @@ The command requires one or more of the following IAM permissions on the specifi
 | GoogleCloudLogging.nextPageToken | String | If there might be more results than those appearing in this response, then nextPageToken is included. | 
 
 #### Command example
+
 ```!gcp-logging-log-entries-list project_name="project_id"```
+
 #### Context Example
+
 ```json
 {
     "GoogleCloudLogging": {
@@ -209,14 +214,18 @@ The command requires one or more of the following IAM permissions on the specifi
 #### Human Readable Output
 
 >### Lists log entries
+>
 >|TimeStamp|Log Name|Insert ID|Principal Email|Type|Project ID|Cluster Name|
 >|---|---|---|---|---|---|---|
->| 2023-05-06T14:39:56.974311Z | logName1 | XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXX | user@example.com | type | project_id | cluster_name |
->| 2023-04-06T14:39:56.974311Z | logName2 | XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXX | user2@example.com | type | project_id | cluster_name |
+>| 2023-05-06T14:39:56.974311Z | logName1 | XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXX | <user@example.com> | type | project_id | cluster_name |
+>| 2023-04-06T14:39:56.974311Z | logName2 | XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXX | <user2@example.com> | type | project_id | cluster_name |
+>
 >### Next page token
+>
 >|nextPageToken|
 >|---|
 >| xxx-xxx |
 
 ## Troubleshooting
+
 If you encounter the following error message: 'Failed to generate/refresh token. Subject email or service account credentials are invalid. Reason: invalid_grant: Invalid JWT Signature.', please ensure that your Service Account JSON, permissions and service account scopes are correct.

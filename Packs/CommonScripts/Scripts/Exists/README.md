@@ -1,6 +1,7 @@
 Checks if a given value exists in the context. The script will return "no" for an empty arrays. This script should be used mostly with DQ and selectors.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Checks if a given value exists in the context. The script will return "no" for a
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ Checks if a given value exists in the context. The script will return "no" for a
 | value | The value to check if it exists. It can handle arrays as well. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

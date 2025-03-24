@@ -6,7 +6,7 @@ This integration was integrated and tested with version August 2024 of Hoxhunt.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://api.hoxhunt.com/graphql-external) |  | True |
+| Server URL (e.g. <https://api.hoxhunt.com/graphql-external>) |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | API Key | Input your api key from Hoxhunt | False |

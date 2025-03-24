@@ -6,7 +6,7 @@ This integration was integrated and tested with version 13.11 of Cyberwatch.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Master scanner URL (e.g. https://192.168.0.1) | The Cyberwatch master scanner URL. | True |
+| Master scanner URL (e.g. <https://192.168.0.1>) | The Cyberwatch master scanner URL. | True |
 | API Access key | See the Cyberwatch documentation for instructions to generate the API access and secret keys. | True |
 | API Secret key | See the Cyberwatch documentation for instructions to generate the API access and secret keys. | True |
 | Trust any certificate (not secure) |  | False |
@@ -56,8 +56,11 @@ Get a list of CVEs from Cyberwatch.
 | Cyberwatch.CVE.last_modified | date | CVE last modification date | 
 
 #### Command example
+
 ```!cyberwatch-list-cves page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -236,6 +239,7 @@ Get a list of CVEs from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVEs
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|
 >|---|---|---|---|---|---|---|---|
 >| CVE-2014-7552 | The Zombie Diary (aka com.ezjoy.feelingtouch.zombiediary)... | 2014-10-20T08:55:10 | 2014-11-14T13:13:46 | level_medium | 5.4 | 0.00049 |  |
@@ -246,8 +250,11 @@ Get a list of CVEs from Cyberwatch.
 
 
 #### Command example
+
 ```!cyberwatch-list-cves prioritized=true page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -521,6 +528,7 @@ Get a list of CVEs from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVEs
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|
 >|---|---|---|---|---|---|---|---|
 >| CVE-2020-15683 | Mozilla developers and community members... | 2020-10-22T19:15:13 | 2022-04-28T16:24:03 | level_critical | 9.8 | 0.01033 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_none<br/>***scope***: scope_unchanged<br/>***confidentiality_impact***: confidentiality_impact_high<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_high |
@@ -531,8 +539,11 @@ Get a list of CVEs from Cyberwatch.
 
 
 #### Command example
+
 ```!cyberwatch-list-cves exploit_code_maturity[]=functional,high access_vector[]=access_vector_physical,access_vector_network active=true level=level_critical ignored=false page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -772,6 +783,7 @@ Get a list of CVEs from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVEs
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|
 >|---|---|---|---|---|---|---|---|
 >| CVE-2018-13382 | An Improper Authorization vulnerability... | 2019-06-04T19:29:00 | 2021-06-03T09:15:08 | level_critical | 9.1 | 0.89131 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_none<br/>***scope***: scope_unchanged<br/>***confidentiality_impact***: confidentiality_impact_high<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_none |
@@ -782,8 +794,11 @@ Get a list of CVEs from Cyberwatch.
 
 
 #### Command example
+
 ```!cyberwatch-list-cves page=1 per_page=5 groups[]=ENV_PRODUCTION,Cloud active=true ignored=false prioritized=true```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -1069,6 +1084,7 @@ Get a list of CVEs from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVEs
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|
 >|---|---|---|---|---|---|---|---|
 >| CVE-2021-26411 | Internet Explorer Memory Corruption Vulnerability | 2021-03-11T15:15:13 | 2023-12-29T16:15:59 | level_high | 8.8 | 0.04096 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_required<br/>***scope***: scope_changed<br/>***confidentiality_impact***: confidentiality_impact_low<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_low |
@@ -1079,8 +1095,11 @@ Get a list of CVEs from Cyberwatch.
 
 
 #### Command example
+
 ```!cyberwatch-list-cves exploit_code_maturity[]=high,functional technology_vendor=openbsd technology_product=openssh page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -1265,6 +1284,7 @@ Get a list of CVEs from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVEs
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|
 >|---|---|---|---|---|---|---|---|
 >| CVE-2012-0814 | The auth_parse_options function in auth-options... | 2012-01-27T18:55:01 | 2023-11-07T01:10:02 | level_low | 3.5 | 0.00285 |  |
@@ -1275,8 +1295,11 @@ Get a list of CVEs from Cyberwatch.
 
 
 #### Command example
+
 ```!cyberwatch-list-cves exploit_code_maturity[]=high,functional technology_vendor=openbsd technology_product=openssh page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -1321,6 +1344,7 @@ Get a list of CVEs from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVEs
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|
 >|---|---|---|---|---|---|---|---|
 >| CVE-2014-7552 | The Zombie Diary... | 2014-10-20T08:55:10 | 2014-11-14T13:13:46 | level_medium | 5.4 | 0.00049 |  |
@@ -1353,8 +1377,11 @@ Get all details for a CVE from Cyberwatch.
 | Cyberwatch.CVE.last_modified | date | CVE last modification date | 
 
 #### Command example
+
 ```!cyberwatch-fetch-cve cve_code=CVE-2024-21413```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -1533,6 +1560,7 @@ Get all details for a CVE from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVE
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|servers_count|security_announcements_count|
 >|---|---|---|---|---|---|---|---|---|---|
 >| CVE-2024-21413 | Microsoft Outlook Remote Code Execution Vulnerability | 2024-02-13T17:16:00 | 2024-05-28T22:15:34 | level_critical | 9.8 | 0.00586 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_none<br/>***scope***: scope_unchanged<br/>***confidentiality_impact***: confidentiality_impact_high<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_high | 2 | 2 |
@@ -1578,8 +1606,11 @@ Get a list of assets scanned by Cyberwatch.
 | Cyberwatch.Asset.reboot_required | boolean | Asset reboot requirement | 
 
 #### Command example
+
 ```!cyberwatch-list-assets page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -1817,6 +1848,7 @@ Get a list of assets scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Assets
+>
 >|id|hostname|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 912 | ip-192-168-0-214 | None | server | 2020-11-10T15:36:29 | Ubuntu 14.04 LTS | High | ***values***: ENV_PRODUCTION, Sentinelo, auditeur, APP_Apache, LINUX  | 0 | 0 | 0 | ***values***:  |
@@ -1827,8 +1859,11 @@ Get a list of assets scanned by Cyberwatch.
 
 
 #### Command example
+
 ```!cyberwatch-list-assets environment_id=27 page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -1932,6 +1967,7 @@ Get a list of assets scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Assets
+>
 >|id|hostname|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1548 | Siemens Rapidlab 1200 | None | industrial_device | 2022-10-19T09:50:02 | Siemens | Actif isolé critique | ***values***: Sante | 2 | 0 | 1 | ***values***:  |
@@ -1939,8 +1975,11 @@ Get a list of assets scanned by Cyberwatch.
 
 
 #### Command example
+
 ```!cyberwatch-list-assets reboot_required=true communication_failed=false page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -2166,6 +2205,7 @@ Get a list of assets scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Assets
+>
 >|id|hostname|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1187 | ip-192-168-0-39 | True | server | 2019-02-11T09:15:01 | Ubuntu 18.04 LTS | Low | ***values***: ENV_PRODUCTION, LINUX  | 1167 | 9 | 217 | ***values***:  |
@@ -2176,8 +2216,11 @@ Get a list of assets scanned by Cyberwatch.
 
 
 #### Command example
+
 ```!cyberwatch-list-assets hostname=WIN-GNVEC8UIKUD page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -2285,6 +2328,7 @@ Get a list of assets scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Assets
+>
 >|id|hostname|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1197 | WIN-GNVEC8UIKUD | False | server | 2019-09-13T09:14:34 | Windows Server 2012 R2 | High | ***values***: APP_Apache, APP_BaseDeDonnees, AmazonWebServices | 1699 | 645 | 9 | ***values***:  |
@@ -2292,8 +2336,11 @@ Get a list of assets scanned by Cyberwatch.
 
 
 #### Command example
+
 ```!cyberwatch-list-assets address=127.0.0.1 page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -2524,6 +2571,7 @@ Get a list of assets scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Assets
+>
 >|id|hostname|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1188 | MacBook-Pro.local | False | desktop | 2019-05-16T14:29:20 | Mac OS X | Low | ***values***: Direction_Comm | 3966 | 86 | 19 | ***values***:  |
@@ -2534,8 +2582,11 @@ Get a list of assets scanned by Cyberwatch.
 
 
 #### Command example
+
 ```!cyberwatch-list-assets os=windows_2008_r2 category=server group_id=768 page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -2587,6 +2638,7 @@ Get a list of assets scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Assets
+>
 >|id|hostname|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1200 | WIN-IUVBSL1UF49 | False | server | 2019-09-21T12:56:28 | Windows Server 2008 R2 | Low | ***values***: AmazonWebServices | 1800 | 66 | 12 | ***values***:  |
@@ -2622,8 +2674,11 @@ Get security details for an asset scanned by Cyberwatch.
 | Cyberwatch.Asset.reboot_required | boolean | Asset reboot requirement | 
 
 #### Command example
+
 ```!cyberwatch-fetch-asset id=1206```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -2825,6 +2880,7 @@ Get security details for an asset scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Asset
+>
 >|id|hostname|description|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1206 | vps418658 | None | False | server | 2020-11-03T10:25:01 | Debian 10 (Buster) | Privacy | ***values***: 0_Compliance, demonstration, LINUX  | 898 | 117 | 127 | ***values***: Security_Best_Practices |
@@ -2859,8 +2915,11 @@ Get all details for an asset scanned by Cyberwatch, including packages, ports, s
 | Cyberwatch.Asset.reboot_required | boolean | Asset reboot requirement | 
 
 #### Command example
+
 ```!cyberwatch-fetch-asset-fulldetails id=1206```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -3041,6 +3100,7 @@ Get all details for an asset scanned by Cyberwatch, including packages, ports, s
 #### Human Readable Output
 
 ### Cyberwatch Asset
+
 |id|hostname|description|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|packages_count|metadata_count|services_count|ports_count|connector_type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1206 | vps418658 | None | False | server | 2020-11-03T10:25:01 | Debian 10 (Buster) | Privacy | ***values***: 0_Compliance, demonstration, LINUX  | 898 | 117 | 127 | ***values***: Security_Best_Practices | 312 | 0 | 0 | 0 | Agent |
@@ -3075,8 +3135,11 @@ Get a list of Security issues from Cyberwatch.
 | Cyberwatch.SecurityIssue.editable | boolean | Security Issue editability | 
 
 #### Command example
+
 ```!cyberwatch-list-securityissues page=1 per_page=5 level=level_critical```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -3104,6 +3167,7 @@ Get a list of Security issues from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Security Issues
+>
 >|id|sid|level|title|description|
 >|---|---|---|---|---|
 >| 42 | Pentest-2020-01 | level_critical | Capacité à faire une injection SQL |  |
@@ -3114,8 +3178,11 @@ Get a list of Security issues from Cyberwatch.
 
 
 #### Command example
+
 ```!cyberwatch-list-securityissues sid=WSTG-INPV-05 page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -3134,6 +3201,7 @@ Get a list of Security issues from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Security Issues
+>
 >|id|sid|level|title|description|
 >|---|---|---|---|---|
 >| 47 | WSTG-INPV-05 | level_critical | SQL Injection | An SQL injection attack ... |
@@ -3166,8 +3234,11 @@ Get all details for a Security issue from Cyberwatch.
 | Cyberwatch.SecurityIssue.editable | boolean | Security Issue editability | 
 
 #### Command example
+
 ```!cyberwatch-fetch-securityissue id=47```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -3201,6 +3272,7 @@ Get all details for a Security issue from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Security Issue
+>
 >|id|sid|title|description|servers_count|cve_announcements_count|
 >|---|---|---|---|---|---|
 >| 47 | WSTG-INPV-05 | SQL Injection | An SQL injection attack... |  |  |

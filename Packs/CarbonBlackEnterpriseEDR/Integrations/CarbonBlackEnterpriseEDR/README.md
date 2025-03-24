@@ -1,16 +1,18 @@
 ## Overview
+
 ---
 
 VMware Carbon Black Enterprise EDR is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter)
 
 ## Configure VMware Carbon Black Enterprise EDR on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ \> __Integrations__ \> __Servers & Services__.
 2. Search for VMware Carbon Black Enterprise EDR.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Server URL (e.g. https://defense.conferdeploy.net)__
+    * __Server URL (e.g. <https://defense.conferdeploy.net>)__
     * __Organization Key__
     * __Custom Key__
     * __Custom ID__
@@ -23,9 +25,11 @@ VMware Carbon Black Enterprise EDR is an advanced threat hunting and incident re
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. cb-eedr-alert-workflow-update
 2. cb-eedr-device-quarantine
 3. cb-eedr-device-unquarantine
@@ -61,17 +65,23 @@ After you successfully execute a command, a DBot message appears in the War Room
 33. cb-eedr-process-search
 34. cb-eedr-events-by-process-get
 35. cb-eedr-process-search-results
+
 ### 1. cb-eedr-alert-workflow-update
+
 ---
 Updates the workflow of a single event.
+
 ##### Required Permissions
+
 RBAC Permissions Required - org.alerts.dismiss: EXECUTE
+
 ##### Base Command
 
 `cb-eedr-alert-workflow-update`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | alert_id | The ID of the alert to update. Get the ID from list_alerts command. | Required | 
 | status | Workflow status to update. | Optional | 
@@ -87,7 +97,7 @@ RBAC Permissions Required - org.alerts.dismiss: EXECUTE
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Alert.AlertID | String | The alert ID. | 
 | CarbonBlackEEDR.Alert.ChangedBy | String | User that changed the ID. | 
@@ -98,9 +108,11 @@ RBAC Permissions Required - org.alerts.dismiss: EXECUTE
 
 
 ##### Command Example
+
 ```!cb-eedr-alert-workflow-update alert_id=A28C720DCBCD66333A624893AB1E0FE9 status=open```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.Alert": {
@@ -115,23 +127,30 @@ RBAC Permissions Required - org.alerts.dismiss: EXECUTE
 ```
 
 ##### Human Readable Output
+
 ### Successfully updated the alert: "A28C720DCBCD66333A624893AB1E0FE9"
+
 |changed_by|last_update_time|state|
 |---|---|---|
 | ATL5Y9DR4B | 2020-05-26T13:33:12.890Z | OPEN |
 
 
 ### 2. cb-eedr-device-quarantine
+
 ---
 Quarantines a device.
+
 ##### Required Permissions
+
 RBAC Permissions Required - device.quarantine: EXECUTE
+
 ##### Base Command
 
 `cb-eedr-device-quarantine`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | device_id | The devices on which to perform the action. Get the ID from the devices-list command. Supports comma-separated values. | Required | 
 
@@ -141,22 +160,29 @@ RBAC Permissions Required - device.quarantine: EXECUTE
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-device-quarantine device_id="1225783"```
 
 ##### Human Readable Output
+
 The device ['1225783'] has been quarantined successfully.
 
 ### 3. cb-eedr-device-unquarantine
+
 ---
 Removes a device from quarantine.
+
 ##### Required Permissions
+
 RBAC Permissions Required - device.quarantine: EXECUTE
+
 ##### Base Command
 
 `cb-eedr-device-unquarantine`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | device_id | The devices on which to perform the action. Get the ID from the devices-list command. Supports comma-separated values. | Required | 
 
@@ -166,22 +192,29 @@ RBAC Permissions Required - device.quarantine: EXECUTE
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-device-unquarantine device_id="1225783"```
 
 ##### Human Readable Output
+
 The device ['1225783'] has been unquarantined successfully.
 
 ### 4. cb-eedr-device-background-scan-stop
+
 ---
 Stops a background scan on the specified devices.
+
 ##### Required Permissions
+
 RBAC Permissions Required - device.bg-scan: EXECUTE
+
 ##### Base Command
 
 `cb-eedr-device-background-scan-stop`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | device_id | The device ID. Get the ID from the devices-list command. Supports comma-separated values. | Required | 
 
@@ -191,22 +224,29 @@ RBAC Permissions Required - device.bg-scan: EXECUTE
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-device-background-scan-stop device_id="1225783"```
 
 ##### Human Readable Output
+
 The device ['1225783'] background scan has been disabled successfully.
 
 ### 5. cb-eedr-device-background-scan
+
 ---
 Start a background scan on device.
+
 ##### Required Permissions
+
 RBAC Permissions Required - device.bg-scan: EXECUTE
+
 ##### Base Command
 
 `cb-eedr-device-background-scan`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | device_id | The device ID. Get the ID from the devices-list command. Supports comma-separated values. | Required | 
 
@@ -216,22 +256,29 @@ RBAC Permissions Required - device.bg-scan: EXECUTE
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-device-background-scan device_id="1225783"```
 
 ##### Human Readable Output
+
 The device ['1225783'] background scan has been enabled successfully.
 
 ### 6. cb-eedr-device-bypass
+
 ---
 Enable a bypass on device.
+
 ##### Required Permissions
+
 RBAC Permissions Required - device.bypass: EXECUTE
+
 ##### Base Command
 
 `cb-eedr-device-bypass`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | device_id | The device ID. Get the ID from the devices-list command. Support comma-separated values. | Required | 
 
@@ -241,22 +288,29 @@ RBAC Permissions Required - device.bypass: EXECUTE
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-device-bypass device_id="1225783"```
 
 ##### Human Readable Output
+
 The device ['1225783'] bypass has been enabled successfully.
 
 ### 7. cb-eedr-device-unbypass
+
 ---
 Disable a bypass on device.
+
 ##### Required Permissions
+
 RBAC Permissions Required - device.bypass: EXECUTE
+
 ##### Base Command
 
 `cb-eedr-device-unbypass`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | device_id | The device ID. Get the ID from the devices-list command. Support comma-separated values. | Required | 
 
@@ -266,22 +320,29 @@ RBAC Permissions Required - device.bypass: EXECUTE
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-device-unbypass device_id="1225783"```
 
 ##### Human Readable Output
+
 The device ['1225783'] bypass has been disabled successfully.
 
 ### 8. cb-eedr-device-policy-update
+
 ---
 Update device policy.
+
 ##### Required Permissions
+
 RBAC Permissions Required - device.policy: EXECUTE
+
 ##### Base Command
 
 `cb-eedr-device-policy-update`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | device_id | The device ID. Get the ID from the devices-list command. Support comma-separated values. | Required | 
 | policy_id | The policy ID. | Required | 
@@ -292,22 +353,29 @@ RBAC Permissions Required - device.policy: EXECUTE
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-device-policy-update device_id=1225783 policy_id=12064```
 
 ##### Human Readable Output
+
 The policy 12064 has been assigned to device ['1225783'] successfully.
 
 ### 9. cb-eedr-devices-list
+
 ---
 List devices based on the search query.
+
 ##### Required Permissions
+
 RBAC Permissions Required - device: READ
+
 ##### Base Command
 
 `cb-eedr-devices-list`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | device_id | The device ID. Supports comma-separated values. | Optional | 
 | status | The device status. Supports comma-separated values. | Optional | 
@@ -324,7 +392,7 @@ RBAC Permissions Required - device: READ
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Device.sensor_out_of_date | Boolean | Is the device sensor out of date. | 
 | CarbonBlackEEDR.Device.vdi_base_device | String | vdi base device. | 
@@ -380,9 +448,11 @@ RBAC Permissions Required - device: READ
 
 
 ##### Command Example
+
 ```!cb-eedr-devices-list```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.Device": [
@@ -473,7 +543,9 @@ RBAC Permissions Required - device: READ
 ```
 
 ##### Human Readable Output
+
 ### Devices list results
+
 |ID|LastContactTime|LastExternalIpAddress|LastInternalIpAddress|LastLocation|Name|OS|PolicyName|Quarantined|TargetPriority|status|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1244290 | 2020-05-26T13:32:36.272Z | 2.2.2.2 | 3.3.3.3 | OFFSITE | DESKTOP-ABCND73 | WINDOWS | test | false | HIGH | REGISTERED |
@@ -481,16 +553,21 @@ RBAC Permissions Required - device: READ
 | 5425783 | 2020-05-26T13:32:23.788Z | 8.8.8.8 | 10.10.10.10 | OFFSITE | Alphab-Win10-VM-1 | WINDOWS | test | false | HIGH | REGISTERED |
 
 ### 10. cb-eedr-list-alerts
+
 ---
 Returns a list of alerts.
+
 ##### Required Permissions
+
 RBAC Permissions Required - org.alerts: READ
+
 ##### Base Command
 
 `cb-eedr-list-alerts`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | minimum_severity | Alert minimum severity. | Optional | 
 | device_os_version | Device OS version. Supports comma-separated values. | Optional | 
@@ -515,7 +592,7 @@ RBAC Permissions Required - org.alerts: READ
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Alert.threat_id | String | Threat ID. | 
 | CarbonBlackEEDR.Alert.first_event_time | Date | First event time. | 
@@ -565,9 +642,11 @@ RBAC Permissions Required - org.alerts: READ
 
 
 ##### Command Example
+
 ```!cb-eedr-list-alerts```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.Alert": [
@@ -638,7 +717,9 @@ RBAC Permissions Required - org.alerts: READ
 ```
 
 ##### Human Readable Output
+
 ### Alerts list results
+
 |AlertID|CreateTime|DeviceID|DeviceName|DeviceOS|PolicyName|ProcessName|Type|WorkflowState|
 |---|---|---|---|---|---|---|---|---|
 | ED0C9E6AE0C0E631FABC7E145CE036A5 | 2020-05-13T13:31:15.024Z | 1234242 | DESKTOP-AB3H40D | WINDOWS | test1 | 067f1b8f1e0b2bfe286f5169e17834e8cf7f4123b8d97f28ea78995dc81b0e7b.exe | WATCHLIST | DISMISSED |
@@ -646,22 +727,27 @@ RBAC Permissions Required - org.alerts: READ
 
 
 ### 11. cb-eedr-watchlist-list
+
 ---
 Retrieves all watchlists.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: READ
+
 ##### Base Command
 
 `cb-eedr-watchlist-list`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Watchlist.classifier | String | Watchlist classifier. | 
 | CarbonBlackEEDR.Watchlist.last_update_timestamp | Date | Watchlist last updated timestamp. | 
@@ -674,9 +760,11 @@ RBAC Permissions Required - threathunter.watchlists: READ
 
 
 ##### Command Example
+
 ```!cb-eedr-watchlist-list```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.Watchlist": [
@@ -738,7 +826,9 @@ RBAC Permissions Required - threathunter.watchlists: READ
 ```
 
 ##### Human Readable Output
+
 ### Carbon Black Enterprise EDR Watchlists
+
 |ID|Name|Description|create_timestamp|Alerts_enabled|Tags_enabled|Report_ids|Last_update_timestamp|Classifier|
 |---|---|---|---|---|---|---|---|---|
 | AjQoLZwJRYu4oPC22YpepQ | test watchlist2 |  | 2020-05-26T13:27:44.000Z | true | true | A59huyinQSmAr8t1a2hpg | 2020-05-26T13:27:44.000Z |  |
@@ -749,23 +839,28 @@ RBAC Permissions Required - threathunter.watchlists: READ
 
 
 ### 12. cb-eedr-get-watchlist-by-id
+
 ---
 Gets watchlist information by  watchlist ID.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: READ
+
 ##### Base Command
 
 `cb-eedr-get-watchlist-by-id`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | watchlist_id | The watchlist ID. Get the ID from the watchlist-list command. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Watchlist.classifier | String | Watchlist classifier. | 
 | CarbonBlackEEDR.Watchlist.last_update_timestamp | Date | Watchlist last updated timestamp. | 
@@ -779,9 +874,11 @@ RBAC Permissions Required - threathunter.watchlists: READ
 
 
 ##### Command Example
+
 ```!cb-eedr-get-watchlist-by-id watchlist_id="JI5wCDVTPGEgbWlDCoGgQ"```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.Watchlist": {
@@ -801,23 +898,30 @@ RBAC Permissions Required - threathunter.watchlists: READ
 ```
 
 ##### Human Readable Output
+
 ### Watchlist JI5wCDVTPGEgbWlDCoGgQ information
+
 |ID|Name|Description|create_timestamp|Alerts_enabled|Tags_enabled|Report_ids|Last_update_timestamp|
 |---|---|---|---|---|---|---|---|
 | JI5wCDVTPGEgbWlDCoGgQ | test watchlist1 | test description | 1970-01-19T03:38:34.000Z | true | false | A59huyinQSmAr8t1a2hpg | 1970-01-19T09:29:39.000Z |
 
 
 ### 13. cb-eedr-watchlist-alerts-status
+
 ---
 Retrieves the alert status for the watchlist with given watchlist ID.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: READ
+
 ##### Base Command
 
 `cb-eedr-watchlist-alerts-status`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | watchlist_id | The watchlist ID. Get the ID from the watchlist-list command. | Required | 
 
@@ -827,22 +931,29 @@ RBAC Permissions Required - threathunter.watchlists: READ
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-watchlist-alerts-status watchlist_id=AiyyP5o1T6ia2LGBIuZtg```
 
 ##### Human Readable Output
+
 Watchlist AiyyP5o1T6ia2LABIuZtg alert status is On
 
 ### 14. cb-eedr-watchlist-alerts-enable
+
 ---
 Turns on alerts for the watchlist with the specified watchlist ID.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: READ
+
 ##### Base Command
 
 `cb-eedr-watchlist-alerts-enable`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | watchlist_id | The watchlist ID. Get the ID from the watchlist-list command. | Required | 
 
@@ -852,22 +963,29 @@ RBAC Permissions Required - threathunter.watchlists: READ
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-watchlist-alerts-enable watchlist_id=AiyyP5o1T6ia2LABIuZtg```
 
 ##### Human Readable Output
+
 Watchlist AiyyP5o1T6ia2LABIuZtg alert was enabled successfully.
 
 ### 15. cb-eedr-watchlist-alerts-disable
+
 ---
 Turns off alerts for the watchlist with the specified watchlist ID.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: READ
+
 ##### Base Command
 
 `cb-eedr-watchlist-alerts-disable`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | watchlist_id | The watchlist ID. Get the ID from the watchlist-list command. | Required | 
 
@@ -877,22 +995,29 @@ RBAC Permissions Required - threathunter.watchlists: READ
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-watchlist-alerts-disable watchlist_id=AiyyP5o1T6ia2LABIuZtg```
 
 ##### Human Readable Output
+
 Watchlist AiyyP5o1T6ia2LABIuZtg alert was disabled successfully.
 
 ### 16. cb-eedr-watchlist-create
+
 ---
 Creates a new report or classifier watchlist.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: CREATE
+
 ##### Base Command
 
 `cb-eedr-watchlist-create`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | watchlist_name | The name of the watchlist. | Required | 
 | description | The watchlist description. | Optional | 
@@ -905,7 +1030,7 @@ RBAC Permissions Required - threathunter.watchlists: CREATE
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Watchlist.Classifier | String | The watchlist classifier. | 
 | CarbonBlackEEDR.Watchlist.Last_update_timestamp | Date | Watchlist last updated timestamp. | 
@@ -919,9 +1044,11 @@ RBAC Permissions Required - threathunter.watchlists: CREATE
 
 
 ##### Command Example
+
 ```!cb-eedr-watchlist-create watchlist_name="test watchlist3" alerts_enabled=false tags_enabled=false report_ids=A59huyinQSmAr8t1a2hpg```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.Watchlist": {
@@ -940,23 +1067,30 @@ RBAC Permissions Required - threathunter.watchlists: CREATE
 ```
 
 ##### Human Readable Output
+
 ### The watchlist "test watchlist3" created successfully.
+
 |Name|ID|Create_timestamp|Tags_enabled|Alerts_enabled|Report_ids|
 |---|---|---|---|---|---|
 | test watchlist3 | Bz4PlP5RSiGLvekCLbC0A | 2020-05-26T13:33:19.000Z | true | true | A59huyinQSmAr8t1a2hpg |
 
 
 ### 17. cb-eedr-watchlist-delete
+
 ---
 Removes the specified watchlist.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: DELETE
+
 ##### Base Command
 
 `cb-eedr-watchlist-delete`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | watchlist_id | The watchlist ID to remove. Get the ID from the watchlist-list command. | Required | 
 
@@ -966,22 +1100,29 @@ RBAC Permissions Required - threathunter.watchlists: DELETE
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-watchlist-delete watchlist_id=AjQoLZwJRYu4oPC22YpepQ```
 
 ##### Human Readable Output
+
 The watchlist AjQoLZwJRYu4oPC22YpepQ was deleted successfully.
 
 ### 18. cb-eedr-watchlist-update
+
 ---
 Updates the specified watchlist. This will update the tags and alert status as well as any reports or classifiers attached to the watchlist.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: UPDATE
+
 ##### Base Command
 
 `cb-eedr-watchlist-update`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | watchlist_id | The watchlist ID to update. | Required | 
 | watchlist_name | The watchlist name. | Optional | 
@@ -995,7 +1136,7 @@ RBAC Permissions Required - threathunter.watchlists: UPDATE
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Watchlist.Classifier | String | The watchlist classifier. | 
 | CarbonBlackEEDR.Watchlist.Last_update_timestamp | Date | Watchlist last update timestamp. | 
@@ -1009,9 +1150,11 @@ RBAC Permissions Required - threathunter.watchlists: UPDATE
 
 
 ##### Command Example
+
 ```!cb-eedr-watchlist-update watchlist_id=2Bge40iPRCachAa1oYqMkA alerts_enabled=true watchlist_name="new name"```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.Watchlist": {
@@ -1028,30 +1171,37 @@ RBAC Permissions Required - threathunter.watchlists: UPDATE
 ```
 
 ##### Human Readable Output
+
 ### The watchlist "2Bge40iPRCachAa1oYqMkA" was updated successfully.
+
 |Name|ID|Create_timestamp|Tags_enabled|Alerts_enabled|
 |---|---|---|---|---|
 | new name | 2Bge40iPRCachAa1oYqMkA | 2020-05-13T14:39:43.000Z | false | true |
 
 
 ### 19. cb-eedr-report-get
+
 ---
 Retrieves the specified report.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: READ
+
 ##### Base Command
 
 `cb-eedr-report-get`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | report_id | The report ID. Get the ID from the watchlist-list command. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Report.Visibility | String | Report visibility. | 
 | CarbonBlackEEDR.Report.Title | String | Report title. | 
@@ -1065,9 +1215,11 @@ RBAC Permissions Required - threathunter.watchlists: READ
 
 
 ##### Command Example
+
 ```!cb-eedr-report-get report_id="A59huyinQSmAr8t1a2hpg"```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.Report": {
@@ -1124,11 +1276,15 @@ RBAC Permissions Required - threathunter.watchlists: READ
 ```
 
 ##### Human Readable Output
+
 ### Report "A59huyinQSmAr8t1a2hpg" information
+
 |ID|Title|Timestamp|Severity|Tags|
 |---|---|---|---|---|
 | A59huyinQSmAr8t1a2hpg | badfile.exe.exe | 1970-01-19T06:40:07.000Z | 8 | SAMPLE |
+
 ### The IOCs for the report
+
 |ID|Match_type|Values|
 |---|---|---|
 | 860ececb-2a2e-4dc5-bdbd-f6f45657cf7c | query | (process_name:chrome.exe) |
@@ -1138,16 +1294,21 @@ RBAC Permissions Required - threathunter.watchlists: READ
 
 
 ### 20. cb-eedr-ioc-ignore-status
+
 ---
 Gets the current ignore status for IOC ioc_id in report report_id.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: READ
+
 ##### Base Command
 
 `cb-eedr-ioc-ignore-status`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | report_id | Report ID. Get the ID from the watchlist-list command. | Required | 
 | ioc_id | IOC ID. Get the ID from get_report command | Required | 
@@ -1158,22 +1319,29 @@ RBAC Permissions Required - threathunter.watchlists: READ
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-ioc-ignore-status ioc_id=860ececb-2a2e-4dc5-bdbd-f6f45657cf7c report_id=A59huyinQSmAr8t1a2hpg```
 
 ##### Human Readable Output
+
 IOC 860ececb-2a2e-4dc5-bdbd-f6f45657cf7c status is false
 
 ### 21. cb-eedr-ioc-ignore
+
 ---
 IOC ioc_id for report report_id will not match future events for any watchlist.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: UPDATE
+
 ##### Base Command
 
 `cb-eedr-ioc-ignore`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | report_id | Report ID. Get the ID from the watchlist-list command. | Required | 
 | ioc_id | IOC ID. Get the ID from get_report command. | Required | 
@@ -1184,22 +1352,29 @@ RBAC Permissions Required - threathunter.watchlists: UPDATE
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-ioc-ignore ioc_id=860ececb-2a2e-4dc5-bdbd-f6f45657cf7c report_id=A59huyinQSmAr8t1a2hpg```
 
 ##### Human Readable Output
+
 The IOC 860ececb-2a2e-4dc5-bdbd-f6f45657cf7c for report A59huyinQSmAr8t1a2hpg will not match future events for any watchlist.
 
 ### 22. cb-eedr-ioc-reactivate
+
 ---
 IOC ioc_id for report report_id will match future events for all watchlists.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: DELETE
+
 ##### Base Command
 
 `cb-eedr-ioc-reactivate`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | report_id | Report ID. Get the ID from the watchlist-list command. | Required | 
 | ioc_id | IOC ID. Get the ID from get_report command | Required | 
@@ -1210,22 +1385,29 @@ RBAC Permissions Required - threathunter.watchlists: DELETE
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-ioc-reactivate ioc_id=860ececb-2a2e-4dc5-bdbd-f6f45657cf7c report_id=A59huyinQSmAr8t1a2hpg```
 
 ##### Human Readable Output
+
 IOC 860ececb-2a2e-4dc5-bdbd-f6f45657cf7c for report A59huyinQSmAr8t1a2hpg will match future events for all watchlists.
 
 ### 23. cb-eedr-report-ignore
+
 ---
 Report with report_id and all contained IOCs will not match future events for any watchlist.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: UPDATE
+
 ##### Base Command
 
 `cb-eedr-report-ignore`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | report_id | The report ID. Get the ID from the watchlist-list command. | Required | 
 
@@ -1235,22 +1417,29 @@ RBAC Permissions Required - threathunter.watchlists: UPDATE
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-report-ignore report_id=A59huyinQSmAr8t1a2hpg```
 
 ##### Human Readable Output
+
 The report with report_id "A59huyinQSmAr8t1a2hpg" and all contained IOCs will not match future events for any watchlist.
 
 ### 24. cb-eedr-report-reactivate
+
 ---
 Report with report_id and all contained IOCs will match future events for all watchlists.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: DELETE
+
 ##### Base Command
 
 `cb-eedr-report-reactivate`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | report_id | The report ID. Get the ID from the watchlist-list command. | Required | 
 
@@ -1260,22 +1449,29 @@ RBAC Permissions Required - threathunter.watchlists: DELETE
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-report-reactivate report_id=qtcpqJwuRjaFZWjAT8zhqQ```
 
 ##### Human Readable Output
+
 Report with report_id "qtcpqJwuRjaFZWjAT8zhqQ" and all contained IOCs will match future events for all watchlists
 
 ### 25. cb-eedr-report-ignore-status
+
 ---
 Get current ignore status for report with report_id.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: READ
+
 ##### Base Command
 
 `cb-eedr-report-ignore-status`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | report_id | The report ID. Get the ID from the watchlist-list command. | Required | 
 
@@ -1285,22 +1481,29 @@ RBAC Permissions Required - threathunter.watchlists: READ
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-report-ignore-status report_id=A59huyinQSmAr8t1a2hpg```
 
 ##### Human Readable Output
+
 ignore status for report with report_id "A59huyinQSmAr8t1a2hpg" is enabled.
 
 ### 26. cb-eedr-report-remove
+
 ---
 Remove report with report_id.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: DELETE
+
 ##### Base Command
 
 `cb-eedr-report-remove`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | report_id | The report ID to remove. Get the ID from the watchlist-list command. | Required | 
 
@@ -1310,22 +1513,29 @@ RBAC Permissions Required - threathunter.watchlists: DELETE
 There is no context output for this command.
 
 ##### Command Example
+
 ```!cb-eedr-report-remove report_id=A59huyinQSmAr8t1a2hpg ```
 
 ##### Human Readable Output
+
 The report "A59huyinQSmAr8t1a2hpg" was deleted successfully.
 
 ### 27. cb-eedr-report-create
+
 ---
 Adds a new watchlist report.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: CREATE
+
 ##### Base Command
 
 `cb-eedr-report-create`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | title | The report title. | Required | 
 | description | The report description. | Required | 
@@ -1341,7 +1551,7 @@ RBAC Permissions Required - threathunter.watchlists: CREATE
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Report.ID | String | The report ID. | 
 | CarbonBlackEEDR.Report.IOCs | String | The report IOCs | 
@@ -1355,9 +1565,11 @@ RBAC Permissions Required - threathunter.watchlists: CREATE
 
 
 ##### Command Example
+
 ```!cb-eedr-report-create title="Report test" description="Testing new report creation" tags="one,two,three" severity="5" ipv4="2.2.2.2,3.3.3.3" timestamp="2019-01-01T00:00:16"```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.Report": {
@@ -1390,27 +1602,36 @@ RBAC Permissions Required - threathunter.watchlists: CREATE
 ```
 
 ##### Human Readable Output
+
 ### The report was created successfully.
+
 |ID|Title|Timestamp|Description|Severity|Tags|
 |---|---|---|---|---|---|
 | rbwEBRfnTUGB6LqTUcgWg | Report test | 1970-01-18T21:31:40.000Z | Testing new report creation | 5 | one,two,three |
+
 ### The IOCs for the report
+
 |Field|ID|Match_type|Values|
 |---|---|---|---|
 | netconn_ipv4 | 56e85f3d538b0602b10e0b544c3f61ea | equality | 2.2.2.2,3.3.3.3 |
 
 
 ### 28. cb-eedr-report-update
+
 ---
 Updates the specified report.
+
 ##### Required Permissions
+
 RBAC Permissions Required - threathunter.watchlists: UPDATE
+
 ##### Base Command
 
 `cb-eedr-report-update`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | report_id | The report ID to update. | Required | 
 | title | The report title. | Required | 
@@ -1427,7 +1648,7 @@ RBAC Permissions Required - threathunter.watchlists: UPDATE
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Report.ID | String | The report ID. | 
 | CarbonBlackEEDR.Report.IOCs | String | The report IOC's | 
@@ -1441,9 +1662,11 @@ RBAC Permissions Required - threathunter.watchlists: UPDATE
 
 
 ##### Command Example
+
 ```!cb-eedr-report-update description="new description" report_id=qtcpqJwuRjaFZWjAT8zhqQ severity=5 timestamp=2020-05-19T09:18:48 title="new title"```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.Report": {
@@ -1461,32 +1684,40 @@ RBAC Permissions Required - threathunter.watchlists: UPDATE
 ```
 
 ##### Human Readable Output
+
 ### The report was updated successfully.
+
 |ID|Title|Timestamp|Description|Severity|
 |---|---|---|---|---|
 | qtcpqJwuRjaFZWjAT8zhqQ | new title | 2473-10-23T21:08:00.000Z | new description | 5 |
+
 ### The IOCs for the report
-**No entries.**
+__No entries.__
 
 
 ### 29. cb-eedr-file-device-summary
+
 ---
 Gets an overview of the devices that executed the file.
+
 ##### Required Permissions
+
 RBAC Permissions Required - Ubs.org.sha256
+
 ##### Base Command
 
 `cb-eedr-file-device-summary`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | sha256 | The requested SHA256 hash to obtain information for. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.File.first_seen_device_id | Number | The device ID of the device that first saw this file. | 
 | CarbonBlackEEDR.File.first_seen_device_name | String | The name of the device that first saw this file. | 
@@ -1499,9 +1730,11 @@ RBAC Permissions Required - Ubs.org.sha256
 
 
 ##### Command Example
+
 ```!cb-eedr-file-device-summary sha256="4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa"```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.File": {
@@ -1518,30 +1751,37 @@ RBAC Permissions Required - Ubs.org.sha256
 ```
 
 ##### Human Readable Output
+
 ### The file device summary
+
 |first_seen_device_id|first_seen_device_name|first_seen_device_timestamp|last_seen_device_id|last_seen_device_name|last_seen_device_timestamp|num_devices|sha256|
 |---|---|---|---|---|---|---|---|
 | 1294302 | test732-PC | 2020-05-18T09:26:28.205254Z | 1246865 | testcorewin764 | 2020-05-21T06:59:07.866395Z | 3 | 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa |
 
 
 ### 30. cb-eedr-get-file-metadata
+
 ---
 Returns all of the metadata for the specified binary identified by the SHA256 hash.
+
 ##### Required Permissions
+
 RBAC Permissions Required - Ubs.org.sha256
+
 ##### Base Command
 
 `cb-eedr-get-file-metadata`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | sha256 | The requested SHA256 hash to obtain metadata information. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.File.file_size | Number | The size of the actual file. This is the size of the file represented by this hash. | 
 | CarbonBlackEEDR.File.file_available | Boolean | If true, the file is available for download. | 
@@ -1564,9 +1804,11 @@ RBAC Permissions Required - Ubs.org.sha256
 
 
 ##### Command Example
+
 ```!cb-eedr-get-file-metadata sha256=4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.File": {
@@ -1595,23 +1837,30 @@ RBAC Permissions Required - Ubs.org.sha256
 ```
 
 ##### Human Readable Output
+
 ### The file metadata
+
 |SHA256|comments|file_size|internal_name|original_filename|os_type|
 |---|---|---|---|---|---|
 | 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa | Portable | 745664 | test.exe | test.exe | WINDOWS |
 
 
 ### 31. cb-eedr-files-download-link-get
+
 ---
 The files are able to be downloaded via AWS S3 pre-signed URLs.
+
 ##### Required Permissions
+
 RBAC Permissions Required - Ubs.org.file
+
 ##### Base Command
 
 `cb-eedr-files-download-link-get`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | sha256 | An array of SHA256 hashes (limit 100). Supports comma-separated values. | Required | 
 | expiration_seconds | The number of seconds to make the download URLs available for. The default is 300. | Optional | 
@@ -1620,7 +1869,7 @@ RBAC Permissions Required - Ubs.org.file
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.File.found.sha256 | String | SHA256 hash of file that is available to be downloaded | 
 | CarbonBlackEEDR.File.found.url | String | An AWS S3 pre-signed URL for this file. Perform a GET on this URL to download the file. | 
@@ -1629,9 +1878,11 @@ RBAC Permissions Required - Ubs.org.file
 
 
 ##### Command Example
+
 ```!cb-eedr-files-download-link-get sha256="4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa" expiration_seconds="3600" download_to_xsoar="false"```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.File": {
@@ -1648,30 +1899,37 @@ RBAC Permissions Required - Ubs.org.file
 ```
 
 ##### Human Readable Output
+
 ### The file to download
+
 |sha256|url|
 |---|---|
-| 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa | https://cdc-file-storage-production-us-east-1.s3.amazonaws.com/4a/71/4d/98/ce/40/f5/f3/57/7c/30/6a/66/cb/4a/6b/1f/f3/fd/01/04/7c/7f/45/81/f8/55/8f/0b/cd/f5/fa/4a714d98ce40f5f3577c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAVT6ZCSICASU327FI%2F20200526%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200526T133305Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Security-Token=IQoJb3JpZ2luX2VjAAwaCXVzLWVhc3QtMSJIMEYCIQCqqdEFtwaybOvJkycEEMnMQLR%2FoNSvmNbsb%2Bchb5UEpAIhAPZTjLn4T8p3IGfkKQ0CpEEot%2FLR9oI17UIKtAV1Ej7fKr0DCKT%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQAhoMMzg2NDY1NDM2MTY0IgyYvqWtKKorgx1b%2FXYqkQMeEOokBfnVZv0RtN1W3G3sW97NreAGknB7LRsG1QVMc4b4vrRmgvPvY1ZuE8hAIOu40RQfWBEgfiQo9URFcVRqzKFi8zrLEKlX0NinYijdgA8nHKFIlqSuPRArHXhwixq4aUzQ%2B3uh9UxM%2FrwSYItYn3skiacUz6TwqLFzjfWk3YIFMH3bP4jD9q7omZHgtA6PM%2BCbsf%2Fzj2DwI8JXGKyOm0jAMpNr8wz7n1gLoFnB5WHe4ELHpBfnAh%2Fe5r1H62n0y4eT%2B19zNuNZFd7jjr1FYgounceibjgvlGILMN3xhQWpjzUgssL3GprTM%2FCFy3FzxfPnjUcgJJ%2BjAJw9AICH2yCkFiY6IglFzQwzK%2BC5Q7HvEYmStt682IvQg6ZdYoWuH7iPf7ypiMB%2Bd4o2LwnJ67xCVitD0oLxFMYgIub4buB0dlSwy%2FskcERt81xlhWIZhxRYEDxyTtMPwYSRu5El7vvui5W9y0AmLBANjAb4EaFcaOqUIFOlF6JO%2Blt4Jc6LyMzFu3zdOd9Nx7%2Fi6AewgDDN97P2BTrqAdX%2BqmMi8oItlqJdoU9ntWJ2SBR6y2xa%2BCj3GpHLzvrvWMYAQPfcOxXqDYv9UPPAsPPh1Hxl1P0Jua%2BBwmwOA4m9Lak%2BkwqL8oQMUMb68pyRNxv8dTFa1turFetE9%2Bh4NTzHfxH5WhXH58oGt5ozzPmeJmuJrMAJJV%2BMZhdL1eClkK%2FzLKfSboJIgqmvMSXncccSmEc3Ref6qGWXN3k3%2F5YLf4831zEGH%2FUKCnQqU%2F45QVHvPOfuw2%2BIsItIYimn8YRW73TMOpp3frhKVYMiEwhVBNFQESjNLzDfBZgIMKeWjUbHmJT4Cwb82w%3D%3D&X-Amz-Signature=0757be785f81856477277969af21d8076289d4bb92274c42c73b8d2776443763 |
+| 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa | <https://cdc-file-storage-production-us-east-1.s3.amazonaws.com/4a/71/4d/98/ce/40/f5/f3/57/7c/30/6a/66/cb/4a/6b/1f/f3/fd/01/04/7c/7f/45/81/f8/55/8f/0b/cd/f5/fa/4a714d98ce40f5f3577c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAVT6ZCSICASU327FI%2F20200526%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200526T133305Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Security-Token=IQoJb3JpZ2luX2VjAAwaCXVzLWVhc3QtMSJIMEYCIQCqqdEFtwaybOvJkycEEMnMQLR%2FoNSvmNbsb%2Bchb5UEpAIhAPZTjLn4T8p3IGfkKQ0CpEEot%2FLR9oI17UIKtAV1Ej7fKr0DCKT%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQAhoMMzg2NDY1NDM2MTY0IgyYvqWtKKorgx1b%2FXYqkQMeEOokBfnVZv0RtN1W3G3sW97NreAGknB7LRsG1QVMc4b4vrRmgvPvY1ZuE8hAIOu40RQfWBEgfiQo9URFcVRqzKFi8zrLEKlX0NinYijdgA8nHKFIlqSuPRArHXhwixq4aUzQ%2B3uh9UxM%2FrwSYItYn3skiacUz6TwqLFzjfWk3YIFMH3bP4jD9q7omZHgtA6PM%2BCbsf%2Fzj2DwI8JXGKyOm0jAMpNr8wz7n1gLoFnB5WHe4ELHpBfnAh%2Fe5r1H62n0y4eT%2B19zNuNZFd7jjr1FYgounceibjgvlGILMN3xhQWpjzUgssL3GprTM%2FCFy3FzxfPnjUcgJJ%2BjAJw9AICH2yCkFiY6IglFzQwzK%2BC5Q7HvEYmStt682IvQg6ZdYoWuH7iPf7ypiMB%2Bd4o2LwnJ67xCVitD0oLxFMYgIub4buB0dlSwy%2FskcERt81xlhWIZhxRYEDxyTtMPwYSRu5El7vvui5W9y0AmLBANjAb4EaFcaOqUIFOlF6JO%2Blt4Jc6LyMzFu3zdOd9Nx7%2Fi6AewgDDN97P2BTrqAdX%2BqmMi8oItlqJdoU9ntWJ2SBR6y2xa%2BCj3GpHLzvrvWMYAQPfcOxXqDYv9UPPAsPPh1Hxl1P0Jua%2BBwmwOA4m9Lak%2BkwqL8oQMUMb68pyRNxv8dTFa1turFetE9%2Bh4NTzHfxH5WhXH58oGt5ozzPmeJmuJrMAJJV%2BMZhdL1eClkK%2FzLKfSboJIgqmvMSXncccSmEc3Ref6qGWXN3k3%2F5YLf4831zEGH%2FUKCnQqU%2F45QVHvPOfuw2%2BIsItIYimn8YRW73TMOpp3frhKVYMiEwhVBNFQESjNLzDfBZgIMKeWjUbHmJT4Cwb82w%3D%3D&X-Amz-Signature=0757be785f81856477277969af21d8076289d4bb92274c42c73b8d2776443763> |
 
 
 ### 32. cb-eedr-file-paths
+
 ---
 Return a summary of the observed file paths
+
 ##### Required Permissions
+
 RBAC Permissions Required - RBAC Permissions Required: READ
+
 ##### Base Command
 
 `cb-eedr-file-paths`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | sha256 | The requested SHA256 hash to obtain information for. Supports comma-separated values. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.File.file_path_count | Number | The total number of unique file paths that have been observed, by this organization, for this file. | 
 | CarbonBlackEEDR.File.file_paths | String | The file path details. | 
@@ -1680,9 +1938,11 @@ RBAC Permissions Required - RBAC Permissions Required: READ
 
 
 ##### Command Example
+
 ```!cb-eedr-file-paths sha256="4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa"```
 
 ##### Context Example
+
 ```
 {
     "CarbonBlackEEDR.File": {
@@ -1701,23 +1961,29 @@ RBAC Permissions Required - RBAC Permissions Required: READ
 ```
 
 ##### Human Readable Output
+
 ### The file path for the sha256
+
 |file_path_count|file_paths|sha256|total_file_path_count|
 |---|---|---|---|
 | 1 | {'count': 3, 'file_path': 'c:\\program files\\admin\\test.exe', 'first_seen_timestamp': '2020-05-18T09:26:28.205254Z'} | 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa | 3 |
 
 ### 33. cb-eedr-process-search
+
 ---
 Creates a process search job and returns results if 'polling' argument is True.
+
 ##### Required Permissions
+
 RBAC Permissions Required - org.search.events: CREATE
 
 #### Base Command
 
 `cb-eedr-process-search`
+
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | process_name | The process name to search. | Optional | 
 | process_hash | The process hash to search. | Optional | 
@@ -1731,7 +1997,7 @@ RBAC Permissions Required - org.search.events: CREATE
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.SearchProcess.job_id | String | The ID of the job found by the search. | 
 | CarbonBlackEEDR.SearchProcess.status | String | The status of the job found by the search. | 
@@ -1764,9 +2030,11 @@ RBAC Permissions Required - org.search.events: CREATE
 | CarbonBlackEEDR.SearchProcess.results.scriptload_count | Number | The cumulative count of loaded scripts since process tracking started. | 
 
 #### Command Example
+
 ```!cb-eedr-process-search process_name="vmtoolsd.exe" limit=10```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackEEDR": {
@@ -1783,17 +2051,21 @@ RBAC Permissions Required - org.search.events: CREATE
 >job_id is 633b7900-2b28-456d-add3-28e665525753.
 
 ### 34. cb-eedr-events-by-process-get
+
 ---
 Retrieves the events associated with a given process.
 
 ##### Required Permissions
+
 RBAC Permissions Required - org.search.events: READ
+
 #### Base Command
 
 `cb-eedr-events-by-process-get`
+
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | process_guid | The process GUID to search. Must be focused on a single process. | Optional | 
 | event_type | The event type to search. | Optional | 
@@ -1806,7 +2078,7 @@ RBAC Permissions Required - org.search.events: READ
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.SearchEvent.backend_timestamp | Date | The timestamp of when the process was ingested by the backend. | 
 | CarbonBlackEEDR.SearchEvent.created_timestamp | Date | The timestamp of when the event document was created. | 
@@ -1827,9 +2099,11 @@ RBAC Permissions Required - org.search.events: READ
 
 
 #### Command Example
+
 ```!cb-eedr-events-by-process-get process_guid="7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43" event_type="modload" start_time="1 month"```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackEEDR": {
@@ -2293,6 +2567,7 @@ RBAC Permissions Required - org.search.events: READ
 #### Human Readable Output
 
 >### Results Found.
+>
 >|backend_timestamp|created_timestamp|event_guid|event_hash|event_timestamp|event_type|legacy|modload_action|modload_effective_reputation|modload_md5|modload_name|modload_publisher|modload_publisher_state|modload_sha256|process_guid|process_pid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.503Z | OCaEtLR1SRGcWgVUcoj2mA | lQJi__dhQpGzdVwCmbdbjg | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_LOCAL_WHITE | aae1f614bfe5e3e5cde18d1f928f5b12 | c:\windows\system32\ctiuser.dll | Carbon Black, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 81eb5f6fbf8d7566560f43f75ec30e5f0284cdee9b5c9df0d81281bda0db3d07 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
@@ -2318,24 +2593,28 @@ RBAC Permissions Required - org.search.events: READ
 >Total of 2120 items found. Showing items 0 - 19.
 
 ### 35. cb-eedr-process-search-results
+
 ---
 Retrieves the process search results for a given job ID.
 
 ##### Required Permissions
+
 RBAC Permissions Required - org.search.events: READ
+
 #### Base Command
 
 `cb-eedr-process-search-results`
+
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | job_id | The job ID to search. | Required | 
 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.SearchProcess.job_id | String | The ID of the job found by the search. | 
 | CarbonBlackEEDR.SearchProcess.status | String | The status of the job found by the search. | 
@@ -2369,9 +2648,11 @@ RBAC Permissions Required - org.search.events: READ
 
 
 #### Command Example
+
 ```!cb-eedr-process-search-results job_id="99aad740-3903-4148-a5e7-7b5648794862"```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackEEDR": {
@@ -2727,6 +3008,7 @@ RBAC Permissions Required - org.search.events: READ
 #### Human Readable Output
 
 >### Completed Search Results:
+>
 >|process_hash|process_name|device_name|device_timestamp|process_pid|process_username|
 >|---|---|---|---|---|---|
 >| 1169495860abe1bc6a498d2c196787c3,<br/>fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9 | c:\program files\vmware\vmware tools\vmtoolsd.exe | cbcloud-win10 | 2020-10-28T07:20:07.603Z | 2912 |  |
@@ -2751,14 +3033,14 @@ Update threat ID tags.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | threat_id | Threat ID. | Required | 
 | tags | Comma-separated list of tags. | Required | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Threat.ThreatID | unknown | Threat ID. | 
 | CarbonBlackEEDR.Threat.Tags | unknown | Threat ID tags. | 
@@ -2774,14 +3056,14 @@ Update threat ID notes.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | threat_id | Threat ID. | Required | 
 | notes | Notes to be added to the provided threat ID. | Required | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Threat.ThreatID | unknown | Threat ID. | 
 | CarbonBlackEEDR.Threat.Notes | unknown | Threat ID notes. | 
@@ -2797,14 +3079,14 @@ Update alert ID notes.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | alert_id | Alert ID to add the notes to. | Required | 
 | notes | Notes to be added to the provided alert ID. | Required | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Alert.AlertID | unknown | The alert ID. | 
 | CarbonBlackEEDR.Alert.Notes | unknown | Alert notes. | 
@@ -2820,16 +3102,17 @@ Output a list of tags for the provided threat ID.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | threat_id | The threat ID for which we wish to get the tags. | Required | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Threat.ThreatID | unknown | Threat ID. | 
 | CarbonBlackEEDR.Threat.Tags | unknown | Threat tags. | 
+
 ### cb-eedr-list-alerts
 
 ***
@@ -2841,7 +3124,7 @@ Returns a list of alerts.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | minimum_severity | Alert minimum severity (In range of 1-10). | Optional | 
 | device_os_version | Device OS version. Supports comma-separated values. | Optional | 
@@ -2865,7 +3148,7 @@ Returns a list of alerts.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.Alert.threat_id | String | Threat ID. | 
 | CarbonBlackEEDR.Alert.first_event_time | Date | First event time. | 
@@ -2912,6 +3195,7 @@ Returns a list of alerts.
 | CarbonBlackEEDR.Alert.workflow.last_update_time | Date | Alert workflow - last updated time. | 
 | CarbonBlackEEDR.Alert.workflow.remediation | String | Alert workflow - remediation. | 
 | CarbonBlackEEDR.Alert.workflow.state | String | Alert workflow state. | 
+
 ### cb-eedr-process-search
 
 ***
@@ -2923,7 +3207,7 @@ Creates a process search job and returns results if 'polling' argument is True.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | process_name | The process name to search. | Optional | 
 | process_hash | The process hash to search. | Optional | 
@@ -2940,7 +3224,7 @@ Creates a process search job and returns results if 'polling' argument is True.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | CarbonBlackEEDR.SearchProcess.job_id | String | The ID of the job found by the search. | 
 | CarbonBlackEEDR.SearchProcess.status | String | The status of the job found by the search. | 

@@ -57,8 +57,11 @@ Access policies contain allowed/blocked URL categories in the network.
 | CiscoWSA.AccessPolicy.amw_reputation | Unknown | Anti-Malware and reputation settings. | 
 
 #### Command example
+
 ```!cisco-wsa-access-policy-list page=1 page_size=3```
+
 #### Context Example
+
 ```json
 {
     "CiscoWSA": {
@@ -812,6 +815,7 @@ Access policies contain allowed/blocked URL categories in the network.
 #### Human Readable Output
 
 >### Access Policies
+>
 >|Policy Name|Policy Status|Policy Description|
 >|---|---|---|
 >| global_policy | enable | Default settings |
@@ -846,8 +850,11 @@ cisco-wsa-access-policy-anti-malware-update (Update the anti-malware policy for 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-create policy_name=test policy_status=enable policy_description=test policy_order=1 identification_profile_name=global_identification_profile identification_profiles=test7```
+
 #### Human Readable Output
 
 >Created "test" access policy successfully.
@@ -875,8 +882,11 @@ Update the access policy.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-update policy_name=test policy_description=test1```
+
 #### Human Readable Output
 
 >Updated "test" access policy successfully.
@@ -903,8 +913,11 @@ Update the Protocols and User Agents policy for access policy.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-protocols-user-agents-update policy_name=test block_custom_user_agents=test allow_connect_ports=22,24 block_protocols=http```
+
 #### Human Readable Output
 
 >Updated "test" access policy successfully.
@@ -939,8 +952,11 @@ Update the URL filtering policy for access policy.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-url-filtering-update policy_name=test predefined_categories_action=monitor predefined_categories=Astrology custom_categories_action=block custom_categories=test```
+
 #### Human Readable Output
 
 >Updated "test" access policy successfully.
@@ -967,8 +983,11 @@ Update applications policy for access policy. Only applicable for global_policy.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-applications-update policy_name=test application=Blogging action=block values=Blogger```
+
 #### Human Readable Output
 
 >Updated "test" access policy successfully.
@@ -997,8 +1016,11 @@ Update objects policy for access policy.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-objects-update policy_name=test object_type=Media object_action=block object_values=Audio http_or_https_max_object_size_mb=30 ftp_max_object_size_mb=20```
+
 #### Human Readable Output
 
 >Updated "test" access policy successfully.
@@ -1029,8 +1051,11 @@ Update the anti-malware policy for access policy.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-anti-malware-update policy_name=test web_reputation_status=enable file_reputation_filtering_status=enable file_reputation_action=block anti_malware_scanning_status=enable suspect_user_agent_scanning=block block_malware_categories=Adware block_other_categories=Unscannable```
+
 #### Human Readable Output
 
 >Updated "test" access policy successfully.
@@ -1053,8 +1078,11 @@ Delete access policy.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-delete policy_names=test```
+
 #### Human Readable Output
 
 >Deleted Access policy profiles successfully.
@@ -1088,8 +1116,11 @@ Domain maps are DNS mappings of domain to IP addresses.
 | CiscoWSA.DomainMap.order | Number | Index of the domain map in the collection. | 
 
 #### Command example
+
 ```!cisco-wsa-domain-map-list limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoWSA": {
@@ -1135,6 +1166,7 @@ Domain maps are DNS mappings of domain to IP addresses.
 #### Human Readable Output
 
 >### Domain Map
+>
 >|Domain Name|Ip Addresses|Order|
 >|---|---|---|
 >| ascxcdfdgdfgsfvd | 19.23.2.23 | 1 |
@@ -1164,8 +1196,11 @@ Create domain mapping for IP addresses.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-domain-map-create domain_name=test.com order=1 ip_addresses=1.1.1.1```
+
 #### Human Readable Output
 
 >Domain "test.com" mapping created successfully.
@@ -1191,8 +1226,11 @@ Update the domain map.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-domain-map-update domain_name=test.com new_domain_name=test1.com order=2 ip_addresses=1.1.1.1,2.2.2.2```
+
 #### Human Readable Output
 
 >Domain "test.com" mapping updated successfully.
@@ -1215,8 +1253,11 @@ Delete domain map.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-domain-map-delete domain_names=test1.com```
+
 #### Human Readable Output
 
 >Domain "test1.com" deleted successfully.
@@ -1258,8 +1299,11 @@ Identification profiles are classifications of users, defining authentication re
 | CiscoWSA.IdentificationProfile.UserAgents.custom | String | User-agent custom. | 
 
 #### Command example
+
 ```!cisco-wsa-identification-profiles-list page=1 page_size=2```
+
 #### Context Example
+
 ```json
 {
     "CiscoWSA": {
@@ -1301,6 +1345,7 @@ Identification profiles are classifications of users, defining authentication re
 #### Human Readable Output
 
 >### Identification Profiles
+>
 >|Order|Profile Name|Status|Description|Members|
 >|---|---|---|---|---|
 >| 1 | hello | enable | Sample description | ip: 12.2.2.6<br/>protocols: http,<br/>https,<br/>ftp<br/>proxy_ports: 4000,<br/>5006 |
@@ -1333,8 +1378,11 @@ Create an identification profile.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-identification-profiles-create profile_name=test status=enable description=test protocols=HTTPS order=1```
+
 #### Human Readable Output
 
 >Created identification profile "test" successfully.
@@ -1366,8 +1414,11 @@ Update the identification profile. This command rewrites the profile values (doe
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-identification-profiles-update profile_name=test description=testtest protocols=HTTPS,SOCKS order=2```
+
 #### Human Readable Output
 
 >Updated identification profile "test" successfully.
@@ -1390,8 +1441,11 @@ Delete identification profiles.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-identification-profiles-delete profile_names=test```
+
 #### Human Readable Output
 
 >Deleted identification profiles successfully.
@@ -1420,8 +1474,11 @@ Retrieve URL categories of available categories to allow/block in access policie
 | CiscoWSA.UrlCategory.custom | String | Custom URL categories. | 
 
 #### Command example
+
 ```!cisco-wsa-url-categories-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoWSA": {
@@ -1546,6 +1603,7 @@ Retrieve URL categories of available categories to allow/block in access policie
 #### Human Readable Output
 
 >### URL categories
+>
 >|Custom|Predefined|
 >|---|---|
 >| test,<br/>Adult | Adult,<br/>Advertisements,<br/>Alcohol,<br/>Animals and Pets,<br/>Arts,<br/>Astrology,<br/>Auctions,<br/>Business and Industry,<br/>Cannabis,<br/>Chat and Instant Messaging,<br/>Cheating and Plagiarism,<br/>Child Abuse Content,<br/>Cloud and Data Centers,<br/>Computer Security,<br/>Computers and Internet,<br/>Conventions, Conferences and Trade Shows,<br/>Cryptocurrency,<br/>Cryptomining,<br/>DIY Projects,<br/>DNS-Tunneling,<br/>Dating,<br/>Digital Postcards,<br/>Dining and Drinking,<br/>DoH and DoT,<br/>Dynamic DNS Provider,<br/>Dynamic and Residential,<br/>Education,<br/>Entertainment,<br/>Extreme,<br/>Fashion,<br/>File Transfer Services,<br/>Filter Avoidance,<br/>Finance,<br/>Freeware and Shareware,<br/>Gambling,<br/>Games,<br/>Government and Law,<br/>Hacking,<br/>Hate Speech,<br/>Health and Medicine,<br/>Humor,<br/>Hunting,<br/>Illegal Activities,<br/>Illegal Downloads,<br/>Illegal Drugs,<br/>Infrastructure and Content Delivery Networks,<br/>Internet Telephony,<br/>Internet of Things,<br/>Job Search,<br/>Lingerie and Swimsuits,<br/>Lotteries,<br/>Military,<br/>Mobile Phones,<br/>Museums,<br/>Nature and Conservation,<br/>News,<br/>Non-governmental Organizations,<br/>Non-sexual Nudity,<br/>Not Actionable,<br/>Online Communities,<br/>Online Document Sharing and Collaboration,<br/>Online Meetings,<br/>Online Storage and Backup,<br/>Online Trading,<br/>Organizational Email,<br/>Paranormal,<br/>Parked Domains,<br/>Peer File Transfer,<br/>Personal Sites,<br/>Personal VPN,<br/>Photo Search and Images,<br/>Politics,<br/>Pornography,<br/>Private IP Addresses as Host,<br/>Professional Networking,<br/>Real Estate,<br/>Recipes and Food,<br/>Reference,<br/>Regional Restricted Sites (Germany),<br/>Regional Restricted Sites (Great Britain),<br/>Regional Restricted Sites (Italy),<br/>Regional Restricted Sites (Poland),<br/>Religion,<br/>SaaS and B2B,<br/>Safe for Kids,<br/>Science and Technology,<br/>Search Engines and Portals,<br/>Sex Education,<br/>Shopping,<br/>Social Networking,<br/>Social Science,<br/>Society and Culture,<br/>Software Updates,<br/>Sports and Recreation,<br/>Streaming Audio,<br/>Streaming Video,<br/>Terrorism and Violent Extremism,<br/>Tobacco,<br/>Transportation,<br/>Travel,<br/>URL Shorteners,<br/>Weapons,<br/>Web Cache and Archives,<br/>Web Hosting,<br/>Web Page Translation,<br/>Web-based Email |

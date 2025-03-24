@@ -1,4 +1,5 @@
 Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
+
 ## Configure PolySwarmV2 in Cortex
 
 
@@ -9,9 +10,12 @@ Real-time threat intelligence from a crowd-sourced network of security experts a
 | PolySwarm v2 Community | the segment of PolySwarm's marketplace to query on. | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### polyswarm-get-report
+
 ***
 Returns a report using the UUID.
 
@@ -19,6 +23,7 @@ Returns a report using the UUID.
 #### Base Command
 
 `polyswarm-get-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -46,6 +51,7 @@ Returns a report using the UUID.
 
 
 ### file
+
 ***
 Queries PolySwarm for file reputation information.
 
@@ -53,6 +59,7 @@ Queries PolySwarm for file reputation information.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -80,6 +87,7 @@ Queries PolySwarm for file reputation information.
 | File.SHA1 | The SHA1 hash of the file. | String |
 
 #### Command Example
+
 `!file hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe"`  
 `!file hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe, 1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a"`
 
@@ -88,6 +96,7 @@ Queries PolySwarm for file reputation information.
 
 
 ### ip
+
 ***
 Queries PolySwarm for IP reputation information.
 
@@ -95,6 +104,7 @@ Queries PolySwarm for IP reputation information.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -122,11 +132,13 @@ Queries PolySwarm for IP reputation information.
 
 
 #### Command Example
+
 ```!ip ip="8.8.8.8"```
 
 
 
 ### url
+
 ***
 Queries PolySwarm for URL reputation information.
 
@@ -135,6 +147,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -162,6 +175,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!url url="https://polyswarm.io"```
 
 #### Context Example
@@ -172,6 +186,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### domain
+
 ***
 Queries PolySwarm to retrieve domain reputation information.
 
@@ -181,6 +196,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -208,6 +224,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!domain domain="polyswarm.io"```
 
 #### Context Example
@@ -218,6 +235,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### url-scan
+
 ***
 Uploads a URL to PolySwarm and retrieves the analysis results.
 
@@ -227,6 +245,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -254,6 +273,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### file-rescan
+
 ***
 Rescans the uploaded artifact by hash.
 
@@ -261,6 +281,7 @@ Rescans the uploaded artifact by hash.
 #### Base Command
 
 `file-rescan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -289,6 +310,7 @@ Rescans the uploaded artifact by hash.
 
 
 ### get-file
+
 ***
 Downloads a file hash from PolySwarm.
 
@@ -296,6 +318,7 @@ Downloads a file hash from PolySwarm.
 #### Base Command
 
 `get-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -337,6 +360,7 @@ Downloads a file hash from PolySwarm.
 
 
 ### file-scan
+
 ***
 Uploads a file to PolySwarm and retrieves the analysis results.
 
@@ -344,6 +368,7 @@ Uploads a file to PolySwarm and retrieves the analysis results.
 #### Base Command
 
 `file-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -363,6 +388,7 @@ Uploads a file to PolySwarm and retrieves the analysis results.
 
 
 #### Command Example
+
 `!file-scan entryID="995@0c42ee2d-57ff-4ccf-88ef-8d51c7936595"`
 
 #### Human Readable Output

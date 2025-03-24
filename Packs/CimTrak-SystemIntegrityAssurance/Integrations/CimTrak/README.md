@@ -1,6 +1,7 @@
 CimTrak XSOAR integration.
 
 ## Configure CimTrak on Cortex XSOAR
+
 - Fill in the URL to your App Server
 - Create an API Key in the CimTrak Management Console and populate in XSOAR
 - Fill in the Repository IP relative to the App Server (IE: If App Server is running on the same machine as the Repository you can use 127.0.0.1)
@@ -8,7 +9,7 @@ CimTrak XSOAR integration.
 - Once configured all unreconciled items from CimTrak will be brought into XSOAR.
 
 
-##Commands
+## Commands
 
 ### get-events
 
@@ -65,6 +66,7 @@ CimTrak XSOAR integration.
 | CimTrak.Event.lparentid | number | Parent ID | 
 | CimTrak.Event.szobjectpath | string | Object Path | 
 | CimTrak.Event.dfilesize | number | File Size | 
+
 ### file-analysis-by-hash
 
 #### Input
@@ -81,6 +83,7 @@ CimTrak XSOAR integration.
 | CimTrak.FileAnalysis.analysisEngine | string | Analysis Engine used | 
 | CimTrak.FileAnalysis.analysisSuccess | boolean | Analysis Success Flag | 
 | CimTrak.FileAnalysis.analysisResults | string | Agent ID | 
+
 ### file-analysis-by-objectdetail-id
 
 #### Input
@@ -97,6 +100,7 @@ CimTrak XSOAR integration.
 | CimTrak.FileAnalysis.analysisEngine | string | Analysis Engine used | 
 | CimTrak.FileAnalysis.analysisSuccess | boolean | Analysis Success Flag | 
 | CimTrak.FileAnalysis.analysisResults | string | Agent ID | 
+
 ### check-file-against-trusted-file-registry-by-hash
 
 #### Input
@@ -111,6 +115,7 @@ CimTrak XSOAR integration.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CimTrak.TrustedFileRegistry.hash | string | Hash found in registry | 
+
 ### promote-authoritative-baseline-files
 
 #### Input
@@ -128,6 +133,7 @@ CimTrak XSOAR integration.
 | CimTrak.AuthoritizeBaseline.status | string | Status | 
 | CimTrak.AuthoritizeBaseline.errorCode | string | Error Code | 
 | CimTrak.AuthoritizeBaseline.errorDescription | string | Status | 
+
 ### demote-authoritative-baseline-files
 
 #### Input
@@ -143,6 +149,7 @@ CimTrak XSOAR integration.
 | --- | --- | --- |
 | CimTrak.AuthoritizeBaseline.objectDetailId | number | objectDetailId of file | 
 | CimTrak.AuthoritizeBaseline.status | string | Status | 
+
 ### update-task-disposition
 
 #### Input
@@ -159,6 +166,7 @@ CimTrak XSOAR integration.
 | --- | --- | --- |
 | CimTrak.TaskDisposition.taskId | number | Task Id | 
 | CimTrak.TaskDisposition.status | string | Status | 
+
 ### get-tickets
 
 #### Input
@@ -198,6 +206,7 @@ CimTrak XSOAR integration.
 | CimTrak.Ticket.tasks | string | Ticket tasks | 
 | CimTrak.Ticket.comments | string | Ticket comments | 
 | CimTrak.Ticket.events | string | Ticket events | 
+
 ### get-ticket-tasks
 
 #### Input
@@ -238,6 +247,7 @@ CimTrak XSOAR integration.
 | CimTrak.TicketTask.createdByUsername | string | Created By Username | 
 | CimTrak.TicketTask.modifiedByUsername | string | Modified by username | 
 | CimTrak.TicketTask.assigneeName | string | Assignee Name | 
+
 ### add-ticket
 
 #### Input
@@ -293,6 +303,7 @@ CimTrak XSOAR integration.
 | CimTrak.Ticket.tasks | string | Ticket tasks | 
 | CimTrak.Ticket.comments | string | Ticket comments | 
 | CimTrak.Ticket.events | string | Ticket events | 
+
 ### update-ticket
 
 #### Input
@@ -349,6 +360,7 @@ CimTrak XSOAR integration.
 | CimTrak.Ticket.tasks | string | Ticket tasks | 
 | CimTrak.Ticket.comments | string | Ticket comments | 
 | CimTrak.Ticket.events | string | Ticket events | 
+
 ### add-ticket-comment
 
 #### Input
@@ -363,6 +375,7 @@ CimTrak XSOAR integration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+
 ### add-hash-allow-list
 
 #### Input
@@ -384,6 +397,7 @@ CimTrak XSOAR integration.
 | CimTrak.AllowList.errorDescription | string | Error Description of adding hash | 
 | CimTrak.AllowList.hash | string | Hash added | 
 | CimTrak.AllowList.tagId | number | TagId of adding hash | 
+
 ### add-hash-deny-list
 
 #### Input
@@ -405,6 +419,7 @@ CimTrak XSOAR integration.
 | CimTrak.DenyList.errorDescription | string | Error Description of adding hash | 
 | CimTrak.DenyList.hash | string | Hash added | 
 | CimTrak.DenyList.tagId | number | TagId of adding hash | 
+
 ### delete-hash-allow-list
 
 #### Input
@@ -422,6 +437,7 @@ CimTrak XSOAR integration.
 | CimTrak.AllowList.status | string | Status of deleting hash | 
 | CimTrak.AllowList.hash | string | Hash deleted | 
 | CimTrak.AllowList.tagId | number | TagId of deleting hash | 
+
 ### delete-hash-deny-list
 
 #### Input
@@ -439,6 +455,7 @@ CimTrak XSOAR integration.
 | CimTrak.DenyList.status | string | Status of deleting hash | 
 | CimTrak.DenyList.hash | string | Hash deleted | 
 | CimTrak.DenyList.tagId | number | TagId of deleting hash | 
+
 ### get-sub-generations
 
 #### Input
@@ -465,6 +482,7 @@ CimTrak XSOAR integration.
 | CimTrak.SubGenerations.totalSize | number | Total Size | 
 | CimTrak.SubGenerations.revision | number | Revision | 
 | CimTrak.SubGenerations.userName | string | User Name | 
+
 ### deploy
 
 #### Input
@@ -480,6 +498,7 @@ CimTrak XSOAR integration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+
 ### get-object-group
 
 #### Input
@@ -528,6 +547,7 @@ CimTrak XSOAR integration.
 | CimTrak.ObjectGroup.objectsCustom | string | Objects Custom | 
 | CimTrak.ObjectGroup.watchArray | string | Watch Array | 
 | CimTrak.ObjectGroup.comparisonMethod | number | Comparison Method | 
+
 ### unlock
 
 #### Input
@@ -541,6 +561,7 @@ CimTrak XSOAR integration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+
 ### lock
 
 #### Input
@@ -554,6 +575,7 @@ CimTrak XSOAR integration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+
 ### get-object
 
 #### Input
@@ -599,6 +621,7 @@ CimTrak XSOAR integration.
 | CimTrak.Object.objectPath | string | Object Path | 
 | CimTrak.Object.url | string | URL | 
 | CimTrak.Object.agentObjectId | number | Agent Object Id | 
+
 ### force-sync
 
 #### Input
@@ -612,6 +635,7 @@ CimTrak XSOAR integration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+
 ### view-file
 
 #### Input
@@ -626,6 +650,7 @@ CimTrak XSOAR integration.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CimTrak.Sync.contents | string | Contents | 
+
 ### run-report-by-name
 
 #### Input
@@ -642,6 +667,7 @@ CimTrak XSOAR integration.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CimTrak.Sync.html | string | HTML Report | 
+
 ### deploy-by-date
 
 #### Input
@@ -656,6 +682,7 @@ CimTrak XSOAR integration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+
 ### get-current-compliance-items
 
 #### Input
@@ -679,6 +706,7 @@ CimTrak XSOAR integration.
 | CimTrak.ComplianceItems.scanid | number | Scanid | 
 | CimTrak.ComplianceItems.compliancemappingid | number | Compliance Mapping id | 
 | CimTrak.ComplianceItems.id | number | id | 
+
 ### get-objects
 
 #### Input
@@ -737,6 +765,7 @@ CimTrak XSOAR integration.
 | CimTrak.Objects.agentIp | string | agent Ip | 
 | CimTrak.Objects.agentName | string | Agent name | 
 | CimTrak.Objects.agentInstalled | boolean | Agent installed | 
+
 ### get-agent-info
 
 #### Input
@@ -754,6 +783,7 @@ CimTrak XSOAR integration.
 | CimTrak.AgentInfo.objectsCustom | string | Object custom | 
 | CimTrak.AgentInfo.agentData | string | Agent data | 
 | CimTrak.AgentInfo.state | string | State | 
+
 ### get-compliance-archive-details
 
 #### Input
@@ -814,6 +844,7 @@ CimTrak XSOAR integration.
 | CimTrak.Compliance.breports | boolean | Reports | 
 | CimTrak.Compliance.blogon | boolean | Logon | 
 | CimTrak.Compliance.isadmin | boolean | Is admin | 
+
 ### get-compliance-archive-summary
 
 #### Input
@@ -859,6 +890,7 @@ CimTrak XSOAR integration.
 | CimTrak.Compliance.badd | boolean | Add | 
 | CimTrak.Compliance.breports | boolean | Reports | 
 | CimTrak.Compliance.blogon | boolean | Logon | 
+
 ### compliance-scan-children
 
 #### Input
@@ -872,6 +904,7 @@ CimTrak XSOAR integration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+
 ### compliance-scan-with-summary
 
 #### Input
@@ -915,6 +948,7 @@ CimTrak XSOAR integration.
 | CimTrak.Compliance.badd | boolean | Add | 
 | CimTrak.Compliance.breports | boolean | Reports | 
 | CimTrak.Compliance.blogon | boolean | Logon | 
+
 ### get-agent-object-id-by-alternate-system-id
 
 #### Input
@@ -929,6 +963,7 @@ CimTrak XSOAR integration.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CimTrak.Object.agentObjectId | number | Object Id of agent | 
+
 ### get-agent-object-by-name
 
 #### Input
@@ -974,6 +1009,7 @@ CimTrak XSOAR integration.
 | CimTrak.Object.objectPath | string | Object Path | 
 | CimTrak.Object.url | string | URL | 
 | CimTrak.Object.agentObjectId | number | Agent Object Id | 
+
 ### get-agent-object-by-alternate-id
 
 #### Input
@@ -1019,6 +1055,7 @@ CimTrak XSOAR integration.
 | CimTrak.Object.objectPath | string | Object Path | 
 | CimTrak.Object.url | string | URL | 
 | CimTrak.Object.agentObjectId | number | Agent Object Id | 
+
 ### get-agent-object-by-ip
 
 #### Input

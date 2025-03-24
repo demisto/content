@@ -25,9 +25,12 @@ The default value is 100k. If you encounter performance issues, consider decreas
 | use_https | Use HTTPS connection | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### majesticmillion-get-indicators
+
 ***
 Gets the feed indicators.
 
@@ -35,6 +38,7 @@ Gets the feed indicators.
 #### Base Command
 
 `majesticmillion-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -47,9 +51,11 @@ Gets the feed indicators.
 There is no context output for this command.
 
 #### Command Example
+
 ```!majesticmillion-get-indicators limit=4```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -57,6 +63,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Indicators
+>
 >|value|type|fields|
 >|---|---|---|
 >| facebook.com | Domain | domainname: facebook.com<br/>domainreferringsubnets: 500065<br/>domainreferringips: 2959982<br/>idndomain: facebook.com<br/>tags:  |

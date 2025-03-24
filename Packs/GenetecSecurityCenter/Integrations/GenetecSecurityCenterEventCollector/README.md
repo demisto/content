@@ -16,8 +16,11 @@ Security Center is the foundation of our unified security portfolio. It lets you
 
 
 ## Commands
+
 You can execute these commands in the War Room in the CLI in Cortex XSIAM.
+
 ### genetec-security-center-get-events
+
 ***
 Manual command to fetch events and display them.
 
@@ -25,6 +28,7 @@ Manual command to fetch events and display them.
 #### Base Command
 
 `genetec-security-center-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

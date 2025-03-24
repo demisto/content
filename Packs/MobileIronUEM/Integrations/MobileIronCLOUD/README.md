@@ -46,7 +46,7 @@ Here is an example image of the rule
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | url | Server URL \(i.e., https://eu1.mobileiron.com \) | True |
+    | url | Server URL \(i.e., <https://eu1.mobileiron.com> \) | True |
     | credentials | User Name | True |
     | incidentType | Incident type | False |
     | partition_id | Partition ID \(leave empty to resolve default\) | False |

@@ -11,9 +11,12 @@ This integration was integrated and tested with version 2.2.5 of Camlytics.
 | Trust any certificate (not secure) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### camlytics-get-channels
+
 ***
 Retrieve video channels
 
@@ -21,6 +24,7 @@ Retrieve video channels
 #### Base Command
 
 `camlytics-get-channels`
+
 #### Input
 
 There are no input arguments for this command.
@@ -40,8 +44,11 @@ There are no input arguments for this command.
 | Camlytics.Channels.profile_token | String | The channel profile token. | 
 
 #### Command example
+
 ```!camlytics-get-channels```
+
 #### Context Example
+
 ```json
 {
     "Camlytics": {
@@ -76,13 +83,15 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|channel_id|login|name|password|profile_name|profile_token|stream_uri|type|uri|
 >|---|---|---|---|---|---|---|---|---|
->| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | Springs |  | none |  | C:\Users\hussain\Desktop\Test Video.mp4 | File | http://localhost/ |
->| 8c27e658-cfee-4801-b1f7-29626ce45afc |  | Video file |  | none |  | C:\Users\hussain\Desktop\Test Video - Copy.mp4 | File | http://localhost/ |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | Springs |  | none |  | C:\Users\hussain\Desktop\Test Video.mp4 | File | <http://localhost/> |
+>| 8c27e658-cfee-4801-b1f7-29626ce45afc |  | Video file |  | none |  | C:\Users\hussain\Desktop\Test Video - Copy.mp4 | File | <http://localhost/> |
 
 
 ### camlytics-get-events-totals-by-rule
+
 ***
 Retrieve video analytics events totals grouped by calibration rules, these rules can be defined using zones and lines to set areas where different camera events will be generated. For example, you can add zone where you want signalize all of all entered objects, line where you want to count people, etc.
 
@@ -90,6 +99,7 @@ Retrieve video analytics events totals grouped by calibration rules, these rules
 #### Base Command
 
 `camlytics-get-events-totals-by-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -110,8 +120,11 @@ Retrieve video analytics events totals grouped by calibration rules, these rules
 | Camlytics.EventsTotalsRule.rule_name | String | The rule name. | 
 
 #### Command example
+
 ```!camlytics-get-events-totals-by-rule```
+
 #### Context Example
+
 ```json
 {
     "Camlytics": {
@@ -148,6 +161,7 @@ Retrieve video analytics events totals grouped by calibration rules, these rules
 #### Human Readable Output
 
 >### Results
+>
 >|channel_id|rule_count|rule_id|rule_name|
 >|---|---|---|---|
 >| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 | 47 | -1 |  |
@@ -157,6 +171,7 @@ Retrieve video analytics events totals grouped by calibration rules, these rules
 
 
 ### camlytics-get-events-totals-by-type
+
 ***
 Retrieve video analytics events totals grouped by analytics event type. For example: ObjectAppear, Tailgating, Sabotage and TripwireCrossed.
 
@@ -164,6 +179,7 @@ Retrieve video analytics events totals grouped by analytics event type. For exam
 #### Base Command
 
 `camlytics-get-events-totals-by-type`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -183,8 +199,11 @@ Retrieve video analytics events totals grouped by analytics event type. For exam
 | Camlytics.EventsTotalsType.type_count | Number | The type count. | 
 
 #### Command example
+
 ```!camlytics-get-events-totals-by-type channelid=09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 origin=Pedestrian```
+
 #### Context Example
+
 ```json
 {
     "Camlytics": {
@@ -207,6 +226,7 @@ Retrieve video analytics events totals grouped by analytics event type. For exam
 #### Human Readable Output
 
 >### Results
+>
 >|channel_id|type|type_count|
 >|---|---|---|
 >| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 | ObjectAppear | 4 |
@@ -214,6 +234,7 @@ Retrieve video analytics events totals grouped by analytics event type. For exam
 
 
 ### camlytics-get-events
+
 ***
 Retrieve video analytics events ordered by event id.
 
@@ -221,6 +242,7 @@ Retrieve video analytics events ordered by event id.
 #### Base Command
 
 `camlytics-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -255,8 +277,11 @@ Retrieve video analytics events ordered by event id.
 | Camlytics.Events.video_file_time | Date | The event video file time. | 
 
 #### Command example
+
 ```!camlytics-get-events channelid="09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9" limit="10"```
+
 #### Context Example
+
 ```json
 {
     "Camlytics": {
@@ -429,6 +454,7 @@ Retrieve video analytics events ordered by event id.
 #### Human Readable Output
 
 >### Results
+>
 >|channel_id|channel_name|event_id|object_id|origin|recording_path|rule_id|rule_name|snapshot_path|time|timestamp|type|video_file_name|video_file_time|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 70 | -1 | Unknown |  | -1 |  |  | 2022-01-19T16:22:25.4330000 | 1.877 | Sabotage | Test Video.mp4 | 2022-01-19T16:21:11.8770000 |

@@ -4,6 +4,7 @@ The Vectra content pack provided by Cortex XSOAR (named Vectra) will be deprecat
 
 
 # Recommended Action
+
 Those using the legacy Vectra content pack should review their playbooks to determine the commands that require migration. The current content pack can support the legacy parameters for ingesting data to create incidents but it’s most likely the user will want to expand the parameters to take advantage of the expanded support the new content pack brings.
 
 See Vectra V2 integration `README` for a list of legacy and replacement commands.

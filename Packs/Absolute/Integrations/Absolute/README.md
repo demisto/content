@@ -2,7 +2,7 @@ Absolute is an adaptive endpoint security solution that delivers device security
 This integration was integrated and tested with the API version 1.7 of Absolute.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---Absolute).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---absolute).
 
 ## Configure Absolute in Cortex
 
@@ -19,9 +19,12 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Fetch Events | Only in XSIAM            | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### absolute-custom-device-field-list
+
 ***
 Returns a list of custom device fields associated with the given device_id, based on the authorization token.
 
@@ -29,6 +32,7 @@ Returns a list of custom device fields associated with the given device_id, base
 #### Base Command
 
 `absolute-custom-device-field-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,8 +54,11 @@ Returns a list of custom device fields associated with the given device_id, base
 | Absolute.CustomDeviceField.CDFValues.Type | String | The data type of the field value. Possible values are: Text, Date, Dropdown. | 
 
 #### Command example
+
 ```!absolute-custom-device-field-list device_id=1234```
+
 #### Context Example
+
 ```json
 {
     "Absolute": {
@@ -83,6 +90,7 @@ Returns a list of custom device fields associated with the given device_id, base
 #### Human Readable Output
 
 >### Absolute Custom device field list
+>
 >|CDF ID|Field Value|Filed Name|
 >|---|---|---|
 >| 4m9fUCZqTYec1bJgDSNg | Asset Number | Asset Number |
@@ -90,6 +98,7 @@ Returns a list of custom device fields associated with the given device_id, base
 
 
 ### absolute-custom-device-field-update
+
 ***
 Updates the value of the included custom device fields for the given device_id.
 
@@ -97,6 +106,7 @@ Updates the value of the included custom device fields for the given device_id.
 #### Base Command
 
 `absolute-custom-device-field-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -109,13 +119,17 @@ Updates the value of the included custom device fields for the given device_id.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!absolute-custom-device-field-update device_id=1234 cdf_uid=4m9fUCZqTYec1bJgDSNg value="test2"```
+
 #### Human Readable Output
 
 >Device 1234 with value test2 was updated successfully.
 
 ### absolute-device-freeze-request
+
 ***
 Creates a new Freeze request for the devices specified in the device_ids argument.
 
@@ -123,6 +137,7 @@ Creates a new Freeze request for the devices specified in the device_ids argumen
 #### Base Command
 
 `absolute-device-freeze-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -151,8 +166,11 @@ Creates a new Freeze request for the devices specified in the device_ids argumen
 | Absolute.FreezeRequest.Errors.messageKey | String | The reference key for the error message. | 
 
 #### Command example
+
 ```!absolute-device-freeze-request device_ids=123456 device_freeze_type=Scheduled html_message="test" message_name="new name" request_name="name1" scheduled_freeze_date=2022-04-03T13:30:00.000Z passcode_type=RandomForEach passcode_length=5```
+
 #### Context Example
+
 ```json
 {
     "Absolute": {
@@ -169,12 +187,14 @@ Creates a new Freeze request for the devices specified in the device_ids argumen
 #### Human Readable Output
 
 >### Absolute device freeze requests results
+>
 >|RequestUID|SucceededDeviceUIDs|
 >|---|---|
 >| 2b62b290-d590-4237-8ba0-57e4779b9f1c | 123456 |
 
 
 ### absolute-device-remove-freeze-request
+
 ***
 Creates a new Remove Freeze request for one or more devices, regardless of their Freeze status. You can submit Remove Freeze requests to perform the following actions: unfreeze frozen devices, remove newly submitted Freeze requests, or remove outstanding Scheduled and Offline Freeze requests. In case of removing from offline:  In addition to creating a Remove Freeze request for devices with a status of Frozen by Condition: Offline, removes Offline Freeze requests from devices with a status of Freeze Requested or Freeze Condition - Offline Set. In case of not removing from offline: a Remove Freeze request is created for the devices but the Conditional - Offline Freeze request is not deleted (deprecated).
 
@@ -182,6 +202,7 @@ Creates a new Remove Freeze request for one or more devices, regardless of their
 #### Base Command
 
 `absolute-device-remove-freeze-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -194,13 +215,17 @@ Creates a new Remove Freeze request for one or more devices, regardless of their
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!absolute-device-remove-freeze-request device_ids=123456 remove_scheduled=true```
+
 #### Human Readable Output
 
 >Successfully removed freeze request for devices ids: 123456.
 
 ### absolute-device-freeze-request-get
+
 ***
 Gets detailed information about the Freeze request specified by request_uid.
 
@@ -208,6 +233,7 @@ Gets detailed information about the Freeze request specified by request_uid.
 #### Base Command
 
 `absolute-device-freeze-request-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -268,8 +294,11 @@ Gets detailed information about the Freeze request specified by request_uid.
 | Absolute.FreezeRequestDetail.IsCurrent | Boolean | Internal flag. | 
 
 #### Command example
+
 ```!absolute-device-freeze-request-get request_uid=c638c2dc-1dd1-4cfa-8708-46f368012398```
+
 #### Context Example
+
 ```json
 {
     "Absolute": {
@@ -345,12 +374,14 @@ Gets detailed information about the Freeze request specified by request_uid.
 #### Human Readable Output
 
 >### Absolute Freeze request details for: c638c2dc-1dd1-4cfa-8708-46f368012398
+>
 >|ID|Name|AccountUid|ActionRequestUid|EventHistoryId|CreatedUTC|ChangedUTC|Requester|
 >|---|---|---|---|---|---|---|---|
->| fa72b6ed-62f4-40bd-b581-ef5c114efb8e | name1 | accountID | c638c2dc-1dd1-4cfa-8708-46f368012398 | DeviceFreeze-0010 | 2022-03-29T10:30:24.279+00:00 | 2022-03-29T10:30:55.462+00:00 | example@test.com |
+>| fa72b6ed-62f4-40bd-b581-ef5c114efb8e | name1 | accountID | c638c2dc-1dd1-4cfa-8708-46f368012398 | DeviceFreeze-0010 | 2022-03-29T10:30:24.279+00:00 | 2022-03-29T10:30:55.462+00:00 | <example@test.com> |
 
 
 ### absolute-device-freeze-message-list
+
 ***
 Gets all the Freeze messages that are configured for the account by the given message_id. If message_id is not given all the messages will be returned.
 
@@ -358,6 +389,7 @@ Gets all the Freeze messages that are configured for the account by the given me
 #### Base Command
 
 `absolute-device-freeze-message-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -379,8 +411,11 @@ Gets all the Freeze messages that are configured for the account by the given me
 | Absolute.FreezeMessage.ChangedUTC | String | The date and time when the Freeze message was last modified. | 
 
 #### Command example
+
 ```!absolute-device-freeze-message-list```
+
 #### Context Example
+
 ```json
 {
     "Absolute": {
@@ -400,12 +435,14 @@ Gets all the Freeze messages that are configured for the account by the given me
 #### Human Readable Output
 
 >### Absolute Device freeze message details:
+>
 >|ID|Name|CreatedUTC|ChangedUTC|ChangedBy|CreatedBy|
 >|---|---|---|---|---|---|
->| 711b5da9-3867-473f-9d8f-9aba3de42b7a | name | 2022-04-03T07:45:01.487+00:00 | 2022-04-03T07:45:01.487+00:00 | 778f8cce-8cc6-4de1-b025-e0538f97e072 | example@test.com |
+>| 711b5da9-3867-473f-9d8f-9aba3de42b7a | name | 2022-04-03T07:45:01.487+00:00 | 2022-04-03T07:45:01.487+00:00 | 778f8cce-8cc6-4de1-b025-e0538f97e072 | <example@test.com> |
 
 
 ### absolute-device-freeze-message-create
+
 ***
 Creates a new Freeze message for the account.
 
@@ -413,6 +450,7 @@ Creates a new Freeze message for the account.
 #### Base Command
 
 `absolute-device-freeze-message-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -428,8 +466,11 @@ Creates a new Freeze message for the account.
 | Absolute.FreezeMessage.ID | String | The system-defined, unique identifier of the Freeze message. | 
 
 #### Command example
+
 ```!absolute-device-freeze-message-create html_message="some text" message_name="name name"```
+
 #### Context Example
+
 ```json
 {
     "Absolute": {
@@ -445,6 +486,7 @@ Creates a new Freeze message for the account.
 >Absolute New freeze message was created with ID: bdaf3a55-411a-4393-a0bf-7340f38fbc68
 
 ### absolute-device-freeze-message-update
+
 ***
 Updates the content of an existing Freeze message.
 
@@ -452,6 +494,7 @@ Updates the content of an existing Freeze message.
 #### Base Command
 
 `absolute-device-freeze-message-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -464,13 +507,17 @@ Updates the content of an existing Freeze message.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!absolute-device-freeze-message-update html_message="new mesg" message_id=711b5da9-3867-473f-9d8f-9aba3de42b7a message_name="name-new"```
+
 #### Human Readable Output
 
 >Absolute Freeze message: 711b5da9-3867-473f-9d8f-9aba3de42b7a was updated successfully
 
 ### absolute-device-freeze-message-delete
+
 ***
 Deletes an existing Freeze message for the account.
 
@@ -478,6 +525,7 @@ Deletes an existing Freeze message for the account.
 #### Base Command
 
 `absolute-device-freeze-message-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -488,13 +536,17 @@ Deletes an existing Freeze message for the account.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!absolute-device-freeze-message-delete message_id="711b5da9-3867-473f-9d8f-9aba3de42b7a"```
+
 #### Human Readable Output
 
 >Absolute Freeze message: 711b5da9-3867-473f-9d8f-9aba3de42b7a was deleted successfully
 
 ### absolute-device-unenroll
+
 ***
 Initiates an unenroll request on a list of eligible devices.
 
@@ -502,6 +554,7 @@ Initiates an unenroll request on a list of eligible devices.
 #### Base Command
 
 `absolute-device-unenroll`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -537,8 +590,11 @@ Initiates an unenroll request on a list of eligible devices.
 | Absolute.DeviceUnenroll.Devices.CreatedDateTimeUtc | Date | The time \(in Unix epoch\) when the request was created. | 
 
 #### Command example
+
 ```!absolute-device-unenroll device_ids="1"```
+
 #### Context Example
+
 ```json
 {
     "Absolute": {
@@ -567,13 +623,15 @@ Initiates an unenroll request on a list of eligible devices.
 #### Human Readable Output
 
 >### Absolute unenroll devices:
+>
 >|DeviceUid|ESN|EligibleStatus|Serial|SystemName|Username|
 >|---|---|---|---|---|---|
->| 1 | 2BU2PJD28VAA1UYL0008 | 0 | CNF83051BN | user1 | example@test.com |
->| 2 | 2BU2PJ545L0008 | 1 | CNF43051BN | user2 | example2@test.com |
+>| 1 | 2BU2PJD28VAA1UYL0008 | 0 | CNF83051BN | user1 | <example@test.com> |
+>| 2 | 2BU2PJ545L0008 | 1 | CNF43051BN | user2 | <example2@test.com> |
 
 
 ### absolute-device-application-list
+
 ***
 Gets a list of device records and the corresponding software application data for each device on the account that you have access to or that meets the given filter.
 
@@ -581,6 +639,7 @@ Gets a list of device records and the corresponding software application data fo
 #### Base Command
 
 `absolute-device-application-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -620,8 +679,11 @@ Gets a list of device records and the corresponding software application data fo
 | Absolute.DeviceApplication.LastScanTimeUtc | Date | The date and time \(in Unix epoch time\) of the most recent installed software \(SNG\) scan. | 
 
 #### Command example
+
 ```!absolute-device-application-list device_ids=1234 filter="appName eq 'Notepad++' or appName eq 'Settings'"```
+
 #### Context Example
+
 ```json
 {
     "Absolute": {
@@ -694,6 +756,7 @@ Gets a list of device records and the corresponding software application data fo
 #### Human Readable Output
 
 >### Absolute device applications list:
+>
 >|AccountUid|AppId|AppName|AppOriginalName|AppOriginalPublisher|AppOriginalVersion|AppPublisher|AppVersion|DeviceAppId|DeviceName|DeviceSerialNumber|DeviceUid|Esn|FirstDetectUtc|InstallDate|InstallPath|LastScanTimeUtc|OsName|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| accountID | U2V0dGluZ3N8fE1pY3Jvc29mdHx8MTAuMC4yLjEwMDA= | Settings | Settings | Microsoft Corporation | 10.0.2.1000 | Microsoft | 10.0.2.1000 | 123456_24222cfe5ccbe45e6d5a78faa58cd977921b4c1dd552884ec38653934c3b75f9 | ABSOLUTE-ASSET- | GoogleCloud-B8736A4405BF0E968020BCBC46EDA096 | 123456 | D0001 | 1648601001193 | 1536995941018 | C:\Windows\ImmersiveControlPanel | 1648627356120 | Microsoft Windows Server 2019 Datacenter |
@@ -702,6 +765,7 @@ Gets a list of device records and the corresponding software application data fo
 >Above results are with page number: 0 and with size: 50.
 
 ### absolute-device-list
+
 ***
 Gets a list of device records and their corresponding data that meets the required filter for all devices in your account, based on your authorization token.
 
@@ -709,6 +773,7 @@ Gets a list of device records and their corresponding data that meets the requir
 #### Base Command
 
 `absolute-device-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -744,8 +809,11 @@ Gets a list of device records and their corresponding data that meets the requir
 | Absolute.Device.EncryptionStatus | String | The summarized encryption status of the device. | 
 
 #### Command example
+
 ```!absolute-device-list os_name="Microsoft Windows Server 2019 Datacenter"```
+
 #### Context Example
+
 ```json
 {
     "Absolute": {
@@ -771,12 +839,14 @@ Gets a list of device records and their corresponding data that meets the requir
 #### Human Readable Output
 
 >### Absolute devices list:
+>
 >|AgentStatus|Esn|FullSystemName|Id|LastConnectedUtc|LocalIp|PublicIp|Serial|SystemManufacturer|SystemModel|SystemName|SystemType|osName|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| A | D0001 | ABSOLUTE-ASSET-.WORKGROUP | 123456 | 1648971645189 | 127.0.0.1 | 127.0.0.1 | GoogleCloud-B8736A4405BF0E968020BCBC46EDA096 | Google | GOOGLE COMPUTE ENGINE | ABSOLUTE-ASSET- | x64-based PC | Microsoft Windows Server 2019 Datacenter |
 >Above results are with page number: 0 and with size: 50.
 
 ### absolute-device-get
+
 ***
 Gets a list of device records and their corresponding data that meets the required fields for all devices in your account.
 
@@ -784,6 +854,7 @@ Gets a list of device records and their corresponding data that meets the requir
 #### Base Command
 
 `absolute-device-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -835,8 +906,11 @@ Gets a list of device records and their corresponding data that meets the requir
 | Absolute.Device.NetworkAdapters.networkSSID | String | The Service Set Identifier \(SSID\) of the connected Wi-Fi adapter. | 
 
 #### Command example
+
 ```!absolute-device-get device_names="ABSOLUTE-ASSET-"```
+
 #### Context Example
+
 ```json
 {
     "Absolute": {
@@ -925,6 +999,7 @@ Gets a list of device records and their corresponding data that meets the requir
 #### Human Readable Output
 
 >### Absolute devices list:
+>
 >|AgentStatus|Bios|Domain|Esn|FullSystemName|Id|LastConnectedUtc|LocalIp|NetworkAdapters|Os|PolicyGroupName|PublicIp|Serial|SystemManufacturer|SystemModel|SystemName|SystemType|Username|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| A | id: Google - 1 Google <br/>serialNumber: GoogleCloud-B8736A4405BF0E968020BCBC46EDA096<br/>version: Google - 1 Google <br/>versionDate: Google Google, 01/01/2011<br/>smBiosVersion: 2.4 | WORKGROUP | D0001 | ABSOLUTE-ASSET-.WORKGROUP | 123456 | 1648971645189 | 127.0.0.1 | {},<br/>{} | architecture: 64-bit<br/>installDate: 1643800616000<br/>lastBootTime: 1646884562500<br/>name: Microsoft Windows Server 2019 Datacenter<br/>productKey: WMDGN-G9PQG-XVVXX-R3X43-63DFG<br/>serialNumber: 00430-00000-00000-AA691<br/>version: 10.0.17763<br/>currentBuild: 17763 | Global Policy Group | 127.0.0.1 | GoogleCloud-B8736A4405BF0E968020BCBC46EDA096 | Google | GOOGLE COMPUTE ENGINE | ABSOLUTE-ASSET- | x64-based PC | Administrator |
@@ -932,6 +1007,7 @@ Gets a list of device records and their corresponding data that meets the requir
 
 
 ### absolute-device-location-get
+
 ***
 Gets a list of devices geo locations records and their corresponding data that meets the required devices IDs.
 
@@ -939,6 +1015,7 @@ Gets a list of devices geo locations records and their corresponding data that m
 #### Base Command
 
 `absolute-device-location-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -961,7 +1038,9 @@ Gets a list of devices geo locations records and their corresponding data that m
 | Absolute.LocationReport.LastUpdate | Number | The date and time \(in Unix epoch\) when the device last changed its location. | 
 
 #### Command example
+
 ```!absolute-device-location-get device_ids=1234```
+
 #### Human Readable Output
 
 >No device locations found in Absolute for the given filters: {'device_ids': '1234'}
@@ -986,68 +1065,75 @@ Retrieves a list of events from the Absolute device instance.
 | limit | The maximum number of records to return per page. Note, this may be restricted by fixed system limits.                                                 | Optional | 
 
 #### Command Example
+
 ```!absolute-device-get-events start_date="one minute ago" end_date="now" limit=10```
 
 
 ### Creating a filtering and sorting query
+
 The following commands have the option to insert a **filter** argument:
+
 - ***absolute-device-application-list***
 - ***absolute-device-list***
 
 Absolute uses a subset of query options from Open Data Protocol (OData) for filtering and sorting. 
 OData version 1 and 2 are supported. OData query parameters must be alphabetized and URI encoded.
-For more information about OData, see: https://www.odata.org/documentation.
+For more information about OData, see: <https://www.odata.org/documentation>.
 
 A few examples of creating a query (i.e., passing a filter argument):
+
 - Using the eq operator
-   - Get a list of all devices with an active status: agentStatus eq 'A'
-   - Get a list of all devices that are currently frozen: dfStatus.statusCode eq 'FRZN'
-   - Get a list of all devices that have 1734 in their ESN (Identifier): substringof('1734',esn) eq true
+  - Get a list of all devices with an active status: agentStatus eq 'A'
+  - Get a list of all devices that are currently frozen: dfStatus.statusCode eq 'FRZN'
+  - Get a list of all devices that have 1734 in their ESN (Identifier): substringof('1734',esn) eq true
 - Using the ne operator
-   - Get a list of all devices that are not active: agentStatus ne 'A'
+  - Get a list of all devices that are not active: agentStatus ne 'A'
 - Using the gt operator
-   - Get a list of all devices with greater than 1 GB (1073741824 bytes) of available physical: availablePhysicalRamBytes gt 1073741824
+  - Get a list of all devices with greater than 1 GB (1073741824 bytes) of available physical: availablePhysicalRamBytes gt 1073741824
 - Using the or operator:
-   - Get a list of all devices with less than 1 GB (1073741824 bytes) of available physical ram or less than 1 GB (1073741824 bytes) of available virtual raml: availablePhysicalMemroyBytes lt 1073741824 or availableVirtualMemoryBytes lt 1073741824
+  - Get a list of all devices with less than 1 GB (1073741824 bytes) of available physical ram or less than 1 GB (1073741824 bytes) of available virtual raml: availablePhysicalMemroyBytes lt 1073741824 or availableVirtualMemoryBytes lt 1073741824
 
 For more examples and explanations, see the [Absolute docs](https://api.absolute.com/api-doc/doc.html) (from page 10).
 
 
 ## Breaking changes from the previous version of this integration - Absolute
+
 The following sections list the changes in this version.
 
 
 ### Arguments
+
 #### The following arguments were removed in this version:
 
 In the ***absolute-device-application-list*** command, the following argument was removed:
-* *account_uids*
+- *account_uids*
 
 
 ### Outputs
+
 - In the ***absolute-device-unenroll*** command the following outputs were replaced:
-  * *Absolute.DeviceUnenroll.DeviceUid* - replaced by *Absolute.DeviceUnenroll.Devices.DeviceUid*.
-  * *Absolute.DeviceUnenroll.ESN* - replaced by *Absolute.DeviceUnenroll.Devices.ESN*.
+  - *Absolute.DeviceUnenroll.DeviceUid* - replaced by *Absolute.DeviceUnenroll.Devices.DeviceUid*.
+  - *Absolute.DeviceUnenroll.ESN* - replaced by *Absolute.DeviceUnenroll.Devices.ESN*.
 
 - In the ***absolute-device-freeze-request-get*** command the following outputs were replaced:
-  * *Absolute.FreezeRequestDetail.Configuration.issuedUtc* - replaced by *Absolute.FreezeRequestDetail.Configuration.issuedDateTimeUTC*.
-  * *Absolute.FreezeRequestDetail.RequesterUid* - replaced by *Absolute.FreezeRequestDetail.Requester*.
-  * *Absolute.FreezeRequestDetail.Statuses.ackClientUtc* - replaced by *Absolute.FreezeRequestDetail.Statuses.ackClientDateTimeUtcs*.
-  * *Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateUTC* - replaced by *Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateTimeUtc*.
-  * *Absolute.FreezeRequestDetail.Statuses.updatedUtc* - replaced by *Absolute.FreezeRequestDetail.Statuses.updatedDateTimeUtc*.
+  - *Absolute.FreezeRequestDetail.Configuration.issuedUtc* - replaced by *Absolute.FreezeRequestDetail.Configuration.issuedDateTimeUTC*.
+  - *Absolute.FreezeRequestDetail.RequesterUid* - replaced by *Absolute.FreezeRequestDetail.Requester*.
+  - *Absolute.FreezeRequestDetail.Statuses.ackClientUtc* - replaced by *Absolute.FreezeRequestDetail.Statuses.ackClientDateTimeUtcs*.
+  - *Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateUTC* - replaced by *Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateTimeUtc*.
+  - *Absolute.FreezeRequestDetail.Statuses.updatedUtc* - replaced by *Absolute.FreezeRequestDetail.Statuses.updatedDateTimeUtc*.
 
 - In the ***absolute-device-application-list*** command the following output was removed:
-  * *Absolute.DeviceApplication.AccountUid*
+  - *Absolute.DeviceApplication.AccountUid*
 
 - In the ***absolute-custom-device-field-list*** command the following output was removed:
-  * *Absolute.CustomDeviceField.ESN*
+  - *Absolute.CustomDeviceField.ESN*
 
 - In the ***absolute-device-freeze-request-get*** command the following outputs were removed:
-  * *Absolute.FreezeRequestDetail.Statuses.statusUid*
-  * *Absolute.FreezeRequestDetail.RequesterUid*
+  - *Absolute.FreezeRequestDetail.Statuses.statusUid*
+  - *Absolute.FreezeRequestDetail.RequesterUid*
 
 - In the ***absolute-device-unenroll*** command the following outputs were removed:
-  * *Absolute.DeviceUnenroll.EligibleStatus*
-  * *Absolute.DeviceUnenroll.Serial*
-  * *Absolute.DeviceUnenroll.SystemName*
-  * *Absolute.DeviceUnenroll.Username*
+  - *Absolute.DeviceUnenroll.EligibleStatus*
+  - *Absolute.DeviceUnenroll.Serial*
+  - *Absolute.DeviceUnenroll.SystemName*
+  - *Absolute.DeviceUnenroll.Username*

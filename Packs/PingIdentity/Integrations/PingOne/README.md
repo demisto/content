@@ -13,9 +13,12 @@ Integrates with the PingOne Management API to unlock, create, delete and update 
 | Use system proxy settings | Use system proxy settings. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### pingone-unlock-user
+
 ***
 Unlock a user's account.
 
@@ -23,6 +26,7 @@ Unlock a user's account.
 #### Base Command
 
 `pingone-unlock-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -35,6 +39,7 @@ Unlock a user's account.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pingone-unlock-user username=emma.sharp```
 
 #### Human Readable Output
@@ -42,6 +47,7 @@ There is no context output for this command.
 >### emma.sharp unlocked
 
 ### pingone-deactivate-user
+
 ***
 Deactivate a user's account.
 
@@ -49,6 +55,7 @@ Deactivate a user's account.
 #### Base Command
 
 `pingone-deactivate-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -61,6 +68,7 @@ Deactivate a user's account.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pingone-deactivate-user username=emma.sharp```
 
 #### Human Readable Output
@@ -68,6 +76,7 @@ There is no context output for this command.
 >### User emma.sharp deactivated
 
 ### pingone-activate-user
+
 ***
 Activate a user's account.
 
@@ -75,6 +84,7 @@ Activate a user's account.
 #### Base Command
 
 `pingone-activate-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -87,6 +97,7 @@ Activate a user's account.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pingone-activate-user username=emma.sharp```
 
 #### Human Readable Output
@@ -94,13 +105,15 @@ There is no context output for this command.
 >### emma.sharp is active now
 
 ### pingone-set-password
+
 ***
-Sets a user's password. Further password details available here: https://apidocs.pingidentity.com/pingone/platform/v1/api/#put-update-password-self
+Sets a user's password. Further password details available here: <https://apidocs.pingidentity.com/pingone/platform/v1/api/#put-update-password-self>
 
 
 #### Base Command
 
 `pingone-set-password`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -114,6 +127,7 @@ Sets a user's password. Further password details available here: https://apidocs
 There is no context output for this command.
 
 #### Command Example
+
 ```!pingone-set-password username=emma.sharp password=OnePing123!```
 
 #### Human Readable Output
@@ -121,6 +135,7 @@ There is no context output for this command.
 >emma.sharp password was updated.
 
 ### pingone-add-to-group
+
 ***
 Add user to the group. One of the following has to be given username or userId and groupName or groupId.
 
@@ -128,6 +143,7 @@ Add user to the group. One of the following has to be given username or userId a
 #### Base Command
 
 `pingone-add-to-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -143,6 +159,7 @@ Add user to the group. One of the following has to be given username or userId a
 There is no context output for this command.
 
 #### Command Example
+
 ```!pingone-add-to-group username=richard.smith groupName=Sales```
 
 #### Human Readable Output
@@ -150,6 +167,7 @@ There is no context output for this command.
 >User: 9bc53389-f806-47b6-9480-ab1e3c6269b5 added to group: Sales successfully
 
 ### pingone-remove-from-group
+
 ***
 Remove user from the group. One of the following has to be given username or userId and groupName or groupId.
 
@@ -157,6 +175,7 @@ Remove user from the group. One of the following has to be given username or use
 #### Base Command
 
 `pingone-remove-from-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -172,6 +191,7 @@ Remove user from the group. One of the following has to be given username or use
 There is no context output for this command.
 
 #### Command Example
+
 ```!pingone-remove-from-group username=richard.smith groupName=Sales```
 
 #### Human Readable Output
@@ -179,6 +199,7 @@ There is no context output for this command.
 >User: 9bc53389-f806-47b6-9480-ab1e3c6269b5 was removed from group: Sales successfully
 
 ### pingone-get-groups
+
 ***
 Returns user's group memberships.
 
@@ -186,6 +207,7 @@ Returns user's group memberships.
 #### Base Command
 
 `pingone-get-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -205,9 +227,11 @@ Returns user's group memberships.
 
 
 #### Command Example
+
 ```!pingone-get-groups username=emma.sharp```
 
 #### Context Example
+
 ```json
 {
     "Account": {
@@ -230,7 +254,9 @@ Returns user's group memberships.
 #### Human Readable Output
 
 >PingOne groups for user: emma.sharp
+>
 > ### Groups
+>
 >|ID|Name|
 >|---|---|
 >| a5ec8d61-6291-4ebf-8630-135c2ecf1d10 | Marketing |
@@ -238,6 +264,7 @@ Returns user's group memberships.
 
 
 ### pingone-get-user
+
 ***
 Returns a PingOne user. One of the following has to be given username or userId.
 
@@ -245,6 +272,7 @@ Returns a PingOne user. One of the following has to be given username or userId.
 #### Base Command
 
 `pingone-get-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -268,9 +296,11 @@ Returns a PingOne user. One of the following has to be given username or userId.
 
 
 #### Command Example
+
 ```!pingone-get-user username=emma.sharp```
 
 #### Context Example
+
 ```json
 {
     "Account": {
@@ -288,12 +318,14 @@ Returns a PingOne user. One of the following has to be given username or userId.
 #### Human Readable Output
 
 >### User:emma.sharp
+>
 >|AccountStatus|CreatedAt|Email|Enabled|Environment|First Name|ID|Last Name|PopulationID|UpdatedAt|Username|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| OK | 2021-09-03T18:04:03.916Z | emma.sharp@example.com | true | b4f5e266-a946-4f77-9cc5-5dc91b046431 | Emma | a8890eb9-38ea-469a-bc00-b64be7903633 | Sharp | 4cd45bdb-0eb2-42fe-8475-4bcd908269f1 | 2021-09-23T17:18:11.747Z | emma.sharp |
+>| OK | 2021-09-03T18:04:03.916Z | <emma.sharp@example.com> | true | b4f5e266-a946-4f77-9cc5-5dc91b046431 | Emma | a8890eb9-38ea-469a-bc00-b64be7903633 | Sharp | 4cd45bdb-0eb2-42fe-8475-4bcd908269f1 | 2021-09-23T17:18:11.747Z | emma.sharp |
 > 
 
 ### pingone-create-user
+
 ***
 Create a PingOne user.
 
@@ -301,6 +333,7 @@ Create a PingOne user.
 #### Base Command
 
 `pingone-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -323,9 +356,11 @@ Create a PingOne user.
 
 
 #### Command Example
+
 ```!pingone-create-user username=richard.smith populationId=4cd45bdb-0eb2-42fe-8475-4bcd908269f1```
 
 #### Context Example
+
 ```json
 {
     "Account": {
@@ -343,12 +378,14 @@ Create a PingOne user.
 #### Human Readable Output
 
 >### PingOne user created: richard.smith
+>
 >|AccountStatus|CreatedAt|Email|Enabled|Environment|First Name|ID|Last Name|PopulationID|UpdatedAt|Username|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| OK | 2021-09-23T17:18:18.292Z |  | true | b4f5e266-a946-4f77-9cc5-5dc91b046431 |  | 9bc53389-f806-47b6-9480-ab1e3c6269b5 |  | 4cd45bdb-0eb2-42fe-8475-4bcd908269f1 | 2021-09-23T17:18:18.292Z | richard.smith |
 
 
 ### pingone-update-user
+
 ***
 Update a PingOne user.
 
@@ -356,6 +393,7 @@ Update a PingOne user.
 #### Base Command
 
 `pingone-update-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -384,15 +422,18 @@ Update a PingOne user.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pingone-update-user username=richard.smith phoneNumber=604-998-7766```
 
 #### Human Readable Output
 
 >### PingOne user updated: richard.smith
+>
 >**No entries.**
 
 
 ### pingone-delete-user
+
 ***
 Delete a PingOne user. One of the following has to be given username or userId.
 
@@ -400,6 +441,7 @@ Delete a PingOne user. One of the following has to be given username or userId.
 #### Base Command
 
 `pingone-delete-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -413,6 +455,7 @@ Delete a PingOne user. One of the following has to be given username or userId.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pingone-delete-user username=richard.smith```
 
 #### Human Readable Output

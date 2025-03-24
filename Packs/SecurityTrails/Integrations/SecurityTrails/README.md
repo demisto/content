@@ -12,9 +12,12 @@ This integration was integrated and tested with V1 of SecurityTrails
 | Fetch indicators | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### securitytrails-get-subdomains
+
 ***
 Returns child and sibling subdomains for a given hostname.
 
@@ -23,6 +26,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `securitytrails-get-subdomains`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -43,6 +47,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -50,6 +55,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### securitytrails-get-domain-details
+
 ***
 Returns the current data about the given hostname. In addition to the current data, you also get the current statistics associated with a particular record. For example, for a records you'll get how many other hostnames have the same IP.
 
@@ -58,6 +64,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `securitytrails-get-domain-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -79,6 +86,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -86,6 +94,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### securitytrails-get-tags
+
 ***
 Returns tags for a given hostname
 
@@ -93,6 +102,7 @@ Returns tags for a given hostname
 #### Base Command
 
 `securitytrails-get-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -111,6 +121,7 @@ Returns tags for a given hostname
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -118,6 +129,7 @@ Returns tags for a given hostname
 
 
 ### securitytrails-get-company-details
+
 ***
 Returns details for a company domain.
 
@@ -125,6 +137,7 @@ Returns details for a company domain.
 #### Base Command
 
 `securitytrails-get-company-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -145,6 +158,7 @@ Returns details for a company domain.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -152,6 +166,7 @@ Returns details for a company domain.
 
 
 ### securitytrails-get-company-associated-ips
+
 ***
 Returns associated IPs for a company domain. The data is based on whois data with the names matched to the domains.
 
@@ -159,6 +174,7 @@ Returns associated IPs for a company domain. The data is based on whois data wit
 #### Base Command
 
 `securitytrails-get-company-associated-ips`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -176,6 +192,7 @@ Returns associated IPs for a company domain. The data is based on whois data wit
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -183,6 +200,7 @@ Returns associated IPs for a company domain. The data is based on whois data wit
 
 
 ### securitytrails-get-domain-whois
+
 ***
 Returns the current WHOIS data about a given hostname with the stats merged together
 
@@ -190,6 +208,7 @@ Returns the current WHOIS data about a given hostname with the stats merged toge
 #### Base Command
 
 `securitytrails-get-domain-whois`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -244,6 +263,7 @@ Returns the current WHOIS data about a given hostname with the stats merged toge
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -251,6 +271,7 @@ Returns the current WHOIS data about a given hostname with the stats merged toge
 
 
 ### securitytrails-get-dns-history
+
 ***
 Lists out specific historical information about the given hostname parameter. In addition of fetching the historical data for a particular type, the count statistic is returned as well, which represents the number of that particular resource against current data.
 
@@ -259,6 +280,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `securitytrails-get-dns-history`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -296,6 +318,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -303,6 +326,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### securitytrails-get-whois-history
+
 ***
 Returns historical WHOIS information about the given domain.
 
@@ -312,6 +336,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `securitytrails-get-whois-history`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -366,6 +391,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -373,6 +399,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### securitytrails-get-ip-neighbors
+
 ***
 Returns the neighbors in any given IP level range and essentially allows you to explore closeby IP addresses. It will divide the range into 16 groups. Example: a /28 would be divided into 16 /32 blocks or a /24 would be divided into 16 /28 blocks
 
@@ -380,6 +407,7 @@ Returns the neighbors in any given IP level range and essentially allows you to 
 #### Base Command
 
 `securitytrails-get-ip-neighbors`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -400,6 +428,7 @@ Returns the neighbors in any given IP level range and essentially allows you to 
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -407,6 +436,7 @@ Returns the neighbors in any given IP level range and essentially allows you to 
 
 
 ### securitytrails-search-domain
+
 ***
 Filter and search specific records using DSL - a powerful SQL like query interface to the data via certain API end points.
 
@@ -414,6 +444,7 @@ Filter and search specific records using DSL - a powerful SQL like query interfa
 #### Base Command
 
 `securitytrails-search-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -421,8 +452,8 @@ Filter and search specific records using DSL - a powerful SQL like query interfa
 | include_ips | Resolves any A records and additionally returns IP addresses. Possible values are: false, true. Default is false. | Optional | 
 | page | The page of the returned results, starting at 1. A page returns 100 results. | Optional | 
 | scroll | Request scrolling. Only supported when query is used and not filter. See the Scrolling API endpoint. Possible values are: false, true. Default is false. | Optional | 
-| query | The DSL query you want to run (https://docs.securitytrails.com/docs/how-to-use-the-dsl). | Optional | 
-| filter | JSON dicitonary of filter terms (https://docs.securitytrails.com/reference#domain-search). Can not be used together with query. | Optional | 
+| query | The DSL query you want to run (<https://docs.securitytrails.com/docs/how-to-use-the-dsl>). | Optional | 
+| filter | JSON dicitonary of filter terms (<https://docs.securitytrails.com/reference#domain-search>). Can not be used together with query. | Optional | 
 
 
 #### Context Output
@@ -440,6 +471,7 @@ Filter and search specific records using DSL - a powerful SQL like query interfa
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -447,6 +479,7 @@ Filter and search specific records using DSL - a powerful SQL like query interfa
 
 
 ### securitytrails-statistics-domain
+
 ***
 Domain statistics
 
@@ -454,12 +487,13 @@ Domain statistics
 #### Base Command
 
 `securitytrails-statistics-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The DSL query you want to run (https://docs.securitytrails.com/docs/how-to-use-the-dsl). | Optional | 
-| filter | JSON dicitonary of filter terms (https://docs.securitytrails.com/reference#domain-search). Can not be used together with query. | Optional | 
+| query | The DSL query you want to run (<https://docs.securitytrails.com/docs/how-to-use-the-dsl>). | Optional | 
+| filter | JSON dicitonary of filter terms (<https://docs.securitytrails.com/reference#domain-search>). Can not be used together with query. | Optional | 
 
 
 #### Context Output
@@ -476,6 +510,7 @@ Domain statistics
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -483,6 +518,7 @@ Domain statistics
 
 
 ### securitytrails-get-associated-domains
+
 ***
 Find all domains that are related to a hostname you input. Limited to 10000 results.
 
@@ -490,6 +526,7 @@ Find all domains that are related to a hostname you input. Limited to 10000 resu
 #### Base Command
 
 `securitytrails-get-associated-domains`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -514,6 +551,7 @@ Find all domains that are related to a hostname you input. Limited to 10000 resu
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -521,6 +559,7 @@ Find all domains that are related to a hostname you input. Limited to 10000 resu
 
 
 ### securitytrails-search-ip
+
 ***
 Search for IP addresses. A maximum of 10000 results can be retrieved.
 
@@ -528,12 +567,13 @@ Search for IP addresses. A maximum of 10000 results can be retrieved.
 #### Base Command
 
 `securitytrails-search-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page | The page of the returned results, starting at 1. A page returns 100 results. Default is 1. | Optional | 
-| query | The DSL query you want to run (https://docs.securitytrails.com/docs/how-to-use-the-dsl). | Required | 
+| query | The DSL query you want to run (<https://docs.securitytrails.com/docs/how-to-use-the-dsl>). | Required | 
 
 
 #### Context Output
@@ -550,6 +590,7 @@ Search for IP addresses. A maximum of 10000 results can be retrieved.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -557,6 +598,7 @@ Search for IP addresses. A maximum of 10000 results can be retrieved.
 
 
 ### securitytrails-statistics-ip
+
 ***
 Statistics like Reverse DNS pattern identification (RDNS entries are grouped and displayed as x), ports (number of open ports found) or total results are returned
 
@@ -564,11 +606,12 @@ Statistics like Reverse DNS pattern identification (RDNS entries are grouped and
 #### Base Command
 
 `securitytrails-statistics-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The DSL query you want to run (https://docs.securitytrails.com/docs/how-to-use-the-dsl). | Required | 
+| query | The DSL query you want to run (<https://docs.securitytrails.com/docs/how-to-use-the-dsl>). | Required | 
 
 
 #### Context Output
@@ -584,6 +627,7 @@ Statistics like Reverse DNS pattern identification (RDNS entries are grouped and
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -591,6 +635,7 @@ Statistics like Reverse DNS pattern identification (RDNS entries are grouped and
 
 
 ### securitytrails-get-ip-whois
+
 ***
 Returns IPs information based on whois information.
 
@@ -598,6 +643,7 @@ Returns IPs information based on whois information.
 #### Base Command
 
 `securitytrails-get-ip-whois`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -619,6 +665,7 @@ Returns IPs information based on whois information.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -626,6 +673,7 @@ Returns IPs information based on whois information.
 
 
 ### securitytrails-get-useragents
+
 ***
 Fetch user agents seen during the last 30 days for a specific IPv4 address. It shows devices with egressing traffic based on large scale web server logs. The number of results is not limited.
 
@@ -633,6 +681,7 @@ Fetch user agents seen during the last 30 days for a specific IPv4 address. It s
 #### Base Command
 
 `securitytrails-get-useragents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -665,6 +714,7 @@ Fetch user agents seen during the last 30 days for a specific IPv4 address. It s
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -672,6 +722,7 @@ Fetch user agents seen during the last 30 days for a specific IPv4 address. It s
 
 
 ### domain
+
 ***
 Provides data enrichment for domains.
 
@@ -681,6 +732,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -728,6 +780,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -735,13 +788,15 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### securitytrails-sql-query
+
 ***
-Queries the SecurityTrails SQL endpoint. The SecurityTrails SQL API provides a powerful SQL-like query interface to data via certain API endpoints. For a full reference of properties and operators please check the following link: https://securitytrails.com/reference/sql
+Queries the SecurityTrails SQL endpoint. The SecurityTrails SQL API provides a powerful SQL-like query interface to data via certain API endpoints. For a full reference of properties and operators please check the following link: <https://securitytrails.com/reference/sql>
 
 
 #### Base Command
 
 `securitytrails-sql-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -762,6 +817,7 @@ Queries the SecurityTrails SQL endpoint. The SecurityTrails SQL API provides a p
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -769,6 +825,7 @@ Queries the SecurityTrails SQL endpoint. The SecurityTrails SQL API provides a p
 
 
 ### securitytrails-sql-get-next
+
 ***
 Retrieves the next page of results returned from a SQL query where the results exceeded the last page.
 
@@ -776,6 +833,7 @@ Retrieves the next page of results returned from a SQL query where the results e
 #### Base Command
 
 `securitytrails-sql-get-next`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -795,6 +853,7 @@ Retrieves the next page of results returned from a SQL query where the results e
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

@@ -1,6 +1,7 @@
 Extract payloads of each stream from a pcap file.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,13 +10,14 @@ Extract payloads of each stream from a pcap file.
 | Tags | pcap, file, Utility |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
 | entry_id | The entry_id of the pcap file from which to extract streams. |
 | bin2txt_mode | The mode of how to convert the binary to text. |
-| pcap_filter | Filter to apply on pcap. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html |
+| pcap_filter | Filter to apply on pcap. Wireshark syntax as can be found here: <https://www.wireshark.org/docs/man-pages/wireshark-filter.html> |
 | rsa_decrypt_key_entry_id | The entry ID for the RSA decryption key. |
 | wpa_password | The WPA password. By providing the password you will be able to decrypt encrypted traffic data. |
 | filter_keys | Keys of output items by which to filter them. |
@@ -23,6 +25,7 @@ Extract payloads of each stream from a pcap file.
 | server_ports | Default server port numbers by which to decide the direction. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

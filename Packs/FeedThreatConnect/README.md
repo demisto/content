@@ -1,6 +1,7 @@
 The Threat Connect feed provides access to published IOCs that contain known indicators.
 
 What does this pack do?
+
 -  Gets indicators from ThreatConnect.
 -  Gets the owners of available indicators.
 

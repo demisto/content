@@ -10,7 +10,7 @@ which utilizes the [EXO v3 module](https://learn.microsoft.com/en-us/powershell/
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Name | The name of the integration | True |
-| Exchange Online URL | https://outlook.office365.com | True |
+| Exchange Online URL | <https://outlook.office365.com> | True |
 | Certificate | A txt certificate encoded in Base64. | True |
 | The organization used in app-only authentication. |  | True |
 | The application ID from the Azure portal |  | True |
@@ -18,14 +18,19 @@ which utilizes the [EXO v3 module](https://learn.microsoft.com/en-us/powershell/
 
 
 ### Important Notes
+
 ---
+
 * It is strongly recommended to follow the [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide), to prevent the docker container from utilizing excessive memory. Details about the known memory leak can be found [here](https://github.com/MicrosoftDocs/office-docs-powershell/issues/6924).
 * If your instance does experience memory management issues, please configure your playbooks to use *Retry on error*.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ews-mailbox-list
+
 ***
 Displays mailbox objects and attributes, populate property pages, or supplies mailbox information to other tasks.
 
@@ -33,6 +38,7 @@ Displays mailbox objects and attributes, populate property pages, or supplies ma
 #### Base Command
 
 `ews-mailbox-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -75,9 +81,11 @@ Displays mailbox objects and attributes, populate property pages, or supplies ma
 
 
 #### Command Example
+
 ```!ews-mailbox-list limit=1```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -109,12 +117,14 @@ Displays mailbox objects and attributes, populate property pages, or supplies ma
 #### Human Readable Output
 
 >### Results of ews-mailbox-list
+>
 >| Alias | DisplayName | DistinguishedName | EmailAddresses | ExchangeVersion | ExternalDirectoryObjectId | Guid | Id | Identity | Name | OrganizationId | PrimarySmtpAddress | RecipientType | RecipientTypeDetails | UserPrincipalName
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| "user" | "User User" | "CN=user,OU=example.com,OU=Microsoft Exchange Hosted Organizations,DC=EURPR07A005,DC=PROD,DC=OUTLOOK,DC=COM" | \["SPO:SPO\_cac4b654\-5fcf\-44f0\-818e\-479cf8ae42ac@SPO\_SP01","SIP:user@example.com","SMTP:user@example.com"\] | "0.20 \(15.0.0\)" | "3fa9f28b\-eb0e\-463a\-ba7b\-8089fe9991e2" | \{"value":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda","Guid":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda"\} | "user" | "user" | "user" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | "user@example.com" | "UserMailbox" | "UserMailbox" | "user@example.com"
+>| "user" | "User User" | "CN=user,OU=example.com,OU=Microsoft Exchange Hosted Organizations,DC=EURPR07A005,DC=PROD,DC=OUTLOOK,DC=COM" | \["SPO:SPO\_cac4b654\-5fcf\-44f0\-818e\-479cf8ae42ac@SPO\_SP01","SIP:user@example.com","SMTP:user@example.com"\] | "0.20 \(15.0.0\)" | "3fa9f28b\-eb0e\-463a\-ba7b\-8089fe9991e2" | \{"value":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda","Guid":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda"\} | "user" | "user" | "user" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | "<user@example.com>" | "UserMailbox" | "UserMailbox" | "<user@example.com>"
 
 
 ### ews-cas-mailbox-list
+
 ***
 Displays Client Access settings that are configured on mailboxes.
 
@@ -122,6 +132,7 @@ Displays Client Access settings that are configured on mailboxes.
 #### Base Command
 
 `ews-cas-mailbox-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -157,9 +168,11 @@ Displays Client Access settings that are configured on mailboxes.
 
 
 #### Command Example
+
 ```!ews-cas-mailbox-list limit=1```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -193,11 +206,13 @@ Displays Client Access settings that are configured on mailboxes.
 #### Human Readable Output
 
 >### Results of ews-cas-mailbox-list
+>
 >| ActiveSyncEnabled | DisplayName | ECPEnabled | EmailAddresses | EwsEnabled | ExchangeVersion | ExternalDirectoryObjectId | Guid | Identity | ImapEnabled | MAPIEnabled | Name | OrganizationId | OWAEnabled | PopEnabled | PrimarySmtpAddress | ServerLegacyDN
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| true | "User User" | true | \["SPO:SPO\_cac4b654\-5fcf\-44f0\-818e\-479cf8ae42ac@SPO\_SP01","SIP:user@example.com","SMTP:user@example.com"\] | true | "0.20 \(15.0.0\)" | "3fa9f28b\-eb0e\-463a\-ba7b\-8089fe9991e2" | \{"value":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda","Guid":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda"\} | "user" | true | true | "user" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | true | true | "user@example.com" | "/o=ExchangeLabs/ou=Exchange Administrative Group \(FYDIBOHF23SPDLT\)/cn=Configuration/cn=Servers/cn=DBXPR07MB383
+>| true | "User User" | true | \["SPO:SPO\_cac4b654\-5fcf\-44f0\-818e\-479cf8ae42ac@SPO\_SP01","SIP:user@example.com","SMTP:user@example.com"\] | true | "0.20 \(15.0.0\)" | "3fa9f28b\-eb0e\-463a\-ba7b\-8089fe9991e2" | \{"value":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda","Guid":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda"\} | "user" | true | true | "user" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | true | true | "<user@example.com>" | "/o=ExchangeLabs/ou=Exchange Administrative Group \(FYDIBOHF23SPDLT\)/cn=Configuration/cn=Servers/cn=DBXPR07MB383
 
 ### ews-mailbox-permission-list
+
 ***
 Retrieves permissions on a mailbox.
 
@@ -205,6 +220,7 @@ Retrieves permissions on a mailbox.
 #### Base Command
 
 `ews-mailbox-permission-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -226,9 +242,11 @@ Retrieves permissions on a mailbox.
 
 
 #### Command Example
+
 ```!ews-mailbox-permission-list identity=user```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -255,11 +273,13 @@ Retrieves permissions on a mailbox.
 #### Human Readable Output
 
 >### Results of ews-mailbox-permission-list
+>
 >| AccessRights | Deny | Identity | InheritanceType | IsInherited | User
 >| --- | --- | --- | --- | --- | ---
 >| \["FullAccess","ReadPermission"\] | \{"IsPresent":false\} | "user" | "All" | false | "NT AUTHORITY\\SELF"
 
 ### ews-recipient-permission-list
+
 ***
 Displays information about SendAs permissions that are configured for users.
 
@@ -267,6 +287,7 @@ Displays information about SendAs permissions that are configured for users.
 #### Base Command
 
 `ews-recipient-permission-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -288,9 +309,11 @@ Displays information about SendAs permissions that are configured for users.
 
 
 #### Command Example
+
 ```!ews-recipient-permission-list identity=<Guid>```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -311,11 +334,13 @@ Displays information about SendAs permissions that are configured for users.
 #### Human Readable Output
 
 >### Results of ews-mailbox-permission-list
+>
 >| AccessRights | Deny | Identity | InheritanceType | IsInherited | User
 >| --- | --- | --- | --- | --- | ---
 >| \["FullAccess","ReadPermission"\] | \{"IsPresent":false\} | "user" | "All" | false | "NT AUTHORITY\\SELF"
 
 ### ews-recipient-list
+
 ***
 Displays existing recipient objects in your organization. This command returns all mail-enabled objects (for example, mailboxes, mail users, mail contacts, and distribution groups).
 
@@ -323,6 +348,7 @@ Displays existing recipient objects in your organization. This command returns a
 #### Base Command
 
 `ews-recipient-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -350,9 +376,11 @@ Displays existing recipient objects in your organization. This command returns a
 
 
 #### Command Example
+
 ```!ews-recipient-list identity=<ExternalDirectoryObjectId>```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -381,14 +409,16 @@ Displays existing recipient objects in your organization. This command returns a
 #### Human Readable Output
 
 >### Results of ews-recipient-list
+>
 >| Alias | DisplayName | DistinguishedName | EmailAddresses | ExchangeVersion | ExternalDirectoryObjectId | Identity | Name | OrganizationId | PrimarySmtpAddress | RecipientType | RecipientTypeDetails
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| "user" | "user" | "CN=user\_Identity,OU=example.com,OU=Microsoft Exchange Hosted Organizations,DC=EURPR07A005,DC=PROD,DC=OUTLOOK,DC=COM" | \["SPO:SPO\_SP00@SPO\_SP01","SMTP:user@example.com"\] | "0.10 \(14.0.100\)" | "Identity" | "user\_Identity" | "user\_Identity" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | "user@example.com" | "MailUniversalDistributionGroup" | "GroupMailbox"
+>| "user" | "user" | "CN=user\_Identity,OU=example.com,OU=Microsoft Exchange Hosted Organizations,DC=EURPR07A005,DC=PROD,DC=OUTLOOK,DC=COM" | \["SPO:SPO\_SP00@SPO\_SP01","SMTP:user@example.com"\] | "0.10 \(14.0.100\)" | "Identity" | "user\_Identity" | "user\_Identity" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | "<user@example.com>" | "MailUniversalDistributionGroup" | "GroupMailbox"
 
 
 
 
 ### ews-new-tenant-allow-block-list-items
+
 ***
 Add new items to the Tenant Allow/Block Lists.  Uses PowerShell New-TenantAllowBlockListItems cmdlet.
 
@@ -398,6 +428,7 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 #### Base Command
 
 `ews-new-tenant-allow-block-list-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -434,9 +465,11 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 
 
 #### Command Example
+
 ```!ews-new-tenant-allow-block-list-items action=Block list_type=sender entries="attacker@phishingsite.com" notes="Email observed in a phishing campaign."```
 
 #### Context Example
+
 ```json
 {
     "Action": "Block",
@@ -461,13 +494,15 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 #### Human Readable Output
 
 >### Results of ews-new-tenant-allow-block-list-items
+>
 >| Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | New | outlook.office365.com | false | \{"value":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3","Guid":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3"\} |  | false | attacker@phishingsite.com
+>| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | New | outlook.office365.com | false | \{"value":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3","Guid":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3"\} |  | false | <attacker@phishingsite.com>
 
 
 
 ### ews-get-tenant-allow-block-list-items
+
 ***
 Retrieve current Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
 
@@ -477,6 +512,7 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 #### Base Command
 
 `ews-get-tenant-allow-block-list-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -512,9 +548,11 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 
 
 #### Command Example
+
 ```!ews-get-tenant-allow-block-list-items action=Block list_type=sender```
 
 #### Context Example
+
 ```json
 [
     {
@@ -539,13 +577,16 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 ```
 
 #### Human Readable Output
+>
 >### Results of ews-get-tenant-allow-block-list-items
+>
 >| Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | Unchanged | outlook.office365.com | false | \{"value":"feada07c\-99b7\-48e9\-a562\-a755073522ff","Guid":"feada07c\-99b7\-48e9\-a562\-a755073522ff"\} |  | false | attacker@phishingsite.com
+>| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | Unchanged | outlook.office365.com | false | \{"value":"feada07c\-99b7\-48e9\-a562\-a755073522ff","Guid":"feada07c\-99b7\-48e9\-a562\-a755073522ff"\} |  | false | <attacker@phishingsite.com>
 
 
 ### ews-get-tenant-allow-block-list-count
+
 ***
 Retrieve current count of defined Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
 
@@ -555,6 +596,7 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 #### Base Command
 
 `ews-get-tenant-allow-block-list-count`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -573,9 +615,11 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 
 
 #### Command Example
+
 ```!ews-get-tenant-allow-block-list-count list_type=sender```
 
 #### Context Example
+
 ```json
 {
     "Count": 2,
@@ -585,13 +629,16 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 ```
 
 #### Human Readable Output
+>
 >### Results of ews-get-tenant-allow-block-list-count
+>
 >| Count | ListSubType | ListType
 >| --- | --- | ---
 >| 2 | Tenant | sender
 
 
 ### ews-remove-tenant-allow-block-list-items
+
 ***
 Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
 
@@ -601,6 +648,7 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 #### Base Command
 
 `ews-remove-tenant-allow-block-list-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -633,9 +681,11 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 | EWS.RemovedTenantBlocks.Value | String | The value of the entry that was removed |
 
 #### Command Example
+
 ```!ews-remove-tenant-allow-block-list-items list_type=sender entries="attacker2@phishingsite.com"```
 
 #### Context Example
+
 ```json
 {
     "Action": "0",
@@ -658,12 +708,15 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 ```
 
 #### Human Readable Output
+>
 >### Results of ews-remove-tenant-allow-block-list-items
+>
 >| Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| 0 |  |  |  |  |  |  |  |  | Deleted | outlook.office365.com | false | \{"value":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c","Guid":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c"\} |  |  | attacker@phishingsite.com
+>| 0 |  |  |  |  |  |  |  |  | Deleted | outlook.office365.com | false | \{"value":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c","Guid":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c"\} |  |  | <attacker@phishingsite.com>
 
 ### ews-export-quarantinemessage
+
 ***
 Export quarantine messages.
 
@@ -671,7 +724,9 @@ Export quarantine messages.
 #### Base Command
 
 `ews-export-quarantinemessage`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required**
 | --- | --- | --- |
 identities | A comma-separated list of identities of the messages to export. | Optional |
@@ -694,9 +749,11 @@ recipient_address | Email address to send the exported message to. | Optional |
 
 
 #### Command Example
+
 ```!ews-export-quarantinemessage identity="12345678-beef-dead-beef-0123456789ab\\c0ffee13-beef-dead-beef-0123456789ab"```
 
 #### Context Example
+
 ```json
 {
     "BodyEncoding": "Base64",
@@ -707,19 +764,24 @@ recipient_address | Email address to send the exported message to. | Optional |
 ```
 
 #### Human Readable Output
+>>
 >>### Results of ews-export-quarantinemessage
+>
 >| **BodyEncoding** | **Eml** | **Identity** | **Organization** |
 >| --- | --- | --- | --- |
 >| Base64 | TmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXAsIG5ldmVyIGdvbm5hIGxldCB5b3UgZG93biwgbmV2ZXIgZ29ubmEgcnVuIGFyb3VuZCBhbmQgZGVzZXJ0IHlvdQo= | 12345678-beef-dead-beef-0123456789ab\\c0ffee13-beef-dead-beef-0123456789ab | c0ffee13-beef-dead-beef-0123456789ab |
 
 ### ews-get-quarantinemessage
+
 ***
 Retrieve quarantine messages.
 
 #### Base Command
 
 `ews-get-quarantinemessage`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | identity | The identity of a single message to retrieve. | Optional |
@@ -798,9 +860,11 @@ Retrieve quarantine messages.
 
 
 #### Command Example
+
 ```!ews-get-quarantinemessage```
 
 #### Context Example
+
 ```json
 {
 [
@@ -909,22 +973,27 @@ Retrieve quarantine messages.
 ]
 }
 ```
+
 #### Human Readable Output
 
 >### Results of ews-get-quarantinemessage
+>
 >| ApprovalId | ApprovalUPN | CustomData | DeletedForRecipients | Direction | EntityType | Expires | Identity | MessageId | MoveToQuarantineAdminActionTakenBy | MoveToQuarantineApprovalId | Organization | OverrideReason | OverrideReasonIntValue | PermissionToAllowSender | PermissionToBlockSender | PermissionToDelete | PermissionToDownload | PermissionToPreview | PermissionToRelease | PermissionToRequestRelease | PermissionToViewHeader | PolicyName | PolicyType | QuarantineTypes | QuarantinedUser | ReceivedTime | RecipientAddress | RecipientCount | RecipientTag | ReleaseStatus | Released | ReleasedBy | ReleasedCount | ReleasedUser | Reported | SenderAddress | Size | SourceId | Subject | SystemReleased | TagName | TeamsConversationType | Type |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  |  |  |  | Outbound | Email | 2024-07-18T13:20:02.7166413+00:00 | 12345678-beef-dead-beef-0123456789ab\c0ffee13-beef-dead-beef-0123456789ab | \u003c12345678-beef-dead-beef-0123456789ab@123456.789a.bcde.example.com\u003e |  |  | c0ffee13-beef-dead-beef-0123456789ab | None | 0 | true | false | true | true | true | true | false | false | Default | HostedContentFilterPolicy | HighConfPhish | [] | 2024-07-02T13:20:02.7166413+00:00 | ["admin@example.com"] | 1 | [""] | NOTRELEASED | false | [] | 0 | [] | false | alerts@example.com | 31218 |  | Informational-severity alert: Tenant Allow/Block List entry is about to expire | false | AdminOnlyAccessPolicy |  | High Confidence Phish |
->|  |  |  |  | Inbound | Email | 2024-07-13T10:59:12.7581841+00:00 | 12345678-beef-dead-beef-0123456789ac\\c0ffee13-beef-dead-beef-0123456789ac | \u003c12345678-beef-dead-beef-0123456789ac@123456.789a.bcde.example.com\u003e |  |  | c0ffee13-beef-dead-beef-0123456789ac | None | 0 | true | false | true | true | true | true | false | false | testing_quarantine_release | HostedContentFilterPolicy | HighConfPhish | [] | 2024-06-28T10:59:12.7581841+00:00 | ["user@example.com"] | 1 | [""] | RELEASED | true | ["SystemMailbox{deadbeef-dead-beef-dead-beefdeadbeef}@example.com"] | 1 | [] | false | sender@example.com | 14781 |  | Check the inbox | false | testing_release |  | High Confidence Phish |
+>|  |  |  |  | Outbound | Email | 2024-07-18T13:20:02.7166413+00:00 | 12345678-beef-dead-beef-0123456789ab\c0ffee13-beef-dead-beef-0123456789ab | \<u003c12345678-beef-dead-beef-0123456789ab@123456.789a.bcde.example.com>\u003e |  |  | c0ffee13-beef-dead-beef-0123456789ab | None | 0 | true | false | true | true | true | true | false | false | Default | HostedContentFilterPolicy | HighConfPhish | [] | 2024-07-02T13:20:02.7166413+00:00 | ["admin@example.com"] | 1 | [""] | NOTRELEASED | false | [] | 0 | [] | false | <alerts@example.com> | 31218 |  | Informational-severity alert: Tenant Allow/Block List entry is about to expire | false | AdminOnlyAccessPolicy |  | High Confidence Phish |
+>|  |  |  |  | Inbound | Email | 2024-07-13T10:59:12.7581841+00:00 | 12345678-beef-dead-beef-0123456789ac\\c0ffee13-beef-dead-beef-0123456789ac | \<u003c12345678-beef-dead-beef-0123456789ac@123456.789a.bcde.example.com>\u003e |  |  | c0ffee13-beef-dead-beef-0123456789ac | None | 0 | true | false | true | true | true | true | false | false | testing_quarantine_release | HostedContentFilterPolicy | HighConfPhish | [] | 2024-06-28T10:59:12.7581841+00:00 | ["user@example.com"] | 1 | [""] | RELEASED | true | ["SystemMailbox{deadbeef-dead-beef-dead-beefdeadbeef}@example.com"] | 1 | [] | false | <sender@example.com> | 14781 |  | Check the inbox | false | testing_release |  | High Confidence Phish |
 
 ### ews-release-quarantinemessage
+
 ***
 Release quarantine messages.
 
 #### Base Command
+
 ```ews-release-quarantinemessage```
 
 #### Input
+
 | **Argument Name**      | **Description**                                            | **Required** |
 |------------------------|------------------------------------------------------------|--------------|
 | user                   | The user associated with the quarantine message.           | Optional |
@@ -938,12 +1007,15 @@ Release quarantine messages.
 | action_type            | The type of action to take when releasing the message.     | Optional |
 
 #### Context Output
+
 There are no context outputs for this command.
 
 #### Human Readable Output
+>
 >The message with identity 12345678-beef-dead-beef-0123456789ab\\c0ffee13-beef-dead-beef-0123456789ab has been sent for release from quarantine.
 
 ### ews-junk-rules-get
+
 ***
 Gets junk rules for the specified mailbox.
 
@@ -951,6 +1023,7 @@ Gets junk rules for the specified mailbox.
 #### Base Command
 
 `ews-junk-rules-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -973,9 +1046,11 @@ Gets junk rules for the specified mailbox.
 
 
 #### Command Example
+
 ```!ews-junk-rules-get mailbox="xsoar@dev.onmicrosoft.com"```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -1006,13 +1081,15 @@ Gets junk rules for the specified mailbox.
 
 #### Human Readable Output
 
->### EWS extension - 'xsoar@dev.onmicrosoft.com' Junk rules
+>### EWS extension - '<xsoar@dev.onmicrosoft.com>' Junk rules
+>
 >| BlockedSendersAndDomains | ContactsTrusted | Enabled | TrustedListsOnly | TrustedSendersAndDomains
 >| --- | --- | --- | --- | ---
->| \["user1@gmail.com","user2@gmail.com"\] | False | False | False | \["user1@gmail.com","user2@gmail.com"\]
+>| \["<user1@gmail.com>","<user2@gmail.com>"\] | False | False | False | \["<user1@gmail.com>","<user2@gmail.com>"\]
 
 
 ### ews-junk-rules-set
+
 ***
 Sets junk rules for the specified mailbox.
 
@@ -1020,6 +1097,7 @@ Sets junk rules for the specified mailbox.
 #### Base Command
 
 `ews-junk-rules-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1039,13 +1117,15 @@ Sets junk rules for the specified mailbox.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ews-junk-rules-set mailbox="xsoar@dev.onmicrosoft.com" add_blocked_senders_and_domains="test@gmail.com" add_trusted_senders_and_domains="dev.onmicrosoft.com"```
 
 #### Human Readable Output
 
->EWS extension - 'xsoar@dev.onmicrosoft.com' Junk rules **modified**!
+>EWS extension - '<xsoar@dev.onmicrosoft.com>' Junk rules **modified**!
 
 ### ews-global-junk-rules-set
+
 ***
 Sets junk rules in all managed accounts.
 
@@ -1053,6 +1133,7 @@ Sets junk rules in all managed accounts.
 #### Base Command
 
 `ews-global-junk-rules-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1071,6 +1152,7 @@ Sets junk rules in all managed accounts.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ews-global-junk-rules-set add_blocked_senders_and_domains="test@demisto.com" add_trusted_senders_and_domains="demisto.com"```
 
 #### Human Readable Output
@@ -1078,6 +1160,7 @@ There is no context output for this command.
 >EWS extension - Junk rules globally **modified**!
 
 ### ews-message-trace-get
+
 ***
 Searches message data for the last 10 days. If you run this command without any arguments, only data from the last 48 hours is returned.
 If you enter a start date that is older than 10 days, you will receive an error and the command will return no results.
@@ -1088,6 +1171,7 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 #### Base Command
 
 `ews-message-trace-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1096,7 +1180,7 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 | recipient_address | The recipient_address parameter filters the results by the recipient's email address. You can specify multiple values separated by commas.<br/>. | Optional | 
 | from_ip | The from_ip parameter filters the results by the source IP address.<br/>For incoming messages, the value of from_ip is the public IP address of the SMTP email server that sent the message.<br/>For outgoing messages from Exchange Online, the value is blank.<br/>. | Optional | 
 | to_ip | The to_ip parameter filters the results by the destination IP address.<br/>For outgoing messages, the value of to_ip is the public IP address in the resolved MX record for the destination domain.<br/>For incoming messages to Exchange Online, the value is blank.<br/>. | Optional | 
-| message_id | The message_id parameter filters the results by the Message-ID header field of the message.<br/>This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message.<br/>The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way.<br/>Be sure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").<br/>. | Optional | 
+| message_id | The message_id parameter filters the results by the Message-ID header field of the message.<br/>This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message.<br/>The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way.<br/>Be sure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"<d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com>").<br/>. | Optional | 
 | message_trace_id | The message_trace_id parameter can be used with the recipient address to uniquely identify a message trace and obtain more details.<br/>A message trace ID is generated for every message that's processed by the system.<br/>. | Optional | 
 | page | The page number of the results you want to view.<br/>Can be an integer between 1 and 1000. The default value is 1.<br/>. Default is 1. | Optional | 
 | page_size | The maximum number of entries per page.<br/>Can be an integer between 1 and 5000. The default value is 100.<br/>. Default is 100. | Optional | 
@@ -1126,9 +1210,11 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 
 
 #### Command Example
+
 ```!ews-message-trace-get```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -1173,13 +1259,15 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 #### Human Readable Output
 
 >### EWS extension - Messages trace
+>
 >| EndDate | FromIP | Index | MessageId | MessageTraceId | Organization | Received | RecipientAddress | SenderAddress | Size | StartDate | Status | Subject | ToIP
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| 1/3/2021 6:14:14 AM | 8.8.8.8 | 0 | xxx | xxxx | microsoft.com | 1/3/2021 4:45:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:14:14 AM | Delivered | Test mail |
->| 1/3/2021 6:15:14 AM | 8.8.8.8 | 1 | xxx | xxxx | microsoft.com | 1/3/2021 4:46:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:15:14 AM | Delivered | Test mail | 
+>| 1/3/2021 6:14:14 AM | 8.8.8.8 | 0 | xxx | xxxx | microsoft.com | 1/3/2021 4:45:36 AM | <xsoar@dev.microsoft.com> | <xsoar@dev.onmicrosoft.com> | 6975 | 1/1/2021 6:14:14 AM | Delivered | Test mail |
+>| 1/3/2021 6:15:14 AM | 8.8.8.8 | 1 | xxx | xxxx | microsoft.com | 1/3/2021 4:46:36 AM | <xsoar@dev.microsoft.com> | <xsoar@dev.onmicrosoft.com> | 6975 | 1/1/2021 6:15:14 AM | Delivered | Test mail | 
 
 
 ### ews-federation-trust-get
+
 ***
 Displays the federation trust configured for the Exchange organization.
 
@@ -1187,6 +1275,7 @@ Displays the federation trust configured for the Exchange organization.
 #### Base Command
 
 `ews-federation-trust-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1416,6 +1505,7 @@ Displays the federation trust configured for the Exchange organization.
 | EWS.FederationTrust.WhenCreatedUTC | Date | The date in UTC format of when the federation trust was created. | 
 
 ### ews-federation-configuration-get
+
 ***
 Retrieves the Exchange organization's federated organization identifier and related details, such as federated domains, organization contact, and status.
 
@@ -1423,6 +1513,7 @@ Retrieves the Exchange organization's federated organization identifier and rela
 #### Base Command
 
 `ews-federation-configuration-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1464,6 +1555,7 @@ Retrieves the Exchange organization's federated organization identifier and rela
 | EWS.FederationConfiguration.WhenCreatedUTC | Date | The date in UTC format of when the federation configuration was created. | 
 
 ### ews-remote-domain-get
+
 ***
 Gets the configuration information for the remote domains configured in your organization. This command is available only in the Exchange Online PowerShell V3 module.
 
@@ -1471,6 +1563,7 @@ Gets the configuration information for the remote domains configured in your org
 #### Base Command
 
 `ews-remote-domain-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1529,6 +1622,7 @@ Gets the configuration information for the remote domains configured in your org
 | EWS.RemoteDomain.WhenCreatedUTC | Date | The date in UTC format of when the remote domain was created. | 
 
 ### ews-user-list
+
 ***
 Displays the existing user objects in your organization.
 
@@ -1536,6 +1630,7 @@ Displays the existing user objects in your organization.
 #### Base Command
 
 `ews-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1659,6 +1754,7 @@ Displays the existing user objects in your organization.
 | EWS.User.DirectReports | String | Direct reports of the user object. | 
 
 ### ews-mailbox-audit-bypass-association-list
+
 ***
 Retrieves information about the AuditBypassEnabled property value for user accounts (on-premises Exchange and the cloud) and computer accounts (on-premises Exchange only).
 
@@ -1666,6 +1762,7 @@ Retrieves information about the AuditBypassEnabled property value for user accou
 #### Base Command
 
 `ews-mailbox-audit-bypass-association-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1704,12 +1801,14 @@ Retrieves information about the AuditBypassEnabled property value for user accou
 
 
 ### ews-rule-list
+
 ***
 Get a list of all mailbox rules.
 
 #### Base Command
 
 `ews-rule-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1719,6 +1818,7 @@ Get a list of all mailbox rules.
 
 
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | EWS.Rule.RuleIdentity | String | The rule identity. | 
@@ -1730,18 +1830,21 @@ Get a list of all mailbox rules.
 #### Human Readable Output
 
 >### Results of ews-rule-list
+>
 >| Enabled | Name | Priority | RuleIdentity |
 >| --- | --- | --- | --- |
 >| true | CheckActionRequired	 | 1 | 1268829516541722625 |
 >| true | ews phishing test	| 8 | 1845290268845146113 |
 
 ### ews-get-rule
+
 ***
 Get a mailbox rule.
 
 #### Base Command
 
 `ews-get-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1750,6 +1853,7 @@ Get a mailbox rule.
 | identity | The ID of the rule. | Required |
 
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | EWS.Rule.Rule | String | The rule identity. | 
@@ -1764,17 +1868,20 @@ Get a mailbox rule.
 #### Human Readable Output
 
 >### Results of ews-rule-list
+>
 >| Enabled | Name | Priority | RuleIdentity | Description | IsValid	| StopProcessingRules|
 >| --- | --- | --- | --- | --- | --- | ---|
 >| true | CheckActionRequired | 1 | 1268829516541722625 | If the message: the sender requested any action and my name is in the To box | true| false |
 
 ### ews-remove-rule
+
 ***
 Remove a mailbox rule.
 
 #### Base Command
 
 `ews-remove-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1784,6 +1891,7 @@ Remove a mailbox rule.
 
 
 #### Context Output
+
 There are no context outputs for this command.
 
 #### Human Readable Output
@@ -1791,12 +1899,14 @@ There are no context outputs for this command.
 >Rule 1845290268845146113 has been deleted successfully
 
 ### ews-rule-disable
+
 ***
 Disable an existing inbox rule in a given mailbox.
 
 #### Base Command
 
 `ews-rule-disable`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1806,6 +1916,7 @@ Disable an existing inbox rule in a given mailbox.
 
 
 #### Context Output
+
 There are no context outputs for this command.
 
 #### Human Readable Output
@@ -1813,12 +1924,14 @@ There are no context outputs for this command.
 >Rule 1845290268845146113 has been disabled successfully
 
 ### ews-rule-enable
+
 ***
 Enable an existing inbox rule in a given mailbox.
 
 #### Base Command
 
 `ews-rule-enable`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1828,6 +1941,7 @@ Enable an existing inbox rule in a given mailbox.
 
 
 #### Context Output
+
 There are no context outputs for this command.
 
 #### Human Readable Output
@@ -1835,19 +1949,23 @@ There are no context outputs for this command.
 >Rule 1845290268845146113  has been enabled successfully
 
 ### ews-mail-flow-rules-list
+
 ***
 List all mail flow rules (transport rules) in the organization.
 
 #### Base Command
 
 `ews-mail-flow-rules-list`
+
 #### Input
+
 | **Argument Name** | **Description**                                                | **Possible Values** | **Is Array** | **Required** | **Note**        |
 |-------------------|----------------------------------------------------------------|---------------------|--------------| --- |-----------------|
 | extended_output   | Determine whether the output will be in verbose format or not. | Boolean             | No           | No | Default = False |
 | limit             | The amount of mail flow rules to return. | Number             | No           | No | Default is 1000  |
 
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- |----------| --- |
 | EWS.MailFlowRule.Size | Number   | The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule. |
@@ -1872,6 +1990,7 @@ List all mail flow rules (transport rules) in the organization.
 #### Human Readable Output
 
 >### Results of ews-rule-list
+>
 >| Name      | State    | Priority | Comment | WhenChanged                | CreatedBy|
 >|-----------|----------|----------|---------|----------------------------| --- |
 >| demisto   | Disabled | 1        | comment | 2019-10-14T07:25:04+00:00  | Edwin Becker
@@ -1879,12 +1998,14 @@ List all mail flow rules (transport rules) in the organization.
 >| demisto-3 | Enabled  | 3        | comment | 2019-11-16T016:26:46+00:00 | Barbara Wagner
 
 ### ews-mail-flow-rule-get
+
 ***
 Get a mail flow rule (transport rules) in the organization.
 
 #### Base Command
 
 `ews-mail-flow-rule-get`
+
 #### Input
 
 | **Argument Name** | **Description**                                                | **Possible Values** | **Is Array** | **Required** | **Note** |
@@ -1894,6 +2015,7 @@ Get a mail flow rule (transport rules) in the organization.
 
 
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- |----------| --- |
 | EWS.MailFlowRule.Size | Number   | The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule. |
@@ -1918,17 +2040,20 @@ Get a mail flow rule (transport rules) in the organization.
 #### Human Readable Output
 
 >### Results of ews-rule-list
+>
 >| Name      | State    | Priority | Comment | WhenChanged                | CreatedBy|
 >|-----------|----------|----------|---------|----------------------------| --- |
 >| demisto   | Disabled | 1        | comment | 2019-10-14T07:25:04+00:00  | Edwin Becker
 
 ### ews-mail-flow-rule-remove
+
 ***
 Remove a mail flow rule (transport rule) from the organization.
 
 #### Base Command
 
 `ews-mail-flow-rule-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1937,18 +2062,22 @@ Remove a mail flow rule (transport rule) from the organization.
 
 
 #### Context Output
+
 There are no context outputs for this command.
 
 #### Human Readable Output
+>
 >Mail flow rule 1845290268845146113 has been removed successfully
 
 ### ews-mail-flow-rule-disable
+
 ***
 Disable a mail flow rule (transport rule) in the organization.
 
 #### Base Command
 
 `ews-mail-flow-rule-disable`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1957,18 +2086,22 @@ Disable a mail flow rule (transport rule) in the organization.
 
 
 #### Context Output
+
 There are no context outputs for this command.
 
 #### Human Readable Output
+>
 >Mail flow rule 1845290268845146113 has been disabled successfully
 
 ### ews-mail-flow-rule-enable
+
 ***
 Enable a mail flow rule (transport rule) in the organization.
 
 #### Base Command
 
 `ews-mail-flow-rule-enable`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1977,18 +2110,22 @@ Enable a mail flow rule (transport rule) in the organization.
 
 
 #### Context Output
+
 There are no context outputs for this command.
 
 #### Human Readable Output
+>
 >Mail flow rule 1845290268845146113 has been enabled successfully
 
 ### ews-mail-forwarding-disable
+
 ***
 Disable mail forwarding for a given user.
 
 #### Base Command
 
 `ews-mail-forwarding-disable`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1997,8 +2134,10 @@ Disable mail forwarding for a given user.
 
 
 #### Context Output
+
 There are no context outputs for this command.
 
 #### Human Readable Output
+>
 >Mail forwarding for user 1845290268845146113 has been disabled successfully
 

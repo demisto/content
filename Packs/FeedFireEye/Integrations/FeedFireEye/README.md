@@ -2,6 +2,7 @@
 Use the FireEye feed integration to fetch indicators from the FireEye Intelligence Feed feed.
 
 ## Configure FireEye Feed in Cortex
+
 ---
 
 
@@ -11,7 +12,7 @@ Use the FireEye feed integration to fetch indicators from the FireEye Intelligen
 | Fetch indicators | If checked, fetches indicators. |
 | Indicator Reputation | The reputation applied to indicators from this integration instance. Default is "Bad". |
 | Source Reliability | The reliability of the source providing the intelligence data. Default is "A - Completely reliable" |
-| Traffic Light Protocol color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp. |
+| Traffic Light Protocol color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at <https://us-cert.cisa.gov/tlp>. |
 | Indicator Expiration Method | The method by which to expire indicators from this feed for this integration instance. |
 | Indicator Expiration Interval | How often to expire the indicators from this integration instance (in minutes). This only applies if the *feedExpirationPolicy* is set to **interval**.|
 | Feed Fetch Interval | How often to fetch indicators from the feed for this integration instance (in minutes). Default is 60. | 
@@ -25,17 +26,20 @@ Use the FireEye feed integration to fetch indicators from the FireEye Intelligen
 
 
 ## Commands
+
 ---
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get indicators from the feed
+
 ---
 Gets the feed indicators and reports.
 
 ##### Base Command
 
 `fireeye-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -48,16 +52,19 @@ Gets the feed indicators and reports.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fireeye-get-indicators limit=10```
 
 
 ### fireeye-reset-fetch-indicators
+
 ***
 WARNING: This command will reset your fetch history.
 
 #### Base Command
 
 `fireeye-reset-fetch-indicators`
+
 #### Input
 
 There are no input arguments for this command.
@@ -67,7 +74,9 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fireeye-reset-fetch-indicators```
 
 #### Human Readable Output
+
 Fetch was reset successfully. Your next indicator fetch will collect indicators from the configured "First Fetch Time"

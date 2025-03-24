@@ -379,7 +379,7 @@ Added the following IP addresses to the block list successfully:
 
 ***
 Adds URLs to the specified category.  
-Ensure that the URLs are properly formatted according to Zscaler's guidelines. For more information on valid URL formats, refer to the (Zscaler URL Format Guidelines)[https://help.zscaler.com/zia/url-format-guidelines].
+Ensure that the URLs are properly formatted according to Zscaler's guidelines. For more information on valid URL formats, refer to the [Zscaler URL Format Guidelines](https://help.zscaler.com/zia/url-format-guidelines).
 
 #### Base Command
 
@@ -1060,6 +1060,7 @@ Adds a new IP destination group.
 #### Human Readable Output
 
 IP Destination group created
+
 |Addresses|Countries|Description|ID|IpCategories|IsNonEditable|Name|Type|
 |---|---|---|---|---|---|---|---|
 | 127.0.0.2,<br>127.0.0.1 |  | Localhost | 2000359 |  | false | Test99 | DSTN_IP |
@@ -1122,6 +1123,7 @@ Updates the IP destination group information for the specified group ID.
 #### Human Readable Output
 
 IP Destination group updated
+
 |Addresses|Countries|Description|ID|IpCategories|Name|Type|
 |---|---|---|---|---|---|---|
 | 127.0.0.2 |  | Localhost v2 | 2000359 |  | Test01 | DSTN_IP |
@@ -1193,6 +1195,7 @@ Gets a list of all IP destination groups or the IP destination group information
 #### Human Readable Output
 
 IPv4 Destination groups (2)
+
 |Addresses|Countries|Description|ID|IpCategories|Name|Type|
 |---|---|---|---|---|---|---|
 | 127.0.0.2 |  | Localhost v2 | 1997898 |  | Test99 | DSTN_IP |
@@ -1215,6 +1218,7 @@ IPv4 Destination groups (2)
 #### Human Readable Output
 
 IPv4 Destination groups lite (1)
+
 ID|Name|Type|
 |---|---|---|
 | 1964949 |  | Russia-Region | DSTN_OTHER 

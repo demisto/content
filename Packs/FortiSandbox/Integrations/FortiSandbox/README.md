@@ -14,10 +14,14 @@ FortiSandbox integration is used to submit files to FortiSandbox for malware ana
     | Trust any certificate (not secure) | By default SSL certification validation is enabled. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fortisandbox-simple-file-rating-sha256
+
 ***
 Get file rating of SHA-256 Checksum
 
@@ -25,6 +29,7 @@ Get file rating of SHA-256 Checksum
 #### Base Command
 
 `fortisandbox-simple-file-rating-sha256`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -37,6 +42,7 @@ Get file rating of SHA-256 Checksum
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -44,6 +50,7 @@ There is no context output for this command.
 
 
 ### fortisandbox-simple-file-rating-sha1
+
 ***
 Get File Rating of SHA-1 checksum
 
@@ -51,6 +58,7 @@ Get File Rating of SHA-1 checksum
 #### Base Command
 
 `fortisandbox-simple-file-rating-sha1`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -63,6 +71,7 @@ Get File Rating of SHA-1 checksum
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -70,6 +79,7 @@ There is no context output for this command.
 
 
 ### fortisandbox-url-rating
+
 ***
 Get URL Rating from FortiSandbox
 
@@ -79,6 +89,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `fortisandbox-url-rating`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -91,6 +102,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -98,6 +110,7 @@ There is no context output for this command.
 
 
 ### fortisandbox-get-file-verdict-detailed
+
 ***
 Query file's verdict through its checksum (returns JSON)
 
@@ -105,6 +118,7 @@ Query file's verdict through its checksum (returns JSON)
 #### Base Command
 
 `fortisandbox-get-file-verdict-detailed`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -118,6 +132,7 @@ Query file's verdict through its checksum (returns JSON)
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -125,6 +140,7 @@ There is no context output for this command.
 
 
 ### fortisandbox-upload-file
+
 ***
 Upload file (on-demand submit)
 
@@ -132,6 +148,7 @@ Upload file (on-demand submit)
 #### Base Command
 
 `fortisandbox-upload-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -155,6 +172,7 @@ Upload file (on-demand submit)
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -162,6 +180,7 @@ Upload file (on-demand submit)
 
 
 ### fortisandbox-query-job-verdict
+
 ***
 Query File Scan verdict from FortiSandbox based on Job ID
 
@@ -169,6 +188,7 @@ Query File Scan verdict from FortiSandbox based on Job ID
 #### Base Command
 
 `fortisandbox-query-job-verdict`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -181,6 +201,7 @@ Query File Scan verdict from FortiSandbox based on Job ID
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -188,6 +209,7 @@ There is no context output for this command.
 
 
 ### fortisandbox-jobid-from-submission
+
 ***
 Get Job IDs from an uploaded Submission using the submission ID
 
@@ -195,6 +217,7 @@ Get Job IDs from an uploaded Submission using the submission ID
 #### Base Command
 
 `fortisandbox-jobid-from-submission`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -211,6 +234,7 @@ Get Job IDs from an uploaded Submission using the submission ID
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -218,6 +242,7 @@ Get Job IDs from an uploaded Submission using the submission ID
 
 
 ### fortisandbox-get-pdf-report
+
 ***
 Get PDF Report of scanned item
 
@@ -225,6 +250,7 @@ Get PDF Report of scanned item
 #### Base Command
 
 `fortisandbox-get-pdf-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -238,6 +264,7 @@ Get PDF Report of scanned item
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -245,6 +272,7 @@ There is no context output for this command.
 
 
 ### fortisandbox-upload-urls
+
 ***
 Upload CSV URLs
 
@@ -254,6 +282,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `fortisandbox-upload-urls`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -266,6 +295,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

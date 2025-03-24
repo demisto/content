@@ -1,9 +1,11 @@
 ## Overview
+
 ---
 
 RiskSense is a cloud-based platform that provides vulnerability management and prioritization to measure and control cybersecurity risk.
 
 ## Use Cases
+
 ---
 The SOAR market is still an emerging market and is often used as an umbrella term that covers security operations, security incident response and threat intelligence. Many vendors, even market leaders  like Splunk, are adding features and functionality to their existing solutions in the fight for market leadership. One major commonality between new SOAR vendors and vendors trying to make their existing solution fit into this market definition is the need to be able to ingest security centric data including threat intelligence to address the biggest use-case for SOAR i.e. security operations. 
 
@@ -11,6 +13,7 @@ Gartner claims that organizations need to have a continuous adaptive risk and tr
 
 
 ## Configure RiskSense on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -28,9 +31,11 @@ Gartner claims that organizations need to have a continuous adaptive risk and tr
 ---
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. risksense-get-hosts
 2. risksense-get-host-detail
 3. risksense-get-unique-cves
@@ -39,16 +44,19 @@ After you successfully execute a command, a DBot message appears in the War Room
 6. risksense-get-apps
 7. risksense-get-host-finding-detail
 8. risksense-get-app-detail
+
 ### 1. risksense-get-hosts
+
 ---
 Gets details of the supplied host. The host details can be searched based on input parameters like fieldname (Host Name, IP Address, Criticality, etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort direction.
 
 ##### Base Command
 
 `risksense-get-hosts`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | fieldname | The RiskSense host attribute by which to filter the results. Can be 'Host Name', 'IP Address', or 'Criticality'. Apart from the available choices, you can provide the attributes supported by RiskSense API. Refer to the API /host/filter API to get the list of supported attributes. The uid of filter attributes must be provided here, for example, assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
 | operator | The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Can be 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with the value matching the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
@@ -62,7 +70,7 @@ Gets details of the supplied host. The host details can be searched based on inp
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Host.Hostname | String | The hostname of the host. | 
 | Host.ID | String | The unique ID within the tool retrieving the host. | 
@@ -132,11 +140,13 @@ Gets details of the supplied host. The host details can be searched based on inp
 
 
 ##### Command Example
+
 ```
 !risksense-get-hosts fieldname="Criticality" value="5" page="0" size="2" sort_by="Total Findings" sort_direction="Descending"
 ```
 
 ##### Context Example
+
 ```
 {
     "RiskSense.Host": [
@@ -595,8 +605,11 @@ Gets details of the supplied host. The host details can be searched based on inp
 ```
 
 ##### Human Readable Output
+
 ### Total hosts found: 1969		Page: 0/984		Client: The Demo Client
+
 ### RiskSense host(s) details:
+
 |RS3|Host Name|Total Findings|Critical Findings|High Findings|Medium Findings|Low Findings|Info Findings|ID|OS|Tags|Notes|Criticality|IP Address|Network|Group|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 513 | iz0.y2.gov | 418 | 48 | 127 | 209 | 34 | 0 | 3570259 | Red Hat Enterprise Linux Server 6.1 | 2 | 0 | 5 | 45.19.214.161 | IP Network | 1 |
@@ -604,15 +617,17 @@ Gets details of the supplied host. The host details can be searched based on inp
 
 
 ### 2. risksense-get-host-detail
+
 ---
 Gets in-depth details of a single host. This command accepts either hostname or host ID as an argument.
 
 ##### Base Command
 
 `risksense-get-host-detail`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | host_id | The unique host ID of the host. The host ID is either known by RiskSense users or it can be searched in context output (RiskSense.Host.ID) or in the human-readable output of 'risksense-get-hosts' command. | Optional | 
 | host | The hostname of the host. The hostname is either known by RiskSense users or it can be searched in context output (RiskSense.Host.HostName) or in the human-readable output of 'risksense-get-hosts' command. | Optional | 
@@ -620,7 +635,7 @@ Gets in-depth details of a single host. This command accepts either hostname or 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Host.Hostname | String | The hostname of the host. | 
 | Host.ID | String | The unique ID within the tool retrieving the host. | 
@@ -690,11 +705,13 @@ Gets in-depth details of a single host. This command accepts either hostname or 
 
 
 ##### Command Example
+
 ```
 !risksense-get-host-detail host=united-78c957c5
 ```
 
 ##### Context Example
+
 ```
 {
     "Host": [
@@ -983,37 +1000,41 @@ Gets in-depth details of a single host. This command accepts either hostname or 
 ### Client: The Demo Client
 
 ### Group Details:
+
  Name: Default Group 
+
 ### Most Recently Identified Service(s): 
+
 msrpc-epmap, blackjack, microsoft-ds, ica, ms-wbt-server, www, netbios-ssn, VxWorks
 
 ### Sources: 
+
 Scanner(s): QUALYS
 
 ### Host Details:
 
-  **Name**         | **IP**       |  **RS3** |  **Discovered On** |  **Last Found On**
+  __Name__         | __IP__       |  __RS3__ |  __Discovered On__ |  __Last Found On__
   -----------------| -------------| ---------|  ------------------|  -------------------
   united-78c957c5  | 53.132.37.52 | 351      | 2007-01-23         | 2007-01-23
                                                                  
 
 ### Findings Distribution:
 
-  **Total**  | **Critical** |  **High** |  **Medium** |   **Low** |    **Info**
+  __Total__  | __Critical__ |  __High__ |  __Medium__ |   __Low__ |    __Info__
   -----------| -------------|---------- | ------------| --------- | ----------
   2          | 2            |  0        |  0          |  0        |  0
                                                                
 
 ### Operating System:
 
-  **Name**        | **Vendor**  | **Class**     |  **Family**
+  __Name__        | __Vendor__  | __Class__     |  __Family__
   ----------------| ------------| --------------|    ------------
   Windows 2008/7  |  Microsoft  | Not Reported  |  Windows
                                                
 
 ### Tag(s) (4):
 
-  **Name**                  | **Category**  | **Description**  | **Created**          | **Updated**
+  __Name__                  | __Category__  | __Description__  | __Created__          | __Updated__
   --------------------------| --------------| -----------------| ---------------------| ---------------------
   Data\_Center\_2           | LOCATION      |                  | 2019-04-24T21:37:06  | 2019-04-24T21:37:06
   Windows\_Server\_Team\_1  | PEOPLE        |                  | 2019-04-24T21:42:34  | 2019-04-24T21:42:34
@@ -1022,29 +1043,31 @@ Scanner(s): QUALYS
 
 ### Ticket(s) (1):
 
-  **Ticket Number**  | **Ticket Status**  | **Deep Link**                                    | **Type**  | **Connector Name**
+  __Ticket Number__  | __Ticket Status__  | __Deep Link__                                    | __Type__  | __Connector Name__
   -------------------| -------------------| ------------------------------------------------ | ----------| --------------------
-  JINT-525           | To Do              | https://risksense.atlassian.net/browse/JINT-525  | JIRA      | Test JIRA
+  JINT-525           | To Do              | <https://risksense.atlassian.net/browse/JINT-525>  | JIRA      | Test JIRA
 
 
 
 ### 3. risksense-get-unique-cves
+
 ---
 Looks up vulnerability details for the supplied host finding with its base score.
 
 ##### Base Command
 
 `risksense-get-unique-cves`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | hostFindingId | The unique host finding ID. The host finding ID is either known by RiskSense users or it can be found in the human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-host-findings' command. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | RiskSense.UniqueVulnerabilities.Cve | String | Common Vulnerabilities and Exposures name. | 
 | RiskSense.UniqueVulnerabilities.HostFindingID | String | The unique ID of the host finding. | 
@@ -1064,11 +1087,13 @@ Looks up vulnerability details for the supplied host finding with its base score
 
 
 ##### Command Example
+
 ```
 !risksense-get-unique-cves hostFindingId=115469504
 ```
 
 ##### Context Example
+
 ```
 {
   'RiskSense.UniqueVulnerabilities': [
@@ -1100,21 +1125,25 @@ Looks up vulnerability details for the supplied host finding with its base score
 ##### Human Readable Output
 
 ### Client: The Demo Client
+
 ### Vulnerabilities found:
+
 |Name|V2/Score|Attack Vector|Attack Complexity|Authentication|Confidentiality Impact|Integrity Impact|Availability Impact|Summary|
 |---|---|---|---|---|---|---|---|---|
 | CVE-2007-0882 | 10.0 | Network | Low | None | Complete | Complete | Complete | Argument injection vulnerability in the telnet daemon (in.telnetd) in Solaris 10 and 11 (SunOS 5.10 and 5.11) misinterprets certain client "-f" sequences as valid requests for the login program to skip authentication, which allows remote attackers to log into certain accounts, as demonstrated by the bin account. |
 
 ### 4. risksense-get-unique-open-findings
+
 ---
 Finds unique open host findings.The open findings can be searched based on input parameters like fieldname (Severity, Title, Source etc), operator (EXACT, IN, LIKE, BETWEEN), page and size.
 
 ##### Base Command
 
 `risksense-get-unique-open-findings`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | fieldname | The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'Severity', and 'Source'. Apart from the available choices, one can provide the attributes supported by RiskSense API. Refer to the API /uniqueHostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
 | operator | The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with the value matching the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
@@ -1128,7 +1157,7 @@ Finds unique open host findings.The open findings can be searched based on input
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | RiskSense.UniqueHostFinding.Title | String | The title of the unique host finding. | 
 | RiskSense.UniqueHostFinding.Severity | Number | Similar to risk rating, the severity of a vulnerability conveys the potential threat. | 
@@ -1139,11 +1168,13 @@ Finds unique open host findings.The open findings can be searched based on input
 
 
 ##### Command Example
+
 ```
 !risksense-get-unique-open-findings fieldname=Source value=QUALYS sort_by=Severity sort_direction="Descending" size="3"
 ```
 
 ##### Context Example
+
 ```
 {
     "RiskSense.UniqueHostFinding": [
@@ -1176,8 +1207,11 @@ Finds unique open host findings.The open findings can be searched based on input
 ```
 
 ##### Human Readable Output
+
 ### Total unique open findings: 3949		 Page: 0/1316		 Client: The Demo Client
+
 ### Unique open finding(s) details:
+
 |Title|Severity|Asset Count|Source|Source ID|
 |---|---|---|---|---|
 | Solaris 10 and Solaris 11 (SolarisExpress) Remote Access Telnet Daemon Flaw | 10.0 | 22 | QUALYS | QUALYS38574 |
@@ -1186,15 +1220,17 @@ Finds unique open host findings.The open findings can be searched based on input
 
 
 ### 5. risksense-get-host-findings
+
 ---
 A detailed host finding view with the severity level. Displays vulnerability information like CVE, Threats associated with current findings and origin of findings.
 
 ##### Base Command
 
 `risksense-get-host-findings`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | fieldname | The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'IP Address', or 'Host Name'. In addition to the available choices, you can provide the attributes supported by RiskSense API. Refer to the API /hostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
 | operator | The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' (filter records exactly matching the criteria), 'IN' (filter records matching any one of the comma-separated values), or 'LIKE' (filter records with the value matching the specified pattern). All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
@@ -1209,7 +1245,7 @@ A detailed host finding view with the severity level. Displays vulnerability inf
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | RiskSense.HostFinding.ID | String | The unique ID of the host finding. | 
 | RiskSense.HostFinding.Source | String | Host discovered by the scanner. | 
@@ -1339,11 +1375,13 @@ A detailed host finding view with the severity level. Displays vulnerability inf
 
 
 ##### Command Example
+
 ```
 !risksense-get-host-findings fieldname="Host Name" value=loz.xg.mil sort_by="Risk Rating" sort_direction="Descending" size="2"
 ```
 
 ##### Context Example
+
 ```
 {
     "Host": [
@@ -1987,8 +2025,11 @@ A detailed host finding view with the severity level. Displays vulnerability inf
 ```
 
 ##### Human Readable Output
+
 ### Total host findings: 16		 Page: 0/7		 Client: The Demo Client
+
 ### Host finding(s) details:
+
 |ID|Host Name|IP Address|Title|Risk|Threats|RS3|Criticality|Severity|Groups|State|Tags|Asset Tags|Note|Manual Finding Report Count|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 115469505 | loz.xg.mil | 116.145.139.179 | Solaris 10 and Solaris 11 (SolarisExpress) Remote Access Telnet Daemon Flaw | 10.0 | 5 | 644 | 5 | 10.0 | 1 | ACCEPTED | 5 | 2 | 1 | 0 |
@@ -1996,15 +2037,17 @@ A detailed host finding view with the severity level. Displays vulnerability inf
 
 
 ### 6. risksense-get-apps
+
 ---
 Looks up the application details. The application details can be searched based on input parameters like fieldname (Name, Network, Address), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort direction.
 
 ##### Base Command
 
 `risksense-get-apps`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | fieldname | The RiskSense application attribute that should be considered for filtering the results. The available choices are 'Name', 'Network', or 'Address'. Apart from the available choices, one can provide the attributes supported by RiskSense API. Refer to the API /application/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
 | operator | The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' (filter records exactly matching the criteria), 'IN' (filter records matching any one of the comma-separated values), or 'LIKE' (filter records with the value matching the specified pattern). All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
@@ -2018,7 +2061,7 @@ Looks up the application details. The application details can be searched based 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | RiskSense.Application.ID | Number | The unique ID within the tool retrieving the application. | 
 | RiskSense.Application.GroupID | Number | The group ID of the application. | 
@@ -2086,11 +2129,13 @@ Looks up the application details. The application details can be searched based 
 
 
 ##### Command Example
+
 ```
 !risksense-get-apps fieldname=Network value=App-data sort_by="Total Findings" sort_direction="Descending" size="3"
 ```
 
 ##### Context Example
+
 ```
 {
     "RiskSense.Application": [
@@ -2413,32 +2458,37 @@ Looks up the application details. The application details can be searched based 
 ```
 
 ##### Human Readable Output
+
 ### Total applications: 7		Page: 0/2		Client: The Demo Client
+
 ### RiskSense application(s) details:
+
 |ID|Address|Name|Network|Total Findings|Critical Findings|High Findings|Medium Findings|Low Findings|Info Findings|Groups|URLs|Tags|Notes|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 19391 | RS TestApp 1 | RS TestApp 1 | App-data | 325 | 2 | 20 | 281 | 21 | 1 | 1 | 74 | 0 | 1 |
-| 19396 | http://zero.webappsecurity.com:80 | http://zero.webappsecurity.com:80 | App-data | 184 | 19 | 0 | 8 | 157 | 0 | 1 | 152 | 0 | 0 |
+| 19396 | <http://zero.webappsecurity.com:80> | <http://zero.webappsecurity.com:80> | App-data | 184 | 19 | 0 | 8 | 157 | 0 | 1 | 152 | 0 | 0 |
 | 19395 | https:/test.thatcompany.com | https:/test.thatcompany.com | App-data | 41 | 28 | 0 | 0 | 13 | 0 | 1 | 33 | 0 | 0 |
 
 
 ### 7. risksense-get-host-finding-detail
+
 ---
 Gets in-depth details of a single host finding. The command accepts the host finding ID as an argument.
 
 ##### Base Command
 
 `risksense-get-host-finding-detail`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | hostfinding_id | The unique host finding ID. The host finding ID is either known by RiskSense users or it can be found in the human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-host-findings' command. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | RiskSense.HostFinding.ID | String | The unique ID of the host finding. | 
 | RiskSense.HostFinding.Source | String | Host discovered by the scanner. | 
@@ -2568,11 +2618,13 @@ Gets in-depth details of a single host finding. The command accepts the host fin
 
 
 ##### Command Example
+
 ```
 !risksense-get-host-finding-detail hostfinding_id=115469504
 ```
 
 ##### Context Example
+
 ```
 {
   "RiskSense.HostFinding": [
@@ -2903,16 +2955,22 @@ Gets in-depth details of a single host finding. The command accepts the host fin
 ```
 
 ##### Human Readable Output
+
 ### Client: The Demo Client
+
 ### Group Details: 
+
 Name: Default Group
+
 ### Host Finding Details:
+
 |Host Name|Ip Address|Network|Source|Risk Rating|Title|
 |---|---|---|---|---|---|
 | lmd.ql.nl | 31.207.62.145 | IP Network | QUALYS | 10.0 | Solaris 10 and Solaris 11 (SolarisExpress) Remote Access Telnet Daemon Flaw |
 |  |  |  |  |  |  |
 
 ### Threat(s) (5):
+
 |Title|Category|Source|CVEs|Published|Updated|
 |---|---|---|---|---|---|
 | Sun Solaris Telnet Remote Authentication Bypass Vulnerability | Exploit | METASPLOIT | CVE-2007-0882 | 2007-02-17T00:00:00 | 2020-02-13T15:32:52 |
@@ -2922,18 +2980,21 @@ Name: Default Group
 | Solaris.Wanuk.Worm | Worm | SYMANTEC | CVE-2007-0882 | 2007-02-28T00:00:00 | 2019-08-16T15:50:12 |
 
 ### Vulnerabilities (1):
+
 |Name|V2/Score|Threat Count|Attack Vector|Access Complexity|Authentication|
 |---|---|---|---|---|---|
 | CVE-2007-0882 | 10.0 | 5 | Network | Low | None |
 |  |  |  |  |  |  |
 
 ### Status:
+
 |State|Current State|Description|Duration|Due Date|
 |---|---|---|---|---|
 | ACCEPTED | RA Approved | Finding was approved in risk acceptance workflow | 3246 day(s) | 2019-12-01T00:00:00 |
 |  |  |  |  |  |
 
 ### Tag(s) (5):
+
 |Name|Category|Created|Updated|
 |---|---|---|---|
 | Data_Center_1 | Location | 2019-04-24T21:35:12 | 2019-06-19T19:23:08 |
@@ -2943,18 +3004,20 @@ Name: Default Group
 | RR_Crit_Test | Custom | 2019-11-19T23:41:36 | 2019-11-19T23:41:36 |
 
 ### Manual Finding Report(s) (0):
-**No entries.**
+__No entries.__
 
 ### Ticket(s) (0):
-**No entries.**
+__No entries.__
 
 ### Assessment(s) (1):
+
 |Name|Date|
 |---|---|
 | First Assessment | 2019-04-23 |
 |  |  |
 
 ### Host Finding Description:
+
 Solaris 10 and 11 hosts are vulnerable to a telnet daemon flaw.
 <p>
 The telnet daemon passes switches directly to the login process which looks for a switch that allows root to login to any account without a password. If your telnet daemon is running as root it allows unauthenticated remote logins.
@@ -2962,22 +3025,24 @@ The telnet daemon passes switches directly to the login process which looks for 
 Telnet poses a risk because data transferred between clients may not be encrypted. Telnet is also a frequent target for port scanners.
 
 ### 8. risksense-get-app-detail
+
 ---
 Gets in-depth details of a single application. The command accepts an application ID as an argument.
 
 ##### Base Command
 
 `risksense-get-app-detail`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | application_id | The application ID is unique for the application. The application ID is either known by RiskSense users or it can be searched in context output (RiskSense.Application.ID) or in the human-readable output of 'risksense-get-apps' command. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | RiskSense.Application.ID | Number | The unique ID within the tool retrieving the application. | 
 | RiskSense.Application.GroupID | Number | The group ID of the application. | 
@@ -3045,9 +3110,11 @@ Gets in-depth details of a single application. The command accepts an applicatio
 
 
 ##### Command Example
+
 ```!risksense-get-app-detail application_id=19394```
 
 ##### Context Example
+
 ```
 {
     "RiskSense.Application": [
@@ -3150,42 +3217,53 @@ Gets in-depth details of a single application. The command accepts an applicatio
 ```
 
 ##### Human Readable Output
+
 ### Client: The Demo Client
+
 ### Group Details: 
+
  Name: Default Group
- ### Sources: 
+
+### Sources: 
+
  Scanner(s): IBMAPPSCANENTERPRISE
+
 ### Application Details:
+
 |Address|Name|Network Name|Network Type|Discovered On|Last Found On|
 |---|---|---|---|---|---|
-| https://freebirddemo.dev.ccs.thatcompany.net | https://freebirddemo.dev.ccs.thatcompany.net | App-data | IP | 2019-06-12 | 2019-06-11 |
+| <https://freebirddemo.dev.ccs.thatcompany.net> | <https://freebirddemo.dev.ccs.thatcompany.net> | App-data | IP | 2019-06-12 | 2019-06-11 |
 |  |  |  |  |  |  |
 
 ### Findings Distribution:
+
 |Total|Critical|High|Medium|Low|Info|
 |---|---|---|---|---|---|
 | 15 | 0 | 0 | 0 | 15 | 0 |
 |  |  |  |  |  |  |
 
 ### Tag(s) (1):
+
 |Name|Category|Description|Created|Updated|
 |---|---|---|---|---|
 | PCI Orch Test  | Project | PCI Orch Test | 2020-01-17T23:59:22 | 2020-01-17T23:59:22 |
 |  |  |  |  |  |
 
 ### Ticket(s) (0):
-**No entries.**
+__No entries.__
 
 ### 8. risksense-apply-tag
+
 ---
 Apply the new or existing tag to the asset, creates a new tag if it does not exist in RiskSense.
 
 ##### Base Command
 
 `risksense-apply-tag`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | tagname | Tag name which applies to the asset(s). | Required |
 | assettype | Type of asset available in RiskSense to apply the tag. Apart from the available choices, you can provide the asset type supported by RiskSense API. | Required |
@@ -3199,7 +3277,7 @@ Apply the new or existing tag to the asset, creates a new tag if it does not exi
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | RiskSense.TagAssociation.TagName | String | Name of the tag. | 
 | RiskSense.TagAssociation.AssociationID | Number | Tag association ID. |
@@ -3207,9 +3285,11 @@ Apply the new or existing tag to the asset, creates a new tag if it does not exi
 
 
 ##### Command Example
+
 ```!risksense-apply-tag tagname="Test" assettype="host"```
 
 ##### Context Example
+
 ```
 {
   "RiskSense.TagAssociation":
@@ -3222,4 +3302,5 @@ Apply the new or existing tag to the asset, creates a new tag if it does not exi
 ```
 
 ##### Human Readable Output
+
 Test tag applied to given asset(s).

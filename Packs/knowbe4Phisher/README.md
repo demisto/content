@@ -5,6 +5,7 @@ With automatic prioritization for emails, PhishER helps your InfoSec and Securit
 
 
 ## What does this pack do?
+
 - Gets all messages from PhishER
 - Creates incidents from messages
 - Allows filtering messages with specific Lucene query 

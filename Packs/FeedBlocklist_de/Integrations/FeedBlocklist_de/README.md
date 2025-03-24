@@ -20,9 +20,12 @@ Use the Blocklist.de feed integration to fetch indicators from the feed.
 | Tags | Supports CSV values. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### blocklist_de-get-indicators
+
 ***
 Gets the feed indicators.
 
@@ -30,6 +33,7 @@ Gets the feed indicators.
 #### Base Command
 
 `blocklist_de-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

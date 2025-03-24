@@ -2,12 +2,15 @@ FireEye Central Management (CM Series) is the FireEye threat intelligence hub. I
 This integration was integrated and tested with version 9.0.2 of FireEye Central Management
 
 ## API Key management
+
 This integration generates an API Key from the username and password given to be authenticated with FireEye.
 The API Key is valid for 15 minutes.
 The integration manages the storage of this key, and its re-generation when the key expires.
 
 ## Fetch FireEye EX Alert Emails
+
 To fetch a FireEye EX alert email, you will need the UUID.
+
 1. Run the ***fireeye-cm-get-alert-details** command with the alert ID. For example,
    ***!fireeye-cm-get-alert-details alert_id=542***
 2. Locate the UUID in the context data and run the ***fireeye-cm-get-artifacts-by-uuid*** command with the UUID. For example: 
@@ -15,7 +18,9 @@ To fetch a FireEye EX alert email, you will need the UUID.
 3. Download the email.
 
 ## Access the FireEye Alert URL
+
 To display a proper link in the FireEye NX Alert URL field of the FireEye NX or EX Alert layout, you need to configure the hostname in the appliance settings of the FireEye application.
+
 1. Log in to your FireEye application.
 2. Navigate to **Appliance Settings > Network > Hostname**.
 3. In the Hostname field, enter your URL/server/ip address.
@@ -37,9 +42,12 @@ To display a proper link in the FireEye NX Alert URL field of the FireEye NX or 
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fireeye-cm-get-alerts
+
 ***
 Searches and retrieves FireEye CM alerts based on several filters.
 
@@ -47,6 +55,7 @@ Searches and retrieves FireEye CM alerts based on several filters.
 #### Base Command
 
 `fireeye-cm-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -93,9 +102,11 @@ Searches and retrieves FireEye CM alerts based on several filters.
 
 
 #### Command Example
+
 ```!fireeye-cm-get-alerts```
 
 #### Context Example
+
 ```json
 {
     "FireEyeCM": {
@@ -146,13 +157,15 @@ Searches and retrieves FireEye CM alerts based on several filters.
 #### Human Readable Output
 
 >### FireEye Central Management Alerts:
+>
 >|id|occurred|product|name|malicious|severity|alertUrl|
 >|---|---|---|---|---|---|---|
->| 35685 | 2021-06-10 21:52:43 +0000 | WEB_MPS | MALWARE_CALLBACK | yes | CRIT | https://FireEyeCM/event_stream/events_for_bot?ev_id=35685 |
+>| 35685 | 2021-06-10 21:52:43 +0000 | WEB_MPS | MALWARE_CALLBACK | yes | CRIT | <https://FireEyeCM/event_stream/events_for_bot?ev_id=35685> |
 
 
 
 ### fireeye-cm-get-alert-details
+
 ***
 Searches and retrieves the details of a single alert.
 
@@ -160,6 +173,7 @@ Searches and retrieves the details of a single alert.
 #### Base Command
 
 `fireeye-cm-get-alert-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -191,9 +205,11 @@ Searches and retrieves the details of a single alert.
 
 
 #### Command Example
+
 ```!fireeye-cm-get-alert-details alert_id=35685```
 
 #### Context Example
+
 ```json
 {
     "FireEyeCM": {
@@ -242,12 +258,14 @@ Searches and retrieves the details of a single alert.
 #### Human Readable Output
 
 >### FireEye Central Management Alerts:
+>
 >|id|occurred|product|name|malicious|action|src|dst|severity|alertUrl|
 >|---|---|---|---|---|---|---|---|---|---|
->| 35685 | 2021-06-10 21:52:43 +0000 | WEB_MPS | MALWARE_CALLBACK | yes | notified | ip: 34.252.247.142<br/>port: 51270 | mac: 00:50:56:94:b8:42<br/>port: 443<br/>ip: 192.168.1.202 | CRIT | https://FireEyeCM/event_stream/events_for_bot?ev_id=35685 |
+>| 35685 | 2021-06-10 21:52:43 +0000 | WEB_MPS | MALWARE_CALLBACK | yes | notified | ip: 34.252.247.142<br/>port: 51270 | mac: 00:50:56:94:b8:42<br/>port: 443<br/>ip: 192.168.1.202 | CRIT | <https://FireEyeCM/event_stream/events_for_bot?ev_id=35685> |
 
 
 ### fireeye-cm-alert-acknowledge
+
 ***
 Confirms that the alert has been reviewed.
 
@@ -255,6 +273,7 @@ Confirms that the alert has been reviewed.
 #### Base Command
 
 `fireeye-cm-alert-acknowledge`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -267,6 +286,7 @@ Confirms that the alert has been reviewed.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fireeye-cm-alert-acknowledge uuid=529023c0-6ddf-4933-9241-fe4ec71a788e```
 
 #### Human Readable Output
@@ -274,6 +294,7 @@ There is no context output for this command.
 >Alert 529023c0-6ddf-4933-9241-fe4ec71a788e was acknowledged successfully.
 
 ### fireeye-cm-get-artifacts-by-uuid
+
 ***
 Downloads malware artifacts data for the specified UUID as a zip file.
 
@@ -281,6 +302,7 @@ Downloads malware artifacts data for the specified UUID as a zip file.
 #### Base Command
 
 `fireeye-cm-get-artifacts-by-uuid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -302,9 +324,11 @@ Downloads malware artifacts data for the specified UUID as a zip file.
 
 
 #### Command Example
+
 ```!fireeye-cm-get-artifacts-by-uuid uuid=b38b83a0-4b96-408c-999f-4e97a5099f61```
 
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -323,6 +347,7 @@ Downloads malware artifacts data for the specified UUID as a zip file.
 
 
 ### fireeye-cm-get-artifacts-metadata-by-uuid
+
 ***
 Gets artifacts metadata for the specified UUID.
 
@@ -330,6 +355,7 @@ Gets artifacts metadata for the specified UUID.
 #### Base Command
 
 `fireeye-cm-get-artifacts-metadata-by-uuid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -348,9 +374,11 @@ Gets artifacts metadata for the specified UUID.
 
 
 #### Command Example
+
 ```!fireeye-cm-get-artifacts-metadata-by-uuid uuid=b38b83a0-4b96-408c-999f-4e97a5099f61```
 
 #### Context Example
+
 ```json
 {
     "FireEyeCM": {
@@ -376,6 +404,7 @@ Gets artifacts metadata for the specified UUID.
 #### Human Readable Output
 
 >### FireEye Central Management b38b83a0-4b96-408c-999f-4e97a5099f61 Artifact metadata:
+>
 >|artifactName|artifactSize|artifactType|
 >|---|---|---|
 >| 34.252.247.142-192.168.1.202-1620538334558058-33354739.txt.gz | 1641 | l7_context_file |
@@ -383,6 +412,7 @@ Gets artifacts metadata for the specified UUID.
 
 
 ### fireeye-cm-get-events
+
 ***
 Retrieves information about existing IPS NX events. An IPS enabled appliance is a prerequisite to be able to retrieve IPS event data.
 
@@ -390,6 +420,7 @@ Retrieves information about existing IPS NX events. An IPS enabled appliance is 
 #### Base Command
 
 `fireeye-cm-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -429,6 +460,7 @@ Retrieves information about existing IPS NX events. An IPS enabled appliance is 
 
 
 #### Command Example
+
 ```!fireeye-cm-get-events duration="48_hours" end_time="2021-05-14T01:08:04.000-02:00" mvx_correlated_only="true"```
 
 #### Human Readable Output
@@ -436,6 +468,7 @@ Retrieves information about existing IPS NX events. An IPS enabled appliance is 
 >No events in the given timeframe were found.
 
 ### fireeye-cm-get-quarantined-emails
+
 ***
 Searches and retrieves quarantined emails.
 
@@ -443,6 +476,7 @@ Searches and retrieves quarantined emails.
 #### Base Command
 
 `fireeye-cm-get-quarantined-emails`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -470,9 +504,11 @@ Searches and retrieves quarantined emails.
 
 
 #### Command Example
+
 ```!fireeye-cm-get-quarantined-emails start_time="1 month" limit=4```
 
 #### Context Example
+
 ```json
 {
     "FireEyeCM": {
@@ -525,15 +561,17 @@ Searches and retrieves quarantined emails.
 #### Human Readable Output
 
 >### FireEye Central Management Quarantined emails:
+>
 >|email_uuid|from|subject|message_id|completed_at|
 >|---|---|---|---|---|
->| d7738eb0-7fe7-4b5d-8fcb-2b053ef57e13 | test@malicious.net | test | queue-id-test@no-message-id | 2021-05-24T09:04:03 |
->| 9e73ca23-b935-47c2-8d2a-fe1a10071db2 | test@malicious.net | test | queue-id-test@no-message-id | 2021-05-24T16:01:16 |
->| e7b52446-555d-40d0-b8ad-e8f1f2a7ab7a | test@malicious.net | test | queue-id-test@no-message-id | 2021-05-24T16:01:16 |
->| ebb991b5-06ef-44f4-b44d-e1daef67ce70 | test@malicious.net | test | queue-id-test@no-message-id | 2021-05-24T16:01:16 |
+>| d7738eb0-7fe7-4b5d-8fcb-2b053ef57e13 | <test@malicious.net> | test | queue-id-test@no-message-id | 2021-05-24T09:04:03 |
+>| 9e73ca23-b935-47c2-8d2a-fe1a10071db2 | <test@malicious.net> | test | queue-id-test@no-message-id | 2021-05-24T16:01:16 |
+>| e7b52446-555d-40d0-b8ad-e8f1f2a7ab7a | <test@malicious.net> | test | queue-id-test@no-message-id | 2021-05-24T16:01:16 |
+>| ebb991b5-06ef-44f4-b44d-e1daef67ce70 | <test@malicious.net> | test | queue-id-test@no-message-id | 2021-05-24T16:01:16 |
 
 
 ### fireeye-cm-release-quarantined-emails
+
 ***
 Releases and deletes quarantined emails. This is not available when Email Security is in Drop mode.
 
@@ -541,6 +579,7 @@ Releases and deletes quarantined emails. This is not available when Email Securi
 #### Base Command
 
 `fireeye-cm-release-quarantined-emails`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -556,6 +595,7 @@ There is no context output for this command.
 
 
 ### fireeye-cm-delete-quarantined-emails
+
 ***
 Deletes quarantined emails. This is not available when Email Security is in Drop mode.
 
@@ -563,6 +603,7 @@ Deletes quarantined emails. This is not available when Email Security is in Drop
 #### Base Command
 
 `fireeye-cm-delete-quarantined-emails`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -578,6 +619,7 @@ There is no context output for this command.
 
 
 ### fireeye-cm-download-quarantined-emails
+
 ***
 Download quarantined emails.
 
@@ -585,6 +627,7 @@ Download quarantined emails.
 #### Base Command
 
 `fireeye-cm-download-quarantined-emails`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -607,9 +650,11 @@ Download quarantined emails.
 
 
 #### Command Example
+
 ```!fireeye-cm-download-quarantined-emails sensor_name=FireEyeEX queue_id=test```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -633,6 +678,7 @@ Download quarantined emails.
 
 
 ### fireeye-cm-get-reports
+
 ***
 Returns reports on selected alerts.
 
@@ -640,6 +686,7 @@ Returns reports on selected alerts.
 #### Base Command
 
 `fireeye-cm-get-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -668,11 +715,13 @@ Returns reports on selected alerts.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
 
 
 ## Known Limitations
+
 Clicking the **Test** button of the **Integration instance settings** window verifies that the instance configuration is correct.
 Due to a known limitation, clicking the **Test** button several times in quick succession may result in an "Unauthorized" error, even after a successful result was initially returned. It is enough to receive one success message to verify that the configuration is correct. "Unauthorized" error messages received from repeated clicking of the instance configuration **Test** button do not affect the validity of the instance if the initial response was successful.

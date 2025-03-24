@@ -14,9 +14,12 @@ This integraitons should work with RSA Netwitness older than v11. For versions v
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### nw-login
+
 ***
 Logins to the system and returns valid sessionId
 
@@ -24,6 +27,7 @@ Logins to the system and returns valid sessionId
 #### Base Command
 
 `nw-login`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -36,6 +40,7 @@ There is no context output for this command.
 
 
 ### fetch-incidents
+
 ***
 Simulates fetching incidents. Returns array of incidents from NetWitness.
 
@@ -43,6 +48,7 @@ Simulates fetching incidents. Returns array of incidents from NetWitness.
 #### Base Command
 
 `fetch-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,6 +61,7 @@ There is no context output for this command.
 
 
 ### netwitness-im-list-incidents
+
 ***
 Fetches incidents by filter
 
@@ -62,6 +69,7 @@ Fetches incidents by filter
 #### Base Command
 
 `netwitness-im-list-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -96,6 +104,7 @@ Fetches incidents by filter
 
 
 ### netwitness-im-login
+
 ***
 Logins to the system and returns valid sessionId
 
@@ -103,6 +112,7 @@ Logins to the system and returns valid sessionId
 #### Base Command
 
 `netwitness-im-login`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -115,6 +125,7 @@ There is no context output for this command.
 
 
 ### netwitness-im-get-components
+
 ***
 Returns all the components in the system
 
@@ -122,6 +133,7 @@ Returns all the components in the system
 #### Base Command
 
 `netwitness-im-get-components`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -147,6 +159,7 @@ Returns all the components in the system
 
 
 ### netwitness-im-get-events
+
 ***
 Returns all the events in defined time range
 
@@ -154,6 +167,7 @@ Returns all the events in defined time range
 #### Base Command
 
 `netwitness-im-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -182,6 +196,7 @@ There is no context output for this command.
 
 
 ### netwitness-im-get-available-assignees
+
 ***
 Returns the available users to be assigned to incidents
 
@@ -189,6 +204,7 @@ Returns the available users to be assigned to incidents
 #### Base Command
 
 `netwitness-im-get-available-assignees`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -207,6 +223,7 @@ Returns the available users to be assigned to incidents
 
 
 ### netwitness-im-create-incident
+
 ***
 Creating new incident
 
@@ -214,6 +231,7 @@ Creating new incident
 #### Base Command
 
 `netwitness-im-create-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -241,6 +259,7 @@ Creating new incident
 
 
 ### netwitness-im-add-events-to-incident
+
 ***
 This command will add new events to existing incident
 
@@ -248,6 +267,7 @@ This command will add new events to existing incident
 #### Base Command
 
 `netwitness-im-add-events-to-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -266,6 +286,7 @@ There is no context output for this command.
 
 
 ### netwitness-im-update-incident
+
 ***
 Updates incident
 
@@ -273,6 +294,7 @@ Updates incident
 #### Base Command
 
 `netwitness-im-update-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -295,6 +317,7 @@ There is no context output for this command.
 
 
 ### netwitness-im-get-alerts
+
 ***
 Return all the alerts filtered by filter.
 
@@ -302,6 +325,7 @@ Return all the alerts filtered by filter.
 #### Base Command
 
 `netwitness-im-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -319,6 +343,7 @@ There is no context output for this command.
 
 
 ### netwitness-im-get-alert-details
+
 ***
 Return single alert by id
 
@@ -326,6 +351,7 @@ Return single alert by id
 #### Base Command
 
 `netwitness-im-get-alert-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -355,6 +381,7 @@ Return single alert by id
 
 
 ### netwitness-im-get-event-details
+
 ***
 Returns two entries. One is event details json and the second is
 
@@ -362,6 +389,7 @@ Returns two entries. One is event details json and the second is
 #### Base Command
 
 `netwitness-im-get-event-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -382,6 +410,7 @@ Returns two entries. One is event details json and the second is
 
 
 ### netwitness-im-get-incident-details
+
 ***
 Returns incident json by id
 
@@ -389,6 +418,7 @@ Returns incident json by id
 #### Base Command
 
 `netwitness-im-get-incident-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -416,6 +446,7 @@ Returns incident json by id
 
 
 ### netwitness-im-get-alert-original
+
 ***
 Returns the original events which this alert contains
 
@@ -423,6 +454,7 @@ Returns the original events which this alert contains
 #### Base Command
 
 `netwitness-im-get-alert-original`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

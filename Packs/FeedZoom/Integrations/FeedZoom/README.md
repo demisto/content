@@ -7,6 +7,7 @@ One example of these providers is Zoom.
 This pack addresses this issue by automating the collection of endpoint data in the form of an indicator feed. This will facilitate validation of the indicators before using them in enforcement points, for example firewalls, proxies, and more.
 
 ## Zoom Network Settings
+
 For information about Zoom network settings, see the [Zoom documentation](https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom).
 
 
@@ -29,9 +30,12 @@ For information about Zoom network settings, see the [Zoom documentation](https:
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### zoom-get-indicators
+
 ***
 Gets indicators from the feed.
 
@@ -39,6 +43,7 @@ Gets indicators from the feed.
 #### Base Command
 
 `zoom-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

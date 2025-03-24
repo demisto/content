@@ -26,6 +26,7 @@ You can add a collection description as is done in *collection1_name*, or enter 
 ## How to Access the TAXII2 Server
 
 ### For Cortex XSOAR 6.x
+
 Use one of the following options:
 
 - `https://<xsoar_address>/instance/execute/<instance_name>/<taxii2_api_endpoint>/`
@@ -36,6 +37,7 @@ Use one of the following options:
 Use `https://ext-<tenant>/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`  
 
 **Note**:  
+
 - For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
   For example, `ext-xsoar.mycompany.com`.  
 - The instance name cannot be changed after saving the integration configuration.
@@ -46,6 +48,7 @@ Use `https://ext-<tenant>/xsoar/instance/execute/<instance-name>/<taxii2_api_end
 To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled. 
 
 In Cortex XSOAR 6.x:
+
 1. Navigate to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to **true**. If this key does not exist, click **+ Add Server Configuration**, add the ***instance.execute.external*** and set the value to **true**.
 
@@ -54,11 +57,15 @@ In Cortex XSOAR 6.x:
 To use HTTPS, a certificate and private key have to be supplied in the integration configuration. 
 
 ## Set up Authentication
+
 ### For Cortex XSOAR 8 Cloud Tenant or Cortex XSIAM Tenant
+
 The TAXII2 Server integration running on a Cortex XSOAR 8 Cloud tenant or Cortex XSIAM tenant enables using basic authentication in the requests.  
 To enable basic authentication, a user and password must be supplied in the **Credentials** parameters in the integration configuration.  
 The server will then authenticate the requests by the `Authorization` header, expecting basic authentication encrypted in base64 to match the given credentials.  
+
 ### For Cortex XSOAR On-prem (6.x or 8) or When Using Engines
+
 For Cortex XSOAR On-prem (6.x or 8) or when using engines, you can set up authentication using custom certificates. For more information on setting up a custom certificate for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). For more information on setting up a custom certificate for Cortex XSOAR 6.x, see [HTTPS with a Signed Certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/HTTPS-with-a-Signed-Certificate).
 
 ## TAXII v2.0 API Endpoints

@@ -1,6 +1,7 @@
 Sends messages to XSOAR's online users over Email, Slack, Mattermost or all.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Sends messages to XSOAR's online users over Email, Slack, Mattermost or all.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ Sends messages to XSOAR's online users over Email, Slack, Mattermost or all.
 | message | The message to send. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

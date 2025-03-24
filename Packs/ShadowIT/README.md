@@ -2,6 +2,7 @@ The Shadow IT pack provides additional capabilities for handling Shadow IT incid
 This pack includes a new **Shadow IT** incident type and a playbook.
 
 ##### What does this pack do?
+
 - Provides an additional **Shadow IT** incident type.
 - Provides a **Shadow IT** indicator layout.
 - Provides a playbook to handle Shadow IT incidents (**Handle Shadow IT Incident**).

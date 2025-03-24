@@ -1,6 +1,7 @@
 Parses a list by header and value.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Parses a list by header and value.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +23,7 @@ Parses a list by header and value.
 | list_separator | Separator to split the list by (use \\\t in case of tab separated list). |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

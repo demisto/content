@@ -2,6 +2,7 @@ TOPdesk’s Enterprise Service Management software (ESM) lets your service teams
 This integration was integrated and tested with 10.08.008-on-premises-release3-build2 for Linux x86 64-bit of TOPdesk.
 
 ## Use cases
+
 1. Get, update, and create TOPdesk incidents, as well as (de-)escalate, (un)archive or upload files to the incidents.
 2. Fetch newly created TOPdesk incidents.
 3. Get information about branches, persons and operators.
@@ -14,7 +15,7 @@ This integration was integrated and tested with 10.08.008-on-premises-release3-b
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g., https://topdesk.mydomain/tas/) | The server url. | True |
+    | Server URL (e.g., <https://topdesk.mydomain/tas/>) | The server url. | True |
     | Username | See section about auth details below | True |
     | Password | See section about auth details below | True |
     | Fetch incidents |  | False |
@@ -29,6 +30,7 @@ This integration was integrated and tested with 10.08.008-on-premises-release3-b
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Auth Details
+
 *Person* and *operator* are TOPdesk's user types. Each user type has a different set of actions that he is allowed to perform.
 For example, a *person* can only update incidents he created, while an *operator* can update a wider range of incidents.
 
@@ -36,6 +38,7 @@ In general, if an account is able to preform the requested command in TOPdesk's 
 Make sure you use the right account for your needs and that the account used has all the required permissions. 
 
 #### Setup TOPdesk's application password
+
 1. Login to TOPdesk with the designated account.
 2. In TOPdesk, click **Open user menu** (top right side of the front page) > Choose **My settings**
 3. At the bottom of the page should be an **Application passwords** section. You can view all application passwords that are configured for the logged in account. 
@@ -45,14 +48,17 @@ Make sure you use the right account for your needs and that the account used has
 7. Once copied for further usage you can click **Close**.
 
 #### Configure Username and Password
+
 **Username**: Use the account username from which the application password was generated. (*Not* the key name)
 
 **Password**: Use the application password generated in step 6 of the **Setup TOPdesk's application password** procedure. 
 
 #### Troubleshooting
+
 Make sure the application password is not expired by logging in TOPdesk and viewing it as described in step 3 of the **Setup TOPdesk's application password** procedure. 
 
 ### Finding the Default Incident Caller ID
+
 The TOPdesk incident caller is the TOPdesk person who requested a specific TOPdesk incident and is the contact person for all activities related to this incident.  
 To find the incident caller ID which should be used as the default caller when creating a new TOPdesk incident, first configure the integration instance *without* providing the **Default Incident Caller ID**. Then run the command `!topdesk-persons-list` in the *Playground - War Room*.  
 You will receive a list of people and their IDs. Copy the ID of the desired person and edit the integration instance to set the **Default Incident Caller ID**.
@@ -62,7 +68,8 @@ You will receive a list of people and their IDs. Copy the ID of the desired pers
 You can enable incident mirroring between Cortex XSOAR incidents and TOPdesk incidents.
 
 To setup the mirroring follow these instructions:
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for **TOPdesk** and select your integration instance.
 3. Enable **Fetches incidents**.
 4. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
@@ -79,8 +86,10 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 **Important Notes**
  To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and TOPdesk.
  
- ### FIQL query
+### FIQL query
+
 A few implemented commands can get a query as a parameter. A partial list of these commands: 
+
 - `topdesk-incidents-list`
 - `topdesk-branches-list` 
 - `topdesk-persons-list` 
@@ -88,7 +97,9 @@ A few implemented commands can get a query as a parameter. A partial list of the
 
 While the new versions of TOPdesk all use the new [FIQL query format](https://developers.topdesk.com/tutorial.html#query), older versions use limited inline parameters for filters in the requests.
 Specifically there are 2 versions being used:
+
 #### [TOPdeskRestAPI](https://developers.topdesk.com/documentation/index.html) 
+
 Implements: `topdesk-incidents-list`
 
 Supports FIQL query version `3.3.0` and higher.
@@ -98,6 +109,7 @@ Therefore, once the integration is configured, it automatically translates FIQL 
 inline parameters and vice versa depending on the TOPdesk version.
 
 #### [SupportingFilesAPI](https://developers.topdesk.com/explorer/?page=supporting-files) 
+
 Implements: `topdesk-branches-list`, `topdesk-persons-list`, `topdesk-operators-list`
 
 Supports FIQL query version `1.38.0` and higher.
@@ -106,13 +118,17 @@ Unlike TOPdeskRestAPI, SupportingFilesAPI does not currently provide an endpoint
 Therefore, this integration only supports SupportingFilesAPI version `1.38.0` and higher. 
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### topdesk-subcategories-list
+
 ***
 Get list of subcategories.
 
 #### Permissions
+
 **Operator**: 1st/2nd line incident permissions; Category/Branch/Operator filters apply.
 
 **Person**: Unrestricted access.
@@ -120,6 +136,7 @@ Get list of subcategories.
 #### Base Command
 
 `topdesk-subcategories-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -138,9 +155,11 @@ Get list of subcategories.
 
 
 #### Command Example
+
 ```!topdesk-subcategories-list```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -169,16 +188,19 @@ Get list of subcategories.
 #### Human Readable Output
 
 >### TOPdesk subcategories
+>
 >|Id|Name|CategoryId|CategoryName|
 >|---|---|---|---|
 >| some-subcategory-id-1 | Endpoint Security | some-category-id | User Security |
 >| some-subcategory-id-2 | Mobile Threat Prevention | some-category-id | User Security |
 
 ### topdesk-categories-list
+
 ***
 Get list of categories.
 
 #### Permissions
+
 **Operator**: With 1st/2nd line incident permission; Category/Branch/Operator filters apply
 
 **Person**: Unrestricted access
@@ -186,6 +208,7 @@ Get list of categories.
 #### Base Command
 
 `topdesk-categories-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -202,9 +225,11 @@ Get list of categories.
 
 
 #### Command Example
+
 ```!topdesk-categories-list```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -225,6 +250,7 @@ Get list of categories.
 #### Human Readable Output
 
 >### TOPdesk categories
+>
 >|Id|Name|
 >|---|---|
 >| some-category-id-1 | User Security |
@@ -232,10 +258,12 @@ Get list of categories.
 
 
 ### topdesk-entry-types-list
+
 ***
 Get list of entry types.
 
 #### Permissions
+
 **Operator**: With 1st/2nd line incident permission; Category/Branch/Operator filters apply
 
 **Person**: No access
@@ -243,6 +271,7 @@ Get list of entry types.
 #### Base Command
 
 `topdesk-entry-types-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -259,9 +288,11 @@ Get list of entry types.
 
 
 #### Command Example
+
 ```!topdesk-entry-types-list```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -282,6 +313,7 @@ Get list of entry types.
 #### Human Readable Output
 
 >### TOPdesk entry types
+>
 >|Id|Name|
 >|---|---|
 >| some-entry-type-id-1 | Self Service Desk |
@@ -289,10 +321,12 @@ Get list of entry types.
 
 
 ### topdesk-call-types-list
+
 ***
 Get list of entry types.
 
 #### Permissions
+
 **Operator**: With 1st/2nd line incident permission; Category/Branch/Operator filters apply
 
 **Person**: Unrestricted access
@@ -300,6 +334,7 @@ Get list of entry types.
 #### Base Command
 
 `topdesk-call-types-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -316,9 +351,11 @@ Get list of entry types.
 
 
 #### Command Example
+
 ```!topdesk-call-types-list```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -339,6 +376,7 @@ Get list of entry types.
 #### Human Readable Output
 
 >### TOPdesk call types
+>
 >|Id|Name|
 >|---|---|
 >| some-call-type-id-1 | Request for Information |
@@ -346,10 +384,12 @@ Get list of entry types.
 
 
 ### topdesk-deescalation-reasons-list
+
 ***
 Get list of deescalation reasons.
 
 #### Permissions
+
 **Operator**: With 1st and 2nd line incident write permission; Feature must be enabled.
 
 **Person**: No access
@@ -357,6 +397,7 @@ Get list of deescalation reasons.
 #### Base Command
 
 `topdesk-deescalation-reasons-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -373,9 +414,11 @@ Get list of deescalation reasons.
 
 
 #### Command Example
+
 ```!topdesk-deescalation-reasons-list```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -394,6 +437,7 @@ Get list of deescalation reasons.
 ```
 
 #### Human Readable Output
+>
 >|Id|Name|
 >|---|---|
 >| some-deescalation-reason-id-1 | Resolves after reset |
@@ -401,10 +445,12 @@ Get list of deescalation reasons.
 
 
 ### topdesk-escalation-reasons-list
+
 ***
 Get list of escalation reasons.
 
 #### Permissions
+
 **Operator**: With 1st line incident write permission and write permission for escalating incidents
 
 **Person**: No access
@@ -412,6 +458,7 @@ Get list of escalation reasons.
 #### Base Command
 
 `topdesk-escalation-reasons-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -428,9 +475,11 @@ Get list of escalation reasons.
 
 
 #### Command Example
+
 ```!topdesk-escalation-reasons-list```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -451,6 +500,7 @@ Get list of escalation reasons.
 #### Human Readable Output
 
 >### TOPdesk escalation reasons
+>
 >|Id|Name|
 >|---|---|
 >| some-escalation-reason-id-1 | Call from president |
@@ -458,10 +508,12 @@ Get list of escalation reasons.
 
 
 ### topdesk-archiving-reasons-list
+
 ***
 Get list of archiving reasons.
 
 #### Permissions
+
 **Operator**: Incident write permission and archiving permission; Category/Branch/Operator filters apply;
 
 **Person**: No access
@@ -469,6 +521,7 @@ Get list of archiving reasons.
 #### Base Command
 
 `topdesk-archiving-reasons-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -485,9 +538,11 @@ Get list of archiving reasons.
 
 
 #### Command Example
+
 ```!topdesk-archiving-reasons-list```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -508,6 +563,7 @@ Get list of archiving reasons.
 #### Human Readable Output
 
 >### TOPdesk archiving reasons
+>
 >|Id|Name|
 >|---|---|
 >| some-archive-reason-id-1 | No longer valid |
@@ -515,10 +571,12 @@ Get list of archiving reasons.
 
 
 ### topdesk-persons-list
+
 ***
 Get list of persons.
 
 #### Permissions
+
 **Operator**: With read permission on persons; Branch filters apply
 
 Visible fields in response: all
@@ -530,6 +588,7 @@ Visible fields in response: id, dynamicName, phoneNumber, mobileNumber, fax, ema
 #### Base Command
 
 `topdesk-persons-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -666,9 +725,11 @@ Visible fields in response: id, dynamicName, phoneNumber, mobileNumber, fax, ema
 
 
 #### Command Example
+
 ```!topdesk-persons-list```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -755,6 +816,7 @@ Visible fields in response: id, dynamicName, phoneNumber, mobileNumber, fax, ema
 #### Human Readable Output
 
 >### TOPdesk persons
+>
 >|Id|Name|BranchName|
 >|---|---|---|
 >| some-user-id-a | Xsoar - User - A | XSoar - Customer - A |
@@ -762,10 +824,12 @@ Visible fields in response: id, dynamicName, phoneNumber, mobileNumber, fax, ema
 
 
 ### topdesk-operators-list
+
 ***
 Get list of operators.
 
 #### Permissions
+
 **Operator**: With read permission on operators; Branch/Operator filters apply
 
 **Person**: No access
@@ -773,6 +837,7 @@ Get list of operators.
 #### Base Command
 
 `topdesk-operators-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -917,9 +982,11 @@ Get list of operators.
 
 
 #### Command Example
+
 ```!topdesk-operators-list```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -1017,16 +1084,19 @@ Get list of operators.
 #### Human Readable Output
 
 >### TOPdesk operators
+>
 >|Id|Name|BranchName|
 >|---|---|---|
 >| some-operator-id | Xsoar - Operator | HQ |
 
 
 ### topdesk-branches-list
+
 ***
 Get list of branches.
 
 #### Permissions
+
 **Operator**: Branch filters apply
 
 **Person**: Only accessible when branches are editable in the SSP. Returns only ID and name.
@@ -1034,6 +1104,7 @@ Get list of branches.
 #### Base Command
 
 `topdesk-branches-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1213,9 +1284,11 @@ Get list of branches.
 
 
 #### Command Example
+
 ```!topdesk-branches-list start=5```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -1455,15 +1528,18 @@ Get list of branches.
 #### Human Readable Output
 
 >### TOPdesk branches
+>
 >|Id|Status|Name|Phone|Website|Address|
 >|---|---|---|---|---|---|
 >| some-branch-id | Active | HeadQuarters | 1337 | some-domain.com | 49 Featherstone Street\nLONDON\nEC1Y 8SY\nUNITED KINGDOM
 
 ### topdesk-incidents-list
+
 ***
 Get list of incidents.
 
 #### Permissions
+
 **Operator**: With read permission on 1st/2nd line incident; Category/Branch/Operator filters apply
 
 **Person**: Accessible; Person visibility settings apply
@@ -1471,6 +1547,7 @@ Get list of incidents.
 #### Base Command
 
 `topdesk-incidents-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1691,9 +1768,11 @@ Get list of incidents.
 
 
 #### Command Example
+
 ```!topdesk-incidents-list```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -1763,16 +1842,19 @@ Get list of incidents.
 #### Human Readable Output
 
 >### TOPdesk incidents
+>
 >|Id|Number|Line|CallerName|Status|
 >|---|---|---|---|---|
 >| some-id | XSOAR-1337 | firstLine | some-caller | Logged |
 
 
 ### topdesk-incident-actions
+
 ***
 List all actions for specific incident
 
 #### Permissions:
+
 **Operator**: With read permission on 1st/2nd line incident; Category/Branch/Operator filters apply
 
 **Persons**: Accessible; Person visibility settings apply
@@ -1780,6 +1862,7 @@ List all actions for specific incident
 #### Base Command
 
 `topdesk-incident-actions-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1802,6 +1885,7 @@ List all actions for specific incident
 | TOPdesk.Action.Memotext | String | Content of the action. |
 
 ### topdesk-incident-create
+
 ***
 Create an incident in TOPdesk.
 
@@ -1809,21 +1893,24 @@ The command first uses the callerLookup option and tries to attach an existing u
 If the callerLookup shows up empty, the command will create an incident with an unregistered caller with a name as provided in the caller option.
 
 #### Permissions: 
+
 **Operator**: With create permission on 1st/2nd line incident, partials require 2nd line create permission
 
 **Person**: Can only create first line incidents for himself. Only the following fields can be set depending on the setting for the new call form:
- - request
- - briefDescription
- - callType
- - category
- - subcategory
- - object
- - location
- - operatorGroup
+
+- request
+- briefDescription
+- callType
+- category
+- subcategory
+- object
+- location
+- operatorGroup
  
 #### Base Command
 
 `topdesk-incident-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2042,9 +2129,11 @@ If the callerLookup shows up empty, the command will create an incident with an 
 
 
 #### Command Example
+
 ```!topdesk-incident-create caller=some-caller```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -2114,20 +2203,24 @@ If the callerLookup shows up empty, the command will create an incident with an 
 #### Human Readable Output
 
 >### TOPdesk incidents
+>
 >|Id|Number|Line|CallerName|Status|
 >|---|---|---|---|---|
 >| some-id | XSOAR-1337 | firstLine | some-caller | Logged |
 
 
 ### topdesk-incident-update
+
 ***
 Update an incident in TOPdesk.
 
 #### Permissions: 
+
 **Operator**: With edit permission on 1st/2nd line incident; Category/Branch/Operator filters apply
 
 **Person**: Accessible; Person visibility settings apply.
 Depending on settings, the following fields can be updated:
+
 - action
 - closed
 - feedbackRating
@@ -2136,6 +2229,7 @@ Depending on settings, the following fields can be updated:
 #### Base Command
 
 `topdesk-incident-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2356,9 +2450,11 @@ Depending on settings, the following fields can be updated:
 
 
 #### Command Example
+
 ```!topdesk-incident-update description=some-updated-description number=XSOAR-1337```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -2428,6 +2524,7 @@ Depending on settings, the following fields can be updated:
 #### Human Readable Output
 
 >### TOPdesk incidents
+>
 >|Id|Number|Line|CallerName|Status|
 >|---|---|---|---|---|
 >| some-id | XSOAR-1337 | firstLine | some-caller | Logged |
@@ -2435,10 +2532,12 @@ Depending on settings, the following fields can be updated:
 
 
 ### topdesk-incident-escalate
+
 ***
 Escalate an incident in TOPdesk.
 
 #### Permissions
+
 **Operator**: With 1st line incident write permission and write permission for escalating incidents; Category/Branch/Operator filters apply
 
 **Person**: No access
@@ -2446,6 +2545,7 @@ Escalate an incident in TOPdesk.
 #### Base Command
 
 `topdesk-incident-escalate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2656,9 +2756,11 @@ Escalate an incident in TOPdesk.
 
 
 #### Command Example
+
 ```!topdesk-incident-escalate number=XSOAR-1337 escalate_reason_id=some-escalation-id-1```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -2728,15 +2830,18 @@ Escalate an incident in TOPdesk.
 #### Human Readable Output
 
 >### TOPdesk incidents
+>
 >|Id|Number|Line|CallerName|Status|
 >|---|---|---|---|---|
 >| some-id | XSOAR-1337 | secondLine | some-caller | Logged |
 
 ### topdesk-incident-deescalate
+
 ***
 Deescalate an incident in TOPdesk.
 
 #### Permissions
+
 **Operator**: With 1st and 2nd line incident write permission; Category/Branch/Operator filters apply; Feature must be enabled
 
 **Person**: No access
@@ -2745,6 +2850,7 @@ Deescalate an incident in TOPdesk.
 #### Base Command
 
 `topdesk-incident-deescalate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2955,9 +3061,11 @@ Deescalate an incident in TOPdesk.
 
 
 #### Command Example
+
 ```!topdesk-incident-deescalate number=XSOAR-1337 deescalate_reason_id=some-deescalation-id-1```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -3027,16 +3135,19 @@ Deescalate an incident in TOPdesk.
 #### Human Readable Output
 
 >### TOPdesk incidents
+>
 >|Id|Number|Line|CallerName|Status|
 >|---|---|---|---|---|
 >| some-id | XSOAR-1337 | firstLine | some-caller | Logged |
 
 
 ### topdesk-incident-archive
+
 ***
 Archive an incident in TOPdesk.
 
 #### Permissions
+
 **Operator**: Incident write permission and archiving permission; Category/Branch/Operator filters apply;
 
 **Person**: No access
@@ -3044,6 +3155,7 @@ Archive an incident in TOPdesk.
 #### Base Command
 
 `topdesk-incident-archive`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3254,9 +3366,11 @@ Archive an incident in TOPdesk.
 
 
 #### Command Example
+
 ```!topdesk-incident-archive archive_reason_id=some-reason-id-1 number=XSOAR-1337```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -3336,17 +3450,20 @@ Archive an incident in TOPdesk.
 #### Human Readable Output
 
 >### TOPdesk incidents
+>
 >|Id|Number|Line|CallerName|Status|
 >|---|---|---|---|---|
 >| some-id | XSOAR-1337 | firstLineArchived | xsoar_test | Logged |
 
 
 ### topdesk-incident-unarchive
+
 ***
 Unarchive an incident in TOPdesk.
 
 
 #### Permissions
+
 **Operator**: Incident write permission and archiving permission; Category/Branch/Operator filters apply;
 
 **Person**: No access
@@ -3354,6 +3471,7 @@ Unarchive an incident in TOPdesk.
 #### Base Command
 
 `topdesk-incident-unarchive`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3563,9 +3681,11 @@ Unarchive an incident in TOPdesk.
 
 
 #### Command Example
+
 ```!topdesk-incident-unarchive number=XSOAR-1337```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -3641,15 +3761,18 @@ Unarchive an incident in TOPdesk.
 #### Human Readable Output
 
 >### TOPdesk incidents
+>
 >|Id|Number|Line|CallerName|Status|
 >|---|---|---|---|---|
 >| some-id | XSOAR-1337 | firstLine | xsoar_test | Logged |
 
 ### topdesk-incident-attachment-upload
+
 ***
 Upload an attachment to an incident in TOPdesk.
 
 #### Permissions
+
 **Operator**: With edit permission on 1st/2nd line incident; Category/Branch/Operator filters apply
 
 **Person**: Accessible; Person visibility settings apply.
@@ -3657,6 +3780,7 @@ Upload an attachment to an incident in TOPdesk.
 #### Base Command
 
 `topdesk-incident-attachment-upload`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3686,9 +3810,11 @@ Upload an attachment to an incident in TOPdesk.
 
 
 #### Command Example
+
 ```!topdesk-incident-attachment-upload number=XSOAR-1337 file=932@some-file-entry```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -3710,6 +3836,7 @@ Upload an attachment to an incident in TOPdesk.
 #### Human Readable Output
 
 >### TOPdesk Attachments
+>
 >|Id|FileName|DownloadUrl|InvisibleForCaller|EntryDate|Operator|
 >|---|---|---|---|---|---|
 >| some-id | tiny_upload_file | /tas/api/incidents/id/some-incident-id/attachments/some-id/download | False | 2021-03-24T13:40:47.000+0000 | xsoar operator a |
@@ -3718,6 +3845,7 @@ Upload an attachment to an incident in TOPdesk.
 #### Base Command
 
 `topdesk-incident-attachments-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3744,9 +3872,11 @@ Upload an attachment to an incident in TOPdesk.
 
 
 #### Command Example
+
 ```!topdesk-incident-attachments-list number=XSOAR-1337```
 
 #### Context Example
+
 ```json
 {
     "TOPdesk": {
@@ -3768,6 +3898,7 @@ Upload an attachment to an incident in TOPdesk.
 #### Human Readable Output
 
 >### TOPdesk Attachments
+>
 >|Id|FileName|DownloadUrl|InvisibleForCaller|EntryDate|Operator|
 >|---|---|---|---|---|---|
 >|some-id|tiny_upload_file|/tas/api/incidents/id/some-incident-id/attachments/some-id/download|False|2021-03-24T13:40:47.000+0000|xsoar operator a|

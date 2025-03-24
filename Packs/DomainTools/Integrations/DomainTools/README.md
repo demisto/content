@@ -12,9 +12,12 @@ Domain name, DNS and Internet OSINT-based cyber threat intelligence and cybercri
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### domain
+
 ***
 Retrieve domain information.
 
@@ -24,6 +27,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,6 +54,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -57,6 +62,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### domainSearch
+
 ***
 Search for domain based on the given parameters
 
@@ -66,6 +72,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domainSearch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -91,6 +98,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -98,6 +106,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### reverseIP
+
 ***
 Reverse loopkup of an IP address
 
@@ -105,6 +114,7 @@ Reverse loopkup of an IP address
 #### Base Command
 
 `reverseIP`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -123,6 +133,7 @@ Reverse loopkup of an IP address
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -130,6 +141,7 @@ Reverse loopkup of an IP address
 
 
 ### reverseNameServer
+
 ***
 Reverse nameserver lookup
 
@@ -137,6 +149,7 @@ Reverse nameserver lookup
 #### Base Command
 
 `reverseNameServer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -153,6 +166,7 @@ Reverse nameserver lookup
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -160,6 +174,7 @@ Reverse nameserver lookup
 
 
 ### reverseWhois
+
 ***
 Reverse lookup of whois information
 
@@ -167,6 +182,7 @@ Reverse lookup of whois information
 #### Base Command
 
 `reverseWhois`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -185,6 +201,7 @@ Reverse lookup of whois information
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -192,6 +209,7 @@ Reverse lookup of whois information
 
 
 ### whois
+
 ***
 Provides registration details about a domain
 
@@ -199,6 +217,7 @@ Provides registration details about a domain
 #### Base Command
 
 `whois`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -216,6 +235,7 @@ Provides registration details about a domain
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -223,6 +243,7 @@ Provides registration details about a domain
 
 
 ### whoisHistory
+
 ***
 Display a history of whois for a given domain
 
@@ -230,6 +251,7 @@ Display a history of whois for a given domain
 #### Base Command
 
 `whoisHistory`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -246,6 +268,7 @@ Display a history of whois for a given domain
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -253,6 +276,7 @@ Display a history of whois for a given domain
 
 
 ### domainProfile
+
 ***
 Display profile for a given domain
 
@@ -260,6 +284,7 @@ Display profile for a given domain
 #### Base Command
 
 `domainProfile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -272,6 +297,7 @@ Display profile for a given domain
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

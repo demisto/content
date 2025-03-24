@@ -2,6 +2,7 @@ Drops a file to a target system by providing its path on the server. In most cas
 This is a utility agent script to be used inside server scripts. See `CopyFileD2` for an example.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +12,7 @@ This is a utility agent script to be used inside server scripts. See `CopyFileD2
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -20,5 +22,6 @@ This is a utility agent script to be used inside server scripts. See `CopyFileD2
 | force | The overwrite file. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

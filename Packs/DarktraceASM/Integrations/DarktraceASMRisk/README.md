@@ -6,7 +6,7 @@ This integration was integrated and tested with version 6.0.0 of Darktrace
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://example.net\) | True |
+| url | Server URL \(e.g. <https://example.net\>) | True |
 | isFetch | Fetch incidents | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | api_token | API Token | True |
@@ -114,7 +114,7 @@ Returns the Risk object associated with the given Risk ID.
 >| evidence | No HSTS header present. |
 >| id | Umlza1R5cGU6MTE5Nzc= |
 >| mitigatedAt | 2023-06-06T09:59:49.344739+00:00 |
->| proposedAction | Turn on the HSTS header, read more on https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Strict_Transport_Security_Cheat_Sheet.html |
+>| proposedAction | Turn on the HSTS header, read more on <https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Strict_Transport_Security_Cheat_Sheet.html> |
 >| securityRating | b |
 >| startedAt | 2022-05-27T18:38:45.439551+00:00 |
 >| title | HSTS header missing |
@@ -284,21 +284,21 @@ Returns the Asset object associated with the given Asset ID.  The output will de
 >| brand | Darktrace |
 >| comments | Q29tbWVudFR5cGU6OTc=: "Test comment" |
 >| createdAt | 2022-06-27 18:34:50.473256+00:00 |
->| discoverySources | RGlzY292ZXJ5U291cmNlVHlwZTo1NDc0Ng==: Record retrieved from FQDN careers.darktrace.com<br>RGlzY292ZXJ5U291cmNlVHlwZTo1NDc1Nw==: Application from https://careers.darktrace.com/ |
+>| discoverySources | RGlzY292ZXJ5U291cmNlVHlwZTo1NDc0Ng==: Record retrieved from FQDN careers.darktrace.com<br>RGlzY292ZXJ5U291cmNlVHlwZTo1NDc1Nw==: Application from <https://careers.darktrace.com/> |
 >| fqdns | RnFkblR5cGU6MjY2Mjc=: careers.darktrace.com |
 >| id | QXBwbGljYXRpb25UeXBlOjI2NjI4 |
 >| ipaddresses | SVBBZGRyZXNzVHlwZToxNTU3Njc=: 1.1.1.1<br>SVBBZGRyZXNzVHlwZToxNTU3Njg=: 1.1.1.1 |
 >| isMalicious | false |
 >| protocol | HTTP |
 >| risks | Umlza1R5cGU6NjYzNjA=: Vulnerable software found - jquery ui/1.13.0 (highest CVE score 4.3)<br>Umlza1R5cGU6MTU1ODQ=: Excessive cookie lifetime (> 1 year)<br>Umlza1R5cGU6MzQ4MzQ=: Excessive cookie lifetime (> 1 year) |
->| screenshot | https://storage.googleapis.com/asm-prod-1931-z5b5n7ow5w-copy/http_screenshot/screenshot_155822.jpg?Expires=1710617295&GoogleAccessId=asm-prod-1931-cyberweb%40dt-asm-prod.iam.gserviceaccount.com&Signature=HjT83fw4EV%2F6notDq7tQB24oAr049F4UZ8OUDJ3hiuAaD%2F3y7xFOniBLDyZNtZBMlUDDJgrG6%2BhXbuJ0Sdobhsk%2Bj6KZknqa6xao0eyv%2BT%2FQGysZSxol8YHn%2BykRBkX8Umajs%2F5KRR8GRWc46o7m%2FnW1Rdop4qUuGKPy82UUOWwbyfcI7yYOGH8nky2b0o95QyfvR4%2Fa4GeCEHL8cz8RksGh4imWICWcTDu18OlGNruI%2F0sAiivHVbzPnOnBBFwFunAIXez9THr5oItqIoTzV%2FrNdwIFHc0rRIvtvNpuUVcrQo7%2FqaDunYZSmPu0Hf6eaL7cR6ZbYbXuKchlr2eAOQ%3D%3D |
+>| screenshot | <https://storage.googleapis.com/asm-prod-1931-z5b5n7ow5w-copy/http_screenshot/screenshot_155822.jpg?Expires=1710617295&GoogleAccessId=asm-prod-1931-cyberweb%40dt-asm-prod.iam.gserviceaccount.com&Signature=HjT83fw4EV%2F6notDq7tQB24oAr049F4UZ8OUDJ3hiuAaD%2F3y7xFOniBLDyZNtZBMlUDDJgrG6%2BhXbuJ0Sdobhsk%2Bj6KZknqa6xao0eyv%2BT%2FQGysZSxol8YHn%2BykRBkX8Umajs%2F5KRR8GRWc46o7m%2FnW1Rdop4qUuGKPy82UUOWwbyfcI7yYOGH8nky2b0o95QyfvR4%2Fa4GeCEHL8cz8RksGh4imWICWcTDu18OlGNruI%2F0sAiivHVbzPnOnBBFwFunAIXez9THr5oItqIoTzV%2FrNdwIFHc0rRIvtvNpuUVcrQo7%2FqaDunYZSmPu0Hf6eaL7cR6ZbYbXuKchlr2eAOQ%3D%3D> |
 >| securityrating | b|
 >| state | Confirmed |
 >| tags | MANAGED BY INTERNAL DEV |
 >| technologies | VGVjaG5vbG9neVR5cGU6MTU4MjY2: Amazon ALB<br>VGVjaG5vbG9neVR5cGU6MTU4MjY3: Amazon Web Services<br>VGVjaG5vbG9neVR5cGU6MTE1MjU3: Bootstrap |
 >| type | application |
 >| updatedAt | 2023-08-21 00:31:57.299904+00:00 |
->| uri | https://careers.darktrace.com |
+>| uri | <https://careers.darktrace.com> |
 
 ### darktrace-asm-mitigate-risk
 

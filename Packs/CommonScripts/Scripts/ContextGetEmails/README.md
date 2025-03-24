@@ -1,5 +1,7 @@
 Gets all email addresses in context, excluding ones given.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +11,7 @@ Gets all email addresses in context, excluding ones given.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,5 +19,6 @@ Gets all email addresses in context, excluding ones given.
 | excludedEmails | The email addresses to exclude (comma-seperated). |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

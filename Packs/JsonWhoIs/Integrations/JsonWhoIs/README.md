@@ -55,11 +55,13 @@ Notice: Submitting indicators using this command might make the indicator data p
 | Domain.WHOIS.Admin.Phone | String | The Admin phone. |
 
 ##### Command Example
+
 ```
 !whois query=demisto.com
 ```
 
 ##### Context Example
+
 ```
 {
     "Domain": {

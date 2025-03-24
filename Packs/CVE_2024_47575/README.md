@@ -19,13 +19,14 @@ The vulnerability impacts the following FortiManager versions:
 
 ### This pack provides you with a first response kit which includes:
 
-* Collect, Extract, and Enrich Indicators
+- Collect, Extract, and Enrich Indicators
 
-* Threat Hunting using XQL Query Engine
+- Threat Hunting using XQL Query Engine
    
-  * Note: The 'fortinet_fortimanager_raw' dataset must be available for the XQL queries to function.
+  - Note: The 'fortinet_fortimanager_raw' dataset must be available for the XQL queries to function.
 
-* Mitigations and Workarounds
+- Mitigations and Workarounds
 
 #### References
+
 [Fortinet PSIRT Advisory FG-IR-24-423](https://www.fortiguard.com/psirt/FG-IR-24-423)

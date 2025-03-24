@@ -35,6 +35,7 @@ You can get latest vulnerabilities with given time from National Vulnerability D
 #### Context Output
 
 There is no context output for this command.
+
 ### nvd-search-keyword
 
 ***
@@ -57,10 +58,11 @@ The keyword parameter allows your application to retrieve records where a word o
 #### Context Output
 
 There is no context output for this command.
+
 ### nvd-search-cvss
 
 ***
-CVSS refers to the scoring system used by NIST to assess the severity of vulnerabilities, https://www.first.org/cvss/. NVD provides base scores using the CVSS version 2 and, more recently, version 3.x.
+CVSS refers to the scoring system used by NIST to assess the severity of vulnerabilities, <https://www.first.org/cvss/>. NVD provides base scores using the CVSS version 2 and, more recently, version 3.x.
 
 #### Base Command
 
@@ -80,10 +82,11 @@ CVSS refers to the scoring system used by NIST to assess the severity of vulnera
 #### Context Output
 
 There is no context output for this command.
+
 ### nvd-search-cwe
 
 ***
-CWE refers to the classification of vulnerabilities at https://cwe.mitre.org/. NIST staff associate one or more CWE to each vulnerability during the analysis process. In the following example, CWE-20 means vulnerabilities caused by Improper Input Validation. To filter search results based on CWE, use the cweId parameter. Example: cweId=CWE-20
+CWE refers to the classification of vulnerabilities at <https://cwe.mitre.org/>. NIST staff associate one or more CWE to each vulnerability during the analysis process. In the following example, CWE-20 means vulnerabilities caused by Improper Input Validation. To filter search results based on CWE, use the cweId parameter. Example: cweId=CWE-20
 
 #### Base Command
 
@@ -101,10 +104,11 @@ CWE refers to the classification of vulnerabilities at https://cwe.mitre.org/. N
 #### Context Output
 
 There is no context output for this command.
+
 ### nvd-search-cpe
 
 ***
-NVD analysts identify which product or products are affected by each vulnerability. The set of associated products is known as the applicability statement of the CVE. NVD uses the Common Platform Enumeration (CPE), version 2.3, to convey product vendors, names, versions, etc. For more information, see https://cpe.mitre.org/.
+NVD analysts identify which product or products are affected by each vulnerability. The set of associated products is known as the applicability statement of the CVE. NVD uses the Common Platform Enumeration (CPE), version 2.3, to convey product vendors, names, versions, etc. For more information, see <https://cpe.mitre.org/>.
 
 #### Base Command
 
@@ -122,6 +126,7 @@ NVD analysts identify which product or products are affected by each vulnerabili
 #### Context Output
 
 There is no context output for this command.
+
 ### nvd-search-cve
 
 ***

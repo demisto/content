@@ -8,8 +8,8 @@ This is the default integration for this content pack when configured by the Dat
     
 | **Parameter**                                                                    | **Description**                                                                                                                | **Required** |
 |----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|--------------|
-| Server URL (e.g. https://WORKDAY-HOST/ccx/api/privacy/v1/TENANT_NAME)                   | REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application                       | True         |
-| Token endpoint (e.g. https://WORKDAY-HOST/ccx/oauth2/TENANT_NAME/token)          | Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application.                     | True         |
+| Server URL (e.g. <https://WORKDAY-HOST/ccx/api/privacy/v1/TENANT_NAME>)                   | REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application                       | True         |
+| Token endpoint (e.g. <https://WORKDAY-HOST/ccx/oauth2/TENANT_NAME/token>)          | Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application.                     | True         |
 | Client ID                                                                        | Copy the Client ID and Secret from the Register API Client for Integrations stage at Workday.                                  | True         |
 | Client Secret                                                                    |                                                                                                                                | True         |
 | Refresh Token                                                                    | Non-expiry Workday API refresh token.                                                                                          | True         |

@@ -8,16 +8,19 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://example.com\) | True |
+| url | Server URL \(e.g. <https://example.com\>) | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | client_id | Client id for client_credentials grant type | True |
 | client_secret | Client secret for client_credentials grant type | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### dsv-secret-get
+
 ***
 Get secret for client
 
@@ -25,6 +28,7 @@ Get secret for client
 #### Base Command
 
 `dsv-secret-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -40,9 +44,11 @@ Get secret for client
 
 
 #### Command Example
+
 ```!dsv-secret-get name="accounts/xsoar"```
 
 #### Context Example
+
 ```json
 {
     "DSV": {

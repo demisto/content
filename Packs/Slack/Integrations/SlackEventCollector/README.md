@@ -16,9 +16,12 @@ This is the default integration for this content pack when configured by the Dat
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### slack-get-events
+
 ***
 Gets audit log events from Slack.
 
@@ -26,6 +29,7 @@ Gets audit log events from Slack.
 #### Base Command
 
 `slack-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -44,9 +48,11 @@ Gets audit log events from Slack.
 There is no context output for this command.
 
 #### Command Example
+
 ``` !slack-get-events action=user_login oldest="15 months ago" limit=1 ```
 
 #### Context Example
+
 ```json
 {
     "SlackEvents": [
@@ -89,6 +95,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Slack Audit Logs
+>
 >|action|actor|context|date_create|entity|id|
 >|---|---|---|---|---|---|
->| user_login | type: user<br/>user: {"id": "W123AB456", "name": "Charlie Parker", "email": "bird@slack.com"} | location: {"type": "enterprise", "id": "E1701NCCA", "name": "Birdland", "domain": "birdland"}<br/>ua: Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/64.0.3282.186 Safari\/537.36<br/>session_id: 847288190092<br/>ip_address: 1.23.45.678 | 1970-01-18 14:33:34 | type: user<br/>user: {"id": "W123AB456", "name": "Charlie Parker", "email": "bird@slack.com"} | 0123a45b-6c7d-8900-e12f-3456789gh0i2 |
+>| user_login | type: user<br/>user: {"id": "W123AB456", "name": "Charlie Parker", "email": "<bird@slack.com>"} | location: {"type": "enterprise", "id": "E1701NCCA", "name": "Birdland", "domain": "birdland"}<br/>ua: Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/64.0.3282.186 Safari\/537.36<br/>session_id: 847288190092<br/>ip_address: 1.23.45.678 | 1970-01-18 14:33:34 | type: user<br/>user: {"id": "W123AB456", "name": "Charlie Parker", "email": "<bird@slack.com>"} | 0123a45b-6c7d-8900-e12f-3456789gh0i2 |

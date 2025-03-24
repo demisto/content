@@ -16,12 +16,12 @@ This pack helps you to build a secure way to transact and use credentials stored
 
 ## Setting up the PAM360 Instance in Cortex XSOAR
 
-Refer to this link https://www.manageengine.com/privileged-access-management/help/cortex-integration.html#settingup
+Refer to this link <https://www.manageengine.com/privileged-access-management/help/cortex-integration.html#settingup>
 
 ## Configuring Cortex XSOAR in PAM360
 
-Refer to this link https://www.manageengine.com/privileged-access-management/help/cortex-integration.html#configurecortex
+Refer to this link <https://www.manageengine.com/privileged-access-management/help/cortex-integration.html#configurecortex>
 
 Help Document to integrate ManageEngine PAM360 with Cortex XSOAR
 
-https://www.manageengine.com/privileged-access-management/help/cortex-integration.html
+<https://www.manageengine.com/privileged-access-management/help/cortex-integration.html>

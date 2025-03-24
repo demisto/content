@@ -16,7 +16,7 @@ This integration was integrated and tested with Tenable.sc v5.7.0.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://192.168.0.1) | The server URL. | True |
+| Server URL (e.g. <https://192.168.0.1>) | The server URL. | True |
 | Access key | See the help for instructions to generate the access key. | False |
 | Secret key |  | False |
 | Username | The Username is either admin or secman \(depend on the role you want to log into\) and your password to the tenable server. | False |
@@ -116,6 +116,7 @@ Requires security manager role. Launch an existing scan from Tenable.sc. Set pol
 #### Human Readable Output
 
 When polling is set to false:
+
 ### Tenable.sc Scan
 
 |Name|ID|OwnerID|JobID|Status|
@@ -123,6 +124,7 @@ When polling is set to false:
 | test_scan_2023 | 169 | 38 | 118864 | Queued |
 
 When polling is set to true:
+
 ### Tenable.sc Scan 130 Report
 
 |ID|Name|Description|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|Status|Scan Type|Completed IPs|
@@ -519,7 +521,7 @@ Requires security manager role. Create a scan on Tenable.sc
 | dhcp_tracking | Track hosts which have been issued new IP address, (e.g., DHCP). Possible values are: true, false. | Optional | 
 | rollover_type | Scan rollover type. Possible values are: nextDay. | Optional | 
 | dependent_id | Dependent scan ID in case of a dependent schedule. Can be retrieved from the list-scans command. | Optional | 
-| time_zone | The timezone for the given start_time, Possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html. | Optional | 
+| time_zone | The timezone for the given start_time, Possible values can be found here: <https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html>. | Optional | 
 | start_time | The scan start time in the format of YYYY-MM-DD:HH:MM:SS or relative timestamp (i.e., now, 3 days). | Optional | 
 | repeat_rule_freq | Specifies repeating events based on an interval of a repeat_rule_freq or more. Possible values are: HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY. | Optional | 
 | repeat_rule_interval | The number of repeat_rule_freq between each interval (for example: If repeat_rule_freq=DAILY and repeat_rule_interval=8 it means every eight days.). | Optional | 
@@ -987,6 +989,7 @@ Returns all scan results in Tenable.sc. Requires security manager role.
 ### Tenable.sc Scan results - 0-1
 
 Total number of elements is 77
+
 |ID|Name|Status|Description|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 92 | test_scan_2023-mart-05-1950 | Error | Test scan 2023 | Network Scan | Full Access | secman | 0 | 2023-04-24T23:50:07Z | 2023-04-25T01:10:13Z | 80.1 | 22639720 |  | Local |
@@ -1065,7 +1068,7 @@ Creates a new user. This command can be executed with both roles (admin or secur
 | email_notice | If different from None, a valid email address must be given. Possible values are: both, password, id, none. Default is none. | Optional | 
 | auth_type | The authentication type. Tenable (TNS). Lightweight Directory Access Protocol (LDAP). Security Assertion Markup Language (SAML). LDAP server or SAML authentication needs to be configured in order to select LDAP or SAML. Possible values are: ldap, legacy, linked, saml, tns. Default is tns. | Required | 
 | password | The user's password. Must be at least 3 characters. | Required | 
-| time_zone | The user timezone, possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html. | Optional | 
+| time_zone | The user timezone, possible values can be found here: <https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html>. | Optional | 
 | role_id | The user's role. Only an Administrator can create Administrator accounts. Possible values are: Administrator, Security Manager, Security Analyst, Vulnerability Analyst, Executive, Credential Manager, Auditor. | Required | 
 | must_change_password | Whether the password must be changed. When choosing LDAP or SAML auth types, 'must_change_password' must be set to False. For all other cases can be either True or False. Possible values are: false, true. Default is false. | Optional | 
 | managed_users_groups | Comma-separated list of session user's role that can manage groups. Use tenable-sc-list-groups to get all available groups. | Optional | 
@@ -1159,7 +1162,7 @@ Update user details of the given user_id.
 | state | The state the user is living in. | Optional | 
 | country | The country the user is living in. | Optional | 
 | locked | Whether the user should be locked. Possible values are: true, false. Default is false. | Optional | 
-| time_zone | The user timezone. Possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html. | Optional | 
+| time_zone | The user timezone. Possible values can be found here: <https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html>. | Optional | 
 | role_id | The user's role. Only an Administrator can create Administrator accounts. Possible values are: Administrator, Security Manager, Security Analyst, Vulnerability Analyst, Executive, Credential Manager, Auditor. | Optional | 
 | must_change_password | Whether the password must be changed. When choosing LDAP or SAML auth types, 'must_change_password' must be set to False. For all other cases can be either True or False. Possible values are: false, true. Default is false. | Optional | 
 | managed_users_groups | Comma-separated list of session user's role that can manage groups. Use tenable-sc-list-groups to get all available groups. | Optional | 
@@ -1590,7 +1593,7 @@ Creates a remediation scan. Requires security manager role. This command is a pr
 | scan_name | Scan name. | Required | 
 | description | Scan description. | Optional | 
 | repository_id | Scan Repository ID, can be retrieved from the list-repositories command. Default is 1. | Required | 
-| time_zone | The timezone for the given start_time. Possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html. | Optional | 
+| time_zone | The timezone for the given start_time. Possible values can be found here: <https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html>. | Optional | 
 | start_time | The scan start time, in the format of YYYY-MM-DD:HH:MM:SS or relative timestamp (i.e., now, 3 days). | Optional | 
 | repeat_rule_freq | Specifies repeating events based on an interval of a repeat_rule_freq or more. Possible values are: HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY. | Optional | 
 | repeat_rule_interval | The number of repeat_rule_freq between each interval (for example: If repeat_rule_freq=DAILY and repeat_rule_interval=8 it means every eight days.). | Optional | 

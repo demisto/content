@@ -18,9 +18,12 @@ This integration was integrated and tested with version 2 of RaDark
 | Incident types to fetch | Set which incident types to fetch from RaDark. | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### radark-incident-get-items
+
 ***
 Fetch all items for an incident by the given incident ID.
 
@@ -28,6 +31,7 @@ Fetch all items for an incident by the given incident ID.
 #### Base Command
 
 `radark-incident-get-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -76,9 +80,11 @@ Fetch all items for an incident by the given incident ID.
 
 
 #### Command Example
+
 ```!radark-incident-get-items incident_id=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx```
 
 #### Context Example
+
 ```json
 {
     "Radark": {
@@ -98,6 +104,7 @@ Fetch all items for an incident by the given incident ID.
     }
 }
 ```
+
 **Items are flexible (base on incident type).* 
 
 #### Human Readable Output
@@ -105,6 +112,7 @@ Fetch all items for an incident by the given incident ID.
 >No data found for item ID: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ### radark-email-enrich
+
 ***
 Search a specific email address to get all exposed leaked credentials collected by RaDark.
 
@@ -112,6 +120,7 @@ Search a specific email address to get all exposed leaked credentials collected 
 #### Base Command
 
 `radark-email-enrich`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -133,9 +142,11 @@ Search a specific email address to get all exposed leaked credentials collected 
 
 
 #### Command Example
+
 ```!radark-email-enrich email=testa@test.com```
 
 #### Context Example
+
 ```json
 {
     "Radark": {
@@ -160,10 +171,11 @@ Search a specific email address to get all exposed leaked credentials collected 
 
 >|Email|Domain|Password Type|Password|Service|Source|Date|
 >|---|---|---|---|---|---|---|
->| testa@test.com | test.com | - | - | - | ss | 2017-01-12T19:43:00Z |
+>| <testa@test.com> | test.com | - | - | - | ss | 2017-01-12T19:43:00Z |
 
 
 ### radark-item-handle
+
 ***
 Mark item as handled on RaDark.
 
@@ -171,6 +183,7 @@ Mark item as handled on RaDark.
 #### Base Command
 
 `radark-item-handle`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -183,13 +196,16 @@ Mark item as handled on RaDark.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
+>
 >Item ID (xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx) marked as handled
 
 
 ### radark-item-purchase
+
 ***
 Request to purchase an item offered for sale on an automated store.
 
@@ -197,6 +213,7 @@ Request to purchase an item offered for sale on an automated store.
 #### Base Command
 
 `radark-item-purchase`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -209,6 +226,7 @@ Request to purchase an item offered for sale on an automated store.
 There is no context output for this command.
 
 #### Command Example
+
 ```!radark-item-purchase item_id=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx```
 
 #### Human Readable Output

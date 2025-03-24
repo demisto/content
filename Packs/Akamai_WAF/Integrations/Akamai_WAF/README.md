@@ -7,7 +7,7 @@ This is the modified version where a new command "akamai-update-network-list-ele
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g., https://example.net) | True |
+| Server URL (e.g., <https://example.net>) | True |
 | Client token | False |
 | Access token | False |
 | Client secret | False |
@@ -140,6 +140,7 @@ Deletes the specified network list.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-activate-network-list
 
 ***
@@ -161,6 +162,7 @@ Activates a network list on the specified environment.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-add-elements-to-network-list
 
 ***
@@ -181,6 +183,7 @@ Adds elements to the specified network list.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-remove-element-from-network-list
 
 ***
@@ -200,6 +203,7 @@ Removes elements from the specified network list.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-get-network-list-activation-status
 
 ***
@@ -243,6 +247,7 @@ Updates list elements of a network list.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-check-group
 
 ***
@@ -287,6 +292,7 @@ Create a new group under a parent GID.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-create-enrollment
 
 ***
@@ -359,6 +365,7 @@ List enrollments of a specific contract.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-create-domain
 
 ***
@@ -378,6 +385,7 @@ Create a domain with properties and domain controller (DC).
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-update-property
 
 ***
@@ -407,6 +415,7 @@ Update a property for a specific domain.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-get-change
 
 ***
@@ -451,6 +460,7 @@ Update the certs and trust chains.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-get-enrollment-by-cn
 
 ***
@@ -512,6 +522,7 @@ Get group.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-get-domains
 
 ***
@@ -573,6 +584,7 @@ Create a data center.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-clone-papi-property
 
 ***
@@ -1035,6 +1047,7 @@ Get PAPI property activation status until it is active.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-get-papi-edgehostname-creation-status-command
 
 ***
@@ -1058,6 +1071,7 @@ Get PAPI edgehostname creation status command until it is created.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-acknowledge-warning-command
 
 ***
@@ -1099,6 +1113,7 @@ Update the list of selected hostnames for a configuration version.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-get-production-deployment
 
 ***
@@ -1117,6 +1132,7 @@ Get Production Deployment.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-get-change-history
 
 ***
@@ -1135,6 +1151,7 @@ Get change history.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-patch-papi-property-rule-siteshield
 
 ***
@@ -1160,6 +1177,7 @@ Patch papi property default rule siteshield.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-update-appsec-config-version-notes
 
 ***
@@ -1180,6 +1198,7 @@ Update application secuirty configuration version notes command.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-new-or-renew-match-target
 
 ***
@@ -1205,6 +1224,7 @@ New match target if no existing found otherwise update the existing match target
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-patch-papi-property-rule-generic
 
 ***
@@ -1231,6 +1251,7 @@ Generic JSON patch command for Papi Property Default Rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-get-papi-property-rule
 
 ***
@@ -1274,6 +1295,7 @@ acknowledge pre verification warning.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-get-papi-property-by-name
 
 ***
@@ -1294,6 +1316,7 @@ Get PAPI property info without the default rule. To get the default rule, use th
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-list-papi-property-by-group
 
 ***
@@ -1314,6 +1337,7 @@ Lists properties available for the current contract and group.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-get-papi-property-by-id
 
 ***
@@ -1334,6 +1358,7 @@ get papi property info by id without default rule. to get default rule, please u
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-new-papi-property-version
 
 ***
@@ -1355,6 +1380,7 @@ Create a new property version based on any previous version.          All data f
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-list-papi-property-activations
 
 ***
@@ -1375,6 +1401,7 @@ This lists all activations for all versions of a property, on both production an
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-list-appsec-configuration-activation-history
 
 ***
@@ -1393,6 +1420,7 @@ Lists the activation history for a configuration. The history is an array in des
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-list-papi-property-by-hostname
 
 ***
@@ -1414,6 +1442,7 @@ Lists active property hostnames for all properties available in an account.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-list-siteshield-map
 
 ***
@@ -1457,8 +1486,11 @@ Returns the certification/enrollment deployment status for specific a environmen
 | Akamai.Cps.Enrollments.Deployment | Dictionary | A collection of settings for the Akami CPS enrollments deployment. |
 
 #### Command example
+
 ```!akamai-get-cps-enrollment-deployment enrollment_id=111111```
+
 #### Context Example
+
 ```json
 {
     "Akamai": {
@@ -1521,8 +1553,11 @@ List all CIDR blocks for all services you are subscribed to. To see additional C
 | Akamai.CidrBlocks | List | A list of CIDR blocks. |
 
 #### Command example
+
 ```!akamai-list-cidr-blocks last_action=add effective_date_gt=2021-02-21```
+
 #### Context Example
+
 ```json
 {
     "Akamai":{ 
@@ -1545,7 +1580,7 @@ List all CIDR blocks for all services you are subscribed to. To see additional C
 ### akamai-update-cps-enrollment
 
 ***
-Updates an enrollment with changes. Response type will vary depending on the type and impact of change. For example, changing SANs list may return HTTP 202 Accepted since the operation requires new certificate and network deployment operations, and thus cannot be completed without a change. On the contrary, for example a Technical Contact name change may return HTTP 200 OK assuming there are no active changes and the operation does not require a new certificate. Reference: https://techdocs.akamai.com/cps/reference/put-enrollment  Note: Depending on the type of the modification, additional steps might be required to complete the update. These additional steps could be carrying out a "renew" change by resubmitting the CSR, acknowledging the warnings raised then waiting for the certificate to be deployed into Production. However, these additional steps are not included in this command. You need to perform those steps once the update command is completed.
+Updates an enrollment with changes. Response type will vary depending on the type and impact of change. For example, changing SANs list may return HTTP 202 Accepted since the operation requires new certificate and network deployment operations, and thus cannot be completed without a change. On the contrary, for example a Technical Contact name change may return HTTP 200 OK assuming there are no active changes and the operation does not require a new certificate. Reference: <https://techdocs.akamai.com/cps/reference/put-enrollment>  Note: Depending on the type of the modification, additional steps might be required to complete the update. These additional steps could be carrying out a "renew" change by resubmitting the CSR, acknowledging the warnings raised then waiting for the certificate to be deployed into Production. However, these additional steps are not included in this command. You need to perform those steps once the update command is completed.
 
 #### Base Command
 
@@ -1573,8 +1608,11 @@ Updates an enrollment with changes. Response type will vary depending on the typ
 | Akamai.Enrollment.Changes | Dictionary | Akamai enrollment changes. |
 
 #### Command example
+
 ```!akamai-update-cps-enrollment enrollment_id=111111 updates="{\"thirdParty\": {\"excludeSans\": \"false\"}}" deploy_not_after=2023-11-30T00:00:00Z deploy_not_before=2023-11-23T00:00:00Z```
+
 #### Context Example
+
 ```json
 {
   "Akamai":{
@@ -1612,9 +1650,11 @@ Updates the current deployment schedule.
 | Akamai.Enrollment.Changes | Dictionary | Akamai enrollment changes. |
 
 #### Command example
+
 ```!akamai-update-cps-enrollment-schedule deploy_not_before=2023-11-30T00:00:00Z enrollment_path=/cps/v2/enrollments/111111/changes/1111111```
 
 #### Context Example
+
 ```json
 {
   "Akamai":{
@@ -1651,8 +1691,11 @@ Gets the status of a pending change.
 | Akamai.Enrollments.Change.Status | Dictionary | Akamai enrollments change status. | 
 
 #### Command example
+
 ```akamai-get-cps-change-status enrollment_path=/cps/v2/enrollments/111111/changes/1111111```
+
 #### Context Example
+
 ```json
 {
   "Akamai":{
@@ -1680,6 +1723,7 @@ Gets the status of a pending change.
               }
 }}}}
 ```
+
 ### akamai-get-cps-enrollment-by-id
 
 ***
@@ -1698,6 +1742,7 @@ Get an enrollment in CPS by enrollment id
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-cancel-cps-change
 
 ***

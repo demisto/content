@@ -1052,11 +1052,11 @@ Content-Type: text/xml;charset=utf-8
 Content-Length: 769
 Date: Wed, 17 Jun 2020 13:12:43 GMT
 
-&lt;?xml version=&apos;1.0&apos; encoding=&apos;UTF-8&apos;?&gt;&lt;S:Envelope xmlns:S=&apos;http://schemas.xmlsoap.org/soap/envelope/&apos;&gt;&lt;S:Body&gt;
-&lt;S:Fault xmlns:ns4=&apos;http://www.w3.org/2003/05/soap-envelope&apos;&gt;
+&lt;?xml version=&apos;1.0&apos; encoding=&apos;UTF-8&apos;?&gt;&lt;S:Envelope xmlns:S=&apos;<http://schemas.xmlsoap.org/soap/envelope/&apos;&gt;&lt;S:Body>&gt;
+&lt;S:Fault xmlns:ns4=&apos;<http://www.w3.org/2003/05/soap-envelope>&apos;&gt;
 &lt;faultcode&gt;S:Server&lt;/faultcode&gt;
 &lt;faultstring&gt;Authentication failed&lt;/faultstring&gt;&lt;detail&gt;
-&lt;ns4:AuthenticationFault xmlns:ns4=&apos;http://www.vontu.com/v2011/enforce/webservice/incident/schema&apos;  xmlns:ns2=&apos;http://www.vontu.com/enforce/export/incident/common/schema&apos;  xmlns:ns3=&apos;http://www.vontu.com/enforce/export/incident/schema&apos;  xmlns:ns5=&apos;http://www.vontu.com/v2011/enforce/webservice/incident/common/schema&apos;  xmlns:ns6=&apos;http://www.vontu.com/v2011/enforce/webservice/incident&apos;&gt;
+&lt;ns4:AuthenticationFault xmlns:ns4=&apos;<http://www.vontu.com/v2011/enforce/webservice/incident/schema>&apos;  xmlns:ns2=&apos;<http://www.vontu.com/enforce/export/incident/common/schema>&apos;  xmlns:ns3=&apos;<http://www.vontu.com/enforce/export/incident/schema>&apos;  xmlns:ns5=&apos;<http://www.vontu.com/v2011/enforce/webservice/incident/common/schema>&apos;  xmlns:ns6=&apos;<http://www.vontu.com/v2011/enforce/webservice/incident>&apos;&gt;
 &lt;ns4:errorMessage&gt;Authentication failed&lt;/ns4:errorMessage&gt;
 &lt;/ns4:AuthenticationFault&gt;&lt;/detail&gt;&lt;/S:Fault&gt;&lt;/S:Body&gt;&lt;/S:Envelope&gt;
 </pre>

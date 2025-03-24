@@ -1,4 +1,5 @@
 <~XSIAM>
+
 # Cisco Umbrella cloud security
 
 ### Collect Access Logs from Cisco Umbrella cloud security
@@ -8,6 +9,7 @@
 **On AWS**
 
 Ensure you have the below prerequisites:
+
 1. A login to Amazon AWS service
 2. A bucket configured in Amazon S3 to be used for storing logs.
 
@@ -23,6 +25,7 @@ See this [doc](https://docs.umbrella.com/deployment-umbrella/docs/setting-up-an-
 For more information, refer to the official Cisco Umbrella [documentation](https://docs.umbrella.com/deployment-umbrella/docs/setting-up-an-amazon-s3-bucket#enable-logging).
 
 At the end of this process, you should have a folder created for each type of log in your bucket:
+
 - auditlogs
 - dnslogs
 - proxylogs

@@ -44,13 +44,17 @@ The following flags can be used in the *flags* argument to control the transform
 | regex_full_match | Regex patterns will be compared with the whole string to find a match. | `not regex_match('\d+', 'a12345')` |
 
 ### Example:
+
 ---
+
 ##### value (Get):
+
 ```
 ${.}
 ```
 
 ##### conditions:
+
 ```json
 [
   {
@@ -72,6 +76,7 @@ ${.}
 ```
 
 ##### flags:
+
 ```
 case_insensitive,regex_dot_all,regex_multiline
 ```

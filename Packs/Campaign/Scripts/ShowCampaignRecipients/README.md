@@ -1,6 +1,7 @@
 Displays the phishing campaign recipients' email addresses and the number of incidents each email address appears in. .
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,9 +11,11 @@ Displays the phishing campaign recipients' email addresses and the number of inc
 | Cortex XSOAR Version | 5.5.0 and later |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

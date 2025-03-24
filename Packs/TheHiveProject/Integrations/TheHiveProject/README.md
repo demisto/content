@@ -1375,11 +1375,11 @@ There is no context output for this command.
 
 >|_id|title|_createdAt|_createdBy|status|group|
 >|---|---|---|---|---|---|
->| ~585736 | newly added task | 2021-10-11T17:36:42Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~581640 | newly added task | 2021-10-11T17:36:42Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~41500824 | task1 | 2021-10-11T17:02:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~438408 | task2 | 2021-10-11T17:02:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~442504 | task3 | 2021-10-11T17:02:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
+>| ~585736 | newly added task | 2021-10-11T17:36:42Z | <adrugobitski@paloaltonetworks.com> | Waiting | default |
+>| ~581640 | newly added task | 2021-10-11T17:36:42Z | <adrugobitski@paloaltonetworks.com> | Waiting | default |
+>| ~41500824 | task1 | 2021-10-11T17:02:01Z | <adrugobitski@paloaltonetworks.com> | Waiting | default |
+>| ~438408 | task2 | 2021-10-11T17:02:01Z | <adrugobitski@paloaltonetworks.com> | Waiting | default |
+>| ~442504 | task3 | 2021-10-11T17:02:01Z | <adrugobitski@paloaltonetworks.com> | Waiting | default |
 
 
 ### thehive-get-task
@@ -1653,15 +1653,15 @@ There is no context output for this command.
 
 >|id|name|roles|status|
 >|---|---|---|---|
->| adrugobitski@paloaltonetworks.com | name API | admin,<br/>write,<br/>read,<br/>alert | Ok |
->| rrapoport@paloaltonetworks.com | Roman Rapoport | admin,<br/>write,<br/>read,<br/>alert | Ok |
->| example@example.com | username | read | Ok |
->| example@example.com | usernamee | read | Ok |
->| new_example@example.com | user_name | read | Ok |
->| test@example.com | user_name_2 | read | Ok |
->| name_login@thehive.local | dem_test | read | Ok |
->| example_2@example.com | merit | read | Ok |
->| test@example.com | testing | read | Ok |
+>| <adrugobitski@paloaltonetworks.com> | name API | admin,<br/>write,<br/>read,<br/>alert | Ok |
+>| <rrapoport@paloaltonetworks.com> | Roman Rapoport | admin,<br/>write,<br/>read,<br/>alert | Ok |
+>| <example@example.com> | username | read | Ok |
+>| <example@example.com> | usernamee | read | Ok |
+>| <new_example@example.com> | user_name | read | Ok |
+>| <test@example.com> | user_name_2 | read | Ok |
+>| <name_login@thehive.local> | dem_test | read | Ok |
+>| <example_2@example.com> | merit | read | Ok |
+>| <test@example.com> | testing | read | Ok |
 
 
 ### thehive-get-user
@@ -1798,7 +1798,7 @@ There is no context output for this command.
 
 >|_id|login|name|profile|
 >|---|---|---|---|
->| ~593928 | name@example.local | dem | read-only |
+>| ~593928 | <name@example.local> | dem | read-only |
 
 
 ### thehive-block-user

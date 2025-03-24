@@ -1,11 +1,12 @@
 SailPoint IdentityNow
 This integration was integrated and tested with SailPoint IdentityNow.
+
 ## Configure SailPointIdentityNow in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| identitynow_url | IdentityNow Server URL \(e.g. https://org.api.identitynow.com\) | True |
+| identitynow_url | IdentityNow Server URL \(e.g. <https://org.api.identitynow.com\>) | True |
 | client_id | Client Id \(for OAuth 2.0\) | True |
 | client_secret | Client Secret \(for OAuth 2.0\) | True |
 | isFetch | Fetch incidents | False |
@@ -17,10 +18,12 @@ This integration was integrated and tested with SailPoint IdentityNow.
 
 
 ## Important Note
+
 This integration pack does not fetch incidents from IdentityNow. It rather utilizes "Generic Webhook" to create incidents on event triggers published by IdentityNow. One can achieve this by following the steps below:
 
 1. Configure Cortex XSOAR Platform - Use the following link to configure Cortex XSOAR platform to initiate receiving of Event Triggers from IdentityNow platform.
-- https://xsoar.pan.dev/docs/reference/integrations/generic-webhook
+
+- <https://xsoar.pan.dev/docs/reference/integrations/generic-webhook>
 - Select "SailPoint IdentityNow Trigger" as the "Incident Type" in the "Generic Webhook" configuration.
 
 2. Enable & Configure the Event Handler - IdentityNow Event Trigger can forward the events occurring within the platform to any external services/platform that have subscribed to the list of triggers available in IdentityNow. Request the IdentityNow team to enable/provide you with the 'identitynow-events-pan-xsoar' event handler designed for Cortex XSOAR. This is a standalone .nodejs microservice that assists with event trigger transform and relaying to Cortex XSOAR.
@@ -33,15 +36,19 @@ Following is a list of environment variables (added to the app.config.js) needed
 | XSOAR_PASSWORD | Password to connect to the "Generic Webhook". |
 
 3. Configure IdentityNow Platform - Use the following link to configure IdentityNow platform to subscribe to event triggers.
-- https://community.sailpoint.com/t5/Admin-Help/Event-Triggers-in-SailPoint-s-Cloud-Services/ta-p/178285
+
+- <https://community.sailpoint.com/t5/Admin-Help/Event-Triggers-in-SailPoint-s-Cloud-Services/ta-p/178285>
 
 Once you have configured all the above steps, whenever an event trigger will occur in IdentityNow, it will notify Cortex XSOAR (as Incidents) using the above setup.
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### identitynow-search-identities
+
 ***
 Search for identity(identities) using elastic search query used by IdentityNow Search Engine.
 
@@ -49,6 +56,7 @@ Search for identity(identities) using elastic search query used by IdentityNow S
 #### Base Command
 
 `identitynow-search-identities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -90,21 +98,27 @@ Search for identity(identities) using elastic search query used by IdentityNow S
 
 
 #### Command Example
+
 ```
 !identitynow-search-identities query=id:2c918084740346d5017408d79229489e
 ```
 
 #### Human Readable Output
+
 ### Results:
+
 Total: 1
+
 ### Identity(Identities)
+
 |id|name|displayName|firstName|lastName|email|created|modified|inactive|protected|status|isManager|identityProfile|source|attributes|accounts|accountCount|appCount|accessCount|entitlementCount|roleCount|accessProfileCount|pod|org|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2c918084740346d5017408d79229489e | testy.testerson@sailpoint.com | testy.testerson@sailpoint.com | testy.testerson@sailpoint.com | testy.testerson@sailpoint.com | testy.testerson@sailpoint.com | 2020-08-19T22:29:39.498Z | 2021-02-04T02:03:11.294Z | false | false | UNREGISTERED | false | id: 2c9180887372d217017408d3c85d0b20<br/>name: ZIA Users | id: 2c91808a737cf404017408d28c1e77a2<br/>name: ZIA | uid: 7a736361-6c65-7200-7363-696d005d7d1a<br/>firstname: testy.testerson@sailpoint.com<br/>cloudAuthoritativeSource: 2c91808a737cf404017408d28c1e77a2<br/>cloudStatus: UNREGISTERED<br/>iplanet-am-user-alias-list: <br/>displayName: testy.testerson@sailpoint.com<br/>internalCloudStatus: UNREGISTERED<br/>identificationNumber: 7a736361-6c65-7200-7363-696d005d7d1a<br/>email: testy.testerson@sailpoint.com<br/>lastname: testy.testerson@sailpoint.com | {'id': '2c918084740346d5017408d7922a489f', 'name': 'testy.testerson@sailpoint.com', 'accountId': '7a736361-6c65-7200-7363-696d005d7d1a', 'source': {'id': '2c91808a737cf404017408d28c1e77a2', 'name': 'ZIA', 'type': 'SCIM 2.0'}, 'disabled': False, 'locked': False, 'privileged': False, 'manuallyCorrelated': False, 'entitlementAttributes': {}, 'created': '2020-08-19T22:29:39.498Z'},<br/>{'id': '2c918084740346d601740c98765a306e', 'name': 'testy.testerson@sailpoint.com', 'accountId': 'testy.testerson@sailpoint.com', 'source': {'id': '2c91808563f9f8b40163fa9734d3029f', 'name': 'IdentityNow', 'type': 'IdentityNowConnector'}, 'disabled': False, 'locked': False, 'privileged': False, 'manuallyCorrelated': False, 'entitlementAttributes': {}, 'created': '2020-08-20T15:59:12.475Z'} | 2 | 0 | 0 | 0 | 0 | 0 | stg-uswest | sailpoint-idn | identity |
+| 2c918084740346d5017408d79229489e | <testy.testerson@sailpoint.com> | <testy.testerson@sailpoint.com> | <testy.testerson@sailpoint.com> | <testy.testerson@sailpoint.com> | <testy.testerson@sailpoint.com> | 2020-08-19T22:29:39.498Z | 2021-02-04T02:03:11.294Z | false | false | UNREGISTERED | false | id: 2c9180887372d217017408d3c85d0b20<br/>name: ZIA Users | id: 2c91808a737cf404017408d28c1e77a2<br/>name: ZIA | uid: 7a736361-6c65-7200-7363-696d005d7d1a<br/>firstname: <testy.testerson@sailpoint.com><br/>cloudAuthoritativeSource: 2c91808a737cf404017408d28c1e77a2<br/>cloudStatus: UNREGISTERED<br/>iplanet-am-user-alias-list: <br/>displayName: <testy.testerson@sailpoint.com><br/>internalCloudStatus: UNREGISTERED<br/>identificationNumber: 7a736361-6c65-7200-7363-696d005d7d1a<br/>email: <testy.testerson@sailpoint.com><br/>lastname: <testy.testerson@sailpoint.com> | {'id': '2c918084740346d5017408d7922a489f', 'name': '<testy.testerson@sailpoint.com>', 'accountId': '7a736361-6c65-7200-7363-696d005d7d1a', 'source': {'id': '2c91808a737cf404017408d28c1e77a2', 'name': 'ZIA', 'type': 'SCIM 2.0'}, 'disabled': False, 'locked': False, 'privileged': False, 'manuallyCorrelated': False, 'entitlementAttributes': {}, 'created': '2020-08-19T22:29:39.498Z'},<br/>{'id': '2c918084740346d601740c98765a306e', 'name': '<testy.testerson@sailpoint.com>', 'accountId': '<testy.testerson@sailpoint.com>', 'source': {'id': '2c91808563f9f8b40163fa9734d3029f', 'name': 'IdentityNow', 'type': 'IdentityNowConnector'}, 'disabled': False, 'locked': False, 'privileged': False, 'manuallyCorrelated': False, 'entitlementAttributes': {}, 'created': '2020-08-20T15:59:12.475Z'} | 2 | 0 | 0 | 0 | 0 | 0 | stg-uswest | sailpoint-idn | identity |
 
 
 
 ### identitynow-get-accounts
+
 ***
 Get accounts by search/filter parameters (id, name, native_identity).
 
@@ -112,6 +126,7 @@ Get accounts by search/filter parameters (id, name, native_identity).
 #### Base Command
 
 `identitynow-get-accounts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -145,13 +160,17 @@ Get accounts by search/filter parameters (id, name, native_identity).
 
 
 #### Command Example
+
 ```
 !identitynow-get-accounts id=2c918084740346d30174088afa6d625e
 ```
 
 #### Human Readable Output
+
 ### Results:
+
 ### Account(s)
+
 |id|name|identityId|nativeIdentity|sourceId|created|modified|attributes|authoritative|disabled|locked|systemAccount|uncorrelated|manuallyCorrelated|hasEntitlements|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 2c918084740346d30174088afa6d625e | Testy.Testerson |  | 41263 | 2c918084737cf3fe01740875ebac75cd | 2020-08-19T21:05:59.917Z | 2020-08-19T21:06:01.269Z | externalId: null<br/>IIQDisabled: true<br/>id: 41263<br/>userName: Testy.Testerson<br/>idNowDescription: f74806c7011b760457c914ef5ea254b8752496a441a92475b910ded9eb5ec487 | false | true | false | false | true | false | false |
@@ -159,6 +178,7 @@ Get accounts by search/filter parameters (id, name, native_identity).
 
 
 ### identitynow-get-accountactivities
+
 ***
 Get account activities by search/filter parameters (requested_for, requested_by, regarding_identity, type).
 
@@ -166,6 +186,7 @@ Get account activities by search/filter parameters (requested_for, requested_by,
 #### Base Command
 
 `identitynow-get-accountactivities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -199,13 +220,17 @@ Get account activities by search/filter parameters (requested_for, requested_by,
 
 
 #### Command Example
+
 ```
 !identitynow-get-accountactivities id=c8f2907b336043be8570676b270965a9
 ```
 
 #### Human Readable Output
+
 ### Results:
+
 ### Account Activity(Account Activities)
+
 |id|name|created|modified|completed|completionStatus|type|requesterIdentitySummary|targetIdentitySummary|items|executionStatus|cancelable|cancelComment|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | c8f2907b336043be8570676b270965a9 | c8f2907b336043be8570676b270965a9 | 2020-02-20T15:28:47.051Z | 2020-02-20T15:29:10.735Z | 2020-02-20T15:29:10.735Z | INCOMPLETE | appRequest | id: 2c91808363f06ad80163fb690fae55b8<br/>name: adam.kennedy | id: 2c91808a6fca28a6016fd7f5ec3f5228<br/>name: jack.brown | {} | VERIFYING | false |  |
@@ -213,6 +238,7 @@ Get account activities by search/filter parameters (requested_for, requested_by,
 
 
 ### identitynow-search-accessprofiles
+
 ***
 Search for access profile(s) using elastic search query used by IdentityNow Search Engine.
 
@@ -220,6 +246,7 @@ Search for access profile(s) using elastic search query used by IdentityNow Sear
 #### Base Command
 
 `identitynow-search-accessprofiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -252,21 +279,27 @@ Search for access profile(s) using elastic search query used by IdentityNow Sear
 
 
 #### Command Example
+
 ```
 !identitynow-search-accessprofiles query=id:2c91808874feffbc01750a4d06560370
 ```
 
 #### Human Readable Output
+
 ### Results:
+
 Total: 1
+
 ### Access Profile(s)
+
 |id|name|description|source|entitlements|entitlementCount|created|modified|synced|enabled|requestable|requestCommentsRequired|owner|pod|org|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2c91808874feffbc01750a4d06560370 | Basic Users | Basic Users | id: 2c9180876ff2de9601700b99e5fb51c6<br/>name: Direct Access Profile | {'hasPermissions': False, 'description': None, 'attribute': 'Roles', 'value': 'Basic Users', 'schema': 'group', 'privileged': False, 'id': '2c91808a6fede9c401700ba9c4d43ef9', 'name': 'Basic Users'} | 1 | 2020-10-08T22:20:21Z | 2020-11-17T15:12:41Z | 2021-03-01T06:30:18.772Z | true | true | false | email: adam.kennedy@sailpoint.com<br/>type: IDENTITY<br/>id: 2c91808363f06ad80163fb690fae55b8<br/>name: adam.kennedy | stg-uswest | sailpoint-idn | accessprofile |
+| 2c91808874feffbc01750a4d06560370 | Basic Users | Basic Users | id: 2c9180876ff2de9601700b99e5fb51c6<br/>name: Direct Access Profile | {'hasPermissions': False, 'description': None, 'attribute': 'Roles', 'value': 'Basic Users', 'schema': 'group', 'privileged': False, 'id': '2c91808a6fede9c401700ba9c4d43ef9', 'name': 'Basic Users'} | 1 | 2020-10-08T22:20:21Z | 2020-11-17T15:12:41Z | 2021-03-01T06:30:18.772Z | true | true | false | email: <adam.kennedy@sailpoint.com><br/>type: IDENTITY<br/>id: 2c91808363f06ad80163fb690fae55b8<br/>name: adam.kennedy | stg-uswest | sailpoint-idn | accessprofile |
 
 
 
 ### identitynow-search-roles
+
 ***
 Search for role(s) using elastic search query used by IdentityNow Search Engine.
 
@@ -274,6 +307,7 @@ Search for role(s) using elastic search query used by IdentityNow Search Engine.
 #### Base Command
 
 `identitynow-search-roles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -305,21 +339,27 @@ Search for role(s) using elastic search query used by IdentityNow Search Engine.
 
 
 #### Command Example
+
 ```
 !identitynow-search-roles query=id:2c9180846ff9c50201700beb2e9000da
 ```
 
 #### Human Readable Output
+
 ### Results:
+
 Total: 1
+
 ### Role(s)
+
 |id|name|description|accessProfiles|accessProfileCount|created|modified|synced|enabled|requestable|requestCommentsRequired|owner|pod|org|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2c9180846ff9c50201700beb2e9000da | Basic | Basic Users | {'id': '2c9180846ff9c50201700becb01e00db', 'name': 'Basic'} | 1 | 2020-02-03T16:38:47Z | 2020-02-03T16:40:42Z | 2021-03-01T05:30:09.434Z | true | true | false | email: adam.kennedy@sailpoint.com<br/>type: IDENTITY<br/>id: 2c91808363f06ad80163fb690fae55b8<br/>name: adam.kennedy | stg-uswest | sailpoint-idn | role |
+| 2c9180846ff9c50201700beb2e9000da | Basic | Basic Users | {'id': '2c9180846ff9c50201700becb01e00db', 'name': 'Basic'} | 1 | 2020-02-03T16:38:47Z | 2020-02-03T16:40:42Z | 2021-03-01T05:30:09.434Z | true | true | false | email: <adam.kennedy@sailpoint.com><br/>type: IDENTITY<br/>id: 2c91808363f06ad80163fb690fae55b8<br/>name: adam.kennedy | stg-uswest | sailpoint-idn | role |
 
 
 
 ### identitynow-search-entitlements
+
 ***
 Search for entitlement(s) using elastic search query used by IdentityNow Search Engine.
 
@@ -327,6 +367,7 @@ Search for entitlement(s) using elastic search query used by IdentityNow Search 
 #### Base Command
 
 `identitynow-search-entitlements`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -358,14 +399,19 @@ Search for entitlement(s) using elastic search query used by IdentityNow Search 
 
 
 #### Command Example
+
 ```
 !identitynow-search-entitlements query=id:2c9180846ff7e56b01700bb399f60eaa
 ```
 
 #### Human Readable Output
+
 ### Results:
+
 Total: 1
+
 ### Entitlement(s)
+
 |id|name|displayName|description|modified|synced|source|privileged|identityCount|attribute|value|schema|pod|org|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 2c9180846ff7e56b01700bb399f60eaa | BASIC_DIRECT | BASIC_DIRECT |  | 2020-10-21T19:58:39Z | 2021-03-01T04:30:40.632Z | id: 2c9180876ff2de9601700b99e5fb51c6<br/>name: Basic Direct | false |  | Roles | BASIC_DIRECT | group | stg-uswest | sailpoint-idn | entitlement |
@@ -373,6 +419,7 @@ Total: 1
 
 
 ### identitynow-search-events
+
 ***
 Search for event(s) using elastic search query used by IdentityNow Search Engine.
 
@@ -380,6 +427,7 @@ Search for event(s) using elastic search query used by IdentityNow Search Engine
 #### Base Command
 
 `identitynow-search-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -413,14 +461,19 @@ Search for event(s) using elastic search query used by IdentityNow Search Engine
 
 
 #### Command Example
+
 ```
 !identitynow-search-events query=id:2bd61299-d986-4c27-bd37-408b9c9ba118
 ```
 
 #### Human Readable Output
+
 ### Results:
+
 Total: 1
+
 ### Event(s)
+
 |id|name|stack|created|synced|objects|ipAddress|technicalName|target|actor|action|attributes|operation|status|pod|org|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 2bd61299-d986-4c27-bd37-408b9c9ba118 | Delete Task Result Passed | sweep | 2020-02-24T22:07:03.793Z | 2020-02-24T22:07:03.831Z | TASK,<br/>RESULT |  | TASK_RESULT_DELETE_PASSED |  | name: unknown | taskResultsPruned | hostName: 24<br/>sourceName: null | DELETE | PASSED | stg-uswest | sailpoint-idn | SYSTEM_CONFIG |
@@ -428,6 +481,7 @@ Total: 1
 
 
 ### identitynow-request-grant
+
 ***
 Grant access request for a single object(access profile or role) for a single user.
 
@@ -435,6 +489,7 @@ Grant access request for a single object(access profile or role) for a single us
 #### Base Command
 
 `identitynow-request-grant`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -450,15 +505,18 @@ Grant access request for a single object(access profile or role) for a single us
 There is no context output for this command.
 
 #### Command Example
+
 ```
 !identitynow-request-grant requested_for=2c9180886ccef167016cdb658fb6547a requested_item=2c918086775e1f5d01776530eb67037b requested_item_type=ACCESS_PROFILE comment=PAN_XSOAR_TEST
 ```
 
 #### Human Readable Output
+
 Access request was successful!
 
 
 ### identitynow-request-revoke
+
 ***
 Revoke access request for a single object(access profile or role) for a single user.
 
@@ -466,6 +524,7 @@ Revoke access request for a single object(access profile or role) for a single u
 #### Base Command
 
 `identitynow-request-revoke`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -481,9 +540,11 @@ Revoke access request for a single object(access profile or role) for a single u
 There is no context output for this command.
 
 #### Command Example
+
 ```
 !identitynow-request-revoke requested_for=2c9180886ccef167016cdb658fb6547a requested_item=2c918086775e1f5d01776530eb67037b requested_item_type=ACCESS_PROFILE comment=PAN_XSOAR_TEST
 ```
 
 #### Human Readable Output
+
 Access request was successful!

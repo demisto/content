@@ -1,5 +1,6 @@
 FireEye Detection On Demand is a threat detection service delivered as an API for integration into the SOC workflow, SIEM analytics, data repositories, or web applications, etc. It delivers flexible file and content analysis to identify malicious behavior wherever the enterprise needs it.
 This integration was integrated and tested with version 1.4.1 of FireEye Detection on Demand
+
 ## Configure FireEye Detection on Demand in Cortex
 
 
@@ -11,9 +12,12 @@ This integration was integrated and tested with version 1.4.1 of FireEye Detecti
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fireeye-dod-get-hashes
+
 ***
 Queries FireEye Detection on Demand reports for the provided md5 hashes
 
@@ -21,6 +25,7 @@ Queries FireEye Detection on Demand reports for the provided md5 hashes
 #### Base Command
 
 `fireeye-dod-get-hashes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -53,9 +58,11 @@ Queries FireEye Detection on Demand reports for the provided md5 hashes
 
 
 #### Command Example
+
 ```!fireeye-dod-get-hashes md5_hashes=47f9fdc617f8c98a6732be534d8dbe9c```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -93,12 +100,14 @@ Queries FireEye Detection on Demand reports for the provided md5 hashes
 #### Human Readable Output
 
 >### FireEye DoD Results
+>
 >|MD5|SHA256|Malicious|
 >|---|---|---|
 >| 47f9fdc617f8c98a6732be534d8dbe9c |  |  |
 
 
 ### fireeye-dod-submit-file
+
 ***
 Submits file to FireEye Detection on Demand for analysis
 
@@ -106,6 +115,7 @@ Submits file to FireEye Detection on Demand for analysis
 #### Base Command
 
 `fireeye-dod-submit-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -130,9 +140,11 @@ Submits file to FireEye Detection on Demand for analysis
 
 
 #### Command Example
+
 ```!fireeye-dod-submit-file entryID=37@760083ae-625e-4a6c-8e93-87ece7964dd0```
 
 #### Context Example
+
 ```json
 {
     "FireEyeDoD": {
@@ -151,6 +163,7 @@ Submits file to FireEye Detection on Demand for analysis
 >Started analysis of test-infection.exe with FireEye Detection on Demand. Results will be published to report id: c1d32790-5b08-45ab-a3be-3e61f8826e8b
 
 ### fireeye-dod-submit-urls
+
 ***
 Submits URLs to FireEye Detection on Demand for analysis
 
@@ -160,6 +173,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `fireeye-dod-submit-urls`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -176,9 +190,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!fireeye-dod-submit-urls urls="https://www.google.com"```
 
 #### Context Example
+
 ```json
 {
     "FireEyeDoD": {
@@ -196,6 +212,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 >Started analysis of ['https://www.google.com'] with FireEye Detection on Demand. Results will be published to report id: 55223a00-6741-41c4-80a9-28d3c133a5db
 
 ### fireeye-dod-get-reports
+
 ***
 Retrieves one or more reports of file scans
 
@@ -203,6 +220,7 @@ Retrieves one or more reports of file scans
 #### Base Command
 
 `fireeye-dod-get-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -232,9 +250,11 @@ Retrieves one or more reports of file scans
 
 
 #### Command Example
+
 ```!fireeye-dod-get-reports report_ids=82e71bec-04c7-4f04-945b-4d344a758abe```
 
 #### Context Example
+
 ```json
 {
     "FireEyeDoD": {
@@ -282,12 +302,14 @@ Retrieves one or more reports of file scans
 #### Human Readable Output
 
 >### Scan status
+>
 >|completed_at|duration|file_extension|file_name|file_size|is_malicious|magic|md5|name|overall_status|report_id|sha1|sha256|signature_name|size|started_at|type|urls|verdict|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2020-11-10 14:28:18 | 0 | urlscan | test-infection.exe | 28672 | true |  | NA | test-infection.exe | DONE | 82e71bec-04c7-4f04-945b-4d344a758abe | NA | NA | Phish.LIVE.DTI.URL,<br/>Malicious.LIVE.DTI.URL,<br/>fe_ml_heuristic,<br/>FireEye.Malware.exe,<br/>FETestEvent | 28672 | 2020-11-10 14:28:18 | urlscan | http:<span></span>//fedeploycheck.fireeye.com/appliance-test/block.html,<br/>http:<span></span>//165.227.14.8/?NDU2MDgz&amp;yOyeu&amp;YPocHQsbD=disagree&amp;lAjd=callous&amp;mvUq=disagree&amp;eSCpt=disagree&amp;mnnYBwlX=abettor&amp;MZMJ=everyone&amp;ipEMqw=professional&amp;xRefGF=callous&amp;tzsdfga4=dJORROwbnhRaGKA1hlIhYVV0W8a2ojkbXzhCf1JaG9RGIZ1hD-sGcELgL6G2xyPNRcw&amp;cvggd54=wnfQMvXcJBXQFYbIKuXDSKxDKU7WFEaVw4-RhMG3YpjNfynz1-zURnL6tASVVFuRrbM&amp;hMdqbI=electrical&amp;qgZufk=disagree&amp;egHdAM=abettor&amp;BUfBH=professional&amp;RGVeFwBNTM2MzY2,<br/>http:<span></span>//br430.teste.website/~idbrok92/idb/UI/Login/,<br/>http:<span></span>//www<span></span>.dulys.co.zw/,<br/>http:<span></span>//fedeploycheck.fireeye.com/appliance-test/test-infection.exe,<br/>http:<span></span>//fedeploycheck.fireeye.com/appliance-test/test-infection.pdf,<br/>http:<span></span>//fedeploycheck.fireeye.com/appliance-test/alert.html,<br/>https:<span></span>//tinyurl.com/y2qezvol,<br/>https:<span></span>//fedeploycheck.fireeye.com/appliance-test/alert.html | MALICIOUS |
 
 
 ### fireeye-dod-get-report-url
+
 ***
 Generates a pre-signed URL for a report
 
@@ -295,6 +317,7 @@ Generates a pre-signed URL for a report
 #### Base Command
 
 `fireeye-dod-get-report-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -308,9 +331,11 @@ Generates a pre-signed URL for a report
 There is no context output for this command.
 
 #### Command Example
+
 ```!fireeye-dod-get-report-url report_id=82e71bec-04c7-4f04-945b-4d344a758abe```
 
 #### Context Example
+
 ```json
 {}
 ```

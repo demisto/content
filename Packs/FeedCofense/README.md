@@ -13,4 +13,4 @@ Cofense Intelligence is reliable, human-verified phishing intelligence for actio
 - Searches for strings associated with phishing attacks
 - Links to human-readable reports for an explanation as to why indicators are a risk to business
 
-https://cofense.com/product-services/phishing-intelligence/
+<https://cofense.com/product-services/phishing-intelligence/>

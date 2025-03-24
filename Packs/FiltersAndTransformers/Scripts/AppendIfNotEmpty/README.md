@@ -1,6 +1,7 @@
 Append item(s) to the end of the list if they are not empty.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Append item(s) to the end of the list if they are not empty.
 | Tags | transformer, entirelist, general |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ Append item(s) to the end of the list if they are not empty.
 | raw | Set to true if you want to append item\(s\) without separating them by comma |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

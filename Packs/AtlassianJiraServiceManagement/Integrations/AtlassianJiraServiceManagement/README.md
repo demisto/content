@@ -143,7 +143,7 @@ Create a new object of the specified object type ID. Either attributes or attrib
 | --- | --- | --- |
 | object_type_id | The object type for which a new object will be created. | Required | 
 | attributes | Provide this field if attributes_json is not provided. A key-value map of object attributes. The structure of the field is: { "attributeId1": [ "value1", "value2"] , "attributeId2":["value1", "value2"] }. You can run the `jira-asset-object-type-attribute-list` command to retrieve the list of available attributes. | Optional | 
-| attributes_json | Provide this field if attributes is not provided. A JSON string of object attributes to be added to the new object. Take a look at https://docs.atlassian.com/assets/REST/10.7.0/#object-createObject for the structure of this field. You can use the `jira-asset-object-type-attribute-list` command  to retrieve the list of available attributes. | Optional | 
+| attributes_json | Provide this field if attributes is not provided. A JSON string of object attributes to be added to the new object. Take a look at <https://docs.atlassian.com/assets/REST/10.7.0/#object-createObject> for the structure of this field. You can use the `jira-asset-object-type-attribute-list` command  to retrieve the list of available attributes. | Optional | 
 
 #### Context Output
 
@@ -175,11 +175,12 @@ Updates an existing object of specified object type ID. Either attributes or att
 | --- | --- | --- |
 | object_id | ID of the object that will be updated. | Required | 
 | attributes | Provide this field if attributes_json is not provided. A key-value map of object attributes. The structure of the field is: { "attributeId1": [ "value1", "value2"] , "attributeId2":["value1", "value2"] }. You can use the `jira-asset-object-type-attribute-list` command to retrieve the list of available attributes. | Optional | 
-| attributes_json | Provide this field if attributes is not provided. A JSON string of object attributes to be added to the new object. Take a look at https://docs.atlassian.com/assets/REST/10.7.0/#object-createObject for the structure of this field. You can use the `jira-asset-object-type-attribute-list` command to retrieve the list of available attributes. | Optional | 
+| attributes_json | Provide this field if attributes is not provided. A JSON string of object attributes to be added to the new object. Take a look at <https://docs.atlassian.com/assets/REST/10.7.0/#object-createObject> for the structure of this field. You can use the `jira-asset-object-type-attribute-list` command to retrieve the list of available attributes. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
+
 ### jira-asset-object-delete
 
 ***
@@ -198,6 +199,7 @@ Deletes an existing object of the specified object ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### jira-asset-object-get
 
 ***
@@ -242,7 +244,7 @@ Searches for objects of the specified object type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ql_query | An aql query to search objects by. View https://support.atlassian.com/jira-service-management-cloud/docs/use-assets-query-language-aql/ for further details. | Required | 
+| ql_query | An aql query to search objects by. View <https://support.atlassian.com/jira-service-management-cloud/docs/use-assets-query-language-aql/> for further details. | Required | 
 | include_attributes | Whether to include the attributes structure in the response. Possible values are: true, false. | Optional | 
 | page | Page number. | Optional | 
 | page_size | Use this argument or limit, but not both. Size of the page. Defaults to 50. | Optional | 

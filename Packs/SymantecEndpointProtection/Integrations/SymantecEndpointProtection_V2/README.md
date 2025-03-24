@@ -1,6 +1,7 @@
 Query the Symantec Endpoint Protection Manager using the official REST API.
 
 ## Use Cases
+
 - Scan/Quarantine/content-update an endpoint.
 - Assign policy to an endpoint.
 - Move client to different group.
@@ -12,7 +13,9 @@ Query the Symantec Endpoint Protection Manager using the official REST API.
 - Receive system alerts
 
 ## Required Permissions
+
 The following role is required to use the Symantec Endpoint Protection API:
+
 - sysadmin
 Note: An **Administrator** role does not have enough permissions for this integration. A **System Administrator** (sysadmin) role is required. 
 
@@ -21,7 +24,7 @@ Note: An **Administrator** role does not have enough permissions for this integr
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server (e.g., https://1.2.3.4:8446) | True |
+| Server (e.g., <https://1.2.3.4:8446>) | True |
 | Authentication | True |
 | Password | True |
 | SEPM domain for the user | False |
@@ -31,9 +34,12 @@ Note: An **Administrator** role does not have enough permissions for this integr
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### sep-endpoints-info
+
 ***
 Returns information about endpoints.
 
@@ -41,6 +47,7 @@ Returns information about endpoints.
 #### Base Command
 
 `sep-endpoints-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -89,15 +96,18 @@ Returns information about endpoints.
 
 
 #### Command Example
+
 ```
 !sep-endpoints-info
 ```
 
 #### Human Readable Output
+
 ![Human_Readable_Output_1](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_1.png)
 
 
 ### sep-groups-info
+
 ***
 Returns information about groups.
 
@@ -105,6 +115,7 @@ Returns information about groups.
 #### Base Command
 
 `sep-groups-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -127,15 +138,18 @@ Returns information about groups.
 
 
 #### Command Example
+
 ```
 !sep-groups-info
 ```
 
 #### Human Readable Output
+
 ![Human_Readable_Output_2](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_2.png)
 
 
 ### sep-system-info
+
 ***
 Returns information about the system, such as version or AV definition.
 
@@ -143,6 +157,7 @@ Returns information about the system, such as version or AV definition.
 #### Base Command
 
 `sep-system-info`
+
 #### Input
 
 There are no input arguments for this command.
@@ -155,15 +170,18 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```
 !sep-system-info
 ```
 
 #### Human Readable Output
+
 ![Human_Readable_Output_3](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_3.png)
 
 
 ### sep-command-status
+
 ***
 Retrieves the status of a command.
 
@@ -171,6 +189,7 @@ Retrieves the status of a command.
 #### Base Command
 
 `sep-command-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -187,15 +206,18 @@ Retrieves the status of a command.
 
 
 #### Command Example
+
 ```
 !sep-command-status commandId=04A68CA5952B4726AAFEB421E0EB436C
 ```
 
 #### Human Readable Output
+
 ![Human_Readable_Output_4](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_4.png)
 
 
 ### sep-client-content
+
 ***
 Retrieves the content of the client.
 
@@ -203,6 +225,7 @@ Retrieves the content of the client.
 #### Base Command
 
 `sep-client-content`
+
 #### Input
 
 There are no input arguments for this command.
@@ -216,15 +239,18 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```
 !sep-client-content
 ```
 
 #### Human Readable Output
+
 ![Human_Readable_Output_5](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_5.png)
 
 
 ### sep-list-policies
+
 ***
 Retrieves a list of existing policies.
 
@@ -232,6 +258,7 @@ Retrieves a list of existing policies.
 #### Base Command
 
 `sep-list-policies`
+
 #### Input
 
 There are no input arguments for this command.
@@ -252,15 +279,18 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```
 !sep-list-policies
 ```
 
 #### Human Readable Output
+
 ![Human_Readable_Output_6](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_6.png)
 
 
 ### sep-assign-policy
+
 ***
 Assigns an existing policy to a specified location.
 
@@ -268,6 +298,7 @@ Assigns an existing policy to a specified location.
 #### Base Command
 
 `sep-assign-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -283,15 +314,18 @@ Assigns an existing policy to a specified location.
 There is no context output for this command.
 
 #### Command Example
+
 ```
 !sep-assign-policy groupID=44BE96AFC0A8010B0CFACB30929326C2 locationID=50FEEA3FC0A8010B739E49CB0C321A7E policyID=A00ADE188AA148D7AD319CBCA1FA2F23 policyType=hi
 ```
 
 #### Human Readable Output
+
 ![Human_Readable_Output_7](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_7.png)
 
 
 ### sep-list-locations
+
 ***
 Retrieves a list of location IDs for a specified group.
 
@@ -299,6 +333,7 @@ Retrieves a list of location IDs for a specified group.
 #### Base Command
 
 `sep-list-locations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -314,15 +349,18 @@ Retrieves a list of location IDs for a specified group.
 
 
 #### Command Example
+
 ```
 !sep-list-locations groupID=44BE96AFC0A8010B0CFACB30929326C2
 ```
 
 #### Human Readable Output
+
 ![Human_Readable_Output_8](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_8.png)
 
 
 ### sep-endpoint-quarantine
+
 ***
 Quarantines an endpoint according to its policy.
 
@@ -330,6 +368,7 @@ Quarantines an endpoint according to its policy.
 #### Base Command
 
 `sep-endpoint-quarantine`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -348,15 +387,18 @@ Quarantines an endpoint according to its policy.
 
 
 #### Command Example
+
 ```
 !sep-endpoint-quarantine actionType=add endpoint=demisto-PC
 ```
 
 #### Human Readable Output
+
 ![Human_Readable_Output_9](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_9.png)
 
 
 ### sep-scan-endpoint
+
 ***
 Scans an endpoint.
 
@@ -364,6 +406,7 @@ Scans an endpoint.
 #### Base Command
 
 `sep-scan-endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -382,15 +425,18 @@ Scans an endpoint.
 
 
 #### Command Example
+
 ```
 !sep-scan-endpoint endpoint=demisto-PC scanType=ScanNow_Quick
 ```
 
 #### Human Readable Output
+
 ![Human_Readable_Output_10](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_10.png)
 
 
 ### sep-update-endpoint-content
+
 ***
 Updates the content of a specified client.
 
@@ -398,6 +444,7 @@ Updates the content of a specified client.
 #### Base Command
 
 `sep-update-endpoint-content`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -414,15 +461,18 @@ Updates the content of a specified client.
 
 
 #### Command Example
+
 ```
 !sep-update-endpoint-content endpoint=demisto-PC
 ```
 
 #### Human Readable Output
+
 ![Human_Readable_Output_11](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_11.png)
 
 
 ### sep-move-client-to-group
+
 ***
 Moves a client to a group.
 
@@ -430,6 +480,7 @@ Moves a client to a group.
 #### Base Command
 
 `sep-move-client-to-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -443,15 +494,18 @@ Moves a client to a group.
 There is no context output for this command.
 
 #### Command Example
+
 ```
 !sep-move-client-to-group groupID=AA51516BC0A8010B3BFBBE37F7B71214 hardwareKey=269CE816FDB1BA25A2505D0A5A59294C
 ```
 
 #### Human Readable Output
+
 ![Human_Readable_Output_12](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_112.png)
 
 
 ### sep-identify-old-clients
+
 ***
 Get endpoints for a running version that is different than the target version or the desired version (if specified).
 
@@ -459,6 +513,7 @@ Get endpoints for a running version that is different than the target version or
 #### Base Command
 
 `sep-identify-old-clients`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -477,15 +532,18 @@ Get endpoints for a running version that is different than the target version or
 There is no context output for this command.
 
 #### Command Example
+
 ```
 !sep-identify-old-clients desiredVersion=10
 ```
 
 #### Human Readable Output
+
 ![Human_Readable_Output_13](../../doc_files/SymantecEndpointProtection_V2_Human_Readable_Output_13.png)
 
 
 ## Known Limitations
+
 - SEPM REST- API currently exposes statistics, but does not expose extended information about Risks, Application and Device control, and Network logs.
 - SEPM REST- API currently does not support an operation to get Host Names or IP addresses of clients who don’t have an update content version.
 - SEPM REST- API currently does not support an operation to create or download reports.

@@ -5,14 +5,19 @@ Use Silverfort integration to get & update Silverfort risk severity.
 This integration was integrated and tested with Silverfort version 2.12.
 
 ## Silverfort Playbook
+
 ---
+
 - Get risk information and block the user if the risk is 'high' or 'critical'
 - Update the Silverfort user risk level
+
 ## Use Cases
+
 ---
 
 - Consume Silverfort user and server risk levels
 - Enrich the Silverfort risk engine and trigger MFA on risky entities
+
 ## Configure Silverfort in Cortex
 
 
@@ -30,10 +35,14 @@ This integration was integrated and tested with Silverfort version 2.12.
     4. Click Save all.
     5. The API KEY is "**App USer ID**:**App USer Secret**". (note the ":" between User ID and Secret)
     For more information, see the [Silverfort documentation](https://support.silverfort.com/hc/en-us/articles/360020891537-Silverfort-Risk-Engine-API-Reference).
+
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### silverfort-get-user-risk
+
 ***
 User risk commands - get the user entity risk.
 
@@ -41,6 +50,7 @@ User risk commands - get the user entity risk.
 ##### Base Command
 
 `silverfort-get-user-risk`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -51,9 +61,9 @@ User risk commands - get the user entity risk.
 | domain | The domain. | Optional | 
 
 Specify one of the following:
-* upn
-* email address and domain
-* sam account and domain
+- upn
+- email address and domain
+- sam account and domain
 
 ##### Context Output
 
@@ -65,9 +75,11 @@ Specify one of the following:
 
 
 ##### Command Example
+
 ```!silverfort-get-user-risk upn="sfuser@silverfort.io"```
 
 ##### Context Example
+
 ```
 {
     "Silverfort": {
@@ -84,13 +96,16 @@ Specify one of the following:
 ```
 
 ##### Human Readable Output
+
 ### Silverfort User Risk
+
 |UPN|Risk|Reasons|
 |---|---|---|
-| sfuser@silverfort.io | Medium | Suspicious activity,Password never expires |
+| <sfuser@silverfort.io> | Medium | Suspicious activity,Password never expires |
 
 
 ### silverfort-get-resource-risk
+
 ***
 Gets the resource entity risk information.
 
@@ -98,6 +113,7 @@ Gets the resource entity risk information.
 ##### Base Command
 
 `silverfort-get-resource-risk`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -116,9 +132,11 @@ Gets the resource entity risk information.
 
 
 ##### Command Example
+
 ```!silverfort-get-resource-risk resource_name="SF-DC-1" domain_name="silverfort.io"```
 
 ##### Context Example
+
 ```
 {
     "Silverfort": {
@@ -134,13 +152,16 @@ Gets the resource entity risk information.
 ```
 
 ##### Human Readable Output
+
 ### Silverfort Resource Risk
+
 |ResourceName|Risk|Reasons|
 |---|---|---|
 | SF-DC-1 | Low | Unconstrained Delegation |
 
 
 ### silverfort-update-user-risk
+
 ***
 Updates the user entity risk.
 
@@ -148,6 +169,7 @@ Updates the user entity risk.
 ##### Base Command
 
 `silverfort-update-user-risk`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -163,26 +185,30 @@ Updates the user entity risk.
 
 
 Specify one of the following:
-* upn
-* email address and domain
-* sam account and domain
+- upn
+- email address and domain
+- sam account and domain
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!silverfort-update-user-risk upn="sfuser@silverfort.io" risk_name="activity_risk" severity=medium valid_for=1 description="Suspicious activity"```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
+
 ok
 
 ### silverfort-update-resource-risk
+
 ***
 Update the resource entity risk.
 
@@ -190,6 +216,7 @@ Update the resource entity risk.
 ##### Base Command
 
 `silverfort-update-resource-risk`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -207,12 +234,15 @@ Update the resource entity risk.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!silverfort-update-resource-risk resource_name="SF-DC-1" domain_name="silverfort.io" risk_name="malware_risk" severity="high" valid_for=1 description="Malware detected"```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
+
 ok

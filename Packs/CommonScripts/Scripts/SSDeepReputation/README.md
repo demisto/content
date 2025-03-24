@@ -1,6 +1,7 @@
 Calculates the SSdeep reputation based on similar files (by ssdeep similarity) on the system.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Calculates the SSdeep reputation based on similar files (by ssdeep similarity) o
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +21,6 @@ Calculates the SSdeep reputation based on similar files (by ssdeep similarity) o
 | threshold | Considerers similar SSdeep above this threshold. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

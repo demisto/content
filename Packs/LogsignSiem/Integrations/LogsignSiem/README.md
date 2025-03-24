@@ -7,7 +7,7 @@ This integration was integrated and tested with version 4.6.x of Logsign SIEM
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://192.168.0.1) | Logsign SIEM API URL | True |
+| Server URL (e.g. <https://192.168.0.1>) | Logsign SIEM API URL | True |
 | API Key | The API Key to use for connection | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -17,9 +17,12 @@ This integration was integrated and tested with version 4.6.x of Logsign SIEM
 | Max Fetch | Maximum number of incidents per fetch \(Recommended less than 200\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### logsign-fetch-incidents
+
 ***
 Gets Incidents from Logsign SIEM
 
@@ -27,6 +30,7 @@ Gets Incidents from Logsign SIEM
 #### Base Command
 
 `logsign-fetch-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -203,6 +207,7 @@ Gets Incidents from Logsign SIEM
 ![Logsign-FetchIncident-HumanReadable-Data](../../doc_files/logsign-fetch-inc-HR.jpg)
 
 ### logsign-get-columns-query
+
 ***
 Gets column values based on your lucene query
 
@@ -210,6 +215,7 @@ Gets column values based on your lucene query
 #### Base Command
 
 `logsign-get-columns-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -228,9 +234,11 @@ Gets column values based on your lucene query
 
 
 #### Command Example
+
 ```!logsign-get-columns-query criteria="value" grouped_column="Source.IP" query="*" time_frame="1 day"```
 
 #### Context Example
+
 ```json
 {
     "Logsign SIEM": {
@@ -250,6 +258,7 @@ Gets column values based on your lucene query
 #### Human Readable Output
 
 >### Results
+>
 >|columns|
 >|---|
 >|192.168.1.35,<br/>192.168.1.17,<br/>192.168.1.18,<br/>192.168.1.5,<br/>192.168.1.93|
@@ -257,6 +266,7 @@ Gets column values based on your lucene query
 
 
 ### logsign-get-count-query
+
 ***
 Gets count of column values.
 
@@ -264,6 +274,7 @@ Gets count of column values.
 #### Base Command
 
 `logsign-get-count-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -282,9 +293,11 @@ Gets count of column values.
 
 
 #### Command Example
+
 ```!logsign-get-count-query criteria="value" grouped_column="Source.IP" query="*" time_frame="1 day"```
 
 #### Context Example
+
 ```json
 {
     "Logsign SIEM": {
@@ -298,6 +311,7 @@ Gets count of column values.
 #### Human Readable Output
 
 >### Results
+>
 >|count|
 >|---|
 >| 785554 |

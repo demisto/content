@@ -1,6 +1,7 @@
 Checks if the investigation found any malicious indicators (file, URL, IP address, domain, or email). It will returns "yes" if at least one malicious indicator is found.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Checks if the investigation found any malicious indicators (file, URL, IP addres
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -20,6 +22,7 @@ Checks if the investigation found any malicious indicators (file, URL, IP addres
 | includeManual | Whether to check manually edited indicators. The default is "yes". |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

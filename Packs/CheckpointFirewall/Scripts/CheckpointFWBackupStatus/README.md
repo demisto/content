@@ -1,6 +1,7 @@
 Connects a Checkpoint firewall appliance using SSH and retrieves the status of backup tasks. The user account that accesses the device must be setup to use the SSH shell and not the built in Checkpoint CLI. Consult the Checkpoint documentation for instructions on how to do this.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Connects a Checkpoint firewall appliance using SSH and retrieves the status of b
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * ssh
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,6 +27,7 @@ This script uses the following commands and scripts.
 | waittimeout | The wait time in seconds. If not provided, it will not wait. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

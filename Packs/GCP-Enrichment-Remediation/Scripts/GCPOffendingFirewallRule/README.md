@@ -28,7 +28,7 @@ This script is used in the following playbooks and scripts.
 | **Argument Name** | **Description** |
 | --- | --- |
 | project_id | The project to look up firewall rules in.  The project ID instead of the project number.  No need to supply \`projects/\` before the ID \(i.e., use \`project-name\` instead of \`projects/project-name\` or \`projects/111111111111\`\). |
-| network_url | The url of the network objects to lookup firewall rules in.  This will be the url of the network and not just the name \(i.e. https://www.googleapis.com/compute/v1/projects/&lt;project_name&gt;/global/networks/&lt;network_name&gt;\). |
+| network_url | The url of the network objects to lookup firewall rules in.  This will be the url of the network and not just the name \(i.e. <https://www.googleapis.com/compute/v1/projects/&lt;project_name&gt;/global/networks/&lt;network_name&gt;\>). |
 | port | Port to match traffic on for firewall rules. |
 | protocol | Protocol to match traffic on for firewall rules. |
 | network_tags | Network tags on GCP VM instance to match rules based on target tag \(optional\). |

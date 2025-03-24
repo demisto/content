@@ -55,8 +55,11 @@ Get events from Exabeam Security Operations Platform.
 | ExabeamPlatform.Event.rawLogs | String | The raw logs associated with the event. | 
 
 #### Command example
+
 ```!exabeam-platform-event-search end_time="today" start_time="7 days ago" limit=2 query="product: Correlation Rule AND rule_severity: High"```
+
 #### Context Example
+
 ```json
 {
     "ExabeamPlatform": {
@@ -103,6 +106,7 @@ Get events from Exabeam Security Operations Platform.
 #### Human Readable Output
 
 >### Logs
+>
 >|Id|Is Parsed|Raw Log Ids|Raw Logs|Tier|
 >|---|---|---|---|---|
 >| fake | false | log-fic | ANY rawLog | Tier 4 |
@@ -127,6 +131,7 @@ Retrieve the records for a specific context table.
 #### Context Output
 
 There is no context output for this command.
+
 ### exabeam-platform-table-record-create
 
 ***
@@ -151,6 +156,7 @@ Add one or more context records directly to an existing table.
 #### Context Output
 
 There is no context output for this command.
+
 ### exabeam-platform-alert-search
 
 ***
@@ -235,6 +241,7 @@ Delete a specific context table, including records and attributes.
 #### Context Output
 
 There is no context output for this command.
+
 ### exabeam-platform-context-table-list
 
 ***

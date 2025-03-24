@@ -1,11 +1,12 @@
 Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
 This integration was integrated and tested with version 5.0 of Delinea
+
 ## Configure Delinea in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://example.net\) | True |
+| url | Server URL \(e.g. <https://example.net\>) | True |
 | credentials | Username | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
@@ -13,9 +14,12 @@ This integration was integrated and tested with version 5.0 of Delinea
 | credentialobjects | List secret name for fetch credentials \(separated by commas\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### delinea-secret-password-get
+
 ***
 Retrieved password from secret
 
@@ -23,6 +27,7 @@ Retrieved password from secret
 #### Base Command
 
 `delinea-secret-password-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -38,9 +43,11 @@ Retrieved password from secret
 
 
 #### Command Example
+
 ```!delinea-secret-password-get secret_id=2```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -53,6 +60,7 @@ Retrieved password from secret
 
 
 ### delinea-secret-username-get
+
 ***
 Retrieved username from secret
 
@@ -60,6 +68,7 @@ Retrieved username from secret
 #### Base Command
 
 `delinea-secret-username-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -75,9 +84,11 @@ Retrieved username from secret
 
 
 #### Command Example
+
 ```!delinea-secret-username-get secret_id=2```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -90,6 +101,7 @@ Retrieved username from secret
 
 
 ### delinea-secret-search-name
+
 ***
 Search ID secret by field name
 
@@ -97,6 +109,7 @@ Search ID secret by field name
 #### Base Command
 
 `delinea-secret-search-name`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -112,9 +125,11 @@ Search ID secret by field name
 
 
 #### Command Example
+
 ```!delinea-secret-search-name search_name=xsoarSecret```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -129,6 +144,7 @@ Search ID secret by field name
 
 
 ### delinea-secret-password-update
+
 ***
 Update password for secret
 
@@ -136,6 +152,7 @@ Update password for secret
 #### Base Command
 
 `delinea-secret-password-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -152,9 +169,11 @@ Update password for secret
 
 
 #### Command Example
+
 ```!delinea-secret-password-update secret_id=2 newpassword=12345```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -167,6 +186,7 @@ Update password for secret
 
 
 ### delinea-secret-checkout
+
 ***
 Check Out a secret
 
@@ -174,6 +194,7 @@ Check Out a secret
 #### Base Command
 
 `delinea-secret-checkout`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -189,9 +210,11 @@ Check Out a secret
 
 
 #### Command Example
+
 ```!delinea-secret-checkout secret_id=2```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -206,6 +229,7 @@ Check Out a secret
 
 
 ### delinea-secret-checkin
+
 ***
 Check In a secret
 
@@ -213,6 +237,7 @@ Check In a secret
 #### Base Command
 
 `delinea-secret-checkin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -228,9 +253,11 @@ Check In a secret
 
 
 #### Command Example
+
 ```!delinea-secret-checkin secret_id=13```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -270,6 +297,7 @@ Check In a secret
 
 
 ### delinea-folder-create
+
 ***
 Create a new secret folder
 
@@ -277,6 +305,7 @@ Create a new secret folder
 #### Base Command
 
 `delinea-folder-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -297,9 +326,11 @@ Create a new secret folder
 
 
 #### Command Example
+
 ```!delinea-folder-create foldername="xsoarFolderTest" foldertypeid="1" parentfolderid="3"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -323,6 +354,7 @@ Create a new secret folder
 
 
 ### delinea-folder-search
+
 ***
 Search folder by name folder
 
@@ -330,6 +362,7 @@ Search folder by name folder
 #### Base Command
 
 `delinea-folder-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -345,9 +378,11 @@ Search folder by name folder
 
 
 #### Command Example
+
 ```!delinea-folder-search foldername="xsoarFolderTest"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -362,9 +397,11 @@ Search folder by name folder
 
 
 #### Command Example
+
 ```!delinea-folder-delete folder_id="18"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -381,6 +418,7 @@ Search folder by name folder
 
 
 ### delinea-secret-get
+
 ***
 Get secret object by ID secret
 
@@ -388,6 +426,7 @@ Get secret object by ID secret
 #### Base Command
 
 `delinea-secret-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -403,9 +442,11 @@ Get secret object by ID secret
 
 
 #### Command Example
+
 ```!delinea-secret-get secret_id=2```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -509,6 +550,7 @@ Get secret object by ID secret
 
 
 ### delinea-secret-search
+
 ***
 Search secret ID by multiply params
 
@@ -516,6 +558,7 @@ Search secret ID by multiply params
 #### Base Command
 
 `delinea-secret-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -557,9 +600,11 @@ Search secret ID by multiply params
 
 
 #### Command Example
+
 ```!delinea-user-search filter_searchfields="username" filter_searchtext="xsoar"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -575,6 +620,7 @@ Search secret ID by multiply params
 
 
 ### delinea-folder-update
+
 ***
 Update a single secret folder by ID
 
@@ -582,6 +628,7 @@ Update a single secret folder by ID
 #### Base Command
 
 `delinea-folder-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -603,9 +650,11 @@ Update a single secret folder by ID
 
 
 #### Command Example
+
 ```!delinea-folder-update id=4 foldername="SafexsoarTest"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -629,6 +678,7 @@ Update a single secret folder by ID
 
 
 ### delinea-secret-create
+
 ***
 Create new object Secret
 
@@ -636,6 +686,7 @@ Create new object Secret
 #### Base Command
 
 `delinea-secret-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -672,9 +723,11 @@ Create new object Secret
 
 
 #### Command Example
+
 ```!delinea-secret-create name="xsoarSecret" secrettemplateid="6003" siteid="1" checkoutenabled=true folderid=3 machine_item="my-machine" username_item="my-username" password_item="XXXXXX@@@@@####"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -780,6 +833,7 @@ Create new object Secret
 
 
 ### delinea-secret-delete
+
 ***
 Delete secret
 
@@ -787,6 +841,7 @@ Delete secret
 #### Base Command
 
 `delinea-secret-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -802,9 +857,11 @@ Delete secret
 
 
 #### Command Example
+
 ```!delinea-secret-delete id=2```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -821,6 +878,7 @@ Delete secret
 
 
 ### delinea-user-create
+
 ***
 Create a new user
 
@@ -828,6 +886,7 @@ Create a new user
 #### Base Command
 
 `delinea-user-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -856,9 +915,11 @@ Create a new user
 
 
 #### Command Example
+
 ```!delinea-user-create displayname="UserOne" password="12345" username="UserOne" ```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -909,6 +970,7 @@ Create a new user
 ```
 
 ### delinea-user-search
+
 ***
 Search, filter, sort, and page users
 
@@ -940,9 +1002,11 @@ Search, filter, sort, and page users
 
 
 #### Command Example
+
 ```!delinea-user-search filter_searchfields="userName" filter_searchtext="xsoarUser"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -955,6 +1019,7 @@ Search, filter, sort, and page users
 
 
 ### delinea-user-update
+
 ***
 Update a single user by ID
 
@@ -962,6 +1027,7 @@ Update a single user by ID
 #### Base Command
 
 `delinea-user-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -994,9 +1060,11 @@ Update a single user by ID
 
 
 #### Command Example
+
 ```!delinea-user-update id=28 displayname="myTestUser"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -1048,6 +1116,7 @@ Update a single user by ID
 
 
 ### delinea-user-delete
+
 ***
 Delete a user by ID
 
@@ -1055,6 +1124,7 @@ Delete a user by ID
 #### Base Command
 
 `delinea-user-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1070,9 +1140,11 @@ Delete a user by ID
 
 
 #### Command Example
+
 ```!delinea-user-delete id=5 ```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -1088,6 +1160,7 @@ Delete a user by ID
 ```
 
 ### delinea-secret-rpc-changepassword
+
 ***
 Change a secret's password
 
@@ -1095,6 +1168,7 @@ Change a secret's password
 #### Base Command
 
 `delinea-secret-rpc-changepassword`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1111,9 +1185,11 @@ Change a secret's password
 
 
 #### Command Example
+
 ```!delinea-secret-rpc-changepassword secret_id=4 newPassword="Test000"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -1151,6 +1227,7 @@ Change a secret's password
 ```
 
 ### delinea-fetch-users
+
 ***
 Fetch credentials from secret
 
@@ -1158,7 +1235,9 @@ Fetch credentials from secret
 #### Base Command
 
 `delinea-fetch-users`
+
 #### Input
+
 NO input argumets
 
 
@@ -1170,9 +1249,11 @@ NO input argumets
 
 
 #### Command Example
+
 ```!delinea-fetch-users```
 
 #### Context Example
+
 ```json
 [
     {

@@ -489,7 +489,7 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.actions.target.drive.root.driveFolder.type | String | The type of Drive folder. | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.legacyCommentId | String | The comment in the discussion thread. | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.legacyDiscussionId | String | The discussion thread to which the comment was added. | 
-| GoogleDrive.DriveActivity.actions.target.fileComment.linkToDiscussion | String | The link to the discussion thread containing this comment, for example, "https://docs.google.com/DOCUMENT_ID/edit?disco=THREAD_ID". | 
+| GoogleDrive.DriveActivity.actions.target.fileComment.linkToDiscussion | String | The link to the discussion thread containing this comment, for example, "<https://docs.google.com/DOCUMENT_ID/edit?disco=THREAD_ID>". | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.parent.name | String | The target Drive item. The format is "items/ITEM_ID". | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.parent.title | String | The title of the Drive item. | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.parent.mimeType | String | The MIME type of the Drive item. | 
@@ -536,7 +536,7 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.targets.drive.root.driveFolder.type | String | The type of Drive folder. | 
 | GoogleDrive.DriveActivity.targets.fileComment.legacyCommentId | String | The comment in the discussion thread. | 
 | GoogleDrive.DriveActivity.targets.fileComment.legacyDiscussionId | String | The discussion thread to which the comment was added. | 
-| GoogleDrive.DriveActivity.targets.fileComment.linkToDiscussion | String | The link to the discussion thread containing this comment, for example, "https://docs.google.com/DOCUMENT_ID/edit?disco=THREAD_ID". | 
+| GoogleDrive.DriveActivity.targets.fileComment.linkToDiscussion | String | The link to the discussion thread containing this comment, for example, "<https://docs.google.com/DOCUMENT_ID/edit?disco=THREAD_ID>". | 
 | GoogleDrive.DriveActivity.targets.fileComment.parent.name | String | The target Drive item. The format is "items/ITEM_ID". | 
 | GoogleDrive.DriveActivity.targets.fileComment.parent.title | String | The title of the Drive item. | 
 | GoogleDrive.DriveActivity.targets.fileComment.parent.mimeType | String | The MIME type of the Drive item. | 
@@ -674,6 +674,7 @@ Deletes a shared drive.
 | drive_id | ID of the shared drive. Can be retrieved using the `google-drive-drives-list` command. | Required | 
 
 #### Context Output
+
 There is no context output for this command.
 
 ### google-drive-files-list
@@ -1154,6 +1155,7 @@ Delete a permission.
 #### Context Output
 
 There is no context output for this command.
+
 ### google-drive-file-modify-label
 
 ***
@@ -1330,8 +1332,11 @@ Make a copy of a Google Drive file.
 | GoogleDrive.File.File.mimeType | String | The MIME type of the copied file. | 
 
 #### Command example
+
 ```!google-drive-file-copy file_id="1O8Gx7DslVpbd-HN7lp4MIN1DDakpw-bHVHCwir2wUlo" copy_title="New Copy"```
+
 #### Context Example
+
 ```json
 {
     "GoogleDrive": {
@@ -1350,6 +1355,7 @@ Make a copy of a Google Drive file.
 #### Human Readable Output
 
 >### File copied successfully.
+>
 >|Id|Kind|Mimetype|Name|
 >|---|---|---|---|
 >| 1JBZfuJcRpnpv5wS5-RBxT5OGjfKMP1cCmqOBHCe7GPw | drive#file | application/vnd.google-apps.spreadsheet | New Copy |

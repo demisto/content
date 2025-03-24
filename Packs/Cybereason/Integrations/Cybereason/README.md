@@ -25,6 +25,7 @@ This involves the mapping of response fields to XSOAR incidents, enhancing the a
 
 1. **Incident Mapping:** The integration maps specific response fields to corresponding incident fields within XSOAR, ensuring that all relevant information is captured accurately.
 2. **Custom Fields:** In addition to standard incident fields, custom fields have been introduced to accommodate unique data requirements specific to our workflow. These fields provide flexibility and enhance the granularity of the incident information.
+
 - `malopcreationtime`
 - `malopupdatetime`
 - `maloprootcauseelementname`

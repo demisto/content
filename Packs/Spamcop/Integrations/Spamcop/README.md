@@ -6,9 +6,12 @@ This integration was integrated and tested with Spamcop.
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Get IP details from Spamcop service
 
@@ -16,6 +19,7 @@ Get IP details from Spamcop service
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -31,9 +35,11 @@ Get IP details from Spamcop service
 
 
 #### Command Example
+
 ```!ip ip=xxx.xxx.xxx.xxx```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -60,6 +66,7 @@ Get IP details from Spamcop service
 #### Human Readable Output
 
 >### Results
+>
 >|indicator|
 >|---|
 >| xxx.xxx.xxx.xxx |

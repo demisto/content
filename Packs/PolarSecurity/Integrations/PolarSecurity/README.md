@@ -1,4 +1,5 @@
 Polar Security, an innovator in technology that helps companies discover, continuously monitor and secure cloud and software-as-a-service (SaaS) application data – and addresses the growing shadow data problem.
+
 ## Configure Polar Security in Cortex
 
 

@@ -1,7 +1,9 @@
 ### Proofpoint CASB
+
 This pack includes parsing and modeling rules for Proofpoint CASB logs sent via HTTP Event Collector.
 
 ### Supported Timestamp Formats:
+
 Timestamp is extracted from the occurredAt field with the following format - yyyy-mm-ddTHH:MM:SS.SSSZ
 
 ### Collect Events from Proofpoint CASB (XSIAM)
@@ -26,6 +28,7 @@ Timestamp is extracted from the occurredAt field with the following format - yyy
  [Link to Proofpoint webhook docs](https://docs.public.analyze.proofpoint.com/admin/notification_policies_webhooks.htm)
 
 <u>Guidelines:</u>
+
 1. Navigate to **Integrations** >  **Notification Policies**. Click **New Notification**.
 2. Select **For Rules** > **Create**.
 3. Name the new policy as "Forward events to XSIAM".

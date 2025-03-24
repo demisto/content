@@ -5,6 +5,7 @@ This integration was integrated and tested with versions 6.6.2, 7.3, 8.4.1 of El
 ## Permissions
 
 The permissions required to use this integration depends on which operations you need to perform. The API user should have the same permissions a regular user would have in order to access the data via the UI. Following are the permissions needed for certain commands:
+
 - **!es-eql-search/search/es-search/fetch-incidents** - If the Elasticsearch security features are enabled, you must have the *read* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
 - **!get-mapping-fields** - If the Elasticsearch security features are enabled, you must have the *view_index_metadata* or *manage* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
 - **!es-index** - If the Elasticsearch security features are enabled, you must have the *write* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
@@ -34,9 +35,12 @@ The permissions required to use this integration depends on which operations you
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### es-search
+
 ***
 Queries an index.
 
@@ -44,6 +48,7 @@ Queries an index.
 #### Base Command
 
 `es-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -81,6 +86,7 @@ Queries an index.
 | Elasticsearch.Search.Size | Number | The maximum number of scores that a search can return. | 
 
 ### search
+
 ***
 Searches an index.
 
@@ -88,6 +94,7 @@ Searches an index.
 #### Base Command
 
 `search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -122,6 +129,7 @@ Searches an index.
 | Elasticsearch.Search.Size | Number | The maximum number of scores that a search can return. | 
 
 ### get-mapping-fields
+
 ***
 Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
 
@@ -129,6 +137,7 @@ Returns the schema of the index to fetch from. This commmand should be used for 
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 There are no input arguments for this command.
@@ -136,7 +145,9 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### es-eql-search
+
 ***
 Search using EQL query
 
@@ -144,6 +155,7 @@ Search using EQL query
 #### Base Command
 
 `es-eql-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -179,6 +191,7 @@ Search using EQL query
 | Elasticsearch.Search.Size | Number | The maximum number of scores that a search can return. |
 
 ### es-index
+
 ***
 Indexes a document into an Elasticsearch index.
 
@@ -186,6 +199,7 @@ Indexes a document into an Elasticsearch index.
 #### Base Command
 
 `es-index`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -205,9 +219,11 @@ Indexes a document into an Elasticsearch index.
 | Elasticsearch.Index.result | String | The result of the index operation. | 
 
 #### Command Example
+
 ```!es-index index_name=test-xsoar document="{\"name\":\"test\"}" id=1234```
 
 #### Context Example
+
 ```
 {
     "Elasticsearch": {
@@ -224,17 +240,20 @@ Indexes a document into an Elasticsearch index.
 #### Human Readable Output
 
 > ### Indexed document
+>
 >|ID|Index name|Version|Result|
 >|---|---|---|---|
 >| 1234 | test-xsoar | 1 | created | 
 
 ### es-integration-health-check
+
 ***
 Returns the health status of the integration. This commmand should be used for debugging purposes.
 
 #### Base Command
 
 `es-integration-health-check`
+
 #### Input
 
 There are no input arguments for this command.

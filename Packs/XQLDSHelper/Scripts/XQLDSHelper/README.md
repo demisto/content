@@ -3,6 +3,7 @@ The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-
 
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,6 +13,7 @@ The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -41,6 +43,7 @@ Once the query starts running, it may take some time to return results. During t
 
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -51,18 +54,19 @@ Once the query starts running, it may take some time to return results. During t
 
 
 ## Structure of the templates
+
 ---
 
 The data provided to `templates` depends on the parameter specified in `templates_type`.
 
- - templates_type: `raw`
-   * Specifies the list of templates directly. The details will be provided later.
+- templates_type: `raw`
+  - Specifies the list of templates directly. The details will be provided later.
 
- - templates_type: `base64`
-   * Specifies the list of templates encoded directly in base64. The details will be provided later.
+- templates_type: `base64`
+  - Specifies the list of templates encoded directly in base64. The details will be provided later.
 
- - templates_type: `list`
-   * Specifies the name of a list managed in the `Lists` of Cortex XSIAM/XSOAR. The list of templates is retrieved from it.
+- templates_type: `list`
+  - Specifies the name of a list managed in the `Lists` of Cortex XSIAM/XSOAR. The list of templates is retrieved from it.
 
 
 The list of templates must be either a dictionary or a serialized JSON string.
@@ -116,7 +120,9 @@ The summary of the template structure in the templates is provided below.
 ```
 
 ### Node: config
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .config.variable_substitution.opening | [Optional] The opening marker of the enclosure for variable substitution. It overrides the opening marker specified in the `variable_substitution` parameter of the arguments. | String |
@@ -124,7 +130,9 @@ The summary of the template structure in the templates is provided below.
 
 
 ### Node: query
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .query.xql | The XQL query string to retrieve the record set to create an entry. | String |
@@ -140,10 +148,12 @@ This node supports [Variable Substitution](#variable-substitution) for all param
 
 
 #### Note: .query.conditions
+
 The `.query.conditions` are evaluated as either true or false. The values of the conditions can be of any type in JSON (null, boolean, number, string, list, or dictionary).
 `null`, `false` (of type boolean or string), `0` (of type number), and an empty string (i.e., a string with 0 length) will be treated as false. All other values will be treated as true for primitive data types.
 
 A list or dictionary can represent a logical expression.
+
 - **A list represents an `OR` condition**, where each element in the list is treated as a separate condition.
   For example, the list `[X, Y, Z]` is evaluated as `X OR Y OR Z`.
   If any of the elements are true, the entire expression is considered true.
@@ -160,11 +170,13 @@ A list or dictionary can represent a logical expression.
   Condition-X: Condition-Y
 }
 ```
+
 This dictionary is evaluated as `(Condition-A AND Condition-B) OR (Condition-X AND Condition-Y)`.
 If any of the individual `AND` conditions evaluate to true, the entire dictionary expression will be true.
 If the dictionary is empty, it is treated as false.
 
 In addition, a dictionary can be nested. For example, consider the following dictionary:
+
 ```
 {
   Condition-A: {
@@ -175,11 +187,14 @@ In addition, a dictionary can be nested. For example, consider the following dic
   }
 }
 ```
+
 This dictionary is evaluated as `Condition-A AND Condition-B AND (Condition-X OR Condition-Y)`.
 
 
 ### Node: entry
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .entry.type | The name of the entry type, which must be one of the following: `markdown`, `markdown-table`, `number`, `number-trend`, `pie`, `line`, `single-bar`, `stacked-bar` or `duration`. | String |
@@ -212,7 +227,9 @@ This node supports [Variable Substitution](#variable-substitution) for all param
 
 
 #### Node: entry.markdown
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .text | The markdown text to display. | String |
@@ -233,7 +250,9 @@ A sample structure of `markdown` in an entry node is shown below.
 
 
 #### Node: entry.markdown-table
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .title | [Optional] The title of the markdown table. | String |
@@ -290,6 +309,7 @@ That is intended to create a table of the top 10 applications from the record se
 The table will be created as shown below:
 
 **Top 10 Applications**
+
 | **Application** | **# of sessions** |
 | --- | --- |
 | ms-ds-smbv3 | 80879 |
@@ -305,7 +325,9 @@ The table will be created as shown below:
 
 
 #### Node: entry.number
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .field | The name of the field used to display the field value. | String |
@@ -369,7 +391,9 @@ The record set must contain at most one record for the number widget entry. An e
 
 
 #### Node: entry.number-trend
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .prev-field | The name of the field used to track the value before the change or update. | String |
@@ -439,7 +463,9 @@ The record set must contain at most one record for the number-trend widget entry
 
 
 #### Node: entry.pie
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .group | Specifies `records` or `fields`. The details will be provided later in this section. | String |
@@ -581,6 +607,7 @@ For more details, refer to the Cortex XSIAM/XSOAR admin guide.
 ```
 
 ---
+
 #### Tips: Sorting Fields by Value in .group = "fields"
 
 When specifying `fields` for `.group`, each slice is plotted in the order defined in `.fields`.
@@ -592,6 +619,7 @@ dataset = panw_ngfw_traffic_raw
 | dedup session_id
 | comp sum(bytes_sent) as total_bytes_sent, sum(bytes_received) as total_bytes_received
 ```
+
 ```
 "pie": {
   "group": "fields",
@@ -643,7 +671,9 @@ To plot these fields ordered by total bytes, use `.group` = `records` with the f
 
 
 #### Node: entry.line
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .x.by | The name of the field by which values are aggregated into groups for the X-axis (e.g., time) of the line chart. | String |
@@ -807,7 +837,9 @@ For more details, refer to the Cortex XSIAM/XSOAR admin guide.
 
 
 #### Node: entry.single-bar
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .group | Specifies `records` or `fields`. The details will be provided later in this section. | String |
@@ -952,6 +984,7 @@ For more details, refer to the Cortex XSIAM/XSOAR admin guide.
 ```
 
 ---
+
 #### Tips: Sorting Fields by Value in .group = "fields"
 
 When specifying `fields` for `.group`, each bar is plotted in the order defined in `.fields`.
@@ -963,6 +996,7 @@ dataset = panw_ngfw_traffic_raw
 | dedup session_id
 | comp sum(bytes_sent) as total_bytes_sent, sum(bytes_received) as total_bytes_received
 ```
+
 ```
 "single-bar": {
   "group": "fields",
@@ -1014,7 +1048,9 @@ To plot these fields ordered by total bytes, use `.group` = `records` with the f
 
 
 #### Node: entry.stacked-bar
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .x.by | The name of the field by which values are aggregated into groups for the X-axis (e.g., time) of the stacked-bar chart. | String |
@@ -1184,7 +1220,9 @@ For more details, refer to the Cortex XSIAM/XSOAR admin guide.
 
 
 #### Node: entry.duration
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .field | The name of the field whose value specifies the duration, and the value must be in seconds. | String |
@@ -1230,7 +1268,9 @@ The record set must contain at most one record for the duration widget entry. An
 
 
 #### Node: entry.default
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .scope | [Optional] A list of scope. The possible values are `no_recordset` and `query_skipped,` which indicate when no record set is available or when a query is skipped, respectively (Default = ["no_recordset", "query_skipped"]). | String or List |
@@ -1241,8 +1281,9 @@ The record set must contain at most one record for the duration widget entry. An
 The default entry is a fallback value. Instead of creating an entry from the query results,
 it is used to display a message indicating that the query was not executed or that no record set is available.
 It will be applied if either of the following conditions is met:
- - `query_skipped` is included in the `.scope`, and the `.query.conditions` in the `query` node evaluates to false.
- - `no_recordset` is included in the `.scope`, and no record set is returned by the XQL query.
+
+- `query_skipped` is included in the `.scope`, and the `.query.conditions` in the `query` node evaluates to false.
+- `no_recordset` is included in the `.scope`, and no record set is returned by the XQL query.
 
 The `.no_recordset`, `.query_skipped` and `.entry` must be of type `str` or `dict`.
 If it is of type `str`, it represents markdown text to be displayed as an entry, as shown below:
@@ -1260,6 +1301,7 @@ If it is of type `dict`, the value is returned as-is.
 
 
 #### Common Node: .colors
+
 ---
 
 The `colors` node configures color palettes for each slice, series, or group in the graph chart.
@@ -1302,6 +1344,7 @@ The colors in the list are applied in the order they appear, starting with the f
 If the number of items exceeds the number of colors in the list, the default color scheme will be applied.
 
 For example, in the provided configuration:
+
 ```
 "colors": [
   "rgb(0, 144, 255)",
@@ -1329,6 +1372,7 @@ Variable Substitution is a syntax used to dynamically replace variables within a
 By default, a variable is enclosed by `${` and `}`, and those symbols can be changed using the `.config.variable_substitution` in the template or the `variable_substitution` argument parameter.
 
 e.g.
+
 ```
 | filter action_remote_ip = "${alert.remoteip}"
 ```
@@ -1336,21 +1380,22 @@ e.g.
 The syntax supports the [DT expression](https://xsoar.pan.dev/docs/integrations/dt), allowing you to make template text more flexible and customizable.
 
 e.g.
+
 ```
 | filter action_remote_ip = "${alert.remoteip=>val ? val[0] : "255.255.255.255"}"
 ```
 
 Variables can be replaced by the standard Cortex XSIAM/XSOAR DT expression.
 
- - ${&lt;context-path&gt;}
- - ${lists.&lt;list-name&gt;}
- - ${alert.&lt;alert-field&gt;}
- - ${incident.&lt;incident-field&gt;}
+- ${&lt;context-path&gt;}
+- ${lists.&lt;list-name&gt;}
+- ${alert.&lt;alert-field&gt;}
+- ${incident.&lt;incident-field&gt;}
 
 In addition, it supports extended variables that start with `.`. Currently, only one value is defined for those variables.
 
- - ${.recordset}
-   * It refers to the record set retrieved by the XQL query.
+- ${.recordset}
+  - It refers to the record set retrieved by the XQL query.
 
 
 
@@ -1360,11 +1405,11 @@ When caching is enabled, data is stored in the context data and retrieved from i
 It is managed under the `XQLDSHelperCache.<template-name>` path within the context data.
 Caching can be controlled by the `cache_type` argument parameter.
 
- - cache_type: `recordset`
-   * All the record sets retrieved from the query are stored in the cache. Entries will be correctly created even when only the parameters in the "entry" are modified, as they are rebuilt from the raw record sets in the cache, provided the query parameters remain unchanged.
+- cache_type: `recordset`
+  - All the record sets retrieved from the query are stored in the cache. Entries will be correctly created even when only the parameters in the "entry" are modified, as they are rebuilt from the raw record sets in the cache, provided the query parameters remain unchanged.
 
- - cache_type: `entry`
-   * Only entry data is stored in the cache. The same entry is returned if the query parameters remain unchanged. This option helps minimize the cache data size. However, if only the parameters within the entry are modified (for example, if the 'colors' parameter is modified), the correct entry cannot be retrieved, as it does not re-query the record set to create a new entry with the updated settings.
+- cache_type: `entry`
+  - Only entry data is stored in the cache. The same entry is returned if the query parameters remain unchanged. This option helps minimize the cache data size. However, if only the parameters within the entry are modified (for example, if the 'colors' parameter is modified), the correct entry cannot be retrieved, as it does not re-query the record set to create a new entry with the updated settings.
 
 
 ## Record Limit for Query Results
@@ -1389,7 +1434,7 @@ dataset = panw_ngfw_traffic_raw
 To assist you more effectively, we’ve provided sample automation scripts with List data, including template data and XQL query strings, in a content bundle.
 You can conveniently download them using the link below.
 
- - [XQLDS_Sample_content-bundle.tar.gz](https://github.com/demisto/content/tree/master/Packs/XQLDSHelper/Scripts/XQLDSHelper/test_data/XQLDS_Sample_content-bundle.tar.gz)
+- [XQLDS_Sample_content-bundle.tar.gz](https://github.com/demisto/content/tree/master/Packs/XQLDSHelper/Scripts/XQLDSHelper/test_data/XQLDS_Sample_content-bundle.tar.gz)
 
 Once you've imported the bundle into your Cortex XSIAM or XSOAR instance, you will see lists starting with `XQLDS_Sample_` in the `Lists` menu for template data and XQL queries, and automation scripts starting with `XQLDS_Sample_` in the `Scripts` menu for displaying widgets in the General Purpose Dynamic Section.
 `XQLDS_Sample_Templates` in the `Lists` is the main template used by the automation scripts. You can refer to it to deepen your understanding of the template structure.

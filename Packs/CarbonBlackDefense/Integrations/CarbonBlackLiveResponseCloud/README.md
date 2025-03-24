@@ -1,14 +1,18 @@
 Enables security operators to collect information and take action on remote endpoints in real time. These actions include the ability to upload, download, and remove files, retrieve and remove registry entries, dump contents of physical memory, and execute and terminate processes.
+
 ## Configure CarbonBlackLiveResponseCloud on Cortex XSOAR
 
 
 **Creating an API Key**
+
 1. To create an API Key, go to **Settings > API Access > API Keys** tab in the Carbon Black Cloud web page.
 2. Select **Add API Key** from the far right.
 3. Give the API Key a unique name, and select the Live Response access level.
 4. Click **Save**. You will be provided with your API Key Credentials:
-  - API Secret Key
-  - API ID
+
+- API Secret Key
+- API ID
+
 5. Go to **Settings > API Access** and copy the ORG KEY from the top left corner of the page.
 6. Set up Carbon Black Cloud Live Response integration instance with the ORG KEY and created API Secret Key and API ID.
 
@@ -16,6 +20,7 @@ Enables security operators to collect information and take action on remote endp
 **Getting the device ID**
 
 You can access the device ID in one of the following ways.
+
 - In Cortex XSOAR:
    1. Create an instance of the Carbon Black Defense integration.
    2. Run the ***cbd-device-search*** command.
@@ -25,6 +30,7 @@ You can access the device ID in one of the following ways.
    2. Search for and click the device name. The device ID will appear at the top of the page in the format *device:\<the device ID\>*. 
 
 **Set up integration instance**
+
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for CarbonBlackLiveResponseCloud.
 3. Click **Add instance** to create and configure a new integration instance.
@@ -39,10 +45,14 @@ You can access the device ID in one of the following ways.
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cbd-lr-file-put
+
 ***
 Creates a new file on the remote machine with the specified data.
 
@@ -50,6 +60,7 @@ Creates a new file on the remote machine with the specified data.
 #### Base Command
 
 `cbd-lr-file-put`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -64,6 +75,7 @@ Creates a new file on the remote machine with the specified data.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-lr-file-put device_id="1234567" destination_path="C:\test\test.txt" file_id=142@5```
 
 #### Human Readable Output
@@ -72,6 +84,7 @@ There is no context output for this command.
 
 
 ### cbd-lr-file-get
+
 ***
 Retrieves the contents of the specified file on the remote machine.
 
@@ -79,6 +92,7 @@ Retrieves the contents of the specified file on the remote machine.
 #### Base Command
 
 `cbd-lr-file-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -90,6 +104,7 @@ Retrieves the contents of the specified file on the remote machine.
 
 
 #### Context Output
+
 ```json
 {
     "File": {
@@ -109,6 +124,7 @@ Retrieves the contents of the specified file on the remote machine.
 ```
 
 #### Command Example
+
 ``` !cbd-lr-file-get device_id="the actually device ID" source_path="C:\\test\\test_file.txt" delay=2 timeout=30```
 
 #### Human Readable Output
@@ -116,6 +132,7 @@ Retrieves the contents of the specified file on the remote machine.
 
 
 ### cbd-lr-file-delete
+
 ***
 Deletes the specified file name on the remote machine.
 
@@ -123,6 +140,7 @@ Deletes the specified file name on the remote machine.
 #### Base Command
 
 `cbd-lr-file-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -136,6 +154,7 @@ Deletes the specified file name on the remote machine.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-lr-file-delete device_id="the actually device ID" source_path="C:\test\test_file.txt"```
 
 #### Human Readable Output
@@ -143,6 +162,7 @@ There is no context output for this command.
 >The file: C:\test\test_file.txt was deleted successfully.
 
 ### cbd-lr-directory-listing
+
 ***
 Lists the contents of a directory on the remote machine.
 
@@ -150,6 +170,7 @@ Lists the contents of a directory on the remote machine.
 #### Base Command
 
 `cbd-lr-directory-listing`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -168,9 +189,11 @@ Lists the contents of a directory on the remote machine.
 
 
 #### Command Example
+
 ```!cbd-lr-directory-listing device_id="the actually device ID" directory_path="C:\test\"```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefenseLR": {
@@ -230,6 +253,7 @@ Lists the contents of a directory on the remote machine.
 #### Human Readable Output
 
 >### Carbon Black Defense Live Response Directory content
+>
 >|Name|Type|Date Modified|Size|
 >|---|---|---|---|
 >| . | Directory | 1970-01-19T17:53:20.000Z | 0 |
@@ -239,6 +263,7 @@ Lists the contents of a directory on the remote machine.
 
 
 ### cbd-lr-reg-sub-keys
+
 ***
 Enumerates the subkeys of the specified registry key on the remote machine.
 
@@ -246,6 +271,7 @@ Enumerates the subkeys of the specified registry key on the remote machine.
 #### Base Command
 
 `cbd-lr-reg-sub-keys`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -264,6 +290,7 @@ Enumerates the subkeys of the specified registry key on the remote machine.
 
 
 #### Command Example
+
 ```!cbd-lr-reg-sub-keys reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST device_id="the actually device ID"```
 
 #### Human Readable Output
@@ -271,6 +298,7 @@ Enumerates the subkeys of the specified registry key on the remote machine.
 >The key: HKEY_LOCAL_MACHINE\SOFTWARE\TEST does not contain any sub keys
 
 ### cbd-lr-reg-get-values
+
 ***
 Enumerates all registry values from the specified registry key on the remote machine.
 
@@ -278,6 +306,7 @@ Enumerates all registry values from the specified registry key on the remote mac
 #### Base Command
 
 `cbd-lr-reg-get-values`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -296,9 +325,11 @@ Enumerates all registry values from the specified registry key on the remote mac
 
 
 #### Command Example
+
 ```!cbd-lr-reg-get-values reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST device_id="the actually device ID"```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefenseLR": {
@@ -320,12 +351,14 @@ Enumerates all registry values from the specified registry key on the remote mac
 #### Human Readable Output
 
 >### Carbon Black Defense Live Response Registry key values
+>
 >|Name|Type|Data|
 >|---|---|---|
 >| TEST_VAL | pbREG_MULTI_SZ | val_1,val_2 |
 
 
 ### cbd-lr-reg-key-create
+
 ***
 Creates a new registry key on the remote machine.
 
@@ -333,6 +366,7 @@ Creates a new registry key on the remote machine.
 #### Base Command
 
 `cbd-lr-reg-key-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -346,6 +380,7 @@ Creates a new registry key on the remote machine.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-lr-reg-key-create device_id="the actually device ID" reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST```
 
 #### Human Readable Output
@@ -353,6 +388,7 @@ There is no context output for this command.
 >Reg key: HKEY_LOCAL_MACHINE\SOFTWARE\TEST, was created successfully.
 
 ### cbd-lr-reg-key-delete
+
 ***
 Deletes a registry key on the remote machine. The key must be without any subkeys.
 
@@ -360,6 +396,7 @@ Deletes a registry key on the remote machine. The key must be without any subkey
 #### Base Command
 
 `cbd-lr-reg-key-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -374,6 +411,7 @@ Deletes a registry key on the remote machine. The key must be without any subkey
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-lr-reg-key-delete reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST device_id="the actually device ID"```
 
 #### Human Readable Output
@@ -381,6 +419,7 @@ There is no context output for this command.
 >Registry key: HKEY_LOCAL_MACHINE\SOFTWARE\TEST was deleted successfully.
 
 ### cbd-lr-reg-value-delete
+
 ***
 Deletes a registry value on the remote machine.
 
@@ -388,6 +427,7 @@ Deletes a registry value on the remote machine.
 #### Base Command
 
 `cbd-lr-reg-value-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -401,6 +441,7 @@ Deletes a registry value on the remote machine.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-lr-reg-value-delete device_id="the actually device ID" reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST\TEST_VAL```
 
 #### Human Readable Output
@@ -408,6 +449,7 @@ There is no context output for this command.
 >Registry value: HKEY_LOCAL_MACHINE\SOFTWARE\TEST\TEST_VAL was deleted successfully.
 
 ### cbd-lr-reg-value-set
+
 ***
 Sets a registry value on the specified registry key on the remote machine.
 
@@ -415,6 +457,7 @@ Sets a registry value on the specified registry key on the remote machine.
 #### Base Command
 
 `cbd-lr-reg-value-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -431,6 +474,7 @@ Sets a registry value on the specified registry key on the remote machine.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-lr-reg-value-set reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST\TEST_VAL device_id="the actually device ID" value_data=[\"val_1\",\"val_2\"] value_type=REG_MULTI_SZ```
 
 #### Human Readable Output
@@ -438,6 +482,7 @@ There is no context output for this command.
 >Value was set to the reg key: HKEY_LOCAL_MACHINE\SOFTWARE\TEST\TEST_VAL successfully.
 
 ### cbd-lr-ps
+
 ***
 Lists the currently running processes on the remote machine.
 
@@ -445,6 +490,7 @@ Lists the currently running processes on the remote machine.
 #### Base Command
 
 `cbd-lr-ps`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -461,9 +507,11 @@ Lists the currently running processes on the remote machine.
 
 
 #### Command Example
+
 ```!cbd-lr-ps device_id="the actually device ID"```
 
 #### Context Example
+
 ```json
 {
     "CarbonBlackDefenseLR": {
@@ -509,6 +557,7 @@ Lists the currently running processes on the remote machine.
 #### Human Readable Output
 
 >### Carbon Black Defense Live Response Processes
+>
 >|Path|Pid|Command Line|
 >|---|---|---|
 >| SYSTEM | 4 |  |
@@ -518,6 +567,7 @@ Lists the currently running processes on the remote machine.
 
 
 ### cbd-lr-kill
+
 ***
 Terminates a process on the remote machine
 
@@ -525,6 +575,7 @@ Terminates a process on the remote machine
 #### Base Command
 
 `cbd-lr-kill`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -538,6 +589,7 @@ Terminates a process on the remote machine
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-lr-kill pid=4592 device_id="the actually device ID" ```
 
 #### Human Readable Output
@@ -546,6 +598,7 @@ There is no context output for this command.
 
 
 ### cbd-lr-execute
+
 ***
 Creates a new process on the remote machine with the specified command string
 
@@ -553,6 +606,7 @@ Creates a new process on the remote machine with the specified command string
 #### Base Command
 
 `cbd-lr-execute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -576,6 +630,7 @@ Creates a new process on the remote machine with the specified command string
 
 
 #### Command Example
+
 ```!cbd-lr-execute device_id="the actually device ID" command_string="cmd.exe"```
 
 #### Human Readable Output
@@ -585,6 +640,7 @@ Creates a new process on the remote machine with the specified command string
 C:\Windows\system32>
 
 ### cbd-lr-memdump
+
 ***
 Performs a memory dump operation on the remote machine.
 
@@ -592,6 +648,7 @@ Performs a memory dump operation on the remote machine.
 #### Base Command
 
 `cbd-lr-memdump`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -605,6 +662,7 @@ Performs a memory dump operation on the remote machine.
 There is no context output for this command.
 
 #### Command Example
+
 ```!cbd-lr-memdump device_id="the actually device ID" target_path=C:\test\memdump\dumped_file```
 
 #### Human Readable Output

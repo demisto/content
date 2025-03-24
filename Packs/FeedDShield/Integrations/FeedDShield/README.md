@@ -18,9 +18,12 @@ This integration fetches a list that summarizes the top 20 attacking class C (/2
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### dshield-get-indicators
+
 ***
 Gets the feed indicators.
 
@@ -28,6 +31,7 @@ Gets the feed indicators.
 #### Base Command
 
 `dshield-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

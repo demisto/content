@@ -8,7 +8,7 @@ This is the default integration for this content pack when configured by the Dat
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://usea1.sentinelone.net) | The URL to use for connection | True |
+| Server URL (e.g., <https://usea1.sentinelone.net>) | The URL to use for connection | True |
 | API Token | The API Token to use for connection | True |
 | Trust any certificate (not secure) | Use SSL secure connection or not. | False |
 | Use system proxy settings | Use proxy settings for connection or not. | False |
@@ -18,9 +18,12 @@ This is the default integration for this content pack when configured by the Dat
 | The maximum number of events per fetch should be between 1-1000 | The limit is per event type. For example, if you choose 3 event types \(ACTIVITIES, THREATS, ALERTS\) with a limit of 100, the actually limit will be 300. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### sentinelone-get-events
+
 ***
 Gets events from SentinelOne.
 
@@ -28,6 +31,7 @@ Gets events from SentinelOne.
 #### Base Command
 
 `sentinelone-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

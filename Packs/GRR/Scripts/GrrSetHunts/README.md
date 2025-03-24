@@ -1,6 +1,7 @@
 Handles hunt creation requests.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Handles hunt creation requests.
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * grr_set_hunts
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,5 +27,6 @@ This script uses the following commands and scripts.
 | hunt_args | The hunt arguments. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

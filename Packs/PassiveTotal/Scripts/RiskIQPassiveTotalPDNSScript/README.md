@@ -1,10 +1,12 @@
 Enhancement script to enrich PDNS information for Domain and IP type of indicators.
 It can be set by following these steps:
- - Settings > ADVANCED > Indicator Type
- - Edit Domain and IP Indicator one by one 
- - Add this script into Enhancement Scripts
+
+- Settings > ADVANCED > Indicator Type
+- Edit Domain and IP Indicator one by one 
+- Add this script into Enhancement Scripts
  
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -14,11 +16,13 @@ It can be set by following these steps:
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
-* pt-get-pdns-details
+- pt-get-pdns-details
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -26,13 +30,16 @@ This script uses the following commands and scripts.
 | indicator_value | domain or IP indicator value that need to enrich |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ## Script Example
+
 ```!RiskIQPassiveTotalPDNSScript indicator_value="www.furth.com.ar"```
 
 ## Context Example
+
 ```
 {
     "DBotScore": [
@@ -143,11 +150,13 @@ There are no outputs for this script.
 ## Human Readable Output
 
 >### Total Retrieved Record(s): 5
+>
 >### PDNS detail(s)
+>
 >|Resolve|Resolve Type|Record Type|Collected (GMT)|First Seen (GMT)|Last Seen (GMT)|Source|Record Hash|
 >|---|---|---|---|---|---|---|---|
 >| furth.com.ar | domain | CNAME | 2020-06-17 12:26:33 | 2010-12-15 09:10:10 | 2020-06-17 05:26:33 | riskiq, pingly | abf781b2484ea79d521cffb0745b71319d4db1158f71bb019b41077f8e55b035 |
 >| 77.81.241.5 | ip | A | 2020-06-17 12:26:33 | 2020-05-29 03:57:44 | 2020-06-17 05:26:33 | riskiq, pingly | d7183564ca617e173fc26aeff66a38bb5c1b9089e56819851183860b9a37ccca |
 >| 184.75.255.33 | ip | A | 2020-06-17 12:26:33 | 2016-01-11 15:45:15 | 2017-10-24 08:53:52 | riskiq | 345780dcde96f0c28e3b93ec53bd33067f26075f30c2d4e49fafe0d2396194ca |
->| webmaster@furth.com.ar | email | SOA | 2020-06-17 12:26:33 | 2020-06-17 05:26:33 | 2020-06-17 05:26:33 | pingly | 63deb7c38cbea98f631777fd3ba89de0c270178bd37eb6a270ee7e37b3cd92e5 |
+>| <webmaster@furth.com.ar> | email | SOA | 2020-06-17 12:26:33 | 2020-06-17 05:26:33 | 2020-06-17 05:26:33 | pingly | 63deb7c38cbea98f631777fd3ba89de0c270178bd37eb6a270ee7e37b3cd92e5 |
 >| furth.com.ar | domain | MX | 2020-06-17 12:26:33 | 2020-06-17 05:26:33 | 2020-06-17 05:26:33 | pingly | 24fa99da36eecc22b8970a33f8adf0f150598391319df4fc02128d677999e886 |

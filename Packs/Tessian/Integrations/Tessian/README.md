@@ -42,9 +42,11 @@ This command allows you to pull Tessian event data into your XSOAR instance.
 | Tessian.EventsOutput.results | Unknown | The events returned by this request. | 
 
 #### Command example
+
 ```!tessian-list-events limit=2```
 
 #### Context Example
+
 ```json
 {
     "Tessian": {
@@ -215,9 +217,13 @@ This command allows you to pull Tessian event data into your XSOAR instance.
 #### Human Readable Output
 
 ># Tessian Events
+>
 >## Checkpoint: eyJzb3J0X3ZhbHVlcyI6IFsxNjkxNTkyNTc4Mjg4LCAiaW5ib3VuZC1lNWI1MmQyYWQ3ZGQ4MTdhMGRhYmVhZjgzMDhhYWMwMDhkZDY3ZDg1ZTQ3MTk1NDE4NTZmMzRkN2JlY2Y4ZTNlIl0sICJyZXZlcnNlIjogZmFsc2V9
+>
 >## Additional Results: True
+>
 >### Number of events returned: 2
+>
 > ### Results
 >
 > | Event ID                           | Event Type                           | Event Created At                           | Event Updated At                           | Portal Link                           |
@@ -250,9 +256,11 @@ This command allows you to release a quarantined emails associated with an event
 | Tessian.ReleaseFromQuarantineOutput.event_id | String | The event ID that was submitted for release. | 
 
 #### Command example
+
 ```!tessian-release-from-quarantine event_id="string"```
 
 #### Context Example
+
 ```json
 {
     "Tessian": {
@@ -277,14 +285,18 @@ This command allows you to release a quarantined emails associated with an event
 #### Human Readable Output
 
 ># Release from Quarantine Action
+>
 >## Event ID: string
+>
 >## Number of Release Actions Successfully Initiated: 1
+>
 >## Number of Release Actions Failed: 1
+>
 > ### Errors
 >
 > | Recipient                           | Error                           |
 > | ------------------------------------ | ------------------------------------ |
-> | test_user2@example.com | EMAIL_ALREADY_REMEDIATED |
+> | <test_user2@example.com> | EMAIL_ALREADY_REMEDIATED |
 
 ### tessian-delete-from-quarantine
 
@@ -311,9 +323,11 @@ This command allows you to delete quarantined emails associated with an event fr
 | Tessian.DeleteFromQuarantineOutput.event_id | String | The event ID that was submitted for deletion. | 
 
 #### Command example
+
 ```!tessian-delete-from-quarantine event_id="string"```
 
 #### Context Example
+
 ```json
 {
     "Tessian": {
@@ -338,14 +352,18 @@ This command allows you to delete quarantined emails associated with an event fr
 #### Human Readable Output
 
 ># Delete from Quarantine Action
+>
 >## Event ID: string
+>
 >## Number of Delete Actions Successfully Initiated: 1
+>
 >## Number of Delete Actions Failed: 1
+>
 > ### Errors
 >
 > | Recipient                           | Error                           |
 > | ------------------------------------ | ------------------------------------ |
-> | test_user2@example.com | EMAIL_ALREADY_REMEDIATED |
+> | <test_user2@example.com> | EMAIL_ALREADY_REMEDIATED |
 
 ### tessian-delete-from-inbox
 
@@ -372,9 +390,11 @@ This command allows you to delete emails associated with a Tessian event from yo
 | Tessian.DeleteFromQuarantineOutput.event_id | String | The event ID that was submitted for deletion. | 
 
 #### Command example
+
 ```!tessian-delete-from-inbox event_id="string"```
 
 #### Context Example
+
 ```json
 {
     "Tessian": {
@@ -399,11 +419,15 @@ This command allows you to delete emails associated with a Tessian event from yo
 #### Human Readable Output
 
 ># Delete from Inbox Action
+>
 >## Event ID: string
+>
 >## Number of Delete Actions Successfully Initiated: 1
+>
 >## Number of Delete Actions Failed: 1
+>
 > ### Errors
 >
 > | Recipient                           | Error                           |
 > | ------------------------------------ | ------------------------------------ |
-> | test_user2@example.com | ALREADY_DELETED |
+> | <test_user2@example.com> | ALREADY_DELETED |

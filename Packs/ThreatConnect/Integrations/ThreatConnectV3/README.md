@@ -2,6 +2,7 @@ ThreatConnect's integration is a intelligence-driven security operations solutio
 This integration was integrated and tested with version 3 of ThreatConnect v3 REST API
 
 ## ThreatConnect v3 HMAC credentials
+
 1. On the top navigation bar, hover the cursor over the Settings icon and select Org Settings from the dropdown menu.
 2. Click the Create API User button on the Membership tab of the Organization Settings screen, and the API User Administration window will be displayed.
 3. Enter the following information:
@@ -297,6 +298,7 @@ Adds a tag to an existing indicator.
 #### Context Output
 
 There is no context output for this command.
+
 ### tc-get-indicator
 
 ***
@@ -766,6 +768,7 @@ Deletes an indicator from ThreatConnect.
 #### Context Output
 
 There is no context output for this command.
+
 ### tc-create-campaign
 
 ***
@@ -873,6 +876,7 @@ Deletes a group.
 #### Context Output
 
 There is no context output for this command.
+
 ### tc-get-events
 
 ***
@@ -891,7 +895,7 @@ Returns a list of events.
 | page | The page to take the results from. | Optional | 
 | limit | The maximum number of results that can be returned. The default is 500. | Optional | 
 | id | A comma-separated list of IDs to filter the groups by. | Optional | 
-| filter | A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
+| filter | A free text TQL filter. Refer to <https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql> for a basic TQL guide. | Optional | 
 
 #### Context Output
 
@@ -925,7 +929,7 @@ Returns all groups.
 | page | The page to take the results from. | Optional | 
 | limit | The maximum number of results that can be returned. The default is 500. | Optional | 
 | id | A comma-separated list of IDs to filter the groups by. | Optional | 
-| filter | A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
+| filter | A free text TQL filter. Refer to <https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql> for a basic TQL guide. | Optional | 
 | include_tags | Add group tags metadata to the results. | Optional | 
 | include_security_labels | Add group security labels metadata to the results. | Optional | 
 | include_attributes | Add group attributes metadata to the results. | Optional | 
@@ -963,6 +967,7 @@ Adds tags to a specified group.
 #### Context Output
 
 There is no context output for this command.
+
 ### tc-get-indicator-types
 
 ***
@@ -1094,6 +1099,7 @@ Get the owner for an indicator.
 #### Context Output
 
 There is no context output for this command.
+
 ### tc-download-report
 
 ***
@@ -1158,95 +1164,98 @@ Updates a group.
 | TC.Group.ID | string | The ID of the group. | 
 
 ### Redundant Arguments
+
 The following arguments were removed in this version:
 
 In the *tc-tag-indicator* command:
-* *owner* - this argument was redundant.
+- *owner* - this argument was redundant.
 
 In the *tc-get-indicator* command:
-* *indicator_type* - this argument was redundant.
-* *owners* - this argument was redundant.
-* *ratingThreshold* - this argument was redundant.
-* *confidenceThreshold* - this argument was redundant.
-* *group_associations* - this argument was redundant.
-* *indicator_associations* - this argument was redundant.
-* *indicator_observations* - this argument was redundant.
-* *indicator_tags* - this argument was redundant.
-* *indicator_attributes* - this argument was redundant.
+- *indicator_type* - this argument was redundant.
+- *owners* - this argument was redundant.
+- *ratingThreshold* - this argument was redundant.
+- *confidenceThreshold* - this argument was redundant.
+- *group_associations* - this argument was redundant.
+- *indicator_associations* - this argument was redundant.
+- *indicator_observations* - this argument was redundant.
+- *indicator_tags* - this argument was redundant.
+- *indicator_attributes* - this argument was redundant.
 
 In the *tc-add-indicator* command:
-* *owner* - this argument was redundant.
+- *owner* - this argument was redundant.
 
 In the *tc-create-incident* command:
-* *owner* - this argument was redundant.
+- *owner* - this argument was redundant.
 
 In the *tc-fetch-incidents* command:
-* *incidentName* - this argument was redundant.
+- *incidentName* - this argument was redundant.
 
 In the *tc-incident-associate-indicator* command:
-* *indicatorType* - this argument was redundant.
-* *owner* - this argument was redundant.
+- *indicatorType* - this argument was redundant.
+- *owner* - this argument was redundant.
 
 In the *tc-get-incident-associate-indicators* command:
-* *owner* - this argument was redundant.
+- *owner* - this argument was redundant.
 
 In the *tc-update-indicator* command:
-* *observations* - this argument was redundant.
-* *threatAssessConfidence* - this argument was redundant.
-* *threatAssessRating* - this argument was redundant.
-* *owner* - this argument was redundant.
+- *observations* - this argument was redundant.
+- *threatAssessConfidence* - this argument was redundant.
+- *threatAssessRating* - this argument was redundant.
+- *owner* - this argument was redundant.
 
 In the *tc-create-campaign* command:
-* *owner* - this argument was redundant.
+- *owner* - this argument was redundant.
 
 In the *tc-create-event* command:
-* *owner* - this argument was redundant.
+- *owner* - this argument was redundant.
 
 In the *tc-delete-group* command:
-* *type* - this argument was redundant.
+- *type* - this argument was redundant.
 
 In the *tc-add-group-attribute* command:
-* *group_type* - this argument was redundant.
+- *group_type* - this argument was redundant.
 
 In the *tc-add-group-security-label* command:
-* *group_type* - this argument was redundant.
+- *group_type* - this argument was redundant.
 
 In the *tc-add-group-tag* command:
-* *group_type* - this argument was redundant.
+- *group_type* - this argument was redundant.
 
 In the *tc-group-associate-indicator* command:
-* *indicator_type* - this argument was redundant.
-* *group_type* - this argument was redundant.
+- *indicator_type* - this argument was redundant.
+- *group_type* - this argument was redundant.
 
 In the *tc-get-group* command:
-* *group_type* - this argument was redundant.
+- *group_type* - this argument was redundant.
 
 In the *tc-get-group-attributes* command:
-* *group_type* - this argument was redundant.
+- *group_type* - this argument was redundant.
 
 In the *tc-get-group-security-labels* command:
-* *group_type* - this argument was redundant.
+- *group_type* - this argument was redundant.
 
 In the *tc-get-group-tags* command:
-* *group_type* - this argument was redundant.
+- *group_type* - this argument was redundant.
 
 In the *tc-get-group-indicators* command:
-* *group_type* - this argument was redundant.
+- *group_type* - this argument was redundant.
 
 In the *tc-get-associated-groups* command:
-* *group_type* - this argument was redundant.
+- *group_type* - this argument was redundant.
 
 In the *tc-associate-group-to-group* command:
-* *group_type* - this argument was redundant.
-* *associated_group_type* - this argument was redundant.
+- *group_type* - this argument was redundant.
+- *associated_group_type* - this argument was redundant.
 
 In the *tc-download-report* command:
-* *group_type* - this argument was redundant.
+- *group_type* - this argument was redundant.
 
 
 ## Additional Considerations for this version
+
 API version 3 [documentation](https://docs.threatconnect.com/en/latest/rest_api/rest_api.html#v3-api)
 Use the new REST v3 API instead of the old python module.
+
 ### tc-create-victim-attribute
 
 ***
@@ -1285,8 +1294,11 @@ Creates a victim attribute.
 | TC.VictimAttribute.createdBy.userName | string | The user name of the user who created the victim attribute. | 
 
 #### Command example
+
 ```!tc-create-victim-attribute attribute_type="Takedown Requests" victim_id=668 attribute_value="test"```
+
 #### Context Example
+
 ```json
 {
     "TC": {
@@ -1314,6 +1326,7 @@ Creates a victim attribute.
 #### Human Readable Output
 
 >Victim Attribute 133 created successfully for victim id: 668
+>
 ### tc-create-victim
 
 ***
@@ -1359,8 +1372,11 @@ Creates a victim.
 | TC.Victim.nationality | string | The nationality of the victim. | 
 
 #### Command example
+
 ```!tc-create-victim name="test" org="test" asset_type="EmailAddress" asset_value="test@test.com" attribute_type="Description" attribute_value="test"```
+
 #### Context Example
+
 ```json
 {
     "TC": {
@@ -1379,6 +1395,7 @@ Creates a victim.
 #### Human Readable Output
 
 >Victim test created successfully with id: 671 
+>
 ### tc-create-victim-asset
 
 ***
@@ -1416,8 +1433,11 @@ Creates a victim asset.
 | TC.VictimAsset.website | string | The website of the victim asset. | 
 
 #### Command example
+
 ```!tc-create-victim-asset victim_id=668 asset_type=SocialNetwork asset_value=test asset_social_network=test```
+
 #### Context Example
+
 ```json
 {
     "TC": {
@@ -1451,7 +1471,7 @@ Retrieves victim assets.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | victim_asset_id | The ID of a specific victim asset to retrieve. If not specified, all victim assets will be retrieved. | Optional | 
-| filter | A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
+| filter | A free text TQL filter. Refer to <https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql> for a basic TQL guide. | Optional | 
 | page | The page to take the results from. The first is 0. Default is 0. | Optional | 
 | limit | The maximum number of results that can be returned. Default is 50. | Optional | 
 
@@ -1472,8 +1492,11 @@ Retrieves victim assets.
 | TC.VictimAsset.website | string | The website of the victim asset. | 
 
 #### Command example
+
 ```!tc-list-victim-assets limit=1```
+
 #### Context Example
+
 ```json
 {
     "TC": {
@@ -1491,6 +1514,7 @@ Retrieves victim assets.
 #### Human Readable Output
 
 >### Victim assets
+>
 >|id|type|victimId|asset|
 >|---|---|---|---|
 >| 740 | Phone | 660 | 111111 |
@@ -1510,7 +1534,7 @@ Retrieves victim attributes.
 | --- | --- | --- |
 | victim_attribute_id | The ID of a specific victim attribute to retrieve. If not specified, all victim attributes will be retrieved. | Optional | 
 | victim_id | The ID of a specific victim to retrieve its attributes. | Optional | 
-| filter | A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
+| filter | A free text TQL filter. Refer to <https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql> for a basic TQL guide. | Optional | 
 | page | The page to take the results from. The first is 0. Default is 0. | Optional | 
 | limit | The maximum number of results that can be returned. Default is 50. | Optional | 
 
@@ -1533,8 +1557,11 @@ Retrieves victim attributes.
 | TC.VictimAttribute.createdBy.userName | string | The user name of the user who created the victim attribute. | 
 
 #### Command example
+
 ```!tc-list-victim-attributes limit=1```
+
 #### Context Example
+
 ```json
 {
     "TC": {
@@ -1562,6 +1589,7 @@ Retrieves victim attributes.
 #### Human Readable Output
 
 >### Victim attributes
+>
 >|id|type|value|dateAdded|
 >|---|---|---|---|
 >| 134 | Description | test | 2024-01-04T13:24:57Z |
@@ -1580,7 +1608,7 @@ Retrieves victims.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | victim_id | The ID of a specific victim to retrieve. If not specified, all victims will be retrieved. | Optional | 
-| filter | A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
+| filter | A free text TQL filter. Refer to <https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql> for a basic TQL guide. | Optional | 
 | include_assets | Whether to add victim's assets metadata to the result. Possible values are: true, false. Default is false. | Optional | 
 | include_associated_groups | Whether to add victim's associated groups metadata to the result. Possible values are: true, false. Default is false. | Optional | 
 | include_attributes | Whether to add victim's attributes metadata to the result. Possible values are: true, false. Default is false. | Optional | 
@@ -1640,8 +1668,11 @@ Retrieves victims.
 | TC.Victim.attributes.data.default | String | Whether the victim attribute is default. | 
 
 #### Command example
+
 ```!tc-list-victims limit=1```
+
 #### Context Example
+
 ```json
 {
     "TC": {
@@ -1659,6 +1690,7 @@ Retrieves victims.
 #### Human Readable Output
 
 >### Victims
+>
 >|id|name|ownerName|description|org|
 >|---|---|---|---|---|
 >| 663 | nat | Palo Alto Cortex XSOAR |  |  |
@@ -1710,8 +1742,11 @@ Updates a victim.
 | TC.Victim.nationality | string | The nationality of the victim. | 
 
 #### Command example
+
 ```!tc-update-victim victim_id=668 mode=append attribute_type="Source" attribute_value="test"```
+
 #### Context Example
+
 ```json
 {
     "TC": {
@@ -1729,6 +1764,7 @@ Updates a victim.
 #### Human Readable Output
 
 >Victim 668 was successfully updated.
+>
 ### tc-update-victim-asset
 
 ***
@@ -1765,8 +1801,11 @@ Updates a victim asset.
 | TC.VictimAsset.website | string | The website of the victim asset. | 
 
 #### Command example
+
 ```!tc-update-victim-asset victim_asset_id=750 asset_value="11111"```
+
 #### Context Example
+
 ```json
 {
     "TC": {
@@ -1784,6 +1823,7 @@ Updates a victim asset.
 #### Human Readable Output
 
 >Victim Asset 750 updated successfully for victim id: 669
+>
 ### tc-update-victim-attribute
 
 ***
@@ -1821,8 +1861,11 @@ Updates a victim attribute.
 | TC.VictimAttribute.createdBy.userName | string | The user name of the user who created the victim attribute. | 
 
 #### Command example
+
 ```!tc-update-victim-attribute victim_attribute_id="132" attribute_value="test2"```
+
 #### Context Example
+
 ```json
 {
     "TC": {
@@ -1850,6 +1893,7 @@ Updates a victim attribute.
 #### Human Readable Output
 
 >Victim attribute 132 was successfully updated.
+>
 ### tc-delete-victim-asset
 
 ***
@@ -1868,11 +1912,15 @@ Deletes a victim asset.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!tc-delete-victim-asset victim_asset_id=738```
+
 #### Human Readable Output
 
 >Victim asset 738 was successfully deleted.
+>
 ### tc-delete-victim-attribute
 
 ***
@@ -1891,11 +1939,15 @@ Deletes a victim attribute.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!tc-delete-victim-attribute victim_attribute_id=110```
+
 #### Human Readable Output
 
 >Victim attribute 110 was successfully deleted.
+>
 ### tc-list-attribute-type
 
 ***
@@ -1931,8 +1983,11 @@ Retrieved all attribute types
 | TC.AttributeType.TC.AttributeType.validationRule.version | string | The attribute type validation rule version. | 
 
 #### Command example
+
 ```!tc-list-attribute-type limit=1```
+
 #### Context Example
+
 ```json
 {
     "TC": {
@@ -1951,6 +2006,7 @@ Retrieved all attribute types
 #### Human Readable Output
 
 >### Attribute types
+>
 >|id|name|description|
 >|---|---|---|
 >| 1 | Course of Action Taken | Describe the Course of Action Taken. |
@@ -1974,8 +2030,11 @@ Deletes a victim.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!tc-delete-victim victim_id=660```
+
 #### Human Readable Output
 
 >Victim 660 was successfully deleted.

@@ -16,9 +16,12 @@ This integration was integrated and tested with version 1.0 of Whois
 | Suppress Rate Limit errors | Whether Rate Limit errors should be supressed or not. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### whois
+
 ***
 Provides data enrichment for domains.
 This pack relies on free services for WHOIS information. As with many free services, the availability is not guaranteed. Free WHOIS providers may block or be reject queries.
@@ -27,6 +30,7 @@ This pack relies on free services for WHOIS information. As with many free servi
 #### Base Command
 
 `whois`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -238,8 +242,11 @@ This pack relies on free services for WHOIS information. As with many free servi
 
 
 #### Command example
+
 ```!whois query="paloaltonetworks.com"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -345,11 +352,13 @@ This pack relies on free services for WHOIS information. As with many free servi
 #### Human Readable Output
 
 >### Whois results for paloaltonetworks.com
+>
 >|Name|CreationDate|ExpirationDate|UpdatedDate|NameServers|Organization|Registrar|DomainStatus|Emails|WhoisServer|
 >|---|---|---|---|---|---|---|---|---|---|
->| paloaltonetworks.com | 21-02-2005 | 21-02-2026 | 08-02-2024 | a1-184.akam.net,<br>a11-64.akam.net,<br>a12-67.akam.net,<br>a13-66.akam.net,<br>a2-65.akam.net,<br>a4-64.akam.net | Palo Alto Networks, Inc. | Name: MarkMonitor, Inc. | clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited,<br>clientTransferProhibited https://icann.org/epp#clientTransferProhibited,<br>clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited,<br>clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited),<br>clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited),<br>clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited) | abusecomplaints@markmonitor.com,<br>whoisrequest@markmonitor.com | whois.markmonitor.com |
+>| paloaltonetworks.com | 21-02-2005 | 21-02-2026 | 08-02-2024 | a1-184.akam.net,<br>a11-64.akam.net,<br>a12-67.akam.net,<br>a13-66.akam.net,<br>a2-65.akam.net,<br>a4-64.akam.net | Palo Alto Networks, Inc. | Name: MarkMonitor, Inc. | clientDeleteProhibited <https://icann.org/epp#clientDeleteProhibited>,<br>clientTransferProhibited <https://icann.org/epp#clientTransferProhibited>,<br>clientUpdateProhibited <https://icann.org/epp#clientUpdateProhibited>,<br>clientUpdateProhibited (<https://www.icann.org/epp#clientUpdateProhibited>),<br>clientTransferProhibited (<https://www.icann.org/epp#clientTransferProhibited>),<br>clientDeleteProhibited (<https://www.icann.org/epp#clientDeleteProhibited>) | <abusecomplaints@markmonitor.com>,<br><whoisrequest@markmonitor.com> | whois.markmonitor.com |
 
 ### domain
+
 ***
 Provides data enrichment for domains.
 
@@ -357,6 +366,7 @@ Provides data enrichment for domains.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -579,8 +589,11 @@ Provides data enrichment for domains.
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 #### Command example
+
 ```!domain domain="google.com"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -696,13 +709,15 @@ Provides data enrichment for domains.
 
 
 >### Whois results for google.com
+>
 >|Name|CreationDate|ExpirationDate|UpdatedDate|NameServers|Organization|Registrar|DomainStatus|Emails|WhoisServer|
 >|---|---|---|---|---|---|---|---|---|---|
->| google.com | 15-09-1997 | 14-09-2028 | 09-09-2019 | ns1.google.com,<br>ns2.google.com,<br>ns3.google.com,<br>ns4.google.com | Google LLC | Name: MarkMonitor, Inc. | clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited,<br>clientTransferProhibited https://icann.org/epp#clientTransferProhibited,<br>clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited,<br>serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited,<br>serverTransferProhibited https://icann.org/epp#serverTransferProhibited,<br>serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited,<br>clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited),<br>clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited),<br>clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited),<br>serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited),<br>serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited),<br>serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited) | abusecomplaints@markmonitor.com,<br>whoisrequest@markmonitor.com | whois.markmonitor.com |
+>| google.com | 15-09-1997 | 14-09-2028 | 09-09-2019 | ns1.google.com,<br>ns2.google.com,<br>ns3.google.com,<br>ns4.google.com | Google LLC | Name: MarkMonitor, Inc. | clientDeleteProhibited <https://icann.org/epp#clientDeleteProhibited>,<br>clientTransferProhibited <https://icann.org/epp#clientTransferProhibited>,<br>clientUpdateProhibited <https://icann.org/epp#clientUpdateProhibited>,<br>serverDeleteProhibited <https://icann.org/epp#serverDeleteProhibited>,<br>serverTransferProhibited <https://icann.org/epp#serverTransferProhibited>,<br>serverUpdateProhibited <https://icann.org/epp#serverUpdateProhibited>,<br>clientUpdateProhibited (<https://www.icann.org/epp#clientUpdateProhibited>),<br>clientTransferProhibited (<https://www.icann.org/epp#clientTransferProhibited>),<br>clientDeleteProhibited (<https://www.icann.org/epp#clientDeleteProhibited>),<br>serverUpdateProhibited (<https://www.icann.org/epp#serverUpdateProhibited>),<br>serverTransferProhibited (<https://www.icann.org/epp#serverTransferProhibited>),<br>serverDeleteProhibited (<https://www.icann.org/epp#serverDeleteProhibited>) | <abusecomplaints@markmonitor.com>,<br><whoisrequest@markmonitor.com> | whois.markmonitor.com |
 
 
 
 ### ip
+
 ***
 Provides data enrichment for ips.
 
@@ -710,6 +725,7 @@ Provides data enrichment for ips.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -760,8 +776,11 @@ Provides data enrichment for ips.
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 #### Command example
+
 ```!ip ip=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1078,12 +1097,16 @@ Provides data enrichment for ips.
 #### Human Readable Output
 
 >### Whois results:
+>
 >|asn|asn_cidr|asn_date|country_code|network_name|query|
 >|---|---|---|---|---|---|
 >| 15169 | 8.8.8.0/24 | 1992-12-01 |  | LVLT-GOGL-8-8-8 | 8.8.8.8 |
 
 ## Troubleshooting
+
 - The error message *Bad Gateway* (502) might occur when using a firewall/proxy. To fix the issue, make sure the whois TLD provider exists in your allowlist.
 - 
+
 ## Known limitations
+
 - The IP lookup has a rate limit of 1 lookup per second.

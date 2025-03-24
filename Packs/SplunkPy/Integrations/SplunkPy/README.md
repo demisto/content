@@ -1,4 +1,5 @@
 Use the SplunkPy integration to:
+
 - Fetch events (logs) from within Cortex XSOAR
 - Push events from Cortex XSOAR to SplunkPy
 - Fetch SplunkPy ES notable events as Cortex XSOAR incidents.
@@ -6,10 +7,11 @@ Use the SplunkPy integration to:
 This integration was integrated and tested with Splunk Enterprise v9.0.4 and Enterprise Security v7.2.0.
 
 ## Use Cases
+
 ---
-* Query Splunk for events.
-* Create a new event in Splunk.
-* Get results of a search that was executed in Splunk.
+- Query Splunk for events.
+- Create a new event in Splunk.
+- Get results of a search that was executed in Splunk.
 
 ## Configure SplunkPy in Cortex
 
@@ -31,7 +33,7 @@ This integration was integrated and tested with Splunk Enterprise v9.0.4 and Ent
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option. | False |
 | Extract Fields - CSV fields that will be parsed out of _raw notable events |  | False |
 | Event Type Field | Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for notable events. However, you may choose any custom field. | False |
-| Use CIM Schemas for Mapping | If selected, when creating a mapper using the \`Select Schema\` feature \(supported from Cortex XSOAR V6.0\), the Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more information. | False |
+| Use CIM Schemas for Mapping | If selected, when creating a mapper using the \`Select Schema\` feature \(supported from Cortex XSOAR V6.0\), the Splunk CIM field will be pulled. See <https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview> for more information. | False |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Splunk to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Splunk\), or Incoming and Outgoing \(from/to Cortex XSOAR and Splunk\). | False |
 | Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident. | False |
 | Additional Splunk status labels to close on mirror (Incoming Mirroring) | A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident \(Example: Resolved,False-Positive\). | False |
@@ -42,7 +44,7 @@ This integration was integrated and tested with Splunk Enterprise v9.0.4 and Ent
 | The app context of the namespace |  | False |
 | HEC Token (HTTP Event Collector) |  | False |
 | HEC Token (HTTP Event Collector) |  | False |
-| HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/). |  | False |
+| HEC BASE URL (e.g: <https://localhost:8088> or <https://example.splunkcloud.com/>). |  | False |
 | Enrichment Types | Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual \(without enrichment\). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see [Enriching Notable Events](#enriching-notable-events). | False |
 | Asset enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Asset enrichment data. | False |
 | Identity enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Identity enrichment data. | False |
@@ -51,7 +53,7 @@ This integration was integrated and tested with Splunk Enterprise v9.0.4 and Ent
 | Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. |  | False |
 | Advanced: Fetch backwards window for the events occurrence time (minutes) | The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment. | False |
 | Advanced: Unique ID fields | A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents. | False |
-| Enable user mapping | Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py\#configure-user-mapping-between-splunk-and-cortex-xsoar | False |
+| Enable user mapping | Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see <https://xsoar.pan.dev/docs/reference/integrations/splunk-py\#configure-user-mapping-between-splunk-and-cortex-xsoar> | False |
 | Users Lookup table name | The name of the lookup table in Splunk, containing the username's mapping data. | False |
 | XSOAR user key | The name of the lookup column containing the Cortex XSOAR username. | False |
 | SPLUNK user key | The name of the lookup table containing the Splunk username. | False |
@@ -67,12 +69,15 @@ This integration was integrated and tested with Splunk Enterprise v9.0.4 and Ent
 For Splunk non-Enterprise Security Users, see [Splunk non-Enterprise Security Users](#splunk-non-enterprise-security-users).
 
 ### Fetching notable events
+
 The integration allows for fetching Splunk notable events using a default query. The query can be changed and modified to support different Splunk use cases. (See [Existing users](#existing-users)).
 
 ### Enriching notable events
+
 This integration allows 3 types of enrichments for fetched notables: Drilldown, Asset, and Identity.
 
 #### Enrichment types
+
 1. **Drilldown search enrichment**: Fetches the drilldown search configured by the user in the rule name that triggered the notable event and performs this search. The results are stored in the context of the incident under the **Drilldown** field as follows: [{result1}, {result2}, {result3}].
 Getting results from multiple drilldown searches is supported from Enterprise Security v7.2.0. In that case, the results are stored in the context of the incident under the **Drilldown** field as follows: [{'query_name':<query_name>, 'query_search': <query_search>, 'query_results': [{result1}, {result2}, {result3}], 'enrichment_status': <enrichment_status>}].
 2. **Asset search enrichment**: Runs the following query:
@@ -83,6 +88,7 @@ where the **$ASSETS_VALUE** is replaced with the **src**, **dest**, **src_ip** a
 where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** from the fetched notable event. The results are stored in the context of the incident under the **Identity** field.
 
 #### How to configure
+
 1. Configure the integration to fetch incidents.
 2. *Enrichment Types*: Select the enrichment types you want to enrich each fetched notable with. If none are selected, the integration will fetch notables as usual (without enrichment).
 3. *Fetch events query*: The query for fetching events. The default query is for fetching notable events. You can edit this query to fetch other types of events. Note that to fetch notable events, make sure the query uses the \`notable\` macro.  
@@ -90,12 +96,14 @@ where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** fro
 5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (Drilldown, Asset, and Identity). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. (default to 20).
 
 #### Configure User Mapping between Splunk and Cortex XSOAR  
+
 When fetching incidents from Splunk to Cortex XSOAR and when mirroring incidents between Splunk and Cortex XSOAR, the Splunk Owner Name (user) associated with an incident needs to be mapped to the relevant Cortex XSOAR Owner Name (user).  
 You can use Splunk to define a user lookup table and then configure the SplunkPy integration instance to enable the user mapping. Alternatively, you can map the users with a script or a transformer.  
 
 **note:** Owner field in Cortex XSOAR incident can only be uses for mirroring-out and cannot be changed according to Splunk values. Mirroring-in will be available via the *Assigned User* incident field. 
 
 **Configure User Mapping Using Splunk**  
+
 1. Define the lookup table in Splunk.  
    1. Under **App: Lookup Editor**, select **Lookup Editor**.  
 
@@ -130,30 +138,37 @@ Define the lookup table in Splunk.
    
 
 #### Troubleshooting enrichment status
+
 Each enriched incident contains the following fields in the incident context:
+
 - **successful_drilldown_enrichment**: whether the drilldown enrichment was successful. In a case of multiple drilldown enrichments, the status is successful if at least one drilldown search enrichment was successful.
 - **successful_asset_enrichment**: whether the asset enrichment was successful.
 - **successful_identity_enrichment**: whether the identity enrichment was successful.
 
 #### Resetting the enriching fetch mechanism
+
 Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism will be reset to the initial configuration. (No need to use the **Last Run** button).
 
 #### Limitations
+
 - As the enrichment process is asynchronous, fetching enriched incidents takes longer. The integration was tested with 20+ notables simultaneously that were fetched and enriched after approximately ~4min.
 - If you wish to configure a mapper, wait for the integration to perform the first fetch successfully. This is to make the fetch mechanism logic stable.
 - The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)  
 
 ### Incident Mirroring
+
 **Important Notes*** 
- - This feature is available from Cortex XSOAR version 6.0.0.
- - This feature is supported by Splunk Enterprise Security only.
- - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
- - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Splunk. 
- - For mirroring the *owner* field, the usernames need to be transformed to the corresponding in Cortex XSOAR and Splunk.
+
+- This feature is available from Cortex XSOAR version 6.0.0.
+- This feature is supported by Splunk Enterprise Security only.
+- In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
+- In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Splunk. 
+- For mirroring the *owner* field, the usernames need to be transformed to the corresponding in Cortex XSOAR and Splunk.
  
 You can enable incident mirroring between Cortex XSOAR incidents and Splunk notables.
 To set up mirroring:
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for SplunkPy and select your integration instance.
 3. Enable **Fetches incidents**.
 4. You can go to the *Fetch notable events ES enrichment query* parameter and select the query to fetch the notables from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
@@ -170,9 +185,11 @@ Newly fetched incidents will be mirrored in the chosen direction.
 **Note: This will not affect existing incidents.**
 
 ### Existing users
+
 **NOTE: The enrichment and mirroring mechanisms use a new default fetch query.** 
 This implies that new fetched events might have a slightly different structure than old events fetched so far.
 Users who wish to enrich or mirror fetched notables and have already used the integration in the past:
+
 1. Might have to slightly change the existing logic for some of their custom entities configured for Splunk (Playbooks, Mappers, Pre-Processing Rules, Scripts, Classifiers, etc.) in order for them to work with the modified structure of the fetched events. 
 2. Will need to change the *Fetch events query* integration parameter to the following query (or a fetch query of their own that uses the \`notable\` macro): 
 
@@ -181,6 +198,7 @@ search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval 
 ```
 
 ### Mapping fetched incidents using Select Schema
+
 This integration supports the *Select Schema* feature of XSOAR 6.0 by providing the ***get-mapping-fields*** command. 
 When creating a new field mapping for fetched incidents, the *Pull Instances* option retrieves current alerts which can be clicked to visually map fields.
 The *Select Schema* option retrieves possible objects, even if they are not the next objects to be fetched, or have not been triggered in the past 24 hours. 
@@ -188,15 +206,17 @@ This enables you to map fields for an incident without having to generate a new 
 The ***get-mapping-fields*** command can be executed in the Playground to test and review the list of sample objects that are returned under the current configuration.
 
 To use this feature, you must set several integration instance parameters:
- - *Fetch events query* - The query used for fetching new incidents. *Select Schema* will run a modified version of this query to get the object samples, so it is important to have the correct query here. 
- - *Event Type Field* - The name of the field that contains the type of the event or alert. The default value is *source* which for *Notable Events* will contains the rule name. However, you may choose any custom field that suits this purpose.
- - *First fetch timestamp* - The time scope of objects to be pulled. You may choose to go back further in time to include samples for alert types that haven't triggered recently - so long as your Splunk server can handle the more intensive Search Job involved.
+
+- *Fetch events query* - The query used for fetching new incidents. *Select Schema* will run a modified version of this query to get the object samples, so it is important to have the correct query here. 
+- *Event Type Field* - The name of the field that contains the type of the event or alert. The default value is *source* which for *Notable Events* will contains the rule name. However, you may choose any custom field that suits this purpose.
+- *First fetch timestamp* - The time scope of objects to be pulled. You may choose to go back further in time to include samples for alert types that haven't triggered recently - so long as your Splunk server can handle the more intensive Search Job involved.
 
 ### Mapping Splunk CIM fields using Select Schema
+
 This integration supports the *Select Schema* feature of XSOAR 6.0 by providing the ***get-mapping-fields*** command. 
 When creating a new field mapping for fetched incidents, the *Pull Instances* option retrieves current alerts which can be clicked to visually map fields.
 If the user has configured the *Use CIM Schemas for Mapping* parameter then the *Select Schema* option retrieves fields based on Splunk CIM.
-For more information see: https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview.
+For more information see: <https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview>.
 The CIM mapping fields implemented in this integration are of 4.18.0 version.
 
 
@@ -220,32 +240,35 @@ Use the following naming convention: (demisto_fields_{type}).
 ![image](./../../doc_files/scheduled-search.png)
 6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
 ![image](./../../doc_files/summary-index.png)
-7. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__ Note: In the example, Splunk Generic is a custom incident type.
+7. Configure the incident type in Cortex XSOAR by navigating to **Settings > Advanced > Incident Types.** Note: In the example, Splunk Generic is a custom incident type.
 ![image](./../../doc_files/incident_type.png)
 8. Configure the classification. Make sure that your non ES incident fields are associated with your custom incident type.
-   1. Navigate to __Settings > Integrations > Classification & Mapping__.
+   1. Navigate to **Settings > Integrations > Classification & Mapping**.
    1. Click your classifier.
    2. Select your instance.
    3. Click the fetched data.
    4. Drag the value to the appropriate incident type.
 ![image](./../../doc_files/classify.png)
 9. Configure the mapping. Make sure to map your non ES fields accordingly and make sure that these incident fields are associated with their custom incident type.
-   1. Navigate to __Settings > Integrations > Classification & Mapping__.
+   1. Navigate to **Settings > Integrations > Classification & Mapping**.
    1. Click your mapper.
    2. Select your instance.
-   3. Click the __Choose data path__ link for the field you want to map.
+   3. Click the **Choose data path** link for the field you want to map.
    4. Click the data from the Splunk fields to map it to Cortex XSOAR.
 ![image](./../../doc_files/mapping.png)
 10. (Optional) Create custom fields.
 11. Build a playbook and assign it as the default for this incident type.
 
 ### Constraints
+
 The following features are not supported in non-ES (Enterprise Security) Splunk.
+
 - Incident Mirroring
 - Enrichment.
 - Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs-cortex.paloaltonetworks.com/p/XSOAR) for information.
 
 ## Create KV Store
+
 KV Store stores your data as key-value pairs in collections.  It provides a way to save and retrieve data within your Splunk apps. The following is an example for how to create a KV Store.
 
 1. In Cortex XSOAR, create a new KV Store.
@@ -264,7 +287,7 @@ KV Store stores your data as key-value pairs in collections.  It provides a way 
    
    **!splunk-kv-store-collection-config kv_store_collection_name="test_kvstore" kv_stre_fields="field.src=cidr,field.t=number,field.description=string"**
 
-   **Note:** To see the fields in Splunk, you must install the _Splunk App for Lookup File Editing_ app in Splunk. For more information, see [Define a KV Store lookup in Splunk](https://docs.splunk.com/Documentation/Splunk/9.1.0/Knowledge/DefineaKVStorelookupinSplunkWeb#:~:text=Splunk%20Web%20currently,Editing%20on%20Splunkbase).
+   **Note:** To see the fields in Splunk, you must install the *Splunk App for Lookup File Editing* app in Splunk. For more information, see [Define a KV Store lookup in Splunk](https://docs.splunk.com/Documentation/Splunk/9.1.0/Knowledge/DefineaKVStorelookupinSplunkWeb#:~:text=Splunk%20Web%20currently,Editing%20on%20Splunkbase).
 
 4. Make the KV Store usable in Splunk queries.
 
@@ -289,10 +312,12 @@ For example:
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### splunk-results
+
 ***
 Returns the results of a previous Splunk search. This command can be used in conjunction with the `splunk-job-create` command.
 
@@ -313,9 +338,11 @@ Returns the results of a previous Splunk search. This command can be used in con
 There is no context output for this command.
 
 ##### Command Example
+
 ``` !splunk-results sid="1566221331.1186" limit="200" ```
 
 ### splunk-search
+
 ***
 Searches Splunk for events. For human readable output, the table command is supported in the query argument. For example, `query=" * | table field1 field2 field3"` will generate a table with field1, field2, and field3 as headers.
 
@@ -350,17 +377,21 @@ Searches Splunk for events. For human readable output, the table command is supp
 | Splunk.JobStatus.TotalResults | String | The number of events that were returned by the job. | 
 
 ##### Command Example
+
 ```!splunk-search query="* | head 3" earliest_time="-1000d"```
 
 **Note:** To display empty columns as well, the following should be added to the query: `| fillnull value=`
 
 ##### Human Readable Output
+
 ### Splunk Search results for query: * | head 3
+
 |_bkt|_cd|_indextime|_kv|_raw|_serial|_si|_sourcetype|_time|host|index|linecount|source|sourcetype|splunk_server|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | main~445~66D21DF4-F4FD-4886-A986-82E72ADCBFE9 | 445:897774 | 1585462906 | 1 | InsertedAt="2020-03-29 06:21:43"; EventID="837005"; EventType="Application control"; Action="None"; ComputerName="ACME-code-007"; ComputerDomain="DOMAIN"; ComputerIPAddress="127.0.0.1"; EventTime="2020-03-29 06:21:43"; EventTypeID="5"; Name="LogMeIn"; EventName="LogMeIn"; UserName=""; ActionID="6"; ScanTypeID="200"; ScanType="Unknown"; SubTypeID="23"; SubType="Remote management tool"; GroupName="";\u003cbr\u003e | 2 | ip-172-31-44-193, main | sophos:appcontrol | 2020-03-28T23:21:43.000-07:00 | 127.0.0.1 | main | 2 | eventgen | sophos:appcontrol | ip-172-31-44-193 |
 
 ### splunk-submit-event
+
 ***
 Creates a new event in Splunk.
 
@@ -384,6 +415,7 @@ Creates a new event in Splunk.
 There is no context output for this command.
 
 ##### Command Example
+
 ``` !splunk-submit-event index="main" data="test" sourcetype="demisto-ci" host="localhost" ```
 
 ##### Human Readable Output
@@ -392,8 +424,10 @@ There is no context output for this command.
 
 
 ### splunk-get-indexes
+
 ***
 Prints all Splunk index names.
+
 ##### Base Command
 
 `splunk-get-indexes`
@@ -407,6 +441,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ##### Command Example
+
 ``` !splunk-get-indexes extend-context="indexes="```
 
 ##### Human Readable Output
@@ -415,6 +450,7 @@ There is no context output for this command.
 
 
 ### splunk-notable-event-edit
+
 ***
 Update an existing notable event in Splunk ES.
 
@@ -439,13 +475,16 @@ Update an existing notable event in Splunk ES.
 There is no context output for this command.
 
 ##### Command Example
+
 ``` !splunk-notable-event-edit eventIDs=66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@notable@@a045b8acc3ec93c2c74a2b18c2caabf4 comment="Demisto"```
 
 ##### Human Readable Output
+
 ![image](../../doc_files/63522203-914e2400-c500-11e9-949a-0b55eb2c5871.png)
 
 
 ### splunk-job-create
+
 ***
 Creates a new search job in Splunk.
 
@@ -470,19 +509,24 @@ Creates a new search job in Splunk.
 
 
 ##### Command Example
+
 ```!splunk-job-create query="index=* | head 3"```
 
 ##### Context Example	
+
 ```	
 {
     "Splunk.Job": "1566221733.1628"
 }
 ```
+
 ##### Human Readable Output
+
 ![image](../../doc_files/63269769-75981300-c29f-11e9-950a-6ca77bcf564c.png)
 
 
 ### splunk-parse-raw
+
 ***
 Parses the raw part of the event.
 
@@ -506,16 +550,19 @@ Parses the raw part of the event.
 
 
 ##### Command Example
+
 ``` !splunk-parse-raw ```
 
 
 ### splunk-submit-event-hec
+
 ***
 Sends events Splunk. if `batch_event_data` or `entry_id` arguments are provided then all arguments related to a single event are ignored.
 
 ##### Base Command
 
 `splunk-submit-event-hec`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -532,6 +579,7 @@ Sends events Splunk. if `batch_event_data` or `entry_id` arguments are provided 
 | entry_id | The entry id in Cortex XSOAR of the file containing a batch of events. Content of the file should be valid batch event's data, as it would be provided to the `batch_event_data`. **If provided, the arguments related to a single event are ignored.** | Optional |
 
 ##### Batched events description
+
 This command allows sending events to Splunk, either as a single event or a batch of multiple events.
 To send a single event: Use the `event`, `fields`, `host`, `index`, `source`, `source_type`, and `time` arguments.
 To send a batch of events, there are two options, either use the batch_event_data argument or use the entry_id argument (for a file uploaded to Cortex XSOAR).
@@ -543,33 +591,41 @@ This formatted string can be passed directly via `batch_event_data`, or, if save
 There is no context output for this command.
 
 ##### Command Example
+
 ```!splunk-submit-event-hec event="something happened" fields="severity: INFO, category: test, test1" source_type=access source="/var/log/access.log"```
 
 ##### Human Readable Output
+
 The event was sent successfully to Splunk.
 
 ### splunk-job-status
+
 ***
 Returns the status of a job.
 
 ##### Base Command
+
 `splunk-job-status`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sid | The ID of the job for which to get the status. | Required |
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Splunk.JobStatus.CID | Unknown | The ID of the job. |
 | Splunk.JobStatus.Status | Unknown | The status of the job. |
 
 ##### Command Example
+
 ```!splunk-job-status sid=1234.5667```
 
 ##### Context Example
+
 ```
 Splank.JobStatus = {
     'SID': 1234.5667,
@@ -578,14 +634,18 @@ Splank.JobStatus = {
 ```
 
 ##### Human Readable Output
+
 ![image](../../doc_files/77630707-2b24f600-6f54-11ea-94fe-4bf6c734aa29.png)
 
 ### get-mapping-fields
+
 ***
 Gets one sample alert per alert type. Used only for creating a mapping with `Select Schema`. 
+
 ##### Base Command
 
 `get-mapping-fields`
+
 ##### Input
 
 There are no input arguments for this command.
@@ -595,9 +655,11 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!get-mapping-fields using="SplunkPy_7.2" raw-response="true"```
 
 ##### Human Readable Output
+
 ```
 {
     "Access - Brute Force Access Behavior Detected - Rule": {
@@ -663,7 +725,9 @@ There is no context output for this command.
         "urgency": "low"
 }
 ```
+
 ### splunk-kv-store-collection-create
+
 ***
 Creates a new KV store table.
 
@@ -671,6 +735,7 @@ Creates a new KV store table.
 #### Base Command
 
 `splunk-kv-store-collection-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -684,6 +749,7 @@ Creates a new KV store table.
 There is no context output for this command.
 
 #### Command Example
+
 ```!splunk-kv-store-collection-create app_name=search kv_store_name=demisto_store```
 
 #### Human Readable Output
@@ -691,6 +757,7 @@ There is no context output for this command.
 >KV store collection search created successfully
 
 ### splunk-kv-store-collection-config
+
 ***
 Configures the KV store fields.
 
@@ -698,6 +765,7 @@ Configures the KV store fields.
 #### Base Command
 
 `splunk-kv-store-collection-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -712,6 +780,7 @@ Configures the KV store fields.
 There is no context output for this command.
 
 #### Command Example
+
 ```!splunk-kv-store-collection-config app_name=search kv_store_collection_name=demisto_store kv_store_fields=addr=string```
 
 
@@ -720,6 +789,7 @@ There is no context output for this command.
 >KV store collection search configured successfully
 
 ### splunk-kv-store-collection-add-entries
+
 ***
 Adds objects to a KV store utilizing the batch-save API.
 
@@ -727,6 +797,7 @@ Adds objects to a KV store utilizing the batch-save API.
 #### Base Command
 
 `splunk-kv-store-collection-add-entries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -742,6 +813,7 @@ Adds objects to a KV store utilizing the batch-save API.
 There is no context output for this command.
 
 #### Command Example
+
 ```!splunk-kv-store-collection-add-entries app_name=search kv_store_collection_name=demisto_store kv_store_data="{\"addr\": \"0.0.0.0\"}" indicator_path=addr```
 
 
@@ -750,6 +822,7 @@ There is no context output for this command.
 >Data added to demisto_store
 
 ### splunk-kv-store-collections-list
+
 ***
 Lists all collections for the specified application.
 
@@ -757,6 +830,7 @@ Lists all collections for the specified application.
 #### Base Command
 
 `splunk-kv-store-collections-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -772,9 +846,11 @@ Lists all collections for the specified application.
 
 
 #### Command Example
+
 ```!splunk-kv-store-collections-list app_name=search```
 
 #### Context Example
+
 ```
 {
     "Splunk": {
@@ -789,12 +865,14 @@ Lists all collections for the specified application.
 #### Human Readable Output
 
 >list of collection names search
+>
 >| name |
 >| --- |
 >|autofocus_tags|
 >|files|
 
 ### splunk-kv-store-collection-data-list
+
 ***
 Lists all data within a specific KV store collection or collections.
 
@@ -802,6 +880,7 @@ Lists all data within a specific KV store collection or collections.
 #### Base Command
 
 `splunk-kv-store-collection-data-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -819,9 +898,11 @@ Lists all data within a specific KV store collection or collections.
 
 
 #### Command Example
+
 ```!splunk-kv-store-collection-data-list app_name=search limit=3 kv_store_collection_name=demisto_store```
 
 #### Context Example
+
 ```
 {
     "Splunk": {
@@ -841,12 +922,14 @@ Lists all data within a specific KV store collection or collections.
 #### Human Readable Output
 
 >### list of collection values demisto_store
+>
 >|_key|_user|addr|
 >|---|---|---|
 >| 5f4e2e9c097d9e6749453536 | nobody | 0.0.0.0 |
 
 
 ### splunk-kv-store-collection-data-delete
+
 ***
 Deletes all data within the specified KV store collection or collections.
 
@@ -854,6 +937,7 @@ Deletes all data within the specified KV store collection or collections.
 #### Base Command
 
 `splunk-kv-store-collection-data-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -867,6 +951,7 @@ Deletes all data within the specified KV store collection or collections.
 There is no context output for this command.
 
 #### Command Example
+
 ```!splunk-kv-store-collection-data-delete app_name=search kv_store_collection_name=demisto_store```
 
 #### Human Readable Output
@@ -874,6 +959,7 @@ There is no context output for this command.
 >The values of the demisto_store were deleted successfully
 
 ### splunk-kv-store-collection-delete
+
 ***
 Deletes the specified KV stores.
 
@@ -881,6 +967,7 @@ Deletes the specified KV stores.
 #### Base Command
 
 `splunk-kv-store-collection-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -894,6 +981,7 @@ Deletes the specified KV stores.
 There is no context output for this command.
 
 #### Command Example
+
 ```!splunk-kv-store-collection-delete app_name=search kv_store_name=demisto_store```
 
 
@@ -902,6 +990,7 @@ There is no context output for this command.
 >The following KV store demisto_store were deleted successfully
 
 ### splunk-kv-store-collection-search-entry
+
 ***
 Searches for specific objects in a store. Search can be a basic key-value pair or a full query.
 
@@ -909,6 +998,7 @@ Searches for specific objects in a store. Search can be a basic key-value pair o
 #### Base Command
 
 `splunk-kv-store-collection-search-entry`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -917,7 +1007,7 @@ Searches for specific objects in a store. Search can be a basic key-value pair o
 | kv_store_collection_name | The name of the KV store collection | Required | 
 | key | The key name to search in the store. If the query argument is used, this argument will be ignored. | Optional | 
 | value | The value to search in the store. If the query argument is used, this argument will be ignored. | Optional | 
-| query | Complex query to search in the store with operators such as "and", "or", "not", etc. For more information see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore | Optional | 
+| query | Complex query to search in the store with operators such as "and", "or", "not", etc. For more information see the Splunk documentation: <https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore> | Optional | 
 
 
 #### Context Output
@@ -928,9 +1018,11 @@ Searches for specific objects in a store. Search can be a basic key-value pair o
 
 
 #### Command Example
+
 ```!splunk-kv-store-collection-search-entry app_name=search kv_store_collection_name=demisto_store key=addr value=0.0.0.0```
 
 #### Context Example
+
 ```
 {
     "Splunk": {
@@ -950,12 +1042,14 @@ Searches for specific objects in a store. Search can be a basic key-value pair o
 #### Human Readable Output
 
 >### list of collection values demisto_store
+>
 >|_key|_user|addr|
 >|---|---|---|
 >| 5f4e2e9c097d9e6749453536 | nobody | 0.0.0.0 |
 
 
 ### splunk-kv-store-collection-delete-entry
+
 ***
 Deletes the specified object in store. Search can be a basic key-value pair or a full query.
 
@@ -963,6 +1057,7 @@ Deletes the specified object in store. Search can be a basic key-value pair or a
 #### Base Command
 
 `splunk-kv-store-collection-delete-entry`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -972,7 +1067,7 @@ Deletes the specified object in store. Search can be a basic key-value pair or a
 | indicator_path | The path to the indicator value in kv_store_data. | Optional | 
 | key | The key name to search in the store. If the query argument is used, this argument will be ignored. | Optional | 
 | value | The value to search in the store. If the query argument is used, this argument will be ignored. | Optional | 
-| query | Complex query to search in the store with operators such as "and", "or", "not", etc.<br/>For more information see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore | Optional | 
+| query | Complex query to search in the store with operators such as "and", "or", "not", etc.<br/>For more information see the Splunk documentation: <https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore> | Optional | 
 
 
 #### Context Output
@@ -980,6 +1075,7 @@ Deletes the specified object in store. Search can be a basic key-value pair or a
 There is no context output for this command.
 
 #### Command Example
+
 ```!splunk-kv-store-collection-delete-entry app_name=search kv_store_collection_name=demisto_store key=addr value=0.0.0.0 indicator_path=addr```
 
 #### Human Readable Output
@@ -988,6 +1084,7 @@ There is no context output for this command.
 
 
 ### get-remote-data
+
 ***
 Gets data from a notable event. This method does not update the current incident, and should be used for debugging purposes.
 
@@ -995,6 +1092,7 @@ Gets data from a notable event. This method does not update the current incident
 #### Base Command
 
 `get-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1009,6 +1107,7 @@ There is no context output for this command.
 
 
 ### get-modified-remote-data
+
 ***
 Gets the list of notable events that were modified since the last update. This command should be used for debugging purposes, and is available from Cortex XSOAR version 6.1.
 
@@ -1016,6 +1115,7 @@ Gets the list of notable events that were modified since the last update. This c
 #### Base Command
 
 `get-modified-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1029,6 +1129,7 @@ There is no context output for this command.
 
 
 ### splunk-reset-enriching-fetch-mechanism
+
 ***
 Resets the enriching fetch mechanism.
 
@@ -1047,6 +1148,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```splunk-reset-enriching-fetch-mechanism```
 
 #### Human Readable Output
@@ -1054,6 +1156,7 @@ There is no context output for this command.
 >Enriching fetch mechanism was reset successfully.
 
 ### splunk-get-username-by-xsoar-user
+
 ***
 Returns the Splunk's username matching the given Cortex XSOAR's username.
 
@@ -1061,6 +1164,7 @@ Returns the Splunk's username matching the given Cortex XSOAR's username.
 #### Base Command
 
 `splunk-get-username-by-xsoar-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1076,9 +1180,11 @@ Returns the Splunk's username matching the given Cortex XSOAR's username.
 
 
 #### Command Example
+
 ```!splunk-get-username-by-xsoar-user xsoar_username=admin```
 
 #### Context Example
+
 ```
 {
     "Splunk": {
@@ -1093,7 +1199,9 @@ Returns the Splunk's username matching the given Cortex XSOAR's username.
 ```
 
 #### Human Readable Output
+
 ### Xsoar-Splunk Username Mapping
+>
 >|Xsoar User|Splunk User|
 >|---|---|
 >| admin | unassigned |
@@ -1120,8 +1228,11 @@ Creates the KV store collection transform.
 #### Context Output
 
 There is no context output for this command.
+
 ## Additional Information
+
 To get the HEC token
+
 1. Go to the Splunk UI.
 2. Under **Settings** > **Data** > **Data inputs**, click **HTTP Event Collector**.
 ![Screen Shot 2020-01-20 at 10 22 50](./../../doc_files/http-event-collector.png)
@@ -1130,7 +1241,7 @@ To get the HEC token
 5. Add all the relevant details until done.
 
 
-_For the HTTP Port number:_
+*For the HTTP Port number:*
 Click on Global settings (in the HTTP Event Collector page)
 ![Screen Shot 2020-01-20 at 10 27 25](./../../doc_files/http-port-number.png)
 

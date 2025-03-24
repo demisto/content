@@ -3,6 +3,7 @@ e.g. ["25", "10", "25"] =>  "10"
  
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +12,7 @@ e.g. ["25", "10", "25"] =>  "10"
 | Tags | transformer, number, entirelist |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ e.g. ["25", "10", "25"] =>  "10"
 | value | A list for which to sum the list values. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

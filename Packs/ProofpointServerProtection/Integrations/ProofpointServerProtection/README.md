@@ -1,4 +1,5 @@
 ## Overview
+
 ---
 Use the Proofpoint Protection Server integration to manage your email security appliances.
 
@@ -9,31 +10,36 @@ Users must be assigned to the **podadmin** role to use this integration.
 This integration does not support SAML protocol for authentication.
 
 ## Use Cases
+
 ---
+
 1. Manage senders list.
 2. Run operations on emails, such as release and download.
 3. Manage quarantined messages and folder.
 
 
 ## Configure Proofpoint Protection Server on Cortex XSOAR
+
 ---
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Proofpoint Protection Server.
-3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __Server URL (e.g., https://192.168.0.1:10000)__
-    * __Username__
-    * __Password__
-    * __Proofpoint Protection Server Version (e.g., 8.14.2)__
-    * __Trust any certificate (not secure)__
-    * __Use system proxy settings__
-4. Click __Test__ to validate the URLs, token, and connection.
+3. Click **Add instance** to create and configure a new integration instance.
+    * **Name**: a textual name for the integration instance.
+    * **Server URL (e.g., <https://192.168.0.1:10000>)**
+    * **Username**
+    * **Password**
+    * **Proofpoint Protection Server Version (e.g., 8.14.2)**
+    * **Trust any certificate (not secure)**
+    * **Use system proxy settings**
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. proofpoint-download-email
 2. proofpoint-quarantine-messages
 3. proofpoint-smart-search
@@ -45,11 +51,14 @@ After you successfully execute a command, a DBot message appears in the War Room
 9. proofpoint-remove-from-safe-senders-list
 
 ### 1. proofpoint-download-email
+
 ---
 Download email message by ID.
+
 ##### Base Command
 
 `proofpoint-download-email`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -62,16 +71,19 @@ Download email message by ID.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!proofpoint-download-email message_id=37b6d02m-63e0-495e-kk92-7c21511adc7a@SB2APC01FT091.outlook.com```
 
 
 ### 2. proofpoint-quarantine-messages
+
 ---
 Retrieves quarantined email messages.
 
 ##### Base Command
 
 `proofpoint-quarantine-messages`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -93,8 +105,11 @@ Retrieves quarantined email messages.
 | Proofpoint.Quarantine.Message.Folder | String | Message folder | 
 
 ##### Command Example
+
 ```!proofpoint-quarantine-messages recipient=user1@demisto.com```
+
 ##### Context Example
+
 ```
 {
     "Proofpoint.Quarantine.Message": {
@@ -107,19 +122,24 @@ Retrieves quarantined email messages.
     }
 }
 ```
+
 ##### Human Readable Output
+
 ### Proofpoint Protection Server Quarantine Search Messages Results
+
 |ID|Date|Recipient|Sender|Subject|Folder|
 |---|---|---|---|---|---|
-| 37b6d02m-63e0-495e-kk92-7c21511adc7a@SB2APC01FT091.outlook.com | 2020-01-25 11:30:00 | user1@demisto.com | bwillis@email.com |External Welcome ! | Inbox |
+| <37b6d02m-63e0-495e-kk92-7c21511adc7a@SB2APC01FT091.outlook.com> | 2020-01-25 11:30:00 | <user1@demisto.com> | <bwillis@email.com> |External Welcome ! | Inbox |
 
 ### 3. proofpoint-smart-search
+
 ---
 Searches for emails.
 
 ##### Base Command
 
 `proofpoint-smart-search`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -158,8 +178,11 @@ Searches for emails.
 
 
 ##### Command Example
+
 ```!proofpoint-smart-search recipient=user1@demisto.com process=100 time=Last24Hours```
+
 ##### Context Example
+
 ```
 {
     "Proofpoint.SmartSearch": {
@@ -171,19 +194,24 @@ Searches for emails.
     }
 }
 ```
+
 ##### Human Readable Output
+
 ### Proofpoint Protection Server Smart Search Results
+
 |ID|Date|Recipient|Sender|Subject|MessageSize|
 |---|---|---|---|---|---|
-| 37b6d02m-63e0-495e-kk92-7c21511adc7a@SB2APC01FT091.outlook.com | 2020-01-25 11:30:00 | user1@demisto.com | bwillis@email.com |External Welcome ! | 20750 |
+| <37b6d02m-63e0-495e-kk92-7c21511adc7a@SB2APC01FT091.outlook.com> | 2020-01-25 11:30:00 | <user1@demisto.com> | <bwillis@email.com> |External Welcome ! | 20750 |
 
 ### 4. proofpoint-quarantine-folders
+
 ---
 Returns a list of quarantined folders.
 
 ##### Base Command
 
 `proofpoint-quarantine-folders`
+
 ##### Input
 
 There are no input arguments for this command.
@@ -195,8 +223,11 @@ There are no input arguments for this command.
 | Proofpoint.Quarantine.Folder.Name | String | Folder name |
 
 ##### Command Example
+
 ```!proofpoint-quarantine-folders```
+
 ##### Context Example
+
 ```
 {
     "Proofpoint.Quarantine.Folder": [
@@ -209,8 +240,11 @@ There are no input arguments for this command.
     ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Proofpoint Protection Server Quarantine Folders
+
 |Name|
 |---|
 | Adult |
@@ -219,11 +253,14 @@ There are no input arguments for this command.
 | Malware |
 
 ### 5. proofpoint-release-email
+
 ---
 Release email with virus scan
+
 ##### Base Command
 
 `proofpoint-download-email`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -237,17 +274,22 @@ Release email with virus scan
 There is no context output for this command.
 
 ##### Command Example
+
 ```!proofpoint-download-email message_id=37b6d02m-63e0-495e-kk92-7c21511adc7a@SB2APC01FT091.outlook.com folder=Blocked```
 
 ##### Human Readable Output
-Released message 37b6d02m-63e0-495e-kk92-7c21511adc7a@SB2APC01FT091.outlook.com successfully
+
+Released message <37b6d02m-63e0-495e-kk92-7c21511adc7a@SB2APC01FT091.outlook.com> successfully
 
 ### 6. proofpoint-add-to-blocked-senders-list
+
 ---
 Adds an email address to blocked senders list.
+
 ##### Base Command
 
 `proofpoint-add-to-blocked-senders-list`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -259,17 +301,22 @@ Adds an email address to blocked senders list.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!proofpoint-add-to-blocked-senders-list email=bwillis@email.com```
 
 ##### Human Readable Output
-Successfully added bwillis@email.com to the Blocked Senders list
+
+Successfully added <bwillis@email.com> to the Blocked Senders list
 
 ### 7. proofpoint-add-to-safe-senders-list
+
 ---
 Adds an email address to safe senders list.
+
 ##### Base Command
 
 `proofpoint-add-to-safe-senders-list`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -281,17 +328,22 @@ Adds an email address to safe senders list.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!proofpoint-add-to-safe-senders-list email=bwillis@email.com```
 
 ##### Human Readable Output
-Successfully added bwillis@email.com to the Safe Senders list
+
+Successfully added <bwillis@email.com> to the Safe Senders list
 
 ### 8. proofpoint-remove-from-blocked-senders-list
+
 ---
 Removes an email address from blocked senders list.
+
 ##### Base Command
 
 `proofpoint-remove-from-blocked-senders-list`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -303,17 +355,22 @@ Removes an email address from blocked senders list.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!proofpoint-remove-from-blocked-senders-list email=bwillis@email.com```
 
 ##### Human Readable Output
-Successfully removed bwillis@email.com from the Blocked Senders list
+
+Successfully removed <bwillis@email.com> from the Blocked Senders list
 
 ### 8. proofpoint-remove-from-safe-senders-list
+
 ---
 Removes an email address from safe senders list.
+
 ##### Base Command
 
 `proofpoint-remove-from-safe-senders-list`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -325,10 +382,12 @@ Removes an email address from safe senders list.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!proofpoint-remove-from-safe-senders-list email=bwillis@email.com```
 
 ##### Human Readable Output
-Successfully removed bwillis@email.com from the Safe Senders list
+
+Successfully removed <bwillis@email.com> from the Safe Senders list
 
 
 

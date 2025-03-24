@@ -7,7 +7,7 @@ This integration was integrated and tested with version 1.9.7478.57683 of Micros
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | ATA Center URL \(e.g. https://atacenter.contoso.com\) | True |
+| url | ATA Center URL \(e.g. <https://atacenter.contoso.com\>) | True |
 | credentials | Username | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
@@ -464,7 +464,7 @@ Retrieves information of distinct entity, such as computers and users.
 
 >|Id|SystemDisplayName|DistinguishedName|UpnName|Type|CreationTime|
 >|---|---|---|---|---|---|
->| 7a58c171-fa19-44f9-bf1e-81b544b318ad | Test ATA | CN=Test ATA,CN=Users,DC=demisto,DC=local | testata@demisto.local | User | 2020-07-21T13:58:11Z |
+>| 7a58c171-fa19-44f9-bf1e-81b544b318ad | Test ATA | CN=Test ATA,CN=Users,DC=demisto,DC=local | <testata@demisto.local> | User | 2020-07-21T13:58:11Z |
 
 >### Entity Profile
 

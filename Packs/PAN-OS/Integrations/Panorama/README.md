@@ -5,6 +5,7 @@ This integration was integrated and tested with versions 8.xx, 9.xx, and 10.xx o
 
 
 ## Use Cases
+
 * Create custom security rules in Palo Alto Networks PAN-OS.
 * Create and update address objects, address-groups, custom URL categories, and URL filtering objects.
 * Use the URL Filtering category information from Palo Alto Networks to enrich URLs by checking the *use_url_filtering* parameter. A valid license for the Firewall is required.
@@ -36,41 +37,44 @@ This integration was integrated and tested with versions 8.xx, 9.xx, and 10.xx o
    3. All file types are forwarded.
 
 ## Known Limitations
+
 * Maximum commit queue length is 3. Running numerous Panorama commands simultaneously might cause errors.
 * After running `panorama-create-` commands and the object is not committed, the `panorama-edit` commands or `panorama-get` commands might not run correctly.
-* URL Filtering `request change` of a URL is not available via the API. Instead, you need to use the https://urlfiltering.paloaltonetworks.com website.
+* URL Filtering `request change` of a URL is not available via the API. Instead, you need to use the <https://urlfiltering.paloaltonetworks.com> website.
 * If you do not specify a vsys (Firewall instances) or a device group (Panorama instances), you will only be able to execute the following commands.
-   * [pan-os-get-url-category](#pan-os-get-url-category)
-   * [pan-os-commit](#pan-os-commit)
-   * [pan-os-push-to-device-group](#pan-os-push-to-device-group)
-   * [pan-os-register-ip-tag](#pan-os-register-ip-tag)
-   * [pan-os-unregister-ip-tag](#pan-os-unregister-ip-tag)
-   * [pan-os-query-logs](#pan-os-query-logs)
-   * [pan-os-check-logs-status](#pan-os-check-logs-status)
-   * [pan-os-get-logs](#pan-os-get-logs)
-   * [pan-os-get-master-key-details](#pan-os-get-master-key-details)
-   * [pan-os-create-master-key](#pan-os-create-master-key)
-   * [pan-os-update-master-key](#pan-os-update-master-key)
+  * [pan-os-get-url-category](#pan-os-get-url-category)
+  * [pan-os-commit](#pan-os-commit)
+  * [pan-os-push-to-device-group](#pan-os-push-to-device-group)
+  * [pan-os-register-ip-tag](#pan-os-register-ip-tag)
+  * [pan-os-unregister-ip-tag](#pan-os-unregister-ip-tag)
+  * [pan-os-query-logs](#pan-os-query-logs)
+  * [pan-os-check-logs-status](#pan-os-check-logs-status)
+  * [pan-os-get-logs](#pan-os-get-logs)
+  * [pan-os-get-master-key-details](#pan-os-get-master-key-details)
+  * [pan-os-create-master-key](#pan-os-create-master-key)
+  * [pan-os-update-master-key](#pan-os-update-master-key)
 * The target argument is supported only in operational type commands. Meaning, you cannot use it with commit, logs, or PCAP commands.
 * Creating or updating the encryption master key of Palo Alto Networks Firewall or Panorama invalidates the current API key and requires obtaining a new one. All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
 
 ## Fetch Incidents
+
 The Panorama integration now supports fetch incidents.
 The incidents are fetched according to a number of different optional log type queries. The log types are: **Traffic, Threat, URL, Data, Correlation, System, Wildfire, Decryption**.
 
 ##### Max incidents per fetch
-- The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
-- Important note: Cortex XSOAR standard setup is not designed to handle many hundreds of new incidents every minute. Therefore, it is strongly recommended to narrow your query by log type, severity, or other criteria to ensure that each fetch cycle retrieves no more than 200 incidents at a time.
+* The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
+* Important note: Cortex XSOAR standard setup is not designed to handle many hundreds of new incidents every minute. Therefore, it is strongly recommended to narrow your query by log type, severity, or other criteria to ensure that each fetch cycle retrieves no more than 200 incidents at a time.
 
 ##### Log Type
+
 The queries that will be included during the fetch are decided according to the "Log Type" parameter (Multiple select dropdown).
-- Selecting "All" will use all the log type queries in the fetch.
-- To choose a specific set of queries, select their log types from the dropdown (make sure "All" option is unselected).
+* Selecting "All" will use all the log type queries in the fetch.
+* To choose a specific set of queries, select their log types from the dropdown (make sure "All" option is unselected).
 
 ##### Log Type Query
-- Each log type has its own query field in the instance configuration.
-- Note that the default query values has some example text in it, make sure to enter a valid query.
-- Note: In case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. 
+* Each log type has its own query field in the instance configuration.
+* Note that the default query values has some example text in it, make sure to enter a valid query.
+* Note: In case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. 
 For example: "and (device_name eq dummy_device)".
 
 ##### Log Type Query Examples
@@ -99,7 +103,7 @@ This integration supports a default Classifier (Panorama Classifier) and Mapper 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| server | Server URL \(e.g., https://192.168.0.1\) | True |
+| server | Server URL \(e.g., <https://192.168.0.1\>) | True |
 | port | Port \(e.g 443\) | False |
 | key | API Key | True |
 | device_group | Device group - Panorama instances only \(write shared for Shared location\) | False |
@@ -127,9 +131,11 @@ This integration supports a default Classifier (Panorama Classifier) and Mapper 
 
 
 ## Debugging in Panorama
+
 In order to ease the process of understanding what parameters are required to be used in the `!pan-os` command, it is highly recommended to use the debugging mode in Panorama to get the correct structure of a request.
 
 Debugging Methods:
+
 * [How to run a PAN-OS Web UI Debug](https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000CmA9CAK)
 * [Configuration (API)](https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api)
 * [Use the API browser](https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/get-started-with-the-pan-os-xml-api/explore-the-api/use-the-api-browser#id676e85fa-1823-466a-9e31-269dc6eb433a)
@@ -151,6 +157,7 @@ Given the following debug-log from PAN-OS Web UI Debug after creating an address
 `
 !pan-os action=set xpath=/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address/entry[@name='test123'] type=config element=<ip-netmask>1.1.1.1</ip-netmask>
 `
+
 | Argument | Description |
 | --- | --- |
 | action | Create/add an object. In this case we want to create a new address object, so we will use set - the Panorama debug log shows us its a 'set' action. |
@@ -177,6 +184,7 @@ The equivalent `!pan-os` command is:
 `
 !pan-os action=edit xpath=/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address-group/entry[@name='test12345'] type=config element=<static><member>test123</member></static>
 `
+
 | Argument | Description |
 | --- | --- |
 | action | Edit an object, in this case we want to edit an entry in an existing address group object, so we will use edit - the panorama debug log shows us its an 'edit' action. |
@@ -221,9 +229,10 @@ The equivalent `!pan-os` command is:
 `
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-> **_NOTE:_**  The "create" commands function as UPSERT (UPDATE and INSERT), overriding existing data with new data if it already exists.
+> ***NOTE:***  The "create" commands function as UPSERT (UPDATE and INSERT), overriding existing data with new data if it already exists.
 
 1. [Run any command supported in the Panorama API: pan-os](#pan-os)
 2. [Get pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context: panorama-get-predefined-threats-list](#pan-os-get-predefined-threats-list)
@@ -341,6 +350,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 ### pan-os
+
 ***
 Run any command supported in the API.
 
@@ -348,11 +358,12 @@ Run any command supported in the API.
 #### Base Command
 
 `pan-os`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api | Optional | 
+| action | Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete. Documentation - <https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api> | Optional | 
 | category | Category parameter. For example, when exporting a configuration file, use "category=configuration". | Optional | 
 | cmd | Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`. | Optional | 
 | command | Run a command. For example, command =&lt;show&gt;&lt;arp&gt;&lt;entry name='all'/&gt;&lt;/arp&gt;&lt;/show&gt; | Optional | 
@@ -364,7 +375,7 @@ Run any command supported in the API.
 | log-type | Retrieves log types. For example, log-type=threat for threat logs. | Optional | 
 | where | Specifies the type of a move operation (for example, where=after, where=before, where=top, where=bottom). | Optional | 
 | period | Time period. For example, period=last-24-hrs | Optional | 
-| xpath | xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail']. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath. | Optional | 
+| xpath | xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail']. Documentation - <https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath>. | Optional | 
 | pcap-id | PCAP ID included in the threat log. | Optional | 
 | serialno | Specifies the device serial number. | Optional | 
 | reporttype | Chooses the report type, such as dynamic, predefined or custom. | Optional | 
@@ -383,13 +394,16 @@ There is no context output for this command.
 
 
 #### Command Example
+
 ```!pan-os xpath=“/config/devices/entry[@name=‘localhost.localdomain’]/template/entry[@name=‘test’]/config/devices/entry[@name=‘localhost.localdomain’]/network/profiles/zone-protection-profile/entry[@name=‘test’]/scan-white-list/entry[@name=‘test’]/ipv4" type=config action=edit element=“<ipv4>1.1.1.1</ipv4>” ```
 
 #### Human Readable Output
+>
 >Command was executed successfully.
 
 
 ### pan-os-get-predefined-threats-list
+
 ***
 Gets the pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context.
 
@@ -397,6 +411,7 @@ Gets the pre-defined threats list from a Firewall or Panorama and stores as a JS
 #### Base Command
 
 `pan-os-get-predefined-threats-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -422,10 +437,12 @@ Gets the pre-defined threats list from a Firewall or Panorama and stores as a JS
 
 
 #### Command Example
+
 ```!pan-os-get-predefined-threats-list```
 
 
 ### pan-os-commit
+
 ***
 Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true", otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
 
@@ -433,6 +450,7 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 #### Base Command
 
 `pan-os-commit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -456,16 +474,21 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 | Panorama.Commit.Description | String | The commit description from the the command input. | 
 
 #### Command example with polling
+
 ```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
+
 #### Human Readable Output
 
 >Waiting for commit "test" with job ID 12345 to finish...
+>
 >### Commit Status:
+>
 >|JobID|Status| Description
 >|---|---|---|
 >| 12345 | Success | test
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -479,17 +502,20 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 ```
 
 #### Command example without polling
+
 ```!pan-os-commit description=test```
 
 #### Human Readable Output
 
 >### Commit Status:
+>
 >|JobID|Status| Description
 >|---|---|---|
 >| 12345 | Pending | test
 
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -504,6 +530,7 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 
 
 ### pan-os-push-to-device-group
+
 ***
 Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID. Validates if a push has been successful if polling="true".
 
@@ -511,6 +538,7 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 #### Base Command
 
 `pan-os-push-to-device-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -537,9 +565,11 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 | Panorama.Push.Details | String | The job ID details. | 
 
 #### Command example with polling=true
+
 ```!pan-os-push-to-device-group description=test polling=true interval_in_seconds=5 timeout=60```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -573,22 +603,27 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 #### Human Readable Output
 
 >Waiting for Job-ID 31374 to finish push changes to device-group Lab-Devices..
+>
 >### Push to Device Group status:
+>
 >|JobID|Status|Details|Errors|Warnings|
 >|---|---|---|---|---|
 >| 31377 | Completed | commit succeeded with warnings,<br/>commit succeeded with warnings | | Interface loopback.645 has no zone configuration.,<br/>External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>Warning: No valid Antivirus content package exists,<br/>(Module: device) |
 
 #### Command example with polling=false
+
 ```!pan-os-push-to-device-group description=test polling=false```
 
 #### Human Readable Output
 
 >### Push to Device Group status:
+>
 >|JobID|Status|Description|
 >|---|---|---|
 >| 113198 | Pending | test |
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -603,6 +638,7 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 ```
 
 ### pan-os-list-addresses
+
 ***
 Returns a list of addresses.
 
@@ -610,6 +646,7 @@ Returns a list of addresses.
 #### Base Command
 
 `pan-os-list-addresses`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -632,9 +669,11 @@ Returns a list of addresses.
 
 
 #### Command Example
+
 ```!pan-os-list-addresses```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -656,6 +695,7 @@ Returns a list of addresses.
 #### Human Readable Output
 
 >### Addresses:
+>
 >|Name|IP_Netmask|IP_Range|FQDN|
 >|---|---|---|---|
 >| Demisto address | 10.10.10.1/24 |  |  |
@@ -663,6 +703,7 @@ Returns a list of addresses.
 
 
 ### pan-os-get-address
+
 ***
 Returns address details for the supplied address name.
 
@@ -670,6 +711,7 @@ Returns address details for the supplied address name.
 #### Base Command
 
 `pan-os-get-address`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -692,9 +734,11 @@ Returns address details for the supplied address name.
 
 
 #### Command Example
+
 ```!pan-os-get-address name="Demisto address"```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -709,12 +753,14 @@ Returns address details for the supplied address name.
 #### Human Readable Output
 
 >### Address:
+>
 >|Name|IP_Netmask|
 >|---|---|
 >| Demisto address | 10.10.10.1/24 |
 
 
 ### pan-os-create-address
+
 ***
 Creates an address object.
 
@@ -722,6 +768,7 @@ Creates an address object.
 #### Base Command
 
 `pan-os-create-address`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -751,9 +798,11 @@ Creates an address object.
 
 
 #### Command Example
+
 ```!pan-os-create-address name="address_test_pb" description="just a desc" ip_range="10.10.10.9-10.10.10.10"```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -771,6 +820,7 @@ Creates an address object.
 >Address was created successfully.
 
 ### pan-os-delete-address
+
 ***
 Delete an address object
 
@@ -778,6 +828,7 @@ Delete an address object
 #### Base Command
 
 `pan-os-delete-address`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -795,9 +846,11 @@ Delete an address object
 
 
 #### Command Example
+
 ```!pan-os-delete-address name="address_test_pb"```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -813,6 +866,7 @@ Delete an address object
 >Address was deleted successfully.
 
 ### pan-os-list-address-groups
+
 ***
 Returns a list of address groups.
 
@@ -820,6 +874,7 @@ Returns a list of address groups.
 #### Base Command
 
 `pan-os-list-address-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -842,9 +897,11 @@ Returns a list of address groups.
 
 
 #### Command Example
+
 ```!pan-os-list-address-groups```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -885,6 +942,7 @@ Returns a list of address groups.
 #### Human Readable Output
 
 >### Address groups:
+>
 >|Name|Type|Addresses|Match|Description|Tags|
 >|---|---|---|---|---|---|
 >| a_g_1 | dynamic |  | 2.2.2.2 |  |  |
@@ -894,6 +952,7 @@ Returns a list of address groups.
 
 
 ### pan-os-get-address-group
+
 ***
 Get details for the specified address group
 
@@ -901,6 +960,7 @@ Get details for the specified address group
 #### Base Command
 
 `pan-os-get-address-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -923,16 +983,19 @@ Get details for the specified address group
 
 
 #### Command Example
+
 ```!pan-os-get-address-group name=suspicious_address_group ```
 
 #### Human Readable Output
 
 >### Address groups:
+>
 >|Name|Type|Addresses|Match|Description|
 >|---|---|---|---|---|
 >| suspicious_address_group | dynamic | 1.1.1.1 | this ip is very bad |
 
 ### pan-os-create-address-group
+
 ***
 Creates a static or dynamic address group.
 
@@ -940,6 +1003,7 @@ Creates a static or dynamic address group.
 #### Base Command
 
 `pan-os-create-address-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -967,9 +1031,11 @@ Creates a static or dynamic address group.
 
 
 #### Command Example
+
 ```!pan-os-create-address-group name=suspicious_address_group type=dynamic match=1.1.1.1 description="this ip is very bad"```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -988,6 +1054,7 @@ Creates a static or dynamic address group.
 >Address group was created successfully.
 
 ### pan-os-block-vulnerability
+
 ***
 Sets a vulnerability signature to block mode.
 
@@ -995,6 +1062,7 @@ Sets a vulnerability signature to block mode.
 #### Base Command
 
 `pan-os-block-vulnerability`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1013,6 +1081,7 @@ Sets a vulnerability signature to block mode.
 
 
 #### Command Example
+
 ```!pan-os-block-vulnerability threat_id=18250 vulnerability_profile=name```
 
 #### Human Readable Output
@@ -1020,6 +1089,7 @@ Sets a vulnerability signature to block mode.
 >Threat with ID 18250 overridden.
 
 ### pan-os-delete-address-group
+
 ***
 Deletes an address group.
 
@@ -1027,6 +1097,7 @@ Deletes an address group.
 #### Base Command
 
 `pan-os-delete-address-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1044,6 +1115,7 @@ Deletes an address group.
 
 
 #### Command Example
+
 ```!pan-os-delete-address-group name="dynamic_address_group_test_pb3"```
 
 
@@ -1052,6 +1124,7 @@ Deletes an address group.
 >Address group was deleted successfully
 
 ### pan-os-edit-address-group
+
 ***
 Edits a static or dynamic address group.
 
@@ -1059,6 +1132,7 @@ Edits a static or dynamic address group.
 #### Base Command
 
 `pan-os-edit-address-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1086,6 +1160,7 @@ Edits a static or dynamic address group.
 
 
 ### pan-os-list-services
+
 ***
 Returns a list of addresses.
 
@@ -1093,6 +1168,7 @@ Returns a list of addresses.
 #### Base Command
 
 `pan-os-list-services`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1115,9 +1191,11 @@ Returns a list of addresses.
 
 
 #### Command Example
+
 ```!pan-os-list-services```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -1144,6 +1222,7 @@ Returns a list of addresses.
 #### Human Readable Output
 
 >### Services:
+>
 >|Name|Protocol|SourcePort|DestinationPort|Description|
 >|---|---|---|---|---|
 >| demisto_service1 | tcp | 567-569 | 55 | rgfg |
@@ -1151,6 +1230,7 @@ Returns a list of addresses.
 
 
 ### pan-os-get-service
+
 ***
 Returns service details for the supplied service name.
 
@@ -1158,6 +1238,7 @@ Returns service details for the supplied service name.
 #### Base Command
 
 `pan-os-get-service`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1180,11 +1261,13 @@ Returns service details for the supplied service name.
 
 
 #### Command Example
+
 ```!pan-os-get-service name=demisto_service1 ```
 
 #### Human Readable Output
 
 >### Address
+>
 >|Name|Protocol|SourcePort|DestinationPort|Description|
 >|---|---|---|---|---|
 >| demisto_service1 | tcp | 567-569 | 55 | rgfg |
@@ -1225,9 +1308,11 @@ Creates a service.
 
 
 #### Command Example
+
 ```!pan-os-create-service name=guy_ser3 protocol=udp destination_port=36 description=bfds```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -1246,6 +1331,7 @@ Creates a service.
 >Service was created successfully.
 
 ### pan-os-delete-service
+
 ***
 Deletes a service.
 
@@ -1253,6 +1339,7 @@ Deletes a service.
 #### Base Command
 
 `pan-os-delete-service`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1270,9 +1357,11 @@ Deletes a service.
 
 
 #### Command Example
+
 ```!pan-os-delete-service name=guy_ser3```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -1288,6 +1377,7 @@ Deletes a service.
 >Service was deleted successfully.
 
 ### pan-os-list-service-groups
+
 ***
 Returns a list of service groups.
 
@@ -1295,6 +1385,7 @@ Returns a list of service groups.
 #### Base Command
 
 `pan-os-list-service-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1314,9 +1405,11 @@ Returns a list of service groups.
 
 
 #### Command Example
+
 ```!pan-os-list-service-groups```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -1340,6 +1433,7 @@ Returns a list of service groups.
 #### Human Readable Output
 
 >### Service groups:
+>
 >|Name|Services|
 >|---|---|
 >| demisto_default_service_groups | service-http,<br/>service-https |
@@ -1347,6 +1441,7 @@ Returns a list of service groups.
 
 
 ### pan-os-get-service-group
+
 ***
 Returns details for the specified service group.
 
@@ -1354,6 +1449,7 @@ Returns details for the specified service group.
 #### Base Command
 
 `pan-os-get-service-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1373,9 +1469,11 @@ Returns details for the specified service group.
 
 
 #### Command Example
+
 ```!pan-os-get-service-group name=ser_group6```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -1393,12 +1491,14 @@ Returns details for the specified service group.
 #### Human Readable Output
 
 >### Service group:
+>
 >|Name|Services|
 >|---|---|
 >| ser_group6 | serice_tcp_test_pb,<br/>demi_service_test_pb |
 
 
 ### pan-os-create-service-group
+
 ***
 Creates a service group.
 
@@ -1406,6 +1506,7 @@ Creates a service group.
 #### Base Command
 
 `pan-os-create-service-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1427,10 +1528,12 @@ Creates a service group.
 
 
 #### Command Example
+
 ```!pan-os-create-service-group name=lalush_sg4 services=`["demisto_service1","demi_service_test_pb"]```
 
 
 ### pan-os-delete-service-group
+
 ***
 Deletes a service group.
 
@@ -1438,6 +1541,7 @@ Deletes a service group.
 #### Base Command
 
 `pan-os-delete-service-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1455,10 +1559,12 @@ Deletes a service group.
 
 
 #### Command Example
+
 ```!pan-os-delete-service-group name=lalush_sg4```
 
 
 ### pan-os-edit-service-group
+
 ***
 Edit a service group.
 
@@ -1466,6 +1572,7 @@ Edit a service group.
 #### Base Command
 
 `pan-os-edit-service-group`
+
 #### Input
 
 | **Argument Name**  | **Description** | **Required** |
@@ -1487,13 +1594,16 @@ Edit a service group.
 
 
 #### Command Example
+
 ```!pan-os-edit-service-group name=lalush_sg4 services_to_remove=`["serice_udp_test_pb","demisto_service1"] ```
 
 #### Human Readable Output
+>
 >Service group was edited successfully
 
 
 ### pan-os-get-custom-url-category
+
 ***
 Returns information for a custom URL category.
 
@@ -1501,6 +1611,7 @@ Returns information for a custom URL category.
 #### Base Command
 
 `pan-os-get-custom-url-category`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1522,17 +1633,20 @@ Returns information for a custom URL category.
 
 
 #### Command Example
+
 ```!pan-os-get-custom-url-category name=my_personal_url_category```
 
 
 #### Human Readable Output
 
 >### Custom URL Category:
+>
 >|Name|Sites|Description|
 >|---|---|
 >| my_personal_url_category | thepill.com,<br/>abortion.com | just a desc |
 
 ### pan-os-create-custom-url-category
+
 ***
 Creates a custom URL category.
 
@@ -1540,6 +1654,7 @@ Creates a custom URL category.
 #### Base Command
 
 `pan-os-create-custom-url-category`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1565,9 +1680,11 @@ Creates a custom URL category.
 
 
 #### Command Example
+
 ```!pan-os-create-custom-url-category name=suspicious_address_group sites=["thepill.com","abortion.com"] description=momo```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -1586,12 +1703,14 @@ Creates a custom URL category.
 #### Human Readable Output
 
 >### Created Custom URL Category:
+>
 >|Name|Sites|Description|
 >|---|---|---|
 >| suspicious_address_group | thepill.com,<br/>abortion.com | momo |
 
 
 ### pan-os-delete-custom-url-category
+
 ***
 Deletes a custom URL category.
 
@@ -1599,6 +1718,7 @@ Deletes a custom URL category.
 #### Base Command
 
 `pan-os-delete-custom-url-category`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1616,9 +1736,11 @@ Deletes a custom URL category.
 
 
 #### Command Example
+
 ```!pan-os-delete-custom-url-category name=suspicious_address_group```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -1634,6 +1756,7 @@ Deletes a custom URL category.
 >Custom URL category was deleted successfully.
 
 ### pan-os-edit-custom-url-category
+
 ***
 Adds or removes sites to and from a custom URL category.
 
@@ -1641,6 +1764,7 @@ Adds or removes sites to and from a custom URL category.
 #### Base Command
 
 `pan-os-edit-custom-url-category`
+
 #### Input
 
 | **Argument Name** | **Description**                                                         | **Required** |
@@ -1662,6 +1786,7 @@ Adds or removes sites to and from a custom URL category.
 
 
 ### pan-os-get-url-category
+
 ***
 Gets a URL category from URL Filtering. This command is only available on Firewall devices.
 
@@ -1669,6 +1794,7 @@ Gets a URL category from URL Filtering. This command is only available on Firewa
 #### Base Command
 
 `pan-os-get-url-category`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1692,9 +1818,11 @@ Gets a URL category from URL Filtering. This command is only available on Firewa
 
 
 #### Command Example
+
 ```!pan-os-get-url-category url="poker.com"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1721,12 +1849,14 @@ Gets a URL category from URL Filtering. This command is only available on Firewa
 #### Human Readable Output
 
 >### URL Filtering:
+>
 >|URL|Category|
 >|---|---|
 >| poker.com | gambling |
 
 
 ### url
+
 ***
 Gets a URL category from URL Filtering. This command is only available on Firewall devices.
 
@@ -1734,6 +1864,7 @@ Gets a URL category from URL Filtering. This command is only available on Firewa
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1756,6 +1887,7 @@ Gets a URL category from URL Filtering. This command is only available on Firewa
 
 
 ### pan-os-get-url-category-from-cloud
+
 ***
 Returns a URL category from URL filtering. This command is only available on Firewall devices.
 
@@ -1763,6 +1895,7 @@ Returns a URL category from URL filtering. This command is only available on Fir
 #### Base Command
 
 `pan-os-get-url-category-from-cloud`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1779,17 +1912,20 @@ Returns a URL category from URL filtering. This command is only available on Fir
 
 
 #### Command Example
+
 ```!pan-os-get-url-category-from-cloud url=google.com ```
 
 #### Human Readable Output
 
 >### URL Filtering from cloud:
+>
 >|URL|Category|
 >|---|---|
 >| google.com | search-engines |
 
 
 ### pan-os-get-url-category-from-host
+
 ***
 Returns a URL category from URL Filtering.
 
@@ -1797,6 +1933,7 @@ Returns a URL category from URL Filtering.
 #### Base Command
 
 `pan-os-get-url-category-from-host`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1813,16 +1950,19 @@ Returns a URL category from URL Filtering.
 
 
 #### Command Example
+
 ```!pan-os-get-url-category-from-host url=google.com ```
 
 #### Human Readable Output
 
 >### URL Filtering from host:
+>
 >|URL|Category|
 >|---|---|
 >| google.com | search-engines |
 
 ### pan-os-get-url-filter
+
 ***
 Returns information for a URL filtering rule.
 
@@ -1830,6 +1970,7 @@ Returns information for a URL filtering rule.
 #### Base Command
 
 `pan-os-get-url-filter`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1852,17 +1993,20 @@ Returns information for a URL filtering rule.
 
 
 #### Command Example
+
 ```!pan-os-get-url-filter name=demisto_default_url_filter```
 
 
 #### Human Readable Output
 
 >### URL Filter:
+>
 >|Name|Category|OverrideAllowList|Description|
 >|---|---|---|---|
 >| demisto_default_url_filter | {'Action': 'block', 'Name': u'abortion'},<br/>{'Action': 'block', 'Name': u'abuse-drugs'} | 888.com,<br/>777.com | gres |
 
 ### pan-os-create-url-filter
+
 ***
 Creates a URL filtering rule.
 
@@ -1870,6 +2014,7 @@ Creates a URL filtering rule.
 #### Base Command
 
 `pan-os-create-url-filter`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1897,9 +2042,11 @@ Creates a URL filtering rule.
 
 
 #### Command Example
+
 ```!pan-os-create-url-filter action=block name=gambling_url url_category=gambling```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -1921,6 +2068,7 @@ Creates a URL filtering rule.
 >URL Filter was created successfully.
 
 ### pan-os-edit-url-filter
+
 ***
 Edit a URL filtering rule.
 
@@ -1928,6 +2076,7 @@ Edit a URL filtering rule.
 #### Base Command
 
 `pan-os-edit-url-filter`
+
 #### Input
 
 | **Argument Name**  | **Description** | **Required** |
@@ -1953,6 +2102,7 @@ Edit a URL filtering rule.
 
 
 #### Command Example
+
 ```!pan-os-edit-url-filter name=demisto_default_url_filter element_to_change=override_allow_list element_value="poker.com" add_remove_element=add```
 
 
@@ -1961,6 +2111,7 @@ Edit a URL filtering rule.
 >URL Filter was edited successfully
 
 ### pan-os-delete-url-filter
+
 ***
 Deletes a URL filtering rule.
 
@@ -1968,6 +2119,7 @@ Deletes a URL filtering rule.
 #### Base Command
 
 `pan-os-delete-url-filter`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1985,9 +2137,11 @@ Deletes a URL filtering rule.
 
 
 #### Command Example
+
 ```!pan-os-delete-url-filter name=gambling_url```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -2003,6 +2157,7 @@ Deletes a URL filtering rule.
 >URL Filter was deleted successfully.
 
 ### pan-os-list-edls
+
 ***
 Returns a list of external dynamic lists.
 
@@ -2010,6 +2165,7 @@ Returns a list of external dynamic lists.
 #### Base Command
 
 `pan-os-list-edls`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2031,9 +2187,11 @@ Returns a list of external dynamic lists.
 
 
 #### Command Example
+
 ```!pan-os-list-edls```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -2060,14 +2218,16 @@ Returns a list of external dynamic lists.
 #### Human Readable Output
 
 >### External Dynamic Lists:
+>
 >|Name|Type|URL|Recurring|Description|
 >|---|---|---|---|---|
 >| blabla3 | url | lolo | hourly | 6u4ju7 |
->| bad_ip_edl_demisot_web_server | ip | http://192.168.1.15/files/very_bad_ip2.txt | five-minute | ip |
+>| bad_ip_edl_demisot_web_server | ip | <http://192.168.1.15/files/very_bad_ip2.txt> | five-minute | ip |
 
 
 
 ### pan-os-get-edl
+
 ***
 Returns information for an external dynamic list
 
@@ -2075,6 +2235,7 @@ Returns information for an external dynamic list
 #### Base Command
 
 `pan-os-get-edl`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2097,9 +2258,11 @@ Returns information for an external dynamic list
 
 
 #### Command Example
+
 ```!pan-os-get-edl name=test_pb_domain_edl_DONT_DEL```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -2117,12 +2280,14 @@ Returns information for an external dynamic list
 #### Human Readable Output
 
 >### External Dynamic List:
+>
 >|Name|Type|URL|Recurring|Description|
 >|---|---|---|---|---|
->| test_pb_domain_edl_DONT_DEL | url | https://test_pb_task.not.real | hourly | new description3 |
+>| test_pb_domain_edl_DONT_DEL | url | <https://test_pb_task.not.real> | hourly | new description3 |
 
 
 ### pan-os-create-edl
+
 ***
 Creates an external dynamic list.
 
@@ -2130,6 +2295,7 @@ Creates an external dynamic list.
 #### Base Command
 
 `pan-os-create-edl`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2157,9 +2323,11 @@ Creates an external dynamic list.
 
 
 #### Command Example
+
 ```!pan-os-create-edl name=new_EDL recurring="five-minute" type=url url="gmail.com"```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -2178,6 +2346,7 @@ Creates an external dynamic list.
 >External Dynamic List was created successfully.
 
 ### pan-os-edit-edl
+
 ***
 Modifies an element of an external dynamic list.
 
@@ -2185,6 +2354,7 @@ Modifies an element of an external dynamic list.
 #### Base Command
 
 `pan-os-edit-edl`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2208,9 +2378,11 @@ Modifies an element of an external dynamic list.
 
 
 #### Command Example
+
 ```!pan-os-edit-edl name=test_pb_domain_edl_DONT_DEL element_to_change=description element_value="new description3"```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -2227,6 +2399,7 @@ Modifies an element of an external dynamic list.
 >External Dynamic List was edited successfully
 
 ### pan-os-delete-edl
+
 ***
 Deletes an external dynamic list.
 
@@ -2234,6 +2407,7 @@ Deletes an external dynamic list.
 #### Base Command
 
 `pan-os-delete-edl`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2251,9 +2425,11 @@ Deletes an external dynamic list.
 
 
 #### Command Example
+
 ```!pan-os-delete-edl name=new_EDL```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -2269,6 +2445,7 @@ Deletes an external dynamic list.
 >External Dynamic List was deleted successfully
 
 ### pan-os-refresh-edl
+
 ***
 Refreshes the specified external dynamic list.
 
@@ -2276,6 +2453,7 @@ Refreshes the specified external dynamic list.
 #### Base Command
 
 `pan-os-refresh-edl`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2292,6 +2470,7 @@ Refreshes the specified external dynamic list.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-refresh-edl name=test_pb_domain_edl_DONT_DEL ```
 
 #### Human Readable Output
@@ -2299,6 +2478,7 @@ There is no context output for this command.
 >Refreshed External Dynamic List successfully
 
 ### pan-os-create-rule
+
 ***
 Creates a policy rule.
 
@@ -2306,6 +2486,7 @@ Creates a policy rule.
 #### Base Command
 
 `pan-os-create-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2356,9 +2537,11 @@ Creates a policy rule.
 
 
 #### Command Example
+
 ```!pan-os-create-rule rulename="block_bad_application" description="do not play at work" action="deny" application="fortnite"```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -2420,9 +2603,11 @@ Creates a custom block policy rule.
 
 
 #### Command Example
+
 ```!pan-os-custom-block-rule object_type=application object_value=fortnite```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -2443,6 +2628,7 @@ Creates a custom block policy rule.
 >Object was blocked successfully.
 
 ### pan-os-move-rule
+
 ***
 Changes the location of a policy rule.
 
@@ -2450,6 +2636,7 @@ Changes the location of a policy rule.
 #### Base Command
 
 `pan-os-move-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2470,6 +2657,7 @@ Changes the location of a policy rule.
 
 
 #### Command Example
+
 ```!pan-os-move-rule rulename="test_rule3" where="bottom" ```
 
 #### Human Readable Output
@@ -2477,6 +2665,7 @@ Changes the location of a policy rule.
 >Rule test_rule3 moved successfully
 
 ### pan-os-edit-rule
+
 ***
 Edits a policy rule.
 
@@ -2484,6 +2673,7 @@ Edits a policy rule.
 #### Base Command
 
 `pan-os-edit-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2520,9 +2710,11 @@ Edits a policy rule.
 | Panorama.SecurityRules.ProfileSetting | String | Profile setting group. |
 
 #### Command Example
+
 ```!pan-os-edit-rule rulename="block_bad_application" element_to_change=action element_value=drop```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -2539,6 +2731,7 @@ Edits a policy rule.
 >Rule edited successfully.
 
 ### pan-os-delete-rule
+
 ***
 Deletes a policy rule.
 
@@ -2546,6 +2739,7 @@ Deletes a policy rule.
 #### Base Command
 
 `pan-os-delete-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2564,6 +2758,7 @@ Deletes a policy rule.
 
 
 #### Command Example
+
 ```!pan-os-delete-rule rulename=block_bad_application```
 
 
@@ -2572,6 +2767,7 @@ Deletes a policy rule.
 >Rule deleted successfully.
 
 ### pan-os-list-applications
+
 ***
 Returns a list of applications.
 
@@ -2579,6 +2775,7 @@ Returns a list of applications.
 #### Base Command
 
 `pan-os-list-applications`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2612,9 +2809,11 @@ Returns a list of applications.
 
 
 #### Command Example
+
 ```!pan-os-list-applications```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -2633,12 +2832,14 @@ Returns a list of applications.
 #### Human Readable Output
 
 >### Applications
+>
 >|Id|Name|Risk|Category|SubCategory|Technology|Description|
 >|---|---|---|---|---|---|---|
 >|  | demisto_fw_app3 | 1 |  | ip-protocol | peer-to-peer | lala |
 
 
 ### pan-os-commit
+
 ***
 Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwiese does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
 
@@ -2646,6 +2847,7 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 #### Base Command
 
 `pan-os-commit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2670,12 +2872,15 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 | Panorama.Commit.Description | String | The commit description from the the command input. | 
 
 #### Command example
+
 ```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
+
 #### Human Readable Output
 
 >Waiting for commit "test" with job ID 7304 to finish...
 
 ### pan-os-push-status
+
 ***
 Returns the push status for a configuration.
 
@@ -2683,6 +2888,7 @@ Returns the push status for a configuration.
 #### Base Command
 
 `pan-os-push-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2701,8 +2907,11 @@ Returns the push status for a configuration.
 | Panorama.Push.Warnings | String | The job ID warnings | 
 
 #### Command example
+
 ```!pan-os-push-status job_id=31377```
+
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -2736,12 +2945,14 @@ Returns the push status for a configuration.
 #### Human Readable Output
 
 >### Push to Device Group status:
+>
 >|JobID|Status|Details|Errors|Warnings|
 >|---|---|---|---|---|
 >| 31377 | Completed | commit succeeded with warnings,<br/>commit succeeded with warnings | | Interface loopback.645 has no zone configuration.,<br/>External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>Warning: No valid Antivirus content package exists,<br/>(Module: device) |
 
 
 ### pan-os-get-pcap
+
 ***
 Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall and run the scp export command to export the PCAP file. For more information, see the Palo Alto Networks documentation.
 
@@ -2756,6 +2967,7 @@ For more information follow instructions from [here](https://docs.paloaltonetwor
 
 
 #### PCAPs api docs
+
 You can find information about required/optional arguments for each pcap type here:
 
 ![filter pcap api](../../doc_files/fliter-pcap-api.png)
@@ -2801,16 +3013,19 @@ You can find information about required/optional arguments for each pcap type he
 
 
 #### Command Example
+
 ```!pan-os-get-pcap pcapType="filter-pcap" from=pcap_test ```
 
 
 ### pan-os-list-pcaps
+
 ***
 Returns a list of all PCAP files by PCAP type. **Not available for threat PCAPs.**
 
 #### Base Command
 
 `pan-os-list-pcaps`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2825,16 +3040,19 @@ Returns a list of all PCAP files by PCAP type. **Not available for threat PCAPs.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-list-pcaps pcapType=“filter-pcap” ```
 
 #### Human Readable Output
 
 >### List of Pcaps:
+>
 >|Pcap name|
 >|---|
 >| pcam_name |
 
 ### pan-os-register-ip-tag
+
 ***
 Registers IP addresses to a tag.
 
@@ -2842,6 +3060,7 @@ Registers IP addresses to a tag.
 #### Base Command
 
 `pan-os-register-ip-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2860,6 +3079,7 @@ Registers IP addresses to a tag.
 
 
 #### Command Example
+
 ```!pan-os-register-ip-tag tag=tag02 IPs=[“10.0.0.13”,“10.0.0.14”] ```
 
 #### Human Readable Output
@@ -2867,6 +3087,7 @@ Registers IP addresses to a tag.
 >Registered ip-tag successfully
 
 ### pan-os-unregister-ip-tag
+
 ***
 Unregisters IP addresses from a tag.
 
@@ -2874,6 +3095,7 @@ Unregisters IP addresses from a tag.
 #### Base Command
 
 `pan-os-unregister-ip-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2887,6 +3109,7 @@ Unregisters IP addresses from a tag.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-unregister-ip-tag tag=tag02 IPs=["10.0.0.13","10.0.0.14"] ```
 
 #### Human Readable Output
@@ -2895,6 +3118,7 @@ There is no context output for this command.
 
 
 ### pan-os-register-user-tag
+
 ***
 Registers users to a tag. This command is only available for PAN-OS version 9.x and above.
 
@@ -2902,6 +3126,7 @@ Registers users to a tag. This command is only available for PAN-OS version 9.x 
 #### Base Command
 
 `pan-os-register-user-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2919,13 +3144,16 @@ Registers users to a tag. This command is only available for PAN-OS version 9.x 
 
 
 #### Command Example
+
 ```!pan-os-register-user-tag tag-tag02 Users=Username```
 
 #### Human Readable Output
+>
 >Registered user-tag successfully
 
 
 ### pan-os-unregister-user-tag
+
 ***
 Unregisters users from a tag. This command is only available for PAN-OS version 9.x and above.
 
@@ -2933,6 +3161,7 @@ Unregisters users from a tag. This command is only available for PAN-OS version 
 #### Base Command
 
 `pan-os-unregister-user-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2946,20 +3175,25 @@ Unregisters users from a tag. This command is only available for PAN-OS version 
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-unregister-user-tag tag-tag02 Users=Username ```
 
 #### Human Readable Output
+>
 >Unregistered user-tag successfully
 
 
 ### pan-os-query-traffic-logs
+
 ***
 Deprecated. Queries traffic logs.
 
 #### Base Command
 
 `pan-os-query-traffic-logs`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Specifies the match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. | Optional |
@@ -2981,23 +3215,27 @@ Deprecated. Queries traffic logs.
 | Panorama.TrafficLogs.Status | string | Status of the traffic logs query. | 
 
 #### Command Example
+
 ```!pan-os-query-traffic-logs query="" number_of_logs="100" direction="backward" source="" destination="" receive_time="" application="" to_port="" action="allow"```
 
 #### Human Readable Output
 
 >### Query Traffic Logs:
+>
 >|JobID|Status|
 >|---|---|
 >| 1858 | Pending |
 
 
 ### pan-os-check-traffic-logs-status
+
 ***
 Deprecated. Checks the query status of traffic logs.
 
 #### Base Command
 
 `pan-os-check-traffic-logs-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3013,23 +3251,27 @@ Deprecated. Checks the query status of traffic logs.
 | Panorama.TrafficLogs.Status | string | Status of the traffic logs query. | 
 
 #### Command Example
+
 ```!pan-os-check-traffic-logs-status job_id="1865"```
 
 #### Human Readable Output
 
 >### Query Traffic Logs status:
+>
 >|JobID|Status|
 >|---|---|
 >| 1858 | Pending |
 
 
 ### pan-os-get-traffic-logs
+
 ***
 Deprecated. Retrieves traffic log query data by job id.
 
 #### Base Command
 
 `pan-os-get-traffic-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3064,6 +3306,7 @@ Deprecated. Retrieves traffic log query data by job id.
 | Panorama.TrafficLogs.Logs.ToZone | string | To zone of the traffic log. |
 
 #### Command Example
+
 ```!pan-os-get-traffic-logs job_id="1865"```
 
 ### pan-os-list-rules
@@ -3133,9 +3376,11 @@ Returns a list of predefined Security Rules. (When passing a query, all other ar
 | Panorama.SecurityRule.Type | String | Represents the type of the security rule \(e.g., pre-rule, post-rule, intra-zone, inter-zone\). | 
 
 #### Command Example
+
 ```!pan-os-list-rules pre_post=“pre-rulebase”```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -3279,12 +3524,14 @@ Returns a list of predefined Security Rules. (When passing a query, all other ar
 #### Human Readable Output
 
 ### Security Rules:
+
 |Name|Location|Tags|Type|Source Zone|Source Address|Source User|Source Device|Destination Zone|Destination Address|Destination Device|Application|Service|Url Category|Action|Profiles|Profile Group|Options|Target|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | block rule | TestDevice | TestTag1,<br>TestTag2,<br>TestTag3 |  | TestName,<br>TestName2 | 1.1.1.1,<br>8.8.4.4,<br>8.8.8.8 | any | any | TestName,<br>TestName2 | 1.1.1.1,<br>8.8.8.8 | any | cortex-xdr,<br>jira,<br>zoom | application-default | abortion,<br>adult,<br>alcohol-and-tobacco,<br>hacking | drop | url-filtering:<br>data-filtering:<br>file-blocking:<br>virus:<br>spyware:<br>vulnerability:<br>wildfire-analysis: | TestGroup | LogAtSessionStart: <br>LogForwarding:<br>Schedule:<br>QoSMarking:<br>DisableServerResponseInspection: | devices: 007051000185487<br>negate: no |
 | jl-test-1 | TestDevice | APIiiiiii,<br>test2shared | intrazone | internal | 1.1.1.1 | me | good name | internal | my_shared_address_object_test | bad nam | 8x8 | new group,<br>service-http,<br>service-https | alcohol-and-tobacco,<br>auctions | reset-server | url-filtering: default<br>data-filtering:<br>file-blocking:<br>virus: default<br>spyware: testing<br>vulnerability:<br>wildfire-analysis: |  | LogAtSessionStart: yes<br>LogForwarding: Log forwarding for SA<br>Schedule: test-schedule<br>QoSMarking: ip-precedence<br>DisableServerResponseInspection: yes | devices: 007051000185487,<br>007051000188986<br>negate: no |
 
 ### pan-os-query-logs
+
 ***
 The query logs in Panorama.
 
@@ -3292,6 +3539,7 @@ The query logs in Panorama.
 #### Base Command
 
 `pan-os-query-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3386,9 +3634,11 @@ enforce the policy. |
 | Panorama.Monitor.Logs.Vsys | String | The VSYS on the firewall that generated the log. | 
 
 #### Command example with polling
+
 ```!pan-os-query-logs log-type=traffic number_of_logs=1 polling=true show-detail=yes```
 
 ### Context example
+
 ```json
 {
     "Panorama": {
@@ -3410,16 +3660,22 @@ enforce the policy. |
 ```
 
 #### Human Readable Output
+>
 >Fetching traffic logs for job ID 1291...
+>
 > >### Query traffic Logs:
+>
 >|TimeGenerated|SourceAddress|DestinationAddress|Application|Action|Rule|
 >|---|---|---|---|---|---|
 >| 2019/07/24 08:50:24 | 1.1.1.1 | 2.3.4.5 | web-browsing | deny | any - any accept |
 
 
 #### Command example without polling 
+
 ```!pan-os-query-logs log-type=traffic number_of_logs=1```
+
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -3434,19 +3690,23 @@ enforce the policy. |
 ```
 
 #### Human Readable Output
+>
 >### Query Logs:
+>
 >|JobID|Status|
 >|---|---|
 >| 1283 | Pending |
 
 
 ### pan-os-check-logs-status
+
 ***
 Checks the status of a logs query.
 
 #### Base Command
 
 `pan-os-check-logs-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3463,16 +3723,19 @@ Checks the status of a logs query.
 
 
 #### Command Example
+
 ```!pan-os-check-logs-status job_id=657 ```
 
 #### Human Readable Output
 
 >### Query Logs Status:
+>
 >|JobID|Status|
 >|---|---|
 >| 657 | Completed |
 
 ### pan-os-get-logs
+
 ***
 Retrieves the data of a logs query.
 
@@ -3480,6 +3743,7 @@ Retrieves the data of a logs query.
 #### Base Command
 
 `pan-os-get-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3536,16 +3800,19 @@ Retrieves the data of a logs query.
 
 
 #### Command Example
+
 ```!pan-os-get-logs job_id=678 ```
 
 #### Human Readable Output
 
 >### Query data Logs:
+>
 >|TimeGenerated|SourceAddress|DestinationAddress|Application|Action|Rule|
 >|---|---|---|---|---|---|
 >| 2019/07/24 08:50:24 | 1.1.1.1 | 2.3.4.5 | web-browsing | deny | any - any accept |
 
 ### pan-os-security-policy-match
+
 ***
 Checks whether a session matches a specified security policy. This command is only available on Firewall instances.
 
@@ -3553,6 +3820,7 @@ Checks whether a session matches a specified security policy. This command is on
 #### Base Command
 
 `pan-os-security-policy-match`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3593,9 +3861,11 @@ Checks whether a session matches a specified security policy. This command is on
 
 
 #### Command Example
+
 ```!pan-os-security-policy-match destination=1.2.3.4 protocol=1 source=2.3.4.5```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -3623,12 +3893,14 @@ Checks whether a session matches a specified security policy. This command is on
 #### Human Readable Output
 
 >### Matching Security Policies:
+>
 >|Name|Action|From|To|Source|Destination|
 >|---|---|---|---|---|---|
 >| any - any accept | allow | any | any | any | any |
 
 
 ### pan-os-list-static-routes
+
 ***
 Lists the static routes of a virtual router.
 
@@ -3636,6 +3908,7 @@ Lists the static routes of a virtual router.
 #### Base Command
 
 `pan-os-list-static-routes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3661,9 +3934,11 @@ Lists the static routes of a virtual router.
 
 
 #### Command Example
+
 ```!pan-os-list-static-routes virtual_router=virtual_router_test_DONT_DELETE```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -3692,6 +3967,7 @@ Lists the static routes of a virtual router.
 #### Human Readable Output
 
 >### Displaying all Static Routes for the Virtual Router: virtual_router_test_DONT_DELETE
+>
 >|Name|Destination|NextHop|RouteTable|Metric|BFDprofile|
 >|---|---|---|---|---|---|
 >| static_route_ip | 2.3.4.5/32 | 3.3.3.3 | Unicast | 14 | None |
@@ -3699,6 +3975,7 @@ Lists the static routes of a virtual router.
 
 
 ### pan-os-get-static-route
+
 ***
 Returns the specified static route of a virtual router.
 
@@ -3706,6 +3983,7 @@ Returns the specified static route of a virtual router.
 #### Base Command
 
 `pan-os-get-static-route`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3730,9 +4008,11 @@ Returns the specified static route of a virtual router.
 
 
 #### Command Example
+
 ```!pan-os-get-static-route static_route=static_route_ip virtual_router=virtual_router_test_DONT_DELETE```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -3752,12 +4032,14 @@ Returns the specified static route of a virtual router.
 #### Human Readable Output
 
 >### Static route: static_route_ip
+>
 >|BFDprofile|Destination|Metric|Name|NextHop|RouteTable|VirtualRouter|
 >|---|---|---|---|---|---|---|
 >| None | 2.3.4.5/32 | 14 | static_route_ip | 3.3.3.3 | Unicast | virtual_router_test_DONT_DELETE |
 
 
 ### pan-os-add-static-route
+
 ***
 Adds a static route.
 
@@ -3765,6 +4047,7 @@ Adds a static route.
 #### Base Command
 
 `pan-os-add-static-route`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3794,9 +4077,11 @@ Adds a static route.
 
 
 #### Command Example
+
 ```!pan-os-add-static-route destination=2.3.4.5/32 nexthop_type="ip-address" nexthop_value=3.3.3.3 static_route=my_temp_route virtual_router=virtual_router_test_DONT_DELETE```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -3814,6 +4099,7 @@ Adds a static route.
 >New uncommitted static route my_temp_route configuration added.
 
 ### pan-os-delete-static-route
+
 ***
 Deletes a static route.
 
@@ -3821,6 +4107,7 @@ Deletes a static route.
 #### Base Command
 
 `pan-os-delete-static-route`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3846,9 +4133,11 @@ Deletes a static route.
 
 
 #### Command Example
+
 ```!pan-os-delete-static-route route_name=my_temp_route virtual_router=virtual_router_test_DONT_DELETE```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -3865,6 +4154,7 @@ Deletes a static route.
 >The static route: my_temp_route was deleted. Changes are not committed.
 
 ### pan-os-show-device-version
+
 ***
 Show firewall device software version.
 
@@ -3872,6 +4162,7 @@ Show firewall device software version.
 #### Base Command
 
 `pan-os-show-device-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3890,9 +4181,11 @@ Show firewall device software version.
 
 
 #### Command Example
+
 ```!pan-os-show-device-version```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -3911,12 +4204,14 @@ Show firewall device software version.
 #### Human Readable Output
 
 >### Device Version:
+>
 >|Devicename|Model|Serial|Version|
 >|---|---|---|---|
 >| PA-VM | PA-VM | 000000000000000 | 8.1.7 |
 
 
 ### pan-os-download-latest-content-update
+
 ***
 Downloads the latest content update.
 
@@ -3924,6 +4219,7 @@ Downloads the latest content update.
 #### Base Command
 
 `pan-os-download-latest-content-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3940,16 +4236,19 @@ Downloads the latest content update.
 
 
 #### Command Example
+
 ```!pan-os-download-latest-content-update ```
 
 #### Human Readable Output
 
 >### Content download:
+>
 >|JobID|Status|
 >|---|---|
 >| 657 | Pending |
 
 ### pan-os-content-update-download-status
+
 ***
 Checks the download status of a content update.
 
@@ -3957,6 +4256,7 @@ Checks the download status of a content update.
 #### Base Command
 
 `pan-os-content-update-download-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3975,17 +4275,20 @@ Checks the download status of a content update.
 
 
 #### Command Example
+
 ```!pan-os-content-update-download-status job_id=678 ```
 
 #### Human Readable Output
 
 >### Content download status:
+>
 >|JobID|Status|Details|
 >|---|---|---|
 >| 678 | Completed | download succeeded with warnings |
 
 
 ### pan-os-install-latest-content-update
+
 ***
 Installs the latest content update.
 
@@ -3993,6 +4296,7 @@ Installs the latest content update.
 #### Base Command
 
 `pan-os-install-latest-content-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4009,17 +4313,20 @@ Installs the latest content update.
 
 
 #### Command Example
+
 ```!pan-os-install-latest-content-update ```
 
 #### Human Readable Output
 
 >### Result:
+>
 >|JobID|Status|
 >|---|---|
 >| 878 | Pending |
 
 
 ### pan-os-content-update-install-status
+
 ***
 Gets the installation status of the content update.
 
@@ -4027,6 +4334,7 @@ Gets the installation status of the content update.
 #### Base Command
 
 `pan-os-content-update-install-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4045,17 +4353,20 @@ Gets the installation status of the content update.
 
 
 #### Command Example
+
 ```!pan-os-content-update-install-status job_id=878 ```
 
 #### Human Readable Output
 
 >### Content install status:
+>
 >|JobID|Status|Details|
 >|---|---|---|
 >| 878 | Completed | installation succeeded with warnings |
 
 
 ### pan-os-check-latest-panos-software
+
 ***
 Checks the PAN-OS software version from the repository.
 
@@ -4063,6 +4374,7 @@ Checks the PAN-OS software version from the repository.
 #### Base Command
 
 `pan-os-check-latest-panos-software`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4077,10 +4389,12 @@ Checks the PAN-OS software version from the repository.
 | Panorama.LatestVersions | unknown | Latest software versions. | 
 
 #### Command Example
+
 ```!pan-os-check-latest-panos-software```
 
 
 ### pan-os-download-panos-version
+
 ***
 Downloads the target PAN-OS software version to install on the target device.
 
@@ -4088,6 +4402,7 @@ Downloads the target PAN-OS software version to install on the target device.
 #### Base Command
 
 `pan-os-download-panos-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4105,16 +4420,19 @@ Downloads the target PAN-OS software version to install on the target device.
 
 
 #### Command Example
+
 ```!pan-os-download-panos-version target_version=1 ```
 
 #### Human Readable Output
 
 >### Result:
+>
 >|JobID|Status|
 >|---|---|
 >| 111 | Pending |
 
 ### pan-os-download-panos-status
+
 ***
 Gets the download status of the target PAN-OS software.
 
@@ -4122,6 +4440,7 @@ Gets the download status of the target PAN-OS software.
 #### Base Command
 
 `pan-os-download-panos-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4140,16 +4459,19 @@ Gets the download status of the target PAN-OS software.
 
 
 #### Command Example
+
 ```!pan-os-download-panos-status job_id=999```
 
 #### Human Readable Output
 
 >### PAN-OS download status:
+>
 >|JobID|Status|Details|
 >|---|---|---|
 >| 999 | Completed | download succeeded with warnings |
 
 ### pan-os-install-panos-version
+
 ***
 Installs the target PAN-OS version on the specified target device.
 
@@ -4157,6 +4479,7 @@ Installs the target PAN-OS version on the specified target device.
 #### Base Command
 
 `pan-os-install-panos-version`
+
 #### Input
 
 | **Argument Name** | **Description**  | **Required** |
@@ -4174,16 +4497,19 @@ Installs the target PAN-OS version on the specified target device.
 
 
 #### Command Example
+
 ```!pan-os-install-panos-version target_version=1 ```
 
 #### Human Readable Output
 
 >### PAN-OS Installation:
+>
 >|JobID|Status|
 >|---|---|
 >| 111 | Pending |
 
 ### pan-os-install-panos-status
+
 ***
 Gets the installation status of the PAN-OS software.
 
@@ -4191,6 +4517,7 @@ Gets the installation status of the PAN-OS software.
 #### Base Command
 
 `pan-os-install-panos-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4209,16 +4536,19 @@ Gets the installation status of the PAN-OS software.
 
 
 #### Command Example
+
 ```!pan-os-install-panos-status job_id=878 ```
 
 #### Human Readable Output
 
 >### PAN-OS installation status:
+>
 >|JobID|Status|Details|
 >|---|---|---|
 >| 878 | Completed | installation succeeded with warnings |
 
 ### pan-os-device-reboot
+
 ***
 Reboots the Firewall device.
 
@@ -4226,6 +4556,7 @@ Reboots the Firewall device.
 #### Base Command
 
 `pan-os-device-reboot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4238,10 +4569,12 @@ Reboots the Firewall device.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-device-reboot ```
 
 
 ### pan-os-show-location-ip
+
 ***
 Gets location information for an IP address.
 
@@ -4249,6 +4582,7 @@ Gets location information for an IP address.
 #### Base Command
 
 `pan-os-show-location-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4267,9 +4601,11 @@ Gets location information for an IP address.
 
 
 #### Command Example
+
 ```!pan-os-show-location-ip ip_address=8.8.8.8```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -4288,12 +4624,14 @@ Gets location information for an IP address.
 #### Human Readable Output
 
 >### IP 8.8.8.8 location:
+>
 >|ip_address|country_name|country_code|
 >|---|---|---|
 >| 8.8.8.8 | United States | US |
 
 
 ### pan-os-get-licenses
+
 ***
 Gets information about available PAN-OS licenses and their statuses.
 
@@ -4301,6 +4639,7 @@ Gets information about available PAN-OS licenses and their statuses.
 #### Base Command
 
 `pan-os-get-licenses`
+
 #### Input
 
 There are no input arguments for this command.
@@ -4320,6 +4659,7 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!pan-os-get-licences ```
 
 #### Human Readable Output
@@ -4394,6 +4734,7 @@ Gets information for the specified security profile.
 
 
 #### Command Example
+
 ```!pan-os-get-security-profiles security_profile=spyware ```
 
 #### Human Readable Output
@@ -4403,6 +4744,7 @@ Gets information for the specified security profile.
 >| best-practice  | {'Name': 'simple-critical', 'Action': {'reset-both': None}, 'Category': 'any', 'Severity': 'critical', 'Threat-name': 'any', 'Packet-capture': 'disable'},<br/>{'Name': 'simple-high', 'Action': {'reset-both': None}, 'Category': 'any', 'Severity': 'high', 'Threat-name': 'any', 'Packet-capture': 'disable'},<br/>{'Name': 'simple-medium', 'Action': {'reset-both': None}, 'Category': 'any', 'Severity': 'medium', 'Threat-name': 'any', 'Packet-capture': 'disable'},<br/>{'Name': 'simple-informational', 'Action': {'default': None}, 'Category': 'any', 'Severity': 'informational', 'Threat-name': 'any', 'Packet-capture': 'disable'},<br/>{'Name': 'simple-low', 'Action': {'default': None}, 'Category': 'any', 'Severity': 'low', 'Threat-name': 'any', 'Packet-capture': 'disable'} |
 
 ### pan-os-apply-security-profile
+
 ***
 Apply a security profile to specific rules or rules with a specific tag.
 
@@ -4410,6 +4752,7 @@ Apply a security profile to specific rules or rules with a specific tag.
 #### Base Command
 
 `pan-os-apply-security-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4425,9 +4768,11 @@ Apply a security profile to specific rules or rules with a specific tag.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-apply-security-profile profile_name=test profile_type=spyware rule_name=rule1 pre_post="pre-rulebase" ```
 
 #### Human Readable Output
+>
 >The profile spyware = test has been applied to the rule rule1
 
 ### pan-os-remove-security-profile
@@ -4449,9 +4794,11 @@ Removes a security profile to specific rules or rules with a specific tag.
 | device-group | The device group for which to apply security profiles. | Optional | 
 
 #### Human Readable Output
+>
 >The profile test has been removed from the rule rule1
 
 ### pan-os-get-ssl-decryption-rules
+
 ***
 Get SSL decryption rules.
 
@@ -4459,6 +4806,7 @@ Get SSL decryption rules.
 #### Base Command
 
 `pan-os-get-ssl-decryption-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4486,6 +4834,7 @@ Get SSL decryption rules.
 
 
 #### Command Example
+
 ```!pan-os-get-ssl-decryption-rules pre_post="pre-rulebase" ```
 
 #### Human Readable Output
@@ -4495,6 +4844,7 @@ Get SSL decryption rules.
 >| test | some_uuid | negate: no | any | member: any | ssl-forward-proxy: null | any | any | any | any | no-decrypt | any |
 
 ### pan-os-get-wildfire-configuration
+
 ***
 Retrieves the Wildfire configuration.
 
@@ -4502,6 +4852,7 @@ Retrieves the Wildfire configuration.
 #### Base Command
 
 `pan-os-get-wildfire-configuration`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4519,23 +4870,28 @@ Retrieves the Wildfire configuration.
 
 
 #### Command Example
+
 ```!pan-os-get-wildfire-configuration template=WildFire ```
 
 
 >### WildFire Configuration
+>
 > Report Grayware File: yes
+>
 >|Name|Size-limit|
 >|---|---|
 >| pe | 10 |
 >| apk | 30 |
 
 >### The updated schedule for Wildfire
+>
 >|recurring|
 >|---|
 >| every-min: {"action": "download-and-install"} |
 
 
 ### pan-os-url-filtering-block-default-categories
+
 ***
 Set default categories to block in the URL filtering profile.
 
@@ -4543,6 +4899,7 @@ Set default categories to block in the URL filtering profile.
 #### Base Command
 
 `pan-os-url-filtering-block-default-categories`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4555,6 +4912,7 @@ Set default categories to block in the URL filtering profile.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-url-filtering-block-default-categories profile_name=test ```
 
 #### Human Readable Output
@@ -4562,6 +4920,7 @@ There is no context output for this command.
 >The default categories to block has been set successfully to test
 
 ### pan-os-get-anti-spyware-best-practice
+
 ***
 Get anti-spyware best practices.
 
@@ -4569,6 +4928,7 @@ Get anti-spyware best practices.
 #### Base Command
 
 `pan-os-get-anti-spyware-best-practice`
+
 #### Input
 
 There are no input arguments for this command.
@@ -4591,11 +4951,13 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!pan-os-get-anti-spyware-best-practice ```
 
 #### Human Readable Output
 
 >### Anti Spyware Botnet-Domains Best Practice
+>
 >|Name|Action|Packet-capture|ipv4-address|ipv6-address|
 >|---|---|---|---|---|
 >| default-paloalto-dns | sinkhole: null | disable |  |  |
@@ -4603,12 +4965,14 @@ There are no input arguments for this command.
 >|  |  |  | pan-sinkhole-default-ip | ::1 |
 
 >### Anti Spyware Best Practice Rules
+>
 >|Name|Severity|Action|Category|Threat-name|
 >|---|---|---|---|---|
 >| simple-critical | critical | reset-both: null | any | any |
 >| simple-high | high | reset-both: null | any | any |
 
 ### pan-os-get-file-blocking-best-practice
+
 ***
 Get file-blocking best practices.
 
@@ -4616,6 +4980,7 @@ Get file-blocking best practices.
 #### Base Command
 
 `pan-os-get-file-blocking-best-practice`
+
 #### Input
 
 There are no input arguments for this command.
@@ -4631,17 +4996,20 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!pan-os-get-file-blocking-best-practice ```
 
 #### Human Readable Output
 
 >### File Blocking Profile Best Practice
+>
 >|Name|Action|File-type|Aplication|
 >|---|---|---|---|
 >| Block all risky file types | block | 7z,<br/>bat,<br/>cab,<br/>chm,<br/>class,<br/>cpl | any |
 >| Block encrypted files | block | encrypted-rar,<br/>encrypted-zip| any |
 
 ### pan-os-get-antivirus-best-practice
+
 ***
 Get anti-virus best practices.
 
@@ -4649,6 +5017,7 @@ Get anti-virus best practices.
 #### Base Command
 
 `pan-os-get-antivirus-best-practice`
+
 #### Input
 
 There are no input arguments for this command.
@@ -4663,17 +5032,20 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!pan-os-get-antivirus-best-practice ```
 
 #### Human Readable Output
 
 >### Antivirus Best Practice Profile
+>
 >|Name|Action|WildFire-action|
 >|---|---|---|
 >| http | default | default|
 >| smtp default | default |
 
 ### pan-os-get-vulnerability-protection-best-practice
+
 ***
 Get vulnerability-protection best practices.
 
@@ -4681,6 +5053,7 @@ Get vulnerability-protection best practices.
 #### Base Command
 
 `pan-os-get-vulnerability-protection-best-practice`
+
 #### Input
 
 There are no input arguments for this command.
@@ -4700,17 +5073,20 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!pan-os-get-vulnerability-protection-best-practice ```
 
 #### Human Readable Output
 
 >### vulnerability Protection Best Practice Profile
+>
 >|Name|Action|Host|Severity|Category|Threat-name|CVE|Vendor-id|
 >|---|---|---|---|---|---|---|---|
 >| simple-client-critical | reset-both: null | client | critical | any | any | any | any |
 >| simple-client-high | reset-both: null | client | high | any | any | any | any |
 
 ### pan-os-get-wildfire-best-practice
+
 ***
 View WildFire best practices.
 
@@ -4718,6 +5094,7 @@ View WildFire best practices.
 #### Base Command
 
 `pan-os-get-wildfire-best-practice`
+
 #### Input
 
 There are no input arguments for this command.
@@ -4738,33 +5115,40 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!pan-os-get-wildfire-best-practice ```
 
 #### Human Readable Output
 
 >### WildFire Best Practice Profile
+>
 >|Name|Analysis|Aplication|File-type|
 >|---|---|---|---|
 >| default | public-cloud | any | any |
 
 >### Wildfire Best Practice Schedule
+>
 >|Action|Recurring|
 >|---|---|
 >| download-and-install | every-minute |
 
 >### Wildfire SSL Decrypt Settings
+>
 >|allow-forward-decrypted-content|
 >|---|
 >| yes |
 
 >### Wildfire System Settings
+>
 >report-grayware-file: yes
+>
 >|Name|File-size|
 >|---|---|
 >| pe | 10 |
 >| apk | 30 |
 
 ### pan-os-get-url-filtering-best-practice
+
 ***
 View URL Filtering best practices.
 
@@ -4772,6 +5156,7 @@ View URL Filtering best practices.
 #### Base Command
 
 `pan-os-get-url-filtering-best-practice`
+
 #### Input
 
 There are no input arguments for this command.
@@ -4791,22 +5176,26 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!pan-os-get-url-filtering-best-practice ```
 
 #### Human Readable Output
 
 >### URL Filtering Best Practice Profile Categories
+>
 >|Category|DeviceGroup|Name|
 >|---|---|---|
 >| {'Name': 'abortion', 'Action': 'alert'},<br/>{'Name': 'abused-drugs', 'Action': 'alert'} | Demisto sales lab | best-practice |
 
 
 >### Best Practice Headers
+>
 >|log-container-page-only|log-http-hdr-referer|log-http-hdr-user|log-http-hdr-xff|
 >|---|---|---|---|
 >| yes | yes | yes | yes |
 
 ### pan-os-enforce-wildfire-best-practice
+
 ***
 Enforces wildfire best practices to upload files to the maximum size, forwards all file types, and updates the schedule.
 
@@ -4814,6 +5203,7 @@ Enforces wildfire best practices to upload files to the maximum size, forwards a
 #### Base Command
 
 `pan-os-enforce-wildfire-best-practice`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4826,6 +5216,7 @@ Enforces wildfire best practices to upload files to the maximum size, forwards a
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-enforce-wildfire-best-practice template=WildFire ```
 
 #### Human Readable Output
@@ -4833,6 +5224,7 @@ There is no context output for this command.
 >The schedule was updated according to the best practice. Recurring every minute with the action of "download and install" The file upload for all file types is set to the maximum size.
 
 ### pan-os-create-antivirus-best-practice-profile
+
 ***
 Creates an antivirus best practice profile.
 
@@ -4840,6 +5232,7 @@ Creates an antivirus best practice profile.
 #### Base Command
 
 `pan-os-create-antivirus-best-practice-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4852,6 +5245,7 @@ Creates an antivirus best practice profile.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-create-antivirus-best-practice-profile profile_name=test ```
 
 #### Human Readable Output
@@ -4859,6 +5253,7 @@ There is no context output for this command.
 >The profile test was created successfully.
 
 ### pan-os-create-anti-spyware-best-practice-profile
+
 ***
 Creates an Anti-Spyware best practice profile.
 
@@ -4866,6 +5261,7 @@ Creates an Anti-Spyware best practice profile.
 #### Base Command
 
 `pan-os-create-anti-spyware-best-practice-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4878,6 +5274,7 @@ Creates an Anti-Spyware best practice profile.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-create-anti-spyware-best-practice-profile profile_name=test ```
 
 #### Human Readable Output
@@ -4885,6 +5282,7 @@ There is no context output for this command.
 >The profile test was created successfully.
 
 ### pan-os-create-vulnerability-best-practice-profile
+
 ***
 Creates a vulnerability protection best practice profile.
 
@@ -4892,6 +5290,7 @@ Creates a vulnerability protection best practice profile.
 #### Base Command
 
 `pan-os-create-vulnerability-best-practice-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4904,6 +5303,7 @@ Creates a vulnerability protection best practice profile.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-create-vulnerability-best-practice-profile profile_name=test ```
 
 #### Human Readable Output
@@ -4911,6 +5311,7 @@ There is no context output for this command.
 >The profile test was created successfully.
 
 ### pan-os-create-url-filtering-best-practice-profile
+
 ***
 Creates a URL filtering best practice profile.
 
@@ -4918,6 +5319,7 @@ Creates a URL filtering best practice profile.
 #### Base Command
 
 `pan-os-create-url-filtering-best-practice-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4930,6 +5332,7 @@ Creates a URL filtering best practice profile.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-create-url-filtering-best-practice-profile profile_name=test ```
 
 #### Human Readable Output
@@ -4937,6 +5340,7 @@ There is no context output for this command.
 >The profile test was created successfully.
 
 ### pan-os-create-file-blocking-best-practice-profile
+
 ***
 Creates a file blocking best practice profile.
 
@@ -4944,6 +5348,7 @@ Creates a file blocking best practice profile.
 #### Base Command
 
 `pan-os-create-file-blocking-best-practice-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4956,6 +5361,7 @@ Creates a file blocking best practice profile.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-create-file-blocking-best-practice-profile profile_name=test ```
 
 #### Human Readable Output
@@ -4963,6 +5369,7 @@ There is no context output for this command.
 >The profile test was created successfully.
 
 ### pan-os-create-wildfire-best-practice-profile
+
 ***
 Creates a WildFire analysis best practice profile.
 
@@ -4970,6 +5377,7 @@ Creates a WildFire analysis best practice profile.
 #### Base Command
 
 `pan-os-create-wildfire-best-practice-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4982,6 +5390,7 @@ Creates a WildFire analysis best practice profile.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-create-wildfire-best-practice-profile profile_name=test ```
 
 #### Human Readable Output
@@ -4989,6 +5398,7 @@ There is no context output for this command.
 >The profile test was created successfully.
 
 ### pan-os-show-user-id-interfaces-config
+
 ***
 Shows the user ID interface configuration.
 
@@ -4996,6 +5406,7 @@ Shows the user ID interface configuration.
 #### Base Command
 
 `pan-os-show-user-id-interfaces-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5015,9 +5426,11 @@ Shows the user ID interface configuration.
 
 
 #### Command Example
+
 ```!pan-os-show-user-id-interfaces-config```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -5033,12 +5446,14 @@ Shows the user ID interface configuration.
 #### Human Readable Output
 
 >### User Interface Configuration:
+>
 >|Name|Zone|EnableUserIdentification|
 >|---|---|---|
 >| ethernet1/1 | test_zone | no |
 
 
 ### pan-os-show-zones-config
+
 ***
 Shows the zones configuration.
 
@@ -5046,6 +5461,7 @@ Shows the zones configuration.
 #### Base Command
 
 `pan-os-show-zones-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5067,9 +5483,11 @@ Shows the zones configuration.
 
 
 #### Command Example
+
 ```!pan-os-show-zones-config```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -5091,12 +5509,14 @@ Shows the zones configuration.
 #### Human Readable Output
 
 >### Zone Configuration:
+>
 >|Name|Network|EnableUserIdentification|
 >|---|---|---|
 >| test_zone | tap: {"member": "ethernet1/1"} | no |
 
 
 ### pan-os-list-configured-user-id-agents
+
 ***
 Retrieves list of user-ID agents configured in the system.
 
@@ -5104,6 +5524,7 @@ Retrieves list of user-ID agents configured in the system.
 #### Base Command
 
 `pan-os-list-configured-user-id-agents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5131,9 +5552,11 @@ Retrieves list of user-ID agents configured in the system.
 
 
 #### Command Example
+
 ```!pan-os-list-configured-user-id-agents```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -5172,6 +5595,7 @@ Retrieves list of user-ID agents configured in the system.
 #### Human Readable Output
 
 >### User ID Agents:
+>
 >|Name|SerialNumber|Host|Port|CollectorName|LdapProxy|NtlmAuth|
 >|---|---|---|---|---|---|---|
 >| testing |  | mine | 12 | demisto | yes | yes |
@@ -5179,6 +5603,7 @@ Retrieves list of user-ID agents configured in the system.
 
 
 ### pan-os-upload-content-update-file
+
 ***
 Uploads a content file to Panorama.
 
@@ -5186,6 +5611,7 @@ Uploads a content file to Panorama.
 #### Base Command
 
 `pan-os-upload-content-update-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5203,16 +5629,20 @@ Uploads a content file to Panorama.
 
 
 #### Command Example
+
 ```pan-os-upload-content-update-file entryID="32@14183" category="content" ```
 
 #### Human Readable Output
+>
 >### Results
+>
 >|Status|Message|
 >|---|---|
 >| Success | line: <file_name> saved |
 
 
 ### pan-os-install-file-content-update
+
 ***
 Installs specific content update file.
 
@@ -5220,6 +5650,7 @@ Installs specific content update file.
 #### Base Command
 
 `pan-os-install-file-content-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5238,27 +5669,36 @@ Installs specific content update file.
 
 
 #### Command Example
+
 ```pan-os-install-file-content-update version_name="panupv2-all-contents-8322-6317" category="content" skip_validity_check="yes" ```
 
 #### Human Readable Output
+>
 >### Results
+>
 >|JobID|Status|
 >|---|---|
 >| 30 | Pending |
 
 
 ### pan-os-platform-get-arp-tables
+
 ***
 Gets all ARP tables from all firewalls in the topology.
+
 #### Base Command
+
 `pan-os-platform-get-arp-tables`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
 | target | Single serial number to target with this command | Optional | 
 
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PANOS.ShowArp.Summary.hostid | String | ID of the PAN-OS host | 
@@ -5273,9 +5713,13 @@ Gets all ARP tables from all firewalls in the topology.
 | PANOS.ShowArp.Result.port | String | Network interface matching entry. | 
 | PANOS.ShowArp.Result.status | String | ARP entry status. | 
 | PANOS.ShowArp.Result.ttl | String | Time to live. | 
+
 #### Command example
+
 ```!pan-os-platform-get-arp-tables```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -5380,11 +5824,13 @@ Gets all ARP tables from all firewalls in the topology.
 #### Human Readable Output
 
 >### PAN-OS ARP Table
+>
 >|dp|hostid|max|timeout|total|
 >|---|---|---|---|---|
 >| dp0 | 0111112222333444 | 1500 | 1800 | 9 |
 
 ### pan-os-platform-get-route-summary
+
 ***
 Pulls all route summary information from the topology.
 
@@ -5392,6 +5838,7 @@ Pulls all route summary information from the topology.
 #### Base Command
 
 `pan-os-platform-get-route-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5411,8 +5858,11 @@ Pulls all route summary information from the topology.
 | PANOS.ShowRouteSummary.Summary.active | Number | Active routes in the routing table .| 
 
 #### Command example
+
 ```!pan-os-platform-get-route-summary```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -5433,11 +5883,13 @@ Pulls all route summary information from the topology.
 #### Human Readable Output
 
 >### PAN-OS Route Summary
+>
 >|active|hostid|limit|total|
 >|---|---|---|---|
 >| 5 | 0111112222333444 | 2500 | 5 |
 
 ### pan-os-platform-get-routes
+
 ***
 Pulls all route information from the topology.
 
@@ -5445,6 +5897,7 @@ Pulls all route information from the topology.
 #### Base Command
 
 `pan-os-platform-get-routes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5472,8 +5925,11 @@ Pulls all route information from the topology.
 | PANOS.ShowRoute.Result.route_table | String | The route table this route belongs to. | 
 
 #### Command example
+
 ```!pan-os-platform-get-routes```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -5560,6 +6016,7 @@ Pulls all route information from the topology.
 #### Human Readable Output
 
 >### PAN-OS Routes
+>
 >|hostid|interface|route_count|
 >|---|---|---|
 >| 0111112222333444 | ethernet1/1 | 2 |
@@ -5567,6 +6024,7 @@ Pulls all route information from the topology.
 >| 0111112222333444 |  | 2 |
 
 ### pan-os-platform-get-system-info
+
 ***
 Gets information from all PAN-OS systems in the topology.
 
@@ -5574,6 +6032,7 @@ Gets information from all PAN-OS systems in the topology.
 #### Base Command
 
 `pan-os-platform-get-system-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5618,8 +6077,11 @@ Gets information from all PAN-OS systems in the topology.
 | PANOS.ShowSystemInfo.Result.url_filtering_version | String | URL filtering content version. | 
 
 #### Command example
+
 ```!pan-os-platform-get-system-info```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -5702,12 +6164,14 @@ Gets information from all PAN-OS systems in the topology.
 #### Human Readable Output
 
 >### PAN-OS System Info
+>
 >|family|hostid|hostname|ip_address|model|sw_version|uptime|
 >|---|---|---|---|---|---|---|
 >| vm | 0111112222333444 | vm-lab-fw1 | 2.2.2.2 | PA-VM | 10.0.5 | 22 days, 0:20:49 |
 >| pc | 1.1.1.1 | Panorama | 1.1.1.1 | Panorama | 10.0.7 | 3 days, 13:56:06 |
 
 ### pan-os-platform-get-device-groups
+
 ***
 Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
 
@@ -5715,6 +6179,7 @@ Gets the operational information of the device groups in the topology(only devic
 #### Base Command
 
 `pan-os-platform-get-device-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5734,6 +6199,7 @@ Gets the operational information of the device groups in the topology(only devic
 | PANOS.DeviceGroupOp.name | String | Device group name. | 
 
 ### pan-os-platform-get-template-stacks
+
 ***
 Gets the operational information of the template stacks in the topology.
 
@@ -5741,6 +6207,7 @@ Gets the operational information of the template stacks in the topology.
 #### Base Command
 
 `pan-os-platform-get-template-stacks`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5761,8 +6228,11 @@ Gets the operational information of the template stacks in the topology.
 | PANOS.TemplateStackOp.name | String | Template stack name. | 
 
 #### Command example
+
 ```!pan-os-platform-get-template-stacks```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -5791,6 +6261,7 @@ Gets the operational information of the template stacks in the topology.
 #### Human Readable Output
 
 >### PAN-OS Operational Template Stack status
+>
 >|connected|hostid|hostname|last_commit_all_state_tpl|name|serial|
 >|---|---|---|---|---|---|
 >| yes | 1.1.1.1 | vm-lab-fw1 | commit succeeded with warnings | LAB-STACK | 0111112222333444 |
@@ -5798,6 +6269,7 @@ Gets the operational information of the template stacks in the topology.
 
 
 ### pan-os-platform-get-global-counters
+
 ***
 Gets global counter information from all the PAN-OS firewalls in the topology.
 
@@ -5805,6 +6277,7 @@ Gets global counter information from all the PAN-OS firewalls in the topology.
 #### Base Command
 
 `pan-os-platform-get-global-counters`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5834,8 +6307,11 @@ Gets global counter information from all the PAN-OS firewalls in the topology.
 | PANOS.ShowCounters.Result.severity | String | Counter severity. | 
 
 #### Command example
+
 ```!pan-os-platform-get-global-counters```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -5883,6 +6359,7 @@ Gets global counter information from all the PAN-OS firewalls in the topology.
 #### Human Readable Output
 
 >### PAN-OS Global Counters
+>
 >|desc|hostid|name|rate|value|
 >|---|---|---|---|---|
 >| Packets received | 11111111111111 | pkt_recv | 15 | 17981379 |
@@ -5972,6 +6449,7 @@ Gets global counter information from all the PAN-OS firewalls in the topology.
 
 
 ### pan-os-platform-get-bgp-peers
+
 ***
 Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
 
@@ -5979,6 +6457,7 @@ Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
 #### Base Command
 
 `pan-os-platform-get-bgp-peers`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6011,8 +6490,11 @@ Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
 | PANOS.ShowBGPPeers.Result.outgoing_advertised | String | Number of advertised routes to the peer. | 
 
 #### Command example
+
 ```!pan-os-platform-get-bgp-peers```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6050,12 +6532,14 @@ Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
 #### Human Readable Output
 
 >### PAN-OS BGP Peers
+>
 >|hostid|incoming_accepted|peer|status|
 >|---|---|---|---|
 >| 11111111111111 | 0 | testlab-server | Active |
 
 
 ### pan-os-platform-get-available-software
+
 ***
 Check the devices for software that is available to be installed.
 
@@ -6063,6 +6547,7 @@ Check the devices for software that is available to be installed.
 #### Base Command
 
 `pan-os-platform-get-available-software`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6088,8 +6573,11 @@ Check the devices for software that is available to be installed.
 | PANOS.SoftwareVersions.Summary.uploaded | Boolean | True if the software version has been uploaded to the system. | 
 
 #### Command example
+
 ```!pan-os-platform-get-available-software```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6116,6 +6604,7 @@ Check the devices for software that is available to be installed.
 #### Human Readable Output
 
 >### PAN-OS Available Software Versions
+>
 >|current|downloaded|filename|hostid|latest|release_notes|size|size_kb|uploaded|version|
 >|---|---|---|---|---|---|---|---|---|---|
 >| false | false | PanOS_vm-10.2.0 | 11111111111111 | true | https:<span>//</span>www.paloaltonetworks.com/documentation/10-2/pan-os/pan-os-release-notes | 1010 | 1034657 | false | 10.2.0 |
@@ -6123,6 +6612,7 @@ Check the devices for software that is available to be installed.
 >| false | false | PanOS_vm-10.1.4-h4 | 11111111111111 | false | https:<span>//</span>www.paloaltonetworks.com/documentation/10-1/pan-os/pan-os-release-notes | 407 | 416843 | false | 10.1.4-h4 |
 
 ### pan-os-platform-get-ha-state
+
 ***
 Get the HA state and associated details from the given device and any other details.
 
@@ -6130,6 +6620,7 @@ Get the HA state and associated details from the given device and any other deta
 #### Base Command
 
 `pan-os-platform-get-ha-state`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6149,8 +6640,11 @@ Get the HA state and associated details from the given device and any other deta
 | PANOS.HAState.peer | String | HA peer. | 
 
 #### Command example
+
 ```!pan-os-platform-get-ha-state```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6175,6 +6669,7 @@ Get the HA state and associated details from the given device and any other deta
 #### Human Readable Output
 
 >### PAN-OS HA State
+>
 >|active|hostid|status|
 >|---|---|---|
 >| true | 11111111111111 | HA Not enabled. |
@@ -6182,6 +6677,7 @@ Get the HA state and associated details from the given device and any other deta
 
 
 ### pan-os-platform-get-jobs
+
 ***
 Get all the jobs from the devices in the environment, or a single job when ID is specified.
 
@@ -6189,6 +6685,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 #### Base Command
 
 `pan-os-platform-get-jobs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6219,8 +6716,11 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 | PANOS.JobStatus.warnings | String | The warnings of the job. | 
 
 #### Command example
+
 ```!pan-os-platform-get-jobs```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6263,12 +6763,14 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 #### Human Readable Output
 
 >### PAN-OS Job Status
+>
 >|hostid|id|positionInQ|progress|result|status|stoppable|tenq|tfin|type|user|warnings|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 11111111111111 | 1 | 0 | 100 | OK | FIN | no | 2022/03/15 14:17:16 | 14:18:17 | Downld |  |  |
 >| 22222222222222 | 2 | 0 | 01:02:15 | OK | FIN | no | 2022/03/16 01:02:04 | 01:02:15 | BuildXMLCache |  |  |
 
 ### pan-os-platform-download-software
+
 ***
 Download the provided software version onto the device.
 
@@ -6276,6 +6778,7 @@ Download the provided software version onto the device.
 #### Base Command
 
 `pan-os-platform-download-software`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6294,8 +6797,11 @@ Download the provided software version onto the device.
 | PANOS.DownloadStatus.Summary.started | String | Whether the download process started. | 
 
 #### Command example
+
 ```!pan-os-platform-download-software version=9.1.0```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6318,12 +6824,14 @@ Download the provided software version onto the device.
 #### Human Readable Output
 
 >### PAN-OS Software Download request Status
+>
 >|hostid|started|
 >|---|---|
 >| 11111111111111 | true |
 >| 192.168.1.145 | true |
 
 ### pan-os-apply-dns-signature-policy
+
 ***
 Allows assigning of EDL to the Anti-Spyware profile under "DNS Signature Policies".
 
@@ -6331,6 +6839,7 @@ Allows assigning of EDL to the Anti-Spyware profile under "DNS Signature Policie
 #### Base Command
 
 `pan-os-apply-dns-signature-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6348,7 +6857,9 @@ There is no context output for this command.
 #### Human Readable Output
 
 **success**
+
 ### pan-os-platform-reboot
+
 ***
 Reboot the given device by hostid. Warning: This command has no confirmation and the device
 will immediately reboot.
@@ -6357,6 +6868,7 @@ will immediately reboot.
 #### Base Command
 
 `pan-os-platform-reboot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6372,8 +6884,11 @@ will immediately reboot.
 | PANOS.RestartStatus.Summary.started | String | Whether the system reboot has started. | 
 
 #### Command example
+
 ```!pan-os-platform-reboot target=11111111111111```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6390,6 +6905,7 @@ will immediately reboot.
 ```
 
 ### pan-os-platform-get-system-status
+
 ***
 Checks the status of the given device, checking whether it's up or down and if the operational mode is normal.
 
@@ -6397,6 +6913,7 @@ Checks the status of the given device, checking whether it's up or down and if t
 #### Base Command
 
 `pan-os-platform-get-system-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6412,8 +6929,11 @@ Checks the status of the given device, checking whether it's up or down and if t
 | PANOS.SystemStatus.up | String | Whether the host device is up or still unavailable. | 
 
 #### Command example
+
 ```!pan-os-platform-get-system-status target=11111111111111```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6426,6 +6946,7 @@ Checks the status of the given device, checking whether it's up or down and if t
 ```
 
 ### pan-os-platform-update-ha-state
+
 ***
 Checks the status of the given device, checking whether it's up or down and the operational mode normal.
 
@@ -6433,6 +6954,7 @@ Checks the status of the given device, checking whether it's up or down and the 
 #### Base Command
 
 `pan-os-platform-update-ha-state`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6449,8 +6971,11 @@ Checks the status of the given device, checking whether it's up or down and the 
 | PANOS.HAStateUpdate.state | String | New HA state. | 
 
 #### Command example
+
 ```!pan-os-platform-update-ha-state hostid=11111111111111 state=functional```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6463,6 +6988,7 @@ Checks the status of the given device, checking whether it's up or down and the 
 ```
 
 ### pan-os-hygiene-check-log-forwarding
+
 ***
 Checks that at least one log forwarding profile is configured according to best practices.
 
@@ -6470,6 +6996,7 @@ Checks that at least one log forwarding profile is configured according to best 
 #### Base Command
 
 `pan-os-hygiene-check-log-forwarding`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6492,8 +7019,11 @@ Checks that at least one log forwarding profile is configured according to best 
 | PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
 
 #### Command example
+
 ```!pan-os-hygiene-check-log-forwarding```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6549,6 +7079,7 @@ Checks that at least one log forwarding profile is configured according to best 
 #### Human Readable Output
 
 >### PAN-OS Configuration Hygiene Check
+>
 >|description|issue_code|issue_count|result|
 >|---|---|---|---|
 >| Fails if there are no valid log forwarding profiles configured. | BP-V-1 | 0 | ✔️ |
@@ -6557,6 +7088,7 @@ Checks that at least one log forwarding profile is configured according to best 
 
 
 ### pan-os-hygiene-check-vulnerability-profiles
+
 ***
 Checks the configured vulnerability profiles to ensure at least one meets best practices.
 
@@ -6564,6 +7096,7 @@ Checks the configured vulnerability profiles to ensure at least one meets best p
 #### Base Command
 
 `pan-os-hygiene-check-vulnerability-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6588,8 +7121,11 @@ Checks the configured vulnerability profiles to ensure at least one meets best p
 | PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
 
 #### Command example
+
 ```!pan-os-hygiene-check-vulnerability-profiles```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6610,12 +7146,14 @@ Checks the configured vulnerability profiles to ensure at least one meets best p
 #### Human Readable Output
 
 >### PAN-OS Configuration Hygiene Check
+>
 >|description|issue_code|issue_count|result|
 >|---|---|---|---|
 >| Fails if no vulnerability profile is configured for visibility. | BP-V-4 | 0 | ✔️ |
 
 
 ### pan-os-platform-install-software
+
 ***
 Install the given software version onto the device. Download the software first with panorama-download-panos-version.
 
@@ -6623,6 +7161,7 @@ Install the given software version onto the device. Download the software first 
 #### Base Command
 
 `pan-os-platform-install-software`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6641,8 +7180,11 @@ Install the given software version onto the device. Download the software first 
 | PANOS.InstallStatus.Summary.started | String | Whether the download process has started. | 
 
 #### Command example
+
 ```!pan-os-platform-install-software version=9.1.0```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6665,12 +7207,14 @@ Install the given software version onto the device. Download the software first 
 #### Human Readable Output
 
 >### PAN-OS Software Install request Status
+>
 >|hostid|started|
 >|---|---|
 >| 1111111111111 | true |
 >| 192.168.1.145 | true |
 
 ### pan-os-hygiene-check-log-forwarding
+
 ***
 Checks that at least one log forwarding profile is configured according to best practices.
 
@@ -6678,6 +7222,7 @@ Checks that at least one log forwarding profile is configured according to best 
 #### Base Command
 
 `pan-os-hygiene-check-log-forwarding`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6700,8 +7245,11 @@ Checks that at least one log forwarding profile is configured according to best 
 | PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
 
 #### Command example
+
 ```!pan-os-hygiene-check-log-forwarding```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6757,6 +7305,7 @@ Checks that at least one log forwarding profile is configured according to best 
 #### Human Readable Output
 
 >### PAN-OS Configuration Hygiene Check
+>
 >|description|issue_code|issue_count|result|
 >|---|---|---|---|
 >| Fails if there are no valid log forwarding profiles configured. | BP-V-1 | 0 | ✔️ |
@@ -6765,6 +7314,7 @@ Checks that at least one log forwarding profile is configured according to best 
 
 
 ### pan-os-hygiene-check-vulnerability-profiles
+
 ***
 Checks the configured vulnerability profiles to ensure at least one meets best practices.
 
@@ -6772,6 +7322,7 @@ Checks the configured vulnerability profiles to ensure at least one meets best p
 #### Base Command
 
 `pan-os-hygiene-check-vulnerability-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6796,8 +7347,11 @@ Checks the configured vulnerability profiles to ensure at least one meets best p
 | PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
 
 #### Command example
+
 ```!pan-os-hygiene-check-vulnerability-profiles```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6818,12 +7372,14 @@ Checks the configured vulnerability profiles to ensure at least one meets best p
 #### Human Readable Output
 
 >### PAN-OS Configuration Hygiene Check
+>
 >|description|issue_code|issue_count|result|
 >|---|---|---|---|
 >| Fails if no vulnerability profile is configured for visibility. | BP-V-4 | 0 | ✔️ |
 
 
 ### pan-os-hygiene-check-spyware-profiles
+
 ***
 Checks the configured Anti-spyware profiles to ensure at least one meets best practices.
 
@@ -6831,6 +7387,7 @@ Checks the configured Anti-spyware profiles to ensure at least one meets best pr
 #### Base Command
 
 `pan-os-hygiene-check-spyware-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6855,8 +7412,11 @@ Checks the configured Anti-spyware profiles to ensure at least one meets best pr
 | PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
 
 #### Command example
+
 ```!pan-os-hygiene-check-spyware-profiles```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6877,12 +7437,14 @@ Checks the configured Anti-spyware profiles to ensure at least one meets best pr
 #### Human Readable Output
 
 >### PAN-OS Configuration Hygiene Check
+>
 >|description|issue_code|issue_count|result|
 >|---|---|---|---|
 >| Fails if no spyware profile is configured for visibility. | BP-V-5 | 0 | ✔️ |
 
 
 ### pan-os-hygiene-check-url-filtering-profiles
+
 ***
 Checks the configured URL Filtering profiles to ensure at least one meets best practices.
 
@@ -6890,6 +7452,7 @@ Checks the configured URL Filtering profiles to ensure at least one meets best p
 #### Base Command
 
 `pan-os-hygiene-check-url-filtering-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6912,8 +7475,11 @@ Checks the configured URL Filtering profiles to ensure at least one meets best p
 | PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
 
 #### Command example
+
 ```!pan-os-hygiene-check-url-filtering-profiles```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6934,12 +7500,14 @@ Checks the configured URL Filtering profiles to ensure at least one meets best p
 #### Human Readable Output
 
 >### PAN-OS Configuration Hygiene Check
+>
 >|description|issue_code|issue_count|result|
 >|---|---|---|---|
 >| Fails if no spyware profile is configured for url-filtering | BP-V-6 | 0 | ✔️ |
 
 
 ### pan-os-hygiene-conforming-url-filtering-profiles
+
 ***
 Returns a list of existing PANOS URL filtering objects that conform to best practices.
 
@@ -6947,6 +7515,7 @@ Returns a list of existing PANOS URL filtering objects that conform to best prac
 #### Base Command
 
 `pan-os-hygiene-conforming-url-filtering-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6964,8 +7533,11 @@ Returns a list of existing PANOS URL filtering objects that conform to best prac
 | PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
 
 #### Command example
+
 ```!pan-os-hygiene-conforming-url-filtering-profiles```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -6990,6 +7562,7 @@ Returns a list of existing PANOS URL filtering objects that conform to best prac
 #### Human Readable Output
 
 >### PAN-OS Objects
+>
 >|container_name|hostid|name|object_type|
 >|---|---|---|---|
 >| shared | 192.168.1.145 | Outbound-URL | URLFilteringProfile |
@@ -6997,6 +7570,7 @@ Returns a list of existing PANOS URL filtering objects that conform to best prac
 
 
 ### pan-os-hygiene-conforming-spyware-profiles
+
 ***
 Returns all Anti-spyware profiles that conform to best practices.
 
@@ -7004,6 +7578,7 @@ Returns all Anti-spyware profiles that conform to best practices.
 #### Base Command
 
 `pan-os-hygiene-conforming-spyware-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7023,8 +7598,11 @@ Returns all Anti-spyware profiles that conform to best practices.
 | PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
 
 #### Command example
+
 ```!pan-os-hygiene-conforming-spyware-profiles```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -7055,6 +7633,7 @@ Returns all Anti-spyware profiles that conform to best practices.
 #### Human Readable Output
 
 >### PAN-OS Objects
+>
 >|container_name|hostid|name|object_type|
 >|---|---|---|---|
 >| shared | 192.168.1.145 | Outbound-AS | AntiSpywareProfile |
@@ -7063,6 +7642,7 @@ Returns all Anti-spyware profiles that conform to best practices.
 
 
 ### pan-os-hygiene-conforming-vulnerability-profiles
+
 ***
 Returns all Vulnerability profiles that conform to best practices.
 
@@ -7070,6 +7650,7 @@ Returns all Vulnerability profiles that conform to best practices.
 #### Base Command
 
 `pan-os-hygiene-conforming-vulnerability-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7089,8 +7670,11 @@ Returns all Vulnerability profiles that conform to best practices.
 | PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
 
 #### Command example
+
 ```!pan-os-hygiene-conforming-vulnerability-profiles```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -7121,6 +7705,7 @@ Returns all Vulnerability profiles that conform to best practices.
 #### Human Readable Output
 
 >### PAN-OS Objects
+>
 >|container_name|hostid|name|object_type|
 >|---|---|---|---|
 >| shared | 192.168.1.145 | Outbound-VP | VulnerabilityProfile |
@@ -7129,6 +7714,7 @@ Returns all Vulnerability profiles that conform to best practices.
 
 
 ### pan-os-hygiene-check-security-zones
+
 ***
 Check configured security zones have correct settings.
 
@@ -7136,6 +7722,7 @@ Check configured security zones have correct settings.
 #### Base Command
 
 `pan-os-hygiene-check-security-zones`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7158,8 +7745,11 @@ Check configured security zones have correct settings.
 | PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
 
 #### Command example
+
 ```!pan-os-hygiene-check-security-zones```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -7189,12 +7779,14 @@ Check configured security zones have correct settings.
 #### Human Readable Output
 
 >### PAN-OS Configuration Hygiene Check
+>
 >|description|issue_code|issue_count|result|
 >|---|---|---|---|
 >| Fails when a security zone has no log forwarding setting. | BP-V-7 | 1 | ❌ |
 
 
 ### pan-os-hygiene-check-security-rules
+
 ***
 Check security rules are configured correctly.
 
@@ -7202,6 +7794,7 @@ Check security rules are configured correctly.
 #### Base Command
 
 `pan-os-hygiene-check-security-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7224,8 +7817,11 @@ Check security rules are configured correctly.
 | PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
 
 #### Command example
+
 ```!pan-os-hygiene-check-security-rules```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -7281,6 +7877,7 @@ Check security rules are configured correctly.
 #### Human Readable Output
 
 >### PAN-OS Configuration Hygiene Check
+>
 >|description|issue_code|issue_count|result|
 >|---|---|---|---|
 >| Fails when a security rule is not configured to log at session end. | BP-V-8 | 1 | ❌ |
@@ -7289,6 +7886,7 @@ Check security rules are configured correctly.
 
 
 ### pan-os-hygiene-fix-log-forwarding
+
 ***
 Fix log forwarding issues identified by pan-os-hygiene-check-log-forwarding.
 
@@ -7296,6 +7894,7 @@ Fix log forwarding issues identified by pan-os-hygiene-check-log-forwarding.
 #### Base Command
 
 `pan-os-hygiene-fix-log-forwarding`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7314,8 +7913,11 @@ Fix log forwarding issues identified by pan-os-hygiene-check-log-forwarding.
 | PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
 
 #### Command example
+
 ```!pan-os-hygiene-fix-log-forwarding issue=${PANOS.ConfigurationHygiene.Result}```
+
 #### Context Example
+
 ```json
 {
   "PANOS": {
@@ -7333,6 +7935,7 @@ Fix log forwarding issues identified by pan-os-hygiene-check-log-forwarding.
 ```
 
 ### pan-os-hygiene-fix-security-zone-log-settings
+
 ***
 Fixes security zones that are configured without a valid log forwarding profile.
 
@@ -7340,6 +7943,7 @@ Fixes security zones that are configured without a valid log forwarding profile.
 #### Base Command
 
 `pan-os-hygiene-fix-security-zone-log-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7359,8 +7963,11 @@ Fixes security zones that are configured without a valid log forwarding profile.
 | PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
 
 #### Command example
+
 ```!pan-os-hygiene-fix-security-zone-log-settings issue=${PANOS.ConfigurationHygiene.Result} log_forwarding_profile_name="test-fwd-profile"```
+
 #### Context Example
+
 ```json
 {
   "PANOS": {
@@ -7378,6 +7985,7 @@ Fixes security zones that are configured without a valid log forwarding profile.
 ```
 
 ### pan-os-hygiene-fix-security-rule-log-settings
+
 ***
 Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
 
@@ -7385,6 +7993,7 @@ Fixed security rules that have incorrect log settings by adding a log forwarding
 #### Base Command
 
 `pan-os-hygiene-fix-security-rule-log-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7404,8 +8013,11 @@ Fixed security rules that have incorrect log settings by adding a log forwarding
 | PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
 
 #### Command example
+
 ```!pan-os-hygiene-fix-security-rule-log-settings issue=${PANOS.ConfigurationHygiene.Result.[0]} log_forwarding_profile_name="test-fwd-profile""```
+
 #### Context Example
+
 ```json
 {
   "PANOS": {
@@ -7423,6 +8035,7 @@ Fixed security rules that have incorrect log settings by adding a log forwarding
 ```
 
 ### pan-os-hygiene-fix-security-rule-profile-settings
+
 ***
 Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
 
@@ -7430,6 +8043,7 @@ Fixed security rules that have incorrect log settings by adding a log forwarding
 #### Base Command
 
 `pan-os-hygiene-fix-security-rule-profile-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7449,8 +8063,11 @@ Fixed security rules that have incorrect log settings by adding a log forwarding
 | PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
 
 #### Command example
+
 ```!pan-os-hygiene-fix-security-rule-log-settings issue=${PANOS.ConfigurationHygiene.Result.[0]} log_forwarding_profile_name="test-fwd-profile""```
+
 #### Context Example
+
 ```json
 {
   "PANOS": {
@@ -7468,6 +8085,7 @@ Fixed security rules that have incorrect log settings by adding a log forwarding
 ```
 
 ### pan-os-config-get-object
+
 ***
 Searches and returns a reference for the given object type and name. If no name is provided, all objects of the given type will be returned.
 
@@ -7475,11 +8093,12 @@ Searches and returns a reference for the given object type and name. If no name 
 #### Base Command
 
 `pan-os-config-get-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_type | The type of object to search; see https://pandevice.readthedocs.io/en/latest/module-objects.html. Possible values are: AddressObject, AddressGroup, ServiceGroup, ServiceObject, ApplicationObject, ApplicationGroup, LogForwardingProfile, SecurityProfileGroup. | Required | 
+| object_type | The type of object to search; see <https://pandevice.readthedocs.io/en/latest/module-objects.html>. Possible values are: AddressObject, AddressGroup, ServiceGroup, ServiceObject, ApplicationObject, ApplicationGroup, LogForwardingProfile, SecurityProfileGroup. | Required | 
 | device_filter_string | If provided, only objects from the given device are returned. | Optional | 
 | object_name | The name of the object reference to return if looking for a specific object. Supports regex if "use_regex" is set. | Optional | 
 | parent | The parent vsys or device group to search. If not provided, all will be returned. | Optional | 
@@ -7496,8 +8115,11 @@ Searches and returns a reference for the given object type and name. If no name 
 | PANOS.PanosObject.object_type | String | The PAN-OS python object type. | 
 
 #### Command example
+
 ```!pan-os-config-get-object object_type="AddressObject"```
+
 #### Context Example
+
 ```json
 {
     "PANOS": {
@@ -7528,6 +8150,7 @@ Searches and returns a reference for the given object type and name. If no name 
 #### Human Readable Output
 
 >### PAN-OS Objects
+>
 >|container_name|hostid|name|object_type|
 >|---|---|---|---|
 >| shared | 192.168.1.145 | Sinkhole-IPv4 | AddressObject |
@@ -7563,6 +8186,7 @@ Get the device state from the provided device. Note; This will attempt to connec
 | InfoFile.Info | String | Basic information of the file. | 
 
 ### pan-os-push-to-template
+
 ***
 Pushes the given PAN-OS template to the given devices or all devices that belong to the template.
 
@@ -7570,6 +8194,7 @@ Pushes the given PAN-OS template to the given devices or all devices that belong
 #### Base Command
 
 `pan-os-push-to-template`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7591,8 +8216,11 @@ Pushes the given PAN-OS template to the given devices or all devices that belong
 | Panorama.Push.Errors | String | The push errors. | 
 
 #### Command example
+
 ```!pan-os-push-to-template template=LAB```
+
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -7608,12 +8236,14 @@ Pushes the given PAN-OS template to the given devices or all devices that belong
 #### Human Readable Output
 
 >### Push to Template:
+>
 >|JobID|Status|
 >|---|---|
 >| 564 | Pending |
 
 
 ### pan-os-push-to-template-stack
+
 ***
 Pushes the given PAN-OS template-stack to the given devices or all devices that belong to the template stack.
 
@@ -7621,6 +8251,7 @@ Pushes the given PAN-OS template-stack to the given devices or all devices that 
 #### Base Command
 
 `pan-os-push-to-template-stack`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7642,8 +8273,11 @@ Pushes the given PAN-OS template-stack to the given devices or all devices that 
 | Panorama.Push.Errors | String | The push errors. | 
 
 #### Command example
+
 ```!pan-os-push-to-template-stack template-stack=LAB-STACK```
+
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -7659,12 +8293,14 @@ Pushes the given PAN-OS template-stack to the given devices or all devices that 
 #### Human Readable Output
 
 >### Push to Template:
+>
 >|JobID|Status|
 >|---|---|
 >| 565 | Pending |
 
 
 ### pan-os-get-running-config
+
 ***
 Pull the running config file
 
@@ -7672,6 +8308,7 @@ Pull the running config file
 #### Base Command
 
 `pan-os-get-running-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7682,9 +8319,13 @@ Pull the running config file
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!pan-os-get-running-config target=00000000000```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -7704,6 +8345,7 @@ There is no context output for this command.
 
 
 ### pan-os-get-merged-config
+
 ***
 Pull the merged config file
 
@@ -7711,6 +8353,7 @@ Pull the merged config file
 #### Base Command
 
 `pan-os-get-merged-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7721,9 +8364,13 @@ Pull the merged config file
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!pan-os-get-merged-config target=0000000000```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -7742,6 +8389,7 @@ There is no context output for this command.
 ```
 
 ### pan-os-list-templates
+
 ***
 Returns a list of available templates. (Used only in Panorama instances).
 
@@ -7749,6 +8397,7 @@ Returns a list of available templates. (Used only in Panorama instances).
 #### Base Command
 
 `pan-os-list-templates`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7771,8 +8420,11 @@ Returns a list of available templates. (Used only in Panorama instances).
 | Panorama.Template.Variable.Description | String | The description of the variable of the template. | 
 
 #### Command example
+
 ```!pan-os-list-templates limit=20```
+
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -7808,12 +8460,14 @@ Returns a list of available templates. (Used only in Panorama instances).
 #### Human Readable Output
 
 >### Templates:
+>
 >|Description|Name|Variable|
 >|---|---|---|
 >|  | test-1 |  |
 >| test description | test-2 | $variable-1,<br/>$variable-2 |
 
 ### pan-os-list-nat-rules
+
 ***
 Returns a list of NAT rules of either a Panorama/firewall instance.
 
@@ -7821,6 +8475,7 @@ Returns a list of NAT rules of either a Panorama/firewall instance.
 #### Base Command
 
 `pan-os-list-nat-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7858,8 +8513,11 @@ Returns a list of NAT rules of either a Panorama/firewall instance.
 | Panorama.NAT.Disabled | String | Whether the rule is disabled. | 
 
 #### Command example
+
 ```!pan-os-list-nat-rules pre_post=pre-rulebase show_uncommitted=true```
+
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -7918,6 +8576,7 @@ Returns a list of NAT rules of either a Panorama/firewall instance.
 #### Human Readable Output
 
 >### Nat Policy Rules:
+>
 >|Name|Tags|Source Zone|Destination Zone|Source Address|Disabled|Destination Address|Destination Interface|Service|Description|
 >|---|---|---|---|---|---|---|---|---|---|
 >| Test |  | any | Admin | bad-url.com | yes | Test_Bla_Bla | any | Test_group | Test |
@@ -7926,6 +8585,7 @@ Returns a list of NAT rules of either a Panorama/firewall instance.
 
 
 ### pan-os-create-nat-rule
+
 ***
 Creates a new NAT rule in a Panorama/firewall instance.
 
@@ -7933,6 +8593,7 @@ Creates a new NAT rule in a Panorama/firewall instance.
 #### Base Command
 
 `pan-os-create-nat-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7964,18 +8625,24 @@ Creates a new NAT rule in a Panorama/firewall instance.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!pan-os-create-nat-rule rulename=test pre_post="pre-rulebase" source_translated_address_type="interface-address" source_translated_interface=a2 source_translation_type="dynamic-ip-and-port" destination_translation_type=dynamic_ip destination_translated_address=1.1.1.1```
+
 #### Human Readable Output
 
 >Nat rule test was created successfully.
+>
 ### pan-os-delete-nat-rule
+
 ***
 Deletes a NAT rule.
 
 #### Base Command
 
 `pan-os-delete-nat-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7988,18 +8655,24 @@ Deletes a NAT rule.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!pan-os-delete-nat-rule rulename=test pre_post="pre-rulebase"```
+
 #### Human Readable Output
 
 >Nat rule test was deleted successfully.
+>
 ### pan-os-edit-nat-rule
+
 ***
 Edits a NAT rule.
 
 #### Base Command
 
 `pan-os-edit-nat-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8015,11 +8688,15 @@ Edits a NAT rule.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!pan-os-edit-nat-rule rulename=test element_to_change=source_translation_static_ip behavior=replace pre_post="pre-rulebase" element_value=3.3.3.3```
+
 #### Human Readable Output
 
 >Nat rule test was edited successfully.
+>
 ### pan-os-list-virtual-routers
 
 ***
@@ -8057,8 +8734,11 @@ Returns a list of virtual routers of either a Panorama/firewall instance.
 
 
 #### Command example
+
 ```!pan-os-list-virtual-routers show_uncommitted=true```
+
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -8244,12 +8924,14 @@ Returns a list of virtual routers of either a Panorama/firewall instance.
 #### Human Readable Output
 
 >### Virtual Routers:
+>
 >|BGP|Interface|Multicast| Name             |OSPF|OSPFv3|RIP|RedistributionProfile|StaticRoute|
 >|---|---|------------------|---|---|---|---|---|---|
 >| no |  |  | virtual-router-1 | no | no | no |  | static_route_ip,<br/>static_route_ip2,<br/>static_route_ip3 |
 >| no | loopback | no | virtual-router-2 | no | no | no | test1,<br/>test-2 | test |
 
 ### pan-os-list-redistribution-profiles
+
 ***
 Returns a list of redistribution-profiles of a specific virtual-router of either a Panorama/firewall instance.
 
@@ -8257,6 +8939,7 @@ Returns a list of redistribution-profiles of a specific virtual-router of either
 #### Base Command
 
 `pan-os-list-redistribution-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8281,8 +8964,11 @@ Returns a list of redistribution-profiles of a specific virtual-router of either
 | Panorama.RedistributionProfile.OSPF | Unknown | The OSPF of the profile. | 
 
 #### Command example
+
 ```!pan-os-list-redistribution-profiles virtual_router=test```
+
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -8341,12 +9027,14 @@ Returns a list of redistribution-profiles of a specific virtual-router of either
 #### Human Readable Output
 
 >### Redistribution profiles for virtual router test-guy
+>
 >|Name|Priority|Action|Filter Type|Filter Destination|Filter Next Hop|BGP|OSPF|
 >|---|---|---|---|---|---|---|---|
 >| test1 | 1 | redist | bgp,<br/>connect,<br/>ospf,<br/>rip,<br/>static | 1.1.1.1 | 2.2.2.2 | Community: local-as,<br/>no-export<br/>ExtendedCommunity: 0x4164ACFCE33404EA | PathType: ext-1,<br/>ext-2,<br/>inter-area,<br/>intra-area<br/>Area: 1.1.1.1,<br/>2.2.2.2<br/>Tag: 1 |
 >| test-2 | 123 | no-redist |  |  |  |  |  |
 
 ### pan-os-create-redistribution-profile
+
 ***
 Creates a new redistribution-profile under a virtual-router for a Panorama/firewall instance.
 
@@ -8354,6 +9042,7 @@ Creates a new redistribution-profile under a virtual-router for a Panorama/firew
 #### Base Command
 
 `pan-os-create-redistribution-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8377,12 +9066,17 @@ Creates a new redistribution-profile under a virtual-router for a Panorama/firew
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!pan-os-create-redistribution-profile name=test virtual_router=virtual-router-1 priority=12 action=redist filter_bgp_extended_community=0x4164ACFCE33404EA filter_source_type=bgp,ospf filter_bgp_community=13,89 filter_ospf_path_type="ext-1" interface=loopback filter_ospf_tag=1.1.1.1,2.2.2.2 filter_ospf_area=1.1.1.1,2.2.2.2 nexthop=1.1.1.1```
+
 #### Human Readable Output
 
 >Redistribution profile test was created successfully.
+>
 ### pan-os-edit-redistribution-profile
+
 ***
 Edits a redistribution-profile in a virtual-router.
 
@@ -8390,6 +9084,7 @@ Edits a redistribution-profile in a virtual-router.
 #### Base Command
 
 `pan-os-edit-redistribution-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8405,13 +9100,17 @@ Edits a redistribution-profile in a virtual-router.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!pan-os-edit-redistribution-profile virtual_router=virtual-router-name name=test element_to_change=filter_type element_value=bgp,ospf```
+
 #### Human Readable Output
 
 >Redistribution profile test was edited successfully.
 
 ### pan-os-delete-redistribution-profile
+
 ***
 Deletes a redistribution-profile from a virtual-router.
 
@@ -8419,6 +9118,7 @@ Deletes a redistribution-profile from a virtual-router.
 #### Base Command
 
 `pan-os-delete-redistribution-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8431,12 +9131,17 @@ Deletes a redistribution-profile from a virtual-router.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!pan-os-delete-redistribution-profile virtual_router=test1 name=test```
+
 #### Human Readable Output
 
 >Redistribution profile test was deleted successfully.
+>
 ### pan-os-list-pbf-rules
+
 ***
 Returns a list of pbf-rules of either a Panorama/firewall instance.
 
@@ -8444,6 +9149,7 @@ Returns a list of pbf-rules of either a Panorama/firewall instance.
 #### Base Command
 
 `pan-os-list-pbf-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8480,8 +9186,11 @@ Returns a list of pbf-rules of either a Panorama/firewall instance.
 | Panorama.PBF.Disabled | String | Whether the rule is disabled. | 
 
 #### Command example
+
 ```!pan-os-list-pbf-rules pre_post="pre-rulebase" show_uncommitted=true debug-mode=true```
+
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -8550,12 +9259,14 @@ Returns a list of pbf-rules of either a Panorama/firewall instance.
 #### Human Readable Output
 
 >### Policy Based Forwarding Rules:
+>
 >|Action|Description|Destination Address|Disabled|Name|Source Address|Source User|Source Zone|Tags|
 >|---|---|---|---|---|---|---|---|---|
 >| forward | Test policy based forwarding rule with a twist | bad-url.com | no | Test_PBF | any | any | Test_Zone | test |
 >| forward | TEst2 | any | no | Test_PBF4 | any | any | internal |  |
 
 ### pan-os-create-pbf-rule
+
 ***
 Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance.
 
@@ -8563,6 +9274,7 @@ Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance
 #### Base Command
 
 `pan-os-create-pbf-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8592,12 +9304,17 @@ Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!pan-os-create-pbf-rule rulename=test4 pre_post="pre-rulebase" enforce_symmetric_return=yes nexthop_address_list=1.1.1.1,2.2.2.2 action=forward description="this is just a description" egress_interface=a2 nexthop="ip-address" nexthop_value=1.1.1.1 negate_source=yes source_zone=1.1.1.1,2.2.2.2 destination_address=1.1.1.1,2.2.2.2 service=dns,service-https```
+
 #### Human Readable Output
 
 >PBF rule test4 was created successfully.
+>
 ### pan-os-edit-pbf-rule
+
 ***
 Edits a redistribution-profile in a virtual-router.
 
@@ -8605,6 +9322,7 @@ Edits a redistribution-profile in a virtual-router.
 #### Base Command
 
 `pan-os-edit-pbf-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8619,12 +9337,17 @@ Edits a redistribution-profile in a virtual-router.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!pan-os-edit-pbf-rule rulename=test4 element_to_change=nexthop_address_list element_value="1.1.1.1,2.2.2.2" pre_post="pre-rulebase"```
+
 #### Human Readable Output
 
 >PBF test4 was edited successfully.
+>
 ### pan-os-delete-pbf-rule
+
 ***
 Deletes a PBF rule.
 
@@ -8632,6 +9355,7 @@ Deletes a PBF rule.
 #### Base Command
 
 `pan-os-delete-pbf-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8644,12 +9368,17 @@ Deletes a PBF rule.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!pan-os-delete-pbf-rule rulename=test4 pre_post="pre-rulebase"```
+
 #### Human Readable Output
 
 >PBF rule test4 was deleted successfully.
+>
 ### pan-os-list-application-groups
+
 ***
 Returns a list of application-groups of either a Panorama/firewall instance.
 
@@ -8657,6 +9386,7 @@ Returns a list of application-groups of either a Panorama/firewall instance.
 #### Base Command
 
 `pan-os-list-application-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8678,8 +9408,11 @@ Returns a list of application-groups of either a Panorama/firewall instance.
 | Panorama.ApplicationGroup.Members | Number | The number of the application that are part of the application-group | 
 
 #### Command example
+
 ```!pan-os-list-application-groups show_uncommitted=true```
+
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -8715,6 +9448,7 @@ Returns a list of application-groups of either a Panorama/firewall instance.
 #### Human Readable Output
 
 >### Application groups:
+>
 >|Applications|Members|Name|
 >|---|---|---|
 >| 1c-enterprise | 1 | test |
@@ -8723,6 +9457,7 @@ Returns a list of application-groups of either a Panorama/firewall instance.
 
 
 ### pan-os-create-application-group
+
 ***
 Creates a new application group rule in a Panorama/firewall instance.
 
@@ -8730,6 +9465,7 @@ Creates a new application group rule in a Panorama/firewall instance.
 #### Base Command
 
 `pan-os-create-application-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8748,8 +9484,11 @@ Creates a new application group rule in a Panorama/firewall instance.
 | Panorama.ApplicationGroup.Members | Number | The number of the applications that are part of the application-group. | 
 
 #### Command example
+
 ```!pan-os-create-application-group name=test-3 applications=1c-enterprise,4shared```
+
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -8768,7 +9507,9 @@ Creates a new application group rule in a Panorama/firewall instance.
 #### Human Readable Output
 
 >application-group test-3 was created successfully.
+>
 ### pan-os-edit-application-group
+
 ***
 Edits an application-group.
 
@@ -8776,6 +9517,7 @@ Edits an application-group.
 #### Base Command
 
 `pan-os-edit-application-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8795,8 +9537,11 @@ Edits an application-group.
 | Panorama.ApplicationGroup.Members | Number | The number of the applications that are part of the application-group | 
 
 #### Command example
+
 ```!pan-os-edit-application-group name=test-3 action=remove applications=4shared```
+
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -8814,7 +9559,9 @@ Edits an application-group.
 #### Human Readable Output
 
 >application-group test-3 was edited successfully.
+>
 ### pan-os-delete-application-group
+
 ***
 Deletes an application-group
 
@@ -8822,6 +9569,7 @@ Deletes an application-group
 #### Base Command
 
 `pan-os-delete-application-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8833,11 +9581,15 @@ Deletes an application-group
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!pan-os-delete-application-group name=test-3```
+
 #### Human Readable Output
 
 >application-group test-3 was deleted successfully.
+>
 ### pan-os-list-tag
 
 ***
@@ -8865,8 +9617,11 @@ Returns a list of tags from Panorama.
 | Panorama.Tag.location | String | The tag's device group location. | 
 
 #### Command example
+
 ```!pan-os-list-tag include_shared_tags=No```
+
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -8893,6 +9648,7 @@ Returns a list of tags from Panorama.
 #### Human Readable Output
 
 >### Tags:
+>
 >|Name|Color|Comment|
 >|---|---|---|
 >| tag1 | color13 |  |
@@ -8921,7 +9677,9 @@ Creates a new tag in Panorama.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!pan-os-create-tag name="testtag" comment="some comment" is_shared=false```
 
 #### Human Readable Output
@@ -8952,6 +9710,7 @@ Edits a tag in Panorama.
 There is no context output for this command.
 
 #### Command example
+
 ```!pan-os-edit-tag name="testtag" new_name="newtesttag" comment="some comment"```
 
 #### Human Readable Output
@@ -8978,6 +9737,7 @@ Deletes a tag from Panorama.
 There is no context output for this command.
 
 #### Command example
+
 ```!pan-os-delete-tag name="testtag"```
 
 #### Human Readable Output
@@ -8988,6 +9748,7 @@ There is no context output for this command.
 
 ***
 Returns a list of all device groups from Panorama.
+
 #### Base Command
 
 `pan-os-list-device-groups`
@@ -9024,6 +9785,7 @@ Exports a tech support file (TSF).
 There is no context output for this command.
 
 #### Command example
+
 ```!pan-os-export-tech-support-file```
 
 #### Human Readable Output
@@ -9062,9 +9824,11 @@ Returns a list of security profile groups from Panorama.
 | Panorama.ProfileGroup.disable-override | String | Whether overriding the security profile group is disabled. | 
 
 #### Command example
+
 ```!pan-os-list-security-profile-group```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -9094,6 +9858,7 @@ Returns a list of security profile groups from Panorama.
 #### Human Readable Output
 
 >### Security Profile Groups:
+>
 >|Name|Location|Antivirus Profile|Anti-Spyware Profile|Vulnerability Protection Profile|URL Filtering Profile|File Blocking Profile|Data Filtering Profile|WildFire Analysis Profile|
 >|---|---|---|---|---|---|---|---|---|
 >| test_security_pg | TestDevice | default | default |  |  |  |  |  |
@@ -9127,6 +9892,7 @@ Creates a new security profile group in Panorama.
 There is no context output for this command.
 
 #### Command example
+
 ```!pan-os-create-security-profile-group group_name="test_security_pg" antivirus_profile="default" anti_spyware_profile="default"```
 
 #### Human Readable Output
@@ -9156,6 +9922,7 @@ Edits the security profile group in Panorama.
 There is no context output for this command.
 
 #### Command example
+
 ```!pan-os-edit-security-profile-group group_name="test-spg" profile_to_change="Antivirus Profile" profile_value="default"```
 
 #### Human Readable Output
@@ -9183,6 +9950,7 @@ Deletes a security profile group from Panorama.
 There is no context output for this command.
 
 #### Command example
+
 ```!pan-os-delete-security-profile-group group_name="test-spg"```
 
 #### Human Readable Output
@@ -9217,9 +9985,11 @@ Gets the audit comment of a rule.
 
 
 #### Command example
+
 ```!pan-os-get-audit-comment rule_name="test" rule_type="Security Rule" pre_post=Post```
 
 #### Context Example
+
 ```json
 {
     "Panorama": {
@@ -9237,9 +10007,11 @@ Gets the audit comment of a rule.
 #### Human Readable Output
 
 >### Audit Comment for Rule: test
+>
 >|Comment|Rule Name|Rule Type|
 >|---|---|---|
 >| some comment | test | Security Rule |
+>
 ### pan-os-add-profile-exception
 
 ***
@@ -9264,11 +10036,13 @@ Add an exception to a Vulnerability Protection profile or Anti Spyware profile.
 | ip_duration_sec | Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
 
 #### Command example
+
 ```!pan-os-add-profile-exception profile_name="test1" threat="10002" action="Drop"```
 
 #### Context Output
 
 There is no context output for this command.
+
 ### pan-os-list-profile-exception
 
 ***
@@ -9286,6 +10060,7 @@ List the exceptions in a Vulnerability Protection profile or Anti Spyware profil
 | profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
 
 #### Command example
+
 ```!pan-os-list-profile-exception profile_name="test1" profile_type="Vulnerability Protection Profile"```
 
 #### Context Output
@@ -9325,11 +10100,13 @@ Delete an exception to a Vulnerability Protection profile or Anti Spyware profil
 | profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
 
 #### Command example
+
 ```!pan-os-delete-profile-exception profile_name="test2" threat="10005" profile_type="Vulnerability Protection Profile"```
 
 #### Context Output
 
 There is no context output for this command.
+
 ### pan-os-edit-profile-exception
 
 ***
@@ -9354,6 +10131,7 @@ Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
 | ip_duration_sec | Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
 
 #### Command example
+
 ```!pan-os-edit-profile-exception profile_name="test1" threat="10002" action="Drop"```
 
 #### Context Output
@@ -9386,6 +10164,7 @@ Create a default master key that encrypts all the private keys and passwords in 
 * The command invalidates the current API key and requires obtaining a new one using the instructions in [the PAN-OS and Panorama API usage guide](https://docs.paloaltonetworks.com/pan-os/11-1/pan-os-panorama-api/pan-os-api-authentication/get-your-api-key). All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
 
 #### Command example
+
 ```!pan-os-create-master-key master_key="MyFakeMasterKey1" lifetime_in_hours=2160 reminder_in_hours=1992```
 
 #### Context Output
@@ -9425,6 +10204,7 @@ Update the default master key that encrypts all the private keys and passwords i
 * The command invalidates the current API key and requires obtaining a new one using the instructions in [the PAN-OS and Panorama API usage guide](https://docs.paloaltonetworks.com/pan-os/11-1/pan-os-panorama-api/pan-os-api-authentication/get-your-api-key). All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
 
 #### Command example
+
 ```!pan-os-update-master-key current_master_key="MyFakeMasterKey1" new_master_key="MyFakeMasterKey2" lifetime_in_hours=2160 reminder_in_hours=1992```
 
 #### Context Output
@@ -9451,6 +10231,7 @@ Show the details of the default master key that encrypts all the private keys an
 There are no input arguments for this command.
 
 #### Command example
+
 ```!pan-os-get-master-key-details```
 
 #### Context Output
@@ -9492,6 +10273,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Master Key Details
+>
 >| Auto-renew master key | Encrypted on HSM | Remind at | Expire at |
 >| --- | --- | --- | --- |
 >| 0 | no | 2024/11/27 04:26:05 | 2025/02/18 04:26:05 |

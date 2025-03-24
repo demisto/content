@@ -36,12 +36,16 @@ This integration was integrated and tested with version v1 of FraudWatch Phishpo
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Fetch Incidents
+
 Due to limitations in FraudWatch API, first fetch timestamp can be at most 1 day.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fraudwatch-incidents-list
+
 ***
 Get a list of incidents from FraudWatch service.
 
@@ -49,6 +53,7 @@ Get a list of incidents from FraudWatch service.
 #### Base Command
 
 `fraudwatch-incidents-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -88,9 +93,11 @@ Get a list of incidents from FraudWatch service.
 
 
 #### Command Example
+
 ```!fraudwatch-incidents-list brand="Testing Brand 2" from="2020-12-12" limit=3 status=monitor```
 
 #### Context Example
+
 ```json
 {
     "FraudWatch": {
@@ -178,14 +185,16 @@ Get a list of incidents from FraudWatch service.
 #### Human Readable Output
 
 >### FraudWatch Incidents
+>
 >|identifier|reference_id|url|status|type|brand|client|content_ip|created_by|discovered_by|current_duration|date_opened|additional_urls|link|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| JJJ-595483 | abc1234 | http://www.malicious.com | monitor | Vishing | Testing Brand 2 | Palo Alto |  | Client | client | 85882 | 2021-02-07T15:37:12.000Z | http://www.malicious2.com,<br/>http://www.malicious3.com,<br/>http://www.malicious4.com,<br/>http://www.malicious5.com | https://www.phishportal.com/client/incident/JJJ-595483 |
->| JJJ-992295 | abc1234 | http://www.malicious.com | monitor | Vishing | Testing Brand 2 | Palo Alto |  | Client | client | 86649 | 2021-02-07T15:24:25.000Z | http://www.malicious2.com,<br/>http://www.malicious3.com,<br/>http://www.malicious4.com,<br/>http://www.malicious5.com | https://www.phishportal.com/client/incident/JJJ-992295 |
->| JJJ-302171 | malicious1 | http://malicious.com | monitor | Brand Abuse | Testing Brand 2 | Palo Alto | 192.168.0.1 | Client | client | 340758 | 2021-02-04T16:49:16.000Z | abuse.com | https://www.phishportal.com/client/incident/JJJ-302171 |
+>| JJJ-595483 | abc1234 | <http://www.malicious.com> | monitor | Vishing | Testing Brand 2 | Palo Alto |  | Client | client | 85882 | 2021-02-07T15:37:12.000Z | <http://www.malicious2.com>,<br/><http://www.malicious3.com>,<br/><http://www.malicious4.com>,<br/><http://www.malicious5.com> | <https://www.phishportal.com/client/incident/JJJ-595483> |
+>| JJJ-992295 | abc1234 | <http://www.malicious.com> | monitor | Vishing | Testing Brand 2 | Palo Alto |  | Client | client | 86649 | 2021-02-07T15:24:25.000Z | <http://www.malicious2.com>,<br/><http://www.malicious3.com>,<br/><http://www.malicious4.com>,<br/><http://www.malicious5.com> | <https://www.phishportal.com/client/incident/JJJ-992295> |
+>| JJJ-302171 | malicious1 | <http://malicious.com> | monitor | Brand Abuse | Testing Brand 2 | Palo Alto | 192.168.0.1 | Client | client | 340758 | 2021-02-04T16:49:16.000Z | abuse.com | <https://www.phishportal.com/client/incident/JJJ-302171> |
 
 
 ### fraudwatch-incident-report
+
 ***
 Report an incident to FraudWatch service.
 
@@ -193,6 +202,7 @@ Report an incident to FraudWatch service.
 #### Base Command
 
 `fraudwatch-incident-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -232,9 +242,11 @@ Report an incident to FraudWatch service.
 
 
 #### Command Example
+
 ```!fraudwatch-incident-report brand="Testing Brand 1" primary_url="http://www.maliciousaddress.com" type="vishing" reference_id="abc123" urls="http://abuse.com"```
 
 #### Context Example
+
 ```json
 {
     "FraudWatch": {
@@ -268,12 +280,14 @@ Report an incident to FraudWatch service.
 #### Human Readable Output
 
 >### Created FraudWatch Incident
+>
 >|additional_urls|brand|client|created_by|current_duration|date_opened|discovered_by|identifier|link|reference_id|status|type|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| http://abuse.com | Testing Brand 1 | Palo Alto | FraudWatch | 0 | 2021-02-08T15:28:37.000Z | client | JJJ-358877 | https://www.phishportal.com/client/incident/JJJ-358877 | abc123 | monitor | Vishing | http://www.maliciousaddress.com |
+>| <http://abuse.com> | Testing Brand 1 | Palo Alto | FraudWatch | 0 | 2021-02-08T15:28:37.000Z | client | JJJ-358877 | <https://www.phishportal.com/client/incident/JJJ-358877> | abc123 | monitor | Vishing | <http://www.maliciousaddress.com> |
 
 
 ### fraudwatch-incident-update
+
 ***
 Updates the incident associated with the 'incident_id' with the specified argument values.
 
@@ -281,6 +295,7 @@ Updates the incident associated with the 'incident_id' with the specified argume
 #### Base Command
 
 `fraudwatch-incident-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -297,6 +312,7 @@ Updates the incident associated with the 'incident_id' with the specified argume
 There is no context output for this command.
 
 #### Command Example
+
 ```!fraudwatch-incident-update incident_id=JJJ-504830 brand="Testing Brand 2" reference_id="reference123"```
 
 #### Human Readable Output
@@ -304,6 +320,7 @@ There is no context output for this command.
 >### Incident with ID JJJ-504830 was updated successfully
 
 ### fraudwatch-incident-get-by-identifier
+
 ***
 Gets an incident from FraudWatch service by its reference ID or incident ID. Single values of 'reference_id' and 'incident_id' should be specified.
 
@@ -311,6 +328,7 @@ Gets an incident from FraudWatch service by its reference ID or incident ID. Sin
 #### Base Command
 
 `fraudwatch-incident-get-by-identifier`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -345,9 +363,11 @@ Gets an incident from FraudWatch service by its reference ID or incident ID. Sin
 
 
 #### Command Example
+
 ```!fraudwatch-incident-get-by-identifier incident_id=JJJ-168840```
 
 #### Context Example
+
 ```json
 {
     "FraudWatch": {
@@ -382,12 +402,14 @@ Gets an incident from FraudWatch service by its reference ID or incident ID. Sin
 #### Human Readable Output
 
 >### FraudWatch Incident
+>
 >|additional_urls|brand|client|created_by|current_duration|date_opened|discovered_by|identifier|link|status|type|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| http://malicious1.com,<br/>http://malicious2.com | Testing Brand 1 | Palo Alto | Client | 514313 | 2021-02-02T16:36:50.000Z | client | JJJ-168840 | https://www.phishportal.com/client/incident/JJJ-168840 | monitor | Vishing | test.com |
+>| <http://malicious1.com>,<br/><http://malicious2.com> | Testing Brand 1 | Palo Alto | Client | 514313 | 2021-02-02T16:36:50.000Z | client | JJJ-168840 | <https://www.phishportal.com/client/incident/JJJ-168840> | monitor | Vishing | test.com |
 
 
 ### fraudwatch-incident-forensic-get
+
 ***
 Gets the forensic data of the incident associated with the specified incident ID.
 
@@ -395,6 +417,7 @@ Gets the forensic data of the incident associated with the specified incident ID
 #### Base Command
 
 `fraudwatch-incident-forensic-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -420,9 +443,11 @@ Gets the forensic data of the incident associated with the specified incident ID
 
 
 #### Command Example
+
 ```!fraudwatch-incident-forensic-get incident_id=JJJ-397266```
 
 #### Context Example
+
 ```json
 {
     "FraudWatch": {
@@ -445,12 +470,14 @@ Gets the forensic data of the incident associated with the specified incident ID
 #### Human Readable Output
 
 >### FraudWatch Incident Forensic Data
+>
 >|host_domain_registrar|host_nameservers|identifier|
 >|---|---|---|
->| name: Moniker Online Services LLC<br/>email: http://www.abuseaddress.com<br/>country: abuse@address.com | NS1.IRAN.COM,<br/>NS2.IRAN.COM | JJJ-397266 |
+>| name: Moniker Online Services LLC<br/>email: <http://www.abuseaddress.com><br/>country: <abuse@address.com> | NS1.IRAN.COM,<br/>NS2.IRAN.COM | JJJ-397266 |
 
 
 ### fraudwatch-incident-contact-emails-list
+
 ***
 Provides a list of the messages related to the incident associated with the specified incident ID.
 
@@ -458,6 +485,7 @@ Provides a list of the messages related to the incident associated with the spec
 #### Base Command
 
 `fraudwatch-incident-contact-emails-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -480,9 +508,11 @@ Provides a list of the messages related to the incident associated with the spec
 
 
 #### Command Example
+
 ```!fraudwatch-incident-contact-emails-list incident_id=JJJ-898410 limit=2```
 
 #### Context Example
+
 ```json
 {
     "FraudWatch": {
@@ -509,6 +539,7 @@ Provides a list of the messages related to the incident associated with the spec
 #### Human Readable Output
 
 >### FraudWatch Incident Contacts Data
+>
 >|noteId|subject|creator|content|date|
 >|---|---|---|---|---|
 >| 11081853 | Client Reply | Client | This incident is very malicious, please monitor it<br/> | 2021-02-08T15:26:19.000Z |
@@ -516,6 +547,7 @@ Provides a list of the messages related to the incident associated with the spec
 
 
 ### fraudwatch-incident-messages-add
+
 ***
 Add a new related message to the incident associated with the specified incident ID.
 
@@ -523,6 +555,7 @@ Add a new related message to the incident associated with the specified incident
 #### Base Command
 
 `fraudwatch-incident-messages-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -536,6 +569,7 @@ Add a new related message to the incident associated with the specified incident
 There is no context output for this command.
 
 #### Command Example
+
 ```!fraudwatch-incident-messages-add incident_id=JJJ-898410 message_content="This incident is very malicious, please monitor it"```
 
 #### Human Readable Output
@@ -543,6 +577,7 @@ There is no context output for this command.
 >### Message for incident id JJJ-898410 was added successfully.
 
 ### fraudwatch-incident-urls-add
+
 ***
 Adds additional URLs to the incident associated with the specified incident ID. Fails if one of the new urls already exists.
 
@@ -550,6 +585,7 @@ Adds additional URLs to the incident associated with the specified incident ID. 
 #### Base Command
 
 `fraudwatch-incident-urls-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -567,9 +603,11 @@ Adds additional URLs to the incident associated with the specified incident ID. 
 
 
 #### Command Example
+
 ```!fraudwatch-incident-urls-add incident_id=JJJ-162968 urls=http://www.malicious1.com,http://www.malicious2.com```
 
 #### Context Example
+
 ```json
 {
     "FraudWatch": {
@@ -587,12 +625,14 @@ Adds additional URLs to the incident associated with the specified incident ID. 
 #### Human Readable Output
 
 >### FraudWatch Incident Urls
+>
 >|new_urls|success|
 >|---|---|
->| http://www.malicious1.com,<br/>http://www.malicious2.com | Add additional urls successfully |
+>| <http://www.malicious1.com>,<br/><http://www.malicious2.com> | Add additional urls successfully |
 
 
 ### fraudwatch-incident-attachment-upload
+
 ***
 Adds a new file attachment to the incident associated with the specified incident ID.
 
@@ -600,6 +640,7 @@ Adds a new file attachment to the incident associated with the specified inciden
 #### Base Command
 
 `fraudwatch-incident-attachment-upload`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -613,6 +654,7 @@ Adds a new file attachment to the incident associated with the specified inciden
 There is no context output for this command.
 
 #### Command Example
+
 ```!fraudwatch-incident-attachment-upload entry_id=fmSNZSY2fSCA2WptU8rddf@d382f488-92db-400c-87ff-fdd71f3b7408 incident_id=JJJ-604206```
 
 #### Human Readable Output
@@ -620,6 +662,7 @@ There is no context output for this command.
 >### File fraud_test.txt was uploaded successfully to incident with an incident id JJJ-604206
 
 ### fraudwatch-brands-list
+
 ***
 Gets a list of brands from FraudWatch service.
 
@@ -627,6 +670,7 @@ Gets a list of brands from FraudWatch service.
 #### Base Command
 
 `fraudwatch-brands-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -649,9 +693,11 @@ Gets a list of brands from FraudWatch service.
 
 
 #### Command Example
+
 ```!fraudwatch-brands-list```
 
 #### Context Example
+
 ```json
 {
     "FraudWatch": {
@@ -752,6 +798,7 @@ Gets a list of brands from FraudWatch service.
 #### Human Readable Output
 
 >### FraudWatch Brands
+>
 >|name|active|client|
 >|---|---|---|
 >| Testing Brand 1 | true | Palo Alto |

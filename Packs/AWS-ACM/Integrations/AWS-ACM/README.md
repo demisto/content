@@ -21,9 +21,12 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### aws-acm-describe-certificate
+
 ***
 Returns detailed metadata about the specified ACM certificate.
 
@@ -31,6 +34,7 @@ Returns detailed metadata about the specified ACM certificate.
 #### Base Command
 
 `aws-acm-describe-certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -47,7 +51,7 @@ Returns detailed metadata about the specified ACM certificate.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AWS.ACM.Certificates.CertificateArn | string | he Amazon Resource Name \(ARN\) of the certificate. | 
-| AWS.ACM.Certificates.DomainName | string | The fully qualified domain name for the certificate, such as www.example.com or example.com. | 
+| AWS.ACM.Certificates.DomainName | string | The fully qualified domain name for the certificate, such as <www.example.com> or example.com. | 
 | AWS.ACM.Certificates.SubjectAlternativeNames | string | One or more domain names \(subject alternative names\) included in the certificate. This list contains the domain names that are bound to the public key that is contained in the certificate. The subject alternative names include the canonical domain name \(CN\) of the certificate and additional domain names that can be used to connect to the website. | 
 | AWS.ACM.Certificates.DomainValidationOptions.DomainName | string | A fully qualified domain name \(FQDN\) in the certificate. | 
 | AWS.ACM.Certificates.DomainValidationOptions.ValidationEmails | string | A list of email addresses that ACM used to send domain validation emails. | 
@@ -91,6 +95,7 @@ Returns detailed metadata about the specified ACM certificate.
 
 
 ### aws-acm-list-certificates
+
 ***
 Retrieves a list of certificate ARNs and domain names. You can request that only certificates that match a specific status be listed. You can also filter by specific attributes of the certificate.
 
@@ -98,6 +103,7 @@ Retrieves a list of certificate ARNs and domain names. You can request that only
 #### Base Command
 
 `aws-acm-list-certificates`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -117,11 +123,12 @@ Retrieves a list of certificate ARNs and domain names. You can request that only
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AWS.ACM.Certificates.CertificateArn | string | Amazon Resource Name \(ARN\) of the certificate. | 
-| AWS.ACM.Certificates.DomainName | string | Fully qualified domain name \(FQDN\), such as www.example.com or example.com, for the certificate. | 
+| AWS.ACM.Certificates.DomainName | string | Fully qualified domain name \(FQDN\), such as <www.example.com> or example.com, for the certificate. | 
 | AWS.ACM.Certificates.Region | unknown | The AWS region were the certificate is located. | 
 
 
 ### aws-acm-add-tags-to-certificate
+
 ***
 Adds one or more tags to an ACM certificate.
 
@@ -129,6 +136,7 @@ Adds one or more tags to an ACM certificate.
 #### Base Command
 
 `aws-acm-add-tags-to-certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -147,6 +155,7 @@ There is no context output for this command.
 
 
 ### aws-acm-remove-tags-from-certificate
+
 ***
 Remove one or more tags from an ACM certificate.
 
@@ -154,6 +163,7 @@ Remove one or more tags from an ACM certificate.
 #### Base Command
 
 `aws-acm-remove-tags-from-certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -172,6 +182,7 @@ There is no context output for this command.
 
 
 ### aws-acm-list-tags-for-certificate
+
 ***
 Lists the tags that have been applied to the ACM certificate. Use the certificate's Amazon Resource Name (ARN) to specify the certificate.
 
@@ -179,6 +190,7 @@ Lists the tags that have been applied to the ACM certificate. Use the certificat
 #### Base Command
 
 `aws-acm-list-tags-for-certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -199,6 +211,7 @@ Lists the tags that have been applied to the ACM certificate. Use the certificat
 
 
 ### aws-acm-get-certificate
+
 ***
 Retrieves a certificate specified by an ARN and its certificate chain . The chain is an ordered list of certificates that contains the end entity certificate, intermediate certificates of subordinate CAs, and the root certificate in that order. The certificate and certificate chain are base64 encoded. If you want to decode the certificate to see the individual fields, you can use OpenSSL.
 
@@ -206,6 +219,7 @@ Retrieves a certificate specified by an ARN and its certificate chain . The chai
 #### Base Command
 
 `aws-acm-get-certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

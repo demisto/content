@@ -1,10 +1,12 @@
 Use Anomali ThreatStream to query and submit threats.
 
 ## Anomali ThreatStream v2 Playbook
+
 * Detonate File - ThreatStream
 * Detonate URL - ThreatStream
 
 ## Use Cases
+
 1. Get threat intelligence from the ThreatStream platform.
 2. Create and manage threat models.
 3. Import indicators to ThreatStream platform.
@@ -15,7 +17,7 @@ Use Anomali ThreatStream to query and submit threats.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g., https://www.test.com\) | True |
+| url | Server URL \(e.g., <https://www.test.com\>) | True |
 | username | Username | True |
 | apikey | API Key | True |
 | default_threshold | Threshold of the indicator. | True |
@@ -24,9 +26,12 @@ Use Anomali ThreatStream to query and submit threats.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Checks the reputation of the given IP.
 
@@ -34,6 +39,7 @@ Checks the reputation of the given IP.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -116,6 +122,7 @@ Checks the reputation of the given IP.
 
 
 ### domain
+
 ***
 Checks the reputation of the given domain name.
 
@@ -123,6 +130,7 @@ Checks the reputation of the given domain name.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -163,6 +171,7 @@ Checks the reputation of the given domain name.
 
 
 #### Command Example
+
     domain domain="microsoftfaq.com" using-brand="Anomali ThreatStream v2" 
 
 ##### Context Example 
@@ -216,6 +225,7 @@ Checks the reputation of the given domain name.
 
 
 ### file
+
 ***
 Checks the reputation of the given hash of the file.
 
@@ -223,6 +233,7 @@ Checks the reputation of the given hash of the file.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -260,6 +271,7 @@ Checks the reputation of the given hash of the file.
 
 
 #### Command Example
+
     file file=07df6c1d9a76d81f191be288d463784b using-brand="Anomali ThreatStream v2"
 
 #### Context Example
@@ -297,6 +309,7 @@ Checks the reputation of the given hash of the file.
 
 
 ### threatstream-email-reputation
+
 ***
 Checks the reputation of the given email address.
 
@@ -304,6 +317,7 @@ Checks the reputation of the given email address.
 #### Base Command
 
 `threatstream-email-reputation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -332,6 +346,7 @@ Checks the reputation of the given email address.
 
 
 #### Command Example
+
     threatstream-email-reputation email=goo@test.com
 
 #### Context Example
@@ -357,14 +372,15 @@ Checks the reputation of the given email address.
 
 #### Human Readable Output
 
-##### Email reputation for: foo@test.com
+##### Email reputation for: <foo@test.com>
 
 | Confidence | Source | Type | Status | Modified | Severity | Email |
 | --- | --- | --- | --- | --- | --- | --- |
-| 100 | Anomali Labs Compromised Credentials | email | active | 2019-06-24T09:50:23.810Z | low | foo@test.com |
+| 100 | Anomali Labs Compromised Credentials | email | active | 2019-06-24T09:50:23.810Z | low | <foo@test.com> |
 
 
 ### threatstream-get-passive-dns
+
 ***
 Returns enrichment data for Domain or IP for availabe observables.
 
@@ -372,6 +388,7 @@ Returns enrichment data for Domain or IP for availabe observables.
 #### Base Command
 
 `threatstream-get-passive-dns`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -394,6 +411,7 @@ Returns enrichment data for Domain or IP for availabe observables.
 
 
 #### Command Example
+
     threatstream-get-passive-dns type=domain value=discoverer.blog
 
 #### Context Example
@@ -430,6 +448,7 @@ Returns enrichment data for Domain or IP for availabe observables.
 
 
 ### threatstream-import-indicator-with-approval
+
 ***
 Imports indicators (observables) into ThreatStream. Approval of the imported data is required, usingh the ThreatStream UI. The data can be imported using one of three methods: plain-text, file, or URL. Only one argument can be used.
 
@@ -486,6 +505,7 @@ The data was imported successfully. The ID of imported job is: 894514
 
 
 ### threatstream-import-indicator-without-approval
+
 ***
 Imports indicators (observables) into ThreatStream. Approval is not required for the imported data. You must have the Approve Intel user permission to import without approval using the API.
 
@@ -493,6 +513,7 @@ Imports indicators (observables) into ThreatStream. Approval is not required for
 #### Base Command
 
 `threatstream-import-indicator-without-approval`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -509,6 +530,7 @@ Imports indicators (observables) into ThreatStream. Approval is not required for
 
 
 ### threatstream-get-model-list
+
 ***
 Returns a list of threat model.
 
@@ -516,6 +538,7 @@ Returns a list of threat model.
 #### Base Command
 
 `threatstream-get-model-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -535,6 +558,7 @@ Returns a list of threat model.
 
 
 #### Command Example
+
     threatstream-get-model-list model=actor limit=10
 
 #### Context Example
@@ -623,6 +647,7 @@ Returns a list of threat model.
 
 
 ### threatstream-get-model-description
+
 ***
 Returns an HTML file with a description of the threat model.
 
@@ -630,6 +655,7 @@ Returns an HTML file with a description of the threat model.
 #### Base Command
 
 `threatstream-get-model-description`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -669,6 +695,7 @@ Returns an HTML file with a description of the threat model.
 
 
 ### threatstream-get-indicators-by-model
+
 ***
 Returns a list of indicators associated with the specified model and ID of the model.
 
@@ -676,6 +703,7 @@ Returns a list of indicators associated with the specified model and ID of the m
 #### Base Command
 
 `threatstream-get-indicators-by-model`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -707,6 +735,7 @@ Returns a list of indicators associated with the specified model and ID of the m
 
 
 #### Command Example
+
     threatstream-get-indicators-by-model id=11885 model=incident
 
 ##### Context Example
@@ -1049,6 +1078,7 @@ Returns a list of indicators associated with the specified model and ID of the m
 
 
 ### threatstream-submit-to-sandbox
+
 ***
 Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
 
@@ -1056,6 +1086,7 @@ Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
 #### Base Command
 
 `threatstream-submit-to-sandbox`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1078,6 +1109,7 @@ Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
 
 
 #### Command Example
+
     threatstream-submit-to-sandbox submission_type=file submission_value=5358@6cf3881e-1cfd-48b5-8fc3-0b9fcfb791f0 premium_sandbox=false report_platform=WINDOWS7
 
 #### Context Example
@@ -1114,6 +1146,7 @@ Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
 
 
 ### threatstream-get-analysis-status
+
 ***
 Returns the current status of the report that was submitted to the sandbox. The report ID is returned from threatstream-submit-to-sandbox command.
 
@@ -1121,6 +1154,7 @@ Returns the current status of the report that was submitted to the sandbox. The 
 #### Base Command
 
 `threatstream-get-analysis-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1139,6 +1173,7 @@ Returns the current status of the report that was submitted to the sandbox. The 
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -1151,6 +1186,7 @@ Returns the current status of the report that was submitted to the sandbox. The 
 
 
 ### threatstream-analysis-report
+
 ***
 Returns the report of a file or URL that was submitted to the sandbox.
 
@@ -1158,6 +1194,7 @@ Returns the report of a file or URL that was submitted to the sandbox.
 #### Base Command
 
 `threatstream-analysis-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1196,6 +1233,7 @@ Returns the report of a file or URL that was submitted to the sandbox.
 
 
 #### Command Example
+
     threatstream-get-analysis-status report_id=422662
 
 #### Context Example
@@ -1221,6 +1259,7 @@ Returns the report of a file or URL that was submitted to the sandbox.
 
 
 ### threatstream-get-indicators
+
 ***
 Return filtered indicators from ThreatStream. If a query is defined, it overides all othe arguments that were passed to the command.
 
@@ -1228,6 +1267,7 @@ Return filtered indicators from ThreatStream. If a query is defined, it overides
 #### Base Command
 
 `threatstream-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1367,6 +1407,7 @@ Return filtered indicators from ThreatStream. If a query is defined, it overides
 
 
 ### threatstream-add-tag-to-model
+
 ***
 Add tags to intelligence for purposes of filtering for related entities.
 
@@ -1374,6 +1415,7 @@ Add tags to intelligence for purposes of filtering for related entities.
 #### Base Command
 
 `threatstream-add-tag-to-model`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1396,6 +1438,7 @@ with 51375607503
 
 
 ### threatstream-create-model
+
 ***
 Creates a threat model with the specified parameters.
 
@@ -1403,6 +1446,7 @@ Creates a threat model with the specified parameters.
 #### Base Command
 
 `threatstream-create-model`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1438,6 +1482,7 @@ Creates a threat model with the specified parameters.
 
 
 #### Command Example
+
     threatstream-create-model model=actor name="New_Created_Actor" description="Description of the actor threat model" intelligence=53042425466,53042425532,53042425520 tags="new actor,test" tlp=red
 
 #### Context Example
@@ -1509,6 +1554,7 @@ Creates a threat model with the specified parameters.
 
 
 ### threatstream-update-model
+
 ***
 Updates a threat model with specific parameters. If one or more optional parameters are defined, the command overides previous data stored in ThreatStream.
 
@@ -1516,6 +1562,7 @@ Updates a threat model with specific parameters. If one or more optional paramet
 #### Base Command
 
 `threatstream-update-model`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1552,6 +1599,7 @@ Updates a threat model with specific parameters. If one or more optional paramet
 
 
 #### Command Example
+
     threatstream-update-model model=actor model_id=26697 intelligence=53042694591 tags="updated tag,gone"
 
 #### Context Example
@@ -1592,6 +1640,7 @@ Updates a threat model with specific parameters. If one or more optional paramet
 
 
 ### threatstream-supported-platforms
+
 ***
 Returns list of supported platforms for default or premium sandbox.
 
@@ -1599,6 +1648,7 @@ Returns list of supported platforms for default or premium sandbox.
 #### Base Command
 
 `threatstream-supported-platforms`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1619,6 +1669,7 @@ Returns list of supported platforms for default or premium sandbox.
 
 
 #### Command Example
+
     threatstream-supported-platforms sandbox_type=default
 
 #### Context Example
@@ -1665,6 +1716,7 @@ Returns list of supported platforms for default or premium sandbox.
 
 
 ### url
+
 ***
 Checks the reputation of the given URL.
 
@@ -1672,6 +1724,7 @@ Checks the reputation of the given URL.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1704,6 +1757,7 @@ Checks the reputation of the given URL.
 | ThreatStream.URL.Tags | Unknown | Tags assigned to the URL. |
 
 #### Command Example
+
     url url=http://194.147.35.172/mikey.mpsl using-brand="Anomali ThreatStream v2"
 
 #### Context Example
