@@ -1419,6 +1419,7 @@ tasks:
       user:
         simple: ${Core.OriginalAlert.event.identity_name}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1582,7 +1583,7 @@ tasks:
         simple: ${Core.OriginalAlert.event.identity_name}
     separatecontext: false
     continueonerror: true
-    continueonerrortype: errorPath
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1679,7 +1680,7 @@ tasks:
     task:
       id: a9ddf707-00c7-4f51-a8e4-b9cd2dd4d693
       version: -1
-      name: Check retrived date
+      name: Check retrieved date
       type: condition
       iscommand: false
       brand: ""
