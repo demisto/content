@@ -105,7 +105,7 @@ script:
       - Text
       - Others
       - Attachment with Zipped File
-    - description: Number of threats that on in each page. Each page of data will have at most page_size threats. Has no effect if filter is not specified.
+    - description: Number of threats per page. Each page will contain up to page_size threats. This has no effect if no filter is specified.
       name: page_size
     - description: 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.
       name: page_number
@@ -136,7 +136,7 @@ script:
       name: mock-data
     - description: Subtenant of the user (if applicable).
       name: subtenant
-    - description: Number of threats that on in each page. Each page of data will have at most page_size threats. Has no effect if filter is not specified.
+    - description: Number of threats per page. Each page will contain up to page_size threats. This has no effect if no filter is specified.
       name: page_size
     - description: 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.
       name: page_number
@@ -340,6 +340,9 @@ script:
       type: String
     - contextPath: AbnormalSecurity.AbnormalCaseDetails.firstObserved
       description: First time suspicious behavior was observed.
+      type: String
+    - contextPath: AbnormalSecurity.AbnormalCaseDetails.genai_summary
+      description: Gen AI summary of the case.
       type: String
   - arguments:
     - description: A string representing the email case. Can be retrieved by first running command to list cases.

@@ -866,7 +866,7 @@ def generate_threat_incidents(client, threats, max_page_number, start_datetime, 
 
         received_time = ""
         threat_details["messages"] = all_messages or all_filtered_messages
-        if threat_details["messages"]:
+        if threat_details.get("messages", []):
             received_time = threat_details["messages"][0].get("receivedTime")
 
         incident = {
@@ -884,9 +884,9 @@ def generate_abuse_campaign_incidents(client, campaigns):
     incidents = []
     for campaign in campaigns:
         campaign_details = client.get_details_of_an_abuse_mailbox_campaign_request(campaign["campaignId"])
-        first_reported = campaign_details["firstReported"]
+        first_reported = campaign_details.get("firstReported", "")
         incident = {
-            "dbotMirrorId": str(campaign["campaignId"]),
+            "dbotMirrorId": str(campaign.get("campaignId", "")),
             "name": "Abuse Campaign",
             "occurred": first_reported[:26] if len(first_reported) > 26 else first_reported,
             'details': "Abuse Campaign",
