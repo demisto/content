@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa: F401
 import re
 import time
 import urllib.parse
-from distutils.util import strtobool
 from enum import Enum
 from re import Match
 from ssl import PROTOCOL_TLSv1_2, SSLContext, SSLError
@@ -2546,7 +2545,7 @@ def channel_mirror_loop():
                             demisto.mirrorInvestigation(
                                 channel_to_update['investigation_id'],
                                 channel_to_update['mirror_type'],
-                                bool(strtobool(channel_to_update['auto_close']))
+                                bool(argToBoolean(channel_to_update['auto_close']))
                             )
                             channel_to_update['mirrored'] = True
                             demisto.info(f'Mirrored incident: {investigation_id} to Microsoft Teams successfully')
