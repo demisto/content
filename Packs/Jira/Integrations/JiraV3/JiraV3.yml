@@ -1766,6 +1766,7 @@ script:
       isArray: true
       name: labels
     - name: priority
+      description: Priority of the ticket.
       predefined:
       - 1 - High
       - 2 - Medium

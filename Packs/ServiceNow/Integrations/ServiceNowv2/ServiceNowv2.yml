@@ -1690,6 +1690,7 @@ script:
       required: true
     - auto: PREDEFINED
       name: ticket_type
+      description: Ticket type
       prettyname: Ticket Type
       predefined:
         - incident
