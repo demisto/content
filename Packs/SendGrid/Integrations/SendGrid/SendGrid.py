@@ -509,7 +509,7 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     if click_tracking:
         click_tracking = click_tracking if type(click_tracking) is dict else json.loads(click_tracking)
         is_enable = click_tracking["enable"] != "False"
-        tracking_settings.click_tracking = ClickTracking(   # type: ignore[name-defined]
+        tracking_settings.click_tracking = ClickTracking(  # type: ignore[name-defined]
             is_enable,  # type: ignore[name-defined]
             click_tracking["enable_text"],
         )
@@ -519,7 +519,8 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
         open_tracking = open_tracking if type(open_tracking) is dict else json.loads(open_tracking)
         is_enable = open_tracking["enable"] != "False"
         tracking_settings.open_tracking = OpenTracking(  # type: ignore[name-defined]
-            is_enable, OpenTrackingSubstitutionTag(open_tracking["substitution_tag"])  # type: ignore[name-defined]
+            is_enable,
+            OpenTrackingSubstitutionTag(open_tracking["substitution_tag"]),  # type: ignore[name-defined]
         )  # type: ignore[name-defined]
 
     sub_tracking = args.get("SubscriptionTracking")
@@ -555,7 +556,8 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
         bcc_mail_set = bcc_mail_set if type(bcc_mail_set) is dict else json.loads(bcc_mail_set)
         is_enable = bcc_mail_set["enable"] != "False"
         mail_settings.bcc_settings = BccSettings(  # type: ignore[name-defined]
-            is_enable, BccSettingsEmail(bcc_mail_set["email"])  # type: ignore[name-defined]
+            is_enable,
+            BccSettingsEmail(bcc_mail_set["email"]),  # type: ignore[name-defined]
         )
 
     footer = args.get("Footer")

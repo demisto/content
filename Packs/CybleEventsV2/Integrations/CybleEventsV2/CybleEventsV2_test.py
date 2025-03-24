@@ -247,9 +247,7 @@ def test_datecheck_validate_input(capfd):
 
     with (
         capfd.disabled(),
-        pytest.raises(
-            ValueError, match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"
-        ),
+        pytest.raises(ValueError, match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"),
     ):
         validate_input(args=args, is_iocs=True)
 

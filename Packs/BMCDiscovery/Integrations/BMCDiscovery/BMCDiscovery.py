@@ -171,9 +171,7 @@ def discovery_search_custom_command(client: Client, **args) -> CommandResults:
         outputs_prefix="BmcDiscovery.CustomSearch",
         outputs=context_output,
         raw_response=response,
-        readable_output=tableToMarkdown(
-            name="BMC Discovery Custom Search Results (see context for more details)", t=user_output
-        ),
+        readable_output=tableToMarkdown(name="BMC Discovery Custom Search Results (see context for more details)", t=user_output),
     )
 
 

@@ -97,9 +97,9 @@ def test_time_format(test_input, output):
 @pytest.mark.parametrize("test_input, output", data_test_convert_time_format)
 def test_convert_time_format(test_input, output):
     temp = convert_time_format(test_input[0], test_input[1], test_input[2])
-    assert temp == output, (
-        f"convert_time_format({test_input[0]}, {test_input[1]}, {test_input[2]}) returns: {temp} instead: {output}."
-    )
+    assert (
+        temp == output
+    ), f"convert_time_format({test_input[0]}, {test_input[1]}, {test_input[2]}) returns: {temp} instead: {output}."
 
 
 @freeze_time("2020-01-01 00:00:00")
@@ -117,9 +117,7 @@ def test_set_query_times(test_input, output):
 @pytest.mark.parametrize("test_input, output", data_test_list_times_set)
 def test_list_times_set(test_input, output):
     temp = list_times_set(test_input[0], test_input[1], test_input[2])
-    assert temp == output, (
-        f"list_times_set({test_input[0]}, {test_input[1]}, {test_input[2]}) returns: {temp} instead: {output}."
-    )
+    assert temp == output, f"list_times_set({test_input[0]}, {test_input[1]}, {test_input[2]}) returns: {temp} instead: {output}."
 
 
 @pytest.mark.parametrize("test_input, output", data_test_time_fields)

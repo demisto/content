@@ -269,7 +269,7 @@ def test_run_on_all_accounts_no_new_func(mocker, role_name, roleArn):
             {
                 "IpamResourceDiscoveries": {
                     "IpamResourceDiscoveryArn": "arn:aws:ec2::222222222222:ipam-resource-discovery/ipam-res-disco"
-                                                "-11111111111111111",
+                    "-11111111111111111",
                     "IpamResourceDiscoveryId": "ipam-res-disco-11111111111111111",
                     "IpamResourceDiscoveryRegion": "us-east-1",
                     "IsDefault": True,
