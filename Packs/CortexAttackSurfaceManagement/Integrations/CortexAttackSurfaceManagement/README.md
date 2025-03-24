@@ -6,7 +6,7 @@ This integration was integrated and tested with version 1.2.0 of Cortex Attack S
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The web UI with \`api-\` appended to front \(e.g., https://api-xsiam.paloaltonetworks.com\). For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
+| Server URL | The web UI with \`api-\` appended to front \(e.g., <https://api-xsiam.paloaltonetworks.com\>). For more information please see <https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis>. | True |
 | API Key ID | For more information please see <https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis>.  Only a standard API key type is supported. | True |
 | API Key |  | True |
 | Trust any certificate (not secure) |  | False |
@@ -1163,7 +1163,7 @@ Returns list of remediation path rules.
 
 >|Action|Attack Surface Rule Id|Created At|Created By|Created By Pretty|Criteria|Criteria Conjunction|Description|Rule Id|Rule Name|
 >|---|---|---|---|---|---|---|---|---|---|
->| Email | RdpServer | 1672897301000 | test@test.com | Test User | {'field': 'severity', 'value': 'high', 'operator': 'eq'},<br/>{'field': 'isCloudManaged', 'value': 'true', 'operator': 'eq'} | AND | for testing | b935cf69-add9-4e75-8c3d-fe32ee471554 | TestRule |
+>| Email | RdpServer | 1672897301000 | <test@test.com> | Test User | {'field': 'severity', 'value': 'high', 'operator': 'eq'},<br/>{'field': 'isCloudManaged', 'value': 'true', 'operator': 'eq'} | AND | for testing | b935cf69-add9-4e75-8c3d-fe32ee471554 | TestRule |
 
 
 ### asm-start-remediation-confirmation-scan

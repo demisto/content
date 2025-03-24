@@ -7,6 +7,7 @@ This Endace Content Pack and Playbook leverages EndaceProbe APIs to search for, 
 
 The Playbook included in this pack helps you save time, preserve evidence and leverage unalterable network packet data in your XSOAR workflows and evidence boards. It automates the search and storage of critical packet data for security incident response.  
 Key functions this playbook provides include:
+
 - Search EndaceProbe Fabric for any traffic related to a specific security event or alert
 - Automated archiving of relevant network PCAPs for compliance or incident response
 - Links your evidence boards and war room to a one-click drill-down to packet data in EndaceVision for detailed forensic investigations

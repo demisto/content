@@ -27,4 +27,4 @@ Integrating Safewalk with XSOAR, Safewalk log files can be stored for auditing p
 
 ## Documentation
 
-Full documentation is available from Safewalk server https://safewalk-server:8443/documentation/index.html
+Full documentation is available from Safewalk server <https://safewalk-server:8443/documentation/index.html>

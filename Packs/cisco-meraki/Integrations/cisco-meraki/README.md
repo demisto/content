@@ -11,9 +11,12 @@ This integration was integrated and tested with version 1.0.0 of Cisco Meraki
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### meraki-fetch-organizations
+
 ***
 List the organizations that the api-key has privileges on.
 
@@ -21,6 +24,7 @@ List the organizations that the api-key has privileges on.
 #### Base Command
 
 `meraki-fetch-organizations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -35,9 +39,11 @@ List the organizations that the api-key has privileges on.
 
 
 #### Command Example
+
 ```!meraki-fetch-organizations```
 
 #### Context Example
+
 ```json
 {
     "Organization": [
@@ -52,12 +58,14 @@ List the organizations that the api-key has privileges on.
 #### Human Readable Output
 
 >### Organizations
+>
 >|id|name|url|
 >|---|---|---|
 >|828552|Demisto|https:<span>//</span>n146.meraki.com/o/N7z3rd/manage/organization/overview|
 
 
 ### meraki-get-organization-license-state
+
 ***
 License state for an organization.
 
@@ -65,6 +73,7 @@ License state for an organization.
 #### Base Command
 
 `meraki-get-organization-license-state`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -82,17 +91,20 @@ License state for an organization.
 
 
 #### Command Example
+
 ```!meraki-get-organization-license-state organizationId=828552```
 
 #### Human Readable Output
 
 >### Organization License State
+>
 >|status|expirationDate|
 >|---|---|
 >|OK|N/A|
 
 
 ### meraki-fetch-organization-inventory
+
 ***
 List of inventories for an organization.
 
@@ -100,6 +112,7 @@ List of inventories for an organization.
 #### Base Command
 
 `meraki-fetch-organization-inventory`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -116,15 +129,18 @@ List of inventories for an organization.
 
 
 #### Command Example
+
 ```!meraki-fetch-organization-inventory organizationId=828552```
 
 #### Human Readable Output
 
 >### Organization Inventory
+>
 >**No entries.**
 
 
 ### meraki-fetch-networks
+
 ***
 List the networks in an organization.
 
@@ -132,6 +148,7 @@ List the networks in an organization.
 #### Base Command
 
 `meraki-fetch-networks`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -148,9 +165,11 @@ List the networks in an organization.
 
 
 #### Command Example
+
 ```!meraki-fetch-networks organizationId=828552```
 
 #### Context Example
+
 ```json
 {
     "Network": [
@@ -169,12 +188,14 @@ List the networks in an organization.
 #### Human Readable Output
 
 >### Networks
+>
 >|id|organizationId|name|timeZone|productTypes.0|type|disableMyMerakiCom|disableRemoteStatusPage|
 >|---|---|---|---|---|---|---|---|
 >|N_645140646620837008|828552|Demisto-DEV|America/Los_Angeles|switch|switch|-|true|
 
 
 ### meraki-fetch-devices
+
 ***
 List the devices in a network.
 
@@ -182,6 +203,7 @@ List the devices in a network.
 #### Base Command
 
 `meraki-fetch-devices`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -198,15 +220,18 @@ List the devices in a network.
 
 
 #### Command Example
+
 ```!meraki-fetch-devices networkId=N_645140646620837008```
 
 #### Human Readable Output
 
 >### Devices
+>
 >**No entries.**
 
 
 ### meraki-fetch-device-uplink
+
 ***
 List of uplink information for a device.
 
@@ -214,6 +239,7 @@ List of uplink information for a device.
 #### Base Command
 
 `meraki-fetch-device-uplink`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -231,6 +257,7 @@ List of uplink information for a device.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -238,6 +265,7 @@ List of uplink information for a device.
 
 
 ### meraki-fetch-ssids
+
 ***
 List the SSIDs in a network.
 
@@ -245,6 +273,7 @@ List the SSIDs in a network.
 #### Base Command
 
 `meraki-fetch-ssids`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -261,6 +290,7 @@ List the SSIDs in a network.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -268,6 +298,7 @@ List the SSIDs in a network.
 
 
 ### meraki-fetch-clients
+
 ***
 List the clients of a device, up to a maximum of a month ago.
 
@@ -275,6 +306,7 @@ List the clients of a device, up to a maximum of a month ago.
 #### Base Command
 
 `meraki-fetch-clients`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -292,6 +324,7 @@ List the clients of a device, up to a maximum of a month ago.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -299,6 +332,7 @@ List the clients of a device, up to a maximum of a month ago.
 
 
 ### meraki-fetch-firewall-rules
+
 ***
 List of L3 firewall rules for an SSID.
 
@@ -306,6 +340,7 @@ List of L3 firewall rules for an SSID.
 #### Base Command
 
 `meraki-fetch-firewall-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -323,6 +358,7 @@ List of L3 firewall rules for an SSID.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -330,6 +366,7 @@ List of L3 firewall rules for an SSID.
 
 
 ### meraki-remove-device
+
 ***
 Remove a single device.
 
@@ -337,6 +374,7 @@ Remove a single device.
 #### Base Command
 
 `meraki-remove-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -350,6 +388,7 @@ Remove a single device.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -357,6 +396,7 @@ There is no context output for this command.
 
 
 ### meraki-get-device
+
 ***
 Get a single device.
 
@@ -364,6 +404,7 @@ Get a single device.
 #### Base Command
 
 `meraki-get-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -381,6 +422,7 @@ Get a single device.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -388,6 +430,7 @@ Get a single device.
 
 
 ### meraki-update-device
+
 ***
 Update the attributes of a device.
 
@@ -395,6 +438,7 @@ Update the attributes of a device.
 #### Base Command
 
 `meraki-update-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -416,6 +460,7 @@ Update the attributes of a device.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -423,6 +468,7 @@ Update the attributes of a device.
 
 
 ### meraki-claim-device
+
 ***
 Claim a device into a network.
 
@@ -430,6 +476,7 @@ Claim a device into a network.
 #### Base Command
 
 `meraki-claim-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -443,6 +490,7 @@ Claim a device into a network.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -450,6 +498,7 @@ There is no context output for this command.
 
 
 ### meraki-update-firewall-rules
+
 ***
 Update rule to L3 firewall rules of an SSID.
 
@@ -457,6 +506,7 @@ Update rule to L3 firewall rules of an SSID.
 #### Base Command
 
 `meraki-update-firewall-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -480,6 +530,7 @@ Update rule to L3 firewall rules of an SSID.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

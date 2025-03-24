@@ -1,6 +1,7 @@
 Allows to parse and extract http flows (requests & responses) from a pcap/pcapng file.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Allows to parse and extract http flows (requests & responses) from a pcap/pcapng
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +24,7 @@ Allows to parse and extract http flows (requests & responses) from a pcap/pcapng
 | allowedContentTypes | The allowed content types to display, separated with comma, uses startswith to find a match \(ie text,image will display text\\html, and image\\png\). |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

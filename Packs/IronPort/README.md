@@ -1,10 +1,13 @@
 # Cisco ESA (Email Security Appliance)
+
 This pack includes Cortex XSIAM content. 
 
 # Integration:
+
 The Cisco Email Security Appliance is an email security gateway product. It is designed to detect and block a wide variety of email-born threats, such as malware, spam and phishing attempts.
 
 ## What does this pack do?
+
 - Retrieve spam quarantined messages.
 - Release and delete messages from spam quarantine.
 - Retrieve, add, append, edit or delete a list entry - blocklist and safelist of spam quarantine. 
@@ -13,6 +16,7 @@ The Cisco Email Security Appliance is an email security gateway product. It is d
 - Reporting - get Cisco SMA's statistics reports.
 - Fetch quarantine messages as incidents.
 <~XSIAM>
+
 ## Creating a Log Subscription in the Cisco ESA GUI
 
 1. Choose System Administration > Log Subscriptions.
@@ -27,10 +31,12 @@ rollovers.
 [link to the website](https://www.cisco.com/c/en/us/td/docs/security/esa/esa11-1/user_guide/b_ESA_Admin_Guide_11_1/b_ESA_Admin_Guide_chapter_0100110.html#con_1134718)
 
 ## Collect Events from Vendor
+
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.

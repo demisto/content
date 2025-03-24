@@ -1,5 +1,6 @@
 Trustwave SEG is a secure messaging solution that protects businesses and users from email-borne threats, including phishing, blended threats, and spam. Trustwave Secure Email Gateway also delivers improved policy enforcement and data leakage prevention.
 This integration was integrated and tested with version 10 of trustwave secure email gateway.
+
 ## Configure trustwave secure email gateway in Cortex
 
 
@@ -13,9 +14,12 @@ This integration was integrated and tested with version 10 of trustwave secure e
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### trustwave-seg-get-version
+
 ***
 Gets Trustwave version information.
 
@@ -23,6 +27,7 @@ Gets Trustwave version information.
 #### Base Command
 
 `trustwave-seg-get-version`
+
 #### Input
 
 There are no input arguments for this command.
@@ -37,9 +42,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!trustwave-seg-get-version```
 
 #### Context Example
+
 ```json
 {
     "TrustwaveSEG": {
@@ -55,12 +62,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Version Information
+>
 >|Config Version|Product Version|
 >|---|---|
 >| 39 | 10.0.1.2030 |
 
 
 ### trustwave-seg-automatic-config-backup-list
+
 ***
 Returns a list of automatic configuration backups.
 
@@ -68,6 +77,7 @@ Returns a list of automatic configuration backups.
 #### Base Command
 
 `trustwave-seg-automatic-config-backup-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -92,9 +102,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!trustwave-seg-automatic-config-backup-list```
 
 #### Context Example
+
 ```json
 {
     "TrustwaveSEG": {
@@ -674,6 +686,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Automatic Configured Backups
+>
 >|Filename|Contains Dkim Keys|Backup User|Product Version|Config Version|Commit Description|Backup Type|
 >|---|---|---|---|---|---|---|
 >| MailMarshal-10.0.1-ManualBackup_10-May-2021-05-40-05 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
@@ -700,6 +713,7 @@ There are no input arguments for this command.
 
 
 ### trustwave-seg-automatic-config-backup-restore
+
 ***
 Restores a specific automatic configuration backup.
 
@@ -707,6 +721,7 @@ Restores a specific automatic configuration backup.
 #### Base Command
 
 `trustwave-seg-automatic-config-backup-restore`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -727,9 +742,11 @@ Restores a specific automatic configuration backup.
 
 
 #### Command Example
+
 ```!trustwave-seg-automatic-config-backup-restore name="MailMarshal-10.0.1-ManualBackup_05-May-2021-05-25-31" timeout=200```
 
 #### Context Example
+
 ```json
 {
     "TrustwaveSEG": {
@@ -745,12 +762,14 @@ Restores a specific automatic configuration backup.
 #### Human Readable Output
 
 >### Automatic Configuration Backup Restore Completed
+>
 >|Name|Reason|Warnings|
 >|---|---|---|
 >| MailMarshal-10.0.1-ManualBackup_05-May-2021-05-25-31 | backup restored | DKIM password not set - DKIM restore is ignored.<br/> |
 
 
 ### trustwave-seg-automatic-config-backup-run
+
 ***
 Run automatic backup now.
 
@@ -758,6 +777,7 @@ Run automatic backup now.
 #### Base Command
 
 `trustwave-seg-automatic-config-backup-run`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -776,9 +796,11 @@ Run automatic backup now.
 
 
 #### Command Example
+
 ```!trustwave-seg-automatic-config-backup-run```
 
 #### Context Example
+
 ```json
 {
     "TrustwaveSEG": {
@@ -793,12 +815,14 @@ Run automatic backup now.
 #### Human Readable Output
 
 >### Automatic Configuration Backup Run Completed
+>
 >|Backup Name|Reason|
 >|---|---|
 >| MailMarshal-10.0.1-ManualBackup_10-May-2021-05-50-37 | backup successful |
 
 
 ### trustwave-seg-list-alerts
+
 ***
 Gets a list of current alerts.
 
@@ -806,6 +830,7 @@ Gets a list of current alerts.
 #### Base Command
 
 `trustwave-seg-list-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -826,9 +851,11 @@ Gets a list of current alerts.
 
 
 #### Command Example
+
 ```!trustwave-seg-list-alerts```
 
 #### Context Example
+
 ```json
 {
     "TrustwaveSEG": {
@@ -889,6 +916,7 @@ Gets a list of current alerts.
 #### Human Readable Output
 
 >### Alerts
+>
 >|Description|Active|Node|Source|Triggered|
 >|---|---|---|---|---|
 >| MMEngine is now running | false | 1 | Engine | 20/04/2021, 12:12:48 |
@@ -900,6 +928,7 @@ Gets a list of current alerts.
 
 
 ### trustwave-seg-statistics
+
 ***
 Gets Trustwave SEG statistics. Must provide a start time or time range.
 
@@ -907,6 +936,7 @@ Gets Trustwave SEG statistics. Must provide a start time or time range.
 #### Base Command
 
 `trustwave-seg-statistics`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -941,9 +971,11 @@ Gets Trustwave SEG statistics. Must provide a start time or time range.
 
 
 #### Command Example
+
 ```!trustwave-seg-statistics time_range="1 day ago"```
 
 #### Context Example
+
 ```json
 {
     "TrustwaveSEG": {
@@ -974,12 +1006,14 @@ Gets Trustwave SEG statistics. Must provide a start time or time range.
 #### Human Readable Output
 
 >### Statistics Information between 09/05/2021, 12:50:34 to 10/05/2021, 12:50:34
+>
 >|Msgs In|Msgs Out|Malicious Urls|Msgs Blended Threats|Msgs Spam|Msgs Virus|Num Quarantined|Unsafe Clicks|Unsafe Urls|Virus Detected|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 
 ### trustwave-seg-list-servers
+
 ***
 Gets a list of servers.
 
@@ -987,6 +1021,7 @@ Gets a list of servers.
 #### Base Command
 
 `trustwave-seg-list-servers`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1017,9 +1052,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!trustwave-seg-list-servers```
 
 #### Context Example
+
 ```json
 {
     "TrustwaveSEG": {
@@ -1069,12 +1106,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Servers Details
+>
 >|Server Name|Server Id|Product Version|Is Active|Server Location|Services|
 >|---|---|---|---|---|---|
 >| DEV-TRUSTWAVE | 1 | 10.0.1.2030 | true | test | Receiver, Engine, Sender |
 
 
 ### trustwave-seg-get-server
+
 ***
 Gets server details.
 
@@ -1082,6 +1121,7 @@ Gets server details.
 #### Base Command
 
 `trustwave-seg-get-server`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1115,9 +1155,11 @@ Gets server details.
 
 
 #### Command Example
+
 ```!trustwave-seg-get-server server_id="1"```
 
 #### Context Example
+
 ```json
 {
     "TrustwaveSEG": {
@@ -1167,12 +1209,14 @@ Gets server details.
 #### Human Readable Output
 
 >### Server Details. ID: 1
+>
 >|Server Name|Server Id|Product Version|Is Active|Server Location|Services|
 >|---|---|---|---|---|---|
 >| DEV-TRUSTWAVE | 1 | 10.0.1.2030 | false | test | Receiver, Engine, Sender |
 
 
 ### trustwave-seg-list-classifications
+
 ***
 Gets a list of classifications.
 
@@ -1180,6 +1224,7 @@ Gets a list of classifications.
 #### Base Command
 
 `trustwave-seg-list-classifications`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1195,9 +1240,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!trustwave-seg-list-classifications```
 
 #### Context Example
+
 ```json
 {
     "TrustwaveSEG": {
@@ -1660,6 +1707,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Classifications
+>
 >|Id|Name|
 >|---|---|
 >| 1 | Folders |
@@ -1740,6 +1788,7 @@ There are no input arguments for this command.
 
 
 ### trustwave-seg-list-quarantine-folders
+
 ***
 Gets a list of folders.
 
@@ -1747,6 +1796,7 @@ Gets a list of folders.
 #### Base Command
 
 `trustwave-seg-list-quarantine-folders`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1774,9 +1824,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!trustwave-seg-list-quarantine-folders```
 
 #### Context Example
+
 ```json
 {
     "TrustwaveSEG": {
@@ -2689,6 +2741,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Quarantine Folders
+>
 >|Folder Id|Name|Description|Is Deleted|Is Read Only|Num Files|Retention|
 >|---|---|---|---|---|---|---|
 >| 1 | Folders |  | false | false | 5 | 7 |
@@ -2744,6 +2797,7 @@ There are no input arguments for this command.
 
 
 ### trustwave-seg-list-quarantine-folders-with-day-info
+
 ***
 Gets a list of folders with current day information.
 
@@ -2751,6 +2805,7 @@ Gets a list of folders with current day information.
 #### Base Command
 
 `trustwave-seg-list-quarantine-folders-with-day-info`
+
 #### Input
 
 There are no input arguments for this command.
@@ -2779,9 +2834,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!trustwave-seg-list-quarantine-folders-with-day-info```
 
 #### Context Example
+
 ```json
 {
     "TrustwaveSEG": {
@@ -3750,12 +3807,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Quarantine Folders with Day Info
+>
 >|Folder Id|Name|Description|Num Files|Is Deleted|Is Read Only|Retention|
 >|---|---|---|---|---|---|---|
 >| 1007 | Archive Out | An archive folder for all outbound messages.  By default, messages are kept for 3 months. | 2 | false | true | 93 |
 
 
 ### trustwave-seg-list-day-info-by-quarantine-folder
+
 ***
 Get the current day information for a folder.
 
@@ -3763,6 +3822,7 @@ Get the current day information for a folder.
 #### Base Command
 
 `trustwave-seg-list-day-info-by-quarantine-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3780,15 +3840,18 @@ Get the current day information for a folder.
 
 
 #### Command Example
+
 ```!trustwave-seg-list-day-info-by-quarantine-folder folder_id=1006```
 
 #### Human Readable Output
 
 >### Quarantine Folder with Day Info. ID: 1006
+>
 >**No entries.**
 
 
 ### trustwave-seg-find-quarantine-message
+
 ***
 Find message by specified parameters.
 
@@ -3796,6 +3859,7 @@ Find message by specified parameters.
 #### Base Command
 
 `trustwave-seg-find-quarantine-message`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3846,9 +3910,11 @@ Find message by specified parameters.
 
 
 #### Command Example
+
 ```!trustwave-seg-find-quarantine-message max_rows=10 time_range="3 month"```
 
 #### Context Example
+
 ```json
 {
     "TrustwaveSEG": {
@@ -3971,16 +4037,18 @@ Find message by specified parameters.
 #### Human Readable Output
 
 >### Find Quarantine Messages Results
+>
 >|Subject|Description|Block Number|Edition|Folder Id|Message Name|Recipient|Server Id|Time Logged|
 >|---|---|---|---|---|---|---|---|---|
->| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106115282632704 | 6082e3b60013 | 1006 | B6082e3b60000 | test@example.com | 1 | 1619190710 |
->| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106112687144960 | 608249030012 | 1006 | B608249020000 | test@example.com | 1 | 1619151106 |
->| This isafdsafasgfaiysgfsaidghfuisf   sdgsgsd the subject line | - Message Archiving : Archive All Outbound Messages | 106109128212480 | 608174e50003 | 1007 | B608174e50000 | test@example.com | 1 | 1619096805 |
->| This isafdsafasgfaiysgfsaidghfuisf   sdgsgsd the subject line | - Message Archiving : Archive All Outbound Messages | 106106651148288 | 6080e13e0000 | 1007 | B6080e1390000 | test@example.com | 1 | 1619059003 |
->| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106098471075840 | 607ef9ae0000 | 1006 | B607ef9ac0000 | test@example.com | 1 | 1618934189 |
+>| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106115282632704 | 6082e3b60013 | 1006 | B6082e3b60000 | <test@example.com> | 1 | 1619190710 |
+>| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106112687144960 | 608249030012 | 1006 | B608249020000 | <test@example.com> | 1 | 1619151106 |
+>| This isafdsafasgfaiysgfsaidghfuisf   sdgsgsd the subject line | - Message Archiving : Archive All Outbound Messages | 106109128212480 | 608174e50003 | 1007 | B608174e50000 | <test@example.com> | 1 | 1619096805 |
+>| This isafdsafasgfaiysgfsaidghfuisf   sdgsgsd the subject line | - Message Archiving : Archive All Outbound Messages | 106106651148288 | 6080e13e0000 | 1007 | B6080e1390000 | <test@example.com> | 1 | 1619059003 |
+>| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106098471075840 | 607ef9ae0000 | 1006 | B607ef9ac0000 | <test@example.com> | 1 | 1618934189 |
 
 
 ### trustwave-seg-spiderlabs-forward-quarantine-message-as-spam
+
 ***
 Forwards a message to Spiderlabs as spam.
 
@@ -3988,6 +4056,7 @@ Forwards a message to Spiderlabs as spam.
 #### Base Command
 
 `trustwave-seg-spiderlabs-forward-quarantine-message-as-spam`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3996,7 +4065,7 @@ Forwards a message to Spiderlabs as spam.
 | edition | Edition of the message (e.g., "607ef9ae0000"). Can be retrieved from the find message endpoint. | Required | 
 | folder_id | Folder ID of the message (e.g., 1006). Can be retrieved from the find message endpoint. | Required | 
 | message_name | The name of the message (e.g., "B607ef9ac0000"). Can be retrieved from the find message endpoint. | Required | 
-| recipient | The recipient of the message (e.g., email@example.com). Can be retrieved from the find message endpoint. | Required | 
+| recipient | The recipient of the message (e.g., <email@example.com>). Can be retrieved from the find message endpoint. | Required | 
 | server_id | The server ID of the message (e.g., 1). Can be retrieved from the find message endpoint. . | Required | 
 | time_logged | The time the message was logged (e.g., 1618934189). Can be retrieved from the find message endpoint. . | Required | 
 | spam_report_message | The message that should be shown with the message on Spiderlabs. (e.g., "This message is spam..."). | Required | 
@@ -4008,6 +4077,7 @@ Forwards a message to Spiderlabs as spam.
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustwave-seg-spiderlabs-forward-quarantine-message-as-spam block_number=106098471075840 edition=607ef9ae0000 folder_id=1006 is_spam="true" message_name=B607ef9ac0000 recipient=test@example.com server_id=1 spam_report_notification_from_address="This is a spam" time_logged=1618934189 spam_report_message="This is a spam"```
 
 #### Human Readable Output

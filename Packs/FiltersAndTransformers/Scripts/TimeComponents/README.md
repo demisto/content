@@ -1,5 +1,6 @@
 Takes a date or time input and get time components in a specific time zone.
 Returns a dictionary with the following components.
+
 - year
 - year_4_digit
 - month
@@ -39,6 +40,7 @@ Returns a dictionary with the following components.
 - HH:mm:ss
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -48,25 +50,29 @@ Returns a dictionary with the following components.
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | Input date or time in a format that is supported by the dateparser.parse\(\) function as outlined here- https://dateparser.readthedocs.io/en/latest/#popular-formats. For example: '2020-01-01' or '1999/02/03 12:01:59'. \(Default is the current time\). Assume given time is in UTC if time zone is not detected. |
+| value | Input date or time in a format that is supported by the dateparser.parse\(\) function as outlined here- <https://dateparser.readthedocs.io/en/latest/#popular-formats>. For example: '2020-01-01' or '1999/02/03 12:01:59'. \(Default is the current time\). Assume given time is in UTC if time zone is not detected. |
 | time_zone | The time zone \(e.g. -0400, \+09:00\) or time string to extract a time zone |
 | key | The name of a key to choose which time component to return |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 
 ## Examples
+
 ---
 
 ### Get all the time components from the time taken
 
 #### Parameters
+
 | **Argument Name** | **Value** |
 | --- | --- |
 | value | 2022-01-23 01:23:45 +00:00 |
@@ -74,6 +80,7 @@ There are no outputs for this script.
 | key | |
 
 #### Output
+
 ```json
 {
   "year": 2022,
@@ -121,6 +128,7 @@ There are no outputs for this script.
 ### Get all the time components in a specific time zone
 
 #### Parameters
+
 | **Argument Name** | **Value** |
 | --- | --- |
 | value | 2022-01-23 01:23:45 +00:00 |
@@ -128,6 +136,7 @@ There are no outputs for this script.
 | key | |
 
 #### Output
+
 ```json
 {
   "year": 2022,
@@ -175,6 +184,7 @@ There are no outputs for this script.
 ### Get all the time components from the unix timestamp
 
 #### Parameters
+
 | **Argument Name** | **Value** |
 | --- | --- |
 | value | 1642868625 |
@@ -182,6 +192,7 @@ There are no outputs for this script.
 | key | |
 
 #### Output
+
 ```json
 {
   "year": 2022,
@@ -229,6 +240,7 @@ There are no outputs for this script.
 ### Get a specific time component (day_of_week_full_name)
 
 #### Parameters
+
 | **Argument Name** | **Value** |
 | --- | --- |
 | value | 2022-01-23 01:23:45 +00:00 |
@@ -236,6 +248,7 @@ There are no outputs for this script.
 | key | day_of_week_full_name |
 
 #### Output
+
 ```
 Sunday
 ```
@@ -245,6 +258,7 @@ Sunday
 ### Get a time component in a specific time zone given by zone info
 
 #### Parameters
+
 | **Argument Name** | **Value** |
 | --- | --- |
 | value | 2022-01-23 01:23:45 +00:00 |
@@ -252,6 +266,7 @@ Sunday
 | key | iso_8601 |
 
 #### Output
+
 ```
 2022-01-23T10:23:45+09:00
 ```
@@ -261,6 +276,7 @@ Sunday
 ### Get a time component in a time zone which is extracted from the time string given to `time_zone`
 
 #### Parameters
+
 | **Argument Name** | **Value** |
 | --- | --- |
 | value | 2022-01-23 01:23:45 +00:00 |
@@ -268,6 +284,7 @@ Sunday
 | key | iso_8601 |
 
 #### Output
+
 ```
 2022-01-23T10:23:45+09:00
 ```
@@ -277,6 +294,7 @@ Sunday
 ### Get a current time in a specific time zone
 
 #### Parameters
+
 | **Argument Name** | **Value** |
 | --- | --- |
 | value | now |
@@ -284,6 +302,7 @@ Sunday
 | key | iso_8601 |
 
 #### Output
+
 ```
 2022-09-30T12:34:56+09:00
 ```
@@ -296,6 +315,7 @@ Sunday
 You can create a custom time format in combination with the `DT` transformer on the chain of transformers. For example, now you want to create a RFC 1123 date string such as `Thu, 10 Nov 2022 08:01:44 +0200`, and have the following results from the `TimeComponents`.
 
 **Table 1**
+
 ```json
 {
     "year": 2022,
@@ -340,12 +360,14 @@ You can create a custom time format in combination with the `DT` transformer on 
 You can set the following value to the `dt` parameter of the `DT` transformer to build the RFC 1123 date string you want.
 
 #### Parameters to DT
+
 | **Argument Name** | **Value** |
 | --- | --- |
 | value | **<Table 1>** |
 | dt | .=val.day_of_week_3_letter + ", " + val.day + " " + val.month_3_letter + " " + val.year + " " + val["HH:mm:ss"] + " " + val.time_zone_hhmm |
 
 #### Output
+
 ```
 Thu, 10 Nov 2022 08:01:44 +0200
 ```

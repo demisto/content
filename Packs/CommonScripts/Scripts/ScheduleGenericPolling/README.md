@@ -1,6 +1,7 @@
 Schedules the polling task. This script is called by the `GenericPolling` playbook.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Schedules the polling task. This script is called by the `GenericPolling` playbo
 | Cortex XSOAR Version | 4.0.0+ |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -26,5 +28,6 @@ Schedules the polling task. This script is called by the `GenericPolling` playbo
 | additionalPollingCommandArgValues | The values of the additional arguments for the polling command. For example, "value1,value2,...". |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

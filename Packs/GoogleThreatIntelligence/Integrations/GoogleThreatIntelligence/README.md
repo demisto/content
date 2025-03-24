@@ -109,6 +109,7 @@ Found safe by relationship files. total_malicious=0 >= 3
   For more information regarding File relationships, see: <https://gtidocs.virustotal.com/reference/file-info>
 
 - Starting with XSOAR version 6.9.0, You may monitor API usage via the *GoogleThreatIntelligence Execution Metrics* dashboard.
+
 ### Comments
 
 In GoogleThreatIntelligence you can now add comments to all indicator types (IP, Domain, File and URL) so each command now has the *resource_type* argument.
@@ -438,8 +439,11 @@ Checks the reputation of an IP address.
 | GoogleThreatIntelligence.IP.attributes.gti_assessment.threat_score.value | Number | GTI threat score of the IP address. |
 
 #### Command example
+
 ```!ip ip=1.1.1.1```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -767,7 +771,7 @@ Checks the reputation of a URL.
 
 #### Human Readable Output
 
->### URL data of "https://example.com"
+>### URL data of "<https://example.com>"
 >
 >|Url|Title|LastModified|HasContent|LastHttpResponseContentSha256|Positives|Reputation|
 >|---|---|---|---|---|---|---|
@@ -1289,7 +1293,7 @@ Retrieves comments for a given resource.
 
 #### Human Readable Output
 
->### GoogleThreatIntelligence comments of url: "https://paloaltonetworks.com"
+>### GoogleThreatIntelligence comments of url: "<https://paloaltonetworks.com>"
 >
 >|Date|Text|Positive Votes|Abuse Votes|Negative Votes|
 >|---|---|---|---|---|

@@ -12,9 +12,12 @@ This integration was integrated and tested with version 4.0 of Qintel QSentry
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Queries Qintel for IP reputation data
 
@@ -22,6 +25,7 @@ Queries Qintel for IP reputation data
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -49,9 +53,11 @@ Queries Qintel for IP reputation data
 
 
 #### Command Example
+
 ```!ip ip=192.168.35.100```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -93,6 +99,7 @@ Queries Qintel for IP reputation data
 #### Human Readable Output
 
 >### Qintel results for IP: 192.168.35.100
+>
 >|ASN|AS Owner|Tags|Description|Last Observed|
 >|---|---|---|---|---|
 >| 65000 | Some Service Provider | <br/>Proxy,<br/>Vpn | This ip address has been associated with a vpn network that offers paid access to users. it is advertised in online underground spaces.,<br/>This ip address has been associated with a proxy network that offers paid access to users and is advertised within the online underground. it is commonly utilized by criminal actors to conduct compromised credential checking and the proxy network is hosted on a botnet infrastructure. ip address is likely an infected machine. | 2021-08-31 11:00:00 |

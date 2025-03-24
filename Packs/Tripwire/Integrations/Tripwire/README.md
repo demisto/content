@@ -1,11 +1,12 @@
 Tripwire is a file integrity management (FIM), FIM monitors files and folders on systems and is triggered when they have changed.
 This integration was integrated and tested with v1 of Tripwire
+
 ## Configure Tripwire in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://tripwire.com\) | True |
+| url | Server URL \(e.g. <https://tripwire.com\>) | True |
 | credentials | Username | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
@@ -17,9 +18,12 @@ This integration was integrated and tested with v1 of Tripwire
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### tripwire-versions-list
+
 ***
 Returns all Element Versions that meet the search critiera.
 
@@ -27,6 +31,7 @@ Returns all Element Versions that meet the search critiera.
 #### Base Command
 
 `tripwire-versions-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -77,9 +82,11 @@ Returns all Element Versions that meet the search critiera.
 
 
 #### Command Example
+
 ```!tripwire-versions-list limit=5 start_detected_time=`30 days` end_detected_time=`1 day` node_names=`ip-10-128-0-12.eu-west-1.compute.internal` rule_ids=`-1y2p0ij32e8ch:-1y2p0ij3233dx````
 
 #### Context Example
+
 ```json
 {
     "Tripwire": {
@@ -212,7 +219,9 @@ Returns all Element Versions that meet the search critiera.
 #### Human Readable Output
 
 >### Tripwire Versions list results
+>
 >The number of returned results is: 5
+>
 >|id|timeDetected|elementName|changeType|nodeName|ruleName|
 >|---|---|---|---|---|---|
 >| -1y2p0ij32e8ch:-1y2p0ij3233dx | 2020-11-10T06:39:01.000Z | /etc/gshadow | MODIFIED | ip-10-128-0-12.eu-west-1.compute.internal | Critical Configuration Files |
@@ -223,6 +232,7 @@ Returns all Element Versions that meet the search critiera.
 
 
 ### tripwire-rules-list
+
 ***
 Returns a list of all rules or those that match the provided filter criteria.
 
@@ -230,6 +240,7 @@ Returns a list of all rules or those that match the provided filter criteria.
 #### Base Command
 
 `tripwire-rules-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -258,9 +269,11 @@ Returns a list of all rules or those that match the provided filter criteria.
 
 
 #### Command Example
+
 ```!tripwire-rules-list limit=5```
 
 #### Context Example
+
 ```json
 {
     "Tripwire": {
@@ -333,7 +346,9 @@ Returns a list of all rules or those that match the provided filter criteria.
 #### Human Readable Output
 
 >### Tripwire Rules list results
+>
 >The number of returned results is: 5
+>
 >|name|id|severity|elementName|type|command|importedTime|modifiedTime|
 >|---|---|---|---|---|---|---|---|
 >| Fax Service Permissions | -1y2p0ij32e7pw:-1y2p0ij32c200 | 0 | sc sdshow Fax | Command Output Capture Rule | %Windir%/system32/sc.exe sdshow Fax | 2020-09-30T17:33:23.330Z | 2020-09-30T17:33:23.330Z |
@@ -344,6 +359,7 @@ Returns a list of all rules or those that match the provided filter criteria.
 
 
 ### tripwire-elements-list
+
 ***
 Returns a list of all elements or those that match the provided criteria.
 
@@ -351,6 +367,7 @@ Returns a list of all elements or those that match the provided criteria.
 #### Base Command
 
 `tripwire-elements-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -385,9 +402,11 @@ Returns a list of all elements or those that match the provided criteria.
 
 
 #### Command Example
+
 ```!tripwire-elements-list limit=5```
 
 #### Context Example
+
 ```json
 {
     "Tripwire": {
@@ -475,7 +494,9 @@ Returns a list of all elements or those that match the provided criteria.
 #### Human Readable Output
 
 >### Tripwire Elements list results
+>
 >The number of returned results is: 5
+>
 >|id|name|baselineVersionId|
 >|---|---|---|
 >| -1y2p0ij32e8cc:-1y2p0ij323hx2 | /home/test/monitored-folder | -1y2p0ij32e8ch:-1y2p0ij3239dk |
@@ -486,6 +507,7 @@ Returns a list of all elements or those that match the provided criteria.
 
 
 ### tripwire-nodes-list
+
 ***
 Returns a list of all nodes or those that match the provided filter criteria.
 
@@ -493,6 +515,7 @@ Returns a list of all nodes or those that match the provided filter criteria.
 #### Base Command
 
 `tripwire-nodes-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -544,9 +567,11 @@ Returns a list of all nodes or those that match the provided filter criteria.
 
 
 #### Command Example
+
 ```!tripwire-nodes-list limit=5```
 
 #### Context Example
+
 ```json
 {
     "Tripwire": {
@@ -681,7 +706,9 @@ Returns a list of all nodes or those that match the provided filter criteria.
 #### Human Readable Output
 
 >### Tripwire Nodes list results
+>
 >The number of returned results is: 2
+>
 >|id|name|make|ipAddresses|type|lastCheck|modifiedTime|
 >|---|---|---|---|---|---|---|
 >| -1y2p0ij32e8bu:-1y2p0ij32e7b3 | ip-172-31-45-155.eu-west-1.compute.internal | Red Hat | 172.31.45.155 | Linux Server | 1970-01-02T00:00:00.000Z | 2020-09-30T18:00:12.416Z |

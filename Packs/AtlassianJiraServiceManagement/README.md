@@ -3,6 +3,7 @@ Jira Assets is a plugin for Jira that allows teams to track and manage their phy
 ## What does this pack do? 
 
 Using the commands in the integration, you can leverage what the Jira Assets API has to offer, such as:
+
 - Adding, reading, updating and deleting assets
 - Getting object schemas
 - Getting object types

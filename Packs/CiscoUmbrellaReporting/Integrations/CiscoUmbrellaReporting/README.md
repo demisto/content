@@ -75,8 +75,11 @@ List of destinations ordered by the number of requests made in descending order.
 | UmbrellaReporting.Destination.counts.requests | Number | Total number of requests. | 
 
 #### Command example
+
 ```!umbrella-reporting-destination-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "UmbrellaReporting": {
@@ -194,9 +197,10 @@ List of destinations ordered by the number of requests made in descending order.
 #### Human Readable Output
 
 >### Destination List
+>
 >|Destination|Category|Allowed|Blocked|Requests|
 >|---|---|---|---|---|
->| www.cisco.com | Computers and Internet, Infrastructure and Content Delivery Networks, Application, abc/efgh, Business Services | 1286 | 0 | 1286 |
+>| <www.cisco.com> | Computers and Internet, Infrastructure and Content Delivery Networks, Application, abc/efgh, Business Services | 1286 | 0 | 1286 |
 >| presence.teams.microsoft.com | Business and Industry, Computers and Internet, Online Meetings, Application, abc/efgh, Business Services | 1003 | 0 | 1003 |
 
 
@@ -244,8 +248,11 @@ List of categories ordered by the number of requests made matching the categorie
 | UmbrellaReporting.Category.rank | Number | Rank of the category. | 
 
 #### Command example
+
 ```!umbrella-reporting-category-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "UmbrellaReporting": {
@@ -282,6 +289,7 @@ List of categories ordered by the number of requests made matching the categorie
 #### Human Readable Output
 
 >### Category List
+>
 >|Category|Type|Activity|
 >|---|---|---|
 >| Application | application | 32446 |
@@ -337,8 +345,11 @@ List of identities ordered by the number of requests made matching the categorie
 | UmbrellaReporting.Identity.identity.deleted | Boolean | Indicates whether the identity was deleted. | 
 
 #### Command example
+
 ```!umbrella-reporting-identity-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "UmbrellaReporting": {
@@ -391,6 +402,7 @@ List of identities ordered by the number of requests made matching the categorie
 #### Human Readable Output
 
 >### Identities List
+>
 >|Identity|Requests|
 >|---|---|
 >| DESKTOP-IIQVPJ7 | 29753 |
@@ -432,8 +444,11 @@ List of event types ordered by the number of requests made for each type of even
 | UmbrellaReporting.EventType.count | Number | Number of requests made that match this event type. | 
 
 #### Command example
+
 ```!umbrella-reporting-event-type-list```
+
 #### Context Example
+
 ```json
 {
     "UmbrellaReporting": {
@@ -474,6 +489,7 @@ List of event types ordered by the number of requests made for each type of even
 #### Human Readable Output
 
 >### Event Type List
+>
 >|Event Type|Count|
 >|---|---|
 >| domain_security | 2 |
@@ -528,8 +544,11 @@ List of files within a time frame. Only returns proxy data.
 | UmbrellaReporting.File.categories.integration | Boolean | Whether the category is an integration. | 
 
 #### Command example
+
 ```!umbrella-reporting-file-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "UmbrellaReporting": {
@@ -567,6 +586,7 @@ List of files within a time frame. Only returns proxy data.
 #### Human Readable Output
 
 >### File List
+>
 >|Requests|Identity Count|SHA256|Category|Category Type|File Name|
 >|---|---|---|---|---|---|
 >| 2 | 1 | 94fe42af4a67ed5be45bd7913d8a8aebc4e35afddd5675d01bd37df8e9b399ae | Online Meetings, Application | content, application | AnyDesk.exe |
@@ -608,9 +628,11 @@ List of top threats within a time frame. Returns both DNS and Proxy data.
 | UmbrellaReporting.Threat.count | Number | The number of requests for that threat name. | 
 
 #### Command example
+
 ```!umbrella-reporting-threat-list limit=1```
 
 #### Context Example
+
 ```json
 {
    "UmbrellaReporting":{
@@ -624,8 +646,11 @@ List of top threats within a time frame. Returns both DNS and Proxy data.
    }
 }
 ```
+
 #### Human Readable Output
+>
 >### Threat List
+
 | **Threat Type** | **Count** |
 |---|---|
 | Adware | 1 |
@@ -700,8 +725,8 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
 | UmbrellaReporting.Activity.allowedapplications.type | String | Type of the application, NBAR or AVC. | 
 | UmbrellaReporting.Activity.allowedapplications.category.label | String | Label of the application category. | 
 | UmbrellaReporting.Activity.allowedapplications.category.id | Number | ID of the application category. | 
-| UmbrellaReporting.Activity.querytype | String | The type of DNS request that was made. For more information, see Common DNS Request Types. https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
-| UmbrellaReporting.Activity.returncode | Number | The DNS return code for this request. For more information, see Common DNS return codes for any DNS service \(and Umbrella\). https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
+| UmbrellaReporting.Activity.querytype | String | The type of DNS request that was made. For more information, see Common DNS Request Types. <https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-> | 
+| UmbrellaReporting.Activity.returncode | Number | The DNS return code for this request. For more information, see Common DNS return codes for any DNS service \(and Umbrella\). <https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-> | 
 | UmbrellaReporting.Activity.blockedapplications.id | Number | ID of the application. | 
 | UmbrellaReporting.Activity.blockedapplications.label | String | Label of the application. | 
 | UmbrellaReporting.Activity.blockedapplications.type | String | Type of the application, NBAR or AVC. | 
@@ -709,8 +734,11 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
 | UmbrellaReporting.Activity.blockedapplications.category.id | Number | ID of the application category. | 
 
 #### Command example
+
 ```!umbrella-reporting-activity-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "UmbrellaReporting": {
@@ -844,6 +872,7 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
 #### Human Readable Output
 
 >### Activity List
+>
 >|Request|Identity|Policy or Ruleset Identity|Destination|Internal IP|External IP|DNS Type|Action|Categories|Public Application|Application Category|Date & Time|
 >|---|---|---|--|---|---|---|---|---|---|---|---|
 >| dns | S’s MacBook Pro | S’s MacBook Pro | stats.g.doubleclick.net | 1.1.1.1 | 4.4.4.4 | A | allowed | Advertisements, Application | Google Marketing Platform | Ad Publishing | 2022-10-29T07:39:08Z |
@@ -925,8 +954,8 @@ Only one activity type can be selected at a time.
 | UmbrellaReporting.ActivityDns.allowedapplications.type | String | Type of the application, NBAR or AVC. | 
 | UmbrellaReporting.ActivityDns.allowedapplications.category.label | String | Label of the application category. | 
 | UmbrellaReporting.ActivityDns.allowedapplications.category.id | Number | ID of the application category. | 
-| UmbrellaReporting.ActivityDns.querytype | String | The type of DNS request that was made. For more information, see https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
-| UmbrellaReporting.ActivityDns.returncode | Number | The DNS return code for this request. For more information, see Common DNS return codes for any DNS service \(and Umbrella\). https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
+| UmbrellaReporting.ActivityDns.querytype | String | The type of DNS request that was made. For more information, see <https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-> | 
+| UmbrellaReporting.ActivityDns.returncode | Number | The DNS return code for this request. For more information, see Common DNS return codes for any DNS service \(and Umbrella\). <https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-> | 
 | UmbrellaReporting.ActivityDns.blockedapplications.id | Number | ID of the application. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.label | String | Label of the application. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.type | String | Type of the application, NBAR or AVC. | 
@@ -934,8 +963,11 @@ Only one activity type can be selected at a time.
 | UmbrellaReporting.ActivityDns.blockedapplications.category.id | Number | ID of the application category. | 
 
 #### Command example for **`traffic_type = dns`** for base command **`umbrella-reporting-activity-get`**
+
 ```!umbrella-reporting-activity-get traffic_type=dns limit=2```
+
 #### Context Example for **`traffic_type = dns`** for base command **`umbrella-reporting-activity-get`**
+
 ```json
 {
     "UmbrellaReporting": {
@@ -1069,6 +1101,7 @@ Only one activity type can be selected at a time.
 #### Human Readable Output
 
 >### Dns Activity List
+>
 >|Identity|Policy or Ruleset Identity|Destination|Internal IP|External IP|DNS Type|Action|Categories|Public Application|Application Category|Date & Time|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| S’s MacBook Pro | S’s MacBook Pro | stats.g.doubleclick.net | 1.1.1.1 | 4.4.4.4 | A | allowed | Advertisements, Application | Google Marketing Platform | Ad Publishing | 2022-10-29T07:39:08Z |
@@ -1089,9 +1122,11 @@ Only one activity type can be selected at a time.
 
 
 #### Command example for **`traffic_type = amp`** for base command **`umbrella-reporting-activity-get`**
+
 ```!umbrella-reporting-activity-get traffic_type=amp limit=2```
 
 #### Context Example for **`traffic_type = amp`** for base command **`umbrella-reporting-activity-get`**
+
 ```json
 {
    "UmbrellaReporting":{
@@ -1109,9 +1144,11 @@ Only one activity type can be selected at a time.
    }
 }
 ```
+
 #### Human Readable Output
 
 >### AMP Activity List
+>
 >|First Seen| Disposition | Score | Host Name | Malware | SHA256 | Date & Time |
 >|---|---|---|---|--------|---|---|
 >| 1548311506 | clean | 10 | google.com | malware | 9495b6c155044053953efe30ebaf804780c114e7b721b14f6a5b0a782769696e | Sep 16, 2022 05:52 AM |
@@ -1201,8 +1238,11 @@ Only one activity type can be selected at a time.
 | UmbrellaReporting.ActivityProxy.amp.score                 | Number   | Advanced Malware Protection (AMP) score.                                                 |
 
 #### Command example for **`traffic_type = proxy`** for base command **`umbrella-reporting-activity-get`**
+
 ```!umbrella-reporting-activity-get traffic_type=proxy limit=2```
+
 #### Context Example for **`traffic_type = proxy`** for base command **`umbrella-reporting-activity-get`**
+
 ```json
 {
     "UmbrellaReporting": {
@@ -1385,6 +1425,7 @@ Only one activity type can be selected at a time.
 #### Human Readable Output
 
 >### Proxy Activity List
+>
 >|Identity|Policy or Ruleset Identity|Internal IP|External IP|Action|Categories|Date & Time|
 >|---|---|---|---|---|---|---|
 >| DESKTOP-IIQVPJ7 | DESKTOP-IIQVPJ7 | 10.10.10.217 | 4.4.4.4 | allowed | Infrastructure and Content Delivery Networks | 2022-10-17T09:38:32Z |
@@ -1427,9 +1468,11 @@ Only one activity type can be selected at a time.
 
 
 #### Command example for **`traffic_type = firewall`** for base command **`umbrella-reporting-activity-get`**
+
 ```!umbrella-reporting-activity-get traffic_type=firewall limit=2```
 
 #### Context Example for **`traffic_type = firewall`** for base command **`umbrella-reporting-activity-get`**
+
 ```json
 {
    "UmbrellaReporting":{
@@ -1485,9 +1528,11 @@ Only one activity type can be selected at a time.
    }
 }
 ```
+
 #### Human Readable Output
 
 >### Firewall Activity List
+>
 >|Identity|Policy or Ruleset Identity|Internal IP|Source IP|Source Port|Destination Port|Protocol|Rule|Type|Action|Public Application|Direction|Date & Time|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Catch Rate Testing System | Catch Rate Testing System | 1.1.1.1 | 192.168.0.1 | 0 | 0 | UDP | Default Rule | firewall |allowed|dns IT Service Management|towards| Sep 16, 2022 05:52 AM |
@@ -1524,6 +1569,7 @@ Only one activity type can be selected at a time.
 | UmbrellaReporting.ActivityIntrusion.signaturelist.id                 | Number | Unique id assigned to a Default or Custom Signature List. |
 
 #### Command example for **`traffic_type = intrusion`** for base command **`umbrella-reporting-activity-get`**
+
 ```!umbrella-reporting-activity-get traffic_type=intrusion limit=2```
 
 #### Context Example for **`traffic_type = intrusion`** for base command **`umbrella-reporting-activity-get`**
@@ -1576,6 +1622,7 @@ Only one activity type can be selected at a time.
    }
 }
 ```
+
 #### Context Output for **`traffic_type = ip`** for base command **`umbrella-reporting-activity-get`**
 
 | **Path**                                                         | **Type** | **Description** |
@@ -1600,7 +1647,9 @@ Only one activity type can be selected at a time.
 | UmbrellaReporting.ActivityIP.categories.type                    | String | The type of category | 
 | UmbrellaReporting.ActivityIP.categories.deprecated              | Boolean | If the category is a legacy category | 
 | UmbrellaReporting.ActivityIP.categories.integration             | Boolean | If the category is an integration |
+
 #### Command example
+
 ```!umbrella-reporting-activity-get traffic_type=ip limit=2```
 
 #### Context Example for **`traffic_type = ip`** for base command **`umbrella-reporting-activity-get`**
@@ -1644,9 +1693,11 @@ Only one activity type can be selected at a time.
    }
 }
 ```
+
 #### Human Readable Output
 
 >### IP Activity List
+>
 >|Identity|Destination IP|Source IP|Source Port| Destination Port|Categories|Type|Action|Date & Time|
 >|---|---|---|---|---|---|---|---|---|
 >| Catch Rate Testing System |  10.10.10.10 | 10.10.10.10 |22|33|Malware|IP|allowed|Sep 16, 2022 05:52 AM|
@@ -1707,8 +1758,11 @@ Get the summary.
 
 
 #### Command example
+
 ```!umbrella-reporting-summary-list domains=api.tunnels.cdfw.umbrella.com```
+
 #### Context Example
+
 ```json
 {
     "UmbrellaReporting": {
@@ -1735,6 +1789,7 @@ Get the summary.
 #### Human Readable Output
 
 >### Summary List
+>
 >|Application|Allowed Application|Blocked Application|Category|Domain|File|File Type|Identity|Identity Type|Policy Category|Policy Request|Request|Allowed Request|Blocked Request|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 0 | 0 | 4 | 1 | 0 | 0 | 3 | 2 | 0 | 0 | 6 | 6 | 0 |
@@ -1766,9 +1821,11 @@ Get the summary.
 
 
 #### Command example for **`summary_type=category`**  for base command **`umbrella-reporting-summary-list`**
+
 ```!umbrella-reporting-summary-list summary_type=category limit=1```
 
 #### Context Example for **`summary_type=category`**  for base command **`umbrella-reporting-summary-list`**
+
 ```json
 {
    "UmbrellaReporting":{
@@ -1801,9 +1858,11 @@ Get the summary.
    }
 }
 ```
+
 #### Human Readable Output
 
 >### Summary with Category List 
+>
 >|Category Type| Category Name |Application|Allowed Application|Blocked Application|Category|Domain|File|File Type|Identity|Identity Type|Policy Category|Policy Request|Request|Allowed Request|Blocked Request|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| security | Malware | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -1831,9 +1890,11 @@ Get the summary.
 
 
 #### Command example for **`summary_type=destination`**  for base command **`umbrella-reporting-summary-list`**
+
 ```!umbrella-reporting-summary-list summary_type=destination limit=1```
 
 #### Context Example for **`summary_type=destination`**  for base command **`umbrella-reporting-summary-list`**
+
 ```json
 {
    "UmbrellaReporting":{
@@ -1861,12 +1922,14 @@ Get the summary.
    }
 }
 ```
+
 #### Human Readable Output
 
 >### Summary with Destination List 
+>
 >|Destination| Application|Allowed Application|Blocked Application|Category|Domain|File|File Type|Identity|Identity Type|Policy Category|Policy Request|Request|Allowed Request|Blocked Request|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| www.google.com | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+>| <www.google.com> | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 
 #### Context Output for **`summary_type=intrusion_rule`**  for base command **`umbrella-reporting-summary-list`**
@@ -1883,10 +1946,12 @@ Get the summary.
 
 
 #### Command example for **`summary_type=intrusion_rule`**  for base command **`umbrella-reporting-summary-list`**
+
 ```!umbrella-reporting-summary-list summary_type=intrusion_rule limit=1```
 
 
 #### Context Example for **`summary_type=intrusion_rule`**  for base command **`umbrella-reporting-summary-list`**
+
 ```json
 {
    "UmbrellaReporting":{
@@ -1914,6 +1979,7 @@ Get the summary.
 #### Human Readable Output
 
 >### Summary with Intrusion List 
+>
 >|Blocked| Detected | Would Block | Last Event |
 >|---|---|---|---|
 >| 0 | 1 | 0 | 1594557262000 |

@@ -38,8 +38,11 @@ Update the severity or The status of the vulnerability.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!app-sec-vulnerability-update vulnerability_id=1111 severity=High```
+
 #### Human Readable Output
 
 >Vulnerability "1111" was successfully updated.
@@ -89,8 +92,11 @@ List vulnerabilities. Vulnerabilities are aspects of your app that can make it s
 | Rapid7AppSec.Vulnerability.vulnerability_score | Number | The vulnerability CVSS Score. |
 
 #### Command example
+
 ```!app-sec-vulnerability-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -127,6 +133,7 @@ List vulnerabilities. Vulnerabilities are aspects of your app that can make it s
 #### Human Readable Output
 
 >### Vulnerability
+>
 >|Id|App Id|Root Cause Url|Severity|Status|First Discovered|Last Discovered|Newly Discovered|Vulnerability Score|
 >|---|---|---|---|---|---|---|---|---|
 >| 1111 | 1111 | http:<span>//</span>test/user/password | HIGH | UNREVIEWED | 2023-07-24T13:40:07.64407 | 2023-09-07T07:11:59.108573 | false | 2.8 |
@@ -161,8 +168,11 @@ List the history of changes for a vulnerability.
 | Rapid7AppSec.VulnerabilityHistory.Changes.new_value | String | The vulnerability new value. |
 
 #### Command example
+
 ```!app-sec-vulnerability-history-list vulnerability_id=1111```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -187,6 +197,7 @@ List the history of changes for a vulnerability.
 #### Human Readable Output
 
 >### Vulnerability History
+>
 >|Vulnerability Id|Id|Create Time|Source Id|Source Type|Changes|
 >|---|---|---|---|---|---|
 >| 1111 | 1111 | 2023-09-10T10:20:29.202337 | 1111 | USER | {'field': 'SEVERITY', 'previous_value': 'MEDIUM', 'new_value': 'HIGH'} |
@@ -211,8 +222,11 @@ Create a new vulnerability comment. A vulnerability comment is a resource that a
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!app-sec-vulnerability-comment-create vulnerability_id=1111 comment_content="test"```
+
 #### Human Readable Output
 
 >Vulnerability Comment was successfully added to vulnerability "1111".
@@ -237,8 +251,11 @@ Update an existing vulnerability comment.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!app-sec-vulnerability-comment-update vulnerability_id=1111 comment_id=1111 comment_content="test2"```
+
 #### Human Readable Output
 
 >Vulnerability Comment "1111" was successfully updated.
@@ -262,8 +279,11 @@ Delete an existing vulnerability comment.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!app-sec-vulnerability-comment-delete vulnerability_id=1111 comment_id=1111```
+
 #### Human Readable Output
 
 >Vulnerability Comment "1111" was successfully deleted.
@@ -297,8 +317,11 @@ List the vulnerability comments. If a comment_id is given, the command will retu
 | Rapid7AppSec.VulnerabilityComment.update_time | Date | The date the comment was updated. |
 
 #### Command example
+
 ```!app-sec-vulnerability-comment-list vulnerability_id=1111```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -329,6 +352,7 @@ List the vulnerability comments. If a comment_id is given, the command will retu
 #### Human Readable Output
 
 >### Vulnerability Comment
+>
 >|Content|Id|Vulnerability Id|Author Id|Create Time|Update Time|
 >|---|---|---|---|---|---|
 >| test | 1111 | 1111 | 1111 | 2023-09-10T10:20:38.784939 | 2023-09-10T10:20:38.784939 |
@@ -362,8 +386,11 @@ Get the metadata of an attack. AppSec can attempt multiple variations of the sam
 | Rapid7AppSec.Attack.description | String | Description about the attack. |
 
 #### Command example
+
 ```!app-sec-attack-get module_id=1111 attack_id=1111```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -381,6 +408,7 @@ Get the metadata of an attack. AppSec can attempt multiple variations of the sam
 #### Human Readable Output
 
 >### Attack metadata
+>
 >|Id|Module Id|Type|Class|Description|
 >|---|---|---|---|---|
 >| 1111 | 1111 | CSPHeaders | Best Practice | test. |
@@ -413,8 +441,11 @@ Get the documentation of an attack. The documentation contains the references an
 | Rapid7AppSec.AttackDocumentation.recommendation | String | The attack documentation recommendation. |
 
 #### Command example
+
 ```!app-sec-attack-documentation-get module_id=1111 attack_id=1111```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -436,6 +467,7 @@ Get the documentation of an attack. The documentation contains the references an
 #### Human Readable Output
 
 >### Attack Documentation
+>
 >|Module Id|Id|References|Description|Recommendation|
 >|---|---|---|---|---|
 >| 1111 | 1111 | test2: test<br/>test: test<br/>test3: test | test. | test. |
@@ -461,8 +493,11 @@ Submit a new scan. A scan encapsulates all the information for a single executio
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!app-sec-scan-submit scan_config_id=1111```
+
 #### Human Readable Output
 
 >Scan was successfully submitted.
@@ -490,8 +525,11 @@ Get any current scan action. Scan actions values are: "PAUSE", "RESUME", "STOP",
 | Rapid7AppSec.Scan.action | String | The scan action. Scan actions values are: "PAUSE", "RESUME", "STOP", "AUTHENTICATE", and "CANCEL". |
 
 #### Command example
+
 ```!app-sec-scan-action-get scan_id=1111```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -506,6 +544,7 @@ Get any current scan action. Scan actions values are: "PAUSE", "RESUME", "STOP",
 #### Human Readable Output
 
 >### Scan
+>
 >|Id|Action|
 >|---|---|
 >| 1111 | RESUME |
@@ -533,6 +572,7 @@ Submit a new scan action. Scan actions values are: "PAUSE", "RESUME", "STOP", "A
 #### Context Output
 
 There is no context output for this command.
+
 ### app-sec-scan-delete
 
 ***
@@ -551,8 +591,11 @@ Delete a scan. The scan must be FAILED or marked as FutureObsolete to be deleted
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!app-sec-scan-delete scan_id=1111```
+
 #### Human Readable Output
 
 >Scan "1111" was successfully deleted.
@@ -591,8 +634,11 @@ List scans. Scans attack the URLs in your app to identify behaviors that could b
 | Rapid7AppSec.Scan.scan_type | String | The scan type. The values are: REGULAR, VERIFICATION, INCREMENTAL, VALIDATION. |
 
 #### Command example
+
 ```!app-sec-scan-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -615,6 +661,7 @@ List scans. Scans attack the URLs in your app to identify behaviors that could b
 #### Human Readable Output
 
 >### Scan list
+>
 >|Id|Status|Scan Type|Submit Time|Completion Time|App Id|Scan Config Id|Submitter Id|Validation Parent Scan Id|
 >|---|---|---|---|---|---|---|---|---|
 >| 1111 | COMPLETE | VERIFICATION | 2023-09-07T06:58:18.724285 | 2023-09-07T07:12:57.372961 | 1111 | 1111 | 1111 | 1111 |
@@ -644,8 +691,11 @@ List the engine events from a scan. These logs typically capture specific events
 | Rapid7AppSec.EngineEvent.Event.event | String | Description about the event. |
 
 #### Command example
+
 ```!app-sec-scan-engine-event-list scan_id=1111```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -669,6 +719,7 @@ List the engine events from a scan. These logs typically capture specific events
 #### Human Readable Output
 
 >### Engine Event
+>
 >|Time|Event|
 >|---|---|
 >| 2023-09-06T14:00:24 | Initializing Scan |
@@ -699,8 +750,11 @@ List the platform events from a scan. Platform logs are broader in scope and usu
 | Rapid7AppSec.PlatformEvent.Event.event | String | Description about the event. |
 
 #### Command example
+
 ```!app-sec-scan-platform-event-list scan_id=1111```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -724,6 +778,7 @@ List the platform events from a scan. Platform logs are broader in scope and usu
 #### Human Readable Output
 
 >### Platform Event
+>
 >|Time|Event|
 >|---|---|
 >| 2023-09-06T13:51:55.236413 | Gathering Seed URLs from app |
@@ -762,8 +817,11 @@ Get real-time details of the execution of a scan (for example: Coverage, Attack,
 | Rapid7AppSec.ExecutionDetail.drip_delay | Number | The the delay enforced \(in milliseconds\) between requests to not overload a target web server. |
 
 #### Command example
+
 ```!app-sec-scan-execution-details-get scan_id=1111```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -787,6 +845,7 @@ Get real-time details of the execution of a scan (for example: Coverage, Attack,
 #### Human Readable Output
 
 >### Execution Detail
+>
 >|Id|Logged In|Links In Queue|Links Crawled|Attacks In Queue|Attacked|Vulnerable|Requests|Failed Requests|Network Speed|Drip Delay|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 1111 | false | 0 | 151 | 0 | 8860 | 328 | 2049 | 0 | 215687 | 0 |
@@ -824,8 +883,11 @@ List the scan configuration. A scan configuration defines all the necessary info
 | Rapid7AppSec.ScanConfig.assignment_environment | String | The environment of the assignment. Values can be CLOUD and ON_PREMISE. |
 
 #### Command example
+
 ```!app-sec-scan-config-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -845,6 +907,7 @@ List the scan configuration. A scan configuration defines all the necessary info
 #### Human Readable Output
 
 >### Scan Config list
+>
 >|Id|Name|App Id|Incremental|Attack Template Id|Assignment Type|Assignment Environment|
 >|---|---|---|---|---|---|---|
 >| 1111 | All Attack Modules (No Auth) | 1111 | false | 1111 | ENGINE_GROUP | CLOUD |
@@ -876,8 +939,11 @@ List apps. An app owns scan configurations, schedules, scans, and vulnerabilitie
 | Rapid7AppSec.App.name | String | The name of the app. |
 
 #### Command example
+
 ```!app-sec-app-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -892,6 +958,7 @@ List apps. An app owns scan configurations, schedules, scans, and vulnerabilitie
 #### Human Readable Output
 
 >### App list
+>
 >|Id|Name|
 >|---|---|
 >| 1111 | test |
@@ -921,8 +988,11 @@ List the modules. If a module_id is given, the command will return the informati
 | Rapid7AppSec.Module.description | String | Description about the module. |
 
 #### Command example
+
 ```!app-sec-module-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -945,6 +1015,7 @@ List the modules. If a module_id is given, the command will return the informati
 #### Human Readable Output
 
 >### Module
+>
 >|Id|Name|Description|
 >|---|---|---|
 >| 1111 | Brute Force (Form Auth) | test.. |
@@ -981,8 +1052,11 @@ List the attack templates. An attack template describes if and how attacks shoul
 | Rapid7AppSec.AttackTemplate.advanced_attacks_enabled | String | A flag to enable advanced attacks. |
 
 #### Command example
+
 ```!app-sec-attack-template-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -1001,6 +1075,7 @@ List the attack templates. An attack template describes if and how attacks shoul
 #### Human Readable Output
 
 >### Attack Template list
+>
 >|Id|Name|System Defined|Browser Encoding Enabled|Attack Prioritization|Advanced Attacks Enabled|
 >|---|---|---|---|---|---|
 >| 1111 | All API Modules | true | false | SMART | false |
@@ -1038,8 +1113,11 @@ List the engines. An engine encapsulates the state and high-level attributes of 
 | Rapid7AppSec.Engine.upgradeable | String | Whether the engine is upgradeable. |
 
 #### Command example
+
 ```!app-sec-engine-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -1058,6 +1136,7 @@ List the engines. An engine encapsulates the state and high-level attributes of 
 #### Human Readable Output
 
 >### Engine
+>
 >|Id|Name|Engine Group Id|Latest Version|Upgradeable|Auto Upgrade|
 >|---|---|---|---|---|---|
 >| 1111 | engine-test | 1111 | false | false | true |
@@ -1090,8 +1169,11 @@ List the engine groups. An engine group is a resource which defines a container 
 | Rapid7AppSec.EngineGroup.description | String | Description about the engine group. |
 
 #### Command example
+
 ```!app-sec-engine-group-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Rapid7AppSec": {
@@ -1107,6 +1189,7 @@ List the engine groups. An engine group is a resource which defines a container 
 #### Human Readable Output
 
 >### Engine Group
+>
 >|Id|Name|Description|
 >|---|---|---|
 >| 1111 | string | string |

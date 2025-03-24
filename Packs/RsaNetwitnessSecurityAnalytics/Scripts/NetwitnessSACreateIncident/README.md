@@ -1,6 +1,7 @@
 Creates an incident inside NetWitness SA from a set of NetWitness events.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Creates an incident inside NetWitness SA from a set of NetWitness events.
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * nw-create-incident
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -30,5 +34,6 @@ This script uses the following commands and scripts.
 | incidentManagementId | The ID of NetWitness INCIDENT_MANAGEMENT device/component ID. It can be received by running `nw-get-component` command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server. (optional number) 
 
 ## Outputs
+
 ---
 There are no outputs for this script.

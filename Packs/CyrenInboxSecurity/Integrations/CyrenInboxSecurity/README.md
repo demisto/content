@@ -15,9 +15,12 @@ This integration was integrated and tested with version 1.0 of Cyren Inbox Secur
 | Fetch incidents |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cyren-resolve-and-remediate
+
 ***
 resolve a case and remediate incidents
 
@@ -25,6 +28,7 @@ resolve a case and remediate incidents
 #### Base Command
 
 `cyren-resolve-and-remediate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -44,9 +48,11 @@ resolve a case and remediate incidents
 
 
 #### Command Example
+
 ```!cyren-resolve-and-remediate resolution=phishing resolution_reason="Identified suspicious sender" case_id="62877980-6ac7-4944-b3fa-62ddf628a0fe" resolution_reason_text="I think it is phishing" actions=ADD_BANNER,MOVE_TO_DELETED```
 
 #### Context Example
+
 ```json
 {
     "Cyren": {
@@ -60,6 +66,7 @@ resolve a case and remediate incidents
 #### Human Readable Output
 
 >### cyren-resolve-and-remediate results
+>
 >|status|
 >|---|
 >| ok |
@@ -67,6 +74,7 @@ resolve a case and remediate incidents
 >*** end of results ***
 
 ### cyren-reset-sample-fetch
+
 ***
 resets integration to fetch a sample incident
 
@@ -74,6 +82,7 @@ resets integration to fetch a sample incident
 #### Base Command
 
 `cyren-reset-sample-fetch`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -85,6 +94,7 @@ resets integration to fetch a sample incident
 There is no context output for this command.
 
 #### Command Example
+
 ```!cyren-reset-sample-fetch```
 
 #### Human Readable Output

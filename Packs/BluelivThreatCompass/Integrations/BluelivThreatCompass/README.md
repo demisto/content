@@ -20,9 +20,12 @@ organization and its employees safe
 | first_fetch_time | First fetch time | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### blueliv-resource-all
+
 ***
 Recovers all resources from the module.
 
@@ -30,6 +33,7 @@ Recovers all resources from the module.
 #### Base Command
 
 `blueliv-resource-all`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -48,9 +52,11 @@ Recovers all resources from the module.
 
 
 #### Command Example
+
 ```!blueliv-resource-all limit=10```
 
 #### Context Example
+
 ```
 {
     "BluelivThreatCompass": {
@@ -462,21 +468,23 @@ Recovers all resources from the module.
 #### Human Readable Output
 
 >### Blueliv DataLeakage info
+>
 >|analysis_calc_result|analysis_result|analysis_user_result|changed_at|checked_at|content_type|countries_id|created_at|domain_type|fav|file|followedUp|history|id|issued|labels|language_id|read|retweet_info|searchPhrase|search_words|title|tlpStatus|total_retweets|url|user_rating|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| POSITIVE | POSITIVE | POSITIVE | 1589634898000 | 1589634898000 | text/html;charset=utf-8 | US | 1589634898000 | SOCIAL_NETWORK | USER_STARRED | 2020/5/16/10712044.html | false |  | 10712044 | false | {'id': 1306, 'name': 'Confidential', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'},<br/>{'id': 205, 'name': 'TopScribdDocsSearch', 'type': 'MODULE_LABEL'} | en | false |  | falabella.com.pe | falabella.com.pe | TOTUS SEDE SJM FINAL.doc \| Internet Protocols \| Transmission Control Protocol | AMBER | 0 | https://www.scribd.com/document/461608373 | 3 |
->| POSITIVE | POSITIVE |  | 1589634865000 | 1589634865000 | text/html;charset=utf-8 | US | 1589634865000 | SOCIAL_NETWORK | NOT_STARRED | 2020/5/16/10712019.html | false |  | 10712019 | false | {'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'},<br/>{'id': 205, 'name': 'TopScribdDocsSearch', 'type': 'MODULE_LABEL'} | en | false |  | falabella.com | falabella.com | CASO FALABELLA \| America latina \| Marketing | AMBER | 0 | https://www.scribd.com/document/461631347 | 0 |
->| POSITIVE | POSITIVE |  | 1589634865000 | 1589634865000 | text/html;charset=utf-8 | US | 1589634865000 | SOCIAL_NETWORK | NOT_STARRED | 2020/5/16/10712020.html | false |  | 10712020 | false | {'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'},<br/>{'id': 205, 'name': 'TopScribdDocsSearch', 'type': 'MODULE_LABEL'} | en | false |  | falabella.com | falabella.com | tipos de Ventas ejemplos.docx | AMBER | 0 | https://www.scribd.com/document/461606657 | 0 |
->| INFORMATIVE | INFORMATIVE |  | 1589633157000 | 1589633157000 | text/html | GB | 1589633157000 | UNKNOWN | NOT_STARRED |  | false |  | 10711255 | false | {'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'},<br/>{'id': 1864, 'name': 'VDocumentsSite', 'type': 'MODULE_LABEL'} | pt | false |  | linio | linio | Tأ‰RMINOS Y CONDICIONES - LINIO MARKETPLACE PREMIUM amp;Cs/20190501_Tآ  asociados (ejemplo: seguro, | AMBER | 0 | https://vdocuments.site/trminos-y-condiciones-linio-marketplace-premium-ampcs20190501t-asociados.html | 0 |
->| INFORMATIVE | INFORMATIVE |  | 1589633149000 | 1589633149000 | text/html | IN | 1589633149000 | UNKNOWN | NOT_STARRED |  | false |  | 10711254 | false | {'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'},<br/>{'id': 1863, 'name': 'VDocumentsMX', 'type': 'MODULE_LABEL'} | pt | false |  | linio | linio | Tأ‰RMINOS Y CONDICIONES - LINIO MARKETPLACE PREMIUM amp;Cs/20190501_Tآ  asociados (ejemplo: seguro, | AMBER | 0 | https://vdocuments.mx/trminos-y-condiciones-linio-marketplace-premium-ampcs20190501t-asociados.html | 0 |
->| INFORMATIVE | INFORMATIVE |  | 1589633137000 | 1589633137000 | text/html | DE | 1589633137000 | UNKNOWN | NOT_STARRED |  | false |  | 10711253 | false | {'id': 1862, 'name': 'FDocumentsWorld', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | pt | false |  | linio | linio | Tأ‰RMINOS Y CONDICIONES - LINIO MARKETPLACE PREMIUM amp;Cs/20190501_Tآ  asociados (ejemplo: seguro, | AMBER | 0 | https://fdocuments.net/document/trminos-y-condiciones-linio-marketplace-premium-ampcs20190501t-asociados.html | 0 |
->| POSITIVE | POSITIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711233 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | Sodimac Chile 18.151 trabajadores 617.398 horas destinadas a capacitaciأ³n en 2017. ... productividad | AMBER | 0 | https://fdocuments.es/document/sodimac-chile-18151-trabajadores-617398-horas-destinadas-a-capacitacin-en-2017.html | 0 |
->| INFORMATIVE | INFORMATIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711234 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | Emisiأ³n de Bonos Ordinarios Fuente: Organizaciأ³n Corona y Sodimac Corporativo, 1Capital IQ Agosto | AMBER | 0 | https://fdocuments.es/document/emisin-de-bonos-ordinarios-fuente-organizacin-corona-y-sodimac-corporativo.html | 0 |
->| POSITIVE | POSITIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711235 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | SODIMAC COLOMBIA S.A. - ?· empresas emisoras de valores, lo que nos conlleva a presentar a consideración… | AMBER | 0 | https://fdocuments.es/document/sodimac-colombia-sa-empresas-emisoras-de-valores-lo-que-nos-conlleva-a.html | 0 |
->| INFORMATIVE | INFORMATIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711236 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | Programa SCM Update ?· en Sodimac. Mauricio Muñoz Jefe de logística en Clínica Alemana. Lía Vera… | AMBER | 0 | https://fdocuments.es/document/programa-scm-update-en-sodimac-mauricio-munoz-jefe-de-logistica-en-clinica.html | 0 |
+>| POSITIVE | POSITIVE | POSITIVE | 1589634898000 | 1589634898000 | text/html;charset=utf-8 | US | 1589634898000 | SOCIAL_NETWORK | USER_STARRED | 2020/5/16/10712044.html | false |  | 10712044 | false | {'id': 1306, 'name': 'Confidential', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'},<br/>{'id': 205, 'name': 'TopScribdDocsSearch', 'type': 'MODULE_LABEL'} | en | false |  | falabella.com.pe | falabella.com.pe | TOTUS SEDE SJM FINAL.doc \| Internet Protocols \| Transmission Control Protocol | AMBER | 0 | <https://www.scribd.com/document/461608373> | 3 |
+>| POSITIVE | POSITIVE |  | 1589634865000 | 1589634865000 | text/html;charset=utf-8 | US | 1589634865000 | SOCIAL_NETWORK | NOT_STARRED | 2020/5/16/10712019.html | false |  | 10712019 | false | {'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'},<br/>{'id': 205, 'name': 'TopScribdDocsSearch', 'type': 'MODULE_LABEL'} | en | false |  | falabella.com | falabella.com | CASO FALABELLA \| America latina \| Marketing | AMBER | 0 | <https://www.scribd.com/document/461631347> | 0 |
+>| POSITIVE | POSITIVE |  | 1589634865000 | 1589634865000 | text/html;charset=utf-8 | US | 1589634865000 | SOCIAL_NETWORK | NOT_STARRED | 2020/5/16/10712020.html | false |  | 10712020 | false | {'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'},<br/>{'id': 205, 'name': 'TopScribdDocsSearch', 'type': 'MODULE_LABEL'} | en | false |  | falabella.com | falabella.com | tipos de Ventas ejemplos.docx | AMBER | 0 | <https://www.scribd.com/document/461606657> | 0 |
+>| INFORMATIVE | INFORMATIVE |  | 1589633157000 | 1589633157000 | text/html | GB | 1589633157000 | UNKNOWN | NOT_STARRED |  | false |  | 10711255 | false | {'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'},<br/>{'id': 1864, 'name': 'VDocumentsSite', 'type': 'MODULE_LABEL'} | pt | false |  | linio | linio | Tأ‰RMINOS Y CONDICIONES - LINIO MARKETPLACE PREMIUM amp;Cs/20190501_Tآ  asociados (ejemplo: seguro, | AMBER | 0 | <https://vdocuments.site/trminos-y-condiciones-linio-marketplace-premium-ampcs20190501t-asociados.html> | 0 |
+>| INFORMATIVE | INFORMATIVE |  | 1589633149000 | 1589633149000 | text/html | IN | 1589633149000 | UNKNOWN | NOT_STARRED |  | false |  | 10711254 | false | {'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'},<br/>{'id': 1863, 'name': 'VDocumentsMX', 'type': 'MODULE_LABEL'} | pt | false |  | linio | linio | Tأ‰RMINOS Y CONDICIONES - LINIO MARKETPLACE PREMIUM amp;Cs/20190501_Tآ  asociados (ejemplo: seguro, | AMBER | 0 | <https://vdocuments.mx/trminos-y-condiciones-linio-marketplace-premium-ampcs20190501t-asociados.html> | 0 |
+>| INFORMATIVE | INFORMATIVE |  | 1589633137000 | 1589633137000 | text/html | DE | 1589633137000 | UNKNOWN | NOT_STARRED |  | false |  | 10711253 | false | {'id': 1862, 'name': 'FDocumentsWorld', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | pt | false |  | linio | linio | Tأ‰RMINOS Y CONDICIONES - LINIO MARKETPLACE PREMIUM amp;Cs/20190501_Tآ  asociados (ejemplo: seguro, | AMBER | 0 | <https://fdocuments.net/document/trminos-y-condiciones-linio-marketplace-premium-ampcs20190501t-asociados.html> | 0 |
+>| POSITIVE | POSITIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711233 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | Sodimac Chile 18.151 trabajadores 617.398 horas destinadas a capacitaciأ³n en 2017. ... productividad | AMBER | 0 | <https://fdocuments.es/document/sodimac-chile-18151-trabajadores-617398-horas-destinadas-a-capacitacin-en-2017.html> | 0 |
+>| INFORMATIVE | INFORMATIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711234 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | Emisiأ³n de Bonos Ordinarios Fuente: Organizaciأ³n Corona y Sodimac Corporativo, 1Capital IQ Agosto | AMBER | 0 | <https://fdocuments.es/document/emisin-de-bonos-ordinarios-fuente-organizacin-corona-y-sodimac-corporativo.html> | 0 |
+>| POSITIVE | POSITIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711235 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | SODIMAC COLOMBIA S.A. - ?· empresas emisoras de valores, lo que nos conlleva a presentar a consideración… | AMBER | 0 | <https://fdocuments.es/document/sodimac-colombia-sa-empresas-emisoras-de-valores-lo-que-nos-conlleva-a.html> | 0 |
+>| INFORMATIVE | INFORMATIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711236 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | Programa SCM Update ?· en Sodimac. Mauricio Muñoz Jefe de logística en Clínica Alemana. Lía Vera… | AMBER | 0 | <https://fdocuments.es/document/programa-scm-update-en-sodimac-mauricio-munoz-jefe-de-logistica-en-clinica.html> | 0 |
 
 
 ### blueliv-resource-search
+
 ***
 Search for a specific resource.
 
@@ -484,6 +492,7 @@ Search for a specific resource.
 #### Base Command
 
 `blueliv-resource-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -505,6 +514,7 @@ Search for a specific resource.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -512,6 +522,7 @@ Search for a specific resource.
 
 
 ### blueliv-resource-search-by-id
+
 ***
 Recovers all the information of a given resource
 
@@ -519,6 +530,7 @@ Recovers all the information of a given resource
 #### Base Command
 
 `blueliv-resource-search-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -534,9 +546,11 @@ Recovers all the information of a given resource
 
 
 #### Command Example
+
 ```!blueliv-resource-search-by-id id=10712044```
 
 #### Context Example
+
 ```
 {
     "BluelivThreatCompass": {
@@ -594,12 +608,14 @@ Recovers all the information of a given resource
 #### Human Readable Output
 
 >### Blueliv DataLeakageinfo
+>
 >|analysis_calc_result|analysis_result|analysis_user_result|changed_at|checked_at|content_type|countries_id|created_at|domain_type|fav|file|followedUp|history|id|issued|labels|language_id|read|retweet_info|searchPhrase|search_words|title|tlpStatus|total_retweets|transform|url|user_rating|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| POSITIVE | POSITIVE | POSITIVE | 1589634898000 | 1589634898000 | text/html;charset=utf-8 | US | 1589634898000 | SOCIAL_NETWORK | USER_STARRED | 2020/5/16/10712044.html | false |  | 10712044 | false | {'id': 1306, 'name': 'Confidential', 'type': 'GLOBAL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'GLOBAL'},<br/>{'id': 205, 'name': 'TopScribdDocsSearch', 'type': 'GLOBAL'} | en | false |  | falabella.com.pe | falabella.com.pe | TOTUS SEDE SJM FINAL.doc \| Internet Protocols \| Transmission Control Protocol | AMBER | 0 | TopScribdDocsSearch | https://www.scribd.com/document/461608373 | 3 |
+>| POSITIVE | POSITIVE | POSITIVE | 1589634898000 | 1589634898000 | text/html;charset=utf-8 | US | 1589634898000 | SOCIAL_NETWORK | USER_STARRED | 2020/5/16/10712044.html | false |  | 10712044 | false | {'id': 1306, 'name': 'Confidential', 'type': 'GLOBAL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'GLOBAL'},<br/>{'id': 205, 'name': 'TopScribdDocsSearch', 'type': 'GLOBAL'} | en | false |  | falabella.com.pe | falabella.com.pe | TOTUS SEDE SJM FINAL.doc \| Internet Protocols \| Transmission Control Protocol | AMBER | 0 | TopScribdDocsSearch | <https://www.scribd.com/document/461608373> | 3 |
 
 
 ### blueliv-resource-set-status
+
 ***
 Changes a resource status.
 
@@ -607,6 +623,7 @@ Changes a resource status.
 #### Base Command
 
 `blueliv-resource-set-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -620,9 +637,11 @@ Changes a resource status.
 There is no context output for this command.
 
 #### Command Example
+
 ```!blueliv-resource-set-status id=10712044 status=positive```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -632,6 +651,7 @@ There is no context output for this command.
 >Status changed to **positive**
 
 ### blueliv-resource-set-label
+
 ***
 Adds a label to the given resource
 
@@ -639,6 +659,7 @@ Adds a label to the given resource
 #### Base Command
 
 `blueliv-resource-set-label`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -652,6 +673,7 @@ Adds a label to the given resource
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -659,6 +681,7 @@ There is no context output for this command.
 
 
 ### blueliv-resource-set-read-status
+
 ***
 Mark the result as read or not.
 
@@ -666,6 +689,7 @@ Mark the result as read or not.
 #### Base Command
 
 `blueliv-resource-set-read-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -679,9 +703,11 @@ Mark the result as read or not.
 There is no context output for this command.
 
 #### Command Example
+
 ```!blueliv-resource-set-read-status id=10712044 read=false```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -691,6 +717,7 @@ There is no context output for this command.
 >Read status changed to **false**.
 
 ### blueliv-resource-assign-rating
+
 ***
 Assign tating to a given result.
 
@@ -698,6 +725,7 @@ Assign tating to a given result.
 #### Base Command
 
 `blueliv-resource-assign-rating`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -711,9 +739,11 @@ Assign tating to a given result.
 There is no context output for this command.
 
 #### Command Example
+
 ```!blueliv-resource-assign-rating id=10712044 rating=3```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -723,6 +753,7 @@ There is no context output for this command.
 >Rating changed to **3**.
 
 ### blueliv-resource-fav
+
 ***
 Changes the favourite status of a resource.
 
@@ -730,6 +761,7 @@ Changes the favourite status of a resource.
 #### Base Command
 
 `blueliv-resource-fav`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -743,9 +775,11 @@ Changes the favourite status of a resource.
 There is no context output for this command.
 
 #### Command Example
+
 ```!blueliv-resource-fav id=10712044 fav=User```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -755,6 +789,7 @@ There is no context output for this command.
 >Resource fav masked as **User** correctly.
 
 ### blueliv-resource-set-tlp
+
 ***
 Sets a new TLP status to a given resource.
 
@@ -762,6 +797,7 @@ Sets a new TLP status to a given resource.
 #### Base Command
 
 `blueliv-resource-set-tlp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -775,12 +811,14 @@ Sets a new TLP status to a given resource.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
 
 
 ### blueliv-resource-favourite
+
 ***
 Changes the favorite status of a resource.
 
@@ -788,6 +826,7 @@ Changes the favorite status of a resource.
 #### Base Command
 
 `blueliv-resource-favourite`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -799,7 +838,9 @@ Changes the favorite status of a resource.
 #### Context Output
 
 There is no context output for this command.
+
 ### blueliv-module-get-labels
+
 ***
 Gets the label list of the module.
 
@@ -807,6 +848,7 @@ Gets the label list of the module.
 #### Base Command
 
 `blueliv-module-get-labels`
+
 #### Input
 
 There are no input arguments for this command.

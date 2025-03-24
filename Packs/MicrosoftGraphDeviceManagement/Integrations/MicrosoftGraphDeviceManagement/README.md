@@ -1,9 +1,11 @@
 Microsoft Intune is a Microsoft cloud-based management solution that provides for mobile device and operating system management
 
 ## Authentication
+
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
 ### Required Permissions
+
 * DeviceManagementApps.ReadWrite.All - Application
 * DeviceManagementConfiguration.ReadWrite.All - Application
 * DeviceManagementManagedDevices.PrivilegedOperations.All - Application
@@ -45,21 +47,27 @@ For more details about the authentication used in this integration, see [Microso
 
 
 5. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### msgraph-get-managed-device-by-id
+
 ***
 Get managed devices
 Note: physicalMemoryInBytes will return 0 by default since Microsoft hasn't updated the v1.0 schema with that information yet
 
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Read.All
 
 #### Base Command
 
 `msgraph-get-managed-device-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -145,9 +153,11 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 
 
 #### Command Example
+
 ```!msgraph-get-managed-device-by-id device_id=DEVICE_ID_VALUE```
 
 #### Context Example
+
 ```
 {
     "MSGraphDeviceManagement": {
@@ -186,21 +196,25 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 #### Human Readable Output
 
 >### Managed device DESKTOP-S2455R8
+>
 >|ID|User ID|Device Name|Operating System|OS Version|Email Address|Manufacturer|Model|
 >|---|---|---|---|---|---|---|---|
->| DEVICE_ID_VALUE | 2827c1e7-edb6-4529-b50d-25984e968637 | DESKTOP-S2455R8 | Windows | 10.0.18363.778 | dev@demistodev.onmicrosoft.com | VMware, Inc. | VMware7,1 |
+>| DEVICE_ID_VALUE | 2827c1e7-edb6-4529-b50d-25984e968637 | DESKTOP-S2455R8 | Windows | 10.0.18363.778 | <dev@demistodev.onmicrosoft.com> | VMware, Inc. | VMware7,1 |
 
 
 ### msgraph-sync-device
+
 ***
 Check the device with Intune, immediately receive pending actions and policies
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PrivilegedOperations.All
 
 #### Base Command
 
 `msgraph-sync-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -212,6 +226,7 @@ DeviceManagementManagedDevices.PrivilegedOperations.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-sync-device device_id=DEVICE_ID_VALUE```
 
 
@@ -222,15 +237,18 @@ There is no context output for this command.
 
 
 ### msgraph-device-disable-lost-mode
+
 ***
 Disable the lost mode of the device
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-device-disable-lost-mode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -243,6 +261,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-windows-device-defender-scan device_id=DEVICE_ID_VALUE```
 
 
@@ -253,15 +272,18 @@ There is no context output for this command.
 
 
 ### msgraph-locate-device
+
 ***
 Gets the GPS location of a device (iOS only)
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-locate-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -274,6 +296,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-locate-device device_id=DEVICE_ID_VALUE```
 
 
@@ -284,15 +307,18 @@ There is no context output for this command.
 
 
 ### msgraph-device-reboot-now
+
 ***
 Immediately reboots the device
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PrivilegedOperations.All
 
 #### Base Command
 
 `msgraph-device-reboot-now`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -305,6 +331,7 @@ DeviceManagementManagedDevices.PrivilegedOperations.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-device-reboot-now device_id=DEVICE_ID_VALUE```
 
 
@@ -315,15 +342,18 @@ There is no context output for this command.
 
 
 ### msgraph-device-shutdown
+
 ***
 Immideately shuts down the device
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-device-shutdown`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -336,6 +366,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-device-shutdown device_id=DEVICE_ID_VALUE```
 
 
@@ -346,15 +377,18 @@ There is no context output for this command.
 
 
 ### msgraph-device-bypass-activation-lock
+
 ***
 Removes the activation lock (iOS devices only)
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-device-bypass-activation-lock`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -367,6 +401,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-device-bypass-activation-lock device_id=DEVICE_ID_VALUE```
 
 
@@ -377,15 +412,18 @@ There is no context output for this command.
 
 
 ### msgraph-device-retire
+
 ***
 Remove the device from intune management
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-device-retire`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -398,6 +436,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-device-retire device_id=DEVICE_ID_VALUE```
 
 
@@ -408,15 +447,18 @@ There is no context output for this command.
 
 
 ### msgraph-device-reset-passcode
+
 ***
 Resets the passcode for the device
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-device-reset-passcode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -429,6 +471,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-device-reset-passcode device_id=DEVICE_ID_VALUE```
 
 
@@ -439,15 +482,18 @@ There is no context output for this command.
 
 
 ### msgraph-device-remote-lock
+
 ***
 Lock the device, to unlock the user will have to use the passcode
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-device-remote-lock`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -460,6 +506,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-device-remote-lock device_id=DEVICE_ID_VALUE```
 
 
@@ -470,15 +517,18 @@ There is no context output for this command.
 
 
 ### msgraph-device-request-remote-assistance
+
 ***
 Request a remote access via TeamViewer
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.ReadWrite.All
 
 #### Base Command
 
 `msgraph-device-request-remote-assistance`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -491,6 +541,7 @@ DeviceManagementManagedDevices.ReadWrite.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-device-request-remote-assistance device_id=DEVICE_ID_VALUE```
 
 
@@ -501,15 +552,18 @@ There is no context output for this command.
 
 
 ### msgraph-device-recover-passcode
+
 ***
 Recovers the passcode from the device
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-device-recover-passcode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -522,6 +576,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-device-recover-passcode device_id=DEVICE_ID_VALUE```
 
 
@@ -532,15 +587,18 @@ There is no context output for this command.
 
 
 ### msgraph-logout-shared-apple-device-active-user
+
 ***
 logs out the current user on a shared iPad device
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-logout-shared-apple-device-active-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -553,6 +611,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-logout-shared-apple-device-active-user device_id=DEVICE_ID_VALUE```
 
 
@@ -563,15 +622,18 @@ There is no context output for this command.
 
 
 ### msgraph-delete-user-from-shared-apple-device
+
 ***
 deletes a user that you select from the local cache on a shared iPad device
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-delete-user-from-shared-apple-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -585,6 +647,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-delete-user-from-shared-apple-device device_id=DEVICE_ID_VALUE user_principal_name=USER_PRINCIPAL_NAME_VALUE```
 
 
@@ -594,15 +657,18 @@ There is no context output for this command.
 
 
 ### msgraph-windows-device-defender-update-signatures
+
 ***
 Forece update windows defender signatures
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-windows-device-defender-update-signatures`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -615,6 +681,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-windows-device-defender-update-signatures device_id=DEVICE_ID_VALUE```
 
 
@@ -625,15 +692,18 @@ There is no context output for this command.
 
 
 ### msgraph-clean-windows-device
+
 ***
 removes any apps that are installed on a PC running Windows 10. it helps remove pre-installed (OEM) apps that are typically installed with a new PC
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-clean-windows-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -647,6 +717,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-clean-windows-device device_id=DEVICE_ID_VALUE keep_user_data=false```
 
 
@@ -657,15 +728,18 @@ There is no context output for this command.
 
 
 ### msgraph-windows-device-defender-scan
+
 ***
 Scans the device with windows defender (windows devices only)
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-windows-device-defender-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -679,6 +753,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-windows-device-defender-scan device_id=DEVICE_ID_VALUE quick_scan=false```
 
 
@@ -687,15 +762,18 @@ There is no context output for this command.
 >Windows device defender scan action activated successfully.
 
 ### msgraph-wipe-device
+
 ***
 restores a device to its factory default settings
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All, DeviceManagementManagedDevices.ReadWrite.All
 
 #### Base Command
 
 `msgraph-wipe-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -711,6 +789,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All, DeviceManagementManagedD
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-wipe-device device_id=DEVICE_ID_VALUE keep_enrollment_data=false keep_user_data=true```
 
 
@@ -721,15 +800,18 @@ There is no context output for this command.
 
 
 ### msgraph-update-windows-device-account
+
 ***
 Updates the windows account of the device
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
 `msgraph-update-windows-device-account`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -748,6 +830,7 @@ DeviceManagementManagedDevices.PriviligedOperation.All
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-update-windows-device-account device_id=DEVICE_ID_VALUE session_initiation_protocal_address=PA_VALUE device_account_password=PW_VALUE device_account_email=MAIL_VALUE```
 
 
@@ -763,6 +846,7 @@ There is no context output for this command.
 List of managed devices
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Read.All
 
 #### Base Command
@@ -855,8 +939,11 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 | MSGraphDeviceManagement.Device.PartnerReportedThreatState | String | Indicates the threat state of a device when a Mobile Threat Defense partner is in use by the account and device. Read Only. Possible values are unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity, unresponsive, compromised, misconfigured. | 
 
 #### Command example
+
 ```!msgraph-list-managed-devices page_size=1```
+
 #### Context Example
+
 ```json
 {
     "MSGraphDeviceManagement": {
@@ -897,23 +984,28 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 #### Human Readable Output
 
 >### Managed device DESKTOP-S2455R8
+>
 >|ID|User ID|Device Name|Operating System|OS Version|Email Address|Manufacturer|Model|
 >|---|---|---|---|---|---|---|---|
->| DEVICE_ID_VALUE | 2827c1e7-edb6-4529-b50d-25984e968637 | DESKTOP-S2455R8 | Windows | 10.0.18363.778 | dev@demistodev.onmicrosoft.com | VMware, Inc. | VMware7,1 |
+>| DEVICE_ID_VALUE | 2827c1e7-edb6-4529-b50d-25984e968637 | DESKTOP-S2455R8 | Windows | 10.0.18363.778 | <dev@demistodev.onmicrosoft.com> | VMware, Inc. | VMware7,1 |
+>
     There are more results than shown. For more data please enter the next_link argument:
     next_link=https://graph.microsoft.com/v1.0/deviceManagement/managedDevices
 
 
 ### msgraph-find-managed-devices-by-name
+
 ***
 Search of managed devices by name
 
 ##### Required Permissions
+
 DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Read.All
 
 #### Base Command
 
 `msgraph-find-managed-devices-by-name`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -999,9 +1091,11 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 
 
 #### Command Example
+
 ```!msgraph-find-managed-devices-by-name device_name=NAME_VALUE```
 
 #### Context Example
+
 ```
 {
     "MSGraphDeviceManagement": {
@@ -1040,9 +1134,10 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 #### Human Readable Output
 
 >### Managed device DESKTOP-S2455R8
+>
 >|ID|User ID|Device Name|Operating System|OS Version|Email Address|Manufacturer|Model|
 >|---|---|---|---|---|---|---|---|
->| DEVICE_ID_VALUE | 2827c1e7-edb6-4529-b50d-25984e968637 | DESKTOP-S2455R8 | Windows | 10.0.18363.778 | dev@demistodev.onmicrosoft.com | VMware, Inc. | VMware7,1 |
+>| DEVICE_ID_VALUE | 2827c1e7-edb6-4529-b50d-25984e968637 | DESKTOP-S2455R8 | Windows | 10.0.18363.778 | <dev@demistodev.onmicrosoft.com> | VMware, Inc. | VMware7,1 |
 
 
 ### msgraph-device-auth-reset
@@ -1061,6 +1156,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-get-managed-device-physical-memory-by-id
 
 ***
@@ -1085,8 +1181,11 @@ Get the managed device physical memory bytes.
 | MSGraphDeviceManagement.Device.deviceName | String | Name of the device. | 
 
 #### Command example
+
 ```!msgraph-get-managed-device-physical-memory-by-id device_id=111111-1111-1111-1111-1111111```
+
 #### Context Example
+
 ```json
 {
     "MSGraphDeviceManagement": {
@@ -1102,6 +1201,7 @@ Get the managed device physical memory bytes.
 #### Human Readable Output
 
 >### Managed device 
+>
 >|physicalMemoryInBytes|id|
 >|---|---|
 >| 4294967296 | 111111-1111-1111-1111-1111111 |

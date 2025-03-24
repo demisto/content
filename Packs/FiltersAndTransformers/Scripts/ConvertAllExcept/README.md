@@ -1,6 +1,7 @@
 Convert all chosen values but exceptions.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Convert all chosen values but exceptions.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +21,6 @@ Convert all chosen values but exceptions.
 | except | Comma separated list of exceptions. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

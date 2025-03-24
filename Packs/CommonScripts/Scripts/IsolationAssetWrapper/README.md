@@ -1,6 +1,7 @@
 This is a wrapper to isolate or unisolate hash lists from Cortex XDR, MSDE or CrowdStrike (Available from Cortex XSOAR 6.0.0).
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ This is a wrapper to isolate or unisolate hash lists from Cortex XDR, MSDE or Cr
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ This is a wrapper to isolate or unisolate hash lists from Cortex XDR, MSDE or Cr
 | action | The action to apply to device IDs - isolate or unisolate. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -39,9 +42,13 @@ This is a wrapper to isolate or unisolate hash lists from Cortex XDR, MSDE or Cr
 
 
 ## Script Examples
+
 ### Example command
+
 ```!IsolationAssetWrapper action=unisolate device_ids=15dbb9d8f06b45fe9f61eb46e829d986,046761c46ec84f40b27b6f79ce7cd32c```
+
 ### Context Example
+
 ```json
 {
     "MicrosoftATP": {
@@ -69,6 +76,7 @@ This is a wrapper to isolate or unisolate hash lists from Cortex XDR, MSDE or Cr
 ### Human Readable Output
 
 ### Results Summary
+
 |Instance|Command|Result|Comment|
 |---|---|---|---|
 | ***CrowdstrikeFalcon***: CrowdstrikeFalcon_instance_1 | ***command***: cs-falcon-lift-host-containment<br>**args**:<br>	***ids***: 15dbb9d8f06b45fe9f61eb46e829d986,046761c46ec84f40b27b6f79ce7cd32c | Success |  |

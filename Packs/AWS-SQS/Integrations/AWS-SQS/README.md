@@ -28,15 +28,19 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
 
 ### There are three options to sign in to the service:
+
 1. Provide Access Key ID and Secret Key ID.
 2. Provide Role ARN and Access Key ID and Secret Key ID.
 3. Do not provide any credentials or Role ARN other than permissions pulled from the service metadata.
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### aws-sqs-get-queue-url
+
 ***
 Returns the URL of an existing queue. To access a queue that belongs to another AWS account, use the queueOwnerAWSAccountId parameter to specify the account ID of the queues owner. The queues owner must grant you permission to access the queue.
 
@@ -44,6 +48,7 @@ Returns the URL of an existing queue. To access a queue that belongs to another 
 #### Base Command
 
 `aws-sqs-get-queue-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -64,6 +69,7 @@ Returns the URL of an existing queue. To access a queue that belongs to another 
 
 
 #### Command Example
+
 ```!aws-sqs-get-queue-url queueName=test ```
 
 #### Human Readable Output
@@ -74,6 +80,7 @@ Returns the URL of an existing queue. To access a queue that belongs to another 
 | --- | --- |
 
 ### aws-sqs-list-queues
+
 ***
 Returns a list of your queues. The maximum number of queues that can be returned is 1,000. If you specify a value for the optional QueueNamePrefix parameter, only queues with a name that begins with the specified value are returned.
 
@@ -81,6 +88,7 @@ Returns a list of your queues. The maximum number of queues that can be returned
 #### Base Command
 
 `aws-sqs-list-queues`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -100,6 +108,7 @@ Returns a list of your queues. The maximum number of queues that can be returned
 
 
 #### Command Example
+
 ```!aws-sqs-list-queues ```
 
 #### Human Readable Output
@@ -113,6 +122,7 @@ Returns a list of your queues. The maximum number of queues that can be returned
 
 
 ### aws-sqs-send-message
+
 ***
 Delivers a message to the specified queue.
 
@@ -120,6 +130,7 @@ Delivers a message to the specified queue.
 #### Base Command
 
 `aws-sqs-send-message`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -145,6 +156,7 @@ Delivers a message to the specified queue.
 
 
 #### Command Example
+
 ``` !aws-sqs-send-message queueUrl=test.queue.amazonaws.com/1234567/test2 messageBody="test"```
 
 #### Human Readable Output
@@ -159,6 +171,7 @@ Delivers a message to the specified queue.
 
 
 ### aws-sqs-create-queue
+
 ***
 Creates a new standard or FIFO queue. You can pass one or more attributes in the request.
 
@@ -166,6 +179,7 @@ Creates a new standard or FIFO queue. You can pass one or more attributes in the
 #### Base Command
 
 `aws-sqs-create-queue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -195,6 +209,7 @@ Creates a new standard or FIFO queue. You can pass one or more attributes in the
 
 
 #### Command Example
+
 ``` !aws-sqs-create-queue queueName=test3```
 
 #### Human Readable Output
@@ -205,6 +220,7 @@ Creates a new standard or FIFO queue. You can pass one or more attributes in the
 | --- | --- |
 
 ### aws-sqs-delete-queue
+
 ***
 Deletes the queue specified by the QueueUrl , regardless of the queue's contents. If the specified queue doesn't exist, Amazon SQS returns a successful response.
 
@@ -212,6 +228,7 @@ Deletes the queue specified by the QueueUrl , regardless of the queue's contents
 #### Base Command
 
 `aws-sqs-delete-queue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -228,6 +245,7 @@ Deletes the queue specified by the QueueUrl , regardless of the queue's contents
 There is no context output for this command.
 
 #### Command Example
+
 ``` !aws-sqs-delete-queue queueUrl=example.com/123456789/test3```
 
 #### Human Readable Output
@@ -236,6 +254,7 @@ The Queue has been deleted
 
 
 ### aws-sqs-purge-queue
+
 ***
 Deletes the messages in a queue specified by the QueueURL parameter.
 
@@ -243,6 +262,7 @@ Deletes the messages in a queue specified by the QueueURL parameter.
 #### Base Command
 
 `aws-sqs-purge-queue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -259,6 +279,7 @@ Deletes the messages in a queue specified by the QueueURL parameter.
 There is no context output for this command.
 
 #### Command Example
+
 ``` !aws-sqs-purge-queue queueUrl=example.com/123456789/test2```
 
 #### Human Readable Output

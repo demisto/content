@@ -12,6 +12,7 @@ Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/confi
 - **Fetch-incidents functionality**
 
 ### Replacement Options:
+
 - Some commands have direct replacements in the **Microsoft Graph Security** integration.
 - Others do not have exact replacements but offer alternatives that return similar data.
 - A few commands have no available replacements.
@@ -1591,6 +1592,7 @@ File.Read.All
 
 This command has been deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `IpAddress` as part of the alert details.
 ---
+
 Retrieves the IP addresses associated to a specific alert.
 
 ##### Required Permissions
@@ -2359,6 +2361,7 @@ URL.Read.All
 
 This command has been deprecated. No available replacement.
 ---
+
 Retrieves a collection of alerts related to a given domain address.
 
 ##### Required Permissions
@@ -3941,6 +3944,7 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 `Ti.ReadWrite`
 
 ##### Note
+
 To ensure that the application is accessible to all indicators, the 'Ti.ReadWrite.All' permission must be granted. Without this permission, the application will only be accessible to the indicators it has created.
 
 #### Base Command
@@ -7247,6 +7251,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### microsoft-atp-get-machine-by-ip
 
 ***
@@ -7294,7 +7299,9 @@ Find Machines seen with the requested internal IP in the time range of 15 minute
 | MicrosoftATP.Machine.AgentVersion | String | The machine Agent version. | 
 
 #### Command example
+
 ```!microsoft-atp-get-machine-by-ip ip=8.8.8.8 timestamp=2024-05-23T10:15:00Z```
+
 #### Human Readable Output
 
 >### Microsoft Defender ATP Machine:

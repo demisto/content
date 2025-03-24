@@ -1,13 +1,17 @@
 This integration enables reputation checks against IPs from Barracuda Reputation Block List (BRBL)
 This integration was integrated and tested with Barracuda Reputation Block List (BRBL)
+
 ## Configure Barracuda Reputation Block List (BRBL) in Cortex
 
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Get IP Reputation
 
@@ -15,6 +19,7 @@ Get IP Reputation
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -38,9 +43,11 @@ Get IP Reputation
 
 
 #### Command Example
+
 ```!ip ip=1.1.1.1```
 
 #### Context Example
+
 ```json
 {
     "Barracuda": {
@@ -63,6 +70,7 @@ Get IP Reputation
 #### Human Readable Output
 
 >### Results
+>
 >|indicator|
 >|---|
 >| 1.1.1.1 |

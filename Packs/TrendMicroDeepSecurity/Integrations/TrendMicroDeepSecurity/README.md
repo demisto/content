@@ -2,7 +2,9 @@ Trend Micro Deep Security
 This integration was integrated and tested with version 20.0 of Trend Micro Deep Security, and v1 of the API.
 
 ## Changes compared to TrendMicroDsm
+
 # Changes in commands
+
 1. trendmicro-create-computer - New command.
 2. trendmicro-search-computers - New command.
 3. trendmicro-get-computer - New command.
@@ -47,16 +49,19 @@ This integration was integrated and tested with version 20.0 of Trend Micro Deep
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | Server URL for TrendMicro console. e.g: https://ip:port/ | True |
+| Server URL | Server URL for TrendMicro console. e.g: <https://ip:port/> | True |
 | API Secret | The API secret key | True |
 | API Version | The API version used | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### trendmicro-create-computer
+
 ***
 Create a new computer
 
@@ -64,6 +69,7 @@ Create a new computer
 #### Base Command
 
 `trendmicro-create-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -93,9 +99,11 @@ Create a new computer
 
 
 #### Command Example
+
 ```!trendmicro-create-computer host_name="example_computer"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -118,12 +126,14 @@ Create a new computer
 #### Human Readable Output
 
 >### Details for the new computer example_computer
+>
 >|ID|Host Name|Group ID|
 >|---|---|---|
 >| 217 | example_computer | 0 |
 
 
 ### trendmicro-search-computers
+
 ***
 Search for specific computers by some field name with a certain type. Every field has a specific type. It can be a simple type like a string, a numeric or a boolean. However, it can also be a choice, which is a string with specific options (enumeration). To search, you must provide the field_name & field_type, the operation to perform, and the value to search.
 
@@ -131,6 +141,7 @@ Search for specific computers by some field name with a certain type. Every fiel
 #### Base Command
 
 `trendmicro-search-computers`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -157,9 +168,11 @@ Search for specific computers by some field name with a certain type. Every fiel
 
 
 #### Command Example
+
 ```!trendmicro-search-computers field_name=groupID field_type=numeric operation=equal value=0```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -4624,6 +4637,7 @@ Search for specific computers by some field name with a certain type. Every fiel
 #### Human Readable Output
 
 >### Matched Computers
+>
 >|ID|Host Name|Description|Group ID|
 >|---|---|---|---|
 >| 1 | q1 | Modified Test | 0 |
@@ -4635,6 +4649,7 @@ Search for specific computers by some field name with a certain type. Every fiel
 
 
 ### trendmicro-get-computer
+
 ***
 Get information about a certain computer
 
@@ -4642,6 +4657,7 @@ Get information about a certain computer
 #### Base Command
 
 `trendmicro-get-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4665,9 +4681,11 @@ Get information about a certain computer
 
 
 #### Command Example
+
 ```!trendmicro-get-computer computer_id=216```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -4690,12 +4708,14 @@ Get information about a certain computer
 #### Human Readable Output
 
 >### Details for the computer example_computer
+>
 >|ID|Host Name|Group ID|
 >|---|---|---|
 >| 216 | example_computer | 0 |
 
 
 ### trendmicro-list-computers
+
 ***
 Get information of all existing computers
 
@@ -4703,6 +4723,7 @@ Get information of all existing computers
 #### Base Command
 
 `trendmicro-list-computers`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4725,9 +4746,11 @@ Get information of all existing computers
 
 
 #### Command Example
+
 ```!trendmicro-list-computers expand="firewall"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -4872,6 +4895,7 @@ Get information of all existing computers
 #### Human Readable Output
 
 >### All computers list
+>
 >|ID|Host Name|Description|Group ID|
 >|---|---|---|---|
 >| 1 | q1 | Modified Test | 0 |
@@ -4883,6 +4907,7 @@ Get information of all existing computers
 
 
 ### trendmicro-modify-computer
+
 ***
 Modify properties of a certain computer
 
@@ -4890,6 +4915,7 @@ Modify properties of a certain computer
 #### Base Command
 
 `trendmicro-modify-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4920,9 +4946,11 @@ Modify properties of a certain computer
 
 
 #### Command Example
+
 ```!trendmicro-modify-computer computer_id=216 description="Example computer description"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -4946,12 +4974,14 @@ Modify properties of a certain computer
 #### Human Readable Output
 
 >### Details for the computer example_computer
+>
 >|ID|Host Name|Description|Group ID|
 >|---|---|---|---|
 >| 216 | example_computer | Example computer description | 0 |
 
 
 ### trendmicro-delete-computer
+
 ***
 Delete a certain computer
 
@@ -4959,6 +4989,7 @@ Delete a certain computer
 #### Base Command
 
 `trendmicro-delete-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4971,6 +5002,7 @@ Delete a certain computer
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-delete-computer computer_id=216```
 
 #### Human Readable Output
@@ -4978,6 +5010,7 @@ There is no context output for this command.
 >The computer was successfully deleted!
 
 ### trendmicro-get-computer-setting
+
 ***
 Get information about a setting of a certain computer
 
@@ -4985,6 +5018,7 @@ Get information about a setting of a certain computer
 #### Base Command
 
 `trendmicro-get-computer-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5004,9 +5038,11 @@ Get information about a setting of a certain computer
 
 
 #### Command Example
+
 ```!trendmicro-get-computer-setting computer_id=216 name=activityMonitoringSettingActivityEnabled```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5022,12 +5058,14 @@ Get information about a setting of a certain computer
 #### Human Readable Output
 
 >### Settings for computer 216
+>
 >|Computer ID|Name|Value|
 >|---|---|---|
 >|  | activityMonitoringSettingActivityEnabled | Off |
 
 
 ### trendmicro-modify-computer-setting
+
 ***
 Modify a setting of a certain computer
 
@@ -5035,6 +5073,7 @@ Modify a setting of a certain computer
 #### Base Command
 
 `trendmicro-modify-computer-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5055,9 +5094,11 @@ Modify a setting of a certain computer
 
 
 #### Command Example
+
 ```!trendmicro-modify-computer-setting computer_id=216 name=activityMonitoringSettingActivityEnabled value=on```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5073,12 +5114,14 @@ Modify a setting of a certain computer
 #### Human Readable Output
 
 >### Settings for computer 216
+>
 >|Computer ID|Name|Value|
 >|---|---|---|
 >|  | activityMonitoringSettingActivityEnabled | On |
 
 
 ### trendmicro-reset-computer-setting
+
 ***
 Reset a setting of certain computer to its default value.
 
@@ -5086,6 +5129,7 @@ Reset a setting of certain computer to its default value.
 #### Base Command
 
 `trendmicro-reset-computer-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5105,9 +5149,11 @@ Reset a setting of certain computer to its default value.
 
 
 #### Command Example
+
 ```!trendmicro-reset-computer-setting computer_id=216 name=activityMonitoringSettingActivityEnabled```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5123,12 +5169,14 @@ Reset a setting of certain computer to its default value.
 #### Human Readable Output
 
 >### Settings for computer 216
+>
 >|Computer ID|Name|Value|
 >|---|---|---|
 >|  | activityMonitoringSettingActivityEnabled | Off |
 
 
 ### trendmicro-list-computer-groups
+
 ***
 Get information about all existing computer groups
 
@@ -5136,6 +5184,7 @@ Get information about all existing computer groups
 #### Base Command
 
 `trendmicro-list-computer-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5152,9 +5201,11 @@ Get information about all existing computer groups
 
 
 #### Command Example
+
 ```!trendmicro-list-computer-groups```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5187,6 +5238,7 @@ Get information about all existing computer groups
 #### Human Readable Output
 
 >### Computer Groups
+>
 >|ID|Name|Description|Parent Group ID|
 >|---|---|---|---|
 >| 1 | PoC Group | Testing Group |  |
@@ -5195,6 +5247,7 @@ Get information about all existing computer groups
 
 
 ### trendmicro-create-computer-group
+
 ***
 Create a new computer group
 
@@ -5202,6 +5255,7 @@ Create a new computer group
 #### Base Command
 
 `trendmicro-create-computer-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5221,9 +5275,11 @@ Create a new computer group
 
 
 #### Command Example
+
 ```!trendmicro-create-computer-group name="Example Computer Group" description="Example computer group description" parent_group_id=1```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5241,12 +5297,14 @@ Create a new computer group
 #### Human Readable Output
 
 >### Computer Groups
+>
 >|ID|Name|Description|Parent Group ID|
 >|---|---|---|---|
 >| 111 | Example Computer Group | Example computer group description | 1 |
 
 
 ### trendmicro-search-computer-groups
+
 ***
 Search for specific computer groups by some field name with a certain type. Every field has a specific type. It can be a simple type like a string, a numeric or a boolean. However, it can also be a choice, which is a string with specific options (enumeration). To search, you must provide the field_name & field_type, the operation to perform, and the value to search.
 
@@ -5254,6 +5312,7 @@ Search for specific computer groups by some field name with a certain type. Ever
 #### Base Command
 
 `trendmicro-search-computer-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5276,9 +5335,11 @@ Search for specific computer groups by some field name with a certain type. Ever
 
 
 #### Command Example
+
 ```!trendmicro-search-computer-groups field_name=ID operation=equal field_type=id value=110```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5296,12 +5357,14 @@ Search for specific computer groups by some field name with a certain type. Ever
 #### Human Readable Output
 
 >### Matched Computer Groups
+>
 >|ID|Name|Parent Group ID|
 >|---|---|---|
 >| 110 | Example Computer Group | 1 |
 
 
 ### trendmicro-get-computer-group
+
 ***
 Get information of a certain computer group
 
@@ -5309,6 +5372,7 @@ Get information of a certain computer group
 #### Base Command
 
 `trendmicro-get-computer-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5326,9 +5390,11 @@ Get information of a certain computer group
 
 
 #### Command Example
+
 ```!trendmicro-get-computer-group computer_group_id=110```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5346,12 +5412,14 @@ Get information of a certain computer group
 #### Human Readable Output
 
 >### Computer Group 110 Details
+>
 >|ID|Name|Parent Group ID|
 >|---|---|---|
 >| 110 | Example Computer Group | 1 |
 
 
 ### trendmicro-modify-computer-group
+
 ***
 Modify the properties of a certain computer group
 
@@ -5359,6 +5427,7 @@ Modify the properties of a certain computer group
 #### Base Command
 
 `trendmicro-modify-computer-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5379,9 +5448,11 @@ Modify the properties of a certain computer group
 
 
 #### Command Example
+
 ```!trendmicro-modify-computer-group computer_group_id=110 description="Example computer group description"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5399,12 +5470,14 @@ Modify the properties of a certain computer group
 #### Human Readable Output
 
 >### Computer Group
+>
 >|ID|Name|Description|Parent Group ID|
 >|---|---|---|---|
 >| 110 | Example Computer Group | Example computer group description | 1 |
 
 
 ### trendmicro-delete-computer-group
+
 ***
 Delete a certain computer group
 
@@ -5412,6 +5485,7 @@ Delete a certain computer group
 #### Base Command
 
 `trendmicro-delete-computer-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5424,6 +5498,7 @@ Delete a certain computer group
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-delete-computer-group computer_group_id=110```
 
 #### Human Readable Output
@@ -5431,6 +5506,7 @@ There is no context output for this command.
 >The computer group was successfully deleted!
 
 ### trendmicro-search-firewall-rules
+
 ***
 Search for specific firewall rules by some field name with a certain type. Every field has a specific type. It can be a simple type like a string, a numeric or a boolean. However, it can also be a choice, which is a string with specific options (enumeration). To search, you must provide the field_name & field_type, the operation to perform, and the value to search.
 
@@ -5438,6 +5514,7 @@ Search for specific firewall rules by some field name with a certain type. Every
 #### Base Command
 
 `trendmicro-search-firewall-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5513,9 +5590,11 @@ Search for specific firewall rules by some field name with a certain type. Every
 
 
 #### Command Example
+
 ```!trendmicro-search-firewall-rules field_name="action" field_type="choice" operation="equal" value="allow"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -6460,6 +6539,7 @@ Search for specific firewall rules by some field name with a certain type. Every
 #### Human Readable Output
 
 >### Matched Firewall Rules
+>
 >|ID|Name|Description|Direction|Action|
 >|---|---|---|---|---|
 >| 20 | Deep Security Agent | Allow incoming traffic to Deep Security Agent | incoming | allow |
@@ -6496,6 +6576,7 @@ Search for specific firewall rules by some field name with a certain type. Every
 
 
 ### trendmicro-list-firewall-rules
+
 ***
 List all existing firewall rules
 
@@ -6503,6 +6584,7 @@ List all existing firewall rules
 #### Base Command
 
 `trendmicro-list-firewall-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6572,9 +6654,11 @@ List all existing firewall rules
 
 
 #### Command Example
+
 ```!trendmicro-list-firewall-rules```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -8995,6 +9079,7 @@ List all existing firewall rules
 #### Human Readable Output
 
 >### Firewall Rules
+>
 >|ID|Name|Description|Direction|Action|
 >|---|---|---|---|---|
 >| 1 | Off Domain Exceptions - Domain Client (UDP) |  | outgoing | force-allow |
@@ -9079,6 +9164,7 @@ List all existing firewall rules
 
 
 ### trendmicro-create-firewall-rule
+
 ***
 Create a new firewall rule
 
@@ -9086,6 +9172,7 @@ Create a new firewall rule
 #### Base Command
 
 `trendmicro-create-firewall-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9211,9 +9298,11 @@ Create a new firewall rule
 
 
 #### Command Example
+
 ```!trendmicro-create-firewall-rule name="Example Rule" action=allow protocol=udp direction=incoming```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -9253,12 +9342,14 @@ Create a new firewall rule
 #### Human Readable Output
 
 >### Firewall Rules
+>
 >|ID|Name|Direction|Action|
 >|---|---|---|---|
 >| 175 | Example Rule | incoming | allow |
 
 
 ### trendmicro-get-firewall-rule
+
 ***
 Get information about a certain firewall rule
 
@@ -9266,6 +9357,7 @@ Get information about a certain firewall rule
 #### Base Command
 
 `trendmicro-get-firewall-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9336,9 +9428,11 @@ Get information about a certain firewall rule
 
 
 #### Command Example
+
 ```!trendmicro-get-firewall-rule firewall_rule_id=174```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -9378,12 +9472,14 @@ Get information about a certain firewall rule
 #### Human Readable Output
 
 >### Details of The Firewall Rule 174
+>
 >|ID|Name|Direction|Action|
 >|---|---|---|---|
 >| 174 | Example Rule | incoming | allow |
 
 
 ### trendmicro-modify-firewall-rule
+
 ***
 Modify the properties of a certain firewall rule
 
@@ -9391,6 +9487,7 @@ Modify the properties of a certain firewall rule
 #### Base Command
 
 `trendmicro-modify-firewall-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9517,9 +9614,11 @@ Modify the properties of a certain firewall rule
 
 
 #### Command Example
+
 ```!trendmicro-modify-firewall-rule firewall_rule_id=174 action=deny```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -9559,12 +9658,14 @@ Modify the properties of a certain firewall rule
 #### Human Readable Output
 
 >### Details About The Modified Firewall Rule 174
+>
 >|ID|Name|Direction|Action|
 >|---|---|---|---|
 >| 174 | Example Rule | incoming | deny |
 
 
 ### trendmicro-delete-firewall-rule
+
 ***
 Delete a certain firewall rule
 
@@ -9572,6 +9673,7 @@ Delete a certain firewall rule
 #### Base Command
 
 `trendmicro-delete-firewall-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9584,6 +9686,7 @@ Delete a certain firewall rule
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-delete-firewall-rule firewall_rule_id=174```
 
 #### Human Readable Output
@@ -9591,6 +9694,7 @@ There is no context output for this command.
 >The firewall rule was successfully deleted!
 
 ### trendmicro-list-firewall-rule-ids-of-computer
+
 ***
 List all IDs of the firewall rules that are assigned to a certain computer
 
@@ -9598,6 +9702,7 @@ List all IDs of the firewall rules that are assigned to a certain computer
 #### Base Command
 
 `trendmicro-list-firewall-rule-ids-of-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9614,9 +9719,11 @@ List all IDs of the firewall rules that are assigned to a certain computer
 
 
 #### Command Example
+
 ```!trendmicro-list-firewall-rule-ids-of-computer computer_id=216```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -9632,6 +9739,7 @@ List all IDs of the firewall rules that are assigned to a certain computer
 >The firewall rules IDs that are assigned to 216: 
 
 ### trendmicro-add-firewall-rule-ids-to-computer
+
 ***
 Add firewall rule IDs to a certain computer
 
@@ -9639,6 +9747,7 @@ Add firewall rule IDs to a certain computer
 #### Base Command
 
 `trendmicro-add-firewall-rule-ids-to-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9656,9 +9765,11 @@ Add firewall rule IDs to a certain computer
 
 
 #### Command Example
+
 ```!trendmicro-add-firewall-rule-ids-to-computer computer_id=216 rule_ids=31```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -9678,6 +9789,7 @@ Add firewall rule IDs to a certain computer
 >The firewall rules IDs that are assigned to computer 216: 21, 22, 31
 
 ### trendmicro-set-firewall-rule-ids-to-computer
+
 ***
 Assign firewall rule IDs to a certain computer
 
@@ -9685,6 +9797,7 @@ Assign firewall rule IDs to a certain computer
 #### Base Command
 
 `trendmicro-set-firewall-rule-ids-to-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9702,9 +9815,11 @@ Assign firewall rule IDs to a certain computer
 
 
 #### Command Example
+
 ```!trendmicro-set-firewall-rule-ids-to-computer computer_id=216 rule_ids=21,22```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -9723,6 +9838,7 @@ Assign firewall rule IDs to a certain computer
 >The firewall rules IDs that are assigned to computer 216: 21, 22
 
 ### trendmicro-get-policy
+
 ***
 Get information about a certain policy
 
@@ -9730,6 +9846,7 @@ Get information about a certain policy
 #### Base Command
 
 `trendmicro-get-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9750,9 +9867,11 @@ Get information about a certain policy
 
 
 #### Command Example
+
 ```!trendmicro-get-policy policy_id=105```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -10495,12 +10614,14 @@ Get information about a certain policy
 #### Human Readable Output
 
 >### Details About The Policy 105
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 105 | Example Policy | Example policy description |
 
 
 ### trendmicro-modify-policy
+
 ***
 Modify a certain policy
 
@@ -10508,6 +10629,7 @@ Modify a certain policy
 #### Base Command
 
 `trendmicro-modify-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -10533,9 +10655,11 @@ Modify a certain policy
 
 
 #### Command Example
+
 ```!trendmicro-modify-policy policy_id=105 description="Example policy description"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -11278,12 +11402,14 @@ Modify a certain policy
 #### Human Readable Output
 
 >### Details About The Policy 105
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 105 | Example Policy | Example policy description |
 
 
 ### trendmicro-delete-policy
+
 ***
 Delete a certain policy
 
@@ -11291,6 +11417,7 @@ Delete a certain policy
 #### Base Command
 
 `trendmicro-delete-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -11303,6 +11430,7 @@ Delete a certain policy
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-delete-policy policy_id=105```
 
 #### Human Readable Output
@@ -11310,6 +11438,7 @@ There is no context output for this command.
 >The policy was successfully deleted!
 
 ### trendmicro-get-policy-setting
+
 ***
 Get information about a setting of a certain policy
 
@@ -11317,6 +11446,7 @@ Get information about a setting of a certain policy
 #### Base Command
 
 `trendmicro-get-policy-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -11336,9 +11466,11 @@ Get information about a setting of a certain policy
 
 
 #### Command Example
+
 ```!trendmicro-get-policy-setting policy_id=105 name=firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -11354,12 +11486,14 @@ Get information about a setting of a certain policy
 #### Human Readable Output
 
 >### The Policy Setting
+>
 >|Policy Id|Name|Value|
 >|---|---|---|
 >| 105 | firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled | false |
 
 
 ### trendmicro-modify-policy-setting
+
 ***
 Modify the value of a setting of a certain policy
 
@@ -11367,6 +11501,7 @@ Modify the value of a setting of a certain policy
 #### Base Command
 
 `trendmicro-modify-policy-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -11387,9 +11522,11 @@ Modify the value of a setting of a certain policy
 
 
 #### Command Example
+
 ```!trendmicro-modify-policy-setting name=firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled policy_id=105 value=true```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -11405,12 +11542,14 @@ Modify the value of a setting of a certain policy
 #### Human Readable Output
 
 >### The Policy Setting: 
+>
 >|Policy Id|Name|Value|
 >|---|---|---|
 >| 105 | firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled | true |
 
 
 ### trendmicro-reset-policy-setting
+
 ***
 Reset the value of a setting of a certain policy
 
@@ -11418,6 +11557,7 @@ Reset the value of a setting of a certain policy
 #### Base Command
 
 `trendmicro-reset-policy-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -11437,9 +11577,11 @@ Reset the value of a setting of a certain policy
 
 
 #### Command Example
+
 ```!trendmicro-reset-policy-setting name=firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled policy_id=105```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -11455,12 +11597,14 @@ Reset the value of a setting of a certain policy
 #### Human Readable Output
 
 >### The Policy Setting
+>
 >|Policy Id|Name|Value|
 >|---|---|---|
 >| 105 | firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled | false |
 
 
 ### trendmicro-list-policies
+
 ***
 List all existing policies
 
@@ -11468,6 +11612,7 @@ List all existing policies
 #### Base Command
 
 `trendmicro-list-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -11487,9 +11632,11 @@ List all existing policies
 
 
 #### Command Example
+
 ```!trendmicro-list-policies```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -21338,6 +21485,7 @@ List all existing policies
 #### Human Readable Output
 
 >### Policies list
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 1 | Base Policy | A policy from which all other policies can inherit. Only the most general settings should be applied to this policy as they will apply to all policies that inherit from it, unless overridden. More specific settings and rules should be added to sub-policies that are assigned to computers. |
@@ -21356,6 +21504,7 @@ List all existing policies
 
 
 ### trendmicro-search-policies
+
 ***
 Search for specific policies by some field name with a certain type. Every field has a specific type. It can be a simple type like a string, a numeric or a boolean. However, it can also be a choice, which is a string with specific options (enumeration). To search, you must provide the field_name & field_type, the operation to perform, and the value to search.
 
@@ -21363,6 +21512,7 @@ Search for specific policies by some field name with a certain type. Every field
 #### Base Command
 
 `trendmicro-search-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -21388,9 +21538,11 @@ Search for specific policies by some field name with a certain type. Every field
 
 
 #### Command Example
+
 ```!trendmicro-search-policies field_name=name operation=equal field_type=string value="Example Policy"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -22133,12 +22285,14 @@ Search for specific policies by some field name with a certain type. Every field
 #### Human Readable Output
 
 >### Matched Policies
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 105 | Example Policy | Example policy description |
 
 
 ### trendmicro-create-policy
+
 ***
 Create a new policy
 
@@ -22146,6 +22300,7 @@ Create a new policy
 #### Base Command
 
 `trendmicro-create-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -22170,9 +22325,11 @@ Create a new policy
 
 
 #### Command Example
+
 ```!trendmicro-create-policy name="Example Policy" parent_id=2 description="Example policy description"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -22915,12 +23072,14 @@ Create a new policy
 #### Human Readable Output
 
 >### The New Policy
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 106 | Example Policy | Example policy description |
 
 
 ### trendmicro-remove-firewall-rule-id-from-computer
+
 ***
 Remove a firewall rule ID from a certain computer
 
@@ -22928,6 +23087,7 @@ Remove a firewall rule ID from a certain computer
 #### Base Command
 
 `trendmicro-remove-firewall-rule-id-from-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -22941,6 +23101,7 @@ Remove a firewall rule ID from a certain computer
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-remove-firewall-rule-id-from-computer computer_id=216 firewall_rule_id=31```
 
 #### Human Readable Output
@@ -22948,6 +23109,7 @@ There is no context output for this command.
 >The firewall rule 31 was successfully deleted from computer 216!
 
 ### trendmicro-list-default-policy-settings
+
 ***
 List default policy settings
 
@@ -22955,6 +23117,7 @@ List default policy settings
 #### Base Command
 
 `trendmicro-list-default-policy-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -22970,9 +23133,11 @@ List default policy settings
 
 
 #### Command Example
+
 ```!trendmicro-list-default-policy-settings```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -23893,12 +24058,14 @@ List default policy settings
 #### Human Readable Output
 
 >### The Default Policy Settings
+>
 >|Activity Monitoring Setting Activity Enabled|Activity Monitoring Setting Indicator Enabled|Activity Monitoring Setting State|Activity Monitoring Setting Syslog Config Id|Anti Malware Setting Combined Mode Protection Source|Anti Malware Setting Connected Threat Defense Suspicious File Ddan Submission Enabled|Anti Malware Setting Connected Threat Defense Use Control Manager Suspicious Object List Enabled|Anti Malware Setting File Hash Enabled|Anti Malware Setting File Hash Md 5 Enabled|Anti Malware Setting File Hash Sha 256 Enabled|Anti Malware Setting File Hash Size Max Mbytes|Anti Malware Setting Identified Files Space Max Mbytes|Anti Malware Setting Malware Scan Multithreaded Processing Enabled|Anti Malware Setting Nsx Security Tagging Enabled|Anti Malware Setting Nsx Security Tagging On Remediation Failure Enabled|Anti Malware Setting Nsx Security Tagging Remove On Clean Scan Enabled|Anti Malware Setting Nsx Security Tagging Value|Anti Malware Setting Scan File Size Max Mbytes|Anti Malware Setting Smart Protection Global Server Enabled|Anti Malware Setting Smart Protection Global Server Use Proxy Enabled|Anti Malware Setting Smart Protection Local Server Allow Off Domain Global|Anti Malware Setting Smart Protection Server Connection Lost Warning Enabled|Anti Malware Setting Smart Scan State|Anti Malware Setting State|Anti Malware Setting Syslog Config Id|Anti Malware Setting Virtual Appliance On Demand Scan Cache Entries Max|Anti Malware Setting Virtual Appliance Real Time Scan Cache Entries Max|Application Control Setting Execution Enforcement Level|Application Control Setting Ruleset Mode|Application Control Setting Shared Ruleset Id|Application Control Setting State|Application Control Setting Syslog Config Id|Firewall Setting Anti Evasion Check Evasive Retransmit|Firewall Setting Anti Evasion Check Fin No Connection|Firewall Setting Anti Evasion Check Fragmented Packets|Firewall Setting Anti Evasion Check Out No Connection|Firewall Setting Anti Evasion Check Paws|Firewall Setting Anti Evasion Check Rst No Connection|Firewall Setting Anti Evasion Check Tcp Check sum|Firewall Setting Anti Evasion Check Tcp Congestion Flags|Firewall Setting Anti Evasion Check Tcp Paws Zero|Firewall Setting Anti Evasion Check Tcp Rst Fin Flags|Firewall Setting Anti Evasion Check Tcp Split Handshake|Firewall Setting Anti Evasion Check Tcp Syn Fin Flags|Firewall Setting Anti Evasion Check Tcp Syn Rst Flags|Firewall Setting Anti Evasion Check Tcp Syn With Data|Firewall Setting Anti Evasion Check Tcp Urgent Flags|Firewall Setting Anti Evasion Check Tcp Zero Flags|Firewall Setting Anti Evasion Security Posture|Firewall Setting Anti Evasion Tcp Paws Window Policy|Firewall Setting Combined Mode Protection Source|Firewall Setting Config Package Exceeds Alert Max Enabled|Firewall Setting Engine Option Ack Timeout|Firewall Setting Engine Option Allow Null Ip Enabled|Firewall Setting Engine Option Block Ipv 6 Agent 8 And Earlier Enabled|Firewall Setting Engine Option Block Ipv 6 Agent 9 And Later Enabled|Firewall Setting Engine Option Block Same Src Dst Ip Enabled|Firewall Setting Engine Option Boot Start Timeout|Firewall Setting Engine Option Bypass Cisco Waas Connections Enabled|Firewall Setting Engine Option Close Timeout|Firewall Setting Engine Option Close Wait Timeout|Firewall Setting Engine Option Closing Timeout|Firewall Setting Engine Option Cold Start Timeout|Firewall Setting Engine Option Connection Cleanup Timeout|Firewall Setting Engine Option Connections Cleanup Max|Firewall Setting Engine Option Connections Num Icmp Max|Firewall Setting Engine Option Connections Num Tcp Max|Firewall Setting Engine Option Connections Num Udp Max|Firewall Setting Engine Option Debug Mode Enabled|Firewall Setting Engine Option Debug Packet Num Max|Firewall Setting Engine Option Disconnect Timeout|Firewall Setting Engine Option Drop 6 To 4 Bogons Addresses Enabled|Firewall Setting Engine Option Drop Evasive Retransmit Enabled|Firewall Setting Engine Option Drop Ip Zero Payload Enabled|Firewall Setting Engine Option Drop Ipv 6 Bogons Addresses Enabled|Firewall Setting Engine Option Drop Ipv 6 Ext Type 0 Enabled|Firewall Setting Engine Option Drop Ipv 6 Fragments Lower Than Min Mtu Enabled|Firewall Setting Engine Option Drop Ipv 6 Reserved Addresses Enabled|Firewall Setting Engine Option Drop Ipv 6 Site Local Addresses Enabled|Firewall Setting Engine Option Drop Teredo Anomalies Enabled|Firewall Setting Engine Option Drop Unknown Ssl Protocol Enabled|Firewall Setting Engine Option Error Timeout|Firewall Setting Engine Option Established Timeout|Firewall Setting Engine Option Event Nodes Max|Firewall Setting Engine Option Filter Ipv 4 Tunnels|Firewall Setting Engine Option Filter Ipv 6 Tunnels|Firewall Setting Engine Option Fin Wait 1 Timeout|Firewall Setting Engine Option Force Allow Dhcp Dns|Firewall Setting Engine Option Force Allow Icmp Type 3 Code 4|Firewall Setting Engine Option Fragment Offset Min|Firewall Setting Engine Option Fragment Size Min|Firewall Setting Engine Option Generate Connection Events Icmp Enabled|Firewall Setting Engine Option Generate Connection Events Tcp Enabled|Firewall Setting Engine Option Generate Connection Events Udp Enabled|Firewall Setting Engine Option Icmp Timeout|Firewall Setting Engine Option Ignore Status Code 0|Firewall Setting Engine Option Ignore Status Code 1|Firewall Setting Engine Option Ignore Status Code 2|Firewall Setting Engine Option Last Ack Timeout|Firewall Setting Engine Option Log All Packet Data Enabled|Firewall Setting Engine Option Log Events Per Second Max|Firewall Setting Engine Option Log One Packet Period|Firewall Setting Engine Option Log One Packet Within Period Enabled|Firewall Setting Engine Option Log Packet Length Max|Firewall Setting Engine Option Logging Policy|Firewall Setting Engine Option Silent Tcp Connection Drop Enabled|Firewall Setting Engine Option Ssl Session Size|Firewall Setting Engine Option Ssl Session Time|Firewall Setting Engine Option Strict Terodo Port Check Enabled|Firewall Setting Engine Option Syn Rcvd Timeout|Firewall Setting Engine Option Syn Sent Timeout|Firewall Setting Engine Option Tcp Mss Limit|Firewall Setting Engine Option Tunnel Depth Max|Firewall Setting Engine Option Tunnel Depth Max Exceeded Action|Firewall Setting Engine Option Udp Timeout|Firewall Setting Engine Option Verify Tcp Checksum Enabled|Firewall Setting Engine Options Enabled|Firewall Setting Event Log File Cached Entries Life Time|Firewall Setting Event Log File Cached Entries Num|Firewall Setting Event Log File Cached Entries Stale Time|Firewall Setting Event Log File Retain Num|Firewall Setting Event Log File Size Max|Firewall Setting Events Out Of Allowed Policy Enabled|Firewall Setting Failure Response Engine System|Firewall Setting Failure Response Packet Sanity Check|Firewall Setting Interface Isolation Enabled|Firewall Setting Interface Limit One Active Enabled|Firewall Setting Network Engine Mode|Firewall Setting Reconnaissance Block Fingerprint Probe Duration|Firewall Setting Reconnaissance Block Network Or Port Scan Duration|Firewall Setting Reconnaissance Block Tcp Null Scan Duration|Firewall Setting Reconnaissance Block Tcp Syn Fin Scan Duration|Firewall Setting Reconnaissance Block Tcp Xmas Attack Duration|Firewall Setting Reconnaissance Detect Fingerprint Probe Enabled|Firewall Setting Reconnaissance Detect Network Or Port Scan Enabled|Firewall Setting Reconnaissance Detect Tcp Null Scan Enabled|Firewall Setting Reconnaissance Detect Tcp Syn Fin Scan Enabled|Firewall Setting Reconnaissance Detect Tcp Xmas Attack Enabled|Firewall Setting Reconnaissance Enabled|Firewall Setting Reconnaissance Notify Fingerprint Probe Enabled|Firewall Setting Reconnaissance Notify Network Or Port Scan Enabled|Firewall Setting Reconnaissance Notify Tcp Null Scan Enabled|Firewall Setting Reconnaissance Notify Tcp Syn Fin Scan Enabled|Firewall Setting Reconnaissance Notify Tcp Xmas Attack Enabled|Firewall Setting State|Firewall Setting Syslog Config Id|Firewall Setting Virtual And Container Network Scan Enabled|Integrity Monitoring Setting Auto Apply Recommendations Enabled|Integrity Monitoring Setting Combined Mode Protection Source|Integrity Monitoring Setting Content Hash Algorithm|Integrity Monitoring Setting Cpu Usage Level|Integrity Monitoring Setting Realtime Enabled|Integrity Monitoring Setting State|Integrity Monitoring Setting Syslog Config Id|Integrity Monitoring Setting Virtual Appliance Optimization Scan Cache Entries Max|Intrusion Prevention Setting Auto Apply Recommendations Enabled|Intrusion Prevention Setting Combined Mode Protection Source|Intrusion Prevention Setting Engine Option Fragmented Ip Keep Max|Intrusion Prevention Setting Engine Option Fragmented Ip Packet Send Icmp Enabled|Intrusion Prevention Setting Engine Option Fragmented Ip Timeout|Intrusion Prevention Setting Engine Option Fragmented Ip Unconcerned Mac Address Bypass Enabled|Intrusion Prevention Setting Engine Options Enabled|Intrusion Prevention Setting Log Data Rule First Match Enabled|Intrusion Prevention Setting Nsx Security Tagging Detect Mode Level|Intrusion Prevent ion Setting Nsx Security Tagging Prevent Mode Level|Intrusion Prevention Setting State|Intrusion Prevention Setting Virtual And Container Network Scan Enabled|Log Inspection Setting Auto Apply Recommendations Enabled|Log Inspection Setting Severity Clipping Agent Event Send Sys Log Level Min|Log Inspection Setting Severity Clipping Agent Event Store Level Min|Log Inspection Setting State|Log Inspection Setting Sys Log Config Id|Platform Setting Agent Communications Direction|Platform Setting Agent Events Send Interval|Platform Setting Agent Self Protection Enabled|Platform Setting Agent Self Protection Password Enabled|Platform Setting Auto Assign New Intrusion Prevention Rules Enabled|Platform Setting Auto Update Anti Malware Engine Enabled|Platform Setting Combined Mode Network Group Protection Source|Platform Setting Heartbeat Inactive Vm Offline Alert Enabled|Platform Setting Heartbeat Interval|Platform Setting Heartbeat Local Time Shift Alert Threshold|Platform Setting Heartbeat Missed Alert Threshold|Platform Setting Inactive Agent Cleanup Override Enabled|Platform Setting Notifications Suppress Popups Enabled|Platform Setting Recommendation Ongoing Scans Interval|Platform Setting Relay State|Platform Setting Scan Cache Concurrency Max|Platform Setting Scan Open Port List Id|Platform Setting Smart Protection Global Server Enabled|Platform Setting Smart Protection Global Server Use Proxy Enabled|Platform Setting Troubleshooting Logging Level|Web Reputation Setting Alerting Enabled|Web Reputation Setting Blocking Page Link|Web Reputation Setting Combined Mode Protection Source|Web Reputation Setting Monitor Port List Id|Web Reputation Setting Security Block Untested Pages Enabled|Web Reputation Setting Security Level|Web Reputation Setting Smart Protection Global Server Use Proxy Enabled|Web Reputation Setting Smart Protection Local Server Allow Off Domain Global|Web Reputation Setting Smart Protection Local Server Enabled|Web Reputation Setting Smart Protection Server Connection Lost Warning Enabled|Web Reputation Setting State|Web Reputation Setting Syslog Config Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Off | Off | Off | 0 | Appliance preferred | true | true | false | false | false | 128 | 1024 | false | true | true | true | ANTI_VIRUS.VirusFound.threat=medium | 0 | true | false | false | true | Automatic | Off | 0 | 500000 | 500000 | Allow unrecognized software until it is explicitly blocked | Use local ruleset | 0 | Off | 0 | Allow | Allow | Allow | Allow | Ignore | Allow | Allow | Allow | Allow | Deny | Deny | Deny | Deny | Deny | Allow | Deny | Normal | 0 | Agent preferred | true | 1 Second | true | true | false | true | 20 Seconds | false | 0 Seconds | 2 Minutes | 1 Second | 5 Minutes | 10 Seconds | 1000 | 10000 | 1000000 | 1000000 | false | 8 | 60 Seconds | true | false | true | true | true | true | true | false | true | true | 10 Seconds | 3 Hours | 20000 | Disable Detection of IPv4 Tunnels | Disable Detection of IPv6 Tunnels | 2 Minutes | Allow DNS Query and DHCP Client | Add Force Allow rule for ICMP type3 code4 | 60 | 120 | false | false | false | 60 Seconds | None | None | None | 30 Seconds | false | 100 | 5 Minutes | false | 1500 Bytes | Default | false | Low - 2500 | 24 Hours | true | 60 Seconds | 20 Seconds | 128 Bytes | 1 | Drop | 20 Seconds | false | false | 30 Minutes | 128 | 15 Minutes | 3 | 4 MB | true | Fail closed | Fail closed | false | false | Inline | No | No | No | No | No | true | true | true | true | true | true | true | true | true | true | true | Off | 0 | false | No | Appliance preferred | sha1 | High | false | Off | 0 | 500000 | No | Agent preferred | 1000 | true | 60 Seconds | false | false | true | No Tagging | No Tagging | Off | true | No | Medium (6) | Medium (6) | Off | 0 | Agent/Appliance Initiated | 60 Seconds | false | false | true | false | Agent preferred | false | 10 Minutes | Unlimited | 2 | false | false | 7 Days | false | 1 | 1-1024 | true | false | Do Not Override | false | http://sitesafety.trendmicro.com/ | Agent preferred | 80,8080 | false | Medium | false | false | false | true | Off | 0 |
+>| Off | Off | Off | 0 | Appliance preferred | true | true | false | false | false | 128 | 1024 | false | true | true | true | ANTI_VIRUS.VirusFound.threat=medium | 0 | true | false | false | true | Automatic | Off | 0 | 500000 | 500000 | Allow unrecognized software until it is explicitly blocked | Use local ruleset | 0 | Off | 0 | Allow | Allow | Allow | Allow | Ignore | Allow | Allow | Allow | Allow | Deny | Deny | Deny | Deny | Deny | Allow | Deny | Normal | 0 | Agent preferred | true | 1 Second | true | true | false | true | 20 Seconds | false | 0 Seconds | 2 Minutes | 1 Second | 5 Minutes | 10 Seconds | 1000 | 10000 | 1000000 | 1000000 | false | 8 | 60 Seconds | true | false | true | true | true | true | true | false | true | true | 10 Seconds | 3 Hours | 20000 | Disable Detection of IPv4 Tunnels | Disable Detection of IPv6 Tunnels | 2 Minutes | Allow DNS Query and DHCP Client | Add Force Allow rule for ICMP type3 code4 | 60 | 120 | false | false | false | 60 Seconds | None | None | None | 30 Seconds | false | 100 | 5 Minutes | false | 1500 Bytes | Default | false | Low - 2500 | 24 Hours | true | 60 Seconds | 20 Seconds | 128 Bytes | 1 | Drop | 20 Seconds | false | false | 30 Minutes | 128 | 15 Minutes | 3 | 4 MB | true | Fail closed | Fail closed | false | false | Inline | No | No | No | No | No | true | true | true | true | true | true | true | true | true | true | true | Off | 0 | false | No | Appliance preferred | sha1 | High | false | Off | 0 | 500000 | No | Agent preferred | 1000 | true | 60 Seconds | false | false | true | No Tagging | No Tagging | Off | true | No | Medium (6) | Medium (6) | Off | 0 | Agent/Appliance Initiated | 60 Seconds | false | false | true | false | Agent preferred | false | 10 Minutes | Unlimited | 2 | false | false | 7 Days | false | 1 | 1-1024 | true | false | Do Not Override | false | <http://sitesafety.trendmicro.com/> | Agent preferred | 80,8080 | false | Medium | false | false | false | true | Off | 0 |
 
 
 ### trendmicro-get-default-policy-setting
+
 ***
 Get information about a certain default policy setting
 
@@ -23906,6 +24073,7 @@ Get information about a certain default policy setting
 #### Base Command
 
 `trendmicro-get-default-policy-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -23922,9 +24090,11 @@ Get information about a certain default policy setting
 
 
 #### Command Example
+
 ```!trendmicro-get-default-policy-setting name=antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -23939,12 +24109,14 @@ Get information about a certain default policy setting
 #### Human Readable Output
 
 >### Default Policy Setting
+>
 >|Name|Value|
 >|---|---|
 >| antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled | true |
 
 
 ### trendmicro-modify-default-policy-setting
+
 ***
 Modify the value of a certain default policy setting
 
@@ -23952,6 +24124,7 @@ Modify the value of a certain default policy setting
 #### Base Command
 
 `trendmicro-modify-default-policy-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -23969,9 +24142,11 @@ Modify the value of a certain default policy setting
 
 
 #### Command Example
+
 ```!trendmicro-modify-default-policy-setting name=antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled value=false```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -23986,12 +24161,14 @@ Modify the value of a certain default policy setting
 #### Human Readable Output
 
 >### Default Policy Setting
+>
 >|Name|Value|
 >|---|---|
 >| antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled | false |
 
 
 ### trendmicro-reset-default-policy-setting
+
 ***
 Reset the value of a certain default policy setting
 
@@ -23999,6 +24176,7 @@ Reset the value of a certain default policy setting
 #### Base Command
 
 `trendmicro-reset-default-policy-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -24015,9 +24193,11 @@ Reset the value of a certain default policy setting
 
 
 #### Command Example
+
 ```!trendmicro-reset-default-policy-setting name=antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -24032,6 +24212,7 @@ Reset the value of a certain default policy setting
 #### Human Readable Output
 
 >### Default Policy Setting
+>
 >|Name|Value|
 >|---|---|
 >| antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled | true |
@@ -24068,8 +24249,11 @@ Get information on all scheduled tasks.
 | TrendMicro.ScheduledTask.ID | Number | The ID of the scheduled task. | 
 
 #### Command example
+
 ```!trendmicro-list-scheduled-task task_id=1```
+
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -24102,6 +24286,7 @@ Get information on all scheduled tasks.
 #### Human Readable Output
 
 >### Scheduled Tasks
+>
 >|ID|Name|Type|Enabled|Last Run Time|
 >|---|---|---|---|---|
 >| 1 | Daily check for Security Updates | check-for-security-updates | true | 2023-06-19 14:30:43 |
@@ -24140,8 +24325,11 @@ Creates a once-only scheduled task with a specific computer ID and runs it.
 | TrendMicro.ScheduledTask.ID | Number | The ID of the scheduled task. | 
 
 #### Command example
+
 ```!trendmicro-create-onceonly-scheduled-task name=test computer_id=1 type="scan-for-malware"```
+
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -24173,6 +24361,7 @@ Creates a once-only scheduled task with a specific computer ID and runs it.
 #### Human Readable Output
 
 >Once-only scheduled task, named test for the computer ID 1 has been successfully created and run.
+>
 ### trendmicro-delete-scheduled-task
 
 ***
@@ -24191,8 +24380,11 @@ Deletes a scheduled task.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!trendmicro-delete-scheduled-task task_id=1```
+
 #### Human Readable Output
 
 >Scheduled task with ID 1 has been successfully deleted.

@@ -5,7 +5,9 @@ Use the O365 File Management (Onedrive/Sharepoint/Teams) integration to enable y
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
 ### Required Permissions
+
 The required permission depends on whether you want to access all sites (Sites.ReadWrite.All) or specific sites (Site.Selected):
+
 - `Sites.ReadWrite.All`: Provides read and write access to all sites.  
 `Client Credentials Flow` - Application permission.  
 `Authorization Code Flow` - Delegated permission.  
@@ -13,6 +15,7 @@ The required permission depends on whether you want to access all sites (Sites.R
 Note: This permission is sufficient for all the commands, but if you want the least privileged permissions for each command, they are listed for each command definition.
 
 OR
+
 - `Sites.Selected - Application`: Provides read and write access to specific sites.  
 This option is not supported with the `Authorization Code Flow` according to [Microsoft documentation](https://learn.microsoft.com/en-us/graph/permissions-reference#sitesselected).
 
@@ -998,6 +1001,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-files-generate-login-url
 
 ***

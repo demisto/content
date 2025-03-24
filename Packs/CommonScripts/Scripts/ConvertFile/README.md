@@ -1,4 +1,4 @@
-Converts a file from one format to a different format by using the convert-to function of Libre Office. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0
+Converts a file from one format to a different format by using the convert-to function of Libre Office. For a list of supported input/output formats see:  <https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0>
 
 ## Troubleshooting
 

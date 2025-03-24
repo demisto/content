@@ -893,6 +893,7 @@ Channel renamed successfully.
 </p>
 
 ### slack-get-integration-context
+
 ***
 Returns the integration context as a file. Use this command for debug purposes only.
 
@@ -900,6 +901,7 @@ Returns the integration context as a file. Use this command for debug purposes o
 #### Base Command
 
 `slack-get-integration-context`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

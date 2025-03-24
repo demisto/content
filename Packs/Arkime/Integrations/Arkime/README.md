@@ -14,9 +14,12 @@ For older versions, see the Moloch pack (deprecated).
 | Trust any certificate (not secure) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### arkime-connection-list
+
 ***
 Gets a list of nodes and links and returns them to the client.
 
@@ -24,6 +27,7 @@ Gets a list of nodes and links and returns them to the client.
 #### Base Command
 
 `arkime-connection-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -67,8 +71,11 @@ Gets a list of nodes and links and returns them to the client.
 | Arkime.Connection.recordsFiltered | Number | The number of history items returned in this result. | 
 
 #### Command example
+
 ```!arkime-connection-list baseline_date=720 start_time=1648817940 stop_time=1649595540```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -111,6 +118,7 @@ Gets a list of nodes and links and returns them to the client.
 #### Human Readable Output
 
 >### Connection Results:
+>
 >|Source IP|Count|Sessions|Node|
 >|---|---|---|---|
 >| 1.1.1.1 | 1 | 2 | localhost |
@@ -118,6 +126,7 @@ Gets a list of nodes and links and returns them to the client.
 
 
 ### arkime-connection-csv-get
+
 ***
 Gets a list of nodes and links in csv format and returns them to the client.
 
@@ -125,6 +134,7 @@ Gets a list of nodes and links in csv format and returns them to the client.
 #### Base Command
 
 `arkime-connection-csv-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -154,8 +164,11 @@ Gets a list of nodes and links in csv format and returns them to the client.
 | Arkime.Connection.InfoFile.Info | String | Basic information about the file. | 
 
 #### Command example
+
 ```!arkime-connection-csv-get start_time=1648817940 stop_time=1649595540```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -174,6 +187,7 @@ Gets a list of nodes and links in csv format and returns them to the client.
 
 
 ### arkime-session-pcap-get
+
 ***
 Retrieve the raw session data in pcap format.
 
@@ -181,6 +195,7 @@ Retrieve the raw session data in pcap format.
 #### Base Command
 
 `arkime-session-pcap-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -203,8 +218,11 @@ Retrieve the raw session data in pcap format.
 | Arkime.PcapFile.data.packetSize | Number | The packet size. | 
 
 #### Command example
+
 ```!arkime-session-pcap-get ids=220516-QHSdz21pJ_xCtJGoL8mbmyNv```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -223,6 +241,7 @@ Retrieve the raw session data in pcap format.
 
 
 ### arkime-session-csv-get
+
 ***
 Gets a list of sessions and returns them as CSV to the client.
 
@@ -230,6 +249,7 @@ Gets a list of sessions and returns them as CSV to the client.
 #### Base Command
 
 `arkime-session-csv-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -259,8 +279,11 @@ Gets a list of sessions and returns them as CSV to the client.
 | Arkime.Session.InfoFile.Info | String | Basic information about the file. | 
 
 #### Command example
+
 ```!arkime-session-csv-get start_time=1650190238 stop_time=1650363038 limit=2```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -279,6 +302,7 @@ Gets a list of sessions and returns them as CSV to the client.
 
 
 ### arkime-session-list
+
 ***
 Gets a list of sessions and returns them to the client.
 
@@ -286,6 +310,7 @@ Gets a list of sessions and returns them to the client.
 #### Base Command
 
 `arkime-session-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -338,8 +363,11 @@ Gets a list of sessions and returns them to the client.
 | Arkime.Session.recordsFiltered | Number | The number of history items returned in this result. | 
 
 #### Command example
+
 ```!arkime-session-list start_time=1650190238 stop_time=1650363038 limit=2```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -401,7 +429,9 @@ Gets a list of sessions and returns them to the client.
 #### Human Readable Output
 
 >Showing 2 results, limit=2
+>
 >### Session List Result:
+>
 >|ID|IP Protocol|Start Time|Stop Time|Source IP|Source Port| Destination IP |Destination Port|Node|
 >|---|---|---|---|---|----------------|---|---|---|
 >| 3@220417-Yg7OpiE4Pi1PFaRqu8lztuA6 | 6 | 2022-04-14 07:26:39 | 2022-04-17 10:15:31 | 1.1.1.1 | 22 | 1.1.1.1        | 41096 | localhost |
@@ -409,6 +439,7 @@ Gets a list of sessions and returns them to the client.
 
 
 ### arkime-unique-field-list
+
 ***
 Gets a list of unique field values (with or without counts) and sends them to the client.
 
@@ -416,6 +447,7 @@ Gets a list of unique field values (with or without counts) and sends them to th
 #### Base Command
 
 `arkime-unique-field-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -444,8 +476,11 @@ Gets a list of unique field values (with or without counts) and sends them to th
 | Arkime.UniqueField.Count | Boolean | The count. | 
 
 #### Command example
+
 ```!arkime-unique-field-list expression_field_names=dns.ASN counts=0 limit=2```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -464,7 +499,9 @@ Gets a list of unique field values (with or without counts) and sends them to th
 #### Human Readable Output
 
 >Showing 2 results, limit=2
+>
 >### Unique Field Results:
+>
 >|Field|Count|
 >|---|---|
 >| AS8075 MICROSOFT-CORP-MSN-AS-BLOCK |  |
@@ -472,8 +509,11 @@ Gets a list of unique field values (with or without counts) and sends them to th
 
 
 #### Command example
+
 ```!arkime-unique-field-list expression_field_names=dns.ASN counts=1 limit=2```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -494,7 +534,9 @@ Gets a list of unique field values (with or without counts) and sends them to th
 #### Human Readable Output
 
 >Showing 2 results, limit=2
+>
 >### Unique Field Results:
+>
 >|Field|Count|
 >|---|---|
 >| AS8075 MICROSOFT-CORP-MSN-AS-BLOCK |  241 |
@@ -502,6 +544,7 @@ Gets a list of unique field values (with or without counts) and sends them to th
 
 
 ### arkime-multi-unique-field-list
+
 ***
 Gets an intersection of unique field values (with or without counts) and sends them to the client.
 
@@ -509,6 +552,7 @@ Gets an intersection of unique field values (with or without counts) and sends t
 #### Base Command
 
 `arkime-multi-unique-field-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -538,8 +582,11 @@ Gets an intersection of unique field values (with or without counts) and sends t
 | Arkime.UniqueField.Count | Boolean | The count. | 
 
 #### Command example
+
 ```!arkime-multi-unique-field-list expression_field_names=destination.ip counts=1 database_field=dns.ASN limit=2```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -560,7 +607,9 @@ Gets an intersection of unique field values (with or without counts) and sends t
 #### Human Readable Output
 
 >Showing 2 results, limit=2
+>
 >### Unique Field Results:
+>
 >| Field        |Count|
 --------------|---|---|
 >| 1.1.1.1      |  10153 |
@@ -568,8 +617,11 @@ Gets an intersection of unique field values (with or without counts) and sends t
 
 
 #### Command example
+
 ```!arkime-multi-unique-field-list expression_field_names=destination.ip counts=0 database_field=dns.ASN limit=2```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -588,7 +640,9 @@ Gets an intersection of unique field values (with or without counts) and sends t
 #### Human Readable Output
 
 >Showing 2 results, limit=2
+>
 >### Unique Field Results:
+>
 >| Field        |Count|
 --------------|---|---|
 >| 1.1.1.1      |  |
@@ -596,6 +650,7 @@ Gets an intersection of unique field values (with or without counts) and sends t
 
 
 ### arkime-field-list
+
 ***
 Gets available database field objects pertaining to sessions.
 
@@ -603,6 +658,7 @@ Gets available database field objects pertaining to sessions.
 #### Base Command
 
 `arkime-field-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -621,8 +677,11 @@ Gets available database field objects pertaining to sessions.
 | Arkime.Field.dbField | String | The dbField. | 
 
 #### Command example
+
 ```!arkime-field-list```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -645,6 +704,7 @@ Gets available database field objects pertaining to sessions.
 #### Human Readable Output
 
 >### Fields Results:
+>
 >|Friendly Name|Type|Group|Help|DB Field|
 >|---|---|---|---|---|
 >| All ASN fields | termfield | general | Search all ASN fields | asnall |
@@ -1001,6 +1061,7 @@ Gets available database field objects pertaining to sessions.
 
 
 ### arkime-spigraph-get
+
 ***
 Gets a list of values for a field with counts and graph data and returns them to the client.
 
@@ -1008,6 +1069,7 @@ Gets a list of values for a field with counts and graph data and returns them to
 #### Base Command
 
 `arkime-spigraph-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1047,8 +1109,11 @@ Gets a list of values for a field with counts and graph data and returns them to
 | Arkime.SpiGraph.recordsFiltered | Number | The number of hunts returned in this result. | 
 
 #### Command example
+
 ```!arkime-spigraph-get field=220516-QHSdz21pJ_xCtJGoL8mbmyNv```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -1067,6 +1132,7 @@ Gets a list of values for a field with counts and graph data and returns them to
 
 
 ### arkime-spiview-get
+
 ***
 Gets a list of field values with counts and returns them to the client.
 
@@ -1074,6 +1140,7 @@ Gets a list of field values with counts and returns them to the client.
 #### Base Command
 
 `arkime-spiview-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1102,8 +1169,11 @@ Gets a list of field values with counts and returns them to the client.
 | Arkime.SpiView.recordsFiltered | Number | The number of history items returned in this result. | 
 
 #### Command example
+
 ```!arkime-spiview-get spi=220516-QHSdz21pJ_xCtJGoL8mbmyNv```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -1122,6 +1192,7 @@ Gets a list of field values with counts and returns them to the client.
 
 
 ### arkime-session-tag-add
+
 ***
 Add tag(s) to individual session(s) by id or by query.
 
@@ -1129,6 +1200,7 @@ Add tag(s) to individual session(s) by id or by query.
 #### Base Command
 
 `arkime-session-tag-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1155,8 +1227,11 @@ Add tag(s) to individual session(s) by id or by query.
 | Arkime.AddSessionTags.text | String | Text from response | 
 
 #### Command example
+
 ```!arkime-session-tag-add tags=test ids=220425-L2AXYh6W4UJOSqilt0i3iDIL segments=time```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -1171,12 +1246,14 @@ Add tag(s) to individual session(s) by id or by query.
 #### Human Readable Output
 
 >### Session Tag Results:
+>
 >|Success|Text|
 >|---|---|
 >| true | Tags added successfully |
 
 
 ### arkime-session-tag-remove
+
 ***
 Removes tag(s) from individual session(s) by id or by query.
 
@@ -1184,6 +1261,7 @@ Removes tag(s) from individual session(s) by id or by query.
 #### Base Command
 
 `arkime-session-tag-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1210,8 +1288,11 @@ Removes tag(s) from individual session(s) by id or by query.
 | Arkime.AddSessionTags.text | String | Text from response. | 
 
 #### Command example
+
 ```!arkime-session-tag-remove tags=test ids=220425-L2AXYh6W4UJOSqilt0i3iDIL segments=time```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -1226,12 +1307,14 @@ Removes tag(s) from individual session(s) by id or by query.
 #### Human Readable Output
 
 >### Session Tag Results:
+>
 >|Success|Text|
 >|---|---|
 >| true | Tags removed successfully |
 
 
 ### arkime-pcap-file-list
+
 ***
 Gets a list of PCAP files that Arkime knows about.
 
@@ -1239,6 +1322,7 @@ Gets a list of PCAP files that Arkime knows about.
 #### Base Command
 
 `arkime-pcap-file-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1266,8 +1350,11 @@ Gets a list of PCAP files that Arkime knows about.
 | Arkime.File.data.packets | Number | The file data packets. | 
 
 #### Command example
+
 ```!arkime-pcap-file-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -1305,7 +1392,9 @@ Gets a list of PCAP files that Arkime knows about.
 #### Human Readable Output
 
 >Showing 2 results, limit=2
+>
 >### Files List Result:
+>
 >|Node|Name|Number|First|File Size|Packet Size|
 >|---|---|---|---|---|---|
 >| localhost | /opt/arkime/raw/localhost-220621-00000384.pcap | 384 | 1970-01-20 03:57:24 | 1073744628 | 1073744628 |

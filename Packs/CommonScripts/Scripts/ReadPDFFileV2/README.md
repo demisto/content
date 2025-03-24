@@ -2,6 +2,7 @@ Load a PDF file's content and metadata into context. Supports extraction of hash
 
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +12,7 @@ Load a PDF file's content and metadata into context. Supports extraction of hash
 | Cortex XSOAR Version | 4.1.0+ |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +23,7 @@ Load a PDF file's content and metadata into context. Supports extraction of hash
 | unescape_url | To unescape URLs that have been escaped as part of the URLs extraction. Invalid characters will be ignored. Default is true.|
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

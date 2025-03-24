@@ -6,6 +6,7 @@ The out-of-the-box items are robust enough to get you started, but are easily cu
 
 
 ##### What Does This Pack Do?
+
 - Retrieves emails from user inboxes or email security gateways.
 - Creates a Phishing Alerts incident in Cortex XSOAR associated with the alert.
 - Extracts and enriches all indicators from email attachments. 

@@ -2,6 +2,7 @@ Freeing the analyst with autonomous decisions.
 This integration was integrated and tested with version 6.1.0 of SumoLogicSEC.
 
 ## Prerequisites
+
 Only use this integration if your Cloud SIEM portal url ends with `.sumologic.com` - this can be verified via the url in your browser when logged into Cloud SIEM.
 
 You'll need an access key in order to complete the instance setup. Instructions on how to generate access keys can be found [here](https://help.sumologic.com/Manage/Security/Access-Keys).
@@ -11,7 +12,7 @@ You'll need an access key in order to complete the instance setup. Instructions 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Sumo Logic API Endpoint | https://api.&amp;lt;deployment&amp;gt;.sumologic.com/api/ | True |
+| Sumo Logic API Endpoint | <https://api.&amp;lt;deployment&amp;gt;.sumologic.com/api/> | True |
 | Sumo Logic Instance Endpoint | For the incident field sumoURL link to work, e.g: https://&amp;lt;yoursubdomain&amp;gt;.&amp;lt;deployment&amp;gt;.sumologic.com | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
@@ -31,6 +32,7 @@ You'll need an access key in order to complete the instance setup. Instructions 
 ## API documentation and query examples
 
 For commands with query parameter input the available fields and operators are documented in API docs. These docs are useful when executing queries using the following commands:
+
 - `sumologic-sec-insight-search`
 - `sumologic-sec-signal-search`
 - `sumologic-sec-entity-search`
@@ -42,6 +44,7 @@ Example: Insight search query ['q' parameter](https://api.us2.sumologic.com/docs
 > The search query string in our custom DSL that is used to filter the results.
 > 
 > Operators:
+>
 > - `exampleField:"bar"`: The value of the field is equal to "bar".
 > - `exampleField:in("bar", "baz", "qux")`: The value of the field > is equal to either "bar", "baz", or "qux".
 > - `exampleTextField:contains("foo bar")`: The value of the field > contains the phrase "foo bar".
@@ -51,6 +54,7 @@ Example: Insight search query ['q' parameter](https://api.us2.sumologic.com/docs
 > - `exampleDateField:2019-02-01T05:00:00+00:00..2019-02-01T08:00:00+00:00`: The value of the date field is between 5 a.m. and 8 a.m. UTC time on February 2, 2019.
 > 
 > Fields:
+>
 > - `id`
 > - `readableId`
 > - `status`
@@ -90,18 +94,21 @@ The table below shows differences between this integration and the legacy JASK i
 
 ### New commands introduced in Sumo Logic Cloud SIEM pack
 
- - `sumologic-sec-insight-set-status`
- - `sumologic-sec-match-list-get`
- - `sumologic-sec-match-list-update`
- - `sumologic-sec-threat-intel-search-indicators`
- - `sumologic-sec-threat-intel-get-sources`
- - `sumologic-sec-threat-intel-update-source`
+- `sumologic-sec-insight-set-status`
+- `sumologic-sec-match-list-get`
+- `sumologic-sec-match-list-update`
+- `sumologic-sec-threat-intel-search-indicators`
+- `sumologic-sec-threat-intel-get-sources`
+- `sumologic-sec-threat-intel-update-source`
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### sumologic-sec-insight-get-details
+
 ***
 Get Insight details for a specific Insight ID.
 
@@ -109,6 +116,7 @@ Get Insight details for a specific Insight ID.
 #### Base Command
 
 `sumologic-sec-insight-get-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -153,17 +161,21 @@ Get Insight details for a specific Insight ID.
 
 
 #### Command Example
+
 `!sumologic-sec-insight-get-details insight-id=INSIGHT-116`
 
 #### Human Readable Output
+
 Insight Details:
+
 |Id|Readable Id|Name|Action|Status|Assignee|Description|Last Updated|Last Updated By|Severity|Closed|Closed By|Timestamp|Entity|Resolution|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| c6c97d84-983d-303e-a03b-86f53d657fc8 | INSIGHT-116 | Lateral Movement with Discovery and Credential Access |  | Closed |  | Initial Access, Lateral Movement, Discovery, Initial Access, Credential Access | 2021-05-10T23:48:10.016204 |  | HIGH | 2021-05-10T23:48:09.961023 | obfuscated@email.com | 2021-02-18T22:04:08.330000 | 1.2.3.4 | No Action |
+| c6c97d84-983d-303e-a03b-86f53d657fc8 | INSIGHT-116 | Lateral Movement with Discovery and Credential Access |  | Closed |  | Initial Access, Lateral Movement, Discovery, Initial Access, Credential Access | 2021-05-10T23:48:10.016204 |  | HIGH | 2021-05-10T23:48:09.961023 | <obfuscated@email.com> | 2021-02-18T22:04:08.330000 | 1.2.3.4 | No Action |
 
 
 
 ### sumologic-sec-insight-get-comments
+
 ***
 Get comments for a specific Insight ID. (Users can post and update comments on the Sumo Logic Cloud SIEM portal for any Insight ID.)
 
@@ -171,6 +183,7 @@ Get comments for a specific Insight ID. (Users can post and update comments on t
 #### Base Command
 
 `sumologic-sec-insight-add-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -191,17 +204,21 @@ Get comments for a specific Insight ID. (Users can post and update comments on t
 
 
 #### Command Example
+
 `!sumologic-sec-insight-add-comment insight-id=INSIGHT-116 comment="This is an example comment"`
 
 #### Human Readable Output
+
 Insight Comment:
+
 |Id|Insight Id|Author|Body|Last Updated|Timestamp|
 |---|---|---|---|---|---|
-| 2 | INSIGHT-116 | obfuscated@email.com | This is an example comment |  | 2021-04-23T00:38:43.977543 |
+| 2 | INSIGHT-116 | <obfuscated@email.com> | This is an example comment |  | 2021-04-23T00:38:43.977543 |
 
 
 
 ### sumologic-sec-insight-get-comments
+
 ***
 Get comments for a specific Insight ID. (Users can post and update comments on the Sumo Logic Cloud SIEM portal for any Insight ID.)
 
@@ -209,6 +226,7 @@ Get comments for a specific Insight ID. (Users can post and update comments on t
 #### Base Command
 
 `sumologic-sec-insight-get-comments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -228,17 +246,21 @@ Get comments for a specific Insight ID. (Users can post and update comments on t
 
 
 #### Command Example
+
 `!sumologic-sec-insight-get-comments insight-id=INSIGHT-116`
 
 #### Human Readable Output
+
 Insight Comments:
+
 |Id|Insight Id|Author|Body|Last Updated|Timestamp|
 |---|---|---|---|---|---|
-| 2 | INSIGHT-116 | obfuscated@email.com | This is an example comment |  | 2021-04-23T00:38:43.977543 |
+| 2 | INSIGHT-116 | <obfuscated@email.com> | This is an example comment |  | 2021-04-23T00:38:43.977543 |
 
 
 
 ### sumologic-sec-signal-get-details
+
 ***
 Get Signal details for a specific Signal ID. Signal details command references signals in Sumo Logic Cloud SIEM which are created when records exhibit suspicious properties and mate with patterns or other detection logic.
 
@@ -246,6 +268,7 @@ Get Signal details for a specific Signal ID. Signal details command references s
 #### Base Command
 
 `sumologic-sec-signal-get-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -271,10 +294,13 @@ Get Signal details for a specific Signal ID. Signal details command references s
 
 
 #### Command Example
+
 `!sumologic-sec-signal-get-details signal-id=e0e7096b-2f91-5b72-b1a2-db48ce882dfc`
 
 #### Human Readable Output
+
 Signal Details:
+
 |Id|Name|Rule Id|Description|Severity|Content Type|Timestamp|Entity
 |---|---|---|---|---|---|---|---|
 | e0e7096b-2f91-5b72-b1a2-db48ce882dfc | Potential malicious JVM download | LEGACY-S00062 | A document was downloaded and opened followed by a file download using a Java user-agent. | 4 | RULE | 2021-02-18T22:04:08.230000 | 1.2.3.4
@@ -282,6 +308,7 @@ Signal Details:
 
 
 ### sumologic-sec-entity-get-details
+
 ***
 Get entity details for a specific entity ID
 
@@ -289,6 +316,7 @@ Get entity details for a specific entity ID
 #### Base Command
 
 `sumologic-sec-entity-get-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -312,10 +340,13 @@ Get entity details for a specific entity ID
 
 
 #### Command Example
+
 `!sumologic-sec-entity-get-details entity-id=_hostname-win10--admin.obfuscated`
 
 #### Human Readable Output
+
 ### Entity Details:
+
 |Id|Name|First Seen|Last Seen|Activity Score|Is Whitelisted|Operating System|Inventory Data
 |---|---|---|---|---|---|---|---|
 | _hostname-win10--admin.obfuscated | win10-admin.obfuscated |  | 2021-04-21T14:43:38.526000 | 9 | false | Windows 10 Enterprise | true |
@@ -323,6 +354,7 @@ Get entity details for a specific entity ID
 
 
 ### sumologic-sec-insight-search
+
 ***
 Search insights using available filters
 
@@ -330,6 +362,7 @@ Search insights using available filters
 #### Base Command
 
 `sumologic-sec-insight-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -379,19 +412,23 @@ Search insights using available filters
 
 
 #### Command Example
+
 `!sumologic-sec-insight-search query="timestamp:>\"2021-02-01T05:00:00+00:00\" status:\"closed\" AND severity:>\"MEDIUM\"" limit=3`
 
 #### Human Readable Output
+
 Insights:
+
 |Id|Readable Id|Name|Action|Status|Assignee|Description|Last Updated|Last Updated By|Severity|Closed|Closed By|Timestamp|Entity|Resolution|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 00853cdd-763e-3e31-a2e4-f74277922f9f | INSIGHT-220 | Command and Control with Defense Evasion and Execution |  | Closed |  | Initial Access, Command and Control, Defense Evasion, Execution | 2021-03-23T20:06:51.565599 |  | HIGH | 2021-03-23T20:06:51.511505 | obfuscated@email.com | 2021-02-22T16:27:51 | testcomputer.somedomain.net | No Action |
-| eefdff8d-7447-3b47-83e0-66a0b210d618 | INSIGHT-219 | Discovery with Credential Access and Execution |  | Closed |  | Initial Access, Credential Access, Initial Access, Execution, Discovery, Credential Access | 2021-03-23T21:21:55.029798 |  | HIGH | 2021-03-23T21:21:54.914061 | obfuscated@email.com | 2021-02-22T16:24:07.959000 | 1.2.3.4 | No Action |
-| 8a77d12e-5905-3401-ae7c-2e17b1fd3060 | INSIGHT-221 | Privilege Escalation with Persistence and Execution |  | Closed | obfuscated@email.com | Execution, Privilege Escalation, Persistence, Execution | 2021-05-12T21:47:08.297222 |  | HIGH | 2021-05-12T21:47:08.132251 | obfuscated@email.com | 2021-02-22T16:24:07.959000 | 5.6.7.8 | No Action |
+| 00853cdd-763e-3e31-a2e4-f74277922f9f | INSIGHT-220 | Command and Control with Defense Evasion and Execution |  | Closed |  | Initial Access, Command and Control, Defense Evasion, Execution | 2021-03-23T20:06:51.565599 |  | HIGH | 2021-03-23T20:06:51.511505 | <obfuscated@email.com> | 2021-02-22T16:27:51 | testcomputer.somedomain.net | No Action |
+| eefdff8d-7447-3b47-83e0-66a0b210d618 | INSIGHT-219 | Discovery with Credential Access and Execution |  | Closed |  | Initial Access, Credential Access, Initial Access, Execution, Discovery, Credential Access | 2021-03-23T21:21:55.029798 |  | HIGH | 2021-03-23T21:21:54.914061 | <obfuscated@email.com> | 2021-02-22T16:24:07.959000 | 1.2.3.4 | No Action |
+| 8a77d12e-5905-3401-ae7c-2e17b1fd3060 | INSIGHT-221 | Privilege Escalation with Persistence and Execution |  | Closed | <obfuscated@email.com> | Execution, Privilege Escalation, Persistence, Execution | 2021-05-12T21:47:08.297222 |  | HIGH | 2021-05-12T21:47:08.132251 | <obfuscated@email.com> | 2021-02-22T16:24:07.959000 | 5.6.7.8 | No Action |
 
 
 
 ### sumologic-sec-signal-search
+
 ***
 Search signals using available filters
 
@@ -399,6 +436,7 @@ Search signals using available filters
 #### Base Command
 
 `sumologic-sec-signal-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -428,10 +466,13 @@ Search signals using available filters
 
 
 #### Command Example
+
 `!sumologic-sec-signal-search query="timestamp:NOW-7D.NOW name:contains(\"Internal\")"`
 
 #### Human Readable Output
+
 Signals:
+
 |Id|Name|Entity|Rule Id|Description|Severity|Stage|Timestamp|Content Type|Tags|
 |---|---|---|---|---|---|---|---|---|---|
 | b50fd570-341b-576d-85b5-8b5cd17c0aee | IP Address Scan - Internal | 1.2.3.4 | LEGACY-S00050 | A scan of IP addresses | 3 | Discovery | 2021-04-22T04:08:13.514000 | RULE | _mitreAttackTactic:TA0007,<br/>_mitreAttackTactic:TA0043,<br/>_mitreAttackTechnique:T1046,<br/>_mitreAttackTechnique:T1595 |
@@ -439,6 +480,7 @@ Signals:
 
 
 ### sumologic-sec-entity-search
+
 ***
 Search entities using the available filters
 
@@ -446,6 +488,7 @@ Search entities using the available filters
 #### Base Command
 
 `sumologic-sec-entity-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -480,10 +523,13 @@ Search entities using the available filters
 
 
 #### Command Example
+
 `!sumologic-sec-entity-search query="type:\"ip\" activityScore:>=3"`
 
 #### Human Readable Output
+
 Entities:
+
 |Id|Name|First Seen|Last Seen|Activity Score|Is Whitelisted|Operating System|Inventory Data|
 |---|---|---|---|---|---|---|---|
 | _ip-specops_analysis_lab-1.2.3.4 | 1.2.3.4 |  | 2021-04-22T04:08:13.514000 | 3 | false |  | false |
@@ -491,6 +537,7 @@ Entities:
 
 
 ### sumologic-sec-insight-set-status
+
 ***
 Change status of Insight
 
@@ -498,6 +545,7 @@ Change status of Insight
 #### Base Command
 
 `sumologic-sec-insight-set-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -543,17 +591,21 @@ Change status of Insight
 
 
 #### Command Example
+
 `!sumologic-sec-insight-set-status insight-id=INSIGHT-116 status=closed resolution="No Action"`
 
 #### Human Readable Output
+
 Insight Details:
+
 |Id|Readable Id|Name|Action|Status|Assignee|Description|Last Updated|Last Updated By|Severity|Closed|Closed By|Timestamp|Entity|Resolution|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| c6c97d84-983d-303e-a03b-86f53d657fc8 | INSIGHT-116 | Lateral Movement with Discovery and Credential Access |  | Closed |  | Initial Access, Lateral Movement, Discovery, Initial Access, Credential Access | 2021-05-13T01:28:32.648352 |  | HIGH | 2021-05-13T01:28:32.580039 | obfuscated@email.com | 2021-02-18T22:04:08.330000 | 1.2.3.4 | No Action |
+| c6c97d84-983d-303e-a03b-86f53d657fc8 | INSIGHT-116 | Lateral Movement with Discovery and Credential Access |  | Closed |  | Initial Access, Lateral Movement, Discovery, Initial Access, Credential Access | 2021-05-13T01:28:32.648352 |  | HIGH | 2021-05-13T01:28:32.580039 | <obfuscated@email.com> | 2021-02-18T22:04:08.330000 | 1.2.3.4 | No Action |
 
 
 
 ### sumologic-sec-match-list-get
+
 ***
 Get match lists
 
@@ -561,6 +613,7 @@ Get match lists
 #### Base Command
 
 `sumologic-sec-match-list-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -587,10 +640,13 @@ Get match lists
 
 
 #### Command Example
+
 `!sumologic-sec-match-list-get limit=3`
 
 #### Human Readable Output
+
 Match lists:
+
 |Id|Name|Target Column|Default Ttl|
 |---|---|---|---|
 | 173 | admin_ips | SrcIp | 0 |
@@ -600,6 +656,7 @@ Match lists:
 
 
 ### sumologic-sec-match-list-update
+
 ***
 Add item to match list
 
@@ -607,6 +664,7 @@ Add item to match list
 #### Base Command
 
 `sumologic-sec-match-list-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -627,10 +685,13 @@ Add item to match list
 
 
 #### Command Example
+
 `!sumologic-sec-match-list-update match-list-id=166 description="My description" expiration=2021-04-25T22:36:10.925Z value="10.20.30.40" active=true`
 
 #### Human Readable Output
+
 Result:
+
 |Result|Server Response|
 |---|---|
 | Success | true |
@@ -638,6 +699,7 @@ Result:
 
 
 ### sumologic-sec-threat-intel-search-indicators
+
 ***
 Search Threat Intel Indicators
 
@@ -645,6 +707,7 @@ Search Threat Intel Indicators
 #### Base Command
 
 `sumologic-sec-threat-intel-search-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -671,10 +734,13 @@ Search Threat Intel Indicators
 
 
 #### Command Example
+
 `!sumologic-sec-threat-intel-search-indicators value=1.2.3.4 sourceIds=54`
 
 #### Human Readable Output
+
 Threat Intel Indicators:
+
 |Id|Value|Active|Expiration|
 |---|---|---|---|
 | f396ae69aa223c049ff639b3649ba1dd6465ec74397c3126916786bbcd6d76017468726561745f49705f44656d6973746f5f54657374 | 1.2.3.4 | true | 2021-04-29T00:00:00 |
@@ -682,6 +748,7 @@ Threat Intel Indicators:
 
 
 ### sumologic-sec-threat-intel-get-sources
+
 ***
 Get Threat Intel Sources
 
@@ -689,6 +756,7 @@ Get Threat Intel Sources
 #### Base Command
 
 `sumologic-sec-threat-intel-get-sources`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -714,10 +782,13 @@ Get Threat Intel Sources
 
 
 #### Command Example
+
 `!sumologic-sec-threat-intel-get-sources limit=3`
 
 #### Human Readable Output
+
 Threat intel sources:
+
 |Id|Name|Description|Source Type|
 |---|---|---|---|
 | 35 | abuse.ch |  | CUSTOM |
@@ -727,6 +798,7 @@ Threat intel sources:
 
 
 ### sumologic-sec-threat-intel-update-source
+
 ***
 Add Threat Intel Indicator to Threat Intel Source
 
@@ -734,6 +806,7 @@ Add Threat Intel Indicator to Threat Intel Source
 #### Base Command
 
 `sumologic-sec-threat-intel-update-source`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -754,10 +827,13 @@ Add Threat Intel Indicator to Threat Intel Source
 
 
 #### Command Example
+
 `!sumologic-sec-threat-intel-update-source threat-intel-source-id=54 active=true value=1.2.3.4 description=test expiration=2021-04-29T00:00:00.000Z`
 
 #### Human Readable Output
+
 Result:
+
 |Result|Server Response|
 |---|---|
 | Success | true |

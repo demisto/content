@@ -10,7 +10,7 @@ Deprecated. Use XSIAM/XDR Salesforce integration instead.
 | Client Secret |  | True |
 | Username |  | True |
 | Password |  | True |
-| Query to get Hourly Event Log Files | For more information, visit the Query Hourly Event Log Files documentation https://developer.salesforce.com/docs/atlas.en-us.234.0.api_rest.meta/api_rest/event_log_file_hourly_query.htm | True |
+| Query to get Hourly Event Log Files | For more information, visit the Query Hourly Event Log Files documentation <https://developer.salesforce.com/docs/atlas.en-us.234.0.api_rest.meta/api_rest/event_log_file_hourly_query.htm> | True |
 | How many log files to fetch |  | True |
 | First fetch time interval |  | False |
 | Use system proxy settings |  | False |

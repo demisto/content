@@ -1,25 +1,30 @@
 Use the Palo Alto Networks IoT 3rd Party integration to get devices, alerts, and vulnerabilities from PANW IoT Cloud.
+
 ## Configure Palo Alto Networks IoT 3rd Party in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| URL | Palo Alto Networks IoT Security Portal URL \(e.g. https://example.iot.paloaltonetworks.com\) | True |
+| URL | Palo Alto Networks IoT Security Portal URL \(e.g. <https://example.iot.paloaltonetworks.com\>) | True |
 | Customer ID | Tenant ID | True |
 | Key ID | Access Key ID | True |
 | Access Key | Secret Access Key | True |
 | isFetch | Fetch incidents | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### panw-iot-3rd-party-report-status-to-panw
+
 ***
 PANW IoT 3rd Party Report Status to PANW command - Sends a status message back to PANW IOT cloud.
 
 #### Base Command
 
 `panw-iot-3rd-party-report-status-to-panw`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -36,10 +41,13 @@ PANW IoT 3rd Party Report Status to PANW command - Sends a status message back t
 There is no context output for this command.
 
 #### Command Example
+
 ```!panw-iot-3rd-party-report-status-to-panw status=success message="successfully updated 100 devices" integration_name=ise playbook_name="Increment Export to Cisco ISE - PANW IoT 3rd Party Integration" asset_type=device```
 
 #### Human Readable Output
+
 ### Reporting Status:
+
 |||
 | --- | --- |
 | integration_name | ise |
@@ -52,6 +60,7 @@ There is no context output for this command.
 
 
 ### panw-iot-3rd-party-get-single-asset
+
 ***
 PANW IoT 3rd Party get single Asset - For a given a asset ID (alert-id, vulnerability-id or mac-address) returns the asset details.
 
@@ -59,6 +68,7 @@ PANW IoT 3rd Party get single Asset - For a given a asset ID (alert-id, vulnerab
 #### Base Command
 
 `panw-iot-3rd-party-get-single-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -75,13 +85,16 @@ PANW IoT 3rd Party get single Asset - For a given a asset ID (alert-id, vulnerab
 
 
 #### Command Example
+
 ```!panw-iot-3rd-party-get-single-asset asset_type="Device" asset_id="00:e0:4c:68:09:16"```
 
 #### Human Readable Output
+
 ### Successfully pulled Device (00:e0:4c:68:09:16) from PANW IoT Cloud
 
 
 ### panw-iot-3rd-party-get-asset-list
+
 ***
 PANW IoT 3rd Party get asset list - Returns a list of assets for the specified asset type.
 
@@ -89,6 +102,7 @@ PANW IoT 3rd Party get asset list - Returns a list of assets for the specified a
 #### Base Command
 
 `panw-iot-3rd-party-get-asset-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -109,10 +123,13 @@ PANW IoT 3rd Party get asset list - Returns a list of assets for the specified a
 
 
 #### Command Example
+
 ```!panw-iot-3rd-party-get-asset-list asset_type="device" increment_time="2"```
 
 #### Human Readable Output
+
 ### Asset import summary:
+
 |||
 | --- | --- |
 | asset type | Device |
@@ -121,6 +138,7 @@ PANW IoT 3rd Party get asset list - Returns a list of assets for the specified a
 
 
 ### panw-iot-3rd-party-convert-assets-to-external-format
+
 ***
 PANW IoT 3rd Party convert assets to external foramt - For a given asset (alert, device, vuln) converts it to 3rd party format.
 
@@ -128,6 +146,7 @@ PANW IoT 3rd Party convert assets to external foramt - For a given asset (alert,
 #### Base Command
 
 `panw-iot-3rd-party-convert-assets-to-external-format`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -153,7 +172,9 @@ PANW IoT 3rd Party convert assets to external foramt - For a given asset (alert,
 
 
 #### Command Example
+
 ```!panw-iot-3rd-party-convert-assets-to-external-format asset_type=device output_format=siem asset_list=[a list of 221 device maps]```
 
 #### Human Readable Output
+
 ### Converted 221 Device to SIEM

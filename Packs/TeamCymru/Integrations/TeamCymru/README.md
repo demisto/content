@@ -11,9 +11,12 @@ This integration was integrated and tested with version 1.0 of TeamCymru
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Checks the reputation of an IP address.
 
@@ -21,6 +24,7 @@ Checks the reputation of an IP address.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -49,8 +53,11 @@ Checks the reputation of an IP address.
 | TeamCymru.IP.Registrar.Abuse.Network | String | The IP range relevant for abuse inquiries provided for the IP. | 
 
 #### Command example
+
 ```!ip ip=1.1.1.1```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -93,12 +100,14 @@ Checks the reputation of an IP address.
 #### Human Readable Output
 
 >### Team Cymru results for 1.1.1.1
+>
 >|IP|ASN|Organization|Country|Range|
 >|---|---|---|---|---|
 >| 1.1.1.1 | 13335 | CLOUDFLARENET, US | AU | 1.1.1.0/24 |
 
 
 ### cymru-bulk-whois
+
 ***
 Checks the reputation of a CSV list of IPv4 addresses within a file. 
 Note: Results for queries exceeding 10,000 IPs may take more than a minute given a moderately sized Internet link.
@@ -107,6 +116,7 @@ Note: Results for queries exceeding 10,000 IPs may take more than a minute given
 #### Base Command
 
 `cymru-bulk-whois`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -136,8 +146,10 @@ Note: Results for queries exceeding 10,000 IPs may take more than a minute given
 | TeamCymru.IP.Registrar.Abuse.Network | String | The IP range relevant for abuse inquiries provided for the IP. | 
 
 #### Command example
+
 ```!cymru-bulk-whois entry_id=${File.EntryID}```
 
 
 ## Troubleshooting
+
 - In case of a problem with the proxy configuration, validate that the given proxy is working with the Whois content pack. 

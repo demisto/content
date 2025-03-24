@@ -4,6 +4,7 @@ If a branch with the name "MyPack" exists, the script return "MyPack_1".
 
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,13 +13,16 @@ If a branch with the name "MyPack" exists, the script return "MyPack_1".
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * Pull Request Creation - Github
 * Pull Request Creation - Gitlab
 * Pull Request Creation - Bitbucket
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -27,6 +31,7 @@ This script is used in the following playbooks and scripts.
 | use_command | Which command to use. Possible commands: * gitlab-branch-list * GitHub-get-branch * bitbucket-branch-get |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

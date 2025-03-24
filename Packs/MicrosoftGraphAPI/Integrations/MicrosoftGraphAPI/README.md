@@ -5,6 +5,7 @@ Use the Microsoft Graph API integration to interact with Microsoft APIs that do 
 Note: In this documentation, we will use the [Application resource type](https://docs.microsoft.com/en-us/graph/api/resources/application?view=graph-rest-1.0) as an example.
 
 ## Authorization
+
 In order to use the integration, there are 2 application authentication methods available.
 
 Note: Depending on the authentication method that you use, the integration parameters might change.
@@ -22,7 +23,7 @@ For example, if we wish to use the [List applications](https://docs.microsoft.co
 
 3. The ***Application Secret*** and the ***Tenant ID*** integration parameters should be left blank.
 
-4. Run the *msgraph-api-auth-start* command - you will be prompted to open the page https://microsoft.com/devicelogin and enter the generated code.
+4. Run the *msgraph-api-auth-start* command - you will be prompted to open the page <https://microsoft.com/devicelogin> and enter the generated code.
 
 5. Run the *msgraph-api-auth-complete* command
 
@@ -33,6 +34,7 @@ For example, if we wish to use the [List applications](https://docs.microsoft.co
 For more information, refer to the following [article](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application). 
 
 ## Configure the Azure app
+
 1. [Register the app](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 2. [Add the requested API permissions](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#request-the-permissions-in-the-app-registration-portal) according to the APIs you wish to use.
     For example, according to the [Create application API documentation](https://docs.microsoft.com/en-us/graph/api/application-post-applications?view=graph-rest-1.0&tabs=http#permissions) in order to create applications we need the *Application.ReadWrite.All* application permission.
@@ -46,6 +48,7 @@ For more information, refer to the following [article](https://xsoar.pan.dev/doc
 2. Search for Microsoft Graph API.
 3. Click **Add instance** to create and configure a new integration instance.
 4. 
+
     | **Parameter**                                                          | **Description**                                                                                                                                                                                                                                                                                                                                        | **Required** |
     |------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
     | Azure Cloud                                                            | See option table below.                                                                                                                                                                                                                                                                                                                                | False        |
@@ -78,24 +81,28 @@ For more information, refer to the following [article](https://xsoar.pan.dev/doc
     | China       | Azure cloud for the Chinese Government                              |
     | Custom      | Custom endpoint configuration to the Azure cloud. See note below.   |
 
-   - Note: In most cases, setting Azure cloud is preferred to setting Azure AD endpoint. Only use it in cases where a custom URL is required for accessing a national cloud.
+- Note: In most cases, setting Azure cloud is preferred to setting Azure AD endpoint. Only use it in cases where a custom URL is required for accessing a national cloud.
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### msgraph-api-auth-start
+
 ***
 Run this command to start the authorization process and follow the instructions in the command results.
 
 ### msgraph-api-auth-complete
+
 ***
 Run this command to complete the authorization process.
 Should be used after running the ***msgraph-api-auth-start*** command.
 
 ### msgraph-api-test
+
 ***
 Tests connectivity to Microsoft.
 
@@ -144,12 +151,14 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ### msgraph-api-generate-login-url
+
 ***
 Generate the login URL used for Authorization code flow.
 
 #### Base Command
 
 `msgraph-api-generate-login-url`
+
 #### Input
 
 There are no input arguments for this command.
@@ -159,11 +168,13 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```msgraph-api-generate-login-url```
 
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. Click on the login URL to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -171,10 +182,12 @@ You will be automatically redirected to a link with the following structure:
 and paste it in your instance configuration under the **Authorization code** parameter.
 
 ## Usage
+
 Let's say we want to [list all the applications](https://docs.microsoft.com/en-us/graph/api/application-list?view=graph-rest-1.0&tabs=http).
 
 We can see that according to the [HTTP request](https://docs.microsoft.com/en-us/graph/api/application-list?view=graph-rest-1.0&tabs=http#http-request):
- - The HTTP method is ***GET***
- - The resource is ***/applications***
+
+- The HTTP method is ***GET***
+- The resource is ***/applications***
  
 So in order to list all the applications using the integration, we would run the command: `!msgraph-api resource=/applications http_method=GET`

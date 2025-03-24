@@ -6,7 +6,9 @@ The pack includes playbooks that automate Prisma Cloud alert response and custom
 With this content pack, you can significantly reduce the time your Security Analysts/Cloud Operations team spend on Cloud Security alerts and standardize the way you manage misconfiguration incidents.
 
 ##### What does this pack do?
+
 The playbooks included in this Pack help automate the remediation of alerts generated from the Prisma Cloud platform.
+
 - Take action on, remediate, and resolve incidents/ alerts from Prisma Cloud.
 - Track configuration issues across all your Cloud environments. 
 - Ensure your Cloud environments are compliant and up to date with the latest compliance standards.

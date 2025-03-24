@@ -17,9 +17,12 @@ This integration was integrated and tested with version 1.2.0 of CadoResponse
 | Default S3 Bucket | Provides a default S3 bucket to fallback to if you forget to add it to a command. | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cado-create-project
+
 ***
 Create a project in Cado Response
 
@@ -27,6 +30,7 @@ Create a project in Cado Response
 #### Base Command
 
 `cado-create-project`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -42,8 +46,11 @@ Create a project in Cado Response
 | CadoResponse.Project.id | Number | The Project ID of the newly created project | 
 
 #### Command example
+
 ```!cado-create-project project_name="Project Name" description="Project Description"```
+
 #### Context Example
+
 ```json
 {
     "CadoResponse": {
@@ -58,12 +65,14 @@ Create a project in Cado Response
 #### Human Readable Output
 
 >### Results
+>
 >|id|msg|
 >|---|---|
 >| 1 | Created |
 
 
 ### cado-list-project
+
 ***
 Get a list of projects from Cado Response
 
@@ -71,6 +80,7 @@ Get a list of projects from Cado Response
 #### Base Command
 
 `cado-list-project`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -90,8 +100,11 @@ Get a list of projects from Cado Response
 | CadoResponse.Projects.created | Date | Creation date of the project | 
 
 #### Command example
+
 ```!cado-list-project limit=100```
+
 #### Context Example
+
 ```json
 {
     "CadoResponse": {
@@ -119,14 +132,18 @@ Get a list of projects from Cado Response
 #### Human Readable Output
 
 >### Results
+>
 >|caseName|created|deleted|description|id|status|users|
 >|---|---|---|---|---|---|---|
 >| Project Name_XSOAR | 2022-01-17T12:21:46.613814 | false | This is a project in Cado Response created through Cortex XSOAR! | 1 | Pending | {'display_name': 'admin', 'id': 1, 'is_admin': True, 'login_type': 0, 'username': 'admin'} |
 
 
 #### Command example
+
 ```!cado-list-project project_id=1```
+
 #### Context Example
+
 ```json
 {
     "CadoResponse": {
@@ -154,12 +171,14 @@ Get a list of projects from Cado Response
 #### Human Readable Output
 
 >### Results
+>
 >|caseName|created|deleted|description|id|status|users|
 >|---|---|---|---|---|---|---|
 >| Project Name_XSOAR | 2022-01-17T12:21:46.613814 | false | This is a project in Cado Response created through Cortex XSOAR! | 1 | Pending | {'display_name': 'admin', 'id': 1, 'is_admin': True, 'login_type': 0, 'username': 'admin'} |
 
 
 ### cado-get-pipeline
+
 ***
 Get pipeline details from Cado Response
 
@@ -167,6 +186,7 @@ Get pipeline details from Cado Response
 #### Base Command
 
 `cado-get-pipeline`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -190,7 +210,9 @@ Get pipeline details from Cado Response
 | CadoResponse.Pipeline.subtask | Array | An array of tasks in the retrieved pipeline | 
 
 #### Command example
+
 ```!cado-get-pipeline project_id=1 pipeline_id=1```
+
 #### Context Example
 
 ```json
@@ -232,12 +254,15 @@ Get pipeline details from Cado Response
 ```
 
 #### Human Readable Output
+>
 >### Results
+>
 >|pipeline_id|pipeline_type|created|evidence_id|project_id|is_terminated|summary|subtask|
 >|---|---|---|---|---|---|---|---|
 >| 1 | processing | 2022-01-17T12:22:00.843869 | 1 | 1 | false |"execution_duration": 0,<br />"finish_time": 0,<br />"name": "Triage: attaching disk for local data storage.",<br />"name_key": infrastructure.check_ssd",<br />"notification_level": "Info",<br />"progress_text": [],<br />"start_time": 0,<br />"state": "PENDING",<br />"task_id": "3699827f-63c4-4408-88a4-0ae899187ed3",<br />"total_stages": null<br />|"cancelled": 0,<br />"failure": 0,<br />"pending": 14,<br />"running": 0,<br />"success": 0,<br />"total": 14<br />|
 
 ### cado-list-ec2
+
 ***
 Get a list of EC2 instances in a region
 
@@ -245,6 +270,7 @@ Get a list of EC2 instances in a region
 #### Base Command
 
 `cado-list-ec2`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -264,8 +290,11 @@ Get a list of EC2 instances in a region
 | CadoResponse.EC2Instances.region | String | AWS region of the EC2 instance | 
 
 #### Command example
+
 ```!cado-list-ec2 project_id=1 region="us-east-1" limit=100```
+
 #### Context Example
+
 ```json
 {
     "CadoResponse": {
@@ -297,12 +326,14 @@ Get a list of EC2 instances in a region
 #### Human Readable Output
 
 >### Results
+>
 >|_placement|_state|celery_worker_name|deployment_id|evidence_id|id|instance_name|instance_type|ip_address|launch_time|processing_type|project_id|queue_name|region|worker_used|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| us-east-1c | stopped |  |  |  | i-00000000000 | Instance | t3a.2xlarge |  | Thu, 25 Mar 2021 18:38:13 GMT |  |  |  | name: us-east-1 |  |
 
 
 ### cado-list-s3
+
 ***
 Get a list of S3 buckets
 
@@ -310,6 +341,7 @@ Get a list of S3 buckets
 #### Base Command
 
 `cado-list-s3`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -325,8 +357,11 @@ Get a list of S3 buckets
 | CadoResponse.S3Buckets.buckets | Array | An array of S3 buckets available to the project | 
 
 #### Command example
+
 ```!cado-list-s3 project_id=1 limit=100```
+
 #### Context Example
+
 ```json
 {
     "CadoResponse": {
@@ -342,12 +377,14 @@ Get a list of S3 buckets
 #### Human Readable Output
 
 >### Results
+>
 >|buckets|
 >|---|
 >| bucket |
 
 
 ### cado-trigger-ec2
+
 ***
 Trigger a disk acquisition and processing pipeline in Cado Response for a given EC2 instance
 
@@ -355,6 +392,7 @@ Trigger a disk acquisition and processing pipeline in Cado Response for a given 
 #### Base Command
 
 `cado-trigger-ec2`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -377,8 +415,11 @@ Trigger a disk acquisition and processing pipeline in Cado Response for a given 
 | CadoResponse.EC2Acquisition.pipeline_id | Number | ID of the created pipeline | 
 
 #### Command example
+
 ```!cado-trigger-ec2 project_id=1 instance_id="i-00000000000" region="us-east-1" bucket="bucket" compress=true include_disks=true include_hash=true include_logs=true include_screenshot=true```
+
 #### Context Example
+
 ```json
 {
     "CadoResponse": {
@@ -415,12 +456,14 @@ Trigger a disk acquisition and processing pipeline in Cado Response for a given 
 #### Human Readable Output
 
 >### Results
+>
 >|created|evidence_id|name|pipeline_id|pipeline_type|project_id|subtasks|user_id|
 >|---|---|---|---|---|---|---|---|
 >| 2022-01-17T12:21:59.084282 | 0 | Acquiring i-00000000000 | 1 | acquisition | 1 | {'id': '1587a9c9-c02c-464b-a6f7-d4b7e720bd93'},<br/>{'id': '4f798bf8-c7d3-427c-9498-10a85cfe3978'},<br/>{'id': 'c5fa26f1-e282-47a6-8335-1160766e089b'},<br/>{'id': '82ec9a7e-47ac-4539-9623-166a44a59d0f'},<br/>{'id': '88151005-a999-422e-b4cb-9e76699d6e42'} | 1 |
 
 
 ### cado-trigger-s3
+
 ***
 Trigger a disk acquisition and processing pipeline in Cado Response for a given file in an S3 bucket
 
@@ -428,6 +471,7 @@ Trigger a disk acquisition and processing pipeline in Cado Response for a given 
 #### Base Command
 
 `cado-trigger-s3`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -444,8 +488,11 @@ Trigger a disk acquisition and processing pipeline in Cado Response for a given 
 | CadoResponse.S3Acquisition.pipeline_id | Number | ID of the created pipeline | 
 
 #### Command example
+
 ```!cado-trigger-s3 project_id=1 bucket="bucket" file_name="file"```
+
 #### Context Example
+
 ```json
 {
     "CadoResponse": {
@@ -509,6 +556,7 @@ Trigger a disk acquisition and processing pipeline in Cado Response for a given 
 #### Human Readable Output
 
 >### Results
+>
 >|created|evidence_id|name|pipeline_id|pipeline_type|project_id|subtasks|user_id|
 >|---|---|---|---|---|---|---|---|
 >| 2022-01-17T12:22:00.843869 | 1 |  | 2 | processing | 1 | {'id': '3699827f-63c4-4408-88a4-0ae899187ed3'},<br/>{'id': '727e2072-8bf7-4847-89ea-9447f5fd8fd0'},<br/>{'id': '857d48b8-abaf-4ea6-b159-d25c9784b837'},<br/>{'id': '533f7deb-74bc-4ffb-b81f-788ed714bead'},<br/>{'id': '3f1defde-3986-4292-a423-1bef62d4c52b'},<br/>{'id': 'e41a0934-266b-4868-9a7d-5f083b1efcc1'},<br/>{'id': '75411e10-46e9-41dd-8bf7-9b5fbdc8df71'},<br/>{'id': '0afbf2f4-fbf3-4305-ad9f-b19d30f4b17c'},<br/>{'id': 'ca063c7b-1135-4922-8542-49f40ce71449'},<br/>{'id': '67fdb0ea-dcee-4f65-a003-4f40fcd567fb'},<br/>{'id': '1437ec33-6af2-4eb8-9c43-e071dcb7e0ac'},<br/>{'id': '06db4dcc-57fd-48bc-bb34-5bd8f2da0a0d'},<br/>{'id': 'e3cc930e-9a60-46c3-97a1-611824c24437'},<br/>{'id': 'ad2c8877-39e7-4bff-9756-81278802ee76'} | 1 |

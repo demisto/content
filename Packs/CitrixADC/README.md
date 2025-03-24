@@ -1,7 +1,9 @@
 # Citrix ADC
+
 This pack includes Cortex XSIAM content. 
 
 ## Configuration on Server Side
+
 You need to configure an audit log policy in the Citrix ADC UI.
 
 1. Navigate to **Configuration** > **System** > **Auditing** > **Syslog**.
@@ -26,6 +28,7 @@ In order to parse the timestamp correctly, make sure to configure the logs to be
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.

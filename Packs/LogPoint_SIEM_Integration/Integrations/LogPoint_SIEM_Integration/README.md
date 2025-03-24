@@ -31,9 +31,12 @@ This integration was integrated and tested with version 6.7.4 of LogPoint.
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### lp-get-incidents
+
 ***
 Displays incidents between the provided two Timestamps ts_from and ts_to. By default, this command will display first 50 incidents of the past 24 hours but limit can be set to get desired number of incidents.
 
@@ -41,6 +44,7 @@ Displays incidents between the provided two Timestamps ts_from and ts_to. By def
 #### Base Command
 
 `lp-get-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -83,9 +87,11 @@ Displays incidents between the provided two Timestamps ts_from and ts_to. By def
 
 
 #### Command Example
+
 ```!lp-get-incidents ts_from=1610700720 ts_to=1610700900 limit=5```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -169,6 +175,7 @@ Displays incidents between the provided two Timestamps ts_from and ts_to. By def
 #### Human Readable Output
 
 >### Displaying all 2 incidents between 1610700720 and 1610700900
+>
 >|Type|Incident Id|Name|Description|Username|User Id|Assigned To|Visible To|Tid|Rows Count|Risk Level|Detection Timestamp|Loginspect Ip Dns|Logpoint Name|Status|Comments|Commentscount|Query|Repos|Time Range|Alert Obj Id|Throttle Enabled|Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Alert | 8a676c39450e099b3512961d71ec4f7d | Memory usages is greater than 50 percent |  | 5bebd9fdd8aaa42840edc853 |  | 5bebd9fdd8aaa42840edc853 |  |  | 5 | medium | 1610700740.2248185 | 127.0.0.1 | LogPoint | unresolved |  | 0 | "col_type"="filesystem" use>=50 | 127.0.0.1:5504 | 1610700000,<br/>1610700600 | 5fc8b1743dee69827459bc70 | false | 600157c44a2018070b627f6a |
@@ -176,6 +183,7 @@ Displays incidents between the provided two Timestamps ts_from and ts_to. By def
 
 
 ### lp-get-incident-data
+
 ***
 Retrieves a Particular Incident's Data
 
@@ -183,6 +191,7 @@ Retrieves a Particular Incident's Data
 #### Base Command
 
 `lp-get-incident-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -329,9 +338,11 @@ Retrieves a Particular Incident's Data
 
 
 #### Command Example
+
 ```!lp-get-incident-data date=1610700740.2248185 incident_id=8a676c39450e099b3512961d71ec4f7d incident_obj_id=600157c44a2018070b627f6a```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -412,12 +423,14 @@ Retrieves a Particular Incident's Data
 #### Human Readable Output
 
 >### Incident Data
+>
 >|Msg|Use|Used|Log Ts|Type Str|Total|Device Name|Offset|Logpoint Name|Repo Name|Free|source Name|col Ts|Tz|Norm Id|Identifier|Collected At|Device Ip|FromV550|Enrich Policy|Type Num|Type Ip|Sig Id|Col Type|Object|Labels|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2021-01-15_08:49:01 Metrics; Physical Memory; total=7977 MB; use=71.0%; used=5664 MB; free=1963 MB | 71.0 | 5664 | 1610700541 | msg col_type device_name collected_at device_ip source_name _tz _enrich_policy label norm_id object _fromV550 repo_name logpoint_name | 7977 | localhost | 195673 | LogPoint | _logpoint | 1963 | /opt/immune/var/log/system_metrics/system_metrics.log | 1610700549 | UTC | LogPoint | 0 | LogPoint | 127.0.0.1 | t | None | log_ts col_ts free total use used sig_id _offset _identifier | device_ip | 10507 | filesystem | Physical Memory | Metrics,<br/>Usage,<br/>Memory,<br/>LogPoint |
 >| 2021-01-15_08:47:01 Metrics; Physical Memory; total=7977 MB; use=71.0%; used=5662 MB; free=1965 MB | 71.0 | 5662 | 1610700421 | msg col_type device_name collected_at device_ip source_name _tz _enrich_policy label norm_id object _fromV550 repo_name logpoint_name | 7977 | localhost | 101372 | LogPoint | _logpoint | 1965 | /opt/immune/var/log/system_metrics/system_metrics.log | 1610700428 | UTC | LogPoint | 0 | LogPoint | 127.0.0.1 | t | None | log_ts col_ts free total use used sig_id _offset _identifier | device_ip | 10507 | filesystem | Physical Memory | Metrics,<br/>Usage,<br/>Memory,<br/>LogPoint |
 
 ### lp-get-incident-states
+
 ***
 Displays incident states data between the provided two Timestamps ts_from and ts_to. By default, this command will display first 50 data of the past 24 hours but limit can be set to get desired number of incident states data.
 
@@ -425,6 +438,7 @@ Displays incident states data between the provided two Timestamps ts_from and ts
 #### Base Command
 
 `lp-get-incident-states`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -445,9 +459,11 @@ Displays incident states data between the provided two Timestamps ts_from and ts
 
 
 #### Command Example
+
 ```!lp-get-incident-states ts_from="1610700720" ts_to="1610700900" limit=5```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -493,6 +509,7 @@ Displays incident states data between the provided two Timestamps ts_from and ts
 #### Human Readable Output
 
 >### Displaying all 2 incident states data.
+>
 >|Id|Name|Assigned To|Status|Comments|
 >|---|---|---|---|---|
 >| 5fdc788ecf35d7ae0f6b791b | Greater than 60 | 5fd9d95769d3a4ea5684fccf | unresolved | {'title': 'admin', 'comment': 'Example comment', 'time': 1610700740},<br/>{'title': 'admin', 'comment': 'Reassigned', 'time': 1610700745} |
@@ -500,6 +517,7 @@ Displays incident states data between the provided two Timestamps ts_from and ts
 
 
 ### lp-add-incident-comment
+
 ***
 Add comments to the incidents
 
@@ -507,6 +525,7 @@ Add comments to the incidents
 #### Base Command
 
 `lp-add-incident-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -523,9 +542,11 @@ Add comments to the incidents
 
 
 #### Command Example
+
 ```!lp-add-incident-comment comment="Example comment" incident_obj_id=600157c44a2018070b627f6a```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -541,6 +562,7 @@ Add comments to the incidents
 >### Comments added
 
 ### lp-assign-incidents
+
 ***
 Assigning/Re-assigning Incidents
 
@@ -548,6 +570,7 @@ Assigning/Re-assigning Incidents
 #### Base Command
 
 `lp-assign-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -564,9 +587,11 @@ Assigning/Re-assigning Incidents
 
 
 #### Command Example
+
 ```!lp-assign-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b" new_assignee=5bebd9fdd8aaa42840edc853```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -582,6 +607,7 @@ Assigning/Re-assigning Incidents
 >### Incidents re-assigned
 
 ### lp-resolve-incidents
+
 ***
 Resolves the Incidents.
 
@@ -589,6 +615,7 @@ Resolves the Incidents.
 #### Base Command
 
 `lp-resolve-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -604,9 +631,11 @@ Resolves the Incidents.
 
 
 #### Command Example
+
 ```!lp-resolve-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b"```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -622,6 +651,7 @@ Resolves the Incidents.
 >### Incidents resolved
 
 ### lp-close-incidents
+
 ***
 Closes the Incidents.
 
@@ -629,6 +659,7 @@ Closes the Incidents.
 #### Base Command
 
 `lp-close-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -644,9 +675,11 @@ Closes the Incidents.
 
 
 #### Command Example
+
 ```!lp-close-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b"```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -662,6 +695,7 @@ Closes the Incidents.
 >### Incidents closed
 
 ### lp-reopen-incidents
+
 ***
 Re-opens the closed incidents
 
@@ -669,6 +703,7 @@ Re-opens the closed incidents
 #### Base Command
 
 `lp-reopen-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -684,9 +719,11 @@ Re-opens the closed incidents
 
 
 #### Command Example
+
 ```!lp-reopen-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b"```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -702,6 +739,7 @@ Re-opens the closed incidents
 >### Incidents reopened
 
 ### lp-get-users
+
 ***
 Gets Incident users and user groups.
 
@@ -709,6 +747,7 @@ Gets Incident users and user groups.
 #### Base Command
 
 `lp-get-users`
+
 #### Input
 
 There are no input arguments for this command.
@@ -723,9 +762,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!lp-get-users```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -764,12 +805,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Incident Users
+>
 >|Id|Name|Usergroups|
 >|---|---|---|
 >| 5bebd9fdd8aaa42840edc853 | admin | {'id': '5bebd9fdd8aaa42840edc84f', 'name': 'LogPoint Administrator'} |
 >| 5fd9d95769d3a4ea5684fccf | sbs | {'id': '5bebd9fdd8aaa42840edc850', 'name': 'User Account Administrator'},<br/>{'id': '5bebd9fdd8aaa42840edc84f', 'name': 'LogPoint Administrator'} |
 
 ### lp-get-users-preference
+
 ***
 Gets LogPoint user's preference such as timezone, date format, etc.
 
@@ -777,6 +820,7 @@ Gets LogPoint user's preference such as timezone, date format, etc.
 #### Base Command
 
 `lp-get-users-preference`
+
 #### Input
 
 There are no input arguments for this command.
@@ -791,9 +835,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!lp-get-users-preference```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -811,12 +857,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### User's Preference
+>
 >|Timezone|Date Format|Hour Format|
 >|---|---|---|
 >| UTC | %Y/%m/%d | 24 Hour |
 
 
 ### lp-get-logpoints
+
 ***
 Gets user's LogPoints.
 
@@ -824,6 +872,7 @@ Gets user's LogPoints.
 #### Base Command
 
 `lp-get-logpoints`
+
 #### Input
 
 There are no input arguments for this command.
@@ -837,9 +886,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!lp-get-logpoints```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -854,12 +905,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### LogPoints
+>
 >|Name|Ip|
 >|---|---|
 >| LogPoint | 127.0.0.1 |
 
 
 ### lp-get-repos
+
 ***
 Gets the list of LogPoint repos that can be accessed by the user.
 
@@ -867,6 +920,7 @@ Gets the list of LogPoint repos that can be accessed by the user.
 #### Base Command
 
 `lp-get-repos`
+
 #### Input
 
 There are no input arguments for this command.
@@ -880,9 +934,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!lp-get-repos```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -903,6 +959,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### LogPoint Repos
+>
 >|Repo|Address|
 >|---|---|
 >| default | 127.0.0.1:5504/default |
@@ -911,6 +968,7 @@ There are no input arguments for this command.
 
 
 ### lp-get-devices
+
 ***
 Gets devices associated with LogPoint.
 
@@ -918,6 +976,7 @@ Gets devices associated with LogPoint.
 #### Base Command
 
 `lp-get-devices`
+
 #### Input
 
 There are no input arguments for this command.
@@ -931,9 +990,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!lp-get-devices```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -958,6 +1019,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Devices
+>
 >|Name|Address|
 >|---|---|
 >| localhost | 127.0.0.1/127.0.0.1 |
@@ -966,6 +1028,7 @@ There are no input arguments for this command.
 
 
 ### lp-get-livesearches
+
 ***
 Gets live search results of the alerts and dashboards.
 
@@ -973,6 +1036,7 @@ Gets live search results of the alerts and dashboards.
 #### Base Command
 
 `lp-get-livesearches`
+
 #### Input
 
 There are no input arguments for this command.
@@ -988,9 +1052,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!lp-get-livesearches```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -1031,12 +1097,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Live Searches
+>
 >|Description|Flush On Trigger|Generated By|Life Id|Limit|Query|Query Info|Searchname|Tid|Timerange Day|Timerange Hour|Timerange Minute|Timerange Second|Vid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | false | alert | c4e38a6fe8226ec0975ee5ed935a733003bd1f11 | 25 | "use"> 86 col_type=filesystem  | fieldsToExtract: use,<br/>col_type<br/>aliases: <br/>success: true<br/>query_filter: "use"> 86 col_type=filesystem<br/>columns: <br/>query_type: simple<br/>lucene_query: (_num_use:{86 TO *} AND col_type:filesystem)<br/>grouping:  | Memory greater than 86 |  | 0 | 1 | 0 | 0 |  |
 
 
 ### lp-get-searchid
+
 ***
 Gets the search ID based on the provided search parameters.
 
@@ -1044,6 +1112,7 @@ Gets the search ID based on the provided search parameters.
 #### Base Command
 
 `lp-get-searchid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1063,9 +1132,11 @@ Gets the search ID based on the provided search parameters.
 
 
 #### Command Example
+
 ```!lp-get-searchid query="| chart count() by col_type" limit=5 time_range="Last 30 minutes"```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -1079,6 +1150,7 @@ Gets the search ID based on the provided search parameters.
 >### Search Id: 97df79d3-b2b8-4260-bd12-805b69434591
 
 ### lp-search-logs
+
 ***
 Gets LogPoint search result. Uses the value of search_id as an argument.
 
@@ -1086,6 +1158,7 @@ Gets LogPoint search result. Uses the value of search_id as an argument.
 #### Base Command
 
 `lp-search-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1101,9 +1174,11 @@ Gets LogPoint search result. Uses the value of search_id as an argument.
 
 
 #### Command Example
+
 ```!lp-search-logs search_id=29023c62-12f4-4771-b988-067284a0e0c5```
 
 #### Context Example
+
 ```json
 {
     "LogPoint": {
@@ -1136,6 +1211,7 @@ Gets LogPoint search result. Uses the value of search_id as an argument.
 #### Human Readable Output
 
 >### Found 2 logs
+>
 >|Group|Type Ip|Type Num|Type Str|Col Type|Count()|
 >|---|---|---|---|---|---|
 >| office365 |  |  count() |  col_type count() | office365 | 312 |

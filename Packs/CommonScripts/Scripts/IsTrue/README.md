@@ -1,6 +1,7 @@
 Checks if a given value is true. Will return "no" otherwise.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Checks if a given value is true. Will return "no" otherwise.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ Checks if a given value is true. Will return "no" otherwise.
 | value | The value to check if it exists. This can handle arrays as well. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

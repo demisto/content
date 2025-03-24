@@ -43,8 +43,11 @@ Checks the EDL and returns the response.
 | EDLChecker.ItemsOnList | unknown | The number of indicators on the list, assuming a successful response\! | 
 
 #### Command example
+
 ```!xsoaredlchecker-get-edl```
+
 #### Context Example
+
 ```json
 {
     "EDLChecker": [
@@ -67,6 +70,7 @@ Checks the EDL and returns the response.
 #### Human Readable Output
 
 >### EDL Response for domains
+>
 >|Name|Status|Response|ItemsOnList|
 >|---|---|---|---|
 >| domains | 200 | domains returned a 200 response, all should be well | 2 |

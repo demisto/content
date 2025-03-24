@@ -99,4 +99,4 @@ Delete all entries in the incident cache.
 
 ## Issues?
 
-Reach out to support@traceable.ai
+Reach out to <support@traceable.ai>

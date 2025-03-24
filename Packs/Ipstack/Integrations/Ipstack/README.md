@@ -11,9 +11,12 @@ APIs and global IP database services.
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Queries an IP address in ipstack.
 
@@ -21,6 +24,7 @@ Queries an IP address in ipstack.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

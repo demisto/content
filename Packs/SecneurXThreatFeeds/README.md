@@ -3,7 +3,8 @@ SecneurX Threat Intelligence is reliable, human-verified intelligence for action
 Consumers of SecneurX Threat intelligence are confident of knowing that the indicators were validated by SecneurX prior to platform ingestion. SecneurX Intelligence machine-readable threat intelligence is ingested into platforms to support automation to make informed decisions against today’s sophesticated attacks.
 
 ## What does this pack do?
+
 - Ingests human-verified intelligence with associated APT groups, ransomware, malware families, active & prevalent threats
 - Correlates APT campaigns & indicators
 
-In order to access SecneurX Threat Intelligence feeds, Make sure you have your SecneurX API-key. You can obtain the API-key, by sending an email to support@secneurx.com.
+In order to access SecneurX Threat Intelligence feeds, Make sure you have your SecneurX API-key. You can obtain the API-key, by sending an email to <support@secneurx.com>.

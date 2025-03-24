@@ -10,6 +10,7 @@ This integration was integrated and tested with version 3.6 of Q-SCMP. Please co
 
 
 ### Configure Q-SCMP on Cortex XSOAR
+
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for **QSS**.
 3. Click **Add instance** to create and configure a new integration instance.

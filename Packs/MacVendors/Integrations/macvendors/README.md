@@ -13,9 +13,12 @@ This integration was integrated and tested with the latest verison of MAC Vendor
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### macvendors-lookup-mac
+
 ***
 Resolves a MAC address to a vendor name.
 
@@ -23,6 +26,7 @@ Resolves a MAC address to a vendor name.
 #### Base Command
 
 `macvendors-lookup-mac`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

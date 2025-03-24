@@ -3,6 +3,7 @@ Copies a file from an entry to the destination path on the specified system. Thi
 Example usage: `!CopyFileD2 destpath=/home/sansforensics/collectedbinaries/inv8_suspiciousPE1.exe.evil entryid=21@8 system=Analyst1`
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,6 +13,7 @@ Example usage: `!CopyFileD2 destpath=/home/sansforensics/collectedbinaries/inv8_
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,5 +24,6 @@ Example usage: `!CopyFileD2 destpath=/home/sansforensics/collectedbinaries/inv8_
 | force | The overwrite file. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

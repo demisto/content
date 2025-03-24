@@ -14,9 +14,12 @@ This is the default integration for this content pack when configured by the Dat
 | Trust any certificate (not secure) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### abnormal-security-event-collector-get-events
+
 ***
 Manual command to fetch events and display them.
 
@@ -24,6 +27,7 @@ Manual command to fetch events and display them.
 #### Base Command
 
 `abnormal-security-event-collector-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

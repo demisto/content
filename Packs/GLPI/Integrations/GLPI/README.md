@@ -6,7 +6,7 @@ This integration was integrated and tested with version 9.5.5 of GLPI
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. https://example.net/apirest.php) | True |
+| Server URL (e.g. <https://example.net/apirest.php>) | True |
 | Application Token | True |
 | User Token | True |
 | Fetch incidents | False |
@@ -24,9 +24,12 @@ This integration was integrated and tested with version 9.5.5 of GLPI
 | Max incidents fetch at the same time | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### glpi-create-user
+
 ***
 Create a new GLPI user
 
@@ -34,6 +37,7 @@ Create a new GLPI user
 #### Base Command
 
 `glpi-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,6 +59,7 @@ Create a new GLPI user
 | GLPI.User.message | unknown | User creation message | 
 
 ### glpi-delete-user
+
 ***
 Delete GLPI user
 
@@ -62,6 +67,7 @@ Delete GLPI user
 #### Base Command
 
 `glpi-delete-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -73,7 +79,9 @@ Delete GLPI user
 #### Context Output
 
 There is no context output for this command.
+
 ### glpi-disable-user
+
 ***
 Disable GLPI user
 
@@ -81,6 +89,7 @@ Disable GLPI user
 #### Base Command
 
 `glpi-disable-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -91,7 +100,9 @@ Disable GLPI user
 #### Context Output
 
 There is no context output for this command.
+
 ### glpi-enable-user
+
 ***
 Enable GLPI user
 
@@ -99,6 +110,7 @@ Enable GLPI user
 #### Base Command
 
 `glpi-enable-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -109,7 +121,9 @@ Enable GLPI user
 #### Context Output
 
 There is no context output for this command.
+
 ### get-mapping-fields
+
 ***
 Return the list of fields for an incident type
 
@@ -117,6 +131,7 @@ Return the list of fields for an incident type
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -126,7 +141,9 @@ Return the list of fields for an incident type
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
+
 ***
 Mirroring feature, use only for debug
 
@@ -134,6 +151,7 @@ Mirroring feature, use only for debug
 #### Base Command
 
 `get-modified-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -144,7 +162,9 @@ Mirroring feature, use only for debug
 #### Context Output
 
 There is no context output for this command.
+
 ### glpi-get-username
+
 ***
 Get username by user ID
 
@@ -152,6 +172,7 @@ Get username by user ID
 #### Base Command
 
 `glpi-get-username`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -168,6 +189,7 @@ Get username by user ID
 | GLPI.User.username | unknown | Username | 
 
 ### glpi-delete-ticket
+
 ***
 Delete GLPI ticket
 
@@ -175,6 +197,7 @@ Delete GLPI ticket
 #### Base Command
 
 `glpi-delete-ticket`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -186,7 +209,9 @@ Delete GLPI ticket
 #### Context Output
 
 There is no context output for this command.
+
 ### glpi-get-ticket
+
 ***
 Get ticket details by ticket ID
 
@@ -194,6 +219,7 @@ Get ticket details by ticket ID
 #### Base Command
 
 `glpi-get-ticket`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -258,6 +284,7 @@ Get ticket details by ticket ID
 | File.MD5 | string | Attachment file MD5 hash. | 
 
 ### glpi-create-ticket
+
 ***
 Create a GLPI ticket
 
@@ -265,6 +292,7 @@ Create a GLPI ticket
 #### Base Command
 
 `glpi-create-ticket`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -296,6 +324,7 @@ Create a GLPI ticket
 | GLPI.Ticket.message | unknown | Result message from ticket creation | 
 
 ### glpi-search
+
 ***
 Search GLPI items
 
@@ -303,12 +332,13 @@ Search GLPI items
 #### Base Command
 
 `glpi-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | item_type | Item type to search (ex : Ticket). | Required | 
-| query | The search query, please visit https://github.com/glpi-project/glpi/blob/master/apirest.md#search-items. | Optional | 
+| query | The search query, please visit <https://github.com/glpi-project/glpi/blob/master/apirest.md#search-items>. | Optional | 
 | forcedisplay | Coma separated additional fields to display. | Optional | 
 | srange | Search range limit (ex : 0-50). | Optional | 
 
@@ -321,6 +351,7 @@ Search GLPI items
 | GLPI.Search.item_type | unknown | This varies depending on the input item_type \(case sensitive\) | 
 
 ### glpi-add-comment
+
 ***
 Add comment to ticket ID
 
@@ -328,6 +359,7 @@ Add comment to ticket ID
 #### Base Command
 
 `glpi-add-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -344,6 +376,7 @@ Add comment to ticket ID
 | GLPI.Comment.message | unknown | GLPI message | 
 
 ### glpi-upload-file
+
 ***
 Upload document
 
@@ -351,6 +384,7 @@ Upload document
 #### Base Command
 
 `glpi-upload-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -376,6 +410,7 @@ Upload document
 | GLPI.Document.upload_result.filename.id | Unknown | Document filename id | 
 
 ### glpi-get-item
+
 ***
 Get item details by item type and item ID
 
@@ -383,6 +418,7 @@ Get item details by item type and item ID
 #### Base Command
 
 `glpi-get-item`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -398,6 +434,7 @@ Get item details by item type and item ID
 | GLPI.item_type | unknown | This varies depending on the input item_type \(case sensitive\) | 
 
 ### glpi-update-ticket
+
 ***
 Update a GLPI ticket
 
@@ -405,6 +442,7 @@ Update a GLPI ticket
 #### Base Command
 
 `glpi-update-ticket`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -436,6 +474,7 @@ Update a GLPI ticket
 | GLPI.Ticket.message | unknown | Result message from ticket update | 
 
 ### get-remote-data
+
 ***
 get remote data command
 
@@ -443,6 +482,7 @@ get remote data command
 #### Base Command
 
 `get-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -454,7 +494,9 @@ get remote data command
 #### Context Output
 
 There is no context output for this command.
+
 ### glpi-add-link
+
 ***
 Link tickets
 
@@ -462,6 +504,7 @@ Link tickets
 #### Base Command
 
 `glpi-add-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -474,7 +517,9 @@ Link tickets
 #### Context Output
 
 There is no context output for this command.
+
 ### glpi-update-user
+
 ***
 Update a user
 
@@ -482,6 +527,7 @@ Update a user
 #### Base Command
 
 `glpi-update-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -491,7 +537,9 @@ Update a user
 #### Context Output
 
 There is no context output for this command.
+
 ### glpi-get-userid
+
 ***
 Get GLPI User ID by Username
 
@@ -499,6 +547,7 @@ Get GLPI User ID by Username
 #### Base Command
 
 `glpi-get-userid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

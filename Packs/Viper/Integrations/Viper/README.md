@@ -35,6 +35,7 @@ Download a sample with file hash
 #### Context Output
 
 There is no context output for this command.
+
 ### viper-search
 
 ***

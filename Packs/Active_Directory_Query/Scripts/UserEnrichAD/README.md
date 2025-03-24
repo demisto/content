@@ -1,6 +1,7 @@
 Deprecated. Use ADGetUser instead.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Deprecated. Use ADGetUser instead.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * ad-search
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,5 +26,6 @@ This script uses the following commands and scripts.
 | name | Name of user |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

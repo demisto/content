@@ -44,11 +44,15 @@ Gets indicators from the feed.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!feedly-get-indicators limit=100```
+
 #### Human Readable Output
 
 >### Indicators from Feedly Feed:
+>
 >|Value|
 >|---|
 >| A new sophisticated SkidMap variant targets unsecured Redis servers |

@@ -7,10 +7,11 @@ Well, now you can. Our latest DBot Truth Bombs content pack allows you to channe
 ![DBot](doc_imgs/dbot4.png)
 
 This Content Pack packs heat:
- - Automates the injection of humor at scale into your daily routine.
- - Energizes you with motivational affirmations when the going gets tough in the SOC.
- - Channels the awesomeness of the original Walker, Texas Ranger to supercharge your security operations.
- - Improves team morale and speeds MTTL (mean time to laughter).
+
+- Automates the injection of humor at scale into your daily routine.
+- Energizes you with motivational affirmations when the going gets tough in the SOC.
+- Channels the awesomeness of the original Walker, Texas Ranger to supercharge your security operations.
+- Improves team morale and speeds MTTL (mean time to laughter).
 
 Let’s see Siri or Alexa top that!  
 

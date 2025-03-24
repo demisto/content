@@ -45,6 +45,7 @@ Lookup rdata records
 #### Context Output
 
 There is no context output for this command.
+
 ### dnsdb-rrset
 
 ***

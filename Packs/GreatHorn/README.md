@@ -2,6 +2,7 @@
 
 
 ##### What does this pack do?
+
 The playbooks included in this pack help you save time and improve the response across your email security platform, keeping all systems in sync. They also help automate repetitive tasks associated with security incidents across the GreatHorn and Cortex XDR systems, including:
 
 - Ingest data from GreatHorn into proven playbook-driven automation to accelerate incident response

@@ -17,10 +17,14 @@ This integration was integrated and tested with version 9.8.38.245 of iboss Zero
     | Source Reliability | Reliability of the source providing the intelligence data |  |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### iboss-add-entity-to-allow-list
+
 ***
 Adds domains, IPs, and/or URLs to an allow list.
 
@@ -28,6 +32,7 @@ Adds domains, IPs, and/or URLs to an allow list.
 #### Base Command
 
 `iboss-add-entity-to-allow-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,8 +57,11 @@ Adds domains, IPs, and/or URLs to an allow list.
 | iboss.AddEntityToAllowList.message | String | Operation result. | 
 
 #### Command example
+
 ```!iboss-add-entity-to-allow-list entity=iboss.com```
+
 #### Context Example
+
 ```json
 {
     "iboss": {
@@ -69,6 +77,7 @@ Adds domains, IPs, and/or URLs to an allow list.
 >`iboss.com` successfully added to policy 1 allow list.
 
 ### iboss-add-entity-to-block-list
+
 ***
 Adds domains, IPs, and/or URLs to a block list.
 
@@ -76,6 +85,7 @@ Adds domains, IPs, and/or URLs to a block list.
 #### Base Command
 
 `iboss-add-entity-to-block-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -100,8 +110,11 @@ Adds domains, IPs, and/or URLs to a block list.
 | iboss.AddEntityToBlockList.message | String | Operation result. | 
 
 #### Command example
+
 ```!iboss-add-entity-to-block-list entity=iboss.com```
+
 #### Context Example
+
 ```json
 {
     "iboss": {
@@ -117,6 +130,7 @@ Adds domains, IPs, and/or URLs to a block list.
 >`iboss.com` successfully added to policy 1 block list.
 
 ### domain
+
 ***
 Lookup reputation for domain names.
 
@@ -124,6 +138,7 @@ Lookup reputation for domain names.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -183,8 +198,11 @@ Lookup reputation for domain names.
 | iboss.Domain.webRequestHeuristicSupport | Number | Whether web request heuristic support enabled. | 
 
 #### Command example
+
 ```!domain domain=iboss.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -250,12 +268,14 @@ Lookup reputation for domain names.
 #### Human Readable Output
 
 >### iboss Result for domain iboss.com
+>
 >|message|categories|isSafeUrl|malwareEngineAnalysisSuccess|malwareEngineAnalysisDescription|reputationDatabaseLookupSuccess|reputationDatabaseMalwareDetection|reputationDatabaseBotnetDetection|webRequestHeuristicSuccess|webRequestHeuristicProtectionLevel|webRequestHeuristicDescription|googleSafeBrowsingSuccess|googleSafeBrowsingIsSafeUrl|googleSafeBrowsingDescription|realtimeCloudLookupSuccess|realtimeCloudLookupDomainIsGrey|realtimeCloudLookupRiskDescription|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Status: Url Known. Please see categories below. | Business,<br/>Technology | 1 | 1 |  | 1 | 0 | 0 | 1 | 1 |  | 1 | 1 |  | 1 | 0 |  |
 
 
 ### ip
+
 ***
 Lookup reputation data for IP addresses.
 
@@ -263,6 +283,7 @@ Lookup reputation data for IP addresses.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -322,8 +343,11 @@ Lookup reputation data for IP addresses.
 | iboss.IP.webRequestHeuristicSupport | Number | Whether web request heuristic support enabled. | 
 
 #### Command example
+
 ```!ip ip=1.1.1.1```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -388,12 +412,14 @@ Lookup reputation data for IP addresses.
 #### Human Readable Output
 
 >### iboss Result for IP 1.1.1.1
+>
 >|message|categories|isSafeUrl|malwareEngineAnalysisSuccess|malwareEngineAnalysisDescription|reputationDatabaseLookupSuccess|reputationDatabaseMalwareDetection|reputationDatabaseBotnetDetection|webRequestHeuristicSuccess|webRequestHeuristicProtectionLevel|webRequestHeuristicDescription|googleSafeBrowsingSuccess|googleSafeBrowsingIsSafeUrl|googleSafeBrowsingDescription|realtimeCloudLookupSuccess|realtimeCloudLookupDomainIsGrey|realtimeCloudLookupRiskDescription|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Status: Url Known. Please see categories below. | Technology | 0 | 1 | Redirect - Redirects to: https:<span>//</span>1.1.1.1/ | 1 | 0 | 0 | 1 | 1 | Heuristic Engine Detection | 1 | 1 |  | 1 | 0 |  |
 
 
 ### iboss-remove-entity-from-allow-list
+
 ***
 Removes domains, IPs, and/or URLs from an allow list
 
@@ -401,6 +427,7 @@ Removes domains, IPs, and/or URLs from an allow list
 #### Base Command
 
 `iboss-remove-entity-from-allow-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -419,8 +446,11 @@ Removes domains, IPs, and/or URLs from an allow list
 | iboss.RemoveEntityFromAllowList.message | String | Operation result. | 
 
 #### Command example
+
 ```!iboss-remove-entity-from-allow-list entity=iboss.com```
+
 #### Context Example
+
 ```json
 {
     "iboss": {
@@ -436,6 +466,7 @@ Removes domains, IPs, and/or URLs from an allow list
 >`iboss.com` removed from policy 1 allow list.
 
 ### iboss-remove-entity-from-block-list
+
 ***
 Removes domains, IPs, and/or URLs to a block list.
 
@@ -443,6 +474,7 @@ Removes domains, IPs, and/or URLs to a block list.
 #### Base Command
 
 `iboss-remove-entity-from-block-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -461,8 +493,11 @@ Removes domains, IPs, and/or URLs to a block list.
 | iboss.RemoveEntityFromBlockList.message | String | Operation result. | 
 
 #### Command example
+
 ```!iboss-remove-entity-from-block-list entity=iboss.com```
+
 #### Context Example
+
 ```json
 {
     "iboss": {
@@ -478,6 +513,7 @@ Removes domains, IPs, and/or URLs to a block list.
 >`iboss.com` removed from policy 1 block list.
 
 ### url
+
 ***
 Lookup reputation data for URLs.
 
@@ -485,6 +521,7 @@ Lookup reputation data for URLs.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -544,8 +581,11 @@ Lookup reputation data for URLs.
 | iboss.URL.webRequestHeuristicSupport | Number | Whether web request heuristic support enabled. | 
 
 #### Command example
+
 ```!url url=https://www.iboss.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -611,12 +651,14 @@ Lookup reputation data for URLs.
 #### Human Readable Output
 
 >### iboss Result for URL https:<span>//</span>www.iboss.com
+>
 >|message|categories|isSafeUrl|malwareEngineAnalysisSuccess|malwareEngineAnalysisDescription|reputationDatabaseLookupSuccess|reputationDatabaseMalwareDetection|reputationDatabaseBotnetDetection|webRequestHeuristicSuccess|webRequestHeuristicProtectionLevel|webRequestHeuristicDescription|googleSafeBrowsingSuccess|googleSafeBrowsingIsSafeUrl|googleSafeBrowsingDescription|realtimeCloudLookupSuccess|realtimeCloudLookupDomainIsGrey|realtimeCloudLookupRiskDescription|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Status: Url Known. Please see categories below. | Business,<br/>Technology | 1 | 1 |  | 1 | 0 | 0 | 1 | 1 |  | 1 | 1 |  | 1 | 0 |  |
 
 
 ### iboss-add-entity-to-policy-layer-list
+
 ***
 Add entity to policy layer list.
 
@@ -624,6 +666,7 @@ Add entity to policy layer list.
 #### Base Command
 
 `iboss-add-entity-to-policy-layer-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -649,8 +692,11 @@ Add entity to policy layer list.
 | iboss.AddEntityToPolicyLayerList.message | String | Operation result. | 
 
 #### Command example
+
 ```!iboss-add-entity-to-policy-layer-list entity=iboss.com policy_layer_name="Test Policy Layer - Allow List"```
+
 #### Context Example
+
 ```json
 {
     "iboss": {
@@ -666,6 +712,7 @@ Add entity to policy layer list.
 >Successfully added URL to list.
 
 ### iboss-remove-entity-from-policy-layer-list
+
 ***
 Remove entity from policy layer list.
 
@@ -673,6 +720,7 @@ Remove entity from policy layer list.
 #### Base Command
 
 `iboss-remove-entity-from-policy-layer-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -697,8 +745,11 @@ Remove entity from policy layer list.
 | iboss.RemoveEntityFromPolicyLayerList.message | String | Operation result. | 
 
 #### Command example
+
 ```!iboss-remove-entity-from-policy-layer-list entity=iboss.com policy_layer_name="Test Policy Layer - Allow List"```
+
 #### Context Example
+
 ```json
 {
     "iboss": {

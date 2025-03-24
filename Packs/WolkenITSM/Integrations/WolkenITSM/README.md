@@ -16,9 +16,12 @@ This integration was integrated and tested with version 1.0.0 of Wolken ITSM
 | Refresh Token | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### wolken-add-internal-notes
+
 ***
 Used to add Internal Notes in the specified incident
 
@@ -26,6 +29,7 @@ Used to add Internal Notes in the specified incident
 #### Base Command
 
 `wolken-add-internal-notes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -43,6 +47,7 @@ Used to add Internal Notes in the specified incident
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -50,6 +55,7 @@ Used to add Internal Notes in the specified incident
 
 
 ### wolken-create-incident-requestv1
+
 ***
 Creates new Wolken ITSM incident
 
@@ -57,6 +63,7 @@ Creates new Wolken ITSM incident
 #### Base Command
 
 `wolken-create-incident-requestv1`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -94,6 +101,7 @@ Creates new Wolken ITSM incident
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -101,6 +109,7 @@ Creates new Wolken ITSM incident
 
 
 ### wolken-get-access-token
+
 ***
 Use to get access token and save it in integration context . Refresh Token saved in integration context will be used to create new access token after expiration.
 
@@ -108,6 +117,7 @@ Use to get access token and save it in integration context . Refresh Token saved
 #### Base Command
 
 `wolken-get-access-token`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -126,6 +136,7 @@ Use to get access token and save it in integration context . Refresh Token saved
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -133,6 +144,7 @@ Use to get access token and save it in integration context . Refresh Token saved
 
 
 ### wolken-get-incident-by-id
+
 ***
 Find incident using the specified incident id
 
@@ -140,6 +152,7 @@ Find incident using the specified incident id
 #### Base Command
 
 `wolken-get-incident-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -155,6 +168,7 @@ Find incident using the specified incident id
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -162,6 +176,7 @@ Find incident using the specified incident id
 
 
 ### wolken-post-api-v1-incidents-add-attachments
+
 ***
 Add Attachment to the specified Incident Id using entry Id
 
@@ -169,6 +184,7 @@ Add Attachment to the specified Incident Id using entry Id
 #### Base Command
 
 `wolken-post-api-v1-incidents-add-attachments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -188,6 +204,7 @@ Add Attachment to the specified Incident Id using entry Id
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -195,6 +212,7 @@ Add Attachment to the specified Incident Id using entry Id
 
 
 ### wolken-post-api-v1-incidents-add-outbound-notes
+
 ***
 Add Outbound Notes to the specified Incident Id
 
@@ -202,6 +220,7 @@ Add Outbound Notes to the specified Incident Id
 #### Base Command
 
 `wolken-post-api-v1-incidents-add-outbound-notes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -219,6 +238,7 @@ Add Outbound Notes to the specified Incident Id
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -226,6 +246,7 @@ Add Outbound Notes to the specified Incident Id
 
 
 ### wolken-post-api-v1-incidents-by-incident-id
+
 ***
 Update an existing incident
 
@@ -233,6 +254,7 @@ Update an existing incident
 #### Base Command
 
 `wolken-post-api-v1-incidents-by-incident-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -252,6 +274,7 @@ Update an existing incident
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -259,6 +282,7 @@ Update an existing incident
 
 
 ### wolken-post-api-v1-incidents-close
+
 ***
 Close an Incident
 
@@ -266,6 +290,7 @@ Close an Incident
 #### Base Command
 
 `wolken-post-api-v1-incidents-close`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -288,6 +313,7 @@ Close an Incident
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -295,6 +321,7 @@ Close an Incident
 
 
 ### wolken-put-api-v1-incidents-cancel
+
 ***
 Cancel an Incident
 
@@ -302,6 +329,7 @@ Cancel an Incident
 #### Base Command
 
 `wolken-put-api-v1-incidents-cancel`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -319,6 +347,7 @@ Cancel an Incident
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -326,6 +355,7 @@ Cancel an Incident
 
 
 ### wolken-search-incidents-by-params
+
 ***
 Search in the list of incident using any parameters
 
@@ -333,6 +363,7 @@ Search in the list of incident using any parameters
 #### Base Command
 
 `wolken-search-incidents-by-params`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -364,6 +395,7 @@ Search in the list of incident using any parameters
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

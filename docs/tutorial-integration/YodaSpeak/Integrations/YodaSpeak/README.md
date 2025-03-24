@@ -14,10 +14,14 @@ An integration to translate English to Yodish.
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### yoda-speak-translate
+
 ***
 Use this command to translate English text.
 
@@ -25,6 +29,7 @@ Use this command to translate English text.
 #### Base Command
 
 `yoda-speak-translate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,11 +46,13 @@ Use this command to translate English text.
 
 
 #### Command Example
+
 ``` !yoda-speak-translate text="this is some sentence for translation."```
 
 #### Human Readable Output
 
 ### Yoda Says...
+
 |Original|Translation|
 |---|---|
 | this is some sentence for translation. | Some sentence for translation, this is. |

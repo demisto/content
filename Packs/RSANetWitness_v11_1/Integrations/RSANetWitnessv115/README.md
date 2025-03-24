@@ -240,6 +240,7 @@ Retrieves a single incident by ID or multiple incidents by the date and time the
 >### Total Retrieved Incidents : 1
 
 > Page number 0 out of 28 
+>
 >|Id|Title|Summary|Priority|RiskScore|Status|AlertCount|Created|LastUpdated|Assignee|Sources|Categories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| INC-49 | Fetch_testing |  | Low | 70 | Assigned | 1 | 2021-11-15T07:30:49.670Z | 2022-01-10T13:50:14.312Z |  | Reporting Engine |  |
@@ -553,6 +554,7 @@ Retrieves all the alerts that are associated with an incident based on the incid
 >### Total Retrieved Alerts : 1 for incident INC-49
 
 > Page number 0 out of 1
+>
 >|Id|Title|Created|Source|Type|Events|
 >|---|---|---|---|---|---|
 >| 1 | Rule | 2021-03-02T17:46:06Z | Reporting Engine | Log | {'source': {'device': {'ipAddress': None, 'port': None, 'macAddress': None, 'dnsHostname': None, 'dnsDomain': None}, 'user': {'username': None, 'emailAddress': None, 'adUsername': None, 'adDomain': None}}, 'destination': {'device': {'ipAddress': '1.1.1.1', 'port': None, 'macAddress': '111::111:11:111:11', 'dnsHostname': None, 'dnsDomain': None}, 'user': {'username': None, 'emailAddress': None, 'adUsername': None, 'adDomain': None}}, 'domain': 'ADONIS', 'eventSource': '1.1.1.1', 'eventSourceId': '1'} |
@@ -720,6 +722,7 @@ Lists all host information from a specific endpoint server. Filter the results u
 >### Total Retrieved Hosts : 1 
 
 > Page number 0 out of 1
+>
 >|agentId|hostName|riskScore|networkInterfaces|lastSeenTime|
 >|---|---|---|---|---|
 >| 1 | hostName | 0 | {'name': 'AWS PV Network Device #0', 'macAddress': '111::111:11:111:11', 'ipv4': ['1.1.1.10'], 'ipv6': ['111::111:11:111:11'], 'networkIdv6': ['1'], 'gateway': ['1.1.1.1'], 'dns': ['1.1.1.1'], 'promiscuous': False} | 2022-01-10T14:12:30.197Z |
@@ -1294,6 +1297,7 @@ Provides snapshot details of the given host for the specified snapshot time. It 
 >### Snapshot details for agent id 1- 
 
 >showing 2 results out of 2
+>
 >|hostName|agentId|scanStartTime|directory|fileName|
 >|---|---|---|---|---|
 >| hostName | 1 | 2022-01-09T16:42:45.661Z | C:\Windows\System32\ | cmd.exe |
@@ -1575,6 +1579,7 @@ Lists all related file information from a specific endpoint server. You can limi
 >### Total Retrieved Files : 1 
 
 > Page number 0 out of 1449
+>
 >|File Name|Risk Score|First Seen Time|Size|Signature|PE Resources|File Status|Remediation|
 >|---|---|---|---|---|---|---|---|
 >| AM_Delta_Patch_1.355.1597.0.exe | 0 | 2022-01-09T08:31:01.525Z | 2618848 | timeStamp: 2022-01-09T03:30:35.633Z<br/>thumbprint: 1<br/>context: microsoft,<br/>signed,<br/>valid<br/>signer: Microsoft Corporation | originalFileName: AM_Delta_Patch_1.355.1597.0.exe<br/>company: Microsoft Corporation<br/>description: Microsoft Antimalware WU Stub<br/>version: null | Neutral | Unblock |

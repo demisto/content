@@ -1,6 +1,7 @@
 Add, remove, or modify logos from the URL Phishing model.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Add, remove, or modify logos from the URL Phishing model.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -20,5 +22,6 @@ Add, remove, or modify logos from the URL Phishing model.
 | action | Action to execute on the model. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

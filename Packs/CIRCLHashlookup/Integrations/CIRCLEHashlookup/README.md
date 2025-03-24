@@ -6,16 +6,19 @@ This integration was integrated and tested with online version of CIRCLEHashlook
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://hashlookup.circl.lu) |  | True |
+| Server URL (e.g. <https://hashlookup.circl.lu>) |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Create relationships | Create relationships between indicators as part of Enrichment. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### circl-info
+
 ***
 Get information about the hash lookup database
 
@@ -23,6 +26,7 @@ Get information about the hash lookup database
 #### Base Command
 
 `circl-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -37,6 +41,7 @@ Get information about the hash lookup database
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -44,6 +49,7 @@ Get information about the hash lookup database
 
 
 ### circl-bulk-md5
+
 ***
 Bulk search of MD5 hashes
 
@@ -51,6 +57,7 @@ Bulk search of MD5 hashes
 #### Base Command
 
 `circl-bulk-md5`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -66,6 +73,7 @@ Bulk search of MD5 hashes
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -73,6 +81,7 @@ Bulk search of MD5 hashes
 
 
 ### circl-bulk-sha1
+
 ***
 Bulk search of SHA1 hashes
 
@@ -80,6 +89,7 @@ Bulk search of SHA1 hashes
 #### Base Command
 
 `circl-bulk-sha1`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -95,6 +105,7 @@ Bulk search of SHA1 hashes
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -102,6 +113,7 @@ Bulk search of SHA1 hashes
 
 
 ### file
+
 ***
 Checks the file reputation of the specified hash.
 
@@ -109,6 +121,7 @@ Checks the file reputation of the specified hash.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -139,6 +152,7 @@ Checks the file reputation of the specified hash.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -146,6 +160,7 @@ Checks the file reputation of the specified hash.
 
 
 ### circl-top
+
 ***
 Return the top 100 of most queried values.
 
@@ -153,6 +168,7 @@ Return the top 100 of most queried values.
 #### Base Command
 
 `circl-top`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -167,6 +183,7 @@ Return the top 100 of most queried values.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

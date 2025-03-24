@@ -1,4 +1,4 @@
-This integration uses DeepL (https://www.deepl.com/) to translate text or files
+This integration uses DeepL (<https://www.deepl.com/>) to translate text or files
 This integration was integrated and tested with DeepL
 
 ## Configure DeepL in Cortex
@@ -6,15 +6,18 @@ This integration was integrated and tested with DeepL
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. https://api-free.deepl.com) | True |
+| Server URL (e.g. <https://api-free.deepl.com>) | True |
 | API Key | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### deepl-usage
+
 ***
 Get current API key usage
 
@@ -22,6 +25,7 @@ Get current API key usage
 #### Base Command
 
 `deepl-usage`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -35,6 +39,7 @@ Get current API key usage
 | DeepL.Usage | unknown | Usage statistics of API key | 
 
 ### deepl-translate-text
+
 ***
 Translates input text
 
@@ -42,6 +47,7 @@ Translates input text
 #### Base Command
 
 `deepl-translate-text`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -67,6 +73,7 @@ Translates input text
 | DeepL.TranslatedText | string | Output of Translation | 
 
 ### deepl-submit-document
+
 ***
 Please note that with every submitted document of type .pptx, .docx or .pdf you are billed a minimum of 50'000 characters with the DeepL API plan, no matter how many characters are included in the document.  Because the request includes a file upload, it must be an HTTP POST request containing multipart/form-data. This call returns immediately after the document was uploaded and queued for translation. Further requests must be sent to the API to get updates on the translation progress or to download the translated document once the translation is finished (see other document request types below).  Once the document is fully uploaded, the translation starts immediately. Please be aware that the uploaded document is automatically removed from the server after the translation is done. You have to upload the document again in order to restart the translation.  The maximum upload limit for any document is 10MB and 1.000.000 characters.
 
@@ -74,6 +81,7 @@ Please note that with every submitted document of type .pptx, .docx or .pdf you 
 #### Base Command
 
 `deepl-submit-document`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -95,6 +103,7 @@ Please note that with every submitted document of type .pptx, .docx or .pdf you 
 | DeepL.DocumentSubmission.document_key | string | Document Key returned | 
 
 ### deepl-check-document-status
+
 ***
 The status of the document translation process can be checked by sending a status request to the document specific status URL.
 
@@ -102,6 +111,7 @@ The status of the document translation process can be checked by sending a statu
 #### Base Command
 
 `deepl-check-document-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -120,6 +130,7 @@ The status of the document translation process can be checked by sending a statu
 | DeepL.DocumentStatus.status | string | Status of the translation | 
 
 ### deepl-get-document
+
 ***
 Get the translated document
 
@@ -127,6 +138,7 @@ Get the translated document
 #### Base Command
 
 `deepl-get-document`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

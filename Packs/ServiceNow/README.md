@@ -23,8 +23,8 @@ The Create ServiceNow Ticket playbook provides an example for how to use the Mir
 
 ### Supported Event Types:
 
-* Audit
-* Syslog Transactions
+- Audit
+- Syslog Transactions
 
 
 ### Configure ServiceNow Event Collector on XSIAM Tenant

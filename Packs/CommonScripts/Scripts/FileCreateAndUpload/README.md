@@ -1,6 +1,7 @@
 Creates a file using the given data input or entry ID, and uploads it to the current investigation's War Room.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Creates a file using the given data input or entry ID, and uploads it to the cur
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +21,6 @@ Creates a file using the given data input or entry ID, and uploads it to the cur
 | entryId | The entry ID contents to write into file. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

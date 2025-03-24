@@ -1,6 +1,7 @@
 Converts Base64 file in a list to a binary file and upload to warroom
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Converts Base64 file in a list to a binary file and upload to warroom
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +21,7 @@ Converts Base64 file in a list to a binary file and upload to warroom
 | isZipFile | Is data compressed \(zip format\)? |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -33,9 +36,13 @@ Converts Base64 file in a list to a binary file and upload to warroom
 
 
 ## Script Examples
+
 ### Example command
+
 ```!Base64ListToFile listname="test_list_name" filename="test_file_name.txt" isZipFile="no"```
+
 ### Context Example
+
 ```json
 {
     "File": {

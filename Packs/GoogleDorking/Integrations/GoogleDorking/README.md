@@ -19,10 +19,12 @@ Automate the process of google dorking searches in order to detect leaked data.
 | Incidents Fetch Interval |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### google-dorking-search
+
 ***
 Use the google search engine to search a query.
 
@@ -30,6 +32,7 @@ Use the google search engine to search a query.
 #### Base Command
 
 `google-dorking-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -45,6 +48,7 @@ Use the google search engine to search a query.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

@@ -1,11 +1,12 @@
 Ivanti Heat service manager
 This integration was integrated and tested with version 2020.1.0.20200313 of Ivanti Heat
+
 ## Configure Ivanti Heat in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://example.net\) | True |
+| url | Server URL \(e.g. <https://example.net\>) | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
 | insecure | Trust any certificate \(not secure\) | False |
@@ -15,9 +16,12 @@ This integration was integrated and tested with version 2020.1.0.20200313 of Iva
 | incident_name_field | The object field to use for incident name | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ivanti-heat-objects-list
+
 ***
 Fetches business object records based on the defined filter values.
 
@@ -25,6 +29,7 @@ Fetches business object records based on the defined filter values.
 #### Base Command
 
 `ivanti-heat-objects-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -60,9 +65,11 @@ Fetches business object records based on the defined filter values.
 
 
 #### Command Example
+
 ```!ivanti-heat-objects-list object-type=problems search-query=email from=2011-09-01 to=2012-01-01```
 
 #### Context Example
+
 ```
 {
     "IvantiHeat": {
@@ -144,12 +151,14 @@ Fetches business object records based on the defined filter values.
 #### Human Readable Output
 
 >### problems results
+>
 >|RecId|Subject|Status|CreatedDateTime|Urgency|OwnerTeam|CreatedBy|Owner|Category|Description|Priority|ClosedDateTime|SocialTextHeader|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 8383718895204FFBB3EC95E79C323966 | Email down | Resolved | 2011-09-18T23:42:38Z | Medium | Problem Management | johnny cash | owner | Accessibility | Email down | 4 | 2020-07-01T08:42:33Z | Problem 103: Email down |
 
 
 ### ivanti-heat-object-update
+
 ***
 Update details of a business object such as a change, problem, or incident.
 
@@ -157,6 +166,7 @@ Update details of a business object such as a change, problem, or incident.
 #### Base Command
 
 `ivanti-heat-object-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -188,9 +198,11 @@ Update details of a business object such as a change, problem, or incident.
 
 
 #### Command Example
+
 ```!ivanti-heat-object-update fields={"Description":desc","Priority":1} object-type=problems rec-id=5874A667```
 
 #### Context Example
+
 ```
 {
     "IvantiHeat": {
@@ -273,12 +285,14 @@ Update details of a business object such as a change, problem, or incident.
 #### Human Readable Output
 
 >### 54A667 updated successfully
+>
 >|RecId|Subject|Status|CreatedDateTime|Urgency|OwnerTeam|CreatedBy|Owner|Category|Description|Priority|ClosedDateTime|SocialTextHeader|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 54A667 | Unable to open Office 2007/2010 files | Resolved | 2012-10-22T23:35:21Z | Medium | Problem Management | Admin | johnny cash | Applications | desc | 1 | 2020-07-05T12:28:12Z | Problem 106: Unable to open Office 2007/2010 files |
 
 
 ### ivanti-heat-object-delete
+
 ***
 Delete a business object such as a change, problem, or incident by its Record ID.
 
@@ -286,6 +300,7 @@ Delete a business object such as a change, problem, or incident by its Record ID
 #### Base Command
 
 `ivanti-heat-object-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -299,9 +314,11 @@ Delete a business object such as a change, problem, or incident by its Record ID
 There is no context output for this command.
 
 #### Command Example
+
 ```!ivanti-heat-object-delete object-type=incidents rec-id=490C3```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -311,6 +328,7 @@ There is no context output for this command.
 >Record 490C3 deleted successfully
 
 ### ivanti-heat-object-attachment-download
+
 ***
 Get attachments from business objects by attachment ID.
 
@@ -318,6 +336,7 @@ Get attachments from business objects by attachment ID.
 #### Base Command
 
 `ivanti-heat-object-attachment-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -330,9 +349,11 @@ Get attachments from business objects by attachment ID.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ivanti-heat-object-attachment-download attachment-id=C03CE103827944E59A4EC23498EA9C6A```
 
 #### Context Example
+
 ```
 {
     "File": {
@@ -356,6 +377,7 @@ There is no context output for this command.
 
 
 ### ivanti-heat-object-attachment-upload
+
 ***
 Upload attachments to business objects.
 
@@ -363,6 +385,7 @@ Upload attachments to business objects.
 #### Base Command
 
 `ivanti-heat-object-attachment-upload`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -382,9 +405,11 @@ Upload attachments to business objects.
 
 
 #### Command Example
+
 ```!ivanti-heat-object-attachment-upload object-type=problem rec-id=D14D995B entry-id=18ab951```
 
 #### Context Example
+
 ```
 {
     "IvantiHeat": {
@@ -402,6 +427,7 @@ Upload attachments to business objects.
 >11.jpg uploaded successfully, attachment ID: A3039BF750
 
 ### ivanti-heat-object-perform-action
+
 ***
 Performs quick actions for a business object. For example, close, clone or resolve an incident or a problem.
 
@@ -409,6 +435,7 @@ Performs quick actions for a business object. For example, close, clone or resol
 #### Base Command
 
 `ivanti-heat-object-perform-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -424,13 +451,16 @@ Performs quick actions for a business object. For example, close, clone or resol
 There is no context output for this command.
 
 #### Command Example
+
 ```!ivanti-heat-object-perform-action action=Close_Incident object-id=123ABC object-type=incidents request-data=${ivantiHeat.CloseIncidentJSON}```
 
 #### Human Readable Output
+>
 > Close_Incident action success
 
 
 ### ivanti-heat-object-create
+
 ***
 create business objects available out-of-the-box, such as a Change, Problem, Incident, or any custom defined business object of your choice.
 
@@ -438,6 +468,7 @@ create business objects available out-of-the-box, such as a Change, Problem, Inc
 #### Base Command
 
 `ivanti-heat-object-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -468,9 +499,11 @@ create business objects available out-of-the-box, such as a Change, Problem, Inc
 
 
 #### Command Example
+
 ```!ivanti-heat-object-create object-type=incidents fields=`{"Category":"Connectivity","ProfileLink":"1087E597","Symptom":"the description","Subject":"test incident","Service":"Desktop Service","Owner":"johnny cash"}````
 
 #### Context Example
+
 ```
 {
     "IvantiHeat": {
@@ -635,6 +668,7 @@ create business objects available out-of-the-box, such as a Change, Problem, Inc
 #### Human Readable Output
 
 >### incidents object created successfully
+>
 >|RecId|Subject|Status|CreatedDateTime|Symptom|OwnerTeam|IncidentNumber|CreatedBy|Owner|Category|Priority|Email|TypeOfIncident|ActualCategory|SocialTextHeader|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| FDF08798DE | test incident | Active | 2020-07-05T12:28:16Z | the description | Service Desk | 152 | Admin | jcash | Connectivity | 3 | user@domain.com | Failure | Connectivity | Incident 112: test incident |
+>| FDF08798DE | test incident | Active | 2020-07-05T12:28:16Z | the description | Service Desk | 152 | Admin | jcash | Connectivity | 3 | <user@domain.com> | Failure | Connectivity | Incident 112: test incident |

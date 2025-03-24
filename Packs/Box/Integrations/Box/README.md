@@ -10,24 +10,28 @@ Deprecated. Use the Box v2 integration instead.
 ## How to initialize the Box integration:
 
   Note: The following steps should be done in less than 30 seconds due to Box security.
+
   1. Create a new Box instance. Do not click **Test**.
   2. In your browser, copy the following line containing the Cortex XSOAR application client id:
-  https://account.box.com/api/oauth2/authorize?response_type=code&client_id=hznnisyhdf09nu9saf2eyfzupawrn9b2&state=lulubalulu
+  <https://account.box.com/api/oauth2/authorize?response_type=code&client_id=hznnisyhdf09nu9saf2eyfzupawrn9b2&state=lulubalulu>
   (client_id is demisto-application client id)
   3. Click **Grant access to Box**. Allow access to it using your box credentials.
   4. You will be redirected to a non active page, with a url in this form:
-  https://localhost/?state=lulubalulu&code=MCTNCsN1gJIjA2cEJ72nczpXzcLVVQxJ
+  <https://localhost/?state=lulubalulu&code=MCTNCsN1gJIjA2cEJ72nczpXzcLVVQxJ>
   5. Copy the code from the url and use it the next step.  (For example, copy MCTNCsN1gJIjA2cEJ72nczpXzcLVVQxJ)
   6. Run the ***box_initiate*** command with the *access_code* argument in the CLI in this form:
   ***!box_initiate access_code=ACCESS_CODE***
-  For additional information, watch https://www.youtube.com/watch?v=ha26tN8amI0
-  Or read about the box oauth2 process at https://developer.box.com/guides/authentication/oauth2/
+  For additional information, watch <https://www.youtube.com/watch?v=ha26tN8amI0>
+  Or read about the box oauth2 process at <https://developer.box.com/guides/authentication/oauth2/>
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### box_get_current_user
+
 ***
 Retrieves information about the user who is currently logged in i.e. the user for whom this auth token was generated
 
@@ -35,6 +39,7 @@ Retrieves information about the user who is currently logged in i.e. the user fo
 #### Base Command
 
 `box_get_current_user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -47,9 +52,11 @@ Retrieves information about the user who is currently logged in i.e. the user fo
 There is no context output for this command.
 
 #### Command Example
+
 ```!box_get_current_user```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -57,12 +64,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Box account current user
+>
 >|ID|Username|Name|Created at|Status|
 >|---|----|----|----|----|
->|14226607780|exampleuser@paloaltonetworks.com|My Name|2020-09-25T15:23:39-07:00|active|
+>|14226607780|<exampleuser@paloaltonetworks.com>|My Name|2020-09-25T15:23:39-07:00|active|
 
 
 ### box_get_users
+
 ***
 Returns a list of all users for the Enterprise along with their user_id, public_name, and login
 
@@ -70,6 +79,7 @@ Returns a list of all users for the Enterprise along with their user_id, public_
 #### Base Command
 
 `box_get_users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -89,9 +99,11 @@ Returns a list of all users for the Enterprise along with their user_id, public_
 
 
 #### Command Example
+
 ```!box_get_users```
 
 #### Context Example
+
 ```json
 {
     "Account": [
@@ -109,11 +121,13 @@ Returns a list of all users for the Enterprise along with their user_id, public_
 #### Human Readable Output
 
 >### Box account users
+>
 >|ID|Username|Name|Created at|Status|
 >|---|---|---|---|---|
->|14226607780|exampleuser@paloaltonetworks.com|My Name|2020-10-29T07:49:51-07:00|active|
+>|14226607780|<exampleuser@paloaltonetworks.com>|My Name|2020-10-29T07:49:51-07:00|active|
 
 ### box_update_user
+
 ***
 Used to edit the settings and information about a user
 
@@ -121,6 +135,7 @@ Used to edit the settings and information about a user
 #### Base Command
 
 `box_update_user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -150,9 +165,11 @@ Used to edit the settings and information about a user
 There is no context output for this command.
 
 #### Command Example
+
 ```!box_update_user user_id=14226607780```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -160,12 +177,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### User updated
+>
 >|ID|Username|Name|Created at|Status|
 >|---|---|---|---|---|
->|14226607780|eampleuser@paloaltonetworks.com|My Name |2020-09-25T16:02:17-07:00|active|
+>|14226607780|<eampleuser@paloaltonetworks.com>|My Name |2020-09-25T16:02:17-07:00|active|
 
 
 ### box_add_user
+
 ***
 Used to provision a new user in an enterprise
 
@@ -173,6 +192,7 @@ Used to provision a new user in an enterprise
 #### Base Command
 
 `box_add_user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -198,9 +218,11 @@ Used to provision a new user in an enterprise
 There is no context output for this command.
 
 #### Command Example
+
 ```!box_add_user login=exampleuser@paloaltonetworks.com name="My Name"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -208,12 +230,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### User created
+>
 >|ID|Username|Name|Created at|Status|
 >|---|---|---|---|---|
->|14226607780|exampleuser@paloaltonetworks.com|My Name|2020-10-29T07:49:51-07:00|active|
+>|14226607780|<exampleuser@paloaltonetworks.com>|My Name|2020-10-29T07:49:51-07:00|active|
 
 
 ### box_delete_user
+
 ***
 Deletes a user in an enterprise account
 
@@ -221,6 +245,7 @@ Deletes a user in an enterprise account
 #### Base Command
 
 `box_delete_user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -235,9 +260,11 @@ Deletes a user in an enterprise account
 There is no context output for this command.
 
 #### Command Example
+
 ```!box_delete_user user_id=14226607780```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -245,10 +272,12 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### User deleted
+>
 >success
 
 
 ### box_move_folder
+
 ***
 Moves all of the owned content from within one user’s folder into a new folder in another user’s account. You can move folders across users as long as the you have administrative permissions and the ‘source’ user owns the folders. To move everything from the root folder, use “0” which always represents the root folder of a Box account (Currently only moving of the root folder (0) is supported)
 
@@ -256,6 +285,7 @@ Moves all of the owned content from within one user’s folder into a new folder
 #### Base Command
 
 `box_move_folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -269,9 +299,11 @@ Moves all of the owned content from within one user’s folder into a new folder
 There is no context output for this command.
 
 #### Command Example
+
 ```!box_move_folder from_user_id=13917563262 to_user_id=14226607780```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -279,10 +311,12 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Folder moved
->Content is now available in account **exampleuser@paloaltonetworks.com** under directory **exmple@paloaltonetworks.com - My Name's Files and Folders (2)**
+>
+>Content is now available in account **<exampleuser@paloaltonetworks.com>** under directory **<exmple@paloaltonetworks.com> - My Name's Files and Folders (2)**
 
 
 ### box_files_get
+
 ***
 getting a file from private Box storage
 
@@ -290,6 +324,7 @@ getting a file from private Box storage
 #### Base Command
 
 `box_files_get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -310,9 +345,11 @@ getting a file from private Box storage
 
 
 #### Command Example
+
 ```!box_files_get file_id=723447059947```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -336,6 +373,7 @@ getting a file from private Box storage
 >Untitled Note 2020-09-25 15.56.56.boxnote
 
 ### box_initiate
+
 ***
 Initialising of Box's integration
 
@@ -343,6 +381,7 @@ Initialising of Box's integration
 #### Base Command
 
 `box_initiate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -355,9 +394,11 @@ Initialising of Box's integration
 There is no context output for this command.
 
 #### Command Example
+
 ```!box_initiate access_code=wOK4V7vzcljJNTFu2mSDyQq7phlFY5nx```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -367,6 +408,7 @@ There is no context output for this command.
 >Box initialized successfully
 
 ### box_files_get_info
+
 ***
 Getting file info of provided ID
 
@@ -374,6 +416,7 @@ Getting file info of provided ID
 #### Base Command
 
 `box_files_get_info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -425,9 +468,11 @@ Getting file info of provided ID
 
 
 #### Command Example
+
 ```!box_files_get_info file_id=723447059947```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -498,7 +543,7 @@ Getting file info of provided ID
 >| ContentModifiedAt | 2020-09-25T16:26:54-07:00 |
 >| CreatedAt | 2020-09-25T15:56:57-07:00 |
 >| CreatedBy.Id | 14226607780 |
->| CreatedBy.Login | exampleuser@paloaltonetworks.com |
+>| CreatedBy.Login | <exampleuser@paloaltonetworks.com> |
 >| CreatedBy.Name | My Name |
 >| CreatedBy.Type | user |
 >| Etag | 1 |
@@ -509,12 +554,12 @@ Getting file info of provided ID
 >| ItemStatus | active |
 >| ModifiedAt | 2020-09-25T16:27:19-07:00 |
 >| ModifiedBy.Id | 14226607780 |
->| ModifiedBy.Login | exampleuser@paloaltonetworks.com |
+>| ModifiedBy.Login | <exampleuser@paloaltonetworks.com> |
 >| ModifiedBy.Name | My Name |
 >| ModifiedBy.Type | user |
 >| Name | Untitled Note 2020-09-25 15.56.56.boxnote |
 >| OwnedBy.Id | 14226607780 | 
->| OwnedBy.Login | exampleuser@paloaltonetworks.com |
+>| OwnedBy.Login | <exampleuser@paloaltonetworks.com> |
 >| OwnedBy.Name | My Name |
 >| OwnedBy.Type | user |
 >| Parent.Etag | 0 |

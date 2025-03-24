@@ -7,6 +7,7 @@ The Default layout is a good match for any incident type, as it dynamically disp
 The layout also features remediation buttons as well as a collection of utilities any analyst would love to have at hand.
 
 ##### What does this pack do?
+
 - Extracts and enriches indicators in an incident using one or more integrations.
 - Deduplicates by linking and closing similar incidents.
 - Retrieves related files from endpoints using hash / file path.

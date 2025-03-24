@@ -6,7 +6,7 @@ This integration was integrated and tested with version 12.0 of Cisco Security M
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | Base URL, e.g., https://XXX.eu.iphmx.com | True |
+| Server URL | Base URL, e.g., <https://XXX.eu.iphmx.com> | True |
 | Username |  | True |
 | Password |  | True |
 | Maximum incidents per fetch | Default is 50. Maximum is 100. | False |
@@ -23,9 +23,12 @@ This integration was integrated and tested with version 12.0 of Cisco Security M
 | Fetch incidents |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cisco-sma-spam-quarantine-message-search
+
 ***
 Search messages in the spam quarantine.
 
@@ -33,6 +36,7 @@ Search messages in the spam quarantine.
 #### Base Command
 
 `cisco-sma-spam-quarantine-message-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -64,8 +68,11 @@ Search messages in the spam quarantine.
 | CiscoSMA.SpamQuarantineMessage.mid | Number | Message ID. | 
 
 #### Command example
+
 ```!cisco-sma-spam-quarantine-message-search start_date=2weeks end_date=now page=3 page_size=2```
+
 #### Context Example
+
 ```json
 {
     "CiscoSMA": {
@@ -108,15 +115,18 @@ Search messages in the spam quarantine.
 #### Human Readable Output
 
 >### Spam Quarantine Messages List
+>
 >Showing page 3.
 > Current page size: 2.
+>
 >|Mid|Date|From Address|To Address|Subject|Size|
 >|---|---|---|---|---|---|
->| 70 | 11 Sep 2022 07:55 (GMT) | Test Test <t1@test.com> | "test@test.com" <test@test.com> | test 2 | 17.60K |
->| 69 | 11 Sep 2022 07:55 (GMT) | Test Test <t1@test.com> | "test@test.com" <test@test.com> | hello | 17.70K |
+>| 70 | 11 Sep 2022 07:55 (GMT) | Test Test <t1@test.com> | "<test@test.com>" <test@test.com> | test 2 | 17.60K |
+>| 69 | 11 Sep 2022 07:55 (GMT) | Test Test <t1@test.com> | "<test@test.com>" <test@test.com> | hello | 17.70K |
 
 
 ### cisco-sma-spam-quarantine-message-get
+
 ***
 Get spam quarantine message.
 
@@ -124,6 +134,7 @@ Get spam quarantine message.
 #### Base Command
 
 `cisco-sma-spam-quarantine-message-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -144,8 +155,11 @@ Get spam quarantine message.
 | CiscoSMA.SpamQuarantineMessage.mid | Number | Message ID. | 
 
 #### Command example
+
 ```!cisco-sma-spam-quarantine-message-get message_id=64```
+
 #### Context Example
+
 ```json
 {
     "CiscoSMA": {
@@ -172,13 +186,16 @@ Get spam quarantine message.
 #### Human Readable Output
 
 >### Spam Quarantine Message
+>
 >Found spam quarantine message with ID: 64
+>
 >|Mid|From Address|To Address|Date|Subject|
 >|---|---|---|---|---|
->| 64 | Test Test <t1@test.com> | "test@test.com" <test@test.com> | 11 Sep 2022 06:07 (GMT) | test1 |
+>| 64 | Test Test <t1@test.com> | "<test@test.com>" <test@test.com> | 11 Sep 2022 06:07 (GMT) | test1 |
 
 
 ### cisco-sma-spam-quarantine-message-release
+
 ***
 Release spam quarantined message.
 
@@ -186,6 +203,7 @@ Release spam quarantined message.
 #### Base Command
 
 `cisco-sma-spam-quarantine-message-release`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -196,13 +214,17 @@ Release spam quarantined message.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-sma-spam-quarantine-message-release message_ids=65```
+
 #### Human Readable Output
 
 >Quarantined message 65 successfully released.
 
 ### cisco-sma-spam-quarantine-message-delete
+
 ***
 Delete spam quarantined message.
 
@@ -210,6 +232,7 @@ Delete spam quarantined message.
 #### Base Command
 
 `cisco-sma-spam-quarantine-message-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -220,13 +243,17 @@ Delete spam quarantined message.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-sma-spam-quarantine-message-delete message_ids=66```
+
 #### Human Readable Output
 
 >Quarantined message 66 successfully deleted.
 
 ### cisco-sma-list-entry-get
+
 ***
 Get spam quarantine blocklist/safelist entry.
 
@@ -234,6 +261,7 @@ Get spam quarantine blocklist/safelist entry.
 #### Base Command
 
 `cisco-sma-list-entry-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -245,7 +273,7 @@ Get spam quarantine blocklist/safelist entry.
 | order_by | How the results should be ordered. Possible values are: recipient, sender. | Optional | 
 | order_dir | Direction in which the results should be ordered. Possible values are: asc, desc. | Optional | 
 | view_by | View results by. Possible values are: recipient, sender. Default is recipient. | Optional | 
-| search | Search for recipients or senders in blocklist/safelist with 'contains' operator.<br/>e.g., test@test.com, test.com<br/>This is only supported for the argument view_by=recipient. | Optional | 
+| search | Search for recipients or senders in blocklist/safelist with 'contains' operator.<br/>e.g., <test@test.com>, test.com<br/>This is only supported for the argument view_by=recipient. | Optional | 
 
 
 #### Context Output
@@ -262,8 +290,11 @@ Get spam quarantine blocklist/safelist entry.
 | CiscoSMA.ListEntry.Safelist.senderAddress | String | Sender address. | 
 
 #### Command example
+
 ```!cisco-sma-list-entry-get entry_type=safelist page=2 page_size=3 view_by=recipient order_by=recipient order_dir=desc```
+
 #### Context Example
+
 ```json
 {
     "CiscoSMA": {
@@ -296,16 +327,19 @@ Get spam quarantine blocklist/safelist entry.
 #### Human Readable Output
 
 >### Safelist Entries
+>
 >Showing page 2.
 > Current page size: 3.
+>
 >|Recipient Address|Sender List|
 >|---|---|
->| test4@test.com | t3@test.com |
->| test3@test.com | t3@test.com |
->| test2@test.com | testi@test.com |
+>| <test4@test.com> | <t3@test.com> |
+>| <test3@test.com> | <t3@test.com> |
+>| <test2@test.com> | <testi@test.com> |
 
 
 ### cisco-sma-list-entry-add
+
 ***
 Add spam quarantine blocklist/safelist entry.
 
@@ -313,6 +347,7 @@ Add spam quarantine blocklist/safelist entry.
 #### Base Command
 
 `cisco-sma-list-entry-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -328,13 +363,17 @@ Add spam quarantine blocklist/safelist entry.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-sma-list-entry-add entry_type=blocklist view_by=recipient recipient_addresses=test@test.com sender_list=t1@test.com,t2@test.com```
+
 #### Human Readable Output
 
->Successfully added t1@test.com, t2@test.com senders to test@test.com recipients in blocklist.
+>Successfully added <t1@test.com>, <t2@test.com> senders to <test@test.com> recipients in blocklist.
 
 ### cisco-sma-list-entry-append
+
 ***
 Append spam quarantine blocklist/safelist entry.
 
@@ -342,6 +381,7 @@ Append spam quarantine blocklist/safelist entry.
 #### Base Command
 
 `cisco-sma-list-entry-append`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -357,13 +397,17 @@ Append spam quarantine blocklist/safelist entry.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-sma-list-entry-append entry_type=blocklist recipient_addresses=test@test.com sender_list=t4@test.com```
+
 #### Human Readable Output
 
->Successfully appended t4@test.com senders to test@test.com recipients in blocklist.
+>Successfully appended <t4@test.com> senders to <test@test.com> recipients in blocklist.
 
 ### cisco-sma-list-entry-edit
+
 ***
 Edit the spam quarantine blocklist/safelist entry. Using this command will override the existing value.
 
@@ -371,6 +415,7 @@ Edit the spam quarantine blocklist/safelist entry. Using this command will overr
 #### Base Command
 
 `cisco-sma-list-entry-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -386,13 +431,17 @@ Edit the spam quarantine blocklist/safelist entry. Using this command will overr
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-sma-list-entry-edit entry_type=blocklist view_by=recipient recipient_addresses=test@test.com sender_list=t5@test.com,t6@test.com```
+
 #### Human Readable Output
 
->Successfully edited test@test.com recipients' senders to t5@test.com, t6@test.com in blocklist.
+>Successfully edited <test@test.com> recipients' senders to <t5@test.com>, <t6@test.com> in blocklist.
 
 ### cisco-sma-list-entry-delete
+
 ***
 Delete a spam quarantine blocklist/safelist entry.
 
@@ -400,6 +449,7 @@ Delete a spam quarantine blocklist/safelist entry.
 #### Base Command
 
 `cisco-sma-list-entry-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -413,13 +463,17 @@ Delete a spam quarantine blocklist/safelist entry.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-sma-list-entry-delete entry_type=blocklist view_by=recipient recipient_list=test@test.com```
+
 #### Human Readable Output
 
->Successfully deleted test@test.com recipients from blocklist.
+>Successfully deleted <test@test.com> recipients from blocklist.
 
 ### cisco-sma-message-search
+
 ***
 Search tracking messages.
 
@@ -427,6 +481,7 @@ Search tracking messages.
 #### Base Command
 
 `cisco-sma-message-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -479,8 +534,11 @@ Search tracking messages.
 | CiscoSMA.Message.sbrs | String | Sender Base Reputation Scores. | 
 
 #### Command example
+
 ```!cisco-sma-message-search start_date=1month end_date=now page=3 page_size=2 subject_filter_operator=contains subject_filter_value=test```
+
 #### Context Example
+
 ```json
 {
     "CiscoSMA": {
@@ -593,15 +651,18 @@ Search tracking messages.
 #### Human Readable Output
 
 >### Messages List
+>
 >Showing page 3.
 > Current page size: 2.
+>
 >|Mid|All Icid|Serial Number|Sender|Recipient|Subject|Message Status|Timestamp|Sender Ip|Sbrs|
 >|---|---|---|---|---|---|---|---|---|---|
->| 433 | 13538 | 423ADC9EBD9C5F1A7A64-B81D2582608C | t1@test.com | test@test.com | test 2 | 433: Quarantined by Anti-Spam/Graymail | 2022-09-11T07:55:25Z | 1.1.1.1 | 3.5 |
->| 431 | 13536 | 423ADC9EBD9C5F1A7A64-B81D2582608C | t1@test.com | test@test.com | test1 | 431: Quarantined by Anti-Spam/Graymail | 2022-09-11T07:55:15Z | 1.1.1.1 | 3.5 |
+>| 433 | 13538 | 423ADC9EBD9C5F1A7A64-B81D2582608C | <t1@test.com> | <test@test.com> | test 2 | 433: Quarantined by Anti-Spam/Graymail | 2022-09-11T07:55:25Z | 1.1.1.1 | 3.5 |
+>| 431 | 13536 | 423ADC9EBD9C5F1A7A64-B81D2582608C | <t1@test.com> | <test@test.com> | test1 | 431: Quarantined by Anti-Spam/Graymail | 2022-09-11T07:55:15Z | 1.1.1.1 | 3.5 |
 
 
 ### cisco-sma-message-details-get
+
 ***
 Get more details on the message.
 
@@ -609,6 +670,7 @@ Get more details on the message.
 #### Base Command
 
 `cisco-sma-message-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -656,8 +718,11 @@ Get more details on the message.
 | CiscoSMA.Message.headerFrom | String | Email header from. | 
 
 #### Command example
+
 ```!cisco-sma-message-details-get serial_number=423ADC9EBD9C5F1A7A64-B81D2582608C message_ids=322 injection_connection_id=10821 delivery_connection_id=4368```
+
 #### Context Example
+
 ```json
 {
     "CiscoSMA": {
@@ -897,11 +962,15 @@ Get more details on the message.
 #### Human Readable Output
 
 >### Message Details
+>
 >Found message with ID 322.
+>
 >|Mid|All Icid|Subject|Sender|Recipient|Timestamp|Message Size|Sending Host Summary|Message Status|Direction|Mail Policy|Sender Group|Show AMP|Show DLP|Show URL|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 322 | 10821 | Microsoft 365 Defender has detected a security threat | azure-noreply@microsoft.com | t2@test.com | 2022-09-07T10:11:18Z | 70.3 (KB) | reverseDnsHostname: test.cloudapp.net (verified) ipAddress: 7.7.7.7 sbrsScore: 3.5 | Delivered | incoming | DEFAULT | ACCEPTLIST | false | false | false |
+>| 322 | 10821 | Microsoft 365 Defender has detected a security threat | <azure-noreply@microsoft.com> | <t2@test.com> | 2022-09-07T10:11:18Z | 70.3 (KB) | reverseDnsHostname: test.cloudapp.net (verified) ipAddress: 7.7.7.7 sbrsScore: 3.5 | Delivered | incoming | DEFAULT | ACCEPTLIST | false | false | false |
+>
 >### Message Summary
+>
 >|Description|Timestamp|Last Event|
 >|---|---|---|
 >| Incoming connection (ICID 10821) has sender_group: ACCEPTLIST, sender_ip: 7.7.7.7 and sbrs: 3.5 | 2022-09-07T10:11:18Z | false |
@@ -910,20 +979,20 @@ Get more details on the message.
 >| Incoming connection (ICID 10821) successfully accepted TLS protocol TLSv1.2 cipher ECDHE-RSA-AES256-GCM-SHA384. | 2022-09-07T10:11:18Z | false |
 >| Message 322 Sender Domain: microsoft.com | 2022-09-07T10:11:18Z | false |
 >| Start message 322 on incoming connection (ICID 10821). | 2022-09-07T10:11:18Z | false |
->| Message 322 enqueued on incoming connection (ICID 10821) from azure-noreply@microsoft.com. | 2022-09-07T10:11:18Z | false |
+>| Message 322 enqueued on incoming connection (ICID 10821) from <azure-noreply@microsoft.com>. | 2022-09-07T10:11:18Z | false |
 >| Message 322 direction: incoming | 2022-09-07T10:11:18Z | false |
 >| Message 322 Domains for which SDR is requested: reverse DNS host: test.cloudapp.net, helo: test.cloudapp.net, env-from: microsoft.com, header_from: Not Present, reply_to: Not Present | 2022-09-07T10:11:18Z | false |
 >| Message 322 Consolidated Sender Threat Level: Neutral, Threat Category: N/A, Suspected Domain(s) : N/A (other reasons for verdict). Sender Maturity: 30 days (or greater) for domain: test.cloudapp.net | 2022-09-07T10:11:18Z | false |
->| Message 322 on incoming connection (ICID 10821) added recipient (t2@test.com). | 2022-09-07T10:11:18Z | false |
->| Message 322 SPF: mailfrom identity azure-noreply@microsoft.com Pass | 2022-09-07T10:11:18Z | false |
->| Message 322 DKIM: pass signature verified (d=microsoft.com s=s1024-meo i=defender-noreply@microsoft.com) | 2022-09-07T10:11:18Z | false |
+>| Message 322 on incoming connection (ICID 10821) added recipient (<t2@test.com>). | 2022-09-07T10:11:18Z | false |
+>| Message 322 SPF: mailfrom identity <azure-noreply@microsoft.com> Pass | 2022-09-07T10:11:18Z | false |
+>| Message 322 DKIM: pass signature verified (d=microsoft.com s=s1024-meo i=<defender-noreply@microsoft.com>) | 2022-09-07T10:11:18Z | false |
 >| Message 322: DMARC Message from domain microsoft.com, DMARC pass (SPF aligned True, DKIM aligned True), | 2022-09-07T10:11:18Z | false |
 >| Message 322: DMARC verification passed. | 2022-09-07T10:11:18Z | false |
 >| Message 322 contains message ID header '<add53137-42a8-4753-af53-bad0752af24d@az.westeurope.production.microsoft.com>'. | 2022-09-07T10:11:18Z | false |
 >| Message 322 original subject on injection: Microsoft 365 Defender has detected a security threat | 2022-09-07T10:11:18Z | false |
 >| Message 322 Domains for which SDR is requested: reverse DNS host: test.cloudapp.net, helo: test.cloudapp.net, env-from: microsoft.com, header_from: microsoft.com, reply_to: Not Present | 2022-09-07T10:11:18Z | false |
 >| Message 322 Consolidated Sender Threat Level: Neutral, Threat Category: N/A, Suspected Domain(s) : N/A (other reasons for verdict). Sender Maturity: 30 days (or greater) for domain: test.cloudapp.net | 2022-09-07T10:11:18Z | false |
->| Message 322 (71983 bytes) from azure-noreply@microsoft.com ready. | 2022-09-07T10:11:18Z | false |
+>| Message 322 (71983 bytes) from <azure-noreply@microsoft.com> ready. | 2022-09-07T10:11:18Z | false |
 >| Message 322 has sender_group: ACCEPTLIST, sender_ip: 7.7.7.7 and sbrs: 3.5 | 2022-09-07T10:11:18Z | false |
 >| Message 322 matched per-recipient policy DEFAULT for inbound mail policies. | 2022-09-07T10:11:19Z | false |
 >| Incoming connection (ICID 10821) lost. | 2022-09-07T10:11:19Z | false |
@@ -938,12 +1007,13 @@ Get more details on the message.
 >| Message 322 queued for delivery. | 2022-09-07T10:11:19Z | false |
 >| SMTP delivery connection (DCID 4368) opened from Cisco IronPort interface 2.2.2.2 to IP address 1.1.1.1 on port 25. | 2022-09-07T10:11:19Z | false |
 >| Delivery connection (DCID 4368) successfully accepted TLS protocol TLSv1.2 cipher ECDHE-RSA-AES256-GCM-SHA384 None. | 2022-09-07T10:11:19Z | false |
->| (DCID 4368) Delivery started for message 322 to t2@test.com. | 2022-09-07T10:11:19Z | false |
->| (DCID 4368) Delivery details: Message 322 sent to t2@test.com [('from', 'Microsoft 365 Defender <defender-noreply@microsoft.com>'), ('to', 't2@test.com')] | 2022-09-07T10:11:20Z | false |
->| Message 322 to t2@test.com received remote SMTP response '2.6.0 <add53137-42a8-4753-af53-bad0752af24d@az.westeurope.production.microsoft.com> [InternalId=1511828495895, Hostname=test.test.PROD.OUTLOOK.COM] 92322 bytes in 0.189, 475.293 KB/sec Queued mail for delivery'. | 2022-09-07T10:11:21Z | true |
+>| (DCID 4368) Delivery started for message 322 to <t2@test.com>. | 2022-09-07T10:11:19Z | false |
+>| (DCID 4368) Delivery details: Message 322 sent to <t2@test.com> [('from', 'Microsoft 365 Defender <defender-noreply@microsoft.com>'), ('to', 't2@test.com')] | 2022-09-07T10:11:20Z | false |
+>| Message 322 to <t2@test.com> received remote SMTP response '2.6.0 <add53137-42a8-4753-af53-bad0752af24d@az.westeurope.production.microsoft.com> [InternalId=1511828495895, Hostname=test.test.PROD.OUTLOOK.COM] 92322 bytes in 0.189, 475.293 KB/sec Queued mail for delivery'. | 2022-09-07T10:11:21Z | true |
 
 
 ### cisco-sma-message-amp-details-get
+
 ***
 Get message AMP summary details.
 
@@ -951,6 +1021,7 @@ Get message AMP summary details.
 #### Base Command
 
 `cisco-sma-message-amp-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -988,8 +1059,11 @@ Get message AMP summary details.
 | CiscoSMA.AMPDetail.headerFrom | String | Email header from. | 
 
 #### Command example
+
 ```!cisco-sma-message-amp-details-get message_ids=21 serial_number=42356DFA5D016457B182-3616BA148E19```
+
 #### Context Example
+
 ```json
 {
     "CiscoSMA": {
@@ -1047,11 +1121,15 @@ Get message AMP summary details.
 #### Human Readable Output
 
 >### Message AMP Report Details
+>
 >Found AMP details for message ID 21.
+>
 >|Mid|All Icid|Subject|Sender|Recipient|Attachments|Timestamp|Message Size|Message Status|Direction|Sender Group|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 21 | 1269 | Fwd: test12345 | t3@test.com | test@test.com | test.jpg | 2022-08-24T10:05:52Z | 439.29 (KB) | Quarantined by Content Filters | incoming | ACCEPTLIST |
+>| 21 | 1269 | Fwd: test12345 | <t3@test.com> | <test@test.com> | test.jpg | 2022-08-24T10:05:52Z | 439.29 (KB) | Quarantined by Content Filters | incoming | ACCEPTLIST |
+>
 >### Message AMP Report Details Summary
+>
 >|Description|Timestamp|
 >|---|---|
 >| File reputation query initiating. File Name = test.jpg, MID = 21, File Size = 325663 bytes, File Type = image/jpeg | 2022-08-24T10:05:55Z |
@@ -1060,6 +1138,7 @@ Get message AMP summary details.
 
 
 ### cisco-sma-message-dlp-details-get
+
 ***
 Get message DLP summary details.
 
@@ -1067,6 +1146,7 @@ Get message DLP summary details.
 #### Base Command
 
 `cisco-sma-message-dlp-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1107,8 +1187,11 @@ Get message DLP summary details.
 | CiscoSMA.DLPDetail.headerFrom | String | Email header from. | 
 
 #### Command example
+
 ```!cisco-sma-message-dlp-details-get message_ids=84 serial_number=423ADC9EBD9C5F1A7A64-B81D2582608C```
+
 #### Context Example
+
 ```json
 {
     "CiscoSMA": {
@@ -1168,17 +1251,22 @@ Get message DLP summary details.
 #### Human Readable Output
 
 >### Message DLP Report Details
+>
 >Found DLP details for message ID 84.
+>
 >|Mid|All Icid|Subject|Sender|Recipient|Timestamp|Message Size|Message Status|Direction|Sender Group|
 >|---|---|---|---|---|---|---|---|---|---|
->| 84 | 3862 | Fw: Re:  | test@test.com | t1@test.com | 2022-08-28T06:56:26Z | 84.56 (KB) | Delivered | outgoing | RELAY_O365 |
+>| 84 | 3862 | Fw: Re:  | <test@test.com> | <t1@test.com> | 2022-08-28T06:56:26Z | 84.56 (KB) | Delivered | outgoing | RELAY_O365 |
+>
 >### Message DLP Report Details Summary
+>
 >|Mid|Violation Severity|Risk Factor|Dlp Policy|
 >|---|---|---|---|
 >| 84 | HIGH | 72 | PCI-DSS (Payment Card Industry Data Security Standard) |
 
 
 ### cisco-sma-message-url-details-get
+
 ***
 Get message URL summary details.
 
@@ -1186,6 +1274,7 @@ Get message URL summary details.
 #### Base Command
 
 `cisco-sma-message-url-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1222,8 +1311,11 @@ Get message URL summary details.
 | CiscoSMA.URLDetail.headerFrom | String | Email header from. | 
 
 #### Command example
+
 ```!cisco-sma-message-url-details-get message_ids=21 serial_number=42356DFA5D016457B182-3616BA148E19```
+
 #### Context Example
+
 ```json
 {
     "CiscoSMA": {
@@ -1280,11 +1372,15 @@ Get message URL summary details.
 #### Human Readable Output
 
 >### Message URL Report Details
+>
 >Found URL details for message ID 21.
+>
 >|Mid|All Icid|Subject|Sender|Recipient|Attachments|Timestamp|Message Size|Message Status|Direction|Sender Group|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 21 | 1269 | Fwd: test12345 | t3@test.com | test@test.com | test.jpg | 2022-08-24T10:05:52Z | 439.29 (KB) | Quarantined by Content Filters | incoming | ACCEPTLIST |
+>| 21 | 1269 | Fwd: test12345 | <t3@test.com> | <test@test.com> | test.jpg | 2022-08-24T10:05:52Z | 439.29 (KB) | Quarantined by Content Filters | incoming | ACCEPTLIST |
+>
 >### Message URL Report Details Summary
+>
 >|Description|Timestamp|
 >|---|---|
 >| Message 21 URL: http:<span>//</span>9.9.9.9:8080/ , URL reputation: -6.8, Condition: URL Reputation Rule. | 2022-08-24T10:05:56Z |
@@ -1293,16 +1389,18 @@ Get message URL summary details.
 
 
 ### cisco-sma-report-get
+
 ***
 Get statistics reports.
 Note that each report type is compatible with different arguments.
 Refer to the following link ("ESA Reporting" section in the file) in order to view the dedicated arguments for each report type.
-https://www.cisco.com/c/dam/en/us/td/docs/security/security_management/sma/sma12-0/AsyncOS-API-Addendum-GD_General_Deployment.xlsx.
+<https://www.cisco.com/c/dam/en/us/td/docs/security/security_management/sma/sma12-0/AsyncOS-API-Addendum-GD_General_Deployment.xlsx>.
 
 
 #### Base Command
 
 `cisco-sma-report-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1329,8 +1427,11 @@ https://www.cisco.com/c/dam/en/us/td/docs/security/security_management/sma/sma12
 | CiscoSMA.Report.resultSet | Number | Report results summary. | 
 
 #### Command example
+
 ```!cisco-sma-report-get start_date=2weeks end_date=now device_group_name=Hosted_Cluster report_type=mail_incoming_traffic_summary```
+
 #### Context Example
+
 ```json
 {
     "CiscoSMA": {
@@ -1425,7 +1526,9 @@ https://www.cisco.com/c/dam/en/us/td/docs/security/security_management/sma/sma12
 #### Human Readable Output
 
 >### Report type: mail_incoming_traffic_summary
+>
 >Report UUID: 54db5cef-36a4-44a7-a121-37d9fb4e3971
+>
 >|Blocked Dmarc|Blocked Invalid Recipient|Blocked Reputation|Blocked Sdr|Bulk Mail|Detected Amp|Detected Spam|Detected Spam Certain|Detected Spam Suspect|Detected Virus|Detected Virus Per Msg|Failed Dkim|Failed Spf|Ims Spam Increment Over Case|Malicious Url|Marketing Mail|Social Mail|Threat Content Filter|Total Clean Recipients|Total Graymail Recipients|Total Mailbox Auto Remediated Recipients|Total Recipients|Total Spoofed Emails|Total Threat Recipients|Verif Decrypt Fail|Verif Decrypt Success|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 6 | 3454 | 0 | 1 | 0 | 35 | 35 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 5 | 0 | 1 | 565 | 6 | 0 | 4069 | 0 | 3498 | 0 | 0 |

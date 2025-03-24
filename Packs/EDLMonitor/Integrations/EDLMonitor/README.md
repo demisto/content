@@ -31,13 +31,14 @@ Gets the current contents of an EDL
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| EDL | EDL IP or URL (e.g. http://xsoarserver.com:10009 or https://xsoarserver.com/instance/execute/instance_name). | Required | 
+| EDL | EDL IP or URL (e.g. <http://xsoarserver.com:10009> or <https://xsoarserver.com/instance/execute/instance_name>). | Required | 
 | EDL_username | EDL username, for auth to the EDL (optional). | Optional | 
 | EDL_password | EDL password, for auth to the EDL (optional). | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
+
 ### email-edl-contents
 
 ***
@@ -51,7 +52,7 @@ Gets the current contents of an EDL and emails it to a specified email address
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| EDL | EDL IP or URL (e.g. http://xsoarserver.com:10009 or https://xsoarserver.com/instance/execute/instance_name). | Required | 
+| EDL | EDL IP or URL (e.g. <http://xsoarserver.com:10009> or <https://xsoarserver.com/instance/execute/instance_name>). | Required | 
 | Email | Email address that you want to send the EDL contents to. | Required | 
 | EDL_username | EDL username, for auth to the EDL (optional). | Optional | 
 | EDL_password | EDL password, for auth to the EDL (optional). | Optional | 
@@ -59,6 +60,7 @@ Gets the current contents of an EDL and emails it to a specified email address
 #### Context Output
 
 There is no context output for this command.
+
 ### check-status
 
 ***
@@ -72,7 +74,7 @@ Return the response code of the EDL
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| EDL | EDL IP or URL (e.g. http://xsoarserver.com:10009 or https://xsoarserver.com/instance/execute/instance_name). | Required | 
+| EDL | EDL IP or URL (e.g. <http://xsoarserver.com:10009> or <https://xsoarserver.com/instance/execute/instance_name>). | Required | 
 | EDL_username | EDL username, for auth to the EDL (optional). | Optional | 
 | EDL_password | EDL password, for auth to the EDL (optional). | Optional | 
 | Email | Email. | Optional | 

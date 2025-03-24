@@ -1,6 +1,7 @@
 Gets all tasks for a specific incident by the given state.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Gets all tasks for a specific incident by the given state.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Gets all tasks for a specific incident by the given state.
 | states | The comma-separated list of states. Can be, "New", "InProgress", "Completed", "Waiting", "Error", "Skipped", "Blocked". You can also leave this field empty to get all tasks. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

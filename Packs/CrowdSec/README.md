@@ -1,4 +1,5 @@
 With the CrowdSec integration, you will have access to CrowdSec CTI, highly accurate, centralized, and curated IP reputation data built from:
+
 - A global community of + 100K power users sharing signals
 - Real-time reactivity against malicious IPs
 - Fully and easily integrates almost anywhere 

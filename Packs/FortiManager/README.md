@@ -7,6 +7,7 @@ This pack includes Cortex XSIAM content.
 ## Configuration on Server Side
 
 To configure Fortinet FortiManager to forward logs to Cortex XSIAM Broker VM via syslog follow the steps below.
+
 1. Go to **System Settings** &rarr; **Advanced** &rarr; **Syslog Server**.
 2. On the top pane, select the **Syslog Server** tab. A new Syslog server window will be open.
 3. Choose a name for the new Syslog server.
@@ -15,9 +16,11 @@ To configure Fortinet FortiManager to forward logs to Cortex XSIAM Broker VM via
 For more information see [FortiManager documentation](https://docs2.fortinet.com/document/fortimanager/6.0.3/administration-guide/235746/syslog-server).
  
 ## Collect Events from Vendor
+
 In order to use the collector, use the [Broker VM](#broker-vm) option.
  
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
  
 You can configure the specific vendor and product for this instance.
@@ -26,6 +29,7 @@ You can configure the specific vendor and product for this instance.
 2. Go to the **Apps** column under the **Brokers** tab and add the **Syslog Collector** app for the relevant broker instance. If the app already exists, hover over it and click **Configure**.
 3. Click **Add New** for adding a new syslog data source.
 4. When configuring the new syslog data source, set the following values:
+
    | Parameter     | Value   
    | :---          | :---        
    | `Vendor`      | Enter **Fortinet**.
@@ -35,7 +39,9 @@ You can configure the specific vendor and product for this instance.
  
 
 ### XQL Queries
+
 The following query returns all mapped XDM Fields
+
 ```
 | datamodel dataset = fortinet_fortimanager_raw 
 | fields fortinet_fortimanager_raw._raw_log,
@@ -57,6 +63,7 @@ The following query returns all mapped XDM Fields
 ```
 
 For further documentation please visit FortiManager documentation: 
+
 * FortiManager [log types and subtypes](https://docs.fortinet.com/document/fortimanager/7.2.0/log-message-reference/238528/fortimanager-log-types-and-subtypes).
 
 </~XSIAM>

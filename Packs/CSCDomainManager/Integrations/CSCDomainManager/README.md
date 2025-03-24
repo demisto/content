@@ -15,6 +15,7 @@ This integration was integrated and tested with version 2.0.0 of CSCDomainManage
 
 
 ## Access and Security
+
  Customers request access through their CSC service team.  Their service team will gather the details for
 the service account that will be used to access the API; and
 the API administrator(s) (one or more authorized client users) who will manage the credentials through our CSCDomainManagerSM web portal.
@@ -23,9 +24,10 @@ Please see attached API guide for reference.
  
 CSC generates the API key and creates the service account, with requested permissions, that will be used to access the API.
  
-The client API administrator then logs into our CSCDomainManagerSM at https://weblogin.cscglobal.com to retrieve the key and generate the bearer token for the API service account.
+The client API administrator then logs into our CSCDomainManagerSM at <https://weblogin.cscglobal.com> to retrieve the key and generate the bearer token for the API service account.
 
 ### Token Refresh
+
 Token will expire after 30 consecutive days of no activity, you can reactive it by using the [token refresh endpoint](https://www.cscglobal.com/cscglobal/docs/dbs/domainmanager/api-v2/#/token/put_token_refresh).
 
 ## Commands
@@ -108,8 +110,11 @@ Gets the domains by the applied filters
 | CSCDomainManager.Domain.whoisPrivacy | Boolean | Indicates if WHOIS privacy protection is enabled for the domain. | 
 
 #### Command example
+
 ```!csc-domains-search domain_name=csc-panw.biz```
+
 #### Context Example
+
 ```json
 {
     "CSCDomainManager": {
@@ -222,9 +227,10 @@ Gets the domains by the applied filters
 #### Human Readable Output
 
 >### Filtered Domains
+>
 >|Qualified Domain Name|Domain|Managed Status|Registration Date|Registry Expiry Date|Paid Through Date|Name Servers|Dns Type|Whois Contact first Name|Whois Contact last Name|Whois Contact email|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| csc-panw.biz | csc-panw | ACTIVE | 22-Apr-2024 UTC | 22-Apr-2025 UTC | 22-Apr-2025 UTC | dns1.cscdns.net,<br/>dns2.cscdns.net | CSC_BASIC | Domain,<br/>Domain,<br/>DNS | Administrator,<br/>Administrator,<br/>Administrator | admin@internationaladmin.com,<br/>admin@internationaladmin.com,<br/>dns-admin@cscglobal.com |
+>| csc-panw.biz | csc-panw | ACTIVE | 22-Apr-2024 UTC | 22-Apr-2025 UTC | 22-Apr-2025 UTC | dns1.cscdns.net,<br/>dns2.cscdns.net | CSC_BASIC | Domain,<br/>Domain,<br/>DNS | Administrator,<br/>Administrator,<br/>Administrator | <admin@internationaladmin.com>,<br/><admin@internationaladmin.com>,<br/><dns-admin@cscglobal.com> |
 
 
 ### csc-domains-availability-check
@@ -255,8 +261,11 @@ Check registration availability for one or more domain names
 | CSCDomainManager.Domain.Availability.availableTerms | Unknown | The terms available for the domain registration. | 
 
 #### Command example
+
 ```!csc-domains-availability-check domain_name=csc-panw.biz```
+
 #### Context Example
+
 ```json
 {
     "CSCDomainManager": {
@@ -283,6 +292,7 @@ Check registration availability for one or more domain names
 #### Human Readable Output
 
 >### Domains Availability
+>
 >|Qualified Domain Name|Code|Message|Price|Currency|List of the terms (months) available for registration|
 >|---|---|---|---|---|---|
 >| csc-panw.biz | DOMAIN_IN_PORTFOLIO | Domain already in portfolio |  |  |  |
@@ -374,8 +384,11 @@ Get domains configuration information for owned domains with optional filtering
 | CSCDomainManager.Domain.Configuration.wwwIsUrlf | Boolean | Indicates if the WWW domain is URL forwarding enabled. | 
 
 #### Command example
+
 ```!csc-domains-configuration-list domain_name=csc-panw.biz```
+
 #### Context Example
+
 ```json
 {
     "CSCDomainManager": {
@@ -456,9 +469,10 @@ Get domains configuration information for owned domains with optional filtering
 #### Human Readable Output
 
 >### Filtered Configurations
+>
 >|Domain|Domain Label|Domain Status Code|Domain extension|Country|Admin Email|Admin Name|Account Number|Account Name|
 >|---|---|---|---|---|---|---|---|---|
->| csc-panw.biz | csc-panw | ACT | biz | GTLD | admin@internationaladmin.com | admin@internationaladmin.com | 8601230 | Palo Alto Networks - Integration |
+>| csc-panw.biz | csc-panw | ACT | biz | GTLD | <admin@internationaladmin.com> | <admin@internationaladmin.com> | 8601230 | Palo Alto Networks - Integration |
 
 
 ### domain
@@ -547,8 +561,11 @@ Get domain data by qualified domain name
 | Domain.WHOIS.Registrant.Phone | String | The phone number of the registrant in the WHOIS record. | 
 
 #### Command example
+
 ```!domain domain=csc-panw.biz```
+
 #### Context Example
+
 ```json
 {
     "CSCDomainManager": {
@@ -755,9 +772,10 @@ Get domain data by qualified domain name
 #### Human Readable Output
 
 >### Domain
+>
 >|Qualified Domain Name|Domain|Idn|Generic top-level domains|Managed Status|Registration Date|Registry Expiry Date|Paid Through Date|Country Code|Server Delete Prohibited|Server Transfer Prohibited|Server Update Prohibited|Name Servers|Dns Type|Whois Contact first Name|Whois Contact last Name|Whois Contact email|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| csc-panw.biz | csc-panw |  | false | ACTIVE | 22-Apr-2024 UTC | 22-Apr-2025 UTC | 22-Apr-2025 UTC |  |  | false |  | dns1.cscdns.net,<br/>dns2.cscdns.net | CSC_BASIC | Domain | Administrator | admin@internationaladmin.com |
+>| csc-panw.biz | csc-panw |  | false | ACTIVE | 22-Apr-2024 UTC | 22-Apr-2025 UTC | 22-Apr-2025 UTC |  |  | false |  | dns1.cscdns.net,<br/>dns2.cscdns.net | CSC_BASIC | Domain | Administrator | <admin@internationaladmin.com> |
 
 
 ### csc-domains-configuration-search

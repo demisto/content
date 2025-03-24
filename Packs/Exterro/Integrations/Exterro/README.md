@@ -16,6 +16,7 @@ Documentation for the integration was provided by FTK Connect.
     
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
@@ -50,17 +51,23 @@ Triggers the automation job and returns a string.
 
 
 ##### Command Example
+
 If automation workflow Id 232 is designed for Agent Memory collection in FTK Connect, then below command can be used to trigger the automation job from cortex xsoar.
+
 ```
 exterro-ftk-trigger-workflow automation_id=232 target_ips=X.X.X.X
 ```
+
 ##### Command Example
+
 If automation workflow Id 233 is designed to create new case, add and process the evidence from provided path in FTK Connect, then below command can be used to trigger the automation job from cortex xsoar.
+
 ```
 exterro-ftk-trigger-workflow automation_id=233 case_name="Test case_name" evidence_path="\\X.X.X.X\ProjectData\Evidences\AR"
 ```
 
 ##### Context Example
+
 ```
 {
     ExterroFTK.Workflow

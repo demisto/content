@@ -1,11 +1,14 @@
 Use the Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
 
 ## Use Cases
+
 ---
+
 1. Export a list of malicious IPs to block via a firewall.
 2. Export a list of indicators to a service such as Splunk, using a supported output format.
 
 ## Configure ExportIndicators on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -16,12 +19,12 @@ Use the Export Indicators Service integration to provide an endpoint with a list
     `!findIndicators query=<your query>`
     * __Outbound Format__: The default format of the entries in the service. Supported formats: text, json, json-seq, csv, XSOAR json, XSOAR json-seq, XSOAR csv, PAN-OS URL, Symantec ProxySG and McAfee Web Gateway.
     * __List Size__: Max amount of entries in the service instance.
-    * __Update On Demand Only__: When set to true, will only update the service indicators via **eis-update** command.
+    * __Update On Demand Only__: When set to true, will only update the service indicators via __eis-update__ command.
     * __Refresh Rate__: How often to refresh the export indicators list (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3
     months, 1 year)
     * __Collapse IPs__: Whether to collapse IPs and if so - to ranges or CIDRs.
     * __Show CSV Formats as Text__: If checked, csv and XSOAR-csv formats will create a textual web page instead of downloading a csv file.
-    * __Listen Port__: Will run the *Export Indicators Service* on this port from within Cortex XSOAR. If you have multiple Export Indicators Service integration instances, make sure to use **different listening ports** to separate the outbound feeds.
+    * __Listen Port__: Will run the *Export Indicators Service* on this port from within Cortex XSOAR. If you have multiple Export Indicators Service integration instances, make sure to use __different listening ports__ to separate the outbound feeds.
     * __Certificate (Required for HTTPS)__: HTTPS Certificate provided by pasting its values into this field.
     * __Private Key (Required for HTTPS)__: HTTPS private key provided by pasting its values into this field.
     * __HTTP Server__: Ignores certificate and private key, and will run the export indicators service
@@ -41,24 +44,27 @@ Use the Export Indicators Service integration to provide an endpoint with a list
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ### Access the Export Indicators Service by Instance Name (HTTPS)
-**Note**: By default, the route will be open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to connect to the integration.
 
-To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled. 
+__Note__: By default, the route will be open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to connect to the integration.
 
-1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
+To access the Export Indicators service by instance name, make sure *__Instance execute external__* is enabled. 
+
+1. In Cortex XSOAR, go to __Settings > About > Troubleshooting__.
+2. In the __Server Configuration__ section, verify that the *__instance.execute.external__* key is set to *true*. If this key does not exist, click __+ Add Server Configuration__ and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
 3. In a web browser, go to `https://*<demisto_address>*/instance/execute/*<instance_name>*` .
 
 ### Update values in the export indicators service
+
 ---
 Updates values stored in the export indicators service (only avaialable On-Demand).
 
 
 ### URL Inline Arguments
+
 ---
 Use the following arguments in the URL to change the request:
 
-| **Argument Name** | **Description** | **Example** |
+| __Argument Name__ | __Description__ | __Example__ |
 | --- | --- | --- |
 | n | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | `https://{server_host}/instance/execute/{instance_name}?n=50` |
 | s | The starting entry index from which to export the indicators. | `https://{server_host}/instance/execute/{instance_name}?s=10&n=50` |
@@ -78,9 +84,10 @@ Use the following arguments in the URL to change the request:
 ##### Base Command
 
 `eis-update`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | query | The query used to retrieve indicators from the system. Leave empty to use the query from the integration parameters.  | Optional | 
 | format | The output format. | Optional | 
@@ -103,10 +110,12 @@ Use the following arguments in the URL to change the request:
 There is no context output for this command.
 
 ##### Command Example
+
 ```!eis-update print_indicators=true query=type:IP format=text list_size=4```
 
 ##### Human Readable Output
-| **Indicators** |
+
+| __Indicators__ |
 | --- |
 | 1.1.1.1 |
 | 2.2.2.2 |

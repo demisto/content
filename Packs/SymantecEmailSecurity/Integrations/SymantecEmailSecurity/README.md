@@ -2,6 +2,7 @@ Symantec Email Security.cloud is a hosted service that filters email messages an
 This integration was integrated and tested with version 10.6.6 of Symantec Email Security Cloud.
 
 ## Use cases
+
 1. **IOC Management:** Manage IOCs for email threats across domains: list, add, update, delete, or renew IOCs.
 2. **Data Feeds:** Retrieve threat data (e.g., malware, spam, clicks) for insights into email security events.
 3. **Email Queue Monitoring:** View queue statistics per domain to monitor email processing and delays.
@@ -77,8 +78,11 @@ List the IOCs that apply to a specific domain or to all domains.
 | SymantecEmailSecurity.IOC.expiryDate | String | Retention period for an IOC until it is removed from the system. |
 
 #### Command example
+
 ```!symantec-email-security-ioc-list```
+
 #### Context Example
+
 ```json
 {
     "SymantecEmailSecurity": {
@@ -99,6 +103,7 @@ List the IOCs that apply to a specific domain or to all domains.
 #### Human Readable Output
 
 >### IOC(s)
+>
 >|ID|Type|Value|Status|Description|Email Direction|Remediation Action|Expiry Date|
 >|---|---|---|---|---|---|---|---|
 >| 00000000-0000-0000-0000-000000000000 | subject | Test | Active | Test | inbound | quarantine | 2024-01-01 00:00:00.0 |
@@ -120,7 +125,7 @@ Add, update, delete, and renew multiple IOCs through the `entry_id` or a single 
 | --- | --- | --- |
 | domain | Run the command for a specific domain, for all domains use 'global'. Run `symantec-email-security-email-queue-list` to get a list of available domains. Default is global. | Optional |
 | action | Defines the action for IOCs: 'merge' to merge or update IOCs in the database by their type and value without inputting `ioc_id`; 'replace' to delete and replace all IOCs in the database without inputting `upload_ioc_json`; 'ioc' to add, update, delete, or renew multiple IOCs each with their own action, use this only when entering an `entry_id`; 'add' to add an IOC without inputting `ioc_id`. Possible values are: merge, replace, upload_ioc_json, add, update, delete, renew. | Required |
-| entry_id | Entry ID of a JSON file to pass multiple IOCs. Only accepts `action=merge/replace/ioc`. Example value: [{"APIRowAction": "U", "IocBlacklistId": xxxx, "IocType": "url", "IocValue": "https://www.example.com", "Description": "Hello World!"}]. More about IOCs can be found in: https://techdocs.broadcom.com/content/dam/broadcom/techdocs/us/en/dita/symantec-security-software/email-security/email-security-cloud/content/Indicators-of-Compromise-(IOC)-Blacklist-API-Guide.pdf. | Optional |
+| entry_id | Entry ID of a JSON file to pass multiple IOCs. Only accepts `action=merge/replace/ioc`. Example value: [{"APIRowAction": "U", "IocBlacklistId": xxxx, "IocType": "url", "IocValue": "https://www.example.com", "Description": "Hello World!"}]. More about IOCs can be found in: <https://techdocs.broadcom.com/content/dam/broadcom/techdocs/us/en/dita/symantec-security-software/email-security/email-security-cloud/content/Indicators-of-Compromise-(IOC)-Blacklist-API-Guide.pdf>. | Optional |
 | ioc_id | ID of the IOC. Can't be used with action=`merge`\replace\`add`. | Optional |
 | ioc_type | Type of the IOC. Possible values are: attachmentname, md5attachment, sha2attachment, bodysenderdomain, bodysenderemail, bodysendertopleveldomain, envelopesenderdomain, envelopesenderemail, envelopesendertopleveldomain, senderipaddress, senderiprange, recipientdomain, recipientemail, subject, url. | Optional |
 | ioc_value | Value of the IOC. | Optional |
@@ -131,8 +136,11 @@ Add, update, delete, and renew multiple IOCs through the `entry_id` or a single 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!symantec-email-security-ioc-action action=add ioc_type=subject ioc_value=Test123 description=test email_direction=inbound remediation_action=block_and_delete```
+
 #### Human Readable Output
 
 >## All IOC(s) were uploaded successfully.
@@ -155,8 +163,11 @@ Renew all IOCs previously uploaded and still in the database, whether active or 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!symantec-email-security-ioc-renew```
+
 #### Human Readable Output
 
 >## All IOC(s) were renewed.
@@ -340,8 +351,11 @@ Retrieves data feeds from Symantec Email Security.cloud. Available feeds: 'all' 
 | SymantecEmailSecurity.Data.reportWindowEndTime | Number | End time of the report window. |
 
 #### Command example
+
 ```!symantec-email-security-data-list```
+
 #### Context Example
+
 ```json
 {
     "SymantecEmailSecurity": {
@@ -478,9 +492,10 @@ Retrieves data feeds from Symantec Email Security.cloud. Available feeds: 'all' 
 #### Human Readable Output
 
 >### Email Data Feed(s)
+>
 >|Message Size|Subject|Envelope From|Envelope To|Sender IP|Sender Mail Server|File/URLs With Risk|Incidents|
 >|---|---|---|---|---|---|---|---|
->| 10000 | New Email Quarantine Account | bounce-newaccount-verp-00000000000000000000@eu.quarantine.symantec.com | hello@world | 0.0.0.0 | 0.0.0.0.googleusercontent.com | Unknown00000000.data-None,<br/>https:<span>//</span>www.example.com-1 | {'Severity': 'LOW', 'Security Service': 'Anti-Malware', 'Detection Method': 'Skeptic Heuristics', 'Verdict': 'Malware', 'Action': 'Block'} |
+>| 10000 | New Email Quarantine Account | <bounce-newaccount-verp-00000000000000000000@eu.quarantine.symantec.com> | hello@world | 0.0.0.0 | 0.0.0.0.googleusercontent.com | Unknown00000000.data-None,<br/>https:<span>//</span>www.example.com-1 | {'Severity': 'LOW', 'Security Service': 'Anti-Malware', 'Detection Method': 'Skeptic Heuristics', 'Verdict': 'Malware', 'Action': 'Block'} |
 
 
 ### symantec-email-security-email-queue-list
@@ -525,8 +540,11 @@ Returns a list of domains owned by the customer, with queue statistics for each 
 | SymantecEmailSecurity.EmailQueue.Domains.MeanTimeInDeliveryQueueOutbound | Number | Average \(mean\) wait time for outbound messages waiting to be delivered after processing. Measured in seconds. |
 
 #### Command example
+
 ```!symantec-email-security-email-queue-list```
+
 #### Context Example
+
 ```json
 {
     "SymantecEmailSecurity": {
@@ -562,11 +580,13 @@ Returns a list of domains owned by the customer, with queue statistics for each 
 #### Human Readable Output
 
 >### Email Queue Statistic(s)
+>
 >|Totalmessagesinbound|Totalmessagesoutbound|Meantimeinqueueinbound|Meantimeinqueueoutbound|Longesttimeininbound|Longesttimeinoutbound|
 >|---|---|---|---|---|---|
 >| 0 | 0 | 0 | 0 | 0 | 0 |
 >
 >### Domain Statistic(s)
+>
 >|Name|Receivequeuecountinbound|Receivequeuecountoutbound|Deliveryqueuecountinbound|Deliveryqueuecountoutbound|
 >|---|---|---|---|---|
 >| lior.sb | 0 | 0 | 0 | 0 |
@@ -585,7 +605,7 @@ Retrieves the metadata for quarantined emails belonging to the authenticated use
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| q | A search criterion that can be used to filter emails that match only certain conditions based on email metadata. The search syntax is built by a field name and search value enclosed by parenthesis and the operators: 'OR', 'AND' to combine multiple search criteria's or values, example: (email_subject:test). Acceptable field names are: 'dlp_message_id', 'email_envelope_sender', 'email_envelope_sender.raw', 'email_sender', 'email_envelope_recipient', 'email_envelope_recipient.raw', 'email_subject', 'email_subject.raw'. See the section called “Search String Syntax” on page 16 in: https://techdocs.broadcom.com/content/dam/broadcom/techdocs/us/en/dita/symantec-security-software/email-security/email-security-cloud/content/EmailQuarantineAPIGuide.pdf. | Optional |
+| q | A search criterion that can be used to filter emails that match only certain conditions based on email metadata. The search syntax is built by a field name and search value enclosed by parenthesis and the operators: 'OR', 'AND' to combine multiple search criteria's or values, example: (email_subject:test). Acceptable field names are: 'dlp_message_id', 'email_envelope_sender', 'email_envelope_sender.raw', 'email_sender', 'email_envelope_recipient', 'email_envelope_recipient.raw', 'email_subject', 'email_subject.raw'. See the section called “Search String Syntax” on page 16 in: <https://techdocs.broadcom.com/content/dam/broadcom/techdocs/us/en/dita/symantec-security-software/email-security/email-security-cloud/content/EmailQuarantineAPIGuide.pdf>. | Optional |
 | sort_column | Specifies the column to use for sorting. Defaults to `email_date_received`. | Optional |
 | sort_order | Specifies the order in which to sort. Possible values are: desc, asc. Default is desc. | Optional |
 | after | A time stamp value used to select only SUDULS items that were created after this time. Accepted formats: any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute. | Optional |
@@ -623,8 +643,11 @@ Retrieves the metadata for quarantined emails belonging to the authenticated use
 | SymantecEmailSecurity.QuarantineEmail.actions.release_message | Bool | Whether the email can be released. |
 
 #### Command example
+
 ```!symantec-email-security-quarantine-email-list```
+
 #### Context Example
+
 ```json
 {
     "SymantecEmailSecurity": {
@@ -789,13 +812,14 @@ Retrieves the metadata for quarantined emails belonging to the authenticated use
 #### Human Readable Output
 
 >### Quarantine Email(s)
+>
 >|ID|Date Received|Direction|Quarantine Type|Is Released|Quarantine Reason|Sender|Master Recipient|Subject|
 >|---|---|---|---|---|---|---|---|---|
->| 000 | 2024-10-06 09:20:41.148000+00:00 | inbound | CI | true | CC | Example (example@example.com) | example@example.com | a |
->| 001 | 2024-10-06 13:37:51.295000+00:00 | inbound | CI | false | CC | Example (example@example.com) | example@example.com | a |
->| 002 | 2024-10-06 13:37:55.373000+00:00 | inbound | CI | false | CC | Example (example@example.com) | example@example.com | a |
->| 003 | 2024-10-06 13:38:00.677000+00:00 | inbound | CI | true | CC | Example (example@example.com) | example@example.com | a |
->| 004 | 2024-10-06 13:40:11.087000+00:00 | inbound | CI | false | CC | Example (example@example.com) | example@example.com | a |
+>| 000 | 2024-10-06 09:20:41.148000+00:00 | inbound | CI | true | CC | Example (<example@example.com>) | <example@example.com> | a |
+>| 001 | 2024-10-06 13:37:51.295000+00:00 | inbound | CI | false | CC | Example (<example@example.com>) | <example@example.com> | a |
+>| 002 | 2024-10-06 13:37:55.373000+00:00 | inbound | CI | false | CC | Example (<example@example.com>) | <example@example.com> | a |
+>| 003 | 2024-10-06 13:38:00.677000+00:00 | inbound | CI | true | CC | Example (<example@example.com>) | <example@example.com> | a |
+>| 004 | 2024-10-06 13:40:11.087000+00:00 | inbound | CI | false | CC | Example (<example@example.com>) | <example@example.com> | a |
 
 
 ### symantec-email-security-quarantine-email-preview
@@ -839,8 +863,11 @@ Retrieves the contents of the email specified in the request. To preview an emai
 | SymantecEmailSecurity.QuarantineEmailPreview.bodypart.content | String | The content of the email's body part. |
 
 #### Command example
+
 ```!symantec-email-security-quarantine-email-preview message_id=000```
+
 #### Context Example
+
 ```json
 {
     "SymantecEmailSecurity": {
@@ -892,14 +919,19 @@ Retrieves the contents of the email specified in the request. To preview an emai
 #### Human Readable Output
 
 >### Quarantine Email Preview
+>
 >|Date|From|To|Subject|
 >|---|---|---|---|
 >| Wed, 02 Oct 2024 04:37:01 +0000 | xxx | xxx | xxx |
+>
 >### Attachments
+>
 >|Name|Type|
 >|---|---|
 >| hello | world |
+>
 >### Body Parts
+>
 >|Content|
 >|---|
 >| xxx |
@@ -927,8 +959,11 @@ Releases the set of quarantined emails specified in the request.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!symantec-email-security-quarantine-email-release message_ids=000```
+
 #### Human Readable Output
 
 >## Successfully released all messages.
@@ -951,8 +986,11 @@ Deletes the set of quarantined emails specified in the request. The items are ma
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!symantec-email-security-quarantine-email-delete message_ids=000```
+
 #### Human Readable Output
 
 >## Successfully deleted all messages.
@@ -991,8 +1029,11 @@ Retrieve the allow list items.
 | SymantecEmailSecurity.AllowList.date_amended | Date | Date at which the item was amended. |
 
 #### Command example
+
 ```!symantec-email-security-item-allow-list```
+
 #### Context Example
+
 ```json
 {
     "SymantecEmailSecurity": {
@@ -1025,6 +1066,7 @@ Retrieve the allow list items.
 #### Human Readable Output
 
 >### Allow List Item(s)
+>
 >|Description|
 >|---|
 >| Test |
@@ -1052,8 +1094,11 @@ Allows a SUDULS (allow quarantine users to maintain their own lists of email add
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!symantec-email-security-item-allow-list-update suduls_user=lior description=sb email_or_domain=lior.sb item_id=000```
+
 #### Human Readable Output
 
 >## The items were successfully merged.
@@ -1076,8 +1121,11 @@ Allows a SUDULS (allow quarantine users to maintain their own lists of email add
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!symantec-email-security-item-allow-list-delete item_id=000```
+
 #### Human Readable Output
 
 >## The items were successfully deleted.
@@ -1116,8 +1164,11 @@ Retrieve the block list items.
 | SymantecEmailSecurity.BlockList.date_amended | Date | Date at which the item was amended. |
 
 #### Command example
+
 ```!symantec-email-security-item-block-list```
+
 #### Context Example
+
 ```json
 {
     "SymantecEmailSecurity": {
@@ -1150,6 +1201,7 @@ Retrieve the block list items.
 #### Human Readable Output
 
 >### Block List Item(s)
+>
 >|Description|
 >|---|
 >| Test |
@@ -1177,8 +1229,11 @@ Allows a SUDULS (allow quarantine users to maintain their own lists of email add
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!symantec-email-security-item-block-list-update suduls_user=lior description=sb email_or_domain=lior.sb item_id=000```
+
 #### Human Readable Output
 
 >## The items were successfully merged.
@@ -1201,8 +1256,11 @@ Allows a SUDULS (allow quarantine users to maintain their own lists of email add
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!symantec-email-security-item-block-list-delete item_id=000```
+
 #### Human Readable Output
 
 >## The items were successfully deleted.

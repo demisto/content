@@ -9,7 +9,7 @@ This is the default integration for this content pack when configured by the Dat
 | **Parameter** | **Description**                                                                                                           | **Required** |
 |---------------------------------------------------------------------------------------------------------------------------| --- | --- |
 | API Token | The API Key to use for connection                                                                                         | True |
-| Server URL (for example: https://app.eu.orcasecurity.io/api) | For more information about the different regions and ips in the (link)[https://docs.orcasecurity.io/docs/regions-and-ips] | True |
+| Server URL (for example: <https://app.eu.orcasecurity.io/api>) | For more information about the different regions and ips in the [link](https://docs.orcasecurity.io/docs/regions-and-ips) | True |
 | First fetch time | First fetch query `<number> <time unit>`, e.g., `7 days`. Default `3 days`)                                            | False |
 | The maximum number of events per fetch | The number of events to fetch. Maximum value is 1000                                                                      | False |
 | Trust any certificate (not secure) |                                                                                                                           | False |

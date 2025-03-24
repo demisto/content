@@ -19,9 +19,12 @@ Follow these steps for a self-deployed configuration.
 | Trust any certificate (not secure) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### inception-file-enrichment
+
 ***
 Enrich files using file hash (MD5, SHA1, SHA256) with Stairwell's knowledge.
 
@@ -29,6 +32,7 @@ Enrich files using file hash (MD5, SHA1, SHA256) with Stairwell's knowledge.
 #### Base Command
 
 `inception-file-enrichment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -44,9 +48,11 @@ Enrich files using file hash (MD5, SHA1, SHA256) with Stairwell's knowledge.
 
 
 #### Command Example
+
 ```!inception-file-enrichment fileHash=9fe1ac46f0cdebf03156a6232d771c14559f8daf```
 
 #### Context Example
+
 ```json
 {
 	"inception": {
@@ -117,17 +123,21 @@ Enrich files using file hash (MD5, SHA1, SHA256) with Stairwell's knowledge.
 #### Human Readable Output
 
 ># Stairwell Inception
+>
 >MD5: 00ddbafe247c891eed36bd74f66f936b
 >SHA256: e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d
 >Seen Assets: 1
 >Matching YARA Intel: wiper_HermeticWiper,MAL_HERMETIC_WIPER
+>
 >### AV Scanning Results
+>
 >Engine Name|Result
 >---|---
 >ClamAV|undetected
 >Engine2|Trojan/Win.Hermeticwiper
 
 ### inception-variant-discovery
+
 ***
 Hunt for variants using a SHA256 across all files you have access to, including your environments and Stairwell's malware feeds.
 
@@ -135,6 +145,7 @@ Hunt for variants using a SHA256 across all files you have access to, including 
 #### Base Command
 
 `inception-variant-discovery`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -150,9 +161,11 @@ Hunt for variants using a SHA256 across all files you have access to, including 
 
 
 #### Command Example
+
 ```!inception-variant-discovery sha256=30e27357b7b773b226d4ee638e17b19b954226d197b0781822859269a5c22b4d```
 
 #### Context Example
+
 ```json
 {
 	"inception": {
@@ -177,6 +190,7 @@ Hunt for variants using a SHA256 across all files you have access to, including 
 #### Human Readable Output
 
 >### File Variants Discovered
+>
 >|sha256|similarity|
 >|---|---|
 >| e1a00d8923bac6f863c262236f15eb60d80571f8b31e7220c4b2912fae7e9a14 | 1 |

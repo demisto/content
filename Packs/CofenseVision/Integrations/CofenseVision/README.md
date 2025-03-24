@@ -16,9 +16,12 @@ This integration was integrated and tested with version 4 of Cofense Vision and 
 | Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cofense-message-token-get
+
 ***
 Retrieves a one-time token that can be used to get an email's content.
 
@@ -26,11 +29,12 @@ Retrieves a one-time token that can be used to get an email's content.
 #### Base Command
 
 `cofense-message-token-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| internet_message_id | Unique identifier of the email, enclosed in angle brackets.<br/><br/>Example: &lt;AC6CAE11-779E-4044-BB25-110171AB0301@example.com&gt;<br/><br/>Note: Users can get the ID by executing the "cofense-message-search-results-get" command. | Required | 
+| internet_message_id | Unique identifier of the email, enclosed in angle brackets.<br/><br/>Example: &lt;<AC6CAE11-779E-4044-BB25-110171AB0301@example.com>&gt;<br/><br/>Note: Users can get the ID by executing the "cofense-message-search-results-get" command. | Required | 
 | recipient_address | Email address of the recipient of the email.<br/><br/>Note: The email address can be a carbon copy (Cc) or blind<br/>carbon copy (Bcc) recipient but cannot be a shared mailbox or a<br/>distribution list.<br/><br/>Note: Users can get the recipient address by executing the "cofense-message-search-results-get" command. | Required | 
 | password | Password to protect the zip file containing the email. | Optional | 
 
@@ -44,8 +48,11 @@ Retrieves a one-time token that can be used to get an email's content.
 | Cofense.Message.recipients.address | String | Email address of the recipient. | 
 
 #### Command example
+
 ```!cofense-message-token-get internet_message_id="<1216208547.160.1658930322668@6d14a4fa9032>" recipient_address="abc@example.com"```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -63,12 +70,14 @@ Retrieves a one-time token that can be used to get an email's content.
 #### Human Readable Output
 
 >### One-time token:
+>
 >|Internet Message ID|Recipient's Address|Token|
 >|---|---|---|
->| <1216208547.160.1658930322668@6d14a4fa9032\> | abc@example.com | de7475a4\-3802\-46c1\-8e4c\-2665912445c0 |
+>| <1216208547.160.1658930322668@6d14a4fa9032\> | <abc@example.com> | de7475a4\-3802\-46c1\-8e4c\-2665912445c0 |
 
 
 ### cofense-message-metadata-get
+
 ***
 Retrieves the full content of a message that matches the specified Internet message ID and recipient email address of an email.
 
@@ -76,11 +85,12 @@ Retrieves the full content of a message that matches the specified Internet mess
 #### Base Command
 
 `cofense-message-metadata-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| internet_message_id | Unique identifier of the email, enclosed in angle brackets.<br/><br/>Example: &lt;AC6CAE11-779E-4044-BB25-110171AB0301@example.com&gt;<br/><br/>Note: Users can get the internet message ID by executing the "cofense-message-search-results-get" command. | Required | 
+| internet_message_id | Unique identifier of the email, enclosed in angle brackets.<br/><br/>Example: &lt;<AC6CAE11-779E-4044-BB25-110171AB0301@example.com>&gt;<br/><br/>Note: Users can get the internet message ID by executing the "cofense-message-search-results-get" command. | Required | 
 | recipient_address | Email address of the recipient of an email. The email address can be a <br/>carbon copy (Cc) or blind carbon copy (Bcc) recipient but cannot be a <br/>shared mailbox or a distribution list.<br/><br/>Note: Users can get the recipient address by executing the "cofense-message-search-results-get" command. | Required | 
 
 
@@ -121,8 +131,11 @@ Retrieves the full content of a message that matches the specified Internet mess
 | Cofense.Message.matchingSources | Unknown | One or more matching IOC sources. | 
 
 #### Command example
+
 ```!cofense-message-metadata-get internet_message_id="<1216208547.160.1658930322668@6d14a4fa9032>" recipient_address="abc@example.com"```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -227,12 +240,14 @@ Retrieves the full content of a message that matches the specified Internet mess
 #### Human Readable Output
 
 >### Message Metadata:
+>
 >|ID|Subject|Received On|Sent On|Processed On|Sender|Recipients|MD5|SHA1|SHA256|Internet Message ID|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 760623 | craftless plantable desulphurate iodized imbeds invoicing infrangibly prosers damn halberdiers refinedly unmoaned scatteredly11 time 1658930322646 | 27/07/2022, 01:58 PM UTC | 27/07/2022, 01:58 PM UTC | 27/07/2022, 01:58 PM UTC | abc@example.com | abc@example.com<br/>pqr@example.com | a486b023cd82f45f7b099a41dc3776a6 | 0b744bed73106d5d613d83c71b9d9884f48690f4 | 2d7bad3fe37c9e4089e6231784f51354ef2fd9689fe7fae6d46cb70d279da8e0 | <1216208547.160.1658930322668@6d14a4fa9032\> |
+>| 760623 | craftless plantable desulphurate iodized imbeds invoicing infrangibly prosers damn halberdiers refinedly unmoaned scatteredly11 time 1658930322646 | 27/07/2022, 01:58 PM UTC | 27/07/2022, 01:58 PM UTC | 27/07/2022, 01:58 PM UTC | <abc@example.com> | <abc@example.com><br/><pqr@example.com> | a486b023cd82f45f7b099a41dc3776a6 | 0b744bed73106d5d613d83c71b9d9884f48690f4 | 2d7bad3fe37c9e4089e6231784f51354ef2fd9689fe7fae6d46cb70d279da8e0 | <1216208547.160.1658930322668@6d14a4fa9032\> |
 
 
 ### cofense-message-get
+
 ***
 Fetches full content of an email and returns it as a zip file using a token.
 
@@ -240,6 +255,7 @@ Fetches full content of an email and returns it as a zip file using a token.
 #### Base Command
 
 `cofense-message-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -263,8 +279,11 @@ Fetches full content of an email and returns it as a zip file using a token.
 | File.Extension | String | The file extension. | 
 
 #### Command example
+
 ```!cofense-message-get token="fbbeff70-2c17-4d67-a741-3d8a7e394005"```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -290,6 +309,7 @@ Fetches full content of an email and returns it as a zip file using a token.
 
 
 ### cofense-message-attachment-get
+
 ***
 Fetches the full content of an email and returns a zip file.
 
@@ -297,6 +317,7 @@ Fetches the full content of an email and returns a zip file.
 #### Base Command
 
 `cofense-message-attachment-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -322,8 +343,11 @@ Fetches the full content of an email and returns a zip file.
 | File.Extension | String | The file extension. | 
 
 #### Command example
+
 ```!cofense-message-attachment-get md5="3d0e1d68f12afee22ae3e79e01027c7a" file_name="attachment.txt"```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -348,6 +372,7 @@ Fetches the full content of an email and returns a zip file.
 >| 603@cc18bdc4-7c64-494c-879c-23c3aee60818 | text/plain | 97ee1d575640245abadbba15c0672eec | 13311 | 13395876300d0a575812878446e15b9bbddda0b2 | 19d9c63bf4067a897950cfb72c14e8d05d8dcab0655979c6b60b925fb91e329f | 31df48f235cc82247c6edc05850f910d6a057717d5d5f6ce84a4bc6c6fc3cc1f6ebae706ac592ace106b0559753928a838a1aee7018bec5b4316b90d95f55bcf | 24:nDBTBpJG4hbUWBFcXekJPkJ1WkJM8PWkJKckJvV/WskJvV28BesR1zvX0:nDNrHb1BWXekJPkJ1WkJfPWkJDkJvV/n | 988 | ASCII text, with CRLF line terminators |
 
 ### cofense-quarantine-jobs-list
+
 ***
 Filters and returns a paginated list of matching quarantine jobs.
 
@@ -355,6 +380,7 @@ Filters and returns a paginated list of matching quarantine jobs.
 #### Base Command
 
 `cofense-quarantine-jobs-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -417,8 +443,11 @@ Filters and returns a paginated list of matching quarantine jobs.
 | Cofense.QuarantineJob.searchId | Number | ID that Cofense Vision assigned to the search, if any. | 
 
 #### Command example
+
 ```!cofense-quarantine-jobs-list size=2```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -514,6 +543,7 @@ Filters and returns a paginated list of matching quarantine jobs.
 #### Human Readable Output
 
 >### Quarantine Job:
+>
 >|ID|Created By|Created Date|Last Modified By|Last Modified Date|Last Action|Status|Completed Date|Messages|
 >|---|---|---|---|---|---|---|---|---|
 >| 8 | testuser | 07/07/2022, 07:36 AM  | system | 20/07/2022, 05:37 AM  | RESTORE | COMPLETED | 20/07/2022, 05:37 AM  | 1 |
@@ -521,6 +551,7 @@ Filters and returns a paginated list of matching quarantine jobs.
 
 
 ### cofense-quarantine-job-create
+
 ***
 Creates a new quarantine job.
 
@@ -528,6 +559,7 @@ Creates a new quarantine job.
 #### Base Command
 
 `cofense-quarantine-job-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -581,8 +613,11 @@ Creates a new quarantine job.
 | Cofense.QuarantineJob.searchId | Number | ID that Cofense Vision assigned to the search, if any. | 
 
 #### Command example
+
 ```!cofense-quarantine-job-create quarantine_emails="<test-id>:test@example.com"```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -622,13 +657,16 @@ Creates a new quarantine job.
 #### Human Readable Output
 
 >### Quarantine job create:
+>
 >#### Quarantine job has been created successfully.
+>
 >|ID|Created By|Created Date|Last Modified By|Last Modified Date|Messages|
 >|---|---|---|---|---|---|
 >| 431 | testuser | 10/08/2022, 04:23 AM  | testuser | 10/08/2022, 04:23 AM  | 1 |
 
 
 ### cofense-quarantine-job-delete
+
 ***
 Deletes the quarantine job identified by its unique ID.
 
@@ -636,6 +674,7 @@ Deletes the quarantine job identified by its unique ID.
 #### Base Command
 
 `cofense-quarantine-job-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -651,8 +690,11 @@ Deletes the quarantine job identified by its unique ID.
 | Cofense.QuarantineJob.isDeleted | Boolean | Whether the quarantine job is successfully deleted\(true\) or not\(false\). | 
 
 #### Command example
+
 ```!cofense-quarantine-job-delete id=266```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -669,6 +711,7 @@ Deletes the quarantine job identified by its unique ID.
 >## Quarantine Job with ID 266 is successfully deleted.
 
 ### cofense-quarantine-job-get
+
 ***
 Retrieves quarantine job identified by its unique ID.
 
@@ -676,6 +719,7 @@ Retrieves quarantine job identified by its unique ID.
 #### Base Command
 
 `cofense-quarantine-job-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -729,8 +773,11 @@ Retrieves quarantine job identified by its unique ID.
 | Cofense.QuarantineJob.searchId | Number | ID that Cofense Vision assigned to the search, if any. | 
 
 #### Command example
+
 ```!cofense-quarantine-job-get id=100```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -794,12 +841,14 @@ Retrieves quarantine job identified by its unique ID.
 #### Human Readable Output
 
 >### Quarantine Job:
+>
 >|ID|Search ID|Created By|Created Date|Last Modified By|Last Modified Date|Last Action|Status|Completed Date|Messages|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 100 | 402 | testuser | 08/07/2022, 03:49 PM  | testuser | 09/08/2022, 11:36 AM  | RESTORE | COMPLETED | 09/08/2022, 11:36 AM  | 10 |
 
 
 ### cofense-quarantine-job-restore
+
 ***
 Restores emails quarantined by the job identified by its unique ID.
 
@@ -807,6 +856,7 @@ Restores emails quarantined by the job identified by its unique ID.
 #### Base Command
 
 `cofense-quarantine-job-restore`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -822,8 +872,11 @@ Restores emails quarantined by the job identified by its unique ID.
 | Cofense.QuarantineJob.isRestored | Boolean | Whether the quarantine job is successfully restored\(true\) or not\(false\). | 
 
 #### Command example
+
 ```!cofense-quarantine-job-restore id=100```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -840,6 +893,7 @@ Restores emails quarantined by the job identified by its unique ID.
 >## Emails quarantined by the quarantine job ID 100 have been successfully restored.
 
 ### cofense-quarantine-job-approve
+
 ***
 Approves the quarantine job identified by its unique ID. When the "Auto Quarantine" feature is configured which requires manual approvals, this command can approve all the pending quarantine jobs.
 
@@ -847,6 +901,7 @@ Approves the quarantine job identified by its unique ID. When the "Auto Quaranti
 #### Base Command
 
 `cofense-quarantine-job-approve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -863,8 +918,11 @@ Approves the quarantine job identified by its unique ID. When the "Auto Quaranti
 | Cofense.QuarantineJob.isApproved | Boolean | Whether the quarantine job is successfully approved\(true\) or not\(false\). | 
 
 #### Command example
+
 ```!cofense-quarantine-job-approve id=430 message_count=1```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -881,6 +939,7 @@ Approves the quarantine job identified by its unique ID. When the "Auto Quaranti
 >## Quarantine Job with ID 430 has been approved successfully.
 
 ### cofense-quarantine-job-stop
+
 ***
 Issues a request to stop the quarantine job identified by its unique ID.
 
@@ -888,6 +947,7 @@ Issues a request to stop the quarantine job identified by its unique ID.
 #### Base Command
 
 `cofense-quarantine-job-stop`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -941,8 +1001,11 @@ Issues a request to stop the quarantine job identified by its unique ID.
 | Cofense.QuarantineJob.searchId | Number | ID that Cofense Vision assigned to the search, if any. | 
 
 #### Command example
+
 ```!cofense-quarantine-job-stop id=100```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1014,12 +1077,14 @@ Issues a request to stop the quarantine job identified by its unique ID.
 #### Human Readable Output
 
 >### Quarantine job with ID 100 has been successfully stopped.
+>
 >|ID|Created By|Created Date|Last Modified By|Last Modified Date|Last Action|Status|Messages|Stopped Quarantine|
 >|---|---|---|---|---|---|---|---|---|
 >| 100 | testuser | 08/07/2022, 03:49 PM  | testuser | 10/08/2022, 04:24 AM  | RESTORE | RUNNING | 10 | true |
 
 
 ### cofense-message-searches-list
+
 ***
 Retrieves the list of searches.
 
@@ -1027,6 +1092,7 @@ Retrieves the list of searches.
 #### Base Command
 
 `cofense-message-searches-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1066,8 +1132,11 @@ Retrieves the list of searches.
 | Cofense.Search.partialIngest | Boolean | Indicates whether to search partially ingested emails or not. | 
 
 #### Command example
+
 ```!cofense-message-searches-list size=2```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1111,13 +1180,15 @@ Retrieves the list of searches.
 #### Human Readable Output
 
 >### Message Searches:
+>
 >|ID|Created By|Created Date|Modified By|Modified Date|Recipient|Subjects|
 >|---|---|---|---|---|---|---|
->| 430 | testuser | 11/07/2022, 07:41 AM  | testuser | 11/07/2022, 07:41 AM  | abc@example.com |  |
->| 431 | testuser | 11/07/2022, 07:42 AM  | testuser | 11/07/2022, 07:42 AM  | pqr@example.com | chalk1 time 1657035399833 |
+>| 430 | testuser | 11/07/2022, 07:41 AM  | testuser | 11/07/2022, 07:41 AM  | <abc@example.com> |  |
+>| 431 | testuser | 11/07/2022, 07:42 AM  | testuser | 11/07/2022, 07:42 AM  | <pqr@example.com> | chalk1 time 1657035399833 |
 
 
 ### cofense-message-search-get
+
 ***
 Retrieves the result of the search identified by an ID.
 
@@ -1125,6 +1196,7 @@ Retrieves the result of the search identified by an ID.
 #### Base Command
 
 `cofense-message-search-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1162,8 +1234,11 @@ Retrieves the result of the search identified by an ID.
 | Cofense.Search.partialIngest | Boolean | Indicates whether to search partially ingested emails or not. | 
 
 #### Command example
+
 ```!cofense-message-search-get id=700```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1187,12 +1262,14 @@ Retrieves the result of the search identified by an ID.
 #### Human Readable Output
 
 >### Message Search:
+>
 >|ID|Created By|Created Date|Modified By|Modified Date|
 >|---|---|---|---|---|
 >| 700 | testuser | 02/08/2022, 07:05 PM  | testuser | 02/08/2022, 07:05 PM  |
 
 
 ### cofense-message-search-create
+
 ***
 Creates a new search.
 
@@ -1200,6 +1277,7 @@ Creates a new search.
 #### Base Command
 
 `cofense-message-search-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1215,7 +1293,7 @@ Creates a new search.
 | domains | A comma-separated string of domains to create a search for domains in<br/>an email's body or its attachment. You can change the type of matching<br/>that happens on the specified domains using the domain_match_criteria argument.<br/><br/>Note: The search can only have a maximum of 3 values. | Optional | 
 | whitelist_urls | A comma-separated string of URLs to be whitelisted.<br/><br/>Note: The search can only have a maximum of 3 values. | Optional | 
 | headers | A comma-separated string of key-value pairs, defining the additional <br/>criteria to search for in the email header.<br/><br/>Supported format: key1:value1, key2:value1:value2:value3<br/><br/>Example: Content-Type:application/json<br/><br/>List of available headers to create a search can be retrieved by<br/>using the command "cofense-searchable-headers-list".<br/><br/>Note: The search can only have a maximum of 3 values. | Optional | 
-| internet_message_id | The unique identifier of the email, enclosed in angle brackets. This argument is case-sensitive.<br/><br/>Example:  &lt;513C8CD8-E593-4DC4-82BF6202E8AC95CB@example.com&gt;. | Optional | 
+| internet_message_id | The unique identifier of the email, enclosed in angle brackets. This argument is case-sensitive.<br/><br/>Example:  &lt;<513C8CD8-E593-4DC4-82BF6202E8AC95CB@example.com>&gt;. | Optional | 
 | partial_ingest | Whether to create a search with partially ingested emails (true) or not with partially ingested emails (false). Possible values are: True, False. Default is False. | Optional | 
 | received_after_date | Date and time to create a search for emails to specify the received<br/>on or after the specified UTC date and time.<br/><br/>Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ<br/><br/>Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z. | Optional | 
 | received_before_date | Date and time to create a search for emails to specify the received<br/>before or on the specified UTC date and time.<br/><br/>Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ<br/><br/>Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z. | Optional | 
@@ -1253,8 +1331,11 @@ Creates a new search.
 | Cofense.Search.partialIngest | Boolean | Indicates whether to search partially ingested emails or not. | 
 
 #### Command example
+
 ```!cofense-message-search-create subjects="test" senders="abc@example.com, pqr@example.com"```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1286,12 +1367,14 @@ Creates a new search.
 #### Human Readable Output
 
 >### Message search with ID 1091 has been created successfully.
+>
 >|ID|Created By|Created Date|Modified By|Modified Date|Senders|Subjects|Partial Ingest|
 >|---|---|---|---|---|---|---|---|
->| 1091 | testuser | 10/08/2022, 04:25 AM  | testuser | 10/08/2022, 04:25 AM  | abc@example.com,<br/>pqr@example.com | test | false |
+>| 1091 | testuser | 10/08/2022, 04:25 AM  | testuser | 10/08/2022, 04:25 AM  | <abc@example.com>,<br/><pqr@example.com> | test | false |
 
 
 ### cofense-message-search-results-get
+
 ***
 Retrieves the results for the search identified by the search ID.
 
@@ -1299,6 +1382,7 @@ Retrieves the results for the search identified by the search ID.
 #### Base Command
 
 `cofense-message-search-results-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1371,8 +1455,11 @@ Retrieves the results for the search identified by the search ID.
 | Cofense.Search.partialIngest | Boolean | Indicates whether to search partially ingested emails or not. | 
 
 #### Command example
+
 ```!cofense-message-search-results-get id=700 size=2```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1568,18 +1655,21 @@ Retrieves the results for the search identified by the search ID.
 #### Human Readable Output
 
 >### Message Search:
+>
 >|ID|Created By|Created Date|Modified By|Modified Date|
 >|---|---|---|---|---|
 >| 700 | testuser | 02/08/2022, 07:05 PM | testuser | 02/08/2022, 07:05 PM |
 
 ### Message Search Results:
+>
 >|Message ID|Internet Message ID|Subject|Sent On|Received On|Sender|Recipient|Attachment File Names|
 >|---|---|---|---|---|---|---|---|
->| 760623 | <1216208547.160.1658930322668@6d14a4fa9032\> | craftless plantable desulphurate iodized imbeds invoicing infrangibly prosers damn halberdiers refinedly unmoaned scatteredly11 time 1658930322646 | 27/07/2022, 01:58 PM UTC | 27/07/2022, 01:58 PM UTC | abc@example.com | abc@example.com,<br/>abc@example.com | File Name: fileNum-Thread[mailer-011,5,main]-text-file-163.txt<br>MD5: 3d0e1d68f12afee22ae3e79e01027c7a<br>SHA256: ca68f5eecd5822783911ed392fbff3c171d3a1854c0f992364d038ee447f8ac3<br><br><br>File Name: fileNum-Thread[mailer-011,5,main]-text-file-146.txt.zip<br>MD5: 5c602ca45faac3bb128a5ecbf977f9f1<br>SHA256: 6018b7cc402e6368d4542c0f6c129a99e35c80ae9001ec338e7621df2f8ac51f<br><br><br>File Name: text-file-146.txt<br>MD5: c5aa88f949574a0a5e75a795dc507da7<br>SHA256: d3a070977ae0ae561bae2215526c187d5c46c54dd8899eefb8fe21ed0e6c1303 |
->| 760624 | <1216208547.160.1658930322668@6d14a4fa9033\> | craftless plantable desulphurate iodized imbeds invoicing infrangibly prosers damn halberdiers refinedly unmoaned scatteredly11 time 1658930322646 | 27/07/2022, 01:58 PM UTC | 27/07/2022, 01:58 PM UTC | abc@example.com | abc@example.com,<br/>abc@example.com | File Name: text-file-146.txt<br>MD5: c5aa88f949574a0a5e75a795dc507da7<br>SHA256: d3a070977ae0ae561bae2215526c187d5c46c54dd8899eefb8fe21ed0e6c1303 |
+>| 760623 | <1216208547.160.1658930322668@6d14a4fa9032\> | craftless plantable desulphurate iodized imbeds invoicing infrangibly prosers damn halberdiers refinedly unmoaned scatteredly11 time 1658930322646 | 27/07/2022, 01:58 PM UTC | 27/07/2022, 01:58 PM UTC | <abc@example.com> | <abc@example.com>,<br/><abc@example.com> | File Name: fileNum-Thread[mailer-011,5,main]-text-file-163.txt<br>MD5: 3d0e1d68f12afee22ae3e79e01027c7a<br>SHA256: ca68f5eecd5822783911ed392fbff3c171d3a1854c0f992364d038ee447f8ac3<br><br><br>File Name: fileNum-Thread[mailer-011,5,main]-text-file-146.txt.zip<br>MD5: 5c602ca45faac3bb128a5ecbf977f9f1<br>SHA256: 6018b7cc402e6368d4542c0f6c129a99e35c80ae9001ec338e7621df2f8ac51f<br><br><br>File Name: text-file-146.txt<br>MD5: c5aa88f949574a0a5e75a795dc507da7<br>SHA256: d3a070977ae0ae561bae2215526c187d5c46c54dd8899eefb8fe21ed0e6c1303 |
+>| 760624 | <1216208547.160.1658930322668@6d14a4fa9033\> | craftless plantable desulphurate iodized imbeds invoicing infrangibly prosers damn halberdiers refinedly unmoaned scatteredly11 time 1658930322646 | 27/07/2022, 01:58 PM UTC | 27/07/2022, 01:58 PM UTC | <abc@example.com> | <abc@example.com>,<br/><abc@example.com> | File Name: text-file-146.txt<br>MD5: c5aa88f949574a0a5e75a795dc507da7<br>SHA256: d3a070977ae0ae561bae2215526c187d5c46c54dd8899eefb8fe21ed0e6c1303 |
 
 
 ### cofense-iocs-list
+
 ***
 Lists the IOCs stored in the local IOC Repository.
 
@@ -1587,6 +1677,7 @@ Lists the IOCs stored in the local IOC Repository.
 #### Base Command
 
 `cofense-iocs-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1639,8 +1730,11 @@ Lists the IOCs stored in the local IOC Repository.
 | File.Malicious.Vendor | String | The vendor who reported the file as malicious. | 
 
 #### Command example
+
 ```!cofense-iocs-list source="Vision-UI" size=2```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1709,17 +1803,20 @@ Lists the IOCs stored in the local IOC Repository.
 #### Human Readable Output
 
 >### IOC:
+>
 >|ID|Threat Type|Threat Value|Threat Level|Updated At|Created At|Match Count|Quarantine Count|
 >|---|---|---|---|---|---|---|---|
 >| 088dc5454129d776b4a1484b71bb71b0 | DOMAIN | qwe | very_high | 29/07/2022, 07:09 AM UTC | 29/07/2022, 07:09 AM UTC | 0 | 0 |
 
 >### IOC:
+>
 >|ID|Threat Type|Threat Value|Threat Level|Updated At|Created At|Match Count|Quarantine Count|
 >|---|---|---|---|---|---|---|---|
 >| 1627363590bae65d9497e0e02bc412b4 | DOMAIN | fgh | High | 02/08/2022, 09:20 AM UTC | 03/08/2022, 09:20 AM UTC | 0 | 0 |
 
 
 ### cofense-ioc-update
+
 ***
 Updates the IOC identified by its unique MD5 ID.
 
@@ -1727,6 +1824,7 @@ Updates the IOC identified by its unique MD5 ID.
 #### Base Command
 
 `cofense-ioc-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1776,8 +1874,11 @@ Updates the IOC identified by its unique MD5 ID.
 | File.Malicious.Vendor | String | The vendor who reported the file as malicious. | 
 
 #### Command example
+
 ```!cofense-ioc-update id="bb78c7a2f8c9eea5b9c5a30eb8c9069b" expires_at="1 day"```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1810,12 +1911,14 @@ Updates the IOC identified by its unique MD5 ID.
 #### Human Readable Output
 
 >### IOC with value bb78c7a2f8c9eea5b9c5a30eb8c9069b has been updated successfully.
+>
 >|ID|Threat Type|Threat Value|Created At|Expires At|
 >|---|---|---|---|---|
 >| bb78c7a2f8c9eea5b9c5a30eb8c9069b | DOMAIN | test.com | 08/08/2022, 09:17 AM UTC | 24/08/2022, 04:25 AM UTC |
 
 
 ### cofense-iocs-update
+
 ***
 Updates one or more IOCs stored in the local IOC repository. 
 To update multiple IOCs use iocs_json argument.
@@ -1828,6 +1931,7 @@ are required parameters to update a single IOC.
 #### Base Command
 
 `cofense-iocs-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1884,8 +1988,11 @@ are required parameters to update a single IOC.
 | File.Malicious.Vendor | String | The vendor who reported the file as malicious. | 
 
 #### Command example
+
 ```!cofense-iocs-update source="Vision-UI" iocs_json="[{\"threat_type\":\"Domain\",\"threat_value\":\"test.com\",\"threat_level\":\"Malicious\",\"source_id\":\"test\",\"created_at\":\"1 day\",\"updated_at\":\"1 day\"}]"```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -1924,12 +2031,14 @@ are required parameters to update a single IOC.
 #### Human Readable Output
 
 >### IOC bb78c7a2f8c9eea5b9c5a30eb8c9069b updated successfully.
+>
 >|ID|Threat Type|Threat Value|Threat Level|Created At|Updated At|Requested Expiration|
 >|---|---|---|---|---|---|---|
 >| bb78c7a2f8c9eea5b9c5a30eb8c9069b | DOMAIN | test.com | Malicious | 09/08/2022, 04:25 AM UTC | 09/08/2022, 04:25 AM UTC | 24/08/2022, 04:25 AM UTC |
 
 
 ### cofense-last-ioc-get
+
 ***
 Synchronizes the update of data between the IOC source and the IOC repository. Retrieves the last updated IOC from the local IOC Repository. It may return an active or an expired IOC.
 
@@ -1937,6 +2046,7 @@ Synchronizes the update of data between the IOC source and the IOC repository. R
 #### Base Command
 
 `cofense-last-ioc-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1985,8 +2095,11 @@ Synchronizes the update of data between the IOC source and the IOC repository. R
 | File.Malicious.Vendor | String | The vendor who reported the file as malicious. | 
 
 #### Command example
+
 ```!cofense-last-ioc-get source="Vision-UI"```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -2027,12 +2140,14 @@ Synchronizes the update of data between the IOC source and the IOC repository. R
 #### Human Readable Output
 
 >### Last IOC:
+>
 >|ID|Threat Type|Threat Value|Created At|Expires At|Match Count|Quarantine Count|First Quarantined At|Last Quarantined At|
 >|---|---|---|---|---|---|---|---|---|
 >| bb931fec9d9672a9e307456133223b2e | SUBJECT | test\-subject | 10/08/2022, 04:12 AM UTC | 24/08/2022, 06:29 PM UTC | 1 | 10 | 10/08/2022, 04:12 AM UTC | 10/08/2022, 04:12 AM UTC |
 
 
 ### cofense-ioc-delete
+
 ***
 Deletes a single active or expired IOC from the local IOC Repository.
 
@@ -2040,6 +2155,7 @@ Deletes a single active or expired IOC from the local IOC Repository.
 #### Base Command
 
 `cofense-ioc-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2089,8 +2205,11 @@ Deletes a single active or expired IOC from the local IOC Repository.
 | File.Malicious.Vendor | String | The vendor who reported the file as malicious. | 
 
 #### Command example
+
 ```!cofense-ioc-delete source="Vision-UI" id=bb931fec9d9672a9e307456133223b2e```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -2131,12 +2250,14 @@ Deletes a single active or expired IOC from the local IOC Repository.
 
 #### Human Readable Output
 
->###  IOC with value "bb931fec9d9672a9e307456133223b2e" has been deleted successfully.
+>### IOC with value "bb931fec9d9672a9e307456133223b2e" has been deleted successfully.
+>
 >|ID|Threat Type|Threat Value|Action Status|
 >|---|---|---|---|
 >| bb931fec9d9672a9e307456133223b2e | SUBJECT | test\-subject | Success |
 
 ### cofense-ioc-get
+
 ***
 Retrieves the IOC identified by its unique MD5 ID.
 
@@ -2144,6 +2265,7 @@ Retrieves the IOC identified by its unique MD5 ID.
 #### Base Command
 
 `cofense-ioc-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2193,8 +2315,11 @@ Retrieves the IOC identified by its unique MD5 ID.
 | File.Malicious.Vendor | String | The vendor who reported the file as malicious. | 
 
 #### Command example
+
 ```!cofense-ioc-get source="Vision-UI" id=bb931fec9d9672a9e307456133223b2e```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -2235,11 +2360,13 @@ Retrieves the IOC identified by its unique MD5 ID.
 #### Human Readable Output
 
 >### IOC:
+>
 >|ID|Threat Type|Threat Value|Created At|Expires At|
 >|---|---|---|---|---|
 >| 0c7aff000d37b4a600eb676a473fa5b1 | DOMAIN | test | 12/09/2022, 06:55 AM UTC | 26/09/2022, 06:55 AM UTC |
 
 ### cofense-searchable-headers-get
+
 ***
 Retrieves a list of configured header keys that can be used to create a message search.
 
@@ -2247,6 +2374,7 @@ Retrieves a list of configured header keys that can be used to create a message 
 #### Base Command
 
 `cofense-searchable-headers-get`
+
 #### Input
 
 There are no input arguments for this command.
@@ -2259,8 +2387,11 @@ There are no input arguments for this command.
 | Cofense.Config.value | Unknown | List of headers that are available to create a message search. | 
 
 #### Command example
+
 ```!cofense-searchable-headers-get```
+
 #### Context Example
+
 ```json
 {
     "Cofense": {
@@ -2277,6 +2408,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Available headers to create a search:
+>
 >|Headers|
 >|---|
 >| X-MS-Exchange-Organization-AuthSource |

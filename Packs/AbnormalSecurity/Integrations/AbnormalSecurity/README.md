@@ -6,7 +6,7 @@ This integration was integrated and tested with version 1.3.0 of Abnormal Securi
 
 | **Parameter**                                         | **Required** |
 | ----------------------------------------------------- | ------------ |
-| Server URL (e.g. https://api.abnormalplatform.com/v1) | True         |
+| Server URL (e.g. <https://api.abnormalplatform.com/v1>) | True         |
 | API Key                                               | True         |
 | Trust any certificate (not secure)                    | False        |
 | Use system proxy settings                             | False        |
@@ -463,7 +463,7 @@ Get details of a threat
 >
 > | subject        | fromAddress              | toAddresses                              | recipientAddress    | receivedTime         | attackType | attackStrategy     | returnPath               | --  |
 > | -------------- | ------------------------ | ---------------------------------------- | ------------------- | -------------------- | ---------- | ------------------ | ------------------------ | --- |
-> | Phishing Email | support@secure-reply.org | example@example.com, another@example.com | example@example.com | 2020-06-09T17:42:59Z | Extortion  | Name Impersonation | support@secure-reply.org | etc |
+> | Phishing Email | <support@secure-reply.org> | <example@example.com>, <another@example.com> | <example@example.com> | 2020-06-09T17:42:59Z | Extortion  | Name Impersonation | <support@secure-reply.org> | etc |
 
 ### abnormal-security-get-abnormal-case
 
@@ -593,7 +593,7 @@ Get details of an Abuse Mailbox campaign
 >
 > | attackType        | campaignId                           | firstReported             | fromAddress         | fromName    | judgementStatus | lastReported              | messageId   | overallStatus  | recipientAddress            | recipientName | subject           |
 > | ----------------- | ------------------------------------ | ------------------------- | ------------------- | ----------- | --------------- | ------------------------- | ----------- | -------------- | --------------------------- | ------------- | ----------------- |
-> | Attack Type: Spam | fff51768-c446-34e1-97a8-9802c29c3ebd | 2020-11-11T13:11:40-08:00 | example@example.com | Tom Dinkley | Malicious       | 2020-11-11T13:11:40-08:00 | 12345678910 | Move attempted | example_phisher@example.com | Booker        | Fwd: This is spam |
+> | Attack Type: Spam | fff51768-c446-34e1-97a8-9802c29c3ebd | 2020-11-11T13:11:40-08:00 | <example@example.com> | Tom Dinkley | Malicious       | 2020-11-11T13:11:40-08:00 | 12345678910 | Move attempted | <example_phisher@example.com> | Booker        | Fwd: This is spam |
 
 ### abnormal-security-get-employee-identity-analysis
 
@@ -671,7 +671,7 @@ Get employee identity analysis (Genome) data
 
 #### Human Readable Output
 
-> ### Analysis of test@test.com
+> ### Analysis of <test@test.com>
 >
 > | description                         | key        | name                | values                                                                                                                                                                                                                                             |
 > | ----------------------------------- | ---------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -728,7 +728,7 @@ Get employee information
 >
 > | email               | manager                    | name      | title         |
 > | ------------------- | -------------------------- | --------- | ------------- |
-> | testemail@email.com | testmanageremail@email.net | test_name | Test Operator |
+> | <testemail@email.com> | <testmanageremail@email.net> | test_name | Test Operator |
 
 ### abnormal-security-get-employee-last-30-days-login-csv
 
@@ -867,7 +867,7 @@ Manage a Threat identified by Abnormal Security
 >
 > | action_id                            | status_url                                                                                                                    |
 > | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-> | a33a212a-89ff-461f-be34-ea52aff44a73 | https://api.abnormalplatform.com/v1/threats/184712ab-6d8b-47b3-89d3-a314efef79e2/actions/a33a212a-89ff-461f-be34-ea52aff44a73 |
+> | a33a212a-89ff-461f-be34-ea52aff44a73 | <https://api.abnormalplatform.com/v1/threats/184712ab-6d8b-47b3-89d3-a314efef79e2/actions/a33a212a-89ff-461f-be34-ea52aff44a73> |
 
 ### abnormal-security-manage-abnormal-case
 
@@ -917,7 +917,7 @@ Manage an Abnormal Case.
 >
 > | action_id                            | status_url                                                                                  |
 > | ------------------------------------ | ------------------------------------------------------------------------------------------- |
-> | 61e76395-40d3-4d78-b6a8-8b17634d0f5b | https://api.abnormalplatform.com/v1/cases/1234/actions/61e76395-40d3-4d78-b6a8-8b17634d0f5b |
+> | 61e76395-40d3-4d78-b6a8-8b17634d0f5b | <https://api.abnormalplatform.com/v1/cases/1234/actions/61e76395-40d3-4d78-b6a8-8b17634d0f5b> |
 
 ### abnormal-security-get-case-analysis-and-timeline
 
@@ -1031,16 +1031,16 @@ Provides the analysis and timeline details of a case
 >
 > | signal         | description                                                                                  |
 > | -------------- | -------------------------------------------------------------------------------------------- |
-> | Risky Location | There was a signin into test@lamronba.com from a location frequently used to launch attacks. |
+> | Risky Location | There was a signin into <test@lamronba.com> from a location frequently used to launch attacks. |
 >
 > ### Event Timeline for
 >
 > | event_timestamp      | category   | title                             | field_labels                                             | ip_address | description                                                 | location                                        | sender            | subject             | title                             | rule_name       |
 > | -------------------- | ---------- | --------------------------------- | -------------------------------------------------------- | ---------- | ----------------------------------------------------------- | ----------------------------------------------- | ----------------- | ------------------- | --------------------------------- | --------------- |
-> | 2021-07-14T22:41:54Z | Risk Event | Impossible Travel                 |                                                          | 127.0.0.1  | Impossible Travel Event was observed for test@lamronba.com. | city: Aldie<br/>state: Virginia<br/>country: US |                   |                     | Impossible Travel                 |                 |
+> | 2021-07-14T22:41:54Z | Risk Event | Impossible Travel                 |                                                          | 127.0.0.1  | Impossible Travel Event was observed for <test@lamronba.com>. | city: Aldie<br/>state: Virginia<br/>country: US |                   |                     | Impossible Travel                 |                 |
 > | 2021-07-14T22:41:54Z | Mail Rule  | Mail Rule Change                  |                                                          |            |                                                             |                                                 |                   |                     | Mail Rule Change                  | Swag Voice Note |
-> | 2021-07-14T22:41:54Z | Mail Sent  | Unusual Correspondence            |                                                          |            |                                                             |                                                 | test@lamronba.com | Spoof email subject | Unusual Correspondence            |                 |
-> | 2021-07-14T22:41:54Z | Sign In    | Suspicious Failed Sign In Attempt | ip_address: rare,<br/>proxy<br/>operating_system: legacy | 127.0.0.1  | Suspicious Failed Sign In Attempt for test@lamronba.com     | country: Ireland                                |                   |                     | Suspicious Failed Sign In Attempt |                 |
+> | 2021-07-14T22:41:54Z | Mail Sent  | Unusual Correspondence            |                                                          |            |                                                             |                                                 | <test@lamronba.com> | Spoof email subject | Unusual Correspondence            |                 |
+> | 2021-07-14T22:41:54Z | Sign In    | Suspicious Failed Sign In Attempt | ip_address: rare,<br/>proxy<br/>operating_system: legacy | 127.0.0.1  | Suspicious Failed Sign In Attempt for <test@lamronba.com>     | country: Ireland                                |                   |                     | Suspicious Failed Sign In Attempt |                 |
 
 ### [Deprecated] abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement
 
@@ -1262,7 +1262,7 @@ Get details of a vendor
 >
 > | vendorDomain      | riskLevel | vendorContacts             | companyContacts                                        | vendorCountries | analysis                                     | vendorIpAddresses |
 > | ----------------- | --------- | -------------------------- | ------------------------------------------------------ | --------------- | -------------------------------------------- | ----------------- |
-> | test-domain-1.com | High      | john.doe@test-domain-1.com | john.doe@test-domain-2.com, jane.doe@test-domain-2.com | USA             | Vendor Compromise Seen in Abnormal Community | 192.158.1.38      |
+> | test-domain-1.com | High      | <john.doe@test-domain-1.com> | <john.doe@test-domain-2.com>, <jane.doe@test-domain-2.com> | USA             | Vendor Compromise Seen in Abnormal Community | 192.158.1.38      |
 
 ### abnormal-security-get-vendor-activity
 
@@ -1339,7 +1339,7 @@ Get details of a vendor
 >
 > | eventTimestamp       | eventType        | suspiciousDomain            | domainIp     | ipGeolocation | attackGoal | actionTaken           | hasEngagement | recipient    | threatId                             |
 > | -------------------- | ---------------- | --------------------------- | ------------ | ------------- | ---------- | --------------------- | ------------- | ------------ | ------------------------------------ |
-> | 2023-07-28T16:20:05Z | Federated Signal | Signal test@test-domain.com | 192.158.1.38 | null          | Spam       | Remediation Triggered | false         | jane@doe.com | 184712ab-6d8b-47b3-89d3-a314efef79e2 |
+> | 2023-07-28T16:20:05Z | Federated Signal | Signal <test@test-domain.com> | 192.158.1.38 | null          | Spam       | Remediation Triggered | false         | <jane@doe.com> | 184712ab-6d8b-47b3-89d3-a314efef79e2 |
 
 ### abnormal-security-list-vendor-cases
 
@@ -1485,7 +1485,7 @@ Get details of a vendor case
 >
 > | vendorCaseId | vendorDomain    | firstObservedTime    | lastModifiedTime     | insights                                                                                                                                                                                                                                                                                                                                                     | timeline                                                                                                                                                                                                            |
 > | ------------ | --------------- | -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-> | 123          | some-domain.com | 2022-04-04T21:12:14Z | 2022-04-05T14:40:11Z | {"highlight": "Inconsistent Sender Domain Registrars","description": "The suspicious sending domain, \"some-domain.com\", was registered in \"City, United States\" to \"unknown\" on 2022-02-07 with registrar \"ABCD\". The legitimate domain for \"some-domain.com\", was registered through \"Test, LLC\" in \"City, United States\" on 1999-12-02."}... | {"eventTimestamp": "2022-04-04T21:12:14Z","senderAddress": "john-doe@some-domain.com","recipientAddress": "jane.doe@some-other-domain.com","subject": "Important Notice","markedAs": "Malicious","threatId": 123}.. |
+> | 123          | some-domain.com | 2022-04-04T21:12:14Z | 2022-04-05T14:40:11Z | {"highlight": "Inconsistent Sender Domain Registrars","description": "The suspicious sending domain, \"some-domain.com\", was registered in \"City, United States\" to \"unknown\" on 2022-02-07 with registrar \"ABCD\". The legitimate domain for \"some-domain.com\", was registered through \"Test, LLC\" in \"City, United States\" on 1999-12-02."}... | {"eventTimestamp": "2022-04-04T21:12:14Z","senderAddress": "<john-doe@some-domain.com>","recipientAddress": "<jane.doe@some-other-domain.com>","subject": "Important Notice","markedAs": "Malicious","threatId": 123}.. |
 
 ### abnormal-security-list-unanalyzed-abuse-mailbox-campaigns
 
@@ -1568,4 +1568,4 @@ Get a list of unanalyzed Abuse Mailbox campaigns
 >
 > | abx_message_id | recipient                                      | reported_datetime    | reporter                                   | subject | not_analyzed_reason |
 > | -------------- | ---------------------------------------------- | -------------------- | ------------------------------------------ | ------- | ------------------- |
-> | 123456789      | name: John Doe email: john.doe@some-domain.com | 2023-06-15T00:17:31Z | email : info@some-domain.com name: Support | URGENT  | INVALID_SUBMISSION  |
+> | 123456789      | name: John Doe email: <john.doe@some-domain.com> | 2023-06-15T00:17:31Z | email : <info@some-domain.com> name: Support | URGENT  | INVALID_SUBMISSION  |

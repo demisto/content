@@ -2,6 +2,7 @@ An event collector for Gitlab audit events and events using Gitlab's API.
 
 [Audit events API documentation](https://docs.gitlab.com/ee/api/audit_events.html)  
 [Events API documentation](https://docs.gitlab.com/ee/api/events.html)
+
 ## Configure Gitlab Event Collector in Cortex
 
 
@@ -17,9 +18,11 @@ An event collector for Gitlab audit events and events using Gitlab's API.
 | User system proxy settings  | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.  | False  |
 
 ## Commands
+
 You can execute the following command from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 #### gitlab-get-events
+
 ***
 Manual command to fetch events and display them.
 

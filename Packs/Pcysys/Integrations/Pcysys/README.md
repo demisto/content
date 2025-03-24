@@ -2,11 +2,13 @@
 
 Integration with Pentera. 
 This integration was integrated and tested with version 4.5.2 of Pentera
+
 ## Pentera Playbook
 
 ## Use Cases
 
 Integration Use Cases:
+
 1. Integrate PenTera’s Automated Penetration Testing findings within Cortex XSOAR for playbook-driven enrichment and response
 2. Address penetration testing findings, prioritize, and automate response tasks
 3. Leverage Cortex XSOAR’s third-party product integrations 
@@ -25,7 +27,7 @@ Solution: After running automated single-action tests for critical vulnerabiliti
 2. Search for Pentera.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Server URL (e.g. https://192.168.64.128)__
+    * __Server URL (e.g. <https://192.168.64.128>)__
     * __Pentera API port__
     * __TGT (The token from Pentera UI in Administration -> API Clients)__
     * __Client Id__
@@ -34,28 +36,36 @@ Solution: After running automated single-action tests for critical vulnerabiliti
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. pentera-run-template-by-name
 2. pentera-get-task-run-status
 3. pentera-get-task-run-full-action-report
+
 ### 1. pentera-run-template-by-name
+
 Run a specific template by its name. Please add the template name in the parameters
+
 ##### Required Permissions
+
 Operator and admin users
+
 ##### Base Command
 
 `pentera-run-template-by-name`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | template_name | The name of the template that you want to run | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Pentera.TaskRun.TemplateName | String | Returns the name of the template | 
 | Pentera.TaskRun.ID | String | The task run id | 
@@ -65,9 +75,11 @@ Operator and admin users
 
 
 ##### Command Example
+
 ```!pentera-run-template-by-name template_name="Test Template for Playbook"```
 
 ##### Context Example
+
 ```
 {
     "Pentera.TaskRun": {
@@ -81,7 +93,9 @@ Operator and admin users
 ```
 
 ##### Human Readable Output
+
 ### Test Template for Playbook
+
 |ID|StartTime|Status|TemplateName|
 |---|---|---|---|
 | 2020-02-13 17:32:45Z | 5e45883d1deb8eda82b1eed5 | '2020-02-13T17:32:45Z' | Running | Test Template for Playbook |
@@ -92,22 +106,27 @@ Parsed JSON Response: {'ID': '5e45883d1deb8eda82b1eed5', 'TemplateName': 'Test T
 Parsed JSON Response: {'ID': '5e45883d1deb8eda82b1eed5', 'TemplateName': 'Test Template for Playbook', 'StartTime': '2020-02-13T17:32:45Z', 'EndTime': None, 'Status': 'Running'}
 
 ### 2. pentera-get-task-run-status
+
 Get the status of a task run by its task run id
+
 ##### Required Permissions
+
 Operator and admin users
+
 ##### Base Command
 
 `pentera-get-task-run-status`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | task_run_id | The ID of the task run | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Pentera.TaskRun.ID | String | The task run id | 
 | Pentera.TaskRun.TemplateName | String | Returns the name of the template | 
@@ -117,10 +136,12 @@ Operator and admin users
 
 
 ##### Command Example
+
 ```!pentera-get-task-run-status task_run_id="5e4583221deb8eda82b195c5"
 ```
 
 ##### Context Example
+
 ```
 {
     "Pentera.TaskRun": {
@@ -134,7 +155,9 @@ Operator and admin users
 ```
 
 ##### Human Readable Output
+
 ### Test Template for Playbook
+
 |EndTime|ID|StartTime|Status|TemplateName|
 |---|---|---|---|---|
 | 2020-02-13 17:10:58Z | 1581614052321.0 | 5e4583221deb8eda82b195c5 | 1581613858961.0 | Done | Test Template for Playbook |
@@ -144,32 +167,44 @@ result is JSON
 Parsed JSON Response: {'ID': '5e4583221deb8eda82b195c5', 'TemplateName': 'Test Template for Playbook', 'StartTime': '2020-02-13T17:10:58Z', 'EndTime': '2020-02-13T19:14:12Z', 'Status': 'Done'}
 
 ### 3. pentera-get-task-run-full-action-report
+
 Get the full action report of a task run
+
 ###### Fieldnames: 'Severity', 'Time', 'Duration', 'Operation Type', 'Techniques', 'Parameters', 'Status'
+
 #### Severity:
+
 * Low: [0: 2.5)
 * Medium: [2.5: 5)
 * High: [5: 7.5)
 * Critical: [7.5: 10]
+
 #### Duration:
+
 In milliseconds
+
 #### Status:
+
 'Running', 'Pending', 'Failed', 'Cleaning up', 'Canceled', 'Done', 'Warning', 'Aborted (exceeded max hosts limit)'.
+
 ##### Required Permissions
+
 User view, operator and admin users
+
 ##### Base Command
 
 `pentera-get-task-run-full-action-report`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | task_run_id | The ID of the task run | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Pentera.TaskRun.ID | String | The task run id | 
 | Pentera.TaskRun.TemplateName | String | Returns the name of the template | 
@@ -180,10 +215,12 @@ User view, operator and admin users
 
 
 ##### Command Example
+
 ```!pentera-get-task-run-full-action-report task_run_id="5e4583221deb8eda82b195c5"
 ```
 
 ##### Context Example
+
 ```
 {
     "Pentera.TaskRun": {
@@ -213,7 +250,9 @@ User view, operator and admin users
 ```
 
 ##### Human Readable Output
+
 ### Pentera Report for TaskRun ID
+
 |Agent Name|Categories|Duration|Operation Type|Parameters|Severity|Status|Techniques|Time|
 |---|---|---|---|---|---|---|---|---|
 | default-node | Discovery, Reconnaissance | 31578 | BlueKeep (CVE-2019-0708) Vulnerability Discovery | Host: 192.168.1.2 | | no results | Network Service Scanning(T1046) | 13/02/2020, 17:11:59 |

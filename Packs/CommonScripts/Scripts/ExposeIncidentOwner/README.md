@@ -1,6 +1,7 @@
 Exposes the incident owner into `IncidentOwner` context key.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,10 +11,12 @@ Exposes the incident owner into `IncidentOwner` context key.
 
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

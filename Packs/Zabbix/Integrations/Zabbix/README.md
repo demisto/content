@@ -1,9 +1,11 @@
 Allow integration with Zabbix api
 
 ## Zabbix Playbook
+
 ---
 
 ## Configure Zabbix on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -13,13 +15,17 @@ Allow integration with Zabbix api
     * __Url__
     * __Credentials__
 4. Click __Test__ to validate the URLs, token, and connection.
+
 ## Fetched Incidents Data
+
 ---
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. zabbix-execute-command
 2. zabbix-hostgroup-get
 3. zabbix-host-get
@@ -27,15 +33,17 @@ After you successfully execute a command, a DBot message appears in the War Room
 5. zabbix-event-get
 
 ### 1. zabbix-execute-command
+
 ---
 Execute command on Zabbix API
 
 ##### Base Command
 
 `zabbix-execute-command`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | method | Method to call on Zabbix API | Required | 
 | params | JSON with params to send with call | Optional | 
@@ -43,16 +51,18 @@ Execute command on Zabbix API
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Zabbix.Execute | Unknown | result | 
 
 
 ##### Command Example
+
 ```!zabbix-execute-command method="host.get"
 ```
 
 ##### Context Example
+
 ```
 {
     "Zabbix.Execute": [
@@ -104,22 +114,26 @@ Execute command on Zabbix API
 ```
 
 ##### Human Readable Output
+
 ### zabbix-execute-command
+
 |auto_compress|available|description|disable_until|error|errors_from|flags|host|hostid|ipmi_authtype|ipmi_available|ipmi_disable_until|ipmi_error|ipmi_errors_from|ipmi_password|ipmi_privilege|ipmi_username|jmx_available|jmx_disable_until|jmx_error|jmx_errors_from|lastaccess|maintenance_from|maintenance_status|maintenance_type|maintenanceid|name|proxy_address|proxy_hostid|snmp_available|snmp_disable_until|snmp_error|snmp_errors_from|status|templateid|tls_accept|tls_connect|tls_issuer|tls_psk|tls_psk_identity|tls_subject|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | 2 |  | 1588621755 | Get value from agent failed: cannot connect to [[127.0.0.1]:10050]: [111] Connection refused | 1585321618 | 0 | Zabbix server | 10084 | -1 | 0 | 0 |  | 0 |  | 2 |  | 0 | 0 |  | 0 | 0 | 0 | 0 | 0 | 0 | Zabbix server |  | 0 | 0 | 0 |  | 0 | 0 | 0 | 1 | 1 |  |  |  |  |
 
 
 ### 2. zabbix-hostgroup-get
+
 ---
 Get host groups
 
 ##### Base Command
 
 `zabbix-hostgroup-get`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | params_graphids | Return only host groups that contain hosts or templates with the given graphs. | Optional | 
 | params_groupids | Return only host groups with the given host group IDs. | Optional | 
@@ -144,7 +158,7 @@ Get host groups
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Zabbix.Hostgroup.groupid | string | ID of the host group | 
 | Zabbix.Hostgroup.name | string | Name of the host group | 
@@ -153,10 +167,12 @@ Get host groups
 
 
 ##### Command Example
+
 ```!zabbix-hostgroup-get params_real_hosts="True"
 ```
 
 ##### Context Example
+
 ```
 {
     "Zabbix.Hostgroup": [
@@ -171,22 +187,26 @@ Get host groups
 ```
 
 ##### Human Readable Output
+
 ### zabbix-hostgroup-get
+
 |flags|groupid|internal|name|
 |---|---|---|---|
 | 0 | 4 | 0 | Zabbix servers |
 
 
 ### 3. zabbix-host-get
+
 ---
 Get hosts
 
 ##### Base Command
 
 `zabbix-host-get`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | params_groupids | Return only hosts that belong to the given groups. | Optional | 
 | params_applicationids | Return only hosts that have the given applications. | Optional | 
@@ -217,7 +237,7 @@ Get hosts
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Zabbix.Host.hostid | string | ID of the host. | 
 | Zabbix.Host.host | string | Technical name of the host. | 
@@ -260,10 +280,12 @@ Get hosts
 
 
 ##### Command Example
+
 ```!zabbix-host-get params_groupids="4"
 ```
 
 ##### Context Example
+
 ```
 {
     "Zabbix.Host": [
@@ -315,21 +337,26 @@ Get hosts
 ```
 
 ##### Human Readable Output
+
 ### zabbix-host-get
+
 |auto_compress|available|description|disable_until|error|errors_from|flags|host|hostid|ipmi_authtype|ipmi_available|ipmi_disable_until|ipmi_error|ipmi_errors_from|ipmi_password|ipmi_privilege|ipmi_username|jmx_available|jmx_disable_until|jmx_error|jmx_errors_from|lastaccess|maintenance_from|maintenance_status|maintenance_type|maintenanceid|name|proxy_address|proxy_hostid|snmp_available|snmp_disable_until|snmp_error|snmp_errors_from|status|templateid|tls_accept|tls_connect|tls_issuer|tls_psk|tls_psk_identity|tls_subject|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | 2 |  | 1588621755 | Get value from agent failed: cannot connect to [[127.0.0.1]:10050]: [111] Connection refused | 1585321618 | 0 | Zabbix server | 10084 | -1 | 0 | 0 |  | 0 |  | 2 |  | 0 | 0 |  | 0 | 0 | 0 | 0 | 0 | 0 | Zabbix server |  | 0 | 0 | 0 |  | 0 | 0 | 0 | 1 | 1 |  |  |  |  |
 
 
 ### 4. zabbix-trigger-get
+
 ---
 Get triggers
+
 ##### Base Command
 
 `zabbix-trigger-get`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | params_triggerids | Return only triggers with the given IDs. | Optional | 
 | params_groupids | Return only triggers that belong to hosts from the given host groups. | Optional | 
@@ -359,7 +386,7 @@ Get triggers
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Zabbix.Trigger.triggerid | string | ID of the trigger. | 
 | Zabbix.Trigger.description | string | Name of the trigger. | 
@@ -383,10 +410,12 @@ Get triggers
 
 
 ##### Command Example
+
 ```!zabbix-trigger-get params_only_true="True"
 ```
 
 ##### Context Example
+
 ```
 {
     "Zabbix.Trigger": [
@@ -416,21 +445,26 @@ Get triggers
 ```
 
 ##### Human Readable Output
+
 ### zabbix-trigger-get
+
 |comments|correlation_mode|correlation_tag|description|error|expression|flags|lastchange|manual_close|priority|recovery_expression|recovery_mode|state|status|templateid|triggerid|type|url|value|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |  | 0 |  | Zabbix agent on {HOST.NAME} is unreachable for 5 minutes |  | {12900}=1 | 0 | 1585321941 | 0 | 3 |  | 0 | 0 | 0 | 10047 | 13491 | 0 |  | 1 |
 
 
 ### 5. zabbix-event-get
+
 ---
 Get events
+
 ##### Base Command
 
 `zabbix-event-get`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | params_eventids | Return only events with the given IDs. | Optional | 
 | params_groupids | Return only events created by objects that belong to the given host groups. | Optional | 
@@ -455,7 +489,7 @@ Get events
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Zabbix.Event.eventid | string | ID of the event. | 
 | Zabbix.Event.source | number | Type of the event. | 
@@ -475,9 +509,11 @@ Get events
 
 
 ##### Command Example
+
 ```!zabbix-event-get params_time_from="1583020800"```
 
 ##### Context Example
+
 ```
 {
     "Zabbix.Event": [
@@ -537,7 +573,9 @@ Get events
 ```
 
 ##### Human Readable Output
+
 ### zabbix-event-get
+
 |acknowledged|c_eventid|clock|correlationid|eventid|name|ns|object|objectid|r_eventid|severity|source|suppressed|userid|value|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | 0 | 1585321941 | 0 | 12 | Zabbix agent on Zabbix server is unreachable for 5 minutes | 248457478 | 0 | 13491 | 0 | 3 | 0 | 0 | 0 | 1 |
@@ -546,12 +584,15 @@ Get events
 
 
 ## Additional Information
+
 Using execute_command you can do anything available on Zabbix API.
 
-You can use the oficcial API documentation on https://www.zabbix.com/documentation/current/manual/api
+You can use the oficcial API documentation on <https://www.zabbix.com/documentation/current/manual/api>
 
 ## Known Limitations
+
 No current known limitations
 
 ## Troubleshooting
+
 Verify if the user has the necessary permissions to execute the operation

@@ -10,9 +10,11 @@ In order to connect to the AzureWAF using either Cortex XSOAR Azure App or the S
 - *Client Credentials Flow*.
 
 # Self-Deployed Application
+
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
 ## Required Permissions:
+
 1. user_impersonation
 2. offline_access
 3. user.read 
@@ -33,10 +35,12 @@ Follow these steps for a self-deployed configuration:
 
 
 ### Authentication Using the Device Code Flow
+
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
 to link Azure SQL Management with Cortex XSOAR.
 
 In order to connect to Azure Web Application Firewall using either the Cortex XSOAR Azure or Self Deployed Azure application:
+
 1. Fill in the required parameters
 2. choose the 'Device' option in the ***user_auth_flow*** parameter.
 4. Run the ***!azure-waf-auth-start*** command.
@@ -45,6 +49,7 @@ In order to connect to Azure Web Application Firewall using either the Cortex XS
 At end of the process, you will see a message that you logged in successfully.
 
 #### Cortex XSOAR Azure app
+
 In order to use the Cortex XSOAR Azure application, use the default application ID (cf22fd73-29f1-4245-8e16-533704926d20) and fill in your subscription ID and default resource group name. 
 
 You only need to fill in your subscription ID and resource group name. You can find your resource group and 
@@ -55,6 +60,7 @@ subscription ID in the Azure Portal. For a more detailed explanation, visit [thi
 Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
 *Note:* In the *Select members* section, assign the application you created earlier.
 To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
+
    1. In the **Authentication Type** field, select the **Client Credentials** option.
    2. In the **Application ID** field, enter your Client/Application ID.
    3. In the **Tenant ID** field, enter your Tenant ID .
@@ -63,6 +69,7 @@ To configure a Microsoft integration that uses this authorization flow with a se
    6. Save the instance.
 
 ### Testing authentication and connectivity
+
 If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the AzureWAF service run the ***!azure-waf-auth-test*** command. 
 
 ## Configure AzureWAF on Cortex XSOAR
@@ -91,9 +98,12 @@ If you are using Device Code Flow or Authorization Code Flow, for testing your a
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-waf-policies-get
+
 ***
 Retrieves protection policies within a resource group.
 
@@ -101,6 +111,7 @@ Retrieves protection policies within a resource group.
 #### Base Command
 
 `azure-waf-policies-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -149,9 +160,11 @@ Retrieves protection policies within a resource group.
 
 
 #### Command Example
+
 ```!azure-waf-policies-get limit=2```
 
 #### Context Example
+
 ```json
 {
     "AzureWAF": {
@@ -192,16 +205,20 @@ Retrieves protection policies within a resource group.
 #### Human Readable Output
 
 >### Policy: example_policy
+>
 >|etag|id|location|name|type|
 >|---|---|---|---|---|
 >| W/"4bf9c37a" | /subscriptions/example_subscription/resourceGroups/example_resource_group/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/example_policy | westus | example_policy | Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies |
+>
 >### Policy: test_policy
+>
 >|etag|id|location|name|type|
 >|---|---|---|---|---|
 >| W/"4e844e6c" | /subscriptions/example_subscription/resourceGroups/example_resource_group/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/test_policy | westus | test_policy | Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies |
 >Showing 2 policies out of 7
 
 ### azure-waf-policies-list-all-in-subscription
+
 ***
 Retrieves all the WAF policies in a subscription.
 
@@ -209,6 +226,7 @@ Retrieves all the WAF policies in a subscription.
 #### Base Command
 
 `azure-waf-policies-list-all-in-subscription`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -256,9 +274,11 @@ Retrieves all the WAF policies in a subscription.
 
 
 #### Command Example
+
 ```!azure-waf-policies-list-all-in-subscription limit=2```
 
 #### Context Example
+
 ```json
 {
     "AzureWAF": {
@@ -299,16 +319,20 @@ Retrieves all the WAF policies in a subscription.
 #### Human Readable Output
 
 >### Policy: example_policy
+>
 >|etag|id|location|name|type|
 >|---|---|---|---|---|
 >| W/"4bf9c37a" | /subscriptions/example_subscription/resourceGroups/example_resource_group/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/example_policy | westus | example_policy | Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies |
+>
 >### Policy: test_policy_1608641948_
+>
 >|etag|id|location|name|type|
 >|---|---|---|---|---|
 >| W/"422867fc-a697-4978-83f5-20a57ab51511" | /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto-sentinel2/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/test_policy_1608641948_ | westus | test_policy_1608641948_ | Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies |
 >Showing 2 policies out of 6
 
 ### azure-waf-policy-update-or-create
+
 ***
 Creates or updates a policy with a specified rule set name within a resource group.
 
@@ -316,6 +340,7 @@ Creates or updates a policy with a specified rule set name within a resource gro
 #### Base Command
 
 `azure-waf-policy-update-or-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -368,9 +393,11 @@ Creates or updates a policy with a specified rule set name within a resource gro
 
 
 #### Command Example
+
 ```!azure-waf-policy-update-or-create policy_name="example_policy" resource_group_name="demisto-sentinel2" location="WestUs" managed_rules="{ \"managedRuleSets\": [{\"ruleSetType\": \"OWASP\",\"ruleSetVersion\": \"3.0\"}]}"```
 
 #### Context Example
+
 ```json
 {
     "AzureWAF": {
@@ -409,12 +436,14 @@ Creates or updates a policy with a specified rule set name within a resource gro
 #### Human Readable Output
 
 >### Policy: example_policy
+>
 >|etag|id|location|name|type|
 >|---|---|---|---|---|
 >| W/"f1121c83" | /subscriptions/example_subscription/resourceGroups/example_resource_group/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/example_policy | westus | example_policy | Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies |
 >Showing 1 policies out of 1
 
 ### azure-waf-policy-delete
+
 ***
 Deletes a policy.
 
@@ -422,6 +451,7 @@ Deletes a policy.
 #### Base Command
 
 `azure-waf-policy-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -436,6 +466,7 @@ Deletes a policy.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-waf-policy-delete policy_name="example_policy"```
 
 #### Human Readable Output
@@ -443,6 +474,7 @@ There is no context output for this command.
 >Policy example_policy was deleted successfully.
 
 ### azure-waf-auth-start
+
 ***
 Run this command to start the authorization process and follow the instructions in the command results.
 
@@ -450,6 +482,7 @@ Run this command to start the authorization process and follow the instructions 
 #### Base Command
 
 `azure-waf-auth-start`
+
 #### Input
 
 There are no input arguments for this command.
@@ -459,18 +492,21 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-waf-auth-start```
 
 
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >        1. To sign in, use a web browser to open the page:
 >            [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
 >           and enter the code **CKVE788YV** to authenticate.
 >        2. Run the **!azure-waf-auth-complete** command in the War Room.
 
 ### azure-waf-auth-complete
+
 ***
 Run this command to complete the authorization process.
 Should be used after running the azure_waf-auth-start command.
@@ -479,6 +515,7 @@ Should be used after running the azure_waf-auth-start command.
 #### Base Command
 
 `azure-waf-auth-complete`
+
 #### Input
 
 There are no input arguments for this command.
@@ -488,6 +525,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-waf-auth-complete```
 
 
@@ -496,6 +534,7 @@ There is no context output for this command.
 >✅ Authorization completed successfully.
 
 ### azure-waf-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
@@ -503,6 +542,7 @@ Run this command if for some reason you need to rerun the authentication process
 #### Base Command
 
 `azure-waf-auth-reset`
+
 #### Input
 
 There are no input arguments for this command.
@@ -512,6 +552,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-waf-auth-reset```
 
 
@@ -520,6 +561,7 @@ There is no context output for this command.
 >Authorization was reset successfully. You can now run **!azure-waf-auth-start** and **!azure-waf-auth-complete**.
 
 ### azure-waf-auth-test
+
 ***
 Tests connectivity to the Azure Web Application Firewall.
 
@@ -527,6 +569,7 @@ Tests connectivity to the Azure Web Application Firewall.
 #### Base Command
 
 `azure-waf-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -536,6 +579,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-waf-auth-test```
 
 
@@ -544,12 +588,14 @@ There is no context output for this command.
 >✅ Great Success!
 
 ### azure-waf-generate-login-url
+
 ***
 Generate the login url used for Authorization code flow.
 
 #### Base Command
 
 `azure-waf-generate-login-url`
+
 #### Input
 
 There are no input arguments for this command.
@@ -559,11 +605,13 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```azure-waf-generate-login-url```
 
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. Click on the login URL to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```

@@ -20,9 +20,12 @@ This integration was integrated and tested with version 01 of Bitsight for Secur
 | Incident type |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### bitsight-company-details-get
+
 ***
 Bitsight command to get company details based on the provided GUID. The details include rating details, rating history, and grades for individual risk vectors.
 
@@ -30,6 +33,7 @@ Bitsight command to get company details based on the provided GUID. The details 
 #### Base Command
 
 `bitsight-company-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -102,8 +106,11 @@ Bitsight command to get company details based on the provided GUID. The details 
 | BitSight.Company.companyFeatures | string | For internal Bitsight use. | 
 
 #### Command example
+
 ```!bitsight-company-details-get guid=00000000-0000-0000-0000-000000000001```
+
 #### Context Example
+
 ```json
 {
     "BitSight": {
@@ -464,6 +471,7 @@ Bitsight command to get company details based on the provided GUID. The details 
 #### Human Readable Output
 
 >### Company Details:
+>
 >|Company Info|Ratings|Rating Details|
 >|---|---|---|
 >| guid: 00000000-0000-0000-0000-000000000001<br/>customId: null<br/>name: Saperix, Inc.<br/>description: Saperix Technologies LLC develops risk analysis software solutions.<br/>ipv4Count: 4169<br/>peopleCount: 400<br/>shortName: Saperix<br/>industry: Technology<br/>industrySlug: technology<br/>subIndustry: Computer & Network Security<br/>subIndustrySlug: computer_network_security<br/>homePage: http:<span>//</span>www.saperix.com<br/>primaryDomain: saperix.com<br/>type: CURATED<br/>displayURL: https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/overview/ | {'rating': 600, 'rating_date': '2021-03-10', 'range': 'Basic'},<br/>{'rating': 600, 'rating_date': '2021-03-09', 'range': 'Basic'},<br/>{'rating': 600, 'rating_date': '2021-03-08', 'range': 'Basic'},<br/>{'rating': 600, 'rating_date': '2021-03-07', 'range': 'Basic'},<br/>{'rating': 600, 'rating_date': '2021-03-06', 'range': 'Basic'},<br/>{'rating': 600, 'rating_date': '2021-03-05', 'range': 'Basic'},<br/>{'rating': 600, 'rating_date': '2021-03-04', 'range': 'Basic'},<br/>{'rating': 600, 'rating_date': '2021-03-03', 'range': 'Basic'},<br/>{'rating': 600, 'rating_date': '2021-03-02', 'range': 'Basic'},<br/>{'rating': 600, 'rating_date': '2021-03-01', 'range': 'Basic'} | {'name': 'Botnet Infections', 'rating': 820, 'percentile': 100, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/compromised-systems/?filter=Botnet%20Infections'},<br/>{'name': 'Spam Propagation', 'rating': 820, 'percentile': 100, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/compromised-systems/?filter=Spam%20Propagation'},<br/>{'name': 'Malware Servers', 'rating': 820, 'percentile': 100, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/compromised-systems/?filter=Malware%20Servers'},<br/>{'name': 'Unsolicited Communications', 'rating': 820, 'percentile': 100, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/compromised-systems/?filter=Unsolicited%20Communications'},<br/>{'name': 'Potentially Exploited', 'rating': 760, 'percentile': 77, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/compromised-systems/?filter=Potentially%20Exploited'},<br/>{'name': 'SPF', 'rating': 780, 'percentile': 87, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/diligence-details/?filter=spf'},<br/>{'name': 'DKIM', 'rating': 700, 'percentile': 54, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/diligence-details/?filter=dkim'},<br/>{'name': 'SSL Certificates', 'rating': 780, 'percentile': 86, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/diligence-details/?filter=certificate'},<br/>{'name': 'SSL Configurations', 'rating': 700, 'percentile': 55, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/diligence-details/?filter=ssl'},<br/>{'name': 'Open Ports', 'rating': 790, 'percentile': 90, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/diligence-details/?filter=open_port'},<br/>{'name': 'Web Application Headers', 'rating': 490, 'percentile': 8, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/diligence-details/?filter=http_headers'},<br/>{'name': 'Patching Cadence', 'rating': 720, 'percentile': 62, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/diligence-details/?filter=pc'},<br/>{'name': 'Insecure Systems', 'rating': 700, 'percentile': 61, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/diligence-details/?filter=insecure_sys'},<br/>{'name': 'Server Software', 'rating': 810, 'percentile': 99, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/diligence-details/?filter=server_software'},<br/>{'name': 'Desktop Software', 'rating': 400, 'percentile': 1, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/diligence-details/?filter=endpoint_pc'},<br/>{'name': 'Mobile Software', 'rating': 500, 'percentile': 9, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/diligence-details/?filter=endpoint_mobile'},<br/>{'name': 'DNSSEC', 'rating': 300, 'percentile': 0, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/diligence-details/?filter=dnssec'},<br/>{'name': 'Mobile Application Security', 'rating': 'N/A', 'percentile': 'N/A', 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/diligence-details/?filter=mobile_appsec'},<br/>{'name': 'File Sharing', 'rating': 750, 'percentile': 79, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/user-behavior'},<br/>{'name': 'Security Incidents', 'rating': 790, 'percentile': 47, 'display_url': 'https:<span>//</span>service.bitsighttech.com/app/company/00000000-0000-0000-0000-000000000001/rating-details/?vector=news'} |
@@ -539,8 +547,11 @@ Bitsight command to get company findings.
 | BitSight.Page.count | Number | The number of findings. | 
 
 #### Command example
+
 ```!bitsight-company-findings-get guid=00000000-0000-0000-0000-000000000001 first_seen=2021-01-01 last_seen=2022-03-01 limit=2```
+
 #### Context Example
+
 ```json
 {
     "BitSight": {
@@ -667,7 +678,9 @@ Bitsight command to get company findings.
 #### Human Readable Output
 
 >### Company findings:
+>
 >Total Findings: 2441
+>
 >|Evidence Key|Risk Vector Label|First Seen|Last Seen|ID|Risk Category|Severity|Asset Category|Finding Grade|
 >|---|---|---|---|---|---|---|---|---|
 >| X.X.X.1:22 | Open Ports | 2022-01-28 | 2022-01-28 | A9Jq | Diligence | minor | X.X.X.1: Low | Good |
@@ -675,6 +688,7 @@ Bitsight command to get company findings.
 
 
 ### bitsight-companies-guid-get
+
 ***
 Bitsight command to get list of companies and GUID.
 
@@ -682,6 +696,7 @@ Bitsight command to get list of companies and GUID.
 #### Base Command
 
 `bitsight-companies-guid-get`
+
 #### Input
 
 There are no input arguments for this command.
@@ -716,8 +731,11 @@ There are no input arguments for this command.
 | BitSight.MyCompany.guid | String | The unique identifier of my company. | 
 
 #### Command example
+
 ```!bitsight-companies-guid-get```
+
 #### Context Example
+
 ```json
 {
     "BitSight": {
@@ -777,6 +795,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Companies:
+>
 >My Company: 00000000-0000-0000-0000-000000000001
 > 
 > 

@@ -9,9 +9,12 @@ Connects to and controls an Arduino pin system using the network.
 | Port number | Port number | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### arduino-set-pin
+
 ***
 Requests that a pin be set
 
@@ -19,6 +22,7 @@ Requests that a pin be set
 #### Base Command
 
 `arduino-set-pin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -44,6 +48,7 @@ Requests that a pin be set
 | Arduino.AnalogPins.PinValue | number | Pin Value | 
 
 ### arduino-get-pin
+
 ***
 Requests the value of a pin
 
@@ -51,6 +56,7 @@ Requests the value of a pin
 #### Base Command
 
 `arduino-get-pin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -75,6 +81,7 @@ Requests the value of a pin
 | Arduino.AnalogPins.PinValue | number | Pin Value | 
 
 ### arduino-send-data
+
 ***
 Send arbitrary data to the Arduino
 
@@ -82,6 +89,7 @@ Send arbitrary data to the Arduino
 #### Base Command
 
 `arduino-send-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

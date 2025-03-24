@@ -12,9 +12,12 @@ This integration was integrated and tested with version 2.8.0 of Inventa
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### inventa-get-datasubjects
+
 ***
 Get Data Subject full details
 
@@ -22,6 +25,7 @@ Get Data Subject full details
 #### Base Command
 
 `inventa-get-datasubjects`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,6 +45,7 @@ Get Data Subject full details
 | street_address | Street Address of a PII. | Optional | 
 Please note that all the arguments are optional, but they form a constraint which determines extraction of the right PII. 
 Following combinations are treated as constraints:
+
 * national_id
 * passport_number
 * driver_license
@@ -68,6 +73,7 @@ Following combinations are treated as constraints:
 
 
 #### Command Examples
+
 ```
 !inventa-get-datasubjects national_id=12345678
 !inventa-get-datasubjects passport_number=AB123456
@@ -89,6 +95,7 @@ Following combinations are treated as constraints:
 
 
 ### inventa-get-sources
+
 ***
 Retrieves data sources' details containing info about data subject
 
@@ -96,6 +103,7 @@ Retrieves data sources' details containing info about data subject
 #### Base Command
 
 `inventa-get-sources`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -122,11 +130,13 @@ Retrieves data sources' details containing info about data subject
 
 
 #### Command Example
+
 ```!inventa-get-sources datasubject_id=123asd123```
 
 
 
 ### inventa-get-sources-piis
+
 ***
 Retrieves PII entities stored in data sources related to datasubject
 
@@ -134,6 +144,7 @@ Retrieves PII entities stored in data sources related to datasubject
 #### Base Command
 
 `inventa-get-sources-piis`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -149,12 +160,14 @@ Retrieves PII entities stored in data sources related to datasubject
 
 
 #### Command Example
+
 ```!inventa-get-sources-piis datasubject_id=123asd123```
 
 
 
 
 ### inventa-get-dsar-transactions
+
 ***
 Retrieves data transactions' details containing info about data subject
 
@@ -162,6 +175,7 @@ Retrieves data transactions' details containing info about data subject
 #### Base Command
 
 `inventa-get-dsar-transactions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -177,12 +191,14 @@ Retrieves data transactions' details containing info about data subject
 
 
 #### Command Example
+
 ```!inventa-get-dsar-transactions ticket_id=3```
 
 
 
 
 ### inventa-get-dsar-files
+
 ***
 Retrieves details of files contatining info about data subject
 
@@ -190,6 +206,7 @@ Retrieves details of files contatining info about data subject
 #### Base Command
 
 `inventa-get-dsar-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -205,12 +222,14 @@ Retrieves details of files contatining info about data subject
 
 
 #### Command Example
+
 ```!inventa-get-dsar-files ticket_id=3```
 
 
 
 
 ### inventa-get-dsar-databases
+
 ***
 Retrieves list of databases and tables containing info about data subject
 
@@ -218,6 +237,7 @@ Retrieves list of databases and tables containing info about data subject
 #### Base Command
 
 `inventa-get-dsar-databases`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -233,12 +253,14 @@ Retrieves list of databases and tables containing info about data subject
 
 
 #### Command Example
+
 ```!inventa-get-dsar-databases ticket_id=3```
 
 
 
 
 ### inventa-get-datasubject-details
+
 ***
 Get datasubject name and email
 
@@ -246,6 +268,7 @@ Get datasubject name and email
 #### Base Command
 
 `inventa-get-datasubject-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -262,12 +285,14 @@ Get datasubject name and email
 
 
 #### Command Example
+
 ```!inventa-get-datasubject-details ticket_id = 3```
 
 
 
 
 ### inventa-get-dsar-dataassets
+
 ***
 Retrieves list of data assets containing info about data subject
 
@@ -275,6 +300,7 @@ Retrieves list of data assets containing info about data subject
 #### Base Command
 
 `inventa-get-dsar-dataassets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -290,12 +316,14 @@ Retrieves list of data assets containing info about data subject
 
 
 #### Command Example
+
 ```inventa-get-dsar-dataassets ticket_id=3```
 
 
 
 
 ### inventa-get-dsar-piis
+
 ***
 Get list of PII categories related to the data subject
 
@@ -303,6 +331,7 @@ Get list of PII categories related to the data subject
 #### Base Command
 
 `inventa-get-dsar-piis`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -318,12 +347,14 @@ Get list of PII categories related to the data subject
 
 
 #### Command Example
+
 ```!inventa-get-dsar-piis ticket_id=3```
 
 
 
 
 ### inventa-get-entities
+
 ***
 Retrieves list of PII entities described in Inventa
 
@@ -331,6 +362,7 @@ Retrieves list of PII entities described in Inventa
 #### Base Command
 
 `inventa-get-entities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -345,12 +377,14 @@ Retrieves list of PII entities described in Inventa
 
 
 #### Command Example
+
 ```!inventa-get-entities```
 
 
 
 
 ### inventa-get-datasubject-id-from-ticket
+
 ***
 Retrieves ID of a data subject from Inventa's DSAR ticket
 
@@ -358,6 +392,7 @@ Retrieves ID of a data subject from Inventa's DSAR ticket
 #### Base Command
 
 `inventa-get-datasubject-id-from-ticket`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -373,12 +408,14 @@ Retrieves ID of a data subject from Inventa's DSAR ticket
 
 
 #### Command Example
+
 ```!inventa-get-datasubject-id-from-ticket ticket_id=3```
 
 
 
 
 ### inventa-get-datasubject-id
+
 ***
 Retrieves ID of a data subject from passed constraints
 
@@ -386,6 +423,7 @@ Retrieves ID of a data subject from passed constraints
 #### Base Command
 
 `inventa-get-datasubject-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -405,6 +443,7 @@ Retrieves ID of a data subject from passed constraints
 | street_address | Street Address of a PII. | Optional | 
 Please note that all the arguments are optional, but they form a constraint which determines extraction of the right PII. 
 Following combinations are treated as constraints:
+
 * national_id
 * passport_number
 * driver_license
@@ -425,6 +464,7 @@ Following combinations are treated as constraints:
 
 
 #### Command Example
+
 ```
 !inventa-get-datasubjects national_id=12345678
 !inventa-get-datasubjects passport_number=AB123456
@@ -443,6 +483,7 @@ Following combinations are treated as constraints:
 
 
 ### inventa-create-ticket
+
 ***
 Creates Inventa ticket
 
@@ -450,6 +491,7 @@ Creates Inventa ticket
 #### Base Command
 
 `inventa-create-ticket`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -466,6 +508,7 @@ Creates Inventa ticket
 
 
 #### Command Example
+
 ```!inventa-create-ticket reason="test reason" datasubject_id=123asd456789```
 
 
@@ -473,6 +516,7 @@ Creates Inventa ticket
 
 
 ### inventa-validate-incident-inputs
+
 ***
 Validates Incident inputs
 
@@ -480,6 +524,7 @@ Validates Incident inputs
 #### Base Command
 
 `inventa-validate-incident-inputs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -494,6 +539,7 @@ Validates Incident inputs
 
 
 #### Command Example
+
 ```!inventa-validate-incident-inputs```
 
 

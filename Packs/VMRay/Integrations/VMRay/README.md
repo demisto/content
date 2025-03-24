@@ -1145,6 +1145,7 @@ Retrieves screenshots taken during a specific dynamic analysis. The screenshots 
 
 
 ### vmray-get-license-usage-verdicts
+
 ***
 Gets the usage of verdicts from VMRay.
 
@@ -1152,6 +1153,7 @@ Gets the usage of verdicts from VMRay.
 #### Base Command
 
 `vmray-get-license-usage-verdicts`
+
 #### Input
 
 There is no input for this command.
@@ -1193,6 +1195,7 @@ There is no input for this command.
 
 
 ### vmray-get-license-usage-reports
+
 ***
 Gets the usage of reports from VMRay.
 
@@ -1200,6 +1203,7 @@ Gets the usage of reports from VMRay.
 #### Base Command
 
 `vmray-get-license-usage-reports`
+
 #### Input
 
 There is no input for this command.
@@ -1228,6 +1232,7 @@ There is no input for this command.
 ```
 
 #### Command Example
+
 ```
 vmray-get-license-usage-reports
 ```

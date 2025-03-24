@@ -27,6 +27,7 @@ When values have different types of data, the hierarchy is: null < bool < int/fl
 There are no outputs for this script.
 
 ---
+
 ## Examples-1
 
 Here is a table for the sorting samples in the Examples-1.
@@ -212,6 +213,7 @@ It will give you the result like this. But the order except for the `Country` an
     ]
 
 ---
+
 ## Examples-2
 
 Here is an array for the sorting samples in the Examples-2.

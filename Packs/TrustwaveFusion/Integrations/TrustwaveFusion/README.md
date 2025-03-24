@@ -24,9 +24,12 @@ This integration was integrated and tested with version 1.0.68 of TrustwaveFusio
 | Ticket Types | Types of tickets to fetch | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### trustwave-get-ticket
+
 ***
 Get a single ticket
 
@@ -34,6 +37,7 @@ Get a single ticket
 #### Base Command
 
 `trustwave-get-ticket`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -68,8 +72,11 @@ Get a single ticket
 | Trustwave.Ticket.urgency | String | The ticket urgency \(HIGH, MEDIUM, LOW\) | 
 
 #### Command example
+
 ```!trustwave-get-ticket id="INA1976568"```
+
 #### Context Example
+
 ```json
 {
     "Trustwave": {
@@ -143,6 +150,7 @@ Get a single ticket
 >| formatted_notes | 2021-12-08T17:16:27.000+00:00 Created by: dummyuser<br/>NOTE:<br/>Note A<br/>----------------<br/>2021-12-08T17:17:57.000+00:00 Created by: dummyuser<br/>NOTE:<br/>Note B<br/>----------------<br/>2021-12-09T1....[Truncated] |
 
 ### trustwave-search-tickets
+
 ***
 Search tickets
 
@@ -150,6 +158,7 @@ Search tickets
 #### Base Command
 
 `trustwave-search-tickets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -187,8 +196,11 @@ Search tickets
 | Trustwave.Ticket.urgency | String | The ticket urgency \(HIGH, MEDIUM, LOW\) | 
 
 #### Command example
+
 ```!trustwave-search-tickets limit=2 type=INCIDENT ```
+
 #### Context Example
+
 ```json
 {
     "Trustwave": {
@@ -271,6 +283,7 @@ Search tickets
 #### Human Readable Output
 
 >### Results
+>
 >|assetIds|category|createdBy|createdOn|customerName|description|findings|formatted_notes|impact|notes|number|priority|status|subCategory|subject|type|updatedOn|urgency|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 765432:managed-device#DEVICE:AW8Qp1Bextjwd2cF57Mk | Technology Management | cpe_outage_service | 2021-11-29T10:56:45.000+00:00 | Sample Customer |  |  | 2021-11-29T10:56:44.000+00:00 Created by: cpe_outage_service<br/>NOTE:<br/>NOTE A | HIGH | {'actor': 'cpe_outage_service', 'text': 'NOTE A', 'timestamp': '2021-11-29T10:56:44.000+00:00'} | INA1077007 | HIGH | CLOSED | Cellular Backup | Alert: device is using cellular | INCIDENT | 2021-12-29T00:00:08.000+00:00 | MEDIUM |
@@ -278,6 +291,7 @@ Search tickets
 
 
 ### trustwave-add-ticket-comment
+
 ***
 Add a comment to a ticket
 
@@ -285,6 +299,7 @@ Add a comment to a ticket
 #### Base Command
 
 `trustwave-add-ticket-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -296,13 +311,17 @@ Add a comment to a ticket
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!trustwave-add-ticket-comment id=INA1051028 comment="test from xsoar"```
+
 #### Human Readable Output
 
 >Success
 
 ### trustwave-close-ticket
+
 ***
 Close a ticket
 
@@ -310,6 +329,7 @@ Close a ticket
 #### Base Command
 
 `trustwave-close-ticket`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -321,13 +341,17 @@ Close a ticket
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!trustwave-close-ticket id="INA1051028" comment="Comment"```
+
 #### Human Readable Output
 
 >Success
 
 ### trustwave-get-updated-tickets
+
 ***
 Get updated tickets.
 
@@ -335,6 +359,7 @@ Get updated tickets.
 #### Base Command
 
 `trustwave-get-updated-tickets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -368,8 +393,11 @@ Get updated tickets.
 | Trustwave.Ticket.urgency | String | The ticket urgency \(HIGH, MEDIUM, LOW\) | 
 
 #### Command example
+
 ```!trustwave-get-updated-tickets fetch_limit=2 since=2021-12-09T16:43:48.000+00:00```
+
 #### Context Example
+
 ```json
 {
     "Trustwave": {
@@ -452,6 +480,7 @@ Get updated tickets.
 #### Human Readable Output
 
 >### Results
+>
 >|assetIds|category|createdBy|createdOn|customerName|description|findings|formatted_notes|impact|notes|number|priority|status|subCategory|subject|type|updatedOn|urgency|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 765432:managed-device#DEVICE:AW8Qp1Bextjwd2cF57Mk | Technology Management | cpe_outage_service | 2021-11-29T10:56:45.000+00:00 | Sample Customer |  |  | 2021-11-29T10:56:44.000+00:00 Created by: cpe_outage_service<br/>NOTE:<br/>NOTE A | HIGH | {'actor': 'cpe_outage_service', 'text': 'NOTE A', 'timestamp': '2021-11-29T10:56:44.000+00:00'} | INA1077007 | HIGH | CLOSED | Cellular Backup | Alert: device is using cellular | INCIDENT | 2021-12-29T00:00:08.000+00:00 | MEDIUM |
@@ -459,6 +488,7 @@ Get updated tickets.
 
 
 ### trustwave-search-findings
+
 ***
 Search for Findings
 
@@ -466,6 +496,7 @@ Search for Findings
 #### Base Command
 
 `trustwave-search-findings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -501,8 +532,11 @@ Search for Findings
 | Trustwave.Finding.updatedOn | Date | Time when the finding was last updated. | 
 
 #### Command example
+
 ```!trustwave-search-findings limit="2" summary="MS Graph Alert Detection Rule" type=threat updatedSince=2021-12-08T17:17:56.000+00:00```
+
 #### Context Example
+
 ```json
 {
     "Trustwave": {
@@ -549,6 +583,7 @@ Search for Findings
 #### Human Readable Output
 
 >### Results
+>
 >|classification|createdOn|customerName|destination|detail|id|priority|severity|source|status|summary|type|updatedOn|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | 2021-09-17T16:26:11.731+00:00 | Sample Customer |  | MCAS - Impossible travel activity | 765432:THREAT:@AXv0k6GhG2zTcaogE1vG | 4 | 4 |  | description: Security Incident | MS Graph Alert Detection Rule | THREAT | 2021-12-08T17:17:56.504+00:00 |
@@ -556,6 +591,7 @@ Search for Findings
 
 
 ### trustwave-get-finding
+
 ***
 Get a Finding
 
@@ -563,6 +599,7 @@ Get a Finding
 #### Base Command
 
 `trustwave-get-finding`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -595,8 +632,11 @@ Get a Finding
 | Trustwave.Finding.updatedOn | Date | Time when the finding was last updated. | 
 
 #### Command example
+
 ```!trustwave-get-finding id="765432:THREAT:@AXv0k6GhG2zTcaogE1vG"```
+
 #### Context Example
+
 ```json
 {
     "Trustwave": {
@@ -639,12 +679,14 @@ Get a Finding
 #### Human Readable Output
 
 >### Results
+>
 >|analystNotes|assetsIds|childFindingIds|classification|createdOn|customerName|destination|detail|eventsIds|id|parentId|priority|severity|source|status|summary|type|updatedOn|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| {'actor': 'dummyuser', 'text': 'Note A', 'timestamp': '2021-12-08T17:17:56.790+00:00'} | 765432:PERSON:AXsNy0R8CfYgZQumlNdv |  |  | 2021-09-17T16:26:11.731+00:00 | Sample Customer |  | MCAS - Impossible travel activity | 34c0e1b2-96e6-4a25-be3d-80d0671a5d8f | 765432:THREAT:@AXv0k6GhG2zTcaogE1vG |  | 4 | 4 |  | description: Security Incident | MS Graph Alert Detection Rule | THREAT | 2021-12-08T17:17:56.504+00:00 |
 
 
 ### trustwave-get-asset
+
 ***
 Get an Asset
 
@@ -652,6 +694,7 @@ Get an Asset
 #### Base Command
 
 `trustwave-get-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -687,8 +730,11 @@ Get an Asset
 | Trustwave.Asset.uri | String | URI of the asset. | 
 
 #### Command example
+
 ```!trustwave-get-asset id="765432:DNA#DEVICE:AW2X-hCmXdgvNlcDpVGf"```
+
 #### Context Example
+
 ```json
 {
     "Trustwave": {
@@ -785,12 +831,14 @@ Get an Asset
 #### Human Readable Output
 
 >### Results
+>
 >|cidr|createdOn|customerName|id|ips|lastActivity|name|networkInterfaces|notes|os|services|status|tags|type|updatedOn|uri|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | 2019-10-04T18:13:30.941+00:00 | Sample Customer | 765432:DNA#DEVICE:AW2X-hCmXdgvNlcDpVGf | 10.103.201.47 |  | host.example.com | {'gateway': None, 'hostnames': ['host.example.com'], 'ip': '10.103.201.47', 'macAddress': None, 'macVendor': None, 'subnet': None} |  |  | {'applicationName': None, 'applicationProtocol': None, 'port': 80, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': 'sunrpcportmap', 'port': 111, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': 'sunrpcportmap', 'port': 111, 'transportProtocol': 'udp'},<br/>{'applicationName': None, 'applicationProtocol': 'ntp', 'port': 123, 'transportProtocol': 'udp'},<br/>{'applicationName': None, 'applicationProtocol': 'snmp', 'port': 161, 'transportProtocol': 'udp'},<br/>{'applicationName': None, 'applicationProtocol': None, 'port': 443, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': 'mysql', 'port': 3306, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': None, 'port': 5672, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': 'snmp', 'port': 16161, 'transportProtocol': 'udp'} |  |  | Device | 2019-10-04T19:09:59.907+00:00 |  |
 
 
 ### trustwave-search-assets
+
 ***
 Search for Assets
 
@@ -798,6 +846,7 @@ Search for Assets
 #### Base Command
 
 `trustwave-search-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -839,8 +888,11 @@ Search for Assets
 | Trustwave.Asset.uri | String | URI of the asset. | 
 
 #### Command example
+
 ```!trustwave-search-assets limit=2 type="DEVICE" name="host.example.com"```
+
 #### Context Example
+
 ```json
 {
     "Trustwave": {
@@ -937,6 +989,7 @@ Search for Assets
 #### Human Readable Output
 
 >### Results
+>
 >|cidr|createdOn|customerName|id|ips|lastActivity|name|networkInterfaces|notes|os|services|status|tags|type|updatedOn|uri|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | 2019-10-04T18:13:30.941+00:00 | Sample Customer | 765432:DNA#DEVICE:AW2X-hCmXdgvNlcDpVGf | 10.103.201.47 |  | host.example.com | {'gateway': None, 'hostnames': ['host.example.com'], 'ip': '10.103.201.47', 'macAddress': None, 'macVendor': None, 'subnet': None} |  |  | {'applicationName': None, 'applicationProtocol': None, 'port': 80, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': 'sunrpcportmap', 'port': 111, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': 'sunrpcportmap', 'port': 111, 'transportProtocol': 'udp'},<br/>{'applicationName': None, 'applicationProtocol': 'ntp', 'port': 123, 'transportProtocol': 'udp'},<br/>{'applicationName': None, 'applicationProtocol': 'snmp', 'port': 161, 'transportProtocol': 'udp'},<br/>{'applicationName': None, 'applicationProtocol': None, 'port': 443, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': 'mysql', 'port': 3306, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': None, 'port': 5672, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': 'snmp', 'port': 16161, 'transportProtocol': 'udp'} |  |  | Device | 2019-10-04T19:09:59.907+00:00 |  |

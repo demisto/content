@@ -3,7 +3,9 @@
 The configuration manager provides the overall Configuration Management (CM) infrastructure and environment to the product development team  (formerly known as SCCM).
 
 This integration was integrated and tested with version 1906 of Microsoft Endpoint Configuration Manager.
+
 ## Prerequisites
+
 - This integration requires root access in order to execute commands. 
 If you configured the server to run Docker images with a non-root internal user make sure to exclude the *demisto/powershell-ubuntu* Docker image as documented For Cortex XSOAR 6 [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users). For Cortex XSOAR 8 Cloud [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide). For Cortex XSOAR 8.7 On-prem [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide).
 - Installation and configuration for Windows Remote Management to support a PowerShell session is a prerequisite in order to support this integration. For more information, refer to the following Microsoft [article](https://docs.microsoft.com/en-us/windows/win32/winrm/installation-and-configuration-for-windows-remote-management).
@@ -17,6 +19,7 @@ If you configured the server to run Docker images with a non-root internal user 
 - To use the ***ms-ecm-script-approve*** command, your account must have Approve permissions for SMS Scripts.
 - To use the ***ms-ecm-script-invoke*** command, your account must have Run Script permissions for Collections.
 - To use the ***ms-ecm-service-stop***, ***ms-ecm-service-start***, and ***ms-ecm-service-restart*** commands, your account must have permissions to use **all** scripts commands
+
 ## Configure Microsoft Endpoint Configuration Manager in Cortex
 
 
@@ -27,9 +30,12 @@ If you configured the server to run Docker images with a non-root internal user 
 | SiteCode | ECM Site Code. | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ms-ecm-user-last-log-on
+
 ***
 Gets the name of the last user who logged in to a given device.
 
@@ -37,6 +43,7 @@ Gets the name of the last user who logged in to a given device.
 #### Base Command
 
 `ms-ecm-user-last-log-on`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,9 +62,11 @@ Gets the name of the last user who logged in to a given device.
 
 
 #### Command Example
+
 ```!ms-ecm-user-last-log-on device_name=EC2AMAZ-2AKQ815```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -77,12 +86,14 @@ Gets the name of the last user who logged in to a given device.
 #### Human Readable Output
 
 >### Last log on user on EC2AMAZ-2AKQ815
+>
 >| LastLogonUserName | LastLogonTimestamp | DeviceName | IPAddresses
 >| --- | --- | --- | ---
 >|  | 2020\-11\-12T06:07:29Z | EC2AMAZ\-2AKQ815 | \["2.2.2.2","fe80::81c5:1670:9363:a40b"\]
 
 
 ### ms-ecm-collection-list
+
 ***
 Gets a Configuration Manager collection.
 
@@ -90,6 +101,7 @@ Gets a Configuration Manager collection.
 #### Base Command
 
 `ms-ecm-collection-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -125,9 +137,11 @@ Gets a Configuration Manager collection.
 
 
 #### Command Example
+
 ```!ms-ecm-collection-list collection_name="All Systems" collection_type=Device```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -162,12 +176,14 @@ Gets a Configuration Manager collection.
 #### Human Readable Output
 
 >### Collection List
+>
 >| Comment | LastMemberChangeTime | LimitToCollectionName | HasProvisionedMember | LocalMemberCount | IsBuiltIn | IsReferenceCollection | Type | CollectionRules | MemberCount | MemberClassName | Name | ID | IncludeExcludeCollectionsCount | UseCluster | LastChangeTime | LimitToCollectionID | CurrentStatus | LastRefreshTime
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| All Systems | 2020\-11\-01T21:49:33Z |  | True | 5 | True | True | Device | <br/>instance of SMS\_CollectionRuleQuery<br/>\{<br/>	QueryExpression = "select \* from sms\_r\_system";<br/>	QueryID = 1;<br/>	RuleName = "All Systems";<br/>\};<br/>,<br/>instance of SMS\_CollectionRuleQuery<br/>\{<br/>	QueryExpression = "select SMS\_R\_UNKNOWNSYSTEM.ResourceID,SMS\_R\_UNKNOWNSYSTEM.ResourceType,SMS\_R\_UNKNOWNSYSTEM.Name,SMS\_R\_UNKNOWNSYSTEM.Name,SMS\_R\_UNKNOWNSYSTEM.Name from SMS\_R\_UnknownSystem";<br/>	QueryID = 2;<br/>	RuleName = "All Unknown Computers";<br/>\};<br/> | 5 | SMS\_CM\_RES\_COLL\_SMS00001 | All Systems | SMS00001 | 0 | False | 2019\-04\-17T14:07:58Z |  | READY | 2020\-11\-19T04:00:19Z
 
 
 ### ms-ecm-device-list
+
 ***
 Lists a Configuration Manager device.
 
@@ -175,6 +191,7 @@ Lists a Configuration Manager device.
 #### Base Command
 
 `ms-ecm-device-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -193,9 +210,11 @@ Lists a Configuration Manager device.
 
 
 #### Command Example
+
 ```!ms-ecm-device-list collection_name="All Systems" limit=1```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -210,12 +229,14 @@ Lists a Configuration Manager device.
 #### Human Readable Output
 
 >### Devices List
+>
 >| DeviceName | ResourceID
 >| --- | ---
 >| EC2AMAZ\-2AKQ815 | 16777220
 
 
 ### ms-ecm-script-list
+
 ***
 Gets Configuration Manager PowerShell scripts.
 
@@ -223,6 +244,7 @@ Gets Configuration Manager PowerShell scripts.
 #### Base Command
 
 `ms-ecm-script-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -251,9 +273,11 @@ Gets Configuration Manager PowerShell scripts.
 
 
 #### Command Example
+
 ```!ms-ecm-script-list script_name="XSOAR StartService"```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -279,12 +303,14 @@ Gets Configuration Manager PowerShell scripts.
 #### Human Readable Output
 
 >### Scripts List
+>
 >| ScriptHash | Script | Parameterlist | ScriptHashAlgorithm | ScriptGuid | Comment | ApprovalState | ScriptType | ScriptVersion | LastUpdateTime | ScriptName | Author | Approver
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| C19588A7660DF68072866BDFA37FE558A55DC350FD3BB0977245199CD4264752 | ��Get\-Service 'dnscache' \-ErrorAction Stop \| Start\-Service \-PassThru \-ErrorAction Stop |  | SHA256 | 1984C9F9\-7DCE\-4191\-AE20\-B21281CB635B | XSOAR StartService script | Approved | 0 | 1 | 2020\-11\-19T14:28:36Z | XSOAR StartService | DEMISTO\\sccmadmin | DEMISTO\\sccmadmin
 
 
 ### ms-ecm-script-create
+
 ***
 Creates a new Powershell script.
 
@@ -292,6 +318,7 @@ Creates a new Powershell script.
 #### Base Command
 
 `ms-ecm-script-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -321,9 +348,11 @@ Creates a new Powershell script.
 
 
 #### Command Example
+
 ```!ms-ecm-script-create script_name="My new script" script_text="$PSVersionTable"```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -349,12 +378,14 @@ Creates a new Powershell script.
 #### Human Readable Output
 
 >### Scripts List
+>
 >| Comment | Parameterlist | ScriptHashAlgorithm | Script | Approver | Author | ScriptName | ScriptHash | LastUpdateTime | ScriptVersion | ApprovalState | ScriptGuid | ScriptType
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >|  |  | SHA256 | ��$PSVersionTable |  | DEMISTO\\sccmadmin | My new script | CE09E98D654CF613A0D219B744B56392E8356430534F309F715960E45A1417F8 | 2020\-11\-19T14:50:44Z | 1 | Waiting for approval | 91B1B3C9\-D6C5\-4096\-A24D\-24838F8646C5 | 0
 
 
 ### ms-ecm-script-invoke
+
 ***
 Invokes a script in the Configuration Manager.
 
@@ -362,6 +393,7 @@ Invokes a script in the Configuration Manager.
 #### Base Command
 
 `ms-ecm-script-invoke`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -396,9 +428,11 @@ Invokes a script in the Configuration Manager.
 
 
 #### Command Example
+
 ```!ms-ecm-script-invoke script_guid=394EDB29-5D89-4B9B-9745-A1F6DC8214E2 collection_name="All Systems" poll_results=true```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -462,6 +496,7 @@ Invokes a script in the Configuration Manager.
 #### Human Readable Output
 
 >### Script Invocation Results
+>
 >| CollectionName | ScriptExitCode | OperationId | ScriptGuid | LastUpdateTime | ScriptOutputHash | TaskID | ScriptVersion | ScriptExecutionState | ScriptOutput | ScriptName | ScriptLastModifiedDate | DeviceName | ResourceId | CollectionId
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| All Systems | 0 | 16777872 | 394EDB29\-5D89\-4B9B\-9745\-A1F6DC8214E2 | 2020\-11\-19T14:51:20Z | EF8CDB402162E39E41C92FB87B8C54F8D3E5E8805ABC58E5BE6E31DBE94378CB | \{111F6FAA\-5D5A\-4693\-9670\-0A0184EC8766\} | 1 | Succeeded | \{"PSVersion":\{"Major":5,"Minor":1,"Build":14393,"Revision":2828,"MajorRevision":0,"MinorRevision":2828\},"PSEdition":"Desktop","PSCompatibleVersions":\[\{"Major":1,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":2,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":3,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":4,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":5,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":5,"Minor":1,"Build":14393,"Revision":2828,"MajorRevision":0,"MinorRevision":2828\}\],"BuildVersion":\{"Major":10,"Minor":0,"Build":14393,"Revision":2828,"MajorRevision":0,"MinorRevision":2828\},"CLRVersion":\{"Major":4,"Minor":0,"Build":30319,"Revision":42000,"MajorRevision":0,"MinorRevision":\-23536\},"WSManStackVersion":\{"Major":3,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},"PSRemotingProtocolVersion":\{"Major":2,"Minor":3,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},"SerializationVersion":\{"Major":1,"Minor":1,"Build":0,"Revision":1,"MajorRevision":0,"MinorRevision":1\}\} | Itay | 2020\-09\-24T14:29:14Z | EC2AMAZ\-PHPTDJV | 16777221 | SMS00001
@@ -470,6 +505,7 @@ Invokes a script in the Configuration Manager.
 
 
 ### ms-ecm-script-approve
+
 ***
 Approves a Configuration Manager PowerShell script.
 
@@ -477,6 +513,7 @@ Approves a Configuration Manager PowerShell script.
 #### Base Command
 
 `ms-ecm-script-approve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -490,6 +527,7 @@ Approves a Configuration Manager PowerShell script.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ms-ecm-script-approve comment="Some comment" script_guid=394EDB29-5D89-4B9B-9745-A1F6DC8214E2```
 
 
@@ -498,6 +536,7 @@ There is no context output for this command.
 >### Script was approved successfully
 
 ### ms-ecm-device-collection-create
+
 ***
 Creates a Configuration Manager collection.
 
@@ -505,6 +544,7 @@ Creates a Configuration Manager collection.
 #### Base Command
 
 `ms-ecm-device-collection-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -540,9 +580,11 @@ Creates a Configuration Manager collection.
 
 
 #### Command Example
+
 ```!ms-ecm-device-collection-create collection_name="my new collection name" comment="my collection comment" limiting_collection_name="All Systems"```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -576,12 +618,14 @@ Creates a Configuration Manager collection.
 #### Human Readable Output
 
 >### Collection List
+>
 >| Name | ID | Type | Comment | CurrentStatus | CollectionRules | HasProvisionedMember | IncludeExcludeCollectionsCount | IsBuiltIn | IsReferenceCollection | LastChangeTime | LastMemberChangeTime | LastRefreshTime | LimitToCollectionID | LimitToCollectionName | LocalMemberCount | MemberClassName | MemberCount | UseCluster
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| my new collection name | ISR0001F |  | my collection comment |  |  | False | 0 | False | False | 2020\-11\-29T15:09:46Z | 1980\-00\-01T00:01:00Z | 1980\-00\-01T00:01:00Z | SMS00001 | All Systems | 0 | SMS\_CM\_RES\_COLL\_ISR0001F | 0 | False
 
 
 ### ms-ecm-device-collection-members-add
+
 ***
 Adds a direct rule membership to a device collection.
 
@@ -589,6 +633,7 @@ Adds a direct rule membership to a device collection.
 #### Base Command
 
 `ms-ecm-device-collection-members-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -624,9 +669,11 @@ Adds a direct rule membership to a device collection.
 
 
 #### Command Example
+
 ```!ms-ecm-device-collection-members-add device_resource_ids=16777220 collection_name="my new collection name"```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -669,6 +716,7 @@ Adds a direct rule membership to a device collection.
 
 
 ### ms-ecm-device-collection-include
+
 ***
 Adds an include collections membership rule to a device collection.
 
@@ -676,6 +724,7 @@ Adds an include collections membership rule to a device collection.
 #### Base Command
 
 `ms-ecm-device-collection-include`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -712,12 +761,14 @@ Adds an include collections membership rule to a device collection.
 
 
 #### Command Example
+
 ``` 
 !ms-ecm-device-collection-include collection_name="my new collection name" exclude_collection_name="Test"
 ```
 
 
 ### ms-ecm-device-collection-exclude
+
 ***
 Adds an exclude membership rule to one or more Configuration Manager device collections.
 
@@ -725,6 +776,7 @@ Adds an exclude membership rule to one or more Configuration Manager device coll
 #### Base Command
 
 `ms-ecm-device-collection-exclude`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -761,9 +813,11 @@ Adds an exclude membership rule to one or more Configuration Manager device coll
 
 
 #### Command Example
+
 ```!ms-ecm-device-collection-exclude collection_name="my new collection name" exclude_collection_name="Test"```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -797,12 +851,14 @@ Adds an exclude membership rule to one or more Configuration Manager device coll
 #### Human Readable Output
 
 >### Collection List
+>
 >| Name | ID | Type | Comment | CurrentStatus | CollectionRules | HasProvisionedMember | IncludeExcludeCollectionsCount | IsBuiltIn | IsReferenceCollection | LastChangeTime | LastMemberChangeTime | LastRefreshTime | LimitToCollectionID | LimitToCollectionName | LocalMemberCount | MemberClassName | MemberCount | UseCluster
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| my new collection name | ISR0001F |  | my collection comment |  | <br/>instance of SMS\_CollectionRuleExcludeCollection<br/>\{<br/>	ExcludeCollectionID = "ISR00014";<br/>	RuleName = "Test";<br/>\};<br/> | False | 0 | False | False | 2020\-11\-29T15:09:46Z | 2020\-11\-29T15:09:53Z | 2020\-11\-29T15:09:53Z | SMS00001 | All Systems | 0 | SMS\_CM\_RES\_COLL\_ISR0001F | 0 | False
 
 
 ### ms-ecm-device-collection-members-by-query-add
+
 ***
 Adds a query membership rule to one or more Configuration Manager device collections.
 
@@ -810,6 +866,7 @@ Adds a query membership rule to one or more Configuration Manager device collect
 #### Base Command
 
 `ms-ecm-device-collection-members-by-query-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -846,9 +903,11 @@ Adds a query membership rule to one or more Configuration Manager device collect
 
 
 #### Command Example
+
 ```!ms-ecm-device-collection-members-by-query-add query_expression="select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where (ClientType = 1) OR (SMS_R_System.AgentEdition0 = 5)" rule_name="new Rule" collection_name="my new collection name"```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -889,12 +948,14 @@ Adds a query membership rule to one or more Configuration Manager device collect
 #### Human Readable Output
 
 >### Collection List
+>
 >| Comment | LimitToCollectionID | CurrentStatus | LastMemberChangeTime | Type | IncludeExcludeCollectionsCount | UseCluster | LastChangeTime | Name | LocalMemberCount | HasProvisionedMember | LimitToCollectionName | MemberClassName | IsReferenceCollection | CollectionRules | ID | LastRefreshTime | IsBuiltIn | MemberCount
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| my collection comment | SMS00001 | READY | 2020\-11\-09T14:21:06Z | Device | 1 | False | 2020\-11\-19T14:25:59Z | my new collection name | 2 | True | All Systems | SMS\_CM\_RES\_COLL\_ISR00068 | False | <br/>instance of SMS\_CollectionRuleExcludeCollection<br/>\{<br/>	ExcludeCollectionID = "ISR00020";<br/>	RuleName = "Test";<br/>\};<br/>,<br/>instance of SMS\_CollectionRuleQuery<br/>\{<br/>	QueryExpression = "select SMS\_R\_SYSTEM.ResourceID,SMS\_R\_SYSTEM.ResourceType,SMS\_R\_SYSTEM.Name,SMS\_R\_SYSTEM.SMSUniqueIdentifier,SMS\_R\_SYSTEM.ResourceDomainORWorkgroup,SMS\_R\_SYSTEM.Client from SMS\_R\_System where \(ClientType = 1\) OR \(SMS\_R\_System.AgentEdition0 = 5\)";<br/>	QueryID = 1;<br/>	RuleName = "new Rule";<br/>\};<br/>,<br/>instance of SMS\_CollectionRuleQuery<br/>\{<br/>	QueryExpression = "select SMS\_R\_SYSTEM.ResourceID,SMS\_R\_SYSTEM.ResourceType,SMS\_R\_SYSTEM.Name,SMS\_R\_SYSTEM.SMSUniqueIdentifier,SMS\_R\_SYSTEM.ResourceDomainORWorkgroup,SMS\_R\_SYSTEM.Client from SMS\_R\_System where \(ClientType = 1\) OR \(SMS\_R\_System.AgentEdition0 = 5\)";<br/>	QueryID = 2;<br/>	RuleName = "new Rule";<br/>\};<br/>,<br/>instance of SMS\_CollectionRuleQuery<br/>\{<br/>	QueryExpression = "select SMS\_R\_SYSTEM.ResourceID,SMS\_R\_SYSTEM.ResourceType,SMS\_R\_SYSTEM.Name,SMS\_R\_SYSTEM.SMSUniqueIdentifier,SMS\_R\_SYSTEM.ResourceDomainORWorkgroup,SMS\_R\_SYSTEM.Client from SMS\_R\_System where \(ClientType = 1\) OR \(SMS\_R\_System.AgentEdition0 = 5\)";<br/>	QueryID = 3;<br/>	RuleName = "new Rule";<br/>\};<br/>,<br/>instance of SMS\_CollectionRuleQuery<br/>\{<br/>	QueryExpression = "select SMS\_R\_SYSTEM.ResourceID,SMS\_R\_SYSTEM.ResourceType,SMS\_R\_SYSTEM.Name,SMS\_R\_SYSTEM.SMSUniqueIdentifier,SMS\_R\_SYSTEM.ResourceDomainORWorkgroup,SMS\_R\_SYSTEM.Client from SMS\_R\_System where \(ClientType = 1\) OR \(SMS\_R\_System.AgentEdition0 = 5\)";<br/>	QueryID = 4;<br/>	RuleName = "new Rule";<br/>\};<br/>,<br/>instance of SMS\_CollectionRuleQuery<br/>\{<br/>	QueryExpression = "select SMS\_R\_SYSTEM.ResourceID,SMS\_R\_SYSTEM.ResourceType,SMS\_R\_SYSTEM.Name,SMS\_R\_SYSTEM.SMSUniqueIdentifier,SMS\_R\_SYSTEM.ResourceDomainORWorkgroup,SMS\_R\_SYSTEM.Client from SMS\_R\_System where \(ClientType = 1\) OR \(SMS\_R\_System.AgentEdition0 = 5\)";<br/>	QueryID = 5;<br/>	RuleName = "new Rule";<br/>\};<br/>,<br/>instance of SMS\_CollectionRuleDirect<br/>\{<br/>	ResourceClassName = "SMS\_R\_System";<br/>	ResourceID = 16777220;<br/>	RuleName = "EC2AMAZ\-2AKQ815";<br/>\};<br/>,<br/>instance of SMS\_CollectionRuleQuery<br/>\{<br/>	QueryExpression = "select SMS\_R\_SYSTEM.ResourceID,SMS\_R\_SYSTEM.ResourceType,SMS\_R\_SYSTEM.Name,SMS\_R\_SYSTEM.SMSUniqueIdentifier,SMS\_R\_SYSTEM.ResourceDomainORWorkgroup,SMS\_R\_SYSTEM.Client from SMS\_R\_System where \(ClientType = 1\) OR \(SMS\_R\_System.AgentEdition0 = 5\)";<br/>	RuleName = "new Rule";<br/>\};<br/> | ISR00068 | 2020\-11\-19T14:26:13Z | False | 2
 
 
 ### ms-ecm-service-start
+
 ***
 Starts a service on a device or collection. (Implemented by creating and invoking the `XSOAR StartService` script.)
 
@@ -902,6 +963,7 @@ Starts a service on a device or collection. (Implemented by creating and invokin
 #### Base Command
 
 `ms-ecm-service-start`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -936,9 +998,11 @@ Starts a service on a device or collection. (Implemented by creating and invokin
 
 
 #### Command Example
+
 ```!ms-ecm-service-start service_name=dnscache collection_name="All Systems" poll_results=true timeout=15```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -1002,6 +1066,7 @@ Starts a service on a device or collection. (Implemented by creating and invokin
 #### Human Readable Output
 
 >### Script Invocation Results
+>
 >| CollectionName | ScriptExitCode | OperationId | ScriptGuid | LastUpdateTime | ScriptOutputHash | TaskID | ScriptVersion | ScriptExecutionState | ScriptOutput | ScriptName | ScriptLastModifiedDate | DeviceName | ResourceId | CollectionId
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| All Systems | 0 | 16777874 | CB2A5600\-95A0\-4663\-9940\-20E97BD26AC8 | 2020\-11\-19T14:53:10Z | B03DDFEA2112E2743EFF47D0A450E762A864ECD55CF6D01AD6BF1A01E19BC78B | \{560F73AF\-E4BC\-447E\-9C68\-A7962E8E9B6B\} | 1 | Succeeded | \{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"DNS Client","DependentServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"Network Connectivity Assistant","DependentServices":"","MachineName":".","ServiceName":"NcaSvc","ServicesDependedOn":"NSI dnscache iphlpsvc BFE","ServiceHandle":"SafeServiceHandle","Status":1,"ServiceType":32,"StartType":3,"Site":null,"Container":null\}\],"MachineName":".","ServiceName":"dnscache","ServicesDependedOn":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SMS\_SITE\_VSS\_WRITER SMS\_SITE\_SQL\_BACKUP SMS\_SITE\_COMPONENT\_MANAGER SMS\_SITE\_BACKUP SMS\_EXECUTIVE SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\],"ServiceHandle":\{"IsInvalid":false,"IsClosed":false\},"Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null,"Name":"dnscache","RequiredServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SMS\_SITE\_VSS\_WRITER SMS\_SITE\_SQL\_BACKUP SMS\_SITE\_COMPONENT\_MANAGER SMS\_SITE\_BACKUP SMS\_EXECUTIVE SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\]\} | XSOAR StartService | 2020\-11\-19T14:52:56Z | EC2AMAZ\-PHPTDJV | 16777221 | SMS00001
@@ -1010,6 +1075,7 @@ Starts a service on a device or collection. (Implemented by creating and invokin
 
 
 ### ms-ecm-service-restart
+
 ***
 Restarts a service on a device or collection. (Implemented by creating and invoking the `XSOAR RestartService` script.)
 
@@ -1017,6 +1083,7 @@ Restarts a service on a device or collection. (Implemented by creating and invok
 #### Base Command
 
 `ms-ecm-service-restart`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1051,9 +1118,11 @@ Restarts a service on a device or collection. (Implemented by creating and invok
 
 
 #### Command Example
+
 ```!ms-ecm-service-restart service_name=dnscache collection_name="All Systems" poll_results=true timeout=15```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -1117,6 +1186,7 @@ Restarts a service on a device or collection. (Implemented by creating and invok
 #### Human Readable Output
 
 >### Script Invocation Results
+>
 >| CollectionId | ResourceId | ScriptExitCode | DeviceName | CollectionName | LastUpdateTime | ScriptVersion | ScriptExecutionState | ScriptOutput | ScriptGuid | ScriptLastModifiedDate | ScriptOutputHash | ScriptName | OperationId | TaskID
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| SMS00001 | 16777221 | 0 | EC2AMAZ\-PHPTDJV | All Systems | 2020\-11\-19T14:52:35Z | 1 | Succeeded | \{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"DNS Client","DependentServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"Network Connectivity Assistant","DependentServices":"","MachineName":".","ServiceName":"NcaSvc","ServicesDependedOn":"NSI dnscache iphlpsvc BFE","ServiceHandle":"SafeServiceHandle","Status":1,"ServiceType":32,"StartType":3,"Site":null,"Container":null\}\],"MachineName":".","ServiceName":"dnscache","ServicesDependedOn":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SMS\_SITE\_VSS\_WRITER SMS\_SITE\_SQL\_BACKUP SMS\_SITE\_COMPONENT\_MANAGER SMS\_SITE\_BACKUP SMS\_EXECUTIVE SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\],"ServiceHandle":\{"IsInvalid":false,"IsClosed":false\},"Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null,"Name":"dnscache","RequiredServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SMS\_SITE\_VSS\_WRITER SMS\_SITE\_SQL\_BACKUP SMS\_SITE\_COMPONENT\_MANAGER SMS\_SITE\_BACKUP SMS\_EXECUTIVE SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\]\} | 640C640F\-7FED\-4F80\-812E\-CF8C0852F2E5 | 2020\-11\-19T14:52:22Z | B03DDFEA2112E2743EFF47D0A450E762A864ECD55CF6D01AD6BF1A01E19BC78B | XSOAR RestartService | 16777873 | \{8E911C86\-A0D8\-4C29\-ACEB\-9FB183909128\}
@@ -1125,6 +1195,7 @@ Restarts a service on a device or collection. (Implemented by creating and invok
 
 
 ### ms-ecm-service-stop
+
 ***
 Stops a service on a device or collection. (Implemented by creating and invoking the `XSOAR StopService` script.)
 
@@ -1132,6 +1203,7 @@ Stops a service on a device or collection. (Implemented by creating and invoking
 #### Base Command
 
 `ms-ecm-service-stop`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1166,9 +1238,11 @@ Stops a service on a device or collection. (Implemented by creating and invoking
 
 
 #### Command Example
+
 ```!ms-ecm-service-stop service_name=dnscache collection_name="All Systems" poll_results=true timeout=15```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -1232,6 +1306,7 @@ Stops a service on a device or collection. (Implemented by creating and invoking
 #### Human Readable Output
 
 >### Script Invocation Results
+>
 >| CollectionName | TaskID | ScriptOutput | ScriptGuid | ScriptExecutionState | ScriptLastModifiedDate | CollectionId | ScriptVersion | DeviceName | LastUpdateTime | ScriptName | ResourceId | ScriptOutputHash | ScriptExitCode | OperationId
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| All Systems | \{B038C34A\-678C\-49A2\-BEEE\-7EF2DA67831D\} | \{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"DNS Client","DependentServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"Network Connectivity Assistant","DependentServices":"","MachineName":".","ServiceName":"NcaSvc","ServicesDependedOn":"NSI dnscache iphlpsvc BFE","ServiceHandle":"SafeServiceHandle","Status":1,"ServiceType":32,"StartType":3,"Site":null,"Container":null\}\],"MachineName":".","ServiceName":"dnscache","ServicesDependedOn":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SMS\_SITE\_VSS\_WRITER SMS\_SITE\_SQL\_BACKUP SMS\_SITE\_COMPONENT\_MANAGER SMS\_SITE\_BACKUP SMS\_EXECUTIVE SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\],"ServiceHandle":\{"IsInvalid":false,"IsClosed":false\},"Status":1,"ServiceType":32,"StartType":2,"Site":null,"Container":null,"Name":"dnscache","RequiredServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SMS\_SITE\_VSS\_WRITER SMS\_SITE\_SQL\_BACKUP SMS\_SITE\_COMPONENT\_MANAGER SMS\_SITE\_BACKUP SMS\_EXECUTIVE SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\]\} | F6CD27EC\-E932\-4981\-9CED\-ECF78A06651D | Succeeded | 2020\-11\-19T14:53:31Z | SMS00001 | 1 | EC2AMAZ\-PHPTDJV | 2020\-11\-19T14:53:40Z | XSOAR StopService | 16777221 | 2586F4DFD8FB133752E3DCC53248A417124F096777FC9EEE327B08DF0DEFD175 | 0 | 16777875
@@ -1240,6 +1315,7 @@ Stops a service on a device or collection. (Implemented by creating and invoking
 
 
 ### ms-ecm-script-invocation-results
+
 ***
 Gets a script invocation results.
 
@@ -1247,6 +1323,7 @@ Gets a script invocation results.
 #### Base Command
 
 `ms-ecm-script-invocation-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1276,9 +1353,11 @@ Gets a script invocation results.
 
 
 #### Command Example
+
 ```!ms-ecm-script-invocation-results operation_id=16777267```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -1306,12 +1385,14 @@ Gets a script invocation results.
 #### Human Readable Output
 
 >### Script Invocation Results
+>
 >| CollectionName | TaskID | ScriptOutput | ScriptGuid | ScriptExecutionState | ScriptLastModifiedDate | CollectionId | ScriptVersion | DeviceName | LastUpdateTime | ScriptName | ResourceId | ScriptOutputHash | ScriptExitCode | OperationId
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| All Systems | \{FC58140A\-B688\-4D2E\-8FEE\-F7AED348FABF\} |  | 2E0D961D\-1C89\-477D\-B1A7\-3FFEDC0AF2FA | Failed | 2020\-09\-24T14:36:32Z | SMS00001 | 1 | EC2AMAZ\-2AKQ815 | 2020\-09\-29T10:57:15Z | Fail | 16777220 | E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855 | \-2147467259 | 16777267
 
 
 ### ms-ecm-device-get-collection-member
+
 ***
 Gets a Configuration Manager device by querying the SMS_CM_RES_COLL_SMS00001 class. You can use the `ms-ecm-device-get-resource` or `ms-ecm-device-get-collection-member` commands to change the query class. Depending upon your role-based access in the site, you may need to use one of these other commands.
 
@@ -1319,6 +1400,7 @@ Gets a Configuration Manager device by querying the SMS_CM_RES_COLL_SMS00001 cla
 #### Base Command
 
 `ms-ecm-device-get-collection-member`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1359,9 +1441,11 @@ Gets a Configuration Manager device by querying the SMS_CM_RES_COLL_SMS00001 cla
 
 
 #### Command Example
+
 ```!ms-ecm-device-get-collection-member device_names=EC2AMAZ-2AKQ815```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -1400,12 +1484,14 @@ Gets a Configuration Manager device by querying the SMS_CM_RES_COLL_SMS00001 cla
 #### Human Readable Output
 
 >### Device As Collection Member
+>
 >| ClientVersion | ResourceID | IsActive | IsBlocked | DeviceOSBuild | LastHardwareScan | SiteCode | DeviceName | LastPolicyRequest | DeviceThreatLevel | CurrentLogonUser | PrimaryUser | ExchangeServer | LastClientCheckTime | LastDDR | IsDecommissioned | LastLogonUser | Domain | Status | LastActiveTime | IsClient | ADLastLogonTime | IsVirtualMachine | DeviceOS
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| 5.00.8790.1007 | 16777220 | True | False | 10.0.14393.3025 | 2020\-11\-15T11:49:36Z | ISR | EC2AMAZ\-2AKQ815 | 2020\-11\-19T13:10:59Z |  |  | demisto\\sccmadmin |  | 2020\-11\-07T16:42:39Z | 2020\-11\-18T18:30:48Z | False |  | DEMISTO |  | 2020\-11\-19T13:10:59Z | True | 11/12/2020 6:07:29 AM | False | Microsoft Windows NT Advanced Server 10.0
 
 
 ### ms-ecm-device-get-resource
+
 ***
 Gets a Configuration Manager device by querying the SMS_R_System class. You can use the `ms-ecm-device-get-resource` or `ms-ecm-device-get-collection-member` commands to change the query class. Depending upon your role-based access in the site, you may need to use one of these other commands.
 
@@ -1413,6 +1499,7 @@ Gets a Configuration Manager device by querying the SMS_R_System class. You can 
 #### Base Command
 
 `ms-ecm-device-get-resource`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1449,9 +1536,11 @@ Gets a Configuration Manager device by querying the SMS_R_System class. You can 
 
 
 #### Command Example
+
 ```!ms-ecm-device-get-resource device_names=EC2AMAZ-2AKQ815```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -1499,12 +1588,14 @@ Gets a Configuration Manager device by querying the SMS_R_System class. You can 
 #### Human Readable Output
 
 >### Device As Resource
+>
 >| DistinguishedName | VirtualMachineHostName | AgentTime | OperatingSystemNameandVersion | IPv4Addresses | AgentSite | AgentName | ADSiteName | FullDomainName | VirtualMachineType | CPUType | UserAccountControl | NetbiosName | LastLogonTimestamp | HardwareID | DNSForestGuid | LastLogonUserName | IPv6Addresses | DeviceName | LastLogonUserDomain | ResourceID
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| CN=EC2AMAZ\-2AKQ815,CN=Computers,DC=demisto,DC=local |  | \["2020\-11\-19T00:00:01Z","2019\-07\-07T10:12:48Z","2020\-11\-19T14:30:48Z"\] | Microsoft Windows NT Advanced Server 10.0 | "2.2.2.2" | \["ISR","ISR","ISR"\] | \["SMS\_AD\_SYSTEM\_DISCOVERY\_AGENT","MP\_ClientRegistration","Heartbeat Discovery"\] | Default\-First\-Site\-Name | DEMISTO.LOCAL | 0 | Intel64 Family 6 Model 85 Stepping 4 | 4096 | EC2AMAZ\-2AKQ815 | 2020\-11\-12T06:07:29Z | 2:387B42C549C5E7D718B68BC65959FA9041F7F2D0 | E8AA1F36\-33BE\-41F2\-ADCB\-E40376F5B168 |  | "fe80::81c5:1670:9363:a40b" | EC2AMAZ\-2AKQ815 |  | 16777220
 
 
 ### ms-ecm-get-user-device-affinity
+
 ***
 Gets the relationships between a device and its primary users.
 
@@ -1512,6 +1603,7 @@ Gets the relationships between a device and its primary users.
 #### Base Command
 
 `ms-ecm-get-user-device-affinity`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1534,9 +1626,11 @@ Gets the relationships between a device and its primary users.
 
 
 #### Command Example
+
 ```!ms-ecm-get-user-device-affinity device_names=EC2AMAZ-2AKQ815```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftECM": {
@@ -1565,6 +1659,7 @@ Gets the relationships between a device and its primary users.
 #### Human Readable Output
 
 >### User Device Affinity
+>
 >| IsActive | DeviceName | ResourceID | CreationTime | UserName | RelationshipResourceID
 >| --- | --- | --- | --- | --- | ---
 >| True | EC2AMAZ\-2AKQ815 | 16777220 | 2020\-09\-07T14:52:57Z | demisto\\sccmadmin | 25165825

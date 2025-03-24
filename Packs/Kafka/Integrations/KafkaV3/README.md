@@ -34,9 +34,12 @@ This integration is fully compatible with the Kafka v2 integration.
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### kafka-print-topics
+
 ***
 Prints all topics and their partitions.
 
@@ -44,6 +47,7 @@ Prints all topics and their partitions.
 #### Base Command
 
 `kafka-print-topics`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -62,9 +66,11 @@ Prints all topics and their partitions.
 
 
 #### Command Example
+
 ```!kafka-print-topics```
 
 #### Context Example
+
 ```
 {
     "Kafka": {
@@ -94,7 +100,9 @@ Prints all topics and their partitions.
 ```
 
 #### Human Readable Output
+
 ##### Kafka Topics
+
 | **Name** | **Partitions** |
 | --- | --- |
 | test-topic1 | {'ID': 0} |
@@ -133,6 +141,7 @@ There is no context output for this command.
 Message was successfully produced to topic 'test-topic', partition 0
 
 ### kafka-consume-msg
+
 ***
 Consumes a single Kafka message.
 
@@ -140,6 +149,7 @@ Consumes a single Kafka message.
 #### Base Command
 
 `kafka-consume-msg`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -160,9 +170,11 @@ Consumes a single Kafka message.
 
 
 #### Command Example
+
 ```!kafka-consume-msg topic=test-topic offset=latest```
 
 #### Context Example
+
 ```
 {
     "Kafka": {
@@ -178,13 +190,16 @@ Consumes a single Kafka message.
 ```
 
 #### Human Readable Output
+
 ##### Message consumed from topic 'test'
+
 | **Offset** | **Message** |
 | --- | --- |
 | 11 | test message |
 
 
 ### kafka-fetch-partitions
+
 ***
 Fetches partitions for a topic.
 
@@ -192,6 +207,7 @@ Fetches partitions for a topic.
 #### Base Command
 
 `kafka-fetch-partitions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -208,9 +224,11 @@ Fetches partitions for a topic.
 
 
 #### Command Example
+
 ```!kafka-fetch-partitions topic=test```
 
 ### Context Example
+
 ```
 {
     "Kafka": {
@@ -227,7 +245,9 @@ Fetches partitions for a topic.
 ```
 
 #### Human Readable Output
+
 ##### Available partitions for topic 'test'
+
 | **Partitions** |
 | --- |
 | 0 |
@@ -235,6 +255,7 @@ Fetches partitions for a topic.
 | 2 |
 
 ## Configuration of SASL_SSL PLAIN:
+
 1. Make sure you have the broker port which supports SSL connection.
 2. Add 'broker_address:port' to the brokers list.
 3. Provide the CA root certificate in the 'CA certificate of Kafka server (.cer)' section.

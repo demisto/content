@@ -16,9 +16,12 @@ If you've configured the server to run Docker images with a non-root internal us
 | Document root (e.g., var/www/html/files) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### pan-os-edl-get-external-file
+
 ***
 Displays the contents of the specified remote file located in the War Room.
 
@@ -26,6 +29,7 @@ Displays the contents of the specified remote file located in the War Room.
 #### Base Command
 
 `pan-os-edl-get-external-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -39,11 +43,13 @@ Displays the contents of the specified remote file located in the War Room.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-edl-get-external-file file_path=test_playbook_list4.txt```
 
 #### Human Readable Output
 
 >### File Content:
+>
 >|List|
 >|---|
 >| jojo.com |
@@ -52,6 +58,7 @@ There is no context output for this command.
 
 
 ### pan-os-edl-search-external-file
+
 ***
 Searches for a string in a remote file.
 
@@ -59,6 +66,7 @@ Searches for a string in a remote file.
 #### Base Command
 
 `pan-os-edl-search-external-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -72,11 +80,13 @@ Searches for a string in a remote file.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-edl-search-external-file file_path=test_playbook_list4.txt search_string=koko```
 
 #### Human Readable Output
 
 >### Search Results for koko:
+>
 >|Result|
 >|---|
 >|  |
@@ -84,6 +94,7 @@ There is no context output for this command.
 
 
 ### pan-os-edl-update
+
 ***
 Updates the instance context with the specified list name and list items, and then overrides the path of the remote file with the internal list.
 
@@ -91,6 +102,7 @@ Updates the instance context with the specified list name and list items, and th
 #### Base Command
 
 `pan-os-edl-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -107,17 +119,20 @@ Updates the instance context with the specified list name and list items, and th
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-edl-update add_or_remove=remove file_path=test_playbook_list4.txt list_items=toto.com list_name=test_playbook_list4 verbose=true```
 
 #### Human Readable Output
 
 >### Updated File Data:
+>
 >|Data|
 >|---|
 >| jojo.com<br/>koko.com<br/>upload.wikimedia.org |
 
 
 ### pan-os-edl-update-from-external-file
+
 ***
 Updates internal list data with the contents of a remote file.
 
@@ -125,6 +140,7 @@ Updates internal list data with the contents of a remote file.
 #### Base Command
 
 `pan-os-edl-update-from-external-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -141,6 +157,7 @@ Updates internal list data with the contents of a remote file.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-edl-update-from-external-file file_path=test_playbook_list4.txt list_name=test_playbook_list4 type=override```
 
 #### Human Readable Output
@@ -148,6 +165,7 @@ There is no context output for this command.
 >Instance context updated successfully
 
 ### pan-os-edl-delete-external-file
+
 ***
 Deletes a file from a remote server.
 
@@ -155,6 +173,7 @@ Deletes a file from a remote server.
 #### Base Command
 
 `pan-os-edl-delete-external-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -167,6 +186,7 @@ Deletes a file from a remote server.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-edl-delete-external-file file_path=test_playbook_list5.txt```
 
 #### Human Readable Output
@@ -174,6 +194,7 @@ There is no context output for this command.
 >File deleted successfully
 
 ### pan-os-edl-print-internal-list
+
 ***
 Displays internal list data in the War Room.
 
@@ -181,6 +202,7 @@ Displays internal list data in the War Room.
 #### Base Command
 
 `pan-os-edl-print-internal-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -193,11 +215,13 @@ Displays internal list data in the War Room.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-edl-print-internal-list list_name=test_playbook_list4```
 
 #### Human Readable Output
 
 >### List items:
+>
 >|test_playbook_list4|
 >|---|
 >| jojo.com |
@@ -206,6 +230,7 @@ There is no context output for this command.
 
 
 ### pan-os-edl-dump-internal-list
+
 ***
 Dumps (copies) instance context to either the incident context or a file.
 
@@ -213,6 +238,7 @@ Dumps (copies) instance context to either the incident context or a file.
 #### Base Command
 
 `pan-os-edl-dump-internal-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -230,9 +256,11 @@ Dumps (copies) instance context to either the incident context or a file.
 
 
 #### Command Example
+
 ```!pan-os-edl-dump-internal-list list_name=test_playbook_list4 destination=incident_context```
 
 #### Context Example
+
 ```json
 {
     "PANOSEDL": {
@@ -249,6 +277,7 @@ Dumps (copies) instance context to either the incident context or a file.
 #### Human Readable Output
 
 >### List items:
+>
 >|test_playbook_list4|
 >|---|
 >| jojo.com |
@@ -257,6 +286,7 @@ Dumps (copies) instance context to either the incident context or a file.
 
 
 ### pan-os-edl-list-internal-lists
+
 ***
 Displays instance context list names.
 
@@ -264,6 +294,7 @@ Displays instance context list names.
 #### Base Command
 
 `pan-os-edl-list-internal-lists`
+
 #### Input
 
 There are no input arguments for this command.
@@ -273,17 +304,20 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-edl-list-internal-lists```
 
 #### Human Readable Output
 
 >### Instance context Lists:
+>
 >|List names|
 >|---|
 >| test_playbook_list4 |
 
 
 ### pan-os-edl-search-internal-list
+
 ***
 Search for a string in internal list.
 
@@ -291,6 +325,7 @@ Search for a string in internal list.
 #### Base Command
 
 `pan-os-edl-search-internal-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -304,6 +339,7 @@ Search for a string in internal list.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-edl-search-internal-list list_name=test_playbook_list4 search_string=koko.com```
 
 #### Human Readable Output
@@ -311,6 +347,7 @@ There is no context output for this command.
 >Search string koko.com is in the internal list test_playbook_list4.
 
 ### pan-os-edl-compare
+
 ***
 Compares internal list and external file contents.
 
@@ -318,6 +355,7 @@ Compares internal list and external file contents.
 #### Base Command
 
 `pan-os-edl-compare`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -332,6 +370,7 @@ Compares internal list and external file contents.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-edl-compare file_path=test_playbook_list4.txt list_name=list_name=test_playbook_list4```
 
 #### Human Readable Output
@@ -339,6 +378,7 @@ There is no context output for this command.
 >List was not found in instance context.
 
 ### pan-os-edl-get-external-file-metadata
+
 ***
 Gets metadata for an external file.
 
@@ -346,6 +386,7 @@ Gets metadata for an external file.
 #### Base Command
 
 `pan-os-edl-get-external-file-metadata`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -364,9 +405,11 @@ Gets metadata for an external file.
 
 
 #### Command Example
+
 ```!pan-os-edl-get-external-file-metadata file_path=test_playbook_list4.txt```
 
 #### Context Example
+
 ```json
 {
     "PANOSEDL": {
@@ -381,12 +424,14 @@ Gets metadata for an external file.
 #### Human Readable Output
 
 >### File metadata:
+>
 >|FileName|Size|NumberOfLines|LastModified|
 >|---|---|---|---|
 >| test_playbook_list4.txt | 38 | 3 | 2021-07-11 06:46:21.290803188 |
 
 
 ### pan-os-edl-update-internal-list
+
 ***
 Updates the instance context with the specified list name and list items.
 
@@ -394,6 +439,7 @@ Updates the instance context with the specified list name and list items.
 #### Base Command
 
 `pan-os-edl-update-internal-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -409,6 +455,7 @@ Updates the instance context with the specified list name and list items.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-edl-update-internal-list add_or_remove=add list_items=toto.com list_name=test_playbook_list4```
 
 #### Human Readable Output
@@ -416,6 +463,7 @@ There is no context output for this command.
 >Instance context updated successfully.
 
 ### pan-os-edl-update-external-file
+
 ***
 Updates a remote file with the contents of an internal list.
 
@@ -423,6 +471,7 @@ Updates a remote file with the contents of an internal list.
 #### Base Command
 
 `pan-os-edl-update-external-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -437,11 +486,13 @@ Updates a remote file with the contents of an internal list.
 There is no context output for this command.
 
 #### Command Example
+
 ```!pan-os-edl-update-external-file file_path=test_playbook_list4.txt list_name=test_playbook_list4 verbose=true```
 
 #### Human Readable Output
 
 >### Updated File Data:
+>
 >|Data|
 >|---|
 >| jojo.com<br/>koko.com<br/>toto.com<br/>upload.wikimedia.org |

@@ -14,9 +14,12 @@ This integration was integrated and tested with version 1.0.1 of Nexthink
 | Use system proxy settings | Use system proxy settings. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### nt-compliance-check
+
 ***
 Verify antivirus/antispyware status.
 
@@ -24,6 +27,7 @@ Verify antivirus/antispyware status.
 #### Base Command
 
 `nt-compliance-check`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -49,6 +53,7 @@ Verify antivirus/antispyware status.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -56,6 +61,7 @@ Verify antivirus/antispyware status.
 
 
 ### nt-installed-packages
+
 ***
 Query installed software in endpoint.
 
@@ -63,6 +69,7 @@ Query installed software in endpoint.
 #### Base Command
 
 `nt-installed-packages`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -85,6 +92,7 @@ Query installed software in endpoint.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -92,6 +100,7 @@ Query installed software in endpoint.
 
 
 ### nt-endpoint-details
+
 ***
 Get endpoint details.
 
@@ -99,6 +108,7 @@ Get endpoint details.
 #### Base Command
 
 `nt-endpoint-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -118,6 +128,7 @@ Get endpoint details.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

@@ -24,6 +24,7 @@ This following are the indicator fields for the Certificate indicator layout.
 - Validity Not Before (Starting of certificate validity period)
 
 ## Automation
+
 This pack includes the following 2 Automations.
 
 - **CertificateExtract** - Extracts all the certificate fields from a X509 certificate in PEM or DER format.
@@ -34,7 +35,9 @@ This pack includes the following 2 Automations.
 The default Certificate Indicator layout includes information about the indicators on both the Info page and the Details page. 
 
 ### The Info Page
+
 The following information appears in the Info page.
+
 - Creation date, modified date, expiration date of the indicator.
 - Reputation of the indicator sources.
 - The date, event, and source of the indicators.
@@ -44,7 +47,9 @@ The following information appears in the Info page.
 It also includes [action buttons](#action-buttons) for Analysts to utilize in their day to day.
 
 ### The Details Page
+
 The following information appears in the Details page. 
+
 - Extensions 
 - Public key
 - The raw certificate
@@ -53,6 +58,7 @@ The following information appears in the Details page.
 ### Action Buttons
 
 The following action button scripts appear in the Certificate Indicator layout:
+
 - Enrich - Enriches the indicators.
 - Expire - Allows a user to expire an indicator. When an indicator is expired, it remains in the indicator's table with the status of expired.
 

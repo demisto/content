@@ -15,4 +15,4 @@ The playbooks included in this pack help you automate repetitive tasks associate
 - Process indicators against IP and CIDR lists.
 
 
-_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/index)._
+*For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/index).*

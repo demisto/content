@@ -38,9 +38,12 @@ keys panel.
 For further information about the SOCRadar API keys please see [SOCRadar API](https://platform.socradar.com/docs/api/intro/) documentation.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### socradar-mark-incident-fp
+
 ***
 Marks incident as false positive in SOCRadar platform.
 
@@ -48,6 +51,7 @@ Marks incident as false positive in SOCRadar platform.
 #### Base Command
 
 `socradar-mark-incident-fp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -61,6 +65,7 @@ Marks incident as false positive in SOCRadar platform.
 There is no context output for this command.
 
 #### Command Example
+
 ```!socradar-mark-incident-fp socradar_incident_id=29051453 comments="This incident is FP."```
 
 #### Human Readable Output
@@ -68,6 +73,7 @@ There is no context output for this command.
 >SOCRadar API Response: False positive action has been successfully taken. Affected incident IDs: 29051453
 
 ### socradar-mark-incident-resolved
+
 ***
 Marks incident as resolved in SOCRadar platform.
 
@@ -75,6 +81,7 @@ Marks incident as resolved in SOCRadar platform.
 #### Base Command
 
 `socradar-mark-incident-resolved`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -88,6 +95,7 @@ Marks incident as resolved in SOCRadar platform.
 There is no context output for this command.
 
 #### Command Example
+
 ```!socradar-mark-incident-resolved socradar_incident_id=29051453 comments="Incident has been resolved."```
 
 #### Human Readable Output

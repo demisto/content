@@ -14,9 +14,12 @@ APIVoid wraps up a number of services such as ipvoid & urlvoid.
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### apivoid-ip
+
 ***
 Returns the reputation and extended context of the IP.
 
@@ -24,6 +27,7 @@ Returns the reputation and extended context of the IP.
 #### Base Command
 
 `apivoid-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -76,6 +80,7 @@ Returns the reputation and extended context of the IP.
 | APIVoid.IP.ip | string |  | 
 
 ### apivoid-domain
+
 ***
 Returns the reputation of the domain.
 
@@ -83,6 +88,7 @@ Returns the reputation of the domain.
 #### Base Command
 
 `apivoid-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -136,6 +142,7 @@ Returns the reputation of the domain.
 | APIVoid.Domain.category.is_url_shortener | boolean |  | 
 
 ### apivoid-url
+
 ***
 Returns the reputation of the URL.
 
@@ -145,6 +152,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `apivoid-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -269,6 +277,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | APIVoid.URL.file_type.signature | string |  | 
 
 ### ip
+
 ***
 Returns the reputation of the IP.
 
@@ -276,6 +285,7 @@ Returns the reputation of the IP.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -302,6 +312,7 @@ Returns the reputation of the IP.
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 
 ### domain
+
 ***
 Returns the reputation of the domain.
 
@@ -309,6 +320,7 @@ Returns the reputation of the domain.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -330,6 +342,7 @@ Returns the reputation of the domain.
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 
 ### url
+
 ***
 Returns the reputation of the URL.
 
@@ -339,6 +352,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -362,6 +376,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 
 ### apivoid-dns-lookup
+
 ***
 Gets DNS records of a host.
 
@@ -369,6 +384,7 @@ Gets DNS records of a host.
 #### Base Command
 
 `apivoid-dns-lookup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -408,6 +424,7 @@ Gets DNS records of a host.
 | APIVoid.DNS.items.value | string |  | 
 
 ### apivoid-ssl-info
+
 ***
 Get useful SSL information from a remote host
 
@@ -415,6 +432,7 @@ Get useful SSL information from a remote host
 #### Base Command
 
 `apivoid-ssl-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -480,6 +498,7 @@ Get useful SSL information from a remote host
 | APIVoid.SSL.details.version | string |  | 
 
 ### apivoid-email-verify
+
 ***
 Checks if an email address is disposable, if it has MX records, and more.
 
@@ -487,6 +506,7 @@ Checks if an email address is disposable, if it has MX records, and more.
 #### Base Command
 
 `apivoid-email-verify`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -524,6 +544,7 @@ Checks if an email address is disposable, if it has MX records, and more.
 | APIVoid.Email.score | number |  | 
 
 ### apivoid-threatlog
+
 ***
 Check if a website is present on ThreatLog database
 
@@ -531,6 +552,7 @@ Check if a website is present on ThreatLog database
 #### Base Command
 
 `apivoid-threatlog`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -548,6 +570,7 @@ Check if a website is present on ThreatLog database
 | Domain.Name | string | The domain name, for example: "google.com". | 
 
 ### apivoid-parked-domain
+
 ***
 Detect if a domain (i.e google.com) is actually parked
 
@@ -555,6 +578,7 @@ Detect if a domain (i.e google.com) is actually parked
 #### Base Command
 
 `apivoid-parked-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -571,6 +595,7 @@ Detect if a domain (i.e google.com) is actually parked
 | Domain.Name | string | The domain name, for example: "google.com". | 
 
 ### apivoid-domain-age
+
 ***
 Get the registration date of a domain and the domain age in days
 
@@ -578,6 +603,7 @@ Get the registration date of a domain and the domain age in days
 #### Base Command
 
 `apivoid-domain-age`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -601,6 +627,7 @@ Get the registration date of a domain and the domain age in days
 | Domain.Name | string | The domain name, for example: "google.com". | 
 
 ### apivoid-url-to-image
+
 ***
 Capture a high-quality screenshot of any website or URL
 
@@ -608,6 +635,7 @@ Capture a high-quality screenshot of any website or URL
 #### Base Command
 
 `apivoid-url-to-image`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -632,6 +660,7 @@ Capture a high-quality screenshot of any website or URL
 | File.Extension | string | The extension of the file. | 
 
 ### apivoid-url-to-pdf
+
 ***
 Convert an URL info high-quality and printable PDF document
 
@@ -639,6 +668,7 @@ Convert an URL info high-quality and printable PDF document
 #### Base Command
 
 `apivoid-url-to-pdf`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -663,6 +693,7 @@ Convert an URL info high-quality and printable PDF document
 | File.Extension | string | The extension of the file. | 
 
 ### apivoid-url-to-html
+
 ***
 Get the body of an html page after javascript has been executed
 
@@ -670,6 +701,7 @@ Get the body of an html page after javascript has been executed
 #### Base Command
 
 `apivoid-url-to-html`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -694,6 +726,7 @@ Get the body of an html page after javascript has been executed
 | File.Extension | string | The extension of the file. | 
 
 ### apivoid-site-trustworthiness
+
 ***
 A smart API that accurately checks a website's trustworthiness.
 
@@ -701,6 +734,7 @@ A smart API that accurately checks a website's trustworthiness.
 #### Base Command
 
 `apivoid-site-trustworthiness`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

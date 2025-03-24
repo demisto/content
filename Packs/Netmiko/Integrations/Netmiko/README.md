@@ -26,13 +26,17 @@
 1. [Executes a command, or series of commands, over an SSH connection: netmiko-cmds](#netmiko-cmds)
 
 ## netmiko-cmds
+
 Executes a command, or series of commands, over an SSH connection. Outputs from the executed commands are returned to the incident/playground context.
 
 #### Base Command
+
 `netmiko-cmds`
 
 #### Input
+
 ------------------
+
 | **Argument Name** | **Description**  | **Required** |
 |--|--|--|
 |cmds|The command, or commands, to execute. When commands are manually specified and executed via the XSOAR CLI or in a task, place each command after the first on a new line (no comma required)|Required|
@@ -49,6 +53,7 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 |require_exit|Specifies an optional command that must be executed upon completion of the cmds parameter being executed. (Default: **False**)|Optional|
 
 #### Context Output 
+
 |**Path**|**Type**|**Description**|
 |--|--|--|
 |Netmiko.Command|String|The executed command(s)|
@@ -57,7 +62,9 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 |Netmiko.Output|String|The results of the command(s) that were executed|
 
 #### Command Example (Single command)
+
 `!netmiko-cmds cmds="whoami"`
+
 #### Context Example
 
 >{<br> 	
@@ -68,18 +75,22 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 >}<br>
 
 #### Human Readable Output
+
 #### Command(s) against 192.168.0.1 (linux)
+
 |**Command**|**DateTimeUTC**|**Hostname**|**Output**|
 |--|--|--|--|
 |whoami|2023-04-24T21:40:21.755985|192.168.0.1|root|
 
 ### Command Example (Multiple commands)
+
 #### As multiple commands via CLI or task
 
 `!netmiko-cmds cmds="whoami`
 `who"`
 
 #### As multiple commands via CLI or task using an array 
+
 `array context key = ["whoami", "who"]`
 `!netmiko-cmds cmds=${array}`
 
@@ -101,7 +112,9 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 >}<br>
 
 #### Human Readable Output
+
 #### Command(s) against 192.168.0.1 (linux)
+
 |**Command**|**DateTimeUTC**|**Hostname**|**Output**|
 |--|--|--|--|
 |whoami|2023-04-24T21:59:02.177240|192.168.0.1|root|

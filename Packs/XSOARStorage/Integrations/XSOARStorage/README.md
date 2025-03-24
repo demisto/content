@@ -1,4 +1,5 @@
 Facilitates the storage and retrieval of key/value pairs within XSOAR.
+
 ## Configure XSOAR Storage in Cortex
 
 
@@ -7,9 +8,12 @@ Facilitates the storage and retrieval of key/value pairs within XSOAR.
 | Max Size of Store in bytes (Maximum of 1024000) | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### xsoar-store-list
+
 ***
 List the keys available.
 
@@ -17,6 +21,7 @@ List the keys available.
 #### Base Command
 
 `xsoar-store-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -32,6 +37,7 @@ List the keys available.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -39,6 +45,7 @@ List the keys available.
 
 
 ### xsoar-store-put
+
 ***
 Places data in the store under the provided key.
 
@@ -46,6 +53,7 @@ Places data in the store under the provided key.
 #### Base Command
 
 `xsoar-store-put`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -60,6 +68,7 @@ Places data in the store under the provided key.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -67,6 +76,7 @@ There is no context output for this command.
 
 
 ### xsoar-store-get
+
 ***
 Retrieve data stored in the provided key.
 
@@ -74,6 +84,7 @@ Retrieve data stored in the provided key.
 #### Base Command
 
 `xsoar-store-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -90,6 +101,7 @@ Retrieve data stored in the provided key.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

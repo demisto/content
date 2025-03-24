@@ -1,6 +1,7 @@
 Returns the length of the string passed as an argument.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Returns the length of the string passed as an argument.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ Returns the length of the string passed as an argument.
 | str | The string to evaluate. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

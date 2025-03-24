@@ -5,7 +5,9 @@ The pack also contains the corresponding custom malware incident views and layou
 These playbooks orchestrate across multiple products to extract and enrich IOCs, detonate malicious files, hunt for more IOCs within the organization, and perform remediation using only Palo Alto Networks products.
 
 ##### What does this pack do?
+
 The playbooks included in this pack help you save time and automate repetitive tasks using Palo Alto Networks product integrations:
+
 - Find and link similar incidents
 - Extract and enrich all relevant indicators from the source alert
 - Calculate severity for the incident based on initial severity provided, indicator reputations, email authenticity check and critical assets if any are involved.

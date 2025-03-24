@@ -11,7 +11,7 @@ Ingest indicator feeds from TAXII 2.0 and 2.1 servers.
 | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
 | Feed Fetch Interval |  | False |
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-| Discovery Service URL (e.g. https://example.net/taxii) |  | True |
+| Discovery Service URL (e.g. <https://example.net/taxii>) |  | True |
 | Username / API Key |  | False |
 | Password |  | False |
 | Collection Name To Fetch Indicators From | Indicators will be fetched from this collection. Run "taxii2-get-collections" command to get a valid value. If left empty, the instance will try to fetch from all the collections in the given discovery service. | False |
@@ -32,21 +32,26 @@ Ingest indicator feeds from TAXII 2.0 and 2.1 servers.
 
 
 ### Using API Token authentication
+
 In order to use the integration with an API token you'll first need to change the `Username / API Key (see '?')` field to `_api_token_key`. Following this step, you can now enter the API Token into the `Password` field - this value will be used as an API key.
 
 
 ### Using custom authentication header
+
 In case the TAXII 2 server you're trying to connect to requires a custom authentication header, you'll first need to change the `Username / API Key (see '?')` field to `_header:` and the custom header name, e.g. `_header:custom_auth`. Following this step, you can now enter the custom auth header value into the `Password` field - this value will be used as a custom auth header.
 
 ### Complex Observation Mode
+
 Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR", and "FOLLOWEDBY". e.g. `[ IP = 'b' ] AND [ URL = 'd' ]`. These relationships are not represented in in CORTEX XSOAR TIM indicators. You can opt to create them while ignoring these relations, or you can opt to ignore these expressions - if you chose the latter, then no indicator will be created for complex observations.
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### taxii2-get-indicators
+
 ***
 Allows you to test your feed and to make sure you can fetch indicators successfuly.
 
@@ -54,6 +59,7 @@ Allows you to test your feed and to make sure you can fetch indicators successfu
 #### Base Command
 
 `taxii2-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -73,9 +79,11 @@ Allows you to test your feed and to make sure you can fetch indicators successfu
 
 
 #### Command Example
+
 ```!taxii2-get-indicators limit=3```
 
 #### Human Readable Output
+
 |value|type|
 |---|---|
 | coronashop.jp | Domain |
@@ -84,6 +92,7 @@ Allows you to test your feed and to make sure you can fetch indicators successfu
 
 
 ### taxii2-get-collections
+
 ***
 Gets the list of collections from the discovery service.
 
@@ -91,6 +100,7 @@ Gets the list of collections from the discovery service.
 #### Base Command
 
 `taxii2-get-collections`
+
 #### Input
 
 There are no input arguments for this command.
@@ -104,9 +114,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!taxii2-get-collections```
 
 #### Human Readable Output
+
 |Name|ID|
 |---|---|
 | Phish Tank | 107 |
@@ -123,12 +135,14 @@ There are no input arguments for this command.
 
 
 ### taxii2-reset-fetch-indicators
+
 ***
 WARNING: This command will reset your fetch history.
 
 #### Base Command
 
 `taxii2-reset-fetch-indicators`
+
 #### Input
 
 There are no input arguments for this command.
@@ -138,7 +152,9 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!taxii2-reset-fetch-indicators```
 
 #### Human Readable Output
+
 Fetch was reset successfully. Your next indicator fetch will collect indicators from the configured "First Fetch Time"

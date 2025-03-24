@@ -17,10 +17,12 @@ This integration was integrated and tested with Wiz
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook or War Room.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### wiz-get-issue
+
 ***
 Get the details for a Wiz Issue ID.
 
@@ -35,11 +37,13 @@ Get the details for a Wiz Issue ID.
 | issue_id | Issue id | Required | 
 
 #### Command Example
+
 ```
 !wiz-get-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b"
 ```
 
 ### wiz-get-issues
+
 ***
 Get the issues on cloud resources.
 <h4> Base Command </h4>
@@ -64,6 +68,7 @@ Get the issues on cloud resources.
 
 
 #### Command Example
+
 ```
 !wiz-get-issues entity_type="VIRTUAL_MACHINE"
 !wiz-get-issues issue_type="THREAT_DETECTION"
@@ -72,6 +77,7 @@ Get the issues on cloud resources.
 ```
 
 ### wiz-get-resource
+
 ***
 Get Details of a resource. You should pass exactly one of `resource_id`, `resource_name`.
 When searching by name, results are limited to 500 records.
@@ -96,6 +102,7 @@ When searching by name, results are limited to 500 records.
 
 
 #### Command Example
+
 ```
 !wiz-get-resource resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
 !wiz-get-resource resource_name="i-0g03j4h5gd123d456"
@@ -103,6 +110,7 @@ When searching by name, results are limited to 500 records.
 ```
 
 ### wiz-issue-in-progress
+
 ***
 Re-open an Issue.
 
@@ -125,11 +133,13 @@ Re-open an Issue.
 
 
 #### Command Example
+
 ```
 !wiz-issue-in-progress issue_id="12345678-1234-1234-1234-cc0a24716e0b"
 ```
 
 ### wiz-reopen-issue
+
 ***
 Re-open an Issue.
 
@@ -153,11 +163,13 @@ Re-open an Issue.
 
 
 #### Command Example
+
 ```
 !wiz-reopen-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" reopen-note="still an issue"
 ```
 
 ### wiz-reject-issue
+
 ***
 Re-open an Issue.
 
@@ -182,11 +194,13 @@ Re-open an Issue.
 
 
 #### Command Example
+
 ```
 !wiz-reject-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" reject_reason="WONT_FIX" reject_note="this is by design"
 ```
 
 ### wiz-resolve-issue
+
 ***
 Resolve a Threat Detection Issue.
 
@@ -211,11 +225,13 @@ Resolve a Threat Detection Issue.
 
 
 #### Command Example
+
 ```
 !wiz-resolve-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" resolution_note="won't fix this issue as this is low priority" resolution_reason="WONT_FIX"
 ```
 
 ### wiz-set-issue-note
+
 ***
 Set (append) a note to an Issue.
 
@@ -231,11 +247,13 @@ Set (append) a note to an Issue.
 | reject_note | Note for the Issue. Will be appeneded to existing one. | Required | 
 
 #### Command Example
+
 ```
 !wiz-set-issue-note issue_id="12345678-1234-1234-1234-cc0a24716e0b" note="Checking with owner"
 ```
 
 ### wiz-clear-issue-note
+
 ***
 Clears a note from an Issue.
 
@@ -250,11 +268,13 @@ Clears a note from an Issue.
 | issue_id | Issue id | Required | 
 
 #### Command Example
+
 ```
 !wiz-clear-issue-note issue_id="12345678-1234-1234-1234-cc0a24716e0b"
 ```
 
 ### wiz-get-issue-evidence
+
 ***
 Get the evidence from an Issue.
 
@@ -269,15 +289,18 @@ Get the evidence from an Issue.
 | issue_id | Issue id | Required |
 
 #### Command Example
+
 ```
 !wiz-get-issue-evidence issue_id="12345678-1234-1234-1234-cc0a24716e0b"
 ```
 
 ### wiz-rescan-machine-disk
+
 ***
 Deprecated
 
 ### wiz-set-issue-due-date
+
 ***
 Set a due date for an Issue.
 
@@ -293,11 +316,13 @@ Set a due date for an Issue.
 | due_at | Due At Date | Required | 
 
 #### Command Example
+
 ```
 !wiz-set-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b" due_at="2022-01-20"
 ```
 
 ### wiz-clear-issue-due-date
+
 ***
 Clear a due date for an Issue.
 
@@ -312,11 +337,13 @@ Clear a due date for an Issue.
 | issue_id | Issue id | Required | 
 
 #### Command Example
+
 ```
 !wiz-clear-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b"
 ```
 
 ### wiz-get-project-team
+
 ***
 Clear a due date for an Issue.
 
@@ -331,11 +358,13 @@ Clear a due date for an Issue.
 | project_name | Project Name | Required | 
 
 #### Command Example
+
 ```
 !wiz-get-project-team project_name="project1"
 ```
 
 ### wiz-copy-to-forensics-account
+
 ***
 Copy VM's Volumes to a Forensics Account
 
@@ -350,6 +379,7 @@ Copy VM's Volumes to a Forensics Account
 | resource_id | Resource Id     | Required | 
 
 #### Command Example
+
 ```
 !wiz-copy-to-forensics-account resource_id="12345678-1234-1234-1234-cc0a24716e0b"
 !wiz-copy-to-forensics-account resource_id="arn:aws:ec2:us-east-1:123455563321:instance/i-05r662bfb9708a4e8"

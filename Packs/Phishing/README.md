@@ -4,12 +4,14 @@ Phishing emails are one of the most frequent, easily executable, and harmful sec
 The Phishing content pack is the main pack for all phishing purposes. If you need to respond to phishing incidents based on user reports, this is the content pack for you. With this content pack, you can significantly reduce the time your security analysts spend on phishing alerts and standardize the way you manage phishing incidents.
 
 This content pack includes playbooks that:
+
 - Facilitate analyst investigation by automating phishing alert response and custom phishing incident fields, views, and layouts. 
 - Orchestrate across multiple products, including cross-referencing against your external threat databases.
 On Cortex XSOAR, the pack also leverages machine learning to intelligently identify phishing campaigns targeting multiple users in the organization, linking them together and allowing full interaction and control over the campaign from within the incident layout.
 
  
 ##### What does this pack do?
+
 - Retrieves emails from user inboxes or ingests them using mail listeners.
 - Creates a phishing incident within Cortex XSOAR associated with the email.
 - Extracts and enriches all indicators from email attachments. 

@@ -1,5 +1,6 @@
 Accenture CTI provides intelligence regarding security threats and vulnerabilities.
 This integration was integrated and tested with version v2.58.0 of ACTI
+
 ## Configure Accenture CTI in Cortex
 
 
@@ -12,9 +13,12 @@ This integration was integrated and tested with version v2.58.0 of ACTI
 | use_proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Checks the reputation of the given IP address.
 
@@ -22,6 +26,7 @@ Checks the reputation of the given IP address.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -44,9 +49,11 @@ Checks the reputation of the given IP address.
 
 
 #### Command Example
+
 ```!ip ip=0.0.0.0```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -65,12 +72,14 @@ Checks the reputation of the given IP address.
 #### Human Readable Output
 
 >### Results
+>
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
 >| 0 | 2 | 2018-04-25 14:20:30 | 0.0.0.0 | Cyber Espionage | MALWARE_DOWNLOAD,<br/>MALWARE_C2 |
 
 
 ### domain
+
 ***
 Checks the reputation of the given domain.
 
@@ -78,6 +87,7 @@ Checks the reputation of the given domain.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -100,9 +110,11 @@ Checks the reputation of the given domain.
 
 
 #### Command Example
+
 ```!domain domain=example.org```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -121,12 +133,14 @@ Checks the reputation of the given domain.
 #### Human Readable Output
 
 >### Results
+>
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
 >| 50 | 2 | 2019-09-18 15:56:49 | example.org | Cyber Crime | MALWARE_C2 |
 
 
 ### url
+
 ***
 Checks the reputation of the given URL.
 
@@ -134,6 +148,7 @@ Checks the reputation of the given URL.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -156,9 +171,11 @@ Checks the reputation of the given URL.
 
 
 #### Command Example
+
 ```!url url=http://example.com```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -177,12 +194,14 @@ Checks the reputation of the given URL.
 #### Human Readable Output
 
 >### Results
+>
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
->| 50 | 2 | 2020-09-16 20:29:35 | http://example.com | Cyber Crime | MALWARE_C2 |
+>| 50 | 2 | 2020-09-16 20:29:35 | <http://example.com> | Cyber Crime | MALWARE_C2 |
 
 
 ### idefense-get-ioc-by-uuid
+
 ***
 Get specific indicator reputation
 
@@ -190,6 +209,7 @@ Get specific indicator reputation
 #### Base Command
 
 `idefense-get-ioc-by-uuid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -218,9 +238,11 @@ Get specific indicator reputation
 
 
 #### Command Example
+
 ```!idefense-get-ioc-by-uuid uuid=xxxx```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -239,6 +261,7 @@ Get specific indicator reputation
 #### Human Readable Output
 
 >### Results
+>
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
 >| 0 | 2 | 2017-01-11 20:56:22 | example.org | Cyber Espionage | MALWARE_C2 |

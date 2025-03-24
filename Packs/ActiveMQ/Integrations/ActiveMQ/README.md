@@ -1,4 +1,5 @@
 ## Overview
+
 ---
 
 Integration with ActiveMQ.
@@ -7,12 +8,15 @@ Fetch incidents is based on using Durable Topic Subscribers, in order to fetch m
 
 
 ## Use Cases
+
 ---
+
 - Send messages to queue or topic
 - Read messages from queue or topic
 - Fetch messages from queue or topic and create incidents in Cortex XSOAR per message
 
 ## Configure ActiveMQ in Cortex
+
 ---
 
 
@@ -33,23 +37,29 @@ Fetch incidents is based on using Durable Topic Subscribers, in order to fetch m
 | queue_name | Queue Name (for subscription) | False |
 
 ## Fetched Incidents Data
+
 ---
 Returns the messages in the queue or topic. Creates incidents in Cortex XSOAR and populate the incident `details` field 
 with the message content.
 
 ## Commands
+
 ---
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. activemq-send
 2. activemq-subscribe
 
 ### 1. activemq-send
+
 ---
 Sends a message to the specified destination.
+
 ##### Base Command
 
 `activemq-send`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -64,19 +74,24 @@ Sends a message to the specified destination.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!activemq-send destination="/topic/demisto-test" body="send the message to topic"```
 
 ```!activemq-send destination="/queue/demisto-test" body="send the message to queue"```
 
 ##### Human Readable Output
+
 Message sent to ActiveMQ destination: /topic/demisto-test with transaction ID: 69726a84-ee17-4db5-a6da-5171da9986d3
 
 ### activemq-subscribe
+
 ***
 Subscribes to and reads messages from a topic or queue. Must provide either queue-name or topic-name. You can't provide both.
+
 ##### Base Command
 
 `activemq-subscribe`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -91,8 +106,10 @@ Subscribes to and reads messages from a topic or queue. Must provide either queu
 There is no context output for this command.
 
 ##### Command Example
+
 ```!activemq-subscribe subscription-id=1 topic-name=demisto-test```
 
 ##### Human Readable Output
+
 send to topic message
 

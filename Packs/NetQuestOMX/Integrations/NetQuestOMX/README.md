@@ -6,7 +6,7 @@ This integration was integrated and tested with version 3.7.5a of NetQuest OMX.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The IP of the 5G device using NetQuest OMX, formatted as https://X.X.X.X | True |
+| Server URL | The IP of the 5G device using NetQuest OMX, formatted as <https://X.X.X.X> | True |
 | Username |  | True |
 | Password |  | True |
 | Slot number | Target NetQuest device slot number. | True |
@@ -39,6 +39,7 @@ Uploads a .txt file with the address list to the appliance. The appliance tempor
 #### Context Output
 
 There is no context output for this command.
+
 ### netquest-address-list-optimize
 
 ***
@@ -81,6 +82,7 @@ Creates a new address list.  This list will replace and override the old list en
 #### Context Output
 
 There is no context output for this command.
+
 ### netquest-address-list-rename
 
 ***
@@ -100,6 +102,7 @@ Renames an address list. This is only meant to change the name of the list. If y
 #### Context Output
 
 There is no context output for this command.
+
 ### netquest-address-list-delete
 
 ***
@@ -118,6 +121,7 @@ Deletes the address list of the name provided.
 #### Context Output
 
 There is no context output for this command.
+
 ### get-events
 
 ***

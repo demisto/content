@@ -5,6 +5,7 @@ Arbor Sightline provides network visibility and reporting capabilities to help y
 
 
 ## What does this pack do?
+
 - Gets the list of network alerts.
 - Gets annotations for a given alert.
 - Gets the mitigations.

@@ -48,7 +48,7 @@ This endpoint allows you to post events to the stream.
 | related_event_id | ID of the parent event. | Optional | 
 | tags | A comma-separated list of tags to apply to the event. <br/>Ex: "environment:production, region:East” . | Optional | 
 | aggregation_key | An arbitrary string to use for aggregation. <br/>If you specify a key, all events using that key are grouped together in the Event Stream. <br/>Limited to 100 characters. | Optional | 
-| source_type_name | The type of event being posted. A complete list of source attribute values are available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/. | Optional | 
+| source_type_name | The type of event being posted. A complete list of source attribute values are available here: <https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/>. | Optional | 
 | alert_type | If an alert event is enabled, set its type. Possible values are: error, warning, info, success, user_update, recommendation, snapshot. | Optional | 
 
 #### Context Output
@@ -69,8 +69,11 @@ This endpoint allows you to post events to the stream.
 | Datadog.Event.host | String | Host name to associate with the event. Any tags associated with the host are also applied to this event. | 
 
 #### Command example
+
 ```!datadog-event-create title="EventTitle" text="EventText"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -96,6 +99,7 @@ This endpoint allows you to post events to the stream.
 #### Human Readable Output
 
 >### Event Details
+>
 >|Title|Text|Date Happened|Id|
 >|---|---|---|---|
 >| EventTitle | EventText | May 02, 2023 08:18 AM | 7025503766209321995 |
@@ -118,7 +122,7 @@ Get a list of events / Get the details of a particular event.
 | start_date | Start Date <br/>Format : yyyy-MM-dd’T’HH:mm:ssZ  or “-1days” or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. . | Optional | 
 | end_date | End Date <br/>Default: now <br/>Format : yyyy-MM-dd’T’HH:mm:ssZ or "-1 days" or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. . | Optional | 
 | priority | The priority of the event. Possible values are: normal, low. | Optional | 
-| sources | A comma-separated string of sources.<br/>A complete list of source attribute values is available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/. | Optional | 
+| sources | A comma-separated string of sources.<br/>A complete list of source attribute values is available here: <https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/>. | Optional | 
 | tags | A comma-separated list indicating what tags, if any, should be used to filter the list of events. <br/>Ex: "environment:production, region:East". | Optional | 
 | unaggregated | Set unaggregated to 'true' to return all events within the specified [start,end] timeframe. Possible values are: True, False. | Optional | 
 | exclude_aggregate | Set exclude_aggregate to 'true' to only return unaggregated events where is_aggregate=false in the response. Possible values are: True, False. | Optional | 
@@ -144,8 +148,11 @@ Get a list of events / Get the details of a particular event.
 | Datadog.Event.source_type_name | String | The type of event being posted. | 
 
 #### Command example
+
 ```!datadog-event-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -202,6 +209,7 @@ Get a list of events / Get the details of a particular event.
 #### Human Readable Output
 
 >### Events List
+>
 >|Title|Text|Date Happened|Id|Priority|Source|Tags|Is Aggregate|Alert Type|
 >|---|---|---|---|---|---|---|---|---|
 >| Incident #236: incident-test1 | Status: Active \| Severity: Unknown \| Commander: Unassigned<br/>https:<span>//</span>app.datadoghq.com/incidents/236 | May 02, 2023 08:17 AM | 7025502259105342299 | normal | Incidents | source:incidents | false | info |
@@ -234,8 +242,11 @@ Return a mapping of tags to hosts for your whole infrastructure.
 | Datadog.HostTag | Unknown | The host name. | 
 
 #### Command example
+
 ```!datadog-tag-list limit=10```
+
 #### Context Example
+
 ```json
 {
     "Datadog": [
@@ -270,6 +281,7 @@ Return a mapping of tags to hosts for your whole infrastructure.
 #### Human Readable Output
 
 >### Tags List
+>
 >|Tag|Host Name|
 >|---|---|
 >| role:database | TestHost2 |
@@ -302,8 +314,11 @@ This endpoint allows you to add new tags to a host, optionally specifying where 
 | Datadog.HostTag | String | The host name. | 
 
 #### Command example
+
 ```!datadog-host-tag-create host_name="TestHost2" tags="env:prod"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -318,6 +333,7 @@ This endpoint allows you to add new tags to a host, optionally specifying where 
 #### Human Readable Output
 
 >### Host Tags Details
+>
 >|Host Name|Tag|
 >|---|---|
 >| TestHost2 | env:prod |
@@ -350,8 +366,11 @@ Return the list of tags that apply to a given host.
 | Datadog.HostTag | String | The host name. | 
 
 #### Command example
+
 ```!datadog-host-tag-get host_name="TestHost2"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -369,6 +388,7 @@ Return the list of tags that apply to a given host.
 #### Human Readable Output
 
 >### Host Tags List
+>
 >|Tags|
 >|---|
 >| role:database |
@@ -401,8 +421,11 @@ This endpoint allows you to replace all tags in an integration source with those
 | Datadog.HostTag | String | The host name. | 
 
 #### Command example
+
 ```!datadog-host-tag-update host_name="TestHost2"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -415,6 +438,7 @@ This endpoint allows you to replace all tags in an integration source with those
 #### Human Readable Output
 
 >### Host Tags Details
+>
 >|Host Name|
 >|---|
 >| TestHost2 |
@@ -438,8 +462,11 @@ This endpoint allows you to remove all user-assigned tags for a single host.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!datadog-host-tag-delete host_name="TestHost2"```
+
 #### Human Readable Output
 
 >### Host tags deleted successfully!
@@ -473,8 +500,11 @@ Get the list of actively reporting metrics.
 | Datadog.Metric | Unknown | List of metric names. | 
 
 #### Command example
+
 ```!datadog-active-metric-list from="-2days"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -538,6 +568,7 @@ Get the list of actively reporting metrics.
 #### Human Readable Output
 
 >### Active Metric List
+>
 >|From|Metric Name|
 >|---|---|
 >| 2023-04-30 08:18:57 | datadog.agent.python.version,<br/>datadog.agent.running,<br/>datadog.dogstatsd.client.aggregated_context,<br/>datadog.dogstatsd.client.aggregated_context_by_type,<br/>datadog.dogstatsd.client.bytes_dropped,<br/>datadog.dogstatsd.client.bytes_dropped_queue,<br/>datadog.dogstatsd.client.bytes_dropped_writer,<br/>datadog.dogstatsd.client.bytes_sent,<br/>datadog.dogstatsd.client.events,<br/>datadog.dogstatsd.client.metric_dropped_on_receive,<br/>datadog.dogstatsd.client.metrics,<br/>datadog.dogstatsd.client.metrics_by_type,<br/>datadog.dogstatsd.client.packets_dropped,<br/>datadog.dogstatsd.client.packets_dropped_queue,<br/>datadog.dogstatsd.client.packets_dropped_writer,<br/>datadog.dogstatsd.client.packets_sent,<br/>datadog.dogstatsd.client.service_checks,<br/>datadog.estimated_usage.events.custom_events,<br/>datadog.estimated_usage.events.ingested_events,<br/>datadog.estimated_usage.hosts,<br/>datadog.estimated_usage.incident_management.active_users,<br/>datadog.event.tracking.indexation.feed.events,<br/>datadog.event.tracking.intake.feed.bytes,<br/>datadog.event.tracking.intakev2.feed.bytes,<br/>datadog.process.agent,<br/>datadog.trace_agent.cpu_percent,<br/>datadog.trace_agent.events.max_eps.current_rate,<br/>datadog.trace_agent.events.max_eps.max_rate,<br/>datadog.trace_agent.events.max_eps.reached_max,<br/>datadog.trace_agent.events.max_eps.sample_rate,<br/>datadog.trace_agent.heap_alloc,<br/>datadog.trace_agent.heartbeat,<br/>datadog.trace_agent.receiver.out_chan_fill,<br/>datadog.trace_agent.receiver.ratelimit,<br/>datadog.trace_agent.sampler.kept,<br/>datadog.trace_agent.sampler.rare.hits,<br/>datadog.trace_agent.sampler.rare.misses,<br/>datadog.trace_agent.sampler.rare.shrinks,<br/>datadog.trace_agent.sampler.seen,<br/>datadog.trace_agent.sampler.size,<br/>datadog.trace_agent.stats_writer.bytes,<br/>datadog.trace_agent.stats_writer.client_payloads,<br/>datadog.trace_agent.stats_writer.encode_ms.avg,<br/>datadog.trace_agent.stats_writer.encode_ms.count,<br/>datadog.trace_agent.stats_writer.encode_ms.max,<br/>datadog.trace_agent.stats_writer.errors,<br/>datadog.trace_agent.stats_writer.payloads,<br/>datadog.trace_agent.stats_writer.retries,<br/>datadog.trace_agent.stats_writer.splits,<br/>datadog.trace_agent.stats_writer.stats_buckets |
@@ -556,7 +587,7 @@ Search for metrics from the last 24 hours in Datadog.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query string to search metrics from last 24 hours in Datadog.<br/>A complete list of query string values are available here: https://app.datadoghq.com/metric/summary. | Required | 
+| query | Query string to search metrics from last 24 hours in Datadog.<br/>A complete list of query string values are available here: <https://app.datadoghq.com/metric/summary>. | Required | 
 
 #### Context Output
 
@@ -565,8 +596,11 @@ Search for metrics from the last 24 hours in Datadog.
 | Datadog.Metric.metric_name | Unknown | List of metrics that match the search query. | 
 
 #### Command example
+
 ```!datadog-metric-search query="datadog.agent.python.version"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -582,6 +616,7 @@ Search for metrics from the last 24 hours in Datadog.
 #### Human Readable Output
 
 >### Metrics Search List
+>
 >|Metric Name|
 >|---|
 >| datadog.agent.python.version |
@@ -616,8 +651,11 @@ Get metadata about a specific metric.
 | Datadog.MetricMetadata.metric_name | String | The metric name. | 
 
 #### Command example
+
 ```!datadog-metric-metadata-get metric_name="system.io.block_in"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -638,6 +676,7 @@ Get metadata about a specific metric.
 #### Human Readable Output
 
 >### Metric Metadata Details
+>
 >|Metric Name|Type|
 >|---|---|
 >| system.io.block_in | gauge |
@@ -658,7 +697,7 @@ Edit metadata of a specific metric.
 | --- | --- | --- |
 | metric_name | Name of the metric for which to edit metadata. | Required | 
 | description | Metric description. | Optional | 
-| per_unit | Per unit of the metric  <br/>A complete list of metric units values are available here: https://docs.datadoghq.com/metrics/units/#unit-list. | Optional | 
+| per_unit | Per unit of the metric  <br/>A complete list of metric units values are available here: <https://docs.datadoghq.com/metrics/units/#unit-list>. | Optional | 
 | short_name | A human-readable and abbreviated version of the metric name. | Optional | 
 | statsd_interval | StatsD flush interval of the metric in seconds if applicable. | Optional | 
 | type | Metric type. Possible values are: count, rate, gauge, set, histogram, distribution. | Optional | 
@@ -677,8 +716,11 @@ Edit metadata of a specific metric.
 | Datadog.MetricMetadata.metric_name | String | The metric name. | 
 
 #### Command example
+
 ```!datadog-metric-metadata-update metric_name="system.io.block_in"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -699,6 +741,7 @@ Edit metadata of a specific metric.
 #### Human Readable Output
 
 >### Metric Metadata Details
+>
 >|Metric Name|Type|
 >|---|---|
 >| system.io.block_in | gauge |
@@ -778,8 +821,11 @@ Create an incident.
 | Datadog.Incident.included.relationships.roles.id | String | The unique identifier of the role. | 
 
 #### Command example
+
 ```!datadog-incident-create customer_impacted=False title="incident-test1"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -946,6 +992,7 @@ Create an incident.
 #### Human Readable Output
 
 >### Incident Details
+>
 >|ID|Title|Created|Customer Impacted|Customer Impact Duration|Customer Impact Scope|Detected|Resolved|Time to Detect|Time to Internal Response|Time to Repair|Time to Resolve|Severity|State|Detection Method|Root Cause|Summary|Notification Display Name|Notification Handle|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 33203994-907e-5fb1-8655-9a81f4fd2d99 | incident-test1 | May 02, 2023 08:19 AM | False | 0 | None | May 02, 2023 08:19 AM | None | 0 | 0 | 0 | 0 | UNKNOWN | active | unknown | None | None | None | None |
@@ -969,8 +1016,11 @@ Delete an existing incident.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!datadog-incident-delete incident_id=73e9f627-5dd6-526f-b658-6e89b7e2e438```
+
 #### Human Readable Output
 
 >### Incident deleted successfully!
@@ -1052,8 +1102,11 @@ Updates an incident. Provide only the attributes that should be updated as this 
 | Datadog.Incident.included.relationships.roles.id | String | The unique identifier of the role. | 
 
 #### Command example
+
 ```!datadog-incident-update incident_id=73e9f627-5dd6-526f-b658-6e89b7e2e438```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -1234,6 +1287,7 @@ Updates an incident. Provide only the attributes that should be updated as this 
 #### Human Readable Output
 
 >### Incident Details
+>
 >|ID|Title|Created|Customer Impacted|Customer Impact Duration|Customer Impact Scope|Detected|Resolved|Time to Detect|Time to Internal Response|Time to Repair|Time to Resolve|Severity|State|Detection Method|Root Cause|Summary|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 73e9f627-5dd6-526f-b658-6e89b7e2e438 | Example-Create_an_incident_returns_CREATED_response | February 02, 2023 06:53 AM | False | 0 | None | February 02, 2023 06:53 AM | None | 0 | 0 | 0 | 0 | UNKNOWN | resolved | unknown | None | None |
@@ -1312,8 +1366,11 @@ Get all incidents for the user’s organization / Get the details of an incident
 | Datadog.Incident.included.relationships.roles.id | String | The unique identifier of the role. | 
 
 #### Command example
+
 ```!datadog-incident-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -1632,6 +1689,7 @@ Get all incidents for the user’s organization / Get the details of an incident
 #### Human Readable Output
 
 >### Incidents List
+>
 >|ID|Title|Created|Customer Impacted|Customer Impact Duration|Detected|Resolved|Time to Detect|Time to Internal Response|Time to Repair|Time to Resolve|Severity|State|Detection Method|Root Cause|Summary|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| dc203d96-2c07-55f4-9312-5427468a8190 | test-incident-i1 | February 02, 2023 10:07 AM | False | 0 | February 02, 2023 10:07 AM | None | 0 | 0 | 0 | 0 | UNKNOWN | resolved | unknown | None | None |
@@ -1653,7 +1711,7 @@ Query of sequence of data points that are collected over time intervals, allowin
 | --- | --- | --- |
 | from | Start of the queried time period.<br/>Format : YYYY-MM-dd’T’HH:mm:ssZ Or '-1days'. | Required | 
 | to | End of the queried time period.<br/>Format : yyyy-MM-dd’T’HH:mm:ssZ Or '-1days'. | Required | 
-| query | Query string.<br/>Ex : query="system.cpu.idle" <br/>A complete list of query string values are available here: https://app.datadoghq.com/metric/summary. | Required | 
+| query | Query string.<br/>Ex : query="system.cpu.idle" <br/>A complete list of query string values are available here: <https://app.datadoghq.com/metric/summary>. | Required | 
 
 #### Context Output
 
@@ -1686,8 +1744,11 @@ Query of sequence of data points that are collected over time intervals, allowin
 | Datadog.TimeSeriesPoint.to_date | Date | End of requested time window in milliseconds since Unix epoch. | 
 
 #### Command example
+
 ```!datadog-time-series-point-query from="-2days" query="system.cpu.idle" to=now```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {

@@ -18,9 +18,12 @@ Read the code to understand more.
 | Allow Insecure connections to the server | Check this to ignore certificate signature | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### xsoar-create-entry
+
 ***
 Creates an entry into an investigation warroom or  by default on the playground.
 
@@ -28,6 +31,7 @@ Creates an entry into an investigation warroom or  by default on the playground.
 #### Base Command
 
 `xsoar-create-entry`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,6 +45,7 @@ Creates an entry into an investigation warroom or  by default on the playground.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

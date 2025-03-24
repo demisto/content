@@ -8,7 +8,7 @@ This is the default integration for this content pack when configured by the Dat
 
 | **Parameter** | **Required** |
 |--------| --- |
-| Server URL (e.g., 'https://api.zoom.us/v2/')                                                             | True   |
+| Server URL (e.g., '<https://api.zoom.us/v2/>')                                                             | True   |
 | Account ID (OAuth)                                                                                       | True   |
 | Client ID (OAuth)                                                                                        | True   |
 | Client Secret (OAuth)                                                                                    | True   |
@@ -52,16 +52,17 @@ There is no context output for this command.
 
 | action | category_type | operation_detail                | operator            | time                 |
 |--------|---------------|---------------------------------|---------------------|----------------------|
-| Delete | User          | Delete User example@example.com | example@example.com | 2023-01-16T09:51:59Z |
+| Delete | User          | Delete User <example@example.com> | <example@example.com> | 2023-01-16T09:51:59Z |
 
 ### activities Events
 
 | client_type | email               | ip_address | time                 | type    | version |
 |-------------|---------------------|------------|----------------------|---------|---------|
-| Browser     | example@example.com | 8.8.8.8    | 2023-01-19T14:44:23Z | Sign in | -       |
+| Browser     | <example@example.com> | 8.8.8.8    | 2023-01-19T14:44:23Z | Sign in | -       |
 
 
 
 ### Rate Limits
+
 To prevent abuse and ensure service stability, all API requests are rate limited. Rate limits specify the maximum number of API calls that can be made in a minute period. The exact number of calls that your application can make per minute varies based on company plan. 
 For more information, please refer to the Zoom API documentation on [Rate limits by account type](https://developers.zoom.us/docs/api/rest/rate-limits/#rate-limits-by-account-type).

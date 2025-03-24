@@ -1,4 +1,5 @@
 ## Overview
+
 This integration supports using ReversingLabs Advanced File Analysis to 'detonate file' on the TitaniumScale Advanced Malware
 Analysis Appliance.
 
@@ -11,6 +12,7 @@ families. It recursively unpacks hundreds of file format families, and fully rep
 analysis.
 
 * * *
+
 ## Prerequisites
 
 You need to obtain the following:
@@ -80,8 +82,11 @@ Upload sample to TitaniumScale and retrieve analysis report.
 | ReversingLabs.tc_report | String | Full report. | 
 
 #### Command example
+
 ```!reversinglabs-titaniumscale-upload-sample-and-get-results entryId="371@b26c8c3a-8d0e-459f-8f2c-c0b8783a8422" custom_token="a-custom-token"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -664,8 +669,11 @@ Upload sample to TitaniumScale for analysis.
 | ReversingLabs.task_Url | Unknown | url to get report from. | 
 
 #### Command example
+
 ```!reversinglabs-titaniumscale-upload-sample entryId="371@b26c8c3a-8d0e-459f-8f2c-c0b8783a8422" custom_token="a-custom-token"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -684,7 +692,8 @@ Upload sample to TitaniumScale for analysis.
 #### Human Readable Output
 
 >## ReversingLabs TitaniumScale upload sample
-> **Titanium Scale task URL**: https://tiscale-worker-integrations-demo-01.rl.lan/api/tiscale/v1/task/42
+>
+> **Titanium Scale task URL**: <https://tiscale-worker-integrations-demo-01.rl.lan/api/tiscale/v1/task/42>
 
 ### reversinglabs-titaniumscale-get-results
 
@@ -742,8 +751,11 @@ List active processing tasks.
 | ReversingLabs.list_processing_tasks | Unknown | Processing tasks. | 
 
 #### Command example
+
 ```!reversinglabs-titaniumscale-list-processing-tasks age="60" custom_token="a-custom-token"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -755,7 +767,9 @@ List active processing tasks.
 #### Human Readable Output
 
 >## ReversingLabs TitaniumScale List processing tasks
+>
 > ### Processing tasks
+>
 >**No entries.**
 
 
@@ -798,11 +812,15 @@ Deletes a processing task.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!reversinglabs-titaniumscale-delete-processing-task task_id="100"```
+
 #### Human Readable Output
 
 >## ReversingLabs TitaniumScale delete processing task
+>
 > Task 100 deleted successfully.
 
 ### reversinglabs-titaniumscale-delete-multiple-tasks
@@ -823,11 +841,15 @@ Deletes multiple processing tasks.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!reversinglabs-titaniumscale-delete-multiple-tasks age="20"```
+
 #### Human Readable Output
 
 >## ReversingLabs TitaniumScale delete multiple tasks
+>
 > Tasks of age 20 seconds or less deleted successfully.
 
 ### reversinglabs-titaniumscale-get-yara-id
@@ -850,8 +872,11 @@ There are no input arguments for this command.
 | ReversingLabs.yara_id | Unknown | Identifier of the current set of YARA rules on the TitaniumScale Worker instance. | 
 
 #### Command example
+
 ```!reversinglabs-titaniumscale-get-yara-id```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -865,4 +890,5 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >## ReversingLabs TitaniumScale YARA ruleset ID
+>
 > **ID**: f0a151ce303ae9b9e46b236492ac9196f3f72490

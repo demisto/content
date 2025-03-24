@@ -15,9 +15,12 @@ This integration was tested with version 5.12.17 of OpenCTI.
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### opencti-get-indicators
 
 ***
@@ -68,6 +71,7 @@ Get indicators in OpenCTI.
 | OpenCTI.Indicators.LastRunID | string | The last ID of the previous fetch for pagination. | 
 
 ### opencti-indicator-delete
+
 ***
 Delete indicator.
 
@@ -75,6 +79,7 @@ Delete indicator.
 #### Base Command
 
 `opencti-indicator-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -87,6 +92,7 @@ Delete indicator.
 There is no context output for this command.
 
 #### Command Example
+
 ```!opencti-indicator-delete id=74faf2e8-bbab-4a1a-a548-58db202c5e57```
 
 #### Human Readable Output
@@ -94,6 +100,7 @@ There is no context output for this command.
 >Indicator deleted.
 
 ### opencti-indicator-field-update
+
 ***
 Update the indicator field. The fields that can be updated are: score, description.
 
@@ -101,6 +108,7 @@ Update the indicator field. The fields that can be updated are: score, descripti
 #### Base Command
 
 `opencti-indicator-field-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -118,9 +126,11 @@ Update the indicator field. The fields that can be updated are: score, descripti
 
 
 #### Command Example
+
 ```!opencti-indicator-field-update field=score id=81d63245-9ba3-495d-8e78-03b037d71e01 value=100```
 
 #### Context Example
+
 ```json
 {
     "OpenCTI": {
@@ -136,6 +146,7 @@ Update the indicator field. The fields that can be updated are: score, descripti
 >Indicator 81d63245-9ba3-495d-8e78-03b037d71e01 updated successfully.
 
 ### opencti-indicator-create
+
 ***
 Create new indicator.
 
@@ -143,6 +154,7 @@ Create new indicator.
 #### Base Command
 
 `opencti-indicator-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -166,9 +178,11 @@ Create new indicator.
 
 
 #### Command Example
+
 ```!opencti-indicator-create type=Domain created_by=0c7cb378-64c3-4809-b423-986ac7cecf91 description=test value="TestDomainDocs.com" score=70 label_id=fa57f98e-f2f5-45fd-97f2-bf2c53119044 marking_id=9128e411-c759-4af0-aeb0-b65f12082648```
 
 #### Context Example
+
 ```json
 {
     "OpenCTI": {
@@ -186,6 +200,7 @@ Create new indicator.
 >Indicator created successfully. New Indicator id: 7ed5946a-81a2-4490-8be8-06d3633a41fb
 
 ### opencti-indicator-field-add
+
 ***
 Add a field to the indicator. Fields that can be added are marking definition and label.
 
@@ -193,6 +208,7 @@ Add a field to the indicator. Fields that can be added are marking definition an
 #### Base Command
 
 `opencti-indicator-field-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -207,6 +223,7 @@ Add a field to the indicator. Fields that can be added are marking definition an
 There is no context output for this command.
 
 #### Command Example
+
 ```!opencti-indicator-field-add id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b field=label value=07cfae2d-6cc9-42c5-9fd0-32eff8142404```
 
 #### Human Readable Output
@@ -214,6 +231,7 @@ There is no context output for this command.
 >Added label successfully.
 
 ### opencti-indicator-field-remove
+
 ***
 Remove indicator field value. Fields which values can be removed are marking definition and label.
 
@@ -221,6 +239,7 @@ Remove indicator field value. Fields which values can be removed are marking def
 #### Base Command
 
 `opencti-indicator-field-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -228,6 +247,7 @@ Remove indicator field value. Fields which values can be removed are marking def
 | id | Indicator ID. | Required | 
 | field | Indicator field to update. Possible values are: marking, label. | Required | 
 | value | Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Required | 
+
 ### opencti-indicator-create
 
 ***
@@ -275,6 +295,7 @@ Create a new indicator in OpenCTI.
         ]
     }
 }
+
 ```
 
 #### Human Readable Output
@@ -329,6 +350,7 @@ Create a new organization.
 >Organization ExampleOrganization was created successfully with id: 11ddff08-8933-46d7-ab22-31f49496499f.
 
 ### opencti-label-list
+
 ***
 Get list of all labels.
 
@@ -336,6 +358,7 @@ Get list of all labels.
 #### Base Command
 
 `opencti-label-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -354,9 +377,11 @@ Get list of all labels.
 
 
 #### Command Example
+
 ```!opencti-label-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "OpenCTI": {
@@ -380,6 +405,7 @@ Get list of all labels.
 #### Human Readable Output
 
 >### Labels
+>
 >|Value|Id|
 >|---|---|
 >| demisto_lablel | 7ba41668-1594-4a09-9be5-3640f2c2d253 |
@@ -387,6 +413,7 @@ Get list of all labels.
 
 
 ### opencti-label-create
+
 ***
 Create a new label.
 
@@ -394,6 +421,7 @@ Create a new label.
 #### Base Command
 
 `opencti-label-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -409,9 +437,11 @@ Create a new label.
 
 
 #### Command Example
+
 ```!opencti-label-create name=docsTest```
 
 #### Context Example
+
 ```json
 {
     "OpenCTI": {
@@ -427,6 +457,7 @@ Create a new label.
 >Label docsTest was created successfully with id: beb5159a-e162-4352-b7d7-6e355db7f057.
 
 ### opencti-external-reference-create
+
 ***
 Create external reference.
 
@@ -434,6 +465,7 @@ Create external reference.
 #### Base Command
 
 `opencti-external-reference-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -450,9 +482,11 @@ Create external reference.
 
 
 #### Command Example
+
 ```!opencti-external-reference-create source_name=source_name url=www.url.com```
 
 #### Context Example
+
 ```json
 {
     "OpenCTI": {
@@ -468,6 +502,7 @@ Create external reference.
 >Reference source_name was created successfully with id: 8339d023-ada2-4b32-8a29-0a3897fc096d.
 
 ### opencti-marking-definition-list
+
 ***
 Get a list of all marking definitions.
 
@@ -475,6 +510,7 @@ Get a list of all marking definitions.
 #### Base Command
 
 `opencti-marking-definition-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -493,9 +529,11 @@ Get a list of all marking definitions.
 
 
 #### Command Example
+
 ```!opencti-marking-definition-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "OpenCTI": {
@@ -519,10 +557,12 @@ Get a list of all marking definitions.
 #### Human Readable Output
 
 >### Markings
+>
 >|Value|Id|
 >|---|---|
 >| TLP:GREEN | dc911977-796a-4d96-95e4-615bd1c41263 |
 >| TLP:AMBER | 9128e411-c759-4af0-aeb0-b65f12082648 |
+>
 ### opencti-relationship-create
 
 ***
@@ -567,6 +607,7 @@ Delete incident.
 #### Context Output
 
 There is no context output for this command.
+
 ### opencti-incident-create
 
 ***
@@ -620,6 +661,7 @@ Add a field to the observable. Fields that can be added are marking definition a
 #### Context Output
 
 There is no context output for this command.
+
 ### opencti-indicator-update
 
 ***
@@ -769,6 +811,7 @@ Delete relationship.
 #### Context Output
 
 There is no context output for this command.
+
 ### opencti-observable-delete
 
 ***
@@ -787,6 +830,7 @@ Delete observable.
 #### Context Output
 
 There is no context output for this command.
+
 ### opencti-observable-field-remove
 
 ***
@@ -807,6 +851,7 @@ Remove observable field value. Fields which values can be removed are marking de
 #### Context Output
 
 There is no context output for this command.
+
 ### opencti-observable-field-update
 
 ***
@@ -873,6 +918,7 @@ Get a list of all incident types.
 | OpenCTI.IncidentTypes.IncidentTypesList.id | unknown | Incident type ID. | 
 | OpenCTI.IncidentTypes.IncidentTypesList.name | unknown | Incident type name. | 
 | OpenCTI.IncidentTypes.IncidentTypesList.description | unknown | Incident type description. | 
+
 ### opencti-get-incidents
 
 ***

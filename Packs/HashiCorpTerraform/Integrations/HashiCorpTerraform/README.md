@@ -89,8 +89,11 @@ List runs in a workspace.
 | Terraform.Run.data.links.self | String | Link to the Terraform run data. | 
 
 #### Command example
+
 ```!terraform-runs-list```
+
 #### Context Example
+
 ```json
 {
     "Terraform": {
@@ -298,6 +301,7 @@ List runs in a workspace.
 #### Human Readable Output
 
 >### Terraform Runs
+>
 >|Plan id|Planned at|Run id|Status|
 >|---|---|---|---|
 >| plan-T7zpGYFEioRfWEAq | 2023-12-17T10:23:52+00:00 | run-8wpCneWr4TLSzfat | planned |
@@ -331,8 +335,11 @@ Perform an action on a Terraform run. The available actions are: apply, cancel, 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!terraform-run-action run_id=run-8wpCneWr4TLSzfat action="discard" comment="test comment"```
+
 #### Human Readable Output
 
 >Successfully queued an discard request for run id run-8wpCneWr4TLSzfat
@@ -382,8 +389,11 @@ Get the plan JSON file or the plan meta data.
 | Terraform.Plan.links.json-schema | String | Link to the JSON schema of the Terraform plan. | 
 
 #### Command example
+
 ```!terraform-plan-get plan_id=plan-V4fvpvCzGQrsZikD```
+
 #### Context Example
+
 ```json
 {
     "Terraform": {
@@ -437,14 +447,18 @@ Get the plan JSON file or the plan meta data.
 #### Human Readable Output
 
 >### Terraform Plan
+>
 >|Agent Queued at|Plan id|Status|
 >|---|---|---|
 >| 2023-11-30T09:21:33+00:00 | plan-V4fvpvCzGQrsZikD | finished |
 
 
 #### Command example
+
 ```!terraform-plan-get plan_id=plan-V4fvpvCzGQrsZikD json_output="true"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -514,8 +528,11 @@ List the policies for an organization or get a specific policy.
 | Terraform.Policy.meta.pagination.total-count | Number | Total count of Terraform policies. | 
 
 #### Command example
+
 ```!terraform-policies-list```
+
 #### Context Example
+
 ```json
 {
     "Terraform": {
@@ -565,6 +582,7 @@ List the policies for an organization or get a specific policy.
 #### Human Readable Output
 
 >### Terraform Policies
+>
 >|Kind|Organization id|Policy Set ids|Policy id|Policy name|
 >|---|---|---|---|---|
 >| sentinel | example-org-40dc3b | polset-hc2bvqDW8YRgHEt8 | pol-ycCqXorxsFjaH5aK | nat-policies |
@@ -631,8 +649,11 @@ List the policy sets for an organization or get a specific policy set.
 | Terraform.PolicySet.meta.pagination.total-count | Number | Total number of Terraform policy sets. | 
 
 #### Command example
+
 ```!terraform-policy-set-list```
+
 #### Context Example
+
 ```json
 {
     "Terraform": {
@@ -693,6 +714,7 @@ List the policy sets for an organization or get a specific policy set.
 #### Human Readable Output
 
 >### Terraform Policy Sets
+>
 >|Organization|Policies ids|Policy Set name|Policy set id|Workspaces|
 >|---|---|---|---|---|
 >| example-org-40dc3b | pol-ycCqXorxsFjaH5aK | test-policy-set | polset-hc2bvqDW8YRgHEt8 | ws-u7kVixWpJYWiERMG |
@@ -741,8 +763,11 @@ List the policy checks for a Terraform run.
 | Terraform.PolicyCheck.links.output | String | Link to the output of the Terraform policy check. | 
 
 #### Command example
+
 ```!terraform-policies-checks-list run_id=run-8wpCneWr4TLSzfat```
+
 #### Human Readable Output
 
 >### Terraform Policy Checks
+>
 >**No entries.**

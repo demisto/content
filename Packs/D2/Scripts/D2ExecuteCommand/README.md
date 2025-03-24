@@ -1,6 +1,7 @@
 Runs a D2 built-in command on a D2 agent.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Runs a D2 built-in command on a D2 agent.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ Runs a D2 built-in command on a D2 agent.
 | commandName | The D2 command to run. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

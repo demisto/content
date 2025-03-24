@@ -1,6 +1,7 @@
 
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@
 | Tags | transformer, general |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,5 +18,6 @@
 | value |  |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

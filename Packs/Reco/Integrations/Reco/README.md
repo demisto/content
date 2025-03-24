@@ -6,7 +6,7 @@ This integration was integrated and tested with version 2023.34.0 of Reco.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://host.reco.ai/api/v1) |  | True |
+| Server URL (e.g. <https://host.reco.ai/api/v1>) |  | True |
 | JWT app token |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -44,6 +44,7 @@ Add exclusion filter to Reco Classifier
 #### Context Output
 
 There is no context output for this command.
+
 ### reco-update-incident-timeline
 
 ***
@@ -63,6 +64,7 @@ Add a comment to an incident in Reco
 #### Context Output
 
 There is no context output for this command.
+
 ### reco-resolve-visibility-event
 
 ***
@@ -82,6 +84,7 @@ Resolve an event in Reco Finding. Reco Findings contains aggregations of events.
 #### Context Output
 
 There is no context output for this command.
+
 ### reco-get-risky-users
 
 ***
@@ -120,6 +123,7 @@ Tag a user as risky in Reco
 #### Context Output
 
 There is no context output for this command.
+
 ### reco-get-assets-user-has-access-to
 
 ***
@@ -160,6 +164,7 @@ Tag a user as leaving org user in Reco
 #### Context Output
 
 There is no context output for this command.
+
 ### reco-get-sensitive-assets-by-name
 
 ***
@@ -179,6 +184,7 @@ Get all sensitive assets from Reco by name
 #### Context Output
 
 There is no context output for this command.
+
 ### reco-get-sensitive-assets-by-id
 
 ***
@@ -226,6 +232,7 @@ Generate a magic link for reco UI (overview page)
 #### Context Output
 
 There is no context output for this command.
+
 ### reco-get-3rd-parties-accessible-to-data-list
 
 ***

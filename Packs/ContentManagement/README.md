@@ -3,6 +3,7 @@ The Cortex XSOAR marketplace provides some of the best use-cases that we can ima
 This pack provides the ability to control your Cortex XSOAR system, your use-cases, and your unique configurations all in one place. 
 
 ##### What does this pack do?
+
 * Sets up an Cortex XSOAR machine automatically using a predefined configuration file.
 * Lets you control your own developed Cortex XSOAR content, using third party version control systems and artifacts servers.
 * Organizes the information you need to know on the installation process in a designated incident type.

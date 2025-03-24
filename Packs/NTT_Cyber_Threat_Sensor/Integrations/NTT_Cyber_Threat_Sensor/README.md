@@ -1,5 +1,6 @@
 Retrieve alerts and recommendations from NTT CTS
 This integration was integrated and tested with version 1.0 of NTT Cyber Threat Sensor
+
 ## Configure NTT Cyber Threat Sensor in Cortex
 
 
@@ -15,9 +16,12 @@ This integration was integrated and tested with version 1.0 of NTT Cyber Threat 
 | BASEURL | The base URL for the backend to consume from | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ntt-cyber-threat-sensor-poll-blobs
+
 ***
 Check if blobs is available
 
@@ -25,6 +29,7 @@ Check if blobs is available
 #### Base Command
 
 `ntt-cyber-threat-sensor-poll-blobs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -43,9 +48,11 @@ Check if blobs is available
 
 
 #### Command Example
+
 ```!ntt-cyber-threat-sensor-poll-blobs event_id=07be6916957da6dc0b4c7fbf6995b1e44dccb9e7 timestamp=2020-08-12T07:29:01.464841```
 
 #### Context Example
+
 ```
 {
     "CTS": {
@@ -62,6 +69,7 @@ Check if blobs is available
 >CTS blob(s) was found and has been sceduled for download
 
 ### ntt-cyber-threat-sensor-fetch-blobs
+
 ***
 Collecting blobs, most commonly pcap from an incident
 
@@ -69,6 +77,7 @@ Collecting blobs, most commonly pcap from an incident
 #### Base Command
 
 `ntt-cyber-threat-sensor-fetch-blobs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -94,9 +103,11 @@ Collecting blobs, most commonly pcap from an incident
 
 
 #### Command Example
+
 ```!ntt-cyber-threat-sensor-fetch-blobs event_id=07be6916957da6dc0b4c7fbf6995b1e44dccb9e7```
 
 #### Context Example
+
 ```
 {
     "CTS": {

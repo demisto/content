@@ -45,10 +45,12 @@ Get Varonis threat models
 | Name | String  | Name of the threat model | 
 
 #### Command example
+
 ```!varonis-get-threat-models```  
 ```!varonis-get-threat-models name="*access to*|Domain controller*"```
 
 #### Context Example
+
 ```json
 [
     {
@@ -71,6 +73,7 @@ Get Varonis threat models
 #### Human Readable Output
 
 >### Varonis Alerts
+>
 >|ID|Name|Category|Severity|Source|
 >|---|---|---|---|---|
 >| 1 | Abnormal service behavior: access to atypical folders | Exfiltration | 3 - Error | Predefined |\n| 2 | Abnormal service behavior: access to atypical files | Exfiltration | 3 - Error | Predefined |
@@ -135,8 +138,11 @@ Get alerts from Varonis DA
 | Varonis.Alert.IngestTime | Date | Time when the alert was ingested into the system                                                                                                                                                                                     | 
 
 #### Command example
+
 ```!varonis-get-alerts start_time="2023-12-01T09:58:00" end_time="2023-12-07T04:16:00" alert_status="New" alert_severity="High" device_name="intfc35adh" threat_model_name="Deletion: Active Directory containers, Foreign Security Principal, or GPO" extra_fields="Alert.MitreTactic.*"```
+
 #### Context Example
+
 ```json
 [
   {
@@ -177,6 +183,7 @@ Get alerts from Varonis DA
 #### Human Readable Output
 
 >### Varonis Alerts
+>
 >|Alert.Rule.Name|Alert.Rule.Severity.Name|Alert.TimeUTC|Alert.Rule.Category.Name|Alert.User.Name|Alert.Status.Name|Alert.ID|
 >|---|---|---|--|----------------------------|-------|-------|
 >| Deletion: Multiple directory service objects | Medium | 2023-12-11T03:50:00 | Denial of Service | varadm (intaf6fb.com) | New | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE |
@@ -243,8 +250,11 @@ Get events applied to specific alerts
 
 
 #### Command example
+
 ```varonis-get-alerted-events alert_id="C98A3E72-99E9-4E5C-A560-7D04FA60686E,C83D55F0-EC63-41FC-B8C6-A5A66CB51372" last_days=7 extra_fields="Event.ByAccount.DistinguishedName"```
+
 #### Context Example
+
 ```json
 [
   {
@@ -289,6 +299,7 @@ Get events applied to specific alerts
 #### Human Readable Output
 
 >### Varonis Alerted Events
+>
 >|Event.Type.Name|Event.Description|Event.Filer.Platform.Name|Event.Filer.Name|Event.ByAccount.SamAccountName|Event.OnObjectName|Event.Alert.ID|Event.ID|Event.TimeUTC|Event.Status.Name|Event.Location.Country.Name|Event.Location.Subdivision.Name|Event.Location.BlacklistedLocation|Event.Operation.Name|Event.ByAccount.Type.Name|Event.ByAccount.Domain.Name|Event.ByAccount.Identity.Name|Event.IP|Event.Device.ExternalIP.IP|Event.Destination.IP|Event.Device.Name|Event.Destination.DeviceName|Event.ByAccount.IsDisabled|Event.ByAccount.IsStale|Event.ByAccount.IsLockout|Event.Device.ExternalIP.ThreatTypes.Name|Event.Device.ExternalIP.IsMalicious|Event.Device.ExternalIP.Reputation.Name|Event.OnResource.ObjectType.Name|Event.OnAccount.SamAccountName|Event.OnResource.IsSensitive|Event.OnAccount.IsDisabled|Event.OnAccount.IsLockout|Event.OnResource.Path|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| DS object deleted | Organizational Unit "CommitOu_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | CommitOu_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE | 7D87B6A2-C9C2-4859-A076-DD4D0EFC8276 | 2023-12-11T03:41:08.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | Organizational unit | 51d4ee86-db4a-4d4a-baaa-1b84e02afd59 |  |  |  | intaf6fb.com\\CommitOu_a9c42 |\n| DS object deleted | User "intaf6fb.com\\PolWinRolU_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | intaf6fb.com\\PolWinRolU_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE | B75C4ECE-48BA-4172-BBB1-68B85E3ABB6F | 2023-12-11T03:41:08.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | User | PolWinRolU_a9c42 |  | No | No | intaf6fb.com\\Users\\PolWinRolU_a9c42 |\n| DS object deleted | User "intaf6fb.com\\Add_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | intaf6fb.com\\Add_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE | 4800A52F-F8C2-483A-BC39-A68D1AF13D98 | 2023-12-11T03:41:08.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | User | Add_a9c42 |  | No | No | intaf6fb.com\\Users\\Add_a9c42 |\n| DS object deleted | Organizational Unit "CommitOu_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | CommitOu_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE,0AB569DA-B58E-4DC5-9FC2-8793BA118C88 | DFEE2A16-E0DF-4777-BA8A-390DD869D413 | 2023-12-11T03:41:08.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | Organizational unit | 51d4ee86-db4a-4d4a-baaa-1b84e02afd59 |  |  |  | intaf6fb.com\\CommitOu_a9c42 |\n| DS object deleted | "intaf6fb.com\\CommitAdGroup_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | intaf6fb.com\\CommitAdGroup_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE | FA2F5005-6EFC-46B9-BC95-E88CD3838D1A | 2023-12-11T03:41:08.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | Group | CommitAdGroup_a9c42 |  |  |  | intaf6fb.com\\Users\\CommitAdGroup_a9c42 |\n| DS object deleted | User "intaf6fb.com\\RollbackRemove_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | intaf6fb.com\\RollbackRemove_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE | 0A5A616D-D3CA-4623-A248-18DC0E7AB67A | 2023-12-11T03:41:08.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | User | RollbackRemove_a9c42 |  | No | No | intaf6fb.com\\Users\\RollbackRemove_a9c42 |\n| DS object deleted | User "intaf6fb.com\\Remove_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | intaf6fb.com\\Remove_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE | 59E8DE00-7F0F-4637-B5DA-BC8842B2533F | 2023-12-11T03:41:08.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | User | Remove_a9c42 |  | No | No | intaf6fb.com\\Users\\Remove_a9c42 |\n| DS object deleted | "CommitNewGroup_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | CommitNewGroup_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE | 5CC0C582-C5D6-4ED2-8596-BBBFD0ABB746 | 2023-12-11T03:41:08.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | Group | a9dde0e5-1346-4d15-a9dc-0c1337ddab2f |  |  |  | intaf6fb.com\\CommitOu_a9c42\\CommitNewGroup_a9c42 |\n| DS object deleted | User "intaf6fb.com\\CommitAdUser_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | intaf6fb.com\\CommitAdUser_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE | AD3642A0-B90B-4349-ADB1-206749BF18E8 | 2023-12-11T03:41:08.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | User | CommitAdUser_a9c42 |  | No | No | intaf6fb.com\\Users\\CommitAdUser_a9c42 |\n| DS object deleted | User "intaf6fb.com\\RollbackRemove_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | intaf6fb.com\\RollbackRemove_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE | 015579AF-E357-4D16-AAC0-50B76E7D7104 | 2023-12-11T03:41:05.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | User | RollbackRemove_a9c42 |  | No | No | intaf6fb.com\\Users\\RollbackRemove_a9c42 |\n| DS object deleted | User "intaf6fb.com\\Add_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | intaf6fb.com\\Add_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE | B38D714B-8D20-4E68-8EFC-709C128C136C | 2023-12-11T03:41:05.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | User | Add_a9c42 |  | No | No | intaf6fb.com\\Users\\Add_a9c42 |\n| DS object deleted | User "intaf6fb.com\\Remove_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | intaf6fb.com\\Remove_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE | E5F15080-A7C0-42CF-A911-05627FF26179 | 2023-12-11T03:41:05.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | User | Remove_a9c42 |  | No | No | intaf6fb.com\\Users\\Remove_a9c42 |\n| DS object deleted | User "intaf6fb.com\\CommitAdUser_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | intaf6fb.com\\CommitAdUser_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE | A9673047-6CDD-4404-805F-38B5CACAC047 | 2023-12-11T03:41:05.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | User | CommitAdUser_a9c42 |  | No | No | intaf6fb.com\\Users\\CommitAdUser_a9c42 |\n| DS object deleted | User "intaf6fb.com\\PolWinRolU_a9c42" was deleted | Active Directory | AD-intaf6fb.com | varadm | intaf6fb.com\\PolWinRolU_a9c42 | A5F4B69A-F5C0-494F-B5B4-185185BC3FBE | 967A5AA4-391C-4AB6-BB33-592AACCFB4D2 | 2023-12-11T03:41:04.000Z | Success |  |  |  | Deleted | User | intaf6fb.com | varadm |  |  |  | intaf6fbdh |  | No | No | No |  |  |  | User | PolWinRolU_a9c42 |  | No | No | intaf6fb.com\\Users\\PolWinRolU_a9c42 |
@@ -315,6 +326,7 @@ Add note to alerts
 There is no context output for this command.
 
 #### Command example
+
 ```!varonis-alert-add-note alert_id=C98A3E72-99E9-4E5C-A560-7D04FA60686E note="This needs to be invested ASAP" ```
 
 
@@ -340,6 +352,7 @@ Update alert status
 There is no context output for this command.
 
 #### Command example
+
 ```!varonis-update-alert-status alert_id=C98A3E72-99E9-4E5C-A560-7D04FA60686E status="Action Required" note="Waiting for feedback from security team" ```
 
 
@@ -365,10 +378,12 @@ Close the alert
 There is no context output for this command.
 
 #### Command example
+
 ```!varonis-close-alert  alert_id=C98A3E72-99E9-4E5C-A560-7D04FA60686E close_reason="Inaccurate alert logic"  note="Alert is irrelevant. Closed" ```
 
 
 ### get-mapping-fields
+
 ***
 Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
 
@@ -376,6 +391,7 @@ Returns the list of fields to map in outgoing mirroring. This command is only us
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 There are no input arguments for this command.
@@ -388,6 +404,7 @@ There is no context output for this command.
 
 You can enable outgoing incident mirroring between Cortex XSOAR incidents and Varonis alerts (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored (currently only outgoing mirroring is available):
 
@@ -400,12 +417,15 @@ To set up the mirroring:
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 
 ### Mirroring Out Notes
+
 The supported fields in the mirroring out process are:
+
 - Varonis Alert Status.
 - Varonis Close Reason
 - Incident Close Notes
 
 **Important Note:**
 You have two options how to close Varonis Alert:
- - The first option is to change the Varonis Alert Status field in the XSOAR incident. In this case, the status of the alert in Varonis SaaS service will be change by the mirroring functionality, but the Incident in XSOAR won't be closed.
- - The second one is to close the incident in XSOAR. In this case, the Varonis Alert will be closed on the Varonis side by the post-processing script.
+
+- The first option is to change the Varonis Alert Status field in the XSOAR incident. In this case, the status of the alert in Varonis SaaS service will be change by the mirroring functionality, but the Incident in XSOAR won't be closed.
+- The second one is to close the incident in XSOAR. In this case, the Varonis Alert will be closed on the Varonis side by the post-processing script.

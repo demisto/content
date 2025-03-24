@@ -15,9 +15,12 @@ This integration was integrated and tested with version 6.5.7 & 7.0.0 of Endace
 | hostname | EndaceProbe System Hostname | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### endace-create-search
+
 ***
 Create a search task on EndaceProbe. Search is issued against all Rotation Files on EndaceProbe.
 
@@ -25,6 +28,7 @@ Create a search task on EndaceProbe. Search is issued against all Rotation Files
 ##### Base Command
 
 `endace-create-search`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -51,9 +55,11 @@ Create a search task on EndaceProbe. Search is issued against all Rotation Files
 
 
 ##### Command Example
+
 ```!endace-create-search start="2020-04-15T14:48:12" ip="1.1.1.1" timeframe="1hour"```
 
 ##### Context Example
+
 ```
 {
     "Endace": {
@@ -70,13 +76,16 @@ Create a search task on EndaceProbe. Search is issued against all Rotation Files
 ```
 
 ##### Human Readable Output
+
 ### EndaceResult
+
 |Task|JobID|Status|Error|
 |---|---|---|---|
 | CreateSearchTask | c944a329-bf16-4e51-ac58-900f17fa1a52 | Started | NoError |
 
 
 ### endace-get-search-status
+
 ***
 Get search status from EndaceProbe. This command can be polled in a loop until response is received or polling timer is over.
 
@@ -84,6 +93,7 @@ Get search status from EndaceProbe. This command can be polled in a loop until r
 ##### Base Command
 
 `endace-get-search-status`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -104,9 +114,11 @@ Get search status from EndaceProbe. This command can be polled in a loop until r
 
 
 ##### Command Example
+
 ```!endace-get-search-status jobid="c944a329-bf16-4e51-ac58-900f17fa1a52"```
 
 ##### Context Example
+
 ```
 {
     "Endace": {
@@ -126,13 +138,16 @@ Get search status from EndaceProbe. This command can be polled in a loop until r
 ```
 
 ##### Human Readable Output
+
 ### EndaceSearch
+
 |Task|JobID|Status|Error|JobProgress|DataSources|TotalBytes|
 |---|---|---|---|---|---|---|
 | GetSearchStatus | c944a329-bf16-4e51-ac58-900f17fa1a52 | complete | NoError | 100 | endaceprobe-1:datasource1 | 5526100 |
 
 
 ### endace-delete-search-task
+
 ***
 Delete search task
 
@@ -140,6 +155,7 @@ Delete search task
 ##### Base Command
 
 `endace-delete-search-task`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -157,9 +173,11 @@ Delete search task
 
 
 ##### Command Example
+
 ```!endace-delete-search-task jobid="c944a329-bf16-4e51-ac58-900f17fa1a52"```
 
 ##### Context Example
+
 ```
 {
     "Endace": {
@@ -176,13 +194,16 @@ Delete search task
 ```
 
 ##### Human Readable Output
+
 ### EndaceSearch
+
 |Task|JobID|Status|Error|
 |---|---|---|---|
 | DeleteSearchTask | c944a329-bf16-4e51-ac58-900f17fa1a52 | Deleted | NoError |
 
 
 ### endace-create-archive
+
 ***
 Create an archive task to archive packets of interest on EndaceProbe. Archived packets can later be downloaded from EndaceProbe as a PCAP file. Archived Files never expire. Allowed chars are text, numbers, dash and underscore.
 
@@ -190,6 +211,7 @@ Create an archive task to archive packets of interest on EndaceProbe. Archived p
 ##### Base Command
 
 `endace-create-archive`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -219,9 +241,11 @@ Create an archive task to archive packets of interest on EndaceProbe. Archived p
 
 
 ##### Command Example
+
 ```!endace-create-archive start="2020-04-15T14:48:12" archive_filename="event" ip="1.1.1.1" timeframe="1hour"```
 
 ##### Context Example
+
 ```
 {
     "Endace": {
@@ -242,13 +266,16 @@ Create an archive task to archive packets of interest on EndaceProbe. Archived p
 ```
 
 ##### Human Readable Output
+
 ### EndaceResult
+
 |Task|FileName|P2Vurl|Status|Error|JobID|
 |---|---|---|---|---|---|
 | CreateArchiveTask | event-1586976954 | [Endace PivotToVision URL](https://endaceprobe-1/vision2/pivotintovision/?datasources=tag:rotation-file&title=event-1586976954&start=1586962092000&end=1586965692000&tools=trafficOverTime_by_app%2Cconversations_by_ipaddress&ip=1.1.1.1) | Started | NoError | 495f1899-6f27-4ed9-85c9-2af19a4e55d8 |
 
 
 ### endace-get-archive-status
+
 ***
 get status of archived task
 
@@ -256,6 +283,7 @@ get status of archived task
 ##### Base Command
 
 `endace-get-archive-status`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -274,9 +302,11 @@ get status of archived task
 
 
 ##### Command Example
+
 ```!endace-get-archive-status archive_filename="event-1586976861"```
 
 ##### Context Example
+
 ```
 {
     "Endace": {
@@ -294,13 +324,16 @@ get status of archived task
 ```
 
 ##### Human Readable Output
+
 ### EndaceResult
+
 |Task|FileName|Status|Error|FileSize|
 |---|---|---|---|---|
 | GetArchiveStatus | event-1586976861 | Finished | NoError | 6.29MB |
 
 
 ### endace-delete-archive-task
+
 ***
 delete archive task
 
@@ -308,6 +341,7 @@ delete archive task
 ##### Base Command
 
 `endace-delete-archive-task`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -325,9 +359,11 @@ delete archive task
 
 
 ##### Command Example
+
 ```!endace-delete-archive-task jobid="83fec7a8-daec-42fb-9b5a-e742145e85e8"```
 
 ##### Context Example
+
 ```
 {
     "Endace": {
@@ -344,13 +380,16 @@ delete archive task
 ```
 
 ##### Human Readable Output
+
 ### EndaceResult
+
 |Task|JobID|Status|Error|
 |---|---|---|---|
 | DeleteArchiveTask | 83fec7a8-daec-42fb-9b5a-e742145e85e8 | Deleted | NoError |
 
 
 ### endace-download-pcap
+
 ***
 Download a copy of the PCAP file from EndaceProbe if PCAP file size is within the threshold value defined by filesizelimit.
 
@@ -358,6 +397,7 @@ Download a copy of the PCAP file from EndaceProbe if PCAP file size is within th
 ##### Base Command
 
 `endace-download-pcap`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -380,9 +420,11 @@ Download a copy of the PCAP file from EndaceProbe if PCAP file size is within th
 
 
 ##### Command Example
+
 ```!endace-download-pcap filename="event-1586976861" filesizelimit="50"```
 
 ##### Context Example
+
 ```
 {
     "Endace": {
@@ -411,13 +453,16 @@ Download a copy of the PCAP file from EndaceProbe if PCAP file size is within th
 ```
 
 ##### Human Readable Output
+
 ### EndaceResult
+
 |Task|FileName|Status|Error|FileSize|FileType|FileUser|FileURL|
 |---|---|---|---|---|---|---|---|
 | DownloadPCAP | event-1586976861.pcap | DownloadFinished | NoError | 6.29MB | archive_file | admin | [Endace PCAP URL](https://endaceprobe-1/vision2/data/files/b20e43e6-2cf7-1af2-3665-01016cb2daba/stream?format=pcap) |
 
 
 ### endace-delete-archived-file
+
 ***
 Delete an archived file from EndaceProbe.
 
@@ -425,6 +470,7 @@ Delete an archived file from EndaceProbe.
 ##### Base Command
 
 `endace-delete-archived-file`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -442,9 +488,11 @@ Delete an archived file from EndaceProbe.
 
 
 ##### Command Example
+
 ```!endace-delete-archived-file archived_filename="event-1586976861"```
 
 ##### Context Example
+
 ```
 {
     "Endace": {
@@ -461,7 +509,9 @@ Delete an archived file from EndaceProbe.
 ```
 
 ##### Human Readable Output
+
 ### EndaceResult
+
 |Task|FileName|Status|Error|
 |---|---|---|---|
 | DeleteArchivedFile | event-1586976861 | FileDeleted | NoError |

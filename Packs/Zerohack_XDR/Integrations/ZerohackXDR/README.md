@@ -102,10 +102,14 @@ This integration was integrated and tested with version 1.0 of Zerohack XDR
 
 
 ![Setup Account](./../../doc_imgs/latest_fetch_history.png)   
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### zerohack-get-latest-incident
+
 ***
 Fetch a single incident of your choice of severity level to study the incidents structure before you start continously fecthing incidents.
 
@@ -113,6 +117,7 @@ Fetch a single incident of your choice of severity level to study the incidents 
 #### Base Command
 
 `zerohack-get-latest-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

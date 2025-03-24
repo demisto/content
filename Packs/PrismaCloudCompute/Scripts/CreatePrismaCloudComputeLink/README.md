@@ -28,7 +28,7 @@ There are no outputs for this script.
 
 ### Example command
 
-```!CreatePrismaCloudComputeLink imageName=dvwa type=sqli baseUrl=`https://prismcloudcomputeurl````
+```!CreatePrismaCloudComputeLink imageName=dvwa type=sqli baseUrl=`<https://prismcloudcomputeurl````>
 
 ### Context Example
 
@@ -41,7 +41,8 @@ There are no outputs for this script.
 ### Human Readable Output
 
 >### Results
+>
 >|link|
 >|---|
->| https://prismcloudcomputeurl/#!/monitor/events/firewall/app/container?filters=imageName%3Ddvwa%26type%3Dsqli |
+>| <https://prismcloudcomputeurl/#!/monitor/events/firewall/app/container?filters=imageName%3Ddvwa%26type%3Dsqli> |
 

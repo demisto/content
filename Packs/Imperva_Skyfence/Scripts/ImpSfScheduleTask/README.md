@@ -3,6 +3,7 @@ Gets all of a device's data from the server. If a device hasn't been accessed in
 If the device hasn't been accessed in over three months, the script will revoke the device credentials and notify the user by mail.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,12 +13,15 @@ If the device hasn't been accessed in over three months, the script will revoke 
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * scheduleEntry
 * ImpSfRevokeUnaccessedDevices
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -26,5 +30,6 @@ This script uses the following commands and scripts.
 | times | The number of times to execute the check. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

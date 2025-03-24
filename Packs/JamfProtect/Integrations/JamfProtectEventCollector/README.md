@@ -1,4 +1,5 @@
 Use this integration to fetch audit logs events, alerts events and computers assets from Jamf Protect to Cortex XSIAM.
+
 ## Configure Jamf Protect Event Collector in Cortex
 
 

@@ -36,6 +36,7 @@ Returns a list of, and basic details for, all managed and un-managed endpoints.
 #### Context Output
 
 There is no context output for this command.
+
 ### imp-sf-set-endpoint-status
 
 ***

@@ -1,4 +1,4 @@
-SecOps operations - Reflect and manage the Lumu Incidents either from XSOAR Cortex or viceversa using the mirroring integration flow, https://lumu.io/
+SecOps operations - Reflect and manage the Lumu Incidents either from XSOAR Cortex or viceversa using the mirroring integration flow, <https://lumu.io/>
 This integration was integrated and tested with version 20230215 of Lumu
 
 ## Configure Lumu in Cortex
@@ -22,9 +22,12 @@ This integration was integrated and tested with version 20230215 of Lumu
 | Mirror tags | Comment and files that will be marked with this tag will be pushed into Lumu. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### lumu-retrieve-labels
+
 ***
 Get a paginated list of all the labels created for the company and its details such as id, name and business relevance. The items are sorted by the label id in ascending order.
 
@@ -32,6 +35,7 @@ Get a paginated list of all the labels created for the company and its details s
 #### Base Command
 
 `lumu-retrieve-labels`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -53,8 +57,11 @@ Get a paginated list of all the labels created for the company and its details s
 | Lumu.RetrieveLabels.paginationInfo.prev | Number | previous page | 
 
 #### Command example
+
 ```!lumu-retrieve-labels```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -124,6 +131,7 @@ Get a paginated list of all the labels created for the company and its details s
 #### Human Readable Output
 
 >### Labels
+>
 >|Id|Name|Relevance|
 >|---|---|---|
 >| 51 | Mi Ofi | 1 |
@@ -138,12 +146,14 @@ Get a paginated list of all the labels created for the company and its details s
 >| 331 | VA 3.1.3 | 1 |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
 
 ### lumu-retrieve-a-specific-label
+
 ***
 Get details such as id, name and business relevance from a specific label.
 
@@ -154,6 +164,7 @@ Get details such as id, name and business relevance from a specific label.
 #### Base Command
 
 `lumu-retrieve-a-specific-label`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -170,8 +181,11 @@ Get details such as id, name and business relevance from a specific label.
 | Lumu.RetrieveASpecificLabel.relevance | Number | label relevance | 
 
 #### Command example
+
 ```!lumu-retrieve-a-specific-label label_id=51```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -187,12 +201,14 @@ Get details such as id, name and business relevance from a specific label.
 #### Human Readable Output
 
 >### Label
+>
 >|Id|Name|Relevance|
 >|---|---|---|
 >| 51 | Mi Ofi | 1 |
 
 
 ### lumu-retrieve-incidents
+
 ***
 Get a paginated list of incidents for the company. The items are listed by the most recent.
 
@@ -200,6 +216,7 @@ Get a paginated list of incidents for the company. The items are listed by the m
 #### Base Command
 
 `lumu-retrieve-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -232,8 +249,11 @@ Get a paginated list of incidents for the company. The items are listed by the m
 | Lumu.RetrieveIncidents.paginationInfo.items | Number | current items | 
 
 #### Command example
+
 ```!lumu-retrieve-incidents```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -478,13 +498,14 @@ Get a paginated list of incidents for the company. The items are listed by the m
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-15T13:28:25.537Z | false | ad2b63c0-ad34-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-15T13:28:25.537Z | closed | 2023-02-15T21:53:41.468Z | 2023-02-15T13:28:47.356Z | 1 | false |
+>| <www.chg.com.br> | <www.chg.com.br> | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-15T13:28:25.537Z | false | ad2b63c0-ad34-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-15T13:28:25.537Z | closed | 2023-02-15T21:53:41.468Z | 2023-02-15T13:28:47.356Z | 1 | false |
 >| 104.156.63.145 | 104.156.63.145 | C2C | 10 | Malware family Agentemis | 2023-02-15T02:21:59Z | false | 8c5efc90-aca5-11ed-9fd0-e5fb50c818f6 | 2144: 10 | 2023-02-15T05:35:40Z | open | 2023-02-14T20:24:14.297Z | 2023-02-14T20:24:14.297Z | 1 | false |
 >| 161.97.110.203 | 161.97.110.203 | C2C | 1 | Malware family Katana | 2023-02-15T02:18:17Z | false | 853e3020-aca5-11ed-9fd0-e5fb50c818f6 | 2144: 1 | 2023-02-15T02:18:17Z | open | 2023-02-14T20:24:02.338Z | 2023-02-14T20:24:02.338Z | 1 | false |
 >| rea.co.ke | rea.co.ke | C2C,<br/>Malware | 1 | Malware family P2PZeuS | 2023-02-14T17:27:26.791Z | false | e0b39da0-ac8c-11ed-9fd0-e5fb50c818f6 | 989: 1 | 2023-02-14T17:27:26.791Z | closed | 2023-02-14T18:33:38.315Z | 2023-02-14T17:27:38.362Z | 1 | false |
->| www.puertoballesta.com | www.puertoballesta.com | Phishing | 1 | Phishing domain | 2023-02-14T17:08:11.751Z | false | 91aaaf20-ac8a-11ed-9fd0-e5fb50c818f6 | 989: 1 | 2023-02-14T17:08:11.751Z | open | 2023-02-14T17:24:41.268Z | 2023-02-14T17:11:06.770Z | 1 | false |
+>| <www.puertoballesta.com> | <www.puertoballesta.com> | Phishing | 1 | Phishing domain | 2023-02-14T17:08:11.751Z | false | 91aaaf20-ac8a-11ed-9fd0-e5fb50c818f6 | 989: 1 | 2023-02-14T17:08:11.751Z | open | 2023-02-14T17:24:41.268Z | 2023-02-14T17:11:06.770Z | 1 | false |
 >| bitmovil.mx | bitmovil.mx | Malware | 2 | Heodo | 2023-02-14T17:05:37.987Z | false | 0d207a50-ac8a-11ed-9fd0-e5fb50c818f6 | 989: 2 | 2023-02-14T17:05:37.987Z | closed | 2023-02-14T18:44:09.946Z | 2023-02-14T17:07:24.405Z | 1 | false |
 >| msk.turbolider.ru | msk.turbolider.ru | Phishing | 2 | Phishing domain | 2023-02-14T16:28:11.169Z | false | 99b7bf10-ac84-11ed-9fd0-e5fb50c818f6 | 147: 2 | 2023-02-14T16:28:11.169Z | open | 2023-02-14T16:28:23.297Z | 2023-02-14T16:28:23.297Z | 1 | false |
 >| rspg-spectrum.eu | rspg-spectrum.eu | Phishing | 7 | Phishing domain | 2023-01-13T18:15:24.305Z | true | 903c5580-abef-11ed-9fd0-e5fb50c818f6 | 4055: 2<br/>2041: 5 | 2023-02-14T16:01:27.715Z | open | 2023-02-13T22:41:32.376Z | 2023-02-13T22:41:32.376Z | 3 | false |
@@ -492,25 +513,31 @@ Get a paginated list of incidents for the company. The items are listed by the m
 >| portaconexao8.top | portaconexao8.top | Malware | 2 | Malware hash: 55e57c52cd5e1dcfad4e9bcf0eb2f3a5 | 2023-02-11T18:40:09.087Z | false | 89658e80-aa3b-11ed-9fd0-e5fb50c818f6 | 147: 2 | 2023-02-11T18:40:09.087Z | closed | 2023-02-15T13:26:02.357Z | 2023-02-11T18:40:20.328Z | 1 | false |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
 
 #### Command example
+
 ```!lumu-retrieve-incidents page=2 status=open adversary-types=Malware labels=1580```
+
 #### Human Readable Output
 
 >### Incidents
+>
 >**No entries.**
 >
 >### paginationInfo
+>
 >|Items|Page|Prev|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
 
 ### lumu-retrieve-a-specific-incident-details
+
 ***
 Get details of a specific Incident.
 
@@ -521,6 +548,7 @@ Get details of a specific Incident.
 #### Base Command
 
 `lumu-retrieve-a-specific-incident-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -605,8 +633,11 @@ Get details of a specific Incident.
 | Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.isPlayback | Boolean | Lumu lastContactDetails.isPlayback | 
 
 #### Command example
+
 ```!lumu-retrieve-a-specific-incident-details lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -709,11 +740,13 @@ Get details of a specific Incident.
 #### Human Readable Output
 
 >### Incident
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact Details|Has Playback Contacts|Id|Is Unread|Label Distribution|Last Contact|Last Contact Details|Status|Status Timestamp|Timestamp|Total Endpoints|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| activity.lumu.io | activity.lumu.io | Spam | 8 | Activity Test Query | uuid: 737f12d0-a7cf-11ed-972b-0f9b6b3c6ffd<br/>datetime: 2023-02-08T16:41:35.613Z<br/>host: activity.lumu.io<br/>types: Spam<br/>details: Activity Test Query<br/>endpointIp: 186.29.109.138<br/>endpointName: cd-ho<br/>label: 147<br/>sourceType: PublicResolver<br/>sourceId: 587ec9d348053ca03a58aeddeccb1b93<br/>sourceData: null<br/>isPlayback: false | false | 7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 | false | 147: 1<br/>2254: 1<br/>1885: 2<br/>989: 2<br/>0: 2 | 2023-02-15T16:59:47.142Z | uuid: 26fd6e60-ad52-11ed-8d57-0f9b6b8d54f0<br/>datetime: 2023-02-15T16:59:47.142Z<br/>host: activity.lumu.io<br/>types: Spam<br/>details: Activity Test Query<br/>endpointIp: 192.168.1.100<br/>endpointName: LUMU-100<br/>label: 0<br/>sourceType: custom_collector<br/>sourceId: 6d942a7a-d287-415e-9c09-3d6632a6a976<br/>sourceData: {"DNSQueryExtraInfo": {"queryType": "A"}}<br/>isPlayback: false | open | 2023-02-15T12:01:03.667Z | 2023-02-08T16:41:50.304Z | 6 |
 >
 >### Actions
+>
 >|Action|Comment|Datetime|User Id|
 >|---|---|---|---|
 >| comment | test comment | 2023-02-15T12:18:53.523Z | 6252 |
@@ -723,6 +756,7 @@ Get details of a specific Incident.
 
 
 ### lumu-retrieve-a-specific-incident-context
+
 ***
 Get details of a specific Incident.
 
@@ -733,6 +767,7 @@ Get details of a specific Incident.
 #### Base Command
 
 `lumu-retrieve-a-specific-incident-context`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -760,8 +795,11 @@ Get details of a specific Incident.
 | Lumu.RetrieveASpecificIncidentContext.timestamp | Date | Lumu timestamp | 
 
 #### Command example
+
 ```!lumu-retrieve-a-specific-incident-context lumu_incident_id=6eddaf40-938c-11ed-b0f8-a7e340234a4e hash=SHA256```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -829,12 +867,14 @@ Get details of a specific Incident.
 #### Human Readable Output
 
 >### Incident
+>
 >|Adversary _ Id|Currently _ Active|External _ Resources|Mitre|Playbooks|Threat _ Details|Threat _ Triggers|Timestamp|
 >|---|---|---|---|---|---|---|---|
 >| jits.ac.in | true | https:<span>//</span>blog.quosec.net/posts/grap_qakbot_navigation/,<br/>https:<span>//</span>unit42.paloaltonetworks.com/wireshark-tutorial-emotet-infection/,<br/>https:<span>//</span>malwareandstuff.com/an-old-enemy-diving-into-qbot-part-1/,<br/>https:<span>//</span>raw.githubusercontent.com/fboldewin/When-ransomware-hits-an-ATM-giant---The-Diebold-Nixdorf-case-dissected/main/When%20ransomware%20hits%20an%20ATM%20giant%20-%20The%20Diebold%20Nixdorf%20case%20dissected%20-%20Group-IB%20CyberCrimeCon2020.pdf,<br/>https:<span>//</span>malpedia.caad.fkie.fraunhofer.de/details/win.qakbot,<br/>https:<span>//</span>media.scmagazine.com/documents/225/bae_qbot_report_56053.pdf,<br/>https:<span>//</span>malwareandstuff.com/an-old-enemy-diving-into-qbot-part-3/,<br/>https:<span>//</span>www.cert.ssi.gouv.fr/uploads/CERTFR-2020-CTI-010.pdf,<br/>https:<span>//</span>urlhaus.abuse.ch/host/jits.ac.in/,<br/>https:<span>//</span>elis531989.medium.com/funtastic-packers-and-where-to-find-them-41429a7ef9a7,<br/>https:<span>//</span>research.checkpoint.com/2020/exploring-qbots-latest-attack-methods/,<br/>https:<span>//</span>www.vkremez.com/2018/07/lets-learn-in-depth-reversing-of-qakbot.html,<br/>https:<span>//</span>twitter.com/redcanary/status/1334224861628039169,<br/>https:<span>//</span>web.archive.org/web/20201207094648/https:<span>//</span>go.group-ib.com/rs/689-LRE-818/images/Group-IB_Egregor_Ransomware.pdf,<br/>https:<span>//</span>www.hornetsecurity.com/en/security-information/qakbot-malspam-leading-to-prolock/,<br/>https:<span>//</span>blog.morphisec.com/qakbot-qbot-maldoc-two-new-techniques,<br/>https:<span>//</span>www.virustotal.com/gui/domain/jits.ac.in/relations | details: {'tactic': 'command-and-control', 'techniques': ['T1071']}<br/>matrix: enterprise<br/>version: 8.2 | https:<span>//</span>docs.lumu.io/portal/en/kb/articles/malware-incident-response-playbook | qbot,<br/>Gafgyt,<br/>Qakbot,<br/>Quakbot,<br/>Qbot,<br/>lizkebab,<br/>torlus,<br/>PinkSlipBot,<br/>Bashlite,<br/>Akbot,<br/>Pinkslipbot,<br/>Qbot ,<br/>gayfgt | https:<span>//</span>jits.ac.in/TS.php | 2023-02-15T21:59:16.261Z |
 
 
 ### lumu-comment-a-specific-incident
+
 ***
 Get a paginated list of open incidents for the company. The items are listed by the most recent.
 
@@ -842,6 +882,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
 #### Base Command
 
 `lumu-comment-a-specific-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -857,8 +898,11 @@ Get a paginated list of open incidents for the company. The items are listed by 
 | Lumu.CommentASpecificIncident.statusCode | number | Lumu statusCode | 
 
 #### Command example
+
 ```!lumu-comment-a-specific-incident comment="from cortex, palo alto" lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -875,6 +919,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
 >Comment added to the incident successfully.
 
 ### lumu-retrieve-open-incidents
+
 ***
 Get a paginated list of open incidents for the company. The items are listed by the most recent.
 
@@ -882,6 +927,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
 #### Base Command
 
 `lumu-retrieve-open-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -913,8 +959,11 @@ Get a paginated list of open incidents for the company. The items are listed by 
 | Lumu.RetrieveOpenIncidents.paginationInfo.items | Number | current items  | 
 
 #### Command example
+
 ```!lumu-retrieve-open-incidents```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -1164,28 +1213,33 @@ Get a paginated list of open incidents for the company. The items are listed by 
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| activity.lumu.io | activity.lumu.io | Spam | 8 | Activity Test Query | 2023-02-08T16:41:35.613Z | false | 7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 | 147: 1<br/>2254: 1<br/>1885: 2<br/>989: 2<br/>0: 2 | 2023-02-15T16:59:47.142Z | open | 2023-02-15T12:01:03.667Z | 2023-02-08T16:41:50.304Z | 6 | false |
 >| 104.156.63.145 | 104.156.63.145 | C2C | 10 | Malware family Agentemis | 2023-02-15T02:21:59Z | false | 8c5efc90-aca5-11ed-9fd0-e5fb50c818f6 | 2144: 10 | 2023-02-15T05:35:40Z | open | 2023-02-14T20:24:14.297Z | 2023-02-14T20:24:14.297Z | 1 | false |
 >| 161.97.110.203 | 161.97.110.203 | C2C | 1 | Malware family Katana | 2023-02-15T02:18:17Z | false | 853e3020-aca5-11ed-9fd0-e5fb50c818f6 | 2144: 1 | 2023-02-15T02:18:17Z | open | 2023-02-14T20:24:02.338Z | 2023-02-14T20:24:02.338Z | 1 | false |
->| www.puertoballesta.com | www.puertoballesta.com | Phishing | 1 | Phishing domain | 2023-02-14T17:08:11.751Z | false | 91aaaf20-ac8a-11ed-9fd0-e5fb50c818f6 | 989: 1 | 2023-02-14T17:08:11.751Z | open | 2023-02-14T17:24:41.268Z | 2023-02-14T17:11:06.770Z | 1 | false |
+>| <www.puertoballesta.com> | <www.puertoballesta.com> | Phishing | 1 | Phishing domain | 2023-02-14T17:08:11.751Z | false | 91aaaf20-ac8a-11ed-9fd0-e5fb50c818f6 | 989: 1 | 2023-02-14T17:08:11.751Z | open | 2023-02-14T17:24:41.268Z | 2023-02-14T17:11:06.770Z | 1 | false |
 >| msk.turbolider.ru | msk.turbolider.ru | Phishing | 2 | Phishing domain | 2023-02-14T16:28:11.169Z | false | 99b7bf10-ac84-11ed-9fd0-e5fb50c818f6 | 147: 2 | 2023-02-14T16:28:11.169Z | open | 2023-02-14T16:28:23.297Z | 2023-02-14T16:28:23.297Z | 1 | false |
 >| rspg-spectrum.eu | rspg-spectrum.eu | Phishing | 7 | Phishing domain | 2023-01-13T18:15:24.305Z | true | 903c5580-abef-11ed-9fd0-e5fb50c818f6 | 4055: 2<br/>2041: 5 | 2023-02-14T16:01:27.715Z | open | 2023-02-13T22:41:32.376Z | 2023-02-13T22:41:32.376Z | 3 | false |
 >| scalarchives.com | scalarchives.com | Phishing | 4 | Phishing domain | 2023-01-13T21:44:39.025Z | true | f2571f00-aa43-11ed-9fd0-e5fb50c818f6 | 4055: 4 | 2023-01-13T21:44:39.035Z | open | 2023-02-11T19:40:32.368Z | 2023-02-11T19:40:32.368Z | 2 | false |
->| www.ascentive.com | www.ascentive.com | Malware | 9 | Malware family Trojan.Win32.Generic | 2023-02-09T16:04:59.540Z | false | e6a0cc30-a893-11ed-9fd0-e5fb50c818f6 | 989: 1<br/>2144: 7<br/>1885: 1 | 2023-02-14T23:34:09.414Z | open | 2023-02-09T16:07:50.131Z | 2023-02-09T16:07:50.131Z | 3 | false |
+>| <www.ascentive.com> | <www.ascentive.com> | Malware | 9 | Malware family Trojan.Win32.Generic | 2023-02-09T16:04:59.540Z | false | e6a0cc30-a893-11ed-9fd0-e5fb50c818f6 | 989: 1<br/>2144: 7<br/>1885: 1 | 2023-02-14T23:34:09.414Z | open | 2023-02-09T16:07:50.131Z | 2023-02-09T16:07:50.131Z | 3 | false |
 >| ac20mail.in | ac20mail.in | Spam | 1 | Disposable email host | 2023-01-28T05:29:26.009Z | false | ce5753e0-9ecc-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T05:29:26.009Z | open | 2023-02-09T15:55:27.960Z | 2023-01-28T05:29:59.070Z | 1 | false |
 >| dimar.cl | dimar.cl | Malware | 2 | Malicious domain | 2023-02-07T08:10:51.125Z | false | cf26cf90-a7e5-11ed-9fd0-e5fb50c818f6 | 51: 2 | 2023-02-07T08:10:51.125Z | open | 2023-02-08T19:21:38.313Z | 2023-02-08T19:21:38.313Z | 1 | false |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
 
 #### Command example
+
 ```!lumu-retrieve-open-incidents adversary-types=Spam labels=1791```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -1443,6 +1497,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| jits.ac.in | jits.ac.in | Malware | 5 | QakBot | 2023-01-13T21:51:12.190Z | false | 6eddaf40-938c-11ed-b0f8-a7e340234a4e | 1791: 1<br/>548: 3<br/>4301: 1 | 2023-01-27T21:23:34.329Z | open | 2023-02-08T00:29:50.824Z | 2023-01-13T21:51:28.308Z | 3 | false |
@@ -1457,12 +1512,14 @@ Get a paginated list of open incidents for the company. The items are listed by 
 >| businessbackend.com | businessbackend.com | Spam | 2 | Disposable email host | 2023-01-13T21:46:06.886Z | false | ba390670-938b-11ed-b0f8-a7e340234a4e | 1791: 1<br/>4301: 1 | 2023-01-27T21:03:35.699Z | open | 2023-01-13T21:46:25.239Z | 2023-01-13T21:46:25.239Z | 2 | true |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
 
 ### lumu-retrieve-muted-incidents
+
 ***
 Get a paginated list of muted incidents for the company. The items are listed by the most recent.
 
@@ -1470,6 +1527,7 @@ Get a paginated list of muted incidents for the company. The items are listed by
 #### Base Command
 
 `lumu-retrieve-muted-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1501,8 +1559,11 @@ Get a paginated list of muted incidents for the company. The items are listed by
 | Lumu.RetrieveMutedIncidents.paginationInfo.items | Number | current items  | 
 
 #### Command example
+
 ```!lumu-retrieve-muted-incidents```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -1751,28 +1812,33 @@ Get a paginated list of muted incidents for the company. The items are listed by
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 12finance.com | 12finance.com | Mining | 11 | CryptoMining domain | 2022-12-23T14:46:54Z | false | 721ed640-82d2-11ed-a600-d53ba4d2bb70 | 2148: 1<br/>2254: 10 | 2022-12-23T22:30:10.448Z | muted | 2022-12-27T02:39:14.360Z | 2022-12-23T14:59:48.772Z | 4 | false |
->| www.digeus.com | www.digeus.com | Malware | 2 | Malware family Application.Deceptor.ANL | 2022-12-12T23:20:56.706Z | false | ab056a80-7a73-11ed-a600-d53ba4d2bb70 | 147: 1<br/>218: 1 | 2022-12-22T20:37:02.228Z | muted | 2022-12-15T20:59:51.796Z | 2022-12-12T23:21:12.744Z | 2 | false |
+>| <www.digeus.com> | <www.digeus.com> | Malware | 2 | Malware family Application.Deceptor.ANL | 2022-12-12T23:20:56.706Z | false | ab056a80-7a73-11ed-a600-d53ba4d2bb70 | 147: 1<br/>218: 1 | 2022-12-22T20:37:02.228Z | muted | 2022-12-15T20:59:51.796Z | 2022-12-12T23:21:12.744Z | 2 | false |
 >| jameshallybone.co.uk | jameshallybone.co.uk | Malware | 8 | Malicious domain | 2022-11-21T21:46:01.425Z | false | f06a50c0-69e5-11ed-89c2-6136df938368 | 989: 6<br/>1651: 1<br/>3811: 1 | 2022-12-05T16:03:05.322Z | muted | 2022-12-13T20:48:09.825Z | 2022-11-21T21:46:22.028Z | 3 | false |
 >| 3.223.53.1 | 3.223.53.1 | Spam | 1 | Activity Test Query | 2022-12-12T17:09:20.331Z | false | 8b6f8c70-7a71-11ed-a600-d53ba4d2bb70 | 218: 1 | 2022-12-12T17:09:20.331Z | muted | 2022-12-12T23:21:43.833Z | 2022-12-12T23:06:00.759Z | 1 | false |
 >| coovigomez.com | coovigomez.com | Mining | 1 | CryptoMining domain | 2022-11-12T23:31:33Z | false | 149207b0-6471-11ed-b373-192ba321fedf | 2148: 1 | 2022-11-12T23:31:33Z | muted | 2022-11-17T18:56:09.751Z | 2022-11-14T23:07:15.755Z | 1 | false |
 >| barbombon.com. | barbombon.com. | Malware | 2 | Malware family Trojan.Script.Generic | 2022-10-28T19:39:13.452Z | false | 47bbc6c0-56f8-11ed-987a-cd6f8ff058b8 | 1651: 2 | 2022-10-28T19:44:10.172Z | muted | 2022-10-31T21:51:02.594Z | 2022-10-28T19:39:47.372Z | 1 | false |
 >| coasttickets.com | coasttickets.com | Malware | 1 | Malware family Trojan.Downloader.Psdownload.MSIL.Generic | 2022-09-22T15:19:42.152Z | true | 11c5a410-41fd-11ed-8751-63984e51f242 | 548: 1 | 2022-09-22T15:19:42.152Z | muted | 2022-10-28T17:06:32.994Z | 2022-10-02T02:51:09.905Z | 1 | false |
 >| dark-utilities.pw | dark-utilities.pw | Mining | 2 | CryptoMining domain | 2022-10-27T16:47:40Z | false | 8da63fc0-5618-11ed-987a-cd6f8ff058b8 | 2148: 1<br/>2267: 1 | 2022-10-27T17:12:45.099Z | muted | 2022-10-27T17:57:57.931Z | 2022-10-27T16:58:17.404Z | 2 | false |
->| www.com-about.com | www.com-about.com | Malware | 1 | Malware family Downloader.Riskware.A.Atoz | 2022-10-25T20:45:41.154Z | false | 046a19c0-54a6-11ed-9df2-6538d9561738 | 3635: 1 | 2022-10-25T20:45:41.154Z | muted | 2022-10-25T21:17:21.376Z | 2022-10-25T20:45:53.372Z | 1 | false |
+>| <www.com-about.com> | <www.com-about.com> | Malware | 1 | Malware family Downloader.Riskware.A.Atoz | 2022-10-25T20:45:41.154Z | false | 046a19c0-54a6-11ed-9df2-6538d9561738 | 3635: 1 | 2022-10-25T20:45:41.154Z | muted | 2022-10-25T21:17:21.376Z | 2022-10-25T20:45:53.372Z | 1 | false |
 >| nexttime.ovh | nexttime.ovh | Malware,<br/>Mining | 5 | Malicious domain | 2022-10-25T21:13:43.551Z | false | ef8ee900-54a9-11ed-9df2-6538d9561738 | 3635: 5 | 2022-10-26T22:45:31.230Z | muted | 2022-10-25T21:16:15.909Z | 2022-10-25T21:13:56.368Z | 1 | false |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
 
 #### Command example
+
 ```!lumu-retrieve-muted-incidents labels=1651 adversary-types=Malware```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -1881,6 +1947,7 @@ Get a paginated list of muted incidents for the company. The items are listed by
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| jameshallybone.co.uk | jameshallybone.co.uk | Malware | 8 | Malicious domain | 2022-11-21T21:46:01.425Z | false | f06a50c0-69e5-11ed-89c2-6136df938368 | 989: 6<br/>1651: 1<br/>3811: 1 | 2022-12-05T16:03:05.322Z | muted | 2022-12-13T20:48:09.825Z | 2022-11-21T21:46:22.028Z | 3 | false |
@@ -1889,12 +1956,14 @@ Get a paginated list of muted incidents for the company. The items are listed by
 >| asapcallcenter.net | asapcallcenter.net | C2C | 5 | Malware family KINS |  | false | 2720e2a0-a0c9-11ec-af58-8da2705ed08a | 864: 1<br/>1651: 3<br/>548: 1 | 2022-07-09T15:53:55.423Z | muted | 2022-03-10T23:59:14.933Z | 2022-03-10T23:23:54.698Z | 3 | false |
 >
 >### paginationInfo
+>
 >|Items|Page|
 >|---|---|
 >| 10 | 1 |
 
 
 ### lumu-retrieve-closed-incidents
+
 ***
 Get a paginated list of closed incidents for the company. The items are listed by the most recent.
 
@@ -1902,6 +1971,7 @@ Get a paginated list of closed incidents for the company. The items are listed b
 #### Base Command
 
 `lumu-retrieve-closed-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1934,8 +2004,11 @@ Get a paginated list of closed incidents for the company. The items are listed b
 | Lumu.RetrieveClosedIncidents.paginationInfo.next | Number | next page  | 
 
 #### Command example
+
 ```!lumu-retrieve-closed-incidents```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -2182,28 +2255,33 @@ Get a paginated list of closed incidents for the company. The items are listed b
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-15T13:28:25.537Z | false | ad2b63c0-ad34-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-15T13:28:25.537Z | closed | 2023-02-15T21:53:41.468Z | 2023-02-15T13:28:47.356Z | 1 | false |
+>| <www.chg.com.br> | <www.chg.com.br> | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-15T13:28:25.537Z | false | ad2b63c0-ad34-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-15T13:28:25.537Z | closed | 2023-02-15T21:53:41.468Z | 2023-02-15T13:28:47.356Z | 1 | false |
 >| italive.it | italive.it | Phishing | 1 | Phishing domain | 2023-01-28T03:37:56.088Z | false | 3e5f6480-9ebd-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T03:37:56.088Z | closed | 2023-02-15T13:28:32.355Z | 2023-01-28T03:38:35.080Z | 1 | false |
->| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T23:58:44.455Z | false | e65b3f60-a99e-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T23:58:44.455Z | closed | 2023-02-15T13:28:07.991Z | 2023-02-10T23:59:05.302Z | 1 | false |
+>| <www.chg.com.br> | <www.chg.com.br> | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T23:58:44.455Z | false | e65b3f60-a99e-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T23:58:44.455Z | closed | 2023-02-15T13:28:07.991Z | 2023-02-10T23:59:05.302Z | 1 | false |
 >| portaconexao8.top | portaconexao8.top | Malware | 2 | Malware hash: 55e57c52cd5e1dcfad4e9bcf0eb2f3a5 | 2023-02-11T18:40:09.087Z | false | 89658e80-aa3b-11ed-9fd0-e5fb50c818f6 | 147: 2 | 2023-02-11T18:40:09.087Z | closed | 2023-02-15T13:26:02.357Z | 2023-02-11T18:40:20.328Z | 1 | false |
 >| bitmovil.mx | bitmovil.mx | Malware | 2 | Heodo | 2023-02-14T17:05:37.987Z | false | 0d207a50-ac8a-11ed-9fd0-e5fb50c818f6 | 989: 2 | 2023-02-14T17:05:37.987Z | closed | 2023-02-14T18:44:09.946Z | 2023-02-14T17:07:24.405Z | 1 | false |
 >| rea.co.ke | rea.co.ke | C2C,<br/>Malware | 1 | Malware family P2PZeuS | 2023-02-14T17:27:26.791Z | false | e0b39da0-ac8c-11ed-9fd0-e5fb50c818f6 | 989: 1 | 2023-02-14T17:27:26.791Z | closed | 2023-02-14T18:33:38.315Z | 2023-02-14T17:27:38.362Z | 1 | false |
 >| rea.co.ke | rea.co.ke | C2C,<br/>Malware | 21 | Malware family P2PZeuS | 2022-12-12T16:36:02.228Z | false | 726849c0-7a6b-11ed-a600-d53ba4d2bb70 | 2267: 1<br/>1885: 1<br/>2254: 19 | 2023-01-03T23:31:50.938Z | closed | 2023-02-14T17:26:47.897Z | 2022-12-12T22:22:21.788Z | 5 | false |
->| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T22:39:28.912Z | false | d42c40b0-a993-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T22:39:28.912Z | closed | 2023-02-10T22:41:07.512Z | 2023-02-10T22:39:50.331Z | 1 | false |
->| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T21:56:41.360Z | false | d98a0f20-a98d-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T21:56:41.360Z | closed | 2023-02-10T22:37:37.379Z | 2023-02-10T21:57:02.354Z | 1 | false |
->| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T21:41:27.961Z | false | b9e93490-a98b-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T21:41:27.961Z | closed | 2023-02-10T21:56:37.507Z | 2023-02-10T21:41:50.297Z | 1 | false |
+>| <www.chg.com.br> | <www.chg.com.br> | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T22:39:28.912Z | false | d42c40b0-a993-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T22:39:28.912Z | closed | 2023-02-10T22:41:07.512Z | 2023-02-10T22:39:50.331Z | 1 | false |
+>| <www.chg.com.br> | <www.chg.com.br> | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T21:56:41.360Z | false | d98a0f20-a98d-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T21:56:41.360Z | closed | 2023-02-10T22:37:37.379Z | 2023-02-10T21:57:02.354Z | 1 | false |
+>| <www.chg.com.br> | <www.chg.com.br> | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T21:41:27.961Z | false | b9e93490-a98b-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T21:41:27.961Z | closed | 2023-02-10T21:56:37.507Z | 2023-02-10T21:41:50.297Z | 1 | false |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
 
 #### Command example
+
 ```!lumu-retrieve-closed-incidents labels=0 adversary-types=Mining,Spam```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -2448,26 +2526,29 @@ Get a paginated list of closed incidents for the company. The items are listed b
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-15T13:28:25.537Z | false | ad2b63c0-ad34-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-15T13:28:25.537Z | closed | 2023-02-15T21:53:41.468Z | 2023-02-15T13:28:47.356Z | 1 | false |
->| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T23:58:44.455Z | false | e65b3f60-a99e-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T23:58:44.455Z | closed | 2023-02-15T13:28:07.991Z | 2023-02-10T23:59:05.302Z | 1 | false |
->| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T22:39:28.912Z | false | d42c40b0-a993-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T22:39:28.912Z | closed | 2023-02-10T22:41:07.512Z | 2023-02-10T22:39:50.331Z | 1 | false |
->| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T21:56:41.360Z | false | d98a0f20-a98d-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T21:56:41.360Z | closed | 2023-02-10T22:37:37.379Z | 2023-02-10T21:57:02.354Z | 1 | false |
->| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T21:41:27.961Z | false | b9e93490-a98b-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T21:41:27.961Z | closed | 2023-02-10T21:56:37.507Z | 2023-02-10T21:41:50.297Z | 1 | false |
->| www.chg.com.br | www.chg.com.br | Malware | 10 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-03T19:01:00Z | false | d0ce2800-a3f5-11ed-a0c7-dd6f8e69d343 | 989: 3<br/>0: 7 | 2023-02-10T21:40:12.762Z | closed | 2023-02-10T21:41:34.408Z | 2023-02-03T19:06:08.384Z | 1 | false |
+>| <www.chg.com.br> | <www.chg.com.br> | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-15T13:28:25.537Z | false | ad2b63c0-ad34-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-15T13:28:25.537Z | closed | 2023-02-15T21:53:41.468Z | 2023-02-15T13:28:47.356Z | 1 | false |
+>| <www.chg.com.br> | <www.chg.com.br> | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T23:58:44.455Z | false | e65b3f60-a99e-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T23:58:44.455Z | closed | 2023-02-15T13:28:07.991Z | 2023-02-10T23:59:05.302Z | 1 | false |
+>| <www.chg.com.br> | <www.chg.com.br> | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T22:39:28.912Z | false | d42c40b0-a993-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T22:39:28.912Z | closed | 2023-02-10T22:41:07.512Z | 2023-02-10T22:39:50.331Z | 1 | false |
+>| <www.chg.com.br> | <www.chg.com.br> | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T21:56:41.360Z | false | d98a0f20-a98d-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T21:56:41.360Z | closed | 2023-02-10T22:37:37.379Z | 2023-02-10T21:57:02.354Z | 1 | false |
+>| <www.chg.com.br> | <www.chg.com.br> | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T21:41:27.961Z | false | b9e93490-a98b-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T21:41:27.961Z | closed | 2023-02-10T21:56:37.507Z | 2023-02-10T21:41:50.297Z | 1 | false |
+>| <www.chg.com.br> | <www.chg.com.br> | Malware | 10 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-03T19:01:00Z | false | d0ce2800-a3f5-11ed-a0c7-dd6f8e69d343 | 989: 3<br/>0: 7 | 2023-02-10T21:40:12.762Z | closed | 2023-02-10T21:41:34.408Z | 2023-02-03T19:06:08.384Z | 1 | false |
 >| activity.lumu.io | activity.lumu.io | Spam | 5 | Activity Test Query | 2022-12-20T14:37:02.228Z | false | 460dd2d0-a740-11ed-9fd0-e5fb50c818f6 | 0: 5 | 2022-12-20T14:37:02.228Z | closed | 2023-02-08T00:57:03.424Z | 2023-02-07T23:36:41.341Z | 1 | false |
 >| activity.lumu.io | activity.lumu.io | Spam | 2 | Activity Test Query | 2022-12-20T14:37:02.228Z | false | 9e9238e0-a73d-11ed-9fd0-e5fb50c818f6 | 0: 2 | 2022-12-20T14:37:02.228Z | closed | 2023-02-07T23:20:42.817Z | 2023-02-07T23:17:41.358Z | 1 | false |
 >| activity.lumu.io | activity.lumu.io | Spam | 12 | Activity Test Query | 2023-02-07T15:51:15.463Z | false | 826dd220-a6ff-11ed-9fd0-e5fb50c818f6 | 989: 1<br/>0: 11 | 2023-02-07T15:51:15.463Z | closed | 2023-02-07T23:08:53.658Z | 2023-02-07T15:53:05.346Z | 3 | false |
 >| activity.lumu.io | activity.lumu.io | Spam | 3 | Activity Test Query | 2022-12-20T14:37:02.228Z | false | eb611160-a638-11ed-a0c7-dd6f8e69d343 | 0: 3 | 2022-12-20T14:37:02.228Z | closed | 2023-02-06T16:19:52.211Z | 2023-02-06T16:11:31.574Z | 1 | false |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
 
 ### lumu-retrieve-endpoints-by-incident
+
 ***
 Get a paginated summary of the endpoints affected by a specified incident.
 
@@ -2478,6 +2559,7 @@ Get a paginated summary of the endpoints affected by a specified incident.
 #### Base Command
 
 `lumu-retrieve-endpoints-by-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2500,8 +2582,11 @@ Get a paginated summary of the endpoints affected by a specified incident.
 | Lumu.RetrieveEndpointsByIncident.paginationInfo.items | Number | current items  | 
 
 #### Command example
+
 ```!lumu-retrieve-endpoints-by-incident lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -2568,6 +2653,7 @@ Get a paginated summary of the endpoints affected by a specified incident.
 #### Human Readable Output
 
 >### Incident endpoints
+>
 >|Endpoint|First|Label|Last|Last Source Id|Last Source Type|Total|
 >|---|---|---|---|---|---|---|
 >| LUMU-100 | 2023-02-15T16:59:47.142Z | 0 | 2023-02-15T16:59:47.142Z | 6d942a7a-d287-415e-9c09-3d6632a6a976 | custom_collector | 1 |
@@ -2578,12 +2664,14 @@ Get a paginated summary of the endpoints affected by a specified incident.
 >| DESKTOP-LUMU | 2023-02-09T15:22:01.450Z | 989 | 2023-02-09T15:22:30.732Z | c5ae44a0-8c53-11ed-8008-11cbedd55f0c | windows_agent | 2 |
 >
 >### paginationInfo
+>
 >|Items|Page|
 >|---|---|
 >| 10 | 1 |
 
 
 ### lumu-mark-incident-as-read
+
 ***
 This transaction does not require any additional body parameters.
 
@@ -2596,6 +2684,7 @@ This transaction does not require any additional body parameters.
 #### Base Command
 
 `lumu-mark-incident-as-read`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2610,8 +2699,11 @@ This transaction does not require any additional body parameters.
 | Lumu.MarkIncidentAsRead.statusCode | unknown | Lumu statusCode | 
 
 #### Command example
+
 ```!lumu-mark-incident-as-read lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 ```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -2625,7 +2717,9 @@ This transaction does not require any additional body parameters.
 >Marked as read the incident successfully.
 
 ### lumu-mute-incident
+
 ***
+
 | `{incident-uuid}` | uuid of the specific incident |
 |---|---|
 
@@ -2635,6 +2729,7 @@ This transaction does not require any additional body parameters.
 #### Base Command
 
 `lumu-mute-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2650,8 +2745,11 @@ This transaction does not require any additional body parameters.
 | Lumu.MuteIncident.statusCode | unknown | Lumu statusCode | 
 
 #### Command example
+
 ```!lumu-mute-incident lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 comment="mute from cortex"```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -2668,7 +2766,9 @@ This transaction does not require any additional body parameters.
 >Muted the incident successfully.
 
 ### lumu-unmute-incident
+
 ***
+
 | `{incident-uuid}` | uuid of the specific incident |
 |---|---|
 
@@ -2678,6 +2778,7 @@ This transaction does not require any additional body parameters.
 #### Base Command
 
 `lumu-unmute-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2693,8 +2794,11 @@ This transaction does not require any additional body parameters.
 | Lumu.UnmuteIncident.statusCode | unknown | Lumu statusCode | 
 
 #### Command example
+
 ```!lumu-unmute-incident lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 comment="unmute from cortex"```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -2711,6 +2815,7 @@ This transaction does not require any additional body parameters.
 >Unmute the incident successfully.
 
 ### lumu-consult-incidents-updates-through-rest
+
 ***
 Lumu provides an endpoint to consult real-time updates on incident operations through REST when Websocket is not available.
 
@@ -2723,6 +2828,7 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
 #### Base Command
 
 `lumu-consult-incidents-updates-through-rest`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2810,8 +2916,11 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
 | Lumu.ConsultIncidentsUpdatesThroughRest.offset | Number | Lumu next offset | 
 
 #### Command example
+
 ```!lumu-consult-incidents-updates-through-rest items=4 offset=1096305 time=4```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -3411,13 +3520,16 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
 #### Human Readable Output
 
 >### Results
+>
 >|offset|updates|
 >|---|---|
 >| 1096578 | {'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 15, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 2}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10311, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-b5ad-23f20297b7bb', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 16, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 3}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10312, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-ab18-23f2022bdf77', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 17, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 4}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10313, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-a675-23f2020a8d4c', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 18, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 5}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10314, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-ba29-23f202e1cb1a', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 19, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 6}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10315, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-8392-23f20218d429', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 20, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 7}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10316, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-abb1-23f202b7a63d', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentCommentAdded': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incidentId': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'comment': 'from XSOAR Cortex 20230206_135000 test comment, hmacsha256:efa407ced8d7cdedef4ed94e3730e3242996bd7ebf394c1e694d0b9a3f1087c6'}},<br/>{'IncidentCommentAdded': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incidentId': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'comment': 'comment 854'}},<br/>{'IncidentMarkedAsRead': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incidentId': '790f0700-9ec4-11ed-a0c7-dd6f8e69d343'}},<br/>{'IncidentMuted': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '790f0700-9ec4-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-01-28T04:30:20.016Z', 'statusTimestamp': '2023-02-06T15:01:54.199Z', 'status': 'muted', 'contacts': 1, 'adversaries': ['obobbo.com'], 'adversaryId': 'obobbo.com', 'adversaryTypes': ['Spam'], 'description': 'Disposable email host', 'labelDistribution': {'4301': 1}, 'totalEndpoints': 1, 'lastContact': '2023-01-28T04:29:57.692Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-01-28T04:29:57.692Z'}, 'comment': 'test', 'reason': 'irrelevant'}} |
 
 
 ### lumu-close-incident
+
 ***
+
 | `{incident-uuid}` | uuid of the specific incident |
 |---|---|
 
@@ -3427,6 +3539,7 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
 #### Base Command
 
 `lumu-close-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3442,8 +3555,11 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
 | Lumu.CloseIncident.statusCode | unknown | Lumu statusCode | 
 
 #### Command example
+
 ```!lumu-close-incident lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 comment="closed from Cortex"```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -3460,6 +3576,7 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
 >Closed the incident successfully.
 
 ### get-modified-remote-data
+
 ***
 mirror process 
 
@@ -3467,6 +3584,7 @@ mirror process
 #### Base Command
 
 `get-modified-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3477,7 +3595,9 @@ mirror process
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
+
 ***
 mirror process 
 
@@ -3485,6 +3605,7 @@ mirror process
 #### Base Command
 
 `get-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3496,7 +3617,9 @@ mirror process
 #### Context Output
 
 There is no context output for this command.
+
 ### get-mapping-fields
+
 ***
 mirror process 
 
@@ -3504,6 +3627,7 @@ mirror process
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3513,7 +3637,9 @@ mirror process
 #### Context Output
 
 There is no context output for this command.
+
 ### lumu-clear-cache
+
 ***
 Lumu clear cache, only trigger if it mandatory 
 
@@ -3521,6 +3647,7 @@ Lumu clear cache, only trigger if it mandatory
 #### Base Command
 
 `lumu-clear-cache`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3534,8 +3661,11 @@ Lumu clear cache, only trigger if it mandatory
 | Lumu.ClearCache | string | Lumu clear cache | 
 
 #### Command example
+
 ```!lumu-clear-cache```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -3549,6 +3679,7 @@ Lumu clear cache, only trigger if it mandatory
 >cache cleared get_integration_context()={'cache': [], 'lumu_incidentsId': []}
 
 ### update-remote-system
+
 ***
 mirror process 
 
@@ -3556,6 +3687,7 @@ mirror process
 #### Base Command
 
 `update-remote-system`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3569,7 +3701,9 @@ mirror process
 #### Context Output
 
 There is no context output for this command.
+
 ### lumu-get-cache
+
 ***
 Lumu get cache
 
@@ -3577,6 +3711,7 @@ Lumu get cache
 #### Base Command
 
 `lumu-get-cache`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3591,8 +3726,11 @@ Lumu get cache
 | Lumu.GetCache.lumu_incidentsId | string | Lumu incident ids processed | 
 
 #### Command example
+
 ```!lumu-get-cache```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -3635,6 +3773,7 @@ Lumu get cache
 #### Human Readable Output
 
 >### Cache
+>
 >|Lumu _ Incidents Id|
 >|---|
 >| e65b3f60-a99e-11ed-9fd0-e5fb50c818f6,<br/>8c5efc90-aca5-11ed-9fd0-e5fb50c818f6,<br/>903c5580-abef-11ed-9fd0-e5fb50c818f6,<br/>ad2b63c0-ad34-11ed-9fd0-e5fb50c818f6,<br/>229d4030-9eba-11ed-a0c7-dd6f8e69d343,<br/>50240240-9ec0-11ed-a0c7-dd6f8e69d343,<br/>02355f90-9ecd-11ed-a0c7-dd6f8e69d343,<br/>099a9e80-2ec0-11ed-9b90-a51546bb08b5,<br/>0fe32870-9ec3-11ed-a0c7-dd6f8e69d343,<br/>73661810-9ec5-11ed-a0c7-dd6f8e69d343,<br/>3e5f6480-9ebd-11ed-a0c7-dd6f8e69d343,<br/>89658e80-aa3b-11ed-9fd0-e5fb50c818f6,<br/>f2571f00-aa43-11ed-9fd0-e5fb50c818f6,<br/>853e3020-aca5-11ed-9fd0-e5fb50c818f6,<br/>6522d180-9ec5-11ed-a0c7-dd6f8e69d343,<br/>fd6788c0-561b-11ed-987a-cd6f8ff058b8,<br/>e6a0cc30-a893-11ed-9fd0-e5fb50c818f6,<br/>38183850-8bbb-11ed-b0f8-a7e340234a4e,<br/>a82e5550-9ec8-11ed-a0c7-dd6f8e69d343,<br/>0d207a50-ac8a-11ed-9fd0-e5fb50c818f6,<br/>7c40be00-a7cf-11ed-9fd0-e5fb50c818f6,<br/>99b7bf10-ac84-11ed-9fd0-e5fb50c818f6,<br/>91aaaf20-ac8a-11ed-9fd0-e5fb50c818f6,<br/>726849c0-7a6b-11ed-a600-d53ba4d2bb70,<br/>e0b39da0-ac8c-11ed-9fd0-e5fb50c818f6,<br/>ec869190-85aa-11ed-a600-d53ba4d2bb70,<br/>672a8c90-9ebe-11ed-a0c7-dd6f8e69d343 |
@@ -3644,6 +3783,7 @@ Lumu get cache
 
 You can enable incident mirroring between Cortex XSOAR incidents and Lumu corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 

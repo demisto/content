@@ -3,6 +3,7 @@
 This pack has a collection of playbooks to rapidly respond to high profile breaches with existing deployed tools in your enterprise. 
 The playbooks in this pack can also be used as a template to hunt and block these indicators using additional tools in your environment.
 This pack contains the response playbooks for the following breaches:
+
 - [Sunburst and SolarStorm Hunting and Response](https://xsoar.pan.dev/docs/reference/playbooks/solar-storm-and-sunburst-hunting-and-response-playbook)
 - [FireEye Red Team Tools Investigation and Response](https://xsoar.pan.dev/docs/reference/playbooks/fire-eye-red-team-tools-investigation-and-response)
 - [HAFNIUM - Exchange 0-day Exploits](https://xsoar.pan.dev/docs/reference/playbooks/hafnium---exchange-0-day-exploits)
@@ -22,6 +23,7 @@ More playbooks are available in the following packs:
 - [CVE-2022-41040 & CVE-2022-41082 - ProxyNotShell](https://xsoar.pan.dev/docs/reference/playbooks/cve-2022-41040--cve-2022-41082---proxy-not-shell)
 - [CVE-2023-23397 - Microsoft Outlook EoP](https://cortex.marketplace.pan.dev/marketplace/details/CVE_2023_23397__Microsoft_Outlook_EoP/)
 - [3CXDesktopApp Supply Chain Attack](https://xsoar.pan.dev/docs/reference/playbooks/3-cx-desktop-app-supply-chain-attack)
+
 ##### How to enable it?
 
 - Install the pack.

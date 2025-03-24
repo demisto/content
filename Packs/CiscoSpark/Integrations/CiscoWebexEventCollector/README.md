@@ -56,6 +56,7 @@ Use this command to start the authorization process. In order to authorize the i
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-oauth-complete
 
 ***
@@ -75,6 +76,7 @@ Use this command to complete the authorization process. After copying the author
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-oauth-test
 
 ***
@@ -93,6 +95,7 @@ Use this command to complete the authorization process. After copying the author
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-get-admin-audit-events
 
 ***
@@ -116,11 +119,12 @@ Gets admin audit events from Cisco Webex.
 
 |_time|actorId|actorOrgId|created|data|id|source_log_type|
 |---|---|---|---|---|---|---|
-| 2023-11-02T09:33:26.408Z | 444444 | 222222 | 2023-11-02T09:33:26.408Z | actorOrgName: panw<br>targetName: panw<br>operationType: CREATE<br>eventDescription: An org setting was created or updated.<br>actorName: admin@example.com<br>actorEmail: admin@example.com<br>settingKey: release_migration<br>settingName: release_migration<br>settingValue: "MIGRATED"<br>trackingId: 111111<br>previousValue: Null<br>targetType: ORG<br>targetId: 222222<br>actorUserAgent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/2.2.2.2 Safari/537.36<br>eventCategory: ORG_SETTINGS<br>actorIp: 1.1.1.1<br>targetOrgId: 222222<br>actionText: admin@example.com has modified the value of setting release_migration for ORG "panw". New value = "MIGRATED", Previous value = Null.<br>entityType: ORG<br>targetOrgName: panw | 333333 | Admin Audit Events |
+| 2023-11-02T09:33:26.408Z | 444444 | 222222 | 2023-11-02T09:33:26.408Z | actorOrgName: panw<br>targetName: panw<br>operationType: CREATE<br>eventDescription: An org setting was created or updated.<br>actorName: <admin@example.com><br>actorEmail: <admin@example.com><br>settingKey: release_migration<br>settingName: release_migration<br>settingValue: "MIGRATED"<br>trackingId: 111111<br>previousValue: Null<br>targetType: ORG<br>targetId: 222222<br>actorUserAgent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/2.2.2.2 Safari/537.36<br>eventCategory: ORG_SETTINGS<br>actorIp: 1.1.1.1<br>targetOrgId: 222222<br>actionText: <admin@example.com> has modified the value of setting release_migration for ORG "panw". New value = "MIGRATED", Previous value = Null.<br>entityType: ORG<br>targetOrgName: panw | 333333 | Admin Audit Events |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-get-security-audit-events
 
 ***
@@ -144,11 +148,12 @@ Gets security audit events from Cisco Webex.
 
 |_time|actorId|actorOrgId|created|data|id|source_log_type|
 |---|---|---|---|---|---|---|
-| 2023-12-19T07:01:26.486Z | 444444 | 222222 | 2023-12-19T07:01:26.486Z | actorOrgName: panw<br>eventDescription: A user attempted logging in<br>actorName: admin@example.com<br>actorEmail: admin@example.com<br>authenticationMethod: Non-Interactive<br>trackingId: 123456<br>eventStatus: SUCCESS<br>actorOauthClient: 111111<br>actorUserAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36<br>eventCategory: LOGINS<br>actorIp: 1.1.1.1<br>actorClientName: Developer Portal<br>actionText: admin@example.com attempted logging into panw using client (Developer Portal) and Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36. Login status: SUCCESS.  <br>failedReason:   | 333333 | Security Audit Events |
+| 2023-12-19T07:01:26.486Z | 444444 | 222222 | 2023-12-19T07:01:26.486Z | actorOrgName: panw<br>eventDescription: A user attempted logging in<br>actorName: <admin@example.com><br>actorEmail: <admin@example.com><br>authenticationMethod: Non-Interactive<br>trackingId: 123456<br>eventStatus: SUCCESS<br>actorOauthClient: 111111<br>actorUserAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36<br>eventCategory: LOGINS<br>actorIp: 1.1.1.1<br>actorClientName: Developer Portal<br>actionText: <admin@example.com> attempted logging into panw using client (Developer Portal) and Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36. Login status: SUCCESS.  <br>failedReason:   | 333333 | Security Audit Events |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-get-compliance-officer-events
 
 ***
@@ -172,7 +177,7 @@ Gets events from Cisco Webex.
 
 |_time|actorId|created|data|id|resource|source_log_type|type|
 |---|---|---|---|---|---|---|---|
-| 2023-11-05T13:33:46.417Z | 222222 | 2023-11-05T13:33:46.417Z | id: 333333<br>roomId: 444444<br>roomType: group<br>personId: 222222<br>personEmail: ksolberg@paloaltonetworks.com<br>personDisplayName: Kfir Solberg<br>personOrgId: 555555<br>isModerator: false<br>isMonitor: false<br>isRoomHidden: false<br>created: 2023-11-05T13:33:46.417Z | 111111 | memberships | Events | created |
+| 2023-11-05T13:33:46.417Z | 222222 | 2023-11-05T13:33:46.417Z | id: 333333<br>roomId: 444444<br>roomType: group<br>personId: 222222<br>personEmail: <ksolberg@paloaltonetworks.com><br>personDisplayName: Kfir Solberg<br>personOrgId: 555555<br>isModerator: false<br>isMonitor: false<br>isRoomHidden: false<br>created: 2023-11-05T13:33:46.417Z | 111111 | memberships | Events | created |
 
 #### Context Output
 

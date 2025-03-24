@@ -29,16 +29,23 @@ Required AWS IAM Permissions and Roles for Lambda are documented [here](https://
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### aws-lambda-get-function
+
 ***
 Returns the configuration information of the Lambda function and a presigned URL link to the .zip file you uploaded with CreateFunction so you can download the .zip file. Note that the URL is valid for up to 10 minutes. The configuration information is the same information you provided as parameters when uploading the function.  Use the Qualifier parameter to retrieve a published version of the function. Otherwise, returns the unpublished version ($LATEST ).
+
 #### Required Permissions
+
 * `AWSLambda_ReadOnlyAccess`: more details [here](https://docs.aws.amazon.com/lambda/latest/dg/security_iam_troubleshoot.html#security_iam_troubleshoot-admin-deprecation).
+
 #### Base Command
 
 `aws-lambda-get-function`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -87,9 +94,11 @@ Returns the configuration information of the Lambda function and a presigned URL
 
 
 #### Command Example
+
 ```!aws-lambda-get-function functionName="test_echo"```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -142,19 +151,25 @@ Returns the configuration information of the Lambda function and a presigned URL
 #### Human Readable Output
 
 >### AWS Lambda Functions
+>
 >|FunctionArn|FunctionName|Region|Runtime|
 >|---|---|---|---|
 >| arn:aws:lambda:us-west-2:123456789012:function:test_echo | test_echo | us-west-2 | nodejs12.x |
 
 
 ### aws-lambda-list-functions
+
 ***
 Returns a list of your Lambda functions. For each function, the response includes the function configuration information. You must use GetFunction to retrieve the code for your function.
+
 #### Required Permissions
+
 * `AWSLambda_ReadOnlyAccess`: more details [here](https://docs.aws.amazon.com/lambda/latest/dg/security_iam_troubleshoot.html#security_iam_troubleshoot-admin-deprecation).
+
 #### Base Command
 
 `aws-lambda-list-functions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -197,9 +212,11 @@ Returns a list of your Lambda functions. For each function, the response include
 
 
 #### Command Example
+
 ```!aws-lambda-list-functions```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -286,6 +303,7 @@ Returns a list of your Lambda functions. For each function, the response include
 #### Human Readable Output
 
 >### AWS Lambda Functions
+>
 >|FunctionArn|FunctionName|LastModified|Region|Runtime|
 >|---|---|---|---|---|
 >| arn:aws:lambda:us-west-2:123456789012:function:test_sleep | test_sleep | 2020-12-30T16:15:55.726+0000 | us-west-2 | nodejs12.x |
@@ -294,13 +312,18 @@ Returns a list of your Lambda functions. For each function, the response include
 
 
 ### aws-lambda-list-aliases
+
 ***
 Returns list of aliases created for a Lambda function. For each alias, the response includes information such as the alias ARN, description, alias name, and the function version to which it points.
+
 #### Required Permissions
+
 * `AWSLambda_ReadOnlyAccess`: more details [here](https://docs.aws.amazon.com/lambda/latest/dg/security_iam_troubleshoot.html#security_iam_troubleshoot-admin-deprecation).
+
 #### Base Command
 
 `aws-lambda-list-aliases`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -326,6 +349,7 @@ Returns list of aliases created for a Lambda function. For each alias, the respo
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -338,7 +362,9 @@ Returns list of aliases created for a Lambda function. For each alias, the respo
 Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias.  If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. Use the "timeout" and "retries" arguments to control this behavior. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
 
 #### Required Permissions
+
 * `AWSLambdaRole`: more details [here](https://docs.aws.amazon.com/lambda/latest/dg/access-control-identity-based.html).
+
 #### Base Command
 
 `aws-lambda-invoke`
@@ -374,9 +400,11 @@ Invokes a Lambda function. Specify just a function name to invoke the latest ver
 
 
 #### Command Example
+
 ```!aws-lambda-invoke functionName="test_echo" logType="Tail" payload="{\"value\":\"test\"}"```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -396,18 +424,24 @@ Invokes a Lambda function. Specify just a function name to invoke the latest ver
 #### Human Readable Output
 
 >### AWS Lambda Invoked Functions
+>
 >|ExecutedVersion|FunctionName|LogResult|Payload|Region|
 >|---|---|---|---|---|
 >| $LATEST | test_echo | START RequestId: c24e087f-5c05-4e92-a1a8-e54f2d6cd925 Version: $LATEST<br/>END RequestId: c24e087f-5c05-4e92-a1a8-e54f2d6cd925<br/>REPORT RequestId: c24e087f-5c05-4e92-a1a8-e54f2d6cd925	Duration: 16.00 ms	Billed Duration: 16 ms	Memory Size: 128 MB	Max Memory Used: 65 MB	Init Duration: 133.86 ms	<br/> | {"message":"Your function executed successfully!","payload":{"value":"test"}} | us-west-2 |
 
 ### aws-lambda-get-account-settings
+
 ***
 Retrieves details about your account's limits and usage in an AWS Region.
+
 #### Required Permissions
+
 * `AWSLambda_ReadOnlyAccess`: more details [here](https://docs.aws.amazon.com/lambda/latest/dg/security_iam_troubleshoot.html#security_iam_troubleshoot-admin-deprecation).
+
 #### Base Command
 
 `aws-lambda-get-account-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -432,9 +466,11 @@ Retrieves details about your account's limits and usage in an AWS Region.
 
 
 #### Command Example
+
 ```!aws-lambda-get-account-settings```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -475,12 +511,13 @@ Retrieves details about your account's limits and usage in an AWS Region.
 
 
 >### AWS Lambda Functions
+>
 >|AccountLimit|AccountUsage|
 >|---|---|
 >| TotalCodeSize: 80530636800<br/>CodeSizeUnzipped: 262144000<br/>CodeSizeZipped: 52428800<br/>ConcurrentExecutions: 1000<br/>UnreservedConcurrentExecutions: 1000 | TotalCodeSize: 272431<br/>FunctionCount: 3 |
 
 
- ### aws-lambda-get-policy
+### aws-lambda-get-policy
 
 ***
 Returns the resource-based IAM policy for a function, version, or alias.
@@ -513,8 +550,11 @@ Returns the resource-based IAM policy for a function, version, or alias.
 | AWS.Lambda.RevisionId | String | A unique identifier for the current revision of the policy. | 
 
 #### Command example
+
 ```!aws-lambda-get-policy functionName="test"```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -548,6 +588,7 @@ Returns the resource-based IAM policy for a function, version, or alias.
 #### Human Readable Output
 
 >### Policy
+>
 >|Action|Effect|Id|Resource|RevisionId|Sid|Version|Principal|
 >|---|---|---|---|---|---|---|
 >| lambda | Allow | default | arn:aws:dummy-api:dummy:12345678:dummy/*/*/test | 1111-1111-111-111-11111 | arn:aws:dummy-api:dummy:12345678:dummy/*/*/test | 2015-10-17 | apidummy.dummy.com |
@@ -616,8 +657,11 @@ Returns a list of versions, with the version-specific configuration of each.
 | AWS.Lambda.Versions.ImageConfigResponse.ImageConfig | Object | The image configuration values. | 
 
 #### Command example
+
 ```!aws-lambda-list-versions-by-function functionName=test```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -661,6 +705,7 @@ Returns a list of versions, with the version-specific configuration of each.
 #### Human Readable Output
 
 >### Versions
+>
 >|Function Name|Role|Runtime|Last Modified|State|Description|
 >|---|---|---|---|---|---|
 >| test | dummy.111111:role/dummy-role/test-role-11111 | nodejs18.x | 2024-06-05T11:54:29.646+0000 |  |  |
@@ -696,7 +741,7 @@ Returns details about a Lambda function URL.
 | AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials | Boolean | Whether to allow cookies or other credentials in requests to the function URL. The default is false. | 
 | AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders | List | The HTTP headers that origins can include in requests to the function URL. For example Date, Keep-Alive, X-Custom-Header. | 
 | AWS.Lambda.FunctionURLConfig.Cors.AllowMethods | List | The HTTP methods that are allowed when calling the function URL. For example GET, POST, DELETE, or the wildcard character \( \*\). | 
-| AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins | List | The origins that can access the function URL.You can list any number of specific origins, separated by a comma. For example https://www.example.com, http://localhost:8080. Alternatively, you can grant access to all origins using the wildcard character \( \*\). | 
+| AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins | List | The origins that can access the function URL.You can list any number of specific origins, separated by a comma. For example <https://www.example.com>, <http://localhost:8080>. Alternatively, you can grant access to all origins using the wildcard character \( \*\). | 
 | AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders | List | The HTTP headers in the function response that you want to expose to origins that call the function URL. For example Date, Keep-Alive, X-Custom-Header. | 
 | AWS.Lambda.FunctionURLConfig.Cors.MaxAge | Number | The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. By default, this is set to 0, which means that the browser doesn’t cache results. | 
 | AWS.Lambda.FunctionURLConfig.CreationTime | String | When the function URL was created, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
@@ -704,8 +749,11 @@ Returns details about a Lambda function URL.
 | AWS.Lambda.FunctionURLConfig.InvokeMode | String | Use one of the following options: BUFFERED – This is the default option. Lambda invokes your function using the Invoke API operation. Invocation results are available when the payload is complete. The maximum payload size is 6 MB. RESPONSE_STREAM – Your function streams payload results as they become available. Lambda invokes your function using the InvokeWithResponseStream API operation. The maximum response payload size is 20 MB, however, you can request a quota increase. | 
 
 #### Command example
+
 ```!aws-lambda-get-function-url-config functionName="test"```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -726,6 +774,7 @@ Returns details about a Lambda function URL.
 #### Human Readable Output
 
 >### Function URL Config
+>
 >|Auth Type|Creation Time|Function Arn|Function Url|Invoke Mode|Last Modified Time|
 >|---|---|---|---|---|---|
 >| NONE | 2024-05-02T07:23:12.573458Z | dummy.111111:role/dummy/test-11111 | hxxps:<span>//</span>dummy.com/ | BUFFERED | 2024-05-02T07:23:12.573458Z |
@@ -792,8 +841,11 @@ Returns the version-specific settings of a Lambda function or version. The outpu
 | AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig | Object | The image configuration values. | 
 
 #### Command example
+
 ```!aws-lambda-get-function-configuration functionName=test```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -840,6 +892,7 @@ Returns the version-specific settings of a Lambda function or version. The outpu
 #### Human Readable Output
 
 >### Function Configuration
+>
 >|Code Sha256|Description|Function Arn|Function Name|Revision Id|Runtime|State|
 >|---|---|---|---|---|---|---|
 >| 11111111 |  | dummy:role/dummy-role/test-role-11111 | test | 11111-11111-111 | nodejs18.x | Active |
@@ -868,6 +921,7 @@ Deletes a Lambda function URL. When you delete a function URL, you can’t recov
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-lambda-delete-function
 
 ***
@@ -891,6 +945,7 @@ Deletes a Lambda function. To delete a specific function version, use the Qualif
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-lambda-create-function
 
 ***
@@ -948,9 +1003,11 @@ Creates a Lambda function. To create a function, you need a deployment package a
 
 
 #### Command example
+
 ```!aws-lambda-create-function code=entry_id functionName=test runtime=nodejs role=test-role handler=test.handler vpcConfig="{\"SubnetIds\": [\"subnet-1\",\"subnet-2\"], \"SecurityGroupIds\":[\"sg-1\"]}" ```
 
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -981,6 +1038,7 @@ Creates a Lambda function. To create a function, you need a deployment package a
 #### Human Readable Output
 
 >### Create Function
+>
 >| Function Name |Function Arn|Runtime| Role      | Handler      |Code Size|Description|Timeout|Memory Size|Version| Vpc Config                                                                                                            |Package Type|Last Modified|
 >|---------------|---|---|-----------|--------------|---|---|---|---|---|-----------------------------------------------------------------------------------------------------------------------|---|---|
 >| test          | test | nodejs | test-role | test.handler | 30 | test function | 30 | 123 | test | SubnetIds: subnet-1,<br>subnet-2<br>SecurityGroupIds: sg-1<br>VpcId: test<br>Ipv6AllowedForDualStack: true | Zip | test |
@@ -1027,10 +1085,12 @@ Creates an Lambda layer from a ZIP archive.
 
 
 #### Command example
+
 ```!aws-lambda-publish-layer-version layer-name=test zip-file=entry_id description=test-layer-3
  ```
 
 #### Context Example
+
 ```json
 {
     "CompatibleRuntimes": ["nodejs"],
@@ -1045,6 +1105,7 @@ Creates an Lambda layer from a ZIP archive.
 #### Human Readable Output
 
 >### Publish Layer Version
+>
 >|Layer Version Arn|Layer Arn|Description|Created Date|Version|Compatible Runtimes|
 >|---|---|---|---|---|---|
 >| test_version_arn | test_layer_arn | test | 2024-03-01T10:12:00.0TZD | 2 | nodejs |
@@ -1088,9 +1149,11 @@ Lists the versions of an Lambda layer.
 
 
 #### Command example
+
 ```!aws-lambda-list-layer-version layer-name=test```
 
 #### Context Example
+
 ```json
 {
     "NextMarker": "test_marker",
@@ -1109,6 +1172,7 @@ Lists the versions of an Lambda layer.
 #### Human Readable Output
 
 >### Layer Version List
+>
 >|Compatible Architectures|Compatible Runtimes|Created Date|Description|Layer Version Arn|License Info|Version|
 >|---|---|---|---|---|---|---|
 >| x86_64 | nodejs | 2018-11-27T15:10:45.123+0000 | test | testLayer | test | 1 |
@@ -1135,6 +1199,7 @@ Deletes a version of an Lambda layer.
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
 #### Command example
+
 ```!aws-lambda-delete-layer-version version-number=4 layer-name=test_layer```
 
 #### Context Output

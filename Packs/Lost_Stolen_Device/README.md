@@ -3,6 +3,7 @@ With this content pack, you can significantly reduce the time your security anal
 
 
 ##### What does this pack do?
+
 The playbooks included in this pack guides you manually through the necessary tasks to remediate a lost or stolen device:
 
 - Enrich device, owner and involved personal information, report the device to authorities.

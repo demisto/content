@@ -54,8 +54,11 @@ Gets indicators from the feed.
 | Cyberint.confidence        | String | The feed confidence. |
 
 #### Command example
+
 ```!cyberint-get-indicators limit=10 execution-timeout=700```
+
 #### Context Example
+
 ```json
 {
     "Cyberint": [
@@ -266,6 +269,7 @@ Gets indicators from the feed.
 #### Human Readable Output
 
 >### Indicators from Cyberint Feed:
+>
 >|Value|Type|
 >|---|---|
 >| ioc1 | File |

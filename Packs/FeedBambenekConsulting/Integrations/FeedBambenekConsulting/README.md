@@ -42,4 +42,4 @@ Use the Bambenek Consulting feed integration to fetch indicators from the feed.
 
 ## Gain Access  
 
-Get a quote and subscribe: sales@bambenekconsulting.com
+Get a quote and subscribe: <sales@bambenekconsulting.com>

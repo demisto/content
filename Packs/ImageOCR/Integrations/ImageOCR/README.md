@@ -1,6 +1,7 @@
 Use the Image OCR integration to extract text from images. The integration utilizes the open-source [tesseract](https://github.com/tesseract-ocr/tesseract/) OCR engine.
 
 ## Use Cases
+
 * Extract text from images included in emails during a phishing investigation.
 * Extract text from images included in an html page.
 
@@ -39,6 +40,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 > ## Image OCR Supported Languages
+>
 > * ara
 > * chi_sim
 > * chi_sim_vert
@@ -99,6 +101,7 @@ Extracts text from an image.
 #### Human Readable Output
 
 > ## Image OCR Extracted Text for Entry ID 1613@1e6b4a55-33e7-433b-8f6f-2c0751c8c444
+>
 > The quick brown fox
 > jumped over the 5
 > lazy dogs!

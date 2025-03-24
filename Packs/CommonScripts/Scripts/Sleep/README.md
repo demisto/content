@@ -1,5 +1,7 @@
 Sleeps for a selected amount of time. In seconds.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +11,7 @@ Sleeps for a selected amount of time. In seconds.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,5 +19,6 @@ Sleeps for a selected amount of time. In seconds.
 | seconds | The amount of seconds to sleep. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

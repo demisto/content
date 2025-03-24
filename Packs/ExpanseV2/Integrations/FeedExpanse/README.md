@@ -29,9 +29,12 @@ Supported Cortex XSOAR versions: 6.0.0 and later.
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### feedexpanse-get-indicators
+
 ***
 Retrieve discovered IPs/IP Ranges/Domains/Certificates
 
@@ -39,6 +42,7 @@ Retrieve discovered IPs/IP Ranges/Domains/Certificates
 #### Base Command
 
 `feedexpanse-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,11 +59,13 @@ Retrieve discovered IPs/IP Ranges/Domains/Certificates
 There is no context output for this command.
 
 #### Command Example
+
 ```!feedexpanse-get-indicators max_indicators=1 certificate=yes ip=yes domain=yes```
 
 #### Human Readable Output
 
 >### Expanse Indicators (capped at 1)
+>
 >|value|type|
 >|---|---|
 >| 198.51.100.220 | IP |

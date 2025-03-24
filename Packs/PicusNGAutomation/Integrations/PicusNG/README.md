@@ -17,9 +17,12 @@ This integration was integrated and tested with Picus NG
 ![image](./../../doc_files/test_integration.png)
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### picus-get-access-token
+
 ***
 OAuth2 protocol is used to authorize Refresh/Access tokens. To obtain the API, you should generate a refresh token and then request an access token using this command.
 
@@ -27,6 +30,7 @@ OAuth2 protocol is used to authorize Refresh/Access tokens. To obtain the API, y
 #### Base Command
 
 `picus-get-access-token`
+
 #### Input
 
 There are no input arguments for this command.
@@ -34,7 +38,9 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-get-agent-list
+
 ***
 This command returns the simulation agent list with agent name, id, status, agent type and platform information as in Picus platform > Agents.
 
@@ -42,6 +48,7 @@ This command returns the simulation agent list with agent name, id, status, agen
 #### Base Command
 
 `picus-get-agent-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -49,7 +56,9 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-get-agent-detail
+
 ***
 This command returns agent name, status, agent type, platform and also mitigation devices and attack modules using the agent ID.
 
@@ -57,6 +66,7 @@ This command returns agent name, status, agent type, platform and also mitigatio
 #### Base Command
 
 `picus-get-agent-detail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -67,7 +77,9 @@ This command returns agent name, status, agent type, platform and also mitigatio
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-create-simulation
+
 ***
 This command creates and runs a simulation as requested; scheduled or instant.
 You can create a simulation by giving your simulation a name and adding the template ID, agent ID.
@@ -76,6 +88,7 @@ You can create a simulation by giving your simulation a name and adding the temp
 #### Base Command
 
 `picus-create-simulation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -90,7 +103,9 @@ You can create a simulation by giving your simulation a name and adding the temp
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-get-template-list
+
 ***
 This command returns template list that contains template name, id, description, content type, category as in Picus Platform> Threat Templates.
 
@@ -98,6 +113,7 @@ This command returns template list that contains template name, id, description,
 #### Base Command
 
 `picus-get-template-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -109,7 +125,9 @@ This command returns template list that contains template name, id, description,
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-get-integration-agent-list
+
 ***
 This command returns the agent name, id, status, agent installation information and the token expiration information.
 
@@ -117,6 +135,7 @@ This command returns the agent name, id, status, agent installation information 
 #### Base Command
 
 `picus-get-integration-agent-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -124,7 +143,9 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-get-simulation-list
+
 ***
 This command returns the list of you latest simulation result overview as in Picus Platform > Simulations tab. Latest simulation run results are included.
 
@@ -132,6 +153,7 @@ This command returns the list of you latest simulation result overview as in Pic
 #### Base Command
 
 `picus-get-simulation-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -147,6 +169,7 @@ This command returns the list of you latest simulation result overview as in Pic
 | Picus.simulationlist.simulation_id | Number | ID of the simulation | 
 
 ### picus-simulate-now
+
 ***
 This command runs the existing simulation using the Simulation ID.
 
@@ -154,6 +177,7 @@ This command runs the existing simulation using the Simulation ID.
 #### Base Command
 
 `picus-simulate-now`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -164,7 +188,9 @@ This command runs the existing simulation using the Simulation ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-get-simulation-detail
+
 ***
 This command returns the information about a specific simulation.
 
@@ -172,6 +198,7 @@ This command returns the information about a specific simulation.
 #### Base Command
 
 `picus-get-simulation-detail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -182,7 +209,9 @@ This command returns the information about a specific simulation.
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-get-latest-simulation-result
+
 ***
 This command returns detailed information about simulation results including Prevention and Detection result details for the latest simulation run.
 
@@ -190,6 +219,7 @@ This command returns detailed information about simulation results including Pre
 #### Base Command
 
 `picus-get-latest-simulation-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -206,6 +236,7 @@ This command returns detailed information about simulation results including Pre
 | Picus.latestSimulationResult.status | String | Simulation Status | 
 
 ### picus-get-simulation-result
+
 ***
 This command returns detailed information about simulation results including Prevention and Detection result details for a specific simulation run with run id.
 
@@ -213,6 +244,7 @@ This command returns detailed information about simulation results including Pre
 #### Base Command
 
 `picus-get-simulation-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -224,7 +256,9 @@ This command returns detailed information about simulation results including Pre
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-get-simulation-threats
+
 ***
 This command returns simulation result based on threats. Threat result includes threat id and name, prevention result and action count.
 
@@ -232,6 +266,7 @@ This command returns simulation result based on threats. Threat result includes 
 #### Base Command
 
 `picus-get-simulation-threats`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -249,6 +284,7 @@ This command returns simulation result based on threats. Threat result includes 
 | Picus.SimulationThreats | String | Threat list of simulation | 
 
 ### picus-get-simulation-actions
+
 ***
 This command returns simulation result based on action list using threat ID, simulation ID and simulation run ID.
 
@@ -256,6 +292,7 @@ This command returns simulation result based on action list using threat ID, sim
 #### Base Command
 
 `picus-get-simulation-actions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -274,6 +311,7 @@ This command returns simulation result based on action list using threat ID, sim
 | Picus.SimulationActions | String | Action Results\(ID and result combination\) | 
 
 ### picus-get-mitigation-devices
+
 ***
 This command returns mitigation device information as obtained under Picus platform > Mitigation > Vendor Based Mitigations. Vendor based mitigation devices can be fetched using this command.
 
@@ -281,6 +319,7 @@ This command returns mitigation device information as obtained under Picus platf
 #### Base Command
 
 `picus-get-mitigation-devices`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -291,7 +330,9 @@ This command returns mitigation device information as obtained under Picus platf
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-get-signature-list
+
 ***
 This command returns action based signature suggestions.
 
@@ -299,6 +340,7 @@ This command returns action based signature suggestions.
 #### Base Command
 
 `picus-get-signature-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -310,7 +352,9 @@ This command returns action based signature suggestions.
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-set-paramPB
+
 ***
 Set parameter on playbook. (This command is only used on playbook)
 
@@ -318,6 +362,7 @@ Set parameter on playbook. (This command is only used on playbook)
 #### Base Command
 
 `picus-set-paramPB`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -336,6 +381,7 @@ Set parameter on playbook. (This command is only used on playbook)
 | Picus.param.simulation_id | String | Simulation ID | 
 
 ### picus-filter-insecure-attacks
+
 ***
 Filter insecure attacks on playbook. (This command is only used on playbook)
 
@@ -343,6 +389,7 @@ Filter insecure attacks on playbook. (This command is only used on playbook)
 #### Base Command
 
 `picus-filter-insecure-attacks`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -1,4 +1,5 @@
 Ingest indicators from the OpenCTI feed. Compatible with OpenCTI 5.12.17 and above.
+
 ## Configure OpenCTI Feed 4.X in Cortex
 
 
@@ -21,9 +22,12 @@ Ingest indicators from the OpenCTI feed. Compatible with OpenCTI 5.12.17 and abo
 | Score maximum value | Score maximum value to filter by. Values range is 1-100.  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### opencti-reset-fetch-indicators
+
 ***
 WARNING: This command will reset your fetch history.
 
@@ -31,6 +35,7 @@ WARNING: This command will reset your fetch history.
 #### Base Command
 
 `opencti-reset-fetch-indicators`
+
 #### Input
 
 There are no input arguments for this command.
@@ -40,6 +45,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!opencti-reset-fetch-indicators```
 
 #### Human Readable Output
@@ -47,6 +53,7 @@ There is no context output for this command.
 >Fetch history deleted successfully
 
 ### opencti-get-indicators
+
 ***
 Gets indicators from the feed.
 
@@ -54,6 +61,7 @@ Gets indicators from the feed.
 #### Base Command
 
 `opencti-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -70,9 +78,11 @@ Gets indicators from the feed.
 There is no context output for this command.
 
 #### Command Example
+
 ```!opencti-get-indicators limit=2 indicator_types="IP"```
 
 #### Context Example
+
 ```json
 {
     "OpenCTI": {
@@ -117,6 +127,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Indicators
+>
 >|type|value|id|
 >|---|---|---|
 >| IP | 1.2.3.4 | 700c8187-2dce-4aeb-bf3a-0864cb7b02c7 |

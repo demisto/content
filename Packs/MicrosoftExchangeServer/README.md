@@ -13,12 +13,15 @@ This pack includes XSIAM content
    `Message tracking log path`: The value you specify must be on the local Exchange server. If the folder doesn't exist, it's created for you when you click Save.
 
 #### Example log path:
+
 `C:\Program Files\Microsoft\Exchange Server\V15\TransportRoles\Logs\MessageTracking\`
 
 *Ensure that the tracking log path here matches the one in the YAML configuration.*
 
 3. When you're finished, click Save.
+
 ## Filebeat Collection
+
 In order to use the collector, you need to use the following option to collect events from the vendor:
 
 - [XDRC (XDR Collector)](#xdrc-xdr-collector)

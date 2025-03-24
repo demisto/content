@@ -1,4 +1,4 @@
-Fetches Indicators from Github Repo https://github.com/stamparm/maltrail
+Fetches Indicators from Github Repo <https://github.com/stamparm/maltrail>
 
 ## Configure Github Maltrail Feed in Cortex
 

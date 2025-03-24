@@ -13,8 +13,9 @@ This pack includes Cortex XSIAM content.
 ## What does this pack do?
 
 This pack includes:
-  - An integration that allows you to collect Admin Login reports and Admin Change audits from IBM MaaS360 Security.
-  - Modeling rules for log normalization
+
+- An integration that allows you to collect Admin Login reports and Admin Change audits from IBM MaaS360 Security.
+- Modeling rules for log normalization
 
 ## How to collect data from IBM MaaS360:
 

@@ -6,7 +6,7 @@ This integration was integrated and tested with version 9.16(3)23 of Cisco ASA
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g., https://192.168.0.1) | True |
+| Server URL (e.g., <https://192.168.0.1>) | True |
 | Credentials | True |
 | Password | True |
 | Use system proxy settings | False |
@@ -49,8 +49,11 @@ Retrieve information about network object groups. Network object groups can cont
 | CiscoASA.NetworkObjectGroup.members.value | String | The value of IPv4Address, IPv4Network, IPv6Address or IPv6Network. | 
 
 #### Command example
+
 ```!cisco-asa-list-network-object-group limit=1```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -80,6 +83,7 @@ Retrieve information about network object groups. Network object groups can cont
 #### Human Readable Output
 
 >### Network Object Groups
+>
 >|Object Id|Name|Description|Members|
 >|---|---|---|---|
 >| TEST_GROUP1 | TEST_GROUP1 | This is a test | {'kind': 'objectRef#NetworkObj', 'object_id': 'Test_Lior'},<br/>{'kind': 'objectRef#NetworkObj', 'object_id': 'Test_Lior1'},<br/>{'kind': 'objectRef#NetworkObj', 'object_id': 'Test_Lior2'} |
@@ -114,8 +118,11 @@ Retrieve information about local user groups, which are collections of user acco
 | CiscoASA.LocalUserGroup.members.object_id | String | The ID of the user. | 
 
 #### Command example
+
 ```!cisco-asa-list-local-user-group limit=1```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -140,6 +147,7 @@ Retrieve information about local user groups, which are collections of user acco
 #### Human Readable Output
 
 >### Local User Groups
+>
 >|Object Id|Name|Members|
 >|---|---|---|
 >| LIOR_GROUP | LIOR_GROUP | {'kind': 'objectRef#UserObj', 'object_id': 'api'},<br/>{'kind': 'objectRef#UserObj', 'object_id': 'restapi'} |
@@ -174,8 +182,11 @@ Retrieve information about individual local user accounts within a network syste
 | CiscoASA.LocalUser.asdm_cli_access_type | String | ASDM and CLI access type. Can be one of "Full", "None", "Cli". | 
 
 #### Command example
+
 ```!cisco-asa-list-local-user limit=1```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -193,6 +204,7 @@ Retrieve information about individual local user accounts within a network syste
 #### Human Readable Output
 
 >### Local Users
+>
 >|Object Id|Name|Privilege Level|Asdm Cli Access Type|
 >|---|---|---|---|
 >| admin | admin | 15 | Full |
@@ -231,8 +243,11 @@ Retrieve information about time range objects. A time range object defines a spe
 | CiscoASA.TimeRange.periodic.end_minute | Number | The minute at which this time range will end periodically. | 
 
 #### Command example
+
 ```!cisco-asa-list-time-range page=1 page_size=1```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -258,6 +273,7 @@ Retrieve information about time range objects. A time range object defines a spe
 #### Human Readable Output
 
 >### Time Ranges
+>
 >|Object Id|Name|Start|End|Periodic|
 >|---|---|---|---|---|
 >| trUserTest | trUserTest | now | 03:47 May 14 2014 | {'frequency': 'Wednesday to Thursday', 'start_hour': 4, 'start_minute': 3, 'end_hour': 23, 'end_minute': 59} |
@@ -293,8 +309,11 @@ Retrieve information about security groups, which are collections of security gr
 | CiscoASA.SecurityObjectGroup.members.object_id | String | The object ID of objectRef\#SecurityObjGroup. | 
 
 #### Command example
+
 ```!cisco-asa-list-security-object-group page=1 page_size=1```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -320,6 +339,7 @@ Retrieve information about security groups, which are collections of security gr
 #### Human Readable Output
 
 >### Security Object Groups
+>
 >|Object Id|Name|Description|Members|
 >|---|---|---|---|
 >| oneSecurityGroup | oneSecurityGroup | test12 | {'kind': 'SecurityName', 'value': 'zeno1'},<br/>{'kind': 'SecurityTag', 'value': '71'} |
@@ -353,8 +373,11 @@ Retrieve information about user definitions within the system. This helps in man
 | CiscoASA.UserObject.value | String | The value of the local user. | 
 
 #### Command example
+
 ```!cisco-asa-list-user-object page=1 page_size=1```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -370,6 +393,7 @@ Retrieve information about user definitions within the system. This helps in man
 #### Human Readable Output
 
 >### User Objects
+>
 >|Object Id|User Name|
 >|---|---|
 >| api | api |
@@ -395,8 +419,11 @@ There are no input arguments for this command.
 | CiscoASA.WriteMemory.response | String | Shows a successful 'write memory' command execution on a Cisco ASA device, building the configuration and generating a cryptochecksum for integrity. The process is completed with an "\[OK\]" message. | 
 
 #### Command example
+
 ```!cisco-asa-write-memory```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -412,6 +439,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|response|
 >|---|
 >| Building configuration...<br/>Cryptochecksum: fa399474 22b66df0 6e2a7619 b37adea3 <br/><br/>20838 bytes copied in 0.50 secs<br/>[OK]<br/> |
@@ -464,8 +492,11 @@ Gets a list all rules for the supplied interface.
 | CiscoASA.Rules.TimeRange.objectId | String | The object ID of the time range. | 
 
 #### Command example
+
 ```!cisco-asa-list-rules interface_type=Global```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -532,6 +563,7 @@ Gets a list all rules for the supplied interface.
 #### Human Readable Output
 
 >### Rules:
+>
 >|ID|Source|Dest|Permit|Interface|InterfaceType|IsActive|Position|SourceService|DestService|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 3583139358 | TEST_GROUP1 | TEST_GROUP2 | false |  | Global | true | 1 | ip | ip |
@@ -557,8 +589,11 @@ Creates a backup of the current settings (i.e., the backup.cfg file).
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-asa-backup backup_name=Lior```
+
 #### Human Readable Output
 
 >Created backup successfully in:
@@ -613,8 +648,11 @@ Gets a specific rule by rule ID.
 | CiscoASA.Rules.TimeRange.objectId | String | The object ID of the time range. | 
 
 #### Command example
+
 ```!cisco-asa-get-rule-by-id interface_type=Global rule_id=3371063501```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -652,6 +690,7 @@ Gets a specific rule by rule ID.
 #### Human Readable Output
 
 >### Rule 3371063501:
+>
 >|ID|Source|Dest|Permit|Interface|InterfaceType|IsActive|Position|SourceService|DestService|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 3371063501 | 0.0.0.0/24 | 5.5.5.5 | false |  | Global | true | 30 | tcp/cifs | tcp/citrix-ica |
@@ -724,8 +763,11 @@ Creates a rule.
 | CiscoASA.Rules.TimeRange.objectId | String | The object ID of the time range. | 
 
 #### Command example
+
 ```!cisco-asa-create-rule destination=1.1.1.1 source=0.0.0.0/24 interface_type=Global permit=False destination_kind=IPv4Address source_kind=IPv4Network active=False service_kind=TcpUdpService service=tcp/cifs destination_service=tcp/citrix-ica destination_service_kind=TcpUdpService destination_security_kind=SecurityTag destination_security=1 source_security_kind=SecurityTag source_security=2 timerange=trUserTest user_kind=UserObj user=api```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -763,6 +805,7 @@ Creates a rule.
 #### Human Readable Output
 
 >### Created new rule. ID: 3152305802
+>
 >|ID|Source|Dest|Permit|Interface|InterfaceType|IsActive|Position|SourceService|DestService|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 3152305802 | 0.0.0.0/24 | 1.1.1.1 | false |  | Global | false | 37 | tcp/cifs | tcp/citrix-ica |
@@ -788,8 +831,11 @@ Deletes a rule.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-asa-delete-rule rule_id=2152246838 interface_type=Global```
+
 #### Human Readable Output
 
 >Rule 2152246838 deleted successfully.
@@ -862,8 +908,11 @@ Updates an existing rule.
 | CiscoASA.Rules.TimeRange.objectId | String | The object ID of the time range. | 
 
 #### Command example
+
 ```!cisco-asa-edit-rule rule_id=3371063501 interface_type=Global active=True```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -901,6 +950,7 @@ Updates an existing rule.
 #### Human Readable Output
 
 >### Edited rule 3371063501
+>
 >|ID|Source|Dest|Permit|Interface|InterfaceType|IsActive|Position|SourceService|DestService|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 3371063501 | 0.0.0.0/24 | 5.5.5.5 | false |  | Global | true | 30 | tcp/cifs | tcp/citrix-ica |
@@ -932,8 +982,11 @@ Gets a list all configured network objects.
 | CiscoASA.NetworkObject.Name | String | The name of the network object. | 
 
 #### Command example
+
 ```!cisco-asa-list-network-objects object_name=Test_Lior```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -952,6 +1005,7 @@ Gets a list all configured network objects.
 #### Human Readable Output
 
 >### Network Objects
+>
 >|ID|Name|Host|Description|
 >|---|---|---|---|
 >| Test_Lior | Test_Lior | kind: IPv4Address<br/>value: 0.0.0.0 |  |
@@ -984,8 +1038,11 @@ Creates a network object.
 | CiscoASA.NetworkObject.Name | String | The name of the network object. | 
 
 #### Command example
+
 ```!cisco-asa-create-network-object object_name=HelloThereLiorSB object_type=IPv4 object_value=1.1.1.1```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -1004,6 +1061,7 @@ Creates a network object.
 #### Human Readable Output
 
 >### Network Objects
+>
 >|ID|Name|Host|Description|
 >|---|---|---|---|
 >| HelloThereLiorSB | HelloThereLiorSB | kind: IPv4Address<br/>value: 1.1.1.1 |  |
@@ -1031,8 +1089,11 @@ There are no input arguments for this command.
 | CiscoASA.Interface.Type | String | The type of interface. | 
 
 #### Command example
+
 ```!cisco-asa-list-interfaces```
+
 #### Context Example
+
 ```json
 {
     "CiscoASA": {
@@ -1060,6 +1121,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Interfaces
+>
 >|Type|ID|Name|
 >|---|---|---|
 >| Global | -1 |  |

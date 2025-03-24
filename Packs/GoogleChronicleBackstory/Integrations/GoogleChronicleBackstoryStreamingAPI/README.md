@@ -1,4 +1,5 @@
 ## Overview
+
 ---
 
 Use the Google Chronicle Backstory Streaming API integration to ingest detections created by both user-created rules and Chronicle Rules as XSOAR incidents.
@@ -9,6 +10,7 @@ This integration was integrated and tested with version 2 of Google Chronicle Ba
 **Note:** The streaming mechanism will do up to 7 internal retries with a gap of 2, 4, 8, 16, 32, 64, and 128 seconds (exponentially) between the retries.
 
 ##### Problem #1
+
 Duplication of rule detection incidents when fetched from Chronicle.
 
 ##### Solution #1

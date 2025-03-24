@@ -105,8 +105,11 @@ There are no input arguments for this command.
 | DataminrPulse.WatchLists.companies.name | String | Name of the company. | 
 
 #### Command example
+
 ```!dataminrpulse-watchlists-get```
+
 #### Context Example
+
 ```json
 {
     "DataminrPulse": {
@@ -137,6 +140,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Watchlists
+>
 >|Watchlist ID|Watchlist Name|Watchlist Type|Watchlist Color|
 >|---|---|---|---|
 >| 3320156 | Cyber-Physical | TOPIC | darkblue |
@@ -265,8 +269,11 @@ Retrieves the alerts as per the provided watchlist_ids or query or configured wa
 | DataminrPulse.Cursor.to | String | "to" points to a cursor that you want any alerts before. | 
 
 #### Command example
+
 ```!dataminrpulse-alerts-get query="Google" num=2 use_configured_watchlist_names=yes```
+
 #### Context Example
+
 ```json
 {
     "DataminrPulse": {
@@ -537,12 +544,14 @@ Retrieves the alerts as per the provided watchlist_ids or query or configured wa
 #### Human Readable Output
 
 >### Alerts
+>
 >|Alert Type|Alert ID|Caption|Alert URL|Watchlist Name|Alert Time|Alert Location|Post Link|Is source verified|Publisher Category|
 >|---|---|---|---|---|---|---|---|---|---|
 >| Alert | 263446797171227825118793783-1679036084482-1 | Credentials from Netflix, Roku and Google in post selling data from machine infected by Raccoon stealer in United States: Blog via Russian Market. | [https://app.dataminr.com/#alertDetail/5/263446797171227825118793783-1679036084482-1](https://app.dataminr.com/#alertDetail/5/263446797171227825118793783-1679036084482-1) | Data Security | 17 Mar 2023, 06:54 AM UTC | united states | [http://dummy.com/logs#b557780d27d99](http://dummy.com/logs#b557780d27d99) | false | Blog |
 >| Alert | 8182773200381469871601567489-1679036084274-1 | Credentials from Google and Paypal in post selling data from machine infected by Raccoon stealer in Venezuela: Blog via Russian Market. | [https://app.dataminr.com/#alertDetail/5/8182773200381469871601567489-1679036084274-1](https://app.dataminr.com/#alertDetail/5/8182773200381469871601567489-1679036084274-1) | Data Security | 17 Mar 2023, 06:54 AM UTC | venezuela | [http://dummy.com/logs#b05eb146256c7774f](http://dummy.com/logs#b05eb146256c7774f) | false | Blog |
 
 >### Cursor for pagination
+>
 >|from|to|
 >|---|---|
 >| from_cursor | to_cursor |
@@ -663,8 +672,11 @@ Retrieves the alerts related to the provided Alert ID.
 | DataminrPulse.Alerts.userTopHashtags | Unknown | User's top hashtags. | 
 
 #### Command example
+
 ```!dataminrpulse-related-alerts-get alert_id="969633949-1679028615394-3"```
+
 #### Context Example
+
 ```json
 {
     "DataminrPulse": {
@@ -753,6 +765,7 @@ Retrieves the alerts related to the provided Alert ID.
 #### Human Readable Output
 
 >### Alerts
+>
 >|Alert Type|Alert ID|Caption|Alert URL|Alert Time|Alert Location|Post Link|Is source verified|Publisher Category|
 >|---|---|---|---|---|---|---|---|---|
 >| Urgent | 1114146985-1679026540479-3 | Power outage affects 1,328 customers in Brisbane City, QLD, Australia: Government via Energex. | [https://app.dataminr.com/#alertDetail/5/1114146985-1679026540479-3](https://app.dataminr.com/#alertDetail/5/1114146985-1679026540479-3) | 17 Mar 2023, 04:16 AM UTC | Brisbane City QLD 4000, Australia | [https://www.dummy.com/residential-and-business/power-interruptions/current-interruptions](https://www.dummy.com/residential-and-business/power-interruptions/current-interruptions) | false | Government |

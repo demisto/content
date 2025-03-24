@@ -36,6 +36,7 @@ For more information on obtaining *OAuth Credentials*, refer to [this documentat
 - No need to generate the bearer token, the integration uses the provided `OAuth Credentials` to generate one.
 - The `test_module` test checks only the validity of the `OAuth credential` parameter and does not validate the `Channel ID` and `Stream ID` parameters.
 - Fetching events that occurred at a specific time may be delayed due to delays in event ingestion on Symantec's side.
+
 ### symantec-ses-reset-integration-context
 
 ***
@@ -46,6 +47,7 @@ By default, resetting the integration context only resets the `next_fetch` field
 This means that the next fetch call will be performed without the `next` parameter, but events will still be filtered, preventing duplicate events from being ingested.  
 
 When using the `delete_all=true` argument, the entire `integration_context` is deleted. This means that the API call will be performed without the `next` parameter, and duplicate events may be ingested into the system.
+
 #### Base Command
 
 `symantec-ses-reset-integration-context`
@@ -62,5 +64,6 @@ There is no context output for this command.
 
 
 ### Troubleshooting
+
 In case where the integration has been disabled for an extended period, it is recommended to run the command `symantec-ses-reset-integration-context` without the `delete_all` argument. This will ensure that the `next` parameter stored in the `integration_context` is cleared,  
 This means that the fetch process will run without the `next` parameter and retrieve all available events from the stream. However, events will still be filtered based on the last retrieved event timestamp.

@@ -7,9 +7,13 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 
 ## Detailed Instructions
+
 This section includes information required for configuring an integration instance.
+
 ### Prerequisites - Connect to McAfee Threat Intelligence Exchange (TIE) using the DXL TIE Client
+
 To connect the McAfee TIE using the DXL TIE client, you need to create certificates and configure DXL. For more information, see the [documentation](https://xsoar.pan.dev/docs/reference/integrations/mc-afee-dxl#how-to-create-the-rsa-key-pair). After you complete this configuration, you will have the following files:
+
 1. Broker CA certificates (`brokercerts.crt` file)
 2. Client certificate (`client.crt` file)
 3. Client private key (`client.key` file)
@@ -18,12 +22,15 @@ To connect the McAfee TIE using the DXL TIE client, you need to create certifica
 **Important**: These are the actual certificates, not request certificates.
 
 ### set-file instruction
+
 To use the ***tie-set-file-reputation*** command, you need to authorize the client (Cortex XSOAR) to run the command. Follow the [instructions](https://opendxl.github.io/opendxl-client-python/pydoc/marsendauth.html) to do so. In step 4, instead of selecting **Active Response Server API**, select **TIE Server Set Enterprise Reputation**.
 
 ### Dependencies (Python packages)
+
 You don't need to install the packages, they are included in the Docker image.
-  - DXL Client [documentation](https://opendxl.github.io/opendxl-client-python/pydoc/dxlclient.client.html)
-  - DXL TIE Client [documentation](https://opendxl.github.io/opendxl-tie-client-python/pydoc/dxltieclient.client.html)
+
+- DXL Client [documentation](https://opendxl.github.io/opendxl-client-python/pydoc/dxlclient.client.html)
+- DXL TIE Client [documentation](https://opendxl.github.io/opendxl-tie-client-python/pydoc/dxltieclient.client.html)
 
 ## Configure McAfee Threat Intelligence Exchange V2 in Cortex
 
@@ -37,9 +44,12 @@ You don't need to install the packages, they are included in the Docker image.
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### file
+
 ***
 Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SHA256".  
 
@@ -47,6 +57,7 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -109,6 +120,7 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_File_Reps | String | The parent file reputations \(aggregate string\) according to the following format:<br /> - The number of files.<br /> - The maximum trust level found across the files.<br /> - The minimum trust level found across the files.<br /> - The trust level for the last file.<br /> - The average trust level across the files. | 
 
 ### Providers Table
+
 | **Provider** | **Numeric** | **Description** |
 | --- | --- | --- |
 | GTI | 1 | Global Threat Intelligence (GTI). |
@@ -116,6 +128,7 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 | ATD | 5 | McAfee Advanced Threat Defense (ATD). |
 
 ### Trust Level Table
+
 | **Trust Level** | **Numeric** | **Description** |
 | --- | --- | --- |
 | KNOWN_TRUSTED_INSTALLER | 100 | It is a trusted installer. |
@@ -129,6 +142,7 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 | NOT_SET | 0 | The file's reputation hasn't been determined yet. |
 
 ### ATD Trust Score Table
+
 | **Trust Level** | **Numeric** | **Description** |
 | --- | --- | --- |
 | KNOWN_TRUSTED | -1 | It is a trusted file. |
@@ -141,9 +155,11 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 | NOT_SET | -2 | The file's reputation hasn't been determined yet. |
 
 ### Command Example
+
 `!file file=f2c7bb8acc97f92e987a2d4087d021b1,7eb0139d2175739b3ccb0d1110067820be6abd29`
 
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -244,25 +260,30 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 ```
 
 #### Human Readable Output
+
 ### McAfee TIE Hash Reputations For f2c7bb8acc97f92e987a2d4087d021b1:
+
 |Created date|Provider (verbose)|Provider ID|Trust level|Trust level (verbose)|
 |---|---|---|---|---|
 | 2017-10-15 15:33:20 | Global Threat Intelligence (GTI) | 1 | 99 | KNOWN_TRUSTED |
 | 2017-10-15 15:33:20 | Enterprise reputation | 3 | 85 | MOST_LIKELY_TRUSTED |
 
 ### McAfee TIE Hash Reputations For 7eb0139d2175739b3ccb0d1110067820be6abd29:
+
 |Created date|Provider (verbose)|Provider ID|Trust level|Trust level (verbose)|
 |---|---|---|---|---|
 | 2017-10-15 16:30:54 | Enterprise reputation | 3 | 1 | KNOWN_MALICIOUS |
 | 2018-06-04 13:31:02 | Global Threat Intelligence (GTI) | 1 | 99 | KNOWN_TRUSTED |
 
 ### tie-set-file-reputation
+
 ***
 Sets the “Enterprise” reputation (trust level, filename, and comment) of the specified hashes. Hashes that represent the same file can have a different "Enterprise" reputation if they are given different reputations. Permissions are required to invoke this method. See the [instruction](#set-file-instruction) section.
 
 #### Base Command
 
 `tie-set-file-reputation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -274,21 +295,26 @@ Sets the “Enterprise” reputation (trust level, filename, and comment) of the
 
 
 #### Context Output
+
 `There is no context output for this command.`
 
 ### Command Example
+
 ```!tie-set-file-reputation file=f2c7bb8acc97f92e987a2d4087d021b1,7eb0139d2175739b3ccb0d1110067820be6abd29 trust_level=MOST_LIKELY_TRUSTED comment="For testing" filename="tesing.exe"```
 
 #### Human Readable Output
+
 `Successfully set files reputation.`
 
 ### tie-file-references
+
 ***
 Retrieves the set of systems which have referenced (typically executed) the specified hashes.  
 
 #### Base Command
 
 `tie-file-references`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -311,9 +337,11 @@ Retrieves the set of systems which have referenced (typically executed) the spec
 | McAfee.TIE.FilesReferences.Hash | String | The value of the hash. | 
 
 ### Command Example
+
 `!tie-file-references file=f2c7bb8acc97f92e987a2d4087d021b1,7eb0139d2175739b3ccb0d1110067820be6abd29 query_limit=5`
 
 #### Context Example
+
 ```json
 {
     "File": [
@@ -396,7 +424,9 @@ Retrieves the set of systems which have referenced (typically executed) the spec
 ```
 
 #### Human Readable Output
+
 ### References For Hash f2c7bb8acc97f92e987a2d4087d021b1:
+
 |AgentGuid|Date|
 |---|---|
 | 0c906be0-224c-45d4-8e6f-bc89da69d268 | 2017-10-15 15:33:20 |
@@ -406,6 +436,7 @@ Retrieves the set of systems which have referenced (typically executed) the spec
 | e50a8b51-2063-42cb-a85f-10bd0a698323 | 2017-10-15 16:30:51 |
 
 ### References For Hash 7eb0139d2175739b3ccb0d1110067820be6abd29:
+
 |AgentGuid|Date|
 |---|---|
 | 157eaf84-88ab-4d95-9456-30878fded9d5 | 2017-10-15 16:30:54 |
@@ -416,11 +447,13 @@ Retrieves the set of systems which have referenced (typically executed) the spec
 
 
 ## Breaking Changes
+
 The following sections list the changes in this version.
+
 - You can now pass more than one file to the following commands:
-   - ***tie-set-file-reputation***
-   - ***tie-file-references***
+  - ***tie-set-file-reputation***
+  - ***tie-file-references***
 - Added additional context outputs to the following commands:
-   - ***file***
-   - ***tie-file-references***
+  - ***file***
+  - ***tie-file-references***
 

@@ -19,9 +19,12 @@ Please make sure you look at the integration source code and comments.
 | max_fetch | Maximum number of incidents per fetch | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### gra-fetch-users
+
 ***
 Retrieve List of All Users (Identities)
 
@@ -29,6 +32,7 @@ Retrieve List of All Users (Identities)
 #### Base Command
 
 `gra-fetch-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -59,9 +63,11 @@ Retrieve List of All Users (Identities)
 
 
 #### Command Example
+
 ```!gra-fetch-users page=1 max=25```
 
 #### Context Example
+
 ```
 [{
   "firstName":"Evan",
@@ -114,9 +120,11 @@ Retrieve all Accounts Information
 | Gra.Accounts.updated_on | Date | Updated on. |
 
 #### Command Example
+
 ```!gra-fetch-accounts page=1 max=25```
 
 #### Context Example
+
 ```
 [
     {
@@ -143,6 +151,7 @@ Retrieve all Accounts Information
 
 
 ### gra-fetch-active-resource-accounts
+
 ***
 Retrieve List of All Active Accounts for a Given Resource.
 
@@ -150,6 +159,7 @@ Retrieve List of All Active Accounts for a Given Resource.
 #### Base Command
 
 `!gra-fetch-active-resource-accounts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -178,9 +188,11 @@ Retrieve List of All Active Accounts for a Given Resource.
 | Gra.Active.Resource.Accounts.updated_on | Date | Updated on. |
 
 #### Command Example
+
 ```!gra-fetch-active-resource-accounts resource_name="Linux"  page=1 max=25```
 
 #### Context Example
+
 ```
 [
     {
@@ -205,6 +217,7 @@ Retrieve List of All Active Accounts for a Given Resource.
 
 
 ### gra-fetch-user-accounts
+
 ***
  Retrieve List of All Active Accounts and Details for a Given User.
 
@@ -212,6 +225,7 @@ Retrieve List of All Active Accounts for a Given Resource.
 #### Base Command
 
 `gra-fetch-user-accounts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -242,9 +256,11 @@ Retrieve List of All Active Accounts for a Given Resource.
 
 
 #### Command Example
+
 ```!gra-fetch-user-accounts employee_id="Alec.Holland01_NN"  page=1 max=25```
 
 #### Context Example
+
 ```
 [{
       "id":35,
@@ -267,6 +283,7 @@ Retrieve List of All Active Accounts for a Given Resource.
 
 
 ### gra-fetch-resource-highrisk-accounts
+
 ***
 Retrieve High Risk Accounts for a Given Resource
 
@@ -274,6 +291,7 @@ Retrieve High Risk Accounts for a Given Resource
 #### Base Command
 
 `gra-fetch-resource-highrisk-accounts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -302,9 +320,11 @@ Retrieve High Risk Accounts for a Given Resource
 
 
 #### Command Example
+
 ```!gra-fetch-resource-highrisk-accounts resource_name="Windows Security"  page=1 max=25```
 
 #### Context Example
+
 ```
 [{
       "id":35,
@@ -328,6 +348,7 @@ Retrieve High Risk Accounts for a Given Resource
 >### 
 
 ### gra-fetch-hpa
+
 ***
 Retrieve List of All High Risk Privileged Accounts.
 
@@ -335,6 +356,7 @@ Retrieve List of All High Risk Privileged Accounts.
 #### Base Command
 
 `!gra-fetch-hpa`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -362,9 +384,11 @@ Retrieve List of All High Risk Privileged Accounts.
 
 
 #### Command Example
+
 ```!gra-fetch-hpa  page=1 max=25```
 
 #### Context Example
+
 ```
 {
       "id":35,
@@ -389,6 +413,7 @@ Retrieve List of All High Risk Privileged Accounts.
 
 
 ### gra-fetch-resource-hpa
+
 ***
 Retrieve all High Privileged Accounts for a Given Resource.
 
@@ -396,6 +421,7 @@ Retrieve all High Privileged Accounts for a Given Resource.
 #### Base Command
 
 `gra-fetch-resource-hpa`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -424,9 +450,11 @@ Retrieve all High Privileged Accounts for a Given Resource.
 | Gra.Resource.Hpa.updated_on | Date | Updated On. | 
 
 #### Command Example
+
 ```!gra-fetch-resource-hpa resource_name="Linux"  page=1 max=25```
 
 #### Context Example
+
 ```
 [{
       "id":2,
@@ -450,6 +478,7 @@ Retrieve all High Privileged Accounts for a Given Resource.
 
 
 ### gra-fetch-orphan-accounts
+
 ***
 Retrieve List of All Orphan / Rogue Accounts.
 
@@ -457,6 +486,7 @@ Retrieve List of All Orphan / Rogue Accounts.
 #### Base Command
 
 `gra-fetch-orphan-accounts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -483,9 +513,11 @@ Retrieve List of All Orphan / Rogue Accounts.
 | Gra.Orphan.Accounts.updated_on | Date | Updated On. | 
 
 #### Command Example
+
 ```!gra-fetch-orphan-accounts  page=1 max=25```
 
 #### Context Example
+
 ```
 [{
       "id":2,
@@ -507,6 +539,7 @@ Retrieve List of All Orphan / Rogue Accounts.
 #### Human Readable Output
 
 ### gra-fetch-resource-orphan-accounts
+
 ***
 Retrieve All Orphan / Rogue Accounts for a Given Resource.
 
@@ -514,6 +547,7 @@ Retrieve All Orphan / Rogue Accounts for a Given Resource.
 #### Base Command
 
 `gra-fetch-resource-orphan-accounts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -543,9 +577,11 @@ Retrieve All Orphan / Rogue Accounts for a Given Resource.
 
 
 #### Command Example
+
 ```!gra-fetch-resource-orphan-accounts resource_name="Windows Security"  page=1 max=25```
 
 #### Context Example
+
 ```
 [{
       "id":2,
@@ -571,6 +607,7 @@ Retrieve All Orphan / Rogue Accounts for a Given Resource.
 
 
 ### gra-fetch-orphan-accounts
+
 ***
 Retrieve List of All Orphan / Rogue Accounts.
 
@@ -578,6 +615,7 @@ Retrieve List of All Orphan / Rogue Accounts.
 #### Base Command
 
 `gra-user-activities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -598,9 +636,11 @@ Retrieve List of All Orphan / Rogue Accounts.
 | Gra.User.Activity.risk_score | Number | Risk Score . |
 
 #### Command Example
+
 ```!gra-user-activities employee_id="aa17600"  page=1 max=25```
 
 #### Context Example
+
 ```
 {
 "employee_id":"aa17600",
@@ -617,6 +657,7 @@ Retrieve List of All Orphan / Rogue Accounts.
 
 
 ### gra-fetch-users-details
+
 ***
 get details of the user.
 
@@ -624,6 +665,7 @@ get details of the user.
 #### Base Command
 
 `gra-fetch-users-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -652,9 +694,11 @@ get details of the user.
 
 
 #### Command Example
+
 ```!gra-user-activities employee_id="aa17600"  page=1 max=25```
 
 #### Context Example
+
 ```
 [
   {
@@ -682,6 +726,7 @@ get details of the user.
 
 
 ### gra-fetch-users-details
+
 ***
 get details of the user.
 
@@ -732,9 +777,11 @@ get details of the user.
 
 
 #### Command Example
+
 ```!gra-highRisk-users  page=1 max=25```
 
 #### Context Example
+
 ```
 [
   {
@@ -759,6 +806,7 @@ get details of the user.
 
 
 ### gra-cases
+
 ***
 get details of the user.
 
@@ -766,6 +814,7 @@ get details of the user.
 #### Base Command
 
 `gra-cases`
+
 #### Input
 
 
@@ -792,9 +841,11 @@ get details of the user.
 | Gra.Cases.anomalies | String | Anomalies . | 
 
 #### Command Example
+
 ```!gra-cases status="OPEN" page=1 max=25```
 
 #### Context Example
+
 ```
 [
  {
@@ -815,6 +866,7 @@ get details of the user.
 #### Human Readable Output
 
 ### gra-user-anomalies
+
 ***
 get details of the user.
 
@@ -839,9 +891,11 @@ get details of the user.
 
 
 #### Command Example
+
 ```!gra-user-anomalies employeeId="AB1234"  page=1 max=25```
 
 #### Context Example
+
 ```
 [
    {
@@ -854,6 +908,7 @@ get details of the user.
 
 
 ### gra-case-action
+
 ***
 Closing a case and updating the anomaly status as Closed / Risk Managed / Model Reviewed.
 
@@ -879,9 +934,11 @@ Closing a case and updating the anomaly status as Closed / Risk Managed / Model 
 
 
 #### Command Example
+
 ```!gra-case-action action=modelReviewCase caseId=5 subOption="Tuning Required" caseComment="This is Completed"```
 
 #### Context Example
+
 ```
 [
   {
@@ -893,6 +950,7 @@ Closing a case and updating the anomaly status as Closed / Risk Managed / Model 
 #### Human Readable Output
 
 ### gra-case-action-anomaly
+
 ***
 Closing an anomaly or anomalies within a case and updating the anomaly status as Closed / Risk Managed / Model Reviewed.
 
@@ -920,9 +978,11 @@ Closing an anomaly or anomalies within a case and updating the anomaly status as
 
 
 #### Command Example
+
 ```!gra-case-action-anomaly action=modelReviewCaseAnomaly caseId=5 anomalyNames=anomalyName1 subOption="Tuning Required" caseComment="This is Completed"```
 
 #### Context Example
+
 ```
 [
   {
@@ -937,6 +997,7 @@ Closing an anomaly or anomalies within a case and updating the anomaly status as
 
 
 ### gra-investigate-anomaly-summary
+
 ***
 Retrieve detailed anomaly summary of specified anomaly name.
 
@@ -977,9 +1038,11 @@ Retrieve detailed anomaly summary of specified anomaly name.
 
 
 #### Command Example
+
 ```!gra-investigate-anomaly-summary modelName=ModelName```
 
 #### Context Example
+
 ```
 {
   "analyticalFeatures": {
@@ -1020,6 +1083,7 @@ Retrieve detailed anomaly summary of specified anomaly name.
 
 
 ### gra-analytical-features-entity-value
+
 ***
 Retrieve analytical features for specified entity value and model name.
 
@@ -1046,9 +1110,11 @@ Retrieve analytical features for specified entity value and model name.
 
 
 #### Command Example
+
 ```!gra-analytical-features-entity-value entityValue=EntityValue```
 
 #### Context Example
+
 ```
 {
     "analyticalFeatures": {
@@ -1076,6 +1142,7 @@ Retrieve analytical features for specified entity value and model name.
 #### Human Readable Output
  
 ### gra-cases-anomaly
+
 ***
 Retrieve anomalies for specified case id from GRA and update in XSOAR.
 
@@ -1103,9 +1170,11 @@ Retrieve anomalies for specified case id from GRA and update in XSOAR.
 
 
 #### Command Example
+
 ```!gra-cases-anomaly caseId=10```
 
 #### Context Example
+
 ```
 [
     {
@@ -1130,7 +1199,9 @@ Retrieve anomalies for specified case id from GRA and update in XSOAR.
 ```
 
 #### Human Readable Output
+
 ### gra-validate-api
+
 ***
 Verifies the Gurucul platform's operational status by assessing system health, reviewing logs, and checking key performance indicators for any errors.
 
@@ -1139,9 +1210,11 @@ Verifies the Gurucul platform's operational status by assessing system health, r
 `gra-validate-api`
 
 #### Command Example
+
 ```!gra-validate-api```
 
 #### Context Example
+
 ```
 ok
 ```

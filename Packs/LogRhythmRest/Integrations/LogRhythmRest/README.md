@@ -1,5 +1,6 @@
 LogRhythm security intelligence.
 This integration was integrated and tested with version 7.4.6 of LogRhythmRest
+
 ## Configure LogRhythmRest in Cortex
 
 
@@ -16,9 +17,12 @@ This integration was integrated and tested with version 7.4.6 of LogRhythmRest
 | Incident type | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### lr-execute-query
+
 ***
 Executes a query for logs that match the query parameters.
 
@@ -26,6 +30,7 @@ Executes a query for logs that match the query parameters.
 #### Base Command
 
 `lr-execute-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,10 +57,12 @@ Executes a query for logs that match the query parameters.
 
 
 #### Command Example
+
 ```!lr-execute-query keyword=Failure time-frame=Custom start-date=2019-05-15 end-date=2019-05-16 page-size=2```
 
 
 #### Context Example
+
 ```json
 {
     "Logrhythm.Log": [
@@ -86,6 +93,7 @@ Executes a query for logs that match the query parameters.
 #### Human Readable Output
 
 >### Hosts for primary
+>
 >|Level|Computer|Channel|Keywords|EventData|
 >|---|---|---|---|---|
 >| Information | WIN-1234.lab | Security | Audit Failure | An account failed to log on.\n\nSubject:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\t-\n\tAccount Domain:\t\t-\n\tLogon ID:\t\t0x0\n\nLogon Type:\t\t\t3\n\nAccount For Which Logon Failed:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\tGPWARD\n\tAccount Domain:\t\t\n\nFailure Information:\n\tFailure Reason:\t\tUnknown user name or bad password.\n\tStatus:\t\t\t0xC000006D\n\tSub Status:\t\t0xC0000064\n\nProcess Information:\n\tCaller Process ID:\t0x0\n\tCaller Process Name:\t-\n\nNetwork Information:\n\tWorkstation Name:\t-\n\tSource Network Address:\t-\n\tSource Port:\t\t-\n\nDetailed Authentication Information:\n\tLogon Process:\t\tNtLmSsp \n\tAuthentication Package:\tNTLM\n\tTransited Services:\t-\n\tPackage Name (NTLM only):\t-\n\tKey Length:\t\t0\n\nThis event is generated when a logon request fails. It is generated on the computer where access was attempted.\n\nThe Subject fields indicate the account on the local system which requested the logon. This is most commonly a service such as the Server service, or a local process such as Winlogon.exe or Services.exe.\n\nThe Logon Type field indicates the kind of logon that was requested. The most common types are 2 (interactive) and 3 (network).\n\nThe Process Information fields indicate which account and process on the system requested the logon.\n\nThe Network Information fields indicate where a remote logon request originated. Workstation name is not always available and may be left blank in some cases.\n\nThe authentication information fields provide detailed information about this specific logon request.\n\t- Transited services indicate which intermediate services have participated in this logon request.\n\t- Package name indicates which sub-protocol was used among the NTLM protocols.\n\t- Key length indicates the length of the generated session key. This will be 0 if no session key was requested. |
@@ -93,6 +101,7 @@ Executes a query for logs that match the query parameters.
 
 
 ### lr-get-hosts-by-entity
+
 ***
 Retrieves a list of hosts for a given entity, or an empty list if none is found.
 
@@ -100,6 +109,7 @@ Retrieves a list of hosts for a given entity, or an empty list if none is found.
 #### Base Command
 
 `lr-get-hosts-by-entity`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -128,9 +138,11 @@ Retrieves a list of hosts for a given entity, or an empty list if none is found.
 
 
 #### Command Example
+
 ```!lr-get-hosts-by-entity entity-name=primary count=2```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -173,6 +185,7 @@ Retrieves a list of hosts for a given entity, or an empty list if none is found.
 #### Human Readable Output
 
 >### Hosts for primary
+>
 >|ID|Name|EntityId|EntityName|OS|Status|Location|RiskLevel|ThreatLevel|ThreatLevelComments|DateUpdated|HostZone|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| -1000002 | AI Engine Server | 1 | Primary Site | Unknown | Active | NA | None | None |  | 2019-04-24T09:58:32.003Z | Internal |
@@ -180,6 +193,7 @@ Retrieves a list of hosts for a given entity, or an empty list if none is found.
 
 
 ### lr-add-host
+
 ***
 Add a new host to an entity.
 
@@ -187,6 +201,7 @@ Add a new host to an entity.
 #### Base Command
 
 `lr-add-host`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -226,9 +241,11 @@ Add a new host to an entity.
 
 
 #### Command Example
+
 ```!lr-add-host entity-id=1 entity-name=`Primary Site` host-status=New host-zone=Internal name=host11 os=Windows risk-level="High-Medium" use-eventlog-credentials=false```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -257,6 +274,7 @@ Add a new host to an entity.
 >host11 added successfully to Primary Site
 
 ### lr-update-host-status
+
 ***
 Updates an host status.
 
@@ -264,6 +282,7 @@ Updates an host status.
 #### Base Command
 
 `lr-update-host-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -292,9 +311,11 @@ Updates an host status.
 
 
 #### Command Example
+
 ```!lr-update-host-status host-id=8 status=Retired```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -322,6 +343,7 @@ Updates an host status.
 >Status updated to Retired
 
 ### lr-get-persons
+
 ***
 Retrieves a list of LogRhythm persons.
 
@@ -329,6 +351,7 @@ Retrieves a list of LogRhythm persons.
 #### Base Command
 
 `lr-get-persons`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -352,9 +375,11 @@ Retrieves a list of LogRhythm persons.
 
 
 #### Command Example
+
 ```!lr-get-persons person-id=7```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -375,12 +400,14 @@ Retrieves a list of LogRhythm persons.
 #### Human Readable Output
 
 >### Persons information
+>
 >|ID|HostStatus|IsAPIPerson|FirstName|LastName|UserID|UserLogin|DateUpdated|
 >|---|---|---|---|---|---|---|---|
 >| 7 | Retired | false | logrhythm | logrhythm | 5 | lrapi2 | 0001-01-01T00:00:00Z |
 
 
 ### lr-get-networks
+
 ***
 Retrieves a list of networks.
 
@@ -388,6 +415,7 @@ Retrieves a list of networks.
 #### Base Command
 
 `lr-get-networks`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -415,9 +443,11 @@ Retrieves a list of networks.
 
 
 #### Command Example
+
 ```!lr-get-networks network-id=1```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -442,12 +472,14 @@ Retrieves a list of networks.
 #### Human Readable Output
 
 >### Networks information
+>
 >|ID|BeganIP|EndIP|HostStatus|Name|RiskLevel|EntityId|EntityName|Location|ThreatLevel|DateUpdated|HostZone|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 1.1.1.1 | 2.2.2.2 | Active | test | None | -100 | Global Entity | NA | None | 2019-02-20T10:57:13.983Z | External |
 
 
 ### lr-get-hosts
+
 ***
 Returns a list of hosts.
 
@@ -455,6 +487,7 @@ Returns a list of hosts.
 #### Base Command
 
 `lr-get-hosts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -483,9 +516,11 @@ Returns a list of hosts.
 
 
 #### Command Example
+
 ```!lr-get-hosts host-id=1```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -511,12 +546,14 @@ Returns a list of hosts.
 #### Human Readable Output
 
 >### Hosts information:
+>
 >|ID|Name|EntityId|EntityName|OS|Status|Location|RiskLevel|ThreatLevel|ThreatLevelComments|DateUpdated|HostZone|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | WIN-JSBOL5ERCQA | 1 | Primary Site | Windows | Active | NA | Medium-Medium | None |  | 2021-05-18T15:06:54.62Z | Internal |
 
 
 ### lr-get-alarm-data
+
 ***
 Returns data for an alarm.
 
@@ -524,6 +561,7 @@ Returns data for an alarm.
 #### Base Command
 
 `lr-get-alarm-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -553,9 +591,11 @@ Returns data for an alarm.
 
 
 #### Command Example
+
 ```!lr-get-alarm-data alarm-id=1824```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -604,16 +644,20 @@ Returns data for an alarm.
 #### Human Readable Output
 
 >### Alarm information for alarm id 1824
+>
 >|AIERuleID|AIERuleName|AlarmGuid|DateInserted|EventID|ID|LastDxTimeStamp|NormalMessageDate|NotificationSent|Priority|RetryCount|Status|WebConsoleIds|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1000000003 | Use Of Admin User | 5a4d8d77-5ec6-4669-b455-fb0cdbeed7df | 2019-06-20T12:13:28.363 | 337555 | 1824 | 0001-01-01T00:00:00 | 2019-06-20T12:13:20.243 | false | 85 | 0 | Completed | c272b5f5-1db6-461b-9e9c-78d171429494 |
+>
 >### Alarm summaries
+>
 >|PIFType|DrillDownSummaryLogs|
 >|---|---|
 >| User (Origin) | administrator |
 
 
 ### lr-get-alarm-events
+
 ***
 Returns a list of events, by alarm ID.
 
@@ -621,6 +665,7 @@ Returns a list of events, by alarm ID.
 #### Base Command
 
 `lr-get-alarm-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -640,9 +685,11 @@ Returns a list of events, by alarm ID.
 
 
 #### Command Example
+
 ```!lr-get-alarm-events alarm-id=1835```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -943,6 +990,7 @@ Returns a list of events, by alarm ID.
 #### Human Readable Output
 
 >### Events information for alarm 1835
+>
 >|classificationId|classificationName|classificationTypeName|command|commonEventId|commonEventName|count|direction|directionName|entityId|entityName|impactedEntityId|impactedEntityName|impactedHost|impactedHostName|impactedName|impactedZoneName|keyField|logDate|logSourceHost|logSourceHostId|logSourceHostName|logSourceId|logSourceName|logSourceType|logSourceTypeName|login|messageId|messageTypeEnum|mpeRuleId|mpeRuleName|normalDate|normalDateMin|normalMsgDateMax|object|objectName|originEntityId|originEntityName|originHostId|originZone|originZoneName|parentProcessId|priority|protocolId|reason|rootEntityId|rootEntityName|ruleBlockNumber|sequenceNumber|session|severity|status|subject|vendorInfo|vendorMessageId|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.lab |  | win-jsbol5ercqa.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | 1e28712d-4af4-4e82-9403-a2ebfda82f2d | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211157 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
@@ -952,6 +1000,7 @@ Returns a list of events, by alarm ID.
 >| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.lab |  | win-jsbol5ercqa.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | dd2c2251-ede1-4559-916b-0422ea8c0f9e | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211153 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
 
 ### lr-get-case-evidence
+
 ***
 Execute evidence query for a specific case ID.
 
@@ -959,6 +1008,7 @@ Execute evidence query for a specific case ID.
 #### Base Command
 
 `lr-get-case-evidence`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -982,9 +1032,11 @@ Execute evidence query for a specific case ID.
 
 
 #### Command Example
+
 ```!lr-get-case-evidence case_id=12345```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -1026,11 +1078,13 @@ Execute evidence query for a specific case ID.
 #### Human Readable Output
 
 >### Evidences for case FD05A0D9-6749-45F7-BB5D-596FBA68E731
+>
 >|Alarm|Createdby|Datecreated|Datepinned|Dateupdated|Lastupdatedby|Number|Pinned|Status|Statusmessage|Text|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| alarmDate: 2019-04-15T00:02:52.847Z<br/>dateInserted: 2019-04-15T00:02:52.86Z<br/>alarmRuleId: 1098<br/>entityName: Primary Site<br/>alarmId: 190<br/>riskBasedPriorityMax: 37<br/>entityId: 1<br/>alarmRuleName: LogRhythm Data Indexer Max Index Exceeded | disabled: false<br/>number: -100<br/>name: LogRhythm Administrator | 2019-04-15T21:41:34.61Z |  | 2019-04-15T21:41:34.61Z | disabled: false<br/>number: -100<br/>name: LogRhythm Administrator | 3 | false | completed |  |  | alarm |
 
 ### lr-execute-search-query
+
 ***
 Execute search query to LogRhythm log database.
 
@@ -1038,6 +1092,7 @@ Execute search query to LogRhythm log database.
 #### Base Command
 
 `lr-execute-search-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1066,6 +1121,7 @@ Execute search query to LogRhythm log database.
 
 
 #### Command Example
+
 ```json
 {
     "Logrhythm": {
@@ -1083,6 +1139,7 @@ Execute search query to LogRhythm log database.
 >New search query created, Task ID=e1c3f960-e1c3f960-e1c3f960
 
 ### lr-get-query-result
+
 ***
 Get search query result with task ID output from lr-execute-search-query command
 
@@ -1090,6 +1147,7 @@ Get search query result with task ID output from lr-execute-search-query command
 #### Base Command
 
 `lr-get-query-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1123,6 +1181,7 @@ Get search query result with task ID output from lr-execute-search-query command
 
 
 #### Command Example
+
 ```json
 {
     "Logrhythm": {
@@ -1148,12 +1207,14 @@ Get search query result with task ID output from lr-execute-search-query command
 #### Human Readable Output
 
 >### Search results for task e1c3f960-e1c3f960-e1c3f960
+>
 >|OriginEntityId|ImpactedIp|LogSourceName|OriginHost|EntityName|
 >|---|---|---|---|---|
 >| 1 | 10.0.0.1 | Linux Syslog | 1.2.3.4 | Nothing | 
 
 
 ### lr-get-users
+
 ***
 Returns a list of users
 
@@ -1161,6 +1222,7 @@ Returns a list of users
 #### Base Command
 
 `lr-get-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1186,9 +1248,11 @@ Returns a list of users
 
 
 #### Command Example
+
 ```!lr-get-users user_id=5```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -1217,12 +1281,14 @@ Returns a list of users
 #### Human Readable Output
 
 >### Users information
+>
 >|ID|DateUpdated|HostStatus|LastName|FirstName|UserType|Entity|Owner|ReadAccess|WriteAccess|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 5 | 2021-10-11T15:04:50.757Z | Retired | testuser | testuser | Individual | id: 1<br/>name: Primary Site | id: 1<br/>name: myadmin | Private | Private |
 
 
 ### lr-get-logins
+
 ***
 Returns a list of logins
 
@@ -1230,6 +1296,7 @@ Returns a list of logins
 #### Base Command
 
 `lr-get-logins`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1253,9 +1320,11 @@ Returns a list of logins
 
 
 #### Command Example
+
 ```!lr-get-logins user_id=5```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -1289,12 +1358,14 @@ Returns a list of logins
 #### Human Readable Output
 
 >### Logins information
+>
 >|Login|UserProfileId|UserId|DefaultEntityId|HostStatus|DateUpdated|DateCreated|
 >|---|---|---|---|---|---|---|
 >| testusername | -100 | 5 | 1 | Retired | 2021-10-11T15:04:50.753Z | 2021-09-21T13:27:59.72Z |
 
 
 ### lr-get-privileges
+
 ***
 Returns the privileges of a given user.
 
@@ -1302,6 +1373,7 @@ Returns the privileges of a given user.
 #### Base Command
 
 `lr-get-privileges`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1320,9 +1392,11 @@ Returns the privileges of a given user.
 
 
 #### Command Example
+
 ```!lr-get-privileges user_id=5 count=15```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -1353,12 +1427,14 @@ Returns the privileges of a given user.
 #### Human Readable Output
 
 >### Privileges information
+>
 >|Privileges|
 >|---|
 >| GlobalAIEEventsAccess,<br/>SecondLookMgmt,<br/>LogRhythmAPIAccess,<br/>CaseMgmtAccess,<br/>CloudAIAccess,<br/>ShowDeploymentManager,<br/>ShowEntityMgr,<br/>EntityMgmt,<br/>ShowAgentAgentMgr,<br/>AgentMgmt,<br/>ShowLSMgr,<br/>LSMgmt,<br/>DPMgmt,<br/>PMMgmt,<br/>NMMgmt |
 
 
 ### lr-get-profiles
+
 ***
 Returns a list of user profiles
 
@@ -1366,6 +1442,7 @@ Returns a list of user profiles
 #### Base Command
 
 `lr-get-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1398,9 +1475,11 @@ Returns a list of user profiles
 
 
 #### Command Example
+
 ```!lr-get-profiles profile_id=-100```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -1428,12 +1507,14 @@ Returns a list of user profiles
 #### Human Readable Output
 
 >### Users information
+>
 >|ID|Name|ShortDescription|LongDescription|DataProcessorAccessMode|SecurityRole|ProfileType|DateUpdated|TotalAssociatedUsers|
 >|---|---|---|---|---|---|---|---|---|
 >| -100 | LogRhythm Global Administrator | LogRhythm Global Administrators have full access to the system. | The LogRhythm Global Administrator profile is a system record which cannot be modified or deleted. | All | GlobalAdmin | Allow | 2021-07-09T16:03:19.62Z | 11 |
 
 
 ### lr-add-user
+
 ***
 Add a new user to the LogRhythm SIEM
 
@@ -1441,6 +1522,7 @@ Add a new user to the LogRhythm SIEM
 #### Base Command
 
 `lr-add-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1467,9 +1549,11 @@ Add a new user to the LogRhythm SIEM
 
 
 #### Command Example
+
 ```!lr-add-user first_name=Alice last_name=Richards```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -1498,12 +1582,14 @@ Add a new user to the LogRhythm SIEM
 #### Human Readable Output
 
 >### User added
+>
 >|ID|DateUpdated|HostStatus|LastName|FirstName|UserType|Entity|Owner|ReadAccess|WriteAccess|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 13 | 2021-10-20T15:02:14.733Z | Active | Richards | Alice | Individual | id: 1<br/>name: Primary Site | id: 1<br/>name: myadmin | Private | Private |
 
 
 ### lr-add-login
+
 ***
 Add a new login to the LogRhythm user
 
@@ -1511,6 +1597,7 @@ Add a new login to the LogRhythm user
 #### Base Command
 
 `lr-add-login`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1537,9 +1624,11 @@ Add a new login to the LogRhythm user
 
 
 #### Command Example
+
 ```!lr-add-login login=arichards password=Example0Password123!! profile_id=-100 user_id=13```
 
 #### Context Example
+
 ```json
 {
     "Logrhythm": {
@@ -1573,6 +1662,7 @@ Add a new login to the LogRhythm user
 #### Human Readable Output
 
 >### Login added
+>
 >|Login|UserProfileId|UserId|DefaultEntityId|HostStatus|DateUpdated|DateCreated|
 >|---|---|---|---|---|---|---|
 >| arichards | -100 | 13 | 1 | Active | 2021-10-20T15:02:17.783Z | 2021-10-20T15:02:17.78Z |

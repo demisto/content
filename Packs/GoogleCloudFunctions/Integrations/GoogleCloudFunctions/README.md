@@ -1,5 +1,6 @@
 Google Cloud Functions is an event-driven serverless compute platform that enables you to run your code locally or in the cloud without having to provision servers.
 This integration was integrated and tested with API version 1 of Google Cloud Functions
+
 ## Configure Google Cloud Functions in Cortex
 
 
@@ -12,9 +13,12 @@ This integration was integrated and tested with API version 1 of Google Cloud Fu
 | insecure | Trust any certificate \(not secure\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### google-cloud-functions-list
+
 ***
 Lists all Google Cloud functions.
 
@@ -22,6 +26,7 @@ Lists all Google Cloud functions.
 ##### Base Command
 
 `google-cloud-functions-list`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,9 +46,11 @@ Lists all Google Cloud functions.
 
 
 ##### Command Example
+
 ```!google-cloud-functions-list```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudFunctions": {
@@ -73,13 +80,16 @@ Lists all Google Cloud functions.
 ```
 
 ##### Human Readable Output
+
 ### Functions in project "gcp-integrations" and region "us-central1"
+
 |name|httpsTrigger|status|entryPoint|timeout|availableMemoryMb|serviceAccountEmail|updateTime|versionId|labels|sourceUploadUrl|runtime|ingressSettings|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| projects/project/locations/us-central1/functions/demisto-func | url: www.example.com | ACTIVE | hello_world | 60s | 128 | email | 2020-04-05T12:43:29.610Z | 1 | deployment-tool: console-cloud |  | python37 | ALLOW_ALL |
+| projects/project/locations/us-central1/functions/demisto-func | url: <www.example.com> | ACTIVE | hello_world | 60s | 128 | email | 2020-04-05T12:43:29.610Z | 1 | deployment-tool: console-cloud |  | python37 | ALLOW_ALL |
 
 
 ### google-cloud-function-regions-list
+
 ***
 Lists all regions in the project.
 
@@ -87,6 +97,7 @@ Lists all regions in the project.
 ##### Base Command
 
 `google-cloud-function-regions-list`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -104,9 +115,11 @@ Lists all regions in the project.
 
 
 ##### Command Example
+
 ```!google-cloud-function-regions-list```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudFunctions": {
@@ -173,7 +186,9 @@ Lists all regions in the project.
 ```
 
 ##### Human Readable Output
+
 ### Regions in project "gcp-integrations"
+
 |locationId|name|labels|
 |---|---|---|
 | europe-west1 | projects/gcp-integrations/locations/europe-west1 | cloud.googleapis.com/region: europe-west1 |
@@ -187,6 +202,7 @@ Lists all regions in the project.
 
 
 ### google-cloud-function-get-by-name
+
 ***
 Gets the details of a specific Google Cloud function.
 
@@ -194,6 +210,7 @@ Gets the details of a specific Google Cloud function.
 ##### Base Command
 
 `google-cloud-function-get-by-name`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -214,9 +231,11 @@ Gets the details of a specific Google Cloud function.
 
 
 ##### Command Example
+
 ```!google-cloud-function-get-by-name function_name="demisto-func"```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudFunctions": {
@@ -244,13 +263,16 @@ Gets the details of a specific Google Cloud function.
 ```
 
 ##### Human Readable Output
+
 ### Here are the details for demisto-func:
+
 |name|httpsTrigger|status|entryPoint|timeout|availableMemoryMb|serviceAccountEmail|updateTime|versionId|labels|sourceUploadUrl|runtime|ingressSettings|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| projects/project/locations/us-central1/functions/demisto-func | url: www.example.com | ACTIVE | hello_world | 60s | 128 | email | 2020-04-05T12:43:29.610Z | 1 | deployment-tool: console-cloud |  | python37 | ALLOW_ALL |
+| projects/project/locations/us-central1/functions/demisto-func | url: <www.example.com> | ACTIVE | hello_world | 60s | 128 | email | 2020-04-05T12:43:29.610Z | 1 | deployment-tool: console-cloud |  | python37 | ALLOW_ALL |
 
 
 ### google-cloud-function-execute
+
 ***
 Executes a Google Cloud function.
 
@@ -258,6 +280,7 @@ Executes a Google Cloud function.
 ##### Base Command
 
 `google-cloud-function-execute`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -277,9 +300,11 @@ Executes a Google Cloud function.
 
 
 ##### Command Example
+
 ```!google-cloud-function-execute function_name=demisto-func parameters=message:hell\"oThere```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudFunctions": {
@@ -292,7 +317,9 @@ Executes a Google Cloud function.
 ```
 
 ##### Human Readable Output
+
 ### Execution details for demisto-func:
+
 |executionId|result|
 |---|---|
 | xp9hifb4y996 | hell"oThere |

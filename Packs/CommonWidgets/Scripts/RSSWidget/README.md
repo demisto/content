@@ -1,6 +1,7 @@
 # RSSWidget Script
 
 ### Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,7 +10,9 @@
 | Cortex XSOAR Version | 5.5.0 |
 
 ### Inputs
+
 ---
+
 | **Argument Name** | **Description** |
 | --- | --- |
 | url | The URL of the RSS feed. |
@@ -23,10 +26,12 @@ There are no outputs for this script.
 
 
 ### Script Example
+
 ---
 ```!RSSWidget url=https://threatpost.com/feed/```
 
 ### Human Readable Output
+
 ---
 **[Article Title #1](https://xsoar.pan.dev/)**<br />
 *Posted June 25, 2021 3:35 PM by Timor*<br />

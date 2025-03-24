@@ -1,6 +1,7 @@
 Verifies the URL's SSL certificate.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Verifies the URL's SSL certificate.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ Verifies the URL's SSL certificate.
 | url | Comma separated list of URLs to verify. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

@@ -7,7 +7,7 @@ Moved to beta due to the lack of a formal API.
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g., https://192.168.0.1:443) | True |
+| Server URL (e.g., <https://192.168.0.1:443>) | True |
 | Username | True |
 | Password | True |
 | Vsys - Firewall instances only | False |
@@ -49,9 +49,11 @@ Gets the Policy Optimizer statistics.
 
 
 #### Command Example
+
 ```!pan-os-po-get-stats```
 
 #### Context Example
+
 ```json
 {
     "PanOS": {
@@ -71,6 +73,7 @@ Gets the Policy Optimizer statistics.
 #### Human Readable Output
 
 >### Policy Optimizer Statistics:
+>
 >|@name|text|
 >|---|---|
 >| no_app_specified | 1 |
@@ -103,9 +106,11 @@ Shows all security policies with no apps specified.
 
 
 #### Command Example
+
 ```!pan-os-po-no-apps```
 
 #### Context Example
+
 ```json
 {
     "PanOS": {
@@ -183,6 +188,7 @@ Shows all security policies with no apps specified.
 #### Human Readable Output
 
 >### Policy Optimizer No App Specified:
+>
 >|@name|@uuid|action|description|source|destination|
 >|---|---|---|---|---|---|
 >| pano_rule | uuid | allow | a test rule for the move function | member: any | member: any |
@@ -242,9 +248,11 @@ Gets unused, used, or any rules.
 
 
 #### Command Example
+
 ```!pan-os-po-get-rules usage=Any```
 
 #### Context Example
+
 ```json
 {
     "PanOS": {
@@ -323,6 +331,7 @@ Gets unused, used, or any rules.
 #### Human Readable Output
 
 >### PolicyOptimizer AnyRules:
+>
 >|@name|@uuid|action|description|source|destination|
 >|---|---|---|---|---|---|
 >| tip rule | uuid | allow |  | member: tip | member: any |
@@ -351,6 +360,7 @@ Gets the app usage statistics for a specific security rule.
 
 
 #### Command Example
+
 ```!pan-os-po-app-and-usage rule_uuid=uuid```
 
 #### Human Readable Output

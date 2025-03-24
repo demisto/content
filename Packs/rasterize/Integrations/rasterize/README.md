@@ -1,4 +1,5 @@
 Converts URLs, PDF files, and emails to an image file or PDF file.
+
 ## Docker Security Recommendations
      
 If you are using the integration to rasterize un-trusted URLs or HTML content, such as those obtained via external emails, we recommend following the instructions at the [Network Hardening Guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Network-Hardening) or [Docker network hardening Guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker network hardening Guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide) under the Block Internal Network Access section.
@@ -18,8 +19,10 @@ If you are using the integration to rasterize un-trusted URLs or HTML content, s
 
 
 **Configuration Notes:**
+
 * Return Errors: If this checkbox is not selected, a warning will be returned instead of an error.
 * Chrome options: A comma-separated list of Chrome options to add or remove for rasterization. Use for advanced troubleshooting. If a value contains a comma (for example, when setting the user agent value), escape it with the backslash (**\\**) character. To remove a default option that is used, put the option in square brackets. For example, to add the option *--disable-auto-reload* and remove the option *--disable-dev-shm-usage*, set the following value:
+
     ```
     --disable-auto-reload,[--disable-dev-shm-usage]
     ```
@@ -31,9 +34,12 @@ If you want to set the language to en-US, use en-GB instead.
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### rasterize
+
 ***
 Converts the contents of a URL to an image file or a PDF file.
 
@@ -41,6 +47,7 @@ Converts the contents of a URL to an image file or a PDF file.
 #### Base Command
 
 `rasterize`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -68,9 +75,11 @@ Converts the contents of a URL to an image file or a PDF file.
 | InfoFile.Extension | string | File extension. | 
 
 #### Command Example
+
 ```!rasterize url=http://google.com```
 
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -85,10 +94,12 @@ Converts the contents of a URL to an image file or a PDF file.
 ```
 
 #### Human Readable Output
+
 [!image](https://raw.githubusercontent.com/demisto/content/6bdd1b0ca11b977db6d1c652063b71b8697794c2/Packs/rasterize/Integrations/rasterize/doc_files/rasterize_url_command_output.png)
 
 
 ### rasterize-email
+
 ***
 Converts the body of an email to an image file or a PDF file.
 
@@ -96,6 +107,7 @@ Converts the body of an email to an image file or a PDF file.
 #### Base Command
 
 `rasterize-email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -122,9 +134,11 @@ Converts the body of an email to an image file or a PDF file.
 | InfoFile.Extension | string | File extension. | 
 
 #### Command Example
+
 ```!rasterize-email htmlBody="<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"></head><body><br>---------- TEST FILE ----------<br></body></html>"```
 
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -144,6 +158,7 @@ Converts the body of an email to an image file or a PDF file.
 
 
 ### rasterize-image
+
 ***
 Converts an image file to a PDF file.
 
@@ -151,6 +166,7 @@ Converts an image file to a PDF file.
 #### Base Command
 
 `rasterize-image`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -175,9 +191,11 @@ Converts an image file to a PDF file.
 | InfoFile.Extension | string | File extension. |
 
 #### Command Example
+
 ```!rasterize-image EntryID=889@6e069bc4-2a1e-43ea-8ed3-ea558e377751```
 
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -196,6 +214,7 @@ Converts an image file to a PDF file.
 
 
 ### rasterize-pdf
+
 ***
 Converts a PDF file to an image file.
 
@@ -203,6 +222,7 @@ Converts a PDF file to an image file.
 #### Base Command
 
 `rasterize-pdf`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -226,9 +246,11 @@ Converts a PDF file to an image file.
 | InfoFile.Extension | string | File extension. |
 
 #### Command Example
+
 ```!rasterize-pdf EntryID=897@6e069bc4-2a1e-43ea-8ed3-ea558e377751```
 
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -247,6 +269,7 @@ Converts a PDF file to an image file.
 
 
 ### rasterize-html
+
 ***
 Converts an html file to a PDF or PNG file.
 
@@ -254,6 +277,7 @@ Converts an html file to a PDF or PNG file.
 #### Base Command
 
 `rasterize-html`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -278,9 +302,11 @@ Converts an html file to a PDF or PNG file.
 | InfoFile.Extension | string | File extension. |
 
 #### Command Example
+
 ```!rasterize-html EntryID=889@6e069bc4-2a1e-43ea-8ed3-ea558e4586751```
 
 #### Context Example
+
 ```json
 {
     "InfoFile": {

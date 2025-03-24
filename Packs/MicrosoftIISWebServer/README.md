@@ -20,12 +20,15 @@ For configuring logging [Per-site](https://learn.microsoft.com/en-us/iis/manage/
 ![Server Screenshot](doc_files/IISLogging.png)
 
 ### Supported Log Formats
+
 The XDM normalization included in this pack is supported only for the *W3C* format, for logs with the following field list structures: 
 
-####  Access Log 
+#### Access Log 
+
 ``` bash
   date time s-sitename s-computername s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs-version cs(User-Agent) cs(Cookie) cs(Referer) cs-host sc-status sc-substatus sc-win32-status sc-bytes cs-bytes time-taken
 ```
+
 #### Error Log
 
 ``` bash

@@ -1,4 +1,5 @@
 ## Binalyze AIR Integration
+
 This integration allows you to use the Binalyze AIR's isolation and evidence collecting features easily.
 ---
 
@@ -29,6 +30,7 @@ Isolate an endpoint
 #### Base Command
 
 `binalyze-air-isolate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -47,6 +49,7 @@ Isolate an endpoint
 | BinalyzeAIR.Isolate.result.organizationId | number | Organization Id of endpoint |
 
 ### binalyze-air-acquire
+
 ***
 Acquire evidence from an endpoint
 
@@ -54,6 +57,7 @@ Acquire evidence from an endpoint
 #### Base Command
 
 `binalyze-air-acquire`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                       | **Required** |

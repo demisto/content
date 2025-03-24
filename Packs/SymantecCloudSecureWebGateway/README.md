@@ -12,13 +12,16 @@ In addition, data is normalized to the Cortex Data Model (XDM).
 The following XQL Queries demonstrate the parsing and XDM modeling for the Symantec Cloud SWG Access Logs:
 
 1. **XDM Mapped Fields (Implicit)** 
+
     ```javascript
     config  timeframe = 1H
     | datamodel dataset = symantec_swg_raw 
     | fields *
     | view column order = populated 
     ```
+
 2. **XDM Mapped Fields (Explicit)** 
+
     ```javascript
     config  timeframe = 1H
     | datamodel dataset = symantec_swg_raw 

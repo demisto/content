@@ -22,9 +22,12 @@ This integration was integrated and tested with version 3.0.0 of the GuardiCore 
 | Fetch incidents |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### guardicore-search-asset
+
 ***
 Display information about assets.
 
@@ -32,6 +35,7 @@ Display information about assets.
 #### Base Command
 
 `guardicore-search-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -107,9 +111,11 @@ Display information about assets.
 
 
 #### Command Example
+
 ```!guardicore-search-asset ip_address=1.1.1.1```
 
 #### Context Example
+
 ```json
 {
     "Guardicore": {
@@ -131,12 +137,14 @@ Display information about assets.
 #### Human Readable Output
 
 >### GuardiCoreV2 - Asset: Accounting-web-1
+>
 >|asset_id|ip_addresses|last_seen|name|status|tenant_name|
 >|---|---|---|---|---|---|
 >| 920b9a05-889e-429e-97d0-94a92ccbe376 | 1.1.1.1,<br/>fe80::250:56ff:fe84:da1e | 1627909413816 | Accounting-web-1 | on | esx10/lab_a/Apps/Accounting |
 
 
 ### guardicore-get-incident
+
 ***
 Display information about an incident.
 
@@ -144,6 +152,7 @@ Display information about an incident.
 #### Base Command
 
 `guardicore-get-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -378,9 +387,11 @@ Display information about an incident.
 
 
 #### Command Example
+
 ```!guardicore-get-incident id="c2acca07-e9bf-4d63-9a26-ff6c749d24d2"```
 
 #### Context Example
+
 ```json
 {
     "Guardicore": {
@@ -972,12 +983,14 @@ Display information about an incident.
 #### Human Readable Output
 
 >### GuardiCoreV2 - Incident: c2acca07-e9bf-4d63-9a26-ff6c749d24d2
+>
 >|affected_assets|end_time|ended|id|incident_type|severity|start_time|
 >|---|---|---|---|---|---|---|
 >| {'labels': ['source'], 'ip': '1.1.1.1', 'vm_id': '53d49bdc-0be0-4b7e-b7e3-d3dcc79bc285', 'vm': {'id': '53d49bdc-0be0-4b7e-b7e3-d3dcc79bc285', 'name': 'Accounting-lb-1', 'recent_domains': [], 'tenant_name': 'esx10/lab_a/Apps/Accounting', 'full_name': 'esx10/lab_a/Apps/Accounting\\Accounting-lb-1'}, 'is_inner': True},<br/>{'labels': ['destination'], 'ip': '1.1.1.1', 'vm_id': 'e69d1434-28d3-4774-a933-c2c993412edc', 'vm': {'id': 'e69d1434-28d3-4774-a933-c2c993412edc', 'name': 'DC-01', 'recent_domains': [], 'tenant_name': 'esx10/lab_a/Endpoints', 'full_name': 'esx10/lab_a/Endpoints\\DC-01'}, 'is_inner': True} | 1625203336164 | true | c2acca07-e9bf-4d63-9a26-ff6c749d24d2 | Reveal | 50 | 1625203133278 |
 
 
 ### guardicore-get-incidents
+
 ***
 Display information about incidents.
 
@@ -985,6 +998,7 @@ Display information about incidents.
 #### Base Command
 
 `guardicore-get-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1064,9 +1078,11 @@ Display information about incidents.
 
 
 #### Command Example
+
 ```!guardicore-get-incidents from_time="2020-12-12T15:31:17Z" to_time="2022-07-07T15:31:17Z" limit=1```
 
 #### Context Example
+
 ```json
 {
     "Guardicore": {
@@ -1111,12 +1127,14 @@ Display information about incidents.
 #### Human Readable Output
 
 >### GuardiCoreV2 - Incidents: 1
+>
 >|affected_assets|end_time|ended|id|incident_type|severity|start_time|
 >|---|---|---|---|---|---|---|
 >| {'labels': ['source'], 'ip': '1.1.1.1', 'is_inner': False},<br/>{'labels': ['destination'], 'ip': '1.1.1.1', 'vm_id': '7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5', 'vm': {'id': '7b868cc2-9f61-4c81-ac75-ff74bc8ee7c5', 'name': 'jumpbox-linux-1', 'recent_domains': [], 'tenant_name': 'esx10/lab_a/Endpoints', 'full_name': 'esx10/lab_a/Endpoints\\jumpbox-linux-1'}, 'is_inner': True} | 1611322117545 | true | adb636b7-f941-438f-82ce-c0f44ddb5324 | Reveal | 30 | 1611321257006 |
 
 
 ### endpoint
+
 ***
 Endpoint command (uses `guardicore-search-asset` internally).
 
@@ -1124,6 +1142,7 @@ Endpoint command (uses `guardicore-search-asset` internally).
 #### Base Command
 
 `endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1147,9 +1166,11 @@ Endpoint command (uses `guardicore-search-asset` internally).
 
 
 #### Command Example
+
 ```!endpoint ip=1.1.1.1```
 
 #### Context Example
+
 ```json
 {
     "Endpoint": [
@@ -1300,12 +1321,14 @@ Endpoint command (uses `guardicore-search-asset` internally).
 #### Human Readable Output
 
 >### GuardiCoreV2 - Endpoint: 
+>
 >|ID|IPAddress|MACAddress|OS|Vendor|
 >|---|---|---|---|---|
 >| a9900e49-b8d5-479d-93e1-a199f2b2e7a4 | 1.1.1.1 | 00:00:00:00:a1:6f | 0 | GuardiCore Response |
 
 
 ## Breaking changes from the previous version of this integration - GuardiCore v2
+
 This is a new version, old version of the API is deprecated (by GuardiCore).
 
 ## Additional Considerations for this version

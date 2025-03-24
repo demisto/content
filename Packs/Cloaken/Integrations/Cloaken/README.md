@@ -116,6 +116,7 @@ Creates a screenshot of the specified URL.
 #### Base Command
 
 `cloaken-screenshot-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -11,9 +11,12 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### threatvault-antivirus-signature-get
+
 ***
 Gets the antivirus signature.
 
@@ -21,6 +24,7 @@ Gets the antivirus signature.
 #### Base Command
 
 `threatvault-antivirus-signature-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -43,9 +47,11 @@ Gets the antivirus signature.
 
 
 #### Command Example
+
 ```!threatvault-antivirus-signature-get signature_id=93534285```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -77,12 +83,14 @@ Gets the antivirus signature.
 #### Human Readable Output
 
 >### Antivirus:
+>
 >|active|createTime|release|sha256|signatureId|signatureName|
 >|---|---|---|---|---|---|
 >| true | 2010-10-01 10:28:57 (UTC) | wildfire: {"latestReleaseVersion": 0, "firstReleaseVersion": 0}<br/>antivirus: {"latestReleaseVersion": 0, "firstReleaseVersion": 334, "firstReleaseTime": "2010-10-03 15:04:58 UTC"} | 7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8,<br/>9e12c5cdb069f74487c11758e732d72047b72bedf4373aa9e3a58e8e158380f8 | 93534285 | Worm/Win32.autorun.crck |
 
 
 ### file
+
 ***
 Checks the reputation of an antivirus in Threat Vault.
 
@@ -90,6 +98,7 @@ Checks the reputation of an antivirus in Threat Vault.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -112,9 +121,11 @@ Checks the reputation of an antivirus in Threat Vault.
 
 
 #### Command Example
+
 ```!file file= 7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -192,19 +203,22 @@ Checks the reputation of an antivirus in Threat Vault.
 #### Human Readable Output
 
 >### WildFire File Report
+>
 >|FileType|MD5|SHA256|Size|Status|
 >|---|---|---|---|---|
 >| PE | 7e8d3744c0a06d3c7ca7f6dbfce3d576 | 7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8 | 117760 | Completed |
 
 
 ### threatvault-dns-signature-get-by-id
+
 ***
 Gets the DNS signature.
-For more information about getting the IDs, see: https://docs.paloaltonetworks.com/pan-os/10-0/pan-os-admin/threat-prevention/learn-more-about-and-assess-threats/learn-more-about-threat-signatures.html
+For more information about getting the IDs, see: <https://docs.paloaltonetworks.com/pan-os/10-0/pan-os-admin/threat-prevention/learn-more-about-and-assess-threats/learn-more-about-threat-signatures.html>
 
 #### Base Command
 
 `threatvault-dns-signature-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -226,9 +240,11 @@ For more information about getting the IDs, see: https://docs.paloaltonetworks.c
 
 
 #### Command Example
+
 ```!threatvault-dns-signature-get-by-id signature_id=325235352```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -242,13 +258,15 @@ For more information about getting the IDs, see: https://docs.paloaltonetworks.c
 >DNS signature was not found. Please try with a different dns_signature_id.
 
 ### threatvault-antispyware-signature-get-by-id
+
 ***
 Gets the antispyware signature.
-For more information about getting the IDs, see: https://docs.paloaltonetworks.com/pan-os/10-0/pan-os-admin/threat-prevention/learn-more-about-and-assess-threats/learn-more-about-threat-signatures.html
+For more information about getting the IDs, see: <https://docs.paloaltonetworks.com/pan-os/10-0/pan-os-admin/threat-prevention/learn-more-about-and-assess-threats/learn-more-about-threat-signatures.html>
 
 #### Base Command
 
 `threatvault-antispyware-signature-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -274,9 +292,11 @@ For more information about getting the IDs, see: https://docs.paloaltonetworks.c
 
 
 #### Command Example
+
 ```!threatvault-antispyware-signature-get-by-id signature_id=10001```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -309,12 +329,14 @@ For more information about getting the IDs, see: https://docs.paloaltonetworks.c
 #### Human Readable Output
 
 >### Anti Spyware Signature:
+>
 >|signatureId|signatureName|signatureType|status|firstReleaseTime|latestReleaseTime|
 >|---|---|---|---|---|---|
 >| 10001 | Autorun User-Agent Traffic | spyware | released | 2011-05-23 UTC | 2020-11-06 UTC |
 
 
 ### threatvault-ip-geo-get
+
 ***
 Get the IP address geolocation.
 
@@ -322,6 +344,7 @@ Get the IP address geolocation.
 #### Base Command
 
 `threatvault-ip-geo-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -339,9 +362,11 @@ Get the IP address geolocation.
 
 
 #### Command Example
+
 ```!threatvault-ip-geo-get ip=8.8.8.8```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -357,12 +382,14 @@ Get the IP address geolocation.
 #### Human Readable Output
 
 >### IP location:
+>
 >|countryCode|countryName|ipAddress|
 >|---|---|---|
 >| US | United States | 8.8.8.8 |
 
 
 ### ip
+
 ***
 Check IP location.
 
@@ -370,6 +397,7 @@ Check IP location.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -390,9 +418,11 @@ Check IP location.
 
 
 #### Command Example
+
 ```!ip ip=1.1.1.1```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -420,12 +450,14 @@ Check IP location.
 #### Human Readable Output
 
 >### IP location:
+>
 >|countryCode|countryName|ipAddress|
 >|---|---|---|
 >| AU | Australia | 1.1.1.1 |
 
 
 ### threatvault-antivirus-signature-search
+
 ***
 Initiates an antivirus signature search.
 
@@ -433,6 +465,7 @@ Initiates an antivirus signature search.
 #### Base Command
 
 `threatvault-antivirus-signature-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -451,9 +484,11 @@ Initiates an antivirus signature search.
 
 
 #### Command Example
+
 ```!threatvault-antivirus-signature-search signature_name=Worm/Win32.autorun.crck```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -471,12 +506,14 @@ Initiates an antivirus signature search.
 #### Human Readable Output
 
 >### Antivirus Signature Search:
+>
 >|from|search_request_id|search_type|status|to|
 >|---|---|---|---|---|
 >| 0 | 5d10d1f1-2191-11eb-8c3b-396ee8360b80 | panav | submitted | 10 |
 
 
 ### threatvault-dns-signature-search
+
 ***
 Initiates a DNS signature search.
 
@@ -484,6 +521,7 @@ Initiates a DNS signature search.
 #### Base Command
 
 `threatvault-dns-signature-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -503,9 +541,11 @@ Initiates a DNS signature search.
 
 
 #### Command Example
+
 ```!threatvault-dns-signature-search domain_name=google.com```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -523,12 +563,14 @@ Initiates a DNS signature search.
 #### Human Readable Output
 
 >### DNS Signature Search:
+>
 >|from|search_request_id|search_type|status|to|
 >|---|---|---|---|---|
 >| 0 | 5a2e4b67-2191-11eb-aaa0-476a91ad21a0 | dns | submitted | 10 |
 
 
 ### threatvault-antispyware-signature-search
+
 ***
 Initiates an antispyware signature search.
 
@@ -536,6 +578,7 @@ Initiates an antispyware signature search.
 #### Base Command
 
 `threatvault-antispyware-signature-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -556,9 +599,11 @@ Initiates an antispyware signature search.
 
 
 #### Command Example
+
 ```!threatvault-antispyware-signature-search cve=CVE-2015-8650```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -576,12 +621,14 @@ Initiates an antispyware signature search.
 #### Human Readable Output
 
 >### Anti Spyware Signature Search:
+>
 >|from|search_request_id|search_type|status|to|
 >|---|---|---|---|---|
 >| 0 | 5bb4285c-2191-11eb-b288-43f099eed11d | ips | submitted | 10 |
 
 
 ### threatvault-signature-search-results
+
 ***
 Initiates an antispyware signature search.
 
@@ -589,6 +636,7 @@ Initiates an antispyware signature search.
 #### Base Command
 
 `threatvault-signature-search-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -610,9 +658,11 @@ Initiates an antispyware signature search.
 
 
 #### Command Example
+
 ```!threatvault-signature-search-results search_type=dns search_request_id=8e9e2289-218f-11eb-b876-aba382af19b4```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -819,6 +869,7 @@ Initiates an antispyware signature search.
 #### Human Readable Output
 
 >### Signature search are showing 10 of 5385 results:
+>
 >|signatureId|signatureName|domainName|category|
 >|---|---|---|---|
 >| 44101494 | generic:mail-google.com.co | `mail-google.com.co` | malware |

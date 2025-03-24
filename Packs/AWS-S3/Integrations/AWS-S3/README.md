@@ -22,9 +22,12 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### aws-s3-create-bucket
+
 ***
 Create AWS S3 bucket.
 
@@ -32,6 +35,7 @@ Create AWS S3 bucket.
 #### Base Command
 
 `aws-s3-create-bucket`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -59,9 +63,11 @@ Create AWS S3 bucket.
 
 
 #### Command Example
+
 ``` !aws-s3-create-bucket bucket=test acl=private```
 
 #### Human Readable Output
+
 AWS S3 Buckets
 
 | BucketName | Location  |
@@ -71,6 +77,7 @@ AWS S3 Buckets
 
 
 ### aws-s3-delete-bucket
+
 ***
 Delete AWS S3 bucket.
 
@@ -78,6 +85,7 @@ Delete AWS S3 bucket.
 #### Base Command
 
 `aws-s3-delete-bucket`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -94,13 +102,16 @@ Delete AWS S3 bucket.
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-s3-delete-bucket bucket=test ```
 
 #### Human Readable Output
+
 The bucket was deleted.
 
 
 ### aws-s3-list-buckets
+
 ***
 List all S3 buckets in AWS account
 
@@ -108,6 +119,7 @@ List all S3 buckets in AWS account
 #### Base Command
 
 `aws-s3-list-buckets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -127,9 +139,11 @@ List all S3 buckets in AWS account
 
 
 #### Command Example
+
 ``` !aws-s3-list-buckets```
 
 #### Human Readable Output
+
 AWS S3 Buckets
 
 | BucketName | CreationDate  |
@@ -140,6 +154,7 @@ AWS S3 Buckets
 
 
 ### aws-s3-get-bucket-policy
+
 ***
 Get AWS S3 Bucket Policy
 
@@ -147,6 +162,7 @@ Get AWS S3 Bucket Policy
 #### Base Command
 
 `aws-s3-get-bucket-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -174,10 +190,12 @@ Get AWS S3 Bucket Policy
 
 
 #### Command Example
+
 ```!aws-s3-get-bucket-policy bucket=test ```
 
 
 ### aws-s3-delete-bucket-policy
+
 ***
 Deletes the policy from the bucket.
 
@@ -185,6 +203,7 @@ Deletes the policy from the bucket.
 #### Base Command
 
 `aws-s3-delete-bucket-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -201,14 +220,17 @@ Deletes the policy from the bucket.
 There is no context output for this command.
 
 #### Command Example
+
 ``` !aws-s3-delete-bucket-policy bucket=test```
 
 #### Human Readable Output
+
 Policy deleted from test.
 
 
 
 ### aws-s3-download-file
+
 ***
 Download a file from S3 bucket to war room.
 
@@ -216,6 +238,7 @@ Download a file from S3 bucket to war room.
 #### Base Command
 
 `aws-s3-download-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -233,9 +256,11 @@ Download a file from S3 bucket to war room.
 There is no context output for this command.
 
 #### Command Example
+
 ```!aws-s3-download-file bucket=test key=test.txt ```
 
 ### aws-s3-list-bucket-objects
+
 ***
 List object in S3 bucket.
 
@@ -243,6 +268,7 @@ List object in S3 bucket.
 #### Base Command
 
 `aws-s3-list-bucket-objects`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -266,9 +292,11 @@ List object in S3 bucket.
 
 
 #### Command Example
+
 ``` !aws-s3-list-bucket-objects bucket=test prefix=testing delimiter='/'```
 
 #### Human Readable Output
+
 AWS S3 Bucket Objects
 
 | Key | Size | LastModified |
@@ -277,6 +305,7 @@ AWS S3 Bucket Objects
 
 
 ### aws-s3-put-bucket-policy
+
 ***
 Replaces a policy on a bucket. If the bucket already has a policy, the one in this request completely replaces it.
 
@@ -284,6 +313,7 @@ Replaces a policy on a bucket. If the bucket already has a policy, the one in th
 #### Base Command
 
 `aws-s3-put-bucket-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -302,6 +332,7 @@ Replaces a policy on a bucket. If the bucket already has a policy, the one in th
 There is no context output for this command.
 
 #### Command Example
+
 ``` !aws-s3-put-bucket-policy bucket=test policy={"Version":"2012-10-17","Id":"Policy1519481415511","Statement":[{"Sid":"Stmt1519ds34548138sf5929","Effect":"Allow","Principal":{"AWS":"arn:aws:iam::123456789:user/itai"},"Action":"s3:","Resource":"arn:aws:s3:::test"},{"Sid":"Stmt1345519481414395","Effect":"Allow","Principal":{"AWS":"arn:aws:iam::123456789:user/bob"},"Action":"s3:","Resource":"arn:aws:s3:::test"}]}```
 
 #### Human Readable Output
@@ -310,6 +341,7 @@ Successfully applied bucket policy to test bucket.
 
 
 ### aws-s3-upload-file
+
 ***
 Upload file to S3 bucket
 
@@ -317,6 +349,7 @@ Upload file to S3 bucket
 #### Base Command
 
 `aws-s3-upload-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -335,6 +368,7 @@ Upload file to S3 bucket
 There is no context output for this command.
 
 #### Command Example
+
 ``` !aws-s3-upload-file bucket="bucket name" key="file name to be displayed" entryID=##@##```
 
 #### Human Readable Output
@@ -343,6 +377,7 @@ File {file name to be displayed} was uploaded successfully to {bucket name}'
 
 
 ### aws-s3-get-public-access-block
+
 ***
 Retrieves the PublicAccessBlock configuration for an Amazon S3 bucket.
 
@@ -350,6 +385,7 @@ Retrieves the PublicAccessBlock configuration for an Amazon S3 bucket.
 #### Base Command
 
 `aws-s3-get-public-access-block`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -371,6 +407,7 @@ Retrieves the PublicAccessBlock configuration for an Amazon S3 bucket.
 | AWS.S3.Buckets.BucketName.PublicAccessBlockConfiguration.RestrictPublicBuckets | Boolean | Specifies whether Amazon S3 should restrict public bucket policies for this bucket. | 
 
 #### Command Example
+
 ``` !aws-s3-get-public-access-block bucket="bucket name"```
 
 #### Human Readable Output
@@ -383,6 +420,7 @@ AWS S3 Bucket Public Access Block
 
 
 ### aws-s3-put-public-access-block
+
 ***
 Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
 
@@ -390,6 +428,7 @@ Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
 #### Base Command
 
 `aws-s3-put-public-access-block`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -410,6 +449,7 @@ Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
 There is no context output for this command.
 
 #### Command Example
+
 ``` !aws-s3-put-public-access-block bucket="bucket name" BlockPublicAcls=True IgnorePublicAcls=False BlockPublicPolicy=True RestrictPublicBuckets=True```
 
 #### Human Readable Output
@@ -417,6 +457,7 @@ There is no context output for this command.
 Successfully applied public access block to the {bucket} bucket.
 
 ### aws-s3-get-bucket-encryption
+
 ***
 Get AWS S3 Bucket Encryption
 

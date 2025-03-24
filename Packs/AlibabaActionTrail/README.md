@@ -21,10 +21,14 @@ This integration was integrated and tested with API version 0.6 of Alicloud Log 
     | Use Secured Connection | Use SSL secure connection or ‘None’. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands Alert War Room in the CLI in XSIAM.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### alibaba-get-events
+
 ***
 Manual command to fetch events and display them.
 
@@ -32,6 +36,7 @@ Manual command to fetch events and display them.
 #### Base Command
 
 `alibaba-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

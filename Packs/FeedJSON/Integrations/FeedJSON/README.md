@@ -2,6 +2,7 @@
 Use the JSON feed integration to fetch indicators from a JSON feed. This integration allows for a wide variety of user configuration to support different types of JSON feeds.
 
 ## Configure JSON Feed in Cortex
+
 ---
 
 
@@ -11,7 +12,7 @@ Use the JSON feed integration to fetch indicators from a JSON feed. This integra
 | Fetch indicators | Whether to fetch indicators, if checked. |
 | Indicator Reputation | The reputation applied to indicators from this integration instance. The default value is "Bad". |
 | Source Reliability | The reliability of the source providing the intelligence data. The default value is "C - Fairly reliable" |
-| Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp |
+| Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at <https://us-cert.cisa.gov/tlp> |
 | Indicator Expiration Method | The method by which to expire indicators from this feed for this integration instance. |    
 | Feed Fetch Interval | How often to fetch indicators from the feed for this integration instance (in minutes). The default value is 60. | 
 | URL | The URL of the feed. | 
@@ -28,11 +29,12 @@ Use the JSON feed integration to fetch indicators from a JSON feed. This integra
 
 
 ## Step-by-step configuration
+
 ---
 
 IP address ranges from Amazon AWS will be used as examples. The feed will ingest indicators of the CIDR type. These are the feed instance configuration parameters for our example.
 
-**URL**: https://ip-ranges.amazonaws.com/ip-ranges.json
+**URL**: <https://ip-ranges.amazonaws.com/ip-ranges.json>
 
 **Auto detect indicator type**: Checked.
 
@@ -53,17 +55,20 @@ By clicking `Mapping` in the integration instance, the field names we previously
 We can use `Set up a new classification rule` using actual data from the feed.
 
 ## Commands
+
 ---
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get indicators from the feed
+
 ---
 Gets the feed indicators.
 
 ##### Base Command
 
 `!json-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -76,6 +81,7 @@ Gets the feed indicators.
 There is no context output for this command.
 
 ## Demo Video
+
 <video controls>
     <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedJSON/Json_generic_feed_demo.mp4"
             type="video/mp4"/>

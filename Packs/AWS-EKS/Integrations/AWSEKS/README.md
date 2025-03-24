@@ -45,8 +45,11 @@ Lists the Amazon EKS clusters in your Amazon Web Services account in the specifi
 | AWS.EKS.Cluster.NextToken | List | The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter. | 
 
 #### Command example
+
 ```!aws-eks-list-clusters```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -66,6 +69,7 @@ Lists the Amazon EKS clusters in your Amazon Web Services account in the specifi
 #### Human Readable Output
 
 >### The list of clusters
+>
 >| Clusters Names |
 >|----------------|
 >| cluster_name1  |
@@ -104,8 +108,11 @@ Updates an Amazon EKS cluster configuration. Only one type of update is allowed.
 | AWS.EKS.UpdateCluster.errors | Object | Any errors associated with a failed update. | 
 
 #### Command example
+
 ```!aws-eks-update-cluster-config cluster_name=CLUSTER_NAME logging="{'clusterLogging': [{'types': ['api', 'authenticator', 'audit'], 'enabled': false}]}"```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -132,6 +139,7 @@ Updates an Amazon EKS cluster configuration. Only one type of update is allowed.
 #### Human Readable Output
 
 >### Updated Cluster Config Information
+>
 >|Cluster Name| ID                                   |Status|Type|Params|
 >|---|--------------------------------------|---|---|---|
 >| CLUSTER_NAME | 11111111-1111-1111-1111-111111111111 | InProgress | LoggingUpdate | {'type': 'ClusterLogging', 'value': '{"clusterLogging":[{"types":["api","audit","authenticator"],"enabled":false}]}'} |
@@ -196,8 +204,11 @@ Describes an Amazon EKS cluster.
 | AWS.EKS.DescribeCluster.accessConfig.authenticationMode | String | The current authentication mode of the cluster. | 
 
 #### Command example
+
 ```!aws-eks-describe-cluster cluster_name=CLUSTER_NAME```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -268,6 +279,7 @@ Describes an Amazon EKS cluster.
 #### Human Readable Output
 
 >### Describe Cluster Information
+>
 >|Cluster Name|Status| ARN     |Created At|Version|
 >|---|---|---------|---|---|
 >| roleArn | ACTIVE | roleArn | 2024-02-26 09:38:11.578000+00:00 | 1.29 |
@@ -310,8 +322,11 @@ Creates an access entry.
 | AWS.EKS.CreateAccessEntry.type | String | The type of the access entry. | 
 
 #### Command example
+
 ```!aws-eks-create-access-entry cluster_name=CLUSTER_NAME principal_arn=principal_arn```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -341,6 +356,7 @@ Creates an access entry.
 #### Human Readable Output
 
 >### The newly created access entry
+>
 >|Cluster Name|Principal Arn|Username|Type| Created At           |
 >|---|---|---|---|----------------------|
 >| clusterName | principalArn | username | STANDARD | 2024-02-26 09:38:11.578000+00:00 |
@@ -378,8 +394,11 @@ Associates an access policy and its scope to an access entry.
 | AWS.EKS.AssociatedAccessPolicy.modifiedAt | String | The date and time for the last modification to the object. | 
 
 #### Command example
+
 ```!aws-eks-associate-access-policy cluster_name=CLUSTER_NAME principal_arn=principal_arn type=cluster```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -405,6 +424,7 @@ Associates an access policy and its scope to an access entry.
 #### Human Readable Output
 
 >### The access policy was associated to the access entry successfully.
+>
 >|Cluster Name|Principal Arn|Policy Arn| associate At           |
 >|---|---|-----------|----------------------|
 >| clusterName | principalArn | username  | 2024-02-26 09:38:11.578000+00:00 |
@@ -444,8 +464,11 @@ Updates an access entry.
 | AWS.EKS.UpdateAccessEntry.type | String | The type of the access entry. | 
 
 #### Command example
+
 ```!aws-eks-update-access-entry cluster_name=CLUSTER_NAME principal_arn=principal_arn```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -469,6 +492,7 @@ Updates an access entry.
 #### Human Readable Output
 
 >### The updated access entry
+>
 >|Cluster Name|Principal Arn|Username|Type|Modified At|
 >|---|---|---|---|---|
 >| CLUSTER_NAME | principal_arn | username | STANDARD | 2024-02-26 09:38:11.578000+00:00 |

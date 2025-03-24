@@ -1,19 +1,23 @@
 Use the HostIo integration to enrich domains using the Host.io API.
 This integration was integrated and tested with version 1.0 of HostIo
+
 ## Configure HostIo in Cortex
 
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. https://host.io) | True |
+| Server URL (e.g. <https://host.io>) | True |
 | API Key | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### hostio-domain-search
+
 ***
 Returns a list of domains associated with a specific field, and the total number of these domains.
 
@@ -21,6 +25,7 @@ Returns a list of domains associated with a specific field, and the total number
 #### Base Command
 
 `hostio-domain-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,9 +46,11 @@ Returns a list of domains associated with a specific field, and the total number
 
 
 #### Command Example
+
 ```!hostio-domain-search field="twitter" value="elonmusk"```
 
 #### Context Example
+
 ```json
 {
     "HostIo": {
@@ -71,12 +78,14 @@ Returns a list of domains associated with a specific field, and the total number
 #### Human Readable Output
 
 >### Domains associated with twitter: elonmusk
+>
 >|domains|total|twitter|
 >|---|---|---|
 >| dogedoor.net,<br/>ridesharehouston.org,<br/>a2ch.ru,<br/>elon-airdrop.org,<br/>selenianboondocks.com | 356 | elonmusk |
 
 
 ### domain
+
 ***
 Returns Domain information.
 
@@ -84,6 +93,7 @@ Returns Domain information.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -109,9 +119,11 @@ Returns Domain information.
 
 
 #### Command Example
+
 ```!domain domain="twitter.com"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -669,6 +681,7 @@ Returns Domain information.
 #### Human Readable Output
 
 >### Domain
+>
 >|dns|domain|ipinfo|related|updated_date|web|
 >|---|---|---|---|---|---|
->| domain: twitter.com<br/>a: 104.244.42.1,<br/>104.244.42.193<br/>mx: 10 aspmx.l.google.com.,<br/>20 alt1.aspmx.l.google.com.,<br/>20 alt2.aspmx.l.google.com.,<br/>30 aspmx2.googlemail.com.,<br/>30 aspmx3.googlemail.com.<br/>ns: a.r06.twtrdns.net.,<br/>b.r06.twtrdns.net.,<br/>c.r06.twtrdns.net.,<br/>d.r06.twtrdns.net.,<br/>d01-01.ns.twtrdns.net.,<br/>d01-02.ns.twtrdns.net.,<br/>ns1.p34.dynect.net.,<br/>ns2.p34.dynect.net.,<br/>ns3.p34.dynect.net.,<br/>ns4.p34.dynect.net. | twitter.com | 104.244.42.6: {"city": "San Francisco", "region": "California", "country": "US", "loc": "37.7749,-122.4194", "postal": "94103", "timezone": "America/Los_Angeles", "asn": {"asn": "AS13414", "name": "Twitter Inc.", "domain": "twitter.com", "route": "104.244.42.0/24", "type": "business"}}<br/>104.244.42.1: {"city": "San Francisco", "region": "California", "country": "US", "loc": "37.7749,-122.4194", "postal": "94103", "timezone": "America/Los_Angeles", "asn": {"asn": "AS13414", "name": "Twitter Inc.", "domain": "twitter.com", "route": "104.244.42.0/24", "type": "business"}}<br/>104.244.42.193: {"city": "San Francisco", "region": "California", "country": "US", "loc": "37.7749,-122.4194", "postal": "94103", "timezone": "America/Los_Angeles", "asn": {"asn": "AS13414", "name": "Twitter Inc.", "domain": "twitter.com", "route": "104.244.42.0/24", "type": "business"}} | ip: {'value': '104.244.42.6', 'count': 92624},<br/>{'value': '104.244.42.1', 'count': 51},<br/>{'value': '104.244.42.193', 'count': 52}<br/>asn: {'value': 'AS13414', 'count': 392693}<br/>ns: {'value': 'twtrdns.net', 'count': 118},<br/>{'value': 'dynect.net', 'count': 181297}<br/>mx: {'value': 'google.com', 'count': 13977803},<br/>{'value': 'googlemail.com', 'count': 5288687}<br/>backlinks: {'value': 'twitter.com', 'count': 18707958}<br/>redirects: {'value': 'twitter.com', 'count': 389612} | 2020-11-25T20:10:08Z | domain: twitter.com<br/>rank: 5<br/>url: https://mobile.twitter.com/signup<br/>ip: 104.244.42.6<br/>date: 2020-11-25T20:10:08.708Z<br/>length: 4170<br/>server: tsa_a<br/>encoding: utf8<br/>twitter: signup<br/>title: Twitter<br/>links:  |
+>| domain: twitter.com<br/>a: 104.244.42.1,<br/>104.244.42.193<br/>mx: 10 aspmx.l.google.com.,<br/>20 alt1.aspmx.l.google.com.,<br/>20 alt2.aspmx.l.google.com.,<br/>30 aspmx2.googlemail.com.,<br/>30 aspmx3.googlemail.com.<br/>ns: a.r06.twtrdns.net.,<br/>b.r06.twtrdns.net.,<br/>c.r06.twtrdns.net.,<br/>d.r06.twtrdns.net.,<br/>d01-01.ns.twtrdns.net.,<br/>d01-02.ns.twtrdns.net.,<br/>ns1.p34.dynect.net.,<br/>ns2.p34.dynect.net.,<br/>ns3.p34.dynect.net.,<br/>ns4.p34.dynect.net. | twitter.com | 104.244.42.6: {"city": "San Francisco", "region": "California", "country": "US", "loc": "37.7749,-122.4194", "postal": "94103", "timezone": "America/Los_Angeles", "asn": {"asn": "AS13414", "name": "Twitter Inc.", "domain": "twitter.com", "route": "104.244.42.0/24", "type": "business"}}<br/>104.244.42.1: {"city": "San Francisco", "region": "California", "country": "US", "loc": "37.7749,-122.4194", "postal": "94103", "timezone": "America/Los_Angeles", "asn": {"asn": "AS13414", "name": "Twitter Inc.", "domain": "twitter.com", "route": "104.244.42.0/24", "type": "business"}}<br/>104.244.42.193: {"city": "San Francisco", "region": "California", "country": "US", "loc": "37.7749,-122.4194", "postal": "94103", "timezone": "America/Los_Angeles", "asn": {"asn": "AS13414", "name": "Twitter Inc.", "domain": "twitter.com", "route": "104.244.42.0/24", "type": "business"}} | ip: {'value': '104.244.42.6', 'count': 92624},<br/>{'value': '104.244.42.1', 'count': 51},<br/>{'value': '104.244.42.193', 'count': 52}<br/>asn: {'value': 'AS13414', 'count': 392693}<br/>ns: {'value': 'twtrdns.net', 'count': 118},<br/>{'value': 'dynect.net', 'count': 181297}<br/>mx: {'value': 'google.com', 'count': 13977803},<br/>{'value': 'googlemail.com', 'count': 5288687}<br/>backlinks: {'value': 'twitter.com', 'count': 18707958}<br/>redirects: {'value': 'twitter.com', 'count': 389612} | 2020-11-25T20:10:08Z | domain: twitter.com<br/>rank: 5<br/>url: <https://mobile.twitter.com/signup><br/>ip: 104.244.42.6<br/>date: 2020-11-25T20:10:08.708Z<br/>length: 4170<br/>server: tsa_a<br/>encoding: utf8<br/>twitter: signup<br/>title: Twitter<br/>links:  |

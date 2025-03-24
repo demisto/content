@@ -1,4 +1,5 @@
 IP2Location.io integration to query IP geolocation data.
+
 ## Configure IP2LocationIO in Cortex
 
 

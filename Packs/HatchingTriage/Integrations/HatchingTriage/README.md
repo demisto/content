@@ -6,15 +6,18 @@ This integration was integrated and tested with version 0 of Hatching Triage
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API URL | Private url is https://private.tria.ge/api/v0/ | True |
+| API URL | Private url is <https://private.tria.ge/api/v0/> | True |
 | API Key | The API Key to use for the connection. | True |
 | Verify SSL |  | False |
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### triage-query-samples
+
 ***
 Get a list of all samples either private or public
 
@@ -22,6 +25,7 @@ Get a list of all samples either private or public
 #### Base Command
 
 `triage-query-samples`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -46,6 +50,7 @@ Get a list of all samples either private or public
 | Triage.submissions.url | String | URL that was submitted | 
 
 ### triage-submit-sample
+
 ***
 Submits a file or url for analysis
 
@@ -55,6 +60,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `triage-submit-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -77,12 +83,15 @@ Notice: Submitting indicators using this command might make the indicator data p
 | Triage.submissions.submitted | Date | Date that the sample was submitted on | 
 
 #### Command example
+
 ```!triage-submit-sample data="4@1" kind="file"```
+
 #### Human Readable Output
 
 
 
 ### triage-get-sample
+
 ***
 Pulls back basic information about the sample id given
 
@@ -90,6 +99,7 @@ Pulls back basic information about the sample id given
 #### Base Command
 
 `triage-get-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -113,6 +123,7 @@ Pulls back basic information about the sample id given
 | Triage.samples.tasks.target | String | Target of the task, e.g. filename for file submissions | 
 
 ### triage-get-sample-summary
+
 ***
 Gets a summary report of the sample id provided
 
@@ -120,6 +131,7 @@ Gets a summary report of the sample id provided
 #### Base Command
 
 `triage-get-sample-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -143,12 +155,15 @@ Gets a summary report of the sample id provided
 | Triage.sample-summaries.tasks | String | Tasks performed in the analysis | 
 
 #### Command example
+
 ```!triage-get-sample-summary sample_id="220807-d5sxnaebbx"```
+
 #### Human Readable Output
 
 
 
 ### triage-delete-sample
+
 ***
 Deletes a sample from the sandbox
 
@@ -156,6 +171,7 @@ Deletes a sample from the sandbox
 #### Base Command
 
 `triage-delete-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -166,7 +182,9 @@ Deletes a sample from the sandbox
 #### Context Output
 
 There is no context output for this command.
+
 ### triage-set-sample-profile
+
 ***
 When a sample is in the static_analysis status, a profile should be selected in order to continue.
 
@@ -174,6 +192,7 @@ When a sample is in the static_analysis status, a profile should be selected in 
 #### Base Command
 
 `triage-set-sample-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -187,7 +206,9 @@ When a sample is in the static_analysis status, a profile should be selected in 
 #### Context Output
 
 There is no context output for this command.
+
 ### triage-get-static-report
+
 ***
 Get the static analysis of a sample
 
@@ -195,6 +216,7 @@ Get the static analysis of a sample
 #### Base Command
 
 `triage-get-static-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -218,12 +240,15 @@ Get the static analysis of a sample
 | URL.Data | String | The URL | 
 
 #### Command example
+
 ```!triage-get-static-report sample_id="220807-d5sxnaebbx"```
+
 #### Human Readable Output
 
 
 
 ### triage-get-report-triage
+
 ***
 Retrieves the generated Triage behavioral report for a single task
 
@@ -231,6 +256,7 @@ Retrieves the generated Triage behavioral report for a single task
 #### Base Command
 
 `triage-get-report-triage`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -255,12 +281,15 @@ Retrieves the generated Triage behavioral report for a single task
 | URL.Data | String | The URL | 
 
 #### Command example
+
 ```!triage-get-report-triage sample_id="220807-d5sxnaebbx" task_id="behavioral1"```
+
 #### Human Readable Output
 
 
 
 ### triage-get-kernel-monitor
+
 ***
 Retrieves the output of the kernel monitor
 
@@ -268,6 +297,7 @@ Retrieves the output of the kernel monitor
 #### Base Command
 
 `triage-get-kernel-monitor`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -279,7 +309,9 @@ Retrieves the output of the kernel monitor
 #### Context Output
 
 There is no context output for this command.
+
 ### triage-get-pcap
+
 ***
 Retrieves the PCAP of the analysis for further manual analysis
 
@@ -287,6 +319,7 @@ Retrieves the PCAP of the analysis for further manual analysis
 #### Base Command
 
 `triage-get-pcap`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -298,7 +331,9 @@ Retrieves the PCAP of the analysis for further manual analysis
 #### Context Output
 
 There is no context output for this command.
+
 ### triage-get-dumped-file
+
 ***
 Retrieves files dumped by the sample. The names can be found under the "dumped" section from the triage report output
 
@@ -306,6 +341,7 @@ Retrieves files dumped by the sample. The names can be found under the "dumped" 
 #### Base Command
 
 `triage-get-dumped-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -318,7 +354,9 @@ Retrieves files dumped by the sample. The names can be found under the "dumped" 
 #### Context Output
 
 There is no context output for this command.
+
 ### triage-get-users
+
 ***
 Return all users within the company as a paginated list. Returns a single user if a userID is provided
 
@@ -326,6 +364,7 @@ Return all users within the company as a paginated list. Returns a single user i
 #### Base Command
 
 `triage-get-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -347,6 +386,7 @@ Return all users within the company as a paginated list. Returns a single user i
 | Triage.users.permissions | String | Users permissions | 
 
 ### triage-create-user
+
 ***
 Creates a new user and returns it. The user will become a member of the company the requesting user is a member of
 
@@ -354,6 +394,7 @@ Creates a new user and returns it. The user will become a member of the company 
 #### Base Command
 
 `triage-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -379,6 +420,7 @@ Creates a new user and returns it. The user will become a member of the company 
 | Triage.users.permissions | String | Users permissions | 
 
 ### triage-delete-user
+
 ***
 Delete a user and all associated data, invalidating any sessions and removing their API keys. Any samples submitted by this user are kept
 
@@ -386,6 +428,7 @@ Delete a user and all associated data, invalidating any sessions and removing th
 #### Base Command
 
 `triage-delete-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -396,7 +439,9 @@ Delete a user and all associated data, invalidating any sessions and removing th
 #### Context Output
 
 There is no context output for this command.
+
 ### triage-create-api-key
+
 ***
 Creates a new key can be used to make API calls on behalf of the specified user. The user should have been granted the access_api permission beforehand
 
@@ -404,6 +449,7 @@ Creates a new key can be used to make API calls on behalf of the specified user.
 #### Base Command
 
 `triage-create-api-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -420,6 +466,7 @@ Creates a new key can be used to make API calls on behalf of the specified user.
 | Triage.apikey.name | String | Name of the API Key | 
 
 ### triage-get-api-key
+
 ***
 Lists all API keys that the user has.
 
@@ -427,6 +474,7 @@ Lists all API keys that the user has.
 #### Base Command
 
 `triage-get-api-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -442,6 +490,7 @@ Lists all API keys that the user has.
 | Triage.apikey.name | String | Name of the API Key | 
 
 ### triage-delete-api-key
+
 ***
 Delete the user's API key with the specified name
 
@@ -449,6 +498,7 @@ Delete the user's API key with the specified name
 #### Base Command
 
 `triage-delete-api-key`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -460,7 +510,9 @@ Delete the user's API key with the specified name
 #### Context Output
 
 There is no context output for this command.
+
 ### triage-get-profiles
+
 ***
 List all profiles that your company has
 
@@ -468,6 +520,7 @@ List all profiles that your company has
 #### Base Command
 
 `triage-get-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -487,6 +540,7 @@ List all profiles that your company has
 | Triage.profiles..timeout | Number | Max run time of the profile | 
 
 ### triage-create-profile
+
 ***
 Create a new profile
 
@@ -494,6 +548,7 @@ Create a new profile
 #### Base Command
 
 `triage-create-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -516,6 +571,7 @@ Create a new profile
 | Triage.profiles.timeout | Number | Profile max run time | 
 
 ### triage-update-profile
+
 ***
 Update an existing profile
 
@@ -523,6 +579,7 @@ Update an existing profile
 #### Base Command
 
 `triage-update-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -536,7 +593,9 @@ Update an existing profile
 #### Context Output
 
 There is no context output for this command.
+
 ### triage-query-search
+
 ***
 Get a list of private and public samples matching the search query
 
@@ -544,6 +603,7 @@ Get a list of private and public samples matching the search query
 #### Base Command
 
 `triage-query-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -568,12 +628,15 @@ Get a list of private and public samples matching the search query
 | Triage.samples.url | string | URL that was submitted | 
 
 #### Command example
+
 ```!triage-query-search query="tag:stealer AND tag:spyware"```
+
 #### Human Readable Output
 
 
 
 ### triage-delete-profile
+
 ***
 Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID
 
@@ -581,6 +644,7 @@ Update the profile with the specified ID or name. The stored profile is overwrit
 #### Base Command
 
 `triage-delete-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

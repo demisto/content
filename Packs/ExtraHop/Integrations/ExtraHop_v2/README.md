@@ -18,13 +18,14 @@ ExtraHop Reveal(x) for Cortex XSOAR is a network detection and response solution
 | Use system proxy settings | Specifies whether to use XSOAR system proxy settings to connect to the API. | False |
 | First fetch time | Specifies the beginning timestamp from which to start fetching detection events. | False |
 | Incidents Fetch Interval | Specifies how often the instance fetches detection events. Because each API call fetches a maximum of 200 detection events, we recommend specifying one minute intervals to fetch all detection events. | False |
-| Advanced Filter | Applies a filter to the list of detections based on a JSON-specific query.<br/><br/>Example for detections:<br/>\{<br/>  "categories": \["sec.attack"\],<br/>  "risk_score_min": 51<br/>\}<br/><br/>If the categories and category are not specified, then categories will be set to \["sec.attack"\]. The category field is deprecated by the API, so please use the categories field instead.<br/>For a complete reference to the Extrahop detections filter fields, please refer to the ExtraHop REST API documentation at<br/>https://docs.extrahop.com/current/rest-api-guide/ | False |
+| Advanced Filter | Applies a filter to the list of detections based on a JSON-specific query.<br/><br/>Example for detections:<br/>\{<br/>  "categories": \["sec.attack"\],<br/>  "risk_score_min": 51<br/>\}<br/><br/>If the categories and category are not specified, then categories will be set to \["sec.attack"\]. The category field is deprecated by the API, so please use the categories field instead.<br/>For a complete reference to the Extrahop detections filter fields, please refer to the ExtraHop REST API documentation at<br/><https://docs.extrahop.com/current/rest-api-guide/> | False |
 | Do not use by default | Select to disable running commands through the Cortex XSOAR CLI on this instance of the integration. | False |
 | Log Level | Specifies the level of logging to enable for this instance of the integration. | False |
 | Run on | Specifies whether to run the instance of the integration on a single engine. | False |
     
 
 ## Commands
+
 You can run the following commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully run a command, a DBot message appears in the War Room with the command details.
 
@@ -46,6 +47,7 @@ After you successfully run a command, a DBot message appears in the War Room wit
 </ul>
 
 ### extrahop-watchlist-get
+
 ***
 Get all devices on the advanced analysis watchlist in ExtraHop Reveal(x).
 
@@ -53,6 +55,7 @@ Get all devices on the advanced analysis watchlist in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-watchlist-get`
+
 #### Input
 
 There are no input arguments for this command.
@@ -89,8 +92,11 @@ There are no input arguments for this command.
 | ExtraHop.Device.Url | string | Link to the device details page in ExtraHop Reveal(x). | 
 
 #### Command example
+
 ```!extrahop-watchlist-get```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -163,6 +169,7 @@ There are no input arguments for this command.
 
 
 ### extrahop-peers-get
+
 ***
 Get all peers for a device from ExtraHop Reveal(x).
 
@@ -170,13 +177,14 @@ Get all peers for a device from ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-peers-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip_or_id | The IP address or ExtraHop API ID of the source device to get peer devices. | Required | 
-| query_from | The beginning timestamp of the time range the query will search, expressed in milliseconds since the epoch. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes. Default is -30m. | Optional | 
-| query_until | The ending timestamp of the time range the query will search, expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes. | Optional | 
+| query_from | The beginning timestamp of the time range the query will search, expressed in milliseconds since the epoch. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See <https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-> for more details on supported time units and suffixes. Default is -30m. | Optional | 
+| query_until | The ending timestamp of the time range the query will search, expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See <https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-> for more details on supported time units and suffixes. | Optional | 
 | peer_role | The role of the peer device in relation to the origin device. Possible values are: any, client, server. Default is any. | Optional | 
 | protocol | A filter to only return peers that the source device has communicated with over this protocol. If no value is set, the object includes any protocol. Possible values are: any, AAA, ActiveMQ, AJP, amf, CIFS, DB, DHCP, DICOM, DNS, FIX, FTP, HL7, HTTP, IBMMQ, ICA, IKE/ISAKMP, IMAP, IPFIX, IPsec NAT-T, IRC, iSCSI, Kerberos, L2TP, LDAP, lync-compress, memcache, Modbus, MongoDB, MSMQ, MSN, MSRPC, NetFlow, NFS, NTP, OpenVPN, PCoIP, Perforce, POP3, RDP, Redis, RFB, RTCP, RTP, sFlow, SIP, SMPP, SMTP, SNMP, SSH, SSL, Syslog, TCP, telnet, UDP, WebSocket. Default is any. | Optional | 
 
@@ -213,8 +221,11 @@ Get all peers for a device from ExtraHop Reveal(x).
 | ExtraHop.Device.Url | string | Link to the device details page in ExtraHop Reveal(x). | 
 
 #### Command example
+
 ```!extrahop-peers-get ip_or_id=0.0.0.0 peer_role=server protocol=any query_from=-60m query_until=0```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -259,6 +270,7 @@ Get all peers for a device from ExtraHop Reveal(x).
 
 
 ### extrahop-devices-search
+
 ***
 Search for devices in ExtraHop Reveal(x).
 
@@ -266,6 +278,7 @@ Search for devices in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-devices-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -277,13 +290,13 @@ Search for devices in ExtraHop Reveal(x).
 | software | The OS of the device. Possible values are: android, apple_ios, arista_eos, cisco_ios, cisco_nx-os, chrome_os, linux, mac_os, windows, windows_server, windows_server_2008, windows_server_2008_r2, windows_server_2012, windows_server_2012_r2, windows_server_2016, windows_vista, windows_7, windows_8, windows_8.1, windows_10. | Optional | 
 | tag | A tag present on the device. | Optional | 
 | vendor | The vendor of the device, based on MAC address via OUI lookup. Possible values are: alcatel-lucent, apple, arista, asus, brother, canon, cisco, cisco-linksys, citrix, dell, dellemc, d-link, emc, f5, google, hp, htc, huawei, ibm, juniper, kyocera, microsoft, netapp, netgear, nokia, nortel, oracle, paloalto, samsung, 3com, toshiba, virtualbox, vmware, zte. | Optional | 
-| discover_time | The time that device was first seen by the ExtraHop system, expressed in milliseconds since the epoch. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with the following unit suffixes: ms, s, m, h, d, w, M, y. For example, to look one day back enter -1d or -24h. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes. | Optional | 
+| discover_time | The time that device was first seen by the ExtraHop system, expressed in milliseconds since the epoch. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with the following unit suffixes: ms, s, m, h, d, w, M, y. For example, to look one day back enter -1d or -24h. See <https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-> for more details on supported time units and suffixes. | Optional | 
 | vlan | The VLAN ID of the Virtual LAN that the device is on. | Optional | 
 | activity | The activity of the device. Possible values are: aaa_client, aaa_server, ajp_client, ajp_server, amf_client, amf_server, cifs_client, cifs_server, db_client, db_server, dhcp_client, dhcp_server, dicom_client, dicom_server, dns_client, dns_server, fix_client, fix_server, ftp_client, ftp_server, hl7_client, hl7_server, http_client, http_server, ibmmq_client, ibmmq_server, ica_client, ica_server, icmp, iscsi_client, iscsi_server, kerberos_client, kerberos_server, ldap_client, ldap_server, llmnr_client, llmnr_server, memcache_client, memcache_server, modbus_client, modbus_server, mongo_client, mongo_server, msmq, nbns_client, nbns_server, nfs_client, nfs_server, pcoip_client, pcoip_server, pop3_client, pop3_server, rdp_client, rdp_server, redis_client, redis_server, rfb_client, rfb_server, rpc_client, rpc_server, rtcp, rtp, scanner, sip_client, sip_server, smpp_client, smpp_server, smtp_client, smtp_server, ssh_client, ssh_server, ssl_client, ssl_server, tcp, telnet_client, telnet_server, udp, websocket_client, websocket_server, wsman_client, wsman_server. | Optional | 
 | operator | The compare method applied when matching the fields against their values. For example, to find devices with names that begin with 'SEA1' (set name=SEA1, operator=startswith). Possible values are: &gt;, &lt;, &lt;=, &gt;=, =, !=, startswith, exists, not_exists, ~, !~. Default is =. | Optional | 
 | match_type | The match operator to use when chaining the search fields together. For example, to find all HTTP servers running Windows on the network (set match_type=and, role=http_server, software=windows). Possible values are: and, or, not. Default is and. | Optional | 
-| active_from | The beginning timestamp for the request. Return only devices active after this time. Time is expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes. | Optional | 
-| active_until | The ending timestamp for the request. Return only devices active before this time. Time is expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes. | Optional | 
+| active_from | The beginning timestamp for the request. Return only devices active after this time. Time is expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See <https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-> for more details on supported time units and suffixes. | Optional | 
+| active_until | The ending timestamp for the request. Return only devices active before this time. Time is expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See <https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-> for more details on supported time units and suffixes. | Optional | 
 | limit | The maximum number of devices to return. Default is 10. | Optional | 
 | l3_only | Only returns layer 3 devices by filtering out any layer 2 parent devices. Possible values are: true, false. Default is true. | Optional | 
 
@@ -320,8 +333,11 @@ Search for devices in ExtraHop Reveal(x).
 | ExtraHop.Device.Url | String | Link to the device details page in ExtraHop Reveal(x). | 
 
 #### Command example
+
 ```!extrahop-devices-search activity=aaa_client discover_time=-10m ip=0.0.0.0 l3_only=true limit=2 mac=00:00:00:00:00:00 match_type=or name=DNS operator=!= role=file_server software=linux tag=tag1 vendor=cisco```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -394,6 +410,7 @@ Search for devices in ExtraHop Reveal(x).
 
 
 ### extrahop-protocols-get
+
 ***
 Get all active network protocols for a device from ExtraHop Reveal(x).
 
@@ -401,13 +418,14 @@ Get all active network protocols for a device from ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-protocols-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip_or_id | The IP address or ExtraHop API ID of the device to get all active network protocols. | Required | 
-| query_from | The beginning timestamp of the time range the query will search, expressed in milliseconds since the epoch. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes. Default is -30m. | Optional | 
-| query_until | The ending timestamp of the time range the query will search, expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes. | Optional | 
+| query_from | The beginning timestamp of the time range the query will search, expressed in milliseconds since the epoch. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See <https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-> for more details on supported time units and suffixes. Default is -30m. | Optional | 
+| query_until | The ending timestamp of the time range the query will search, expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See <https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-> for more details on supported time units and suffixes. | Optional | 
 
 
 #### Context Output
@@ -444,8 +462,11 @@ Get all active network protocols for a device from ExtraHop Reveal(x).
 | ExtraHop.Device.ServerProtocols | String | The list of protocols the peer device is communicating on as a server. | 
 
 #### Command example
+
 ```!extrahop-protocols-get ip_or_id=0.0.0.0 query_from=-20m query_until=0```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -492,6 +513,7 @@ Get all active network protocols for a device from ExtraHop Reveal(x).
 
 
 ### extrahop-activity-map-get
+
 ***
 Get a link to a live activity map in ExtraHop Reveal(x).
 
@@ -499,6 +521,7 @@ Get a link to a live activity map in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-activity-map-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -518,8 +541,11 @@ Get a link to a live activity map in ExtraHop Reveal(x).
 | ExtraHop.ActivityMap.url | String | The link to a visual activity map in ExtraHop Reveal(x). | 
 
 #### Command example
+
 ```!extrahop-activity-map-get ip_or_id=0.0.0.0 peer_role=server protocol=any time_interval="30 minutes"```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -535,6 +561,7 @@ Get a link to a live activity map in ExtraHop Reveal(x).
 >[View Live Activity Map in ExtraHop](https://dummy_url/extrahop/#/activitymaps?appliance_id=00000000000000000000000000000000&discovery_id=0000000000000000&from=30&interval_type=MIN&object_type=device&protocol=any&role=server&until=0)
 
 ### extrahop-alert-rules-get
+
 ***
 Get all alert rules from ExtraHop Reveal(x).
 
@@ -542,6 +569,7 @@ Get all alert rules from ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-alert-rules-get`
+
 #### Input
 
 There are no input arguments for this command.
@@ -571,8 +599,11 @@ There are no input arguments for this command.
 | ExtraHop.Alert.StatName | String | The statistic name for the alert. | 
 
 #### Command example
+
 ```!extrahop-alert-rules-get```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -648,6 +679,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Found 3 Alert(s)
+>
 >|Apply All|Author|Description|Disabled|Field Name|Field Name2|Field Op|Id|Interval Length|Mod Time|Name|Notify Snmp|Operand|Operator|Refire Interval|Severity|Stat Name|Type|Units|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | ExtraHop | Alert triggered when ratio of DB errors is greater than 1%. | false | rsp_error | rsp | / | 15 | 30 | 1617887147538 | DB Error Ratio - Orange | false | 0.01 | > | 300 | 3 | extrahop.application.db | threshold | none |
@@ -656,6 +688,7 @@ There are no input arguments for this command.
 
 
 ### extrahop-packets-search
+
 ***
 Search for specific packets in ExtraHop Reveal(x).
 
@@ -663,6 +696,7 @@ Search for specific packets in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-packets-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -670,8 +704,8 @@ Search for specific packets in ExtraHop Reveal(x).
 | output | The output format. A pcap file, A keylog.txt file that can be loaded in wireshark to decode ssl packets, or a zip file containing both a packets.pcap and keylog.txt. Possible values are: pcap, keylog_txt, zip. Default is pcap. | Optional | 
 | limit_bytes | The maximum number of bytes to return. Default is 10MB. | Optional | 
 | limit_search_duration | The maximum amount of time to run the packet search. The default unit is milliseconds, but other units can be specified with a unit suffix. Default is 5m. | Optional | 
-| query_from | The beginning timestamp of the time range the search will include, expressed in milliseconds since the epoch. A negative value specifies that the search will begin with packets captured at a time in the past relative to the current time. For example, specify -10m to begin the search with packets captured 10 minutes before the time of the request. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes. Default is -10m. | Optional | 
-| query_until | The ending timestamp of the time range the search will include, expressed in milliseconds since the epoch. A 0 value specifies that the search will end with packets captured at the time of the search. A negative value specifies that the search will end with packets captured at a time in the past relative to the current time. For example, specify -5m to end the search with packets captured 5 minutes before the time of the request. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes. | Optional | 
+| query_from | The beginning timestamp of the time range the search will include, expressed in milliseconds since the epoch. A negative value specifies that the search will begin with packets captured at a time in the past relative to the current time. For example, specify -10m to begin the search with packets captured 10 minutes before the time of the request. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See <https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-> for more details on supported time units and suffixes. Default is -10m. | Optional | 
+| query_until | The ending timestamp of the time range the search will include, expressed in milliseconds since the epoch. A 0 value specifies that the search will end with packets captured at the time of the search. A negative value specifies that the search will end with packets captured at a time in the past relative to the current time. For example, specify -5m to end the search with packets captured 5 minutes before the time of the request. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See <https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-> for more details on supported time units and suffixes. | Optional | 
 | bpf | The Berkeley Packet Filter (BPF) syntax for the packet search. | Optional | 
 | ip1 | Returns packets sent to or received by the specified IP address. | Optional | 
 | port1 | Returns packets sent from or received on the specified port. | Optional | 
@@ -695,7 +729,9 @@ Search for specific packets in ExtraHop Reveal(x).
 | File.Extension | String | The file extension. | 
 
 #### Command example
+
 ```!extrahop-packets-search ip1=0.0.0.0 ip2=0.0.0.0 limit_bytes=10MB limit_search_duration=10m output=pcap port1=8000 port2=8000 query_from=-15m query_until=0```
+
 #### Human Readable Output
 
 >Uploaded file: extrahop 2022-12-15 21.12.29 to 21.27.29 IST.pcapDownload.
@@ -712,6 +748,7 @@ Search for specific packets in ExtraHop Reveal(x).
 > | SSDeep | 12288:WzC9IOFcF8jgBXx00uMOsOFtKu1R4mF48f6G2GeXCuX:Wgo8cNx3QsODKugmnfjcPX |
 
 ### extrahop-devices-tag
+
 ***
 Add or remove a tag from devices in ExtraHop Reveal(x).
 
@@ -719,6 +756,7 @@ Add or remove a tag from devices in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-devices-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -731,13 +769,17 @@ Add or remove a tag from devices in ExtraHop Reveal(x).
 #### Context Output
 
 There is no context output for this command.<br>
+
 #### Command example
+
 ```!extrahop-devices-tag tag=MyTag add=0.0.0.0 remove=0.0.0.0```
+
 #### Human Readable Output
 
 >Successfully tagged untagged the device/s.
 
 ### extrahop-alert-rule-create
+
 ***
 Create a new alert rule in ExtraHop Reveal(x).
 
@@ -745,6 +787,7 @@ Create a new alert rule in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-alert-rule-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -773,13 +816,18 @@ Create a new alert rule in ExtraHop Reveal(x).
 #### Context Output
 
 There is no context output for this command.<br>
+
 #### Command example
+
 ```!extrahop-alert-rule-create apply_all=true interval_length=30 disabled=false name="test10" notify_snmp=false refire_interval=300 severity=4 type=detection object_type=device protocols="udp"```
 <br>
+
 #### Human Readable Output
 
 >Successfully created alert rule.
+>
 ### extrahop-ticket-track
+
 ***
 Link an ExtraHop Reveal(x) detection to a Cortex XSOAR incident.
 
@@ -787,6 +835,7 @@ Link an ExtraHop Reveal(x) detection to a Cortex XSOAR incident.
 #### Base Command
 
 `extrahop-ticket-track`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -805,8 +854,11 @@ Link an ExtraHop Reveal(x) detection to a Cortex XSOAR incident.
 | ExtraHop.TicketId | String | Cortex XSOAR incident ID successfully tracked to the ExtraHop Reveal(x) detection. | 
 
 #### Command example
+
 ```!extrahop-ticket-track detection_id=1234 incident_id=1 incident_owner=John incident_status=1```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -822,6 +874,7 @@ Link an ExtraHop Reveal(x) detection to a Cortex XSOAR incident.
 >Successfully linked detection(1234) with incident(1)
 
 ### extrahop-alert-rule-edit
+
 ***
 Modify an alert rule in ExtraHop Reveal(x).
 
@@ -829,6 +882,7 @@ Modify an alert rule in ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-alert-rule-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -858,13 +912,17 @@ Modify an alert rule in ExtraHop Reveal(x).
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!extrahop-alert-rule-edit interval_length=30 alert_id=36 apply_all=true disabled=false name="t127" notify_snmp=false refire_interval=300 severity=4 type=detection protocols="udp" object_type=device```
+
 #### Human Readable Output
 
 >Successfully updated alert rule.
 
 ### extrahop-watchlist-edit
+
 ***
 Add or remove devices from the advanced analysis watchlist in ExtraHop Reveal(x).
 
@@ -872,6 +930,7 @@ Add or remove devices from the advanced analysis watchlist in ExtraHop Reveal(x)
 #### Base Command
 
 `extrahop-watchlist-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -883,14 +942,18 @@ Add or remove devices from the advanced analysis watchlist in ExtraHop Reveal(x)
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!extrahop-watchlist-edit add=0.0.0.0 remove=0.0.0.0```
+
 #### Human Readable Output
 
 >Successfully added new devices(0.0.0.0) in the watchlist 
 >Successfully removed devices(0.0.0.0) from the watchlist
 
 ### extrahop-metrics-list
+
 ***
 Get metrics for specified objects from ExtraHop Reveal(x).
 
@@ -898,6 +961,7 @@ Get metrics for specified objects from ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-metrics-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -908,7 +972,7 @@ Get metrics for specified objects from ExtraHop Reveal(x).
 | object_ids | The list of numeric values that represent unique identifiers. Unique identifiers can be retrieved through the /networks, /devices, /applications, /vlans, /devicegroups, /activitygroups, and /appliances resources. For system health metrics, specify the ID of the sensor or console and set the object_type parameter to "system". | Required | 
 | object_type | Indicates the object type of unique identifiers specified in the object_ids property.<br/>Supported values: "network", "device", "application", "vlan", "device_group", "system". Possible values are: network, device, application, vlan, device_group, system. | Required | 
 | until_time | The ending timestamp for the request. Return only metrics collected before this time. Time is expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with a unit suffix.<br/>For example, to request devices active in the last 30 minutes, specify the following parameter value: "-30m". | Required | 
-| metric_specs | An array of metric specification objects. <br/>Refer to the ExtraHop REST API Guide at https://docs.extrahop.com/current/rest-api-guide/. | Required | 
+| metric_specs | An array of metric specification objects. <br/>Refer to the ExtraHop REST API Guide at <https://docs.extrahop.com/current/rest-api-guide/>. | Required | 
 
 
 #### Context Output
@@ -926,8 +990,11 @@ Get metrics for specified objects from ExtraHop Reveal(x).
 | ExtraHop.Metrics.stats.values | Unknown | The count value of the metrics that were collected. | 
 
 #### Command example
+
 ```!extrahop-metrics-list cycle=auto from_time=0 metric_category=http object_ids=0 object_type=application until_time=0 metric_specs="[{\"name\": \"req\", \"key\": \"/GET/\"}]"```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -981,6 +1048,7 @@ Metrics Found:
 | Stats | {'oid': 0, 'time': 1637740800000, 'duration': 30000, 'values': [4]},<br>{'oid': 0, 'time': 1676871420000, 'duration': 30000, 'values': [9]},<br>{'oid': 0, 'time': 1676871450000, 'duration': 30000, 'values': [4]}, |
 
 ### extrahop-detections-list
+
 ***
 Get detections from ExtraHop Reveal(x).
 
@@ -988,11 +1056,12 @@ Get detections from ExtraHop Reveal(x).
 #### Base Command
 
 `extrahop-detections-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Detection-specific filters.<br/>For eg:<br/>\{<br/>  "categories": ["sec.attack"],<br/>  "risk_score_min": 51<br/>\}<br/><br/>If the categories and category are not specified, then categories will be set to ["sec.attack"]. The category field is deprecated by the API, so please use the categories field instead.<br/>Refer to the ExtraHop REST API guide at https://docs.extrahop.com/current/rest-api-guide/. | Optional | 
+| filter | Detection-specific filters.<br/>For eg:<br/>\{<br/>  "categories": ["sec.attack"],<br/>  "risk_score_min": 51<br/>\}<br/><br/>If the categories and category are not specified, then categories will be set to ["sec.attack"]. The category field is deprecated by the API, so please use the categories field instead.<br/>Refer to the ExtraHop REST API guide at <https://docs.extrahop.com/current/rest-api-guide/>. | Optional | 
 | from | Returns detections that occurred after the specified date, expressed in milliseconds since the epoch. Detections that started before the specified date are returned if the detection was ongoing at that time.<br/><br/>For eg:<br/>from=1673508360001. | Optional | 
 | limit | Returns no more than the specified number of detections.<br/><br/>For eg:<br/>limit=10. Default is 200. | Optional | 
 | offset | The number of detections to skip for pagination.<br/><br/>For eg:<br/>offset=100. | Optional | 
@@ -1026,8 +1095,11 @@ Get detections from ExtraHop Reveal(x).
 | ExtraHop.Detections.is_user_created | Boolean | Indicates whether the detection is user-created. | 
 
 #### Command example
+
 ```!extrahop-detections-list limit=3```
+
 #### Context Example
+
 ```json
 {
     "ExtraHop": {
@@ -1136,6 +1208,7 @@ Get detections from ExtraHop Reveal(x).
 #### Human Readable Output
 
 >### Found 3 Detection(s)
+>
 >|Detection ID|Risk Score|Description|Categories|Start Time|
 >|---|---|---|---|---|
 >| 1110161 | 50 | The offender was recently observed carrying out a TCP SYN Scan and has now made a successful TCP 3-way handshake to the victim device. Investigate to determine if this is the result of the SYN Scan. | sec,<br/>sec.exploit | 1676895361452 |
@@ -1144,6 +1217,7 @@ Get detections from ExtraHop Reveal(x).
 
 
 ## Additional Information
+
 <h2>ExtraHop Reveal(x) Playbooks</h2>
 <ul>
   <li>ExtraHop - Default</li>

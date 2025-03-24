@@ -4,12 +4,14 @@ This integration was integrated and tested with Google Cloud Pub/Sub
 ## Required Permissions
 
 To use this integration you must have a Service Account with one of the following roles:
+
 - **Project-Owner**
 - **Project-Editor**
 - **Pub/Sub Admin**
 - **Pub/Sub Editor**
 
 ## Known Limitations
+
 When clicking on **Reset the "last run" timestamp**, messages that were recently pulled (including pulls via classification mapper) might take a few minutes before they can be fetched again.
 Because the fetch ignores older messages once newer ones were fetched, it's recommended to wait a few minutes following a reset before trying to fetch again, to prevent older messages from being dropped.
 
@@ -28,9 +30,12 @@ Because the fetch ignores older messages once newer ones were fetched, it's reco
 | default_max_msgs | Max Incidents Per Fetch | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### gcp-pubsub-topics-list
+
 ***
 Get a list of the project's topics.
 
@@ -38,6 +43,7 @@ Get a list of the project's topics.
 ##### Base Command
 
 `gcp-pubsub-topics-list`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -56,9 +62,11 @@ Get a list of the project's topics.
 
 
 ##### Command Example
+
 ```!gcp-pubsub-topics-list project_id=dmst-integrations```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudPubSubTopics": {
@@ -68,13 +76,16 @@ Get a list of the project's topics.
 ```
 
 ##### Human Readable Output
+
 ### Topics for project dmst-integrations
+
 |name|
 |---|
 | projects/dmst-integrations/topics/dmst-topic |
 
 
 ### gcp-pubsub-topic-publish-message
+
 ***
 Publish a message in a topic.
 
@@ -82,6 +93,7 @@ Publish a message in a topic.
 ##### Base Command
 
 `gcp-pubsub-topic-publish-message`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -104,9 +116,11 @@ Publish a message in a topic.
 
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-publish-message data="42 is the answer" project_id=dmst-integrations topic_id=dmst-topic delim_char_attributes=","```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudPubSubPublishedMessages": {
@@ -120,13 +134,16 @@ Publish a message in a topic.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud PubSub has published the message successfully
+
 |Data|Message Id|Topic|
 |---|---|---|
 | 42 is the answer | 874663628353499 | dmst-topic |
 
 
 ### gcp-pubsub-topic-subscription-get-by-name
+
 ***
 Get subscription details by subscription ID.
 
@@ -134,6 +151,7 @@ Get subscription details by subscription ID.
 ##### Base Command
 
 `gcp-pubsub-topic-subscription-get-by-name`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -154,9 +172,11 @@ Get subscription details by subscription ID.
 
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-subscription-get-by-name subscription_id=test_sub_2 project_id=dmst-integrations```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudPubSubSubscriptions": {
@@ -173,13 +193,16 @@ Get subscription details by subscription ID.
 ```
 
 ##### Human Readable Output
+
 ### Subscription test_sub_2
+
 |ackDeadlineSeconds|expirationPolicy|messageRetentionDuration|name|pushConfig|topic|
 |---|---|---|---|---|---|
 | 10 | ttl: 9999999999s | 604800s | projects/dmst-integrations/subscriptions/test_sub_2 |  | projects/dmst-integrations/topics/dmst-topic |
 
 
 ### gcp-pubsub-topic-subscriptions-list
+
 ***
 Get a list of subscriptions by project ID or topic ID.
 
@@ -187,6 +210,7 @@ Get a list of subscriptions by project ID or topic ID.
 ##### Base Command
 
 `gcp-pubsub-topic-subscriptions-list`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -211,9 +235,11 @@ Get a list of subscriptions by project ID or topic ID.
 
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-subscriptions-list project_id=dmst-integrations```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudPubSubSubscriptions": [
@@ -399,7 +425,9 @@ Get a list of subscriptions by project ID or topic ID.
 ```
 
 ##### Human Readable Output
+
 ### Subscriptions in project dmst-integrations
+
 |Name|Topic|Ack Deadline Seconds|Labels|
 |---|---|---|---|
 | projects/dmst-integrations/subscriptions/dean-sub1 | projects/dmst-integrations/topics/dmst-topic | 11 |  |
@@ -420,6 +448,7 @@ Get a list of subscriptions by project ID or topic ID.
 
 
 ### gcp-pubsub-topic-messages-pull
+
 ***
 Pull messages that were published.
 
@@ -427,6 +456,7 @@ Pull messages that were published.
 ##### Base Command
 
 `gcp-pubsub-topic-messages-pull`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -448,9 +478,11 @@ Pull messages that were published.
 
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-messages-pull ack=true max_messages=1 project_id=dmst-integrations subscription_id=test_sub_2```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudPubSubPulledMessages": {
@@ -462,13 +494,16 @@ Pull messages that were published.
 ```
 
 ##### Human Readable Output
+
 ### Google Cloud PubSub Messages
+
 |data|messageId|publishTime|
 |---|---|---|
 | 42 is the answer | 874662740221427 | 2020-04-16T13:32:41.398Z |
 
 
 ### gcp-pubsub-topic-subscription-create
+
 ***
 Create a pull or push subscription.
 
@@ -476,6 +511,7 @@ Create a pull or push subscription.
 ##### Base Command
 
 `gcp-pubsub-topic-subscription-create`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -507,9 +543,11 @@ Create a pull or push subscription.
 
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-subscription-create expiration_ttl=86400s project_id=dmst-integrations topic_id=dmst-topic subscription_id=doc_sub_1```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudPubSubSubscriptions": {
@@ -528,13 +566,16 @@ Create a pull or push subscription.
 ```
 
 ##### Human Readable Output
+
 ### Subscription doc_sub_1 was created successfully
+
 |ackDeadlineSeconds|expirationPolicy|messageRetentionDuration|name|pushConfig|topic|
 |---|---|---|---|---|---|
 | 10 | ttl: 86400s | 86400s | projects/dmst-integrations/subscriptions/doc_sub_1 |  | projects/dmst-integrations/topics/dmst-topic |
 
 
 ### gcp-pubsub-topic-create
+
 ***
 Create a topic.
 
@@ -542,6 +583,7 @@ Create a topic.
 ##### Base Command
 
 `gcp-pubsub-topic-create`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -549,7 +591,7 @@ Create a topic.
 | project_id | ID of the project the topic will belong to. | Optional | 
 | topic_id | ID of the newly created topic. | Required | 
 | labels | &#x27;Input format: &quot;key=val&quot; pairs sepearated by &quot;,&quot;.&#x27; | Optional | 
-| allowed_persistence_regions | A comma separated list of IDs of GCP regions where messages that are published to the topic may be persisted in storage. e.g. &quot;us-east4,asia-1&quot;.<br/>https://cloud.google.com/compute/docs/regions-zones#locations | Optional | 
+| allowed_persistence_regions | A comma separated list of IDs of GCP regions where messages that are published to the topic may be persisted in storage. e.g. &quot;us-east4,asia-1&quot;.<br/><https://cloud.google.com/compute/docs/regions-zones#locations> | Optional | 
 | kms_key_name | The full name of the Cloud KMS CryptoKey to be used to restrict access to messages published on this topic.<br/><br/>Full name format: projects/*/locations/*/keyRings/*/cryptoKeys/*. | Optional | 
 
 
@@ -564,9 +606,11 @@ Create a topic.
 
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-create project_id=dmst-integrations topic_id=dmst-doc-topic```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudPubSubTopics": {
@@ -576,13 +620,16 @@ Create a topic.
 ```
 
 ##### Human Readable Output
+
 ### Topic **dmst-doc-topic** was created successfully
+
 |Name|
 |---|
 | projects/dmst-integrations/topics/dmst-doc-topic |
 
 
 ### gcp-pubsub-topic-delete
+
 ***
 Delete a topic.
 
@@ -590,6 +637,7 @@ Delete a topic.
 ##### Base Command
 
 `gcp-pubsub-topic-delete`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -603,17 +651,21 @@ Delete a topic.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-delete project_id=dmst-integrations topic_id=dmst-doc-topic```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
+
 Topic **dmst-doc-topic** was deleted successfully
 
 ### gcp-pubsub-topic-update
+
 ***
 Updates a topic.
 
@@ -621,6 +673,7 @@ Updates a topic.
 ##### Base Command
 
 `gcp-pubsub-topic-update`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -628,7 +681,7 @@ Updates a topic.
 | project_id | ID of the project the topic belongs to. | Optional | 
 | topic_id | ID of the topic. | Required | 
 | labels | &#x27;Input format: &quot;key=val&quot; pairs sepearated by &quot;,&quot;.&#x27; | Optional | 
-| allowed_persistence_regions | A comma separated list of IDs of GCP regions where messages that are published to the topic may be persisted in storage. e.g. &quot;us-east4,asia-1&quot;.<br/>https://cloud.google.com/compute/docs/regions-zones#locations | Optional | 
+| allowed_persistence_regions | A comma separated list of IDs of GCP regions where messages that are published to the topic may be persisted in storage. e.g. &quot;us-east4,asia-1&quot;.<br/><https://cloud.google.com/compute/docs/regions-zones#locations> | Optional | 
 | kms_key_name | The full name of the Cloud KMS CryptoKey to be used to restrict access to messages published on this topic.<br/><br/>Full name format: projects/*/locations/*/keyRings/*/cryptoKeys/*. | Optional | 
 | update_mask | Indicates which fields in the provided topic to update.<br/>A comma-separated list of fields. Example: &quot;labels,messageStoragePolicy&quot;. | Required | 
 
@@ -644,9 +697,11 @@ Updates a topic.
 
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-update project_id=dmst-integrations topic_id=dmst-doc-topic labels="doc=true" update_mask=labels```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudPubSubTopics": {
@@ -659,13 +714,16 @@ Updates a topic.
 ```
 
 ##### Human Readable Output
+
 ### Topic dmst-doc-topic was updated successfully
+
 |Labels|Name|
 |---|---|
 | doc: true | projects/dmst-integrations/topics/dmst-doc-topic |
 
 
 ### gcp-pubsub-topic-subscription-update
+
 ***
 Update a subscription.
 
@@ -673,6 +731,7 @@ Update a subscription.
 ##### Base Command
 
 `gcp-pubsub-topic-subscription-update`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -705,9 +764,11 @@ Update a subscription.
 
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-subscription-update labels="doc=true" project_id=dmst-integrations subscription_id=doc_sub_1 topic_id=dmst-topic update_mask=labels```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudPubSubSubscriptions": {
@@ -733,13 +794,16 @@ Update a subscription.
 ```
 
 ##### Human Readable Output
+
 ### Subscription doc_sub_1 was updated successfully
+
 |ackDeadlineSeconds|expirationPolicy|labels|messageRetentionDuration|name|pushConfig|topic|
 |---|---|---|---|---|---|---|
 | 10 | ttl: 86400s | doc: true | 86400s | projects/dmst-integrations/subscriptions/doc_sub_1 | attributes: {"x-goog-version": "v1"} | projects/dmst-integrations/topics/dmst-topic |
 
 
 ### gcp-pubsub-topic-messages-seek
+
 ***
 Seeks a subscription to a given point in time or to a given snapshot.
 
@@ -747,6 +811,7 @@ Seeks a subscription to a given point in time or to a given snapshot.
 ##### Base Command
 
 `gcp-pubsub-topic-messages-seek`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -762,17 +827,21 @@ Seeks a subscription to a given point in time or to a given snapshot.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-messages-seek time_string="2020-04-16T13:27:55.117Z" project_id=dmst-integrations topic_id=dmst-topic subscription_id=doc_sub_1```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
+
 Message seek was successful for **time: 2020-04-16T13:27:55.117Z**
 
 ### gcp-pubsub-topic-snapshots-list
+
 ***
 Get a list of snapshots by project ID and topic ID.
 
@@ -780,6 +849,7 @@ Get a list of snapshots by project ID and topic ID.
 ##### Base Command
 
 `gcp-pubsub-topic-snapshots-list`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -802,9 +872,11 @@ Get a list of snapshots by project ID and topic ID.
 
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-snapshots-list project_id=dmst-integrations```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudPubSubSnapshots": {
@@ -819,13 +891,16 @@ Get a list of snapshots by project ID and topic ID.
 ```
 
 ##### Human Readable Output
+
 ### Snapshots for project dmst-integrations
+
 |name|
 |---|
 | projects/dmst-integrations/snapshots/doc_snapshot |
 
 
 ### gcp-pubsub-topic-snapshot-create
+
 ***
 Creates a snapshot from the requested subscription. Snapshots are used in gcp-pubsub-topic-messages-seek command.
 
@@ -833,6 +908,7 @@ Creates a snapshot from the requested subscription. Snapshots are used in gcp-pu
 ##### Base Command
 
 `gcp-pubsub-topic-snapshot-create`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -854,9 +930,11 @@ Creates a snapshot from the requested subscription. Snapshots are used in gcp-pu
 
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-snapshot-create project_id=dmst-integrations subscription_id=test_sub_2 snapshot_id=doc_snapshot```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudPubSubSnapshots": {
@@ -868,13 +946,16 @@ Creates a snapshot from the requested subscription. Snapshots are used in gcp-pu
 ```
 
 ##### Human Readable Output
+
 ### Snapshot **doc_snapshot** was created successfully
+
 |Expire Time|Name|Topic|
 |---|---|---|
 | 2020-04-23T13:37:26.199Z | projects/dmst-integrations/snapshots/doc_snapshot | projects/dmst-integrations/topics/dmst-topic |
 
 
 ### gcp-pubsub-topic-snapshot-update
+
 ***
 Updates an existing snapshot. Snapshots are used in gcp-pubsub-topic-messages-seek command.
 
@@ -882,6 +963,7 @@ Updates an existing snapshot. Snapshots are used in gcp-pubsub-topic-messages-se
 ##### Base Command
 
 `gcp-pubsub-topic-snapshot-update`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -905,9 +987,11 @@ Updates an existing snapshot. Snapshots are used in gcp-pubsub-topic-messages-se
 
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-snapshot-update project_id=dmst-integrations subscription_id=test_sub_2 snapshot_id=doc_snapshot labels="doc=true" update_mask=labels topic_id=dmst-topic```
 
 ##### Context Example
+
 ```
 {
     "GoogleCloudPubSubSnapshots": {
@@ -922,13 +1006,16 @@ Updates an existing snapshot. Snapshots are used in gcp-pubsub-topic-messages-se
 ```
 
 ##### Human Readable Output
+
 ### Snapshot **doc_snapshot** was updated successfully
+
 |Expire Time|Labels|Name|Topic|
 |---|---|---|---|
 | 2020-04-23T13:37:26.199Z | doc: true | projects/dmst-integrations/snapshots/doc_snapshot | projects/dmst-integrations/topics/dmst-topic |
 
 
 ### gcp-pubsub-topic-snapshot-delete
+
 ***
 Removes an existing snapshot.
 
@@ -936,6 +1023,7 @@ Removes an existing snapshot.
 ##### Base Command
 
 `gcp-pubsub-topic-snapshot-delete`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -949,18 +1037,22 @@ Removes an existing snapshot.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-snapshot-delete project_id=dmst-integrations snapshot_id=doc_snapshot```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
+
 Snapshot **doc_snapshot** was deleted successfully
 
 
 ### gcp-pubsub-topic-snapshot-delete
+
 ***
 Removes an existing snapshot.
 
@@ -968,6 +1060,7 @@ Removes an existing snapshot.
 ##### Base Command
 
 `gcp-pubsub-topic-ack-messages`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -982,15 +1075,19 @@ Removes an existing snapshot.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!gcp-pubsub-topic-ack-messages ack_ids=example_ack_id subscription_id=test_sub_2```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
+
 ### Subscription test_sub_2 had the following ids acknowledged
+
 |ACK ID|
 |---|
 | example_ack_id |

@@ -12,6 +12,7 @@
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -114,6 +115,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### taegis-execute-playbook
 
 #### Base Command
+
 `!taegis-execute-playbook`
 
 #### Inputs
@@ -356,6 +358,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### taegis-fetch-endpoint
 
 #### Base Command
+
 `!taegis-fetch-endpoint`
 
 #### Inputs
@@ -399,6 +402,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### taegis-fetch-investigation
 
 #### Base Command
+
 `!taegis-fetch-investigation`
 
 #### Inputs
@@ -441,6 +445,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### taegis-fetch-investigation-alerts
 
 #### Base Command
+
 `!taegis-fetch-investigation-alerts`
 
 #### Inputs
@@ -477,6 +482,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### taegis-fetch-investigations
 
 #### Base Command
+
 `!taegis-fetch-investigations`
 
 #### Inputs
@@ -516,6 +522,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### taegis-fetch-playbook-execution
 
 #### Base Command
+
 `!taegis-fetch-playbook-execution`
 
 #### Inputs
@@ -562,6 +569,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### taegis-fetch-users
 
 #### Base Command
+
 `!taegis-fetch-users`
 
 #### Inputs
@@ -709,6 +717,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### taegis-update-investigation
 
 #### Base Command
+
 `!taegis-update-investigation`
 
 #### Inputs

@@ -31,6 +31,7 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 2. If the issue persists, try to increase the Load Balancer timeout through the Devops team (for 800,000 indicators, it is recommended to increase the timeout up to 1 hour (depends on the indicator query)).
 
 ### Deleted or expired indicators showing in EDL export
+
 Append `expirationStatus:active` to the end of the query.
 
 ### EDL Log
@@ -186,15 +187,18 @@ To access the Export Indicators service by instance name, make sure ***Instance 
     `https://<xsoar_address>/instance/execute/<instance_name>`
 
 ### Set up Authentication
+
 EDLs running on tenants in Cortex XSOAR 8 Cloud or Cortex XSIAM require basic authentication. EDLs running on engines do not require basic authentication, but it is recommended.  
 For Cortex XSOAR On-prem (6.x or 8) or when using engines, you can set up authentication using custom certificates. For more information on setting up a custom certificate for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). 
 
 ### Access EDLs on Cortex XSOAR 8 Cloud and On-prem and Cortex XSIAM
+
 **Note:**  
 For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
 For example, `ext-xsoar.mycompany.com`.
   
 For Cortex XSOAR 8 Cloud, Cortex XSOAR On-prem and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
+
 - If the integration is configured to run on a tenant, use `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`  
   Note: For Cortex XSIAM, you can use the `edl-` prefix. Alternatively, if using the `ext-` prefix, replace the `xdr` in the url to `crtx`.  
 
@@ -272,6 +276,7 @@ There is no context output for this command.
 
 
 ### Troubleshooting
+
 - Indicators that are passed through the integration undergo formatting and deduplication, which may lead to an apparent loss of indicators.  
   For instance, enabling the `Strip ports from URLs` option may cause two URLs that are similar but use different ports to be merged into a single indicator after formatting, resulting in the removal of one of them as a duplicate.
 - In case all fields are selected, there is a potential memory issue when dealing with CSV or JSON format files that exceed 150,000 entries.
@@ -288,6 +293,7 @@ The headers are:
 
 
 #### Execution Time
+
 - 10,000 indicators can take 10-20 seconds.
 - 100,000 indicators can take up to 1-3 minutes.
 - 1,000,000 indicators can take over half an hour.

@@ -25,12 +25,13 @@ After an initial import, a background task is regularly executed to synchronize 
 # What does this integration do?
 
 This integration uses the [OpenCVE APIs](https://docs.opencve.io/api/) to ingest and enrich CVEs. You can pull CVEs for a vendor, product, or individually and get information like:
- - CVSS v2/v3 info
+
+- CVSS v2/v3 info
 	 - Score
 	 - Vector
 	 - Vector broken down for easy understanding
- - NVD and Mitre links to CVE
- - Tags for all vendors and products related to the CVE
+- NVD and Mitre links to CVE
+- Tags for all vendors and products related to the CVE
 
 
 ## Installation
@@ -41,8 +42,8 @@ There are two parts to the installation: OpenCVE and optionally an XSOAR engine 
 
 #### Prerequisites
 
- - Fresh Linux installation (CentOS, RHEL, Ubuntu, etc.)
- - [See Documentation](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/engines/install-deploy-and-configure-demisto-engines)
+- Fresh Linux installation (CentOS, RHEL, Ubuntu, etc.)
+- [See Documentation](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/engines/install-deploy-and-configure-demisto-engines)
 
 #### Installation
 
@@ -55,15 +56,17 @@ See the [official documentation](https://docs.paloaltonetworks.com/cortex/cortex
 #### Prerequisites
 
 Make sure the following are complete before moving on:
- - **Python >=3.6** installed
- - `docker-compose` installed
- - Current user is in the `docker` group
+
+- **Python >=3.6** installed
+- `docker-compose` installed
+- Current user is in the `docker` group
 
 The instructions below will deploy via `docker-compose` the following services:
- - `webserver`: used to present the data to the user (also provides the API) on port `8000`
- - `postgres`: used to store the data (CVE, Users, Vendors, Products, Subscriptions, etc.)
- - `celery_worker` and `celery_beat`: used to periodically fetch the NVD database and update the list of CVEs
- - `redis`: brokers `celery_beat` with `postgres`
+
+- `webserver`: used to present the data to the user (also provides the API) on port `8000`
+- `postgres`: used to store the data (CVE, Users, Vendors, Products, Subscriptions, etc.)
+- `celery_worker` and `celery_beat`: used to periodically fetch the NVD database and update the list of CVEs
+- `redis`: brokers `celery_beat` with `postgres`
 
 
 > **Note:** The XOAR engine does have Docker installed but it does not have `docker-compose`. You will need to install `docker-compose` on your own (typically `pip3 install docker-compose`, but this may change depending on distro and setup).
@@ -118,6 +121,7 @@ Installation is fairly straight forward.
 	read -p "Enter admin email: " EMAIL
 	docker exec -it webserver opencve create-user ${USERNAME} ${EMAIL} --admin
 	```
+
 OpenCVE is now running on `http://<server_ip>:8000`. Log in and subscribe to some vendors and products.
 
 7. Configure the integration.

@@ -9,15 +9,18 @@ This integration was created and tested with version 10.1 of WildFire.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server base URL (e.g., https://192.168.0.1/publicapi) |  | True |
+| Server base URL (e.g., <https://192.168.0.1/publicapi>) |  | True |
 | API Key |  | False |
 | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
 | Use system proxy settings | Use system proxy settings. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### internal-wildfire-get-report
+
 ***
 Retrieves results for a file hash using WildFire.
 
@@ -25,6 +28,7 @@ Retrieves results for a file hash using WildFire.
 #### Base Command
 
 `internal-wildfire-get-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -37,6 +41,7 @@ Retrieves results for a file hash using WildFire.
 There is no context output for this command.
 
 #### Command Example
+
 ```!internal-wildfire-get-report sha256=abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890```
 
 #### Human Readable Output

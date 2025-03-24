@@ -1,4 +1,5 @@
 The ServiceNow API handles the OAuth2 authentication process and API requests. When developing a ServiceNow integration, follow these steps:
+
 1. Import the API module to the integration.
 2. Add the !servicenow-login command, which will create a refresh token using the given credentials. The refresh token will be used to generate access tokens to the instance of the user.
 3. (Optional) Add the !servicenow-test command, which will test the instance configuration. 

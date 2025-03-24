@@ -2,6 +2,7 @@ Deprecated. Use Flashpoint Ignite instead.
 This integration was integrated and tested with API version 1.0.0 and 4.0.0 of Flashpoint.
 
 ### Auto Extract Indicator
+
 Both incident types **Flashpoint Alerts** and **Flashpoint Compromised Credentials** support auto extraction feature by default that extract indicators and enriches their reputations using commands and scripts defined for the indicator type (Refer [Indicator extraction (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Indicator-Extraction) or [Indicator extraction (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Indicator-extraction) or [Indicator extraction (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Indicator-extraction) for more detail).
 
 ## Configure Flashpoint on Cortex XSOAR
@@ -25,10 +26,14 @@ Both incident types **Flashpoint Alerts** and **Flashpoint Compromised Credentia
     | Create relationships | Create relationships between indicators as part of Enrichment. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Looks up details of an IP indicator. The reputation of the IP address is considered malicious if there's at least one IOC event in the Flashpoint database that matches the IP indicator. Alternatively, the IP address is considered suspicious if it matches any one of the Torrent's Peer IP Address or Forum Visit's Peer IP Address.
 
@@ -36,6 +41,7 @@ Looks up details of an IP indicator. The reputation of the IP address is conside
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -71,11 +77,13 @@ Looks up details of an IP indicator. The reputation of the IP address is conside
 
 
 #### Command Example
+
 ```
 !ip ip="210.122.7.129"
 ```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -134,6 +142,7 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=ip-dst%2Cip-src&ioc_value=210.122.7.129
 
 ### domain
+
 ***
 Lookup the "Domain" type indicator details. The reputation of Domain is considered Malicious if there's at least one IOC event in Flashpoint database matching the Domain indicator.
 
@@ -141,6 +150,7 @@ Lookup the "Domain" type indicator details. The reputation of Domain is consider
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -175,11 +185,13 @@ Lookup the "Domain" type indicator details. The reputation of Domain is consider
 | Domain.Relationships.EntityBType | string | The type of the destination of the relationship. | 
 
 #### Command Example
+
 ```
 !domain domain="subaat.com"
 ```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -257,6 +269,7 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=domain&ioc_value=subaat<span></span>.com
 
 ### filename
+
 ***
 Lookup the "Filename" type indicator details. The reputation of Filename is considered Malicious if there's at least one IOC event in Flashpoint database matching the Filename indicator.
 
@@ -264,6 +277,7 @@ Lookup the "Filename" type indicator details. The reputation of Filename is cons
 #### Base Command
 
 `filename`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -290,11 +304,13 @@ Lookup the "Filename" type indicator details. The reputation of Filename is cons
 | Flashpoint.Filename.Event.Comment | string | The comment that was provided when the indicator was observed. | 
 
 #### Command Example
+
 ```
 !filename filename=".locked"
 ```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -362,12 +378,14 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=filename&ioc_value=.locked
 
 ### url
+
 ***
 Lookup the "URL" type indicator details. The reputation of Url is considered Malicious if there's at least one IOC event in Flashpoint database matching the Url indicator.
 
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -401,11 +419,13 @@ Lookup the "URL" type indicator details. The reputation of Url is considered Mal
 | URL.Relationships.EntityBType | string | The type of the destination of the relationship. | 
 
 #### Command Example
+
 ```
 !url url="92.63.197.153/krabaldento.exe"
 ```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -469,12 +489,14 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=url&ioc_value=92.63.197.153/krabaldento.exe
 
 ### file
+
 ***
 Lookup the "File" type indicator details. The reputation of File-hash is considered Malicious if there's at least one IOC event in Flashpoint database matching the File-hash indicator.
 
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -512,11 +534,13 @@ Lookup the "File" type indicator details. The reputation of File-hash is conside
 | File.Relationships.EntityBType | string | The type of the destination of the relationship. | 
 
 #### Command Example
+
 ```
 !file file="ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5"
 ```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -631,12 +655,14 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=md5%2Csha1%2Csha256%2Csha512&ioc_value=ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5
 
 ### email
+
 ***
 Lookup the "Email" type indicator details. The reputation of Email is considered Malicious if there's at least one IOC event in Flashpoint database matching the Email indicator.
 
 #### Base Command
 
 `email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -664,11 +690,13 @@ Lookup the "Email" type indicator details. The reputation of Email is considered
 | Account.Email.Name | string | Name of indicator. | 
 
 #### Command Example
+
 ```
 !email email="qicifomuejijika@o2.pl"
 ```
 
 #### Context Example
+
 ```
 {
     "Account.Email": {
@@ -735,12 +763,14 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=email-dst%2Cemail-src%2Cemail-src-display-name%2Cemail-subject&ioc_value=qicifomuejijika%40o2<span></span>.pl
 
 ### flashpoint-search-intelligence-reports
+
 ***
 Search for the Intelligence Reports using a keyword
 
 #### Base Command
 
 `flashpoint-search-intelligence-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -754,11 +784,13 @@ Search for the Intelligence Reports using a keyword
 | Flashpoint.Report | unknown | List of reports based on specified search query or keyword | 
 
 #### Command Example
+
 ```
 !flashpoint-search-intelligence-reports report_search="isis"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Report": [
@@ -849,12 +881,14 @@ Top 5 reports:
     https:/<span></span>/fp.tools/home/search/reports?query=isis
 
 ### flashpoint-get-single-intelligence-report
+
 ***
 Get single report details using the report id. The report id can be known from output context path (Flashpoint.Report.ReportId) of report-search command or some other investigation.
 
 #### Base Command
 
 `flashpoint-get-single-intelligence-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -874,11 +908,13 @@ Get single report details using the report id. The report id can be known from o
 | Flashpoint.Report.ReportId | string | Unique id of the report. | 
 
 #### Command Example
+
 ```
 !flashpoint-get-single-intelligence-report report_id="e-QdYuuwRwCntzRljzn9-A"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Report": {
@@ -904,12 +940,14 @@ Get single report details using the report id. The report id can be known from o
 | ISIS Supporters Warn of the Risks Associated with Exif Data | Sep 23, 2019 20:27 | On September 17, 2019, multiple pro-ISIS Telegram groups disseminated a message warning of the dangers of exposed exif data?a type of metadata showing GPS coordinates, time, and date the image was taken and the make and model of the device used?that is typically captured from images taken by a phone or camera, unless the security settings are properly configured. | Intelligence Report, Law Enforcement & Military, Physical Threats, Jihadist, Propaganda, Terrorism, Global |
 
 ### flashpoint-get-related-reports
+
 ***
 Get related reports for a particular report using the report-id. The report id can be known from output context path (Flashpoint.Report.ReportId) of report-search command or some other investigation.
 
 #### Base Command
 
 `flashpoint-get-related-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -923,11 +961,13 @@ Get related reports for a particular report using the report-id. The report id c
 | Flashpoint.Report | unknown | Display list of related report based on report fpid. | 
 
 #### Command Example
+
 ```
 !flashpoint-get-related-reports report_id="tiPqg51OQpOTsoFyTaYa_w"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Report": [
@@ -1021,12 +1061,14 @@ Top 5 related reports:
     https:/<span></span>/fp.tools/home/intelligence/reports/report/tiPqg51OQpOTsoFyTaYa_w#detail
 
 ### flashpoint-get-single-event
+
 ***
 Retrieves the details of a single event using event UUID or FPID. To retrieve the event id, run the get-events command and see the value under the Flashpoint.Event.EventId context path. or indicator reputation command response or some other investigation.
 
 #### Base Command
 
 `flashpoint-get-single-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1046,11 +1088,13 @@ Retrieves the details of a single event using event UUID or FPID. To retrieve th
 | Flashpoint.Event.Name | string | The name of the event. | 
 
 #### Command Example
+
 ```
 !flashpoint-get-single-event event_id=Hu2SoTWJWteLrH9mR94JbQ
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Event": {
@@ -1076,12 +1120,14 @@ Retrieves the details of a single event using event UUID or FPID. To retrieve th
 | Jun 18, 2019 22:08 | CryptingService_4c0d570ecdf23529c91b8decf27107db5c5e9430_2019-06-17T03:01:03.000Z | source:CryptingService2 | <p>\"Quasar\" is a publicly available, open-source remote access trojan (RAT) for Microsoft Windows operating systems written in the C# programming language. Quasar is authored by GitHub user "MaxXor" and publicly hosted as a GitHub repository. The functionality of the Quasar malware includes remote file management on the infected machine, registry alterations, recording the actions of the victim, and establishing remote desktop connections.</p> |
 
 ### flashpoint-get-events
+
 ***
 Searches for events within the specified time-period, the report fpid, or attack IDs.
 
 #### Base Command
 
 `flashpoint-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1099,11 +1145,13 @@ Searches for events within the specified time-period, the report fpid, or attack
 | Flashpoint.Event | unknown | A list of multiple events. | 
 
 #### Command Example
+
 ```
 !flashpoint-get-events limit=20
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Event": [
@@ -1324,12 +1372,14 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs
 
 ### flashpoint-common-lookup
+
 ***
 Lookup any type of indicator
 
 #### Base Command
 
 `flashpoint-common-lookup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1346,11 +1396,13 @@ Lookup any type of indicator
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 
 #### Command Example
+
 ```
 !flashpoint-common-lookup indicator="mondns.myftp.biz"
 ```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -1375,12 +1427,14 @@ Reputation: Malicious
 | Oct 11, 2019 15:30 | ModiRAT | misp-galaxy:mitre-enterprise-attack-attack-pattern=“Deobfuscate/Decode Files or Information - T1140”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“System Owner/User Discovery - T1033”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“System Information Discovery - T1082”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“Screen Capture - T1113”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“Custom Command and Control Protocol - T1094”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“Data Encoding - T1132”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“Uncommonly Used Port - T1065”, malware:ModiRAT, type:RAT, os:Windows, report:FQmMHh1rR_WuGd_PNVv-bQ |
 
 ### flashpoint-get-forum-details
+
 ***
 Retrieves forum details using the forum ID. To retrieve the forum ID run the flashpoint-search-forum-posts command and see the value under the following context paths, Flashpoint.Forum.ForumId or Flashpoint.Forum.Post.Forum.id.
 
 #### Base Command
 
 `flashpoint-get-forum-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1400,11 +1454,13 @@ Retrieves forum details using the forum ID. To retrieve the forum ID run the fla
 | Flashpoint.Forum.ForumId | string | The forum’s unique ID. |
 
 #### Command Example
+
 ```
 !flashpoint-get-forum-details forum_id=ifY5BsXeXQqdTx3fafZbIg
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Forum": {
@@ -1459,12 +1515,14 @@ Retrieves forum details using the forum ID. To retrieve the forum ID run the fla
 | 0hack | bbs<span></span>.0hack<span></span>.com | Chinese, Cyber Threat, Hacking, Language |
 
 ### flashpoint-get-forum-room-details
+
 ***
 Retrieves forum room details using the room ID. To retrieve the room ID run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.Room.id context path.
 
 #### Base Command
 
 `flashpoint-get-forum-room-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1482,11 +1540,13 @@ Retrieves forum room details using the room ID. To retrieve the room ID run the 
 
 
 #### Command Example
+
 ```
 !flashpoint-get-forum-room-details room_id="dBoQqur5XmGGYLxSrc8C9A"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Forum.Room": {
@@ -1554,12 +1614,14 @@ Retrieves forum room details using the room ID. To retrieve the room ID run the 
 | Crdpro | Bank Carding | forumdisplay.php?f=70&s=6e25902255e1b57bfe37dd2749dafd66 |
 
 ### flashpoint-get-forum-user-details
+
 ***
 Retrieves user details using the user-id. To retrieve the user ID, run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.User.id context path.
 
 #### Base Command
 
 `flashpoint-get-forum-user-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1577,11 +1639,13 @@ Retrieves user details using the user-id. To retrieve the user ID, run the flash
 | Flashpoint.Forum.User.UserId | string | The unique ID of the forum user. | 
 
 #### Command Example
+
 ```
 !flashpoint-get-forum-user-details user_id="P3au_EzEX4-uctmRfdUYeA"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Forum.User": {
@@ -1650,12 +1714,14 @@ Retrieves user details using the user-id. To retrieve the user ID, run the flash
 | Crdpro | IllWillPub | http:/<span></span>/www<span></span>.crdpro.su/member<span></span>.php?s=9f099a0eebc5f7c79e36fc688af2f697&u=50678 |
 
 ### flashpoint-get-forum-post-details
+
 ***
 Retrieves post details using the post-id. To retrieve the post ID, run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.PostId context path. command or some other investigation.
 
 #### Base Command
 
 `flashpoint-get-forum-post-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1676,11 +1742,13 @@ Retrieves post details using the post-id. To retrieve the post ID, run the flash
 
 
 #### Command Example
+
 ```
 !flashpoint-get-forum-post-details post_id=PDo1xGiKXDebHGc8fZme6g
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Forum.Post": {
@@ -1760,12 +1828,14 @@ Retrieves post details using the post-id. To retrieve the post ID, run the flash
 | 2019-12-10T01:17:00+00:00 | Ord-UA | Форум | Дубовик | ДСНС на чолі з Бочковським і К…. | 2014/10/22/dsns-na-choli-z-bochkovskim-i-k/?lpage=1&page=580 | https:/<span></span>/fp.tools/home/ddw/forums/threads/M3NorvmYVoG6rVFHnP3T9w?id=PDo1xGiKXDebHGc8fZme6g |
 
 ### flashpoint-search-forum-sites
+
 ***
 Searches forum sites using a keyword. it will search in site content like name, title, descripion etc.
 
 #### Base Command
 
 `flashpoint-search-forum-sites`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1779,11 +1849,13 @@ Searches forum sites using a keyword. it will search in site content like name, 
 | Flashpoint.Forum.Site | unknown | A list of forum site details based on the search keyword. | 
 
 #### Command Example
+
 ```
 !flashpoint-search-forum-sites site_search="0hack"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Forum.Site": [
@@ -1809,12 +1881,14 @@ Top 10 sites:
 | 0hack | bbs<span></span>.0hack<span></span>.com | 0hack (零黑联盟) is a Chinese-language hacker training forum. The forum appears to be affiliated with 非凡安全网, 803389<span></span>.com. |
 
 ### flashpoint-search-forum-posts
+
 ***
 Search forum posts using a keyword
 
 #### Base Command
 
 `flashpoint-search-forum-posts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1830,11 +1904,13 @@ Search forum posts using a keyword
 
 
 #### Command Example
+
 ```
 !flashpoint-search-forum-posts post_search="The Courtyard Café"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Forum.Post": [
@@ -2497,12 +2573,14 @@ Follow this [link](https://fp.tools/home/search/forums?query=The%20Courtyard%20C
 
 
 ### flashpoint-alert-list
+
 ***
 Retrieves an alert or a list of alerts based on the filter values provided in the command arguments. Yields the alerts from Flashpoint collected sources and the alerts from data exposure.
 
 #### Base Command
 
 `flashpoint-alert-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2568,9 +2646,11 @@ Retrieves an alert or a list of alerts based on the filter values provided in th
 
 
 #### Command Example
+
 ``` !flashpoint-alert-list ```
 
 #### Context Example
+
 ```json
 {
     "Flashpoint": {
@@ -2715,12 +2795,14 @@ Retrieves an alert or a list of alerts based on the filter values provided in th
 #### Human Readable Output
 
 ##### Alerts from Flashpoint collected sources.
+
 |**FPID**|**Keyword Text**|**Site Title**|**Created Date (UTC)**|**Last Observed Date (UTC)**|
 | --- | --- | --- | --- | --- |
 | dummy_fpid1 | "user manager" | pastebin.com | July 6, 2021  14:44 | July 6, 2021  16:43 |
 | dummy_fpid2 | "user manager" | pastebin.com | July 6, 2021  10:35 | July 6, 2021  15:55 |
 
 ##### Alerts with data exposures.
+
 |**FPID**|**Keyword Text**|**File**|**Owner**|**Repo**|**Source**|
 | --- | --- | --- | --- | --- | --- |
 | dummy_fpid1 | "onelogin" | dummy_file1 | onelogin | dummy_repo1 | github |
@@ -2733,6 +2815,7 @@ size = 1<br>
 until = 2021-06-16T02:45:00Z
 
 ### flashpoint-compromised-credentials-list
+
 ***
 Retrieves the compromised credentials based on the filter values provided in the command arguments.
 
@@ -2740,6 +2823,7 @@ Retrieves the compromised credentials based on the filter values provided in the
 #### Base Command
 
 `flashpoint-compromised-credentials-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2798,9 +2882,11 @@ Retrieves the compromised credentials based on the filter values provided in the
 | Flashpoint.CompromisedCredential.sort | Unknown | Sort value of the IoC. | 
 
 #### Command Example
+
 ``` !flashpoint-compromised-credentials-list ```
 
 #### Context Example
+
 ```json
 {
     "Flashpoint": {
@@ -2947,8 +3033,9 @@ Retrieves the compromised credentials based on the filter values provided in the
 #### Total number of records found: 1302
 
 ### Compromised Credential(s)
+
 | **FPID** | **Email** | **Breach Source** | **Breach Source Type** | **Password** | **Created Date (UTC)** | **First Observed Date (UTC)** |
 | --- | --- | --- | --- | --- | --- | --- |
 | dummy_fpid1 | dummy_email1 | Analyst Research| Analyst Research | dummy_password1 | Jan 26, 2021  12:00 | Jan 27, 2021  18:50 |
-| dummy_fpid2 | dummy_email2 | https://www.virustotal.com/gui/file/0e59531d9ebf1d695cb41c1afd443c22bfaef56dafa636c2cf157deb19b679fe/details | VirusTotal | dummy_password2 | Jun 6, 2021  20:47 | Jun 6, 2021  20:47 |
+| dummy_fpid2 | dummy_email2 | <https://www.virustotal.com/gui/file/0e59531d9ebf1d695cb41c1afd443c22bfaef56dafa636c2cf157deb19b679fe/details> | VirusTotal | dummy_password2 | Jun 6, 2021  20:47 | Jun 6, 2021  20:47 |
 

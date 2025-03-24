@@ -12,7 +12,7 @@ By integrating AI-automated threat hunting with SOAR capabilities SOC teams can 
 
 
 
-- www.linkshadow.com
-- www.linkshadow.com/contact-us
-- www.linkshadow.com/downloads/reports/LinkShadow-Cortex-XSOAR-Datasheet-Final.pdf
+- <www.linkshadow.com>
+- <www.linkshadow.com/contact-us>
+- <www.linkshadow.com/downloads/reports/LinkShadow-Cortex-XSOAR-Datasheet-Final.pdf>
 

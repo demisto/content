@@ -2,6 +2,7 @@ This is the Quest KACE integration.
 This integration was integrated and tested with version v10.0.290 of QuestKace
 
 ## Limitations
+
 For **kace-ticket-create** and **kace-ticket-update**, When the queue_id is not the default:
 Status,Category,Priority,Impact - values from the option list might cause an error as they correspond to different values.
 If a value not from the list will be inserted - This value will pass to the API as is.
@@ -31,9 +32,12 @@ Custom fields of tickets are represented by their custom number and not but thei
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### kace-machines-list
+
 ***
 Returns a list of all machines in system.
 
@@ -41,6 +45,7 @@ Returns a list of all machines in system.
 #### Base Command
 
 `kace-machines-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -79,9 +84,11 @@ Returns a list of all machines in system.
 
 
 #### Command Example
+
 ```!kace-machines-list custom_filter="id gt 1"```
 
 #### Context Example
+
 ```
 {
     "QuestKace": {
@@ -93,10 +100,12 @@ Returns a list of all machines in system.
 #### Human Readable Output
 
 >### Quest Kace Machines
+>
 >**No entries.**
 
 
 ### kace-assets-list
+
 ***
 Returns a list of all assets in Quest KACE.
 
@@ -104,6 +113,7 @@ Returns a list of all assets in Quest KACE.
 #### Base Command
 
 `kace-assets-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -131,9 +141,11 @@ Returns a list of all assets in Quest KACE.
 
 
 #### Command Example
+
 ```!kace-assets-list custom_filter="name eq Mac"```
 
 #### Context Example
+
 ```
 {
     "QuestKace": {
@@ -159,12 +171,14 @@ Returns a list of all assets in Quest KACE.
 #### Human Readable Output
 
 >### Quest Kace Assets
+>
 >|ID|Name|Created|Modified|OwnerID|MappedID|AssetClassID|AssetDataID|AssetStatusID|AssetTypeID|AssetTypeName|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 2 | Mac | 2020-06-09 03:57:30 | 2020-06-09 03:57:30 | 0 | 0 | 10000 | 1 | 0 | 5 | Device |
 
 
 ### kace-queues-list
+
 ***
 Returns a list of all queues in Quest KACE.
 
@@ -172,6 +186,7 @@ Returns a list of all queues in Quest KACE.
 #### Base Command
 
 `kace-queues-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -197,9 +212,11 @@ Returns a list of all queues in Quest KACE.
 
 
 #### Command Example
+
 ```!kace-queues-list custom_filter="id neq 1"```
 
 #### Context Example
+
 ```
 {
     "QuestKace": {
@@ -393,12 +410,14 @@ Returns a list of all queues in Quest KACE.
 #### Human Readable Output
 
 >### Quest Kace Queues
+>
 >|ID|Name|Fields|
 >|---|---|---|
 >| 3 | New Queue 2 | {'ID': 36, 'HdQueueID': 3, 'Name': 'SAT_SURVEY', 'HdTicketFieldName': 'sat_survey', 'Ordinal': 0, 'RequiredState': 'none', 'FieldLabel': 'Please tell us about your recent help desk experience', 'Visible': 'usermodify'},<br/>{'ID': 37, 'HdQueueID': 3, 'Name': 'TITLE', 'HdTicketFieldName': 'title', 'Ordinal': 1, 'RequiredState': 'all', 'FieldLabel': 'Title', 'Visible': 'usercreate'},<br/>{'ID': 38, 'HdQueueID': 3, 'Name': 'SUMMARY', 'HdTicketFieldName': 'summary', 'Ordinal': 2, 'RequiredState': 'none', 'FieldLabel': 'Summary', 'Visible': 'usercreate'},<br/>{'ID': 39, 'HdQueueID': 3, 'Name': 'IMPACT', 'HdTicketFieldName': 'impact_id', 'Ordinal': 3, 'RequiredState': 'none', 'FieldLabel': 'Impact', 'Visible': 'usercreate'},<br/>{'ID': 40, 'HdQueueID': 3, 'Name': 'CATEGORY', 'HdTicketFieldName': 'category_id', 'Ordinal': 4, 'RequiredState': 'none', 'FieldLabel': 'Category', 'Visible': 'usercreate'},<br/>{'ID': 41, 'HdQueueID': 3, 'Name': 'STATUS', 'HdTicketFieldName': 'status_id', 'Ordinal': 5, 'RequiredState': 'none', 'FieldLabel': 'Status', 'Visible': 'uservisible'},<br/>{'ID': 42, 'HdQueueID': 3, 'Name': 'PRIORITY', 'HdTicketFieldName': 'priority_id', 'Ordinal': 6, 'RequiredState': 'none', 'FieldLabel': 'Priority', 'Visible': 'uservisible'},<br/>{'ID': 43, 'HdQueueID': 3, 'Name': 'OWNER', 'HdTicketFieldName': 'owner_id', 'Ordinal': 7, 'RequiredState': 'none', 'FieldLabel': 'Owner', 'Visible': 'uservisible'},<br/>{'ID': 44, 'HdQueueID': 3, 'Name': 'MACHINE', 'HdTicketFieldName': 'machine_id', 'Ordinal': 8, 'RequiredState': 'none', 'FieldLabel': 'Device', 'Visible': 'uservisible'},<br/>{'ID': 45, 'HdQueueID': 3, 'Name': 'ASSET', 'HdTicketFieldName': 'asset_id', 'Ordinal': 9, 'RequiredState': 'none', 'FieldLabel': 'Asset', 'Visible': 'uservisible'},<br/>{'ID': 61, 'HdQueueID': 3, 'Name': 'DUE_DATE', 'HdTicketFieldName': 'due_date', 'Ordinal': 25, 'RequiredState': 'none', 'FieldLabel': 'Due Date', 'Visible': 'userhidden'},<br/>{'ID': 62, 'HdQueueID': 3, 'Name': 'CC_LIST', 'HdTicketFieldName': 'cc_list', 'Ordinal': 26, 'RequiredState': 'none', 'FieldLabel': 'CC List', 'Visible': 'userhidden'},<br/>{'ID': 63, 'HdQueueID': 3, 'Name': 'CREATED', 'Ordinal': 27, 'RequiredState': 'none', 'FieldLabel': 'Created', 'Visible': 'uservisible'},<br/>{'ID': 64, 'HdQueueID': 3, 'Name': 'MODIFIED', 'Ordinal': 28, 'RequiredState': 'none', 'FieldLabel': 'Modified', 'Visible': 'uservisible'},<br/>{'ID': 65, 'HdQueueID': 3, 'Name': 'SUBMITTER', 'HdTicketFieldName': 'submitter_id', 'Ordinal': 29, 'RequiredState': 'none', 'FieldLabel': 'Submitter', 'Visible': 'usercreate'},<br/>{'ID': 68, 'HdQueueID': 3, 'Name': 'SEE_ALSO', 'HdTicketFieldName': 'related_ticket_ids', 'Ordinal': 32, 'RequiredState': 'none', 'FieldLabel': 'See Also', 'Visible': 'userhidden'},<br/>{'ID': 69, 'HdQueueID': 3, 'Name': 'REFERRERS', 'Ordinal': 33, 'RequiredState': 'none', 'FieldLabel': 'Referrers', 'Visible': 'userhidden'},<br/>{'ID': 70, 'HdQueueID': 3, 'Name': 'RESOLUTION', 'HdTicketFieldName': 'resolution', 'Ordinal': 34, 'RequiredState': 'none', 'FieldLabel': 'Resolution', 'Visible': 'uservisible'} |
 
 
 ### kace-tickets-list
+
 ***
 Returns a list of all tickets in Quest KACE.
 
@@ -406,6 +425,7 @@ Returns a list of all tickets in Quest KACE.
 #### Base Command
 
 `kace-tickets-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -457,9 +477,11 @@ Returns a list of all tickets in Quest KACE.
 
 
 #### Command Example
+
 ```!kace-tickets-list custom_shaping="hd_ticket all,submitter limited,owner limited, asset limited,machine limited,priority limited,category limited, impact limited,status limited"```
 
 #### Context Example
+
 ```
 {
     "QuestKace": {
@@ -1110,6 +1132,7 @@ Returns a list of all tickets in Quest KACE.
 #### Human Readable Output
 
 >### Quest Kace Tickets
+>
 >|ID|Title|Created|Modified|HdQueueID|DueDate|
 >|---|---|---|---|---|---|
 >| 11 | Untitled | 2020-05-19 05:54:42 | 2020-05-19 05:54:42 | 1 | 0000-00-00 00:00:00 |
@@ -1134,6 +1157,7 @@ Returns a list of all tickets in Quest KACE.
 
 
 ### kace-ticket-create
+
 ***
 Creates a new ticket to the system.
 
@@ -1141,6 +1165,7 @@ Creates a new ticket to the system.
 #### Base Command
 
 `kace-ticket-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1162,9 +1187,11 @@ Creates a new ticket to the system.
 There is no context output for this command.
 
 #### Command Example
+
 ```!kace-ticket-create title="test1" status="Opened" summary="test of Quest Kace integration ticket create" category="Network" queue_id=1```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -1179,6 +1206,7 @@ There is no context output for this command.
 
 
 ### kace-ticket-update
+
 ***
 Updates a ticket in the system.
 
@@ -1186,6 +1214,7 @@ Updates a ticket in the system.
 #### Base Command
 
 `kace-ticket-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1207,9 +1236,11 @@ Updates a ticket in the system.
 There is no context output for this command.
 
 #### Command Example
+
 ```!kace-ticket-update ticket_id=11 title="updated test1"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -1224,6 +1255,7 @@ There is no context output for this command.
 
 
 ### kace-ticket-delete
+
 ***
 Deletes the specified ticket.
 
@@ -1231,6 +1263,7 @@ Deletes the specified ticket.
 #### Base Command
 
 `kace-ticket-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1243,9 +1276,11 @@ Deletes the specified ticket.
 There is no context output for this command.
 
 #### Command Example
+
 ```!kace-ticket-delete ticket_id=11```
 
 #### Context Example
+
 ```
 {}
 ```

@@ -18,10 +18,12 @@ This integration was integrated and tested with version 1.0.0 of VersaDirector
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### vd-auth-start
+
 ***
 Obtain an access token from the API client. If Client ID and Client Secret were not passed as parameters or arguments, a new Auth Client will be created.
 
@@ -29,6 +31,7 @@ Obtain an access token from the API client. If Client ID and Client Secret were 
 #### Base Command
 
 `vd-auth-start`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -46,8 +49,11 @@ Obtain an access token from the API client. If Client ID and Client Secret were 
 | VersaDirector.AuthClient | String | Auth Client Credentials. | 
 
 #### Command example
+
 ```!vd-auth-start auth_client_name=example_client description="example client"```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -69,6 +75,7 @@ Obtain an access token from the API client. If Client ID and Client Secret were 
 >To ensure the authentication is valid, run the 'vd-auth-test' command.
 
 ### vd-auth-test
+
 ***
 Run a connectivity test to verify that the OAuth process worked.
 
@@ -76,6 +83,7 @@ Run a connectivity test to verify that the OAuth process worked.
 #### Base Command
 
 `vd-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -83,13 +91,17 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!vd-auth-test```
+
 #### Human Readable Output
 
 >Auth Token Authentication method connectivity verified.
 
 ### vd-predefined-application-list
+
 ***
 List all user predefined application objects.
 
@@ -97,6 +109,7 @@ List all user predefined application objects.
 #### Base Command
 
 `vd-predefined-application-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -122,8 +135,11 @@ List all user predefined application objects.
 | VersaDirector.PredefinedApplication.tag | string | A comma-separated list of predefined applications tag. | 
 
 #### Command example
+
 ```!vd-predefined-application-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -163,6 +179,7 @@ List all user predefined application objects.
 >Return result too large, uploaded as a file
 
 ### vd-appliance-user-modified-application-list
+
 ***
 List all user modified predefined application objects associated with a specific organization and appliance (device).
 
@@ -170,6 +187,7 @@ List all user modified predefined application objects associated with a specific
 #### Base Command
 
 `vd-appliance-user-modified-application-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -192,7 +210,9 @@ List all user modified predefined application objects associated with a specific
 | VersaDirector.ApplianceUserModifiedApplication.app-specific-option-list.app-final-with-endpoint | string | Appliance user modified application final endpoint. | 
 
 #### Command example
+
 ```!vd-appliance-user-modified-application-list appliance_name=EXAMPLE_BRANCH limit=3```
+
 #### Human Readable Output
 
 >Empty response has returned from vd-appliance-user-modified-application-list command.
@@ -201,6 +221,7 @@ List all user modified predefined application objects associated with a specific
 
 
 ### vd-template-user-modified-application-list
+
 ***
 List all user modified predefined application objects associated with a specific organization and template.
 
@@ -208,6 +229,7 @@ List all user modified predefined application objects associated with a specific
 #### Base Command
 
 `vd-template-user-modified-application-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -230,8 +252,11 @@ List all user modified predefined application objects associated with a specific
 | VersaDirector.TemplateUserModifiedApplication.app-specific-option-list.app-final-with-endpoint | string | Template user modified application final endpoint. | 
 
 #### Command example
+
 ```!vd-template-user-mod-Default-Application limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -249,12 +274,14 @@ List all user modified predefined application objects associated with a specific
 #### Human Readable Output
 
 >### User modified predefined application objects associated with EXAMPLE_CLIENT
+>
 >|App - Name|App - Risk|App - Productivity|App - Timeout|App - Final - With - Endpoint|
 >|---|---|---|---|---|
 >| TEST | 3 | 3 | 300 | false |
 
 
 ### vd-appliance-user-defined-application-list
+
 ***
 List all user defined application objects associated with a specific organization and appliance (device).
 
@@ -262,6 +289,7 @@ List all user defined application objects associated with a specific organizatio
 #### Base Command
 
 `vd-appliance-user-defined-application-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -285,7 +313,9 @@ List all user defined application objects associated with a specific organizatio
 | VersaDirector.ApplianceUserDefinedApplication.user-defined-application.family | string | Appliance user defined application family. | 
 
 #### Command example
+
 ```!vd-appliance-user-defined-application-list appliance_name=EXAMPLE_BRANCH limit=3```
+
 #### Human Readable Output
 
 >Empty response has returned from vd-appliance-user-defined-application-list command.
@@ -294,6 +324,7 @@ List all user defined application objects associated with a specific organizatio
 
 
 ### vd-template-user-defined-application-list
+
 ***
 List all user defined application objects associated with a specific organization and template.
 
@@ -301,6 +332,7 @@ List all user defined application objects associated with a specific organizatio
 #### Base Command
 
 `vd-template-user-defined-application-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -324,8 +356,11 @@ List all user defined application objects associated with a specific organizatio
 | VersaDirector.TemplateUserDefinedApplication.user-defined-application.family | string | Template user defined application family. | 
 
 #### Command example
+
 ```!vd-template-user-defined-application-list template_name=EXAMPLE_CLIENT-Default-Application limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -367,6 +402,7 @@ List all user defined application objects associated with a specific organizatio
 #### Human Readable Output
 
 >### A comma-separated list of user defined applications objects associated with EXAMPLE_CLIENT
+>
 >|App - Name|Description|Precedence|Tag|Risk|Family|
 >|---|---|---|---|---|---|
 >| TestApplication | This is a test from UI | 65 | ***values***: tag2, v_cloud, vs_evasive | 3 | collaboration |
@@ -374,6 +410,7 @@ List all user defined application objects associated with a specific organizatio
 
 
 ### vd-appliance-address-object-delete
+
 ***
 Delete an address object associated with a specific organization and appliance (device).
 
@@ -381,6 +418,7 @@ Delete an address object associated with a specific organization and appliance (
 #### Base Command
 
 `vd-appliance-address-object-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -393,13 +431,17 @@ Delete an address object associated with a specific organization and appliance (
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!vd-appliance-address-object-delete object_name=Bad-Address appliance_name=EXAMPLE_BRANCH```
+
 #### Human Readable Output
 
 >Command run successfully.
 
 ### vd-appliance-address-object-edit
+
 ***
 Edit an address object associated with a specific organization and appliance (device).
 
@@ -407,6 +449,7 @@ Edit an address object associated with a specific organization and appliance (de
 #### Base Command
 
 `vd-appliance-address-object-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -435,7 +478,9 @@ Edit an address object associated with a specific organization and appliance (de
 | VersaDirector.TemplateAddressObject.dynamic-address | string | Template address object dynamic address. | 
 
 #### Command example
+
 ```!vd-appliance-address-object-edit appliance_name=EXAMPLE_BRANCH address_object_type=fqdn object_value=test1.com,test2.com object_name=Bad-Address description="changed"```
+
 #### Human Readable Output
 
 >Command run successfully.
@@ -444,6 +489,7 @@ Edit an address object associated with a specific organization and appliance (de
 >{'address': {'name': 'Bad-Address', 'description': 'changed', 'tag': [], 'fqdn': 'test1.com,test2.com'}}
 
 ### vd-appliance-address-object-create
+
 ***
 Create an address object associated with a specific organization and appliance (device).
 
@@ -451,6 +497,7 @@ Create an address object associated with a specific organization and appliance (
 #### Base Command
 
 `vd-appliance-address-object-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -479,7 +526,9 @@ Create an address object associated with a specific organization and appliance (
 | VersaDirector.TemplateAddressObject.dynamic-address | string | Template address object dynamic address. | 
 
 #### Command example
+
 ```!vd-appliance-address-object-create appliance_name=EXAMPLE_BRANCH address_object_type=fqdn object_value=test1.com,test2.com object_name=Bad-Address description="test"```
+
 #### Human Readable Output
 
 >Command run successfully.
@@ -488,6 +537,7 @@ Create an address object associated with a specific organization and appliance (
 >{'address': {'name': 'Bad-Address', 'description': 'test', 'tag': [], 'fqdn': 'test1.com,test2.com'}}
 
 ### vd-appliance-address-object-list
+
 ***
 List all address objects associated with a specific organization and appliance (device).
 
@@ -495,6 +545,7 @@ List all address objects associated with a specific organization and appliance (
 #### Base Command
 
 `vd-appliance-address-object-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -517,8 +568,11 @@ List all address objects associated with a specific organization and appliance (
 | VersaDirector.ApplianceAddressObject.fqdn | string | Appliance address object FQDN. | 
 
 #### Command example
+
 ```!vd-appliance-address-object-list appliance_name=EXAMPLE_BRANCH limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -544,6 +598,7 @@ List all address objects associated with a specific organization and appliance (
 #### Human Readable Output
 
 >### Address objects associated with EXAMPLE_CLIENT
+>
 >|Name|Tag|Ipv 4- Prefix|Fqdn|
 >|---|---|---|---|
 >| Bad-Address-1 | test | EXAMPLE_URL/32 |  |
@@ -552,6 +607,7 @@ List all address objects associated with a specific organization and appliance (
 
 
 ### vd-template-address-object-delete
+
 ***
 Delete an address object associated with a specific organization and template.
 
@@ -559,6 +615,7 @@ Delete an address object associated with a specific organization and template.
 #### Base Command
 
 `vd-template-address-object-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -571,13 +628,17 @@ Delete an address object associated with a specific organization and template.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!vd-template-address-object-delete template_name=EXAMPLE_CLIENT-Default-Application object_name=Bad-Address```
+
 #### Human Readable Output
 
 >Command run successfully.
 
 ### vd-template-address-object-edit
+
 ***
 Create an address object associated with a specific organization and template.
 
@@ -585,6 +646,7 @@ Create an address object associated with a specific organization and template.
 #### Base Command
 
 `vd-template-address-object-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -616,7 +678,9 @@ Create an address object associated with a specific organization and template.
 | VersaDirector.TemplateAddressObject.dynamic-address | string | Template address object dynamic address. | 
 
 #### Command example
+
 ```!vd-template-address-object-edit template_name=EXAMPLE_CLIENT-Default-Application address_object_type=fqdn object_value=test.com object_name=Bad-Address description="changed"```
+
 #### Human Readable Output
 
 >Command run successfully.
@@ -625,6 +689,7 @@ Create an address object associated with a specific organization and template.
 >{'address': {'name': 'Bad-Address', 'description': 'changed', 'tag': [], 'fqdn': 'test.com'}}
 
 ### vd-template-address-object-create
+
 ***
 Create an address object associated with a specific organization and template.
 
@@ -632,6 +697,7 @@ Create an address object associated with a specific organization and template.
 #### Base Command
 
 `vd-template-address-object-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -660,7 +726,9 @@ Create an address object associated with a specific organization and template.
 | VersaDirector.TemplateAddressObject.dynamic-address | string | Template address object dynamic address. | 
 
 #### Command example
+
 ```!vd-template-address-object-create template_name=EXAMPLE_CLIENT-Default-Application address_object_type=fqdn object_value=test.com object_name=Bad-Address description="test"```
+
 #### Human Readable Output
 
 >Command run successfully.
@@ -669,6 +737,7 @@ Create an address object associated with a specific organization and template.
 >{'address': {'name': 'Bad-Address', 'description': 'test', 'tag': [], 'fqdn': 'test.com'}}
 
 ### vd-template-address-object-list
+
 ***
 List all address objects associated with a specific organization and template.
 
@@ -676,6 +745,7 @@ List all address objects associated with a specific organization and template.
 #### Base Command
 
 `vd-template-address-object-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -698,8 +768,11 @@ List all address objects associated with a specific organization and template.
 | VersaDirector.TemplateAddressObject.fqdn | string | Template address object FQDN. | 
 
 #### Command example
+
 ```!vd-template-address-object-list template_name=EXAMPLE_CLIENT-Default-Application limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -730,6 +803,7 @@ List all address objects associated with a specific organization and template.
 #### Human Readable Output
 
 >### Address objects associated with EXAMPLE_CLIENT
+>
 >|Name|Description|Tag|Ipv 4- Prefix|Fqdn|Ipv 4- Wildcard - Mask|
 >|---|---|---|---|---|---|
 >| Bad-Address-2 | None | ['badAddress,veryBadAddress'] |  |  | MASK |
@@ -738,6 +812,7 @@ List all address objects associated with a specific organization and template.
 
 
 ### vd-appliance-sdwan-policy-rule-delete
+
 ***
 Delete an SDWAN policy rule associated with a specific appliance (device).
 
@@ -745,6 +820,7 @@ Delete an SDWAN policy rule associated with a specific appliance (device).
 #### Base Command
 
 `vd-appliance-sdwan-policy-rule-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -758,13 +834,17 @@ Delete an SDWAN policy rule associated with a specific appliance (device).
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!vd-appliance-sdwan-policy-rule-delete appliance_name=EXAMPLE_BRANCH rule_name=test_rule sdwan_policy_name=Default-Policy```
+
 #### Human Readable Output
 
 >Command run successfully.
 
 ### vd-appliance-sdwan-policy-rule-edit
+
 ***
 Edit an SDWAN policy rule associated with a specific appliance (device).
 
@@ -772,6 +852,7 @@ Edit an SDWAN policy rule associated with a specific appliance (device).
 #### Base Command
 
 `vd-appliance-sdwan-policy-rule-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -798,7 +879,9 @@ Edit an SDWAN policy rule associated with a specific appliance (device).
 #### Context Output
 
 There is no context output for this command.
+
 ### vd-appliance-sdwan-policy-rule-create
+
 ***
 Create an SDWAN policy rule associated with a specific appliance (device).
 
@@ -806,6 +889,7 @@ Create an SDWAN policy rule associated with a specific appliance (device).
 #### Base Command
 
 `vd-appliance-sdwan-policy-rule-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -832,8 +916,11 @@ Create an SDWAN policy rule associated with a specific appliance (device).
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!vd-appliance-sdwan-policy-rule-create appliance_name=EXAMPLE_BRANCH sdwan_policy_name=Default-Policy rule_name=test_rule forwarding_action=deny description="test"```
+
 #### Human Readable Output
 
 >Command run successfully.
@@ -842,6 +929,7 @@ There is no context output for this command.
 >{'rule': {'name': 'test_rule', 'description': 'test', 'tag': [], 'rule-disable': 'false', 'match': {'source': {'zone': {}, 'address': {'address-list': []}, 'user': {'user-type': 'any', 'local-database': {'status': 'disabled'}, 'external-database': {'status': 'disabled'}}}, 'destination': {'zone': {}, 'address': {'address-list': []}}, 'application': {'predefined-application-list': [], 'user-defined-application-list': []}, 'url-category': {'user-defined': []}, 'url-reputation': {'predefined': []}, 'ttl': {}}, 'set': {'lef': {'event': 'never', 'profile-default': 'true', 'rate-limit': '10'}, 'action': 'deny', 'tcp-optimization': {}}, 'monitor': {}}}
 
 ### vd-appliance-sdwan-policy-rule-list
+
 ***
 List all SDWAN policy rules associated with a specific appliance (device).
 
@@ -849,6 +937,7 @@ List all SDWAN policy rules associated with a specific appliance (device).
 #### Base Command
 
 `vd-appliance-sdwan-policy-rule-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -871,8 +960,11 @@ List all SDWAN policy rules associated with a specific appliance (device).
 | VersaDirector.ApplianceSdwanPolicyRule.set.action | string | Rule action | 
 
 #### Command example
+
 ```!vd-appliance-sdwan-policy-rule-list appliance_name=EXAMPLE_BRANCH sdwan_policy_name=Default-Policy limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -939,6 +1031,7 @@ List all SDWAN policy rules associated with a specific appliance (device).
 #### Human Readable Output
 
 >### SD-WAN policy rules associated with EXAMPLE_CLIENT
+>
 >|Name|Rule - Disable|
 >|---|---|
 >| Tesrt | false |
@@ -946,6 +1039,7 @@ List all SDWAN policy rules associated with a specific appliance (device).
 
 
 ### vd-appliance-sdwan-policy-list
+
 ***
 List all SDWAN policies associated with a specific organization and appliance (device).
 
@@ -953,6 +1047,7 @@ List all SDWAN policies associated with a specific organization and appliance (d
 #### Base Command
 
 `vd-appliance-sdwan-policy-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -974,8 +1069,11 @@ List all SDWAN policies associated with a specific organization and appliance (d
 | VersaDirector.ApplianceSdwanPolicy.set | string | Appliance SDWAN policy set. | 
 
 #### Command example
+
 ```!vd-appliance-sdwan-policy-list appliance_name=EXAMPLE_BRANCH limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -999,12 +1097,14 @@ List all SDWAN policies associated with a specific organization and appliance (d
 #### Human Readable Output
 
 >### SD-WAN policies associated with EXAMPLE_CLIENT
+>
 >|Name|Rules|
 >|---|---|
 >| Default-Policy | **rule**:<br/>	**-**	***name***: TEST<br/>	**-**	***name***: Block-custom-URL-category-rule |
 
 
 ### vd-template-sdwan-policy-rule-delete
+
 ***
 Delete an SDWAN policy rule associated with a specific template.
 
@@ -1012,6 +1112,7 @@ Delete an SDWAN policy rule associated with a specific template.
 #### Base Command
 
 `vd-template-sdwan-policy-rule-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1025,13 +1126,17 @@ Delete an SDWAN policy rule associated with a specific template.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!vd-template-sdwan-policy-rule-delete template_name=EXAMPLE_CLIENT-Default-Application sdwan_policy_name=Default-Policy rule_name=test_rule```
+
 #### Human Readable Output
 
 >Command run successfully.
 
 ### vd-template-sdwan-policy-rule-edit
+
 ***
 Edit an SDWAN policy rule associated with a specific appliance (device).
 
@@ -1039,6 +1144,7 @@ Edit an SDWAN policy rule associated with a specific appliance (device).
 #### Base Command
 
 `vd-template-sdwan-policy-rule-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1065,7 +1171,9 @@ Edit an SDWAN policy rule associated with a specific appliance (device).
 #### Context Output
 
 There is no context output for this command.
+
 ### vd-template-sdwan-policy-rule-create
+
 ***
 Create an SDWAN policy rule associated with a specific template.
 
@@ -1073,6 +1181,7 @@ Create an SDWAN policy rule associated with a specific template.
 #### Base Command
 
 `vd-template-sdwan-policy-rule-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1099,8 +1208,11 @@ Create an SDWAN policy rule associated with a specific template.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!vd-template-sdwan-policy-rule-create template_name=EXAMPLE_CLIENT-Default-Application sdwan_policy_name=Default-Policy rule_name=test_rule forwarding_action=deny```
+
 #### Human Readable Output
 
 >Command run successfully.
@@ -1109,7 +1221,9 @@ There is no context output for this command.
 >{'rule': {'name': 'test_rule', 'description': '', 'tag': [], 'rule-disable': 'false', 'match': {'source': {'zone': {}, 'address': {'address-list': []}, 'user': {'user-type': 'any', 'local-database': {'status': 'disabled'}, 'external-database': {'status': 'disabled'}}}, 'destination': {'zone': {}, 'address': {'address-list': []}}, 'application': {'predefined-application-list': [], 'user-defined-application-list': []}, 'url-category': {'user-defined': []}, 'url-reputation': {'predefined': []}, 'ttl': {}}, 'set': {'lef': {'event': 'never', 'profile-default': 'true', 'rate-limit': '10'}, 'action': 'deny', 'tcp-optimization': {}}, 'monitor': {}}}
 
 #### Command example
+
 ```!vd-template-sdwan-policy-rule-create template_name=EXAMPLE_CLIENT-Default-Application sdwan_policy_name=Default-Policy rule_name=test_rule forwarding_action=deny```
+
 #### Human Readable Output
 
 >Object already exists.
@@ -1118,6 +1232,7 @@ There is no context output for this command.
 >(None, 'Not available.')
 
 ### vd-template-sdwan-policy-rule-list
+
 ***
 List all SDWAN policy rules associated with a specific template.
 
@@ -1125,6 +1240,7 @@ List all SDWAN policy rules associated with a specific template.
 #### Base Command
 
 `vd-template-sdwan-policy-rule-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1145,8 +1261,11 @@ List all SDWAN policy rules associated with a specific template.
 | VersaDirector.TemplateSdwanPolicy.sdwan-policy-group.rules | string | Template SDWAN policy group rules | 
 
 #### Command example
+
 ```!vd-template-sdwan-policy-rule-list template_name=EXAMPLE_CLIENT-Default-Application sdwan_policy_name=Default-Policy limit=3 ```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -1195,6 +1314,7 @@ List all SDWAN policy rules associated with a specific template.
 #### Human Readable Output
 
 >### SD-WAN policy rules associated with EXAMPLE_CLIENT
+>
 >|Name|Match|Set|
 >|---|---|---|
 >| Voice | **application**:<br/>	***predefined-filter-list***: VOIP | ***action***: allow<br/>***forwarding-profile***: Rule-Voice-FP |
@@ -1203,6 +1323,7 @@ List all SDWAN policy rules associated with a specific template.
 
 
 ### vd-template-sdwan-policy-list
+
 ***
 List all SDWAN policies associated with a specific organization and template.
 
@@ -1210,6 +1331,7 @@ List all SDWAN policies associated with a specific organization and template.
 #### Base Command
 
 `vd-template-sdwan-policy-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1229,8 +1351,11 @@ List all SDWAN policies associated with a specific organization and template.
 | VersaDirector.TemplateSdwanPolicy.sdwan-policy-group.rules | string | Template SDWAN policy group rules | 
 
 #### Command example
+
 ```!vd-template-sdwan-policy-list template_name=EXAMPLE_CLIENT-Default-Application limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -1345,12 +1470,14 @@ List all SDWAN policies associated with a specific organization and template.
 #### Human Readable Output
 
 >### SD-WAN policies associated with EXAMPLE_CLIENT
+>
 >|Name|Rules|
 >|---|---|
 >| Default-Policy | **rule**:<br/>	**-**	***name***: Voice<br/>	**-**	***name***: Audio-Video-Streaming<br/>	**-**	***name***: ADP-Apps<br/>	**-**	***name***: Amazon-Apps<br/>	**-**	***name***: Box-Apps<br/>	**-**	***name***: Citrix-Apps<br/>	**-**	***name***: Concur-Apps<br/>	**-**	***name***: Docusign-Apps<br/>	**-**	***name***: Dropbox-Apps<br/>	**-**	***name***: IBM-Apps<br/>	**-**	***name***: Intuit-Apps<br/>	**-**	***name***: Jira-Apps<br/>	**-**	***name***: Office365-Apps<br/>	**-**	***name***: Oracle-Apps<br/>	**-**	***name***: SAP-Apps<br/>	**-**	***name***: Salesforce-Apps<br/>	**-**	***name***: Zendesk-Apps<br/>	**-**	***name***: Zoho-Apps<br/>	**-**	***name***: SaaS-Applications<br/>	**-**	***name***: Database<br/>	**-**	***name***: Business-Traffic<br/>	**-**	***name***: Google-Apps<br/>	**-**	***name***: Conferencing-Apps<br/>	**-**	***name***: SoftwareUpdates<br/>	**-**	***name***: File-Transfer<br/>	**-**	***name***: Adobe-Apps<br/>	**-**	***name***: Advertising<br/>	**-**	***name***: Gaming<br/>	**-**	***name***: P2P<br/>	**-**	***name***: Social-Media<br/>	**-**	***name***: Block-custom-URL-category-rule<br/>|
 
 
 ### vd-appliance-access-policy-rule-delete
+
 ***
 Delete an access policy configuration (NGFW) rule associated with a specific appliance (device).
 
@@ -1358,6 +1485,7 @@ Delete an access policy configuration (NGFW) rule associated with a specific app
 #### Base Command
 
 `vd-appliance-access-policy-rule-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1371,13 +1499,17 @@ Delete an access policy configuration (NGFW) rule associated with a specific app
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!vd-appliance-access-policy-rule-delete rule_name=test_rule_new1 appliance_name=EXAMPLE_BRANCH access_policy_name=Test_Policy```
+
 #### Human Readable Output
 
 >Command run successfully.
 
 ### vd-appliance-access-policy-rule-edit
+
 ***
 Edit access policy configuration (NGFW) rule associated with a specific appliance (device). Important note - the data provided in the request overwrites the existing rule settings.
 
@@ -1385,6 +1517,7 @@ Edit access policy configuration (NGFW) rule associated with a specific applianc
 #### Base Command
 
 `vd-appliance-access-policy-rule-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1406,8 +1539,11 @@ Edit access policy configuration (NGFW) rule associated with a specific applianc
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!vd-appliance-access-policy-rule-edit rule_name=test_rule_new1 appliance_name=EXAMPLE_BRANCH access_policy_name=Test_Policy description="test rule changed" source_address_objects="Bad-Address-1" destination_address_objects="Bad-Address-2"```
+
 #### Human Readable Output
 
 >Command run successfully.
@@ -1416,6 +1552,7 @@ There is no context output for this command.
 >{'access-policy': {'name': 'test_rule_new1', 'description': 'test rule changed', 'rule-disable': 'false', 'tag': [], 'match': {'source': {'zone': {}, 'address': {'address-list': ['Bad-Address-1'], 'negate': ''}, 'site-name': [], 'user': {'user-type': 'any', 'local-database': {'status': 'disabled'}, 'external-database': {'status': 'disabled'}}}, 'destination': {'zone': {}, 'address': {'address-list': ['Bad-Address-2'], 'negate': ''}, 'site-name': []}, 'application': {'predefined-application-list': [], 'user-defined-application-list': []}, 'url-category': {'user-defined': []}, 'url-reputation': {'predefined': []}, 'ttl': {}}, 'set': {'lef': {'event': 'never', 'options': {'send-pcap-data': {'enable': False}}}, 'action': 'deny', 'tcp-session-keepalive': 'disabled'}}}
 
 ### vd-appliance-access-policy-rule-create
+
 ***
 Create an access policy configuration (NGFW) rule associated with a specific appliance (device).
 
@@ -1423,6 +1560,7 @@ Create an access policy configuration (NGFW) rule associated with a specific app
 #### Base Command
 
 `vd-appliance-access-policy-rule-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1444,8 +1582,11 @@ Create an access policy configuration (NGFW) rule associated with a specific app
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!vd-appliance-access-policy-rule-create rule_name=test_rule_new1 appliance_name=EXAMPLE_BRANCH access_policy_name=Test_Policy description="test rule" source_address_objects="Bad-Address-1" destination_address_objects="Bad-Address-2"```
+
 #### Human Readable Output
 
 >Command run successfully.
@@ -1454,6 +1595,7 @@ There is no context output for this command.
 >{'access-policy': {'name': 'test_rule_new1', 'description': 'test rule', 'rule-disable': 'false', 'tag': [], 'match': {'source': {'zone': {}, 'address': {'address-list': ['Bad-Address-1'], 'negate': ''}, 'site-name': [], 'user': {'user-type': 'any', 'local-database': {'status': 'disabled'}, 'external-database': {'status': 'disabled'}}}, 'destination': {'zone': {}, 'address': {'address-list': ['Bad-Address-2'], 'negate': ''}, 'site-name': []}, 'application': {'predefined-application-list': [], 'user-defined-application-list': []}, 'url-category': {'user-defined': []}, 'url-reputation': {'predefined': []}, 'ttl': {}}, 'set': {'lef': {'event': 'never', 'options': {'send-pcap-data': {'enable': False}}}, 'action': 'deny', 'tcp-session-keepalive': 'disabled'}}}
 
 ### vd-appliance-access-policy-rule-list
+
 ***
 List all access policy configuration (NGFW) rules associated with a specific appliance.
 
@@ -1461,6 +1603,7 @@ List all access policy configuration (NGFW) rules associated with a specific app
 #### Base Command
 
 `vd-appliance-access-policy-rule-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1483,8 +1626,11 @@ List all access policy configuration (NGFW) rules associated with a specific app
 | VersaDirector.ApplianceAccessPolicyRule.rule-disable | string | Appliance access policy rule disabled | 
 
 #### Command example
+
 ```!vd-appliance-access-policy-rule-list appliance_name=EXAMPLE_BRANCH access_policy_name=Test_Policy limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -1593,6 +1739,7 @@ List all access policy configuration (NGFW) rules associated with a specific app
 #### Human Readable Output
 
 >### Access policies associated with EXAMPLE_CLIENT
+>
 >|Name|Description|Tag|Rule - Disable|
 >|---|---|---|---|
 >| Test_Rule | test rule |  | false |
@@ -1600,6 +1747,7 @@ List all access policy configuration (NGFW) rules associated with a specific app
 
 
 ### vd-appliance-access-policy-list
+
 ***
 List all access policies associated with a specific organization and appliance (device).
 
@@ -1607,6 +1755,7 @@ List all access policies associated with a specific organization and appliance (
 #### Base Command
 
 `vd-appliance-access-policy-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1626,8 +1775,11 @@ List all access policies associated with a specific organization and appliance (
 | VersaDirector.ApplianceAccessPolicy.rules | string | Access policy rules | 
 
 #### Command example
+
 ```!vd-appliance-access-policy-list appliance_name=EXAMPLE_BRANCH limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -1656,12 +1808,14 @@ List all access policies associated with a specific organization and appliance (
 #### Human Readable Output
 
 >### Access policies associated with EXAMPLE_CLIENT
+>
 >|Name|Rules|
 >|---|---|
 >| Test_Policy | **access-policy**:<br/>	**-**	***name***: Test_Rule<br/>	**-**	***name***: Block-custom-URL-category-rulethree |
 
 
 ### vd-template-access-policy-rule-delete
+
 ***
 Delete an access policy configuration (NGFW) rule associated with a specific template.
 
@@ -1669,6 +1823,7 @@ Delete an access policy configuration (NGFW) rule associated with a specific tem
 #### Base Command
 
 `vd-template-access-policy-rule-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1682,13 +1837,17 @@ Delete an access policy configuration (NGFW) rule associated with a specific tem
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!vd-template-access-policy-rule-delete rule_name=test_rule template_name=EXAMPLE_CLIENT-Test-NGFW access_policy_name=Default-Policy```
+
 #### Human Readable Output
 
 >Command run successfully.
 
 ### vd-template-access-policy-rule-edit
+
 ***
 Edit access policy configuration (NGFW) rule associated with a specific template. Important note - the data provided in the request overwrites the existing rule settings.
 
@@ -1696,6 +1855,7 @@ Edit access policy configuration (NGFW) rule associated with a specific template
 #### Base Command
 
 `vd-template-access-policy-rule-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1717,8 +1877,11 @@ Edit access policy configuration (NGFW) rule associated with a specific template
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!vd-template-access-policy-rule-edit template_name=EXAMPLE_CLIENT-Test-NGFW rule_name=test_rule access_policy_name=Default-Policy```
+
 #### Human Readable Output
 
 >Command run successfully.
@@ -1727,6 +1890,7 @@ There is no context output for this command.
 >{'access-policy': {'name': 'test_rule', 'description': '', 'rule-disable': 'false', 'tag': [], 'match': {'source': {'zone': {}, 'address': {'address-list': [], 'negate': ''}, 'site-name': [], 'user': {'user-type': 'any', 'local-database': {'status': 'disabled'}, 'external-database': {'status': 'disabled'}}}, 'destination': {'zone': {}, 'address': {'address-list': [], 'negate': ''}, 'site-name': []}, 'application': {'predefined-application-list': [], 'user-defined-application-list': []}, 'url-category': {'user-defined': []}, 'url-reputation': {'predefined': []}, 'ttl': {}}, 'set': {'lef': {'event': 'never', 'options': {'send-pcap-data': {'enable': False}}}, 'action': 'deny', 'tcp-session-keepalive': 'disabled'}}}
 
 ### vd-template-access-policy-rule-create
+
 ***
 Create an access policy configuration (NGFW) rule associated with a specific template.
 
@@ -1734,6 +1898,7 @@ Create an access policy configuration (NGFW) rule associated with a specific tem
 #### Base Command
 
 `vd-template-access-policy-rule-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1755,8 +1920,11 @@ Create an access policy configuration (NGFW) rule associated with a specific tem
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!vd-template-access-policy-rule-create template_name=EXAMPLE_CLIENT-Test-NGFW rule_name=test_rule access_policy_name=Default-Policy```
+
 #### Human Readable Output
 
 >Command run successfully.
@@ -1765,6 +1933,7 @@ There is no context output for this command.
 >{'access-policy': {'name': 'test_rule', 'description': '', 'rule-disable': 'false', 'tag': [], 'match': {'source': {'zone': {}, 'address': {'address-list': [], 'negate': ''}, 'site-name': [], 'user': {'user-type': 'any', 'local-database': {'status': 'disabled'}, 'external-database': {'status': 'disabled'}}}, 'destination': {'zone': {}, 'address': {'address-list': [], 'negate': ''}, 'site-name': []}, 'application': {'predefined-application-list': [], 'user-defined-application-list': []}, 'url-category': {'user-defined': []}, 'url-reputation': {'predefined': []}, 'ttl': {}}, 'set': {'lef': {'event': 'never', 'options': {'send-pcap-data': {'enable': False}}}, 'action': 'deny', 'tcp-session-keepalive': 'disabled'}}}
 
 ### vd-template-access-policy-rule-list
+
 ***
 List all access policy configuration (NGFW) rules associated with a specific template.
 
@@ -1772,6 +1941,7 @@ List all access policy configuration (NGFW) rules associated with a specific tem
 #### Base Command
 
 `vd-template-access-policy-rule-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1794,8 +1964,11 @@ List all access policy configuration (NGFW) rules associated with a specific tem
 | VersaDirector.TemplateAccessPolicy.rule-disable | string | Template access policy disabled | 
 
 #### Command example
+
 ```!vd-template-access-policy-rule-list template_name=EXAMPLE_CLIENT-Test-NGFW access_policy_name=Default-Policy limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -1950,6 +2123,7 @@ List all access policy configuration (NGFW) rules associated with a specific tem
 #### Human Readable Output
 
 >### Access policies associated with EXAMPLE_CLIENT
+>
 >|Name|Description|Tag|Rule - Disable|
 >|---|---|---|---|
 >| Block-custom-URL-category-rule two |  |  | false |
@@ -1958,6 +2132,7 @@ List all access policy configuration (NGFW) rules associated with a specific tem
 
 
 ### vd-template-access-policy-list
+
 ***
 List all access policies associated with a specific organization and template.
 
@@ -1965,6 +2140,7 @@ List all access policies associated with a specific organization and template.
 #### Base Command
 
 `vd-template-access-policy-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1984,8 +2160,11 @@ List all access policies associated with a specific organization and template.
 | VersaDirector.TemplateAccessPolicy.rules | string | Access policy rules | 
 
 #### Command example
+
 ```!vd-template-access-policy-list template_name="EXAMPLE_CLIENT-Test-NGFW" limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -2022,12 +2201,14 @@ List all access policies associated with a specific organization and template.
 #### Human Readable Output
 
 >### Access policies associated with EXAMPLE_CLIENT
+>
 >|Name|Rules|
 >|---|---|
 >| Default-Policy | **access-policy**:<br/>	**-**	***name***: Block-custom-URL-category-rule two<br/>	**-**	***name***: test_rule_UI<br/>	**-**	***name***: rule<br/>	**-**	***name***: Block-custom-URL-category-rule 555<br/>	**-**	***name***: Block-custom-URL-category-rule three |
 
 
 ### vd-appliance-custom-url-category-delete
+
 ***
 Delete a custom URL category associated with a specific appliance (device).
 
@@ -2035,6 +2216,7 @@ Delete a custom URL category associated with a specific appliance (device).
 #### Base Command
 
 `vd-appliance-custom-url-category-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2054,12 +2236,15 @@ Delete a custom URL category associated with a specific appliance (device).
 | VersaDirector.ApplianceCustomUrlCategory.content.urls | string | Appliance custom URL category A comma-separated list of URLs. | 
 
 #### Command example
+
 ```!vd-appliance-custom-url-category-delete appliance_name=EXAMPLE_BRANCH url_category_name="category_example"```
+
 #### Human Readable Output
 
 >Command run successfully.
 
 ### vd-appliance-custom-url-category-edit
+
 ***
 Edit a custom URL category associated with a specific appliance (device). Important note - the data provided in the request overwrites the existing object.
 
@@ -2067,6 +2252,7 @@ Edit a custom URL category associated with a specific appliance (device). Import
 #### Base Command
 
 `vd-appliance-custom-url-category-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2092,6 +2278,7 @@ Edit a custom URL category associated with a specific appliance (device). Import
 | VersaDirector.ApplianceCustomUrlCategory.content.urls | string | Appliance custom URL category A comma-separated list of URLs. | 
 
 ### vd-appliance-custom-url-category-create
+
 ***
 Create a custom URL category associated with a specific appliance (device).
 
@@ -2099,6 +2286,7 @@ Create a custom URL category associated with a specific appliance (device).
 #### Base Command
 
 `vd-appliance-custom-url-category-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2124,7 +2312,9 @@ Create a custom URL category associated with a specific appliance (device).
 | VersaDirector.ApplianceCustomUrlCategory.content.urls | string | Appliance custom URL category A comma-separated list of URLs. | 
 
 #### Command example
+
 ```!vd-appliance-custom-url-category-create appliance_name=EXAMPLE_BRANCH description="description example" url_category_name="category_example" confidence=80```
+
 #### Human Readable Output
 
 >Command run successfully.
@@ -2133,7 +2323,9 @@ Create a custom URL category associated with a specific appliance (device).
 >{'url-category': {'category-name': 'category_example', 'category-description': 'description example', 'confidence': '80', 'urls': {'strings': [], 'patterns': []}}}
 
 #### Command example
+
 ```!vd-appliance-custom-url-category-create appliance_name=EXAMPLE_BRANCH description="description example" url_category_name="category_example" confidence=90```
+
 #### Human Readable Output
 
 >Object already exists.
@@ -2142,6 +2334,7 @@ Create a custom URL category associated with a specific appliance (device).
 >(None, 'Not available.')
 
 ### vd-appliance-custom-url-category-list
+
 ***
 List all custom URL categories associated with a specific appliance or get a specific custom URL category.
 
@@ -2149,6 +2342,7 @@ List all custom URL categories associated with a specific appliance or get a spe
 #### Base Command
 
 `vd-appliance-custom-url-category-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2171,8 +2365,11 @@ List all custom URL categories associated with a specific appliance or get a spe
 | VersaDirector.ApplianceCustomUrlCategory.content.urls | string | Appliance custom URL category A comma-separated list of URLs. | 
 
 #### Command example
+
 ```!vd-appliance-custom-url-category-list appliance_name=EXAMPLE_BRANCH limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -2200,12 +2397,14 @@ List all custom URL categories associated with a specific appliance or get a spe
 #### Human Readable Output
 
 >### Application Service Appliances associated with EXAMPLE_CLIENT
+>
 >|Category - Name|Category - Description|Confidence|Urls|
 >|---|---|---|---|
 >| Test_Cat | Test | 95 | **strings**:<br/>	***string-value***: hxxps:<span>//</span>test1.ru<br/>**patterns**:<br/>	***pattern-value***: %.test2.ru |
 
 
 ### vd-template-custom-url-category-delete
+
 ***
 Delete a custom URL category associated with a specific template.
 
@@ -2213,6 +2412,7 @@ Delete a custom URL category associated with a specific template.
 #### Base Command
 
 `vd-template-custom-url-category-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2232,12 +2432,15 @@ Delete a custom URL category associated with a specific template.
 | VersaDirector.TemplateCustomUrlCategory.content.urls | string | Template custom URL category A comma-separated list of URLs. | 
 
 #### Command example
+
 ```!vd-template-custom-url-category-delete template_name=EXAMPLE_CLIENT-Default-Application url_category_name="category_example"```
+
 #### Human Readable Output
 
 >Command run successfully.
 
 ### vd-template-custom-url-category-edit
+
 ***
 Edit a custom URL category associated with a specific template. Important note - the data provided in the request overwrites the existing object.
 
@@ -2245,6 +2448,7 @@ Edit a custom URL category associated with a specific template. Important note -
 #### Base Command
 
 `vd-template-custom-url-category-edit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2270,7 +2474,9 @@ Edit a custom URL category associated with a specific template. Important note -
 | VersaDirector.ApplicationServiceTemplate.content.urls | string | Template custom URL category URLs. | 
 
 #### Command example
+
 ```!vd-template-custom-url-category-edit template_name=EXAMPLE_CLIENT-Default-Application description="description example" url_category_name="category_example" confidence=90```
+
 #### Human Readable Output
 
 >Command run successfully.
@@ -2279,6 +2485,7 @@ Edit a custom URL category associated with a specific template. Important note -
 >{'url-category': {'category-name': 'category_example', 'category-description': 'description example', 'confidence': '90', 'urls': {'strings': [], 'patterns': []}}}
 
 ### vd-template-custom-url-category-create
+
 ***
 Create a custom URL category associated with a specific template.
 
@@ -2286,6 +2493,7 @@ Create a custom URL category associated with a specific template.
 #### Base Command
 
 `vd-template-custom-url-category-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2311,12 +2519,15 @@ Create a custom URL category associated with a specific template.
 | VersaDirector.ApplicationServiceTemplate.content.urls | string | Template custom URL category URLs. | 
 
 #### Command example
+
 ```!vd-template-custom-url-category-create template_name=EXAMPLE_CLIENT-Default-Application description="description example" url_category_name="category_example" confidence=80```
+
 #### Human Readable Output
 
 >Object created successfully.
 
 ### vd-template-custom-url-category-list
+
 ***
 List all custom URL categories associated with a specific template or get a specific custom URL category.
 
@@ -2324,6 +2535,7 @@ List all custom URL categories associated with a specific template or get a spec
 #### Base Command
 
 `vd-template-custom-url-category-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2347,8 +2559,11 @@ List all custom URL categories associated with a specific template or get a spec
 | VersaDirector.ApplicationServiceTemplate.content.urls | string | Template custom URL category URLs. | 
 
 #### Command example
+
 ```!vd-template-custom-url-category-list template_name=EXAMPLE_CLIENT-Default-Application limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -2414,6 +2629,7 @@ List all custom URL categories associated with a specific template or get a spec
 #### Human Readable Output
 
 >### Application Service Templates associated with EXAMPLE_CLIENT
+>
 >|Category - Name|Category - Description|Confidence|Urls|
 >|---|---|---|---|
 >| category example1 | Some description for testing, and now editing | 90 | **strings**:<br/>	***string-value***: hxxps:<span>//</span>test.ru<br/>**patterns**:<br/>	***pattern-value***: .*.testurl.com |
@@ -2422,6 +2638,7 @@ List all custom URL categories associated with a specific template or get a spec
 
 
 ### vd-template-change-commit
+
 ***
 Commit a specific template change to an appliance/s (devices). This will trigger a task to make the commit, and then it will be polled to retrieve the status until complete, and the status will be presented.
 
@@ -2429,6 +2646,7 @@ Commit a specific template change to an appliance/s (devices). This will trigger
 #### Base Command
 
 `vd-template-change-commit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2452,12 +2670,15 @@ Commit a specific template change to an appliance/s (devices). This will trigger
 | VersaDirector.Commit.versa-tasks.progressmessage | string | Task progress message. | 
 
 #### Command example
+
 ```!vd-template-change-commit template_name=EXAMPLE_CLIENT-Test-NGFW appliances=EXAMPLE_BRANCH mode=merge reboot=false```
+
 #### Human Readable Output
 
 >Fetching Results:
 
 ### vd-application-service-template-list
+
 ***
 List all application service templates. Can be filtered by organization or a keyword search.
 
@@ -2465,6 +2686,7 @@ List all application service templates. Can be filtered by organization or a key
 #### Base Command
 
 `vd-application-service-template-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2488,8 +2710,11 @@ List all application service templates. Can be filtered by organization or a key
 | VersaDirector.ApplicationServiceTemplate.content.status | string | Application service template status. | 
 
 #### Command example
+
 ```!vd-application-service-template-list limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -2537,12 +2762,14 @@ List all application service templates. Can be filtered by organization or a key
 #### Human Readable Output
 
 >### Application Service Templates associated with EXAMPLE_CLIENT
+>
 >|Create Date|Modify Date|Last Updated By|Name|Organization|Status|
 >|---|---|---|---|---|---|
 >| 2021-08-26 18:02:44 | 2021-08-26 18:02:48 | EXAMPLE_USER | EXAMPLE_CLIENT-Default-Application | EXAMPLE_CLIENT | DEPLOYED |
 
 
 ### vd-datastore-template-list
+
 ***
 List all templates associated with a specific datastore. As a best practice, we do not recommend applying rules to datastore templates. Instead, use devices/service/application templates.
 
@@ -2550,6 +2777,7 @@ List all templates associated with a specific datastore. As a best practice, we 
 #### Base Command
 
 `vd-datastore-template-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2571,8 +2799,11 @@ List all templates associated with a specific datastore. As a best practice, we 
 | VersaDirector.DataStoreTemplate.available-networks | string | DataStore template available networks. | 
 
 #### Command example
+
 ```!vd-datastore-template-list limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -2600,12 +2831,14 @@ List all templates associated with a specific datastore. As a best practice, we 
 #### Human Readable Output
 
 >### Templates associated with EXAMPLE_CLIENT Data-Store
+>
 >|Name|Available - Routing - Instances|Owned - Routing - Instances|Available - Networks|
 >|---|---|---|---|
 >| EXAMPLE_CLIENT | EXAMPLE_CLIENT-LAN-VR | EXAMPLE_CLIENT-LAN-VR | INET,<br/>INET-2,<br/>LTE,<br/>MPLS,<br/>MPLS-2 |
 
 
 ### vd-template-list
+
 ***
 List all templates associated with a specific organization. Default type argument is 'MAIN'.
 
@@ -2613,6 +2846,7 @@ List all templates associated with a specific organization. Default type argumen
 #### Base Command
 
 `vd-template-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2631,8 +2865,11 @@ List all templates associated with a specific organization. Default type argumen
 | VersaDirector.Template |  | Template name. | 
 
 #### Command example
+
 ```!vd-template-list limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -2667,12 +2904,14 @@ List all templates associated with a specific organization. Default type argumen
 #### Human Readable Output
 
 >### Templates associated with EXAMPLE_CLIENT
+>
 >|Name|Organization|Lock Details|Template Type|Is Primary|Is Staging|
 >|---|---|---|---|---|---|
 >| EXAMPLE_SITE | EXAMPLE_CLIENT | user: EXAMPLE_USER<br/>lockType: NONE | sdwan-post-staging | true | false |
 
 
 ### vd-appliance-group-template-appliance-list
+
 ***
 List all appliances associated with a specific device-group and associated templates
 
@@ -2680,6 +2919,7 @@ List all appliances associated with a specific device-group and associated templ
 #### Base Command
 
 `vd-appliance-group-template-appliance-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2706,8 +2946,11 @@ List all appliances associated with a specific device-group and associated templ
 | VersaDirector.DeviceGroup.enable-staging-url | string | Device group enable staging URL. | 
 
 #### Command example
+
 ```!vd-appliance-group-template-appliance-list device_group="EXAMPLE_BRANCH" template_name=EXAMPLE_CLIENT-Test-NGFW limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -2743,12 +2986,14 @@ List all appliances associated with a specific device-group and associated templ
 #### Human Readable Output
 
 >### Appliances
+>
 >|Name|Poststaging - Template|Template - Association|
 >|---|---|---|
 >| EXAMPLE_BRANCH | EXAMPLE_CLIENT-Test-NGFW | **-**	***name***: EXAMPLE_CLIENT-DataStore<br/>**-**	***name***: EXAMPLE_CLIENT-Test-NGFW |
 
 
 ### vd-appliance-group-list
+
 ***
 List all appliance (device) groups associated with an organization (tenant)
 
@@ -2756,6 +3001,7 @@ List all appliance (device) groups associated with an organization (tenant)
 #### Base Command
 
 `vd-appliance-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2783,8 +3029,11 @@ List all appliance (device) groups associated with an organization (tenant)
 | VersaDirector.DeviceGroup.inventory-name | String | Inventory name. | 
 
 #### Command example
+
 ```!vd-appliance-group-list limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -2816,12 +3065,14 @@ List all appliance (device) groups associated with an organization (tenant)
 #### Human Readable Output
 
 >### Appliance groups associated with EXAMPLE_CLIENT
+>
 >|Name|Organization|Create Date|Inventory - Name|Poststaging - Template|
 >|---|---|---|---|---|
 >| EXAMPLE_BRANCH-DG | EXAMPLE_CLIENT | 2022-10-05 10:44:26 | EXAMPLE_BRANCH | EXAMPLE_SITE |
 
 
 ### vd-organization-appliance-list
+
 ***
 List all devices associated with a specific organization.
 
@@ -2829,6 +3080,7 @@ List all devices associated with a specific organization.
 #### Base Command
 
 `vd-organization-appliance-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2848,8 +3100,11 @@ List all devices associated with a specific organization.
 | VersaDirector.Appliance.applianceLocation | string | Appliance location. | 
 
 #### Command example
+
 ```!vd-organization-appliance-list limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -3071,12 +3326,14 @@ List all devices associated with a specific organization.
 #### Human Readable Output
 
 >### Organization List
+>
 >|Name|Ip Address|Type|Software Version|Owner Org|
 >|---|---|---|---|---|
 >| EXAMPLE_BRANCH | EXAMPLE_URL | branch | NORMAL | EXAMPLE_CLIENT |
 
 
 ### vd-organization-list
+
 ***
 List all organizations/tenants.
 
@@ -3084,6 +3341,7 @@ List all organizations/tenants.
 #### Base Command
 
 `vd-organization-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3112,8 +3370,11 @@ List all organizations/tenants.
 | VersaDirector.Organization.blockInterRegionRouting | String | Organization blockInter region routing. | 
 
 #### Command example
+
 ```!vd-organization-list limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -3199,12 +3460,14 @@ List all organizations/tenants.
 #### Human Readable Output
 
 >### Organization List
+>
 >|Name|Id|Parent|Appliances|Cpe Deployment Type|Uuid|
 >|---|---|---|---|---|---|
 >| EXAMPLE_CLIENT | ID | Versa | NAME | SDWAN | XXX |
 
 
 ### vd-appliance-list
+
 ***
 List all available appliances for all organizations/tenants, with a limit of max 25 appliances per organization.
 
@@ -3212,6 +3475,7 @@ List all available appliances for all organizations/tenants, with a limit of max
 #### Base Command
 
 `vd-appliance-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3232,8 +3496,11 @@ List all available appliances for all organizations/tenants, with a limit of max
 | VersaDirector.Appliance.branchId | Number | Application branch ID. | 
 
 #### Command example
+
 ```!vd-appliance-list limit=3```
+
 #### Context Example
+
 ```json
 {
     "VersaDirector": {
@@ -3255,6 +3522,7 @@ List all available appliances for all organizations/tenants, with a limit of max
 #### Human Readable Output
 
 >### Appliances
+>
 >|Name|Uuid|Ip Address|App Type|Branch Id|
 >|---|---|---|---|---|
 >| EXAMPLE_BRANCH | UUID | EXAMPLE_URL | branch | ID |

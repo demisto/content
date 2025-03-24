@@ -844,8 +844,8 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 To troubleshoot possible issues with the SEKOIA XDR integration, consider the following steps:
 
 - **Debug Mode**: 
-    - In your integration instance, enable the Debug option.
-    - Navigate to `Settings > About > Troubleshooting > Download logs` to download the logs. Analyzing these logs can provide valuable insights into any issues.
+  - In your integration instance, enable the Debug option.
+  - Navigate to `Settings > About > Troubleshooting > Download logs` to download the logs. Analyzing these logs can provide valuable insights into any issues.
 
 - **Mirror Values**: 
   - To diagnose mirroring issues beyond what debug mode offers, you can inspect specific fields in the context data. Check if the following dbot fields are set:

@@ -14,6 +14,6 @@ Vectra XDR pack allows the security operations center to create incidents based 
 
 #### Support
 
-If you have questions or concerns about the content you're receiving, please reach out for support at [https://support.vectra.ai](https://support.vectra.ai) or support@vectra.ai.
+If you have questions or concerns about the content you're receiving, please reach out for support at [https://support.vectra.ai](https://support.vectra.ai) or <support@vectra.ai>.
 
 For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/integrations/vectra-xdr)

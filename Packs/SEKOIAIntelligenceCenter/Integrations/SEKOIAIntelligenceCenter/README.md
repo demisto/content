@@ -90,7 +90,7 @@ Query SEKOIA.IO Intelligence Center for information about this observable.
 
 #### Human Readable Output
 
->### Observable eicar@sekoia.io
+>### Observable <eicar@sekoia.io>
 
 >|modified|created|
 >|---|---|
@@ -207,7 +207,7 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 
 #### Human Readable Output
 
->### Indicator eicar@sekoia.io is categorized as ['benign']
+>### Indicator <eicar@sekoia.io> is categorized as ['benign']
 >
 >SEKOIA EICAR unit is known to have used in the past this email address to distribute EICAR dropper during phishing campaign.
 
@@ -9218,7 +9218,7 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 
 #### Human Readable Output
 
->### Indicator eicar@sekoia.io is linked to the following:
+>### Indicator <eicar@sekoia.io> is linked to the following:
 
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
@@ -9542,7 +9542,7 @@ Query SEKOIA.IO Intelligence Center for context around this indicator
 
 #### Human Readable Output
 
->### Indicator eicar@sekoia.io is linked to the following:
+>### Indicator <eicar@sekoia.io> is linked to the following:
 
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|

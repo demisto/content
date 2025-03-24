@@ -239,7 +239,7 @@
       "CELLULAR_NUMBER":"788-853-418",
       "DEPARTMENT_PATH":"Sales/Direct/Customer Support",
       "EMPLOYEE_ID":"14412",
-      "E_MAIL":"test@example.com",
+      "E_MAIL":"<test@example.com>",
       "LAST_NAME":"Ernst, Walter",
       "LOCATION_PATH":"Europe/United Kingdom/Plymouth/Bldg 1/Floor 03/337",
       "PHONE_NUMBER":"+441442200573"
@@ -249,7 +249,7 @@
       "CELLULAR_NUMBER":"788-853-418",
       "DEPARTMENT_PATH":"Sales/Direct/Customer Support",
       "EMPLOYEE_ID":"14412",
-      "E_MAIL":"test@example.com",
+      "E_MAIL":"<test@example.com>",
       "LAST_NAME":"Ernst, Walter",
       "LOCATION_PATH":"Europe/United Kingdom/Plymouth/Bldg 1/Floor 03/337",
       "PHONE_NUMBER":"+441442200573"

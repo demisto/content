@@ -5,7 +5,7 @@ FireMon Security Manager delivers comprehensive rule lifecycle management to hel
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. https://example.net) | True |
+| Server URL (e.g. <https://example.net>) | True |
 | Username | True |
 | Password | True |
 | Fetch incidents | False |
@@ -15,9 +15,12 @@ FireMon Security Manager delivers comprehensive rule lifecycle management to hel
 | Incidents Fetch Interval | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### firemon-user-authentication
+
 ***
 Returns authentication token
 
@@ -25,6 +28,7 @@ Returns authentication token
 #### Base Command
 
 `firemon-user-authentication`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -38,6 +42,7 @@ Returns authentication token
 | FireMonSecurityManager.Authentication.token | String | Authentication token | 
 
 ### firemon-create-pp-ticket
+
 ***
 Creates a ticket in policy planner application
 
@@ -45,6 +50,7 @@ Creates a ticket in policy planner application
 #### Base Command
 
 `firemon-create-pp-ticket`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -63,6 +69,7 @@ Creates a ticket in policy planner application
 | FireMonSecurityManager.CreatePPTicket.pp_ticket | Unknown | Response for Policy Planner Ticket | 
 
 ### firemon-pca
+
 ***
 PCA- Pre-Change Assessment is process of showing impact of created devices changes in early stages before implementing changes to devices. 
 We can check the PCA table in Review stage of Policy planner ticket.
@@ -71,6 +78,7 @@ We can check the PCA table in Review stage of Policy planner ticket.
 #### Base Command
 
 `firemon-pca`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -90,6 +98,7 @@ We can check the PCA table in Review stage of Policy planner ticket.
 | FireMonSecurityManager.PCA.pca | Unknown | Response for PCA | 
 
 ### firemon-secmgr-secrule-search
+
 ***
 Searches for security rules using the SIQL language query (limit to 10k)
 
@@ -97,6 +106,7 @@ Searches for security rules using the SIQL language query (limit to 10k)
 #### Base Command
 
 `firemon-secmgr-secrule-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -116,6 +126,7 @@ Searches for security rules using the SIQL language query (limit to 10k)
 #### Base Command
 
 `firemon-collector-get-all`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -134,6 +145,7 @@ Searches for security rules using the SIQL language query (limit to 10k)
 #### Base Command
 
 `firemon-collector-get-status-byid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

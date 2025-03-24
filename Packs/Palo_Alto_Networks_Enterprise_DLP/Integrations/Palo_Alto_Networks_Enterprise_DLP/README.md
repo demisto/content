@@ -2,6 +2,7 @@ Palo Alto Networks Enterprise DLP discovers and protects company data across eve
 This integration was integrated and tested with version 2.0 of Palo Alto Networks Enterprise DLP
 
 ### Setup
+
 Go to the `Settings` tab on the DLP web interface. 
 Choose `Alerts` on the left menu. Follow all the steps under `Setup Instructions`.
 Make sure the toggle at the bottom is switched on.
@@ -21,9 +22,12 @@ Make sure the toggle at the bottom is switched on.
 | Bot Message | The message to send to the user to ask for feedback. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### pan-dlp-get-report
+
 ***
 Fetches DLP reports associated with a report ID.
 
@@ -31,6 +35,7 @@ Fetches DLP reports associated with a report ID.
 #### Base Command
 
 `pan-dlp-get-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -51,6 +56,7 @@ Fetches DLP reports associated with a report ID.
 | DLP.Report.DataPatternMatches.LowConfidenceFrequency | unknown | The number of low confidence occurrences. | 
 
 ### pan-dlp-update-incident
+
 ***
 Updates a DLP incident with user feedback.
 
@@ -58,6 +64,7 @@ Updates a DLP incident with user feedback.
 #### Base Command
 
 `pan-dlp-update-incident`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                           | **Required** |
@@ -79,6 +86,7 @@ Updates a DLP incident with user feedback.
 | DLP.IncidentUpdate.exemption_duration | number | The exemption duration, only available for "EXCEPTION_GRANTED". | 
 
 ### pan-dlp-exemption-eligible
+
 ***
 Determines whether exemption can be granted on incidents from a certain data profile.
 
@@ -86,6 +94,7 @@ Determines whether exemption can be granted on incidents from a certain data pro
 #### Base Command
 
 `pan-dlp-exemption-eligible`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -100,6 +109,7 @@ Determines whether exemption can be granted on incidents from a certain data pro
 | DLP.exemption.eligible | boolean | Whether the data profile is eligible for exemption. | 
 
 ### pan-dlp-slack-message
+
 ***
 Gets the Slack bot message to send to the user for gathering feedback.
 
@@ -107,6 +117,7 @@ Gets the Slack bot message to send to the user for gathering feedback.
 #### Base Command
 
 `pan-dlp-slack-message`
+
 #### Input
 
 | **Argument Name** | **Description**                                          | **Required** |
@@ -125,6 +136,7 @@ Gets the Slack bot message to send to the user for gathering feedback.
 | DLP.slack_message | string | The Slack bot message. | 
 
 ### pan-dlp-reset-last-run
+
 ***
 Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
 
@@ -132,6 +144,7 @@ Resets the fetch incidents last run value, which resets the fetch to its initial
 #### Base Command
 
 `pan-dlp-reset-last-run`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

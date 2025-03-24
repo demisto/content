@@ -51,7 +51,7 @@ Here is an example image of the rule
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | url | Server URL \(ex. https://core.mobileiron.com \) | True |
+    | url | Server URL \(ex. <https://core.mobileiron.com> \) | True |
     | admin_space_id | Admin Space ID \(ex. 1 for the global space ID.\) | True |
     | credentials | API User Credentials | True |
     | max_fetch | Maximum number of incidents per fetch | False |

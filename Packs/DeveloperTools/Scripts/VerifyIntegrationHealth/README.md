@@ -1,6 +1,7 @@
 Checks for existing errors in a given integration.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Checks for existing errors in a given integration.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ Checks for existing errors in a given integration.
 | integration_name | Integration name to check its health status. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -27,9 +30,11 @@ Checks for existing errors in a given integration.
 
 
 ## Script Example
+
 ```!VerifyIntegrationHealth integration_name="AutoFocus Daily Feed"```
 
 ## Context Example
+
 ```json
 {
     "IntegrationHealth": {
@@ -43,11 +48,13 @@ Checks for existing errors in a given integration.
 ## Human Readable Output
 
 >### Results
+>
 >|fetchDone|integrationName|isHealthy|
 >|---|---|---|
 >| true | AutoFocus Daily Feed | true |
 
 ### Troubleshooting
+
 Multi-tenant environments should be configured with the Cortex Rest API instance when using this 
 automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integration) is checked 
 to ensure that API calls are made to the current tenant instead of the master tenant.

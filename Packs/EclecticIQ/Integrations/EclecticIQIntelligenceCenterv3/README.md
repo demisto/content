@@ -9,7 +9,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| EclecticIQ Intelligence Center URL (e.g. https://eclecticiq-platform.local) |  | True |
+| EclecticIQ Intelligence Center URL (e.g. <https://eclecticiq-platform.local>) |  | True |
 | API user token to authenticate in EclecticIQ Intelligence Center |  | True |
 | EclecticIQ Intelligence Center public API version |  | True |
 | IP threshold. Minimum maliciousness confidence level to consider the IP address malicious: High, Medium, Low, Safe, Unknown |  | False |
@@ -70,8 +70,11 @@ Get reputation of IP address observable.
 | IP.Address | String | IP address. | 
 
 #### Command example
+
 ```!ip ip="8.8.8.8"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -98,9 +101,10 @@ Get reputation of IP address observable.
 #### Human Readable Output
 
 >### EclecticIQ IP reputation - 8.8.8.8
+>
 >|created|id|last_updated|maliciousness|platform_link|source_name|type|value|
 >|---|---|---|---|---|---|---|---|
->| 2023-10-09T18:00 | 466127 | 2023-11-13T15:35 | unknown | https://ic-playground.eclecticiq.com/main/intel/all/browse/observable?tab=overview&id=466127 | enricher_task: VirusTotal APIv3 File Hash (Contacted Infrastructure) Enricher; enricher_task: Recorded Future Enricher; group: Testing Group;  | ipv4 | 8.8.8.8 |
+>| 2023-10-09T18:00 | 466127 | 2023-11-13T15:35 | unknown | <https://ic-playground.eclecticiq.com/main/intel/all/browse/observable?tab=overview&id=466127> | enricher_task: VirusTotal APIv3 File Hash (Contacted Infrastructure) Enricher; enricher_task: Recorded Future Enricher; group: Testing Group;  | ipv4 | 8.8.8.8 |
 
 
 ### url
@@ -135,8 +139,11 @@ Gets the reputation of a URL observable.
 | URL.Data | String | URL requested. | 
 
 #### Command example
+
 ```!url url="https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -163,9 +170,10 @@ Gets the reputation of a URL observable.
 #### Human Readable Output
 
 >### EclecticIQ URL reputation - https:<span>//</span>www.ultimatewindowssecurity.com/securitylog/encyclopedia/
+>
 >|created|id|last_updated|maliciousness|platform_link|source_name|type|value|
 >|---|---|---|---|---|---|---|---|
->| 2023-06-02T08:14 | 119519 | 2023-06-02T08:14 | unknown | https://ic-playground.eclecticiq.com/main/intel/all/browse/observable?tab=overview&id=119519 | incoming_feed: Elemendar;  | uri | https:<span>//</span>www.ultimatewindowssecurity.com/securitylog/encyclopedia/ |
+>| 2023-06-02T08:14 | 119519 | 2023-06-02T08:14 | unknown | <https://ic-playground.eclecticiq.com/main/intel/all/browse/observable?tab=overview&id=119519> | incoming_feed: Elemendar;  | uri | https:<span>//</span>www.ultimatewindowssecurity.com/securitylog/encyclopedia/ |
 
 
 ### file
@@ -202,8 +210,11 @@ Gets the reputation of a file hash observable.
 | File.SHA256 | String | Bad SHA256 hash. | 
 
 #### Command example
+
 ```!file file=ae5f156a6f5052494a295c597389dbee```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -236,9 +247,10 @@ Gets the reputation of a file hash observable.
 #### Human Readable Output
 
 >### EclecticIQ File reputation - ae5f156a6f5052494a295c597389dbee
+>
 >|created|id|last_updated|maliciousness|platform_link|source_name|type|value|
 >|---|---|---|---|---|---|---|---|
->| 2023-05-26T09:20 | 13 | 2023-05-26T09:20 | unknown | https://ic-playground.eclecticiq.com/main/intel/all/browse/observable?tab=overview&id=13 | enricher_task: Threatcrowd API V2;  | hash-md5 | ae5f156a6f5052494a295c597389dbee |
+>| 2023-05-26T09:20 | 13 | 2023-05-26T09:20 | unknown | <https://ic-playground.eclecticiq.com/main/intel/all/browse/observable?tab=overview&id=13> | enricher_task: Threatcrowd API V2;  | hash-md5 | ae5f156a6f5052494a295c597389dbee |
 
 
 ### eclecticiq-get-entity
@@ -310,8 +322,11 @@ Gets the reputation of an email address observable.
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 
 #### Command example
+
 ```!email email=domains@twitter.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -337,10 +352,11 @@ Gets the reputation of an email address observable.
 
 #### Human Readable Output
 
->### EclecticIQ Email reputation - domains@twitter.com
+>### EclecticIQ Email reputation - <domains@twitter.com>
+>
 >|created|id|last_updated|maliciousness|platform_link|source_name|type|value|
 >|---|---|---|---|---|---|---|---|
->| 2023-05-26T09:22 | 1028 | 2023-05-26T09:22 | unknown | https://ic-playground.eclecticiq.com/main/intel/all/browse/observable?tab=overview&id=1028 | enricher_task: Threatcrowd API V2;  | email | domains@twitter.com |
+>| 2023-05-26T09:22 | 1028 | 2023-05-26T09:22 | unknown | <https://ic-playground.eclecticiq.com/main/intel/all/browse/observable?tab=overview&id=1028> | enricher_task: Threatcrowd API V2;  | email | <domains@twitter.com> |
 
 
 ### domain
@@ -375,8 +391,11 @@ Gets the reputation of a domain observable.
 | Domain.Name | String | Requested Domain. | 
 
 #### Command example
+
 ```!domain domain=urlz.fr```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -407,9 +426,10 @@ Gets the reputation of a domain observable.
 #### Human Readable Output
 
 >### EclecticIQ Domain reputation - urlz.fr
+>
 >|created|id|last_updated|maliciousness|platform_link|source_name|type|value|
 >|---|---|---|---|---|---|---|---|
->| 2023-05-26T09:20 | 43 | 2023-05-26T09:20 | low | https://ic-playground.eclecticiq.com/main/intel/all/browse/observable?tab=overview&id=43 |  | domain | urlz.fr |
+>| 2023-05-26T09:20 | 43 | 2023-05-26T09:20 | low | <https://ic-playground.eclecticiq.com/main/intel/all/browse/observable?tab=overview&id=43> |  | domain | urlz.fr |
 
 
 ### eclecticiq-create-sighting
@@ -536,8 +556,11 @@ Make HTTP GET request to EclecticIQ Intelligence Center.
 | EclecticIQ.GET.URI | String | GET reply requested URI. | 
 
 #### Command example
+
 ```!eclecticiq-request-get uri=/api/v2/datasets```
+
 #### Context Example
+
 ```json
 {
     "EclecticIQ": {
@@ -585,8 +608,11 @@ Make HTTP POST request to EclecticIQ Intelligence Center.
 | EclecticIQ.POST.URI | String | POST reply requested URI. | 
 
 #### Command example
+
 ```!eclecticiq-request-post uri=/api/v2/datasets body=`{"data": {"workspaces": "1", "name": "test11112"}}```
+
 #### Context Example
+
 ```json
 {
     "EclecticIQ": {
@@ -633,8 +659,11 @@ Make HTTP PUT request to EclecticIQ Intelligence Center.
 | EclecticIQ.PUT.URI         | String | PUT reply requested URI. | 
 
 #### Command example
+
 ```!eclecticiq-request-put uri=/api/v2/datasets body=`{"data": {"workspaces": "1", "name": "test11112"}}```
+
 #### Context Example
+
 ```json
 {
     "EclecticIQ": {
@@ -681,8 +710,11 @@ Make HTTP PATCH request to EclecticIQ Intelligence Center.
 | EclecticIQ.PATCH.URI         | String | PATCH reply requested URI. | 
 
 #### Command example
+
 ```!eclecticiq-request-patch uri=/api/v2/datasets/1 body=`{"data": {"workspaces": "1", "name": "test11112"}}```
+
 #### Context Example
+
 ```json
 {
     "EclecticIQ": {
@@ -743,13 +775,18 @@ Get last block of Indicators from configured to fetch Outgoing feed.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!eclecticiq-get-indicators```
+
 #### Human Readable Output
 
 >### Indicators collected from first block of feed:[{'id': '11', 'created_at': '2023-06-26T15:23:19.737166+00:00', 'update_strategy': 'REPLACE', 'packaging_status': 'SUCCESS', 'name': 'splunk-test'}]
+>
 >**No entries.**
 
 
 ## Breaking changes from the previous version of this integration - EclecticIQ Intelligence Center v3
+
 Integration rebuild with added functionality to fetch indicators from outgoing feeds and with many new commands. Integration is not compatible with EclecticIQ integration v2.

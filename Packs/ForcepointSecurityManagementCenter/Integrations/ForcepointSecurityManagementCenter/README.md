@@ -44,8 +44,11 @@ Creates an IP list.
 | ForcepointSMC.IPList.Comment | String | The comment for the IP list. | 
 
 #### Command example
+
 ```!forcepoint-smc-ip-list-create name="name" addresses="1.1.1.1" comment="test"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -90,8 +93,11 @@ Updates an IP list.
 | ForcepointSMC.IPList.Comment | String | The comment for the IP list. | 
 
 #### Command example
+
 ```!forcepoint-smc-ip-list-update name="name" addresses="1.2.3.4" comment="test" is_override=True```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -136,8 +142,11 @@ Lists the IP Lists in the system.
 | ForcepointSMC.IPList.Comment | String | The comment of the IPList | 
 
 #### Command example
+
 ```!forcepoint-smc-ip-list-list name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -155,6 +164,7 @@ Lists the IP Lists in the system.
 #### Human Readable Output
 
 >### IP Lists:
+>
 >|Name|Addresses|Comment|
 >|---|---|---|
 >| name | 1.2.3.4 | test |
@@ -183,8 +193,11 @@ Deletes an IP list.
 | ForcepointSMC.IPList.Deleted | Boolean | Whether the IP list was deleted. | 
 
 #### Command example
+
 ```!forcepoint-smc-ip-list-delete name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -228,8 +241,11 @@ Lists the hosts in the system.
 | ForcepointSMC.Host.Comment | String | The comment for the host. | 
 
 #### Command example
+
 ```!forcepoint-smc-host-list name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -247,6 +263,7 @@ Lists the hosts in the system.
 #### Human Readable Output
 
 >### Hosts:
+>
 >|Name|Address|
 >|---|---|
 >| name | 1.1.1.1 |
@@ -282,8 +299,11 @@ Creates a new host.
 | ForcepointSMC.Host.Comment | String | The comment for the host. | 
 
 #### Command example
+
 ```!forcepoint-smc-host-create name="name" address="1.1.1.1"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -332,8 +352,11 @@ Updates a host.
 | ForcepointSMC.Host.Comment | String | The comment for the host. | 
 
 #### Command example
+
 ```!forcepoint-smc-host-update name="name" address="1.2.3.4"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -375,8 +398,11 @@ Deletes a host.
 | ForcepointSMC.Host.Deleted | Boolean | Whether the host was deleted. | 
 
 #### Command example
+
 ```!forcepoint-smc-host-delete name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -416,8 +442,11 @@ Creates a new domain.
 | ForcepointSMC.Domain.Comment | String | The comment of the host. | 
 
 #### Command example
+
 ```!forcepoint-smc-domain-create name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -458,8 +487,11 @@ Lists the domains in the system.
 | ForcepointSMC.Domain.Comment | String | The comment for the domain. | 
 
 #### Command example
+
 ```!forcepoint-smc-domain-list name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -474,6 +506,7 @@ Lists the domains in the system.
 #### Human Readable Output
 
 >### Domains:
+>
 >|Name|
 >|---|
 >| name |
@@ -502,8 +535,11 @@ Deletes a domain.
 | ForcepointSMC.Domain.Deleted | Boolean | Whether the domain was deleted. | 
 
 #### Command example
+
 ```!forcepoint-smc-domain-delete name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -543,8 +579,11 @@ Lists the policy templates in the system.
 | ForcepointSMC.PolicyTemplate.Comment | String | The comment for the firewall policy. | 
 
 #### Command example
+
 ```!forcepoint-smc-policy-template-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -559,6 +598,7 @@ Lists the policy templates in the system.
 #### Human Readable Output
 
 >### Policy template:
+>
 >|Name|Comment|
 >|---|---|
 >| Firewall Template | Firewall Template Policy that uses Inspection rules from the No Inspection Policy. |
@@ -588,8 +628,11 @@ Lists the firewall policies in the system.
 | ForcepointSMC.Policy.Comment | String | The comment for the firewall policy. | 
 
 #### Command example
+
 ```!forcepoint-smc-firewall-policy-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -604,6 +647,7 @@ Lists the firewall policies in the system.
 #### Human Readable Output
 
 >### Firewall policies:
+>
 >|Name|
 >|---|
 >| Policy For May To Test PC |
@@ -633,8 +677,11 @@ Creates a firewall policy.
 | ForcepointSMC.Policy.Comment | String | The comment for the firewall policy. | 
 
 #### Command example
+
 ```!forcepoint-smc-firewall-policy-create name="name" template="Firewall Template"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -673,8 +720,11 @@ Deletes a firewall policy.
 | ForcepointSMC.Policy.Deleted | Boolean | Whether the policy was deleted. | 
 
 #### Command example
+
 ```!forcepoint-smc-firewall-policy-delete name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -726,8 +776,11 @@ Creates a rule.
 | ForcepointSMC.Rule.Comment | String | The comment for the rule. | 
 
 #### Command example
+
 ```!forcepoint-smc-rule-create policy_name="name" action=allow rule_name="test" destination_ip_list="test" ip_version="V4"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -782,8 +835,11 @@ Updates a rule.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!forcepoint-smc-rule-update policy_name="name" action=continue rule_name="test" source_ip_list="test" ip_version="V4"```
+
 #### Human Readable Output
 
 >The rule test to the policy name was updated successfully.
@@ -817,8 +873,11 @@ Lists the rules in a specific policy.
 | ForcepointSMC.Rule.Comment | String | The comment of the rule. | 
 
 #### Command example
+
 ```!forcepoint-smc-rule-list policy_name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -845,6 +904,7 @@ Lists the rules in a specific policy.
 #### Human Readable Output
 
 >### Rules:
+>
 >|Name|ID|IP_version|Sources|Destinations|Actions|
 >|---|---|---|---|---|---|
 >| test | 2097186.1 | V4 | test | test | continue |
@@ -875,8 +935,11 @@ Deletes a rule.
 | ForcepointSMC.Rule.Deleted | Boolean | Whether the rule was deleted. | 
 
 #### Command example
+
 ```!forcepoint-smc-rule-delete policy_name="name" rule_name="test" ip_version=V4```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -916,8 +979,11 @@ Lists the engines in the system.
 | ForcepointSMC.Engine.Comment | String | The comment for the engine. | 
 
 #### Command example
+
 ```!forcepoint-smc-engine-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -932,6 +998,7 @@ Lists the engines in the system.
 #### Human Readable Output
 
 >### Engines:
+>
 >|Name|Comment|
 >|---|---|
 >| Forcepoint Engine | Forcepoint Engine element pre-populated by installer |

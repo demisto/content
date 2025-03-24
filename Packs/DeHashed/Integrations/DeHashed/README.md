@@ -13,9 +13,12 @@ This integration allows you to check if your personal information such as your e
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### dehashed-search
+
 ***
 Performs a search to check if information is compromised.
 
@@ -23,6 +26,7 @@ Performs a search to check if information is compromised.
 #### Base Command
 
 `dehashed-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -57,8 +61,9 @@ Performs a search to check if information is compromised.
 
 
 #### Command Example
-!dehashed-search asset_type=all_fields operation=contains value=or-gal@gmail.com results_to=4 results_from=0
-!dehashed-search asset_type=email operation=is value=or-gal@gmail.com page=1
+
+!dehashed-search asset_type=all_fields operation=contains value=<or-gal@gmail.com> results_to=4 results_from=0
+!dehashed-search asset_type=email operation=is value=<or-gal@gmail.com> page=1
 !dehashed-search asset_type=name operation=contains value=gal,gil,test1 results_from=2 results_to=30 page=3
 !dehashed-search asset_type=name operation=regex value=joh?n(ath[oa]n)
 
@@ -67,6 +72,7 @@ Performs a search to check if information is compromised.
 
 
 ### email
+
 ***
 Checks if an email address was compromised.
 
@@ -74,6 +80,7 @@ Checks if an email address was compromised.
 #### Base Command
 
 `email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -105,7 +112,8 @@ Checks if an email address was compromised.
 
 
 #### Command Example
-!email email=or-gal@gmail.com
+
+!email email=<or-gal@gmail.com>
 
 #### Human Readable Output
 

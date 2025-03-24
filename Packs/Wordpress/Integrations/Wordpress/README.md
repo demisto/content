@@ -13,9 +13,12 @@ This integration was integrated and tested with version 5.6 of Wordpress
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### wordpress-url-request
+
 ***
 Get information from a custom URL
 
@@ -23,6 +26,7 @@ Get information from a custom URL
 #### Base Command
 
 `wordpress-url-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -40,6 +44,7 @@ Get information from a custom URL
 | Wordpress.URL | Unknown | URL output data | 
 
 ### wordpress-list-posts
+
 ***
 Lists all posts
 
@@ -47,6 +52,7 @@ Lists all posts
 #### Base Command
 
 `wordpress-list-posts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -106,6 +112,7 @@ Lists all posts
 | Wordpress.Posts.ping_status | String | Ping status | 
 
 ### wordpress-get-post
+
 ***
 Retrieve a specific post record.
 
@@ -113,6 +120,7 @@ Retrieve a specific post record.
 #### Base Command
 
 `wordpress-get-post`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -154,6 +162,7 @@ Retrieve a specific post record.
 | Wordpress.Posts.ping_status | String | Ping status | 
 
 ### wordpress-create-post
+
 ***
 Create a post
 
@@ -161,6 +170,7 @@ Create a post
 #### Base Command
 
 `wordpress-create-post`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -215,6 +225,7 @@ Create a post
 | Wordpress.Posts.ping_status | String | Ping status | 
 
 ### wordpress-update-post
+
 ***
 Update a post
 
@@ -222,6 +233,7 @@ Update a post
 #### Base Command
 
 `wordpress-update-post`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -279,6 +291,7 @@ Update a post
 | Wordpress.Posts.ping_status | String | Ping status | 
 
 ### wordpress-delete-post
+
 ***
 Delete a post
 
@@ -286,6 +299,7 @@ Delete a post
 #### Base Command
 
 `wordpress-delete-post`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -326,6 +340,7 @@ Delete a post
 | Wordpress.Posts.ping_status | String | Ping status | 
 
 ### wordpress-list-categories
+
 ***
 List categories
 
@@ -333,6 +348,7 @@ List categories
 #### Base Command
 
 `wordpress-list-categories`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -367,6 +383,7 @@ List categories
 | Wordpress.Categories.description | String | Description | 
 
 ### wordpress-create-category
+
 ***
 Create a category
 
@@ -374,6 +391,7 @@ Create a category
 #### Base Command
 
 `wordpress-create-category`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -401,6 +419,7 @@ Create a category
 | Wordpress.Categories.description | String | Description | 
 
 ### wordpress-get-category
+
 ***
 Retrieve a category
 
@@ -408,6 +427,7 @@ Retrieve a category
 #### Base Command
 
 `wordpress-get-category`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -432,6 +452,7 @@ Retrieve a category
 | Wordpress.Categories.description | String | Description | 
 
 ### wordpress-update-category
+
 ***
 Update a category
 
@@ -439,6 +460,7 @@ Update a category
 #### Base Command
 
 `wordpress-update-category`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -467,6 +489,7 @@ Update a category
 | Wordpress.Categories.description | String | Description | 
 
 ### wordpress-delete-category
+
 ***
 Delete a category
 
@@ -474,6 +497,7 @@ Delete a category
 #### Base Command
 
 `wordpress-delete-category`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -484,7 +508,9 @@ Delete a category
 #### Context Output
 
 There is no context output for this command.
+
 ### wordpress-list-tags
+
 ***
 Lists all tags
 
@@ -492,6 +518,7 @@ Lists all tags
 #### Base Command
 
 `wordpress-list-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -525,6 +552,7 @@ Lists all tags
 | Wordpress.Tags.description | String | Description | 
 
 ### wordpress-create-tag
+
 ***
 Create a tag
 
@@ -532,6 +560,7 @@ Create a tag
 #### Base Command
 
 `wordpress-create-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -557,6 +586,7 @@ Create a tag
 | Wordpress.Tags.description | String | Description | 
 
 ### wordpress-get-tag
+
 ***
 Retrieves a tag
 
@@ -564,6 +594,7 @@ Retrieves a tag
 #### Base Command
 
 `wordpress-get-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -587,6 +618,7 @@ Retrieves a tag
 | Wordpress.Tags.description | String | Description | 
 
 ### wordpress-update-tag
+
 ***
 Update a tag
 
@@ -594,6 +626,7 @@ Update a tag
 #### Base Command
 
 `wordpress-update-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -621,6 +654,7 @@ Update a tag
 | Wordpress.Tags.description | String | Description | 
 
 ### wordpress-delete-tag
+
 ***
 Delete a tag
 
@@ -628,6 +662,7 @@ Delete a tag
 #### Base Command
 
 `wordpress-delete-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -638,7 +673,9 @@ Delete a tag
 #### Context Output
 
 There is no context output for this command.
+
 ### wordpress-list-comments
+
 ***
 Lists all comments
 
@@ -646,6 +683,7 @@ Lists all comments
 #### Base Command
 
 `wordpress-list-comments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -693,6 +731,7 @@ Lists all comments
 | Wordpress.Comments.author_name | String | Author name | 
 
 ### wordpress-create-comment
+
 ***
 Create a comment
 
@@ -700,6 +739,7 @@ Create a comment
 #### Base Command
 
 `wordpress-create-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -738,6 +778,7 @@ Create a comment
 | Wordpress.Comments.author_name | String | Author name | 
 
 ### wordpress-get-comment
+
 ***
 Retrieves a comment
 
@@ -745,6 +786,7 @@ Retrieves a comment
 #### Base Command
 
 `wordpress-get-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -775,6 +817,7 @@ Retrieves a comment
 | Wordpress.Comments.author_name | String | Author name | 
 
 ### wordpress-update-comment
+
 ***
 Update a comment
 
@@ -782,6 +825,7 @@ Update a comment
 #### Base Command
 
 `wordpress-update-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -823,6 +867,7 @@ Update a comment
 | Wordpress.Comments.author_name | String | Author name | 
 
 ### wordpress-delete-comment
+
 ***
 Delete a comment
 
@@ -830,6 +875,7 @@ Delete a comment
 #### Base Command
 
 `wordpress-delete-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -860,6 +906,7 @@ Delete a comment
 | Wordpress.Comments.author_name | String | Author name | 
 
 ### wordpress-list-users
+
 ***
 List users
 
@@ -867,6 +914,7 @@ List users
 #### Base Command
 
 `wordpress-list-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -900,6 +948,7 @@ List users
 | Wordpress.Users.description | String | Description | 
 
 ### wordpress-get-user
+
 ***
 Retrieve a user.
 
@@ -907,6 +956,7 @@ Retrieve a user.
 #### Base Command
 
 `wordpress-get-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -930,6 +980,7 @@ Retrieve a user.
 | Wordpress.Users.description | String | Description | 
 
 ### wordpress-create-user
+
 ***
 Create a user
 
@@ -937,6 +988,7 @@ Create a user
 #### Base Command
 
 `wordpress-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -971,6 +1023,7 @@ Create a user
 | Wordpress.Users.description | String | Description | 
 
 ### wordpress-update-user
+
 ***
 Update a user
 
@@ -978,6 +1031,7 @@ Update a user
 #### Base Command
 
 `wordpress-update-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1013,6 +1067,7 @@ Update a user
 | Wordpress.Users.description | String | Description | 
 
 ### wordpress-delete-user
+
 ***
 Delete a user
 
@@ -1020,6 +1075,7 @@ Delete a user
 #### Base Command
 
 `wordpress-delete-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

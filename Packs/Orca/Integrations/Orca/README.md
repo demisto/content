@@ -1,5 +1,6 @@
 Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS, Azure, and GCP.
 This integration was integrated and tested with Orca
+
 ## Configure Orca in Cortex
 
 
@@ -15,9 +16,12 @@ This integration was integrated and tested with Orca
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### orca-get-alerts
+
 ***
 Get the alerts on cloud assets
 
@@ -25,6 +29,7 @@ Get the alerts on cloud assets
 #### Base Command
 
 `orca-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,9 +46,11 @@ Get the alerts on cloud assets
 
 
 #### Command Example
+
 ``` ```
 
 ### orca-get-asset
+
 ***
 Get Description of An asset
 
@@ -51,6 +58,7 @@ Get Description of An asset
 #### Base Command
 
 `orca-get-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -66,11 +74,13 @@ Get Description of An asset
 
 
 #### Command Example
+
 ``` ```
 
 #### Base Command
 
 `orca-set-alert-severity`
+
 #### Input
 
 | **Argument Name** | **Description**                | **Required** |
@@ -87,9 +97,11 @@ Get Description of An asset
 
 
 #### Command Example
+
 ``` !orca-set-alert-severity alert_id=orca1 score=5 ```
 
 `orca-get-alert-event-log`
+
 #### Input
 
 | **Argument Name** | **Description**                | **Required** |
@@ -108,9 +120,11 @@ Get Description of An asset
 
 
 #### Command Example
+
 ``` !orca-get-alert-event-log alert_id=orca1 limit=10 ```
 
 `orca-set-alert-status`
+
 #### Input
 
 | **Argument Name** | **Description**  | **Required** |
@@ -127,9 +141,11 @@ Get Description of An asset
 
 
 #### Command Example
+
 ``` !orca-set-alert-status alert_id=orca1 status=open ```
 
 `orca-verify-alert`
+
 #### Input
 
 | **Argument Name** | **Description**  | **Required** |
@@ -145,9 +161,11 @@ Get Description of An asset
 
 
 #### Command Example
+
 ``` !orca-verify-alert alert_id=orca1 ```
 
 `orca-download-malicious-file`
+
 #### Input
 
 | **Argument Name** | **Description**  | **Required** |
@@ -163,4 +181,5 @@ Get Description of An asset
 
 
 #### Command Example
+
 ``` !orca-download-malicious-file alert_id=orca1```

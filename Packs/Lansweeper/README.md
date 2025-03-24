@@ -4,6 +4,7 @@ Lansweeper is an application that gathers information of computers and other dev
 **What does this pack do?**
 
 The Lansweeper content pack provides the following capabilities:
+
 - Allows users to search specific assets.
 - Retrieves asset details for the provided IP address from the Lansweeper platform. 
 - Retrieves asset details for the provided MAC address from the Lansweeper platform.
@@ -14,5 +15,6 @@ The Lansweeper content pack provides the following capabilities:
 This content pack includes the following playbook:
 
 #### Retrieve Asset Details - Lansweeper
+
 Get contextual information of asset based on IP/MAC from Lansweeper.
 ![Retrieve Asset Details - Lansweeper](doc_files/Retrieve_Asset_Details_-_Lansweeper.png)

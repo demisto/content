@@ -15,6 +15,7 @@ What does this pack do :
 
 This pack enables you to monitor threats via Demisto Platform and fetch important information related to incidents. it also helps do repetitive tasks associated with
 ConcentricAI Security Event :
+
    1) Fetches Alerts as Incidents into Demisto
    2) Triggers a custom playbook to fetch all relevant details such as user information and file details for every incident.
    3) Calculates the severity of the incident.

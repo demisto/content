@@ -1,5 +1,6 @@
 SaaS Security is an integrated CASB (Cloud Access Security Broker) solution that helps Security teams like yours meet 
 the challenges of:
+
 * protecting the growing availability of sanctioned and unsanctioned SaaS applications
 * maintaining compliance consistently in the cloud
 * stopping threats to sensitive information, users, and resources
@@ -21,17 +22,20 @@ This is the default integration for this content pack when configured by the Dat
     | Use system proxy settings | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server. | False |
     | The maximum number of events per fetch. | The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to Saas-Security api limitations. Default is 1000. In case this is empty, all available events will be fetched. | False |
     | The maximum number of iterations to retrieve events. | In order to prevent timeouts, set this parameter to limit the number of iterations for retrieving events. Note - the default value is the recommended value to prevent timeouts. Default is 150. | False |
+
 5. Click **Test** to validate the URLs, token, and connection.
 
 ## Create the Client ID and Client Secret on SaaS Security
+
 In the SaaS Security UI, do the following:
+
 1. Navigate to **Settings** > **External Service**.
 2. Click **Add API Client**.
 3. Specify a unique name for the API client.
 4. Authorize the API client for the required scopes. You use these scopes in the POST request to the /oauth/token endpoint. The Required Scopes are:
-    - Log access — Access log files. You can either provide the client log access API or add a syslog receiver.
-    - Incident management — Retrieve and change the incident status.
-    - Quarantine management — Quarantine assets and restore quarantined assets.
+    * Log access — Access log files. You can either provide the client log access API or add a syslog receiver.
+    * Incident management — Retrieve and change the incident status.
+    * Quarantine management — Quarantine assets and restore quarantined assets.
 6. Copy the client ID and client secret.
 Tip: Record your API client secret somewhere safe. For security purposes, it’s only shown when you create or reset the API client. If you lose your secret you must reset it, which removes access for any integrations that still use the previous secret.
 7. Add the **Client ID** and **Client Secret** to Cortex XSOAR.
@@ -39,6 +43,7 @@ Note: For more information see the [SaaS Security Administrator's Guide](https:/
 
 
 ## Limitations
+
 1) Occurring events expire after one hour in Saas-Security cache, so setting a low limit could cause events to expire if there are a large number of events in the Saas-Security cache.
 2) If the ```max_fetch``` is not dividable by 10, it will be rounded down to a number that is dividable by 10 due to SaaS Security api limits.
 3) **reset last fetch** has no effect.
@@ -49,6 +54,7 @@ Note: For more information see the [SaaS Security Administrator's Guide](https:/
 8) In case not providing the ```max_fetch``` argument, the default will be 1000.
 
 ## Fetch Events
+
 Requires the scope of *api_access* in order to fetch log events. See [Documentation](https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/api-client-integration/api-client-authentication/retrieve-a-token#idd543d5f0-c56e-4899-957f-74f921fd0976)
 Since those events are saved only 1 hour at cache, it is highly recommended giving *Events Fetch Interval* in minutes rather than hours.
 
@@ -58,6 +64,7 @@ Log types could be one of policy_violation, activity_monitoring, remediation, in
 Every type returns a different api response that is unique.
 
 **Example Activity Monitoring Response**
+
 ```json
 {
     "log_type" : "activity_monitoring",
@@ -77,6 +84,7 @@ Every type returns a different api response that is unique.
 ```
 
 **Example Incident Response**
+
 ```json
 {
     "log_type" : "incident",
@@ -102,6 +110,7 @@ Every type returns a different api response that is unique.
 ```
 
 **Example Remediation Response**
+
 ```json
 {
     "log_type" : "remediation",
@@ -124,6 +133,7 @@ Every type returns a different api response that is unique.
 ```
 
 **Example Policy Violation Response**
+
 ```json
 {
     "log_type" : "policy_violation",
@@ -146,6 +156,7 @@ Every type returns a different api response that is unique.
 ```
 
 **Example Admin Audit Response**
+
 ```json
 {
     "log_type" : "admin_audit",
@@ -163,14 +174,17 @@ Every type returns a different api response that is unique.
     "serial" : "mySerial"
 }
 ```
+
 for more information see [documentation](https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/api-client-integration/public-api-references/log-events-api#id2bfde842-f708-4e0b-bc41-9809903a6021_id51ace1dd-a6cd-4d8b-8014-094d1d7c26b2)
 
 ## Commands
+
 You can execute these commands from the Cortex XSIAM CLI as part of an automation or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
 ### saas-security-get-events
+
 ***
 Manual command to fetch events and display them.
 
@@ -178,6 +192,7 @@ Manual command to fetch events and display them.
 #### Base Command
 
 `saas-security-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -222,8 +237,11 @@ Manual command to fetch events and display them.
 | SaasSecurity.Event.resource_value_new | String | New resource value. \(optional\). | 
 
 #### Command example
+
 ```!saas-security-get-events limit=200 should_push_events=False```
+
 #### Context Example
+
 ```json
 {
     "SaasSecurity": {
@@ -268,6 +286,7 @@ Manual command to fetch events and display them.
 #### Human Readable Output
 
 >### SaaS Security Logs
+>
 >|LogType|ItemType|ItemName|Timestamp|
 >|---|---|---|---|
 >| activity_monitoring | file | ssn_test3.txt | 2022-05-30T06:40:59Z |

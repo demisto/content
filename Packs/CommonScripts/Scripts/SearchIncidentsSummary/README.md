@@ -5,6 +5,7 @@ Returns the id, name, type, severity, status, owner, and created/closed times to
 This automation runs using the default Limited User role, unless you explicitly change the permissions.  Based on the SearchIncidentsV2 from the Common Scripts pack, but more efficient.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -13,6 +14,7 @@ This automation runs using the default Limited User role, unless you explicitly 
 | Tags | Utility |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -41,6 +43,7 @@ This automation runs using the default Limited User role, unless you explicitly 
 | add_fields_to_context | A comma seperated list of fields to return to the context, \(default: id,name,type,severity,status,owner,created,closed\) |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

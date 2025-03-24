@@ -2,6 +2,7 @@ FortiManager is a single console central management system that manages Fortinet
 This integration was integrated and tested with version 6.2.2 of FortiManager
 
 ## Required Permissions
+
 Following are the required permissions for the integration commands:
 
 | **Setting** | **Minimal Requirement** |
@@ -26,9 +27,12 @@ For more information about administrator permissions see the [FortiManager docum
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fortimanager-devices-list
+
 ***
 List all devices in the ADOM instance.
 
@@ -36,6 +40,7 @@ List all devices in the ADOM instance.
 #### Base Command
 
 `fortimanager-devices-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -131,9 +136,11 @@ List all devices in the ADOM instance.
 
 
 #### Command Example
+
 ```!fortimanager-devices-list offset=1 limit=2```
 
 #### Context Example
+
 ```json
 {
     "FortiManager": {
@@ -266,12 +273,14 @@ List all devices in the ADOM instance.
 #### Human Readable Output
 
 >### ADOM adom/root Devices
+>
 >|Name|Ip|Hostname|Os Type|Adm Usr|Vdom|Ha Mode|
 >|---|---|---|---|---|---|---|
 >| device_name | 1.2.3.4 |  | 0 |  | root, mgmt-vdom | 0 |
 >| Another_device | 2.3.4.5 | Another_device | 4 | admin | root | 0 |
 
 ### fortimanager-device-groups-list
+
 ***
 List ADOM device groups.
 
@@ -279,6 +288,7 @@ List ADOM device groups.
 #### Base Command
 
 `fortimanager-device-groups-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -301,9 +311,11 @@ List ADOM device groups.
 
 
 #### Command Example
+
 ```!fortimanager-device-groups-list offset=1 limit=2```
 
 #### Context Example
+
 ```json
 {
     "FortiManager": {
@@ -330,6 +342,7 @@ List ADOM device groups.
 #### Human Readable Output
 
 >### ADOM adom/root Device Groups
+>
 >|Name|Type|Os Type|
 >|---|---|---|
 >| All_FortiAnalyzer | 1 | 4 |
@@ -337,6 +350,7 @@ List ADOM device groups.
 
 
 ### fortimanager-address-list
+
 ***
 List ADOM firewall IPv4 addresses.
 
@@ -344,6 +358,7 @@ List ADOM firewall IPv4 addresses.
 #### Base Command
 
 `fortimanager-address-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -392,9 +407,11 @@ List ADOM firewall IPv4 addresses.
 
 
 #### Command Example
+
 ```!fortimanager-address-list offset=1 limit=2```
 
 #### Context Example
+
 ```json
 {
     "FortiManager": {
@@ -448,6 +465,7 @@ List ADOM firewall IPv4 addresses.
 #### Human Readable Output
 
 >### Firewall IPv4 Addresses
+>
 >|Name|Type|Subnet|Start-ip|End-ip|
 >|---|---|---|---|---|
 >| FAC-SAML | 1 |  | 1.2.3.4 | 2.3.4.5 |
@@ -455,6 +473,7 @@ List ADOM firewall IPv4 addresses.
 
 
 ### fortimanager-address-create
+
 ***
 Add a new IPv4 address.
 
@@ -462,6 +481,7 @@ Add a new IPv4 address.
 #### Base Command
 
 `fortimanager-address-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -488,6 +508,7 @@ Add a new IPv4 address.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-address-create name=new_address type=iprange start_ip=1.2.3.4 end_ip=2.3.4.5```
 
 
@@ -496,6 +517,7 @@ There is no context output for this command.
 >Created new Address new_address
 
 ### fortimanager-address-update
+
 ***
 Add a new IPv4 address.
 
@@ -503,6 +525,7 @@ Add a new IPv4 address.
 #### Base Command
 
 `fortimanager-address-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -529,6 +552,7 @@ Add a new IPv4 address.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-address-update name=new_address end_ip=3.3.3.3```
 
 #### Human Readable Output
@@ -536,6 +560,7 @@ There is no context output for this command.
 >Updated Address new_address
 
 ### fortimanager-address-delete
+
 ***
 Delete an address.
 
@@ -543,6 +568,7 @@ Delete an address.
 #### Base Command
 
 `fortimanager-address-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -556,6 +582,7 @@ Delete an address.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-address-delete address=new_address```
 
 #### Human Readable Output
@@ -563,6 +590,7 @@ There is no context output for this command.
 >Deleted Address new_address
 
 ### fortimanager-address-group-list
+
 ***
 List ADOM IPv4 address groups.
 
@@ -570,6 +598,7 @@ List ADOM IPv4 address groups.
 #### Base Command
 
 `fortimanager-address-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -612,9 +641,11 @@ List ADOM IPv4 address groups.
 
 
 #### Command Example
+
 ```!fortimanager-address-group-list offset=1 limit=2```
 
 #### Context Example
+
 ```json
 {
     "FortiManager": {
@@ -657,6 +688,7 @@ List ADOM IPv4 address groups.
 #### Human Readable Output
 
 >### Firewall IPv4 Address Groups
+>
 >|Name|Member|Allow-routing|
 >|---|---|---|
 >| my_address_group | address1,<br/>address2 | 0 |
@@ -664,6 +696,7 @@ List ADOM IPv4 address groups.
 
 
 ### fortimanager-address-group-create
+
 ***
 Create a new address group.
 
@@ -671,6 +704,7 @@ Create a new address group.
 #### Base Command
 
 `fortimanager-address-group-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -686,6 +720,7 @@ Create a new address group.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-address-group-create name=new_address_group member=new_address,my_address2```
 
 
@@ -694,6 +729,7 @@ There is no context output for this command.
 >Created new Address Group new_address_group
 
 ### fortimanager-address-group-update
+
 ***
 Create a new address group.
 
@@ -701,6 +737,7 @@ Create a new address group.
 #### Base Command
 
 `fortimanager-address-group-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -716,6 +753,7 @@ Create a new address group.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-address-group-update name=new_address_group member=new_address```
 
 
@@ -724,6 +762,7 @@ There is no context output for this command.
 >Updated Address Group new_address_group
 
 ### fortimanager-address-group-delete
+
 ***
 Delete an address group.
 
@@ -731,6 +770,7 @@ Delete an address group.
 #### Base Command
 
 `fortimanager-address-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -744,6 +784,7 @@ Delete an address group.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-address-group-delete address_group=new_address_group```
 
 
@@ -752,6 +793,7 @@ There is no context output for this command.
 >Deleted Address Group new_address_group
 
 ### fortimanager-service-categories-list
+
 ***
 List the ADOM service categories.
 
@@ -759,6 +801,7 @@ List the ADOM service categories.
 #### Base Command
 
 `fortimanager-service-categories-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -778,9 +821,11 @@ List the ADOM service categories.
 
 
 #### Command Example
+
 ```!fortimanager-service-categories-list offset=1 limit=2```
 
 #### Context Example
+
 ```json
 {
     "FortiManager": {
@@ -803,6 +848,7 @@ List the ADOM service categories.
 #### Human Readable Output
 
 >### Service Categories
+>
 >|Name|Comment|
 >|---|---|
 >| Web Access | Web access. |
@@ -810,6 +856,7 @@ List the ADOM service categories.
 
 
 ### fortimanager-service-group-list
+
 ***
 List ADOM service groups.
 
@@ -817,6 +864,7 @@ List ADOM service groups.
 #### Base Command
 
 `fortimanager-service-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -839,9 +887,11 @@ List ADOM service groups.
 
 
 #### Command Example
+
 ```!fortimanager-service-group-list offset=1 limit=2```
 
 #### Context Example
+
 ```json
 {
     "FortiManager": {
@@ -878,6 +928,7 @@ List ADOM service groups.
 #### Human Readable Output
 
 >### Service Groups
+>
 >|Name|Member|Proxy|
 >|---|---|---|
 >| Web Access | DNS,<br/>HTTP,<br/>HTTPS | 0 |
@@ -885,6 +936,7 @@ List ADOM service groups.
 
 
 ### fortimanager-service-group-create
+
 ***
 Creates a new service group.
 
@@ -892,6 +944,7 @@ Creates a new service group.
 #### Base Command
 
 `fortimanager-service-group-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -908,13 +961,16 @@ Creates a new service group.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-service-group-create member=new_service name=new_service_group ```
 
 #### Human Readable Output
+>
 >Created new Service Group new_service_group
 
 
 ### fortimanager-service-group-update
+
 ***
 Create a new service group.
 
@@ -922,6 +978,7 @@ Create a new service group.
 #### Base Command
 
 `fortimanager-service-group-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -938,13 +995,16 @@ Create a new service group.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-service-group-update name=new_service_group proxy=disable ```
 
 #### Human Readable Output
+>
 >Updated Service Group new_service_group
 
 
 ### fortimanager-service-group-delete
+
 ***
 Delete a service group
 
@@ -952,6 +1012,7 @@ Delete a service group
 #### Base Command
 
 `fortimanager-service-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -965,13 +1026,16 @@ Delete a service group
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-service-group-delete service_group=new_service_group ```
 
 #### Human Readable Output
+>
 >Deleted Service Group new_service_group
 
 
 ### fortimanager-custom-service-list
+
 ***
 List the custom services.
 
@@ -979,6 +1043,7 @@ List the custom services.
 #### Base Command
 
 `fortimanager-custom-service-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1021,9 +1086,11 @@ List the custom services.
 
 
 #### Command Example
+
 ```!fortimanager-custom-service-list offset=1 limit=2```
 
 #### Context Example
+
 ```json
 {
     "FortiManager": {
@@ -1090,6 +1157,7 @@ List the custom services.
 #### Human Readable Output
 
 >### Custom Services
+>
 >|Name|Category|Protocol|Iprange|
 >|---|---|---|---|
 >| ALL_TCP | General | 5 | 0.0.0.0 |
@@ -1097,6 +1165,7 @@ List the custom services.
 
 
 ### fortimanager-custom-service-create
+
 ***
 Create a new custom service.
 
@@ -1104,6 +1173,7 @@ Create a new custom service.
 #### Base Command
 
 `fortimanager-custom-service-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1138,6 +1208,7 @@ Create a new custom service.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-custom-service-create name=new_service fqdn=demisto.com```
 
 
@@ -1146,6 +1217,7 @@ There is no context output for this command.
 >Created new Custom Service new_service
 
 ### fortimanager-custom-service-update
+
 ***
 Update a custom service.
 
@@ -1153,6 +1225,7 @@ Update a custom service.
 #### Base Command
 
 `fortimanager-custom-service-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1187,6 +1260,7 @@ Update a custom service.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-custom-service-update name=new_service proxy=enable```
 
 
@@ -1195,6 +1269,7 @@ There is no context output for this command.
 >Updated Custom Service new_service
 
 ### fortimanager-custom-service-delete
+
 ***
 Delete a custom service.
 
@@ -1202,6 +1277,7 @@ Delete a custom service.
 #### Base Command
 
 `fortimanager-custom-service-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1215,6 +1291,7 @@ Delete a custom service.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-custom-service-delete custom=new_service```
 
 
@@ -1223,6 +1300,7 @@ There is no context output for this command.
 >Deleted Custom Service new_service
 
 ### fortimanager-firewall-policy-package-list
+
 ***
 List ADOM policy packages.
 
@@ -1230,6 +1308,7 @@ List ADOM policy packages.
 #### Base Command
 
 `fortimanager-firewall-policy-package-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1261,9 +1340,11 @@ List ADOM policy packages.
 
 
 #### Command Example
+
 ```!fortimanager-firewall-policy-package-list offset=1 limit=2```
 
 #### Context Example
+
 ```json
 {
     "FortiManager": {
@@ -1303,6 +1384,7 @@ List ADOM policy packages.
 #### Human Readable Output
 
 >### Policy Packages
+>
 >|Name|Type|
 >|---|---|
 >| FG5H0E3917901297_root | pkg |
@@ -1310,6 +1392,7 @@ List ADOM policy packages.
 
 
 ### fortimanager-firewall-policy-package-create
+
 ***
 Create a new firewall policy package.
 
@@ -1317,6 +1400,7 @@ Create a new firewall policy package.
 #### Base Command
 
 `fortimanager-firewall-policy-package-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1338,6 +1422,7 @@ Create a new firewall policy package.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-firewall-policy-package-create name=new_package type=pkg```
 
 
@@ -1346,6 +1431,7 @@ There is no context output for this command.
 >Created new Policy Package new_package
 
 ### fortimanager-firewall-policy-package-update
+
 ***
 Create a new firewall policy package.
 
@@ -1353,6 +1439,7 @@ Create a new firewall policy package.
 #### Base Command
 
 `fortimanager-firewall-policy-package-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1374,6 +1461,7 @@ Create a new firewall policy package.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-firewall-policy-package-update name=new_package central_nat=enable```
 
 #### Human Readable Output
@@ -1381,6 +1469,7 @@ There is no context output for this command.
 >Update Policy Package new_package
 
 ### fortimanager-firewall-policy-package-delete
+
 ***
 Delete a firewall policy package.
 
@@ -1388,6 +1477,7 @@ Delete a firewall policy package.
 #### Base Command
 
 `fortimanager-firewall-policy-package-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1401,6 +1491,7 @@ Delete a firewall policy package.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-firewall-policy-package-delete pkg_path=new_package```
 
 #### Human Readable Output
@@ -1408,6 +1499,7 @@ There is no context output for this command.
 >Deleted Policy Package new_package
 
 ### fortimanager-firewall-policy-list
+
 ***
 List specific firewall policies from a policy package.
 
@@ -1415,6 +1507,7 @@ List specific firewall policies from a policy package.
 #### Base Command
 
 `fortimanager-firewall-policy-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1562,9 +1655,11 @@ List specific firewall policies from a policy package.
 
 
 #### Command Example
+
 ```!fortimanager-firewall-policy-list package=new_package```
 
 #### Context Example
+
 ```json
 {
     "FortiManager": {
@@ -1685,12 +1780,14 @@ List specific firewall policies from a policy package.
 #### Human Readable Output
 
 >### ADOM root Policy Package new_package Policies
+>
 >|Policyid|Name|Srcintf|Dstintf|Srcaddr|Dstaddr|Schedule|Service|Action|
 >|---|---|---|---|---|---|---|---|---|
 >| 9 | new_policy | any | any | all | all | always | ALL | 1 |
 
 
 ### fortimanager-firewall-policy-create
+
 ***
 Create a firewall policy.
 
@@ -1698,6 +1795,7 @@ Create a firewall policy.
 #### Base Command
 
 `fortimanager-firewall-policy-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1728,6 +1826,7 @@ Create a firewall policy.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-firewall-policy-create action=accept logtraffic=utm name=new_policy package=new_package dstaddr=all srcaddr=all policyid=9```
 
 
@@ -1736,6 +1835,7 @@ There is no context output for this command.
 >Created policy with ID 9
 
 ### fortimanager-firewall-policy-update
+
 ***
 Update a firewall policy.
 
@@ -1743,6 +1843,7 @@ Update a firewall policy.
 #### Base Command
 
 `fortimanager-firewall-policy-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1773,6 +1874,7 @@ Update a firewall policy.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-firewall-policy-update package=new_package policyid=9 status=disable```
 
 
@@ -1781,6 +1883,7 @@ There is no context output for this command.
 >Updated policy with ID 9
 
 ### fortimanager-firewall-policy-delete
+
 ***
 Delete a firewall policy.
 
@@ -1788,6 +1891,7 @@ Delete a firewall policy.
 #### Base Command
 
 `fortimanager-firewall-policy-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1802,6 +1906,7 @@ Delete a firewall policy.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-firewall-policy-delete package=new_package policy=9```
 
 
@@ -1810,6 +1915,7 @@ There is no context output for this command.
 >Deleted Policy 9
 
 ### fortimanager-firewall-policy-move
+
 ***
 Move a policy in the package.
 
@@ -1817,6 +1923,7 @@ Move a policy in the package.
 #### Base Command
 
 `fortimanager-firewall-policy-move`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1833,6 +1940,7 @@ Move a policy in the package.
 There is no context output for this command.
 
 #### Command Example
+
 ```!fortimanager-firewall-policy-move option=after package=some_package policy=1 target=2```
 
 
@@ -1841,6 +1949,7 @@ There is no context output for this command.
 >Moved policy with ID 1 after 2 in Policy Package: some_package
 
 ### fortimanager-dynamic-interface-list
+
 ***
 List dynamic interfaces
 
@@ -1848,6 +1957,7 @@ List dynamic interfaces
 #### Base Command
 
 `fortimanager-dynamic-interface-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1882,9 +1992,11 @@ List dynamic interfaces
 
 
 #### Command Example
+
 ```!fortimanager-dynamic-interface-list offset=1 limit=2```
 
 #### Context Example
+
 ```json
 {
     "FortiManager": {
@@ -1949,6 +2061,7 @@ List dynamic interfaces
 #### Human Readable Output
 
 >### ADOM root Dynamic Interfaces
+>
 >|Name|
 >|---|
 >| bgp loopback |
@@ -1956,6 +2069,7 @@ List dynamic interfaces
 
 
 ### fortimanager-firewall-policy-package-install
+
 ***
 Schedule a policy package installation.
 
@@ -1963,6 +2077,7 @@ Schedule a policy package installation.
 #### Base Command
 
 `fortimanager-firewall-policy-package-install`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1984,14 +2099,17 @@ Schedule a policy package installation.
 
 
 #### Command Example
+
 ```!fortimanager-policy-package-install package=package_to_install name=device_name vdom=root adom_rev_name=testing_installation ```
 
 #### Human Readable Output
+>
 >Installed a policy package my_package in ADOM: root 
 >On Device my_device and VDOM vdom_name.
 >Task ID: 175
 
 #### Context Example
+
 ```json
 {
     "FortiManager": {
@@ -2004,6 +2122,7 @@ Schedule a policy package installation.
 
 
 ### fortimanager-firewall-policy-package-install-status
+
 ***
 Get installation status.
 
@@ -2011,6 +2130,7 @@ Get installation status.
 #### Base Command
 
 `fortimanager-firewall-policy-package-install-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2052,5 +2172,6 @@ Get installation status.
 
 
 #### Command Example
+
 ```!fortimanager-policy-package-install-status task_id=175 ```
 

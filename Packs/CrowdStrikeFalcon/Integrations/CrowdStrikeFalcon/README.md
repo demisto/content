@@ -5,7 +5,7 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://api.crowdstrike.com) |  | True |
+| Server URL (e.g., <https://api.crowdstrike.com>) |  | True |
 | Client ID |  | False |
 | Secret |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command. | False |
@@ -62,6 +62,7 @@ In order to use the CrowdStrike Falcon integration, the API client must have the
 
 You can enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Fetch types* integration parameter, select what types to mirror.
 3. Optional: You can go to one of the *fetch query* parameters and select the query to fetch the events from CrowdStrike Falcon.
@@ -357,7 +358,7 @@ Search for details of specific detections, either using a filter query, or by pr
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | A comma-separated list of IDs of the detections to search. If provided, will override other arguments. | Optional | 
-| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch. | Optional | 
+| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>For a full list of valid filter options, see: <https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch>. | Optional | 
 | extended_data | Whether to get additional data such as device and behaviors processed. Possible values are: Yes, No. | Optional | 
 
 #### Context Output
@@ -933,6 +934,7 @@ Script le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 was del
 #### Context Output
 
 There is no context output for this command.
+
 ### cs-falcon-list-scripts
 
 ***
@@ -4529,7 +4531,7 @@ Get a list of IOA exclusions by specifying their IDs or a filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: name:'test'.<br/> Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.<br/> For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language. | Optional | 
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: name:'test'.<br/> Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.<br/> For more information, see: <https://www.falconpy.io/Service-Collections/Falcon-Query-Language>. | Optional | 
 | name | The name by which the exclusions should be filtered. | Optional | 
 | ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and name. | Optional | 
 | limit | The limit of how many exclusions to retrieve. Default is 50. Applies only if the ids argument is not supplied. | Optional | 
@@ -6106,6 +6108,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Mobile Detection(s) id_1, id_2 were successfully updated
+>
 ### cs-falcon-list-users
 
 ***

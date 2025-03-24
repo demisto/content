@@ -30,9 +30,12 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | Trust any certificate (not secure) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### lr-alarms-list
+
 ***
 Gets the details of the alarms using the filter criteria.
 
@@ -40,6 +43,7 @@ Gets the details of the alarms using the filter criteria.
 #### Base Command
 
 `lr-alarms-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -67,9 +71,11 @@ Gets the details of the alarms using the filter criteria.
 
 
 #### Command Example
+
 ```!lr-alarms-list count=2 alarm_status=Opened```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -110,6 +116,7 @@ Gets the details of the alarms using the filter criteria.
 #### Human Readable Output
 
 >### Alarms
+>
 >|Alarm Id|Alarm Status|Associated Cases|Alarm Rule Name|Date Inserted|Entity Name|Alarm Data Cached|
 >|---|---|---|---|---|---|---|
 >| 882 | Opened | 7C2A040E-3014-41D5-ADF0-164A202D3518,<br/> 5FAA1AFB-5453-4FF7-92F8-28222A586368,<br/> 0795BCB1-28AA-4C3F-9739-B5431AE4004B | LogRhythm Agent Heartbeat Missed | 2021-10-13T09:13:20.103 | EchoTestEntity | N |
@@ -117,6 +124,7 @@ Gets the details of the alarms using the filter criteria.
 
 
 ### lr-alarm-update
+
 ***
 Updates the alarm status and RBP based on the alarm ID supplied. alarm_status or rbp are required.
 
@@ -124,6 +132,7 @@ Updates the alarm status and RBP based on the alarm ID supplied. alarm_status or
 #### Base Command
 
 `lr-alarm-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -138,6 +147,7 @@ Updates the alarm status and RBP based on the alarm ID supplied. alarm_status or
 There is no context output for this command.
 
 #### Command Example
+
 ```!lr-alarm-update alarm_id=200 alarm_status=Closed rbp=100```
 
 #### Human Readable Output
@@ -145,6 +155,7 @@ There is no context output for this command.
 >Alarm 200 has been updated.
 
 ### lr-alarm-add-comment
+
 ***
 Updates the Alarm History table with comments in the Comments column based on the alarm ID supplied.
 
@@ -152,6 +163,7 @@ Updates the Alarm History table with comments in the Comments column based on th
 #### Base Command
 
 `lr-alarm-add-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -165,6 +177,7 @@ Updates the Alarm History table with comments in the Comments column based on th
 There is no context output for this command.
 
 #### Command Example
+
 ```!lr-alarm-add-comment alarm_id=200 alarm_comment=test```
 
 #### Human Readable Output
@@ -172,6 +185,7 @@ There is no context output for this command.
 >Comment added successfully to the alarm 200.
 
 ### lr-alarm-history-list
+
 ***
 Gets the alarm history details by ID and filter criteria.
 
@@ -179,6 +193,7 @@ Gets the alarm history details by ID and filter criteria.
 #### Base Command
 
 `lr-alarm-history-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -203,9 +218,11 @@ Gets the alarm history details by ID and filter criteria.
 
 
 #### Command Example
+
 ```!lr-alarm-history-list alarm_id=200 type=status```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -316,6 +333,7 @@ Gets the alarm history details by ID and filter criteria.
 #### Human Readable Output
 
 >### History for alarm 200
+>
 >|Alarm Id|Comments|Date Inserted|Date Updated|Person Id|
 >|---|---|---|---|---|
 >| 200 | Changed status to: Closed | 2021-10-30T20:16:33.673 | 2021-10-30T20:16:33.673 | 1 |
@@ -335,6 +353,7 @@ Gets the alarm history details by ID and filter criteria.
 
 
 ### lr-alarm-events-list
+
 ***
 Gets a list of events for the specified alarm ID.
 Note: Currently, this command does not work as expected on LogRhythm's side. It always returns a list of one item, even if the given alarm ID is associated with more than one event.
@@ -343,6 +362,7 @@ Note: Currently, this command does not work as expected on LogRhythm's side. It 
 #### Base Command
 
 `lr-alarm-events-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -503,9 +523,11 @@ Note: Currently, this command does not work as expected on LogRhythm's side. It 
 
 
 #### Command Example
+
 ```!lr-alarm-events-list alarm_id=200```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -680,12 +702,14 @@ Note: Currently, this command does not work as expected on LogRhythm's side. It 
 #### Human Readable Output
 
 >### Events for alarm 200
+>
 >|Common Event Name|Log Message|Priority|Log Date|Impacted Host Id|Impacted Zone|Service Name||Entity Name|Classification Name|Classification Type Name|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| LogRhythm Agent Heartbeat Missed | A heartbeat message from the LogRhythm System Monitor Agent service was not received in the allotted time. | 100 | 2021-08-18T13:05:59.477 | 3 | Internal | LogRhythm Agent |  | EchoTestEntity | Error | Operations |
 
 
 ### lr-alarm-summary
+
 ***
 Get the alarm summary by the specified alarm ID.
 
@@ -693,6 +717,7 @@ Get the alarm summary by the specified alarm ID.
 #### Base Command
 
 `lr-alarm-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -729,9 +754,11 @@ Get the alarm summary by the specified alarm ID.
 
 
 #### Command Example
+
 ```!lr-alarm-summary alarm_id=200```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -770,16 +797,20 @@ Get the alarm summary by the specified alarm ID.
 #### Human Readable Output
 
 >### Alarm summary
+>
 >|Additional Details|Alarm Id|Alarm Rule Group|Alarm Rule Id|Brief Description|Date Inserted|Rbp Avg|Rbp Max|
 >|---|---|---|---|---|---|---|---|
 >| Action:<br/>1.  Use LogRhythm to analyze and collect all information regarding the alarm, related events/logs, and surrounding logs from affected sources. <br/>2.  Check System Monitor service health (try restarting). <br/>3.  Check network connectivity between Agent and Mediator. <br/>4.  Check scsm.log for errors. <br/>5.  If the steps above do not provide a solution or if you require assistance, please contact LogRhythm Support. | 200 | LogRhythm Diagnostics | 98 | Alarms on the occurrence of a LogRhythm Agent Heartbeat Missed event which could indicate a LogRhythm Agent going down. | 2021-08-18T13:05:59.683 | 100 | 100 |
+>
 >### Alarm event summary
+>
 >|Common Event Id|Common Event Name|Impacted Entity Name|Impacted Host Id|Impacted User|Impacted User Identity Id|Impacted User Identity Name|Msg Class Id|Msg Class Name|Origin Entity Name|Origin Host Id|Origin User|Origin User Identity Id|Origin User Identity Name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| -1100003 | LogRhythm Agent Heartbeat Missed | EchoTestEntity | 3 |  |  |  | 3200 | Error | EchoTestEntity | 3 |  |  |  |
 
 
 ### lr-alarm-drilldown
+
 ***
 Gets the drill-down logs per rule block for a specific alarm Id that fired associated with an AIE alarm.
 
@@ -787,6 +818,7 @@ Gets the drill-down logs per rule block for a specific alarm Id that fired assoc
 #### Base Command
 
 `lr-alarm-drilldown`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -826,6 +858,7 @@ Gets the drill-down logs per rule block for a specific alarm Id that fired assoc
 
 
 ### lr-get-alarm-details
+
 ***
 Get the details of an alarm by the specified alarm ID.
 
@@ -833,6 +866,7 @@ Get the details of an alarm by the specified alarm ID.
 #### Base Command
 
 `lr-get-alarm-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -868,6 +902,7 @@ Get the details of an alarm by the specified alarm ID.
 | LogRhythm.AlarmDetails.alarmDataCached | String | The cached alarm data. | 
 
 ### lr-cases-list
+
 ***
 Get cases details using filter criteria.
 
@@ -875,6 +910,7 @@ Get cases details using filter criteria.
 #### Base Command
 
 `lr-cases-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -930,9 +966,11 @@ Get cases details using filter criteria.
 
 
 #### Command Example
+
 ```!lr-cases-list priority=5```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -1407,6 +1445,7 @@ Get cases details using filter criteria.
 #### Human Readable Output
 
 >### Cases
+>
 >|Collaborators|Date Closed|Date Created|Date Updated|Due Date|Entity|External Id|Id|Last Updated By|Name|Number|Owner|Priority|Resolution|Resolution Date Updated|Resolution Last Updated By|Status|Summary|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-08-11T14:10:08.617291Z | 2021-08-31T15:18:26.8118901Z | 2021-08-12T14:10:08.617291Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity |  | B055F3D5-6F49-4D94-AEF1-FAEDC4A25251 | number: 1<br/>name: LR Soap API<br/>disabled: false | test case | 4 | number: 1<br/>name: LR Soap API<br/>disabled: false | 5 |  |  |  | name: Incident<br/>number: 3 |  |  |
@@ -1423,6 +1462,7 @@ Get cases details using filter criteria.
 
 
 ### lr-case-create
+
 ***
 Create a new case.
 
@@ -1430,6 +1470,7 @@ Create a new case.
 #### Base Command
 
 `lr-case-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1477,9 +1518,11 @@ Create a new case.
 
 
 #### Command Example
+
 ```!lr-case-create name=test priority=1 external_id=8200 summary=`test case````
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -1532,12 +1575,14 @@ Create a new case.
 #### Human Readable Output
 
 >### Case created successfully
+>
 >|Collaborators|Date Closed|Date Created|Date Updated|Due Date|Entity|External Id|Id|Last Updated By|Name|Number|Owner|Priority|Resolution|Resolution Date Updated|Resolution Last Updated By|Status|Summary|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-10-30T20:33:44.6636405Z | 2021-10-30T20:33:44.6636405Z | 2021-10-31T20:33:44.6636405Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity | 8200 | 83E66AB6-5F9A-441E-BF96-52CA53E20BEA | number: 1<br/>name: LR Soap API<br/>disabled: false | test | 98 | number: 1<br/>name: LR Soap API<br/>disabled: false | 1 |  |  |  | name: Created<br/>number: 1 | test case |  |
 
 
 ### lr-case-update
+
 ***
 Update case information. For example, the case name, priority, and due date.
 
@@ -1545,6 +1590,7 @@ Update case information. For example, the case name, priority, and due date.
 #### Base Command
 
 `lr-case-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1595,9 +1641,11 @@ Update case information. For example, the case name, priority, and due date.
 
 
 #### Command Example
+
 ```!lr-case-update case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE priority=3```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -1650,12 +1698,14 @@ Update case information. For example, the case name, priority, and due date.
 #### Human Readable Output
 
 >### Case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE updated successfully
+>
 >|Collaborators|Date Closed|Date Created|Date Updated|Due Date|Entity|External Id|Id|Last Updated By|Name|Number|Owner|Priority|Resolution|Resolution Date Updated|Resolution Last Updated By|Status|Summary|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-08-19T15:38:07.8995494Z | 2021-08-31T15:31:24.9870972Z | 2021-08-20T15:38:07.8995494Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity | 9930 | 2E7FA20D-191E-4733-B7DC-A18BBFE762CE | number: 1<br/>name: LR Soap API<br/>disabled: false | test | 17 | number: 1<br/>name: LR Soap API<br/>disabled: false | 3 |  |  |  | name: Incident<br/>number: 3 | test case |  |
 
 
 ### lr-case-status-change
+
 ***
 Update the status of a case.
 
@@ -1663,6 +1713,7 @@ Update the status of a case.
 #### Base Command
 
 `lr-case-status-change`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1707,9 +1758,11 @@ Update the status of a case.
 
 
 #### Command Example
+
 ```!lr-case-status-change case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE status=Incident```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -1762,12 +1815,14 @@ Update the status of a case.
 #### Human Readable Output
 
 >### Case status updated successfully
+>
 >|Collaborators|Date Closed|Date Created|Date Updated|Due Date|Entity|External Id|Id|Last Updated By|Name|Number|Owner|Priority|Resolution|Resolution Date Updated|Resolution Last Updated By|Status|Summary|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-08-19T15:38:07.8995494Z | 2021-08-31T15:31:24.9870972Z | 2021-08-20T15:38:07.8995494Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity | 9930 | 2E7FA20D-191E-4733-B7DC-A18BBFE762CE | number: 1<br/>name: LR Soap API<br/>disabled: false | test | 17 | number: 1<br/>name: LR Soap API<br/>disabled: false | 3 |  |  |  | name: Incident<br/>number: 3 | test case |  |
 
 
 ### lr-case-evidence-list
+
 ***
 Return a list of evidence summaries for a case.
 
@@ -1775,6 +1830,7 @@ Return a list of evidence summaries for a case.
 #### Base Command
 
 `lr-case-evidence-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1808,9 +1864,11 @@ Return a list of evidence summaries for a case.
 
 
 #### Command Example
+
 ```!lr-case-evidence-list case_id=583A7DAA-872A-4ECE-80B8-0DECB6FC3061```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -1909,6 +1967,7 @@ Return a list of evidence summaries for a case.
 #### Human Readable Output
 
 >### Evidences for case 583A7DAA-872A-4ECE-80B8-0DECB6FC3061
+>
 >|Number|Type|Status|Date Created|Created By|Text|Alarm|File|
 >|---|---|---|---|---|---|---|---|
 >| 58 | alarm | completed | 2021-08-19T14:21:01.7066667Z | number: -100<br/>name: LogRhythm Administrator<br/>disabled: false |  | alarmId: 212<br/>alarmDate: 2021-08-19T13:08:08.713Z<br/>alarmRuleId: 98<br/>alarmRuleName: LogRhythm Agent Heartbeat Missed<br/>dateInserted: 2021-08-19T13:08:08.727Z<br/>entityId: 2<br/>entityName: EchoTestEntity<br/>riskBasedPriorityMax: 39 |  |
@@ -1917,6 +1976,7 @@ Return a list of evidence summaries for a case.
 
 
 ### lr-case-alarm-evidence-add
+
 ***
 Add multiple alarms as evidence on a case.
 
@@ -1924,6 +1984,7 @@ Add multiple alarms as evidence on a case.
 #### Base Command
 
 `lr-case-alarm-evidence-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1963,9 +2024,11 @@ Add multiple alarms as evidence on a case.
 
 
 #### Command Example
+
 ```!lr-case-alarm-evidence-add case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE alarm_numbers=200,201```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2043,6 +2106,7 @@ Add multiple alarms as evidence on a case.
 #### Human Readable Output
 
 >### Alarms added as evidence to case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE successfully
+>
 >|Number|Type|Status|Date Created|Created By|Text|Alarm|File|
 >|---|---|---|---|---|---|---|---|
 >| 62 | alarm | completed | 2021-08-19T15:41:35.54Z | number: 1<br/>name: LR Soap API<br/>disabled: false |  | alarmId: 200<br/>alarmDate: 2021-08-18T13:05:59.663Z<br/>alarmRuleId: 98<br/>alarmRuleName: LogRhythm Agent Heartbeat Missed<br/>dateInserted: 2021-08-18T13:05:59.683Z<br/>entityId: 2<br/>entityName: EchoTestEntity<br/>riskBasedPriorityMax: 100 |  |
@@ -2050,6 +2114,7 @@ Add multiple alarms as evidence on a case.
 
 
 ### lr-case-note-evidence-add
+
 ***
 Add a note as evidence on a case.
 
@@ -2057,6 +2122,7 @@ Add a note as evidence on a case.
 #### Base Command
 
 `lr-case-note-evidence-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2088,9 +2154,11 @@ Add a note as evidence on a case.
 
 
 #### Command Example
+
 ```!lr-case-note-evidence-add case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE note=test```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2127,12 +2195,14 @@ Add a note as evidence on a case.
 #### Human Readable Output
 
 >### Note added as evidence to case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE successfully
+>
 >|Number|Type|Status|Date Created|Created By|Text|Alarm|File|
 >|---|---|---|---|---|---|---|---|
 >| 243 | note | completed | 2021-10-30T20:17:09.2251906Z | number: 1<br/>name: LR Soap API<br/>disabled: false | test |  |  |
 
 
 ### lr-case-file-evidence-add
+
 ***
 Upload a file as evidence on a case.
 
@@ -2140,6 +2210,7 @@ Upload a file as evidence on a case.
 #### Base Command
 
 `lr-case-file-evidence-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2171,9 +2242,11 @@ Upload a file as evidence on a case.
 
 
 #### Command Example
+
 ```!lr-case-file-evidence-add case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE entryId=8502@383ed6ae-1fd7-431a-858d-a11f2620c73b```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2214,12 +2287,14 @@ Upload a file as evidence on a case.
 #### Human Readable Output
 
 >### File added as evidence to case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE successfully
+>
 >|Number|Type|Status|Date Created|Created By|Text|Alarm|File|
 >|---|---|---|---|---|---|---|---|
 >| 244 | file | pending | 2021-10-30T20:33:46.8Z | number: 1<br/>name: LR Soap API<br/>disabled: false |  |  | name: File.jpeg<br/>size: 170781 |
 
 
 ### lr-case-evidence-delete
+
 ***
 Remove evidence from a case.
 
@@ -2227,6 +2302,7 @@ Remove evidence from a case.
 #### Base Command
 
 `lr-case-evidence-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2240,6 +2316,7 @@ Remove evidence from a case.
 There is no context output for this command.
 
 #### Command Example
+
 ```!lr-case-evidence-delete case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE evidence_number=65```
 
 #### Human Readable Output
@@ -2247,6 +2324,7 @@ There is no context output for this command.
 >Evidence deleted successfully from case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE.
 
 ### lr-case-file-evidence-download
+
 ***
 Download an item of file evidence from a case.
 
@@ -2254,6 +2332,7 @@ Download an item of file evidence from a case.
 #### Base Command
 
 `lr-case-file-evidence-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2267,9 +2346,11 @@ Download an item of file evidence from a case.
 There is no context output for this command.
 
 #### Command Example
+
 ```!lr-case-file-evidence-download case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE evidence_number=66```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -2293,6 +2374,7 @@ There is no context output for this command.
 
 
 ### lr-case-tags-add
+
 ***
 Add tags to a case.
 
@@ -2300,6 +2382,7 @@ Add tags to a case.
 #### Base Command
 
 `lr-case-tags-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2344,9 +2427,11 @@ Add tags to a case.
 
 
 #### Command Example
+
 ```!lr-case-tags-add case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE tag_numbers=2,3```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2408,12 +2493,14 @@ Add tags to a case.
 #### Human Readable Output
 
 >### Tags added successfully to case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE
+>
 >|Collaborators|Date Closed|Date Created|Date Updated|Due Date|Entity|External Id|Id|Last Updated By|Name|Number|Owner|Priority|Resolution|Resolution Date Updated|Resolution Last Updated By|Status|Summary|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-08-19T15:38:07.8995494Z | 2021-10-30T20:17:15.9861818Z | 2021-08-20T15:38:07.8995494Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity | 9930 | 2E7FA20D-191E-4733-B7DC-A18BBFE762CE | number: 1<br/>name: LR Soap API<br/>disabled: false | test | 17 | number: 1<br/>name: LR Soap API<br/>disabled: false | 3 |  |  |  | name: Incident<br/>number: 3 | test case | {'number': 2, 'text': 'tag #2'},<br/>{'number': 3, 'text': 'tag #3'} |
 
 
 ### lr-case-tags-remove
+
 ***
 Remove tags from a case.
 
@@ -2421,6 +2508,7 @@ Remove tags from a case.
 #### Base Command
 
 `lr-case-tags-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2465,9 +2553,11 @@ Remove tags from a case.
 
 
 #### Command Example
+
 ```!lr-case-tags-remove case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE tag_numbers=1,2```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2525,12 +2615,14 @@ Remove tags from a case.
 #### Human Readable Output
 
 >### Tags removed successfully from case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE
+>
 >|Collaborators|Date Closed|Date Created|Date Updated|Due Date|Entity|External Id|Id|Last Updated By|Name|Number|Owner|Priority|Resolution|Resolution Date Updated|Resolution Last Updated By|Status|Summary|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-08-19T15:38:07.8995494Z | 2021-10-30T20:17:17.3901952Z | 2021-08-20T15:38:07.8995494Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity | 9930 | 2E7FA20D-191E-4733-B7DC-A18BBFE762CE | number: 1<br/>name: LR Soap API<br/>disabled: false | test | 17 | number: 1<br/>name: LR Soap API<br/>disabled: false | 3 |  |  |  | name: Incident<br/>number: 3 | test case | {'number': 3, 'text': 'tag #3'} |
 
 
 ### lr-tags-list
+
 ***
 Return a list of tags using filter criteria.
 
@@ -2538,6 +2630,7 @@ Return a list of tags using filter criteria.
 #### Base Command
 
 `lr-tags-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2560,9 +2653,11 @@ Return a list of tags using filter criteria.
 
 
 #### Command Example
+
 ```!lr-tags-list count=2```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2595,6 +2690,7 @@ Return a list of tags using filter criteria.
 #### Human Readable Output
 
 >### Tags
+>
 >|Number|Text|Date Created|Created By|
 >|---|---|---|---|
 >| 2 | tag #2 | 2021-08-11T13:44:00.4433333Z | number: 1<br/>name: LR Soap API<br/>disabled: false |
@@ -2602,6 +2698,7 @@ Return a list of tags using filter criteria.
 
 
 ### lr-case-collaborators-list
+
 ***
 Returns the owner and a list of collaborators associated with a specific case.
 
@@ -2609,6 +2706,7 @@ Returns the owner and a list of collaborators associated with a specific case.
 #### Base Command
 
 `lr-case-collaborators-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2630,9 +2728,11 @@ Returns the owner and a list of collaborators associated with a specific case.
 
 
 #### Command Example
+
 ```!lr-case-collaborators-list case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2658,16 +2758,20 @@ Returns the owner and a list of collaborators associated with a specific case.
 #### Human Readable Output
 
 >### Case owner
+>
 >|Disabled|Name|Number|
 >|---|---|---|
 >| false | LR Soap API | 1 |
+>
 >### Case collaborators
+>
 >|Disabled|Name|Number|
 >|---|---|---|
 >| false | LR Soap API | 1 |
 
 
 ### lr-case-collaborators-update
+
 ***
 Updates the owner and collaborators associated with a specific case.
 
@@ -2675,6 +2779,7 @@ Updates the owner and collaborators associated with a specific case.
 #### Base Command
 
 `lr-case-collaborators-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2698,9 +2803,11 @@ Updates the owner and collaborators associated with a specific case.
 
 
 #### Command Example
+
 ```!lr-case-collaborators-update case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE collaborators=1 owner=1```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2726,17 +2833,22 @@ Updates the owner and collaborators associated with a specific case.
 #### Human Readable Output
 
 >### Case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE updated successfully
+>
 >### Case owner
+>
 >|Disabled|Name|Number|
 >|---|---|---|
 >| false | LR Soap API | 1 |
+>
 >### Case collaborators
+>
 >|Disabled|Name|Number|
 >|---|---|---|
 >| false | LR Soap API | 1 |
 
 
 ### lr-entities-list
+
 ***
 Returns all Entities that match the specified criteria.
 
@@ -2744,6 +2856,7 @@ Returns all Entities that match the specified criteria.
 #### Base Command
 
 `lr-entities-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2767,9 +2880,11 @@ Returns all Entities that match the specified criteria.
 
 
 #### Command Example
+
 ```!lr-entities-list count=2```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2798,6 +2913,7 @@ Returns all Entities that match the specified criteria.
 #### Human Readable Output
 
 >### Entities
+>
 >|Id|Name|Full Name|Record Status Name|Short Desc|Date Updated|
 >|---|---|---|---|---|---|
 >| 2 | EchoTestEntity | EchoTestEntity | Active | LogRhythm ECHO | 2021-10-12T14:01:21.54Z |
@@ -2805,6 +2921,7 @@ Returns all Entities that match the specified criteria.
 
 
 ### lr-hosts-list
+
 ***
 Returns all hosts that match the specified criteria.
 
@@ -2812,6 +2929,7 @@ Returns all hosts that match the specified criteria.
 #### Base Command
 
 `lr-hosts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2851,9 +2969,11 @@ Returns all hosts that match the specified criteria.
 
 
 #### Command Example
+
 ```!lr-hosts-list count=2```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2910,6 +3030,7 @@ Returns all hosts that match the specified criteria.
 #### Human Readable Output
 
 >### Hosts
+>
 >|Date Updated|Entity|Host Identifiers|Host Roles|Host Zone|Id|Location|Name|Os|Os Type|Record Status Name|Risk Level|Threat Level|Threat Level Comments|Use Eventlog Credentials|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2021-07-27T15:56:14.34Z | id: -100<br/>name: Global Entity |  |  | Internal | -1000001 | id: -1 | AI Engine Server | Unknown | Server | Active | None | None |  | false |
@@ -2917,6 +3038,7 @@ Returns all hosts that match the specified criteria.
 
 
 ### lr-users-list
+
 ***
 Returns user records based on the permissions of the currently logged in user and the specified criteria.
 
@@ -2924,6 +3046,7 @@ Returns user records based on the permissions of the currently logged in user an
 #### Base Command
 
 `lr-users-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2955,9 +3078,11 @@ Returns user records based on the permissions of the currently logged in user an
 
 
 #### Command Example
+
 ```!lr-users-list count=2```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -3012,6 +3137,7 @@ Returns user records based on the permissions of the currently logged in user an
 #### Human Readable Output
 
 >### Users
+>
 >|Id|Full Name|User Type|First Name|Last Name|Record Status Name|Date Updated|Object Permissions|
 >|---|---|---|---|---|---|---|---|
 >| 1 | LR Soap API | Role |  |  | Active | 2021-07-27T20:38:31.443Z | readAccess: PublicGlobalAdmin<br/>writeAccess: PublicGlobalAdmin<br/>entity: {"id": 1, "name": "Primary Site"}<br/>owner: {"id": -100, "name": "LogRhythmAdmin"} |
@@ -3019,6 +3145,7 @@ Returns user records based on the permissions of the currently logged in user an
 
 
 ### lr-lists-get
+
 ***
 Returns list details using the filter criteria.
 
@@ -3026,6 +3153,7 @@ Returns list details using the filter criteria.
 #### Base Command
 
 `lr-lists-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3065,9 +3193,11 @@ Returns list details using the filter criteria.
 
 
 #### Command Example
+
 ```!lr-lists-get```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -4886,6 +5016,7 @@ Returns list details using the filter criteria.
 #### Human Readable Output
 
 >### Lists
+>
 >|Guid|Name|List Type|Status|Short Description|Id|Entity Name|Date Created|Owner|Write Access|Read Access|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| B1E34445-2693-411E-8BE2-9B97AFFF20A9 | Windows System32 Hashes | GeneralValue | Active | Hashes of executables in the %systemroot%\system32 directory. Use Case: Masquerading technique in MITRE ATT&CK -1000130 | Global Entity | 2019-11-05T04:11:38.303Z | -1000000 | PublicGlobalAdmin | PublicAll |
@@ -4961,6 +5092,7 @@ Returns list details using the filter criteria.
 
 
 ### lr-list-summary-create-update
+
 ***
 Updates a list summary based on the GUID and other required details. Searches the system for existing list summaries by GUID. Creates a new list summary if the GUID does not exist. Otherwise, updates the list summary.
 
@@ -4968,6 +5100,7 @@ Updates a list summary based on the GUID and other required details. Searches th
 #### Base Command
 
 `lr-list-summary-create-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5012,9 +5145,11 @@ Updates a list summary based on the GUID and other required details. Searches th
 
 
 #### Command Example
+
 ```!lr-list-summary-create-update does_expire=false enabled=true entity_name=`Global Entity` list_type=User name=test1 need_to_notify=false read_access=Private replace_existing=false restricted_read=false use_patterns=false write_access=Private owner=1```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -5050,12 +5185,14 @@ Updates a list summary based on the GUID and other required details. Searches th
 #### Human Readable Output
 
 >### List created successfully
+>
 >|Guid|Name|List Type|Status|Short Description|Id|Entity Name|Date Created|Owner|Write Access|Read Access|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 4BC51B20-640B-4F58-A448-A5C8A52161D2 | test1 | User | Active |  | 2044 | Global Entity | 2021-10-30T20:17:42.433Z | 1 | Private | Private |
 
 
 ### lr-list-details-and-items-get
+
 ***
 Returns list details and list items based on the list GUID.
 
@@ -5063,6 +5200,7 @@ Returns list details and list items based on the list GUID.
 #### Base Command
 
 `lr-list-details-and-items-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5107,9 +5245,11 @@ Returns list details and list items based on the list GUID.
 
 
 #### Command Example
+
 ```!lr-list-details-and-items-get list_guid=EA778B8F-20CA-4413-9A2D-CF69FB536793```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -5169,10 +5309,13 @@ Returns list details and list items based on the list GUID.
 #### Human Readable Output
 
 >### List EA778B8F-20CA-4413-9A2D-CF69FB536793 details
+>
 >|Guid|Name|List Type|Status|Short Description|Id|Entity Name|Date Created|Owner|Write Access|Read Access|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| EA778B8F-20CA-4413-9A2D-CF69FB536793 | test list 2 | Application | Active |  | 2002 | Primary Site | 2021-08-09T05:41:30.443Z | -100 | Private | Private |
+>
 >### List items
+>
 >|Display Value|Expiration Date|Is Expired|Is List Item|Is Pattern|List Item Data Type|List Item Type|Value|
 >|---|---|---|---|---|---|---|---|
 >| 8081,8085 |  | false | false | false | PortRange | PortRange | 8081,8085 |
@@ -5180,6 +5323,7 @@ Returns list details and list items based on the list GUID.
 
 
 ### lr-list-items-add
+
 ***
 Adds more items to an existing list.
 
@@ -5187,6 +5331,7 @@ Adds more items to an existing list.
 #### Base Command
 
 `lr-list-items-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5223,9 +5368,11 @@ Adds more items to an existing list.
 
 
 #### Command Example
+
 ```!lr-list-items-add list_guid=EA778B8F-20CA-4413-9A2D-CF69FB536793 items=`{"listItemDataType": "PortRange","listItemType": "PortRange","value": "200,300","valueAsListReference":{"listType": "Network"}}````
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -5263,12 +5410,14 @@ Adds more items to an existing list.
 #### Human Readable Output
 
 >### The item added to the list EA778B8F-20CA-4413-9A2D-CF69FB536793.
+>
 >|Auto Import Option|Date Created|Date Updated|Does Expire|Entity Name|Entry Count|Guid|Id|List Items Count|List Type|Name|Need To Notify|Owner|Read Access|Restricted Read|Revisit Date|Status|Use Context|Write Access|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| enabled: false<br/>usePatterns: false<br/>replaceExisting: false | 2021-08-09T05:41:30.443Z | 2021-10-30T20:33:48.12Z | false | Primary Site | 3 | EA778B8F-20CA-4413-9A2D-CF69FB536793 | 2002 | 0 | Application | test list 2 | false | -100 | Private | false | 2031-10-30T20:33:48.12Z | Active | None | Private |
 
 
 ### lr-list-items-remove
+
 ***
 Removes items from an existing list.
 
@@ -5276,6 +5425,7 @@ Removes items from an existing list.
 #### Base Command
 
 `lr-list-items-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5312,9 +5462,11 @@ Removes items from an existing list.
 
 
 #### Command Example
+
 ```!lr-list-items-remove list_guid=EA778B8F-20CA-4413-9A2D-CF69FB536793 items=`{"displayValue": "201,301","listItemType": "PortRange","value": "201,301"}````
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -5352,12 +5504,14 @@ Removes items from an existing list.
 #### Human Readable Output
 
 >### The item deleted from the list EA778B8F-20CA-4413-9A2D-CF69FB536793.
+>
 >|Auto Import Option|Date Created|Date Updated|Does Expire|Entity Name|Entry Count|Guid|Id|List Items Count|List Type|Name|Need To Notify|Owner|Read Access|Restricted Read|Revisit Date|Status|Use Context|Write Access|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| enabled: false<br/>usePatterns: false<br/>replaceExisting: false | 2021-08-09T05:41:30.443Z | 2021-10-30T20:33:49.717Z | false | Primary Site | 3 | EA778B8F-20CA-4413-9A2D-CF69FB536793 | 2002 | 0 | Application | test list 2 | false | -100 | Private | false | 2031-10-30T20:33:49.717Z | Active | None | Private |
 
 
 ### lr-execute-search-query
+
 ***
 Execute a search query on the LogRhythm log database.
 
@@ -5365,6 +5519,7 @@ Execute a search query on the LogRhythm log database.
 #### Base Command
 
 `lr-execute-search-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5417,9 +5572,11 @@ Execute a search query on the LogRhythm log database.
 
 
 #### Command Example
+
 ```!lr-execute-search-query number_of_days=5 entity_id=1 host_name=HOSTNAME```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -5438,6 +5595,7 @@ Execute a search query on the LogRhythm log database.
 >New search query created, Task ID=9a5533c6-dc18-46dc-9d9a-3e7461b5ca7a
 
 ### lr-get-query-result
+
 ***
 Get the search query result for the specified task ID. The task ID can be retrieved from the lr-execute-search-query command.
 
@@ -5445,6 +5603,7 @@ Get the search query result for the specified task ID. The task ID can be retrie
 #### Base Command
 
 `lr-get-query-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5479,9 +5638,11 @@ Get the search query result for the specified task ID. The task ID can be retrie
 
 
 #### Command Example
+
 ```!lr-get-query-result task_id=88e1a446-b49d-4197-b599-26d4b3d1d1ac```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -5913,6 +6074,7 @@ Get the search query result for the specified task ID. The task ID can be retrie
 #### Human Readable Output
 
 >### Search results for task 88e1a446-b49d-4197-b599-26d4b3d1d1ac
+>
 >|Action|Classification Id|Classification Name|Classification Type Name|Command|Common Event Id|Common Event Name|Count|Direction|Direction Name|Entity Id|Entity Name|Impacted Entity Id|Impacted Entity Name|Impacted Host|Impacted Host Id|Impacted Host Name|Impacted Zone Name|Indexed Date|Inserted Date|Key Field|Log Date|Log Message|Log Source Host|Log Source Host Id|Log Source Host Name|Log Source Id|Log Source Name|Log Source Type|Log Source Type Name|Message Id|Message Type Enum|Mpe Rule Id|Mpe Rule Name|Normal Date|Normal Date Hour|Normal Date Min|Normal Msg Date Max|Origin Entity Id|Origin Entity Name|Origin Host|Origin Host Id|Origin Host Name|Origin Name|Origin Zone|Origin Zone Name|Priority|Process|Protocol Id|Root Entity Id|Root Entity Name|Service Id|Service Name|Session|Severity|Subject|Vendor Message Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| none | 1020 | Authentication Success | Audit | authorizationsuccess | -1100516 | LogRhythm DX Authorization Success | 1 | 1 | Local | 1 | Primary Site | 1 | Primary Site | HOSTNAME * | 1 | HOSTNAME | Internal | 1635624839736 | 1635624765372 | messageId | 1635624757414 | 2021-10-30 20:12:37.414 CODE=000030 MESSAGE=AuthorizationSuccess HOST=HOSTNAME SEVERITY=Low SERVICENAME=columbo TRIGGEREDWHEN=Data Indexer has granted access to a user or service SUGGESTEDACTION=None ADDITIONALINFO=[Name:[lr-soap-api]][Role:[globalAdmin]][PersonID:[1]][ID:[1af934a9-4a1e-46ac-9201-63d33f884347]][Action:[search]] | HOSTNAME | 1 | HOSTNAME | 16 | LogrhythmDXMonitor | 1000648 | Flat File - LogRhythm Data Indexer Monitor | 209782fc-e20e-4fb1-ae24-834e8aba893f | 1 | 1490984 | Authorization Success | 1635624757437 | 1635624000000 | 1635624757437 | 1635624757437 | 1 | Primary Site | HOSTNAME * | 1 | HOSTNAME | HOSTNAME | 0 | Internal | 22 | data indexer has granted access to a user or service | -1 | 1 | Primary Site | -1000012 | LogRhythm Data Indexer | columbo | low | none | 000030 |
@@ -5925,6 +6087,7 @@ Get the search query result for the specified task ID. The task ID can be retrie
 
 
 ### lr-add-host
+
 ***
 Add a new host to an entity.
 
@@ -5932,6 +6095,7 @@ Add a new host to an entity.
 #### Base Command
 
 `lr-add-host`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5972,9 +6136,11 @@ Add a new host to an entity.
 
 
 #### Command Example
+
 ```!lr-add-host entity-name=`Global Entity` host-status=Retired host-zone=DMZ name=test_host223322 os=AIX risk-level="High-High" use-eventlog-credentials=false```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -6005,12 +6171,14 @@ Add a new host to an entity.
 #### Human Readable Output
 
 >### Host added successfully
+>
 >|Date Updated|Entity|Host Zone|Id|Location|Name|Os|Os Type|Record Status Name|Risk Level|Threat Level|Threat Level Comments|Use Eventlog Credentials|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2021-10-30T20:33:51.01Z | id: -100<br/>name: Global Entity | DMZ | 9 | id: -1 | test_host223322 | AIX | Server | Retired | High-High | None |  | false |
 
 
 ### endpoint
+
 ***
 Returns information about an endpoint.
 
@@ -6018,6 +6186,7 @@ Returns information about an endpoint.
 #### Base Command
 
 `endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6035,9 +6204,11 @@ Returns information about an endpoint.
 | Endpoint.ID | String | The endpoint's ID. | 
 
 #### Command Example
+
 ```!endpoint hostname=HOSTNAME```
 
 #### Context Example
+
 ```json
 {
     "Endpoint": {
@@ -6053,12 +6224,14 @@ Returns information about an endpoint.
 #### Human Readable Output
 
 >### Logrhythm endpoint
+>
 >|Date Updated|Entity|Host Identifiers|Host Roles|Host Zone|Id|Location|Name|Os|Os Type|Os Version|Record Status Name|Risk Level|Short Desc|Threat Level|Threat Level Comments|Use Eventlog Credentials|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2021-07-29T14:55:16.427Z | id: 1<br/>name: Primary Site | {'type': 'WindowsName', 'value': 'HOSTNAME', 'dateAssigned': '2021-07-27T15:55:40.717Z'},<br/>{'type': 'IPAddress', 'value': '127.0.0.1', 'dateAssigned': '2021-07-27T15:55:40.717Z'} |  | Internal | 1 | id: -1 | HOSTNAME | Windows | Server | Microsoft Windows NT 10.0.17763.0 | Active | Medium-Medium | This is the LogRhythm Platform Manager host. | None |  | false |
 
 
 ### lr-hosts-status-update
+
 ***
 Updates the status of a host to retire or active.
 
@@ -6066,6 +6239,7 @@ Updates the status of a host to retire or active.
 #### Base Command
 
 `lr-hosts-status-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6079,6 +6253,7 @@ Updates the status of a host to retire or active.
 There is no context output for this command.
 
 #### Command Example
+
 ```!lr-hosts-status-update host_id=7 host_status=Active```
 
 #### Human Readable Output
@@ -6086,6 +6261,7 @@ There is no context output for this command.
 >Host status updated successfully to Active.
 
 ### lr-networks-list
+
 ***
 Returns all networks that match the specified criteria.
 
@@ -6093,6 +6269,7 @@ Returns all networks that match the specified criteria.
 #### Base Command
 
 `lr-networks-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6129,9 +6306,11 @@ Returns all networks that match the specified criteria.
 
 
 #### Command Example
+
 ```!lr-networks-list count=2```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -6188,6 +6367,7 @@ Returns all networks that match the specified criteria.
 #### Human Readable Output
 
 >### Networks
+>
 >|Id|Name|Short Desc|Long Desc|Record Status Name|Bip|Eip|Entity|Risk Level|Date Updated|Threat Level|Threat Level Comment|Host Zone|Location|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | Test network | This is a test network | This is a test network | Active | 1.1.1.1 | 2.2.2.2 | id: -100<br/>name: Global Entity | None | 2021-10-12T13:48:43.133Z | None | string | Internal | id: 1<br/>name: Andorra |
@@ -6195,61 +6375,70 @@ Returns all networks that match the specified criteria.
 
 
 ## Breaking changes from the previous version of this integration - LogRhythmRest v2
+
 The following sections list the changes in this version.
 
 ### Commands
+
 #### The following commands were removed in this version:
-* *lr-execute-query*
-* *lr-get-persons*
-* *lr-get-logins*
-* *lr-get-privileges*
-* *lr-get-profiles*
-* *lr-add-login*
-* *lr-add-user*
-* *lr-get-hosts-by-entity* - this command was replaced by *lr-hosts-list*.
-* *lr-update-host-status* - this command was replaced by *lr-hosts-status-update*.
-* *lr-get-networks* - this command was replaced by *lr-networks-list*.
-* *lr-get-hosts* - this command was replaced by *lr-hosts-list*.
-* *lr-get-alarm-data* - this command was replaced by *lr-alarms-list*.
-* *lr-get-alarm-events* - this command was replaced by *lr-alarm-events-list*.
-* *lr-get-case-evidence* - this command was replaced by *lr-case-evidence-list*.
-* *lr-get-users* - this command was replaced by *lr-users-list*.
+
+* _lr-execute-query_
+* _lr-get-persons_
+* _lr-get-logins_
+* _lr-get-privileges_
+* _lr-get-profiles_
+* _lr-add-login_
+* _lr-add-user_
+* _lr-get-hosts-by-entity_ - this command was replaced by _lr-hosts-list_.
+* _lr-update-host-status_ - this command was replaced by _lr-hosts-status-update_.
+* _lr-get-networks_ - this command was replaced by _lr-networks-list_.
+* _lr-get-hosts_ - this command was replaced by _lr-hosts-list_.
+* _lr-get-alarm-data_ - this command was replaced by _lr-alarms-list_.
+* _lr-get-alarm-events_ - this command was replaced by _lr-alarm-events-list_.
+* _lr-get-case-evidence_ - this command was replaced by _lr-case-evidence-list_.
+* _lr-get-users_ - this command was replaced by _lr-users-list_.
 
 
 ### Arguments
+
 #### The following arguments were removed in this version:
 
-In the *lr-execute-search-query* command:
-* *max_massage* - this argument was replaced by *max_message*.
+In the _lr-execute-search-query_ command:
+
+* _max_massage_ - this argument was replaced by _max_message_.
 
 ### Outputs
+
 #### The following outputs were removed in this version:
 
-In the *lr-add-host* command:
-* *Logrhythm.Host.EntityId* - this output was replaced by *LogRhythm.Host.entity.id*.
-* *Logrhythm.Host.EntityName* - this output was replaced by *LogRhythm.Host.entity.name*.
-* *Logrhythm.Host.Status* - this output was replaced by *LogRhythm.Host.recordStatusName*.
+In the _lr-add-host_ command:
 
-In the *lr-get-query-result* command:
-* *Logrhythm.Search.Results.TaskStatus* - this output was replaced by *LogRhythm.Search.TaskStatus*.
-* *Logrhythm.Search.Results.TaskID* - this output was replaced by *LogRhythm.Search.TaskId*.
-* *Logrhythm.Search.Results.Items.originEntityId* - this output was replaced by *LogRhythm.Search.Results.originEntityId*.
-* *Logrhythm.Search.Results.Items.impactedIp* - this output was replaced by *LogRhythm.Search.Results.impactedIp*.
-* *Logrhythm.Search.Results.Items.classificationTypeName* - this output was replaced by *LogRhythm.Search.Results.classificationTypeName*.
-* *Logrhythm.Search.Results.Items.logSourceName* - this output was replaced by *LogRhythm.Search.Results.logSourceName*.
-* *Logrhythm.Search.Results.Items.entityName* - this output was replaced by *LogRhythm.Search.Results.entityName*.
-* *Logrhythm.Search.Results.Items.normalDate* - this output was replaced by *LogRhythm.Search.Results.normalDate*.
-* *Logrhythm.Search.Results.Items.vendorMessageId* - this output was replaced by *LogRhythm.Search.Results.vendorMessageId*.
-* *Logrhythm.Search.Results.Items.priority* - this output was replaced by *LogRhythm.Search.Results.priority*.
-* *Logrhythm.Search.Results.Items.sequenceNumber* - this output was replaced by *LogRhythm.Search.Results.sequenceNumber*.
-* *Logrhythm.Search.Results.Items.originHostId* - this output was replaced by *LogRhythm.Search.Results.originHostId*.
-* *Logrhythm.Search.Results.Items.mpeRuleId* - this output was replaced by *LogRhythm.Search.Results.mpeRuleId*.
-* *Logrhythm.Search.Results.Items.originIp* - this output was replaced by *LogRhythm.Search.Results.originIp*.
-* *Logrhythm.Search.Results.Items.mpeRuleName* - this output was replaced by *LogRhythm.Search.Results.mpeRuleName*.
-* *Logrhythm.Search.Results.Items.logSourceHostId* - this output was replaced by *LogRhythm.Search.Results.logSourceHostId*.
-* *Logrhythm.Search.Results.Items.originHost* - this output was replaced by *LogRhythm.Search.Results.originHost*.
-* *Logrhythm.Search.Results.Items.logDate* - this output was replaced by *LogRhythm.Search.Results.logDate*.
-* *Logrhythm.Search.Results.Items.classificationName* - this output was replaced by *LogRhythm.Search.Results.classificationName*.
+* _Logrhythm.Host.EntityId_ - this output was replaced by _LogRhythm.Host.entity.id_.
+* _Logrhythm.Host.EntityName_ - this output was replaced by _LogRhythm.Host.entity.name_.
+* _Logrhythm.Host.Status_ - this output was replaced by _LogRhythm.Host.recordStatusName_.
 
-In the *lr-execute-search-query* command:
-* *Logrhythm.Search.Task.TaskID* - this output was replaced by *LogRhythm.Search.TaskId*.
+In the _lr-get-query-result_ command:
+
+* _Logrhythm.Search.Results.TaskStatus_ - this output was replaced by _LogRhythm.Search.TaskStatus_.
+* _Logrhythm.Search.Results.TaskID_ - this output was replaced by _LogRhythm.Search.TaskId_.
+* _Logrhythm.Search.Results.Items.originEntityId_ - this output was replaced by _LogRhythm.Search.Results.originEntityId_.
+* _Logrhythm.Search.Results.Items.impactedIp_ - this output was replaced by _LogRhythm.Search.Results.impactedIp_.
+* _Logrhythm.Search.Results.Items.classificationTypeName_ - this output was replaced by _LogRhythm.Search.Results.classificationTypeName_.
+* _Logrhythm.Search.Results.Items.logSourceName_ - this output was replaced by _LogRhythm.Search.Results.logSourceName_.
+* _Logrhythm.Search.Results.Items.entityName_ - this output was replaced by _LogRhythm.Search.Results.entityName_.
+* _Logrhythm.Search.Results.Items.normalDate_ - this output was replaced by _LogRhythm.Search.Results.normalDate_.
+* _Logrhythm.Search.Results.Items.vendorMessageId_ - this output was replaced by _LogRhythm.Search.Results.vendorMessageId_.
+* _Logrhythm.Search.Results.Items.priority_ - this output was replaced by _LogRhythm.Search.Results.priority_.
+* _Logrhythm.Search.Results.Items.sequenceNumber_ - this output was replaced by _LogRhythm.Search.Results.sequenceNumber_.
+* _Logrhythm.Search.Results.Items.originHostId_ - this output was replaced by _LogRhythm.Search.Results.originHostId_.
+* _Logrhythm.Search.Results.Items.mpeRuleId_ - this output was replaced by _LogRhythm.Search.Results.mpeRuleId_.
+* _Logrhythm.Search.Results.Items.originIp_ - this output was replaced by _LogRhythm.Search.Results.originIp_.
+* _Logrhythm.Search.Results.Items.mpeRuleName_ - this output was replaced by _LogRhythm.Search.Results.mpeRuleName_.
+* _Logrhythm.Search.Results.Items.logSourceHostId_ - this output was replaced by _LogRhythm.Search.Results.logSourceHostId_.
+* _Logrhythm.Search.Results.Items.originHost_ - this output was replaced by _LogRhythm.Search.Results.originHost_.
+* _Logrhythm.Search.Results.Items.logDate_ - this output was replaced by _LogRhythm.Search.Results.logDate_.
+* _Logrhythm.Search.Results.Items.classificationName_ - this output was replaced by _LogRhythm.Search.Results.classificationName_.
+
+In the _lr-execute-search-query_ command:
+
+* _Logrhythm.Search.Task.TaskID_ - this output was replaced by _LogRhythm.Search.TaskId_.

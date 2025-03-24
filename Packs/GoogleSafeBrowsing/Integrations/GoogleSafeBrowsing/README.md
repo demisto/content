@@ -14,9 +14,12 @@ Search Safe Browsing
 | Trust any certificate (not secure) |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### url
+
 ***
 Check URL Reputation
 
@@ -26,6 +29,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -48,9 +52,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!url url="http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -73,12 +79,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### Google Safe Browsing APIs - URL Query
->#### Found matches for URL http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/
+>
+>#### Found matches for URL <http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/>
+>
 >cacheDuration|platformType|threat|threatEntryType|threatType
 >---|---|---|---|---
->300s | ANY_PLATFORM | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
->300s | WINDOWS | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
->300s | LINUX | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
->300s | ALL_PLATFORMS | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
->300s | OSX | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
->300s | CHROME | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
+>300s | ANY_PLATFORM | {"url":"<http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"}> | URL | MALWARE
+>300s | WINDOWS | {"url":"<http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"}> | URL | MALWARE
+>300s | LINUX | {"url":"<http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"}> | URL | MALWARE
+>300s | ALL_PLATFORMS | {"url":"<http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"}> | URL | MALWARE
+>300s | OSX | {"url":"<http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"}> | URL | MALWARE
+>300s | CHROME | {"url":"<http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"}> | URL | MALWARE

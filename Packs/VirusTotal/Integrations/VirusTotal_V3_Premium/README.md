@@ -4,6 +4,7 @@ The differences between VirusTotal's Public API and Premium API can be found [in
 This integration was integrated and tested with VirusTotal - Premium (API v3)
 
 ## Use Cases
+
 - Fetch live hunt notifications as incidents.
 - Use retro hunt to analyze files with custom YARA rule.
 - Download suspicious files from VirusTotal for further analysis.
@@ -25,29 +26,37 @@ This integration was integrated and tested with VirusTotal - Premium (API v3)
 
 
 ### Acquire API Key 
+
 Your API key can be found in your VirusTotal account user menu.
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
 ## Fetch Incidents
+
 Fetch incidents will fetch livehunt notifications of the given ruleset or identifier. 
 As an example, you can fetch incidents that were created by the CyberGate ruleset by using the "cybergate" tag.
 The scope of the rule-set should be narrowed to catch only indicators that you want to analyze by a playbook.
 Defining a broad rule-set will cause the integration to create multiple redundant incidents.  
 
 ## VirusTotal - Private API compatibility
+
 The following 2 commands appear in both the *VirusTotal - Private API* and *VirusTotal Premium - (API v3)* integrations.
+
 - **vt-private-search-file**
 - **vt-private-download-file**
 - It is recommended to use these commands in the *VirusTotal Premium - (API v3)* integration.   
 - For all other commands, you should use the *VirusTotal - Private API* integration.
 
 ## Report commands alternatives / Enrichment
+
 To enrich indicators, you can use the *VirusTotal (API v3)* integration reputation commands.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### vt-private-download-file
+
 ***
 Downloads file from VirusTotal
 
@@ -55,6 +64,7 @@ Downloads file from VirusTotal
 #### Base Command
 
 `vt-private-download-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -79,9 +89,11 @@ Downloads file from VirusTotal
 
 
 #### Command Example
+
 ```!vt-private-download-file hash=0f555ed56bb78c5511f4e488cd37f24d1425fcfa```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -101,6 +113,7 @@ Downloads file from VirusTotal
 
 
 ### vt-private-zip-create
+
 ***
 Creates a password-protected ZIP file containing files from VirusTotal.
 
@@ -108,6 +121,7 @@ Creates a password-protected ZIP file containing files from VirusTotal.
 #### Base Command
 
 `vt-private-zip-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -130,9 +144,11 @@ Creates a password-protected ZIP file containing files from VirusTotal.
 
 
 #### Command Example
+
 ```!vt-private-zip-create file=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f password=apassword```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -156,12 +172,14 @@ Creates a password-protected ZIP file containing files from VirusTotal.
 #### Human Readable Output
 
 >### The request to create the ZIP was submitted successfully!
+>
 >|id|status|
 >|---|---|
 >| 6268237216776192 | starting |
 
 
 ### vt-private-zip-get
+
 ***
 Retrieve information about a ZIP file.
 
@@ -169,6 +187,7 @@ Retrieve information about a ZIP file.
 #### Base Command
 
 `vt-private-zip-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -190,9 +209,11 @@ Retrieve information about a ZIP file.
 
 
 #### Command Example
+
 ```!vt-private-zip-get zip_id=5548746369433600```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -218,6 +239,7 @@ Retrieve information about a ZIP file.
 >ZIP creation status is "finished"
 
 ### vt-private-zip-download
+
 ***
 Download a ZIP file.
 
@@ -225,6 +247,7 @@ Download a ZIP file.
 #### Base Command
 
 `vt-private-zip-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -249,11 +272,13 @@ Download a ZIP file.
 
 
 #### Command Example
+
 ```!vt-private-zip-download zip_id=5548746369433600```
 
 
 
 ### vt-private-file-sandbox-pcap
+
 ***
 Extracted PCAP from a sandbox analysis.
 
@@ -261,6 +286,7 @@ Extracted PCAP from a sandbox analysis.
 #### Base Command
 
 `vt-private-file-sandbox-pcap`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -285,10 +311,12 @@ Extracted PCAP from a sandbox analysis.
 
 
 #### Command Example
+
 ```!vt-private-file-sandbox-pcap report_id="699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3_VirusTotal Jujubox"```
 
 
 ### vt-private-intelligence-search
+
 ***
 Search for files.
 
@@ -296,13 +324,14 @@ Search for files.
 #### Base Command
 
 `vt-private-intelligence-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Search query. | Required | 
 | limit | Maximum number of results. Default is 10. | Optional | 
-| order | The order value can be sorted depends on the query type. See documentation. https://docs.virustotal.com/reference/intelligence-search. | Optional | 
+| order | The order value can be sorted depends on the query type. See documentation. <https://docs.virustotal.com/reference/intelligence-search>. | Optional | 
 | cursor | Continuation cursor. | Optional | 
 | descriptors_only | Whether to return full object information or just object descriptors. Possible values are: true, false. Default is false. | Optional | 
 | extended_data | Whether to return full data information. Possible values are: true, false. Default is false. | Optional | 
@@ -327,9 +356,11 @@ Search for files.
 
 
 #### Command Example
+
 ```!vt-private-intelligence-search query=699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -535,12 +566,14 @@ Search for files.
 #### Human Readable Output
 
 >### Results
+>
 >|attributes|id|
 >|---|---| 
 >| type_description: Win32 EXE | 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3 | 
 
 
 ### vt-private-search-file
+
 ***
 Search for files.
 
@@ -548,6 +581,7 @@ Search for files.
 #### Base Command
 
 `vt-private-search-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -565,16 +599,20 @@ Search for files.
 
 
 #### Command Example
+
 ```!vt-private-search-file query="type:peexe size:90kb+ positives:5+ behaviour:'taskkill'"```
 
 #### Human Readable Output
+>
 > ### Found hashes for query: "type:peexe size:90kb+ positives:5+ behaviour:'taskkill'"
+>
 >| Found hashes |
 >|---|
 >| 83bafb3147b885c78fbda8a4f6a7f9f58c82b86681da38f48232e0205c57774b |
 
 
 ### vt-private-livehunt-rules-get-by-id
+
 ***
 Retrieve VT Hunting livehunt rulesets.
 
@@ -582,6 +620,7 @@ Retrieve VT Hunting livehunt rulesets.
 #### Base Command
 
 `vt-private-livehunt-rules-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -607,16 +646,20 @@ Retrieve VT Hunting livehunt rulesets.
 
 
 #### Command Example
+
 ```!vt-private-livehunt-rules-get-by-id id=6360290934161408```
 
 #### Human Readable Output
+>
 > ### Livehunt Ruleset 5950298890469376
+>
 > | name | enabled | rule_names |
 > |---|---|---|
 > | A rule name | false | foobar | 
 
 
 ### vt-private-livehunt-rules-list
+
 ***
 Retrieve VT Hunting livehunt rulesets.
 
@@ -624,6 +667,7 @@ Retrieve VT Hunting livehunt rulesets.
 #### Base Command
 
 `vt-private-livehunt-rules-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -653,9 +697,11 @@ Retrieve VT Hunting livehunt rulesets.
 
 
 #### Command Example
+
 ```!vt-private-livehunt-rules-list limit=1 enabled=false order="modification_date-"```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -686,12 +732,14 @@ Retrieve VT Hunting livehunt rulesets.
 #### Human Readable Output
 
 >### VT Hunting Livehunt rulesets
+>
 >|id|name|enabled|rule_names|
 >|---|---|---|---|
 >| 5551558908215296 | a new rule | false | foobar |
 
 
 ### vt-private-livehunt-rules-create
+
 ***
 Create a new VT Hunting Livehunt ruleset.
 
@@ -699,6 +747,7 @@ Create a new VT Hunting Livehunt ruleset.
 #### Base Command
 
 `vt-private-livehunt-rules-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -728,9 +777,11 @@ Create a new VT Hunting Livehunt ruleset.
 
 
 #### Command Example
+
 ```!vt-private-livehunt-rules-create limit=100 name="a new rule" yara_rule=`rule foobar { strings: $ = "foobar" condition: all of them }````
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -761,12 +812,14 @@ Create a new VT Hunting Livehunt ruleset.
 #### Human Readable Output
 
 >### New rule "a new rule" was created successfully
+>
 >|id|name|number_of_rules|
 >|---|---|---|
 >| 5551558908215296 | a new rule | 1 |
 
 
 ### vt-private-livehunt-rules-update
+
 ***
 Update a VT Hunting Livehunt ruleset.
 
@@ -774,6 +827,7 @@ Update a VT Hunting Livehunt ruleset.
 #### Base Command
 
 `vt-private-livehunt-rules-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -803,9 +857,11 @@ Update a VT Hunting Livehunt ruleset.
 
 
 #### Command Example
+
 ```!vt-private-livehunt-rules-update id=6360290934161408 enabled=false```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -836,12 +892,14 @@ Update a VT Hunting Livehunt ruleset.
 #### Human Readable Output
 
 >### Rule "6360290934161408" has been updated!
+>
 >|id|name|number_of_rules|
 >|---|---|---|
 >| 6360290934161408 | a new rule | 1 |
 
 
 ### vt-private-livehunt-rules-delete
+
 ***
 Delete a VT Hunting Livehunt ruleset.
 
@@ -849,6 +907,7 @@ Delete a VT Hunting Livehunt ruleset.
 #### Base Command
 
 `vt-private-livehunt-rules-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -861,6 +920,7 @@ Delete a VT Hunting Livehunt ruleset.
 There is no context output for this command.
 
 #### Command Example
+
 ```!vt-private-livehunt-rules-delete id=5030439520337920```
 
 #### Human Readable Output
@@ -868,6 +928,7 @@ There is no context output for this command.
 >Rule "5030439520337920" was deleted successfully
 
 ### vt-private-livehunt-notifications-list
+
 ***
 Retrieve VT Hunting Livehunt notifications.
 
@@ -875,6 +936,7 @@ Retrieve VT Hunting Livehunt notifications.
 #### Base Command
 
 `vt-private-livehunt-notifications-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -907,9 +969,11 @@ Retrieve VT Hunting Livehunt notifications.
 
 
 #### Command Example
+
 ```!vt-private-livehunt-notifications-list filter=malicious_executables limit=1```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -950,12 +1014,14 @@ Retrieve VT Hunting Livehunt notifications.
 #### Human Readable Output
 
 >### Notifications found:
+>
 >|id|
 >|---|
 >| 5883562783178752-e3df8c66cef961b7ddcb0d21a4d1eabc-843bdd8f7843fd1f9ce488666dd6cf88e79c6b098e9c9aada96af1d802aab7e2-1617025081 |
 
 
 ### vt-private-livehunt-notifications-files-list
+
 ***
 Retrieve file objects for VT Hunting Livehunt notifications.
 
@@ -963,6 +1029,7 @@ Retrieve file objects for VT Hunting Livehunt notifications.
 #### Base Command
 
 `vt-private-livehunt-notifications-files-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1034,9 +1101,11 @@ Retrieve file objects for VT Hunting Livehunt notifications.
 
 
 #### Command Example
+
 ```!vt-private-livehunt-notifications-files-list limit=1```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -1178,12 +1247,14 @@ Retrieve file objects for VT Hunting Livehunt notifications.
 #### Human Readable Output
 
 >### Notifications file listed:
+>
 >|id|meaningful_name|last_analysis_stats|
 >|---|---|---|
 >| 843bdd8f7843fd1f9ce488666dd6cf88e79c6b098e9c9aada96af1d802aab7e2 | Warface Repair Assistent.exe | harmless: 0<br/>type-unsupported: 5<br/>suspicious: 0<br/>confirmed-timeout: 0<br/>timeout: 0<br/>failure: 0<br/>malicious: 64<br/>undetected: 6 |
 
 
 ### vt-private-livehunt-notifications-files-get-by-hash
+
 ***
 Retrieve file objects for VT Hunting Livehunt notifications.
 
@@ -1191,6 +1262,7 @@ Retrieve file objects for VT Hunting Livehunt notifications.
 #### Base Command
 
 `vt-private-livehunt-notifications-files-get-by-hash`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1261,16 +1333,20 @@ Retrieve file objects for VT Hunting Livehunt notifications.
 
 
 #### Command Example
+
 ```!vt-private-livehunt-notifications-files-get-by-hash hash=389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79```
 
 #### Human Readable Output
+>
 >### Notifications file listed:
+>
 >|id|meaningful_name|last_analysis_stats|
 >|---|---|---|
 >| 389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79 | /tmp/eml_attach_for_scan/c1726acd63066eeabfb9af65d1e7c3ba.file | harmless: 0<br>type-unsupported: 12<br>suspicious: 0<br>confirmed-timeout: 0<br>timeout: 1<br>failure: 1<br>malicious: 0<br>undetected: 59 |
 
 
 ### vt-private-livehunt-rule-list-files
+
 ***
 Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
 
@@ -1278,6 +1354,7 @@ Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
 #### Base Command
 
 `vt-private-livehunt-rule-list-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1296,16 +1373,20 @@ Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
 
 
 #### Command Example
+
 ```!vt-private-livehunt-rule-list-files id=6393327418376192```
 
 #### Human Readable Output
+>
 >### Files found by rule 6393327418376192
+>
 >|context_attributes|id|type|
 >|---|---|---|
 >| notification_id: 6393327418376192-9d90aa797c1c16ea7afac7368c53cc0b-389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79-1617876439<br>notification_source_key: 9d712fef<br>notification_tags: new_file_from_china,<br>389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79,<br>chinese_files<br>ruleset_name: Chinese Files<br>notification_source_country: CN<br>rule_name: new_file_from_china<br>notification_snippet: <br>ruleset_id: 6393327418376192<br>rule_tags: <br>notification_date: 1617880045<br>match_in_subfile: false | 389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79 | file |
 
 
 ### vt-private-retrohunt-jobs-list
+
 ***
 Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
 
@@ -1313,6 +1394,7 @@ Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
 #### Base Command
 
 `vt-private-retrohunt-jobs-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1344,9 +1426,11 @@ Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
 
 
 #### Command Example
+
 ```!vt-private-retrohunt-jobs-list limit=1```
 
 #### Context Example
+
 ```json
     {"VirusTotal": {
         "RetroHuntJob": {
@@ -1377,12 +1461,14 @@ Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
 #### Human Readable Output
 
 >### Retrohunt jobs listed:
+>
 >|id|corpus|status|rules|
 >|---|---|---|---|
 >| akrupnik_panw-1617056777 | goodware | starting | rule foobar { strings: $ = "foobar" condition: all of them } |
 
 
 ### vt-private-retrohunt-jobs-get-by-id
+
 ***
 Retrieve a retrohunt job.
 
@@ -1390,6 +1476,7 @@ Retrieve a retrohunt job.
 #### Base Command
 
 `vt-private-retrohunt-jobs-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1419,9 +1506,11 @@ Retrieve a retrohunt job.
 
 
 #### Command Example
+
 ```!vt-private-retrohunt-jobs-get-by-id id=akrupnik_panw-1615822819```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -1455,12 +1544,14 @@ Retrieve a retrohunt job.
 #### Human Readable Output
 
 >### Retrohunt job: akrupnik_panw-1615822819
+>
 >|attributes|corpus|creation_date|finish_date|id|links|num_matches|num_matches_outside_time_range|progress|rules|scanned_bytes|start_date|status|time_range|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| status: finished<br/>finish_date: 1615822869<br/>rules: rule foobar { strings: $ = "foobar" condition: all of them }<br/>num_matches_outside_time_range: 556<br/>scanned_bytes: 146897923532<br/>time_range: {"start": 1615563618, "end": 1615822818}<br/>num_matches: 0<br/>progress: 100.0<br/>corpus: goodware<br/>creation_date: 1615822819<br/>start_date: 1615822824 | goodware | 1615822819 | 1615822869 | akrupnik_panw-1615822819 | self: https://www.virustotal.com/api/v3/intelligence/retrohunt_jobs/akrupnik_panw-1615822819 | 0 | 556 | 100.0 | rule foobar { strings: $ = "foobar" condition: all of them } | 146897923532 | 1615822824 | finished | start: 1615563618<br/>end: 1615822818 | retrohunt_job |
+>| status: finished<br/>finish_date: 1615822869<br/>rules: rule foobar { strings: $ = "foobar" condition: all of them }<br/>num_matches_outside_time_range: 556<br/>scanned_bytes: 146897923532<br/>time_range: {"start": 1615563618, "end": 1615822818}<br/>num_matches: 0<br/>progress: 100.0<br/>corpus: goodware<br/>creation_date: 1615822819<br/>start_date: 1615822824 | goodware | 1615822819 | 1615822869 | akrupnik_panw-1615822819 | self: <https://www.virustotal.com/api/v3/intelligence/retrohunt_jobs/akrupnik_panw-1615822819> | 0 | 556 | 100.0 | rule foobar { strings: $ = "foobar" condition: all of them } | 146897923532 | 1615822824 | finished | start: 1615563618<br/>end: 1615822818 | retrohunt_job |
 
 
 ### vt-private-retrohunt-jobs-get-matching-files
+
 ***
 Retrieve matches for a retrohunt job matching file relationship.
 
@@ -1468,6 +1559,7 @@ Retrieve matches for a retrohunt job matching file relationship.
 #### Base Command
 
 `vt-private-retrohunt-jobs-get-matching-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1537,16 +1629,20 @@ Retrieve matches for a retrohunt job matching file relationship.
 
 
 #### Command Example
+
 ```!vt-private-retrohunt-jobs-get-matching-files id=akrupnik_panw-1610969096```
 
 #### Human Readable Output
+>
 >### Files matching id "akrupnik_panw-1610969096"
+>
 >|sha256|popular_threat_classification|reputation|
 >|---|---|---|
 >| cf13811bb818c02149ad1745c95a11ef8b122801953aee463343627a2ffaa29a |  | 0 |
 
 
 ### vt-private-retrohunt-jobs-create
+
 ***
 Create a new retrohunt job.
 
@@ -1554,6 +1650,7 @@ Create a new retrohunt job.
 #### Base Command
 
 `vt-private-retrohunt-jobs-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1587,9 +1684,11 @@ Create a new retrohunt job.
 
 
 #### Command Example
+
 ```!vt-private-retrohunt-jobs-create rules=`rule foobar { strings: $ = "foobar" condition: all of them }` corpus=goodware start_time="3 days"```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -1621,12 +1720,14 @@ Create a new retrohunt job.
 #### Human Readable Output
 
 >### Retrohunt job has been successfully created
+>
 >|id|corpus|status|rules|
 >|---|---|---|---|
 >| akrupnik_panw-1617056777 | goodware | starting | rule foobar { strings: $ = "foobar" condition: all of them } |
 
 
 ### vt-private-quota-limits-list
+
 ***
 Retrieve user's API usage.
 
@@ -1634,6 +1735,7 @@ Retrieve user's API usage.
 #### Base Command
 
 `vt-private-quota-limits-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1703,9 +1805,11 @@ Retrieve user's API usage.
 
 
 #### Command Example
+
 ```!vt-private-quota-limits-list```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -1847,6 +1951,7 @@ Retrieve user's API usage.
 #### Human Readable Output
 
 >### Monthly quota data: More data can be found in the Context.
+>
 >|api_requests_monthly|cases_creation_monthly|intelligence_downloads_monthly|intelligence_retrohunt_jobs_monthly|intelligence_searches_monthly|intelligence_vtdiff_creation_monthly|
 >|---|---|---|---|---|---|
 >| group: {"inherited_from": "palo_alto_networks", "used": 13551234, "allowed": 1000000000}<br/>user: {"used": 2564, "allowed": 1000000000} | user: {"used": 0, "allowed": 20} | group: {"inherited_from": "palo_alto_networks", "used": 6214, "allowed": 100000}<br/>user: {"used": 5, "allowed": 0} | group: {"inherited_from": "palo_alto_networks", "used": 163, "allowed": 300}<br/>user: {"used": 0, "allowed": 0} | group: {"inherited_from": "palo_alto_networks", "used": 16328, "allowed": 100000}<br/>user: {"used": 12, "allowed": 0} | group: {"inherited_from": "palo_alto_networks", "used": 23, "allowed": 100000000}<br/>user: {"used": 0, "allowed": 0} |

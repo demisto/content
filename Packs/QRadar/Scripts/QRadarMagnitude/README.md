@@ -4,6 +4,7 @@ This script applies colors to the field according to the magnitude based on the 
 8-10 red
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -13,9 +14,11 @@ This script applies colors to the field according to the magnitude based on the 
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

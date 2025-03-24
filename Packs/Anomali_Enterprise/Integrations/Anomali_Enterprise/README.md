@@ -5,7 +5,7 @@ Use Anomali Match to search indicators and enrich domains.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g., https://www.test.com\) | True |
+| url | Server URL \(e.g., <https://www.test.com\>) | True |
 | credentials | Username | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |

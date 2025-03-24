@@ -8,16 +8,19 @@ This integration was integrated and tested with version 22.1 of OPNSense
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. https://opnsense.mydomain.ltd) | True |
+| Server URL (e.g. <https://opnsense.mydomain.ltd>) | True |
 | API Key | True |
 | API Secret | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### opnsense-alias-list
+
 ***
 Get aliases list
 
@@ -25,6 +28,7 @@ Get aliases list
 #### Base Command
 
 `opnsense-alias-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -38,6 +42,7 @@ Get aliases list
 | OPNSense.Alias | unknown | Aliases list | 
 
 ### opnsense-alias-add
+
 ***
 Create new alias
 
@@ -45,6 +50,7 @@ Create new alias
 #### Base Command
 
 `opnsense-alias-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -67,6 +73,7 @@ Create new alias
 | OPNSense.Alias | unknown | Alias UUID created | 
 
 ### opnsense-alias-del
+
 ***
 Delete alias with uuid
 
@@ -74,6 +81,7 @@ Delete alias with uuid
 #### Base Command
 
 `opnsense-alias-del`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -89,6 +97,7 @@ Delete alias with uuid
 | OPNSense.Alias | unknown | Alias UUID deleted | 
 
 ### opnsense-alias-mod
+
 ***
 Modify an existing alias
 
@@ -96,6 +105,7 @@ Modify an existing alias
 #### Base Command
 
 `opnsense-alias-mod`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -119,6 +129,7 @@ Modify an existing alias
 | OPNSense.Alias | unknown | Alias UUID modified | 
 
 ### opnsense-alias-mod-additem
+
 ***
 Add item into existing alias
 
@@ -126,6 +137,7 @@ Add item into existing alias
 #### Base Command
 
 `opnsense-alias-mod-additem`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -142,6 +154,7 @@ Add item into existing alias
 | OPNSense.Alias | unknown | Alias UUID modified | 
 
 ### opnsense-alias-mod-delitem
+
 ***
 Del item into existing alias
 
@@ -149,6 +162,7 @@ Del item into existing alias
 #### Base Command
 
 `opnsense-alias-mod-delitem`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -165,6 +179,7 @@ Del item into existing alias
 | OPNSense.Alias | unknown | Alias UUID modified | 
 
 ### opnsense-alias-get
+
 ***
 Get alias details
 
@@ -172,6 +187,7 @@ Get alias details
 #### Base Command
 
 `opnsense-alias-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -191,6 +207,7 @@ Get alias details
 | OPNSense.Alias.enabled | Unknown | Alias enabled | 
 
 ### opnsense-alias-get-uuid
+
 ***
 Get alias UUID
 
@@ -198,6 +215,7 @@ Get alias UUID
 #### Base Command
 
 `opnsense-alias-get-uuid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -212,6 +230,7 @@ Get alias UUID
 | OPNSense.Alias | Unknown | Alias UUID | 
 
 ### opnsense-interfaces-list
+
 ***
 Get interfaces list
 
@@ -219,6 +238,7 @@ Get interfaces list
 #### Base Command
 
 `opnsense-interfaces-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -232,6 +252,7 @@ Get interfaces list
 | OPNSense.Interfaces | Unknown | Interfaces list | 
 
 ### opnsense-category-list
+
 ***
 Get categories list
 
@@ -239,6 +260,7 @@ Get categories list
 #### Base Command
 
 `opnsense-category-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -252,6 +274,7 @@ Get categories list
 | OPNSense.Category | Unknown | Categories list | 
 
 ### opnsense-category-add
+
 ***
 Create new category
 
@@ -259,6 +282,7 @@ Create new category
 #### Base Command
 
 `opnsense-category-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -275,6 +299,7 @@ Create new category
 | OPNSense.Category | Unknown | Category UUID | 
 
 ### opnsense-category-del
+
 ***
 Delete category with uuid
 
@@ -282,6 +307,7 @@ Delete category with uuid
 #### Base Command
 
 `opnsense-category-del`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -296,6 +322,7 @@ Delete category with uuid
 | OPNSense.Category | Unknown | Category UUID | 
 
 ### opnsense-category-get
+
 ***
 Get category details
 
@@ -303,6 +330,7 @@ Get category details
 #### Base Command
 
 `opnsense-category-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -317,6 +345,7 @@ Get category details
 | OPNSense.Category | Unknown | Category details | 
 
 ### opnsense-category-mod
+
 ***
 Modify an axisting category
 
@@ -324,6 +353,7 @@ Modify an axisting category
 #### Base Command
 
 `opnsense-category-mod`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -341,6 +371,7 @@ Modify an axisting category
 | cef2c7d7-68d8-41aa-b6b8-1cac38554d58 | Unknown | Category UUID | 
 
 ### opnsense-rule-list
+
 ***
 Get rules list
 
@@ -348,6 +379,7 @@ Get rules list
 #### Base Command
 
 `opnsense-rule-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -361,6 +393,7 @@ Get rules list
 | OPNSense.Rule | Unknown | Rules list | 
 
 ### opnsense-rule-get
+
 ***
 Get rule details
 
@@ -368,6 +401,7 @@ Get rule details
 #### Base Command
 
 `opnsense-rule-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -387,6 +421,7 @@ Get rule details
 | OPNSense.Rule.interface | Unknown | Interface's rule | 
 
 ### opnsense-alias-apply
+
 ***
 Apply configuration
 
@@ -394,6 +429,7 @@ Apply configuration
 #### Base Command
 
 `opnsense-alias-apply`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -403,7 +439,9 @@ Apply configuration
 #### Context Output
 
 There is no context output for this command.
+
 ### opnsense-device-reboot
+
 ***
 Reboot the device
 
@@ -411,6 +449,7 @@ Reboot the device
 #### Base Command
 
 `opnsense-device-reboot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -424,6 +463,7 @@ Reboot the device
 | OPNSense.Device | Unknown | Reboot status | 
 
 ### opnsense-firmware-info
+
 ***
 Get firmware info
 
@@ -431,6 +471,7 @@ Get firmware info
 #### Base Command
 
 `opnsense-firmware-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -444,6 +485,7 @@ Get firmware info
 | OPNSense.Firmware | Unknown | Firmware info | 
 
 ### opnsense-firmware-status
+
 ***
 Get firmware status
 
@@ -451,6 +493,7 @@ Get firmware status
 #### Base Command
 
 `opnsense-firmware-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -464,6 +507,7 @@ Get firmware status
 | OPNSense.Firmware | Unknown | Firmware status | 
 
 ### opnsense-firmware-upgradestatus
+
 ***
 Get firmware upgrade status
 
@@ -471,6 +515,7 @@ Get firmware upgrade status
 #### Base Command
 
 `opnsense-firmware-upgradestatus`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -484,6 +529,7 @@ Get firmware upgrade status
 | OPNSense.Firmware | Unknown | Firmware upgrade status | 
 
 ### opnsense-firmware-update
+
 ***
 Do firmware update
 
@@ -491,6 +537,7 @@ Do firmware update
 #### Base Command
 
 `opnsense-firmware-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -504,6 +551,7 @@ Do firmware update
 | OPNSense.Firmware | Unknown | Firmware update | 
 
 ### opnsense-firmware-upgrade
+
 ***
 Do firmware upgrade
 
@@ -511,6 +559,7 @@ Do firmware upgrade
 #### Base Command
 
 `opnsense-firmware-upgrade`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -524,6 +573,7 @@ Do firmware upgrade
 | OPNSense.Firmware | Unknown | Firmware upgrade | 
 
 ### opnsense-rule-del
+
 ***
 Delete an existing rule
 
@@ -531,6 +581,7 @@ Delete an existing rule
 #### Base Command
 
 `opnsense-rule-del`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -546,6 +597,7 @@ Delete an existing rule
 | OPNSense.Rule | Unknown | Rule UUID | 
 
 ### opnsense-rule-add
+
 ***
 Create a new rule
 
@@ -553,6 +605,7 @@ Create a new rule
 #### Base Command
 
 `opnsense-rule-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -583,6 +636,7 @@ Create a new rule
 | OPNSense.Rule | Unknown | Rule UUID | 
 
 ### opnsense-rule-mod
+
 ***
 Modify an existing rule
 
@@ -590,6 +644,7 @@ Modify an existing rule
 #### Base Command
 
 `opnsense-rule-mod`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -620,6 +675,7 @@ Modify an existing rule
 | OPNSense.Rule | Unknown | Rule UUID | 
 
 ### opnsense-rule-apply
+
 ***
 Apply rules current configuration
 
@@ -627,6 +683,7 @@ Apply rules current configuration
 #### Base Command
 
 `opnsense-rule-apply`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -641,6 +698,7 @@ Apply rules current configuration
 | OPNSense.Rule | Unknown | Action status | 
 
 ### opnsense-rule-savepoint
+
 ***
 Save rules current configuration
 
@@ -648,6 +706,7 @@ Save rules current configuration
 #### Base Command
 
 `opnsense-rule-savepoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -661,6 +720,7 @@ Save rules current configuration
 | OPNSense.Rule | Unknown | Action status | 
 
 ### opnsense-logs-search
+
 ***
 Search into firewall logs
 
@@ -668,6 +728,7 @@ Search into firewall logs
 #### Base Command
 
 `opnsense-logs-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -688,11 +749,12 @@ Search into firewall logs
 | OPNSense.Logs.dst | Unknown | DST in logs | 
 | OPNSense.Logs.dstport | Unknown | DSTPORT in logs | 
 | OPNSense.Logs.action | Unknown | Action in logs | 
-| OPNSense.Logs.__timestamp__ | Unknown | timestamp in logs | 
+| OPNSense.Logs.**timestamp** | Unknown | timestamp in logs | 
 | OPNSense.Logs.label | Unknown | label in logs | 
 | OPNSense.Logs.protoname | Unknown | protoname in logs | 
 
 ### opnsense-states-search
+
 ***
 Query states
 
@@ -700,6 +762,7 @@ Query states
 #### Base Command
 
 `opnsense-states-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -721,6 +784,7 @@ Query states
 | OPNSense.States.proto | Unknown | Protocol in states | 
 
 ### opnsense-state-del
+
 ***
 Delete state with ID
 
@@ -728,6 +792,7 @@ Delete state with ID
 #### Base Command
 
 `opnsense-state-del`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -738,7 +803,9 @@ Delete state with ID
 #### Context Output
 
 There is no context output for this command.
+
 ### opnsense-rule-revert
+
 ***
 Revert config to given savepoint
 
@@ -746,6 +813,7 @@ Revert config to given savepoint
 #### Base Command
 
 `opnsense-rule-revert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

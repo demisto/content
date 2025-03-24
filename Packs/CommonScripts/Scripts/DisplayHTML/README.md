@@ -1,6 +1,7 @@
 Displays HTML in the War Room.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Displays HTML in the War Room.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +21,6 @@ Displays HTML in the War Room.
 | header | Adds a header text to the output. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

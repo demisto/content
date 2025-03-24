@@ -16,7 +16,7 @@ This is a long-running integration. For more information about long-running inte
 | Use a self deployed Azure Application |  | False |
 | Application redirect URI (for Authorization Code flow mode) |  | False |
 | Authorization Code | Authorization code on behalf of a user, used with self deployed Azure Applications. | False |
-| Email address of the XSOAR delegated Teams user (e.g. "example@demisto.com") |  | True |
+| Email address of the XSOAR delegated Teams user (e.g. "<example@demisto.com>") |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Suppress Errors for Non Found Users |  | False |

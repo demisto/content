@@ -3,6 +3,7 @@ This pack enables integration between the XSOAR platform and Zendesk, a popular 
 
 
 # What does this pack do?
+
 -Search and Query: Search and query existing Zendesk users or tickets based on specific criteria, such as ticket ID, requester, subject, tags, and more, to quickly retrieve relevant information.
 -Ticket Creation: Automatically create Zendesk tickets from within XSOAR based on specific triggers or events, allowing for quick and efficient incident reporting and tracking.
 -Ticket Retrieval: Retrieve ticket details, including comments, attachments, and metadata, directly from Zendesk within XSOAR. This feature enables comprehensive investigation and analysis of customer issues.

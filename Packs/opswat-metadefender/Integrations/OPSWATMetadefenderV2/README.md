@@ -6,7 +6,7 @@ This integration was integrated and tested with version 5.0.0 of OPSWAT-Metadefe
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. http://localhost:8008/metascan_rest/) | True |
+| Server URL (e.g. <http://localhost:8008/metascan_rest/>) | True |
 | API Key - Needed in cloud based solutions | False |
 | API Key - Needed in cloud based solutions | False |
 | Cloud based | False |
@@ -62,6 +62,7 @@ Check file hash on OPSWAT
 #### Context Output
 
 There is no context output for this command.
+
 ### opswat-scan-result
 
 ***
@@ -80,6 +81,7 @@ Get OPSWAT result
 #### Context Output
 
 There is no context output for this command.
+
 ### opswat-sanitization-result
 
 ***

@@ -22,16 +22,23 @@ Instructions on how to configure and test the XML API for McAfee DAM are availab
 | ruleName | Rule Name, If fetch incident is checked, this field is mandatory and will be used to get DAM alerts only triggered by this rule | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### Get information for a single alert
+
 ***
 Gets a DAM alert from McAfee Database Activity Monitoring by alert ID.
+
 ##### Required Permissions
+
 * Alerts Read 
+
 ##### Base Command
 
 `dam-get-alert-by-id`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -53,13 +60,18 @@ Gets a DAM alert from McAfee Database Activity Monitoring by alert ID.
 
 
 ### Get the latest DAM alerts
+
 ***
 Gets the latest DAM alerts by rule name.
+
 ##### Required Permissions
+
 * Alerts Read
+
 ##### Base Command
 
 `dam-get-latest-by-rule`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |

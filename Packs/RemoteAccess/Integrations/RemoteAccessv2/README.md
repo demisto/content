@@ -20,20 +20,28 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 
 ## Configure SSH From Remote
+
 For login using root:
+
 1. Edit the /etc/ssh/sshd_config file.
+
 - set `PermitRootLogin` to `yes`
 - set `PasswordAuthentication` to `yes`
+
 2. Restart the sshd server: `service sshd restart`
 
 ## Configure the instance with SSH certificate
+
 Currently, the only type of certificate that is supported is RSA private keys (.PEM) files.
 In case access is required to an instance in the cloud, use the PEM file provided by the cloud provider.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ssh
+
 ***
 Run the specified command on the remote system with SSH.
 
@@ -41,6 +49,7 @@ Run the specified command on the remote system with SSH.
 #### Base Command
 
 `ssh`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                    | **Required** |
@@ -64,9 +73,11 @@ Run the specified command on the remote system with SSH.
 
 
 #### Command Example
+
 ```!ssh command="echo test"```
 
 #### Context Example
+
 ```json
 {
     "RemoteAccess": {
@@ -85,12 +96,14 @@ Run the specified command on the remote system with SSH.
 #### Human Readable Output
 
 >### Command echo test Outputs
+>
 >|command|output|success|
 >|---|---|---|
 >| echo test | test<br/> | true |
 
 
 ### copy-to
+
 ***
 Copies the given file from Cortex XSOAR to the remote machine.
 
@@ -99,6 +112,7 @@ Copies the given file from Cortex XSOAR to the remote machine.
 #### Base Command
 
 `copy-to`
+
 #### Input
 
 | **Argument Name**   | **Description**                                                                                                                                                                                                                                   | **Required** |
@@ -119,6 +133,7 @@ Copies the given file from Cortex XSOAR to the remote machine.
 There is no context output for this command.
 
 #### Command Example
+
 ```!copy-to entry_id=104@49493d71-eef6-4bb4-8075-4be38d9bc340 destination_path="test/cortex_copied_file"```
 
 #### Human Readable Output
@@ -126,6 +141,7 @@ There is no context output for this command.
 >### The file corresponding to entry ID: 104@49493d71-eef6-4bb4-8075-4be38d9bc340 was copied to remote host.
 
 ### copy-from
+
 ***
 Copies the given file from the remote machine to Cortex XSOAR.
 
@@ -133,6 +149,7 @@ Copies the given file from the remote machine to Cortex XSOAR.
 #### Base Command
 
 `copy-from`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                    | **Required** |
@@ -163,9 +180,11 @@ Copies the given file from the remote machine to Cortex XSOAR.
 
 
 #### Command Example
+
 ```!copy-from file_path="test/remote_file.txt" file_name="CopiedRemoteFile"```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -188,19 +207,25 @@ Copies the given file from the remote machine to Cortex XSOAR.
 
 
 ## Breaking changes from the previous version of this integration - RemoteAccess v2
+
 - Removed the *Interactive terminal mode* instance parameter.
 - Removed the *Terminal Type* instance parameter.
 
 ### Commands
+
 ### Arguments
+
 #### The following argument names were changed, added, or removed in this version
+
 | Remote Access Command Name | Old Command Argument Name | New Command Name |
 | --- | --- | --- |
 | copy-to | fileID | **Argument was removed** |
 | copy-from | **Argument did not exist** | file_name |
 
 ### Outputs
+
 #### The following outputs were removed in this version:
+
 | Remote Access Command Name | Old Command Outputs | Remote Access v2 Command Name | New Command Outputs |
 | --- | --- | --- | --- |
 | ssh | Command outputs were: <br /> - command<br /> - stdout<br /> -  stderr<br /> - remote machine IP<br /> - success status | ssh | Outputs: <br /> - stdout<br /> - stderr  |

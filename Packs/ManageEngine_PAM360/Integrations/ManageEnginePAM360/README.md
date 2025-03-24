@@ -5,15 +5,18 @@ Use ManageEngine PAM360, a privileged access management solution to manage criti
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g., https://localhost:8282\) | True |
+| url | Server URL \(e.g., <https://localhost:8282\>) | True |
 | APP_TOKEN | Token to access PAM360 vault | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### pam360-create-resource
+
 ***
 Creates a new resource.
 
@@ -21,6 +24,7 @@ Creates a new resource.
 #### Base Command
 
 `pam360-create-resource`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -51,9 +55,11 @@ Creates a new resource.
 
 
 #### Command Example
+
 ```!pam360-create-resource resource_name="SOUTH-FIN-WINSERQA-09" resource_type="Windows" resource_url="https://remote-win-serv:8285/adminhome" domain_name="SOUTH-FIN-WINSERQA-09" resourcegroup_name="Remote Windows Servers" owner_name="admin" location="Plaza - South Wing" dnsname="SOUTH-FIN-WINSERQA-09" department="Finance" resource_description="Windows server resources reserved for testing API" notes="Windows server resources reserved for testing API" account_name="administrator" password="QA!K>35Hgg(x" resource_password_policy="Strong" account_password_policy="Strong"```
 
 #### Context Example
+
 ```
 {
    "operation":{
@@ -65,7 +71,9 @@ Creates a new resource.
    }
 }
 ```
+
 ### pam360-create-account
+
 ***
 Creates a new account under a specified resource.
 
@@ -73,6 +81,7 @@ Creates a new account under a specified resource.
 #### Base Command
 
 `pam360-create-account`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -93,9 +102,11 @@ Creates a new account under a specified resource.
 
 
 #### Command Example
+
 ```!pam360-create-account resource_id=1 account_name="admin" password="t8BRq)<6h9g1" notes="Windows server resources reserved for testing API" account_password_policy="Strong"```
 
 #### Context Example
+
 ```
 {
    "operation":{
@@ -113,7 +124,9 @@ Creates a new account under a specified resource.
       "name":"ADD ACCOUNTS"
    }
 ```
+
 ### pam360-update-resource
+
 ***
 Updates the attributes of a resource such as name, type, URL, and description.
 
@@ -121,6 +134,7 @@ Updates the attributes of a resource such as name, type, URL, and description.
 #### Base Command
 
 `pam360-update-resource`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -146,9 +160,11 @@ Updates the attributes of a resource such as name, type, URL, and description.
 
 
 #### Command Example
+
 ```!pam360-update-resource resource_id=1 resource_name="SOUTH-FIN-WINSERQA-09" resource_type="Windows" resource_url="https://remote-win-serv:8285/adminhome" resource_description="Windows server resources reserved for testing API" resource_password_policy="Strong" location="Plaza - South Wing" department="Finance" dnsname="SOUTH-FIN-WINSERQA-09" owner_name="admin"```
 
 #### Context Example
+
 ```
 {
    "operation":{
@@ -160,7 +176,9 @@ Updates the attributes of a resource such as name, type, URL, and description.
    }
 }
 ```
+
 ### pam360-update-account
+
 ***
 Updates the attributes an account such as name, password policy, and notes if applicable.
 
@@ -168,6 +186,7 @@ Updates the attributes an account such as name, password policy, and notes if ap
 #### Base Command
 
 `pam360-update-account`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -189,9 +208,11 @@ Updates the attributes an account such as name, password policy, and notes if ap
 
 
 #### Command Example
+
 ```!pam360-update-account resource_id=1 account_id=1 account_name="admin" owner_name="admin" notes="Windows server resources reserved for testing API" account_password_policy="Strong"```
 
 #### Context Example
+
 ```
 {
    "operation":{
@@ -203,7 +224,9 @@ Updates the attributes an account such as name, password policy, and notes if ap
    }
 }
 ```
+
 ### pam360-list-all-resources
+
 ***
 Lists all resources owned by you and shared to you by other users.
 
@@ -227,9 +250,11 @@ Lists all resources owned by you and shared to you by other users.
 
 
 #### Command Example
+
 ```!pam360-list-all-resources```
 
 #### Context Example
+
 ```
 {
    "operation":{
@@ -251,7 +276,9 @@ Lists all resources owned by you and shared to you by other users.
    }
 }
 ```
+
 ### pam360-list-all-accounts
+
 ***
 Lists all accounts belonging to the resource.
 
@@ -259,6 +286,7 @@ Lists all accounts belonging to the resource.
 #### Base Command
 
 `pam360-list-all-accounts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -292,9 +320,11 @@ Lists all accounts belonging to the resource.
 
 
 #### Command Example
+
 ```!pam360-list-all-accounts resource_id=1```
 
 #### Context Example
+
 ```
 {
    "operation":{
@@ -341,7 +371,9 @@ Lists all accounts belonging to the resource.
    }
 }
 ```
+
 ### pam360-fetch-account-details
+
 ***
 Fetches the details of an account using the corresponding account ID.
 
@@ -349,6 +381,7 @@ Fetches the details of an account using the corresponding account ID.
 #### Base Command
 
 `pam360-fetch-account-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -375,9 +408,11 @@ Fetches the details of an account using the corresponding account ID.
 
 
 #### Command Example
+
 ```!pam360-fetch-account-details resource_id=1 account_id=1```
 
 #### Context Example
+
 ```
 {
    "operation":{
@@ -400,7 +435,9 @@ Fetches the details of an account using the corresponding account ID.
    }
 }
 ```
+
 ### pam360-fetch-resource-account-id
+
 ***
 Fetches the IDs of the resources and accounts.
 
@@ -408,6 +445,7 @@ Fetches the IDs of the resources and accounts.
 #### Base Command
 
 `pam360-fetch-resource-account-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -427,9 +465,11 @@ Fetches the IDs of the resources and accounts.
 
 
 #### Command Example
+
 ```!pam360-fetch-resource-account-id resource_name=SOUTH-FIN-WINSERQA-09 account_name=admin```
 
 #### Context Example
+
 ```
 {
    "operation":{
@@ -445,7 +485,9 @@ Fetches the IDs of the resources and accounts.
    }
 }
 ```
+
 ### pam360-fetch-password
+
 ***
 Fetches the account password using the Resource and Account IDs.
 
@@ -453,6 +495,7 @@ Fetches the account password using the Resource and Account IDs.
 #### Base Command
 
 `pam360-fetch-password`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -473,9 +516,11 @@ Fetches the account password using the Resource and Account IDs.
 
 
 #### Command Example
+
 ```!pam360-fetch-password resource_id=1 account_id=1 reason="Need the password to log in to the Windows Server for testing purposes." ticket_id=7```
 
 #### Context Example
+
 ```
 {
    "operation":{
@@ -490,7 +535,9 @@ Fetches the account password using the Resource and Account IDs.
    }
 }
 ```
+
 ### pam360-update-account-password
+
 ***
 Updates the account password.
 
@@ -498,6 +545,7 @@ Updates the account password.
 #### Base Command
 
 `pam360-update-account-password`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -519,9 +567,11 @@ Updates the account password.
 
 
 #### Command Example
+
 ```!pam360-update-account-password resource_id=1 account_id=1 new_password="A8>ne3J&0Z" reset_type="local" reason="Password Expired" ticket_id=7```
 
 #### Context Example
+
 ```
 {
    "operation":{

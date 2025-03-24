@@ -2,6 +2,7 @@ Use the AutoFocus v2 integration to contextualize threat intelligence and bring 
 TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
 
 ## Use Cases
+
 * Query samples / sessions
 * Get sample analysis
 * Get session details
@@ -9,15 +10,18 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 * Get top tags
 
 ## Get Your API Key
+
 To get your API key, you need to add an authorization code, and then activate the API.
 
 ## Add your authorization code
+
 1. Go to the [Palo Alto Networks support site](https://support.paloaltonetworks.com/).
 2. Select **Assets > Site Licenses** tab.
 3. Select **Add Site License**.
 4. Enter the authorization code.
 
 ## Activate the API
+
 1. in **Site Licenses**, select **Enable**.
 2. Click the API Key link.
 
@@ -25,6 +29,7 @@ Use the API key when configuring the integration.
 For more information on activating the license see [Activating AutoFocus Licenses](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/get-started-with-autofocus/activate-autofocus-licenses.html).
 
 ## Configure AutoFocus V2 on Cortex XSOAR
+
 ---
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -47,12 +52,15 @@ For more information on activating the license see [Activating AutoFocus License
 
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Search for samples
+
 ---
 Searches for samples. To view the results provide polling=true, or run the `autofocus-samples-search-results` command with the returned Af Cookie. The AF Cookie expires 120 seconds after the search completes. Use the query that was created in AutoFocus within playbooks "as-is". To run the command with the query in Cortex XSOAR, wrap the query in backticks ``. For example:
+
 ```
 !autofocus-search-samples query=`{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]}` scope=Global sort="First Seen (Create Date)" order=Ascending
 ```
@@ -83,16 +91,19 @@ Searches for samples. To view the results provide polling=true, or run the `auto
 | retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 ##### Using polling
+
 The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need to run `autofocus-samples-search-results`.
 
 For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/scheduled-commands).
 
 ### How to Build a Query
+
 1. Go to the [AutoFocus platform](https://autofocus.paloaltonetworks.com/#/samples/global) search screen.
 2. Click the **Advanced...** button on the top right.
 3. Build a query by selecting the fields operators and relevant values. To add another condition, click the **+** button. For more information on how to use the search editor, see [Work with the Search Editor](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-search/work-with-the-search-editor.html#id791798e0-2277-41b5-a723-383bd0787816_id597cae40-646e-4a2f-acf5-5fe04d9e2cf0).
 5. To get the query, open the API syntax, and click the **>_API** button.
 Copy the query value from the opening curly bracket `{` until the `,"scope"` parameter, and paste it as the value for the `query` argument for both search commands. For example:
+
 ```
 {"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1},{"field":"sample.create_date","operator":"is after","value":["2019-06-13","2019-06-13"]}]}
 ```
@@ -133,11 +144,13 @@ Copy the query value from the opening curly bracket `{` until the `,"scope"` par
 | AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 ##### Command Example
+
 ```
 !autofocus-search-samples query=`{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]}` scope=Global sort="First Seen (Create Date)" order=Ascending
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.SamplesSearch": {
@@ -148,13 +161,16 @@ Copy the query value from the opening curly bracket `{` until the `,"scope"` par
 ```
 
 ##### Human Readable Output
+
 ##### Search Samples Info:
+
 |AFCookie|Status|
 |---|---|
 | 2-78049b80-9c18-47e7-835e-d31ca8bd48aa+0 | in progress |
 
 
 ### Search for sessions
+
 ---
 Searches for sessions. To view the results provide polling=true, or run the `autofocus-sessions-search-results` command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes.
 
@@ -181,16 +197,19 @@ Searches for sessions. To view the results provide polling=true, or run the `aut
 | retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 ##### Using polling
+
 The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need for `autofocus-sessions-search-results`.
 
 For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/scheduled-commands).
 
 ### How to Build a Query
+
 1. Go to the [AutoFocus platform](https://autofocus.paloaltonetworks.com/#/samples/global) search screen.
 2. Select the **Advanced...** button on the top right.
 3. Build a query by selecting fields operators and relevant values. To add another condition, click the **+** button. For more information on how to use the search editor, see [Work with the Search Editor](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-search/work-with-the-search-editor.html#id791798e0-2277-41b5-a723-383bd0787816_id597cae40-646e-4a2f-acf5-5fe04d9e2cf0).
 4. To get the query you built, open the API syntax, and click the **>_API** button.
 5. Copy the query value from the opening curly bracket `{` until the `,"scope"` parameter, and paste it as the value for the `query` argument for both search commands. For example:
+
 ```
 {"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1},{"field":"sample.create_date","operator":"is after","value":["2019-06-13","2019-06-13"]}]}
 ```
@@ -223,11 +242,13 @@ For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/s
 
 
 ##### Command Example
+
 ```
 !autofocus-search-sessions query={"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]} max_results="30" sort="Application" order="Ascending"
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.SessionsSearch": {
@@ -238,19 +259,23 @@ For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/s
 ```
 
 ##### Human Readable Output
+
 ##### Search Sessions Info:
+
 |AFCookie|Status|
 |---|---|
 | 2-2d70539d-26af-40d2-b80b-16be60dabbaf+0 | in progress |
 
 
 ### Get results of a samples search
+
 ---
 Returns the results of a previous samples search.
 
 ##### Base Command
 
 `autofocus-samples-search-results`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -294,11 +319,13 @@ Returns the results of a previous samples search.
 
 
 ##### Command Example
+
 ```
 !autofocus-samples-search-results af_cookie=2-c0a49ebb-2fee-4423-9bd3-76004d5878ba+1
 ```
 
 ##### Context Example
+
 ```
 {
     "File": [
@@ -373,12 +400,15 @@ Returns the results of a previous samples search.
 ```
 
 ##### Human Readable Output
+
 ### Search Samples Result is in progress
+
 |Created|FileType|Finished|ID|MD5|Region|SHA1|SHA256|Size|Tags|Verdict|imphash|ssdeep|tag_groups|tasks|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 2020-04-05T00:03:49 | PE | 2020-04-05T00:11:59 | d455abd39edc7a2f03fa43b4d0f9194a11e73fce9c794021b5ca050dd0bc156d | 77c94c76214c7069b7fc5e7634b7e225 | us | 1460b6a9a0955f0d5c011edba569786c13b6d8a6 | d455abd39edc7a2f03fa43b4d0f9194a11e73fce9c794021b5ca050dd0bc156d | 362331 | Unit42.IPAddressLookup,Unit42.InitialSystemDataEnumeration,Unit42.RunOnce,Unit42.GandCrab | 1 | f456e8b8fd5e0768c2e3120e086c8ebc | 6144 | Ransomware | {'metadata_compilation_ts': '2018-06-11T11:15:25'} |
 
 ### Artifacts for Sample: 
+
 |b|g|m|indicator_type|confidence|indicator|
 |---|---|---|---|---|---|
 | 1 | 0 | 145006 | Domain | suspect | carder.bit |
@@ -387,6 +417,7 @@ Returns the results of a previous samples search.
 
 
 ### Get results of a sessions search
+
 ---
 Returns the results of a previous session's search.
 
@@ -428,11 +459,13 @@ Returns the results of a previous session's search.
 
 
 ##### Command Example
+
 ```
 !autofocus-sessions-search-results af_cookie=2-f2c742b6-a363-4eb9-a313-63a99c376081+0
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.SessionsSearch": {
@@ -474,7 +507,9 @@ Returns the results of a previous session's search.
 ```
 
 ##### Human Readable Output
+
 ##### Search Sessions Results is complete
+
 |FileName|ID|Industry|Region|SHA256|Seen|Tags|UploadSource|tag_groups|
 |---|---|---|---|---|---|---|---|---|
 | wildfire-test-pe-file.exe | u_56095401643 | High Tech | us | 2eb355b54855c7531a811d435b2ff4dc74d377bfed98fd1ad03caa591f5555bd | 2019-12-11T08:52:16 | Commodity.WildFireTest | Manual API |  |
@@ -510,12 +545,14 @@ Returns the results of a previous session's search.
 
 
 ### Get session details
+
 ---
 Returns session details by session ID.
 
 ##### Base Command
 
 `autofocus-get-session-details`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -546,11 +583,13 @@ Returns session details by session ID.
 
 
 ##### Command Example
+
 ```
 !autofocus-get-session-details session_id="u_39605858263"
 ```
 
 ##### Context Example
+
 ```
 {
     "File": [
@@ -574,13 +613,16 @@ Returns session details by session ID.
 ```
 
 ##### Human Readable Output
+
 ##### Session u_39605858263:
+
 |FileName|ID|Industry|Region|SHA256|Seen|UploadSource|
 |---|---|---|---|---|---|---|
 | wildfire-test-apk-file.apk | u_39605858263 | High Tech | us | 8d4241654449c63f70dabd83483f8ca8bd8e8e6a8d0679639eb061b3b6dbcfec | 2019-05-29T15:25:26 | Manual API |
 
 
 ### Get analysis details
+
 ---
 Returns properties, behaviors, and activities observed for a sample. Runs the command a single time to get the fields and operating systems under HTTP, Coverage, Behavior, Registry, Files, Processes, Connections, and DNS.
 
@@ -620,11 +662,13 @@ Returns properties, behaviors, and activities observed for a sample. Runs the co
 
 
 ##### Command Example
+
 ```
 !autofocus-sample-analysis sample_id=dd0d26ceea034b3ae32a4f6a477466ac598ee17f811f88cf14b2c708240fb993
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.SampleAnalysis": {
@@ -856,9 +900,13 @@ Returns properties, behaviors, and activities observed for a sample. Runs the co
 ```
 
 ##### Human Readable Output
+
 ##### Sample Analysis results for dd0d26ceea034b3ae32a4f6a477466ac598ee17f811f88cf14b2c708240fb993:### Behavior Static Analyzer:
+
 No entries
+
 ##### Behavior Win7:
+
 |Behavior|Risk|
 |---|---|
 |  Connected to a non-standard HTTP port | high  |
@@ -879,12 +927,16 @@ No entries
 |  Attempted to determine public IP address via IP-checking website | high  |
 |  Connected to a malicious IP | high  |
 |  Connected to a malicious URL | high  |
+
 ##### Behavior Winxp:
+
 |Behavior|Risk|
 |---|---|
 |  Created or modified a file in the Windows system folder | medium  |
 |  Started a process from a user folder | low  |
+
 ##### Processes Win7:
+
 |Action|Parent Process|
 |---|---|
 |  created  | svchost.exe  |
@@ -895,12 +947,15 @@ No entries
 |  created  | services.exe  |
 |  created  | svchost.exe  |
 |  created  | services.exe  |
+
 ##### Processes Winxp:
+
 |Action|Parent Process|
 |---|---|
 |  created  | explorer.exe  |
 |  created  | svchost.exe  |
 |  created  | winlogon.exe  |
+
 ##### Files Win7:
 
 |Action|Parent Process|
@@ -913,9 +968,13 @@ No entries
 |  Create  | na.exe  |
 |  Create  | users\administrator\sample.dll:DllInstall  |
 |  Create  | users\administrator\sample.dll:DllInstall  |
+
 ##### Files Winxp:
+
 No entries
+
 ###
+
 33 Registry Win7:
 
 |Action|Parameters|
@@ -930,28 +989,35 @@ No entries
 |  RegSetValueEx  |  HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall  |
 |  RegSetValueEx  |  HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{5129CAA8-E24B-2AEE-652F-C652FBF1E9BB}  |
 |  RegSetValueEx  |  HKLM\SOFTWARE\Wow6432Node\$(brand_name)  |
+
 ##### Registry Winxp:
+
 |Action|Parameters|
 |---|---|
 |  SetValueKey  |  HKCU\SessionInformation\ProgramCount  |
 |  SetValueKey  |  HKLM\SOFTWARE\Microsoft\WBEM\CIMOM\List of event-active namespaces  |
 |  SetValueKey  |  HKCU\SessionInformation\ProgramCount  |
 |  SetValueKey  |  HKLM\SOFTWARE\Microsoft\WZCSVC\Parameters\Interfaces\ActiveSettings  |
+
 ##### Mutex Win7:
+
 |Action|Parameters|Process|
 |---|---|---|
 |  CreateMutexW  |  Global\_MSIExecute | msiexec.exe  |
+
 ##### Http Win7:
+
 |Host|Method|Url|
 |---|---|---|
 | sp1.eventincoandhar.info  |  POST  |  /  |
 | ip-api.com  |  GET  |  /json  |
 | knsemis.com  |  POST  |  /tickets  |
-| www.<span></span>cnn.com  |  HEAD  |  /  |
-| www.<span></span>bbc.com  |  HEAD  |  /  |
+| <www>.<span></span>cnn.com  |  HEAD  |  /  |
+| <www>.<span></span>bbc.com  |  HEAD  |  /  |
 
 
 ### Get tag details
+
 ---
 Returns details about the given tag.
 
@@ -991,11 +1057,13 @@ Returns details about the given tag.
 
 
 ##### Command Example
+
 ```
 !autofocus-tag-details tag_name=490082.Pastebin_Raw
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.Tag": {
@@ -1014,13 +1082,16 @@ Returns details about the given tag.
 ```
 
 ##### Human Readable Output
+
 ##### Tag 490082.Pastebin_Raw details:
+
 |Count|Customer Name|Description|Lasthit|Public Tag Name|Source|Tag Class|Tag Definition Scope|Tag Definition Status|Tag Name|
 |---|---|---|---|---|---|---|---|---|---|
 | 84674 | Squadra Solutions | Malicious actors may post raw code to Pastebin which can then be downloaded for further use or as a C2 channel. Some code are also encoded in base64 for further obfuscation | 2020-01-02 05:22:18 | 490082.Pastebin_Raw | Squadra Solutions | malicious_behavior | public | enabled | Pastebin_Raw |
 
 
 ### Search for the most popular tags
+
 ---
 Performs a search to identify the most popular tags.
 
@@ -1043,16 +1114,18 @@ Performs a search to identify the most popular tags.
 | retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 ##### Using polling
+
 The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need to run `autofocus-samples-search-results`.
 
 For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/scheduled-commands).
 
 ##### Tag Classes
-- Malware Family: group of malware that have shared properties or common functions. 
-- Campaign:  targeted attack, which might include several incidents or sets of activities. 
-- Actor: individual or group that initiates a campaign using malware families. 
-- Exploit: an attack, which takes advantage of a software or network weakness, bug, or vulnerability to manipulate the behavior of the system. 
-- Malicious Behavior: behavior that is not specific to a malware family or campaign, but indicates that your system has been compromised.
+
+* Malware Family: group of malware that have shared properties or common functions. 
+* Campaign:  targeted attack, which might include several incidents or sets of activities. 
+* Actor: individual or group that initiates a campaign using malware families. 
+* Exploit: an attack, which takes advantage of a software or network weakness, bug, or vulnerability to manipulate the behavior of the system. 
+* Malicious Behavior: behavior that is not specific to a malware family or campaign, but indicates that your system has been compromised.
 
 ##### Context Output
 
@@ -1074,11 +1147,13 @@ For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/s
 
 
 ##### Command Example
+
 ```
 !autofocus-top-tags-search scope="all" class="Malicious Behavior" private="True" public="True" commodity="False" unit42="False"
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.TopTagsSearch": {
@@ -1089,19 +1164,23 @@ For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/s
 ```
 
 ##### Human Readable Output
+
 ##### Top tags search Info:
+
 |AFCookie|Status|
 |---|---|
 | 2-1caadf19-2e94-4742-b9cf-da8b2d90988c+0 | in progress |
 
 
 ### Get results of a top tags search
+
 ---
 Returns the results of a previous top tags search.
 
 ##### Base Command
 
 `autofocus-top-tags-results`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1128,11 +1207,13 @@ Returns the results of a previous top tags search.
 
 
 ##### Command Example
+
 ```
 !autofocus-top-tags-results af_cookie=2-2190f844-7c0a-42e7-b4be-5f7d83c9b05c+0
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.TopTagsSearch": {
@@ -1265,7 +1346,9 @@ Returns the results of a previous top tags search.
 ```
 
 ##### Human Readable Output
+
 ##### Search Top Tags Results is in progress:
+
 |Count|Lasthit|Public Tag Name|Tag Name|
 |---|---|---|---|
 | 84674 | 2020-01-02 05:22:18 | 490082.Pastebin_Raw | Pastebin_Raw |
@@ -1291,12 +1374,14 @@ Returns the results of a previous top tags search.
 
 
 ### Get the reputation for an IP address
+
 ---
 Returns the reputation of an IP address.
 
 ##### Base Command
 
 `ip`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1337,11 +1422,13 @@ Returns the reputation of an IP address.
 
 
 ##### Command Example
+
 ```
 !ip ip=127.0.0.1 using-brand="AutoFocus V2"
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.IP": [
@@ -1372,19 +1459,23 @@ Returns the reputation of an IP address.
 ```
 
 ##### Human Readable Output
+
 ##### AutoFocus V2 IP reputation for: 127.0.0.1
+
 |Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|
 | IPV4_ADDRESS | 127.0.0.1 | PAN_DB: BENIGN |  |  |
 
 
 ### Get the reputation of a URL
+
 ---
 Returns the reputation of a URL.
 
 ##### Base Command
 
 `url`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1425,11 +1516,13 @@ Returns the reputation of a URL.
 
 
 ##### Command Example
+
 ```
 !url url=www.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/ using-brand="AutoFocus V2"
 ```
 
 ##### Context Example
+
 ```
 {
     "URL": [
@@ -1463,19 +1556,23 @@ Returns the reputation of a URL.
 ```
 
 ##### Human Readable Output
+
 ##### AutoFocus V2 URL reputation for: www<span></span>.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/
+
 |Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|
 | URL | www<span></span>.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/ | PAN_DB: MALWARE |  |  |
 
 
 ### Get the reputation of a file
+
 ---
 Returns the reputation of a file.
 
 ##### Base Command
 
 `file`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1516,11 +1613,13 @@ Returns the reputation of a file.
 
 
 ##### Command Example
+
 ```
 !file file=9040e9fda52931c9472c90ecad5b74295cdb9cf7b68e2b89219700f6a8bff5ac using-brand="AutoFocus V2"
 ```
 
 ##### Context Example
+
 ```
 {
     "DBotScore": [
@@ -1567,12 +1666,14 @@ Returns the reputation of a file.
 
 
 ### Get the reputation of a domain name
+
 ---
 Returns the reputation of a domain.
 
 ##### Base Command
 
 `domain`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1622,11 +1723,13 @@ Returns the reputation of a domain.
 
 
 ##### Command Example
+
 ```
 !domain domain=google.com using-brand="AutoFocus V2"
 ```
 
 ##### Context Example
+
 ```
 {
     "Domain": [
@@ -1681,13 +1784,16 @@ Returns the reputation of a domain.
 ```
 
 ##### Human Readable Output
+
 ##### AutoFocus V2 Domain reputation for: google.com
+
 |Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Whoisadmincountry|Whoisadminemail|Whoisadminname|Whoisdomaincreationdate|Whoisdomainexpiredate|Whoisdomainupdatedate|Whoisregistrant|Whoisregistrar|Whoisregistrarurl|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | DOMAIN | google.com | PAN_DB: BENIGN |  |  |  |  | 1997-09-15 | 2020-09-14 | 2018-02-21 |  | markdownguide Inc. | http:/<span></span>/ww<span></span>w.<span></span>markdownguide.org |  |
 
 
 ### autofocus-get-export-list-indicators
+
 ***
 Gets export list indicators from AutoFocus.
 
@@ -1695,6 +1801,7 @@ Gets export list indicators from AutoFocus.
 #### Base Command
 
 `autofocus-get-export-list-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

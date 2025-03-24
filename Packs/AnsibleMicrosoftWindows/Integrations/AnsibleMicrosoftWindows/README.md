@@ -5,6 +5,7 @@ To use this integration, configure an instance of this integration. This will as
 This integration uses NTLM for authentication. This ensures that actual credentials are never sent over the network, instead relying on hashing methods. By default, the initial authentication phase is performed unencrypted over HTTP, after which all communication is encrypted using a symmetric 256-bit key. If it is desired to use HTTPS from the onset, [additional configuration on the Windows host is required](https://docs.microsoft.com/en-US/troubleshoot/windows-client/system-management-components/configure-winrm-for-https). After WinRM is configured for HTTPS, update the port setting on the integration. Any port other than the default 5985 will use HTTPS communication.
 
 ## Host Requirements
+
 WinRM is enabled by default on all Windows Server operating systems since Windows Server 2012 and above, but disabled on all client operating systems like Windows 10, Windows 8 and Windows 7.
 
 WinRM can be enabled on Windows client OSes [using Group Policy](https://docs.microsoft.com/en-us/windows/win32/winrm/installation-and-configuration-for-windows-remote-management#configuring-winrm-with-group-policy).
@@ -12,28 +13,38 @@ WinRM can be enabled on Windows client OSes [using Group Policy](https://docs.mi
 PowerShell 3.0 or newer and at least .NET 4.0 to be installed on the Windows host.
 
 ## Network Requirements
+
 By default, TCP port 5985 will be used. If WinRM is configured for HTTPS, update the port setting on the integration.
 
 Please also note that the default Windows Firewall Policy (Windows Remote Management (HTTP-In)) allows WinRM connections only from the private networks.
 
 The connection will be initiated from the XSOAR engine/server specified in the instance settings.
+
 ## Credentials
+
 A Windows Domain Account is recommended; however local accounts are also supported.
-The username syntax can be in Pre-Windows2000 style (domain.local/account) or in newer UPN format (account@domain.local)
+The username syntax can be in Pre-Windows2000 style (domain.local/account) or in newer UPN format (<account@domain.local>)
+
 ## Permissions
+
 While Administrative privileges are not strictly required, WinRM is configured by default to only allow connections from accounts in the local Administrators group.
 
 Non-administrative accounts can be used with WinRM, however most typical server administration tasks require some level of administrative access, so the utility is usually limited.
+
 ## Concurrency
+
 This integration supports execution of commands against multiple hosts concurrently. The `host` parameter accepts a list of addresses, and will run the command in parallel as per the **Concurrency Factor** value.
 
 ## Further information
+
 This integration is powered by Ansible 2.9. Further information can be found on that the following locations:
+
 * [Ansible Windows Guide](https://docs.ansible.com/ansible/2.9/user_guide/windows_setup.html)
 * [Windows Module Index](https://docs.ansible.com/ansible/2.9/modules/list_of_windows_modules.html)
 
 
 ## Configure Ansible Microsoft Windows on Cortex XSOAR
+
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Ansible Microsoft Windows.
 3. Click **Add instance** to create and configure a new integration instance.
@@ -45,25 +56,31 @@ This integration is powered by Ansible 2.9. Further information can be found on 
     | Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
 
 ## Testing
+
 This integration does not support testing from the integration management screen. Instead it is recommended to use the `!win-gather-facts`command providing an example `host` as the command argument. This command will connect to the specified host with the configured credentials in the integration, and if successful output general information about the host.
 
 ## Complex Command Inputs
+
 Some commands may require structured input arguments such as `lists` or `dictionary`, these can be provided in standard JSON notation wrapped in double curly braces. For example a argument called `dns_servers` that accepts a list of server IPs 8.8.8.8 and 8.8.4.4 would be entered as `dns_servers="{{ ['8.8.8.8', '8.8.4.4'] }}"`.
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### win-gather-facts
+
 ***
 Gathers facts about remote hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html>
 
 
 #### Base Command
 
 `win-gather-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -79,14 +96,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-acl
+
 ***
 Set file/directory/registry permissions for a system user or group
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_acl_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_acl_module.html>
 
 
 #### Base Command
 
 `win-acl`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -108,9 +127,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-acl host="123.123.123.123" user="fed-phil" path="C:\\Important\\Executable.exe" type="deny" rights="ExecuteFile,Write" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -126,18 +147,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
+>
+> * changed: True
 
 
 ### win-acl-inheritance
+
 ***
 Change ACL inheritance
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_acl_inheritance_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_acl_inheritance_module.html>
 
 
 #### Base Command
 
 `win-acl-inheritance`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -155,9 +179,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-acl-inheritance host="123.123.123.123" path="C://apache" state="absent"```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -173,18 +199,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
+>
+> * changed: True
 
 
 ### win-audit-policy-system
+
 ***
 Used to make changes to the system wide Audit Policy
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_audit_policy_system_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_audit_policy_system_module.html>
 
 
 #### Base Command
 
 `win-audit-policy-system`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -203,9 +232,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-audit-policy-system host="123.123.123.123" subcategory="File System" audit_type="failure" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -224,20 +255,25 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ## Current_Audit_Policy
->    * file system: failure
+>
+> * changed: False
+>
+> * ## Current_Audit_Policy
+>
+>   * file system: failure
 
 
 ### win-audit-rule
+
 ***
 Adds an audit rule to files, folders, or registry keys
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_audit_rule_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_audit_rule_module.html>
 
 
 #### Base Command
 
 `win-audit-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -263,9 +299,11 @@ Will be one of file, directory, registry. |
 
 
 #### Command Example
+
 ```!win-audit-rule host="123.123.123.123" path="C:\\inetpub\\wwwroot\\website" user="BUILTIN\\Users" rights="write,delete,changepermissions" audit_flags="success,failure" inheritance_flags="ContainerInherit,ObjectInherit" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -290,26 +328,31 @@ Will be one of file, directory, registry. |
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * path_type: directory
->  * ## Current_Audit_Rules
->    * audit_flags: Success, Failure
->    * inheritance_flags: ContainerInherit, ObjectInherit
->    * is_inherited: False
->    * propagation_flags: None
->    * rights: Write, Delete, ChangePermissions
->    * user: BUILTIN\Users
+>
+> * changed: True
+> * path_type: directory
+>
+> * ## Current_Audit_Rules
+>
+>   * audit_flags: Success, Failure
+>   * inheritance_flags: ContainerInherit, ObjectInherit
+>   * is_inherited: False
+>   * propagation_flags: None
+>   * rights: Write, Delete, ChangePermissions
+>   * user: BUILTIN\Users
 
 
 ### win-certificate-store
+
 ***
 Manages the certificate store
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_certificate_store_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_certificate_store_module.html>
 
 
 #### Base Command
 
 `win-certificate-store`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -334,9 +377,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-certificate-store host="123.123.123.123" path="C:\\Temp\\cert.pem" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -355,20 +400,25 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * ## Thumbprints
->    * 0: 58288A1E834AD6E157688226A7206914CBD28519
+>
+> * changed: True
+>
+> * ## Thumbprints
+>
+>   * 0: 58288A1E834AD6E157688226A7206914CBD28519
 
 
 ### win-chocolatey
+
 ***
 Manage packages using chocolatey
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_module.html>
 
 
 #### Base Command
 
 `win-chocolatey`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -408,9 +458,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-chocolatey host="123.123.123.123" name="git" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -427,19 +479,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * rc: 0
+>
+> * changed: True
+> * rc: 0
 
 
 ### win-chocolatey-config
+
 ***
 Manages Chocolatey config settings
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_config_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_config_module.html>
 
 
 #### Base Command
 
 `win-chocolatey-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -457,9 +512,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-chocolatey-config host="123.123.123.123" name="cacheLocation" state="present" value="D:\\chocolatey_temp" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -475,18 +532,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
+>
+> * changed: True
 
 
 ### win-chocolatey-facts
+
 ***
 Create a facts collection for Chocolatey
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_facts_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_facts_module.html>
 
 
 #### Base Command
 
 `win-chocolatey-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -502,9 +562,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-chocolatey-facts host="123.123.123.123" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -597,84 +659,105 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * ## Chocolatey
->    * ### Config
->      * cacheLocation: D:\chocolatey_temp
->      * commandExecutionTimeoutSeconds: 2700
->      * containsLegacyPackageInstalls: True
->      * proxy: 
->      * proxyBypassList: 
->      * proxyBypassOnLocal: True
->      * proxyPassword: 
->      * proxyUser: 
->      * upgradeAllExceptions: 
->      * webRequestTimeoutSeconds: 30
->    * ### Feature
->      * allowEmptyChecksums: False
->      * allowEmptyChecksumsSecure: True
->      * allowGlobalConfirmation: False
->      * autoUninstaller: True
->      * checksumFiles: True
->      * exitOnRebootDetected: False
->      * failOnAutoUninstaller: False
->      * failOnInvalidOrMissingLicense: False
->      * failOnStandardError: False
->      * ignoreInvalidOptionsSwitches: True
->      * ignoreUnfoundPackagesOnUpgradeOutdated: False
->      * logEnvironmentValues: False
->      * logValidationResultsOnWarnings: True
->      * logWithoutColor: False
->      * powershellHost: True
->      * removePackageInformationOnUninstall: False
->      * scriptsCheckLastExitCode: False
->      * showDownloadProgress: True
->      * showNonElevatedWarnings: True
->      * skipPackageUpgradesWhenNotInstalled: False
->      * stopOnFirstPackageFailure: False
->      * useEnhancedExitCodes: False
->      * useFipsCompliantChecksums: False
->      * usePackageExitCodes: True
->      * usePackageRepositoryOptimizations: True
->      * useRememberedArgumentsForUpgrades: False
->      * virusCheck: False
->    * ### Packages
->    * ### List
->      * package: chocolatey
->      * version: 0.10.15
->    * ### List
->      * package: chocolatey-core.extension
->      * version: 1.1.1.1
->    * ### List
->      * package: git
->      * version: 2.32.0
->    * ### List
->      * package: git.install
->      * version: 2.32.0
->    * ### List
->      * package: nssm
->      * version: 2.24.101.20180116
->    * ### Sources
->    * ### Chocolatey
->      * admin_only: False
->      * allow_self_service: False
->      * bypass_proxy: False
->      * certificate: None
->      * disabled: False
->      * name: chocolatey
->      * priority: 0
->      * source: https://chocolatey.org/api/v2/
->      * source_username: None
+>
+> * ## Chocolatey
+>
+>   * ### Config
+>
+>     * cacheLocation: D:\chocolatey_temp
+>     * commandExecutionTimeoutSeconds: 2700
+>     * containsLegacyPackageInstalls: True
+>     * proxy: 
+>     * proxyBypassList: 
+>     * proxyBypassOnLocal: True
+>     * proxyPassword: 
+>     * proxyUser: 
+>     * upgradeAllExceptions: 
+>     * webRequestTimeoutSeconds: 30
+>
+>   * ### Feature
+>
+>     * allowEmptyChecksums: False
+>     * allowEmptyChecksumsSecure: True
+>     * allowGlobalConfirmation: False
+>     * autoUninstaller: True
+>     * checksumFiles: True
+>     * exitOnRebootDetected: False
+>     * failOnAutoUninstaller: False
+>     * failOnInvalidOrMissingLicense: False
+>     * failOnStandardError: False
+>     * ignoreInvalidOptionsSwitches: True
+>     * ignoreUnfoundPackagesOnUpgradeOutdated: False
+>     * logEnvironmentValues: False
+>     * logValidationResultsOnWarnings: True
+>     * logWithoutColor: False
+>     * powershellHost: True
+>     * removePackageInformationOnUninstall: False
+>     * scriptsCheckLastExitCode: False
+>     * showDownloadProgress: True
+>     * showNonElevatedWarnings: True
+>     * skipPackageUpgradesWhenNotInstalled: False
+>     * stopOnFirstPackageFailure: False
+>     * useEnhancedExitCodes: False
+>     * useFipsCompliantChecksums: False
+>     * usePackageExitCodes: True
+>     * usePackageRepositoryOptimizations: True
+>     * useRememberedArgumentsForUpgrades: False
+>     * virusCheck: False
+>
+>   * ### Packages
+>
+>   * ### List
+>
+>     * package: chocolatey
+>     * version: 0.10.15
+>
+>   * ### List
+>
+>     * package: chocolatey-core.extension
+>     * version: 1.1.1.1
+>
+>   * ### List
+>
+>     * package: git
+>     * version: 2.32.0
+>
+>   * ### List
+>
+>     * package: git.install
+>     * version: 2.32.0
+>
+>   * ### List
+>
+>     * package: nssm
+>     * version: 2.24.101.20180116
+>
+>   * ### Sources
+>
+>   * ### Chocolatey
+>
+>     * admin_only: False
+>     * allow_self_service: False
+>     * bypass_proxy: False
+>     * certificate: None
+>     * disabled: False
+>     * name: chocolatey
+>     * priority: 0
+>     * source: <https://chocolatey.org/api/v2/>
+>     * source_username: None
 
 
 ### win-chocolatey-feature
+
 ***
 Manages Chocolatey features
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_feature_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_feature_module.html>
 
 
 #### Base Command
 
 `win-chocolatey-feature`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -691,9 +774,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-chocolatey-feature host="123.123.123.123" name="checksumFiles" state="disabled" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -709,18 +794,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
+>
+> * changed: True
 
 
 ### win-chocolatey-source
+
 ***
 Manages Chocolatey sources
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_source_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_source_module.html>
 
 
 #### Base Command
 
 `win-chocolatey-source`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -747,9 +835,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-chocolatey-source host="123.123.123.123" name="chocolatey" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -765,18 +855,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### win-copy
+
 ***
 Copies files to remote locations on windows hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_copy_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_copy_module.html>
 
 
 #### Base Command
 
 `win-copy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -806,9 +899,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-copy host="123.123.123.123" "src"="C:\\Important\\Executable.exe" dest="C:\\Temp" remote_"src"=yes```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -830,24 +925,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * checksum: 4a2446ee9651d90ac6c5613bddf416df197f6401
->  * dest: C:\Temp\Executable.exe
->  * operation: file_copy
->  * original_basename: Executable.exe
->  * size: 32256
->  * src: C:\Important\Executable.exe
+>
+> * changed: True
+> * checksum: 4a2446ee9651d90ac6c5613bddf416df197f6401
+> * dest: C:\Temp\Executable.exe
+> * operation: file_copy
+> * original_basename: Executable.exe
+> * size: 32256
+> * src: C:\Important\Executable.exe
 
 
 ### win-credential
+
 ***
 Manages Windows Credentials in the Credential Manager
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_credential_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_credential_module.html>
 
 
 #### Base Command
 
 `win-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -873,14 +971,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-defrag
+
 ***
 Consolidate fragmented files on local volumes
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_defrag_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_defrag_module.html>
 
 
 #### Base Command
 
 `win-defrag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -906,9 +1006,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-defrag host="123.123.123.123" parallel="True" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -995,14 +1097,15 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * cmd: defrag.exe /C /M /V
->  * delta: 0:00:00.062484
->  * end: 2021-06-29 03:14:21.017314
->  * rc: 0
->  * start: 2021-06-29 03:14:20.954829
->  * stderr: 
->  * stdout: Microsoft Drive Optimizer
+>
+> * changed: True
+> * cmd: defrag.exe /C /M /V
+> * delta: 0:00:00.062484
+> * end: 2021-06-29 03:14:21.017314
+> * rc: 0
+> * start: 2021-06-29 03:14:20.954829
+> * stderr: 
+> * stdout: Microsoft Drive Optimizer
 >Copyright (c) 2013 Microsoft Corp.
 >
 >An invalid command line option was specified. (0x89000008)
@@ -1064,80 +1167,84 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >	defrag C:\mountpoint /A /U
 >	defrag /C /H /V
 >
->  * ## Stderr_Lines
->  * ## Stdout_Lines
->    * 0: Microsoft Drive Optimizer
->    * 1: Copyright (c) 2013 Microsoft Corp.
->    * 2: 
->    * 3: An invalid command line option was specified. (0x89000008)
->    * 2: 
->    * 5: Description:
->    * 2: 
->    * 7: 	Optimizes and defragments files on local volumes to
->    * 8: 	improve system performance.
->    * 2: 
->    * 10: Syntax:
->    * 2: 
->    * 12: 	defrag  | /C | /E  [<task(s)>] [/H] [/M [n] | [/U] [/V]] [/I n]
->    * 2: 
->    * 14: 	Where <task(s)> is omitted (traditional defrag), or as follows:
->    * 15: 		/A | [/D] [/K] [/L] | /O | /X
->    * 2: 
->    * 17: 	Or, to track an operation already in progress on a volume:
->    * 18: 	defrag  /T
->    * 2: 
->    * 20: Parameters:
->    * 2: 
->    * 22: 	Value	Description
->    * 2: 
->    * 24: 	/A	Perform analysis on the specified volumes.
->    * 2: 
->    * 26: 	/C	Perform the operation on all volumes.
->    * 2: 
->    * 28: 	/D	Perform traditional defrag (this is the default).
->    * 2: 
->    * 30: 	/E	Perform the operation on all volumes except those specified.
->    * 2: 
->    * 32: 	/G	Optimize the storage tiers on the specified volumes.
->    * 2: 
->    * 34: 	/H	Run the operation at normal priority (default is low).
->    * 2: 
->    * 36: 	/I n	Tier optimization would run for at most n seconds on each volume.
->    * 2: 
->    * 38: 	/K	Perform slab consolidation on the specified volumes.
->    * 2: 
->    * 40: 	/L	Perform retrim on the specified volumes.
->    * 2: 
->    * 42: 	/M [n]	Run the operation on each volume in parallel in the background.
->    * 43: 		At most n threads optimize the storage tiers in parallel.
->    * 2: 
->    * 45: 	/O	Perform the proper optimization for each media type.
->    * 2: 
->    * 47: 	/T	Track an operation already in progress on the specified volume.
->    * 2: 
->    * 49: 	/U	Print the progress of the operation on the screen.
->    * 2: 
->    * 51: 	/V	Print verbose output containing the fragmentation statistics.
->    * 2: 
->    * 53: 	/X	Perform free space consolidation on the specified volumes.
->    * 2: 
->    * 55: Examples:
->    * 2: 
->    * 57: 	defrag C: /U /V
->    * 58: 	defrag C: D: /M
->    * 59: 	defrag C:\mountpoint /A /U
->    * 60: 	defrag /C /H /V
+> * ## Stderr_Lines
+>
+> * ## Stdout_Lines
+>
+>   * 0: Microsoft Drive Optimizer
+>   * 1: Copyright (c) 2013 Microsoft Corp.
+>   * 2: 
+>   * 3: An invalid command line option was specified. (0x89000008)
+>   * 2: 
+>   * 5: Description:
+>   * 2: 
+>   * 7: 	Optimizes and defragments files on local volumes to
+>   * 8: 	improve system performance.
+>   * 2: 
+>   * 10: Syntax:
+>   * 2: 
+>   * 12: 	defrag  | /C | /E  [<task(s)>] [/H] [/M [n] | [/U] [/V]] [/I n]
+>   * 2: 
+>   * 14: 	Where <task(s)> is omitted (traditional defrag), or as follows:
+>   * 15: 		/A | [/D] [/K] [/L] | /O | /X
+>   * 2: 
+>   * 17: 	Or, to track an operation already in progress on a volume:
+>   * 18: 	defrag  /T
+>   * 2: 
+>   * 20: Parameters:
+>   * 2: 
+>   * 22: 	Value	Description
+>   * 2: 
+>   * 24: 	/A	Perform analysis on the specified volumes.
+>   * 2: 
+>   * 26: 	/C	Perform the operation on all volumes.
+>   * 2: 
+>   * 28: 	/D	Perform traditional defrag (this is the default).
+>   * 2: 
+>   * 30: 	/E	Perform the operation on all volumes except those specified.
+>   * 2: 
+>   * 32: 	/G	Optimize the storage tiers on the specified volumes.
+>   * 2: 
+>   * 34: 	/H	Run the operation at normal priority (default is low).
+>   * 2: 
+>   * 36: 	/I n	Tier optimization would run for at most n seconds on each volume.
+>   * 2: 
+>   * 38: 	/K	Perform slab consolidation on the specified volumes.
+>   * 2: 
+>   * 40: 	/L	Perform retrim on the specified volumes.
+>   * 2: 
+>   * 42: 	/M [n]	Run the operation on each volume in parallel in the background.
+>   * 43: 		At most n threads optimize the storage tiers in parallel.
+>   * 2: 
+>   * 45: 	/O	Perform the proper optimization for each media type.
+>   * 2: 
+>   * 47: 	/T	Track an operation already in progress on the specified volume.
+>   * 2: 
+>   * 49: 	/U	Print the progress of the operation on the screen.
+>   * 2: 
+>   * 51: 	/V	Print verbose output containing the fragmentation statistics.
+>   * 2: 
+>   * 53: 	/X	Perform free space consolidation on the specified volumes.
+>   * 2: 
+>   * 55: Examples:
+>   * 2: 
+>   * 57: 	defrag C: /U /V
+>   * 58: 	defrag C: D: /M
+>   * 59: 	defrag C:\mountpoint /A /U
+>   * 60: 	defrag /C /H /V
 
 
 ### win-disk-facts
+
 ***
 Show the attached disks and disk information of the target host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_disk_facts_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_disk_facts_module.html>
 
 
 #### Base Command
 
 `win-disk-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1153,9 +1260,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-disk-facts host="123.123.123.123" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -1493,311 +1602,365 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * ## Disks
->  * ## Vmware Virtual Disk
->    * bootable: True
->    * bus_type: SAS
->    * clustered: False
->    * firmware_version: 2.0 
->    * friendly_name: VMware Virtual disk
->    * guid: None
->    * location: SCSI0
->    * manufacturer: VMware  
->    * model: Virtual disk    
->    * number: 0
->    * operational_status: Online
->    * partition_count: 2
->    * partition_style: MBR
->    * path: \\?\scsi#disk&ven_vmware&prod_virtual_disk#5&1ec51bf7&0&000000#{53f56307-b6bf-11d0-94f2-00a0c91efb8b}
->    * read_only: False
->    * sector_size: 512
->    * serial_number: None
->    * size: 16106127360
->    * system_disk: True
->    * unique_id: SCSI\DISK&VEN_VMWARE&PROD_VIRTUAL_DISK\5&1EC51BF7&0&000000:WIN-U425UI0HPP7
->    * ### Partitions
->    * ### List
->      * active: True
->      * drive_letter: None
->      * guid: None
->      * hidden: False
->      * mbr_type: 7
->      * number: 1
->      * offset: 1048576
->      * shadow_copy: False
->      * size: 524288000
->      * transition_state: 1
->      * type: IFS
->      * #### Access_Paths
->        * 0: \\?\Volume{da4b1e8a-0000-0000-0000-100000000000}\
->      * #### Volumes
->      * #### {1}\\Win-U425Ui0Hpp7\Root/Microsoft/Windows/Storage/Providers_V2\Wsp_Volume.Objectid="{65F97678-Bd69-11Eb-88D8-806E6F6E6963}:Vo:\\?\Volume{Da4B1E8A-0000-0000-0000-100000000000}\"
->        * allocation_unit_size: 4096
->        * drive_type: Fixed
->        * health_status: Healthy
->        * label: System Reserved
->        * object_id: {1}\\WIN-U425UI0HPP7\root/Microsoft/Windows/Storage/Providers_v2\WSP_Volume.ObjectId="{65f97678-bd69-11eb-88d8-806e6f6e6963}:VO:\\?\Volume{da4b1e8a-0000-0000-0000-100000000000}\"
->        * path: \\?\Volume{da4b1e8a-0000-0000-0000-100000000000}\
->        * size: 524283904
->        * size_remaining: 179843072
->        * type: NTFS
->    * ### List
->      * active: False
->      * drive_letter: C
->      * guid: None
->      * hidden: False
->      * mbr_type: 7
->      * number: 2
->      * offset: 525336576
->      * shadow_copy: False
->      * size: 15579742208
->      * transition_state: 1
->      * type: IFS
->      * #### Access_Paths
->        * 0: C:\
->        * 1: \\?\Volume{da4b1e8a-0000-0000-0000-501f00000000}\
->      * #### Volumes
->      * #### {1}\\Win-U425Ui0Hpp7\Root/Microsoft/Windows/Storage/Providers_V2\Wsp_Volume.Objectid="{65F97678-Bd69-11Eb-88D8-806E6F6E6963}:Vo:\\?\Volume{Da4B1E8A-0000-0000-0000-501F00000000}\"
->        * allocation_unit_size: 4096
->        * drive_type: Fixed
->        * health_status: Healthy
->        * label: 
->        * object_id: {1}\\WIN-U425UI0HPP7\root/Microsoft/Windows/Storage/Providers_v2\WSP_Volume.ObjectId="{65f97678-bd69-11eb-88d8-806e6f6e6963}:VO:\\?\Volume{da4b1e8a-0000-0000-0000-501f00000000}\"
->        * path: \\?\Volume{da4b1e8a-0000-0000-0000-501f00000000}\
->        * size: 15579738112
->        * size_remaining: 1943584768
->        * type: NTFS
->    * ### Physical_Disk
->      * allocated_size: 16106127360
->      * bus_type: SAS
->      * can_pool: False
->      * cannot_pool_reason: Insufficient Capacity
->      * device_id: 0
->      * firmware_version: 2.0
->      * friendly_name: VMware Virtual disk
->      * health_status: Healthy
->      * indication_enabled: None
->      * manufacturer: VMware
->      * media_type: SSD
->      * model: Virtual disk
->      * object_id: {1}\\WIN-U425UI0HPP7\root/Microsoft/Windows/Storage/Providers_v2\SPACES_PhysicalDisk.ObjectId="{65f97678-bd69-11eb-88d8-806e6f6e6963}:PD:{2ab9f649-d867-11eb-88db-806e6f6e6963}"
->      * operational_status: OK
->      * partial: True
->      * physical_location: SCSI0
->      * serial_number: None
->      * size: 16106127360
->      * spindle_speed: 0
->      * unique_id: {2ab9f649-d867-11eb-88db-806e6f6e6963}
->      * usage_type: Auto-Select
->      * #### Supported_Usages
->        * Count: 5
->        * ##### Value
->          * 0: Auto-Select
->          * 1: Manual-Select
->          * 2: Hot Spare
->          * 3: Retired
->          * 4: Journal
->    * ### Win32_Disk_Drive
->      * availability: None
->      * bytes_per_sector: 512
->      * caption: VMware Virtual disk SCSI Disk Device
->      * compression_method: None
->      * config_manager_error_code: 0
->      * config_manager_user_config: False
->      * creation_class_name: Win32_DiskDrive
->      * default_block_size: None
->      * description: Disk drive
->      * device_id: \\.\PHYSICALDRIVE0
->      * error_cleared: None
->      * error_description: None
->      * error_methodology: None
->      * firmware_revision: 2.0 
->      * index: 0
->      * install_date: None
->      * interface_type: SCSI
->      * last_error_code: None
->      * manufacturer: (Standard disk drives)
->      * max_block_size: None
->      * max_media_size: None
->      * media_loaded: True
->      * media_type: Fixed hard disk media
->      * min_block_size: None
->      * model: VMware Virtual disk SCSI Disk Device
->      * name: \\.\PHYSICALDRIVE0
->      * needs_cleaning: None
->      * number_of_media_supported: None
->      * partitions: 4
->      * pnp_device_id: SCSI\DISK&VEN_VMWARE&PROD_VIRTUAL_DISK\5&1EC51BF7&0&000000
->      * power_management_capabilities: None
->      * power_management_supported: None
->      * scsi_bus: 0
->      * scsi_logical_unit: 0
->      * scsi_port: 0
->      * scsi_target_id: 0
->      * sectors_per_track: 63
->      * serial_number: None
->      * signature: 3662356106
->      * size: 16105098240
->      * status: OK
->      * status_info: None
->      * system_creation_class_name: Win32_ComputerSystem
->      * system_name: WIN-U425UI0HPP7
->      * total_cylinders: 1958
->      * total_heads: 255
->      * total_sectors: 31455270
->      * total_tracks: 499290
->      * tracks_per_cylinder: 255
->      * #### Capabilities
->        * 0: 3
->        * 1: 4
->      * #### Capability_Descriptions
->        * 0: Random Access
->        * 1: Supports Writing
->  * ## Vmware Virtual Disk
->    * bootable: False
->    * bus_type: SAS
->    * clustered: False
->    * firmware_version: 2.0 
->    * friendly_name: VMware Virtual disk
->    * guid: None
->    * location: SCSI0
->    * manufacturer: VMware  
->    * model: Virtual disk    
->    * number: 1
->    * operational_status: Online
->    * partition_count: 1
->    * partition_style: MBR
->    * path: \\?\scsi#disk&ven_vmware&prod_virtual_disk#5&1ec51bf7&0&000100#{53f56307-b6bf-11d0-94f2-00a0c91efb8b}
->    * read_only: False
->    * sector_size: 512
->    * serial_number: None
->    * size: 19922944
->    * system_disk: False
->    * unique_id: SCSI\DISK&VEN_VMWARE&PROD_VIRTUAL_DISK\5&1EC51BF7&0&000100:WIN-U425UI0HPP7
->    * ### Partitions
->    * ### List
->      * active: False
->      * drive_letter: F
->      * guid: None
->      * hidden: False
->      * mbr_type: 7
->      * number: 1
->      * offset: 65536
->      * shadow_copy: False
->      * size: 16777216
->      * transition_state: 1
->      * type: IFS
->      * #### Access_Paths
->        * 0: F:\
->        * 1: \\?\Volume{75516713-0000-0000-0000-010000000000}\
->      * #### Volumes
->      * #### {1}\\Win-U425Ui0Hpp7\Root/Microsoft/Windows/Storage/Providers_V2\Wsp_Volume.Objectid="{65F97678-Bd69-11Eb-88D8-806E6F6E6963}:Vo:\\?\Volume{75516713-0000-0000-0000-010000000000}\"
->        * allocation_unit_size: 4096
->        * drive_type: Fixed
->        * health_status: Healthy
->        * label: New Volume
->        * object_id: {1}\\WIN-U425UI0HPP7\root/Microsoft/Windows/Storage/Providers_v2\WSP_Volume.ObjectId="{65f97678-bd69-11eb-88d8-806e6f6e6963}:VO:\\?\Volume{75516713-0000-0000-0000-010000000000}\"
->        * path: \\?\Volume{75516713-0000-0000-0000-010000000000}\
->        * size: 16773120
->        * size_remaining: 6569984
->        * type: NTFS
->    * ### Physical_Disk
->      * allocated_size: 2097152
->      * bus_type: SAS
->      * can_pool: False
->      * cannot_pool_reason: Insufficient Capacity
->      * device_id: 1
->      * firmware_version: 2.0
->      * friendly_name: VMware Virtual disk
->      * health_status: Healthy
->      * indication_enabled: None
->      * manufacturer: VMware
->      * media_type: SSD
->      * model: Virtual disk
->      * object_id: {1}\\WIN-U425UI0HPP7\root/Microsoft/Windows/Storage/Providers_v2\SPACES_PhysicalDisk.ObjectId="{65f97678-bd69-11eb-88d8-806e6f6e6963}:PD:{2aba10d3-d867-11eb-88db-000c29740042}"
->      * operational_status: OK
->      * partial: False
->      * physical_location: SCSI0
->      * serial_number: None
->      * size: 19922944
->      * spindle_speed: 0
->      * unique_id: {2aba10d3-d867-11eb-88db-000c29740042}
->      * usage_type: Auto-Select
->      * #### Supported_Usages
->        * Count: 5
->        * ##### Value
->          * 0: Auto-Select
->          * 1: Manual-Select
->          * 2: Hot Spare
->          * 3: Retired
->          * 4: Journal
->    * ### Win32_Disk_Drive
->      * availability: None
->      * bytes_per_sector: 512
->      * caption: VMware Virtual disk SCSI Disk Device
->      * compression_method: None
->      * config_manager_error_code: 0
->      * config_manager_user_config: False
->      * creation_class_name: Win32_DiskDrive
->      * default_block_size: None
->      * description: Disk drive
->      * device_id: \\.\PHYSICALDRIVE1
->      * error_cleared: None
->      * error_description: None
->      * error_methodology: None
->      * firmware_revision: 2.0 
->      * index: 1
->      * install_date: None
->      * interface_type: SCSI
->      * last_error_code: None
->      * manufacturer: (Standard disk drives)
->      * max_block_size: None
->      * max_media_size: None
->      * media_loaded: True
->      * media_type: Fixed hard disk media
->      * min_block_size: None
->      * model: VMware Virtual disk SCSI Disk Device
->      * name: \\.\PHYSICALDRIVE1
->      * needs_cleaning: None
->      * number_of_media_supported: None
->      * partitions: 4
->      * pnp_device_id: SCSI\DISK&VEN_VMWARE&PROD_VIRTUAL_DISK\5&1EC51BF7&0&000100
->      * power_management_capabilities: None
->      * power_management_supported: None
->      * scsi_bus: 0
->      * scsi_logical_unit: 0
->      * scsi_port: 0
->      * scsi_target_id: 1
->      * sectors_per_track: 63
->      * serial_number: None
->      * signature: 1968269075
->      * size: 16450560
->      * status: OK
->      * status_info: None
->      * system_creation_class_name: Win32_ComputerSystem
->      * system_name: WIN-U425UI0HPP7
->      * total_cylinders: 2
->      * total_heads: 255
->      * total_sectors: 32130
->      * total_tracks: 510
->      * tracks_per_cylinder: 255
->      * #### Capabilities
->        * 0: 3
->        * 1: 4
->      * #### Capability_Descriptions
->        * 0: Random Access
->        * 1: Supports Writing
+>
+> * ## Disks
+>
+> * ## Vmware Virtual Disk
+>
+>   * bootable: True
+>   * bus_type: SAS
+>   * clustered: False
+>   * firmware_version: 2.0 
+>   * friendly_name: VMware Virtual disk
+>   * guid: None
+>   * location: SCSI0
+>   * manufacturer: VMware  
+>   * model: Virtual disk    
+>   * number: 0
+>   * operational_status: Online
+>   * partition_count: 2
+>   * partition_style: MBR
+>   * path: \\?\scsi#disk&ven_vmware&prod_virtual_disk#5&1ec51bf7&0&000000#{53f56307-b6bf-11d0-94f2-00a0c91efb8b}
+>   * read_only: False
+>   * sector_size: 512
+>   * serial_number: None
+>   * size: 16106127360
+>   * system_disk: True
+>   * unique_id: SCSI\DISK&VEN_VMWARE&PROD_VIRTUAL_DISK\5&1EC51BF7&0&000000:WIN-U425UI0HPP7
+>
+>   * ### Partitions
+>
+>   * ### List
+>
+>     * active: True
+>     * drive_letter: None
+>     * guid: None
+>     * hidden: False
+>     * mbr_type: 7
+>     * number: 1
+>     * offset: 1048576
+>     * shadow_copy: False
+>     * size: 524288000
+>     * transition_state: 1
+>     * type: IFS
+>
+>     * #### Access_Paths
+>
+>       * 0: \\?\Volume{da4b1e8a-0000-0000-0000-100000000000}\
+>
+>     * #### Volumes
+>
+>     * #### {1}\\Win-U425Ui0Hpp7\Root/Microsoft/Windows/Storage/Providers_V2\Wsp_Volume.Objectid="{65F97678-Bd69-11Eb-88D8-806E6F6E6963}:Vo:\\?\Volume{Da4B1E8A-0000-0000-0000-100000000000}\"
+>
+>       * allocation_unit_size: 4096
+>       * drive_type: Fixed
+>       * health_status: Healthy
+>       * label: System Reserved
+>       * object_id: {1}\\WIN-U425UI0HPP7\root/Microsoft/Windows/Storage/Providers_v2\WSP_Volume.ObjectId="{65f97678-bd69-11eb-88d8-806e6f6e6963}:VO:\\?\Volume{da4b1e8a-0000-0000-0000-100000000000}\"
+>       * path: \\?\Volume{da4b1e8a-0000-0000-0000-100000000000}\
+>       * size: 524283904
+>       * size_remaining: 179843072
+>       * type: NTFS
+>
+>   * ### List
+>
+>     * active: False
+>     * drive_letter: C
+>     * guid: None
+>     * hidden: False
+>     * mbr_type: 7
+>     * number: 2
+>     * offset: 525336576
+>     * shadow_copy: False
+>     * size: 15579742208
+>     * transition_state: 1
+>     * type: IFS
+>
+>     * #### Access_Paths
+>
+>       * 0: C:\
+>       * 1: \\?\Volume{da4b1e8a-0000-0000-0000-501f00000000}\
+>
+>     * #### Volumes
+>
+>     * #### {1}\\Win-U425Ui0Hpp7\Root/Microsoft/Windows/Storage/Providers_V2\Wsp_Volume.Objectid="{65F97678-Bd69-11Eb-88D8-806E6F6E6963}:Vo:\\?\Volume{Da4B1E8A-0000-0000-0000-501F00000000}\"
+>
+>       * allocation_unit_size: 4096
+>       * drive_type: Fixed
+>       * health_status: Healthy
+>       * label: 
+>       * object_id: {1}\\WIN-U425UI0HPP7\root/Microsoft/Windows/Storage/Providers_v2\WSP_Volume.ObjectId="{65f97678-bd69-11eb-88d8-806e6f6e6963}:VO:\\?\Volume{da4b1e8a-0000-0000-0000-501f00000000}\"
+>       * path: \\?\Volume{da4b1e8a-0000-0000-0000-501f00000000}\
+>       * size: 15579738112
+>       * size_remaining: 1943584768
+>       * type: NTFS
+>
+>   * ### Physical_Disk
+>
+>     * allocated_size: 16106127360
+>     * bus_type: SAS
+>     * can_pool: False
+>     * cannot_pool_reason: Insufficient Capacity
+>     * device_id: 0
+>     * firmware_version: 2.0
+>     * friendly_name: VMware Virtual disk
+>     * health_status: Healthy
+>     * indication_enabled: None
+>     * manufacturer: VMware
+>     * media_type: SSD
+>     * model: Virtual disk
+>     * object_id: {1}\\WIN-U425UI0HPP7\root/Microsoft/Windows/Storage/Providers_v2\SPACES_PhysicalDisk.ObjectId="{65f97678-bd69-11eb-88d8-806e6f6e6963}:PD:{2ab9f649-d867-11eb-88db-806e6f6e6963}"
+>     * operational_status: OK
+>     * partial: True
+>     * physical_location: SCSI0
+>     * serial_number: None
+>     * size: 16106127360
+>     * spindle_speed: 0
+>     * unique_id: {2ab9f649-d867-11eb-88db-806e6f6e6963}
+>     * usage_type: Auto-Select
+>
+>     * #### Supported_Usages
+>
+>       * Count: 5
+>
+>       * ##### Value
+>
+>         * 0: Auto-Select
+>         * 1: Manual-Select
+>         * 2: Hot Spare
+>         * 3: Retired
+>         * 4: Journal
+>
+>   * ### Win32_Disk_Drive
+>
+>     * availability: None
+>     * bytes_per_sector: 512
+>     * caption: VMware Virtual disk SCSI Disk Device
+>     * compression_method: None
+>     * config_manager_error_code: 0
+>     * config_manager_user_config: False
+>     * creation_class_name: Win32_DiskDrive
+>     * default_block_size: None
+>     * description: Disk drive
+>     * device_id: \\.\PHYSICALDRIVE0
+>     * error_cleared: None
+>     * error_description: None
+>     * error_methodology: None
+>     * firmware_revision: 2.0 
+>     * index: 0
+>     * install_date: None
+>     * interface_type: SCSI
+>     * last_error_code: None
+>     * manufacturer: (Standard disk drives)
+>     * max_block_size: None
+>     * max_media_size: None
+>     * media_loaded: True
+>     * media_type: Fixed hard disk media
+>     * min_block_size: None
+>     * model: VMware Virtual disk SCSI Disk Device
+>     * name: \\.\PHYSICALDRIVE0
+>     * needs_cleaning: None
+>     * number_of_media_supported: None
+>     * partitions: 4
+>     * pnp_device_id: SCSI\DISK&VEN_VMWARE&PROD_VIRTUAL_DISK\5&1EC51BF7&0&000000
+>     * power_management_capabilities: None
+>     * power_management_supported: None
+>     * scsi_bus: 0
+>     * scsi_logical_unit: 0
+>     * scsi_port: 0
+>     * scsi_target_id: 0
+>     * sectors_per_track: 63
+>     * serial_number: None
+>     * signature: 3662356106
+>     * size: 16105098240
+>     * status: OK
+>     * status_info: None
+>     * system_creation_class_name: Win32_ComputerSystem
+>     * system_name: WIN-U425UI0HPP7
+>     * total_cylinders: 1958
+>     * total_heads: 255
+>     * total_sectors: 31455270
+>     * total_tracks: 499290
+>     * tracks_per_cylinder: 255
+>
+>     * #### Capabilities
+>
+>       * 0: 3
+>       * 1: 4
+>
+>     * #### Capability_Descriptions
+>
+>       * 0: Random Access
+>       * 1: Supports Writing
+>
+> * ## Vmware Virtual Disk
+>
+>   * bootable: False
+>   * bus_type: SAS
+>   * clustered: False
+>   * firmware_version: 2.0 
+>   * friendly_name: VMware Virtual disk
+>   * guid: None
+>   * location: SCSI0
+>   * manufacturer: VMware  
+>   * model: Virtual disk    
+>   * number: 1
+>   * operational_status: Online
+>   * partition_count: 1
+>   * partition_style: MBR
+>   * path: \\?\scsi#disk&ven_vmware&prod_virtual_disk#5&1ec51bf7&0&000100#{53f56307-b6bf-11d0-94f2-00a0c91efb8b}
+>   * read_only: False
+>   * sector_size: 512
+>   * serial_number: None
+>   * size: 19922944
+>   * system_disk: False
+>   * unique_id: SCSI\DISK&VEN_VMWARE&PROD_VIRTUAL_DISK\5&1EC51BF7&0&000100:WIN-U425UI0HPP7
+>
+>   * ### Partitions
+>
+>   * ### List
+>
+>     * active: False
+>     * drive_letter: F
+>     * guid: None
+>     * hidden: False
+>     * mbr_type: 7
+>     * number: 1
+>     * offset: 65536
+>     * shadow_copy: False
+>     * size: 16777216
+>     * transition_state: 1
+>     * type: IFS
+>
+>     * #### Access_Paths
+>
+>       * 0: F:\
+>       * 1: \\?\Volume{75516713-0000-0000-0000-010000000000}\
+>
+>     * #### Volumes
+>
+>     * #### {1}\\Win-U425Ui0Hpp7\Root/Microsoft/Windows/Storage/Providers_V2\Wsp_Volume.Objectid="{65F97678-Bd69-11Eb-88D8-806E6F6E6963}:Vo:\\?\Volume{75516713-0000-0000-0000-010000000000}\"
+>
+>       * allocation_unit_size: 4096
+>       * drive_type: Fixed
+>       * health_status: Healthy
+>       * label: New Volume
+>       * object_id: {1}\\WIN-U425UI0HPP7\root/Microsoft/Windows/Storage/Providers_v2\WSP_Volume.ObjectId="{65f97678-bd69-11eb-88d8-806e6f6e6963}:VO:\\?\Volume{75516713-0000-0000-0000-010000000000}\"
+>       * path: \\?\Volume{75516713-0000-0000-0000-010000000000}\
+>       * size: 16773120
+>       * size_remaining: 6569984
+>       * type: NTFS
+>
+>   * ### Physical_Disk
+>
+>     * allocated_size: 2097152
+>     * bus_type: SAS
+>     * can_pool: False
+>     * cannot_pool_reason: Insufficient Capacity
+>     * device_id: 1
+>     * firmware_version: 2.0
+>     * friendly_name: VMware Virtual disk
+>     * health_status: Healthy
+>     * indication_enabled: None
+>     * manufacturer: VMware
+>     * media_type: SSD
+>     * model: Virtual disk
+>     * object_id: {1}\\WIN-U425UI0HPP7\root/Microsoft/Windows/Storage/Providers_v2\SPACES_PhysicalDisk.ObjectId="{65f97678-bd69-11eb-88d8-806e6f6e6963}:PD:{2aba10d3-d867-11eb-88db-000c29740042}"
+>     * operational_status: OK
+>     * partial: False
+>     * physical_location: SCSI0
+>     * serial_number: None
+>     * size: 19922944
+>     * spindle_speed: 0
+>     * unique_id: {2aba10d3-d867-11eb-88db-000c29740042}
+>     * usage_type: Auto-Select
+>
+>     * #### Supported_Usages
+>
+>       * Count: 5
+>
+>       * ##### Value
+>
+>         * 0: Auto-Select
+>         * 1: Manual-Select
+>         * 2: Hot Spare
+>         * 3: Retired
+>         * 4: Journal
+>
+>   * ### Win32_Disk_Drive
+>
+>     * availability: None
+>     * bytes_per_sector: 512
+>     * caption: VMware Virtual disk SCSI Disk Device
+>     * compression_method: None
+>     * config_manager_error_code: 0
+>     * config_manager_user_config: False
+>     * creation_class_name: Win32_DiskDrive
+>     * default_block_size: None
+>     * description: Disk drive
+>     * device_id: \\.\PHYSICALDRIVE1
+>     * error_cleared: None
+>     * error_description: None
+>     * error_methodology: None
+>     * firmware_revision: 2.0 
+>     * index: 1
+>     * install_date: None
+>     * interface_type: SCSI
+>     * last_error_code: None
+>     * manufacturer: (Standard disk drives)
+>     * max_block_size: None
+>     * max_media_size: None
+>     * media_loaded: True
+>     * media_type: Fixed hard disk media
+>     * min_block_size: None
+>     * model: VMware Virtual disk SCSI Disk Device
+>     * name: \\.\PHYSICALDRIVE1
+>     * needs_cleaning: None
+>     * number_of_media_supported: None
+>     * partitions: 4
+>     * pnp_device_id: SCSI\DISK&VEN_VMWARE&PROD_VIRTUAL_DISK\5&1EC51BF7&0&000100
+>     * power_management_capabilities: None
+>     * power_management_supported: None
+>     * scsi_bus: 0
+>     * scsi_logical_unit: 0
+>     * scsi_port: 0
+>     * scsi_target_id: 1
+>     * sectors_per_track: 63
+>     * serial_number: None
+>     * signature: 1968269075
+>     * size: 16450560
+>     * status: OK
+>     * status_info: None
+>     * system_creation_class_name: Win32_ComputerSystem
+>     * system_name: WIN-U425UI0HPP7
+>     * total_cylinders: 2
+>     * total_heads: 255
+>     * total_sectors: 32130
+>     * total_tracks: 510
+>     * tracks_per_cylinder: 255
+>
+>     * #### Capabilities
+>
+>       * 0: 3
+>       * 1: 4
+>
+>     * #### Capability_Descriptions
+>
+>       * 0: Random Access
+>       * 1: Supports Writing
 
 
 ### win-disk-image
+
 ***
 Manage ISO/VHD/VHDX mounts on Windows hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_disk_image_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_disk_image_module.html>
 
 
 #### Base Command
 
 `win-disk-image`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1816,9 +1979,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-disk-image host="123.123.123.123" image_path="C:/install.iso" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -1837,20 +2002,25 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * ## Mount_Paths
->    * 0: D:\
+>
+> * changed: True
+>
+> * ## Mount_Paths
+>
+>   * 0: D:\
 
 
 ### win-dns-client
+
 ***
 Configures DNS lookup on Windows hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_dns_client_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_dns_client_module.html>
 
 
 #### Base Command
 
 `win-dns-client`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1869,14 +2039,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-dns-record
+
 ***
 Manage Windows Server DNS records
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_dns_record_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_dns_record_module.html>
 
 
 #### Base Command
 
 `win-dns-record`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1900,14 +2072,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-domain
+
 ***
 Ensures the existence of a Windows domain
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_domain_module.html>
 
 
 #### Base Command
 
 `win-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1931,9 +2105,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-domain host="123.123.123.123" dns_domain_name="ansible.vagrant" safe_mode_password="password123!" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -1950,19 +2126,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * reboot_required: True
+>
+> * changed: True
+> * reboot_required: True
 
 
 ### win-domain-computer
+
 ***
 Manage computers in Active Directory
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_computer_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_domain_computer_module.html>
 
 
 #### Base Command
 
 `win-domain-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1989,14 +2168,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-domain-controller
+
 ***
 Manage domain controller/member server state for a Windows host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_controller_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_domain_controller_module.html>
 
 
 #### Base Command
 
 `win-domain-controller`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2024,14 +2205,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-domain-group
+
 ***
 Creates, modifies or removes domain groups
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_group_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_domain_group_module.html>
 
 
 #### Base Command
 
 `win-domain-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2075,14 +2258,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-domain-group-membership
+
 ***
 Manage Windows domain group membership
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_group_membership_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_domain_group_membership_module.html>
 
 
 #### Base Command
 
 `win-domain-group-membership`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2109,14 +2294,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-domain-membership
+
 ***
 Manage domain/workgroup membership for a Windows host
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_membership_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_domain_membership_module.html>
 
 
 #### Base Command
 
 `win-domain-membership`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2141,14 +2328,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-domain-user
+
 ***
 Manages Windows Active Directory user accounts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_user_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_domain_user_module.html>
 
 
 #### Base Command
 
 `win-domain-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2216,14 +2405,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-dotnet-ngen
+
 ***
 Runs ngen to recompile DLLs after .NET  updates
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_dotnet_ngen_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_dotnet_ngen_module.html>
 
 
 #### Base Command
 
 `win-dotnet-ngen`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2248,14 +2439,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-dsc
+
 ***
 Invokes a PowerShell DSC configuration
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_dsc_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_dsc_module.html>
 
 
 #### Base Command
 
 `win-dsc`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2279,14 +2472,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-environment
+
 ***
 Modify environment variables on windows hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_environment_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_environment_module.html>
 
 
 #### Base Command
 
 `win-environment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2307,9 +2502,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-environment host="123.123.123.123" state="present" name="TestVariable" value="Test value" level="machine" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -2334,25 +2531,31 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * before_value: Test value
->  * changed: False
->  * value: Test value
->  * ## Values
->    * ### Testvariable
->      * after: Test value
->      * before: Test value
->      * changed: False
+>
+> * before_value: Test value
+> * changed: False
+> * value: Test value
+>
+> * ## Values
+>
+>   * ### Testvariable
+>
+>     * after: Test value
+>     * before: Test value
+>     * changed: False
 
 
 ### win-eventlog
+
 ***
 Manage Windows event logs
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_eventlog_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_eventlog_module.html>
 
 
 #### Base Command
 
 `win-eventlog`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2384,9 +2587,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-eventlog host="123.123.123.123" name="MyNewLog" sources="['NewLogSource1', 'NewLogSource2']" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -2414,29 +2619,35 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * entries: 0
->  * exists: True
->  * maximum_size_kb: 512
->  * name: MyNewLog
->  * overflow_action: OverwriteOlder
->  * retention_days: 7
->  * ## Sources
->    * 0: 'NewLogSource2']
->    * 1: MyNewLog
->    * 2: ['NewLogSource1'
->  * ## Sources_Changed
+>
+> * changed: False
+> * entries: 0
+> * exists: True
+> * maximum_size_kb: 512
+> * name: MyNewLog
+> * overflow_action: OverwriteOlder
+> * retention_days: 7
+>
+> * ## Sources
+>
+>   * 0: 'NewLogSource2']
+>   * 1: MyNewLog
+>   * 2: ['NewLogSource1'
+>
+> * ## Sources_Changed
 
 
 ### win-eventlog-entry
+
 ***
 Write entries to Windows event logs
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_eventlog_entry_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_eventlog_entry_module.html>
 
 
 #### Base Command
 
 `win-eventlog-entry`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2458,9 +2669,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-eventlog-entry host="123.123.123.123" log="System" source="System" event_id="1234" message="This is a test log entry."```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -2477,19 +2690,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * msg: Entry added to log System from source System
+>
+> * changed: True
+> * msg: Entry added to log System from source System
 
 
 ### win-feature
+
 ***
 Installs and uninstalls Windows Features on Windows Server
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_feature_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_feature_module.html>
 
 
 #### Base Command
 
 `win-feature`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2512,9 +2728,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-feature host="123.123.123.123" name="Web-Server" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -2534,22 +2752,26 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * exitcode: NoChangeNeeded
->  * reboot_required: False
->  * success: True
->  * ## Feature_Result
+>
+> * changed: False
+> * exitcode: NoChangeNeeded
+> * reboot_required: False
+> * success: True
+>
+> * ## Feature_Result
 
 
 ### win-file
+
 ***
 Creates, touches or removes files or directories
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_file_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_file_module.html>
 
 
 #### Base Command
 
 `win-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2566,9 +2788,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-file host="123.123.123.123" path="C:/Temp/foo.conf" state="touch"```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -2584,18 +2808,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
+>
+> * changed: True
 
 
 ### win-file-version
+
 ***
 Get DLL or EXE file build version
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_file_version_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_file_version_module.html>
 
 
 #### Base Command
 
 `win-file-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2618,9 +2845,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-file-version host="123.123.123.123" path="C:\\Windows\\System32\\cmd.exe" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -2642,24 +2871,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * file_build_part: 14393
->  * file_major_part: 10
->  * file_minor_part: 0
->  * file_private_part: 0
->  * file_version: 10.0.14393.0 (rs1_release.160715-1616)
->  * path: C:\Windows\System32\cmd.exe
->  * product_version: 10.0.14393.0
+>
+> * file_build_part: 14393
+> * file_major_part: 10
+> * file_minor_part: 0
+> * file_private_part: 0
+> * file_version: 10.0.14393.0 (rs1_release.160715-1616)
+> * path: C:\Windows\System32\cmd.exe
+> * product_version: 10.0.14393.0
 
 
 ### win-find
+
 ***
 Return a list of files based on specific criteria
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_find_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_find_module.html>
 
 
 #### Base Command
 
 `win-find`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2689,9 +2921,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-find host="123.123.123.123" paths="c:\\Temp" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -2737,46 +2971,53 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * examined: 2
->  * matched: 1
->  * ## Files
->  * ## Earthrise.Jpg
->    * attributes: Archive
->    * checksum: 40c7d97574e7c791d649582912620f7d816829e4
->    * creationtime: 1624943905.9269967
->    * exists: True
->    * extension: .jpg
->    * filename: earthrise.jpg
->    * isarchive: True
->    * isdir: False
->    * ishidden: False
->    * isjunction: False
->    * islnk: False
->    * isreadonly: False
->    * isreg: True
->    * isshared: False
->    * lastaccesstime: 1624943905.9269967
->    * lastwritetime: 1624943905.8957422
->    * lnk_source: None
->    * lnk_target: None
->    * nlink: 1
->    * owner: BUILTIN\Administrators
->    * path: C:\Temp\earthrise.jpg
->    * sharename: None
->    * size: 45108
->    * ### Hlnk_Targets
+>
+> * changed: False
+> * examined: 2
+> * matched: 1
+>
+> * ## Files
+>
+> * ## Earthrise.Jpg
+>
+>   * attributes: Archive
+>   * checksum: 40c7d97574e7c791d649582912620f7d816829e4
+>   * creationtime: 1624943905.9269967
+>   * exists: True
+>   * extension: .jpg
+>   * filename: earthrise.jpg
+>   * isarchive: True
+>   * isdir: False
+>   * ishidden: False
+>   * isjunction: False
+>   * islnk: False
+>   * isreadonly: False
+>   * isreg: True
+>   * isshared: False
+>   * lastaccesstime: 1624943905.9269967
+>   * lastwritetime: 1624943905.8957422
+>   * lnk_source: None
+>   * lnk_target: None
+>   * nlink: 1
+>   * owner: BUILTIN\Administrators
+>   * path: C:\Temp\earthrise.jpg
+>   * sharename: None
+>   * size: 45108
+>
+>   * ### Hlnk_Targets
 
 
 ### win-firewall
+
 ***
 Enable or disable the Windows Firewall
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_firewall_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_firewall_module.html>
 
 
 #### Base Command
 
 `win-firewall`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2796,9 +3037,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-firewall host="123.123.123.123" state="enabled" profiles="['Domain', 'Private', 'Public']" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -2835,35 +3078,46 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * state: enabled
->  * ## Domain
->    * considered: False
->    * currentstate: 1
->    * enabled: True
->  * ## Private
->    * considered: False
->    * currentstate: 1
->    * enabled: True
->  * ## Public
->    * considered: False
->    * currentstate: 1
->    * enabled: True
->  * ## Profiles
->    * 0: ['Domain'
->    * 1: 'Private'
->    * 2: 'Public']
+>
+> * changed: False
+> * state: enabled
+>
+> * ## Domain
+>
+>   * considered: False
+>   * currentstate: 1
+>   * enabled: True
+>
+> * ## Private
+>
+>   * considered: False
+>   * currentstate: 1
+>   * enabled: True
+>
+> * ## Public
+>
+>   * considered: False
+>   * currentstate: 1
+>   * enabled: True
+>
+> * ## Profiles
+>
+>   * 0: ['Domain'
+>   * 1: 'Private'
+>   * 2: 'Public']
 
 
 ### win-firewall-rule
+
 ***
 Windows firewall automation
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_firewall_rule_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_firewall_rule_module.html>
 
 
 #### Base Command
 
 `win-firewall-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2893,9 +3147,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-firewall-rule host="123.123.123.123" name="SMTP" localport="25" action="allow" direction="in" protocol="tcp" state="present" enabled="True" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -2912,19 +3168,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * msg: Firewall rule(s) changed '' - unchanged 'SMTP'
+>
+> * changed: False
+> * msg: Firewall rule(s) changed '' - unchanged 'SMTP'
 
 
 ### win-format
+
 ***
 Formats an existing volume or a new volume on an existing partition on Windows
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_format_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_format_module.html>
 
 
 #### Base Command
 
 `win-format`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2950,9 +3209,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-format host="123.123.123.123" drive_letter=f```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -2968,18 +3229,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### win-get-url
+
 ***
 Downloads file from HTTP, HTTPS, or FTP to node
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_get_url_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_get_url_module.html>
 
 
 #### Base Command
 
 `win-get-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3026,9 +3290,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-get-url host="123.123.123.123" url="https://www.nasa.gov/sites/default/files/styles/full_width_feature/public/images/297755main_GPN-2001-000009_full.jpg" dest="C:\\Temp\\earthrise.jpg" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -3052,26 +3318,29 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * checksum_dest: 40c7d97574e7c791d649582912620f7d816829e4
->  * checksum_src: 40c7d97574e7c791d649582912620f7d816829e4
->  * dest: C:\Temp\earthrise.jpg
->  * elapsed: 1.4999867
->  * msg: OK
->  * size: 45108
->  * status_code: 200
->  * url: https://www.nasa.gov/sites/default/files/styles/full_width_feature/public/images/297755main_GPN-2001-000009_full.jpg
+>
+> * changed: True
+> * checksum_dest: 40c7d97574e7c791d649582912620f7d816829e4
+> * checksum_src: 40c7d97574e7c791d649582912620f7d816829e4
+> * dest: C:\Temp\earthrise.jpg
+> * elapsed: 1.4999867
+> * msg: OK
+> * size: 45108
+> * status_code: 200
+> * url: <https://www.nasa.gov/sites/default/files/styles/full_width_feature/public/images/297755main_GPN-2001-000009_full.jpg>
 
 
 ### win-group
+
 ***
 Add and remove local groups
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_group_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_group_module.html>
 
 
 #### Base Command
 
 `win-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3089,9 +3358,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-group host="123.123.123.123" name="deploy" description="Deploy Group" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -3107,18 +3378,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### win-group-membership
+
 ***
 Manage Windows local group membership
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_group_membership_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_group_membership_module.html>
 
 
 #### Base Command
 
 `win-group-membership`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3140,9 +3414,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-group-membership host="123.123.123.123" name="Remote Desktop Users" members="fed-phil" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -3165,23 +3441,30 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * name: Remote Desktop Users
->  * ## Added
->    * 0: WIN-U425UI0HPP7\fed-phil
->  * ## Members
->    * 0: WIN-U425UI0HPP7\fed-phil
+>
+> * changed: True
+> * name: Remote Desktop Users
+>
+> * ## Added
+>
+>   * 0: WIN-U425UI0HPP7\fed-phil
+>
+> * ## Members
+>
+>   * 0: WIN-U425UI0HPP7\fed-phil
 
 
 ### win-hostname
+
 ***
 Manages local Windows computer name
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_hostname_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_hostname_module.html>
 
 
 #### Base Command
 
 `win-hostname`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3199,9 +3482,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-hostname host="123.123.123.123" name="sample-hostname" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -3219,20 +3504,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * old_name: WIN-U425UI0HPP7
->  * reboot_required: True
+>
+> * changed: True
+> * old_name: WIN-U425UI0HPP7
+> * reboot_required: True
 
 
 ### win-hosts
+
 ***
 Manages hosts file entries on Windows.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_hosts_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_hosts_module.html>
 
 
 #### Base Command
 
 `win-hosts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3252,9 +3540,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-hosts host="123.123.123.123" state="present" canonical_name="localhost" ip_address="127.0.0.1" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -3270,18 +3560,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### win-hotfix
+
 ***
 Install and uninstalls Windows hotfixes
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_hotfix_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_hotfix_module.html>
 
 
 #### Base Command
 
 `win-hotfix`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3305,14 +3598,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-http-proxy
+
 ***
 Manages proxy settings for WinHTTP
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_http_proxy_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_http_proxy_module.html>
 
 
 #### Base Command
 
 `win-http-proxy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3330,9 +3625,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-http-proxy host="123.123.123.123" proxy="hostname" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -3348,18 +3645,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### win-iis-virtualdirectory
+
 ***
 Configures a virtual directory in IIS
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_virtualdirectory_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_iis_virtualdirectory_module.html>
 
 
 #### Base Command
 
 `win-iis-virtualdirectory`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3381,14 +3681,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-iis-webapplication
+
 ***
 Configures IIS web applications
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_webapplication_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_iis_webapplication_module.html>
 
 
 #### Base Command
 
 `win-iis-webapplication`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3412,14 +3714,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-iis-webapppool
+
 ***
 Configure IIS Web Application Pools
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_webapppool_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_iis_webapppool_module.html>
 
 
 #### Base Command
 
 `win-iis-webapppool`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3435,20 +3739,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftWindows.WinIisWebapppool.attributes | unknown | Application Pool attributes that were set and processed by this module invocation. | 
-| MicrosoftWindows.WinIisWebapppool.info | unknown | Information on current state of the Application Pool. See https://www.iis.net/configreference/system.applicationhost/applicationpools/add\#005 for the full list of return attributes based on your IIS version. | 
+| MicrosoftWindows.WinIisWebapppool.info | unknown | Information on current state of the Application Pool. See <https://www.iis.net/configreference/system.applicationhost/applicationpools/add\#005> for the full list of return attributes based on your IIS version. | 
 
 
 
 
 ### win-iis-webbinding
+
 ***
 Configures a IIS Web site binding
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_webbinding_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_iis_webbinding_module.html>
 
 
 #### Base Command
 
 `win-iis-webbinding`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3479,14 +3785,16 @@ Can be removed, updated, matched, or added |
 
 
 ### win-iis-website
+
 ***
 Configures a IIS Web site
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_website_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_iis_website_module.html>
 
 
 #### Base Command
 
 `win-iis-website`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3513,14 +3821,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-inet-proxy
+
 ***
 Manages proxy settings for WinINet and Internet Explorer
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_inet_proxy_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_inet_proxy_module.html>
 
 
 #### Base Command
 
 `win-inet-proxy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3540,9 +3850,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-inet-proxy host="123.123.123.123" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -3558,18 +3870,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### win-lineinfile
+
 ***
 Ensure a particular line is in a file, or replace an existing line using a back-referenced regular expression
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_lineinfile_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_lineinfile_module.html>
 
 
 #### Base Command
 
 `win-lineinfile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3599,9 +3914,11 @@ This is now deprecated, use \`backup_file\` instead. |
 
 
 #### Command Example
+
 ```!win-lineinfile host="123.123.123.123" path="c:/temp/file.txt" line="c:/temp/new" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -3620,21 +3937,24 @@ This is now deprecated, use \`backup_file\` instead. |
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * backup: 
->  * changed: True
->  * encoding: utf-8
->  * msg: line added
+>
+> * backup: 
+> * changed: True
+> * encoding: utf-8
+> * msg: line added
 
 
 ### win-mapped-drive
+
 ***
 Map network drives for users
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_mapped_drive_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_mapped_drive_module.html>
 
 
 #### Base Command
 
 `win-mapped-drive`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3656,14 +3976,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-msg
+
 ***
 Sends a message to logged in users on Windows hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_msg_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_msg_module.html>
 
 
 #### Base Command
 
 `win-msg`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3688,9 +4010,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-msg host="123.123.123.123" display_seconds="60" msg="Automated upgrade about to start.  Please save your work and log off before 6pm" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -3712,24 +4036,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * display_seconds: 60
->  * msg: Automated upgrade about to start.  Please save your work and log off before 6pm
->  * rc: 0
->  * runtime_seconds: 0.10118519999999999
->  * sent_localtime: Tuesday, June 29, 2021 5:19:08 AM
->  * wait: False
+>
+> * changed: True
+> * display_seconds: 60
+> * msg: Automated upgrade about to start.  Please save your work and log off before 6pm
+> * rc: 0
+> * runtime_seconds: 0.10118519999999999
+> * sent_localtime: Tuesday, June 29, 2021 5:19:08 AM
+> * wait: False
 
 
 ### win-netbios
+
 ***
 Manage NetBIOS over TCP/IP settings on Windows.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_netbios_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_netbios_module.html>
 
 
 #### Base Command
 
 `win-netbios`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3747,9 +4074,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-netbios host="123.123.123.123" state="disabled" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -3766,19 +4095,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * reboot_required: False
+>
+> * changed: False
+> * reboot_required: False
 
 
 ### win-nssm
+
 ***
 Install a service using NSSM
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_nssm_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_nssm_module.html>
 
 
 #### Base Command
 
 `win-nssm`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3808,9 +4140,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-nssm host="123.123.123.123" name="foo" application="C:/windows/system32/calc.exe" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -3827,19 +4161,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * changed_by: AppRotateBytes
+>
+> * changed: True
+> * changed_by: AppRotateBytes
 
 
 ### win-optional-feature
+
 ***
 Manage optional Windows features
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_optional_feature_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_optional_feature_module.html>
 
 
 #### Base Command
 
 `win-optional-feature`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3859,9 +4196,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-optional-feature host="123.123.123.123" name="TelnetClient" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -3878,19 +4217,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * reboot_required: False
+>
+> * changed: False
+> * reboot_required: False
 
 
 ### win-owner
+
 ***
 Set owner
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_owner_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_owner_module.html>
 
 
 #### Base Command
 
 `win-owner`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3908,9 +4250,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-owner host="123.123.123.123" path="C:/apache" user="fed-phil" recurse="True" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -3926,18 +4270,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
+>
+> * changed: True
 
 
 ### win-package
+
 ***
 Installs/uninstalls an installable package
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_package_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_package_module.html>
 
 
 #### Base Command
 
 `win-package`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3972,14 +4319,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-pagefile
+
 ***
 Query or change pagefile configuration
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_pagefile_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_pagefile_module.html>
 
 
 #### Base Command
 
 `win-pagefile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4005,9 +4354,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-pagefile host="123.123.123.123" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -4025,20 +4376,24 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * automatic_managed_pagefiles: True
->  * changed: False
->  * ## Pagefiles
+>
+> * automatic_managed_pagefiles: True
+> * changed: False
+>
+> * ## Pagefiles
 
 
 ### win-partition
+
 ***
 Creates, changes and removes partitions on Windows Server
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_partition_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_partition_module.html>
 
 
 #### Base Command
 
 `win-partition`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4064,9 +4419,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-partition host="123.123.123.123" drive_letter="F" partition_size="10 MB" disk_number="1"```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -4082,17 +4439,20 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
+>
+> * changed: True
 
 ### win-path
+
 ***
 Manage Windows path environment variables
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_path_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_path_module.html>
 
 
 #### Base Command
 
 `win-path`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4111,9 +4471,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-path host="123.123.123.123" elements="['%SystemRoot%\\\\system32', '%SystemRoot%\\\\system32\\\\WindowsPowerShell\\\\v1.0']" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -4130,19 +4492,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * path_value: %SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;C:\ProgramData\chocolatey\bin;['%SystemRoot%\system32', '%SystemRoot%\system32\WindowsPowerShell\v1.0'];C:\Program Files\Git\cmd
+>
+> * changed: False
+> * path_value: %SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;C:\ProgramData\chocolatey\bin;['%SystemRoot%\system32', '%SystemRoot%\system32\WindowsPowerShell\v1.0'];C:\Program Files\Git\cmd
 
 
 ### win-pester
+
 ***
 Run Pester tests on Windows hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_pester_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_pester_module.html>
 
 
 #### Base Command
 
 `win-pester`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4165,14 +4530,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-ping
+
 ***
 A windows version of the classic ping module
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_ping_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_ping_module.html>
 
 
 #### Base Command
 
 `win-ping`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4189,9 +4556,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-ping host="123.123.123.123" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -4208,19 +4577,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ping: pong
+>
+> * changed: False
+> * ping: pong
 
 
 ### win-power-plan
+
 ***
 Changes the power plan of a Windows system
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_power_plan_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_power_plan_module.html>
 
 
 #### Base Command
 
 `win-power-plan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4239,9 +4611,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-power-plan host="123.123.123.123" name="high performance" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -4264,24 +4638,29 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * power_plan_enabled: True
->  * power_plan_name: high performance
->  * ## All_Available_Plans
->    * Balanced: False
->    * High performance: True
->    * Power saver: False
+>
+> * changed: False
+> * power_plan_enabled: True
+> * power_plan_name: high performance
+>
+> * ## All_Available_Plans
+>
+>   * Balanced: False
+>   * High performance: True
+>   * Power saver: False
 
 
 ### win-product-facts
+
 ***
 Provides Windows product and license information
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_product_facts_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_product_facts_module.html>
 
 
 #### Base Command
 
 `win-product-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4297,9 +4676,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-product-facts host="123.123.123.123" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -4319,22 +4700,25 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * os_license_channel: Retail:TB:Eval
->  * os_license_edition: Windows(R), ServerStandardEval edition
->  * os_license_status: Licensed
->  * os_product_id: 00378-00000-00000-AA739
->  * os_product_key: WD6GH-2TH8C-77QD4-8WVRH-9BVYG
+>
+> * os_license_channel: Retail:TB:Eval
+> * os_license_edition: Windows(R), ServerStandardEval edition
+> * os_license_status: Licensed
+> * os_product_id: 00378-00000-00000-AA739
+> * os_product_key: WD6GH-2TH8C-77QD4-8WVRH-9BVYG
 
 
 ### win-psexec
+
 ***
 Runs commands (remotely) as another (privileged) user
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_psexec_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_psexec_module.html>
 
 
 #### Base Command
 
 `win-psexec`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4371,9 +4755,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-psexec host="123.123.123.123" command="whoami.exe" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -4406,38 +4792,44 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * delta: 0:00:01.375000
->  * end: 2021-06-29 04:18:35.671487
->  * psexec_command: psexec.exe -accepteula whoami.exe
->  * rc: 0
->  * start: 2021-06-29 04:18:34.296487
->  * stderr: whoami.exe exited with error code 0.
 >
->  * stdout: 
+> * changed: True
+> * delta: 0:00:01.375000
+> * end: 2021-06-29 04:18:35.671487
+> * psexec_command: psexec.exe -accepteula whoami.exe
+> * rc: 0
+> * start: 2021-06-29 04:18:34.296487
+> * stderr: whoami.exe exited with error code 0.
+>
+> * stdout: 
 >PsExec v2.34 - Execute processes remotely
 >Copyright (C) 2001-2021 Mark Russinovich
->Sysinternals - www.sysinternals.com
+>Sysinternals - <www.sysinternals.com>
 >
 >
->  * ## Stderr_Lines
->    * 0: whoami.exe exited with error code 0.
->  * ## Stdout_Lines
->    * 0: 
->    * 1: PsExec v2.34 - Execute processes remotely
->    * 2: Copyright (C) 2001-2021 Mark Russinovich
->    * 3: Sysinternals - www.sysinternals.com
->    * 0: 
+> * ## Stderr_Lines
+>
+>   * 0: whoami.exe exited with error code 0.
+>
+> * ## Stdout_Lines
+>
+>   * 0: 
+>   * 1: PsExec v2.34 - Execute processes remotely
+>   * 2: Copyright (C) 2001-2021 Mark Russinovich
+>   * 3: Sysinternals - <www.sysinternals.com>
+>   * 0: 
 
 ### win-psmodule
+
 ***
 Adds or removes a Windows PowerShell module
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_psmodule_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_psmodule_module.html>
 
 
 #### Base Command
 
 `win-psmodule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4465,9 +4857,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-psmodule host="123.123.123.123" name="PowerShellModule" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -4486,21 +4880,24 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * nuget_changed: False
->  * output: Module PowerShellModule already present
->  * repository_changed: False
+>
+> * changed: False
+> * nuget_changed: False
+> * output: Module PowerShellModule already present
+> * repository_changed: False
 
 
 ### win-psrepository
+
 ***
 Adds, removes or updates a Windows PowerShell repository.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_psrepository_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_psrepository_module.html>
 
 
 #### Base Command
 
 `win-psrepository`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4519,9 +4916,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-psrepository host="123.123.123.123" name="PSGallery" state="present"```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -4537,18 +4936,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 
 ### win-rabbitmq-plugin
+
 ***
 Manage RabbitMQ plugins
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rabbitmq_plugin_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_rabbitmq_plugin_module.html>
 
 
 #### Base Command
 
 `win-rabbitmq-plugin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4571,14 +4973,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-rds-cap
+
 ***
 Manage Connection Authorization Policies (CAP) on a Remote Desktop Gateway server
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rds_cap_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_rds_cap_module.html>
 
 
 #### Base Command
 
 `win-rds-cap`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4610,14 +5014,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-rds-rap
+
 ***
 Manage Resource Authorization Policies (RAP) on a Remote Desktop Gateway server
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rds_rap_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_rds_rap_module.html>
 
 
 #### Base Command
 
 `win-rds-rap`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4641,14 +5047,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-rds-settings
+
 ***
 Manage main settings of a Remote Desktop Gateway server
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rds_settings_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_rds_settings_module.html>
 
 
 #### Base Command
 
 `win-rds-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4669,14 +5077,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-reboot
+
 ***
 Reboot a windows machine
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_reboot_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_reboot_module.html>
 
 
 #### Base Command
 
 `win-reboot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4700,9 +5110,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-reboot host="123.123.123.123" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -4718,17 +5130,20 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
+>
+> * changed: False
 
 ### win-reg-stat
+
 ***
 Get information about Windows registry keys
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_reg_stat_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_reg_stat_module.html>
 
 
 #### Base Command
 
 `win-reg-stat`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4752,9 +5167,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-reg-stat host="123.123.123.123" path="HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -4832,67 +5249,95 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * exists: True
->  * ## Properties
->    * ### Commonfilesdir
->      * raw_value: C:\Program Files\Common Files
->      * type: REG_SZ
->      * value: C:\Program Files\Common Files
->    * ### Commonfilesdir (X86)
->      * raw_value: C:\Program Files (x86)\Common Files
->      * type: REG_SZ
->      * value: C:\Program Files (x86)\Common Files
->    * ### Commonw6432Dir
->      * raw_value: C:\Program Files\Common Files
->      * type: REG_SZ
->      * value: C:\Program Files\Common Files
->    * ### Devicepath
->      * raw_value: %SystemRoot%\inf
->      * type: REG_EXPAND_SZ
->      * value: C:\Windows\inf
->    * ### Mediapathunexpanded
->      * raw_value: %SystemRoot%\Media
->      * type: REG_EXPAND_SZ
->      * value: C:\Windows\Media
->    * ### Programfilesdir
->      * raw_value: C:\Program Files
->      * type: REG_SZ
->      * value: C:\Program Files
->    * ### Programfilesdir (X86)
->      * raw_value: C:\Program Files (x86)
->      * type: REG_SZ
->      * value: C:\Program Files (x86)
->    * ### Programfilespath
->      * raw_value: %ProgramFiles%
->      * type: REG_EXPAND_SZ
->      * value: C:\Program Files
->    * ### Programw6432Dir
->      * raw_value: C:\Program Files
->      * type: REG_SZ
->      * value: C:\Program Files
->    * ### Sm_Configureprogramsname
->      * raw_value: Set Program Access and Defaults
->      * type: REG_SZ
->      * value: Set Program Access and Defaults
->    * ### Sm_Gamesname
->      * raw_value: Games
->      * type: REG_SZ
->      * value: Games
->  * ## Sub_Keys
->    * 0: AccountPicture
->    * 1: ActionCenter
+>
+> * changed: False
+> * exists: True
+>
+> * ## Properties
+>
+>   * ### Commonfilesdir
+>
+>     * raw_value: C:\Program Files\Common Files
+>     * type: REG_SZ
+>     * value: C:\Program Files\Common Files
+>
+>   * ### Commonfilesdir (X86)
+>
+>     * raw_value: C:\Program Files (x86)\Common Files
+>     * type: REG_SZ
+>     * value: C:\Program Files (x86)\Common Files
+>
+>   * ### Commonw6432Dir
+>
+>     * raw_value: C:\Program Files\Common Files
+>     * type: REG_SZ
+>     * value: C:\Program Files\Common Files
+>
+>   * ### Devicepath
+>
+>     * raw_value: %SystemRoot%\inf
+>     * type: REG_EXPAND_SZ
+>     * value: C:\Windows\inf
+>
+>   * ### Mediapathunexpanded
+>
+>     * raw_value: %SystemRoot%\Media
+>     * type: REG_EXPAND_SZ
+>     * value: C:\Windows\Media
+>
+>   * ### Programfilesdir
+>
+>     * raw_value: C:\Program Files
+>     * type: REG_SZ
+>     * value: C:\Program Files
+>
+>   * ### Programfilesdir (X86)
+>
+>     * raw_value: C:\Program Files (x86)
+>     * type: REG_SZ
+>     * value: C:\Program Files (x86)
+>
+>   * ### Programfilespath
+>
+>     * raw_value: %ProgramFiles%
+>     * type: REG_EXPAND_SZ
+>     * value: C:\Program Files
+>
+>   * ### Programw6432Dir
+>
+>     * raw_value: C:\Program Files
+>     * type: REG_SZ
+>     * value: C:\Program Files
+>
+>   * ### Sm_Configureprogramsname
+>
+>     * raw_value: Set Program Access and Defaults
+>     * type: REG_SZ
+>     * value: Set Program Access and Defaults
+>
+>   * ### Sm_Gamesname
+>
+>     * raw_value: Games
+>     * type: REG_SZ
+>     * value: Games
+>
+> * ## Sub_Keys
+>
+>   * 0: AccountPicture
+>   * 1: ActionCenter
 
 
 ### win-regedit
+
 ***
 Add, change, or remove registry keys and values
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html>
 
 
 #### Base Command
 
 `win-regedit`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4916,9 +5361,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-regedit host="123.123.123.123" path="HKCU:\\Software\\MyCompany" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -4936,20 +5383,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * data_changed: False
->  * data_type_changed: False
+>
+> * changed: False
+> * data_changed: False
+> * data_type_changed: False
 
 
 ### win-region
+
 ***
 Set the region and format settings
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_region_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_region_module.html>
 
 
 #### Base Command
 
 `win-region`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4969,9 +5419,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-region host="123.123.123.123" format="en-US" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -4988,19 +5440,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * restart_required: False
+>
+> * changed: False
+> * restart_required: False
 
 
 ### win-regmerge
+
 ***
 Merges the contents of a registry file into the Windows registry
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regmerge_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_regmerge_module.html>
 
 
 #### Base Command
 
 `win-regmerge`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5020,9 +5475,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-regmerge host="123.123.123.123" path="C:/temp/firefox.reg" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -5039,19 +5496,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * compared: False
+>
+> * changed: True
+> * compared: False
 
 
 ### win-robocopy
+
 ***
 Synchronizes the contents of two directories using Robocopy
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_robocopy_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_robocopy_module.html>
 
 
 #### Base Command
 
 `win-robocopy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5080,9 +5540,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-robocopy host="123.123.123.123" "src"="C:/temp" dest="C:/temp2" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -5156,75 +5618,80 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * cmd:  C:/temp C:/temp2
->  * dest: C:/temp2
->  * flags: None
->  * msg: Files copied successfully!
->  * purge: False
->  * rc: 1
->  * recurse: False
->  * return_code: 1
->  * src: C:/temp
->  * ## Output
->    * 0: 
->    * 1: -------------------------------------------------------------------------------
->    * 2:    ROBOCOPY     ::     Robust File Copy for Windows                              
->    * 1: -------------------------------------------------------------------------------
->    * 0: 
->    * 5:   Started : Tuesday, June 29, 2021 5:22:01 AM
->    * 6:    Source : C:\temp\
->    * 7:      Dest : C:\temp2\
->    * 0: 
->    * 9:     Files : *.*
->    * 10: 	    
->    * 11:   Options : *.* /DCOPY:DA /COPY:DAT /R:1000000 /W:30 
->    * 0: 
->    * 13: ------------------------------------------------------------------------------
->    * 0: 
->    * 15: 	                   6	C:\temp\
->    * 16: 	    New File  		    4708	cert.pem
->    * 17:   0%  
->    * 18: 100%  
->    * 19: 	    New File  		   45108	earthrise.jpg
->    * 17:   0%  
->    * 18: 100%  
->    * 22: 	    New File  		   32256	Executable.exe
->    * 17:   0%  
->    * 18: 100%  
->    * 25: 	    New File  		      11	file.txt
->    * 17:   0%  
->    * 18: 100%  
->    * 28: 	    New File  		     446	firefox.reg
->    * 17:   0%  
->    * 18: 100%  
->    * 31: 	    New File  		       0	foo.conf
->    * 18: 100%  
->    * 0: 
->    * 13: ------------------------------------------------------------------------------
->    * 0: 
->    * 36:                Total    Copied   Skipped  Mismatch    FAILED    Extras
->    * 37:     Dirs :         1         0         1         0         0         0
->    * 38:    Files :         6         6         0         0         0         0
->    * 39:    Bytes :    80.5 k    80.5 k         0         0         0         0
->    * 40:    Times :   0:00:00   0:00:00                       0:00:00   0:00:00
->    * 0: 
->    * 0: 
->    * 43:    Speed :             5894928 Bytes/sec.
->    * 44:    Speed :             337.310 MegaBytes/min.
->    * 45:    Ended : Tuesday, June 29, 2021 5:22:01 AM
->    * 0: 
+>
+> * changed: True
+> * cmd:  C:/temp C:/temp2
+> * dest: C:/temp2
+> * flags: None
+> * msg: Files copied successfully!
+> * purge: False
+> * rc: 1
+> * recurse: False
+> * return_code: 1
+> * src: C:/temp
+>
+> * ## Output
+>
+>   * 0: 
+>   * 1: -------------------------------------------------------------------------------
+>   * 2:    ROBOCOPY     ::     Robust File Copy for Windows                              
+>   * 1: -------------------------------------------------------------------------------
+>   * 0: 
+>   * 5:   Started : Tuesday, June 29, 2021 5:22:01 AM
+>   * 6:    Source : C:\temp\
+>   * 7:      Dest : C:\temp2\
+>   * 0: 
+>   * 9:     Files : *.*
+>   * 10: 	    
+>   * 11:   Options : *.* /DCOPY:DA /COPY:DAT /R:1000000 /W:30 
+>   * 0: 
+>   * 13: ------------------------------------------------------------------------------
+>   * 0: 
+>   * 15: 	                   6	C:\temp\
+>   * 16: 	    New File  		    4708	cert.pem
+>   * 17:   0%  
+>   * 18: 100%  
+>   * 19: 	    New File  		   45108	earthrise.jpg
+>   * 17:   0%  
+>   * 18: 100%  
+>   * 22: 	    New File  		   32256	Executable.exe
+>   * 17:   0%  
+>   * 18: 100%  
+>   * 25: 	    New File  		      11	file.txt
+>   * 17:   0%  
+>   * 18: 100%  
+>   * 28: 	    New File  		     446	firefox.reg
+>   * 17:   0%  
+>   * 18: 100%  
+>   * 31: 	    New File  		       0	foo.conf
+>   * 18: 100%  
+>   * 0: 
+>   * 13: ------------------------------------------------------------------------------
+>   * 0: 
+>   * 36:                Total    Copied   Skipped  Mismatch    FAILED    Extras
+>   * 37:     Dirs :         1         0         1         0         0         0
+>   * 38:    Files :         6         6         0         0         0         0
+>   * 39:    Bytes :    80.5 k    80.5 k         0         0         0         0
+>   * 40:    Times :   0:00:00   0:00:00                       0:00:00   0:00:00
+>   * 0: 
+>   * 0: 
+>   * 43:    Speed :             5894928 Bytes/sec.
+>   * 44:    Speed :             337.310 MegaBytes/min.
+>   * 45:    Ended : Tuesday, June 29, 2021 5:22:01 AM
+>   * 0: 
 
 
 ### win-route
+
 ***
 Add or remove a static route
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_route_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_route_module.html>
 
 
 #### Base Command
 
 `win-route`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5244,9 +5711,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-route host="123.123.123.123" destination="192.168.2.10/32" gateway="192.168.1.1" metric="1" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -5263,19 +5732,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * output: Static route already exists
+>
+> * changed: False
+> * output: Static route already exists
 
 
 ### win-say
+
 ***
 Text to speech module for Windows to speak messages and optionally play sounds
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_say_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_say_module.html>
 
 
 #### Base Command
 
 `win-say`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5299,9 +5771,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-say host="123.123.123.123" msg="Warning, deployment commencing in 5 minutes, please log out." ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -5319,20 +5793,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * message_text: Warning, deployment commencing in 5 minutes, please log out.
->  * voice: Microsoft Zira Desktop
+>
+> * changed: False
+> * message_text: Warning, deployment commencing in 5 minutes, please log out.
+> * voice: Microsoft Zira Desktop
 
 
 ### win-scheduled-task
+
 ***
 Manage scheduled tasks
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_scheduled_task_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_scheduled_task_module.html>
 
 
 #### Base Command
 
 `win-scheduled-task`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5381,6 +5858,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-scheduled-task host="123.123.123.123" name="TaskName" description="open command prompt" actions="[{'path': 'cmd.exe', 'arguments': '/c hostname'}, {'path': 'cmd.exe', 'arguments': '/c whoami'}]" triggers="[{'type': 'daily', 'start_boundary': '2017-10-09T09:00:00'}]" username="SYSTEM" state="present" enabled="True" ```
 
 #### Human Readable Output
@@ -5388,14 +5866,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >null
 
 ### win-scheduled-task-stat
+
 ***
 Get information about Windows Scheduled Tasks
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_scheduled_task_stat_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_scheduled_task_stat_module.html>
 
 
 #### Base Command
 
 `win-scheduled-task-stat`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5422,9 +5902,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-scheduled-task-stat host="123.123.123.123" path="\\folder name" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -5441,19 +5923,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * folder_exists: False
+>
+> * changed: False
+> * folder_exists: False
 
 
 ### win-security-policy
+
 ***
 Change local security policy settings
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_security_policy_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_security_policy_module.html>
 
 
 #### Base Command
 
 `win-security-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5478,9 +5963,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-security-policy host="123.123.123.123" section="System Access" key="NewGuestName" value="Guest Account" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -5499,21 +5986,24 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * key: NewGuestName
->  * section: System Access
->  * value: Guest Account
+>
+> * changed: False
+> * key: NewGuestName
+> * section: System Access
+> * value: Guest Account
 
 
 ### win-service
+
 ***
 Manage and query Windows services
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_service_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_service_module.html>
 
 
 #### Base Command
 
 `win-service`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5552,9 +6042,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-service host="123.123.123.123" name="spooler" state="restarted" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -5585,32 +6077,38 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * can_pause_and_continue: False
->  * changed: True
->  * description: This service spools print jobs and handles interaction with the printer.  If you turn off this service, you won’t be able to print or see your printers.
->  * desktop_interact: False
->  * display_name: Print Spooler
->  * exists: True
->  * name: Spooler
->  * path: C:\Windows\System32\spoolsv.exe
->  * start_mode: auto
->  * state: running
->  * username: LocalSystem
->  * ## Depended_By
->  * ## Dependencies
->    * 0: RPCSS
->    * 1: http
+>
+> * can_pause_and_continue: False
+> * changed: True
+> * description: This service spools print jobs and handles interaction with the printer.  If you turn off this service, you won’t be able to print or see your printers.
+> * desktop_interact: False
+> * display_name: Print Spooler
+> * exists: True
+> * name: Spooler
+> * path: C:\Windows\System32\spoolsv.exe
+> * start_mode: auto
+> * state: running
+> * username: LocalSystem
+>
+> * ## Depended_By
+>
+> * ## Dependencies
+>
+>   * 0: RPCSS
+>   * 1: http
 
 
 ### win-share
+
 ***
 Manage Windows shares
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_share_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_share_module.html>
 
 
 #### Base Command
 
 `win-share`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5637,9 +6135,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-share host="123.123.123.123" name="internal" description="top secret share" path="C:/temp" list="False" full="Administrators,fed-phil" read="fed-phil" deny="Guest" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -5664,26 +6164,31 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * ## Actions
->    * 0: New-SmbShare -Name internal -Path C:\temp
->    * 1: Set-SmbShare -Force -Name internal -Description top secret share
->    * 2: Set-SmbShare -Force -Name internal -FolderEnumerationMode AccessBased
->    * 3: Revoke-SmbShareAccess -Force -Name internal -AccountName Everyone
->    * 4: Grant-SmbShareAccess -Force -Name internal -AccountName BUILTIN\Administrators -AccessRight Full
->    * 5: Grant-SmbShareAccess -Force -Name internal -AccountName WIN-U425UI0HPP7\fed-phil -AccessRight Full
->    * 6: Block-SmbShareAccess -Force -Name internal -AccountName WIN-U425UI0HPP7\Guest
+>
+> * changed: True
+>
+> * ## Actions
+>
+>   * 0: New-SmbShare -Name internal -Path C:\temp
+>   * 1: Set-SmbShare -Force -Name internal -Description top secret share
+>   * 2: Set-SmbShare -Force -Name internal -FolderEnumerationMode AccessBased
+>   * 3: Revoke-SmbShareAccess -Force -Name internal -AccountName Everyone
+>   * 4: Grant-SmbShareAccess -Force -Name internal -AccountName BUILTIN\Administrators -AccessRight Full
+>   * 5: Grant-SmbShareAccess -Force -Name internal -AccountName WIN-U425UI0HPP7\fed-phil -AccessRight Full
+>   * 6: Block-SmbShareAccess -Force -Name internal -AccountName WIN-U425UI0HPP7\Guest
 
 
 ### win-shortcut
+
 ***
 Manage shortcuts on Windows
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_shortcut_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_shortcut_module.html>
 
 
 #### Base Command
 
 `win-shortcut`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5708,9 +6213,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-shortcut host="123.123.123.123" "src"="C:\\Program Files\\Mozilla Firefox\\Firefox.exe" dest="C:\\Users\\Public\\Desktop\\Mozilla Firefox.lnk" icon="C:\\Program Files\\Mozilla Firefox\\Firefox.exe,0" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -5735,27 +6242,30 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * args: 
->  * changed: False
->  * description: 
->  * dest: C:\Users\Public\Desktop\Mozilla Firefox.lnk
->  * directory: 
->  * hotkey: 
->  * icon: C:\Program Files\Mozilla Firefox\Firefox.exe,0
->  * src: C:\Program Files\Mozilla Firefox\Firefox.exe
->  * state: present
->  * windowstyle: normal
+>
+> * args: 
+> * changed: False
+> * description: 
+> * dest: C:\Users\Public\Desktop\Mozilla Firefox.lnk
+> * directory: 
+> * hotkey: 
+> * icon: C:\Program Files\Mozilla Firefox\Firefox.exe,0
+> * src: C:\Program Files\Mozilla Firefox\Firefox.exe
+> * state: present
+> * windowstyle: normal
 
 
 ### win-snmp
+
 ***
 Configures the Windows SNMP service
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_snmp_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_snmp_module.html>
 
 
 #### Base Command
 
 `win-snmp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5777,14 +6287,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-stat
+
 ***
 Get information about Windows files
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_stat_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_stat_module.html>
 
 
 #### Base Command
 
 `win-stat`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5806,9 +6318,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-stat host="123.123.123.123" path="C:/logs.zip" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -5847,41 +6361,47 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * ## Stat
->    * attributes: Archive
->    * checksum: 386bcb29bec1df41bde1cb0324b609338337b893
->    * creationtime: 1624942389.4979205
->    * exists: True
->    * extension: .zip
->    * filename: logs.zip
->    * isarchive: True
->    * isdir: False
->    * ishidden: False
->    * isjunction: False
->    * islnk: False
->    * isreadonly: False
->    * isreg: True
->    * isshared: False
->    * lastaccesstime: 1624942389.4979205
->    * lastwritetime: 1624942389.5135438
->    * nlink: 1
->    * owner: BUILTIN\Administrators
->    * path: C:\logs.zip
->    * size: 354
->    * ### Hlnk_Targets
+>
+> * changed: False
+>
+> * ## Stat
+>
+>   * attributes: Archive
+>   * checksum: 386bcb29bec1df41bde1cb0324b609338337b893
+>   * creationtime: 1624942389.4979205
+>   * exists: True
+>   * extension: .zip
+>   * filename: logs.zip
+>   * isarchive: True
+>   * isdir: False
+>   * ishidden: False
+>   * isjunction: False
+>   * islnk: False
+>   * isreadonly: False
+>   * isreg: True
+>   * isshared: False
+>   * lastaccesstime: 1624942389.4979205
+>   * lastwritetime: 1624942389.5135438
+>   * nlink: 1
+>   * owner: BUILTIN\Administrators
+>   * path: C:\logs.zip
+>   * size: 354
+>
+>   * ### Hlnk_Targets
 
 
 
 ### win-tempfile
+
 ***
 Creates temporary files and directories
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_tempfile_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_tempfile_module.html>
 
 
 #### Base Command
 
 `win-tempfile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5901,9 +6421,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-tempfile host="123.123.123.123" state="directory" suffix="build" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -5921,20 +6443,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * path: C:\Users\Administrator\AppData\Local\Temp\ansible.orvo45xg.ldhbuild
->  * state: directory
+>
+> * changed: True
+> * path: C:\Users\Administrator\AppData\Local\Temp\ansible.orvo45xg.ldhbuild
+> * state: directory
 
 
 ### win-template
+
 ***
 Template a file out to a remote server
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_template_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_template_module.html>
 
 
 #### Base Command
 
 `win-template`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5962,6 +6487,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-template host="123.123.123.123" "src"="/mytemplates/file.conf.j2" dest="C:\\Temp\\file.conf" ```
 
 #### Human Readable Output
@@ -5969,14 +6495,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >null
 
 ### win-timezone
+
 ***
 Sets Windows machine timezone
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_timezone_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_timezone_module.html>
 
 
 #### Base Command
 
 `win-timezone`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5994,9 +6522,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-timezone host="123.123.123.123" timezone="Romance Standard Time" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -6014,20 +6544,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * previous_timezone: Romance Standard Time
->  * timezone: Romance Standard Time
+>
+> * changed: False
+> * previous_timezone: Romance Standard Time
+> * timezone: Romance Standard Time
 
 
 ### win-toast
+
 ***
 Sends Toast windows notification to logged in users on Windows 10 or later hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_toast_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_toast_module.html>
 
 
 #### Base Command
 
 `win-toast`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6053,9 +6586,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-toast host="123.123.123.123" expire="60" title="System Upgrade Notification" msg="Automated upgrade about to start.  Please save your work and log off before 6pm" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -6076,23 +6611,26 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * expire_at: 6/29/2021 5:21:50 AM
->  * expire_at_utc: Tuesday, June 29, 2021 3:21:50 AM
->  * sent_localtime: Tuesday, June 29, 2021 5:21:50 AM
->  * time_taken: 60.2358145
->  * toast_sent: True
+>
+> * changed: False
+> * expire_at: 6/29/2021 5:21:50 AM
+> * expire_at_utc: Tuesday, June 29, 2021 3:21:50 AM
+> * sent_localtime: Tuesday, June 29, 2021 5:21:50 AM
+> * time_taken: 60.2358145
+> * toast_sent: True
 
 
 ### win-unzip
+
 ***
 Unzips compressed files and archives on the Windows node
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_unzip_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_unzip_module.html>
 
 
 #### Base Command
 
 `win-unzip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6115,9 +6653,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-unzip host="123.123.123.123" "src"="C:/logs.zip" dest="C:/temp/OldLogs" creates="C:/temp/OldLogs" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -6136,21 +6676,24 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * dest: C:/temp/OldLogs
->  * removed: False
->  * src: C:/logs.zip
+>
+> * changed: True
+> * dest: C:/temp/OldLogs
+> * removed: False
+> * src: C:/logs.zip
 
 
 ### win-updates
+
 ***
 Download and install Windows updates
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_updates_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_updates_module.html>
 
 
 #### Base Command
 
 `win-updates`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6180,9 +6723,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-updates host="123.123.123.123" category_names="['SecurityUpdates', 'CriticalUpdates', 'UpdateRollups']" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -6244,53 +6789,76 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * found_update_count: 0
->  * installed_update_count: 0
->  * reboot_required: False
->  * ## Filtered_Updates
->    * ### 95335A9A-923A-47B2-Abb1-7584D685De6A
->      * filtered_reason: category_names
->      * id: 95335a9a-923a-47b2-abb1-7584d685de6a
->      * installed: False
->      * title: 2021-04 Servicing Stack Update for Windows Server 2016 for x64-based Systems (KB5001402)
->      * #### Categories
->        * 0: Security Updates
->        * 1: Windows Server 2016
->      * #### Kb
->        * 0: 5001402
->    * ### A711F6A5-5Bf3-4392-95D0-686F748789Dd
->      * filtered_reason: category_names
->      * id: a711f6a5-5bf3-4392-95d0-686f748789dd
->      * installed: False
->      * title: 2018-05 Cumulative Update for Windows Server 2016 for x64-based Systems (KB4103720)
->      * #### Categories
->        * 0: Updates
->        * 1: Windows Server 2016
->      * #### Kb
->        * 0: 4103720
->    * ### E0Fa0562-D5Bf-451F-A63C-1Ea947B6Eb27
->      * filtered_reason: category_names
->      * id: e0fa0562-d5bf-451f-a63c-1ea947b6eb27
->      * installed: False
->      * title: Windows Malicious Software Removal Tool x64 - v5.90 (KB890830)
->      * #### Categories
->        * 0: Update Rollups
->        * 1: Windows Server 2016
->        * 2: Windows Server 2019
->      * #### Kb
->        * 0: 890830
->  * ## Updates
+>
+> * changed: False
+> * found_update_count: 0
+> * installed_update_count: 0
+> * reboot_required: False
+>
+> * ## Filtered_Updates
+>
+>   * ### 95335A9A-923A-47B2-Abb1-7584D685De6A
+>
+>     * filtered_reason: category_names
+>     * id: 95335a9a-923a-47b2-abb1-7584d685de6a
+>     * installed: False
+>     * title: 2021-04 Servicing Stack Update for Windows Server 2016 for x64-based Systems (KB5001402)
+>
+>     * #### Categories
+>
+>       * 0: Security Updates
+>       * 1: Windows Server 2016
+>
+>     * #### Kb
+>
+>       * 0: 5001402
+>
+>   * ### A711F6A5-5Bf3-4392-95D0-686F748789Dd
+>
+>     * filtered_reason: category_names
+>     * id: a711f6a5-5bf3-4392-95d0-686f748789dd
+>     * installed: False
+>     * title: 2018-05 Cumulative Update for Windows Server 2016 for x64-based Systems (KB4103720)
+>
+>     * #### Categories
+>
+>       * 0: Updates
+>       * 1: Windows Server 2016
+>
+>     * #### Kb
+>
+>       * 0: 4103720
+>
+>   * ### E0Fa0562-D5Bf-451F-A63C-1Ea947B6Eb27
+>
+>     * filtered_reason: category_names
+>     * id: e0fa0562-d5bf-451f-a63c-1ea947b6eb27
+>     * installed: False
+>     * title: Windows Malicious Software Removal Tool x64 - v5.90 (KB890830)
+>
+>     * #### Categories
+>
+>       * 0: Update Rollups
+>       * 1: Windows Server 2016
+>       * 2: Windows Server 2019
+>
+>     * #### Kb
+>
+>       * 0: 890830
+>
+> * ## Updates
 
 ### win-uri
+
 ***
 Interacts with webservices
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_uri_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_uri_module.html>
 
 
 #### Base Command
 
 `win-uri`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6338,9 +6906,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-uri host="123.123.123.123" url="http://google.com/" status_code=200```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -6405,65 +6975,73 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * accept_ranges: none
->  * cache_control: private, max-age=0
->  * changed: False
->  * character_set: ISO-8859-1
->  * content_encoding: 
->  * content_length: -1
->  * content_type: text/html; charset=ISO-8859-1
->  * date: Tue, 29 Jun 2021 03:20:39 GMT
->  * elapsed: 0.5468812
->  * expires: -1
->  * is_from_cache: False
->  * is_mutually_authenticated: False
->  * last_modified: 2021-06-29T05:20:39.5210399+02:00
->  * method: GET
->  * msg: OK
->  * p3_p: CP="This is not a P3P policy! See g.co/p3phelp for more info."
->  * response_uri: http://www.google.com/
->  * server: gws
->  * set_cookie: 1P_JAR=2021-06-29-03; expires=Thu, 29-Jul-2021 03:20:39 GMT; path=/; domain=.google.com; Secure,NID=218=k9gPfV-dyDTDIEhr83SQqx1tn5-dypVUGdmaL2MChbc_cpeIBSkBxku2aaIgbuc-JQabdIkGeaydImnAa1dTmtSQTj3MhjzGBCuFUY-5erUZ9GkrAFuvcSwS0KrismDc-Y8n0bBg15L4nTx5JJC0OrlhGH-Hofb9xrGAT0A3Qdo; expires=Wed, 29-Dec-2021 03:20:39 GMT; path=/; domain=.google.com; HttpOnly
->  * status_code: 200
->  * status_description: OK
->  * supports_headers: True
->  * transfer_encoding: chunked
->  * url: http://google.com/
->  * vary: Accept-Encoding
->  * x_frame_options: SAMEORIGIN
->  * xxss_protection: 0
->  * ## Cookies
->  * ## Headers
->    * 0: X-XSS-Protection
->    * 1: X-Frame-Options
->    * 2: Cache-Control
->    * 3: Content-Type
->    * 4: Date
->    * 5: Expires
->    * 6: P3P
->    * 7: Set-Cookie
->    * 8: Server
->    * 9: Accept-Ranges
->    * 10: Vary
->    * 11: Transfer-Encoding
->  * ## Protocol_Version
->    * Build: -1
->    * Major: 1
->    * MajorRevision: -1
->    * Minor: 1
->    * MinorRevision: -1
->    * Revision: -1
+>
+> * accept_ranges: none
+> * cache_control: private, max-age=0
+> * changed: False
+> * character_set: ISO-8859-1
+> * content_encoding: 
+> * content_length: -1
+> * content_type: text/html; charset=ISO-8859-1
+> * date: Tue, 29 Jun 2021 03:20:39 GMT
+> * elapsed: 0.5468812
+> * expires: -1
+> * is_from_cache: False
+> * is_mutually_authenticated: False
+> * last_modified: 2021-06-29T05:20:39.5210399+02:00
+> * method: GET
+> * msg: OK
+> * p3_p: CP="This is not a P3P policy! See g.co/p3phelp for more info."
+> * response_uri: <http://www.google.com/>
+> * server: gws
+> * set_cookie: 1P_JAR=2021-06-29-03; expires=Thu, 29-Jul-2021 03:20:39 GMT; path=/; domain=.google.com; Secure,NID=218=k9gPfV-dyDTDIEhr83SQqx1tn5-dypVUGdmaL2MChbc_cpeIBSkBxku2aaIgbuc-JQabdIkGeaydImnAa1dTmtSQTj3MhjzGBCuFUY-5erUZ9GkrAFuvcSwS0KrismDc-Y8n0bBg15L4nTx5JJC0OrlhGH-Hofb9xrGAT0A3Qdo; expires=Wed, 29-Dec-2021 03:20:39 GMT; path=/; domain=.google.com; HttpOnly
+> * status_code: 200
+> * status_description: OK
+> * supports_headers: True
+> * transfer_encoding: chunked
+> * url: <http://google.com/>
+> * vary: Accept-Encoding
+> * x_frame_options: SAMEORIGIN
+> * xxss_protection: 0
+>
+> * ## Cookies
+>
+> * ## Headers
+>
+>   * 0: X-XSS-Protection
+>   * 1: X-Frame-Options
+>   * 2: Cache-Control
+>   * 3: Content-Type
+>   * 4: Date
+>   * 5: Expires
+>   * 6: P3P
+>   * 7: Set-Cookie
+>   * 8: Server
+>   * 9: Accept-Ranges
+>   * 10: Vary
+>   * 11: Transfer-Encoding
+>
+> * ## Protocol_Version
+>
+>   * Build: -1
+>   * Major: 1
+>   * MajorRevision: -1
+>   * Minor: 1
+>   * MinorRevision: -1
+>   * Revision: -1
 
 
 ### win-user
+
 ***
 Manages local Windows user accounts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_user_module.html>
 
 
 #### Base Command
 
 `win-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6502,9 +7080,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-user host="123.123.123.123" name="fed-phil" password="B0bP4ssw0rd" state="present" groups="Users" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -6537,33 +7117,39 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * account_disabled: False
->  * account_locked: False
->  * changed: True
->  * description: 
->  * fullname: fed-phil
->  * name: fed-phil
->  * password_expired: False
->  * password_never_expires: False
->  * path: WinNT://WORKGROUP/WIN-U425UI0HPP7/fed-phil
->  * sid: S-1-5-21-4202888923-410868521-3023024269-1003
->  * state: present
->  * user_cannot_change_password: False
->  * ## Groups
->  * ## Users
->    * name: Users
->    * path: WinNT://WORKGROUP/WIN-U425UI0HPP7/Users
+>
+> * account_disabled: False
+> * account_locked: False
+> * changed: True
+> * description: 
+> * fullname: fed-phil
+> * name: fed-phil
+> * password_expired: False
+> * password_never_expires: False
+> * path: WinNT://WORKGROUP/WIN-U425UI0HPP7/fed-phil
+> * sid: S-1-5-21-4202888923-410868521-3023024269-1003
+> * state: present
+> * user_cannot_change_password: False
+>
+> * ## Groups
+>
+> * ## Users
+>
+>   * name: Users
+>   * path: WinNT://WORKGROUP/WIN-U425UI0HPP7/Users
 
 
 ### win-user-profile
+
 ***
 Manages the Windows user profiles.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_profile_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_user_profile_module.html>
 
 
 #### Base Command
 
 `win-user-profile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6583,9 +7169,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-user-profile host="123.123.123.123" username="fed-phil" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -6602,26 +7190,29 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * path: C:\Users\fed-phil
+>
+> * changed: True
+> * path: C:\Users\fed-phil
 
 
 ### win-user-right
+
 ***
 Manage Windows User Rights
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_right_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_user_right_module.html>
 
 
 #### Base Command
 
 `win-user-right`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host | hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance. | Required | 
 | name | The name of the User Right as shown by the `Constant Name` value from `https://technet.microsoft.com/en-us/library/dd349804.aspx`.<br/>The module will return an error if the right is invalid. | Required | 
-| users | A list of users or groups to add/remove on the User Right.<br/>These can be in the form DOMAIN\user-group, user-group@DOMAIN.COM for domain users/groups.<br/>For local users/groups it can be in the form user-group, .\user-group, SERVERNAME\user-group where SERVERNAME is the name of the remote server.<br/>You can also add special local accounts like SYSTEM and others.<br/>Can be set to an empty list with `action=set` to remove all accounts from the right. | Required | 
+| users | A list of users or groups to add/remove on the User Right.<br/>These can be in the form DOMAIN\user-group, <user-group@DOMAIN.COM> for domain users/groups.<br/>For local users/groups it can be in the form user-group, .\user-group, SERVERNAME\user-group where SERVERNAME is the name of the remote server.<br/>You can also add special local accounts like SYSTEM and others.<br/>Can be set to an empty list with `action=set` to remove all accounts from the right. | Required | 
 | action | `add` will add the users/groups to the existing right.<br/>`remove` will remove the users/groups from the existing right.<br/>`set` will replace the users/groups of the existing right. Possible values are: add, remove, set. Default is set. | Optional | 
 
 
@@ -6634,9 +7225,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-user-right host="123.123.123.123" name="SeDenyInteractiveLogonRight" users="Guest" action="set" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -6656,21 +7249,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
->  * ## Added
->    * 0: WIN-U425UI0HPP7\Guest
->  * ## Removed
+>
+> * changed: True
+>
+> * ## Added
+>
+>   * 0: WIN-U425UI0HPP7\Guest
+>
+> * ## Removed
 
 
 ### win-wait-for
+
 ***
 Waits for a condition before continuing
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_wait_for_module.html>
 
 
 #### Base Command
 
 `win-wait-for`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6697,9 +7296,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-wait-for host="123.123.123.123" port="3389" delay="10" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -6717,20 +7318,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * elapsed: 10.031336099999999
->  * wait_attempts: 1
+>
+> * changed: False
+> * elapsed: 10.031336099999999
+> * wait_attempts: 1
 
 
 ### win-wait-for-process
+
 ***
 Waits for a process to exist or not exist before continuing.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_process_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_wait_for_process_module.html>
 
 
 #### Base Command
 
 `win-wait-for-process`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6757,9 +7361,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-wait-for-process host="123.123.123.123" process_name_pattern="v(irtual)?box(headless|svc)?" state="absent" timeout="500" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -6777,20 +7383,24 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * changed: False
->  * elapsed: 0.0468785
->  * ## Matched_Processes
+>
+> * changed: False
+> * elapsed: 0.0468785
+>
+> * ## Matched_Processes
 
 
 ### win-wakeonlan
+
 ***
 Send a magic Wake-on-LAN (WoL) broadcast packet
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_wakeonlan_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_wakeonlan_module.html>
 
 
 #### Base Command
 
 `win-wakeonlan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6808,9 +7418,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-wakeonlan host="123.123.123.123" mac="00:00:5E:00:53:66" broadcast="192.0.2.23" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -6826,18 +7438,21 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  CHANGED 
->  * changed: True
+>
+> * changed: True
 
 
 ### win-webpicmd
+
 ***
 Installs packages using Web Platform Installer command-line
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_webpicmd_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_webpicmd_module.html>
 
 
 #### Base Command
 
 `win-webpicmd`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6855,14 +7470,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### win-whoami
+
 ***
 Get information about the current user and process
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_whoami_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_whoami_module.html>
 
 
 #### Base Command
 
 `win-whoami`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6875,12 +7492,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftWindows.WinWhoami.authentication_package | string | The name of the authentication package used to authenticate the user in the session. | 
-| MicrosoftWindows.WinWhoami.user_flags | string | The user flags for the logon session, see UserFlags in \`https://msdn.microsoft.com/en-us/library/windows/desktop/aa380128\`. | 
+| MicrosoftWindows.WinWhoami.user_flags | string | The user flags for the logon session, see UserFlags in \`<https://msdn.microsoft.com/en-us/library/windows/desktop/aa380128\`>. | 
 | MicrosoftWindows.WinWhoami.upn | string | The user principal name of the current user. | 
-| MicrosoftWindows.WinWhoami.logon_type | string | The logon type that identifies the logon method, see \`https://msdn.microsoft.com/en-us/library/windows/desktop/aa380129.aspx\`. | 
+| MicrosoftWindows.WinWhoami.logon_type | string | The logon type that identifies the logon method, see \`<https://msdn.microsoft.com/en-us/library/windows/desktop/aa380129.aspx\`>. | 
 | MicrosoftWindows.WinWhoami.privileges | unknown | A dictionary of privileges and their state on the logon token. | 
 | MicrosoftWindows.WinWhoami.label | unknown | The mandatory label set to the logon session. | 
-| MicrosoftWindows.WinWhoami.impersonation_level | string | The impersonation level of the token, only valid if \`token_type\` is \`TokenImpersonation\`, see \`https://msdn.microsoft.com/en-us/library/windows/desktop/aa379572.aspx\`. | 
+| MicrosoftWindows.WinWhoami.impersonation_level | string | The impersonation level of the token, only valid if \`token_type\` is \`TokenImpersonation\`, see \`<https://msdn.microsoft.com/en-us/library/windows/desktop/aa379572.aspx\`>. | 
 | MicrosoftWindows.WinWhoami.login_time | string | The logon time in ISO 8601 format | 
 | MicrosoftWindows.WinWhoami.groups | unknown | A list of groups and attributes that the user is a member of. | 
 | MicrosoftWindows.WinWhoami.account | unknown | The running account SID details. | 
@@ -6893,9 +7510,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
+
 ```!win-whoami host="123.123.123.123" ```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftWindows": {
@@ -6979,74 +7598,89 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 ># 123.123.123.123 -  SUCCESS 
->  * authentication_package: NTLM
->  * changed: False
->  * dns_domain_name: 
->  * impersonation_level: SecurityAnonymous
->  * login_domain: WIN-U425UI0HPP7
->  * login_time: 2021-06-29T05:17:41.3808413+02:00
->  * logon_id: 17293435
->  * logon_server: WIN-U425UI0HPP7
->  * logon_type: Network
->  * token_type: TokenPrimary
->  * upn: 
->  * ## Account
->    * account_name: Administrator
->    * domain_name: WIN-U425UI0HPP7
->    * sid: S-1-5-21-4202888923-410868521-3023024269-500
->    * type: User
->  * ## Groups
->  * ## None
->    * account_name: None
->    * domain_name: WIN-U425UI0HPP7
->    * sid: S-1-5-21-4202888923-410868521-3023024269-513
->    * type: Group
->    * ### Attributes
->      * 0: Mandatory
->      * 1: Enabled by default
->      * 2: Enabled
->  * ## Privileges
->    * SeBackupPrivilege: enabled-by-default
->    * SeChangeNotifyPrivilege: enabled-by-default
->    * SeCreateGlobalPrivilege: enabled-by-default
->    * SeCreatePagefilePrivilege: enabled-by-default
->    * SeCreateSymbolicLinkPrivilege: enabled-by-default
->    * SeDebugPrivilege: enabled-by-default
->    * SeDelegateSessionUserImpersonatePrivilege: enabled-by-default
->    * SeImpersonatePrivilege: enabled-by-default
->    * SeIncreaseBasePriorityPrivilege: enabled-by-default
->    * SeIncreaseQuotaPrivilege: enabled-by-default
->    * SeIncreaseWorkingSetPrivilege: enabled-by-default
->    * SeLoadDriverPrivilege: enabled-by-default
->    * SeManageVolumePrivilege: enabled-by-default
->    * SeProfileSingleProcessPrivilege: enabled-by-default
->    * SeRemoteShutdownPrivilege: enabled-by-default
->    * SeRestorePrivilege: enabled-by-default
->    * SeSecurityPrivilege: enabled-by-default
->    * SeShutdownPrivilege: enabled-by-default
->    * SeSystemEnvironmentPrivilege: enabled-by-default
->    * SeSystemProfilePrivilege: enabled-by-default
->    * SeSystemtimePrivilege: enabled-by-default
->    * SeTakeOwnershipPrivilege: enabled-by-default
->    * SeTimeZonePrivilege: enabled-by-default
->    * SeUndockPrivilege: enabled-by-default
->  * ## Rights
->    * 0: SeNetworkLogonRight
->    * 1: SeInteractiveLogonRight
->    * 2: SeBatchLogonRight
->    * 3: SeRemoteInteractiveLogonRight
->  * ## User_Flags
+>
+> * authentication_package: NTLM
+> * changed: False
+> * dns_domain_name: 
+> * impersonation_level: SecurityAnonymous
+> * login_domain: WIN-U425UI0HPP7
+> * login_time: 2021-06-29T05:17:41.3808413+02:00
+> * logon_id: 17293435
+> * logon_server: WIN-U425UI0HPP7
+> * logon_type: Network
+> * token_type: TokenPrimary
+> * upn: 
+>
+> * ## Account
+>
+>   * account_name: Administrator
+>   * domain_name: WIN-U425UI0HPP7
+>   * sid: S-1-5-21-4202888923-410868521-3023024269-500
+>   * type: User
+>
+> * ## Groups
+>
+> * ## None
+>
+>   * account_name: None
+>   * domain_name: WIN-U425UI0HPP7
+>   * sid: S-1-5-21-4202888923-410868521-3023024269-513
+>   * type: Group
+>
+>   * ### Attributes
+>
+>     * 0: Mandatory
+>     * 1: Enabled by default
+>     * 2: Enabled
+>
+> * ## Privileges
+>
+>   * SeBackupPrivilege: enabled-by-default
+>   * SeChangeNotifyPrivilege: enabled-by-default
+>   * SeCreateGlobalPrivilege: enabled-by-default
+>   * SeCreatePagefilePrivilege: enabled-by-default
+>   * SeCreateSymbolicLinkPrivilege: enabled-by-default
+>   * SeDebugPrivilege: enabled-by-default
+>   * SeDelegateSessionUserImpersonatePrivilege: enabled-by-default
+>   * SeImpersonatePrivilege: enabled-by-default
+>   * SeIncreaseBasePriorityPrivilege: enabled-by-default
+>   * SeIncreaseQuotaPrivilege: enabled-by-default
+>   * SeIncreaseWorkingSetPrivilege: enabled-by-default
+>   * SeLoadDriverPrivilege: enabled-by-default
+>   * SeManageVolumePrivilege: enabled-by-default
+>   * SeProfileSingleProcessPrivilege: enabled-by-default
+>   * SeRemoteShutdownPrivilege: enabled-by-default
+>   * SeRestorePrivilege: enabled-by-default
+>   * SeSecurityPrivilege: enabled-by-default
+>   * SeShutdownPrivilege: enabled-by-default
+>   * SeSystemEnvironmentPrivilege: enabled-by-default
+>   * SeSystemProfilePrivilege: enabled-by-default
+>   * SeSystemtimePrivilege: enabled-by-default
+>   * SeTakeOwnershipPrivilege: enabled-by-default
+>   * SeTimeZonePrivilege: enabled-by-default
+>   * SeUndockPrivilege: enabled-by-default
+>
+> * ## Rights
+>
+>   * 0: SeNetworkLogonRight
+>   * 1: SeInteractiveLogonRight
+>   * 2: SeBatchLogonRight
+>   * 3: SeRemoteInteractiveLogonRight
+>
+> * ## User_Flags
 
 
 ### win-xml
+
 ***
 Manages XML file content on Windows hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_xml_module.html
+Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/win_xml_module.html>
 
 
 #### Base Command
 
 `win-xml`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -7073,6 +7707,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### Troubleshooting
+
 The Ansible-Runner container is not suitable for running as a non-root user.
 Therefore, the Ansible integrations will fail if you follow the instructions in [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide). 
 
@@ -7080,7 +7715,7 @@ The `docker.run.internal.asuser` server configuration causes the software that i
 
 The Ansible-Runner software is required to run as root as it applies its own isolation via bwrap to the Ansible execution environment. 
 
-This is a limitation of the Ansible-Runner software itself https://github.com/ansible/ansible-runner/issues/611.
+This is a limitation of the Ansible-Runner software itself <https://github.com/ansible/ansible-runner/issues/611>.
 
 A workaround is to use the `docker.run.internal.asuser.ignore` server setting and to configure Cortex XSOAR to ignore the Ansible container image by setting the value of `demisto/ansible-runner` and afterwards running /reset_containers to reload any containers that might be running to ensure they receive the configuration.
 

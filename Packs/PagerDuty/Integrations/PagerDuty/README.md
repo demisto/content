@@ -179,8 +179,8 @@ Returns the names and details of on call users at a certain time or by specific 
 
 >|ID|Email|Name|Role|User Url|Time Zone|
 >|---|---|---|---|---|---|
->| someid | demisto@demisto.com | Demisto User | owner | <https://demisto.pagerduty.com/users/someid> | Europe/Athens |
->| anotherid | demisto@mail.com | Another User | user | <https://demisto.pagerduty.com/users/anotherid> | Europe/Athens |
+>| someid | <demisto@demisto.com> | Demisto User | owner | <https://demisto.pagerduty.com/users/someid> | Europe/Athens |
+>| anotherid | <demisto@mail.com> | Another User | user | <https://demisto.pagerduty.com/users/anotherid> | Europe/Athens |
 
 
 ### PagerDuty-get-users-on-call-now
@@ -239,7 +239,7 @@ Returns the names and details of current on call personnel.
 
 >|ID|Email|Name|Role|User Url|Time Zone|
 >|---|---|---|---|---|---|
->| someid | demisto@demisto.com | Demisto User | owner | <https://demisto.pagerduty.com/users/someid> | Europe/Athens |
+>| someid | <demisto@demisto.com> | Demisto User | owner | <https://demisto.pagerduty.com/users/someid> | Europe/Athens |
 
 ### PagerDuty-incidents
 
@@ -497,7 +497,7 @@ Get the contact methods of a given user.
 
 >|ID|Type|Details|
 >|---|---|---|
->| someotherid | Email | demisto@demisto.com |
+>| someotherid | Email | <demisto@demisto.com> |
 >| someid | Phone | 0000000 |
 >| onemoreid | SMS | 000000 |
 
@@ -926,4 +926,4 @@ Response Plays are a package of Incident Actions that can be applied during an I
 
 >#### Human Readable Output
 
->Response play successfully run to the incident Q107XAAAAMBBR by john.doe@example.com
+>Response play successfully run to the incident Q107XAAAAMBBR by <john.doe@example.com>

@@ -3,9 +3,11 @@
 This pack includes Cortex XSIAM content. 
 
 <~XSIAM>
+
 ## Configuration on Server Side
 
 Steps to enable Syslog Logging in ADManager Plus:
+
 1. Log in to ADManager Plus.
 2. Go to **Admin** > **Personlize** > **Integration**
 3. Click the **Syslog Server** option.
@@ -21,6 +23,7 @@ More information on a SIEM integration can be found [here](https://www.manageeng
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.

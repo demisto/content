@@ -1,5 +1,6 @@
 Interact with the Trello task manager
 This integration was integrated and tested with version 1.0.0 of Trello
+
 ## Configure Trello in Cortex
 
 First, retrieve an API key from the trello API page, by following [this link](https://trello.com/app-key)
@@ -8,7 +9,7 @@ For more information, see the following [Trello documentation](https://developer
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://example.net) |  | True |
+| Server URL (e.g. <https://example.net>) |  | True |
 | Fetch incidents |  | False |
 | Use system proxy settings |  | False |
 | Default and Fetch Board ID | ID of Trello board used both to fetch incidents and as the default for all integration commands. | False |
@@ -17,9 +18,12 @@ For more information, see the following [Trello documentation](https://developer
 | Incident type |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### trello-list-boards
+
 ***
 List the boards available to the provided API Key
 
@@ -27,6 +31,7 @@ List the boards available to the provided API Key
 #### Base Command
 
 `trello-list-boards`
+
 #### Input
 
 There are no input arguments for this command.
@@ -42,9 +47,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!trello-list-boards```
 
 #### Context Example
+
 ```json
 {
     "Trello": {
@@ -85,6 +92,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Trello Boards
+>
 >|id|name|dateLastActivity|
 >|---|---|---|
 >| 5f84cf4db437823603f98ad0 | Current Tasks | 2021-03-24T04:38:20.193Z |
@@ -94,6 +102,7 @@ There are no input arguments for this command.
 
 
 ### trello-list-lists
+
 ***
 List all the lists associated with the trello board.
 
@@ -101,6 +110,7 @@ List all the lists associated with the trello board.
 #### Base Command
 
 `trello-list-lists`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -119,9 +129,11 @@ List all the lists associated with the trello board.
 
 
 #### Command Example
+
 ```!trello-list-lists```
 
 #### Context Example
+
 ```json
 {
     "Trello": {
@@ -158,6 +170,7 @@ List all the lists associated with the trello board.
 #### Human Readable Output
 
 >### Trello Lists
+>
 >|closed|id|idBoard|name|pos|softLimit|subscribed|
 >|---|---|---|---|---|---|---|
 >| false | 606120363e1eb362adcfdb47 | 602f2f91cc8a4e23e393556a | New Tasks | 65535.5 |  | false |
@@ -167,6 +180,7 @@ List all the lists associated with the trello board.
 
 
 ### trello-create-card
+
 ***
 Create a new card.
 
@@ -174,6 +188,7 @@ Create a new card.
 #### Base Command
 
 `trello-create-card`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -195,6 +210,7 @@ Create a new card.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -202,6 +218,7 @@ Create a new card.
 
 
 ### trello-update-card
+
 ***
 Update an existing card
 
@@ -209,6 +226,7 @@ Update an existing card
 #### Base Command
 
 `trello-update-card`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -228,6 +246,7 @@ Update an existing card
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -235,6 +254,7 @@ Update an existing card
 
 
 ### trello-delete-card
+
 ***
 Delete a card
 
@@ -242,6 +262,7 @@ Delete a card
 #### Base Command
 
 `trello-delete-card`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -254,6 +275,7 @@ Delete a card
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -261,6 +283,7 @@ There is no context output for this command.
 
 
 ### trello-list-actions
+
 ***
 List all actions on a board, such as card updates, additions, and deletes.
 
@@ -268,6 +291,7 @@ List all actions on a board, such as card updates, additions, and deletes.
 #### Base Command
 
 `trello-list-actions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -291,9 +315,11 @@ List all actions on a board, such as card updates, additions, and deletes.
 
 
 #### Command Example
+
 ```!trello-list-actions filter="createCard" since="2021-03-29T00:53:21.972Z"```
 
 #### Context Example
+
 ```json
 {
     "Trello": {
@@ -322,6 +348,7 @@ List all actions on a board, such as card updates, additions, and deletes.
 #### Human Readable Output
 
 >### Trello Actions
+>
 >|id|type|date|
 >|---|---|---|
 >| 606163113a492b52f69c40df | createCard | 2021-03-29T05:18:09.138Z |
@@ -329,6 +356,7 @@ List all actions on a board, such as card updates, additions, and deletes.
 
 
 ### trello-list-labels
+
 ***
 List all the labels in a given board
 
@@ -336,6 +364,7 @@ List all the labels in a given board
 #### Base Command
 
 `trello-list-labels`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -353,9 +382,11 @@ List all the labels in a given board
 
 
 #### Command Example
+
 ```!trello-list-labels```
 
 #### Context Example
+
 ```json
 {
     "Trello": {
@@ -433,6 +464,7 @@ List all the labels in a given board
 #### Human Readable Output
 
 >### Trello Labels
+>
 >|color|id|idBoard|name|
 >|---|---|---|---|
 >| green | 60596b0b080907067c65c0ee | 602f2f91cc8a4e23e393556a | Low |
@@ -451,6 +483,7 @@ List all the labels in a given board
 
 
 ### trello-create-label
+
 ***
 Create a new trello label
 
@@ -458,6 +491,7 @@ Create a new trello label
 #### Base Command
 
 `trello-create-label`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -476,6 +510,7 @@ Create a new trello label
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -483,6 +518,7 @@ Create a new trello label
 
 
 ### trello-add-comment
+
 ***
 Add a comment to a Trello card
 
@@ -490,6 +526,7 @@ Add a comment to a Trello card
 #### Base Command
 
 `trello-add-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -507,6 +544,7 @@ Add a comment to a Trello card
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -514,6 +552,7 @@ Add a comment to a Trello card
 
 
 ### trello-list-cards
+
 ***
 List all the trello cards
 
@@ -521,6 +560,7 @@ List all the trello cards
 #### Base Command
 
 `trello-list-cards`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -543,9 +583,11 @@ List all the trello cards
 
 
 #### Command Example
+
 ```!trello-list-cards list_id=605d2a706398646de27a1f8f```
 
 #### Context Example
+
 ```json
 {
     "Trello": {
@@ -578,7 +620,8 @@ List all the trello cards
 #### Human Readable Output
 
 >### Trello Cards
+>
 >|id|name|url|
 >|---|---|---|
->| 6061628bedda298c34aa588d | Temp card | https://trello.com/c/oq5kliob/99-temp-card |
->| 606163113a492b52f69c40de | This is a test card from XSOAR! | https://trello.com/c/63F5dXGw/100-this-is-a-test-card-from-xsoar |
+>| 6061628bedda298c34aa588d | Temp card | <https://trello.com/c/oq5kliob/99-temp-card> |
+>| 606163113a492b52f69c40de | This is a test card from XSOAR! | <https://trello.com/c/63F5dXGw/100-this-is-a-test-card-from-xsoar> |

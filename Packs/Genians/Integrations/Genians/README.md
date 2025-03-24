@@ -10,7 +10,7 @@ Before you can use this integration in Cortex XSOAR, you need to enable certain 
 
 #### Genian NAC Web Console
 
-1. This is the network address of the Genian NAC Enterprise or standalone Appliance. (The host on which the the Genian NAC is hosted.) For example, if the Genian NAC is hosted at the IP address *192.168.100.100*, then you enter *https://192.168.10.100:8443/mc2*
+1. This is the network address of the Genian NAC Enterprise or standalone Appliance. (The host on which the the Genian NAC is hosted.) For example, if the Genian NAC is hosted at the IP address *192.168.100.100*, then you enter *<https://192.168.10.100:8443/mc2>*
 
 #### Enforcement Mode
 
@@ -63,6 +63,7 @@ You can execute these commands from the CLI, as part of an automation, or in a p
 2. [Delete IP address from a tag: genians-unassign-ip-tag](#Delete-IP-address-from-a-tag)
 
 ### Post IP address to a tag
+
 ***
 Assigns a tag to the Node specified.
 
@@ -98,12 +99,14 @@ Assigns a tag to the Node specified.
 ```
 
 ### Delete IP address from a tag
+
 ***
 Removes the tag(s) from the Node specified.
 
 #### Base Command
 
 `genians-unassign-ip-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

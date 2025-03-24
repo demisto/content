@@ -19,9 +19,12 @@ Gets a list of bad IPs from Feodo Tracker.
 | Create relationships |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### feodotracker-ipblocklist-get-indicators
+
 ***
 Gets the feed indicators.
 
@@ -29,6 +32,7 @@ Gets the feed indicators.
 #### Base Command
 
 `feodotracker-ipblocklist-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

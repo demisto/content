@@ -45,8 +45,11 @@ The Dossier Lookup API returns detailed information on the specified indicator f
 | BloxOneTD.DossierLookup.type    | String   | The indicator type.     |
 
 #### Command example
+
 ```!bloxone-td-dossier-lookup-get indicator_type="ip" value="11.22.33.44" sources="activity,threatfox,ccb"```
+
 #### Context Example
+
 ```json
 {
     "BloxOneTD": {
@@ -99,6 +102,7 @@ The Dossier Lookup API returns detailed information on the specified indicator f
 #### Human Readable Output
 
 >### Lookalike Domain List
+>
 >|Task Id|Type|Target|Source|
 >|---|---|---|---|
 >| d418b8d6-831c-4f6f-a31a-6d48995d2267 | ip | 11.22.33.44 | threatfox |
@@ -126,8 +130,11 @@ There are no input arguments for this command.
 | BloxOneTD.DossierSource | String   | Available Dossier sources. |
 
 #### Command example
+
 ```!bloxone-td-dossier-source-list```
+
 #### Context Example
+
 ```json
 {
     "BloxOneTD": {
@@ -144,6 +151,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|DossierSource|
 >|---|
 >| activity |
@@ -184,8 +192,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 | BloxOneTD.LookalikeDomain.target_domain    | String   | The domain that was targeted by the lookalike domain. |
 
 #### Command example
+
 ```!bloxone-td-lookalike-domain-list detected_at="1y"```
+
 #### Context Example
+
 ```json
 {
     "BloxOneTD": {
@@ -220,6 +231,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### Results
+>
 >|Detected At|Lookalike Domain|Lookalike Host|Reason|Target Domain|
 >|---|---|---|---|---|
 >| 2023-01-27T18:43:01Z | test.a.com | test.a.com | Domain is a lookalike to test.com. The creation date is 2023-01-22. | test.com |

@@ -1,4 +1,5 @@
 ## AWS Organizations
+
 This content pack allows you to manage AWS Organizations from Cortex XSOAR.
 
 The AWS Organizations pack enables you to:

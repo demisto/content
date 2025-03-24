@@ -10,7 +10,7 @@ Cyberint provides intelligence-driven digital risk protection. This integration 
     |----------------------------------------------------------------------------------| --- | --- |
     | Incident type                                                                    |  | False |
     | Cyberint Access Token                                                            | Cyberint API access token. | True |
-    | Cyberint API URL                                                                 | Cyberint environment on which the services run \(Example: https://yourcompany.cyberint.io) | True |
+    | Cyberint API URL                                                                 | Cyberint environment on which the services run \(Example: <https://yourcompany.cyberint.io>) | True |
     | Fetch incidents                                                                  |  | False |
     | Create an incident per CSV record                                                | An incident will be created with the originated Alert details per CSV file record | False |
     | Fetch Severity                                                                   | Severities to fetch. If none is chosen, all severity levels will be returned. | False |

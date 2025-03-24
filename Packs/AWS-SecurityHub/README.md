@@ -2,6 +2,7 @@ AWS Security Hub is a service that performs security best practice checks, aggre
 
 **What does this pack do?**
 This pack enables you to:
+
 - Disable Security Hub for the current region.
 - Update finding fields and objects in order to refresh the information required for investigating a Security Hub finding.
 - Enable Security Hub for your account in the current region or the region you specify in the request, and the CIS AWS Foundations standard.

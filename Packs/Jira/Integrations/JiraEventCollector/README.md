@@ -98,6 +98,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 #### Human Readable Output
 
 >### Jira records
+>
 >|Associated Items|Category|Created| Id   | Object Item                                                                                                                    |Summary|
 >|---|---|------|--------------------------------------------------------------------------------------------------------------------------------|---|---|
 >| {'id': 'ug:123456-123456-123456', 'name': 'ug:123456-123456-123456', 'typeName': 'USER', 'parentId': '111', 'parentName': 'com.atlassian.crowd.directory.example'} | group management | 2022-04-24T16:28:53.146+0000 | 1111 | name: jira-servicemanagement-users<br/>typeName: GROUP<br/>parentId: 111<br/>parentName: com.atlassian.crowd.directory.example | User added to group |

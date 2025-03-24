@@ -1,5 +1,6 @@
 
 ##### What does this pack do?
+
 - Provides the **SaaS Security** integration, which allows Cortex XSOAR to collect incidents from the SaaS Security platform. 
 - Provides a **SaaS Security Incident** incident type with dedicated incoming mapper, fields and layout.
 - Provides a generic polling playbook that handles the remediation of an asset.

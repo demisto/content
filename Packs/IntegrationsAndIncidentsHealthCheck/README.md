@@ -4,7 +4,9 @@ As part of this pack, you will get out-of-the-box, full layouts, dashboards, an 
 
 
 ##### What does this pack do?
+
 The content included in this pack allows you to view all your failed integrations and open incidents in a single incident:
+
 - Run tests on all enabled integrations, error messages, and track notes.
 - Search for errors in open incidents. Detail the playbooks and commands that fail and track notes.
 - Optionally re-run the playbook.

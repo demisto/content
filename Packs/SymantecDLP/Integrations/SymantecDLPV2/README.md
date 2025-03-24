@@ -11,7 +11,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Enforce Server (e.g. https://192.168.0.1) |  | True |
+| Enforce Server (e.g. <https://192.168.0.1>) |  | True |
 | Username |  | True |
 | Password |  | True |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
@@ -26,13 +26,17 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
 
 ## Fetch Incidents
+
 The integration fetches incidents in the order they were created. 
 Note that incident IDs may not be fetched in order, due to creation time differences.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### symantec-dlp-list-incidents
+
 ***
 Returns a list of incidents.
 
@@ -40,6 +44,7 @@ Returns a list of incidents.
 #### Base Command
 
 `symantec-dlp-list-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -71,8 +76,11 @@ Returns a list of incidents.
 | SymantecDLP.Incident.incidentStatusId | Number | The status ID of the incident. | 
 
 #### Command example
+
 ```!symantec-dlp-list-incidents limit=2 severity=High incident_type=Network creation_date="4 days"```
+
 #### Context Example
+
 ```json
 {
     "SymantecDLP": {
@@ -113,6 +121,7 @@ Returns a list of incidents.
 #### Human Readable Output
 
 >### Symantec DLP incidents results
+>
 >|ID|Severity|Status|Creation Date|Incident Type|Message Type|Policy ID|Match Count|
 >|---|---|---|---|---|---|---|---|
 >| 4044 | High | 1 | 2022-03-27T03:23:52.315 | NETWORK | HTTP | 2 | 3 |
@@ -120,6 +129,7 @@ Returns a list of incidents.
 
 
 ### symantec-dlp-get-incident-details
+
 ***
 Returns details of the specified incident.
 
@@ -127,6 +137,7 @@ Returns details of the specified incident.
 #### Base Command
 
 `symantec-dlp-get-incident-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -219,8 +230,11 @@ Returns details of the specified incident.
 | SymantecDLP.Incident.endpointApplicationName | String | The name of the application that caused the incident. | 
 
 #### Command example
+
 ```!symantec-dlp-get-incident-details incident_id=1 custom_attributes="custom attribute group name" custom_data="att group2"```
+
 #### Context Example
+
 ```json
 {
     "SymantecDLP": {
@@ -297,12 +311,14 @@ Returns details of the specified incident.
 #### Human Readable Output
 
 >### Symantec DLP incident 1 details
+>
 >|Status|Creation Date|Detection Date|Incident Type|Policy Name|Policy Group Name|Detection Server Name|Message Type|Message Source|Data Owner Name|Data Owner Email|Custom Attributes|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1 | 2021-12-20T13:25:46.103 | 2021-12-20T13:25:27.56 | NETWORK | Network Test policy | policy_group.default.name | Detection - Network monitor | HTTP | NETWORK | test123 | testing@gmail.com | **-**	***name***: att group2<br/>	**customAttribute**:<br/>		**-**	***name***: kjv<br/>			***value***: test |
+>| 1 | 2021-12-20T13:25:46.103 | 2021-12-20T13:25:27.56 | NETWORK | Network Test policy | policy_group.default.name | Detection - Network monitor | HTTP | NETWORK | test123 | <testing@gmail.com> | **-**	***name***: att group2<br/>	**customAttribute**:<br/>		**-**	***name***: kjv<br/>			***value***: test |
 
 
 ### symantec-dlp-update-incident
+
 ***
 Updates the details of a specific incident.
 
@@ -310,6 +326,7 @@ Updates the details of a specific incident.
 #### Base Command
 
 `symantec-dlp-update-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -328,13 +345,17 @@ Updates the details of a specific incident.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!symantec-dlp-update-incident incident_ids=1,2 severity=Medium data_owner_email=testing@gmail.com custom_attributes=4:test```
+
 #### Human Readable Output
 
 >Symantec DLP incidents: ['1', '2'] were updated
 
 ### symantec-dlp-list-incident-status
+
 ***
 Returns a list of the custom status values defined in the Symantec DLP deployment.
 
@@ -342,6 +363,7 @@ Returns a list of the custom status values defined in the Symantec DLP deploymen
 #### Base Command
 
 `symantec-dlp-list-incident-status`
+
 #### Input
 
 There are no input arguments for this command.
@@ -354,8 +376,11 @@ There are no input arguments for this command.
 | SymantecDLP.IncidentStatus.name | String | The name of the status. | 
 
 #### Command example
+
 ```!symantec-dlp-list-incident-status```
+
 #### Context Example
+
 ```json
 {
     "SymantecDLP": {
@@ -396,6 +421,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Symantec DLP incidents status
+>
 >|Id|Name|
 >|---|---|
 >| 1 | incident.status.New |
@@ -408,6 +434,7 @@ There are no input arguments for this command.
 
 
 ### symantec-dlp-get-incident-history
+
 ***
 Returns the history of the specified incident.
 
@@ -415,6 +442,7 @@ Returns the history of the specified incident.
 #### Base Command
 
 `symantec-dlp-get-incident-history`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -439,8 +467,11 @@ Returns the history of the specified incident.
 | SymantecDLP.IncidentHistory.ID | Number | The ID of the incident. | 
 
 #### Command example
+
 ```!symantec-dlp-get-incident-history limit=6 incident_id=2```
+
 #### Context Example
+
 ```json
 {
     "SymantecDLP": {
@@ -494,6 +525,7 @@ Returns the history of the specified incident.
 #### Human Readable Output
 
 >### Symantec DLP Incident 2 history results
+>
 >|DLP User Name|History Date|Incident History Action|
 >|---|---|---|
 >| Administrator | 2021-12-20T13:25:46.197 | SET_STATUS |
@@ -503,6 +535,7 @@ Returns the history of the specified incident.
 
 
 ### symantec-dlp-list-remediation-status
+
 ***
 Returns a list of the remediation status values defined in the Symantec DLP deployment.
 
@@ -510,6 +543,7 @@ Returns a list of the remediation status values defined in the Symantec DLP depl
 #### Base Command
 
 `symantec-dlp-list-remediation-status`
+
 #### Input
 
 There are no input arguments for this command.
@@ -522,8 +556,11 @@ There are no input arguments for this command.
 | SymantecDLP.IncidentRemediationStatus.name | String | The name of the remediation status. | 
 
 #### Command example
+
 ```!symantec-dlp-list-remediation-status```
+
 #### Context Example
+
 ```json
 {
     "SymantecDLP": {
@@ -784,6 +821,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Incidents remediation status results
+>
 >|Id|Name|
 >|---|---|
 >| 0 | PASSED |
@@ -877,8 +915,11 @@ Fetches the original message from an incident. Requires SDLP 15.8.
 | InfoFile.Type | String | The type of the original message file. | 
 
 #### Command example
+
 ```!symantec-dlp-get-incident-original-message incident_id=1```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -921,8 +962,11 @@ Retrieves the filter criteria for a saved search in the Enforce console by repor
 | SymantecDLP.ReportFilter | Unknown | The filter criteria for a saved search in the Enforce console. | 
 
 #### Command example
+
 ```!symantec-dlp-get-report-filters report_id=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecDLP": {
@@ -1031,6 +1075,7 @@ Retrieves the filter criteria for a saved search in the Enforce console by repor
 #### Human Readable Output
 
 >Returned results for report id 1
+>
 ### symantec-dlp-list-users
 
 ***
@@ -1052,8 +1097,11 @@ Returns details for all SDLP users from the Enforce console. Requires SDLP 16.0.
 | SymantecDLP.Users | Unknown | List of SDLP users and details. | 
 
 #### Command example
+
 ```!symantec-dlp-list-users```
+
 #### Context Example
+
 ```json
 {
     "SymantecDLP": {
@@ -1073,9 +1121,10 @@ Returns details for all SDLP users from the Enforce console. Requires SDLP 16.0.
 #### Human Readable Output
 
 >### Symantec DLP Users
+>
 >|Accountdisabled|Emailaddress|Roles|Userid|Username|
 >|---|---|---|---|---|
->| no | test@gmail.com | API Web | 1 | User1 |
+>| no | <test@gmail.com> | API Web | 1 | User1 |
 
 ### symantec-dlp-get-sender-recipient-pattern
 
@@ -1099,8 +1148,11 @@ Returns a sender/recipient pattern. Requires SDLP 16.0.
 | SymantecDLP.SenderRecipientPattern | Unknown | Sender/recipient pattern returned from the Enforce console. | 
 
 #### Command example
+
 ```!symantec-dlp-get-sender-recipient-pattern pattern_id=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecDLP": {
@@ -1130,6 +1182,7 @@ Returns a sender/recipient pattern. Requires SDLP 16.0.
 #### Human Readable Output
 
 >### XSOAR Sender Block Example
+>
 >|description|id|ipAddresses|modifiedBy|modifiedDate|name|ruleType|userPatterns|
 >|---|---|---|---|---|---|---|---|
 >| demo | 1 | 1.1.1.1,<br/>2.2.2.2 | id: 343<br/>name: AdminUsername  | 05/16/23 12:20 PM | XSOAR Sender Block Example | 4 | domain-jsmith,<br/>domain-jdoe |
@@ -1155,8 +1208,11 @@ Returns a list of all sender/recipient patterns from the Enforce console. Requir
 | SymantecDLP.Patterns | Unknown |  The list of all sender/recipient patterns returned from the Enforce console. | 
 
 #### Command example
+
 ```!symantec-dlp-list-sender-recipient-patterns```
+
 #### Context Example
+
 ```json
 {
     "SymantecDLP": {
@@ -1186,6 +1242,7 @@ Returns a list of all sender/recipient patterns from the Enforce console. Requir
 #### Human Readable Output
 
 >### Sender/Recipient Patterns
+>
 >|description|id|ipAddresses|modifiedBy|modifiedDate|name|ruleType|userPatterns|
 >|---|---|---|---|---|---|---|---|
 >| demo | 1 | 1.1.1.1,<br/>2.2.2.2 | id: 343<br/>name: AdminUsername  | 05/16/23 12:20 PM | XSOAR Sender Block Example | 4 | domain-jsmith,<br/>domain-jdoe |
@@ -1216,8 +1273,11 @@ Updates a sender pattern in the Enforce console. Requires SDLP 16.0.
 | SymantecDLP.SenderUpdate | Unknown | Results of updating the sender pattern from the Enforce Console. | 
 
 #### Command example
+
 ```!symantec-dlp-update-sender-pattern pattern_id=1 name="XSOAR Sender Block Example" description="demo"```
+
 #### Context Example
+
 ```json
 {
     "SymantecDLP": {
@@ -1247,6 +1307,7 @@ Updates a sender pattern in the Enforce console. Requires SDLP 16.0.
 #### Human Readable Output
 
 >### Sender Pattern Update Results
+>
 >|description|id|ipAddresses|modifiedBy|modifiedDate|name|ruleType|userPatterns|
 >|---|---|---|---|---|---|---|---|
 >| demo | 1 | 1.1.1.1,<br/>2.2.2.2 | id: 343<br/>name: AdminUsername  | 05/16/23 12:20 PM | XSOAR Sender Block Example | 4 | domain-jsmith,<br/>domain-jdoe |
@@ -1278,8 +1339,11 @@ Updates a recipient pattern in the Enforce console. Requires SDLP 16.0.
 | SymantecDLP.RecipientUpdate | Unknown | Results of updating the recipient pattern from the Enforce Console. | 
 
 #### Command example
+
 ```!symantec-dlp-update-recipient-pattern pattern_id=1 name="XSOAR Recipient Edit Test" description="updated from XSOAR for demo"```
+
 #### Context Example
+
 ```json
 {
     "SymantecDLP": {
@@ -1313,9 +1377,10 @@ Updates a recipient pattern in the Enforce console. Requires SDLP 16.0.
 #### Human Readable Output
 
 >### Sender Pattern Update Results
+>
 >|description|emailAddresses|id|ipAddresses|modifiedBy|modifiedDate|name|ruleType|urlDomains|
 >|---|---|---|---|---|---|---|---|---|
->| updated from XSOAR for demo | test1@gmail.com,<br/>test2@gmail.com | 1 | 1.1.1.1,<br/>2.2.2.2 | id: 343<br/>name: AdminUsername | 05/16/23 12:18 PM | XSOAR Recipient Edit Test | 2 | example.com,<br/>external.com |
+>| updated from XSOAR for demo | <test1@gmail.com>,<br/><test2@gmail.com> | 1 | 1.1.1.1,<br/>2.2.2.2 | id: 343<br/>name: AdminUsername | 05/16/23 12:18 PM | XSOAR Recipient Edit Test | 2 | example.com,<br/>external.com |
 
 ### symantec-dlp-get-message-body
 
@@ -1339,8 +1404,11 @@ Returns the message body from the Enforce console by incident ID. Requires SDLP 
 | SymantecDLP.MessageBody | Unknown | Message body for the incident returned by the Enforce console. | 
 
 #### Command example
+
 ```!symantec-dlp-get-message-body incident_id=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecDLP": {
@@ -1359,21 +1427,25 @@ Returns the message body from the Enforce console by incident ID. Requires SDLP 
 ## Breaking changes from the previous version of this integration - Symantec Data Loss Prevention v2
 
 ### Commands
+
 #### The following commands were removed in this version:
+
 - ***symantec-dlp-incident-binaries***
 - ***symantec-dlp-incident-violations***
 - ***symantec-dlp-list-custom-attributes***
 
 ### Arguments
+
 #### The following arguments were removed in this version:
 
 In the ***symantec-dlp-update-incident*** command:
-* *incident_id* - this argument was replaced by *incident_ids*.
-* *note_time*
-* *status*
-* *custom_attribute_name* - this argument was replaced by *custom_attributes*.
-* *custom_attribute_value* - this argument was replaced by *custom_attributes*.
-* *remediation_status* - this argument was replaced by *remediation_status_name*.
+
+- *incident_id* - this argument was replaced by *incident_ids*.
+- *note_time*
+- *status*
+- *custom_attribute_name* - this argument was replaced by *custom_attributes*.
+- *custom_attribute_value* - this argument was replaced by *custom_attributes*.
+- *remediation_status* - this argument was replaced by *remediation_status_name*.
 
 #### The behavior of the following arguments was changed:
 
@@ -1382,6 +1454,7 @@ In the ***symantec-dlp-update-incident*** command:
   *incident_id* argument are now called *incident_ids* and can get a list of incident IDs to update.
   
 ### Outputs
+
 #### The following outputs were removed in this version:
 
 In the ***symantec-dlp-get-incident-details*** command:
@@ -1415,5 +1488,6 @@ In the ***symantec-dlp-get-incident-details*** command:
 
 
 ## Additional Considerations for this version
+
 There is an issue with DLP API where some incidents get a 401 error.
 For these incidents, the missing data is returned. From the Network incident layout, in the description field, you can see information about this issue.

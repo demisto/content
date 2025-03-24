@@ -36,6 +36,7 @@ Get ticket details.
 | Remedy.Ticket.ContactName | string | Contact Name. | 
 | Remedy.Ticket.ContactPhone | string | Contact Phone. | 
 | Remedy.Ticket.RequesterPERNR | string | Requester PERNR. | 
+
 ### remedy-create-ticket
 
 ***

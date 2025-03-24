@@ -27,6 +27,7 @@ basic search reports by ip
 | Report.title | unknown | Report title | 
 | Report.publishDate | unknown | Report publish date | 
 | Report.intelligenceType | unknown | Report intelligence type \(overview, vulnerability, malware, threat\) | 
+
 ### domain
 
 ***
@@ -57,6 +58,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | Report.title | unknown | Report title | 
 | Report.publishDate | unknown | Report publish date | 
 | Report.intelligenceType | unknown | Report intelligence type \(overview, vulnerability, malware, threat\) | 
+
 ### file
 
 ***
@@ -84,6 +86,7 @@ basic search file report by md5/sha1. NOTE - specify only one of md5/sha1 argume
 | Report.title | unknown | Report title | 
 | Report.publishDate | unknown | Report publish date | 
 | Report.intelligenceType | unknown | Report intelligence type \(overview, vulnerability, malware, threat\) | 
+
 ### isight-get-report
 
 ***
@@ -113,6 +116,7 @@ Get specific report
 | Report.riskRating | unknown | Report risk rating | 
 | Report.version | unknown | Report version | 
 | Report.tagSection | unknown | Report tag section | 
+
 ### isight-submit-file
 
 ***

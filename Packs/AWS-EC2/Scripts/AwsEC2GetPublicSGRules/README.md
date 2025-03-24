@@ -24,7 +24,7 @@ This script is used in the following playbooks and scripts.
 | **Argument Name** | **Description** |
 | --- | --- |
 | groupId | Security Group ID \(sg-xxxxxxxxx\) |
-| ipPermissions | JSON string of the ipPermissions. IpPermissions should have one or more rules which are composed of IpProtocol, FromPort, ToPort, or IpRanges. Refer to aws-ec2-describe-security-groups \(https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-security-groups.html\) for example/reference. |
+| ipPermissions | JSON string of the ipPermissions. IpPermissions should have one or more rules which are composed of IpProtocol, FromPort, ToPort, or IpRanges. Refer to aws-ec2-describe-security-groups \(<https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-security-groups.html\>) for example/reference. |
 | protocol | Protocol to check. TCP/UDP/All\(-1\) |
 | fromPort | Lower bound port range to be checked. If fromPort and toPort are not specified, all ports will be included. |
 | toPort | Upper bound port range to be checked. If fromPort and toPort are not specified, all ports will be included. |

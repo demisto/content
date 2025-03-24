@@ -18,9 +18,12 @@ Supported Cortex XSOAR versions: 6.0.0 and later.
 | insecure | Trust any certificate \(not secure\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### twinwave-submit-url
+
 ***
 Submit New URL for Scanning.
 
@@ -30,6 +33,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `twinwave-submit-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -49,6 +53,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### twinwave-submit-file
+
 ***
 Submit File for Scanning.
 
@@ -58,6 +63,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `twinwave-submit-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -75,6 +81,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### twinwave-resubmit-job
+
 ***
 Resubmit a Job
 
@@ -82,6 +89,7 @@ Resubmit a Job
 #### Base Command
 
 `twinwave-resubmit-job`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -96,6 +104,7 @@ Resubmit a Job
 
 
 ### twinwave-get-job-summary
+
 ***
 Get Job Summary
 
@@ -103,6 +112,7 @@ Get Job Summary
 #### Base Command
 
 `twinwave-get-job-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -121,6 +131,7 @@ Get Job Summary
 
 
 ### twinwave-get-job-normalized-forensics
+
 ***
 Get a Job's Normalized Forensics
 
@@ -128,6 +139,7 @@ Get a Job's Normalized Forensics
 #### Base Command
 
 `twinwave-get-job-normalized-forensics`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -144,6 +156,7 @@ Get a Job's Normalized Forensics
 
 
 ### twinwave-get-task-normalized-forensics
+
 ***
 Get a Task's Normalized Forensics
 
@@ -151,6 +164,7 @@ Get a Task's Normalized Forensics
 #### Base Command
 
 `twinwave-get-task-normalized-forensics`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -169,6 +183,7 @@ Get a Task's Normalized Forensics
 
 
 ### twinwave-get-task-raw-forensics
+
 ***
 Get a Task's Raw Forensics
 
@@ -176,6 +191,7 @@ Get a Task's Raw Forensics
 #### Base Command
 
 `twinwave-get-task-raw-forensics`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -194,6 +210,7 @@ Get a Task's Raw Forensics
 
 
 ### twinwave-download-submitted-resource
+
 ***
 Download the Submitted Resource. 
 
@@ -205,6 +222,7 @@ All Resources discovered during the analysis are available for download via this
 #### Base Command
 
 `twinwave-download-submitted-resource`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -222,6 +240,7 @@ All Resources discovered during the analysis are available for download via this
 
 
 ### twinwave-get-engines
+
 ***
 List Available Engines
 
@@ -229,6 +248,7 @@ List Available Engines
 #### Base Command
 
 `twinwave-get-engines`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -246,6 +266,7 @@ List Available Engines
 
 
 ### twinwave-search-across-jobs-and-resources
+
 ***
 Search Across Jobs and Resources
 
@@ -253,6 +274,7 @@ Search Across Jobs and Resources
 #### Base Command
 
 `twinwave-search-across-jobs-and-resources`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -262,7 +284,7 @@ Search Across Jobs and Resources
 | type | Enum: "exact" "substring". | Optional | 
 | count | Specify the maximum number of results to be returned. This has a hard limit of 100; specifying a number greater than that will result in a 400 Bad Request and the search will not be performed. | Optional | 
 | shared_only | Specify true to only search across Jobs (and their Resources) which have been shared. | Optional | 
-| submitted_by | Specify a username or part of a username (e.g. alice@example.com or alice) to only search across Jobs (and their Resources) submitted by the matching user. | Optional | 
+| submitted_by | Specify a username or part of a username (e.g. <alice@example.com> or alice) to only search across Jobs (and their Resources) submitted by the matching user. | Optional | 
 | timeframe | Specify the maximum number of days back to search for results. Specify 0 for no limit. For example, setting this to 7 returns results within the last week. | Optional | 
 | page | The page for which you want results. This defaults to 1 the first page. See HasNext in the response of your search to know whether or not there are more pages for your search criteria. | Optional | 
 
@@ -277,6 +299,7 @@ Search Across Jobs and Resources
 
 
 ### twinwave-get-temp-artifact-url
+
 ***
 Get a Temporary Artifact URL
 
@@ -284,6 +307,7 @@ Get a Temporary Artifact URL
 #### Base Command
 
 `twinwave-get-temp-artifact-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

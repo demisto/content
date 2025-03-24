@@ -21,9 +21,12 @@ This is the default integration for this content pack when configured by the Dat
 | API Version | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### tanium-tr-get-intel-doc-by-id
+
 ***
 Returns an intel document object based on ID.
 
@@ -31,6 +34,7 @@ Returns an intel document object based on ID.
 #### Base Command
 
 `tanium-tr-get-intel-doc-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -53,9 +57,11 @@ Returns an intel document object based on ID.
 
 
 #### Command Example
+
 ```!tanium-tr-get-intel-doc-by-id intel_doc_id=509```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -95,12 +101,14 @@ Returns an intel document object based on ID.
 #### Human Readable Output
 
 >### Intel Doc information
+>
 >|ID|Name|Type|Description|Alert Count|Unresolved Alert Count|Created At|Updated At|Label Ids|
 >|---|---|---|---|---|---|---|---|---|
 >| 509 | Zipfldr Library Proxy Execution via RouteTheCall | tanium-signal | Detects the use of rundll32.exe to execute the RouteTheCall function in zipfldr.dll. This can be used for proxy execution to bypass AppLocker or to execute an arbitrary binary. | 0 | 0 | 2021-08-31T21:06:02.932Z | 2021-08-31T21:06:02.932Z | 2, 7, 11, 16 |
 
 
 ### tanium-tr-list-intel-docs
+
 ***
 Returns a list of all intel documents.
 
@@ -108,6 +116,7 @@ Returns a list of all intel documents.
 #### Base Command
 
 `tanium-tr-list-intel-docs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -136,9 +145,11 @@ Returns a list of all intel documents.
 
 
 #### Command Example
+
 ```!tanium-tr-list-intel-docs```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -183,6 +194,7 @@ Returns a list of all intel documents.
 #### Human Readable Output
 
 >### Intel docs
+>
 >|ID|Name|Type|Alert Count|Unresolved Alert Count|Created At|Updated At|Label Ids|
 >|---|---|---|---|---|---|---|---|
 >| 538 | file | yara | 0 | 0 | 2021-09-26T20:42:12.761Z | 2021-09-26T20:42:12.761Z |  |
@@ -238,6 +250,7 @@ Returns a list of all intel documents.
 
 
 ### tanium-tr-list-alerts
+
 ***
 Returns a list of all alerts.
 
@@ -245,6 +258,7 @@ Returns a list of all alerts.
 #### Base Command
 
 `tanium-tr-list-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -280,9 +294,11 @@ Returns a list of all alerts.
 
 
 #### Command Example
+
 ```!tanium-tr-list-alerts limit=2```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -323,6 +339,7 @@ Returns a list of all alerts.
 #### Human Readable Output
 
 >### Alerts
+>
 >|ID|Type|Severity|Priority|Alerted At|Created At|Updated At|Computer Ip Address|Computer Name|GUID|State|Intel Doc Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2021-10-24T01:28:04.275Z | 1.1.1.1 | host0 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
@@ -330,6 +347,7 @@ Returns a list of all alerts.
 
 
 ### tanium-tr-get-alert-by-id
+
 ***
 Returns an alert object based on alert ID.
 
@@ -337,6 +355,7 @@ Returns an alert object based on alert ID.
 #### Base Command
 
 `tanium-tr-get-alert-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -363,9 +382,11 @@ Returns an alert object based on alert ID.
 
 
 #### Command Example
+
 ```!tanium-tr-get-alert-by-id alert_id=1```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -390,12 +411,14 @@ Returns an alert object based on alert ID.
 #### Human Readable Output
 
 >### Alert information
+>
 >|ID|Type|Severity|Priority|Alerted At|Created At|Updated At|Computer Ip Address|Computer Name|GUID|State|Intel Doc Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2021-10-24T01:28:04.275Z | 1.1.1.1 | host0 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
 
 
 ### tanium-tr-alert-update-state
+
 ***
 Updates the state of the specified alerts.
 
@@ -403,6 +426,7 @@ Updates the state of the specified alerts.
 #### Base Command
 
 `tanium-tr-alert-update-state`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -416,6 +440,7 @@ Updates the state of the specified alerts.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tanium-tr-alert-update-state alert_ids=1 state=resolved```
 
 #### Human Readable Output
@@ -423,6 +448,7 @@ There is no context output for this command.
 >Alert state updated to resolved.
 
 ### tanium-tr-create-snapshot
+
 ***
 Captures a new snapshot by connection id.
 
@@ -430,6 +456,7 @@ Captures a new snapshot by connection id.
 #### Base Command
 
 `tanium-tr-create-snapshot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -448,9 +475,11 @@ Captures a new snapshot by connection id.
 
 
 #### Command Example
+
 ```!tanium-tr-create-snapshot connection_id=remote:hostname:123:```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -469,6 +498,7 @@ Captures a new snapshot by connection id.
 >Initiated snapshot creation request for remote:hostname:123:. Task id: 1177.
 
 ### tanium-tr-delete-snapshot
+
 ***
 Deletes a snapshot by connection name and snapshot ID.
 
@@ -476,6 +506,7 @@ Deletes a snapshot by connection name and snapshot ID.
 #### Base Command
 
 `tanium-tr-delete-snapshot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -488,6 +519,7 @@ Deletes a snapshot by connection name and snapshot ID.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tanium-tr-delete-snapshot snapshot_ids=eda5ddce-0f8c-48e8-8dd5-6aa18681d539,3893fa77-4829-4e48-9364-40a16ad6cc0f```
 
 #### Human Readable Output
@@ -495,6 +527,7 @@ There is no context output for this command.
 >Snapshot eda5ddce-0f8c-48e8-8dd5-6aa18681d539,3893fa77-4829-4e48-9364-40a16ad6cc0f deleted successfully.
 
 ### tanium-tr-list-snapshots
+
 ***
 Returns all local snapshots of a single connection.
 
@@ -502,6 +535,7 @@ Returns all local snapshots of a single connection.
 #### Base Command
 
 `tanium-tr-list-snapshots`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -527,9 +561,11 @@ Returns all local snapshots of a single connection.
 
 
 #### Command Example
+
 ```!tanium-tr-list-snapshots limit=2```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -568,6 +604,7 @@ Returns all local snapshots of a single connection.
 #### Human Readable Output
 
 >### Snapshots:
+>
 >|Uuid|Name|Evidence Type|Hostname|Created|
 >|---|---|---|---|---|
 >| 832dec40-1cc2-4e53-881a-7f61cba835bc | host1-1633502448297.db | snapshot | hostname2 | 2021-10-06T06:40:48.297Z |
@@ -575,6 +612,7 @@ Returns all local snapshots of a single connection.
 
 
 ### tanium-tr-delete-local-snapshot
+
 ***
 Deletes a local snapshot by connection id.
 
@@ -582,6 +620,7 @@ Deletes a local snapshot by connection id.
 #### Base Command
 
 `tanium-tr-delete-local-snapshot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -594,6 +633,7 @@ Deletes a local snapshot by connection id.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tanium-tr-delete-local-snapshot connection_id=remote:hostname:123:```
 
 #### Human Readable Output
@@ -601,6 +641,7 @@ There is no context output for this command.
 >Local snapshot of connection remote:hostname:123: was deleted successfully.
 
 ### tanium-tr-list-connections
+
 ***
 Returns all connections.
 
@@ -608,6 +649,7 @@ Returns all connections.
 #### Base Command
 
 `tanium-tr-list-connections`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -640,9 +682,11 @@ Returns all connections.
 
 
 #### Command Example
+
 ```!tanium-tr-list-connections```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -682,6 +726,7 @@ Returns all connections.
 #### Human Readable Output
 
 >### Connections
+>
 >|Id|Status|Hostname|Message|Ip|Platform|Connected At|
 >|---|---|---|---|---|---|---|
 >| rremote:hostname:123: | disconnected | hostname | The connection has been disconnected. | 1.1.1.1 | Windows | 2021-09-22T12:08:39.000Z |
@@ -689,6 +734,7 @@ Returns all connections.
 
 
 ### tanium-tr-create-connection
+
 ***
 Creates a local or remote connection.
 
@@ -696,6 +742,7 @@ Creates a local or remote connection.
 #### Base Command
 
 `tanium-tr-create-connection`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -714,9 +761,11 @@ Creates a local or remote connection.
 
 
 #### Command Example
+
 ```!tanium-tr-create-connection client_id=123 ip=1.1.1.1 hostname=host1 platform=Windows```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -732,6 +781,7 @@ Creates a local or remote connection.
 >Initiated connection request to "remote:host1:123:".
 
 ### tanium-tr-delete-connection
+
 ***
 Deletes a connection by connection id.
 
@@ -739,6 +789,7 @@ Deletes a connection by connection id.
 #### Base Command
 
 `tanium-tr-delete-connection`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -751,6 +802,7 @@ Deletes a connection by connection id.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tanium-tr-delete-connection connection_id=remote:host1:123:```
 
 #### Human Readable Output
@@ -758,6 +810,7 @@ There is no context output for this command.
 >Connection `remote:host1:123:` deleted successfully.
 
 ### tanium-tr-close-connection
+
 ***
 Closes a connection by connection id.
 
@@ -765,6 +818,7 @@ Closes a connection by connection id.
 #### Base Command
 
 `tanium-tr-close-connection`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -777,6 +831,7 @@ Closes a connection by connection id.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tanium-tr-close-connection connection_id=remote:host1:123:```
 
 #### Human Readable Output
@@ -784,6 +839,7 @@ There is no context output for this command.
 >Connection `remote:host1:123:` closed successfully.
 
 ### tanium-tr-list-labels
+
 ***
 Returns all available labels in the system.
 
@@ -791,6 +847,7 @@ Returns all available labels in the system.
 #### Base Command
 
 `tanium-tr-list-labels`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -813,9 +870,11 @@ Returns all available labels in the system.
 
 
 #### Command Example
+
 ```!tanium-tr-list-labels limit=2```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -846,6 +905,7 @@ Returns all available labels in the system.
 #### Human Readable Output
 
 >### Labels
+>
 >|Name|Description|Id|Indicator Count|Signal Count|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| Alpha | These signals have been tested and reviewed internally for syntax. Little or no testing of expected alert generation has been conducted. These signals are not included on the external feed. | 1 | 0 | 0 | 2019-07-31T18:46:28.629Z | 2019-07-31T18:46:28.629Z |
@@ -853,6 +913,7 @@ Returns all available labels in the system.
 
 
 ### tanium-tr-get-label-by-id
+
 ***
 Returns a label object based on label ID.
 
@@ -860,6 +921,7 @@ Returns a label object based on label ID.
 #### Base Command
 
 `tanium-tr-get-label-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -881,9 +943,11 @@ Returns a label object based on label ID.
 
 
 #### Command Example
+
 ```!tanium-tr-get-label-by-id label_id=1```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -903,12 +967,14 @@ Returns a label object based on label ID.
 #### Human Readable Output
 
 >### Label information
+>
 >|Name|Description|Id|Indicator Count|Signal Count|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| Alpha | These signals have been tested and reviewed internally for syntax. Little or no testing of expected alert generation has been conducted. These signals are not included on the external feed. | 1 | 0 | 0 | 2019-07-31T18:46:28.629Z | 2019-07-31T18:46:28.629Z |
 
 
 ### tanium-tr-list-file-downloads
+
 ***
 Returns all downloaded files in the system.
 
@@ -916,6 +982,7 @@ Returns all downloaded files in the system.
 #### Base Command
 
 `tanium-tr-list-file-downloads`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -948,9 +1015,11 @@ Returns all downloaded files in the system.
 
 
 #### Command Example
+
 ```!tanium-tr-list-file-downloads limit=2```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -985,6 +1054,7 @@ Returns all downloaded files in the system.
 #### Human Readable Output
 
 >### File downloads
+>
 >|Uuid|Path|Evidence Type|Hostname|Process Creation Time|Size|
 >|---|---|---|---|---|---|
 >| c0531415-87a6-4d28-a226-b485784b1881 | C:\Program Files (x86)\log1.txt | file | host1 | 2019-09-03T17:51:40.000Z | 10485904 |
@@ -992,6 +1062,7 @@ Returns all downloaded files in the system.
 
 
 ### tanium-tr-get-downloaded-file
+
 ***
 Gets the actual content of a downloaded file by file ID. Downloaded file password: `infected`.
 
@@ -999,6 +1070,7 @@ Gets the actual content of a downloaded file by file ID. Downloaded file passwor
 #### Base Command
 
 `tanium-tr-get-downloaded-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1024,9 +1096,11 @@ Gets the actual content of a downloaded file by file ID. Downloaded file passwor
 
 
 #### Command Example
+
 ```!tanium-tr-get-downloaded-file file_id=c0531415-87a6-4d28-a226-b485784b1881```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -1050,6 +1124,7 @@ Gets the actual content of a downloaded file by file ID. Downloaded file passwor
 
 
 ### tanium-tr-list-events-by-connection
+
 ***
 Queries events for a connection.
 
@@ -1057,6 +1132,7 @@ Queries events for a connection.
 #### Base Command
 
 `tanium-tr-list-events-by-connection`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1113,9 +1189,11 @@ Queries events for a connection.
 
 
 #### Command Example
+
 ```!tanium-tr-list-events-by-connection connection_id=remote:hostname:123: type=File limit=2```
 
 #### Context Example
+
 ```json
 {
     "TaniumEvent": [
@@ -1152,6 +1230,7 @@ Queries events for a connection.
 #### Human Readable Output
 
 >### Events for remote:hostname:123:
+>
 >|Id|File|Timestamp|Process Table Id|Process Path|User Name|
 >|---|---|---|---|---|---|
 >| 4611686018470089188 | C:\Windows\f1.dat | 2021-07-18 07:28:04.007 | 72057594038528503 | C:\Windows\t.exe | LOCAL SERVICE |
@@ -1159,6 +1238,7 @@ Queries events for a connection.
 
 
 ### tanium-tr-get-file-download-info
+
 ***
 Gets the metadata of a file download.
 
@@ -1166,6 +1246,7 @@ Gets the metadata of a file download.
 #### Base Command
 
 `tanium-tr-get-file-download-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1193,9 +1274,11 @@ Gets the metadata of a file download.
 
 
 #### Command Example
+
 ```!tanium-tr-get-file-download-info file_id=c0531415-87a6-4d28-a226-b485784b1881```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -1217,12 +1300,14 @@ Gets the metadata of a file download.
 #### Human Readable Output
 
 >### File download
+>
 >|Uuid|Path|Evidence Type|Hostname|Process Creation Time|Size|
 >|---|---|---|---|---|---|
 >| c0531415-87a6-4d28-a226-b485784b1881 | C:\log1.txt | file | host1 | 2019-09-03T17:51:40.000Z | 10485904 |
 
 
 ### tanium-tr-get-process-info
+
 ***
 Get information for a process.
 
@@ -1230,6 +1315,7 @@ Get information for a process.
 #### Base Command
 
 `tanium-tr-get-process-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1270,9 +1356,11 @@ Get information for a process.
 
 
 #### Command Example
+
 ```!tanium-tr-get-process-info ptid=72057594038510321 connection_id=remote:hostname:123:```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -1310,12 +1398,14 @@ Get information for a process.
 #### Human Readable Output
 
 >### Process information for process with PTID 72057594038510321
+>
 >|Pid|Process Table Id|Parent Process Table Id|Process Path|
 >|---|---|---|---|
 >| 3648 | 72057594038510321 | 72057594038528485 | C:\test.exe |
 
 
 ### tanium-tr-get-events-by-process
+
 ***
 Gets the events for a process.
 
@@ -1323,6 +1413,7 @@ Gets the events for a process.
 #### Base Command
 
 `tanium-tr-get-events-by-process`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1346,9 +1437,11 @@ Gets the events for a process.
 
 
 #### Command Example
+
 ```!tanium-tr-get-events-by-process connection_id=remote:hostname:123: type=Process ptid=72057594038528485 limit=2```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -1377,6 +1470,7 @@ Gets the events for a process.
 #### Human Readable Output
 
 >### Events for process 72057594038528485
+>
 >|Id|Detail|Type|Timestamp|Operation|
 >|---|---|---|---|---|
 >| 72057594038510294 | 4428: C:\test.exe | Process | 2021-07-09 12:20:05.490 | CreateChild |
@@ -1385,6 +1479,7 @@ Gets the events for a process.
 
 
 ### tanium-tr-get-process-children
+
 ***
 Gets the children of this process instance.
 
@@ -1392,6 +1487,7 @@ Gets the children of this process instance.
 #### Base Command
 
 `tanium-tr-get-process-children`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1434,9 +1530,11 @@ Gets the children of this process instance.
 
 
 #### Command Example
+
 ```!tanium-tr-get-process-children connection_id=remote:hostname:123: ptid=72057594038528485```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -1504,6 +1602,7 @@ Gets the children of this process instance.
 #### Human Readable Output
 
 >### Children for process with PTID 72057594038528485
+>
 >|Pid|Process Table Id|Parent Process Table Id|
 >|---|---|---|
 >| 5284 | 72057594038528483 | 72057594038528485 |
@@ -1512,6 +1611,7 @@ Gets the children of this process instance.
 
 
 ### tanium-tr-get-parent-process
+
 ***
 Gets information for the parent process.
 
@@ -1519,6 +1619,7 @@ Gets information for the parent process.
 #### Base Command
 
 `tanium-tr-get-parent-process`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1559,9 +1660,11 @@ Gets information for the parent process.
 
 
 #### Command Example
+
 ```!tanium-tr-get-parent-process connection_id=remote:hostname:123: ptid=72057594038510321```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -1592,12 +1695,14 @@ Gets information for the parent process.
 #### Human Readable Output
 
 >### Parent process for process with PTID 72057594038510321
+>
 >|Id|Pid|Process Table Id|Parent Process Table Id|
 >|---|---|---|---|
 >| 72057594038528485 | -2 | 72057594038528485 | 0 |
 
 
 ### tanium-tr-get-process-tree
+
 ***
 Gets the process tree for the process instance.
 
@@ -1605,6 +1710,7 @@ Gets the process tree for the process instance.
 #### Base Command
 
 `tanium-tr-get-process-tree`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1646,9 +1752,11 @@ Gets the process tree for the process instance.
 
 
 #### Command Example
+
 ```!tanium-tr-get-process-tree connection_id=remote:hostname:123: ptid=72057594038528485```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -1709,6 +1817,7 @@ Gets the process tree for the process instance.
 #### Human Readable Output
 
 >### Process information for process with PTID 72057594038528485
+>
 >|Id|Pid|Process Table Id|Parent Process Table Id|
 >|---|---|---|---|
 >| 72057594038528485 | -2 | 72057594038528485 | 0 |
@@ -1716,6 +1825,7 @@ Gets the process tree for the process instance.
 
 
 ### tanium-tr-event-evidence-list
+
 ***
 Returns a list of all available evidence in the system.
 
@@ -1723,6 +1833,7 @@ Returns a list of all available evidence in the system.
 #### Base Command
 
 `tanium-tr-event-evidence-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1747,9 +1858,11 @@ Returns a list of all available evidence in the system.
 
 
 #### Command Example
+
 ```!tanium-tr-event-evidence-list limit=3```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -1789,6 +1902,7 @@ Returns a list of all available evidence in the system.
 #### Human Readable Output
 
 >### Evidence list
+>
 >|Uuid|Name|Evidence Type|Hostname|Created At|Username|
 >|---|---|---|---|---|---|
 >| 832dec40-1cc2-4e53-881a-7f61cba835bc | host1.db | snapshot | host1 | 2021-10-06T06:40:48.297Z | administrator |
@@ -1797,6 +1911,7 @@ Returns a list of all available evidence in the system.
 
 
 ### tanium-tr-event-evidence-get-properties
+
 ***
 Returns event evidence properties for IOC generation.
 
@@ -1804,6 +1919,7 @@ Returns event evidence properties for IOC generation.
 #### Base Command
 
 `tanium-tr-event-evidence-get-properties`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1817,9 +1933,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!tanium-tr-event-evidence-get-properties```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -1852,6 +1970,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Evidence Properties
+>
 >|Type|Value|
 >|---|---|
 >| MD5Hash | 92ee791a630830452485e8e375f8db35 |
@@ -1862,6 +1981,7 @@ There are no input arguments for this command.
 
 
 ### tanium-tr-get-evidence-by-id
+
 ***
 Gets event evidence by evidence ID.
 
@@ -1869,6 +1989,7 @@ Gets event evidence by evidence ID.
 #### Base Command
 
 `tanium-tr-get-evidence-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1898,9 +2019,11 @@ Gets event evidence by evidence ID.
 
 
 #### Command Example
+
 ```!tanium-tr-get-evidence-by-id evidence_id=b684f9be-80ee-483d-8dca-a4d5cd3aeaa6```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -1938,12 +2061,14 @@ Gets event evidence by evidence ID.
 #### Human Readable Output
 
 >### Evidence information
+>
 >|Uuid|Hostname|Username|Summary|Created|Process Table Id|
 >|---|---|---|---|---|---|
 >| b684f9be-80ee-483d-8dca-a4d5cd3aeaa6 | host1 | administrator | Test description. | 2021-10-05T10:44:36.697Z | 72057594038506412 |
 
 
 ### tanium-tr-create-evidence
+
 ***
 Creates an event evidence from process.
 
@@ -1951,6 +2076,7 @@ Creates an event evidence from process.
 #### Base Command
 
 `tanium-tr-create-evidence`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1966,6 +2092,7 @@ Creates an event evidence from process.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tanium-tr-create-evidence ptid=72057594038510321 connection_id=remote:hostname:123: hostname=host1 summary="Create Process"```
 
 #### Human Readable Output
@@ -1973,6 +2100,7 @@ There is no context output for this command.
 >Evidence have been created.
 
 ### tanium-tr-delete-evidence
+
 ***
 Deletes event evidences from tanium.
 
@@ -1980,6 +2108,7 @@ Deletes event evidences from tanium.
 #### Base Command
 
 `tanium-tr-delete-evidence`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1992,6 +2121,7 @@ Deletes event evidences from tanium.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tanium-tr-delete-evidence evidence_ids=53630ca0-e55a-4f6d-9451-d1c2c277530b```
 
 #### Human Readable Output
@@ -1999,6 +2129,7 @@ There is no context output for this command.
 >Evidence 53630ca0-e55a-4f6d-9451-d1c2c277530b has been deleted successfully.
 
 ### tanium-tr-request-file-download
+
 ***
 Requests a new file download.
 
@@ -2006,6 +2137,7 @@ Requests a new file download.
 #### Base Command
 
 `tanium-tr-request-file-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2027,9 +2159,11 @@ Requests a new file download.
 
 
 #### Command Example
+
 ```!tanium-tr-request-file-download connection_id=remote:hostname:123: path="C:\\Users\\Administrator\\Desktop\\testD.txt"```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -2052,6 +2186,7 @@ Requests a new file download.
 >Download request of file C:\Users\Administrator\Desktop\testD.txt has been sent successfully. Task id: 1178.
 
 ### tanium-tr-delete-file-download
+
 ***
 Deletes a file download.
 
@@ -2059,6 +2194,7 @@ Deletes a file download.
 #### Base Command
 
 `tanium-tr-delete-file-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2071,6 +2207,7 @@ Deletes a file download.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tanium-tr-delete-file-download file_id=0367c8b2-eed9-4124-b173-1c83cbf3ba6f```
 
 #### Human Readable Output
@@ -2078,6 +2215,7 @@ There is no context output for this command.
 >Delete request of file with ID 0367c8b2-eed9-4124-b173-1c83cbf3ba6f has been sent successfully.
 
 ### tanium-tr-list-files-in-directory
+
 ***
 Gets a list of files in the given directory.
 
@@ -2085,6 +2223,7 @@ Gets a list of files in the given directory.
 #### Base Command
 
 `tanium-tr-list-files-in-directory`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2110,9 +2249,11 @@ Gets a list of files in the given directory.
 
 
 #### Command Example
+
 ```!tanium-tr-list-files-in-directory connection_id=remote:hostname:123: path=`C:\Users\Administrator\Desktop\` limit=2```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -2145,6 +2286,7 @@ Gets a list of files in the given directory.
 #### Human Readable Output
 
 >### Files in directory `C:\Users\Administrator\Desktop\`
+>
 >|Name|Path|Connection Id|Created Date|Modified Date|Permissions|Size|
 >|---|---|---|---|---|---|---|
 >| ChromeSetup.exe | C:\Users\Administrator\Desktop\ | remote:hostname:123: | 2020-02-06T08:34:17.000Z | 2018-08-12T11:11:02.000Z | 438 | 1130840 |
@@ -2152,6 +2294,7 @@ Gets a list of files in the given directory.
 
 
 ### tanium-tr-get-file-info
+
 ***
 Gets information about a file from a remote connection.
 
@@ -2159,6 +2302,7 @@ Gets information about a file from a remote connection.
 #### Base Command
 
 `tanium-tr-get-file-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2185,9 +2329,11 @@ Gets information about a file from a remote connection.
 
 
 #### Command Example
+
 ```!tanium-tr-get-file-info connection_id=remote:hostname:123: path="C:\\log1.txt"```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -2211,12 +2357,14 @@ Gets information about a file from a remote connection.
 #### Human Readable Output
 
 >### Information for file `C:\log1.txt`
+>
 >|Path|Name|Connection Id|Type|Created Date|Modified Date|
 >|---|---|---|---|---|---|
 >| C:\log1.txt | C:\log1.txt | remote:hostname:123: | FILE | 2019-09-03T17:51:40.000Z | 2021-09-27T19:36:07.000Z |
 
 
 ### tanium-tr-delete-file-from-endpoint
+
 ***
 Deletes a file from the given endpoint.
 
@@ -2224,6 +2372,7 @@ Deletes a file from the given endpoint.
 #### Base Command
 
 `tanium-tr-delete-file-from-endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2237,6 +2386,7 @@ Deletes a file from the given endpoint.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tanium-tr-delete-file-from-endpoint connection_id=remote:hostname:123: path=`C:\Users\Administrator\Desktop\to_delete.txt````
 
 #### Human Readable Output
@@ -2244,6 +2394,7 @@ There is no context output for this command.
 >Delete request of file C:\Users\Administrator\Desktop\to_delete.txt from endpoint remote:hostname:123: has been sent successfully.
 
 ### tanium-tr-intel-docs-labels-list
+
 ***
 List all labels for the identified intel document.
 
@@ -2251,6 +2402,7 @@ List all labels for the identified intel document.
 #### Base Command
 
 `tanium-tr-intel-docs-labels-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2273,9 +2425,11 @@ List all labels for the identified intel document.
 
 
 #### Command Example
+
 ```!tanium-tr-intel-docs-labels-list intel_doc_id=509```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -2336,6 +2490,7 @@ List all labels for the identified intel document.
 #### Human Readable Output
 
 >### Intel doc (509) labels
+>
 >|ID|Name|Description|Indicator Count|Signal Count|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| 1 | Alpha | These signals have been tested and reviewed internally for syntax. Little or no testing of expected alert generation has been conducted. These signals are not included on the external feed. | 0 | 0 | 2019-07-31T18:46:28.629Z | 2019-07-31T18:46:28.629Z |
@@ -2346,6 +2501,7 @@ List all labels for the identified intel document.
 
 
 ### tanium-tr-intel-docs-add-label
+
 ***
 Create a new label association for the identified intel document.
 
@@ -2353,6 +2509,7 @@ Create a new label association for the identified intel document.
 #### Base Command
 
 `tanium-tr-intel-docs-add-label`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2376,9 +2533,11 @@ Create a new label association for the identified intel document.
 
 
 #### Command Example
+
 ```!tanium-tr-intel-docs-add-label intel_doc_id=509 label_id=1```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -2439,6 +2598,7 @@ Create a new label association for the identified intel document.
 #### Human Readable Output
 
 >### Successfully created a new label (1) association for the identified intel document (509).
+>
 >|ID|Name|Description|Indicator Count|Signal Count|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| 1 | Alpha | These signals have been tested and reviewed internally for syntax. Little or no testing of expected alert generation has been conducted. These signals are not included on the external feed. | 0 | 0 | 2019-07-31T18:46:28.629Z | 2019-07-31T18:46:28.629Z |
@@ -2449,6 +2609,7 @@ Create a new label association for the identified intel document.
 
 
 ### tanium-tr-intel-docs-remove-label
+
 ***
 Delete a label association for the identified intel document.
 
@@ -2456,6 +2617,7 @@ Delete a label association for the identified intel document.
 #### Base Command
 
 `tanium-tr-intel-docs-remove-label`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2479,9 +2641,11 @@ Delete a label association for the identified intel document.
 
 
 #### Command Example
+
 ```!tanium-tr-intel-docs-remove-label intel_doc_id=509 label_id=1```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -2533,6 +2697,7 @@ Delete a label association for the identified intel document.
 #### Human Readable Output
 
 >### Successfully removed the label (1) association for the identified intel document (509).
+>
 >|ID|Name|Description|Indicator Count|Signal Count|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| 2 | Beta | These signals have been tested and reviewed internally for syntax. Internal testing of expected alert generation has been verified. Testing on internal systems for false positives has been conducted and tuned if necessary. These signals are included on the external feed. | 0 | 0 | 2019-07-31T18:46:28.629Z | 2019-07-31T18:46:28.629Z |
@@ -2542,6 +2707,7 @@ Delete a label association for the identified intel document.
 
 
 ### tanium-tr-intel-doc-create
+
 ***
 Add a new intel document to the system by providing its document contents.
 
@@ -2549,6 +2715,7 @@ Add a new intel document to the system by providing its document contents.
 #### Base Command
 
 `tanium-tr-intel-doc-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2578,9 +2745,11 @@ Add a new intel document to the system by providing its document contents.
 
 
 #### Command Example
+
 ```!tanium-tr-intel-doc-create entry_id=7173@e99f97d1-7225-4c75-896c-3c960febbe8c file_extension=yara```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -2607,12 +2776,14 @@ Add a new intel document to the system by providing its document contents.
 #### Human Readable Output
 
 >### Intel Doc information
+>
 >|ID|Name|Type|Alert Count|Unresolved Alert Count|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| 438 | file.yara | yara | 0 | 0 | 2021-07-18T10:27:41.742Z | 2021-10-24T09:00:52.609Z |
 
 
 ### tanium-tr-intel-doc-update
+
 ***
 Update the contents of an existing intel document by providing the document contents.
 
@@ -2620,6 +2791,7 @@ Update the contents of an existing intel document by providing the document cont
 #### Base Command
 
 `tanium-tr-intel-doc-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2650,9 +2822,11 @@ Update the contents of an existing intel document by providing the document cont
 
 
 #### Command Example
+
 ```!tanium-tr-intel-doc-update entry_id=7173@e99f97d1-7225-4c75-896c-3c960febbe8c intel_doc_id=438 file_extension=yara```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -2679,12 +2853,14 @@ Update the contents of an existing intel document by providing the document cont
 #### Human Readable Output
 
 >### Intel Doc information
+>
 >|ID|Name|Type|Alert Count|Unresolved Alert Count|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| 438 | file.yara | yara | 0 | 0 | 2021-07-18T10:27:41.742Z | 2021-10-07T12:23:39.573Z |
 
 
 ### tanium-tr-intel-doc-delete
+
 ***
 Remove an intel document from the system by providing its ID
 
@@ -2692,6 +2868,7 @@ Remove an intel document from the system by providing its ID
 #### Base Command
 
 `tanium-tr-intel-doc-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2700,13 +2877,16 @@ Remove an intel document from the system by providing its ID
 
 
 #### Context Output
+
 None
 
 
 #### Command Example
+
 ```!tanium-tr-intel-doc-delete intel_doc_id=509```
 
 #### Context Example
+
 None
 
 #### Human Readable Output
@@ -2715,6 +2895,7 @@ None
 
 
 ### tanium-tr-start-quick-scan
+
 ***
 Scan a computer group for hashes in intel document. Computer groups
       can be viewed by navigating to `Administration -> Computer Groups` in the Threat-Response
@@ -2725,6 +2906,7 @@ Scan a computer group for hashes in intel document. Computer groups
 #### Base Command
 
 `tanium-tr-start-quick-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2746,9 +2928,11 @@ Scan a computer group for hashes in intel document. Computer groups
 | Tanium.QuickScan.QuestionId | Number | The ID of the quick scan question. | 
 
 #### Command Example
+
 ```!tanium-tr-start-quick-scan intel_doc_id=509 computer_group_name="All Computers"```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -2768,12 +2952,14 @@ Scan a computer group for hashes in intel document. Computer groups
 #### Human Readable Output
 
 >### Quick Scan started
+>
 >|AlertCount|ComputerGroupId|CreatedAt|ID|IntelDocId|QuestionId|UserId|
 >|---|---|---|---|---|---|---|
 >| 0 | 1 | 2022-01-05T19:53:43.049Z | 1000239 | 509 | 2025697 | 64 |
 
 
 ### tanium-tr-intel-deploy
+
 ***
 Deploys intel using the service account context.
 
@@ -2781,6 +2967,7 @@ Deploys intel using the service account context.
 #### Base Command
 
 `tanium-tr-intel-deploy`
+
 #### Input
 
 There are no input arguments for this command.
@@ -2790,6 +2977,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!tanium-tr-intel-deploy```
 
 #### Human Readable Output
@@ -2797,6 +2985,7 @@ There is no context output for this command.
 >Successfully deployed intel.
 
 ### tanium-tr-intel-deploy-status
+
 ***
 Displays status of last intel deployment.
 
@@ -2804,6 +2993,7 @@ Displays status of last intel deployment.
 #### Base Command
 
 `tanium-tr-intel-deploy-status`
+
 #### Input
 
 There are no input arguments for this command.
@@ -2819,9 +3009,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!tanium-tr-intel-deploy-status```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -2838,12 +3030,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Intel deploy status
+>
 >|Created At|Modified At|Current Revision|Current Size|
 >|---|---|---|---|
 >| 2021-05-02T19:18:00.685Z | 2021-10-06T15:07:43.248Z | 855 | 1187840 |
 
 
 ### tanium-tr-get-task-by-id
+
 ***
 Get task by ID.
 
@@ -2851,6 +3045,7 @@ Get task by ID.
 #### Base Command
 
 `tanium-tr-get-task-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2875,9 +3070,11 @@ Get task by ID.
 
 
 #### Command Example
+
 ```!tanium-tr-get-task-by-id task_id=833```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -2923,12 +3120,14 @@ Get task by ID.
 #### Human Readable Output
 
 >### Task information
+>
 >|Id|Status|
 >|---|---|
 >| 833 | COMPLETED |
 
 
 ### tanium-tr-get-system-status
+
 ***
 Get system status, to retrieve all possible connection's client ids, hostnames, ips.
 
@@ -2936,6 +3135,7 @@ Get system status, to retrieve all possible connection's client ids, hostnames, 
 #### Base Command
 
 `tanium-tr-get-system-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2966,9 +3166,11 @@ Get system status, to retrieve all possible connection's client ids, hostnames, 
 
 
 #### Command Example
+
 ```!tanium-tr-get-system-status```
 
 #### Context Example
+
 ```json
 {
     "Tanium": {
@@ -3013,6 +3215,7 @@ Get system status, to retrieve all possible connection's client ids, hostnames, 
 #### Human Readable Output
 
 >### Reporting clients
+>
 >|Host Name|Client Id|Ipaddress Client|Ipaddress Server|Port Number|
 >|---|---|---|---|---|
 >| taniumlinux | 11111 | 1.1.1.1 | 1.1.1.1 | 17472 |
@@ -3091,10 +3294,13 @@ Creates a "gatherSnapshot" Response Action for the specified host
 | Tanium.ResponseActions.eid | String |  | 
 
 ## Breaking changes from the previous version of this integration - Tanium Threat Response v2
+
 The following sections list the changes in this version.
 
 ### Commands
+
 #### The following commands were removed in this version:
+
 * *tanium-tr-list-snapshots-by-connection*
 * *tanium-tr-list-local-snapshots-by-connection*
 * *tanium-tr-get-connection-by-name*
@@ -3104,35 +3310,44 @@ The following sections list the changes in this version.
 * *tanium-tr-get-download-file-request-status* - this command was replaced by *tanium-tr-get-task-by-id*.
 
 ### Arguments
+
 #### The following arguments were removed in this version:
 
 In the *tanium-tr-get-intel-doc-by-id* command:
+
 * *intel-doc-id* - this argument was replaced by *intel_doc_id*.
 
 In the *tanium-tr-list-alerts* command:
+
 * *computer-ip-address* - this argument was replaced by *computer_ip_address*.
 * *computer-name* - this argument was replaced by *computer_name*.
 * *scan-config-id* - this argument was replaced by *scan_config_id*.
 * *intel-doc-id* - this argument was replaced by *intel_doc_id*.
 
 In the *tanium-tr-get-alert-by-id* command:
+
 * *alert-id* - this argument was replaced by *alert_id*.
 
 In the *tanium-tr-alert-update-state* command:
+
 * *alert-id* - this argument was replaced by *alert_ids*.
 
 In the *tanium-tr-create-snapshot* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 
 In the *tanium-tr-delete-snapshot* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 * *snapshot-id* - this argument was replaced by *snapshot_ids*.
 
 In the *tanium-tr-delete-local-snapshot* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 * *file-name* - this argument was removed.
 
 In the *tanium-tr-create-connection* command:
+
 * *remote* - this argument was removed.
 * *destination-type* - this argument was removed.
 * *destination* - this argument was removed.
@@ -3140,74 +3355,96 @@ In the *tanium-tr-create-connection* command:
 * This command receiving new arguments: *client_id*, *ip*, *platform*, *hostname*.
 
 In the *tanium-tr-delete-connection* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 
 In the *tanium-tr-get-label-by-id* command:
+
 * *label-id* - this argument was replaced by *label_id*.
 
 In the *tanium-tr-list-file-downloads* command:
+
 * *host* - this argument was removed.
 
 In the *tanium-tr-get-downloaded-file* command:
+
 * *file-id* - this argument was replaced by *file_id*.
 
 In the *tanium-tr-list-events-by-connection* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 * *event-type* - this argument was replaced by *type*.
 
 In the *tanium-tr-get-file-download-info* command:
+
 * *host* - this argument was removed.
 * *path* - this argument was removed.
 * *id* - this argument was replaced by *file_id*.
 
 In the *tanium-tr-get-process-info* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 
 In the *tanium-tr-get-events-by-process* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 
 In the *tanium-tr-get-process-children* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 
 In the *tanium-tr-get-parent-process* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 
 In the *tanium-tr-get-process-tree* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 
 In the *tanium-tr-get-evidence-by-id* command:
+
 * *evidence-id* - this argument was replaced by *evidence_id*.
 
 In the *tanium-tr-create-evidence* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 
 In the *tanium-tr-delete-evidence* command:
+
 * *evidence-id* - this argument was replaced by *evidence_ids*.
 
 In the *tanium-tr-request-file-download* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 
 In the *tanium-tr-delete-file-download* command:
+
 * *file-id* - this argument was replaced by *file_id*.
 
 In the *tanium-tr-list-files-in-directory* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 
 In the *tanium-tr-get-file-info* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 
 In the *tanium-tr-delete-file-from-endpoint* command:
+
 * *connection-name* - this argument was replaced by *connection_id*.
 
 #### The behavior of the following arguments was changed:
 
 In the *tanium-tr-list-intel-docs* command:
+
 * *limit* - The default value changed to '50'.
 
 ### Outputs
+
 #### The following outputs were removed in this version:
 
 In the *tanium-tr-list-connections* command:
+
 * *Tanium.Connection.CreateTime* - this output was removed.
 * *Tanium.Connection.Name* - this output was replaced by *Tanium.Connection.hostname*.
 * *Tanium.Connection.Remote* - this output was removed.
@@ -3218,6 +3455,7 @@ In the *tanium-tr-list-connections* command:
 * *Tanium.Connection.OSName* - this output was replaced by *Tanium.Connection.platform*.
 
 In the *tanium-tr-list-labels* command:
+
 * *Tanium.Label.CreatedAt* - this output was replaced by *Tanium.Label.createdAt*.
 * *Tanium.Label.Description* - this output was replaced by *Tanium.Label.description*.
 * *Tanium.Label.ID* - this output was replaced by *Tanium.Label.id*.
@@ -3227,6 +3465,7 @@ In the *tanium-tr-list-labels* command:
 * *Tanium.Label.UpdatedAt* - this output was replaced by *Tanium.Label.updatedAt*.
 
 In the *tanium-tr-get-label-by-id* command:
+
 * *Tanium.Label.CreatedAt* - this output was replaced by *Tanium.Label.createdAt*.
 * *Tanium.Label.Description* - this output was replaced by *Tanium.Label.description*.
 * *Tanium.Label.ID* - this output was replaced by *Tanium.Label.id*.
@@ -3236,6 +3475,7 @@ In the *tanium-tr-get-label-by-id* command:
 * *Tanium.Label.UpdatedAt* - this output was replaced by *Tanium.Label.updatedAt*.
 
 In the *tanium-tr-list-file-downloads* command:
+
 * *Tanium.FileDownload.Size* - this output was replaced by *Tanium.FileDownload.size*.
 * *Tanium.FileDownload.Path* - this output was replaced by *Tanium.FileDownload.path*.
 * *Tanium.FileDownload.Downloaded* - this output was replaced by *Tanium.FileDownload.downloaded*.
@@ -3254,6 +3494,7 @@ In the *tanium-tr-list-file-downloads* command:
 * *Tanium.FileDownload.Deleted* - this output was removed.
 
 In the *tanium-tr-list-events-by-connection* command:
+
 * *TaniumEvent.Domain* - this output was removed.
 * *TaniumEvent.File* - this output was replaced by *TaniumEvent.file*.
 * *TaniumEvent.Operation* - this output was replaced by *TaniumEvent.operation*.
@@ -3290,6 +3531,7 @@ In the *tanium-tr-list-events-by-connection* command:
 * *TaniumEvent.Property.Value* - this output was removed.
 
 In the *tanium-tr-get-file-download-info* command:
+
 * *Tanium.FileDownload.Size* - this output was replaced by *Tanium.FileDownload.size*.
 * *Tanium.FileDownload.Path* - this output was replaced by *Tanium.FileDownload.path*.
 * *Tanium.FileDownload.Downloaded* - this output was replaced by *Tanium.FileDownload.downloaded*.
@@ -3308,6 +3550,7 @@ In the *tanium-tr-get-file-download-info* command:
 * *Tanium.FileDownload.Deleted* - this output was removed.
 
 In the *tanium-tr-get-process-info* command:
+
 * *Tanium.Process.CreateTime* - this output was replaced by *Tanium.ProcessInfo.createTime*.
 * *Tanium.Process.Domain* - this output was removed.
 * *Tanium.Process.ExitCode* - this output was replaced by *Tanium.ProcessInfo.exitCode*.
@@ -3319,6 +3562,7 @@ In the *tanium-tr-get-process-info* command:
 * *Tanium.Process.Username* - this output was replaced by *Tanium.ProcessInfo.userName*.
 
 In the *tanium-tr-get-events-by-process* command:
+
 * *Tanium.ProcessEvent.ID* - this output was replaced by *Tanium.ProcessEvent.id*.
 * *Tanium.ProcessEvent.Detail* - this output was replaced by *Tanium.ProcessEvent.detail*.
 * *Tanium.ProcessEvent.Operation* - this output was replaced by *Tanium.ProcessEvent.operation*.
@@ -3326,6 +3570,7 @@ In the *tanium-tr-get-events-by-process* command:
 * *Tanium.ProcessEvent.Type* - this output was replaced by *Tanium.ProcessEvent.type*.
 
 In the *tanium-tr-get-process-children* command:
+
 * *Tanium.ProcessChildren.ID* - this output was replaced by *Tanium.ProcessChildren.id*.
 * *Tanium.ProcessChildren.Name* - this output was removed.
 * *Tanium.ProcessChildren.PID* - this output was replaced by *Tanium.ProcessChildren.pid*.
@@ -3333,6 +3578,7 @@ In the *tanium-tr-get-process-children* command:
 * *Tanium.ProcessChildren.Parent* - this output was removed.
 
 In the *tanium-tr-get-parent-process* command:
+
 * *Tanium.Process.CreateTime* - this output was replaced by *Tanium.ProcessParent.createTime*.
 * *Tanium.Process.Domain* - this output was removed.
 * *Tanium.Process.ExitCode* - this output was replaced by *Tanium.ProcessParent.exitCode*.
@@ -3344,6 +3590,7 @@ In the *tanium-tr-get-parent-process* command:
 * *Tanium.Process.Username* - this output was replaced by *Tanium.ProcessParent.userName*.
 
 In the *tanium-tr-get-process-tree* command:
+
 * *Tanium.ProcessTree.ID* - this output was replaced by *Tanium.ProcessTree.id*.
 * *Tanium.ProcessTree.Name* - this output was removed.
 * *Tanium.ProcessTree.PID* - this output was replaced by *Tanium.ProcessTree.pid*.
@@ -3352,6 +3599,7 @@ In the *tanium-tr-get-process-tree* command:
 * *Tanium.ProcessTree.Children* - this output was replaced by *Tanium.ProcessTree.childrenCount*.
 
 In the *tanium-tr-get-evidence-by-id* command:
+
 * *Tanium.Evidence.ID* - this output was replaced by *Tanium.Evidence.uuid*.
 * *Tanium.Evidence.CreatedAt* - this output was replaced by *Tanium.Evidence.createTime*.
 * *Tanium.Evidence.LastModified* - this output was removed.
@@ -3366,6 +3614,7 @@ In the *tanium-tr-get-evidence-by-id* command:
 * *Tanium.Evidence.Deleted* - this output was removed.
 
 In the *tanium-tr-request-file-download* command:
+
 * *Tanium.FileDownload.Path* - this output was replaced by *Tanium.FileDownloadTask.paths*.
 * *Tanium.FileDownload.ConnectionName* - this output was replaced by *Tanium.FileDownloadTask.connection*.
 * *Tanium.FileDownload.Downloaded* - this output was removed.
@@ -3373,6 +3622,7 @@ In the *tanium-tr-request-file-download* command:
 * *Tanium.FileDownload.ID* - this output was replaced by *Tanium.FileDownloadTask.taskId*.
 
 In the *tanium-tr-list-files-in-directory* command:
+
 * *Tanium.File.Created* - this output was replaced by *Tanium.File.createdDate*.
 * *Tanium.File.Size* - this output was replaced by *Tanium.File.size*.
 * *Tanium.File.IsDirectory* - this output was replaced by *Tanium.File.type*.
@@ -3383,6 +3633,7 @@ In the *tanium-tr-list-files-in-directory* command:
 * *Tanium.File.Deleted* - this output was removed.
 
 In the *tanium-tr-get-file-info* command:
+
 * *Tanium.File.Created* - this output was replaced by *Tanium.File.createdDate*.
 * *Tanium.File.Size* - this output was replaced by *Tanium.File.size*.
 * *Tanium.File.IsDirectory* - this output was replaced by *Tanium.File.type*.

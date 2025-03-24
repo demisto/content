@@ -75,8 +75,11 @@ If a takedown for the attack already exists in the Netcraft system it will be au
 | Netcraft.Takedown.id | String | The ID of the takedown. (this key will only appear if the takedown has been created and verified). | 
 
 #### Command example
+
 ```!netcraft-attack-report attack="https://www.example.com/" comment="Very malicious" attack_type="phishing_url" inactive="true" customer_label="Test Playbook run" tags="coronavirus"```
+
 #### Context Example
+
 ```json
 {
     "Netcraft": {
@@ -90,6 +93,7 @@ If a takedown for the attack already exists in the Netcraft system it will be au
 #### Human Readable Output
 
 >### Netcraft attack reported
+>
 >|Report status|Takedown ID|Response code|
 >|---|---|---|
 >| The attack was submitted to Netcraft successfully. | 45492113 | TD_OK |
@@ -158,11 +162,11 @@ Netcraft has a limit of 1,000,000 objects returned within a 24 hour period (movi
 | Netcraft.Takedown.first_inactive | Date | The date and time that the takedown first entered the inactive \(monitoring\) state in UTC format. | 
 | Netcraft.Takedown.is_redirect | String | Whether or not the attack redirects to another location. Possible values: "final" - the attack is the final destination of another redirect.  "redirect" - the attack redirects to another location. "no_redirect" - the attack does not redirect.  | 
 | Netcraft.Takedown.attack_type | String | The type of attack being taken down. | 
-| Netcraft.Takedown.certificate | Unknown | HTTPS certificate details for the hostname. The structure of the returned data is the output of PHP's "openssl_x509_parse" function with the additional keys spki_sha256 and spki_sha1. \(See https://www.php.net/manual/en/function.openssl-x509-parse.php\).  | 
+| Netcraft.Takedown.certificate | Unknown | HTTPS certificate details for the hostname. The structure of the returned data is the output of PHP's "openssl_x509_parse" function with the additional keys spki_sha256 and spki_sha1. \(See <https://www.php.net/manual/en/function.openssl-x509-parse.php\>).  | 
 | Netcraft.Takedown.certificate.spki_sha256 | Unknown | The SHA-256 hash of the Subject Public Key Info structure in the certificate. | 
 | Netcraft.Takedown.certificate.spki_sha1 | Unknown | The SHA-1 hash of the Subject Public Key Info structure in the certificate. | 
-| Netcraft.Takedown.deceptive_domain_score | String | The deceptive domain score of the domain. E.g., for the URL https://l0gin.example.com/, this value will contain the deceptive domain score for example.com.  | 
-| Netcraft.Takedown.domain_risk_rating | String | A score from 0 to 10 which represents the risk that the domain is hosting a malicious website. E.g., for the URL https://l0gin.example.com/, this value will contain the risk rating for "example.com". This score is distinct from the "deceptive domain score", and takes a range of factors into account, such as the reputation of the hosting provider, age of the domain name, search engine rankings and more.  | 
+| Netcraft.Takedown.deceptive_domain_score | String | The deceptive domain score of the domain. E.g., for the URL <https://l0gin.example.com/>, this value will contain the deceptive domain score for example.com.  | 
+| Netcraft.Takedown.domain_risk_rating | String | A score from 0 to 10 which represents the risk that the domain is hosting a malicious website. E.g., for the URL <https://l0gin.example.com/>, this value will contain the risk rating for "example.com". This score is distinct from the "deceptive domain score", and takes a range of factors into account, such as the reputation of the hosting provider, age of the domain name, search engine rankings and more.  | 
 | Netcraft.Takedown.final_outage | String | The duration \(hh:mm:ss\) between when the takedown was authorized, and the final time that the attack went offline \(final_resolved - date_authed\).  | 
 | Netcraft.Takedown.final_resolved | Date | The date and time that the attack went offline for the final time, in UTC format. | 
 | Netcraft.Takedown.first_outage | Date | The duration \(hh:mm:ss\) between when the takedown was authorized, and the first time that the attack went offline \(first_resolved - date_authed\). | 
@@ -170,7 +174,7 @@ Netcraft has a limit of 1,000,000 objects returned within a 24 hour period (movi
 | Netcraft.Takedown.fwd_owner | String | The owner of the forward DNS infrastructure. | 
 | Netcraft.Takedown.has_phishing_kit | Boolean | Indicates whether the takedown has an associated phishing kit. | 
 | Netcraft.Takedown.hostname | String | The full hostname of the URL or email address being taken down. This will be blank for attacks with no hostname. | 
-| Netcraft.Takedown.hostname_ddss_score | String | The deceptive domain score of the hostname. E.g., For the URL https://l0gin.example.com/, this value will contain the deceptive domain score for l0gin.example.com.  | 
+| Netcraft.Takedown.hostname_ddss_score | String | The deceptive domain score of the hostname. E.g., For the URL <https://l0gin.example.com/>, this value will contain the deceptive domain score for l0gin.example.com.  | 
 | Netcraft.Takedown.evidence_url | String | A URL for the public incident report for this attack. | 
 | Netcraft.Takedown.domain_attack | String | Whether or not the domain name used in the attack is believed to be fraudulent. Possible values \(non exhaustive\): "all" - All attacks. "yes" - There is a high confidence that the domain name is fraudulent. The domain registrar will be contacted, and the webmaster will not be contacted. "yes_low_confidence" - The domain is likely fraudulent. The domain registrar will be contacted, and the webmaster will still be contacted. "no" - The domain name is not believed to be fraudulent. This is likely a compromised site.  | 
 | Netcraft.Takedown.false_positive | Boolean | Indicates whether the reported content was incorrectly flagged as malicious. | 
@@ -188,7 +192,7 @@ Netcraft has a limit of 1,000,000 objects returned within a 24 hour period (movi
 | Netcraft.Takedown.status | String | The status of the takedown. Possible values: "Unverified" - The report has not yet been verified as fraudulent by Netcraft. "Inactive \(Monitoring\)" - The attack went offline before Netcraft was authorized to start the takedown process, and is being monitored in case it returns. "Verified" - The report has been verified as fraudulent, but no takedown notices have been sent. "Contacted Hosting" - Takedown notices have been sent to the hosting provider. "Contacted Police" - The takedown has been escalated to local law enforcement. "Contacted Upstream" - The takedown has been escalated to the organization providing connectivity to the hosting provider. "Monitoring" - The attack is offline, as it is being monitored in case it returns. "Resolved" - The attack has been offline for 7 consecutive days, and is no longer being monitored. "Stale" - The attack went offline before Netcraft was authorized to start the takedown process, and is no longer being monitored. "Invalid" - The report is not a valid takedown target. | 
 | Netcraft.Takedown.tags | String | List of tags applied to the group. | 
 | Netcraft.Takedown.targeted_url | String | The URL which this attack is masquerading as, e.g., the URL of the legitimate login form that a phishing attack is targeting. | 
-| Netcraft.Takedown.site_risk_rating | String | A score from 0 to 10 which represents the risk that the hostname is hosting a malicious website. E.g., For the URL https://l0gin.example.com/, this value will contain the risk rating for l0gin.example.com. | 
+| Netcraft.Takedown.site_risk_rating | String | A score from 0 to 10 which represents the risk that the hostname is hosting a malicious website. E.g., For the URL <https://l0gin.example.com/>, this value will contain the risk rating for l0gin.example.com. | 
 | Netcraft.Takedown.whois_server | String | The WHOIS data for the takedown. | 
 | Netcraft.Takedown.authorization_source | String | The source of authorization for the takedown. will be blank if the takedown has not been authorized. Possible values: "customer" "netcraft". | 
 | Netcraft.Takedown.escalation_source | String | The source of escalation for the takedown. Will be blank if the takedown has not been escalated. Possible values: "customer" "netcraft". | 
@@ -201,8 +205,11 @@ Netcraft has a limit of 1,000,000 objects returned within a 24 hour period (movi
 | Netcraft.Takedown.whois_data | String | The WHOIS data for the takedown. | 
 
 #### Command example
+
 ```!netcraft-takedown-list attack_types="coronavirus" date_from="last week" date_to="yesterday" escalated="No" limit="3"```
+
 #### Context Example
+
 ```json
 {
     "Netcraft": {
@@ -420,6 +427,7 @@ Netcraft has a limit of 1,000,000 objects returned within a 24 hour period (movi
 #### Human Readable Output
 
 >### Netcraft Takedowns
+>
 >|ID|Auth|Brand|Attack Type|Status|Attack URL|Date Reported|Last Updated|Date Authorized|Date Escalated|First Inactive (Monitoring)|First Resolved|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 45535866 | false | Cortex XSOAR | survey_scam | Verified | https:<span>//</span>ganu.dynamicelevate.com/ze/xufawa/namu/index.php?rpclk=8wocgxnwZlVgWqCl4amyElWSdU%2B8SEBm6%2F1vWOh6CEpdwEcFOH6aEWZY8JIqG1yHriIwkvzBnonP07noIGpSFWVojTWPE%2FqBGCYHt2%2FxNJG7sMIb73v2Ba1AdgiFoBWGKZamryDq2xk8JtxfVtgUclt4PWFF3I1CWFqXAH%2FvbFg%2F1Mv%2F0EOWJS6dUJy2IWbtCJvNnuBcJWYF0bEosXgsnv5KmRQDEVAhJjIp4eyvMJr8yPmJWCYMKCH0QJS8kqmnp5AWegynT78OnZyPx1Gf7LS4wbWQ5lB3V3CYpBjgDXmH8UgS69M3RU1HXvQxMXTeHobGqoqBL1odDt5026Cvg014jKzORjPbPRX5O46z6siX%2B0%2BNqGkmwJj4NOmAp%2B%2Bcr07NFz2PRkTnzxhUOULhDux6dICLkRn0Yx30fsQWOznrGGF27ipnKVFY2Ipaa76vpNWzhrklt%2FZhTlWWsS0SsBR0yEKyQDyk6qVv%2BK8DMRA4lZf1XZfY2hNGLJ6nwMVApzIt5iMdgKL78roTKNR3lVSZ6w8rtIEB2NtiiOxFF9ikytLlIHQXSevd6fHvSuXeb3n6Omdyj3ONKIZY%2B3%2FjiIXuPplxffD9kv5dGR2QgXK93cMbhWi8uajt5pHQH3BEQcBAJO%2BcHmh6auGjLuzGCbaWVkueArhTPnw83%2FoI%2BVGEPa7VdwsBJiV55QBTO8%2BWoazxW70VZ4fpKeTA8xB2f3Tg9GQ%2FpdwwdT24f%2BUbnYPgzkIqSqU%2FZhf%2FFQCi2JP0wwE7ffh7T%2Bz0il%2Fkb4EaYEVIpAUdcG5q%2BxJt%2BrIn8Xrw83Hh%2Bci6gSbGwU1A1TWSresXSX01EJ8%2F3Guf2C%2FT0DM0CwpbAFJxz22bILkDOoFx6ICxFKNaKTZcjtKGjrgQfoxhWr%2FCH5%2BU%2B4FhBp6iz8tw6gSR5kxQZYiYTZtoJjJPsHIX5wGV2zYM%2B7LXp7f4EP0Wy%2FS1Pm1ryAiPaIbUUbbh4mWFzwFroDjNt43lD6VK3G3RbpWHI0Fo5k%2F6wlFhev%2Blq6qCeS02P3arwPrF0Qcv%2FGWeFI5Bq2H7LUs0ToCHYUa%2FJo4BA%2Bji0v6WlRN1DS7%2F7k%2F1Zw4ykzxgZN8f712rnKsKLCKIp0AidTPWuVm3DaSk5LRKnHpvMIXYFSus99BSuBqcMGl5J%2BAP9qwXVbtsvPxkr4E%2BhmWRPzaT7At5%2BZen%2B%2BE4f6TWqrDimFbMJoYyiqzxloGQYU%2Fm0FMZhRyicVPXHDg1Y2qWEk8Qh0WtjyQq2jBWuZTDlMixP4kpTU4EaXSXgJsWf5jfIQmZLICAuNWRU3ZJTXB0Q%2FoFOE0dWjKpZ%2BBqIj6ei6hivIUU8F0NblPo98zbIgl%2FKjcBVgq9s3thc%2B257QwNf3D9zKyU0%2FoIHDMAcCe4qIqfMZ6mQ2dTVNbfMe0GvjUHfX9qi2j0RCDLO9WZxCAsDM6eZF7c7TlBrn4DNmugpwRAkdJeUim52UcXOQyVpmtmv0UzOGttUS1SKVOBfhSUZaA5QZbWUHeKtqJnxlRepFBIr2NLtv3IUs1gV4aYpE9lrlbCLuunKuNxgfRhsJbxmt7yxfPnYJ0THmqM%2Fzi2ucbal91xCZN3pV35J8KV8BNt3dXtS38UazqPtnAIfI6W77OBItaQEQ5C5FtpWw2gPGqjEK2%2FscgRBTHWElB3FGGdyiYEE1ymLRJudGux4vdsbndaP6NRKgraYt83HkIWxukpvayoLGtzyAgGNS7mAuoPeILzGwSpz3Vu7lWjBHRbWUY5%2BdRVBsXUcWuj7T6sqGf8pQX7j80rPZ%2ByDHO5agY7ukNOKe7%2BcM1VHhZOEpDDnj5MBp8O%2BpQqxX7tgszsMG9s9YpmmIaztnf6hYo6dM4G3bKae%2FVgNWRPZQb692UHqLGoZqinMP3MqFDfxxpPFVJlsb2yFvqeQUhYOVZlqIASA9sN8nAyLXv%2BhymUTzdyx0lvgqk56M9%2FZGlOkoFibOsAfRp1at4nptRLJ3QZVMg7hI3%2BQs0HjuVRvgF%2Fu5%2BZ5KvytxfanXfdqaOstxSrq7Q1BPW1MRIZ0xIyal%2FYsdEKxMqCr20GOOaha4T1bsj9R7d6lUBJ1HNEXC3BFgPSz0x3%2BUBGBtI7tD%2F6Te5dJ2brm0NmOh%2Fpv1%2Bd%2Bg0RyJoYruyHA2LsMTYP54l2vC30ygGnl7o%2BRLwBMZCkFvKgdD1lP%2BYIqcdUE5xNe4YyJN7nAwPkfq5nro1WlOybHWpwnHmRBu9RSE2hEV4IfyQPLCuBAQbrxdW4sOvnqgxOA7fGqqurj%2BDdUDgcmtzY8tewKpBCBPUV%2BEKGlRTHlOSlilHWu3VPqJVkggviJ2QF8XDa5NISy1nJ6t%2F3D4bfC0y72r%2F%2FsK%2BdRqFvL%2FBcavzhqU1H8jVTvIDz%2Bq9ju2l6%2FVTl2zR1nPg2P2kOWr3u2EDnrwbymtGMEXf39JbldX8UII4JTKNfVuJIYzK8VWqDGaQbmT2vN3Cfh17DD%2B%2BNF%2FsMNl2KL1pgF%2BQtb%2FRGy4Dfs0vWy%2B0Q5HlTwbRVO1COe6QNvOvYtrKY7dlED1le6dn8joEZmptJMx%2BhRd08JARuxfsgOK917RlcAwAYxJh8qgRoJ9ZdtJ9BscTcAhTkclWUD%2Flr75io%3A%3Adeb2860c8e29b6c68bd296fe1cd42554&p=yyKy6P3Jm1mmQPoGQYvkuk6Ug3gYBg%3D%3D%3A%3Afb77cfae6566e293f1c681f8c6c33b5d&oho=t4.radiantascendhq.com&ptf=b932a9b8ce22aed66461b2591cbbb5ed | 2023-09-19 19:05:21 UTC | 2023-09-19 19:27:06 UTC | N/A | N/A | N/A | N/A |
@@ -453,11 +461,15 @@ Update one or more fields related to a takedown.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!netcraft-takedown-update add_tags="smishing,fake-shop-logo" remove_tags="coronavirus" takedown_id=45492113```
+
 #### Human Readable Output
 
 >### Takedown successfully updated.
+>
 >|Takedown ID|
 >|---|
 >| 45492113 |
@@ -485,11 +497,15 @@ The minimum access level required to escalate is "Escalator".
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!netcraft-takedown-escalate takedown_id=45470682```
+
 #### Human Readable Output
 
 >### Takedown successfully escalated.
+>
 >|Takedown ID|
 >|---|
 >| 45470682 |
@@ -519,8 +535,11 @@ Add a new note to an existing takedown.
 | Netcraft.TakedownNote.note_id | Number | The ID of the note added to the takedown. | 
 
 #### Command example
+
 ```!netcraft-takedown-note-create note_text="important not" notify="false" takedown_id=45470682```
+
 #### Context Example
+
 ```json
 {
     "Netcraft": {
@@ -534,6 +553,7 @@ Add a new note to an existing takedown.
 #### Human Readable Output
 
 >### Note successfully added to takedown.
+>
 >|Note ID|Takedown ID|
 >|---|---|
 >| 1394724283 | 45470682 |
@@ -568,8 +588,11 @@ Retrieve details of notes that have been added to takedowns.
 | Netcraft.TakedownNote.note | String | The contents of the note. | 
 
 #### Command example
+
 ```!netcraft-takedown-note-list all_results="true" takedown_id=45470682```
+
 #### Context Example
+
 ```json
 {
     "Netcraft": {
@@ -598,10 +621,11 @@ Retrieve details of notes that have been added to takedowns.
 #### Human Readable Output
 
 >### Takedown Notes
+>
 >|Note ID|Takedown ID|Group ID|Time|Author|Note|
 >|---|---|---|---|---|---|
->| 1394719264 | 45470682 | 0 | 2023-09-21 08:08:52 | reporter@socteam.com | Takedown escalated from automated to managed |
->| 1394724283 | 45470682 | 45470682 | 2023-09-21 08:23:56 | reporter@socteam.com | important not |
+>| 1394719264 | 45470682 | 0 | 2023-09-21 08:08:52 | <reporter@socteam.com> | Takedown escalated from automated to managed |
+>| 1394724283 | 45470682 | 45470682 | 2023-09-21 08:23:56 | <reporter@socteam.com> | important not |
 
 
 ### netcraft-attack-type-list
@@ -636,8 +660,11 @@ Get information on the attack types that are available under a given region.
 | Netcraft.AttackType.auto_authorize | Boolean | Indicates whether or not you have chosen to automatically authorize takedowns under this type. | 
 
 #### Command example
+
 ```!netcraft-attack-type-list all_results="false" automated=true```
+
 #### Context Example
+
 ```json
 {
     "Netcraft": {
@@ -902,6 +929,7 @@ Get information on the attack types that are available under a given region.
 #### Human Readable Output
 
 >### Netcraft Attack Types
+>
 >|Name|Display Name|Base Type|Description|Automated|Auto Escalation|Auto Authorize|
 >|---|---|---|---|---|---|---|
 >| phishing_url | Phishing URL | url | The URL for a webpage which impersonates your company in an attempt to trick users into submitting their login details. Usually the URL is linked to in an email sent to your users. | true | false | true |
@@ -1003,8 +1031,11 @@ Get basic information about a submissions.
 | Netcraft.SubmissionNextToken | String | The submission UUID to provide as the "next_token" argument in a subsequent request for pagination. Will be null if the end of the submissions has been reached. This key appears only if the "submission_uuid" argument is \*not\* provided. | 
 
 #### Command example
+
 ```!netcraft-submission-list submission_uuid=RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70```
+
 #### Context Example
+
 ```json
 {
     "Netcraft": {
@@ -1058,9 +1089,10 @@ Get basic information about a submissions.
 #### Human Readable Output
 
 >### Netcraft Submissions
+>
 >|Submission UUID|Submission Date|Submitter Email|State|Source|
 >|---|---|---|---|---|
->| RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70 | 2023-09-19 13:25:15+00:00 | reporter@socteam.com | no threats | Palo Alto Networks |
+>| RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70 | 2023-09-19 13:25:15+00:00 | <reporter@socteam.com> | no threats | Palo Alto Networks |
 
 
 ### netcraft-file-report-submit
@@ -1123,9 +1155,11 @@ Report files to Netcraft for analysis.
 | Netcraft.Submission.warnings.warning | String | The warning. | 
 
 #### Command example
+
 ```!netcraft-file-report-submit file_content="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" file_name="malicious.txt" interval_in_seconds="15" polling="true" reason="the file may be malicious" reporter_email="reporter@socteam.com"```
 
 #### Context Example
+
 ```json
 {
     "Netcraft": {
@@ -1175,9 +1209,10 @@ Report files to Netcraft for analysis.
 >Submission pending:
 
 >### Netcraft Submissions
+>
 >|Submission UUID|Submission Date|Submitter Email|State|Source|
 >|---|---|---|---|---|
->| RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70 | 2023-09-19 13:25:15+00:00 | reporter@socteam.com | no threats | Palo Alto Networks |
+>| RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70 | 2023-09-19 13:25:15+00:00 | <reporter@socteam.com> | no threats | Palo Alto Networks |
 
 
 ### netcraft-submission-file-list
@@ -1213,8 +1248,11 @@ When a submission is archived this command will return an error with the message
 | Netcraft.SubmissionFile.classification_log.to_state | String | The state the entity moved into. | 
 
 #### Command example
+
 ```!netcraft-submission-file-list limit="50" submission_uuid=RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70```
+
 #### Context Example
+
 ```json
 {
     "Netcraft": {
@@ -1232,6 +1270,7 @@ When a submission is archived this command will return an error with the message
 #### Human Readable Output
 
 >### Submission Files
+>
 >|Filename|Hash|Classification|
 >|---|---|---|
 >| 1695129341388_Netcraft.py | 77fb7e37d57adddf4071f946cbd2a3dc | no threats |
@@ -1265,9 +1304,11 @@ Get a screenshot for a file associated with a submission.
 | InfoFile.Extension | string | The file extension of the screenshot. | 
 
 #### Command example
+
 ```!netcraft-file-screenshot-get file_hash=77fb7e37d57adddf4071f946cbd2a3dc submission_uuid=RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70```
 
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -1348,6 +1389,7 @@ The email must be provided using either the "message" or "entry_id" arguments.
 | Netcraft.Submission.warnings.warning | String | The warning. | 
 
 #### Command example
+
 ```
 !netcraft-email-report-submit message="""From: fraudster@example.com
 To: example@netcraft.com
@@ -1362,6 +1404,7 @@ Example email body with http://example.com URL.
 ```
 
 #### Context Example
+
 ```json
 {
     "Netcraft": {
@@ -1411,9 +1454,10 @@ Example email body with http://example.com URL.
 >Submission pending:
 
 >### Netcraft Submissions
+>
 >|Submission UUID|Submission Date|Submitter Email|State|Source|
 >|---|---|---|---|---|
->| RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70 | 2023-09-19 13:25:15+00:00 | reporter@socteam.com | no threats | Palo Alto Networks |
+>| RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70 | 2023-09-19 13:25:15+00:00 | <reporter@socteam.com> | no threats | Palo Alto Networks |
 
 
 ### netcraft-submission-mail-get
@@ -1448,8 +1492,11 @@ When a submission is archived this command will return an error with the message
 | Netcraft.SubmissionMail.to | String | The email addresses of the email recipients. | 
 
 #### Command example
+
 ```!netcraft-submission-mail-get submission_uuid=bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT```
+
 #### Context Example
+
 ```json
 {
     "Netcraft": {
@@ -1481,9 +1528,10 @@ When a submission is archived this command will return an error with the message
 #### Human Readable Output
 
 >### Submission Mails
+>
 >|Subject|From|To|Classification|
 >|---|---|---|---|
->| Example email | fraudster@example.com | example@netcraft.com | no threats |
+>| Example email | <fraudster@example.com> | <example@netcraft.com> | no threats |
 
 
 ### netcraft-mail-screenshot-get
@@ -1513,8 +1561,11 @@ Get a screenshot for the email associated with a submission.
 | InfoFile.Extension | string | The file extension of the screenshot. | 
 
 #### Command example
+
 ```!netcraft-mail-screenshot-get submission_uuid=bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -1590,9 +1641,11 @@ Report URLs to Netcraft for analysis.
 | Netcraft.Submission.warnings.warning | String | The warning. | 
 
 #### Command example
+
 ```!netcraft-file-report-submit file_content="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" file_name="malicious.txt" interval_in_seconds="15" polling="true" reason="the file may be malicious" reporter_email="reporter@socteam.com"```
 
 #### Context Example
+
 ```json
 {
     "Netcraft": {
@@ -1642,9 +1695,10 @@ Report URLs to Netcraft for analysis.
 >Submission pending:
 
 >### Netcraft Submissions
+>
 >|Submission UUID|Submission Date|Submitter Email|State|Source|
 >|---|---|---|---|---|
->| RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70 | 2023-09-19 13:25:15+00:00 | reporter@socteam.com | no threats | Palo Alto Networks |
+>| RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70 | 2023-09-19 13:25:15+00:00 | <reporter@socteam.com> | no threats | Palo Alto Networks |
 
 ### netcraft-submission-url-list
 
@@ -1697,13 +1751,16 @@ When a submission is archived this command will return an error with the message
 | Netcraft.SubmissionURL.uuid | String | The UUID of the URL. | 
 
 #### Command example
+
 ```!netcraft-submission-url-list limit="50" page="2" page_size="2" submission_uuid=bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT```
+
 #### Human Readable Output
 
 >### Submission URLs
+>
 >|UUID|URL|Hostname|Classification|URL Classification Log|
 >|---|---|---|---|---|
->| 46b1921f9b4e4b34b547bdf20c0c0263 | http://example.com/ | example.com | string | - date: 1000000000<br>  from_state: processing<br>  to_state: no threats<br> |
+>| 46b1921f9b4e4b34b547bdf20c0c0263 | <http://example.com/> | example.com | string | - date: 1000000000<br>  from_state: processing<br>  to_state: no threats<br> |
 
 
 
@@ -1736,9 +1793,11 @@ Download associated screenshots for a specified URL.
 | InfoFile.Extension | string | The file extension of the screenshot. | 
 
 #### Command example
+
 ```!netcraft-url-screenshot-get screenshot_hash="06f8715ba1b1ca5dee4af05e98bbc63a" submission_uuid="0qQt98P04o0qk46UXveNsCHhUN7zLopY" url_uuid="BZqSBm5i4KIoCq6TItXLWKZwGAm3nN08"```
 
 #### Context Example
+
 ```json
 {
     "InfoFile": {

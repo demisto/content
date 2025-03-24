@@ -14,9 +14,12 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### pan-os-get-documentation
+
 ***
 Gets the documentation of all BPA checks.
 
@@ -24,6 +27,7 @@ Gets the documentation of all BPA checks.
 #### Base Command
 
 `pan-os-get-documentation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -54,9 +58,11 @@ Gets the documentation of all BPA checks.
 
 
 #### Command Example
+
 ```!pan-os-get-documentation doc_ids=4,6,7```
 
 #### Context Example
+
 ```json
 {
     "PAN-OS-BPA": {
@@ -259,6 +265,7 @@ Gets the documentation of all BPA checks.
 #### Human Readable Output
 
 >### BPA documentation
+>
 >|Active|CapabilityLabel|ClassLabel|Complexity|ControlCategory|Cscv6Control|Cscv7Control|Description|DocId|DocType|Effort|LastUpdatedDate|LeftNav|Rationale|References|Title|TopNav|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| true | Preventative,<br/>Corrective | Technical | Advanced | Access Control | 11.1,<br/>12.1 | 11.1,<br/>12.3 | Do not specify both the source and destination zones as "any" on the rule. | 4 | Warning | 60 | 2020-10-05T22:46:57.585179Z | Security | Use Security policy settings to create rules that exactly define the traffic to which the rules apply (zones, IP addresses, users, applications). Policies that are too general may match traffic you don’t want the policy to match and either permit undesirable traffic or deny legitimate traffic. Defining the source, destination, or both zones prevents potentially malicious traffic that uses evasive or deceptive techniques to avoid detection or appear benign from traversing the entire network, which reduces the attack surface and the threat scope. The exception to this best practice is when the Security policy needs to protect the entire network. For example, a rule that blocks traffic to malware or phishing URL categories can apply to all zones (and all traffic) because the URL Category clearly defines the traffic to block. Another example is blocking all unknown traffic with a block rule that applies to all traffic in all zones and defining the blocked applications as “unknown-tcp”, “unknown-udp”, and “unknown-p2p”. | ['https://www.paloaltonetworks.com/documentation/81/best-practices/best-practices-internet-gateway/best-practice-internet-gateway-security-policy/define-the-initial-internet-gateway-security-policy'] | Source/Destination = any/any | Policies |
@@ -267,6 +274,7 @@ Gets the documentation of all BPA checks.
 
 
 ### pan-os-bpa-submit-job
+
 ***
 Submits a job to the BPA job queue. PAN-OS devices with large configuration files may take a few minutes for the job to be submitted.
 
@@ -274,6 +282,7 @@ Submits a job to the BPA job queue. PAN-OS devices with large configuration file
 #### Base Command
 
 `pan-os-bpa-submit-job`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -289,9 +298,11 @@ Submits a job to the BPA job queue. PAN-OS devices with large configuration file
 
 
 #### Command Example
+
 ```!pan-os-bpa-submit-job```
 
 #### Context Example
+
 ```json
 {
     "PAN-OS-BPA": {
@@ -307,6 +318,7 @@ Submits a job to the BPA job queue. PAN-OS devices with large configuration file
 >Submitted BPA job ID: ca5dc5a7-c3e5-474a-8d04-e3129c1b0edf
 
 ### pan-os-bpa-get-job-results
+
 ***
 Returns results of BPA job.
 
@@ -314,6 +326,7 @@ Returns results of BPA job.
 #### Base Command
 
 `pan-os-bpa-get-job-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -340,9 +353,11 @@ Returns results of BPA job.
 
 
 #### Command Example
+
 ```!pan-os-bpa-get-job-results task_id=b0539068-e1c1-496c-9dfd-a1274947f76e check_id=104,105 check_name="Accelerated Aging"```
 
 #### Context Example
+
 ```json
 {
     "PAN-OS-BPA": {
@@ -386,6 +401,7 @@ Returns results of BPA job.
 #### Human Readable Output
 
 >### BPA Results
+>
 >|check_category|check_feature|check_id|check_message|check_name|check_passed|check_type|
 >|---|---|---|---|---|---|---|
 >| device | device_setup_services | 105 | It is recommended to configure a primary and secondary NTP Server Address | NTP Server Address | false | Warning |

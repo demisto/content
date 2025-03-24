@@ -34,12 +34,14 @@ You can execute these commands from the CLI, as part of an automation, or in a p
 successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### crowdstrike-indicators-list
+
 ***
 Gets indicators from the CrowdStrike Falcon Intel Feed.
 
 #### Base Command
 
 `crowdstrike-indicators-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -70,9 +72,11 @@ Gets indicators from the CrowdStrike Falcon Intel Feed.
 | CrowdStrikeFalconIntel.Indicators.rawJSON | Unknown | Raw response. | 
 
 #### Command Example
+
 ```!crowdstrike-indicators-list limit=3```
 
 #### Context Example
+
 ```json
 {
   "CrowdStrikeFalconIntel": {
@@ -348,6 +352,7 @@ Gets indicators from the CrowdStrike Falcon Intel Feed.
 #### Human Readable Output
 
 > ### Indicators from CrowdStrike Falcon Intel
+>
 >|Type|Value|Id|
 >|---|---|---|
 >| IP | 1.1.1.1 | ip_address_1.1.1.1 |
@@ -355,12 +360,14 @@ Gets indicators from the CrowdStrike Falcon Intel Feed.
 >| IP | 1.2.3.4 | ip_address_1.2.3.4 |
 
 ### crowdstrike-reset-fetch-indicators
+
 ***
 Resets the retrieving start time according to the `First Fetch Time` parameter, WARNING: This command will reset your fetch history.
 
 #### Base Command
 
 `crowdstrike-reset-fetch-indicators`
+
 #### Input
 
 There are no input arguments for this command.
@@ -370,6 +377,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!crowdstrike-reset-fetch-indicators```
 
 #### Human Readable Output

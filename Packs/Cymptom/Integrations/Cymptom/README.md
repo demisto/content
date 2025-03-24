@@ -14,9 +14,12 @@ This integration was integrated and tested with version 0.3.4 of Cymptom.
 | first_fetch | First fetch time range (`<number> <time unit>`, e.g., 1 hour, 30 minutes). Default is "3 days" | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cymptom-get-mitigations
+
 ***
 This command returns mitigations recommended by Cymptom
 
@@ -24,6 +27,7 @@ This command returns mitigations recommended by Cymptom
 #### Base Command
 
 `cymptom-get-mitigations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -44,18 +48,24 @@ This command returns mitigations recommended by Cymptom
 
 
 #### Command Example
+
 ``` 
 !cymptom-get-mitigations
 ```
 
 #### Human Readable Output
+
 ##### Mitigations
+
 |ID|Name|Severity Type|Attack Vectors Use Percentage|Attack Vectors Count|Techniques|
 |---|---|---|---|---|---|
 | 3936 | Steal or Forge Kerberos Tickets | Critical | 21.16 | 299 | Encrypt Sensitive Information,<br>Privileged Account Management,<br>Active Directory Configuration,<br>Password Policies | 
+
 ### cymptom-get-users-with-cracked-passwords
+
 ***
 This command returns users with cracked password
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -80,13 +90,16 @@ This command returns users with cracked password
 ```
 
 #### Command Example
+
 ```
 !cymptom-get-users-with-cracked-passwords privileged=False 
 ```
 
 
 #### Human Readable Output
+
 #### Unprivileged Users With Cracked Passwords
+
 |Username|
 |---|
 | user1 |

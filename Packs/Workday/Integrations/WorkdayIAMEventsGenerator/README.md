@@ -31,9 +31,12 @@ https://<server_hostname>/instance/execute/<instance_name>
 Use this URL to configure `Workday_IAM` integration and invoke *Fetch_incidents*
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### workday-generate-hire-event
+
 ***
 Generate workday new hire event.
 
@@ -44,6 +47,7 @@ After running this command, a new incident will be created of type: ``IAM - New 
 #### Base Command
 
 `workday-generate-hire-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -54,6 +58,7 @@ After running this command, a new incident will be created of type: ``IAM - New 
 
 
 #### Command Example
+
 ```!workday-generate-hire-event user_email=testing@test.com first_name=John last_name=Smith```
 
 #### Human Readable Output
@@ -61,6 +66,7 @@ After running this command, a new incident will be created of type: ``IAM - New 
 >Successfully generated the new hire event.
 
 ### workday-generate-update-event
+
 ***
 Generate workday update event.
 
@@ -70,6 +76,7 @@ After running this command, a new incident will be created of type: ``IAM - Upda
 #### Base Command
 
 `workday-generate-update-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -82,6 +89,7 @@ After running this command, a new incident will be created of type: ``IAM - Upda
 
 
 #### Command Example
+
 ```!workday-generate-update-event user_email=panw@test.com city="Tel Aviv" title="Software Engineer"```
 
 #### Human Readable Output
@@ -89,6 +97,7 @@ After running this command, a new incident will be created of type: ``IAM - Upda
 >Successfully generated the Update user event.
 
 ### workday-generate-rehire-event
+
 ***
 Generate workday rehire event.
 
@@ -98,6 +107,7 @@ After running this command, a new incident will be created of type: ``IAM - Rehi
 #### Base Command
 
 `workday-generate-rehire-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -106,6 +116,7 @@ After running this command, a new incident will be created of type: ``IAM - Rehi
 
 
 #### Command Example
+
 ```!workday-generate-rehire-event user_email=panw@testing.com```
 
 #### Human Readable Output
@@ -113,6 +124,7 @@ After running this command, a new incident will be created of type: ``IAM - Rehi
 >Successfully generated the rehire user event.
 
 ### workday-generate-terminate-event
+
 ***
 Generate workday terminate event.
 
@@ -122,6 +134,7 @@ After running this command, a new incident will be created of type: ``IAM - Term
 #### Base Command
 
 `workday-generate-terminate-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -132,6 +145,7 @@ After running this command, a new incident will be created of type: ``IAM - Term
 
 
 #### Command Example
+
 ```!workday-generate-terminate-event user_email=panw@testing.com```
 
 #### Human Readable Output
@@ -139,6 +153,7 @@ After running this command, a new incident will be created of type: ``IAM - Term
 >Successfully generated the Terminate user event.
 
 ### initialize-context
+
 ***
 Reset the integration context to fetch the first run reports.
 
@@ -146,12 +161,15 @@ Reset the integration context to fetch the first run reports.
 #### Base Command
 
 `initialize-context`
+
 #### Input
 
 There are no input arguments for this command.
 
 #### Command Example
+
 ```!initialize-context ```
 
 #### Human Readable Output
+>
 >The integration context has been initialized.

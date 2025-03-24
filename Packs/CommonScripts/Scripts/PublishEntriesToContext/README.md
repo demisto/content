@@ -1,6 +1,7 @@
 Publishes entries to the incident's context.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Publishes entries to the incident's context.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Publishes entries to the incident's context.
 | out | The name of the context key. The default is "entries". |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

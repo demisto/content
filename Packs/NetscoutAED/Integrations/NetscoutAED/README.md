@@ -1,6 +1,7 @@
 The Netscout Arbor Edge Defense (AED) integration enables you to block and allow outbound and inbound traffic.
 
 ## What does this pack do?
+
 Using the Netscout AED integration you can:
 
 - Get, add, and remove hosts, countries, domains, and URLs from the inbound block list.
@@ -20,9 +21,12 @@ Using the Netscout AED integration you can:
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### na-ed-outbound-blacklisted-countries-list
+
 ***
 Gets the countries on the outbound block list. By default, 10 block listed countries are returned.
 
@@ -30,6 +34,7 @@ Gets the countries on the outbound block list. By default, 10 block listed count
 #### Base Command
 
 ### na-ed-country-code-list
+
 ***
 Gets a country or list of countries (country name and ISO-standardized country code).
 
@@ -37,6 +42,7 @@ Gets a country or list of countries (country name and ISO-standardized country c
 #### Base Command
 
 `na-ed-country-code-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,9 +61,11 @@ Gets a country or list of countries (country name and ISO-standardized country c
 
 
 #### Command Example
+
 ```!na-ed-country-code-list limit=5```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -90,6 +98,7 @@ Gets a country or list of countries (country name and ISO-standardized country c
 #### Human Readable Output
 
 >### Netscout AED Countries List
+>
 >|Country Name|Iso Code|
 >|---|---|
 >| 6to4 Relay Anycast | XF |
@@ -101,6 +110,7 @@ Gets a country or list of countries (country name and ISO-standardized country c
 
 
 `na-ed-outbound-blacklisted-countries-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -121,9 +131,11 @@ Gets a country or list of countries (country name and ISO-standardized country c
 
 
 #### Command Example
+
 ```!na-ed-outbound-blacklisted-countries-list```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -146,6 +158,7 @@ Gets a country or list of countries (country name and ISO-standardized country c
 #### Human Readable Output
 
 >### Blacklisted Countries
+>
 >|Country|Update Time|Annotation|
 >|---|---|---|
 >| AZ | 2021-04-13T13:06:43.000Z | example1 |
@@ -153,6 +166,7 @@ Gets a country or list of countries (country name and ISO-standardized country c
 
 
 ### na-ed-outbound-blacklisted-countries-add
+
 ***
 Adds one or more countries to the outbound block list.
 
@@ -160,6 +174,7 @@ Adds one or more countries to the outbound block list.
 #### Base Command
 
 `na-ed-outbound-blacklisted-countries-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -178,9 +193,11 @@ Adds one or more countries to the outbound block list.
 
 
 #### Command Example
+
 ```!na-ed-outbound-blacklisted-countries-add country=AU```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -196,13 +213,16 @@ Adds one or more countries to the outbound block list.
 #### Human Readable Output
 
 >Countries were successfully added to the outbound block listed list
+>
 >### Added Countries
+>
 >|Country|Update Time|
 >|---|---|
 >| AU | 2021-05-24T08:58:03.000Z |
 
 
 ### na-ed-outbound-blacklisted-countries-remove
+
 ***
 Removes one or more countries from the outbound block list.
 
@@ -210,6 +230,7 @@ Removes one or more countries from the outbound block list.
 #### Base Command
 
 `na-ed-outbound-blacklisted-countries-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -222,6 +243,7 @@ Removes one or more countries from the outbound block list.
 There is no context output for this command.
 
 #### Command Example
+
 ```!na-ed-outbound-blacklisted-countries-remove country=AU```
 
 #### Human Readable Output
@@ -229,6 +251,7 @@ There is no context output for this command.
 >Countries were successfully removed from the outbound block listed list
 
 ### na-ed-inbound-blacklisted-countries-list
+
 ***
 Gets the inbound block listed countries. By default, 10 block listed countries are returned. To return block listed countries for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects countries that are globally block listed.
 
@@ -236,6 +259,7 @@ Gets the inbound block listed countries. By default, 10 block listed countries a
 #### Base Command
 
 `na-ed-inbound-blacklisted-countries-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -260,9 +284,11 @@ Gets the inbound block listed countries. By default, 10 block listed countries a
 
 
 #### Command Example
+
 ```!na-ed-inbound-blacklisted-countries-list country=AM```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -284,12 +310,14 @@ Gets the inbound block listed countries. By default, 10 block listed countries a
 #### Human Readable Output
 
 >### Blacklisted Countries
+>
 >|Country|Update Time|Annotation|Pgid|
 >|---|---|---|---|
 >| AM | 2021-04-19T15:36:00.000Z | example1 | 52 |
 
 
 ### na-ed-inbound-blacklisted-countries-add
+
 ***
 Adds one or more countries to the inbound block list by pgid or cid.
 
@@ -297,6 +325,7 @@ Adds one or more countries to the inbound block list by pgid or cid.
 #### Base Command
 
 `na-ed-inbound-blacklisted-countries-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -319,9 +348,11 @@ Adds one or more countries to the inbound block list by pgid or cid.
 
 
 #### Command Example
+
 ```!na-ed-inbound-blacklisted-countries-add country=AU```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -343,13 +374,16 @@ Adds one or more countries to the inbound block list by pgid or cid.
 #### Human Readable Output
 
 >Countries were successfully added to the inbound block listed list
+>
 >### Added Countries
+>
 >|Country|Cid|Pgid|Update Time|
 >|---|---|---|---|
 >| AU | -1 | -1 | 2021-05-24T08:57:58.000Z |
 
 
 ### na-ed-inbound-blacklisted-countries-remove
+
 ***
 Removes one or more countries from the block list for a specific protection group or for all protection groups.
 
@@ -357,6 +391,7 @@ Removes one or more countries from the block list for a specific protection grou
 #### Base Command
 
 `na-ed-inbound-blacklisted-countries-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -371,6 +406,7 @@ Removes one or more countries from the block list for a specific protection grou
 There is no context output for this command.
 
 #### Command Example
+
 ```!na-ed-inbound-blacklisted-countries-remove country=AU```
 
 #### Human Readable Output
@@ -378,6 +414,7 @@ There is no context output for this command.
 >Countries were successfully removed from the inbound block listed list
 
 ### na-ed-outbound-blacklisted-hosts-list
+
 ***
 Gets the outbound block listed hosts. By default, 10 block listed hosts are returned.
 
@@ -385,6 +422,7 @@ Gets the outbound block listed hosts. By default, 10 block listed hosts are retu
 #### Base Command
 
 `na-ed-outbound-blacklisted-hosts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -405,9 +443,11 @@ Gets the outbound block listed hosts. By default, 10 block listed hosts are retu
 
 
 #### Command Example
+
 ```!na-ed-outbound-blacklisted-hosts-list```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -430,6 +470,7 @@ Gets the outbound block listed hosts. By default, 10 block listed hosts are retu
 #### Human Readable Output
 
 >### Blacklisted Hosts
+>
 >|Host Address|Update Time|
 >|---|---|
 >| 1.1.1.1 | 2021-05-24T08:58:07.000Z |
@@ -437,6 +478,7 @@ Gets the outbound block listed hosts. By default, 10 block listed hosts are retu
 
 
 ### na-ed-outbound-blacklisted-hosts-add
+
 ***
 Adds one or more hosts to the outbound block list.
 
@@ -444,6 +486,7 @@ Adds one or more hosts to the outbound block list.
 #### Base Command
 
 `na-ed-outbound-blacklisted-hosts-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -462,9 +505,11 @@ Adds one or more hosts to the outbound block list.
 
 
 #### Command Example
+
 ```!na-ed-outbound-blacklisted-hosts-add host_address=1.2.3.4```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -480,13 +525,16 @@ Adds one or more hosts to the outbound block list.
 #### Human Readable Output
 
 >Hosts were successfully added to the outbound block list list
+>
 >### New Hosts
+>
 >|Host Address|Update Time|
 >|---|---|
 >| 1.2.3.4 | 2021-05-24T08:58:07.000Z |
 
 
 ### na-ed-outbound-blacklisted-hosts-replace
+
 ***
 Replaces all the hosts on the outbound block listed list.
 
@@ -494,6 +542,7 @@ Replaces all the hosts on the outbound block listed list.
 #### Base Command
 
 `na-ed-outbound-blacklisted-hosts-replace`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -512,9 +561,11 @@ Replaces all the hosts on the outbound block listed list.
 
 
 #### Command Example
+
 ```!na-ed-outbound-blacklisted-hosts-replace host_address=5.2.3.4```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -530,13 +581,16 @@ Replaces all the hosts on the outbound block listed list.
 #### Human Readable Output
 
 >Hosts were successfully replaced in the outbound block list list
+>
 >### New Hosts
+>
 >|Host Address|Update Time|
 >|---|---|
 >| 5.2.3.4 | 2021-05-24T08:58:08.000Z |
 
 
 ### na-ed-outbound-blacklisted-hosts-remove
+
 ***
 Removes one or more hosts or CIDRS from the outbound block list.
 
@@ -544,6 +598,7 @@ Removes one or more hosts or CIDRS from the outbound block list.
 #### Base Command
 
 `na-ed-outbound-blacklisted-hosts-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -556,6 +611,7 @@ Removes one or more hosts or CIDRS from the outbound block list.
 There is no context output for this command.
 
 #### Command Example
+
 ```!na-ed-outbound-blacklisted-hosts-remove host_address=5.2.3.4```
 
 #### Human Readable Output
@@ -563,6 +619,7 @@ There is no context output for this command.
 >Hosts were successfully removed from the outbound block list list
 
 ### na-ed-outbound-whitelisted-hosts-list
+
 ***
 Gets the outbound allow listed hosts. By default, 10 hosts on allow list are returned.
 
@@ -570,6 +627,7 @@ Gets the outbound allow listed hosts. By default, 10 hosts on allow list are ret
 #### Base Command
 
 `na-ed-outbound-whitelisted-hosts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -590,9 +648,11 @@ Gets the outbound allow listed hosts. By default, 10 hosts on allow list are ret
 
 
 #### Command Example
+
 ```!na-ed-outbound-whitelisted-hosts-list```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -608,12 +668,14 @@ Gets the outbound allow listed hosts. By default, 10 hosts on allow list are ret
 #### Human Readable Output
 
 >### Whitelisted Hosts
+>
 >|Host Address|Update Time|
 >|---|---|
 >| 4.4.4.4 | 2021-05-24T08:53:20.000Z |
 
 
 ### na-ed-outbound-whitelisted-hosts-add
+
 ***
 Adds one or more hosts to the outbound allow listed list.
 
@@ -621,6 +683,7 @@ Adds one or more hosts to the outbound allow listed list.
 #### Base Command
 
 `na-ed-outbound-whitelisted-hosts-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -639,9 +702,11 @@ Adds one or more hosts to the outbound allow listed list.
 
 
 #### Command Example
+
 ```!na-ed-outbound-whitelisted-hosts-add host_address=3.3.3.3```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -657,13 +722,16 @@ Adds one or more hosts to the outbound allow listed list.
 #### Human Readable Output
 
 >Hosts were successfully added to the outbound allow list list
+>
 >### New Hosts
+>
 >|Host Address|Update Time|
 >|---|---|
 >| 3.3.3.3 | 2021-05-24T08:58:19.000Z |
 
 
 ### na-ed-outbound-whitelisted-hosts-replace
+
 ***
 Replaces all the hosts on the outbound allow listed list.
 
@@ -671,6 +739,7 @@ Replaces all the hosts on the outbound allow listed list.
 #### Base Command
 
 `na-ed-outbound-whitelisted-hosts-replace`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -689,9 +758,11 @@ Replaces all the hosts on the outbound allow listed list.
 
 
 #### Command Example
+
 ```!na-ed-outbound-whitelisted-hosts-replace host_address=3.3.3.3,4.4.4.4```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -714,7 +785,9 @@ Replaces all the hosts on the outbound allow listed list.
 #### Human Readable Output
 
 >Hosts were successfully replaced in the outbound allow list list
+>
 >### New Hosts
+>
 >|Host Address|Update Time|
 >|---|---|
 >| 3.3.3.3 | 2021-05-24T08:58:21.000Z |
@@ -722,6 +795,7 @@ Replaces all the hosts on the outbound allow listed list.
 
 
 ### na-ed-protection-groups-update
+
 ***
 Updates the settings for one or more protection groups.
 
@@ -729,6 +803,7 @@ Updates the settings for one or more protection groups.
 #### Base Command
 
 `na-ed-protection-groups-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -767,9 +842,11 @@ Updates the settings for one or more protection groups.
 
 
 #### Command Example
+
 ```!na-ed-protection-groups-update pgid=52 active=false```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -804,13 +881,16 @@ Updates the settings for one or more protection groups.
 #### Human Readable Output
 
 >Successfully updated the protection group object with protection group id: 52
+>
 >### Protection Groups
+>
 >|Name|Pgid|Protection Level|Active|Server Name|Profiling|Profiling Duration|Time Created|
 >|---|---|---|---|---|---|---|---|
 >| test2 | 52 | global protection level | false | test2 | false | 0 | 2021-04-13T14:41:23.000Z |
 
 
 ### na-ed-protection-groups-list
+
 ***
 Gets a list of the protection groups.
 
@@ -818,6 +898,7 @@ Gets a list of the protection groups.
 #### Base Command
 
 `na-ed-protection-groups-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -856,9 +937,11 @@ Gets a list of the protection groups.
 
 
 #### Command Example
+
 ```!na-ed-protection-groups-list active=true```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -893,11 +976,13 @@ Gets a list of the protection groups.
 #### Human Readable Output
 
 >### Protection Groups
+>
 >|Name|Pgid|Protection Level|Active|Server Name|Profiling|Profiling Duration|Time Created|
 >|---|---|---|---|---|---|---|---|
 >| test2 | 52 | global protection level | true | test2 | false | 0 | 2021-04-13T14:41:23.000Z |
 
 ### na-ed-inbound-blacklisted-hosts-list
+
 ***
 Gets the inbound block listed hosts. By default, 10 block listed hosts are returned. To return block listed hosts for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects hosts that are globally block listed.
 
@@ -905,6 +990,7 @@ Gets the inbound block listed hosts. By default, 10 block listed hosts are retur
 #### Base Command
 
 `na-ed-inbound-blacklisted-hosts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -927,8 +1013,11 @@ Gets the inbound block listed hosts. By default, 10 block listed hosts are retur
 
 
 #### Command Example
+
 ```!na-ed-inbound-blacklisted-hosts-list```
+
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -952,12 +1041,14 @@ Gets the inbound block listed hosts. By default, 10 block listed hosts are retur
 #### Human Readable Output
 
 >### Blacklisted Hosts
+>
 >|Host Address|Pgid|Cid|Update Time|Annotation|
 >|---|---|---|---|---|
 >| 1.1.1.1 | -1 | -1 | 2021-05-24T08:58:13.000Z |  |
 
 
 ### na-ed-inbound-blacklisted-hosts-add
+
 ***
 Adds one or more hosts to the inbound block listed list.
 
@@ -965,6 +1056,7 @@ Adds one or more hosts to the inbound block listed list.
 #### Base Command
 
 `na-ed-inbound-blacklisted-hosts-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -985,9 +1077,11 @@ Adds one or more hosts to the inbound block listed list.
 
 
 #### Command Example
+
 ```!na-ed-inbound-blacklisted-hosts-add host_address=1.2.3.4```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -1011,13 +1105,16 @@ Adds one or more hosts to the inbound block listed list.
 #### Human Readable Output
 
 >Hosts were successfully added to the inbound block list list
+>
 >### New Hosts
+>
 >|Host Address|Pgid|Cid|Update Time|Annotation|
 >|---|---|---|---|---|
 >| 1.2.3.4 | -1 | -1 | 2021-05-24T08:58:13.000Z |  |
 
 
 ### na-ed-inbound-blacklisted-hosts-replace
+
 ***
 Replaces all the hosts on the inbound block list.
 
@@ -1025,6 +1122,7 @@ Replaces all the hosts on the inbound block list.
 #### Base Command
 
 `na-ed-inbound-blacklisted-hosts-replace`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1045,9 +1143,11 @@ Replaces all the hosts on the inbound block list.
 
 
 #### Command Example
+
 ```!na-ed-inbound-blacklisted-hosts-replace host_address=5.2.3.4```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -1071,13 +1171,16 @@ Replaces all the hosts on the inbound block list.
 #### Human Readable Output
 
 >Hosts were successfully replaced in the inbound block list list
+>
 >### New Hosts
+>
 >|Host Address|Pgid|Cid|Update Time|Annotation|
 >|---|---|---|---|---|
 >| 5.2.3.4 | -1 | -1 | 2021-05-24T08:58:15.000Z |  |
 
 
 ### na-ed-inbound-blacklisted-hosts-remove
+
 ***
 Removes one or more hosts or CIDRs from the block list for a specific protection group or for all protection groups.
 
@@ -1085,6 +1188,7 @@ Removes one or more hosts or CIDRs from the block list for a specific protection
 #### Base Command
 
 `na-ed-inbound-blacklisted-hosts-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1097,6 +1201,7 @@ Removes one or more hosts or CIDRs from the block list for a specific protection
 There is no context output for this command.
 
 #### Command Example
+
 ```!na-ed-inbound-blacklisted-hosts-remove host_address=5.2.3.4```
 
 #### Human Readable Output
@@ -1104,6 +1209,7 @@ There is no context output for this command.
 >Hosts were successfully removed from the inbound block list list
 
 ### na-ed-inbound-whitelisted-hosts-list
+
 ***
 Get the hosts on allow list. By default, 10 hosts on allow list are returned. To return hosts on allow list for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects hosts that are globally on allow list.
 
@@ -1111,6 +1217,7 @@ Get the hosts on allow list. By default, 10 hosts on allow list are returned. To
 #### Base Command
 
 `na-ed-inbound-whitelisted-hosts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1133,6 +1240,7 @@ Get the hosts on allow list. By default, 10 hosts on allow list are returned. To
 
 
 #### Command Example
+
 ```!na-ed-inbound-whitelisted-hosts-list```
 
 ```json
@@ -1158,12 +1266,14 @@ Get the hosts on allow list. By default, 10 hosts on allow list are returned. To
 #### Human Readable Output
 
 >### Whitelisted Hosts
+>
 >|Host Address|Pgid|Cid|Update Time|Annotation|
 >|---|---|---|---|---|
 >| 2.2.2.2 | -1 | -1 | 2021-05-24T08:58:25.000Z |  |
 
 
 ### na-ed-inbound-whitelisted-hosts-add
+
 ***
 Adds one or more hosts to the inbound allow listed list.
 
@@ -1171,6 +1281,7 @@ Adds one or more hosts to the inbound allow listed list.
 #### Base Command
 
 `na-ed-inbound-whitelisted-hosts-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1191,9 +1302,11 @@ Adds one or more hosts to the inbound allow listed list.
 
 
 #### Command Example
+
 ```!na-ed-inbound-whitelisted-hosts-add host_address=1.2.3.4```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -1217,13 +1330,16 @@ Adds one or more hosts to the inbound allow listed list.
 #### Human Readable Output
 
 >Hosts were successfully added to the inbound allow list list
+>
 >### New Hosts
+>
 >|Host Address|Pgid|Cid|Update Time|Annotation|
 >|---|---|---|---|---|
 >| 1.2.3.4 | -1 | -1 | 2021-05-24T08:58:25.000Z |  |
 
 
 ### na-ed-inbound-whitelisted-hosts-replace
+
 ***
 Replaces all the hosts on the inbound allow list.
 
@@ -1231,6 +1347,7 @@ Replaces all the hosts on the inbound allow list.
 #### Base Command
 
 `na-ed-inbound-whitelisted-hosts-replace`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1251,9 +1368,11 @@ Replaces all the hosts on the inbound allow list.
 
 
 #### Command Example
+
 ```!na-ed-inbound-whitelisted-hosts-replace host_address=5.2.3.4```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -1277,13 +1396,16 @@ Replaces all the hosts on the inbound allow list.
 #### Human Readable Output
 
 >Hosts were successfully replaced in the inbound allow list list
+>
 >### New Hosts
+>
 >|Host Address|Pgid|Cid|Update Time|Annotation|
 >|---|---|---|---|---|
 >| 5.2.3.4 | -1 | -1 | 2021-05-24T08:58:26.000Z |  |
 
 
 ### na-ed-inbound-whitelisted-hosts-remove
+
 ***
 Removes one or more hosts or CIDRs from the allow list for a specific protection group or for all protection groups.
 
@@ -1291,6 +1413,7 @@ Removes one or more hosts or CIDRs from the allow list for a specific protection
 #### Base Command
 
 `na-ed-inbound-whitelisted-hosts-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1303,6 +1426,7 @@ Removes one or more hosts or CIDRs from the allow list for a specific protection
 There is no context output for this command.
 
 #### Command Example
+
 ```!na-ed-inbound-whitelisted-hosts-remove host_address=5.2.3.4```
 
 #### Human Readable Output
@@ -1310,6 +1434,7 @@ There is no context output for this command.
 >Hosts were successfully removed from the inbound whitelist list
 
 ### na-ed-inbound-blacklisted-domains-list
+
 ***
 Gets the block listed domains. By default, 10 block listed domains are returned. To return block listed domains for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects domains that are globally block listed.
 
@@ -1317,6 +1442,7 @@ Gets the block listed domains. By default, 10 block listed domains are returned.
 #### Base Command
 
 `na-ed-inbound-blacklisted-domains-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1341,9 +1467,11 @@ Gets the block listed domains. By default, 10 block listed domains are returned.
 
 
 #### Command Example
+
 ```!na-ed-inbound-blacklisted-domains-list```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -1391,6 +1519,7 @@ Gets the block listed domains. By default, 10 block listed domains are returned.
 #### Human Readable Output
 
 >### Blacklisted Domains
+>
 >|Domain|Pgid|Cid|Update Time|Annotation|
 >|---|---|---|---|---|
 >| sport.co.il | -1 | -1 | 2021-03-15T16:00:24.000Z | try1 |
@@ -1399,6 +1528,7 @@ Gets the block listed domains. By default, 10 block listed domains are returned.
 
 
 ### na-ed-inbound-blacklisted-domains-add
+
 ***
 Adds one or more domains to the block list by pgid or cid.
 
@@ -1406,6 +1536,7 @@ Adds one or more domains to the block list by pgid or cid.
 #### Base Command
 
 `na-ed-inbound-blacklisted-domains-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1428,9 +1559,11 @@ Adds one or more domains to the block list by pgid or cid.
 
 
 #### Command Example
+
 ```!na-ed-inbound-blacklisted-domains-add domain=goo.com```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -1452,13 +1585,16 @@ Adds one or more domains to the block list by pgid or cid.
 #### Human Readable Output
 
 >Domains were successfully added to the inbound block listed list
+>
 >### Added Domains
+>
 >|Domain|Pgid|Cid|Update Time|
 >|---|---|---|---|
 >| goo.com | -1 | -1 | 2021-05-24T08:58:34.000Z |
 
 
 ### na-ed-inbound-blacklisted-domains-remove
+
 ***
 Removes one or more domains from the block list for a specific protection group or for all protection groups.
 
@@ -1466,6 +1602,7 @@ Removes one or more domains from the block list for a specific protection group 
 #### Base Command
 
 `na-ed-inbound-blacklisted-domains-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1478,6 +1615,7 @@ Removes one or more domains from the block list for a specific protection group 
 There is no context output for this command.
 
 #### Command Example
+
 ```!na-ed-inbound-blacklisted-domains-remove domain=goo.com```
 
 #### Human Readable Output
@@ -1485,6 +1623,7 @@ There is no context output for this command.
 >Domains were successfully removed from the inbound block listed list
 
 ### na-ed-inbound-blacklisted-urls-list
+
 ***
 Gets the block listed URLs. By default, 10 block listed URLs are returned. To return block listed URLs for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects URLs that are globally block listed.
 
@@ -1492,6 +1631,7 @@ Gets the block listed URLs. By default, 10 block listed URLs are returned. To re
 #### Base Command
 
 `na-ed-inbound-blacklisted-urls-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1516,9 +1656,11 @@ Gets the block listed URLs. By default, 10 block listed URLs are returned. To re
 
 
 #### Command Example
+
 ```!na-ed-inbound-blacklisted-urls-list limit=3```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -1568,6 +1710,7 @@ Gets the block listed URLs. By default, 10 block listed URLs are returned. To re
 #### Human Readable Output
 
 >### Blacklisted URLs
+>
 >|Url|Pgid|Cid|Update Time|Annotation|
 >|---|---|---|---|---|
 >| google.com | -1 | -1 | 2021-03-18T16:52:26.000Z |  |
@@ -1576,6 +1719,7 @@ Gets the block listed URLs. By default, 10 block listed URLs are returned. To re
 
 
 ### na-ed-inbound-blacklisted-urls-add
+
 ***
 Adds one or more URLs to the block list by pgid or cid.
 
@@ -1583,6 +1727,7 @@ Adds one or more URLs to the block list by pgid or cid.
 #### Base Command
 
 `na-ed-inbound-blacklisted-urls-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1605,9 +1750,11 @@ Adds one or more URLs to the block list by pgid or cid.
 
 
 #### Command Example
+
 ```!na-ed-inbound-blacklisted-urls-add url=www.goo.com```
 
 #### Context Example
+
 ```json
 {
     "NetscoutAED": {
@@ -1629,13 +1776,16 @@ Adds one or more URLs to the block list by pgid or cid.
 #### Human Readable Output
 
 >Urls were successfully added to the inbound block listed list
+>
 >### Added Urls
+>
 >|Url|Pgid|Cid|Update Time|
 >|---|---|---|---|
->| www.goo.com | -1 | -1 | 2021-05-24T08:58:39.000Z |
+>| <www.goo.com> | -1 | -1 | 2021-05-24T08:58:39.000Z |
 
 
 ### na-ed-inbound-blacklisted-urls-remove
+
 ***
 Removes one or more URLs from the block list for a specific protection group or for all protection groups.
 
@@ -1643,6 +1793,7 @@ Removes one or more URLs from the block list for a specific protection group or 
 #### Base Command
 
 `na-ed-inbound-blacklisted-urls-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1655,6 +1806,7 @@ Removes one or more URLs from the block list for a specific protection group or 
 There is no context output for this command.
 
 #### Command Example
+
 ```!na-ed-inbound-blacklisted-urls-remove url=www.goo.com```
 
 #### Human Readable Output
@@ -1662,6 +1814,7 @@ There is no context output for this command.
 >Urls were successfully removed from the inbound block listed list
 
 ### na-ed-outbound-whitelisted-hosts-remove
+
 ***
 Removes one or more hosts or CIDRs from the outbound allow list.
 
@@ -1669,6 +1822,7 @@ Removes one or more hosts or CIDRs from the outbound allow list.
 #### Base Command
 
 `na-ed-outbound-whitelisted-hosts-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1681,6 +1835,7 @@ Removes one or more hosts or CIDRs from the outbound allow list.
 There is no context output for this command.
 
 #### Command Example
+
 ```!na-ed-outbound-whitelisted-hosts-remove host_address=3.3.3.3```
 
 #### Human Readable Output

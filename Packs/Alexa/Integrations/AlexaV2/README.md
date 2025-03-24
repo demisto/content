@@ -2,6 +2,7 @@ Alexa provides website ranking information that can be used to help determine if
 This integration was integrated and tested with Alexa Rank Indicator V2.
 
 ##### New: Alexa Rank Indicator v2
+
 - Use of the Alexa API rank.
 - Domains that are not in the Alexa database, are considered "Unknown" instead of "Suspicious".
 - If the domain doesn't exist, there is an error.
@@ -21,9 +22,12 @@ This integration was integrated and tested with Alexa Rank Indicator V2.
 | API Key |  | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### domain
+
 ***
 Provides the Alexa ranking of a domain.
 
@@ -31,6 +35,7 @@ Provides the Alexa ranking of a domain.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -53,6 +58,7 @@ Provides the Alexa ranking of a domain.
 
 
 #### Command Example
+
 ```!domain domain="google.com,xsoar.com"
 
 #### Context Example
@@ -102,6 +108,7 @@ Provides the Alexa ranking of a domain.
 #### Human Readable Output
 
 >### Alexa Rank for xsoar.com
+>
 >|Domain|Alexa Rank|Reputation|
 >|---|---|---|
 >| xsoar.com |  | Suspicous |

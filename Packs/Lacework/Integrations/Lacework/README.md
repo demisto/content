@@ -16,9 +16,12 @@ This integration was integrated and tested with version 2 of the Lacework APIs
 | Lacework Alert History to Import (in days) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### lw-get-alert-details
+
 ***
 Fetch details for a specific Alert in Lacework.
 
@@ -26,6 +29,7 @@ Fetch details for a specific Alert in Lacework.
 #### Base Command
 
 `lw-get-alert-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,6 +54,7 @@ Fetch details for a specific Alert in Lacework.
 | Lacework.Alert.entityMap | Unknown | The entity map for the alert. | 
 
 ### lw-get-aws-compliance-assessment
+
 ***
 Fetch the latest AWS compliance data from Lacework.
 
@@ -57,6 +62,7 @@ Fetch the latest AWS compliance data from Lacework.
 #### Base Command
 
 `lw-get-aws-compliance-assessment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -110,6 +116,7 @@ Fetch the latest AWS compliance data from Lacework.
 | Lacework.Compliance.reportTime | String | The time the report completed. | 
 
 ### lw-get-azure-compliance-assessment
+
 ***
 Fetch the latest Azure compliance data from Lacework.
 
@@ -117,6 +124,7 @@ Fetch the latest Azure compliance data from Lacework.
 #### Base Command
 
 `lw-get-azure-compliance-assessment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -171,6 +179,7 @@ Fetch the latest Azure compliance data from Lacework.
 | Lacework.Compliance.reportTime | String | The time the report completed. | 
 
 ### lw-get-gcp-compliance-assessment
+
 ***
 Fetch the latest GCP compliance data from Lacework.
 
@@ -178,6 +187,7 @@ Fetch the latest GCP compliance data from Lacework.
 #### Base Command
 
 `lw-get-gcp-compliance-assessment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -231,6 +241,7 @@ Fetch the latest GCP compliance data from Lacework.
 | Lacework.Compliance.reportTime | String | The time the report completed. | 
 
 ### lw-get-gcp-projects-by-organization
+
 ***
 Fetch a list of GCP projects that are under an organization.
 
@@ -238,6 +249,7 @@ Fetch a list of GCP projects that are under an organization.
 #### Base Command
 
 `lw-get-gcp-projects-by-organization`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -253,6 +265,7 @@ Fetch a list of GCP projects that are under an organization.
 | Lacework.GCP.projects | String | The GCP Projects associated to the Organization. | 
 
 ### lw-get-compliance-report
+
 ***
 Fetch a specified compliance report from Lacework.
 
@@ -260,6 +273,7 @@ Fetch a specified compliance report from Lacework.
 #### Base Command
 
 `lw-get-compliance-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -316,6 +330,7 @@ Fetch a specified compliance report from Lacework.
 | Lacework.Compliance.reportTime | String | The time the report completed. | 
 
 ### lw-get-container-vulnerabilities
+
 ***
 Fetch container vulnerability information from Lacework.
 
@@ -323,6 +338,7 @@ Fetch container vulnerability information from Lacework.
 #### Base Command
 
 `lw-get-container-vulnerabilities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -365,6 +381,7 @@ Fetch container vulnerability information from Lacework.
 | Lacework.Vulnerability.Container.vulnHash | String | A unique hash of all data contained in the vulnerability | 
 
 ### lw-get-host-vulnerabilities
+
 ***
 Fetch host vulnerability information from Lacework.
 
@@ -372,6 +389,7 @@ Fetch host vulnerability information from Lacework.
 #### Base Command
 
 `lw-get-host-vulnerabilities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -3,6 +3,7 @@ This integration enables the management of Cisco NXOS Switches and Routers direc
 To use this integration, configure an instance of this integration. This will associate a credential to be used to access hosts when commands are run. The commands from this integration will take the NXOS host address(es) as an input, and use the saved credential associated to the instance to execute. Create separate instances if multiple credentials are required.
 
 ## Credentials
+
 This integration supports a number of methods of authenticating with the network device:
 
 1. Username & Password entered into the integration
@@ -10,12 +11,15 @@ This integration supports a number of methods of authenticating with the network
 3. Username and SSH Key from the XSOAR credential manager
 
 ## Permissions
+
 Whilst possible to use a `Network-Operator` (read-only) role, most commands require read and write access. It is recommended to use `Network-Admin` or appropriately scoped custom role.
 
 ## Network Requirements
+
 By default, TCP port 22 will be used to initiate a SSH connection to the NXOS host.
 
 The connection will be initiated from the XSOAR engine/server specified in the instance settings.
+
 ## Configure Ansible Cisco NXOS in Cortex
 
 
@@ -27,13 +31,17 @@ The connection will be initiated from the XSOAR engine/server specified in the i
 | Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
 
 ## Testing
+
 This integration does not support testing from the integration management screen. Instead it is recommended to use the `!nxos-facts`command providing an example `host` as the command argument. This command will connect to the specified network device with the configured credentials in the integration, and if successful output general information about the device.
 
 ## Idempotence
+
 The action commands in this integration are idempotent. This means that the result of performing it once is exactly the same as the result of performing it repeatedly without any intervening actions.
 
 ## State Arguement
+
 Some of the commands in this integration take a state argument. These define the desired end state of the object being managed. As a result these commands are able to perform multiple management operations depending on the desired state value. Common state values are:
+
 | **State** | **Result** |
 | --- | --- |
 | present | Object should exist. If not present, the object will be created with the provided parameters. If present but not with correct parameters, it will be modified to met provided parameters. |
@@ -43,22 +51,27 @@ Some of the commands in this integration take a state argument. These define the
 | absent | Object should not exist. If it it exists it will be deleted. |
 
 ## Complex Command Inputs
+
 Some commands may require structured input arguments such as `lists` or `dictionary`, these can be provided in standard JSON notation wrapped in double curly braces. For example a argument called `dns_servers` that accepts a list of server IPs 8.8.8.8 and 8.8.4.4 would be entered as `dns_servers="{{ ['8.8.8.8', '8.8.4.4'] }}"`.
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### nxos-aaa-server
+
 ***
 Manages AAA server global configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_aaa_server_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_aaa_server_module.html>
 
 
 #### Base Command
 
 `nxos-aaa-server`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -81,9 +94,11 @@ Manages AAA server global configuration.
 
 
 #### Command Example
+
 ```!nxos-aaa-server host="192.168.1.19" server_type="radius" server_timeout="9" deadtime="20" directed_request="enabled" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -104,22 +119,27 @@ Manages AAA server global configuration.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: radius-server deadtime 20
->    * 1: radius-server timeout 9
->    * 2: radius-server directed-request
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: radius-server deadtime 20
+>   * 1: radius-server timeout 9
+>   * 2: radius-server directed-request
 
 
 ### nxos-aaa-server-host
+
 ***
 Manages AAA server host-specific configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_aaa_server_host_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_aaa_server_host_module.html>
 
 
 #### Base Command
 
 `nxos-aaa-server-host`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -148,9 +168,11 @@ Manages AAA server host-specific configuration.
 
 
 #### Command Example
+
 ```!nxos-aaa-server-host host="192.168.1.19" state="present" server_type="radius" address="1.2.3.4" acct_port="2084" host_timeout="10" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -184,33 +206,43 @@ Manages AAA server host-specific configuration.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## End_State
->    * acct_port: 2084
->    * address: 1.2.3.4
->    * auth_port: None
->    * host_timeout: 10
->    * key: None
->    * server_type: radius
->  * ## Existing
->  * ## Proposed
->    * acct_port: 2084
->    * address: 1.2.3.4
->    * host_timeout: 10
->    * server_type: radius
->  * ## Updates
->    * 0: radius-server host 1.2.3.4 acct-port 2084 timeout 10
+>
+> * changed: True
+>
+> * ## End_State
+>
+>   * acct_port: 2084
+>   * address: 1.2.3.4
+>   * auth_port: None
+>   * host_timeout: 10
+>   * key: None
+>   * server_type: radius
+>
+> * ## Existing
+>
+> * ## Proposed
+>
+>   * acct_port: 2084
+>   * address: 1.2.3.4
+>   * host_timeout: 10
+>   * server_type: radius
+>
+> * ## Updates
+>
+>   * 0: radius-server host 1.2.3.4 acct-port 2084 timeout 10
 
 
 ### nxos-acl
+
 ***
 Manages access list entries for ACLs.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_acl_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_acl_module.html>
 
 
 #### Base Command
 
 `nxos-acl`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -252,9 +284,11 @@ Manages access list entries for ACLs.
 
 
 #### Command Example
+
 ```!nxos-acl host="192.168.1.19" name="ANSIBLE" seq="10" action="permit" proto="tcp" "src"="192.0.2.1/2" dest="any" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -274,21 +308,26 @@ Manages access list entries for ACLs.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: ip access-list ANSIBLE
->    * 1: 10 permit tcp 192.0.2.1/24 any
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: ip access-list ANSIBLE
+>   * 1: 10 permit tcp 192.0.2.1/24 any
 
 
 ### nxos-acl-interface
+
 ***
 Manages applying ACLs to interfaces.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_acl_interface_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_acl_interface_module.html>
 
 
 #### Base Command
 
 `nxos-acl-interface`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -309,9 +348,11 @@ Manages applying ACLs to interfaces.
 
 
 #### Command Example
+
 ```!nxos-acl-interface host="192.168.1.19" name="ANSIBLE" interface="ethernet1/41" direction="egress" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -331,20 +372,25 @@ Manages applying ACLs to interfaces.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: interface ethernet1/41
->    * 1: ip access-group ANSIBLE out
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: interface ethernet1/41
+>   * 1: ip access-group ANSIBLE out
 
 ### nxos-banner
+
 ***
 Manage multiline banners on Cisco NXOS devices
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_banner_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_banner_module.html>
 
 
 #### Base Command
 
 `nxos-banner`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -363,9 +409,11 @@ Manage multiline banners on Cisco NXOS devices
 
 
 #### Command Example
+
 ```!nxos-banner host="192.168.1.19" banner="exec" text="this is my exec banner" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -384,21 +432,26 @@ Manage multiline banners on Cisco NXOS devices
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: banner exec @
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: banner exec @
 >this is my exec banner
 >@
 
 ### nxos-bfd-global
+
 ***
 Bidirectional Forwarding Detection (BFD) global-level configuration
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_bfd_global_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_bfd_global_module.html>
 
 
 #### Base Command
 
 `nxos-bfd-global`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -429,9 +482,11 @@ Bidirectional Forwarding Detection (BFD) global-level configuration
 
 
 #### Command Example
+
 ```!nxos-bfd-global host="192.168.1.19" echo_rx_interval="50" interval="{'tx': 50, 'min_rx': 50, 'multiplier': 4}" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -449,19 +504,23 @@ Bidirectional Forwarding Detection (BFD) global-level configuration
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * check_mode: False
->  * ## Commands
+>
+> * changed: False
+> * check_mode: False
+>
+> * ## Commands
 
 ### nxos-bfd-interfaces
+
 ***
 Manages BFD attributes of nxos interfaces.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_bfd_interfaces_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_bfd_interfaces_module.html>
 
 
 #### Base Command
 
 `nxos-bfd-interfaces`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -481,9 +540,11 @@ Manages BFD attributes of nxos interfaces.
 
 
 #### Command Example
+
 ```!nxos-bfd-interfaces host="192.168.1.19" state="deleted" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -512,28 +573,37 @@ Manages BFD attributes of nxos interfaces.
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Before
->  * ## Ethernet1/1
->    * bfd: enable
->    * echo: enable
->    * name: Ethernet1/1
->  * ## Ethernet1/2
->    * bfd: enable
->    * echo: enable
->    * name: Ethernet1/2
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Before
+>
+> * ## Ethernet1/1
+>
+>   * bfd: enable
+>   * echo: enable
+>   * name: Ethernet1/1
+>
+> * ## Ethernet1/2
+>
+>   * bfd: enable
+>   * echo: enable
+>   * name: Ethernet1/2
+>
+> * ## Commands
 
 
 ### nxos-bgp
+
 ***
 Manages BGP configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_module.html>
 
 
 #### Base Command
 
 `nxos-bgp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -589,9 +659,11 @@ Manages BGP configuration.
 
 
 #### Command Example
+
 ```!nxos-bgp host="192.168.1.19" asn="65535" vrf="test" router_id="192.0.2.1" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -608,18 +680,22 @@ Manages BGP configuration.
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 ### nxos-bgp-af
+
 ***
 Manages BGP Address-family configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_af_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_af_module.html>
 
 
 #### Base Command
 
 `nxos-bgp-af`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -668,14 +744,16 @@ Manages BGP Address-family configuration.
 
 
 ### nxos-bgp-neighbor
+
 ***
 Manages BGP neighbors configurations.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_neighbor_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_neighbor_module.html>
 
 
 #### Base Command
 
 `nxos-bgp-neighbor`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -715,9 +793,11 @@ Manages BGP neighbors configurations.
 
 
 #### Command Example
+
 ```!nxos-bgp-neighbor host="192.168.1.19" asn="65535" neighbor="1.1.1.1" local_as="20" remote_as="30" bfd="enable" description="just a description" update_source="Ethernet1/3" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -742,25 +822,30 @@ Manages BGP neighbors configurations.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: router bgp 65535
->    * 1: neighbor 1.1.1.1
->    * 2: bfd
->    * 3: description just a description
->    * 4: remote-as 30
->    * 5: update-source Ethernet1/3
->    * 6: local-as 20
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: router bgp 65535
+>   * 1: neighbor 1.1.1.1
+>   * 2: bfd
+>   * 3: description just a description
+>   * 4: remote-as 30
+>   * 5: update-source Ethernet1/3
+>   * 6: local-as 20
 
 ### nxos-bgp-neighbor-af
+
 ***
 Manages BGP address-family's neighbors configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_neighbor_af_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_neighbor_af_module.html>
 
 
 #### Base Command
 
 `nxos-bgp-neighbor-af`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -811,9 +896,11 @@ Manages BGP address-family's neighbors configuration.
 
 
 #### Command Example
+
 ```!nxos-bgp-neighbor-af host="192.168.1.19" asn="65535" neighbor="1.1.1.1" afi="ipv4" safi="unicast" route_reflector_client="True" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -835,21 +922,27 @@ Manages BGP address-family's neighbors configuration.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: router bgp 65535
->    * 1: neighbor 1.1.1.1
->    * 2: address-family ipv4 unicast
->    * 3: route-reflector-client
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: router bgp 65535
+>   * 1: neighbor 1.1.1.1
+>   * 2: address-family ipv4 unicast
+>   * 3: route-reflector-client
+>
 ### nxos-command
+
 ***
 Run arbitrary command on Cisco NXOS devices
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_command_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_command_module.html>
 
 
 #### Base Command
 
 `nxos-command`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -872,9 +965,11 @@ Run arbitrary command on Cisco NXOS devices
 
 
 #### Command Example
+
 ```!nxos-command host="192.168.1.19" commands="show version" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -935,17 +1030,20 @@ Run arbitrary command on Cisco NXOS devices
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Stdout
->    * 0: Cisco Nexus Operating System (NX-OS) Software
->TAC support: http://www.cisco.com/tac
->Documents: http://www.cisco.com/en/US/products/ps9372/tsd_products_support_series_home.html
+>
+> * changed: False
+>
+> * ## Stdout
+>
+>   * 0: Cisco Nexus Operating System (NX-OS) Software
+>TAC support: <http://www.cisco.com/tac>
+>Documents: <http://www.cisco.com/en/US/products/ps9372/tsd_products_support_series_home.html>
 >Copyright (c) 2002-2019, Cisco Systems, Inc. All rights reserved.
 >The copyrights to certain works contained herein are owned by
 >other third parties and are used and distributed under license.
 >Some parts of this software are covered under the GNU Public
 >License. A copy of the license is available at
->http://www.gnu.org/licenses/gpl.html.
+><http://www.gnu.org/licenses/gpl.html>.
 >
 >Nexus 9000v is a demo version of the Nexus Operating System
 >
@@ -975,57 +1073,62 @@ Run arbitrary command on Cisco NXOS devices
 >  Core Plugin, Ethernet Plugin
 >
 >Active Package(s):
->  * ## Stdout_Lines
->  * ## List
->    * 0: Cisco Nexus Operating System (NX-OS) Software
->    * 1: TAC support: http://www.cisco.com/tac
->    * 2: Documents: http://www.cisco.com/en/US/products/ps9372/tsd_products_support_series_home.html
->    * 3: Copyright (c) 2002-2019, Cisco Systems, Inc. All rights reserved.
->    * 4: The copyrights to certain works contained herein are owned by
->    * 5: other third parties and are used and distributed under license.
->    * 6: Some parts of this software are covered under the GNU Public
->    * 7: License. A copy of the license is available at
->    * 8: http://www.gnu.org/licenses/gpl.html.
->    * 9: 
->    * 10: Nexus 9000v is a demo version of the Nexus Operating System
->    * 9: 
->    * 12: Software
->    * 13:   BIOS: version 
->    * 14:  NXOS: version 9.3(3)
->    * 15:   BIOS compile time:  
->    * 16:   NXOS image file is: bootflash:///nxos.9.3.3.bin
->    * 17:   NXOS compile time:  12/22/2019 2:00:00 [12/22/2019 14:00:37]
->    * 9: 
->    * 9: 
->    * 20: Hardware
->    * 21:   cisco Nexus9000 C9500v Chassis ("Supervisor Module")
->    * 22:    with 7837092 kB of memory.
->    * 23:   Processor Board ID 9ESGSKDKPR0
->    * 9: 
->    * 25:   Device name: n9kv01
->    * 26:   bootflash:    4287040 kB
->    * 27: Kernel uptime is 0 day(s), 8 hour(s), 56 minute(s), 55 second(s)
->    * 9: 
->    * 29: Last reset 
->    * 30:   Reason: Unknown
->    * 31:   System version: 
->    * 32:   Service: 
->    * 9: 
->    * 34: plugin
->    * 35:   Core Plugin, Ethernet Plugin
->    * 9: 
->    * 37: Active Package(s):
+>
+> * ## Stdout_Lines
+>
+> * ## List
+>
+>   * 0: Cisco Nexus Operating System (NX-OS) Software
+>   * 1: TAC support: <http://www.cisco.com/tac>
+>   * 2: Documents: <http://www.cisco.com/en/US/products/ps9372/tsd_products_support_series_home.html>
+>   * 3: Copyright (c) 2002-2019, Cisco Systems, Inc. All rights reserved.
+>   * 4: The copyrights to certain works contained herein are owned by
+>   * 5: other third parties and are used and distributed under license.
+>   * 6: Some parts of this software are covered under the GNU Public
+>   * 7: License. A copy of the license is available at
+>   * 8: <http://www.gnu.org/licenses/gpl.html>.
+>   * 9: 
+>   * 10: Nexus 9000v is a demo version of the Nexus Operating System
+>   * 9: 
+>   * 12: Software
+>   * 13:   BIOS: version 
+>   * 14:  NXOS: version 9.3(3)
+>   * 15:   BIOS compile time:  
+>   * 16:   NXOS image file is: bootflash:///nxos.9.3.3.bin
+>   * 17:   NXOS compile time:  12/22/2019 2:00:00 [12/22/2019 14:00:37]
+>   * 9: 
+>   * 9: 
+>   * 20: Hardware
+>   * 21:   cisco Nexus9000 C9500v Chassis ("Supervisor Module")
+>   * 22:    with 7837092 kB of memory.
+>   * 23:   Processor Board ID 9ESGSKDKPR0
+>   * 9: 
+>   * 25:   Device name: n9kv01
+>   * 26:   bootflash:    4287040 kB
+>   * 27: Kernel uptime is 0 day(s), 8 hour(s), 56 minute(s), 55 second(s)
+>   * 9: 
+>   * 29: Last reset 
+>   * 30:   Reason: Unknown
+>   * 31:   System version: 
+>   * 32:   Service: 
+>   * 9: 
+>   * 34: plugin
+>   * 35:   Core Plugin, Ethernet Plugin
+>   * 9: 
+>   * 37: Active Package(s):
 
 
 ### nxos-config
+
 ***
 Manage Cisco NXOS configuration sections
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_config_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_config_module.html>
 
 
 #### Base Command
 
 `nxos-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1063,9 +1166,11 @@ Manage Cisco NXOS configuration sections
 
 
 #### Command Example
+
 ```!nxos-config host="192.168.1.19" lines="hostname n9kv01" save_when="modified"  backup=yes```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -1092,26 +1197,33 @@ Manage Cisco NXOS configuration sections
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * backup_path: ./backup/192.168.1.19_config.2021-07-11@00:43:34
->  * changed: True
->  * date: 2021-07-11
->  * filename: 192.168.1.19_config.2021-07-11@00:43:34
->  * shortname: ./backup/192.168.1.19_config
->  * time: 00:43:34
->  * ## Commands
->    * 0: hostname n9kv01
->  * ## Updates
->    * 0: hostname n9kv01
+>
+> * backup_path: ./backup/192.168.1.19_config.2021-07-11@00:43:34
+> * changed: True
+> * date: 2021-07-11
+> * filename: 192.168.1.19_config.2021-07-11@00:43:34
+> * shortname: ./backup/192.168.1.19_config
+> * time: 00:43:34
+>
+> * ## Commands
+>
+>   * 0: hostname n9kv01
+>
+> * ## Updates
+>
+>   * 0: hostname n9kv01
 
 ### nxos-evpn-global
+
 ***
 Handles the EVPN control plane for VXLAN.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_evpn_global_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_evpn_global_module.html>
 
 
 #### Base Command
 
 `nxos-evpn-global`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1128,9 +1240,11 @@ Handles the EVPN control plane for VXLAN.
 
 
 #### Command Example
+
 ```!nxos-evpn-global host="192.168.1.19" nv_overlay_evpn="True" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -1149,20 +1263,25 @@ Handles the EVPN control plane for VXLAN.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: nv overlay evpn
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: nv overlay evpn
 
 
 ### nxos-evpn-vni
+
 ***
 Manages Cisco EVPN VXLAN Network Identifier (VNI).
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_evpn_vni_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_evpn_vni_module.html>
 
 
 #### Base Command
 
 `nxos-evpn-vni`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1185,14 +1304,16 @@ Manages Cisco EVPN VXLAN Network Identifier (VNI).
 
 
 ### nxos-facts
+
 ***
 Gets facts about NX-OS switches
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_facts_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_facts_module.html>
 
 
 #### Base Command
 
 `nxos-facts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1235,9 +1356,11 @@ Gets facts about NX-OS switches
 
 
 #### Command Example
+
 ```!nxos-facts host="192.168.1.19" gather_subset="all" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -1338,11 +1461,12 @@ Gets facts about NX-OS switches
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * net__hostname: 192.168.1.19
->  * net__os: 9.3(3)
->  * net__platform: Nexus9000 C9500v Chassis
->  * net_api: cliconf
->  * net_config: !Command: show running-config
+>
+> * net__hostname: 192.168.1.19
+> * net__os: 9.3(3)
+> * net__platform: Nexus9000 C9500v Chassis
+> * net_api: cliconf
+> * net_config: !Command: show running-config
 >!Running configuration last done at: Sat Jul 10 23:00:14 2021
 >!Time: Sat Jul 10 23:00:57 2021
 >
@@ -1396,85 +1520,116 @@ Gets facts about NX-OS switches
 >line vty
 >no system default switchport shutdown
 >
->  * net_hostname: 192.168.1.19
->  * net_image: bootflash:///nxos.9.3.3.bin
->  * net_license_hostid: 91EMAC025KL
->  * net_memfree_mb: 3965.3359375
->  * net_memtotal_mb: 7653.41015625
->  * net_model: Nexus9000 C9500v Chassis ("Supervisor Module")
->  * net_platform: N9K-C9500v
->  * net_python_version: 3.9.5
->  * net_serialnum: 9ESGSKDKPR0
->  * net_system: nxos
->  * net_version: 9.3(3)
->  * discovered_interpreter_python: /usr/local/bin/python
->  * ## Net_All_Ipv4_Addresses
->    * 0: 192.168.1.19
->  * ## Net_All_Ipv6_Addresses
->  * ## Net_Fan_Info
->  * ## Net_Features_Enabled
->    * 0: bfd
->  * ## Net_Filesystems
->    * 0: bootflash:
->  * ## Net_Gather_Network_Resources
->  * ## Net_Gather_Subset
->    * 0: interfaces
->    * 1: config
->    * 2: hardware
->    * 3: legacy
->    * 4: default
->    * 5: features
->  * ## Net_Interfaces
->    * ### Ethernet1/1
->      * bandwidth: 1000000
->      * duplex: full
->      * macaddress: 0cc2.8a00.0101
->      * mode: access
->      * mtu: 1500
->      * speed: 1000 Mb/s
->      * state: up
->      * type: 100/1000/10000 Ethernet
->    * ### Mgmt0
->      * bandwidth: 1000000
->      * description: DHCP Configuration for PnP
->      * duplex: full
->      * macaddress: 0c05.2bc2.8a00
->      * mtu: 1500
->      * speed: 1000 Mb/s
->      * state: up
->      * type: GigabitEthernet
->      * #### Ipv4
->        * address: 192.168.1.19
->        * masklen: 24
->  * ## Net_Interfaces_List
->    * 0: mgmt0
->    * 1: Ethernet1/1
->  * ## Net_Module
->  * ## List
->    * model: N9K-X9564v
->    * ports: 64
->    * status: ok
->    * type: Nexus 9000v 64 port Ethernet Module
->  * ## List
->    * model: N9K-vSUP
->    * ports: 0
->    * status: active *
->    * type: Virtual Supervisor Module
->  * ## Net_Neighbors
->  * ## Net_Vlan_List
->    * 0: 1
->  * ## Network_Resources
+> * net_hostname: 192.168.1.19
+> * net_image: bootflash:///nxos.9.3.3.bin
+> * net_license_hostid: 91EMAC025KL
+> * net_memfree_mb: 3965.3359375
+> * net_memtotal_mb: 7653.41015625
+> * net_model: Nexus9000 C9500v Chassis ("Supervisor Module")
+> * net_platform: N9K-C9500v
+> * net_python_version: 3.9.5
+> * net_serialnum: 9ESGSKDKPR0
+> * net_system: nxos
+> * net_version: 9.3(3)
+> * discovered_interpreter_python: /usr/local/bin/python
+>
+> * ## Net_All_Ipv4_Addresses
+>
+>   * 0: 192.168.1.19
+>
+> * ## Net_All_Ipv6_Addresses
+>
+> * ## Net_Fan_Info
+>
+> * ## Net_Features_Enabled
+>
+>   * 0: bfd
+>
+> * ## Net_Filesystems
+>
+>   * 0: bootflash:
+>
+> * ## Net_Gather_Network_Resources
+>
+> * ## Net_Gather_Subset
+>
+>   * 0: interfaces
+>   * 1: config
+>   * 2: hardware
+>   * 3: legacy
+>   * 4: default
+>   * 5: features
+>
+> * ## Net_Interfaces
+>
+>   * ### Ethernet1/1
+>
+>     * bandwidth: 1000000
+>     * duplex: full
+>     * macaddress: 0cc2.8a00.0101
+>     * mode: access
+>     * mtu: 1500
+>     * speed: 1000 Mb/s
+>     * state: up
+>     * type: 100/1000/10000 Ethernet
+>
+>   * ### Mgmt0
+>
+>     * bandwidth: 1000000
+>     * description: DHCP Configuration for PnP
+>     * duplex: full
+>     * macaddress: 0c05.2bc2.8a00
+>     * mtu: 1500
+>     * speed: 1000 Mb/s
+>     * state: up
+>     * type: GigabitEthernet
+>
+>     * #### Ipv4
+>
+>       * address: 192.168.1.19
+>       * masklen: 24
+>
+> * ## Net_Interfaces_List
+>
+>   * 0: mgmt0
+>   * 1: Ethernet1/1
+>
+> * ## Net_Module
+>
+> * ## List
+>
+>   * model: N9K-X9564v
+>   * ports: 64
+>   * status: ok
+>   * type: Nexus 9000v 64 port Ethernet Module
+>
+> * ## List
+>
+>   * model: N9K-vSUP
+>   * ports: 0
+>   * status: active *
+>   * type: Virtual Supervisor Module
+>
+> * ## Net_Neighbors
+>
+> * ## Net_Vlan_List
+>
+>   * 0: 1
+>
+> * ## Network_Resources
 
 
 ### nxos-feature
+
 ***
 Manage features in NX-OS switches.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_feature_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_feature_module.html>
 
 
 #### Base Command
 
 `nxos-feature`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1492,9 +1647,11 @@ Manage features in NX-OS switches.
 
 
 #### Command Example
+
 ```!nxos-feature host="192.168.1.19" feature="lacp" state="enabled" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -1514,21 +1671,26 @@ Manage features in NX-OS switches.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: terminal dont-ask
->    * 1: feature lacp
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: terminal dont-ask
+>   * 1: feature lacp
 
 
 ### nxos-gir
+
 ***
 Trigger a graceful removal or insertion (GIR) of the switch.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_gir_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_gir_module.html>
 
 
 #### Base Command
 
 `nxos-gir`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1552,9 +1714,11 @@ Trigger a graceful removal or insertion (GIR) of the switch.
 
 
 #### Command Example
+
 ```!nxos-gir host="192.168.1.19" system_mode_maintenance="True"```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -1570,18 +1734,21 @@ Trigger a graceful removal or insertion (GIR) of the switch.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
+>
+> * changed: True
 
 
 ### nxos-gir-profile-management
+
 ***
 Create a maintenance-mode or normal-mode profile for GIR.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_gir_profile_management_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_gir_profile_management_module.html>
 
 
 #### Base Command
 
 `nxos-gir-profile-management`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1604,9 +1771,11 @@ Create a maintenance-mode or normal-mode profile for GIR.
 
 
 #### Command Example
+
 ```!nxos-gir-profile-management host="192.168.1.19" mode="maintenance" commands="{{ ['router eigrp 11', 'isolate'] }}" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -1622,17 +1791,20 @@ Create a maintenance-mode or normal-mode profile for GIR.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
+>
+> * changed: True
 
 ### nxos-hsrp
+
 ***
 Manages HSRP configuration on NX-OS switches.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_hsrp_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_hsrp_module.html>
 
 
 #### Base Command
 
 `nxos-hsrp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1658,14 +1830,16 @@ Manages HSRP configuration on NX-OS switches.
 
 
 ### nxos-igmp
+
 ***
 Manages IGMP global configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_igmp_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_igmp_module.html>
 
 
 #### Base Command
 
 `nxos-igmp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1685,9 +1859,11 @@ Manages IGMP global configuration.
 
 
 #### Command Example
+
 ```!nxos-igmp host="192.168.1.19" state="default" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -1704,19 +1880,23 @@ Manages IGMP global configuration.
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Updates
+>
+> * changed: False
+>
+> * ## Updates
 
 
 ### nxos-igmp-interface
+
 ***
 Manages IGMP interface configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_igmp_interface_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_igmp_interface_module.html>
 
 
 #### Base Command
 
 `nxos-igmp-interface`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1756,14 +1936,16 @@ Manages IGMP interface configuration.
 
 
 ### nxos-igmp-snooping
+
 ***
 Manages IGMP snooping global configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_igmp_snooping_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_igmp_snooping_module.html>
 
 
 #### Base Command
 
 `nxos-igmp-snooping`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1785,9 +1967,11 @@ Manages IGMP snooping global configuration.
 
 
 #### Command Example
+
 ```!nxos-igmp-snooping host="192.168.1.19" state="default" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -1804,19 +1988,23 @@ Manages IGMP snooping global configuration.
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 
 ### nxos-install-os
+
 ***
 Set boot options like boot, kickstart image and issu.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_install_os_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_install_os_module.html>
 
 
 #### Base Command
 
 `nxos-install-os`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1836,14 +2024,16 @@ Set boot options like boot, kickstart image and issu.
 
 
 ### nxos-interface-ospf
+
 ***
 Manages configuration of an OSPF interface instance.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_interface_ospf_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_interface_ospf_module.html>
 
 
 #### Base Command
 
 `nxos-interface-ospf`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1875,14 +2065,16 @@ Manages configuration of an OSPF interface instance.
 
 
 ### nxos-interfaces
+
 ***
 Manages interface attributes of NX-OS Interfaces
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_interfaces_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_interfaces_module.html>
 
 
 #### Base Command
 
 `nxos-interfaces`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1901,9 +2093,11 @@ Manages interface attributes of NX-OS Interfaces
 | CiscoNXOS.NxosInterfaces.commands | unknown | The set of commands pushed to the remote device. | 
 
 #### Command Example
+
 ```!nxos-interfaces host="192.168.1.19" config="{{ [{'name': 'Ethernet1/1', 'description': 'Configured by Ansible', 'enabled': True}, {'name': 'Ethernet1/2', 'description': 'Configured by Ansible Network', 'enabled': False}] }}" state="merged" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -1940,34 +2134,49 @@ Manages interface attributes of NX-OS Interfaces
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Before
->  * ## Ethernet1/1
->    * description: Configured by Ansible
->    * name: Ethernet1/1
->  * ## Ethernet1/2
->    * description: Configured by Ansible Network
->    * enabled: False
->    * name: Ethernet1/2
->  * ## Ethernet1/3
->    * name: Ethernet1/3
->  * ## Ethernet1/4
->    * name: Ethernet1/4
->  * ## Mgmt0
->    * name: mgmt0
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Before
+>
+> * ## Ethernet1/1
+>
+>   * description: Configured by Ansible
+>   * name: Ethernet1/1
+>
+> * ## Ethernet1/2
+>
+>   * description: Configured by Ansible Network
+>   * enabled: False
+>   * name: Ethernet1/2
+>
+> * ## Ethernet1/3
+>
+>   * name: Ethernet1/3
+>
+> * ## Ethernet1/4
+>
+>   * name: Ethernet1/4
+>
+> * ## Mgmt0
+>
+>   * name: mgmt0
+>
+> * ## Commands
 
 
 
 ### nxos-l2-interfaces
+
 ***
 Manages Layer-2 Interfaces attributes of NX-OS Interfaces
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_l2_interfaces_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_l2_interfaces_module.html>
 
 
 #### Base Command
 
 `nxos-l2-interfaces`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1986,9 +2195,11 @@ Manages Layer-2 Interfaces attributes of NX-OS Interfaces
 | CiscoNXOS.NxosL2Interfaces.commands | unknown | The set of commands pushed to the remote device. | 
 
 #### Command Example
+
 ```!nxos-l2-interfaces host="192.168.1.19" config="{{ [{'name': 'Ethernet1/1', 'trunk': {'native_vlan': 10, 'allowed_vlans': '2,4,15'}}, {'name': 'Ethernet1/2', 'access': {'vlan': 30}}] }}" state="merged" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -2032,38 +2243,59 @@ Manages Layer-2 Interfaces attributes of NX-OS Interfaces
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Before
->  * ## Ethernet1/1
->    * name: Ethernet1/1
->    * ### Trunk
->      * allowed_vlans: 2,4,15
->      * native_vlan: 10
->  * ## Ethernet1/2
->    * name: Ethernet1/2
->    * ### Access
->      * vlan: 30
->  * ## Ethernet1/3
->    * name: Ethernet1/3
->  * ## Ethernet1/4
->    * name: Ethernet1/4
->  * ## Ethernet1/5
->    * name: Ethernet1/5
->  * ## Mgmt0
->    * name: mgmt0
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Before
+>
+> * ## Ethernet1/1
+>
+>   * name: Ethernet1/1
+>
+>   * ### Trunk
+>
+>     * allowed_vlans: 2,4,15
+>     * native_vlan: 10
+>
+> * ## Ethernet1/2
+>
+>   * name: Ethernet1/2
+>
+>   * ### Access
+>
+>     * vlan: 30
+>
+> * ## Ethernet1/3
+>
+>   * name: Ethernet1/3
+>
+> * ## Ethernet1/4
+>
+>   * name: Ethernet1/4
+>
+> * ## Ethernet1/5
+>
+>   * name: Ethernet1/5
+>
+> * ## Mgmt0
+>
+>   * name: mgmt0
+>
+> * ## Commands
 
 
 
 ### nxos-l3-interfaces
+
 ***
 Manages Layer-3 Interfaces attributes of NX-OS Interfaces
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_l3_interfaces_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_l3_interfaces_module.html>
 
 
 #### Base Command
 
 `nxos-l3-interfaces`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2084,14 +2316,16 @@ Manages Layer-3 Interfaces attributes of NX-OS Interfaces
 
 
 ### nxos-lacp
+
 ***
 Manage Global Link Aggregation Control Protocol (LACP) on Cisco NX-OS devices.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_lacp_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_lacp_module.html>
 
 
 #### Base Command
 
 `nxos-lacp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2111,9 +2345,11 @@ Manage Global Link Aggregation Control Protocol (LACP) on Cisco NX-OS devices.
 
 
 #### Command Example
+
 ```!nxos-lacp host="192.168.1.19" config="{'system': {'priority': 10, 'mac': {'address': '00c1.4c00.bd15'}}}" state="merged" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -2143,28 +2379,39 @@ Manage Global Link Aggregation Control Protocol (LACP) on Cisco NX-OS devices.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## After
->    * ### System
->      * priority: 10
->      * #### Mac
->        * address: 00c1.4c00.bd15
->        * role: primary
->  * ## Before
->  * ## Commands
->    * 0: lacp system-priority 10
->    * 1: lacp system-mac 00c1.4c00.bd15
+>
+> * changed: True
+>
+> * ## After
+>
+>   * ### System
+>
+>     * priority: 10
+>
+>     * #### Mac
+>
+>       * address: 00c1.4c00.bd15
+>       * role: primary
+>
+> * ## Before
+>
+> * ## Commands
+>
+>   * 0: lacp system-priority 10
+>   * 1: lacp system-mac 00c1.4c00.bd15
 
 
 ### nxos-lacp-interfaces
+
 ***
 Manage Link Aggregation Control Protocol (LACP) attributes of interfaces on Cisco NX-OS devices.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_lacp_interfaces_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_lacp_interfaces_module.html>
 
 
 #### Base Command
 
 `nxos-lacp-interfaces`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2185,14 +2432,16 @@ Manage Link Aggregation Control Protocol (LACP) attributes of interfaces on Cisc
 
 
 ### nxos-lag-interfaces
+
 ***
 Manages link aggregation groups of NX-OS Interfaces
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_lag_interfaces_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_lag_interfaces_module.html>
 
 
 #### Base Command
 
 `nxos-lag-interfaces`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2212,9 +2461,11 @@ Manages link aggregation groups of NX-OS Interfaces
 
 
 #### Command Example
+
 ```!nxos-lag-interfaces host="192.168.1.19" config="{{ [{'name': 'port-channel99', 'members': [{'member': 'Ethernet1/4'}]}] }}" state="merged" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -2245,28 +2496,40 @@ Manages link aggregation groups of NX-OS Interfaces
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## After
->  * ## Port-Channel99
->    * name: port-channel99
->    * ### Members
->    * ### List
->      * member: Ethernet1/4
->  * ## Before
->  * ## Commands
->    * 0: interface Ethernet1/4
->    * 1: channel-group 99
+>
+> * changed: True
+>
+> * ## After
+>
+> * ## Port-Channel99
+>
+>   * name: port-channel99
+>
+>   * ### Members
+>
+>   * ### List
+>
+>     * member: Ethernet1/4
+>
+> * ## Before
+>
+> * ## Commands
+>
+>   * 0: interface Ethernet1/4
+>   * 1: channel-group 99
 
 
 ### nxos-lldp
+
 ***
 Manage LLDP configuration on Cisco NXOS network devices.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_lldp_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_lldp_module.html>
 
 
 #### Base Command
 
 `nxos-lldp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2283,9 +2546,11 @@ Manage LLDP configuration on Cisco NXOS network devices.
 
 
 #### Command Example
+
 ```!nxos-lldp host="192.168.1.19" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -2305,21 +2570,26 @@ Manage LLDP configuration on Cisco NXOS network devices.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: terminal dont-ask
->    * 1: feature lldp
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: terminal dont-ask
+>   * 1: feature lldp
 
 
 ### nxos-lldp-global
+
 ***
 Configure and manage Link Layer Discovery Protocol(LLDP) attributes on NX-OS platforms.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_lldp_global_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_lldp_global_module.html>
 
 
 #### Base Command
 
 `nxos-lldp-global`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2339,9 +2609,11 @@ Configure and manage Link Layer Discovery Protocol(LLDP) attributes on NX-OS pla
 
 
 #### Command Example
+
 ```!nxos-lldp-global host="192.168.1.19" config="{'timer': 35, 'holdtime': 100}" state="merged" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -2366,25 +2638,33 @@ Configure and manage Link Layer Discovery Protocol(LLDP) attributes on NX-OS pla
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## After
->    * holdtime: 100
->    * timer: 35
->  * ## Before
->  * ## Commands
->    * 0: lldp holdtime 100
->    * 1: lldp timer 35
+>
+> * changed: True
+>
+> * ## After
+>
+>   * holdtime: 100
+>   * timer: 35
+>
+> * ## Before
+>
+> * ## Commands
+>
+>   * 0: lldp holdtime 100
+>   * 1: lldp timer 35
 
 
 ### nxos-logging
+
 ***
 Manage logging on network devices
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_logging_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_logging_module.html>
 
 
 #### Base Command
 
 `nxos-logging`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2417,14 +2697,16 @@ Manage logging on network devices
 
 
 ### nxos-ntp
+
 ***
 Manages core NTP configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_ntp_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_ntp_module.html>
 
 
 #### Base Command
 
 `nxos-ntp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2452,9 +2734,11 @@ Manages core NTP configuration.
 
 
 #### Command Example
+
 ```!nxos-ntp host="192.168.1.19" server="1.2.3.4" key_id="32" prefer="enabled"```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -2488,33 +2772,44 @@ Manages core NTP configuration.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## End_State
->    * address: 1.2.3.4
->    * key_id: 32
->    * peer_type: server
->    * prefer: enabled
->    * vrf_name: default
->  * ## Existing
->  * ## Peer_Server_List
->  * ## Proposed
->    * address: 1.2.3.4
->    * key_id: 32
->    * peer_type: server
->    * prefer: enabled
->  * ## Updates
->    * 0: ntp server 1.2.3.4 prefer key 32
+>
+> * changed: True
+>
+> * ## End_State
+>
+>   * address: 1.2.3.4
+>   * key_id: 32
+>   * peer_type: server
+>   * prefer: enabled
+>   * vrf_name: default
+>
+> * ## Existing
+>
+> * ## Peer_Server_List
+>
+> * ## Proposed
+>
+>   * address: 1.2.3.4
+>   * key_id: 32
+>   * peer_type: server
+>   * prefer: enabled
+>
+> * ## Updates
+>
+>   * 0: ntp server 1.2.3.4 prefer key 32
 
 
 ### nxos-ntp-auth
+
 ***
 Manages NTP authentication.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_ntp_auth_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_ntp_auth_module.html>
 
 
 #### Base Command
 
 `nxos-ntp-auth`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2536,9 +2831,11 @@ Manages NTP authentication.
 
 
 #### Command Example
+
 ```!nxos-ntp-auth host="192.168.1.19" key_id="32" md5string="hello" auth_type="text" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -2574,34 +2871,45 @@ Manages NTP authentication.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## End_State
->    * auth_type: encrypt
->    * authentication: off
->    * key_id: 32
->    * md5string: kapqg
->    * trusted_key: false
->  * ## Existing
->    * authentication: off
->    * trusted_key: false
->  * ## Proposed
->    * auth_type: text
->    * key_id: 32
->    * md5string: hello
->    * trusted_key: false
->  * ## Updates
->    * 0: ntp authentication-key 32 md5 hello 0
+>
+> * changed: True
+>
+> * ## End_State
+>
+>   * auth_type: encrypt
+>   * authentication: off
+>   * key_id: 32
+>   * md5string: kapqg
+>   * trusted_key: false
+>
+> * ## Existing
+>
+>   * authentication: off
+>   * trusted_key: false
+>
+> * ## Proposed
+>
+>   * auth_type: text
+>   * key_id: 32
+>   * md5string: hello
+>   * trusted_key: false
+>
+> * ## Updates
+>
+>   * 0: ntp authentication-key 32 md5 hello 0
 
 
 ### nxos-ntp-options
+
 ***
 Manages NTP options.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_ntp_options_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_ntp_options_module.html>
 
 
 #### Base Command
 
 `nxos-ntp-options`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2621,9 +2929,11 @@ Manages NTP options.
 
 
 #### Command Example
+
 ```!nxos-ntp-options host="192.168.1.19" master="True" stratum="12" logging="False"```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -2647,24 +2957,31 @@ Manages NTP options.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: ntp master
->    * 1: ntp master 12
->  * ## Updates
->    * 0: ntp master
->    * 1: ntp master 12
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: ntp master
+>   * 1: ntp master 12
+>
+> * ## Updates
+>
+>   * 0: ntp master
+>   * 1: ntp master 12
 
 
 ### nxos-nxapi
+
 ***
 Manage NXAPI configuration on an NXOS device.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_nxapi_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_nxapi_module.html>
 
 
 #### Base Command
 
 `nxos-nxapi`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2690,9 +3007,11 @@ Manage NXAPI configuration on an NXOS device.
 
 
 #### Command Example
+
 ```!nxos-nxapi host="192.168.1.19" state="present" sandbox=No```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -2709,18 +3028,22 @@ Manage NXAPI configuration on an NXOS device.
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 ### nxos-ospf
+
 ***
 Manages configuration of an ospf instance.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_ospf_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_ospf_module.html>
 
 
 #### Base Command
 
 `nxos-ospf`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2738,9 +3061,11 @@ Manages configuration of an ospf instance.
 
 
 #### Command Example
+
 ```!nxos-ospf host="192.168.1.19" ospf="1" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -2757,19 +3082,23 @@ Manages configuration of an ospf instance.
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 
 ### nxos-ospf-vrf
+
 ***
 Manages a VRF for an OSPF router.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_ospf_vrf_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_ospf_vrf_module.html>
 
 
 #### Base Command
 
 `nxos-ospf-vrf`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2800,9 +3129,11 @@ Manages a VRF for an OSPF router.
 
 
 #### Command Example
+
 ```!nxos-ospf-vrf host="192.168.1.19" ospf="1" timer_throttle_spf_start="50" timer_throttle_spf_hold="1000" timer_throttle_spf_max="2000" timer_throttle_lsa_start="60" timer_throttle_lsa_hold="1100" timer_throttle_lsa_max="3000" vrf="test" bfd="enable" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -2819,18 +3150,22 @@ Manages a VRF for an OSPF router.
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 ### nxos-overlay-global
+
 ***
 Configures anycast gateway MAC of the switch.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_overlay_global_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_overlay_global_module.html>
 
 
 #### Base Command
 
 `nxos-overlay-global`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2847,9 +3182,11 @@ Configures anycast gateway MAC of the switch.
 
 
 #### Command Example
+
 ```!nxos-overlay-global host="192.168.1.19" anycast_gateway_mac="b.b.b" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -2868,20 +3205,25 @@ Configures anycast gateway MAC of the switch.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: fabric forwarding anycast-gateway-mac 000B.000B.000B
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: fabric forwarding anycast-gateway-mac 000B.000B.000B
 
 
 ### nxos-pim
+
 ***
 Manages configuration of a PIM instance.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_pim_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_pim_module.html>
 
 
 #### Base Command
 
 `nxos-pim`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2899,9 +3241,11 @@ Manages configuration of a PIM instance.
 
 
 #### Command Example
+
 ```!nxos-pim host="192.168.1.19" bfd="enable" ssm_range="224.0.0.0/8"```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -2918,18 +3262,22 @@ Manages configuration of a PIM instance.
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 ### nxos-pim-interface
+
 ***
 Manages PIM interface configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_pim_interface_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_pim_interface_module.html>
 
 
 #### Base Command
 
 `nxos-pim-interface`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2960,14 +3308,16 @@ Manages PIM interface configuration.
 
 
 ### nxos-pim-rp-address
+
 ***
 Manages configuration of an PIM static RP address instance.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_pim_rp_address_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_pim_rp_address_module.html>
 
 
 #### Base Command
 
 `nxos-pim-rp-address`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2989,9 +3339,11 @@ Manages configuration of an PIM static RP address instance.
 
 
 #### Command Example
+
 ```!nxos-pim-rp-address host="192.168.1.19" rp_address="10.1.1.20" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3008,18 +3360,22 @@ Manages configuration of an PIM static RP address instance.
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 ### nxos-ping
+
 ***
 Tests reachability using ping from Nexus switch.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_ping_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_ping_module.html>
 
 
 #### Base Command
 
 `nxos-ping`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3044,9 +3400,11 @@ Tests reachability using ping from Nexus switch.
 
 
 #### Command Example
+
 ```!nxos-ping host="192.168.1.19" dest="8.8.8.8" vrf="management"```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3073,27 +3431,34 @@ Tests reachability using ping from Nexus switch.
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * packet_loss: 0.00%
->  * packets_rx: 5
->  * packets_tx: 5
->  * ## Commands
->    * 0: ping 8.8.8.8 count 5 vrf management
->  * ## Rtt
->    * avg: 11.171
->    * max: 11.845
->    * min: 10.811
+>
+> * changed: False
+> * packet_loss: 0.00%
+> * packets_rx: 5
+> * packets_tx: 5
+>
+> * ## Commands
+>
+>   * 0: ping 8.8.8.8 count 5 vrf management
+>
+> * ## Rtt
+>
+>   * avg: 11.171
+>   * max: 11.845
+>   * min: 10.811
 
 
 ### nxos-reboot
+
 ***
 Reboot a network device.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_reboot_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_reboot_module.html>
 
 
 #### Base Command
 
 `nxos-reboot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3110,9 +3475,11 @@ Reboot a network device.
 
 
 #### Command Example
+
 ```!nxos-reboot host="192.168.1.19" confirm="True" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3128,18 +3495,21 @@ Reboot a network device.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
+>
+> * changed: True
 
 
 ### nxos-rollback
+
 ***
 Set a checkpoint or rollback to a checkpoint.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_rollback_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_rollback_module.html>
 
 
 #### Base Command
 
 `nxos-rollback`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3158,9 +3528,11 @@ Set a checkpoint or rollback to a checkpoint.
 
 
 #### Command Example
+
 ```!nxos-rollback host="192.168.1.19" checkpoint_file="backup.cfg"```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3177,19 +3549,22 @@ Set a checkpoint or rollback to a checkpoint.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * filename: backup.cfg
->  * status: checkpoint file created
+>
+> * changed: True
+> * filename: backup.cfg
+> * status: checkpoint file created
 
 ### nxos-rpm
+
 ***
 Install patch or feature rpms on Cisco NX-OS devices.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_rpm_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_rpm_module.html>
 
 
 #### Base Command
 
 `nxos-rpm`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3210,14 +3585,16 @@ Install patch or feature rpms on Cisco NX-OS devices.
 
 
 ### nxos-smu
+
 ***
 Perform SMUs on Cisco NX-OS devices.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_smu_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_smu_module.html>
 
 
 #### Base Command
 
 `nxos-smu`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3236,14 +3613,16 @@ Perform SMUs on Cisco NX-OS devices.
 
 
 ### nxos-snapshot
+
 ***
 Manage snapshots of the running states of selected features.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_snapshot_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_snapshot_module.html>
 
 
 #### Base Command
 
 `nxos-snapshot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3273,9 +3652,11 @@ Manage snapshots of the running states of selected features.
 
 
 #### Command Example
+
 ```!nxos-snapshot host="192.168.1.19" action="create" snapshot_name="test_snapshot" description="Done with Ansible" save_snapshot_locally="True" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3292,18 +3673,22 @@ Manage snapshots of the running states of selected features.
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 ### nxos-snmp-community
+
 ***
 Manages SNMP community configs.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_community_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_community_module.html>
 
 
 #### Base Command
 
 `nxos-snmp-community`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3324,9 +3709,11 @@ Manages SNMP community configs.
 
 
 #### Command Example
+
 ```!nxos-snmp-community host="192.168.1.19" community="TESTING7" group="network-operator" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3343,18 +3730,22 @@ Manages SNMP community configs.
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 ### nxos-snmp-contact
+
 ***
 Manages SNMP contact info.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_contact_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_contact_module.html>
 
 
 #### Base Command
 
 `nxos-snmp-contact`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3372,9 +3763,11 @@ Manages SNMP contact info.
 
 
 #### Command Example
+
 ```!nxos-snmp-contact host="192.168.1.19" contact="Test" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3393,20 +3786,25 @@ Manages SNMP contact info.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: snmp-server contact Test
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: snmp-server contact Test
 
 
 ### nxos-snmp-host
+
 ***
 Manages SNMP host configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_host_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_host_module.html>
 
 
 #### Base Command
 
 `nxos-snmp-host`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3431,9 +3829,11 @@ Manages SNMP host configuration.
 | CiscoNXOS.NxosSnmpHost.commands | unknown | commands sent to the device | 
 
 #### Command Example
+
 ```!nxos-snmp-host host="192.168.1.19" snmp_host="1.1.1.1" community="TESTING" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3452,21 +3852,26 @@ Manages SNMP host configuration.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: snmp-server host 1.1.1.1 trap version 1 TESTING  udp-port 162
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: snmp-server host 1.1.1.1 trap version 1 TESTING  udp-port 162
 
 
 
 ### nxos-snmp-location
+
 ***
 Manages SNMP location information.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_location_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_location_module.html>
 
 
 #### Base Command
 
 `nxos-snmp-location`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3484,9 +3889,11 @@ Manages SNMP location information.
 
 
 #### Command Example
+
 ```!nxos-snmp-location host="192.168.1.19" location="Test" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3505,19 +3912,24 @@ Manages SNMP location information.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: snmp-server location Test
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: snmp-server location Test
 
 ### nxos-snmp-traps
+
 ***
 Manages SNMP traps.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_traps_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_traps_module.html>
 
 
 #### Base Command
 
 `nxos-snmp-traps`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3536,14 +3948,16 @@ Manages SNMP traps.
 
 
 ### nxos-snmp-user
+
 ***
 Manages SNMP users for monitoring.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_user_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_user_module.html>
 
 
 #### Base Command
 
 `nxos-snmp-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3566,9 +3980,11 @@ Manages SNMP users for monitoring.
 
 
 #### Command Example
+
 ```!nxos-snmp-user host="192.168.1.19" user="ntc" group="network-operator" authentication="md5" pwd="test_password" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3587,20 +4003,25 @@ Manages SNMP users for monitoring.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: snmp-server user ntc auth md5 ********
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: snmp-server user ntc auth md5 ********
 
 
 ### nxos-static-route
+
 ***
 Manages static route configuration
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_static_route_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_static_route_module.html>
 
 
 #### Base Command
 
 `nxos-static-route`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3625,9 +4046,11 @@ Manages static route configuration
 
 
 #### Command Example
+
 ```!nxos-static-route host="192.168.1.19" prefix="1.1.1.2/24" next_hop="1.1.1.1" route_name="testing" pref="100" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3644,18 +4067,22 @@ Manages static route configuration
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Commands
 
 ### nxos-system
+
 ***
 Manage the system attributes on Cisco NXOS devices
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_system_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_system_module.html>
 
 
 #### Base Command
 
 `nxos-system`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3678,9 +4105,11 @@ Manage the system attributes on Cisco NXOS devices
 
 
 #### Command Example
+
 ```!nxos-system host="192.168.1.19" hostname="nxos01" domain_name="test.example.com" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3699,20 +4128,25 @@ Manage the system attributes on Cisco NXOS devices
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: hostname nxos01
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: hostname nxos01
 
 
 ### nxos-telemetry
+
 ***
 Telemetry Monitoring Service (TMS) configuration
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_telemetry_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_telemetry_module.html>
 
 
 #### Base Command
 
 `nxos-telemetry`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3732,9 +4166,11 @@ Telemetry Monitoring Service (TMS) configuration
 
 
 #### Command Example
+
 ```!nxos-telemetry host="192.168.1.19" state="deleted" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3752,19 +4188,24 @@ Telemetry Monitoring Service (TMS) configuration
 #### Human Readable Output
 
 ># 192.168.1.19 -  SUCCESS 
->  * changed: False
->  * ## Before
->  * ## Commands
+>
+> * changed: False
+>
+> * ## Before
+>
+> * ## Commands
 
 ### nxos-udld
+
 ***
 Manages UDLD global configuration params.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_udld_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_udld_module.html>
 
 
 #### Base Command
 
 `nxos-udld`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3789,14 +4230,16 @@ Manages UDLD global configuration params.
 
 
 ### nxos-udld-interface
+
 ***
 Manages UDLD interface configuration params.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_udld_interface_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_udld_interface_module.html>
 
 
 #### Base Command
 
 `nxos-udld-interface`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3820,14 +4263,16 @@ Manages UDLD interface configuration params.
 
 
 ### nxos-user
+
 ***
 Manage the collection of local users on Nexus devices
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_user_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_user_module.html>
 
 
 #### Base Command
 
 `nxos-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3854,9 +4299,11 @@ Manage the collection of local users on Nexus devices
 
 
 #### Command Example
+
 ```!nxos-user host="192.168.1.19" name="ansible" sshkey="ssh-rsa AAAAB3...u+DM=" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -3876,21 +4323,26 @@ Manage the collection of local users on Nexus devices
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: username ansible
->    * 1: username ansible sshkey ssh-rsa AAAAB3...u+DM=
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: username ansible
+>   * 1: username ansible sshkey ssh-rsa AAAAB3...u+DM=
 
 
 ### nxos-vlans
+
 ***
 Create VLAN and manage VLAN configurations on NX-OS Interfaces
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vlans_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_vlans_module.html>
 
 
 #### Base Command
 
 `nxos-vlans`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3911,14 +4363,16 @@ Create VLAN and manage VLAN configurations on NX-OS Interfaces
 
 
 ### nxos-vpc
+
 ***
 Manages global VPC configuration
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vpc_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_vpc_module.html>
 
 
 #### Base Command
 
 `nxos-vpc`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3948,14 +4402,16 @@ Manages global VPC configuration
 
 
 ### nxos-vpc-interface
+
 ***
 Manages interface VPC configuration
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vpc_interface_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_vpc_interface_module.html>
 
 
 #### Base Command
 
 `nxos-vpc-interface`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3976,14 +4432,16 @@ Manages interface VPC configuration
 
 
 ### nxos-vrf
+
 ***
 Manages global VRF configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_module.html>
 
 
 #### Base Command
 
 `nxos-vrf`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4010,9 +4468,11 @@ Manages global VRF configuration.
 
 
 #### Command Example
+
 ```!nxos-vrf host="192.168.1.19" name="ntc" description="testing" state="present" ```
 
 #### Context Example
+
 ```json
 {
     "CiscoNXOS": {
@@ -4034,22 +4494,27 @@ Manages global VRF configuration.
 #### Human Readable Output
 
 ># 192.168.1.19 -  CHANGED 
->  * changed: True
->  * ## Commands
->    * 0: vrf context ntc
->    * 1: description testing
->    * 2: no shutdown
->    * 3: exit
+>
+> * changed: True
+>
+> * ## Commands
+>
+>   * 0: vrf context ntc
+>   * 1: description testing
+>   * 2: no shutdown
+>   * 3: exit
 
 ### nxos-vrf-af
+
 ***
 Manages VRF AF.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_af_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_af_module.html>
 
 
 #### Base Command
 
 `nxos-vrf-af`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4070,14 +4535,16 @@ Manages VRF AF.
 
 
 ### nxos-vrf-interface
+
 ***
 Manages interface specific VRF configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_interface_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_interface_module.html>
 
 
 #### Base Command
 
 `nxos-vrf-interface`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4097,14 +4564,16 @@ Manages interface specific VRF configuration.
 
 
 ### nxos-vrrp
+
 ***
 Manages VRRP configuration on NX-OS switches.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vrrp_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_vrrp_module.html>
 
 
 #### Base Command
 
 `nxos-vrrp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4130,14 +4599,16 @@ Manages VRRP configuration on NX-OS switches.
 
 
 ### nxos-vtp-domain
+
 ***
 Manages VTP domain configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vtp_domain_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_vtp_domain_module.html>
 
 
 #### Base Command
 
 `nxos-vtp-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4159,14 +4630,16 @@ Manages VTP domain configuration.
 
 
 ### nxos-vtp-password
+
 ***
 Manages VTP password configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vtp_password_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_vtp_password_module.html>
 
 
 #### Base Command
 
 `nxos-vtp-password`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4189,14 +4662,16 @@ Manages VTP password configuration.
 
 
 ### nxos-vtp-version
+
 ***
 Manages VTP version configuration.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vtp_version_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_vtp_version_module.html>
 
 
 #### Base Command
 
 `nxos-vtp-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4218,14 +4693,16 @@ Manages VTP version configuration.
 
 
 ### nxos-vxlan-vtep
+
 ***
 Manages VXLAN Network Virtualization Endpoint (NVE).
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vxlan_vtep_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_vxlan_vtep_module.html>
 
 
 #### Base Command
 
 `nxos-vxlan-vtep`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4253,14 +4730,16 @@ Manages VXLAN Network Virtualization Endpoint (NVE).
 
 
 ### nxos-vxlan-vtep-vni
+
 ***
 Creates a Virtual Network Identifier member (VNI)
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vxlan_vtep_vni_module.html
+ Further documentation available at <https://docs.ansible.com/ansible/2.9/modules/nxos_vxlan_vtep_vni_module.html>
 
 
 #### Base Command
 
 `nxos-vxlan-vtep-vni`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4285,6 +4764,7 @@ Creates a Virtual Network Identifier member (VNI)
 
 
 ### Troubleshooting
+
 The Ansible-Runner container is not suitable for running as a non-root user.
 Therefore, the Ansible integrations will fail if you follow the instructions in [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide). 
 
@@ -4292,7 +4772,7 @@ The `docker.run.internal.asuser` server configuration causes the software that i
 
 The Ansible-Runner software is required to run as root as it applies its own isolation via bwrap to the Ansible execution environment. 
 
-This is a limitation of the Ansible-Runner software itself https://github.com/ansible/ansible-runner/issues/611.
+This is a limitation of the Ansible-Runner software itself <https://github.com/ansible/ansible-runner/issues/611>.
 
 A workaround is to use the `docker.run.internal.asuser.ignore` server setting and to configure Cortex XSOAR to ignore the Ansible container image by setting the value of `demisto/ansible-runner` and afterwards running /reset_containers to reload any containers that might be running to ensure they receive the configuration.
 

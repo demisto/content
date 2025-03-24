@@ -15,7 +15,9 @@ Use the Palo Alto Networks Wildfire integration to automatically identify unknow
 6. Get verdict regarding multiple hashes (up to 500) using the wildfire-get-verdicts command.
 
 ## Supported File Types
+
 For a list of the supported file types, see [here](https://docs.paloaltonetworks.com/advanced-wildfire/administration/advanced-wildfire-overview/advanced-wildfire-file-type-support/advanced-wildfire-file-type-support-complete#idbfe44505-f816-40db-8b28-4047bb834a8c).
+
 ## Configure WildFire v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -24,7 +26,7 @@ For a list of the supported file types, see [here](https://docs.paloaltonetworks
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server base URL (e.g., https://192.168.0.1/publicapi) |  | True |
+    | Server base URL (e.g., <https://192.168.0.1/publicapi>) |  | True |
     | API Key |  | True |
     | API Key Type | API Key product name | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
@@ -34,10 +36,14 @@ For a list of the supported file types, see [here](https://docs.paloaltonetworks
     | Create relationships | Create relationships between indicators as part of Enrichment. | False |
     
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### file
+
 ***
 Retrieve results for a file hash using WildFire
 
@@ -45,6 +51,7 @@ Retrieve results for a file hash using WildFire
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -86,17 +93,20 @@ Retrieve results for a file hash using WildFire
 
 
 #### Command Example
+
 ```!file file=735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f```
 
 #### Human Readable Output
 
 >### WildFire File Report
+>
 >|FileType|MD5|SHA256|Size|Status|
 >|---|---|---|---|---|
 >| JScript | ccdb1053f56a2d297906746bc720ef2a | 735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f | 12 | Completed |
 
 
 ### wildfire-upload
+
 ***
 Uploads a file to WildFire for analysis.
 
@@ -104,6 +114,7 @@ Uploads a file to WildFire for analysis.
 #### Base Command
 
 `wildfire-upload`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -190,17 +201,20 @@ Uploads a file to WildFire for analysis.
 | WildFire.Report.ELF.ShellCommands | string | The shell commands | 
 
 #### Command Example
+
 ```!wildfire-upload upload=294@675f238c-ed75-4cae-83d2-02b6b820168b```
 
 #### Human Readable Output
 
 >### WildFire Upload File
+>
 >|FileType|MD5|SHA256|Size|Status|
 >|---|---|---|---|---|
 >| Jscript for WSH | ccdb1053f56a2d297906746bc720ef2a | 735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f | 12 | Pending |
 
 
 ### wildfire-upload-file-url
+
 ***
 Uploads the URL of a remote file to WildFire for analysis.
 
@@ -208,6 +222,7 @@ Uploads the URL of a remote file to WildFire for analysis.
 #### Base Command
 
 `wildfire-upload-file-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -293,17 +308,20 @@ Uploads the URL of a remote file to WildFire for analysis.
 | WildFire.Report.ELF.ShellCommands | string | The shell commands | 
 
 #### Command Example
+
 ```!wildfire-upload-file-url upload=http://www.software995.net/bin/pdf995s.exe```
 
 #### Human Readable Output
 
 >### WildFire Upload File URL
+>
 >|FileType|MD5|SHA256|Size|Status|URL|
 >|---|---|---|---|---|---|
->| PE32 executable | 891b77e864c88881ea98be867e74177f | 555092d994b8838b8fa18d59df4fdb26289d146e071e831fcf0c6851b5fb04f8 | 5958304 | Pending | http://www.software995.net/bin/pdf995s.exe |
+>| PE32 executable | 891b77e864c88881ea98be867e74177f | 555092d994b8838b8fa18d59df4fdb26289d146e071e831fcf0c6851b5fb04f8 | 5958304 | Pending | <http://www.software995.net/bin/pdf995s.exe> |
 
 
 ### wildfire-report
+
 ***
 Retrieves results for a file hash using WildFire.
 
@@ -311,6 +329,7 @@ Retrieves results for a file hash using WildFire.
 #### Base Command
 
 `wildfire-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -395,17 +414,20 @@ Retrieves results for a file hash using WildFire.
 | WildFire.Report.maec_report | string | MAEC report output | 
 
 #### Command Example
+
 ```!wildfire-report url=https://www.XSOAR.com```
 
 #### Human Readable Output
 
->### Wildfire URL report for https://www.XSOAR.com
+>### Wildfire URL report for <https://www.XSOAR.com>
+>
 >|sha256|type|verdict|
 >|---|---|---|
 >| 288cd35401e334a2defc0b428d709f58d4ea28c8e9c6e47fdba88da2d6bc88a7 | wf-report | benign |
 
 
 ### wildfire-get-verdict
+
 ***
 Returns a verdict for a hash.
 
@@ -413,6 +435,7 @@ Returns a verdict for a hash.
 #### Base Command
 
 `wildfire-get-verdict`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -439,17 +462,20 @@ Returns a verdict for a hash.
 
 
 #### Command Example
+
 ```!wildfire-get-verdict hash=afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc```
 
 #### Human Readable Output
 
 >### WildFire Verdict
+>
 >|MD5|SHA256|Verdict|VerdictDescription|
 >|---|---|---|---|
 >| 0e4e3c2d84a9bc726a50b3c91346fbb1 | afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc | 1 | malware |
 
 
 ### wildfire-get-verdicts
+
 ***
 Returns a verdict regarding multiple hashes, stored in a TXT file or given as list.
 
@@ -457,6 +483,7 @@ Returns a verdict regarding multiple hashes, stored in a TXT file or given as li
 #### Base Command
 
 `wildfire-get-verdicts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -480,6 +507,7 @@ Returns a verdict regarding multiple hashes, stored in a TXT file or given as li
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -487,6 +515,7 @@ Returns a verdict regarding multiple hashes, stored in a TXT file or given as li
 
 
 ### wildfire-upload-url
+
 ***
 Uploads a URL of a webpage to WildFire for analysis.
 
@@ -496,6 +525,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `wildfire-upload-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -582,17 +612,20 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!wildfire-upload-url upload=https://www.XSOAR.com```
 
 #### Human Readable Output
 
 >### WildFire Upload URL
+>
 >|MD5|SHA256|Status|URL|
 >|---|---|---|---|
->| 67632f32e6af123aa8ffd1fe8765a783 | c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb | Pending | https://www.XSOAR.com |
+>| 67632f32e6af123aa8ffd1fe8765a783 | c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb | Pending | <https://www.XSOAR.com> |
 
 
 ### wildfire-get-sample
+
 ***
 Retrieves a sample.
 
@@ -600,6 +633,7 @@ Retrieves a sample.
 #### Base Command
 
 `wildfire-get-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -613,6 +647,7 @@ Retrieves a sample.
 There is no context output for this command.
 
 #### Command Example
+
 ```!wildfire-get-sample sha256=afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc```
 
 #### Human Readable Output
@@ -622,6 +657,7 @@ There is no human-readable output for this command.
 
 
 ### wildfire-get-url-webartifacts
+
 ***
 Get web artifacts for a URL webpage. An empty tgz will be returned, no matter what the verdict, or even if the URL is malformed.
 
@@ -631,6 +667,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `wildfire-get-url-webartifacts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -653,6 +690,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!wildfire-get-url-webartifacts url=http://royalmail-login.com```
 
 #### Human Readable Output

@@ -1,11 +1,14 @@
 This transformer will take in a value and transform it based on multiple condition expressions (wildcard, regex, etc) defined in a JSON dictionary structure.
 
 ---
+
 ##### What does this pack do?
+
 - Transform a value based on multiple condition expressions defined in a JSON dictionary structure.
 - Condition expressions support wildcard, regex, and literal.
 
 ---
+
 ## Script Data
 
 | **Name** | **Description** |
@@ -15,6 +18,7 @@ This transformer will take in a value and transform it based on multiple conditi
 
 
 ---
+
 ## Examples
 
 The key:value pair of the JSON dictionary should be:

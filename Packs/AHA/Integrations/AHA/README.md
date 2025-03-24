@@ -13,9 +13,12 @@ This integration was integrated and tested with API version December 02, 2022 re
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### aha-get-features
+
 ***
 Lists all features from service, unless a specific feature is specified.
 
@@ -23,6 +26,7 @@ Lists all features from service, unless a specific feature is specified.
 #### Base Command
 
 `aha-get-features`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -46,11 +50,13 @@ Lists all features from service, unless a specific feature is specified.
 | AHA.Feature.created_at | Date | The feature creation date. | 
 
 #### Command example
+
 ```!aha-get-features```
 ```!aha-get-features feature_name=DEMO-10 fields=workflow_status```
 ```!aha-get-features fields=workflow_status page=2 per_page=30```
 
 ### aha-edit-feature
+
 ***
 You can edit the following fields in a feature: Name and Description.
 
@@ -58,6 +64,7 @@ You can edit the following fields in a feature: Name and Description.
 #### Base Command
 
 `aha-edit-feature`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -78,9 +85,11 @@ You can edit the following fields in a feature: Name and Description.
 | AHA.Feature.created_at | Date | The feature creation date. | 
 
 #### Command example
+
 ```!aha-edit-feature feature_name=DEMO-10 fields=`{"name":"the_new_name", "status":"Closed"}```
 
 ### aha-get-ideas
+
 ***
 Lists all ideas from service, unless a specific idea is specified.
 
@@ -88,6 +97,7 @@ Lists all ideas from service, unless a specific idea is specified.
 #### Base Command
 
 `aha-get-ideas`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -111,11 +121,13 @@ Lists all ideas from service, unless a specific idea is specified.
 | AHA.Idea.created_at | Date | The idea creation date. | 
 
 #### Command example
+
 ```!aha-get-ideas```
 ```!aha-get-ideas idea_name=DEMO-I-2895```
 ```!aha-get-ideas idea_name=DEMO-I-2895 fields=workflow_status```
 
 ### aha-edit-idea
+
 ***
 Edit an idea status to Shipped.
 
@@ -123,6 +135,7 @@ Edit an idea status to Shipped.
 #### Base Command
 
 `aha-edit-idea`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -142,4 +155,5 @@ Edit an idea status to Shipped.
 | AHA.Idea.created_at | Date | The idea creation date. | 
 
 #### Command example
+
 ```!aha-edit-idea idea_name=DEMO-I-2895```

@@ -5,7 +5,7 @@ Allows you to push and pull your external data to and from the KnowBe4 console.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Your server URL |  | True |
-| API Key | The API Key to use for connection. For more information about how to generate an API Key, refer to https://support.knowbe4.com/hc/en-us/articles/360024863474-User-Event-API| True |
+| API Key | The API Key to use for connection. For more information about how to generate an API Key, refer to <https://support.knowbe4.com/hc/en-us/articles/360024863474-User-Event-API>| True |
 | First fetch time interval | The time range to consider for the initial data fetch. \(&amp;lt;number&amp;gt; &amp;lt;unit&amp;gt;, e.g., 2 days, 2 months, 2 years\). Default is 1 day. | False |
 | Events Fetch Interval | The Fetch interval. It is recommended to set it to 5 hours as there are not many events for this API and there's an api-calls daily-limit for the basic API key. | False |
 | Trust any certificate (not secure) |  | False |
@@ -19,13 +19,18 @@ Therefore, the default and recommended **Events Fetch Interval** value is 5 hour
 **First fetch time interval** is 1 day.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### kms-get-events
+
 Manual command to fetch events and display them.
+
 #### Base Command
+
 `kms-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -56,9 +61,11 @@ Manual command to fetch events and display them.
 | KMSat.Event.event_type.name | String | The name of the event type. | 
 
 #### Command example
+
 ```!kms-get-events should_push_events=false```
 
 #### Context Example
+
 ```json
 {
     "KMSat": {
@@ -95,8 +102,9 @@ Manual command to fetch events and display them.
 #### Human Readable Output
 
 >### KnowBe4 KMSAT Logs
+>
 >|AccountId|Description|EventType|Id|OccurredDate|Risk|User|
 >|---|---|---|---|---|---|---|
->| 52306 | My description lkjhy khl lgf | id: 420899085<br/>name: event_type_55<br/>description: null | 786a515c-1cbd-4a8c-a94a-61ad877c893c | 2022-08-09T10:05:13.890Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@paloaltonetworks.com<br/>id: 38651943<br/>archived: false |
->| 52306 | My description lkjhy khl lgf | id: 420894024<br/>name: event_type_2<br/>description: null | c3081dfc-1bf9-4c56-b6ff-f364f0c13d39 | 2022-08-09T10:01:45.862Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@paloaltonetworks.com<br/>id: 38651943<br/>archived: false |
->| 52306 | My description | id: 418927900<br/>name: my_custom_event<br/>description: null | 2b265035-1a12-4e76-bcb1-6c681b86333e | 2022-08-04T14:14:50.917Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@paloaltonetworks.com<br/>id: 38651943<br/>archived: false |
+>| 52306 | My description lkjhy khl lgf | id: 420899085<br/>name: event_type_55<br/>description: null | 786a515c-1cbd-4a8c-a94a-61ad877c893c | 2022-08-09T10:05:13.890Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: <maizen@paloaltonetworks.com><br/>id: 38651943<br/>archived: false |
+>| 52306 | My description lkjhy khl lgf | id: 420894024<br/>name: event_type_2<br/>description: null | c3081dfc-1bf9-4c56-b6ff-f364f0c13d39 | 2022-08-09T10:01:45.862Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: <maizen@paloaltonetworks.com><br/>id: 38651943<br/>archived: false |
+>| 52306 | My description | id: 418927900<br/>name: my_custom_event<br/>description: null | 2b265035-1a12-4e76-bcb1-6c681b86333e | 2022-08-04T14:14:50.917Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: <maizen@paloaltonetworks.com><br/>id: 38651943<br/>archived: false |

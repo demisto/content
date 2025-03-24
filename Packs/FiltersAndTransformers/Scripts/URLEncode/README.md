@@ -1,4 +1,4 @@
-Encodes a URL string by replacing special characters in the string using the %xx escape. For example: https://example.com converts to https:%2F%2Fexample.com.
+Encodes a URL string by replacing special characters in the string using the %xx escape. For example: <https://example.com> converts to https:%2F%2Fexample.com.
 
 ## Script Data
 

@@ -3912,5 +3912,6 @@ Gets the report state for the given ID.
 >| The requested environment ID "300" and file type "pdf" have no available execution environment | CLIENT | FILE_TYPE_BAD_ERROR |  | ERROR |
 
 ## Additional Notes
+
 - The CrowdStrike Environment ID 300 has been deprecated and is now EOL. It is recommended to use Environment ID 310 for Linux sandboxing.
 

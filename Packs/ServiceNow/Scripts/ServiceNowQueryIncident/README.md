@@ -1,6 +1,7 @@
 Wraps the generic `query-table` command in ServiceNow. Fields can be added to use as inputs and outputs from the record as script arguments or in the code and work with the records.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Wraps the generic `query-table` command in ServiceNow. Fields can be added to us
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * servicenow-query-table
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -24,6 +28,7 @@ This script uses the following commands and scripts.
 | assignee | The assignee name of the incident. For example, "John Smith". |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

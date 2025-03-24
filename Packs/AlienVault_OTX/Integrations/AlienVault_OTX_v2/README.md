@@ -1,4 +1,5 @@
 Query Indicators of Compromise in AlienVault OTX.
+
 ## Configure AlienVault OTX v2 in Cortex
 
 
@@ -14,9 +15,12 @@ Query Indicators of Compromise in AlienVault OTX.
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Queries an IP address in AlienVault OTX.
 
@@ -24,6 +28,7 @@ Queries an IP address in AlienVault OTX.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -54,9 +59,11 @@ Queries an IP address in AlienVault OTX.
 
 
 #### Command Example
+
 ```!ip ip=98.136.103.23```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -146,12 +153,14 @@ Queries an IP address in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for ips query
+>
 >|ASN|Address|Geo|Relationships|
 >|---|---|---|---|
 >| AS36647 YAHOO-GQ1 | 98.136.103.23 | Location: 37.751:-97.822<br/>Country: US | {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP', 'EntityB': 'T1140 - Deobfuscate/Decode Files or Information', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP', 'EntityB': 'T1040 - Network Sniffing', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP', 'EntityB': 'T1053 - Scheduled Task/Job', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP', 'EntityB': 'T1060 - Registry Run Keys / Startup Folder', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP', 'EntityB': 'T1071 - Application Layer Protocol', 'EntityBType': 'Attack Pattern'} |
 
 
 ### domain
+
 ***
 Queries a domain in AlienVault OTX.
 
@@ -159,6 +168,7 @@ Queries a domain in AlienVault OTX.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -186,9 +196,11 @@ Queries a domain in AlienVault OTX.
 
 
 #### Command Example
+
 ```!domain domain=ahnlab.myfw.us```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -244,12 +256,14 @@ Queries a domain in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for Domain query
+>
 >|Alexa|Name|Whois|
 >|---|---|---|
->| http://www.alexa.com/siteinfo/ahnlab.myfw.us | ahnlab.myfw.us | http://whois.domaintools.com/ahnlab.myfw.us |
+>| <http://www.alexa.com/siteinfo/ahnlab.myfw.us> | ahnlab.myfw.us | <http://whois.domaintools.com/ahnlab.myfw.us> |
 
 
 ### alienvault-search-ipv6
+
 ***
 Queries IPv6 in AlienVault OTX.
 
@@ -257,6 +271,7 @@ Queries IPv6 in AlienVault OTX.
 #### Base Command
 
 `alienvault-search-ipv6`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -279,9 +294,11 @@ Queries IPv6 in AlienVault OTX.
 
 
 #### Command Example
+
 ```!alienvault-search-ipv6 ip=2001:4860:4860::8888```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -371,12 +388,14 @@ Queries IPv6 in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for ips query
+>
 >|ASN|Address|Geo|Relationships|
 >|---|---|---|---|
 >| AS15169 GOOGLE | 2001:4860:4860::8888 | Location: 37.751:-97.822<br/>Country: US | {'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1071.004 - DNS', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1071.001 - Web Protocols', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1071 - Application Layer Protocol', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1071.003 - Mail Protocols', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1071.002 - File Transfer Protocols', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'TA0011 - Command and Control', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1048 - Exfiltration Over Alternative Protocol', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1041 - Exfiltration Over C2 Channel', 'EntityBType': 'Attack Pattern'} |
 
 
 ### alienvault-search-hostname
+
 ***
 Searches for a host name in AlienVault OTX.
 
@@ -384,6 +403,7 @@ Searches for a host name in AlienVault OTX.
 #### Base Command
 
 `alienvault-search-hostname`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -407,9 +427,11 @@ Searches for a host name in AlienVault OTX.
 
 
 #### Command Example
+
 ```!alienvault-search-hostname hostname=demisto.com```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -435,12 +457,14 @@ Searches for a host name in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for Hostname query
+>
 >|Alexa|Hostname|Whois|
 >|---|---|---|
->| http://www.alexa.com/siteinfo/demisto.com | demisto.com | http://whois.domaintools.com/demisto.com |
+>| <http://www.alexa.com/siteinfo/demisto.com> | demisto.com | <http://whois.domaintools.com/demisto.com> |
 
 
 ### file
+
 ***
 Query a file in AlienVault OTX.
 
@@ -448,6 +472,7 @@ Query a file in AlienVault OTX.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -479,9 +504,11 @@ Query a file in AlienVault OTX.
 
 
 #### Command Example
+
 ```!file file=6c5360d41bd2b14b1565f5b18e5c203cf512e493```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -508,12 +535,14 @@ Query a file in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for File hash query
+>
 >|MD5|Malicious|SHA1|SHA256|SSDeep|Size|Type|
 >|---|---|---|---|---|---|---|
 >| 2eb14920c75d5e73264f77cfa273ad2c | PulseIDs:  | 6c5360d41bd2b14b1565f5b18e5c203cf512e493 | 4cf9322c49adebf63311a599dc225bbcbf16a253eca59bbe1a02e4ae1d824412 |  | 437760 | PE32 executable (GUI) Intel 80386 Mono/.Net assembly, for MS Windows |
 
 
 ### alienvault-search-cve
+
 ***
 Query Common Vulnerabilities and Exposures (CVE) in AlienVault OTX.
 
@@ -521,6 +550,7 @@ Query Common Vulnerabilities and Exposures (CVE) in AlienVault OTX.
 #### Base Command
 
 `alienvault-search-cve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -545,9 +575,11 @@ Query Common Vulnerabilities and Exposures (CVE) in AlienVault OTX.
 
 
 #### Command Example
+
 ```!alienvault-search-cve cve_id=CVE-2014-0160```
 
 #### Context Example
+
 ```json
 {
     "CVE": {
@@ -570,12 +602,14 @@ Query Common Vulnerabilities and Exposures (CVE) in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for Hostname query
+>
 >|CVSS|Description|ID|Modified|Published|
 >|---|---|---|---|---|
 >| 5.0 | The (1) TLS and (2) DTLS implementations in OpenSSL 1.0.1 before 1.0.1g do not properly handle Heartbeat Extension packets, which allows remote attackers to obtain sensitive information from process memory via crafted packets that trigger a buffer over-read, as demonstrated by reading private keys, related to d1_both.c and t1_lib.c, aka the Heartbleed bug. | CVE-2014-0160 | 2020-07-28T17:11:00 | 2014-04-07T22:55:00 |
 
 
 ### alienvault-get-related-urls-by-indicator
+
 ***
 Returns related URLs by indicator.
 
@@ -583,6 +617,7 @@ Returns related URLs by indicator.
 #### Base Command
 
 `alienvault-get-related-urls-by-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -599,9 +634,11 @@ Returns related URLs by indicator.
 
 
 #### Command Example
+
 ```!alienvault-get-related-urls-by-indicator indicator=8.8.8.8 indicator_type=IPv4```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -617,12 +654,14 @@ Returns related URLs by indicator.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Related url list to queried indicator
+>
 >|Data|
 >|---|
->| https://test.com |
+>| <https://test.com> |
 
 
 ### alienvault-get-related-hashes-by-indicator
+
 ***
 Returns related hashes by indicator.
 
@@ -630,6 +669,7 @@ Returns related hashes by indicator.
 #### Base Command
 
 `alienvault-get-related-hashes-by-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -646,9 +686,11 @@ Returns related hashes by indicator.
 
 
 #### Command Example
+
 ```!alienvault-get-related-hashes-by-indicator indicator=8.8.8.8 indicator_type=IPv4```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -685,10 +727,12 @@ Returns related hashes by indicator.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Related malware list to queried indicator
+>
 >**No entries.**
 
 
 ### alienvault-get-passive-dns-data-by-indicator
+
 ***
 Returns passive DNS records by indicator.
 
@@ -696,6 +740,7 @@ Returns passive DNS records by indicator.
 #### Base Command
 
 `alienvault-get-passive-dns-data-by-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -717,9 +762,11 @@ Returns passive DNS records by indicator.
 
 
 #### Command Example
+
 ```!alienvault-get-passive-dns-data-by-indicator indicator=8.8.8.8 indicator_type=IPv4```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -746,13 +793,15 @@ Returns passive DNS records by indicator.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Related passive dns list to queried indicator
+>
 >|FirstSeen|Hostname|IP|LastSeen|Type|
 >|---|---|---|---|---|
->| 2021-04-27T09:48:48 | www.heyheyitskateforay.com | 8.8.8.8 | 2021-04-27T09:49:05 | hostname |
->| 2021-04-27T09:48:30 | www.djjimmykennedy.com | 8.8.8.8 | 2021-04-27T09:49:11 | hostname |
+>| 2021-04-27T09:48:48 | <www.heyheyitskateforay.com> | 8.8.8.8 | 2021-04-27T09:49:05 | hostname |
+>| 2021-04-27T09:48:30 | <www.djjimmykennedy.com> | 8.8.8.8 | 2021-04-27T09:49:11 | hostname |
 
 
 ### alienvault-search-pulses
+
 ***
 Searches for pulses in AlienVault OTX.
 
@@ -760,6 +809,7 @@ Searches for pulses in AlienVault OTX.
 #### Base Command
 
 `alienvault-search-pulses`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -784,9 +834,11 @@ Searches for pulses in AlienVault OTX.
 
 
 #### Command Example
+
 ```!alienvault-search-pulses page=1```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -865,6 +917,7 @@ Searches for pulses in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - pulse page 1
+>
 >|Author|Count|ID|Modified|Name|Source|SubscriberCount|
 >|---|---|---|---|---|---|---|
 >| ID: 2<br/>Username: AlienVault | 28 | 546ce8eb11d40838dc6e43f1 | 1273 days ago  | PoS Scammers Toolbox | web | 141735 |
@@ -875,6 +928,7 @@ Searches for pulses in AlienVault OTX.
 
 
 ### alienvault-get-pulse-details
+
 ***
 Returns pulse details.
 
@@ -882,6 +936,7 @@ Returns pulse details.
 #### Base Command
 
 `alienvault-get-pulse-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -903,9 +958,11 @@ Returns pulse details.
 
 
 #### Command Example
+
 ```!alienvault-get-pulse-details pulse_id=57204e9b3c4c3e015d93cb12```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -936,12 +993,14 @@ Returns pulse details.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - pulse id details
+>
 >|Author|Created|Description|ID|Name|Tags|TargetedCountries|
 >|---|---|---|---|---|---|---|
 >| Username: AlienVault | 2016-04-27T05:31:06.941000 | The infamous Remote Access Trojan (RAT) Poison Ivy (hereafter referred to as PIVY) has resurfaced recently, and exhibits some new behaviors. PIVY has been observed targeting a number of Asian countries for various purposes over the past year. Palo Alto Networks’ Unit 42 recently blogged about a new Poison Ivy variant targeting Hong Kong activists dubbed SPIVY that uses DLL sideloading and operates quite differently from a variant recently observed by ASERT that has been active for at least the past 12 months. | 57204e9b3c4c3e015d93cb12 | Poison Ivy Activity Targeting Myanmar, Asian Countries | rat,<br/>remote access trojan,<br/>poison ivy,<br/>pivy,<br/>Myanmar,<br/>asia,<br/>Hong Kong,<br/>arbornetworks |  |
 
 
 ### url
+
 ***
 Queries a URL in AlienVault OTX.
 
@@ -949,6 +1008,7 @@ Queries a URL in AlienVault OTX.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -979,9 +1039,11 @@ Queries a URL in AlienVault OTX.
 
 
 #### Command Example
+
 ```!url url="http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list"```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -1018,21 +1080,25 @@ Queries a URL in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for url query
+>
 >|Alexa|Domain|Hostname|Url|Whois|
 >|---|---|---|---|---|
->| http://www.alexa.com/siteinfo/fotoidea.com | fotoidea.com | www.fotoidea.com | http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list | http://whois.domaintools.com/fotoidea.com |
+>| <http://www.alexa.com/siteinfo/fotoidea.com> | fotoidea.com | <www.fotoidea.com> | <http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list> | <http://whois.domaintools.com/fotoidea.com> |
 
 
 ## Additional Information
- - AlienVault considers non lowercased URL protocol as invalid, e.g, HTTP://www.google.com. Hence such submissions will be lowercased to ensure a seamless usage of the integration.
+
+- AlienVault considers non lowercased URL protocol as invalid, e.g, <HTTP://www.google.com>. Hence such submissions will be lowercased to ensure a seamless usage of the integration.
 
 
 ## Dbot score calculation method
+
 In case AlienVault OTX API response contains `accepted` under the `false_positive.assessment` key, the DbotScore will be set to **Good**.
 
 Otherwise, if the response includes one validation, DbotScore will be set to **SUSPICIOUS**, if there's no validation in the response then the DbotScore will be set by the `pulse_info` length in the following manner:
-   - **Bad** - If the length of is greater or equal to the default threshold given by the user.
-   - **SUSPICIOUS** - If the length is shorter than the default threshold.
-   - **None** - If the length is zero.
+
+- **Bad** - If the length of is greater or equal to the default threshold given by the user.
+- **SUSPICIOUS** - If the length is shorter than the default threshold.
+- **None** - If the length is zero.
 
 In any other case, the DbotScore will be set to **Good**.

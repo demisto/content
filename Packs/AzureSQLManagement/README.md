@@ -1,6 +1,7 @@
 Microsoft Azure SQL Management Integration manages the Auditing and Threat Policies for Azure SQL.
 
 ## What does this pack do?
+
 - Lists all the servers.
 - Lists all of the databases of the specified server.
 - Gets the audit settings of the specified database.

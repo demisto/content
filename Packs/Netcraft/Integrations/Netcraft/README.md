@@ -12,9 +12,12 @@ An integration for Netcraft, allowing you to open and handle takedown requests.
 | Trust any certificate (not secure) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### netcraft-report-attack
+
 ***
 Reports an attack to Netcraft.
 
@@ -22,6 +25,7 @@ Reports an attack to Netcraft.
 #### Base Command
 
 `netcraft-report-attack`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -53,6 +57,7 @@ Reports an attack to Netcraft.
 | Netcraft.Takedown.IP | String | The IPv4 address of the attack. | 
 
 ### netcraft-get-takedown-info
+
 ***
 Returns information on existing takedowns. You can retrieve the takedown ID when you report the malicious URL and open the takedown, using the netcraft-report-attack command.
 
@@ -60,6 +65,7 @@ Returns information on existing takedowns. You can retrieve the takedown ID when
 #### Base Command
 
 `netcraft-get-takedown-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -95,6 +101,7 @@ Returns information on existing takedowns. You can retrieve the takedown ID when
 | Netcraft.Takedown.Certificate | Unknown | TTPS certificate details for the hostname, or null if no certificate was found. The value returned is the output of PHP's openssl_x509_parse function. | 
 
 ### netcraft-get-takedown-notes
+
 ***
 Returns notes for takedowns.
 
@@ -102,6 +109,7 @@ Returns notes for takedowns.
 #### Base Command
 
 `netcraft-get-takedown-notes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -125,6 +133,7 @@ Returns notes for takedowns.
 | Netcraft.Takedown.Note.Time | string | The date/time the note was created. Format \(UTC\): YYYY-MM-DD HH:MM:SS. | 
 
 ### netcraft-add-notes-to-takedown
+
 ***
 Adds notes to an existing takedown.
 
@@ -132,6 +141,7 @@ Adds notes to an existing takedown.
 #### Base Command
 
 `netcraft-add-notes-to-takedown`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -144,7 +154,9 @@ Adds notes to an existing takedown.
 #### Context Output
 
 There is no context output for this command.
+
 ### netcraft-escalate-takedown
+
 ***
 Escalates a takedown.
 
@@ -152,6 +164,7 @@ Escalates a takedown.
 #### Base Command
 
 `netcraft-escalate-takedown`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -126,6 +126,7 @@ The following lists the changes in this version according to the commands from t
   For more information regarding File relationships, see: <https://docs.virustotal.com/reference/files>
 
 - Starting with XSOAR version 6.8.0, You may monitor API usage via the *VirusTotal API Execution Metrics* dashboard.
+
 ### Comments
 
 In VirusTotal (API v3) you can now add comments to all indicator types (IP, Domain, File and URL) so each command now has the *resource_type* argument.
@@ -456,8 +457,11 @@ Checks the reputation of an IP address.
 | VirusTotal.IP.id | String | ID of the IP. | 
 
 #### Command example
+
 ```!ip ip=1.1.1.1```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -785,7 +789,7 @@ Checks the reputation of a URL.
 
 #### Human Readable Output
 
->### URL data of "https://example.com"
+>### URL data of "<https://example.com>"
 >
 >|Url|Title|LastModified|HasContent|LastHttpResponseContentSha256|Positives|Reputation|
 >|---|---|---|---|---|---|---|
@@ -1307,7 +1311,7 @@ Retrieves comments for a given resource.
 
 #### Human Readable Output
 
->### Virus Total comments of url: "https://paloaltonetworks.com"
+>### Virus Total comments of url: "<https://paloaltonetworks.com>"
 >
 >|Date|Text|Positive Votes|Abuse Votes|Negative Votes|
 >|---|---|---|---|---|
@@ -2566,6 +2570,7 @@ Get analysis of a private file or URL submitted to VirusTotal.
 ## VT indicator fields
 
 3 indicator fields have been added to all indicator types:
+
 - **VT Engine Detections**. Number. Number of VT vendors that flagged the indicator as malicious.
 - **VT Engine Vendors**. Array. VT vendors who flagged the indicator as malicious.
 - **VT Engine Detection Names**. Array. VT detection names that flagged the indicator as malicious.

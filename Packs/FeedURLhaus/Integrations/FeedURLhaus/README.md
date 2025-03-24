@@ -1,4 +1,5 @@
 ## URLhaus
+
 ---
 
 Fetch indicators from URLhaus api.
@@ -23,8 +24,10 @@ Fetch indicators from the URLhaus API.
 
 
 ## Commands
+
 You can execute these commands in a playbook.
 
 ### urlhaus-get-indicators
+
 ***
 Manual command to fetch events and display them.

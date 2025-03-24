@@ -1,6 +1,7 @@
 An Automation Script to Web Scrap a URL or HTML Page
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ An Automation Script to Web Scrap a URL or HTML Page
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +24,7 @@ An Automation Script to Web Scrap a URL or HTML Page
 | insecure | Ignore certificate validation errors |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -30,9 +33,11 @@ An Automation Script to Web Scrap a URL or HTML Page
 
 
 ## Script Example
+
 ```!WebScraper page_url=https://example.com navigator_tree=body```
 
 ## Context Example
+
 ```json
 {
     "WebScraper": {

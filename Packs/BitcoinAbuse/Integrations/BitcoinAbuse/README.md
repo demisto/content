@@ -90,7 +90,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Bitcoin address abcde12345 by abuse bitcoin user abuser@abuse.net was reported to BitcoinAbuse API
+>Bitcoin address abcde12345 by abuse bitcoin user <abuser@abuse.net> was reported to BitcoinAbuse API
 
 ### bitcoinabuse-get-indicators
 

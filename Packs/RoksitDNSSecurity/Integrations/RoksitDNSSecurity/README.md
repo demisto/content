@@ -6,7 +6,7 @@ This integration was integrated and tested with version 1.0.0 of Roksit DNS Secu
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. https://portal.roksit.com/api/integration/blacklist) | True |
+| Server URL (e.g. <https://portal.roksit.com/api/integration/blacklist>) | True |
 | API Key | True |
 | Trust any certificate (not secure) | False |
 
@@ -34,8 +34,11 @@ This command adds a given domain to tha Roksit blacklist.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!Roksit-add-to-blacklist Domain=dummy.com```
+
 #### Human Readable Output
 
 >dummy.com was successfully added to the blacklist.

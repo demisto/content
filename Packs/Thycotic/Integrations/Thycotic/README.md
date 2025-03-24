@@ -1,11 +1,12 @@
 Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
 This integration was integrated and tested with version 5.0 of Thycotic
+
 ## Configure Thycotic in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://example.net\) | True |
+| url | Server URL \(e.g. <https://example.net\>) | True |
 | credentials | Username | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
@@ -13,9 +14,12 @@ This integration was integrated and tested with version 5.0 of Thycotic
 | credentialobjects | List secret name for fetch credentials \(separated by commas\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### thycotic-secret-password-get
+
 ***
 Retrieved password from secret
 
@@ -23,6 +27,7 @@ Retrieved password from secret
 #### Base Command
 
 `thycotic-secret-password-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -38,9 +43,11 @@ Retrieved password from secret
 
 
 #### Command Example
+
 ```!thycotic-secret-password-get secret_id=2```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -56,6 +63,7 @@ Retrieved password from secret
 >Retrieved password by ID 2 1234567890
 
 ### thycotic-secret-username-get
+
 ***
 Retrieved username from secret
 
@@ -63,6 +71,7 @@ Retrieved username from secret
 #### Base Command
 
 `thycotic-secret-username-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -78,9 +87,11 @@ Retrieved username from secret
 
 
 #### Command Example
+
 ```!thycotic-secret-username-get secret_id=2```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -96,6 +107,7 @@ Retrieved username from secret
 >Retrieved username by ID 2 w2\w2
 
 ### thycotic-secret-search-name
+
 ***
 Search ID secret by field name
 
@@ -103,6 +115,7 @@ Search ID secret by field name
 #### Base Command
 
 `thycotic-secret-search-name`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -118,9 +131,11 @@ Search ID secret by field name
 
 
 #### Command Example
+
 ```!thycotic-secret-search-name search_name=xsoarSecret```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -140,6 +155,7 @@ Search ID secret by field name
 >5
 
 ### thycotic-secret-password-update
+
 ***
 Update password for secret
 
@@ -147,6 +163,7 @@ Update password for secret
 #### Base Command
 
 `thycotic-secret-password-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -163,9 +180,11 @@ Update password for secret
 
 
 #### Command Example
+
 ```!thycotic-secret-password-update secret_id=2 newpassword=12345```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -181,6 +200,7 @@ Update password for secret
 >Set new password for secret ID 2, set 12345
 
 ### thycotic-secret-checkout
+
 ***
 Check Out a secret
 
@@ -188,6 +208,7 @@ Check Out a secret
 #### Base Command
 
 `thycotic-secret-checkout`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -203,9 +224,11 @@ Check Out a secret
 
 
 #### Command Example
+
 ```!thycotic-secret-checkout secret_id=2```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -215,6 +238,7 @@ Check Out a secret
 >Check Out for secret ID 2, ResponseCode - None
 
 ### thycotic-secret-checkin
+
 ***
 Check In a secret
 
@@ -222,6 +246,7 @@ Check In a secret
 #### Base Command
 
 `thycotic-secret-checkin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -237,9 +262,11 @@ Check In a secret
 
 
 #### Command Example
+
 ```!thycotic-secret-checkin secret_id=13```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -282,6 +309,7 @@ Check In a secret
 
 
 ### thycotic-folder-create
+
 ***
 Create a new secret folder
 
@@ -289,6 +317,7 @@ Create a new secret folder
 #### Base Command
 
 `thycotic-folder-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -309,9 +338,11 @@ Create a new secret folder
 
 
 #### Command Example
+
 ```!thycotic-folder-create foldername="xsoarFolderTest" foldertypeid="1" parentfolderid="3"```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -338,6 +369,7 @@ Create a new secret folder
 >Create new folder - xsoarFolderTest
 
 ### thycotic-folder-search
+
 ***
 Search folder by name folder
 
@@ -345,6 +377,7 @@ Search folder by name folder
 #### Base Command
 
 `thycotic-folder-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -360,9 +393,11 @@ Search folder by name folder
 
 
 #### Command Example
+
 ```!thycotic-folder-search foldername="xsoarFolderTest"```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -382,9 +417,11 @@ Search folder by name folder
 >5
 
 #### Command Example
+
 ```!thycotic-folder-delete folder_id="18"```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -404,6 +441,7 @@ Search folder by name folder
 >Deleted folder ID: 18
 
 ### thycotic-secret-get
+
 ***
 Get secret object by ID secret
 
@@ -411,6 +449,7 @@ Get secret object by ID secret
 #### Base Command
 
 `thycotic-secret-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -426,9 +465,11 @@ Get secret object by ID secret
 
 
 #### Command Example
+
 ```!thycotic-secret-get secret_id=2```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -536,6 +577,7 @@ Get secret object by ID secret
 >{'id': 2, 'name': 'test-w2', 'secretTemplateId': 6003, 'folderId': 3, 'active': True, 'items': [{'itemId': 5, 'fileAttachmentId': None, 'filename': None, 'itemValue': '192.168.100.1', 'fieldId': 83, 'fieldName': 'Machine', 'slug': 'machine', 'fieldDescription': 'The Server or Location of the Windows Machine.', 'isFile': False, 'isNotes': False, 'isPassword': False}, {'itemId': 6, 'fileAttachmentId': None, 'filename': None, 'itemValue': 'w2\\w2', 'fieldId': 86, 'fieldName': 'Username', 'slug': 'username', 'fieldDescription': 'The Username of the Windows User.', 'isFile': False, 'isNotes': False, 'isPassword': False}, {'itemId': 7, 'fileAttachmentId': None, 'filename': None, 'itemValue': '1234567890', 'fieldId': 85, 'fieldName': 'Password', 'slug': 'password', 'fieldDescription': 'The password of the Windows User.', 'isFile': False, 'isNotes': False, 'isPassword': True}, {'itemId': 8, 'fileAttachmentId': None, 'filename': None, 'itemValue': '', 'fieldId': 84, 'fieldName': 'Notes', 'slug': 'notes', 'fieldDescription': 'Any additional notes.', 'isFile': False, 'isNotes': True, 'isPassword': False}], 'launcherConnectAsSecretId': -1, 'checkOutMinutesRemaining': 30, 'checkedOut': True, 'checkOutUserDisplayName': 'XSOAR integration', 'checkOutUserId': 3, 'isRestricted': True, 'isOutOfSync': False, 'outOfSyncReason': '', 'autoChangeEnabled': False, 'autoChangeNextPassword': '2$C$7vl8*SN@', 'requiresApprovalForAccess': False, 'requiresComment': False, 'checkOutEnabled': True, 'checkOutIntervalMinutes': -1, 'checkOutChangePasswordEnabled': False, 'accessRequestWorkflowMapId': -1, 'proxyEnabled': False, 'sessionRecordingEnabled': False, 'restrictSshCommands': False, 'allowOwnersUnrestrictedSshCommands': False, 'isDoubleLock': False, 'doubleLockId': -1, 'enableInheritPermissions': True, 'passwordTypeWebScriptId': -1, 'siteId': 1, 'enableInheritSecretPolicy': True, 'secretPolicyId': -1, 'lastHeartBeatStatus': 'Pending', 'lastHeartBeatCheck': '0001-01-01T00:00:00', 'failedPasswordChangeAttempts': 0, 'lastPasswordChangeAttempt': '0001-01-01T00:00:00', 'secretTemplateName': 'Windows Account', 'responseCodes': []}
 
 ### thycotic-secret-search
+
 ***
 Search secret ID by multiply params
 
@@ -543,6 +585,7 @@ Search secret ID by multiply params
 #### Base Command
 
 `thycotic-secret-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -584,9 +627,11 @@ Search secret ID by multiply params
 
 
 #### Command Example
+
 ```!thycotic-secret-search filter.folderId=3 filter.includeSubFolders=true filter.searchField=name filter.searchText=xsoar```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -604,6 +649,7 @@ Search secret ID by multiply params
 >Search secret [5]
 
 ### thycotic-folder-update
+
 ***
 Update a single secret folder by ID
 
@@ -611,6 +657,7 @@ Update a single secret folder by ID
 #### Base Command
 
 `thycotic-folder-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -632,9 +679,11 @@ Update a single secret folder by ID
 
 
 #### Command Example
+
 ```!thycotic-folder-update id=4 folderName="SafexsoarTest"```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -661,6 +710,7 @@ Update a single secret folder by ID
 >{'id': 4, 'folderName': 'SafexsoarTest', 'folderPath': '\\Personal Folders\\XSOAR integration\\SafexsoarTest', 'parentFolderId': 3, 'folderTypeId': 1, 'secretPolicyId': -1, 'inheritSecretPolicy': False, 'inheritPermissions': False, 'childFolders': None, 'secretTemplates': None}
 
 ### thycotic-secret-create
+
 ***
 Create new object Secret
 
@@ -668,6 +718,7 @@ Create new object Secret
 #### Base Command
 
 `thycotic-secret-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -704,9 +755,11 @@ Create new object Secret
 
 
 #### Command Example
+
 ```!thycotic-secret-create name="xsoarSecret" secretTemplateId="6003" siteId="1" checkOutEnabled=true folderId=3 machine_item="my-machine" username_item="my-username" password_item="XXXXXX@@@@@####"```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -816,6 +869,7 @@ Create new object Secret
 > object - {'id': 5, 'name': 'xsoarSecret', 'secretTemplateId': 6003, 'folderId': 3, 'active': True, 'items': [{'itemId': 19, 'fileAttachmentId': None, 'filename': None, 'itemValue': 'my-machine', 'fieldId': 83, 'fieldName': 'Machine', 'slug': 'machine', 'fieldDescription': 'The Server or Location of the Windows Machine.', 'isFile': False, 'isNotes': False, 'isPassword': False}, {'itemId': 20, 'fileAttachmentId': None, 'filename': None, 'itemValue': 'my-username', 'fieldId': 86, 'fieldName': 'Username', 'slug': 'username', 'fieldDescription': 'The Username of the Windows User.', 'isFile': False, 'isNotes': False, 'isPassword': False}, {'itemId': 21, 'fileAttachmentId': None, 'filename': None, 'itemValue': 'XXXXXX@@@@@####', 'fieldId': 85, 'fieldName': 'Password', 'slug': 'password', 'fieldDescription': 'The password of the Windows User.', 'isFile': False, 'isNotes': False, 'isPassword': True}, {'itemId': 22, 'fileAttachmentId': None, 'filename': None, 'itemValue': '', 'fieldId': 84, 'fieldName': 'Notes', 'slug': 'notes', 'fieldDescription': 'Any additional notes.', 'isFile': False, 'isNotes': True, 'isPassword': False}], 'launcherConnectAsSecretId': -1, 'checkOutMinutesRemaining': 0, 'checkedOut': False, 'checkOutUserDisplayName': '', 'checkOutUserId': 0, 'isRestricted': True, 'isOutOfSync': False, 'outOfSyncReason': '', 'autoChangeEnabled': False, 'autoChangeNextPassword': None, 'requiresApprovalForAccess': False, 'requiresComment': False, 'checkOutEnabled': True, 'checkOutIntervalMinutes': -1, 'checkOutChangePasswordEnabled': False, 'accessRequestWorkflowMapId': -1, 'proxyEnabled': False, 'sessionRecordingEnabled': False, 'restrictSshCommands': False, 'allowOwnersUnrestrictedSshCommands': False, 'isDoubleLock': False, 'doubleLockId': 0, 'enableInheritPermissions': True, 'passwordTypeWebScriptId': -1, 'siteId': 1, 'enableInheritSecretPolicy': False, 'secretPolicyId': -1, 'lastHeartBeatStatus': 'Pending', 'lastHeartBeatCheck': '0001-01-01T00:00:00', 'failedPasswordChangeAttempts': 0, 'lastPasswordChangeAttempt': '0001-01-01T00:00:00', 'secretTemplateName': 'Windows Account', 'responseCodes': []}
 
 ### thycotic-secret-delete
+
 ***
 Delete secret
 
@@ -823,6 +877,7 @@ Delete secret
 #### Base Command
 
 `thycotic-secret-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -838,9 +893,11 @@ Delete secret
 
 
 #### Command Example
+
 ```!thycotic-secret-delete id=2```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -860,6 +917,7 @@ Delete secret
 >Deleted secret ID:2
 
 ### thycotic-user-create
+
 ***
 Create a new user
 
@@ -867,6 +925,7 @@ Create a new user
 #### Base Command
 
 `thycotic-user-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -895,6 +954,7 @@ Create a new user
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -902,6 +962,7 @@ Create a new user
 
 
 ### thycotic-user-search
+
 ***
 Search, filter, sort, and page users
 
@@ -909,6 +970,7 @@ Search, filter, sort, and page users
 #### Base Command
 
 `thycotic-user-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -932,9 +994,11 @@ Search, filter, sort, and page users
 
 
 #### Command Example
+
 ```!thycotic-user-search filter.searchFields="userName" filter.searchText="xsoarUser"```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {
@@ -950,6 +1014,7 @@ Search, filter, sort, and page users
 >[]
 
 ### thycotic-user-update
+
 ***
 Update a single user by ID
 
@@ -957,6 +1022,7 @@ Update a single user by ID
 #### Base Command
 
 `thycotic-user-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -989,6 +1055,7 @@ Update a single user by ID
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -996,6 +1063,7 @@ Update a single user by ID
 
 
 ### thycotic-user-delete
+
 ***
 Delete a user by ID
 
@@ -1003,6 +1071,7 @@ Delete a user by ID
 #### Base Command
 
 `thycotic-user-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1018,6 +1087,7 @@ Delete a user by ID
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -1025,6 +1095,7 @@ Delete a user by ID
 
 
 ### thycotic-secret-rpc-changepassword
+
 ***
 Change a secret's password
 
@@ -1032,6 +1103,7 @@ Change a secret's password
 #### Base Command
 
 `thycotic-secret-rpc-changepassword`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1048,9 +1120,11 @@ Change a secret's password
 
 
 #### Command Example
+
 ```!thycotic-secret-rpc-changepassword secret_id=4 newPassword="Test000"```
 
 #### Context Example
+
 ```json
 {
     "Thycotic": {

@@ -17,9 +17,12 @@ which utilizes the [EXO v2 module](https://docs.microsoft.com/en-us/powershell/e
 | The application ID from the Azure portal |  | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ews-mailbox-list
+
 ***
 Displays mailbox objects and attributes, populate property pages, or supplies mailbox information to other tasks.
 
@@ -27,6 +30,7 @@ Displays mailbox objects and attributes, populate property pages, or supplies ma
 #### Base Command
 
 `ews-mailbox-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -69,9 +73,11 @@ Displays mailbox objects and attributes, populate property pages, or supplies ma
 
 
 #### Command Example
+
 ```!ews-mailbox-list limit=1```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -103,12 +109,14 @@ Displays mailbox objects and attributes, populate property pages, or supplies ma
 #### Human Readable Output
 
 >### Results of ews-mailbox-list
+>
 >| Alias | DisplayName | DistinguishedName | EmailAddresses | ExchangeVersion | ExternalDirectoryObjectId | Guid | Id | Identity | Name | OrganizationId | PrimarySmtpAddress | RecipientType | RecipientTypeDetails | UserPrincipalName
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| "user" | "User User" | "CN=user,OU=example.com,OU=Microsoft Exchange Hosted Organizations,DC=EURPR07A005,DC=PROD,DC=OUTLOOK,DC=COM" | \["SPO:SPO\_cac4b654\-5fcf\-44f0\-818e\-479cf8ae42ac@SPO\_SP01","SIP:user@example.com","SMTP:user@example.com"\] | "0.20 \(15.0.0\)" | "3fa9f28b\-eb0e\-463a\-ba7b\-8089fe9991e2" | \{"value":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda","Guid":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda"\} | "user" | "user" | "user" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | "user@example.com" | "UserMailbox" | "UserMailbox" | "user@example.com"
+>| "user" | "User User" | "CN=user,OU=example.com,OU=Microsoft Exchange Hosted Organizations,DC=EURPR07A005,DC=PROD,DC=OUTLOOK,DC=COM" | \["SPO:SPO\_cac4b654\-5fcf\-44f0\-818e\-479cf8ae42ac@SPO\_SP01","SIP:user@example.com","SMTP:user@example.com"\] | "0.20 \(15.0.0\)" | "3fa9f28b\-eb0e\-463a\-ba7b\-8089fe9991e2" | \{"value":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda","Guid":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda"\} | "user" | "user" | "user" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | "<user@example.com>" | "UserMailbox" | "UserMailbox" | "<user@example.com>"
 
 
 ### ews-cas-mailbox-list
+
 ***
 Displays Client Access settings that are configured on mailboxes.
 
@@ -116,6 +124,7 @@ Displays Client Access settings that are configured on mailboxes.
 #### Base Command
 
 `ews-cas-mailbox-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -151,9 +160,11 @@ Displays Client Access settings that are configured on mailboxes.
 
 
 #### Command Example
+
 ```!ews-cas-mailbox-list limit=1```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -187,11 +198,13 @@ Displays Client Access settings that are configured on mailboxes.
 #### Human Readable Output
 
 >### Results of ews-cas-mailbox-list
+>
 >| ActiveSyncEnabled | DisplayName | ECPEnabled | EmailAddresses | EwsEnabled | ExchangeVersion | ExternalDirectoryObjectId | Guid | Identity | ImapEnabled | MAPIEnabled | Name | OrganizationId | OWAEnabled | PopEnabled | PrimarySmtpAddress | ServerLegacyDN
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| true | "User User" | true | \["SPO:SPO\_cac4b654\-5fcf\-44f0\-818e\-479cf8ae42ac@SPO\_SP01","SIP:user@example.com","SMTP:user@example.com"\] | true | "0.20 \(15.0.0\)" | "3fa9f28b\-eb0e\-463a\-ba7b\-8089fe9991e2" | \{"value":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda","Guid":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda"\} | "user" | true | true | "user" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | true | true | "user@example.com" | "/o=ExchangeLabs/ou=Exchange Administrative Group \(FYDIBOHF23SPDLT\)/cn=Configuration/cn=Servers/cn=DBXPR07MB383
+>| true | "User User" | true | \["SPO:SPO\_cac4b654\-5fcf\-44f0\-818e\-479cf8ae42ac@SPO\_SP01","SIP:user@example.com","SMTP:user@example.com"\] | true | "0.20 \(15.0.0\)" | "3fa9f28b\-eb0e\-463a\-ba7b\-8089fe9991e2" | \{"value":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda","Guid":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda"\} | "user" | true | true | "user" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | true | true | "<user@example.com>" | "/o=ExchangeLabs/ou=Exchange Administrative Group \(FYDIBOHF23SPDLT\)/cn=Configuration/cn=Servers/cn=DBXPR07MB383
 
 ### ews-mailbox-permission-list
+
 ***
 Retrieves permissions on a mailbox.
 
@@ -199,6 +212,7 @@ Retrieves permissions on a mailbox.
 #### Base Command
 
 `ews-mailbox-permission-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -220,9 +234,11 @@ Retrieves permissions on a mailbox.
 
 
 #### Command Example
+
 ```!ews-mailbox-permission-list identity=user```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -249,11 +265,13 @@ Retrieves permissions on a mailbox.
 #### Human Readable Output
 
 >### Results of ews-mailbox-permission-list
+>
 >| AccessRights | Deny | Identity | InheritanceType | IsInherited | User
 >| --- | --- | --- | --- | --- | ---
 >| \["FullAccess","ReadPermission"\] | \{"IsPresent":false\} | "user" | "All" | false | "NT AUTHORITY\\SELF"
 
 ### ews-recipient-permission-list
+
 ***
 Displays information about SendAs permissions that are configured for users.
 
@@ -261,6 +279,7 @@ Displays information about SendAs permissions that are configured for users.
 #### Base Command
 
 `ews-recipient-permission-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -282,9 +301,11 @@ Displays information about SendAs permissions that are configured for users.
 
 
 #### Command Example
+
 ```!ews-recipient-permission-list identity=<Guid>```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -305,11 +326,13 @@ Displays information about SendAs permissions that are configured for users.
 #### Human Readable Output
 
 >### Results of ews-mailbox-permission-list
+>
 >| AccessRights | Deny | Identity | InheritanceType | IsInherited | User
 >| --- | --- | --- | --- | --- | ---
 >| \["FullAccess","ReadPermission"\] | \{"IsPresent":false\} | "user" | "All" | false | "NT AUTHORITY\\SELF"
 
 ### ews-recipient-list
+
 ***
 Displays existing recipient objects in your organization. This command returns all mail-enabled objects (for example, mailboxes, mail users, mail contacts, and distribution groups).
 
@@ -317,6 +340,7 @@ Displays existing recipient objects in your organization. This command returns a
 #### Base Command
 
 `ews-recipient-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -344,9 +368,11 @@ Displays existing recipient objects in your organization. This command returns a
 
 
 #### Command Example
+
 ```!ews-recipient-list identity=<ExternalDirectoryObjectId>```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -375,14 +401,16 @@ Displays existing recipient objects in your organization. This command returns a
 #### Human Readable Output
 
 >### Results of ews-recipient-list
+>
 >| Alias | DisplayName | DistinguishedName | EmailAddresses | ExchangeVersion | ExternalDirectoryObjectId | Identity | Name | OrganizationId | PrimarySmtpAddress | RecipientType | RecipientTypeDetails
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| "user" | "user" | "CN=user\_Identity,OU=example.com,OU=Microsoft Exchange Hosted Organizations,DC=EURPR07A005,DC=PROD,DC=OUTLOOK,DC=COM" | \["SPO:SPO\_SP00@SPO\_SP01","SMTP:user@example.com"\] | "0.10 \(14.0.100\)" | "Identity" | "user\_Identity" | "user\_Identity" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | "user@example.com" | "MailUniversalDistributionGroup" | "GroupMailbox"
+>| "user" | "user" | "CN=user\_Identity,OU=example.com,OU=Microsoft Exchange Hosted Organizations,DC=EURPR07A005,DC=PROD,DC=OUTLOOK,DC=COM" | \["SPO:SPO\_SP00@SPO\_SP01","SMTP:user@example.com"\] | "0.10 \(14.0.100\)" | "Identity" | "user\_Identity" | "user\_Identity" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | "<user@example.com>" | "MailUniversalDistributionGroup" | "GroupMailbox"
 
 
 
 
 ### ews-new-tenant-allow-block-list-items
+
 ***
 Add new items to the Tenant Allow/Block Lists.  Uses PowerShell New-TenantAllowBlockListItems cmdlet.
 
@@ -392,6 +420,7 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 #### Base Command
 
 `ews-new-tenant-allow-block-list-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -428,9 +457,11 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 
 
 #### Command Example
+
 ```!ews-new-tenant-allow-block-list-items action=Block list_type=sender entries="attacker@phishingsite.com" notes="Email observed in a phishing campaign."```
 
 #### Context Example
+
 ```json
 {
     "Action": "Block",
@@ -455,13 +486,15 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 #### Human Readable Output
 
 >### Results of ews-new-tenant-allow-block-list-items
+
 | Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | New | outlook.office365.com | false | \{"value":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3","Guid":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3"\} |  | false | attacker@phishingsite.com
+| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | New | outlook.office365.com | false | \{"value":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3","Guid":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3"\} |  | false | <attacker@phishingsite.com>
 
 
 
 ### ews-get-tenant-allow-block-list-items
+
 ***
 Retrieve current Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
 
@@ -471,6 +504,7 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 #### Base Command
 
 `ews-get-tenant-allow-block-list-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -506,9 +540,11 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 
 
 #### Command Example
+
 ```!ews-get-tenant-allow-block-list-items action=Block list_type=sender```
 
 #### Context Example
+
 ```json
 [
     {
@@ -533,13 +569,16 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 ```
 
 #### Human Readable Output
+
 ### Results of ews-get-tenant-allow-block-list-items
+
 | Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | Unchanged | outlook.office365.com | false | \{"value":"feada07c\-99b7\-48e9\-a562\-a755073522ff","Guid":"feada07c\-99b7\-48e9\-a562\-a755073522ff"\} |  | false | attacker@phishingsite.com
+| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | Unchanged | outlook.office365.com | false | \{"value":"feada07c\-99b7\-48e9\-a562\-a755073522ff","Guid":"feada07c\-99b7\-48e9\-a562\-a755073522ff"\} |  | false | <attacker@phishingsite.com>
 
 
 ### ews-get-tenant-allow-block-list-count
+
 ***
 Retrieve current count of defined Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
 
@@ -549,6 +588,7 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 #### Base Command
 
 `ews-get-tenant-allow-block-list-count`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -567,9 +607,11 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 
 
 #### Command Example
+
 ```!ews-get-tenant-allow-block-list-count list_type=sender```
 
 #### Context Example
+
 ```json
 {
     "Count": 2,
@@ -579,13 +621,16 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 ```
 
 #### Human Readable Output
+
 ### Results of ews-get-tenant-allow-block-list-count
+
 | Count | ListSubType | ListType
 | --- | --- | ---
 | 2 | Tenant | sender
 
 
 ### ews-remove-tenant-allow-block-list-items
+
 ***
 Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
 
@@ -595,6 +640,7 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 #### Base Command
 
 `ews-remove-tenant-allow-block-list-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -627,9 +673,11 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 | EWS.RemovedTenantBlocks.Value | String | The value of the entry that was removed |
 
 #### Command Example
+
 ```!ews-remove-tenant-allow-block-list-items list_type=sender entries="attacker2@phishingsite.com"```
 
 #### Context Example
+
 ```json
 {
     "Action": "0",
@@ -652,7 +700,9 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 ```
 
 #### Human Readable Output
+
 ### Results of ews-remove-tenant-allow-block-list-items
+
 | Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-| 0 |  |  |  |  |  |  |  |  | Deleted | outlook.office365.com | false | \{"value":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c","Guid":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c"\} |  |  | attacker@phishingsite.com
+| 0 |  |  |  |  |  |  |  |  | Deleted | outlook.office365.com | false | \{"value":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c","Guid":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c"\} |  |  | <attacker@phishingsite.com>

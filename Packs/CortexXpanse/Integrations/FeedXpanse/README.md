@@ -6,8 +6,8 @@ This integration was integrated and tested with version 2.5 of Cortex Xpanse.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The web UI with \`api-\` appended to front \(e.g., https://api-xsiam.paloaltonetworks.com\). For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
-| API Key ID | For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.  Only standard API key type is supported. | True |
+| Server URL | The web UI with \`api-\` appended to front \(e.g., <https://api-xsiam.paloaltonetworks.com\>). For more information, see <https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis>. | True |
+| API Key ID | For more information, see <https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis>.  Only standard API key type is supported. | True |
 | API Key |  | True |
 | Fetch indicators |  | False |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
@@ -52,8 +52,11 @@ Retrieves a limited number of indicators.
 | ASM.Indicators.Type | String | The type of the indicator. | 
 
 #### Command example
+
 ```!xpanse-get-indicators limit=1 ip=yes certificate=no domain=no```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -69,6 +72,7 @@ Retrieves a limited number of indicators.
 #### Human Readable Output
 
 >### Xpanse indicators
+>
 >|Name|Type|Description|
 >|---|---|---|
 >| 1.1.1.1 | IP | 1.1.1.1 indicator of asset type IP from Cortex Xpanse |

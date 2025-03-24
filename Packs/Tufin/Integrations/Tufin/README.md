@@ -1,16 +1,21 @@
 ## Overview
+
 ---
 
 Retrieve and analyze network access controls across Tufin-managed firewalls, SDN, and public cloud to identify vulnerable access paths of an attack
 This integration was integrated and tested with version 19.3 of Tufin Orchestration Suite
+
 ## Tufin Playbook
+
 ---
 
 ## Use Cases
+
 ---
 Gather network intelligence from SecureTrack and SecureApp, perform topology queries in SecureTrack, and submit change tickets from SecureChange.
 
 ## Configure Tufin on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -23,13 +28,17 @@ Gather network intelligence from SecureTrack and SecureApp, perform topology que
     * __Use system proxy settings__
     * __Maximum number of rules returned from device durring a policy search__
 4. Click __Test__ to validate the URLs, token, and connection.
+
 ## Fetched Incidents Data
+
 ---
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. tufin-search-topology
 2. tufin-search-topology-image
 3. tufin-object-resolve
@@ -40,16 +49,19 @@ After you successfully execute a command, a DBot message appears in the War Room
 8. tufin-get-change-info
 9. tufin-search-applications
 10. tufin-search-application-connections
+
 ### 1. tufin-search-topology
+
 ---
 Search the Tufin Topology Map
 
 ##### Base Command
 
 `tufin-search-topology`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | source | Source address/addresses (may contain multiple, comma separated values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33 | Required | 
 | destination | Destination address/addresses (may contain multiple, comma separated values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33 | Required | 
@@ -58,27 +70,32 @@ Search the Tufin Topology Map
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Tufin.Topology.TrafficAllowed | boolean | Traffic Permitted | 
 | Tufin.Topology.TrafficDevices | string | List of devices in path | 
 
 
 ##### Command Example
+
 ```!tufin-search-topology destination=10.2.2.0/24 source=192.168.60.0/24```
 
 ##### Human Readable Output
+
 ![image](../../doc_files/tufin-search-topology.png)
 
 ### 2. tufin-search-topology-image
+
 ---
 Search the Tufin Topology Map, returning an image
+
 ##### Base Command
 
 `tufin-search-topology-image`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | source | Source address/addresses (may contain multiple, comma separated values) | Required | 
 | destination | Destination address/addresses (may contain multiple, comma separated values) | Required | 
@@ -90,103 +107,119 @@ Search the Tufin Topology Map, returning an image
 There is no context output for this command.
 
 ##### Command Example
+
 ```!tufin-search-topology-image destination=10.2.2.0/24 source=192.168.60.0/24```
 
 ##### Human Readable Output
+
 ![image](../../doc_files/tufin-search-topology-image.png)
 
 ### 3. tufin-object-resolve
+
 ---
 Resolve IP address to Network Object
 
 ##### Base Command
 
 `tufin-object-resolve`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | ip | IP Address to Resolve to Network Object | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Tufin.ObjectResolve.NumberOfObjects | number | Number of objects that resolve to given IP address. | 
 
 
 ##### Command Example
+
 ```!tufin-object-resolve ip=10.3.3.3```
 
 ##### Human Readable Output
+
 ![image](../../doc_files/tufin-resolve-object.png)
 
 ### 4. tufin-policy-search
+
 ---
 Search the policies of all devices managed by Tufin
 
 ##### Base Command
 
 `tufin-policy-search`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | search | The text format is for a field is fieldname:text for example source:192.168.1.1 or bareword for free text search. See the search info documentation in Securetrack Policy Browser page for more information. | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Tufin.Policysearch.NumberRulesFound | number | Number of rules found via search | 
 
 
 ##### Command Example
+
 ```!tufin-policy-search search="source:192.168.1.1"```
 
 ##### Human Readable Output
+
 ![image](../../doc_files/tufin-search-policies.png)
 
 ### 5. tufin-get-zone-for-ip
+
 ---
 Match the IP address to the assigned Tufin Zone
 
 ##### Base Command
 
 `tufin-get-zone-for-ip`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | ip | IP Address | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Tufin.Zone.ID | string | Tufin Zone ID | 
 | Tufin.Zone.Name | unknown | Tufin Zone Name | 
 
 
 ##### Command Example
+
 ```!tufin-get-zone-for-ip ip=10.10.12.1```
 
 ##### Human Readable Output
+
 ![image](../../doc_files/tufin-get-zone-for-ip.png)
 
 ### 6. tufin-submit-change-request
+
 ---
 Submit a change request to SecureChange
 
 ##### Base Command
 
 `tufin-submit-change-request`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | request-type | Request Type | Required | 
 | priority | Request Priority | Required | 
@@ -201,27 +234,31 @@ Submit a change request to SecureChange
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Tufin.Request.Status | unknown | Status of the request submission | 
 
 
 ##### Command Example
+
 ```!tufin-submit-change-request request-type="Decommission Request" priority=High source=192.168.1.1 subject="This host is infected with ransomware"```
 
 ##### Human Readable Output
+
 ![image](../../doc_files/tufin-submit-change-request.png)
 
 ### 7. tufin-search-devices
+
 ---
 Search SecureTrack devices
 
 ##### Base Command
 
 `tufin-search-devices`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | name | Device name | Optional | 
 | ip | Device IP | Optional | 
@@ -231,7 +268,7 @@ Search SecureTrack devices
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Tufin.Device.ID | unknown | Device ID | 
 | Tufin.Device.Name | unknown | Device name | 
@@ -241,28 +278,32 @@ Search SecureTrack devices
 
 
 ##### Command Example
+
 ```!tufin-search-devices vendor=Cisco```
 
 ##### Human Readable Output
+
 ![image](../../doc_files/tufin-search-devices.png)
 
 ### 8. tufin-get-change-info
+
 ---
 Get information on a SecureChange Ticket (Ticket ID retrieved from Tufin UI)
 
 ##### Base Command
 
 `tufin-get-change-info`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | ticket-id | SecureChange Ticket ID | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Tufin.Ticket.ID | unknown | Ticket ID | 
 | Tufin.Ticket.Subject | unknown | Ticket subject | 
@@ -275,28 +316,32 @@ Get information on a SecureChange Ticket (Ticket ID retrieved from Tufin UI)
 
 
 ##### Command Example
+
 ```!tufin-get-change-info ticket-id=250```
 
 ##### Human Readable Output
+
 ![image](../../doc_files/tufin-get-change-info.png)
 
 ### 9. tufin-search-applications
+
 ---
 Search SecureApp applications
 
 ##### Base Command
 
 `tufin-search-applications`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | name | Application name | Optional | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Tufin.App.ID | unknown | Application ID | 
 | Tufin.App.Name | unknown | Application name | 
@@ -308,28 +353,32 @@ Search SecureApp applications
 
 
 ##### Command Example
+
 ```!tufin-search-applications name="3Rivers"```
 
 ##### Human Readable Output
+
 ![image](../../doc_files/tufin-search-applications.png)
 
 ### 10. tufin-search-application-connections
+
 ---
 Get SecureApp application connections
 
 ##### Base Command
 
 `tufin-search-application-connections`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | application-id | Application ID | Required | 
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Tufin.AppConnections.ID | unknown | Connection ID | 
 | Tufin.AppConnections.Name | unknown | Connection name | 
@@ -347,11 +396,14 @@ Get SecureApp application connections
 
 
 ##### Command Example
+
 ```!tufin-search-application-connections app_id=215```
 
 ##### Human Readable Output
+
 ![image](../../doc_files/tufin-search-application-connections.png)
 
 ## Troubleshooting
+
 ---
-Contact Tufin support via the Tufin User Portal, or by going to https://www.tufin.com/support
+Contact Tufin support via the Tufin User Portal, or by going to <https://www.tufin.com/support>

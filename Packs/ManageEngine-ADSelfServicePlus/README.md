@@ -1,11 +1,15 @@
 <~XSIAM>
+
 # ManageEngine ADSelfService Plus
+
 This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
+
 You need to configure ManageEngine ADSelfService Plus to forward Syslog messages to Cortex XSIAM.
 
 Follow the below steps:
+
 1. Log in to ADSelfService Plus as default Admin.
 2. Navigate to **Admin** > **Product Settings** > **Integration Settings**.
 3. Click the **Syslog Server** tile.
@@ -20,9 +24,11 @@ Time parsing is based on "TIME" field (UTC epoch).
 For additional information, refer to the official ManageEngine [documentation](https://www.manageengine.com/products/self-service-password/kb/siem-system-integration.html).
 
 ## Collect Events from Vendor
+
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.

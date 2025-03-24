@@ -3,6 +3,7 @@ These days when modern applications are moving to cloud computing, access often 
 This pack provides the necessary configuration and checks for determining the legitimacy of remote access attempts, and takes appropriate steps to quickly contain any malicious user activity.
 
 ##### What does this pack do?
+
 - Gathers IP-based information from the addresses used to initiate the connections
 - Retrieves information about the user account that initiated the connections
 - Calculates the time and distance between user login attempts

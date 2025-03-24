@@ -7,6 +7,7 @@ To ingest feeds via MISP, you must first configure a MISP instance and have the 
 To ingest specific feeds (Bambenek Consulting Feed, BruteForceBlocker Feed, etc.) directly to TIM without any authorization, you can use one of our dedicated feed content packs available in Marketplace. 
 
 To ingest feeds via a URL, you could use one of the following content packs:
+
 - CSV Feed
 - JSON Feed
 - Plain Text Feed
@@ -34,9 +35,12 @@ To ingest feeds via a URL, you could use one of the following content packs:
 | Tags | Supports CSV values. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### misp-feed-get-indicators
+
 ***
 Gets indicators from the feed.
 
@@ -44,6 +48,7 @@ Gets indicators from the feed.
 #### Base Command
 
 `misp-feed-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -109,15 +114,19 @@ Gets indicators from the feed.
 ```
 
 #### Command Example
+
 ``` !misp-feed-get-indicators tags=tlp:% attribute_type=ip-src ```
 
 #### Human Readable Output
+
 Retrieved 7 indicators.
 
 ## Additional Information
+
 If you experience a timeout error while fetching indicators, the following query configuration may be helpful for you.
 
 You can configure the feed to return results from the last 24 hours as shown below:
+
 ```json
 {
     "returnFormat": "json",
@@ -131,4 +140,4 @@ You can configure the feed to return results from the last 24 hours as shown bel
 }
 ```
 
-Both of the above queries can be modified however you would like depending on your specific use case. Additional information can be found here https://www.misp-project.org/openapi/#tag/Attributes/operation/restSearchAttributes
+Both of the above queries can be modified however you would like depending on your specific use case. Additional information can be found here <https://www.misp-project.org/openapi/#tag/Attributes/operation/restSearchAttributes>

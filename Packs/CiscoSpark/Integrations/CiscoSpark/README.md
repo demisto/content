@@ -6,7 +6,7 @@ This integration was integrated and tested with version 6.2.0 of Cisco Spark
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. https://192.168.0.1) | True |
+| Server URL (e.g. <https://192.168.0.1>) | True |
 | API Key | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
@@ -66,6 +66,7 @@ Create a new user account for a given organization. Only an admin can create a n
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-get-person-details
 
 ***
@@ -84,6 +85,7 @@ Shows details for a person, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-update-person
 
 ***
@@ -110,6 +112,7 @@ Update details for a person, by ID. Only an admin can update a person details.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-delete-person
 
 ***
@@ -128,6 +131,7 @@ Remove a person from the system. Only an admin can remove a person.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-get-own-details
 
 ***
@@ -145,6 +149,7 @@ Show the profile for the authenticated user.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-list-rooms
 
 ***
@@ -187,6 +192,7 @@ Creates a room.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-get-room-details
 
 ***
@@ -205,6 +211,7 @@ Shows details for a room, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-update-room
 
 ***
@@ -224,6 +231,7 @@ There is no context output for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-delete-room
 
 ***
@@ -242,6 +250,7 @@ Deletes a room, by ID. Deleted rooms cannot be recovered.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-list-memberships
 
 ***
@@ -287,6 +296,7 @@ Add someone to a room by Person ID or email address; optionally making them a mo
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-get-membership-details
 
 ***
@@ -305,6 +315,7 @@ Get details for a membership by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-update-membership
 
 ***
@@ -324,6 +335,7 @@ Updates properties for a membership by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-delete-membership
 
 ***
@@ -342,6 +354,7 @@ Deletes a membership by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-list-messages
 
 ***
@@ -390,6 +403,7 @@ Posts a plain text message, and optionally, a media content attachment, to a roo
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-get-message-details
 
 ***
@@ -408,6 +422,7 @@ Shows details for a message, by message ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-delete-message
 
 ***
@@ -426,6 +441,7 @@ Deletes a message, by message ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-list-teams
 
 ***
@@ -465,6 +481,7 @@ Creates a team. The authenticated user is automatically added as a member of the
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-get-team-details
 
 ***
@@ -483,6 +500,7 @@ Shows details for a team, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-update-team
 
 ***
@@ -502,6 +520,7 @@ Updates details for a team, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-delete-team
 
 ***
@@ -520,6 +539,7 @@ Deletes a team, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-list-team-memberships
 
 ***
@@ -563,6 +583,7 @@ Add someone to a team by Person ID or email address; optionally making them a mo
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-get-team-membership-details
 
 ***
@@ -581,6 +602,7 @@ Shows details for a team membership, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-update-team-membership
 
 ***
@@ -600,6 +622,7 @@ Updates a team membership, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-delete-team-membership
 
 ***
@@ -618,6 +641,7 @@ Deletes a team membership, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-list-webhooks
 
 ***
@@ -662,6 +686,7 @@ Creates a webhook.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-get-webhook-details
 
 ***
@@ -680,6 +705,7 @@ Shows details for a webhook, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-update-webhook
 
 ***
@@ -700,6 +726,7 @@ Updates a webhook, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-delete-webhook
 
 ***
@@ -718,6 +745,7 @@ Deletes a webhook, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-list-organizations
 
 ***
@@ -757,6 +785,7 @@ Shows details for an organization, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-list-licenses
 
 ***
@@ -797,6 +826,7 @@ Shows details for a license, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-list-roles
 
 ***
@@ -836,6 +866,7 @@ Shows details for a role, by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-send-message-to-person
 
 ***
@@ -858,6 +889,7 @@ Sends a message to a person, by email or person ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-spark-send-message-to-room
 
 ***

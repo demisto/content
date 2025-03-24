@@ -143,6 +143,7 @@ Searches Shodan using facets to get summary information on properties.
 #### Human Readable Output
 
 >Search results for query "country:HK org:RLL-HK -port:80 -port:443 -port:21 -port:25 has_ssl:false" - page 1, facets: None
+>
 >|IP|Port|Timestamp|
 >|---|---|---|
 >| 1.2.3.4 | 5353 | 2021-08-17T03:13:54.617598 |
@@ -249,6 +250,7 @@ Returns all services that have been found on the IP address of the searched host
 #### Human Readable Output
 
 >Shodan details for IP 8.8.8.8
+>
 >|ASN|Country|Hostname|ISP|Location|Ports|
 >|---|---|---|---|---|---|
 >| AS15169 | United States | dns.google | Google LLC | 37.406,-122.078 | 53 |
@@ -343,6 +345,7 @@ Requests Shodan to crawl a network.
 #### Human Readable Output
 
 >Scanning results for scan wQEp0bIIEHklpAwa
+>
 >|ID|Status|
 >|---|---|
 >| wQEp0bIIEHklpAwa | PROCESSING |
@@ -426,6 +429,7 @@ Checks the progress of a previously submitted scan request on the specified port
 #### Human Readable Output
 
 >Scanning results for scan 7rbp1CAtx91BMwcg
+>
 >|ID|Status|
 >|---|---|
 >| 7rbp1CAtx91BMwcg | DONE |
@@ -478,6 +482,7 @@ Creates a network alert for a defined IP address or netblock used for subscribin
 #### Human Readable Output
 
 >Alert ID CB68M776ICCMS36L
+>
 >|Expires|IP|Name|
 >|---|---|---|
 >| 0 | 1.1.1.1 | test_alert |
@@ -528,6 +533,7 @@ Gets the details of a network alert.
 #### Human Readable Output
 
 >Alert ID 0EKRH38BBQEHTQ3E
+>
 >|Expires|IP|Name|
 >|---|---|---|
 >| 0 | 1.2.3.4 | test_alert |
@@ -595,6 +601,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >Alert ID VXGB6CZ536X5AWE6
+>
 >|Expires|IP|Name|
 >|---|---|---|
 >| 0 | 1.1.1.1 | test_alert |
@@ -750,6 +757,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Removed service "1.1.1.1:80" for trigger any in alert 0EKRH38BBQEHTQ3E from the allow list
+>
 ### shodan-get-events
 
 ***

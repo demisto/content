@@ -14,9 +14,12 @@ This integration was integrated and tested with version 3.3.0 of RunZero
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### runzero-asset-search
+
 ***
 Get assets.
 
@@ -24,12 +27,13 @@ Get assets.
 #### Base Command
 
 `runzero-asset-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | asset_ids | A comma-separated list of asset IDs. | Optional | 
-| search | The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional | 
+| search | The query by which to search. For information on the syntax, see: <https://www.runzero.com/docs/runzero-manual.pdf> page 288. | Optional | 
 | ips | A comma-separated list of IP addresses. | Optional | 
 | hostnames | A comma-separated list of hostnames. | Optional | 
 | display_attributes | Whether to include the attributes section in the returned result. Possible values are: True, False. | Optional | 
@@ -73,8 +77,11 @@ Get assets.
 | RunZero.Asset.Site | String | Asset site name. | 
 
 #### Command example
+
 ```!runzero-asset-search```
+
 #### Context Example
+
 ```json
 {
     "RunZero": {
@@ -192,14 +199,18 @@ Get assets.
 #### Human Readable Output
 
 >### Asset
+>
 >|ARP|Addresses|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|RTT/ms|SW|Site|Sources|Svcs|TCP|Tags|Type|UDP|Vulns|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 192.168.1.91,<br/>fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | bf707048-7ce9-4249-a58c-0aaa257d69f0 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0.84 | 2 | Primary | runZero | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | Server | 4 | 0 |
 
 
 #### Command example
+
 ```!runzero-asset-search hostnames=RHEL85```
+
 #### Context Example
+
 ```json
 {
     "RunZero": {
@@ -317,14 +328,18 @@ Get assets.
 #### Human Readable Output
 
 >### Asset
+>
 >|ARP|Addresses|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|RTT/ms|SW|Site|Sources|Svcs|TCP|Tags|Type|UDP|Vulns|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 192.168.1.91,<br/>fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | bf707048-7ce9-4249-a58c-0aaa257d69f0 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0.84 | 2 | Primary | runZero | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | Server | 4 | 0 |
 
 
 #### Command example
+
 ```!runzero-asset-search ips=192.168.1.91,192.168.1.1```
+
 #### Context Example
+
 ```json
 {
     "RunZero": {
@@ -442,20 +457,25 @@ Get assets.
 #### Human Readable Output
 
 >### Asset
+>
 >|ARP|Addresses|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|RTT/ms|SW|Site|Sources|Svcs|TCP|Tags|Type|UDP|Vulns|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 192.168.1.91,<br/>fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | bf707048-7ce9-4249-a58c-0aaa257d69f0 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0.84 | 2 | Primary | runZero | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | Server | 4 | 0 |
 
 
 #### Command example
+
 ```!runzero-asset-search search=os:Windows ```
+
 #### Human Readable Output
 
 >### Asset
+>
 >**No entries.**
 
 
 ### runzero-asset-delete
+
 ***
 Bulk delete assets.
 
@@ -463,6 +483,7 @@ Bulk delete assets.
 #### Base Command
 
 `runzero-asset-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -473,7 +494,9 @@ Bulk delete assets.
 #### Context Output
 
 There is no context output for this command.
+
 ### runzero-service-search
+
 ***
 Get services.
 
@@ -481,12 +504,13 @@ Get services.
 #### Base Command
 
 `runzero-service-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | service_id | UUID of the service to retrieve. | Optional | 
-| search | The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional | 
+| search | The query by which to search. For information on the syntax, see: <https://www.runzero.com/docs/runzero-manual.pdf> page 288. | Optional | 
 | service_addresses | A comma-separated list of services by addresses. | Optional | 
 | display_attributes | Whether to include an attributes section in the returned result. Possible values are: True, False. | Optional | 
 | limit | Limit the number of assets returned. Default is 50. | Optional | 
@@ -533,8 +557,11 @@ Get services.
 | RunZero.Service.Site | String | Service site name. | 
 
 #### Command example
+
 ```!runzero-service-search```
+
 #### Context Example
+
 ```json
 {
     "RunZero": {
@@ -2033,6 +2060,7 @@ Get services.
 #### Human Readable Output
 
 >### Service
+>
 >|ARP|Address|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|Port|Protocol|RTT/ms|SW|Site|Summary|Svcs|TCP|Tags|Transport|Type|UDP|Vulns|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | 04d60ddf-8d28-494c-8186-8cd514e5b9cb | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 111 | rpcbind,<br/>sunrpc | 0.84 | 2 | Primary |  | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | udp | Server | 4 | 0 |
@@ -2049,8 +2077,11 @@ Get services.
 
 
 #### Command example
+
 ```!runzero-service-search service_addresses=192.168.1.2,192.168.1.91 limit=3 display_attributes=True```
+
 #### Context Example
+
 ```json
 {
     "RunZero": {
@@ -2527,6 +2558,7 @@ Get services.
 #### Human Readable Output
 
 >### Service
+>
 >|ARP|Address|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|Port|Protocol|RTT/ms|SW|Site|Summary|Svcs|TCP|Tags|Transport|Type|UDP|Vulns|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | 4cdaab83-a513-42e1-8ff1-ba1d70c64cc3 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 22 | ssh | 0.84 | 2 | Primary | SSH-2.0-OpenSSH_8.0 | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | tcp | Server | 4 | 0 |
@@ -2535,14 +2567,18 @@ Get services.
 
 
 #### Command example
+
 ```!runzero-service-search search=os:Windows ```
+
 #### Human Readable Output
 
 >### Service
+>
 >**No entries.**
 
 
 ### runzero-service-delete
+
 ***
 Delete a service.
 
@@ -2550,6 +2586,7 @@ Delete a service.
 #### Base Command
 
 `runzero-service-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2560,7 +2597,9 @@ Delete a service.
 #### Context Output
 
 There is no context output for this command.
+
 ### runzero-comment-add
+
 ***
 Add a comment or override an existing asset comment.
 
@@ -2568,6 +2607,7 @@ Add a comment or override an existing asset comment.
 #### Base Command
 
 `runzero-comment-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2579,7 +2619,9 @@ Add a comment or override an existing asset comment.
 #### Context Output
 
 There is no context output for this command.
+
 ### runzero-tag-add
+
 ***
 Add tag or tags to the asset.
 
@@ -2587,6 +2629,7 @@ Add tag or tags to the asset.
 #### Base Command
 
 `runzero-tag-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2598,7 +2641,9 @@ Add tag or tags to the asset.
 #### Context Output
 
 There is no context output for this command.
+
 ### runzero-quota-get
+
 ***
 Get information about the API key used. Type, Limit, usage etc.
 
@@ -2606,6 +2651,7 @@ Get information about the API key used. Type, Limit, usage etc.
 #### Base Command
 
 `runzero-quota-get`
+
 #### Input
 
 There are no input arguments for this command.
@@ -2630,8 +2676,11 @@ There are no input arguments for this command.
 | RunZero.Quota.type | String | API key type \(org, etc.\). | 
 
 #### Command example
+
 ```!runzero-quota-get```
+
 #### Context Example
+
 ```json
 {
     "RunZero": {
@@ -2659,12 +2708,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Quota
+>
 >|counter|usage_limit|usage_today|
 >|---|---|---|
 >| 454 | 1672325319 | 25 |
 
 
 ### runzero-tag-delete
+
 ***
 Delete tags for specific asset.
 
@@ -2672,6 +2723,7 @@ Delete tags for specific asset.
 #### Base Command
 
 `runzero-tag-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2683,7 +2735,9 @@ Delete tags for specific asset.
 #### Context Output
 
 There is no context output for this command.
+
 ### runzero-wireless-lan-search
+
 ***
 Get all wireless LANs.
 
@@ -2691,12 +2745,13 @@ Get all wireless LANs.
 #### Base Command
 
 `runzero-wireless-lan-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | wireless_id | The wireless LAN ID. | Optional | 
-| search | The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional | 
+| search | The query by which to search. For information on the syntax, see: <https://www.runzero.com/docs/runzero-manual.pdf> page 288. | Optional | 
 | limit | Limit the number of wireless LAN returned. Default is 50. | Optional | 
 
 
@@ -2720,6 +2775,7 @@ Get all wireless LANs.
 | RunZero.WirelessLAN.Site | String | Wireless LAN site name. | 
 
 ### runzero-wireless-lan-delete
+
 ***
 Remove a wireless LAN.
 
@@ -2727,6 +2783,7 @@ Remove a wireless LAN.
 #### Base Command
 
 `runzero-wireless-lan-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

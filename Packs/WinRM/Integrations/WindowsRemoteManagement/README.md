@@ -1,5 +1,6 @@
 Uses the Python pywinrm library and commands to execute either a process or using Powershell scripts.
 This integration was integrated and tested with Windows Remote Management
+
 ## Configure Windows Remote Management in Cortex
 
 
@@ -12,9 +13,12 @@ This integration was integrated and tested with Windows Remote Management
 | Decode codec (default is utf_8) | Decode codec to use when decoding command outputs \(defaults to 'utf_8'\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### winrm-run-process
+
 ***
 Executes a command on the host
 
@@ -22,6 +26,7 @@ Executes a command on the host
 #### Base Command
 
 `winrm-run-process`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -42,6 +47,7 @@ Executes a command on the host
 | WinRM.Process.Status | unknown | Status code of the WInRM command | 
 
 #### Context Example
+
 ```
 "WinRM": {
     "Process": {
@@ -53,15 +59,18 @@ Executes a command on the host
 ```
 
 #### Command Example
+
 ```
 !winrm-run-process command=`HelloWorldProcess` arguments="DBot"
 ```
 
 #### Human Readable Output
+
 "Hello DBot!"
 
 
 ### winrm-run-powershell
+
 ***
 Executes a Powershell script on the endpoint
 
@@ -69,6 +78,7 @@ Executes a Powershell script on the endpoint
 #### Base Command
 
 `winrm-run-powershell`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -89,6 +99,7 @@ Executes a Powershell script on the endpoint
 | WinRM.Powershell.Status | unknown | Status code of the WInRM command | 
 
 #### Context Example
+
 ```
 "WinRM": {
     "Script": {
@@ -102,9 +113,11 @@ Executes a Powershell script on the endpoint
 ```
 
 #### Command Example
+
 ```
 !winrm-run-powershell script=`Write-Host "Hello, World!"` scriptname="Hello"
 ```
 
 #### Human Readable Output
+
 Hello, World!

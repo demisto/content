@@ -8,6 +8,7 @@ This information can help not only get a malicious verdict but much more context
 
 
 The Actions and playbooks included in this pack help you save time, and automate your incident response pipeline by:
+
 - Checks file reputation for an uploaded file. 
 - Checks file reputation by a given hash, supports SHA256, SHA1, and MD5.
 - Checks the analysis status and gets the analysis result, supports file, url and endpoint analysis.

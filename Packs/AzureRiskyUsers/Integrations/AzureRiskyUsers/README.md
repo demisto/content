@@ -1,9 +1,12 @@
 Azure Risky Users provides access to all at-risk users and risk detections in Azure AD environment.
 This integration was integrated and tested with version 1.0 of Microsoft Graph Azure Risky Users.
+
 # Self-Deployed Application
+
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
 
 The application must have the following permissions:
+
 - *IdentityRiskEvent.Read.All*
 - *IdentityRiskEvent.ReadWrite.All*
 - *IdentityRiskyUser.Read.All*
@@ -38,10 +41,12 @@ At end of the process you'll see a message that you've logged in successfully.
 
 
 # Cortex XSOAR Application
+
 In order to use the Cortex XSOAR Azure application, 
 use the Client ID - (application_id) (**ec854987-95fa-4c8f-8056-768dd0f409ac**).
 
 ## Authentication Using the Device Code Flow -
+
 In order to connect to the Azure Risky Users using the Cortex XSOAR Azure App with Device Code flow authentication. See [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).
 
 1. Fill in the required parameters - use the above mentioned Client ID - (application_id).
@@ -69,10 +74,14 @@ At end of the process you'll see a message that you've logged in successfully.
     | Trust any certificate | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-risky-users-auth-test
+
 ***
 Tests the connectivity to Azure.
 
@@ -80,6 +89,7 @@ Tests the connectivity to Azure.
 #### Base Command
 
 `azure-risky-users-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -89,6 +99,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-risky-users-auth-test```
 
 #### Human Readable Output
@@ -96,6 +107,7 @@ There is no context output for this command.
 > Success!
 
 ### azure-risky-users-auth-start
+
 ***
 Run this command to start the authorization process and follow the instructions in the command results.
 
@@ -103,6 +115,7 @@ Run this command to start the authorization process and follow the instructions 
 #### Base Command
 
 `azure-risky-users-auth-start`
+
 #### Input
 
 There are no input arguments for this command.
@@ -112,15 +125,18 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-risky-users-auth-start```
 
 #### Human Readable Output
 
 >### Authorization instructions
->1. To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code XXXXX to authenticate.
+>
+>1. To sign in, use a web browser to open the page <https://microsoft.com/devicelogin> and enter the code XXXXX to authenticate.
 >2. Run the ***!azure-risky-users-auth-complete*** command in the War Room.
 
 ### azure-risky-users-auth-complete
+
 ***
 Run this command to complete the authorization process. Should be used after running the azure-risky-users-auth-start command.
 
@@ -128,6 +144,7 @@ Run this command to complete the authorization process. Should be used after run
 #### Base Command
 
 `azure-risky-users-auth-complete`
+
 #### Input
 
 There are no input arguments for this command.
@@ -137,6 +154,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-risky-users-auth-complete```
 
 #### Human Readable Output
@@ -144,6 +162,7 @@ There is no context output for this command.
 > Authorization completed successfully.
 
 ### azure-risky-users-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
@@ -151,6 +170,7 @@ Run this command if for some reason you need to rerun the authentication process
 #### Base Command
 
 `azure-risky-users-auth-reset`
+
 #### Input
 
 There are no input arguments for this command.
@@ -160,6 +180,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-risky-users-auth-reset```
 
 #### Human Readable Output
@@ -206,8 +227,11 @@ Returns a list of all risky users and their properties.
 
 
 #### Command example
+
 ```!azure-risky-users-list page_size=2```
+
 #### Context Example
+
 ```json
 {
     "AzureRiskyUsers": {
@@ -243,18 +267,21 @@ Returns a list of all risky users and their properties.
 #### Human Readable Output
 
 >### Risky Users List:
+>
 >|Id|User Display Name|User Principal Name|Risk Level|Risk State|Risk Detail|Risk Last Updated Date Time|
 >|---|---|---|---|---|---|---|
 >| ID_1 | user Display Name | User Principal Name | medium | atRisk | none | 2023-06-04T10:12:39.3625926Z |
 >| ID_2 | user Display Name | User Principal Name | high | atRisk | none | 2022-02-23T17:50:40.3408199Z |
 
 >### Risky Users List Token:
+>
 >|next_token|
 >|---|
 >| token |
 
 
 ### azure-risky-user-get
+
 ***
 Retrieve properties and relationships of a Risky User.
 
@@ -262,6 +289,7 @@ Retrieve properties and relationships of a Risky User.
 #### Base Command
 
 `azure-risky-user-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -285,9 +313,11 @@ Retrieve properties and relationships of a Risky User.
 
 
 #### Command Example
+
 ```!azure-risky-user-get id=333```
 
 #### Context Example
+
 ```json
 {
     "AzureRiskyUsers": {
@@ -310,12 +340,14 @@ Retrieve properties and relationships of a Risky User.
 #### Human Readable Output
 
 >### Found Risky User With ID: 333
+>
 >|Id|User Display Name|User Principal Name|Risk Level|Risk State|Risk Detail|Risk Last Updated Date Time|
 >|---|---|---|---|---|---|---|
->| 333 | Yossi Israeli | yossi@test.com | none | remediated | userPerformedSecuredPasswordReset | 2020-10-05T12:12:17.2115592Z |
+>| 333 | Yossi Israeli | <yossi@test.com> | none | remediated | userPerformedSecuredPasswordReset | 2020-10-05T12:12:17.2115592Z |
 
 
 ### azure-risky-users-risk-detections-list
+
 ***
 Get a list of the riskDetection objects and their properties.
 
@@ -323,6 +355,7 @@ Get a list of the riskDetection objects and their properties.
 #### Base Command
 
 `azure-risky-users-risk-detections-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -363,9 +396,11 @@ Get a list of the riskDetection objects and their properties.
 
 
 #### Command Example
+
 ```!azure-risky-users-risk-detections-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "AzureRiskyUsers": {
@@ -438,15 +473,18 @@ Get a list of the riskDetection objects and their properties.
 #### Human Readable Output
 
 >### Risk Detections List
+>
 >Current page size: 2
 >Showing page 1 out others that may exist
+>
 >|Id|User Id|User Display Name|User Principal Name|Risk Detail|Risk Event Type|Risk Level|Risk State|Risk Detail|Last Updated Date Time|Ip Address|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 555 | 777 | Shalev Israeli | ShalevI@test.com | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | userPassedMFADrivenByRiskBasedPolicy | 2021-06-20T03:53:58.853418Z | 1.1.1.1 |
->| 888 | 999 | Svetlana Israeli | SvetlanaI@test.com | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | userPassedMFADrivenByRiskBasedPolicy | 2021-06-27T19:19:44.4975416Z | 1.1.1.1 |
+>| 555 | 777 | Shalev Israeli | <ShalevI@test.com> | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | userPassedMFADrivenByRiskBasedPolicy | 2021-06-20T03:53:58.853418Z | 1.1.1.1 |
+>| 888 | 999 | Svetlana Israeli | <SvetlanaI@test.com> | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | userPassedMFADrivenByRiskBasedPolicy | 2021-06-27T19:19:44.4975416Z | 1.1.1.1 |
 
 
 ### azure-risky-users-risk-detection-get
+
 ***
 Read the properties and relationships of a riskDetection object.
 
@@ -454,6 +492,7 @@ Read the properties and relationships of a riskDetection object.
 #### Base Command
 
 `azure-risky-users-risk-detection-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -488,9 +527,11 @@ Read the properties and relationships of a riskDetection object.
 
 
 #### Command Example
+
 ```!azure-risky-users-risk-detection-get id=6565```
 
 #### Context Example
+
 ```json
 {
     "AzureRiskyUsers": {
@@ -532,6 +573,7 @@ Read the properties and relationships of a riskDetection object.
 #### Human Readable Output
 
 >### Found Risk Detection with ID: 6565
+>
 >|Id|User Id|User Display Name|User Principal Name|Risk Detail|Risk Event Type|Risk Level|Risk State|Ip Address|Detection Timing Type|Last Updated Date Time|Location|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 6565 | 999 | Svetlana Israeli | SvetlanaI@test.com | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | 3.3.3.3 | realtime | 2021-07-03T13:38:04.6531838Z | city: Lviv<br/>state: L'vivs'ka Oblast'<br/>countryOrRegion: UA<br/>geoCoordinates: {"latitude": 49, "longitude": 24} |
+>| 6565 | 999 | Svetlana Israeli | <SvetlanaI@test.com> | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | 3.3.3.3 | realtime | 2021-07-03T13:38:04.6531838Z | city: Lviv<br/>state: L'vivs'ka Oblast'<br/>countryOrRegion: UA<br/>geoCoordinates: {"latitude": 49, "longitude": 24} |

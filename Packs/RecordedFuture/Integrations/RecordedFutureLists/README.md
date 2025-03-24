@@ -6,7 +6,7 @@ This integration was integrated and tested with version 1.1.1 of RecordedFutureL
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API URL | Default URL: https://api.recordedfuture.com/gw/xsoar/ | True |
+| API URL | Default URL: <https://api.recordedfuture.com/gw/xsoar/> | True |
 | API Token |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -52,11 +52,12 @@ Search for lists in Recorded Future
 ***
 Add entities to a list, separate entities by commas. "NOTE:" if entity type is specified, only one entity type can be added with each action.
 When adding IDs use the following for Recorded Future light entities:
+
 + IPaddress: "ip:x.x.x.x"
 + Domain: "idn:example.xyz"
 + Hash: "hash:examplehashvalue"
 + Email: "email:example@example.xyz"
-+ Url: "url:https://example.xyz"
++ Url: "url:<https://example.xyz>"
 
 #### Base Command
 
@@ -86,11 +87,12 @@ When adding IDs use the following for Recorded Future light entities:
 ***
 Remove entities from a list. Separate entities with commas. "NOTE:" If entity type is specified, only one entity type can be added with each action.
 When adding IDs use the following for Recorded Future light entities:
+
 + IPaddress: "ip:x.x.x.x"
 + Domain: "idn:example.xyz"
 + Hash: "hash:examplehashvalue"
 + Email: "email:example@example.xyz"
-+ Url: "url:https://example.xyz"
++ Url: "url:<https://example.xyz>"
 
 #### Base Command
 

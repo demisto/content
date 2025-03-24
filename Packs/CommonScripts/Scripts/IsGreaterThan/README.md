@@ -4,6 +4,7 @@ Returns no: if first <= second.
 Returns an exception if one of the inputs is not a number.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -13,6 +14,7 @@ Returns an exception if one of the inputs is not a number.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +23,7 @@ Returns an exception if one of the inputs is not a number.
 | second | The second argument to compare. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

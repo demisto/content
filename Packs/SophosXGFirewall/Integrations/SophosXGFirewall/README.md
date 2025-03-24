@@ -1,5 +1,6 @@
 On-Premise firewall by Sophos enables you to manage your firewall, respond to threats, and monitor what’s
 happening on your network.
+
 ## Configure Sophos Firewall in Cortex
 
 
@@ -11,9 +12,12 @@ happening on your network.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### sophos-firewall-rule-list
+
 ***
 Lists all firewall rules. IMPORTANT: Listing starts at 0 (not 1)!
 
@@ -21,6 +25,7 @@ Lists all firewall rules. IMPORTANT: Listing starts at 0 (not 1)!
 #### Base Command
 
 `sophos-firewall-rule-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -44,9 +49,11 @@ Lists all firewall rules. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Command Example
+
 ```!sophos-firewall-rule-list start=0 end=6```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -177,6 +184,7 @@ Lists all firewall rules. IMPORTANT: Listing starts at 0 (not 1)!
 #### Human Readable Output
 
 >### Showing 0 to 6 SecurityPolicy objects out of 8
+>
 >|Name|Description|Status|PolicyType|IPFamily|Action|LogTraffic|
 >|---|---|---|---|---|---|---|
 >| Auto added firewall policy for MTA | This rule was added automatically by SFOS MTA. However you could edit this policy based on network requirement. | Enable | PublicNonHTTPPolicy | IPv4 |  | Disable |
@@ -188,6 +196,7 @@ Lists all firewall rules. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 ### sophos-firewall-rule-get
+
 ***
 Gets a single firewall rule by name.
 
@@ -195,6 +204,7 @@ Gets a single firewall rule by name.
 #### Base Command
 
 `sophos-firewall-rule-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -217,9 +227,11 @@ Gets a single firewall rule by name.
 
 
 #### Command Example
+
 ```!sophos-firewall-rule-get name=user_rule```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -252,12 +264,14 @@ Gets a single firewall rule by name.
 #### Human Readable Output
 
 >### SecurityPolicy Object details
+>
 >|Name|Status|PolicyType|IPFamily|Action|LogTraffic|
 >|---|---|---|---|---|---|
 >| user_rule | Enable | Network | IPv4 | Drop | Enable |
 
 
 ### sophos-firewall-rule-add
+
 ***
 Adds a new firewall rule.
 
@@ -265,6 +279,7 @@ Adds a new firewall rule.
 #### Base Command
 
 `sophos-firewall-rule-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -328,9 +343,11 @@ Adds a new firewall rule.
 
 
 #### Command Example
+
 ```!sophos-firewall-rule-add name=user_rule action=Accept ip_family=IPv4 log_traffic=Disable policy_type=User position=bottom match_identity=Enable show_captive_portal=Enable destination_zones=LAN members="Guest Group"```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -388,11 +405,13 @@ Adds a new firewall rule.
 #### Human Readable Output
 
 >### SecurityPolicy Object details
+>
 >|Name|Status|PolicyType|IPFamily|Action|LogTraffic|
 >|---|---|---|---|---|---|
 >| user_rule | Enable | User | IPv4 | Accept | Disable |
 
 ### sophos-firewall-rule-update
+
 ***
 Updates an existing firewall rule.
 
@@ -400,6 +419,7 @@ Updates an existing firewall rule.
 #### Base Command
 
 `sophos-firewall-rule-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -463,9 +483,11 @@ Updates an existing firewall rule.
 
 
 #### Command Example
+
 ```!sophos-firewall-rule-update name=user_rule log_traffic=Enable source_zones=LAN```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -498,6 +520,7 @@ Updates an existing firewall rule.
 #### Human Readable Output
 
 >### SecurityPolicy Object details
+>
 >|Name|Status|PolicyType|IPFamily|Action|LogTraffic|
 >|---|---|---|---|---|---|
 >| user_rule | Enable | Network | IPv4 | Drop | Enable |
@@ -505,6 +528,7 @@ Updates an existing firewall rule.
 
 
 ### sophos-firewall-rule-delete
+
 ***
 Deletes an existing firewall rule.
 
@@ -512,6 +536,7 @@ Deletes an existing firewall rule.
 #### Base Command
 
 `sophos-firewall-rule-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -528,9 +553,11 @@ Deletes an existing firewall rule.
 
 
 #### Command Example
+
 ```!sophos-firewall-rule-delete name=user_rule```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -545,6 +572,7 @@ Deletes an existing firewall rule.
 #### Human Readable Output
 
 >### Deleting SecurityPolicy Objects Results
+>
 >|Name|IsDeleted|
 >|---|---|
 >| user_rule | true |
@@ -552,6 +580,7 @@ Deletes an existing firewall rule.
 
 
 ### sophos-firewall-rule-group-list
+
 ***
 Lists all firewall rule groups. IMPORTANT: Listing starts at 0 (not 1)!
 
@@ -559,6 +588,7 @@ Lists all firewall rule groups. IMPORTANT: Listing starts at 0 (not 1)!
 #### Base Command
 
 `sophos-firewall-rule-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -580,9 +610,11 @@ Lists all firewall rule groups. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Command Example
+
 ```!sophos-firewall-rule-group-list start=0 end=6```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -643,6 +675,7 @@ Lists all firewall rule groups. IMPORTANT: Listing starts at 0 (not 1)!
 #### Human Readable Output
 
 >### Showing 0 to 6 SecurityPolicyGroup objects out of 8
+>
 >|Name|Description|SecurityPolicyList|DestinationZones|
 >|---|---|---|---|
 >| Traffic to DMZ | Inbound traffic to DMZ. Firewall rules with the destination zone as DMZ would be added to this group on the first match basis if user selects automatic grouping option. This is the default group. | SecurityPolicy: [example] Traffic to DMZ | Zone: DMZ |
@@ -655,6 +688,7 @@ Lists all firewall rule groups. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 ### sophos-firewall-rule-group-get
+
 ***
 Gets a single firewall rule group by name.
 
@@ -662,6 +696,7 @@ Gets a single firewall rule group by name.
 #### Base Command
 
 `sophos-firewall-rule-group-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -682,9 +717,11 @@ Gets a single firewall rule group by name.
 
 
 #### Command Example
+
 ```!sophos-firewall-rule-group-get name=rulegroup```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -707,6 +744,7 @@ Gets a single firewall rule group by name.
 #### Human Readable Output
 
 >### SecurityPolicyGroup Object details
+>
 >|Name|Description|SecurityPolicyList|
 >|---|---|---|
 >| rulegroup | rulegroup for user/network rules | SecurityPolicy: network_rule,<br/>user_rule |
@@ -714,6 +752,7 @@ Gets a single firewall rule group by name.
 
 
 ### sophos-firewall-rule-group-add
+
 ***
 Adds a new firewall rule group.
 
@@ -721,6 +760,7 @@ Adds a new firewall rule group.
 #### Base Command
 
 `sophos-firewall-rule-group-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -746,9 +786,11 @@ Adds a new firewall rule group.
 
 
 #### Command Example
+
 ```!sophos-firewall-rule-group-add name=rulegroup policy_type="User/network rule" rules=user_rule,network_rule```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -771,6 +813,7 @@ Adds a new firewall rule group.
 #### Human Readable Output
 
 >### SecurityPolicyGroup Object details
+>
 >|Name|SecurityPolicyList|
 >|---|---|
 >| rulegroup | SecurityPolicy: user_rule,<br/>network_rule |
@@ -778,6 +821,7 @@ Adds a new firewall rule group.
 
 
 ### sophos-firewall-rule-group-update
+
 ***
 Updates an existing firewall rule group.
 
@@ -785,6 +829,7 @@ Updates an existing firewall rule group.
 #### Base Command
 
 `sophos-firewall-rule-group-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -810,9 +855,11 @@ Updates an existing firewall rule group.
 
 
 #### Command Example
+
 ```!sophos-firewall-rule-group-update name=rulegroup description="rulegroup for user/network rules"```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -835,12 +882,14 @@ Updates an existing firewall rule group.
 #### Human Readable Output
 
 >### SecurityPolicyGroup Object details
+>
 >|Name|Description|SecurityPolicyList|
 >|---|---|---|
 >| rulegroup | rulegroup for user/network rules | SecurityPolicy: network_rule,<br/>user_rule |
 
 
 ### sophos-firewall-rule-group-delete
+
 ***
 Deletes an existing firewall group.
 
@@ -848,6 +897,7 @@ Deletes an existing firewall group.
 #### Base Command
 
 `sophos-firewall-rule-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -864,9 +914,11 @@ Deletes an existing firewall group.
 
 
 #### Command Example
+
 ```!sophos-firewall-rule-group-delete name=rulegroup```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -881,6 +933,7 @@ Deletes an existing firewall group.
 #### Human Readable Output
 
 >### Deleting SecurityPolicyGroup Objects Results
+>
 >|Name|IsDeleted|
 >|---|---|
 >| rulegroup | true |
@@ -888,6 +941,7 @@ Deletes an existing firewall group.
 
 
 ### sophos-firewall-url-group-list
+
 ***
 Lists all URL groups. IMPORTANT: Listing starts at 0 (not 1)!
 
@@ -895,6 +949,7 @@ Lists all URL groups. IMPORTANT: Listing starts at 0 (not 1)!
 #### Base Command
 
 `sophos-firewall-url-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -913,9 +968,11 @@ Lists all URL groups. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Command Example
+
 ```!sophos-firewall-url-group-list start=0 end=6```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -979,18 +1036,20 @@ Lists all URL groups. IMPORTANT: Listing starts at 0 (not 1)!
 #### Human Readable Output
 
 >### Showing 0 to 6 WebFilterURLGroup objects out of 12
+>
 >|Name|Description|URLlist|
 >|---|---|---|
->| 1 | 1desc | URL: www.x.com,<br/>www.y.com |
->| 2 |  | URL: www.z.com |
->| google |  | URL: www.google.com |
->| urlgroup1 |  | URL: www.blockthisurl.com |
+>| 1 | 1desc | URL: <www.x.com>,<br/>www.y.com |
+>| 2 |  | URL: <www.z.com> |
+>| google |  | URL: <www.google.com> |
+>| urlgroup1 |  | URL: <www.blockthisurl.com> |
 >| forunitest |  | URL: badwebsite.com |
 >| forunitest2 |  | URL: badwebsite2.com |
 
 
 
 ### sophos-firewall-url-group-get
+
 ***
 Gets a single URL group by name.
 
@@ -998,6 +1057,7 @@ Gets a single URL group by name.
 #### Base Command
 
 `sophos-firewall-url-group-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1015,9 +1075,11 @@ Gets a single URL group by name.
 
 
 #### Command Example
+
 ```!sophos-firewall-url-group-get name=urlgroup```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1039,13 +1101,15 @@ Gets a single URL group by name.
 #### Human Readable Output
 
 >### WebFilterURLGroup Object details
+>
 >|Name|URLlist|
 >|---|---|
->| urlgroup | URL: www.example.com,<br/>www.another-example.com |
+>| urlgroup | URL: <www.example.com>,<br/>www.another-example.com |
 
 
 
 ### sophos-firewall-url-group-add
+
 ***
 Adds a new URL group.
 
@@ -1053,6 +1117,7 @@ Adds a new URL group.
 #### Base Command
 
 `sophos-firewall-url-group-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1072,9 +1137,11 @@ Adds a new URL group.
 
 
 #### Command Example
+
 ```!sophos-firewall-url-group-add name=urlgroup urls=www.example.com```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1094,6 +1161,7 @@ Adds a new URL group.
 
 
 ### sophos-firewall-url-group-update
+
 ***
 Updates an existing URL group.
 
@@ -1101,6 +1169,7 @@ Updates an existing URL group.
 #### Base Command
 
 `sophos-firewall-url-group-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1120,9 +1189,11 @@ Updates an existing URL group.
 
 
 #### Command Example
+
 ```!sophos-firewall-url-group-update name=urlgroup urls=www.another-example.com```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1144,13 +1215,15 @@ Updates an existing URL group.
 #### Human Readable Output
 
 >### WebFilterURLGroup Object details
+>
 >|Name|URLlist|
 >|---|---|
->| urlgroup | URL: www.example.com,<br/>www.another-example.com |
+>| urlgroup | URL: <www.example.com>,<br/>www.another-example.com |
 
 
 
 ### sophos-firewall-url-group-delete
+
 ***
 Deletes an existing URL group or groups.
 
@@ -1158,6 +1231,7 @@ Deletes an existing URL group or groups.
 #### Base Command
 
 `sophos-firewall-url-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1174,9 +1248,11 @@ Deletes an existing URL group or groups.
 
 
 #### Command Example
+
 ```!sophos-firewall-url-group-delete name=urlgroup```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1191,6 +1267,7 @@ Deletes an existing URL group or groups.
 #### Human Readable Output
 
 >### Deleting WebFilterURLGroup Objects Results
+>
 >|Name|IsDeleted|
 >|---|---|
 >| urlgroup | true |
@@ -1198,6 +1275,7 @@ Deletes an existing URL group or groups.
 
 
 ### sophos-firewall-ip-host-list
+
 ***
 Lists all IP hosts. IMPORTANT: Listing starts at 0 (not 1)!
 
@@ -1205,6 +1283,7 @@ Lists all IP hosts. IMPORTANT: Listing starts at 0 (not 1)!
 #### Base Command
 
 `sophos-firewall-ip-host-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1223,9 +1302,11 @@ Lists all IP hosts. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Command Example
+
 ```!sophos-firewall-ip-host-list start=0 end=6```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1274,6 +1355,7 @@ Lists all IP hosts. IMPORTANT: Listing starts at 0 (not 1)!
 #### Human Readable Output
 
 >### Showing 0 to 6 IPHost objects out of 13
+>
 >|Name|IPFamily|HostType|
 >|---|---|---|
 >| ##ALL_RW | IPv4 | System Host |
@@ -1285,6 +1367,7 @@ Lists all IP hosts. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 ### sophos-firewall-ip-host-get
+
 ***
 Gets a single IP host by name.
 
@@ -1292,6 +1375,7 @@ Gets a single IP host by name.
 #### Base Command
 
 `sophos-firewall-ip-host-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1309,9 +1393,11 @@ Gets a single IP host by name.
 
 
 #### Command Example
+
 ```!sophos-firewall-ip-host-get name=iphost```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1329,6 +1415,7 @@ Gets a single IP host by name.
 #### Human Readable Output
 
 >### IPHost Object details
+>
 >|Name|IPFamily|HostType|
 >|---|---|---|
 >| iphost | IPv4 | IP |
@@ -1336,6 +1423,7 @@ Gets a single IP host by name.
 
 
 ### sophos-firewall-ip-host-add
+
 ***
 Adds a new IP host.
 
@@ -1343,6 +1431,7 @@ Adds a new IP host.
 #### Base Command
 
 `sophos-firewall-ip-host-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1368,9 +1457,11 @@ Adds a new IP host.
 
 
 #### Command Example
+
 ```!sophos-firewall-ip-host-add name=iphost host_type=IP ip_address=1.1.1.1```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1388,6 +1479,7 @@ Adds a new IP host.
 #### Human Readable Output
 
 >### IPHost Object details
+>
 >|Name|IPFamily|HostType|
 >|---|---|---|
 >| iphost | IPv4 | IP |
@@ -1395,6 +1487,7 @@ Adds a new IP host.
 
 
 ### sophos-firewall-ip-host-update
+
 ***
 Updates an existing IP host.
 
@@ -1402,6 +1495,7 @@ Updates an existing IP host.
 #### Base Command
 
 `sophos-firewall-ip-host-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1427,9 +1521,11 @@ Updates an existing IP host.
 
 
 #### Command Example
+
 ```!sophos-firewall-ip-host-update name=iphost ip_address=2.2.2.2```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1447,6 +1543,7 @@ Updates an existing IP host.
 #### Human Readable Output
 
 >### IPHost Object details
+>
 >|Name|IPFamily|HostType|
 >|---|---|---|
 >| iphost | IPv4 | IP |
@@ -1454,6 +1551,7 @@ Updates an existing IP host.
 
 
 ### sophos-firewall-ip-host-delete
+
 ***
 Deletes an existing IP host.
 
@@ -1461,6 +1559,7 @@ Deletes an existing IP host.
 #### Base Command
 
 `sophos-firewall-ip-host-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1477,9 +1576,11 @@ Deletes an existing IP host.
 
 
 #### Command Example
+
 ```!sophos-firewall-ip-host-delete name=iphost```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1494,12 +1595,14 @@ Deletes an existing IP host.
 #### Human Readable Output
 
 >### Deleting IPHost Objects Results
+>
 >|Name|IsDeleted|
 >|---|---|
 >| iphost | true |
 
 
 ### sophos-firewall-ip-host-group-list
+
 ***
 Lists all IP host groups. IMPORTANT: Listing starts at 0 (not 1)!
 
@@ -1507,6 +1610,7 @@ Lists all IP host groups. IMPORTANT: Listing starts at 0 (not 1)!
 #### Base Command
 
 `sophos-firewall-ip-host-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1525,9 +1629,11 @@ Lists all IP host groups. IMPORTANT: Listing starts at 0 (not 1)!
 | SophosFirewall.IPHostGroup.IPFamily | String | IP family of the host group. Either IPv4 or IPv6. | 
 
 #### Command Example
+
 ```!sophos-firewall-ip-host-group-list start=0 end=6```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1564,6 +1670,7 @@ Lists all IP host groups. IMPORTANT: Listing starts at 0 (not 1)!
 #### Human Readable Output
 
 >### Showing 0 to 3 IPHostGroup objects out of 3
+>
 >|Name|Description|IPFamily|HostList|
 >|---|---|---|---|
 >| Blocked by Playbook |  | IPv4 | Host: 1.2.3.4,<br/>8.8.8.8 |
@@ -1572,6 +1679,7 @@ Lists all IP host groups. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 ### sophos-firewall-ip-host-group-get
+
 ***
 Gets a single IP host group by name.
 
@@ -1579,6 +1687,7 @@ Gets a single IP host group by name.
 #### Base Command
 
 `sophos-firewall-ip-host-group-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1597,9 +1706,11 @@ Gets a single IP host group by name.
 
 
 #### Command Example
+
 ```!sophos-firewall-ip-host-group-get name=iphostgroup```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1619,6 +1730,7 @@ Gets a single IP host group by name.
 #### Human Readable Output
 
 >### IPHostGroup Object details
+>
 >|Name|IPFamily|HostList|
 >|---|---|---|
 >| iphostgroup | IPv4 | Host: iphost |
@@ -1626,6 +1738,7 @@ Gets a single IP host group by name.
 
 
 ### sophos-firewall-ip-host-group-add
+
 ***
 Adds a new IP host group.
 
@@ -1633,6 +1746,7 @@ Adds a new IP host group.
 #### Base Command
 
 `sophos-firewall-ip-host-group-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1654,9 +1768,11 @@ Adds a new IP host group.
 
 
 #### Command Example
+
 ```!sophos-firewall-ip-host-group-add name=iphostgroup```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1673,6 +1789,7 @@ Adds a new IP host group.
 #### Human Readable Output
 
 >### IPHostGroup Object details
+>
 >|Name|IPFamily|
 >|---|---|
 >| iphostgroup | IPv4 |
@@ -1680,6 +1797,7 @@ Adds a new IP host group.
 
 
 ### sophos-firewall-ip-host-group-update
+
 ***
 Updates an existing IP host group.
 
@@ -1687,6 +1805,7 @@ Updates an existing IP host group.
 #### Base Command
 
 `sophos-firewall-ip-host-group-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1708,9 +1827,11 @@ Updates an existing IP host group.
 
 
 #### Command Example
+
 ```!sophos-firewall-ip-host-group-update name=iphostgroup hosts=iphost```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1730,6 +1851,7 @@ Updates an existing IP host group.
 #### Human Readable Output
 
 >### IPHostGroup Object details
+>
 >|Name|IPFamily|HostList|
 >|---|---|---|
 >| iphostgroup | IPv4 | Host: iphost |
@@ -1737,6 +1859,7 @@ Updates an existing IP host group.
 
 
 ### sophos-firewall-ip-host-group-delete
+
 ***
 Deletes an existing IP host group.
 
@@ -1744,6 +1867,7 @@ Deletes an existing IP host group.
 #### Base Command
 
 `sophos-firewall-ip-host-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1760,9 +1884,11 @@ Deletes an existing IP host group.
 
 
 #### Command Example
+
 ```!sophos-firewall-ip-host-group-delete name=iphostgroup```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1777,6 +1903,7 @@ Deletes an existing IP host group.
 #### Human Readable Output
 
 >### Deleting IPHostGroup Objects Results
+>
 >|Name|IsDeleted|
 >|---|---|
 >| iphostgroup | true |
@@ -1784,6 +1911,7 @@ Deletes an existing IP host group.
 
 
 ### sophos-firewall-services-list
+
 ***
 Lists all firewall services. IMPORTANT: Listing starts at 0 (not 1)!
 
@@ -1791,6 +1919,7 @@ Lists all firewall services. IMPORTANT: Listing starts at 0 (not 1)!
 #### Base Command
 
 `sophos-firewall-services-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1809,9 +1938,11 @@ Lists all firewall services. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Command Example
+
 ```!sophos-firewall-services-list start=0 end=6```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1899,6 +2030,7 @@ Lists all firewall services. IMPORTANT: Listing starts at 0 (not 1)!
 #### Human Readable Output
 
 >### Showing 0 to 6 Services objects out of 63
+>
 >|Name|Type|ServiceDetails|
 >|---|---|---|
 >| AH | IP | ServiceDetail: {"ProtocolName": "AH"} |
@@ -1911,6 +2043,7 @@ Lists all firewall services. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 ### sophos-firewall-services-get
+
 ***
 Gets a single service by name.
 
@@ -1918,6 +2051,7 @@ Gets a single service by name.
 #### Base Command
 
 `sophos-firewall-services-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1936,9 +2070,11 @@ Gets a single service by name.
 
 
 #### Command Example
+
 ```!sophos-firewall-services-get name=service```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -1964,6 +2100,7 @@ Gets a single service by name.
 #### Human Readable Output
 
 >### Services Object details
+>
 >|Name|Type|ServiceDetails|
 >|---|---|---|
 >| service | IP | ServiceDetail: {'ProtocolName': 'Compaq-Peer'},<br/>{'ProtocolName': 'AH'} |
@@ -1973,6 +2110,7 @@ Gets a single service by name.
 
 
 ### sophos-firewall-services-add
+
 ***
 Adds a new firewall service.
 
@@ -1980,6 +2118,7 @@ Adds a new firewall service.
 #### Base Command
 
 `sophos-firewall-services-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2006,9 +2145,11 @@ Adds a new firewall service.
 
 
 #### Command Example
+
 ```!sophos-firewall-services-add name=service service_type=IP protocol_name="Compaq-Peer"```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -2029,6 +2170,7 @@ Adds a new firewall service.
 #### Human Readable Output
 
 >### Services Object details
+>
 >|Name|Type|ServiceDetails|
 >|---|---|---|
 >| service | IP | ServiceDetail: {"ProtocolName": "Compaq-Peer"} |
@@ -2036,6 +2178,7 @@ Adds a new firewall service.
 
 
 ### sophos-firewall-services-update
+
 ***
 Updates an existing firewall service.
 
@@ -2043,6 +2186,7 @@ Updates an existing firewall service.
 #### Base Command
 
 `sophos-firewall-services-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2069,9 +2213,11 @@ Updates an existing firewall service.
 
 
 #### Command Example
+
 ```!sophos-firewall-services-update name=service service_type=IP protocol_name=AH```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -2097,6 +2243,7 @@ Updates an existing firewall service.
 #### Human Readable Output
 
 >### Services Object details
+>
 >|Name|Type|ServiceDetails|
 >|---|---|---|
 >| service | IP | ServiceDetail: {'ProtocolName': 'Compaq-Peer'},<br/>{'ProtocolName': 'AH'} |
@@ -2105,6 +2252,7 @@ Updates an existing firewall service.
 
 
 ### sophos-firewall-services-delete
+
 ***
 Deletes an existing firewall service.
 
@@ -2112,6 +2260,7 @@ Deletes an existing firewall service.
 #### Base Command
 
 `sophos-firewall-services-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2128,9 +2277,11 @@ Deletes an existing firewall service.
 
 
 #### Command Example
+
 ```!sophos-firewall-services-delete name=service```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -2145,6 +2296,7 @@ Deletes an existing firewall service.
 #### Human Readable Output
 
 >### Deleting Services Objects Results
+>
 >|Name|IsDeleted|
 >|---|---|
 >| service | true |
@@ -2152,6 +2304,7 @@ Deletes an existing firewall service.
 
 
 ### sophos-firewall-user-list
+
 ***
 Lists all users. IMPORTANT: Listing starts at 0 (not 1)!
 
@@ -2159,6 +2312,7 @@ Lists all users. IMPORTANT: Listing starts at 0 (not 1)!
 #### Base Command
 
 `sophos-firewall-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2181,9 +2335,11 @@ Lists all users. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Command Example
+
 ```!sophos-firewall-user-list start=0 end=6```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -2354,18 +2510,20 @@ Lists all users. IMPORTANT: Listing starts at 0 (not 1)!
 #### Human Readable Output
 
 >### Showing 0 to 6 User objects out of 8
+>
 >|Username|Name|Description|EmailList|Group|UserType|Status|
 >|---|---|---|---|---|---|---|
->| user new | user_new |  | EmailID: test@test.com | Open Group | User | Active |
->| sg | sg | This is sg desc | EmailID: test@test.com | Guest Group | Administrator | Active |
+>| user new | user_new |  | EmailID: <test@test.com> | Open Group | User | Active |
+>| sg | sg | This is sg desc | EmailID: <test@test.com> | Guest Group | Administrator | Active |
 >| 1 | 1 | 1 |  | Guest Group | User | Active |
 >| sg1 | sg | new desc |  | Guest Group | User | Active |
->| unitestuser | unitest2 |  | EmailID: test@test.test | Guest Group | User | Active |
->| unitestuser2 | unitest3 |  | EmailID: test@test.test | Guest Group | User | Active |
+>| unitestuser | unitest2 |  | EmailID: <test@test.test> | Guest Group | User | Active |
+>| unitestuser2 | unitest3 |  | EmailID: <test@test.test> | Guest Group | User | Active |
 
 
 
 ### sophos-firewall-user-get
+
 ***
 Gets a single user by name.
 
@@ -2373,6 +2531,7 @@ Gets a single user by name.
 #### Base Command
 
 `sophos-firewall-user-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2394,9 +2553,11 @@ Gets a single user by name.
 
 
 #### Command Example
+
 ```!sophos-firewall-user-get name=user```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -2436,6 +2597,7 @@ Gets a single user by name.
 #### Human Readable Output
 
 >### User Object details
+>
 >|Username|Name|Description|Group|UserType|Status|
 >|---|---|---|---|---|---|
 >| user | user | Description for the user | Guest Group | User | Active |
@@ -2443,6 +2605,7 @@ Gets a single user by name.
 
 
 ### sophos-firewall-user-add
+
 ***
 Adds a new user.
 
@@ -2450,6 +2613,7 @@ Adds a new user.
 #### Base Command
 
 `sophos-firewall-user-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2487,9 +2651,11 @@ Adds a new user.
 
 
 #### Command Example
+
 ```!sophos-firewall-user-add name=user username=user password=1234 email=user@mail.com```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -2532,13 +2698,15 @@ Adds a new user.
 #### Human Readable Output
 
 >### User Object details
+>
 >|Username|Name|EmailList|Group|UserType|Status|
 >|---|---|---|---|---|---|
->| user | user | EmailID: user@mail.com | Guest Group | User | Active |
+>| user | user | EmailID: <user@mail.com> | Guest Group | User | Active |
 
 
 
 ### sophos-firewall-user-update
+
 ***
 Updates a user.
 
@@ -2546,6 +2714,7 @@ Updates a user.
 #### Base Command
 
 `sophos-firewall-user-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2583,9 +2752,11 @@ Updates a user.
 
 
 #### Command Example
+
 ```!sophos-firewall-user-update name=user username=user description="Description for the user"```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -2625,6 +2796,7 @@ Updates a user.
 #### Human Readable Output
 
 >### User Object details
+>
 >|Username|Name|Description|Group|UserType|Status|
 >|---|---|---|---|---|---|
 >| user | user | Description for the user | Guest Group | User | Active |
@@ -2632,6 +2804,7 @@ Updates a user.
 
 
 ### sophos-firewall-user-delete
+
 ***
 Deletes an existing user.
 
@@ -2639,6 +2812,7 @@ Deletes an existing user.
 #### Base Command
 
 `sophos-firewall-user-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2655,9 +2829,11 @@ Deletes an existing user.
 
 
 #### Command Example
+
 ```!sophos-firewall-user-delete name=user```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -2672,6 +2848,7 @@ Deletes an existing user.
 #### Human Readable Output
 
 >### Deleting User Objects Results
+>
 >|Name|IsDeleted|
 >|---|---|
 >| user | true |
@@ -2679,6 +2856,7 @@ Deletes an existing user.
 
 
 ### sophos-firewall-app-policy-list
+
 ***
 Lists all app policies. IMPORTANT: Listing starst at 0 (not 1)!
 
@@ -2686,6 +2864,7 @@ Lists all app policies. IMPORTANT: Listing starst at 0 (not 1)!
 #### Base Command
 
 `sophos-firewall-app-policy-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2707,9 +2886,11 @@ Lists all app policies. IMPORTANT: Listing starst at 0 (not 1)!
 
 
 #### Command Example
+
 ```!sophos-firewall-app-policy-list start=0 end=6```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -2782,6 +2963,7 @@ Lists all app policies. IMPORTANT: Listing starst at 0 (not 1)!
 #### Human Readable Output
 
 >### Showing 0 to 6 ApplicationFilterPolicy objects out of 12
+>
 >|Name|Description|MicroAppSupport|DefaultAction|RuleList|
 >|---|---|---|---|---|
 >| Allow All | Allow All Policy. | True | Allow |  |
@@ -2796,6 +2978,7 @@ Lists all app policies. IMPORTANT: Listing starst at 0 (not 1)!
 
 
 ### sophos-firewall-app-policy-get
+
 ***
 Gets a single app policy by name.
 
@@ -2803,6 +2986,7 @@ Gets a single app policy by name.
 #### Base Command
 
 `sophos-firewall-app-policy-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2822,9 +3006,11 @@ Gets a single app policy by name.
 
 
 #### Command Example
+
 ```!sophos-firewall-app-policy-get name=apppolicy```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -2842,6 +3028,7 @@ Gets a single app policy by name.
 #### Human Readable Output
 
 >### ApplicationFilterPolicy Object details
+>
 >|Name|Description|MicroAppSupport|DefaultAction|
 >|---|---|---|---|
 >| apppolicy | Description for app policy object | True | Allow |
@@ -2849,6 +3036,7 @@ Gets a single app policy by name.
 
 
 ### sophos-firewall-app-policy-add
+
 ***
 Adds a new app policy.
 
@@ -2856,6 +3044,7 @@ Adds a new app policy.
 #### Base Command
 
 `sophos-firewall-app-policy-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2887,9 +3076,11 @@ Adds a new app policy.
 
 
 #### Command Example
+
 ```!sophos-firewall-app-policy-add name=apppolicy```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -2907,6 +3098,7 @@ Adds a new app policy.
 #### Human Readable Output
 
 >### ApplicationFilterPolicy Object details
+>
 >|Name|MicroAppSupport|DefaultAction|
 >|---|---|---|
 >| apppolicy | True | Allow |
@@ -2914,6 +3106,7 @@ Adds a new app policy.
 
 
 ### sophos-firewall-app-policy-update
+
 ***
 Updates an existing app policy.
 
@@ -2921,6 +3114,7 @@ Updates an existing app policy.
 #### Base Command
 
 `sophos-firewall-app-policy-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2952,9 +3146,11 @@ Updates an existing app policy.
 
 
 #### Command Example
+
 ```!sophos-firewall-app-policy-update name=apppolicy description="Description for app policy object"```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -2972,6 +3168,7 @@ Updates an existing app policy.
 #### Human Readable Output
 
 >### ApplicationFilterPolicy Object details
+>
 >|Name|Description|MicroAppSupport|DefaultAction|
 >|---|---|---|---|
 >| apppolicy | Description for app policy object | True | Allow |
@@ -2979,6 +3176,7 @@ Updates an existing app policy.
 
 
 ### sophos-firewall-app-policy-delete
+
 ***
 Deletes an existing app policy.
 
@@ -2986,6 +3184,7 @@ Deletes an existing app policy.
 #### Base Command
 
 `sophos-firewall-app-policy-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3002,9 +3201,11 @@ Deletes an existing app policy.
 
 
 #### Command Example
+
 ```!sophos-firewall-app-policy-delete name=apppolicy```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -3019,6 +3220,7 @@ Deletes an existing app policy.
 #### Human Readable Output
 
 >### Deleting ApplicationFilterPolicy Objects Results
+>
 >|Name|IsDeleted|
 >|---|---|
 >| apppolicy | true |
@@ -3026,6 +3228,7 @@ Deletes an existing app policy.
 
 
 ### sophos-firewall-app-category-list
+
 ***
 Lists all app filter categories. IMPORTANT: Listing starts at 0 (not 1)!
 
@@ -3033,6 +3236,7 @@ Lists all app filter categories. IMPORTANT: Listing starts at 0 (not 1)!
 #### Base Command
 
 `sophos-firewall-app-category-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3053,9 +3257,11 @@ Lists all app filter categories. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Command Example
+
 ```!sophos-firewall-app-category-list start=0 end=6```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -3110,6 +3316,7 @@ Lists all app filter categories. IMPORTANT: Listing starts at 0 (not 1)!
 #### Human Readable Output
 
 >### Showing 0 to 6 ApplicationFilterCategory objects out of 25
+>
 >|Name|Description|QoSPolicy|BandwidthUsageType|
 >|---|---|---|---|
 >| Conferencing | Conferencing | None |  |
@@ -3121,6 +3328,7 @@ Lists all app filter categories. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 ### sophos-firewall-app-category-get
+
 ***
 Gets a single app filter category by name.
 
@@ -3128,6 +3336,7 @@ Gets a single app filter category by name.
 #### Base Command
 
 `sophos-firewall-app-category-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3146,9 +3355,11 @@ Gets a single app filter category by name.
 
 
 #### Command Example
+
 ```!sophos-firewall-app-category-get name=Gaming```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -3166,6 +3377,7 @@ Gets a single app filter category by name.
 #### Human Readable Output
 
 >### ApplicationFilterCategory Object details
+>
 >|Name|Description|QoSPolicy|BandwidthUsageType|
 >|---|---|---|---|
 >| Gaming | Gaming Sites and Applications | policy | Individual |
@@ -3173,6 +3385,7 @@ Gets a single app filter category by name.
 
 
 ### sophos-firewall-app-category-update
+
 ***
 Updates an existing app filter category.
 
@@ -3180,6 +3393,7 @@ Updates an existing app filter category.
 #### Base Command
 
 `sophos-firewall-app-category-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3200,9 +3414,11 @@ Updates an existing app filter category.
 
 
 #### Command Example
+
 ```!sophos-firewall-app-category-update name=Gaming qos_policy=policy```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -3220,6 +3436,7 @@ Updates an existing app filter category.
 #### Human Readable Output
 
 >### ApplicationFilterCategory Object details
+>
 >|Name|Description|QoSPolicy|BandwidthUsageType|
 >|---|---|---|---|
 >| Gaming | Gaming Sites and Applications | policy | Individual |
@@ -3227,6 +3444,7 @@ Updates an existing app filter category.
 
 
 ### sophos-firewall-web-filter-list
+
 ***
 Lists all web filter policies. IMPORTANT: Listing starts at 0 (not 1)!
 
@@ -3234,6 +3452,7 @@ Lists all web filter policies. IMPORTANT: Listing starts at 0 (not 1)!
 #### Base Command
 
 `sophos-firewall-web-filter-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3256,9 +3475,11 @@ Lists all web filter policies. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Command Example
+
 ```!sophos-firewall-web-filter-list start=0 end=6```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -3734,6 +3955,7 @@ Lists all web filter policies. IMPORTANT: Listing starts at 0 (not 1)!
 #### Human Readable Output
 
 >### Showing 0 to 6 WebFilterPolicy objects out of 12
+>
 >|Name|Description|DefaultAction|EnableReporting|DownloadFileSizeRestrictionEnabled|DownloadFileSizeRestriction|RuleList|
 >|---|---|---|---|---|---|---|
 >| No Web Mail or Chat | Deny access to web mail and online chat sites | Allow | Enable | 0 | 0 | Rule: {'CategoryList': {'Category': {'ID': 'Web E-Mail', 'type': 'WebCategory'}}, 'HTTPAction': 'Deny', 'HTTPSAction': 'Deny', 'FollowHTTPAction': '1', 'ExceptionList': {'FileTypeCategory': None}, 'Schedule': 'All The Time', 'PolicyRuleEnabled': '1', 'CCLRuleEnabled': '0'},<br/>{'CategoryList': {'Category': {'ID': 'Online Chat', 'type': 'WebCategory'}}, 'HTTPAction': 'Deny', 'HTTPSAction': 'Deny', 'FollowHTTPAction': '1', 'ExceptionList': {'FileTypeCategory': None}, 'Schedule': 'All The Time', 'PolicyRuleEnabled': '1', 'CCLRuleEnabled': '0'} |
@@ -3746,6 +3968,7 @@ Lists all web filter policies. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 ### sophos-firewall-web-filter-get
+
 ***
 Gets a single web filter policy by name.
 
@@ -3753,6 +3976,7 @@ Gets a single web filter policy by name.
 #### Base Command
 
 `sophos-firewall-web-filter-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3774,9 +3998,11 @@ Gets a single web filter policy by name.
 
 
 #### Command Example
+
 ```!sophos-firewall-web-filter-get name=webfilter```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -3840,6 +4066,7 @@ Gets a single web filter policy by name.
 #### Human Readable Output
 
 >### WebFilterPolicy Object details
+>
 >|Name|Description|DefaultAction|EnableReporting|DownloadFileSizeRestrictionEnabled|DownloadFileSizeRestriction|RuleList|
 >|---|---|---|---|---|---|---|
 >| webfilter | Description for web filter | Allow | Enable | 1 | 300 | Rule: {'CategoryList': {'Category': {'ID': 'Blocked URLs for Default Policy', 'type': 'URLGroup'}}, 'HTTPAction': 'Allow', 'HTTPSAction': 'Allow', 'FollowHTTPAction': '1', 'ExceptionList': {'FileTypeCategory': None}, 'Schedule': 'All Time on Sunday', 'PolicyRuleEnabled': '0', 'CCLRuleEnabled': '0'},<br/>{'CategoryList': {'Category': {'ID': '1', 'type': 'URLGroup'}}, 'HTTPAction': 'Allow', 'HTTPSAction': 'Allow', 'FollowHTTPAction': '0', 'ExceptionList': {'FileTypeCategory': None}, 'Schedule': 'All Time on Sunday', 'PolicyRuleEnabled': '0', 'CCLRuleEnabled': '0'} |
@@ -3847,6 +4074,7 @@ Gets a single web filter policy by name.
 
 
 ### sophos-firewall-web-filter-add
+
 ***
 Adds a new web filter policy.
 
@@ -3854,6 +4082,7 @@ Adds a new web filter policy.
 #### Base Command
 
 `sophos-firewall-web-filter-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3895,9 +4124,11 @@ Adds a new web filter policy.
 
 
 #### Command Example
+
 ```!sophos-firewall-web-filter-add name=webfilter default_action=Allow enable_reporting=Enable download_file_size_restriction=300 download_file_size_restriction_enabled=1 enforce_image_licensing=1 enforce_safe_search=1 goog_app_domain_list=gmail.com goog_app_domain_list_enabled=1 http_action=Allow https_action=Allow schedule="All Time on Sunday" youtube_filter_enabled=1 youtube_filter_is_strict=1 ccl_rule_enabled=0 follow_http_action=1 policy_rule_enabled=0 url_group_names="Blocked URLs for Default Policy"```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -3942,6 +4173,7 @@ Adds a new web filter policy.
 #### Human Readable Output
 
 >### WebFilterPolicy Object details
+>
 >|Name|DefaultAction|EnableReporting|DownloadFileSizeRestrictionEnabled|DownloadFileSizeRestriction|RuleList|
 >|---|---|---|---|---|---|
 >| webfilter | Allow | Enable | 1 | 300 | Rule: {"CategoryList": {"Category": {"ID": "Blocked URLs for Default Policy", "type": "URLGroup"}}, "HTTPAction": "Allow", "HTTPSAction": "Allow", "FollowHTTPAction": "1", "ExceptionList": {"FileTypeCategory": null}, "Schedule": "All Time on Sunday", "PolicyRuleEnabled": "0", "CCLRuleEnabled": "0"} |
@@ -3949,6 +4181,7 @@ Adds a new web filter policy.
 
 
 ### sophos-firewall-web-filter-update
+
 ***
 Updates an existing web filter policy.
 
@@ -3956,6 +4189,7 @@ Updates an existing web filter policy.
 #### Base Command
 
 `sophos-firewall-web-filter-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3997,9 +4231,11 @@ Updates an existing web filter policy.
 
 
 #### Command Example
+
 ```!sophos-firewall-web-filter-update name=webfilter default_action=Allow enable_reporting=Enable download_file_size_restriction=300 download_file_size_restriction_enabled=1 enforce_image_licensing=0 enforce_safe_search=1 goog_app_domain_list=gmail.com goog_app_domain_list_enabled=1 http_action=Allow https_action=Allow schedule="All Time on Sunday" youtube_filter_enabled=1 youtube_filter_is_strict=0 ccl_rule_enabled=0 follow_http_action=0 policy_rule_enabled=0 url_group_names=1 description="Description for web filter"```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -4063,6 +4299,7 @@ Updates an existing web filter policy.
 #### Human Readable Output
 
 >### WebFilterPolicy Object details
+>
 >|Name|Description|DefaultAction|EnableReporting|DownloadFileSizeRestrictionEnabled|DownloadFileSizeRestriction|RuleList|
 >|---|---|---|---|---|---|---|
 >| webfilter | Description for web filter | Allow | Enable | 1 | 300 | Rule: {'CategoryList': {'Category': {'ID': 'Blocked URLs for Default Policy', 'type': 'URLGroup'}}, 'HTTPAction': 'Allow', 'HTTPSAction': 'Allow', 'FollowHTTPAction': '1', 'ExceptionList': {'FileTypeCategory': None}, 'Schedule': 'All Time on Sunday', 'PolicyRuleEnabled': '0', 'CCLRuleEnabled': '0'},<br/>{'CategoryList': {'Category': {'ID': '1', 'type': 'URLGroup'}}, 'HTTPAction': 'Allow', 'HTTPSAction': 'Allow', 'FollowHTTPAction': '0', 'ExceptionList': {'FileTypeCategory': None}, 'Schedule': 'All Time on Sunday', 'PolicyRuleEnabled': '0', 'CCLRuleEnabled': '0'} |
@@ -4070,6 +4307,7 @@ Updates an existing web filter policy.
 
 
 ### sophos-firewall-web-filter-delete
+
 ***
 Deletes an existing web filter policy.
 
@@ -4077,6 +4315,7 @@ Deletes an existing web filter policy.
 #### Base Command
 
 `sophos-firewall-web-filter-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4093,9 +4332,11 @@ Deletes an existing web filter policy.
 
 
 #### Command Example
+
 ```!sophos-firewall-web-filter-delete name=webfilter```
 
 #### Context Example
+
 ```json
 {
     "SophosFirewall": {
@@ -4110,6 +4351,7 @@ Deletes an existing web filter policy.
 #### Human Readable Output
 
 >### Deleting WebFilterPolicy Objects Results
+>
 >|Name|IsDeleted|
 >|---|---|
 >| webfilter | true |

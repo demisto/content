@@ -1,9 +1,11 @@
 Manage teams and members in Microsoft Teams.
 
 ## Authorization
+
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
 
 In order to connect to the Azure Network Security Group using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
+
 1. Fill in the required parameters.
 2. Run the ***!microsoft-teams-auth-start*** command.
 3. Follow the instructions that appear.
@@ -22,6 +24,7 @@ You only need to fill in your subscription ID and resource group name. For more 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal, with mobile and desktop flows enabled.
 
 Required Permissions
+
 * Group.ReadWrite.All - Application
 * Team.ReadBasic.All - Application
 * TeamMember.ReadWrite.All - Application
@@ -42,9 +45,12 @@ Required Permissions
 | Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### microsoft-teams-auth-test
+
 ***
 Tests the connectivity to Microsoft.
 
@@ -52,14 +58,17 @@ Tests the connectivity to Microsoft.
 #### Base Command
 
 `microsoft-teams-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
 
 #### Human Readable Output
+>
 >✅ Success!
 
 ### microsoft-teams-auth-start
+
 ***
 Run this command to start the authorization process and follow the instructions in the command results.
 
@@ -67,12 +76,15 @@ Run this command to start the authorization process and follow the instructions 
 #### Base Command
 
 `microsoft-teams-auth-start`
+
 #### Input
 
 There are no input arguments for this command.
 
 #### Human Readable Output
+>
 >### Authorization instructions
+>
 >        1. To sign in, use a web browser to open the page:
 >            [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
 >           and enter the code **XXXXXXXX** to authenticate.
@@ -80,6 +92,7 @@ There are no input arguments for this command.
 
 
 ### microsoft-teams-auth-complete
+
 ***
 Run this command to complete the authorization process. Should be used after running the ***microsoft-teams-auth-start*** command.
 
@@ -87,14 +100,17 @@ Run this command to complete the authorization process. Should be used after run
 #### Base Command
 
 `microsoft-teams-auth-complete`
+
 #### Input
 
 There are no input arguments for this command.
 
 #### Human Readable Output
+>
 >✅ Authorization completed successfully.
 
 ### microsoft-teams-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
@@ -102,6 +118,7 @@ Run this command if for some reason you need to rerun the authentication process
 #### Base Command
 
 `microsoft-teams-auth-reset`
+
 #### Input
 
 There are no input arguments for this command.
@@ -109,7 +126,9 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >Authorization was reset successfully. You can now run ***!microsoft-teams-auth-start*** and ***!microsoft-teams-auth-complete***.
+>
 ### microsoft-teams-team-create
+
 ***
 Creates a new team.
 
@@ -150,6 +169,7 @@ Creates a new team.
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-teams-team-create display_name="Sample Engineering Team" owner=3fa9f28b-eb0e-463a-ba7b-8089fe9991e2```
 
 #### Human Readable Output
@@ -157,6 +177,7 @@ There is no context output for this command.
 >Team Sample Engineering Team was created successfully.
 
 ### microsoft-teams-team-create-from-group
+
 ***
 Create a new team under a group. In order to create a team, the group must have a least one owner and the group cannot be of type Security.
 
@@ -197,6 +218,7 @@ Create a new team under a group. In order to create a team, the group must have 
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-teams-team-create-from-group group_id=7bc73bf4-c88e-4e0c-a927-6b52d19ca3e6```
 
 #### Human Readable Output
@@ -204,6 +226,7 @@ There is no context output for this command.
 >The team was created from group 7bc73bf4-c88e-4e0c-a927-6b52d19ca3e6 successfully.
 
 ### microsoft-teams-teams-list
+
 ***
 Returns all the groups that have teams in an organization.
 
@@ -233,16 +256,18 @@ There are no input arguments for this command.
 | MicrosoftTeams.Team.mailEnabled | Boolean | Specifies whether the group is mail-enabled. | 
 | MicrosoftTeams.Team.displayName | String | The display name for the group. | 
 | MicrosoftTeams.Team.visibility | String | Specifies the visibility of a Microsoft 365 group. Possible values are: Private, Public, or Hiddenmembership. Blank values are treated as public. | 
-| MicrosoftTeams.Team.proxyAddresses | String | Email addresses for the group that direct to the same group mailbox. For example: \["SMTP: bob@demisto.com", "smtp: bob@sales.demisto.com"\] | 
-| MicrosoftTeams.Team.mail | String | The SMTP address for the group, for example, "serviceadmins@contoso.onmicrosoft.com". | 
+| MicrosoftTeams.Team.proxyAddresses | String | Email addresses for the group that direct to the same group mailbox. For example: \["SMTP: <bob@demisto.com>", "smtp: <bob@sales.demisto.com>"\] | 
+| MicrosoftTeams.Team.mail | String | The SMTP address for the group, for example, "<serviceadmins@contoso.onmicrosoft.com>". | 
 | MicrosoftTeams.Team.id | String | The unique identifier for the group. | 
 | MicrosoftTeams.Team.description | String | An optional description for the group. | 
 
 
 #### Command Example
+
 ```!microsoft-teams-teams-list```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftTeams": {
@@ -287,12 +312,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Microsoft Teams List
+>
 >|id|displayName|createdDateTime|description|
 >|---|---|---|---|
 >| 02bd9fd6-8f93-4758-87c3-1fb73740a315 | HR Taskforce | 2014-01-01T00:00:00Z | Welcome to the HR Taskforce team. |
 >| 8090c93e-ba7c-433e-9f39-08c7ba07c0b3 | X1050 Launch Team | 2014-01-01T00:00:00Z | Welcome to the team that we've assembled to launch our product. |
 
 ### microsoft-teams-team-get
+
 ***
 Retrieve the properties and relationships of the specified team.
 
@@ -326,9 +353,11 @@ Retrieve the properties and relationships of the specified team.
 
 
 #### Command Example
+
 ```!microsoft-teams-team-get team_id=489080f2-98c3-4993-84ec-fa0aac622b2e```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftTeams": {
@@ -372,11 +401,13 @@ Retrieve the properties and relationships of the specified team.
 #### Human Readable Output
 
 >### Team 489080f2-98c3-4993-84ec-fa0aac622b2e
+>
 >|discoverySettings|funSettings|guestSettings|isArchived|memberSettings|messagingSettings|
 >|---|---|---|---|---|---|
 >| showInTeamsSearchAndSuggestions: true | allowGiphy: true\<br/\>giphyContentRating: strict\<br/\>allowStickersAndMemes: true\<br/\>allowCustomMemes: true | allowCreateUpdateChannels: true\<br/\>allowDeleteChannels: true | false | allowCreateUpdateChannels: true\<br/\>allowDeleteChannels: true\<br/\>allowAddRemoveApps: true\<br/\>allowCreateUpdateRemoveTabs: true\<br/\>allowCreateUpdateRemoveConnectors: true | allowUserEditMessages: true\<br/\>allowUserDeleteMessages: true\<br/\>allowOwnerDeleteMessages: true\<br/\>allowTeamMentions: true\<br/\>allowChannelMentions: true |
 
 ### microsoft-teams-team-update
+
 ***
 Update the properties of the specified team.
 
@@ -417,6 +448,7 @@ Update the properties of the specified team.
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-teams-team-update team_id=489080f2-98c3-4993-84ec-fa0aac622b2e description=NewDescription```
 
 #### Human Readable Output
@@ -424,6 +456,7 @@ There is no context output for this command.
 >Team 489080f2-98c3-4993-84ec-fa0aac622b2e was updated successfully.
 
 ### microsoft-teams-team-delete
+
 ***
 Deletes a group. Note: it might take time for the team to disappear from the teams list.
 
@@ -448,6 +481,7 @@ Deletes a group. Note: it might take time for the team to disappear from the tea
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-teams-team-delete team_id=8d64be1b-590f-4afd-9bac-0b31b3703300```
 
 #### Human Readable Output
@@ -455,6 +489,7 @@ There is no context output for this command.
 >Team 8d64be1b-590f-4afd-9bac-0b31b3703300 was deleted successfully.
 
 ### microsoft-teams-members-list
+
 ***
 Returns the members of the specified team.
 
@@ -486,9 +521,11 @@ Returns the members of the specified team.
 
 
 #### Command Example
+
 ```!microsoft-teams-members-list team_id=489080f2-98c3-4993-84ec-fa0aac622b2e```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftTeams": {
@@ -527,13 +564,15 @@ Returns the members of the specified team.
 #### Human Readable Output
 
 >### Team 489080f2-98c3-4993-84ec-fa0aac622b2e Members List
+>
 >|id|displayName|email|roles|
 >|---|---|---|---|
->| ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk= | Adele Vance | AdeleV@M365x987948.OnMicrosoft.com |  |
->| ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM1OThlZmNkNC1lNTQ5LTQwMmEtOTYwMi0wYjUwMjAxZmFlYmU= | MOD Administrator | admin@M365x987948.OnMicrosoft.com | owner |
->| MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyM3NTJmNTBiNy0yNTZmLTQ1MzktYjc3NS1jNGQxMmYyZTQ3MjI= | Harry Johnson | harry@M365x987948.OnMicrosoft.com |  |
+>| ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk= | Adele Vance | <AdeleV@M365x987948.OnMicrosoft.com> |  |
+>| ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM1OThlZmNkNC1lNTQ5LTQwMmEtOTYwMi0wYjUwMjAxZmFlYmU= | MOD Administrator | <admin@M365x987948.OnMicrosoft.com> | owner |
+>| MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyM3NTJmNTBiNy0yNTZmLTQ1MzktYjc3NS1jNGQxMmYyZTQ3MjI= | Harry Johnson | <harry@M365x987948.OnMicrosoft.com> |  |
 
 ### microsoft-teams-member-get
+
 ***
 Gets a member of a team.
 
@@ -566,9 +605,11 @@ Gets a member of a team.
 
 
 #### Command Example
+
 ```!microsoft-teams-member-get membership_id=NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyMzZmE5ZjI4Yi1lYjBlLTQ2M2EtYmE3Yi04MDg5ZmU5OTkxZTI= team_id=489080f2-98c3-4993-84ec-fa0aac622b2e```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftTeams": {
@@ -592,11 +633,13 @@ Gets a member of a team.
 #### Human Readable Output
 
 >### Team Member NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyMzZmE5ZjI4Yi1lYjBlLTQ2M2EtYmE3Yi04MDg5ZmU5OTkxZTI= Details
+>
 >|id|displayName|email|roles|
 >|---|---|---|---|
 >| /ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk= | John Doe |  | owner |
 
 ### microsoft-teams-member-add
+
 ***
 Add a user to be a team member.
 
@@ -629,9 +672,11 @@ Add a user to be a team member.
 
 
 #### Command Example
+
 ```!microsoft-teams-member-add user_id=2827c1e7-edb6-4529-b50d-25984e968637 team_id=489080f2-98c3-4993-84ec-fa0aac622b2e```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftTeams": {
@@ -652,12 +697,14 @@ Add a user to be a team member.
 #### Human Readable Output
 
 >### User 2827c1e7-edb6-4529-b50d-25984e968637 was added to the team 489080f2-98c3-4993-84ec-fa0aac622b2e successfully.
+>
 >|id|displayName|email|roles|
 >|---|---|---|---|
->| ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk= | Cameron White | CameronW@M365x987948.OnMicrosoft.com | owner |
+>| ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk= | Cameron White | <CameronW@M365x987948.OnMicrosoft.com> | owner |
 
 
 ### microsoft-teams-member-remove
+
 ***
 Remove a member from the team.
 
@@ -683,6 +730,7 @@ Remove a member from the team.
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-teams-member-remove team_id=489080f2-98c3-4993-84ec-fa0aac622b2e membership_id=NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyMxZTc2NTVhNC02ZThmLTQ2NjUtYWMxNS03ZWJhMmJmOGQ4ODY=```
 
 #### Human Readable Output
@@ -690,6 +738,7 @@ There is no context output for this command.
 >Team member NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyMxZTc2NTVhNC02ZThmLTQ2NjUtYWMxNS03ZWJhMmJmOGQ4ODY= was removed from the team 489080f2-98c3-4993-84ec-fa0aac622b2e successfully.
 
 ### microsoft-teams-member-update
+
 ***
 Updates a team member.
 
@@ -722,9 +771,11 @@ Updates a team member.
 
 
 #### Command Example
+
 ```!microsoft-teams-member-update membership_id=NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyM4OTE4YzM5MC0zNWI4LTQyYzMtODNmMS04MzUyZTBlOWRmNjU= team_id=489080f2-98c3-4993-84ec-fa0aac622b2e is_owner=true```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftTeams": {
@@ -746,11 +797,13 @@ Updates a team member.
 #### Human Readable Output
 
 >### Team member NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyM4OTE4YzM5MC0zNWI4LTQyYzMtODNmMS04MzUyZTBlOWRmNjU= was updated successfully.
+>
 >|id|displayName|email|roles|
 >|---|---|---|---|
 >| NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyM4OTE4YzM5MC0zNWI4LTQyYzMtODNmMS04MzUyZTBlOWRmNjU= | John Doe |  | owner |
 
 ### microsoft-teams-team-archive
+
 ***
 Archive the specified team. When a team is archived, users can no longer send or like messages on any channel in the team, edit the team's name, description, or other settings, or in general make most changes to the team. Membership changes to the team continue to be allowed. Archiving is an async operation. A team is archived once the async operation completes successfully, which may occur subsequent to a response from this command. In order to archive a team, the team and group must have an owner.
 
@@ -775,6 +828,7 @@ Archive the specified team. When a team is archived, users can no longer send or
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-teams-team-archive team_id=d74944a4-8dca-4cc5-9892-b1f73b4a4419```
 
 #### Human Readable Output
@@ -782,6 +836,7 @@ There is no context output for this command.
 >Team d74944a4-8dca-4cc5-9892-b1f73b4a4419 was archived successfully.
 
 ### microsoft-teams-team-unarchive
+
 ***
 Restore an archived team. This restores the users' ability to send messages and edit the team, abiding by tenant and team settings. Unarchiving is an async operation. A team is unarchived once the async operation completes successfully, which may occur subsequent to a response from this command.
 
@@ -806,6 +861,7 @@ Restore an archived team. This restores the users' ability to send messages and 
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-teams-team-unarchive team_id=d74944a4-8dca-4cc5-9892-b1f73b4a4419```
 
 #### Human Readable Output
@@ -813,6 +869,7 @@ There is no context output for this command.
 >Team d74944a4-8dca-4cc5-9892-b1f73b4a4419 was unarchived successfully.
 
 ### microsoft-teams-team-clone
+
 ***
 Create a copy of a team. This operation also creates a copy of the corresponding group. Cloning is a long-running operation.
 
@@ -844,6 +901,7 @@ Create a copy of a team. This operation also creates a copy of the corresponding
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-teams-team-clone team_id=6e0d7429-4736-4373-bfb7-a1b59e3c463a display_name=Cloned```
 
 #### Human Readable Output
@@ -851,6 +909,7 @@ There is no context output for this command.
 >Team 6e0d7429-4736-4373-bfb7-a1b59e3c463a was cloned successfully.
 
 ### microsoft-teams-teams-list-joined
+
 ***
 Get the teams in Microsoft Teams that the user is a direct member of.
 
@@ -884,9 +943,11 @@ Get the teams in Microsoft Teams that the user is a direct member of.
 
 
 #### Command Example
+
 ```!microsoft-teams-teams-list-joined user_id=3fa9f28b-eb0e-463a-ba7b-8089fe9991e2```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftTeams": {
@@ -930,6 +991,7 @@ Get the teams in Microsoft Teams that the user is a direct member of.
 #### Human Readable Output
 
 >### User 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 Teams
+>
 >|id|displayName|description|
 >|---|---|---|
 >| 02bd9fd6-8f93-4758-87c3-1fb73740a315 | MyGreatTeam | desc |

@@ -1,6 +1,7 @@
 Extract fields from a certificate file and return the standard context
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Extract fields from a certificate file and return the standard context
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Extract fields from a certificate file and return the standard context
 | entry_id | Certificate entry ID \(in DER or PEM format\) |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -62,9 +65,11 @@ Extract fields from a certificate file and return the standard context
 
 
 ## Script Example
+
 ```!CertificateExtract entry_id="978@5b925e3c-6ab8-4209-86bf-10f4ed6a9dc0"```
 
 ## Context Example
+
 ```json
 {
     "Certificate": {

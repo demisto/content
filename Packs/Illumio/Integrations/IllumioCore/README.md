@@ -15,9 +15,12 @@ This integration was integrated and tested with version 1.1.2 of Illumio Python 
 | Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### illumio-traffic-analysis
+
 ***
 Retrieves traffic flow of a particular port & protocol within the specified time range based on policy decisions.
 
@@ -25,6 +28,7 @@ Retrieves traffic flow of a particular port & protocol within the specified time
 #### Base Command
 
 `illumio-traffic-analysis`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -61,8 +65,11 @@ Retrieves traffic flow of a particular port & protocol within the specified time
 | Illumio.TrafficFlows.timestamp_range.first_detected | Date | Time range when traffic was first detected. | 
 
 #### Command example
+
 ```!illumio-traffic-analysis port=8443```
+
 #### Context Example
+
 ```json
 {
     "Illumio": {
@@ -155,6 +162,7 @@ Retrieves traffic flow of a particular port & protocol within the specified time
 #### Human Readable Output
 
 >### Traffic Analysis:
+>
 >|Source IP|Destination IP|Service Port|Service Protocol|Policy Decision|State|Flow Direction|First Detected|Last Detected|
 >|---|---|---|---|---|---|---|---|---|
 >| 127.0.0.1 | 127.0.0.3 | 8443 | TCP | potentially_blocked | closed | inbound | 01 Oct 2022, 10:53 AM | 01 Oct 2022, 10:53 AM |
@@ -163,6 +171,7 @@ Retrieves traffic flow of a particular port & protocol within the specified time
 
 
 ### illumio-virtual-service-create
+
 ***
 Creates a virtual service for a particular port & protocol, which can be further binded to workloads. Until provisioned with the 'illumio-object-provision' command, this object will remain in a draft state.
 
@@ -170,6 +179,7 @@ Creates a virtual service for a particular port & protocol, which can be further
 #### Base Command
 
 `illumio-virtual-service-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -203,8 +213,11 @@ Creates a virtual service for a particular port & protocol, which can be further
 | Illumio.VirtualService.service_addresses | Unknown | Service addresses of the virtual service. | 
 
 #### Command example
+
 ```!illumio-virtual-service-create name=trail-service-test-10002 port=8443 protocol=TCP```
+
 #### Context Example
+
 ```json
 {
     "Illumio": {
@@ -240,6 +253,7 @@ Creates a virtual service for a particular port & protocol, which can be further
 #### Human Readable Output
 
 >### Virtual Service:
+>
 >#### Successfully created virtual service: /orgs/1/sec_policy/draft/virtual_services/cb620c40-6e54-4875-b81c-8a3f22c9c7fc
 >
 >|Virtual Service HREF|Created At|Updated At|Name|Service Port|Service Protocol|
@@ -248,6 +262,7 @@ Creates a virtual service for a particular port & protocol, which can be further
 
 
 ### illumio-service-binding-create
+
 ***
 Binds the existing or a new virtual service to the workloads.
 
@@ -255,6 +270,7 @@ Binds the existing or a new virtual service to the workloads.
 #### Base Command
 
 `illumio-service-binding-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -271,8 +287,11 @@ Binds the existing or a new virtual service to the workloads.
 | Illumio.ServiceBinding.href | String | Label URI. | 
 
 #### Command example
+
 ```!illumio-service-binding-create workloads=/orgs/1/workloads/1b34ea55-315c-4a86-afdb-ba8eacf4e1c5 virtual_service=/orgs/1/sec_policy/draft/virtual_services/79cc1d7d-7460-43fc-a3ac-45cf73022bd7```
+
 #### Context Example
+
 ```json
 {
     "Illumio": {
@@ -288,13 +307,16 @@ Binds the existing or a new virtual service to the workloads.
 #### Human Readable Output
 
 >### Service Binding:
+>
 >#### Workloads have been bounded to the virtual service successfully.
+>
 >|Service Binding HREF|Status|
 >|---|---|
 >| /orgs/1/service_bindings/e78f4e7f-dummy | created |
 
 
 ### illumio-object-provision
+
 ***
 A utility method for provisioning policy objects from draft to active state. Policy objects only affect the network once they've been provisioned.
 
@@ -302,6 +324,7 @@ A utility method for provisioning policy objects from draft to active state. Pol
 #### Base Command
 
 `illumio-object-provision`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -330,8 +353,11 @@ A utility method for provisioning policy objects from draft to active state. Pol
 | Illumio.PolicyState.provisioned_hrefs | Unknown | List of active hrefs after provisioning. | 
 
 #### Command example
+
 ```!illumio-object-provision security_policy_objects=/orgs/1/sec_policy/draft/virtual_services/ac9f932a-1934-47d7-90cd-859a4c93a59f```
+
 #### Context Example
+
 ```json
 {
     "Illumio": {
@@ -366,13 +392,16 @@ A utility method for provisioning policy objects from draft to active state. Pol
 #### Human Readable Output
 
 >### Provision Objects:
+>
 >### Provision is completed for /orgs/1/sec_policy/dummy
+>
 >|Provision Object URI|Commit Message|Created At|
 >|---|---|---|
 >| /orgs/1/sec_policy/2148 | XSOAR - 2022-10-03T12:18:13.993389<br/>Provisioning following objects:<br/>/orgs/1/sec_policy/draft/virtual_services/ac9f932a-1934-47d7-90cd-859a4c93a59f | 03 Oct 2022, 12:18 PM |
 
 
 ### illumio-workload-get
+
 ***
 Retrieves the details of the workload based on the provided workload's HREF.
 
@@ -380,6 +409,7 @@ Retrieves the details of the workload based on the provided workload's HREF.
 #### Base Command
 
 `illumio-workload-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -499,8 +529,11 @@ Retrieves the details of the workload based on the provided workload's HREF.
 | Illumio.Workloads.ike_authentication_certificate | String | IKE authentication certificate for certificate-based Secure Connect and Machine Auth connections. | 
 
 #### Command example
+
 ```!illumio-workload-get href=/orgs/1/workloads/b0426bc0-c6c6-4ef8-bd8a-2a1771f97503```
+
 #### Context Example
+
 ```json
 {
     "Illumio": {
@@ -625,12 +658,14 @@ Retrieves the details of the workload based on the provided workload's HREF.
 #### Human Readable Output
 
 >### Workload Details:
+>
 >|Workload HREF|Created At|Updated At|Hostname|
 >|---|---|---|---|
 >| /orgs/1/workloads/b0426bc0-dummy | 22 Oct 2020, 01:27 AM | 03 Oct 2022, 11:28 AM | perf-workload-56770 |
 
 
 ### illumio-workloads-list
+
 ***
 Retrieves the list of workloads based on the provided filters.
 
@@ -638,6 +673,7 @@ Retrieves the list of workloads based on the provided filters.
 #### Base Command
 
 `illumio-workloads-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -765,8 +801,11 @@ Retrieves the list of workloads based on the provided filters.
 | Illumio.Workloads.ike_authentication_certificate | String | IKE authentication certificate for certificate-based Secure Connect and Machine Auth connections. | 
 
 #### Command example
+
 ```!illumio-workloads-list max_results=2```
+
 #### Context Example
+
 ```json
 {
     "Illumio": {
@@ -888,6 +927,7 @@ Retrieves the list of workloads based on the provided filters.
 
 
 ### illumio-enforcement-boundary-create
+
 ***
 Creates an enforcement boundary for a particular port/protocol. After completion of this command, provisioning will be done using the "illumio-object-provision" command.
 
@@ -895,6 +935,7 @@ Creates an enforcement boundary for a particular port/protocol. After completion
 #### Base Command
 
 `illumio-enforcement-boundary-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -933,8 +974,11 @@ Creates an enforcement boundary for a particular port/protocol. After completion
 | Illumio.EnforcementBoundary.caps | Unknown | Array of permissions for the entity to the current user - an empty array implies read only access. | 
 
 #### Command example
+
 ```!illumio-enforcement-boundary-create consumers=ams providers=ams name=trail-service-test-10002 port=8443```
+
 #### Context Example
+
 ```json
 {
     "Illumio": {
@@ -972,6 +1016,7 @@ Creates an enforcement boundary for a particular port/protocol. After completion
 
 
 ### illumio-enforcement-mode-update
+
 ***
 Update the Enforcement Mode for one or more workloads.
 
@@ -979,6 +1024,7 @@ Update the Enforcement Mode for one or more workloads.
 #### Base Command
 
 `illumio-enforcement-mode-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -995,8 +1041,11 @@ Update the Enforcement Mode for one or more workloads.
 | Illumio.UpdateStatuses.status | String | Whether the operation was successful or not. | 
 
 #### Command example
+
 ```!illumio-enforcement-mode-update enforcement_mode=Visibility_only workloads=/orgs/1/workloads/b98b4456-e24b-4c01-a3b8-f53cd85f1fab```
+
 #### Context Example
+
 ```json
 {
     "Illumio": {
@@ -1011,13 +1060,16 @@ Update the Enforcement Mode for one or more workloads.
 #### Human Readable Output
 
 >### Workload Enforcement Update:
+>
 >#### Successfully updated enforcement mode for 1 workloads, 0 workloads failed to update
+>
 >|Workload HREF|Status|
 >|---|---|
 >| /orgs/1/workloads/b98b4456-dummy | Updated |
 
 
 ### illumio-ip-list-get
+
 ***
 Retrieves the list of IPs based on the name of the IP list.
 
@@ -1025,6 +1077,7 @@ Retrieves the list of IPs based on the name of the IP list.
 #### Base Command
 
 `illumio-ip-list-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1055,8 +1108,11 @@ Retrieves the list of IPs based on the name of the IP list.
 | Illumio.IPLists.fqdns.description | String | Description of FQDN. | 
 
 #### Command example
+
 ```!illumio-ip-list-get href=/orgs/1/sec_policy/draft/ip_lists/35```
+
 #### Context Example
+
 ```json
 {
     "Illumio": {
@@ -1094,12 +1150,14 @@ Retrieves the list of IPs based on the name of the IP list.
 #### Human Readable Output
 
 >### IP List Details:
+>
 >|IP List HREF|Name|Created At|Updated At|IP Ranges|FQDNs|
 >|---|---|---|---|---|---|
 >| /orgs/1/sec_policy/draft/ip_lists/dummy | PCE ip range | 14 May 2021, 08:17 AM | 14 May 2021, 08:17 AM | 127.0.0.1 - 127.0.0.1 | 2x2devtestscr1.ilabs.io |
 
 
 ### illumio-ip-lists-get
+
 ***
 Retrieves the list of IPs based on the query parameters.
 
@@ -1107,6 +1165,7 @@ Retrieves the list of IPs based on the query parameters.
 #### Base Command
 
 `illumio-ip-lists-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1141,8 +1200,11 @@ Retrieves the list of IPs based on the query parameters.
 | Illumio.IPLists.fqdns.description | String | Description of FQDN. | 
 
 #### Command example
+
 ```!illumio-ip-lists-get max_results=2```
+
 #### Context Example
+
 ```json
 {
     "Illumio": {
@@ -1196,6 +1258,7 @@ Retrieves the list of IPs based on the query parameters.
 #### Human Readable Output
 
 >### IP Lists:
+>
 >|IP List HREF|Name|Created At|Updated At|IP Ranges|
 >|---|---|---|---|---|
 >| /orgs/1/sec_policy/draft/ip_lists/dummy-1 | Any (0.0.0.0/0 and ::/0) | 05 Apr 2019, 07:58 PM | 05 Apr 2019, 07:58 PM | 127.0.0.1,127.0.0.1 |
@@ -1203,6 +1266,7 @@ Retrieves the list of IPs based on the query parameters.
 
 
 ### illumio-ruleset-create
+
 ***
 Creates a ruleset with a unique name. Until provisioned with the 'illumio-object-provision' command, this object will remain in a draft state.
 
@@ -1210,6 +1274,7 @@ Creates a ruleset with a unique name. Until provisioned with the 'illumio-object
 #### Base Command
 
 `illumio-ruleset-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1238,8 +1303,11 @@ Creates a ruleset with a unique name. Until provisioned with the 'illumio-object
 | Illumio.Ruleset.caps | Unknown | Array of permissions for the entity to the current user - an empty array implies read-only access. | 
 
 #### Command example
+
 ```!illumio-ruleset-create name=trial-ruleset-test-10002```
+
 #### Context Example
+
 ```json
 {
     "Illumio": {
@@ -1268,12 +1336,14 @@ Creates a ruleset with a unique name. Until provisioned with the 'illumio-object
 #### Human Readable Output
 
 >### Ruleset trial-ruleset-test-10002 has been created successfully.
+>
 >|Ruleset HREF|Name|Created At|Updated At|Enabled|Caps|
 >|---|---|---|---|---|---|
 >| /orgs/1/sec_policy/draft/rule_sets/dummy | trial-ruleset-test-10002 | 03 Oct 2022, 12:19 PM | 03 Oct 2022, 12:19 PM | true | write,<br/>provision |
 
 
 ### illumio-rule-create
+
 ***
 Creates & assigns rules to a particular ruleset. Added or updated Rules will remain in draft state until their containing Rule Set is provisioned using the "illumio-object-provision" command.
 
@@ -1281,6 +1351,7 @@ Creates & assigns rules to a particular ruleset. Added or updated Rules will rem
 #### Base Command
 
 `illumio-rule-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1332,8 +1403,11 @@ Creates & assigns rules to a particular ruleset. Added or updated Rules will rem
 | Illumio.Rule.resolve_labels_as.consumers | String | Consumers resolve labels. | 
 
 #### Command example
+
 ```!illumio-rule-create ruleset_href=/orgs/1/sec_policy/draft/rule_sets/2687 consumers=ams providers=ams ingress_services=/orgs/1/sec_policy/draft/services/1751```
+
 #### Context Example
+
 ```json
 {
     "Illumio": {
@@ -1385,6 +1459,7 @@ Creates & assigns rules to a particular ruleset. Added or updated Rules will rem
 #### Human Readable Output
 
 >### Rule /orgs/1/sec_policy/draft/rule_sets/2687/sec_rules/2691 has been created successfully.
+>
 >|Rule HREF|Created At|Updated At|Enabled|Network Type|Ingress Services|Providers|Consumers|Resolve Providers As|Resolve Consumers As|
 >|---|---|---|---|---|---|---|---|---|---|
 >| /orgs/1/sec_policy/draft/rule_sets/2687/sec_rules/dummy | 03 Oct 2022, 12:19 PM | 03 Oct 2022, 12:19 PM | true | brn | /orgs/1/sec_policy/draft/services/1751 | ams | ams | workloads | workloads |

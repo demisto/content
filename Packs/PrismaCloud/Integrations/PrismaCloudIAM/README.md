@@ -22,9 +22,12 @@ The Prisma Cloud IAM API consists of a set of API endpoints that allow customers
 | Outgoing Mapper |  | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### iam-create-user
+
 ***
 Creates a user.
 
@@ -32,6 +35,7 @@ Creates a user.
 #### Base Command
 
 `iam-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -57,9 +61,11 @@ Creates a user.
 
 
 #### Command Example
-```!iam-create-user user-profile=`{"email": "john.doe@example.com", "givenname": "test", "surname": "test"}````
+
+```!iam-create-user user-profile=`{"email": "<john.doe@example.com>", "givenname": "test", "surname": "test"}````
 
 #### Context Example
+
 ```json
 {
     "IAM": {
@@ -96,12 +102,14 @@ Creates a user.
 #### Human Readable Output
 
 >### Update User Results (PrismaCloudIAM)
+>
 >|brand|instanceName|success|email|details|
 >|---|---|---|---|---|
->| PrismaCloudIAM | PrismaCloudIAM_instance_1 | true | john.doe@example.com | email: john.doe@example.com<br/>firstName: test<br/>lastName: test<br/>roleId: some_role_id<br/>timeZone: America/Los_Angeles |
+>| PrismaCloudIAM | PrismaCloudIAM_instance_1 | true | <john.doe@example.com> | email: <john.doe@example.com><br/>firstName: test<br/>lastName: test<br/>roleId: some_role_id<br/>timeZone: America/Los_Angeles |
 
 
 ### iam-update-user
+
 ***
 Updates an existing user with the data passed in the user-profile argument.
 
@@ -109,6 +117,7 @@ Updates an existing user with the data passed in the user-profile argument.
 #### Base Command
 
 `iam-update-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -134,9 +143,11 @@ Updates an existing user with the data passed in the user-profile argument.
 
 
 #### Command Example
-```!iam-update-user user-profile=`{"email": "john.doe@example.com", "givenname": "John"}````
+
+```!iam-update-user user-profile=`{"email": "<john.doe@example.com>", "givenname": "John"}````
 
 #### Context Example
+
 ```json
 {
     "IAM": {
@@ -171,12 +182,14 @@ Updates an existing user with the data passed in the user-profile argument.
 #### Human Readable Output
 
 >### Update User Results (PrismaCloudIAM)
+>
 >|brand|instanceName|success|email|details|
 >|---|---|---|---|---|
->| PrismaCloudIAM | PrismaCloudIAM_instance_1 | true | john.doe@example.com | email: john.doe@example.com<br/>firstName: John<br/>roleId: some_role_id<br/>timeZone: America/Los_Angeles |
+>| PrismaCloudIAM | PrismaCloudIAM_instance_1 | true | <john.doe@example.com> | email: <john.doe@example.com><br/>firstName: John<br/>roleId: some_role_id<br/>timeZone: America/Los_Angeles |
 
 
 ### iam-get-user
+
 ***
 Retrieves a single user resource.
 
@@ -184,6 +197,7 @@ Retrieves a single user resource.
 #### Base Command
 
 `iam-get-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -208,9 +222,11 @@ Retrieves a single user resource.
 
 
 #### Command Example
-```!iam-get-user user-profile=`{"email": "john.doe@example.com"}````
+
+```!iam-get-user user-profile=`{"email": "<john.doe@example.com>"}````
 
 #### Context Example
+
 ```json
 {
     "IAM": {
@@ -259,12 +275,14 @@ Retrieves a single user resource.
 #### Human Readable Output
 
 >### Get User Results (PrismaCloudIAM)
+>
 >|brand|instanceName|success|active|id|details|
 >|---|---|---|---|---|---|
->| PrismaCloudIAM | PrismaCloudIAM_instance_1 | true | true | john.doe@example.com | email: john.doe@example.com<br/>firstName: test<br/>lastName: test<br/>timeZone: America/Los_Angeles<br/>enabled: true<br/>roleId: some_role_id<br/>lastModifiedBy: modifier@example.com<br/>lastModifiedTs: 1628152142011<br/>lastLoginTs: -1<br/>role: {"id": "some_role_id", "name": "System Admin"}<br/>roleType: System Admin<br/>displayName: test test<br/>accessKeysAllowed: true |
+>| PrismaCloudIAM | PrismaCloudIAM_instance_1 | true | true | <john.doe@example.com> | email: <john.doe@example.com><br/>firstName: test<br/>lastName: test<br/>timeZone: America/Los_Angeles<br/>enabled: true<br/>roleId: some_role_id<br/>lastModifiedBy: <modifier@example.com><br/>lastModifiedTs: 1628152142011<br/>lastLoginTs: -1<br/>role: {"id": "some_role_id", "name": "System Admin"}<br/>roleType: System Admin<br/>displayName: test test<br/>accessKeysAllowed: true |
 
 
 ### iam-disable-user
+
 ***
 Disable an active user.
 
@@ -272,6 +290,7 @@ Disable an active user.
 #### Base Command
 
 `iam-disable-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -296,9 +315,11 @@ Disable an active user.
 
 
 #### Command Example
-```!iam-disable-user user-profile=`{"email": "john.doe@example.com", "givenname": "John"}````
+
+```!iam-disable-user user-profile=`{"email": "<john.doe@example.com>", "givenname": "John"}````
 
 #### Context Example
+
 ```json
 {
     "IAM": {
@@ -328,12 +349,14 @@ Disable an active user.
 #### Human Readable Output
 
 >### Disable User Results (PrismaCloudIAM)
+>
 >|brand|instanceName|success|active|email|
 >|---|---|---|---|---|
->| PrismaCloudIAM | PrismaCloudIAM_instance_1 | true | false | john.doe@example.com |
+>| PrismaCloudIAM | PrismaCloudIAM_instance_1 | true | false | <john.doe@example.com> |
 
 
 #### Outgoing Mapper
+
 - In the `User Profile - PrismaCloudIAM (Outgoing)` you should manually configure and map the following required attributes:
     1. timeZone - the time zone of the user.
     1. roleId - the id of the role assigned to the user

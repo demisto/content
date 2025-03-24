@@ -169,8 +169,11 @@ Returns a list of users.
 
 
 #### Command example
+
 ```!vectra-user-list```
+
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -208,6 +211,7 @@ Returns a list of users.
 #### Human Readable Output
 
 >### Users Table
+>
 >|User ID|User Name|Role|Last Login Timestamp|
 >|---|---|---|---|
 >| 59 | user.name1 | Security Analyst | 2023-08-22T09:24:44Z |
@@ -271,8 +275,11 @@ Returns a list of entities.
 | Vectra.Entity.account_type | String | Account type of the entity. |
 
 #### Command example
+
 ```!vectra-entity-list entity_type=account page=1 page_size=4 tags=test,test1 prioritized=true state=active```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity(val.id && val.id == obj.id)": [
@@ -410,6 +417,7 @@ Returns a list of entities.
 #### Human Readable Output
 
 >### Entities Table (Showing Page 1 out of 1)
+>
 >|ID|Name|Entity Type|Urgency Score|Entity Importance|Last Detection Timestamp|Last Modified Timestamp|Detections IDs|Prioritize|State|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| [334](http://server_url.com/accounts/334) | account_name | account | 100 | High | 2023-05-15T09:39:24Z | 2023-07-18T09:44:24Z | [1933](http://server_url.com/detections/1933), [1934](http://server_url.com/detections/1934) | true | active | test |
@@ -468,8 +476,11 @@ Describes an entity by ID.
 | Vectra.Entity.account_type | Unknown | Account type of the entity. | 
 
 #### Command example
+
 ```!vectra-entity-describe entity_type=account entity_id=334```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity(val.id && val.id == obj.id && val.type && val.type == obj.type)": {
@@ -511,7 +522,9 @@ Describes an entity by ID.
 #### Human Readable Output
 
 >### Entity detail:
+>
 >#### Entity ID: [334](http://server_url.com/accounts/334)
+>
 >|Name|Entity Type|Urgency Score|Entity Importance|Last Detection Timestamp|Last Modified Timestamp|Detections IDs|Prioritize|State|Tags|
 >|---|---|---|---|---|---|---|---|---|---|
 >| account_name | account | 100 | High | 2023-05-15T09:39:24Z | 2023-07-28T05:25:47Z | [1933](http://server_url.com/detections/1933), [1934](http://server_url.com/detections/1934) | true | active | test |
@@ -617,8 +630,11 @@ Returns a list of detections for a specified entity.
 | Vectra.Entity.Detections.url | String | URL associated with the detection. | 
 
 #### Command example
+
 ```!vectra-entity-detection-list entity_id=1```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Detections(val.id && val.id == obj.id)": [
@@ -855,6 +871,7 @@ Returns a list of detections for a specified entity.
 #### Human Readable Output
 
 >### Detections Table (Showing Page 1 out of 1)
+>
 >|ID|Detection Name|Detection Type|Category|Account Name|Src IP|Threat Score|Certainty Score|Number Of Events|State|Last Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| [132](http://server_url.com/detections/132) | Data Smuggler | smuggler | exfiltration | [account_name](http://server_url.com/accounts/21) | 0.0.0.0 | 80 | 70 | 0 | active | 2023-06-06T17:01:04Z |
@@ -956,8 +973,11 @@ Returns a list of detections for the specified detection ID(s).
 
 
 #### Command example
+
 ```!vectra-detection-describe detection_ids=132,135,140```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Detections(val.id && val.id == obj.id)": [
@@ -1196,6 +1216,7 @@ Returns a list of detections for the specified detection ID(s).
 #### Human Readable Output
 
 >### Detections Table (Showing Page 1 out of 1)
+>
 >|ID|Detection Name|Detection Type|Category|Account Name|Src IP|Threat Score|Certainty Score|Number Of Events|State|Last Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| [132](http://server_url.com/detections/132) | Data Smuggler | smuggler | exfiltration | [account_name](http://server_url.com/accounts/21) | 0.0.0.0 | 80 | 70 | 0 | active | 2023-06-06T17:01:04Z |
@@ -1233,8 +1254,11 @@ Add a note to the entity.
 | Vectra.Entity.Notes.note | String | The content of the note. | 
 
 #### Command example
+
 ```!vectra-entity-note-add entity_id=1 entity_type=account note="test note"```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Notes(val.entity_id && val.entity_id == obj.entity_id && val.note_id && val.note_id == obj.note_id)": {
@@ -1250,6 +1274,7 @@ Add a note to the entity.
 #### Human Readable Output
 
 >##### The note has been successfully added to the entity.
+>
 >Returned Note ID: **19**
 
 
@@ -1284,8 +1309,11 @@ Update a note in the entity.
 | Vectra.Entity.Notes.note | String | Content of the note. | 
 
 #### Command example
+
 ```!vectra-entity-note-update entity_id=1 entity_type=account note_id=1 note="note modified"```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Notes(val.entity_id && val.entity_id == obj.entity_id && val.note_id && val.note_id == obj.note_id)": {
@@ -1327,12 +1355,15 @@ Remove a note from the entity.
 There is no context output for this command.
 
 #### Command Example
+
 ```!vectra-entity-note-remove entity_id=1 entity_type=account note_id=1"```
 
 #### Context Example
+
 ```json
 {}
 ```
+
 #### Human Readable Output
 
 >##### The note has been successfully removed from the entity.
@@ -1365,8 +1396,11 @@ Add tags in the entity.
 | Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. | 
 
 #### Command example
+
 ```!vectra-entity-tag-add entity_id=1 entity_type=host tags="tag1, tag2"```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Tags(val.tag_id && val.tag_id == obj.tag_id && val.entity_type && val.entity_type == obj.entity_type)": {
@@ -1384,6 +1418,7 @@ Add tags in the entity.
 #### Human Readable Output
 
 >##### Tags have been successfully added to the entity.
+>
 >Updated list of tags: **tag1**, **tag2**
 
 
@@ -1413,8 +1448,11 @@ Returns a list of tags for a specified entity.
 | Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. | 
 
 #### Command example
+
 ```!vectra-entity-tag-list entity_id=1 entity_type=host```
+
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -1465,8 +1503,11 @@ Remove tags from the entity.
 | Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. | 
 
 #### Command example
+
 ```!vectra-entity-tag-remove entity_id=1 entity_type=host tags="tag2"```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Tags(val.tag_id && val.tag_id == obj.tag_id && val.entity_type && val.entity_type == obj.entity_type && val.entity_id && val.entity_id == obj.entity_id)": {
@@ -1481,6 +1522,7 @@ Remove tags from the entity.
 #### Human Readable Output
 
 >##### Specified tags have been successfully removed for the entity.
+>
 >Updated list of tags: **tag1**
 
 
@@ -1504,12 +1546,15 @@ Mark detection as fixed with provided detection IDs in argument.
 There is no context output for this command.
 
 #### Command Example
+
 ```!vectra-detections-mark-fixed detection_ids=1,2,3```
 
 #### Context Example
+
 ```json
 {}
 ```
+
 #### Human Readable Output
 
 >##### The provided detection IDs have been successfully marked as fixed.
@@ -1535,12 +1580,15 @@ Unmark detection as fixed with provided detection IDs in argument.
 There is no context output for this command.
 
 #### Command Example
+
 ```!vectra-detections-unmark-fixed detection_ids=1,2,3```
 
 #### Context Example
+
 ```json
 {}
 ```
+
 #### Human Readable Output
 
 >##### The provided detection IDs have been successfully unmarked as fixed.
@@ -1594,9 +1642,11 @@ Add an assignment for the entity.
 | Vectra.Entity.Assignments.assigned_to.username | String | Username of the user who is currently assigned to the entity. | 
 
 #### Command Example
+
 ```!vectra-entity-assignment-add entity_id=1 entity_type=account user_id=1```
 
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Assignments(val.assignment_id && val.assignment_id == obj.assignment_id)": {
@@ -1628,13 +1678,16 @@ Add an assignment for the entity.
   }
 }
 ```
+
 #### Human Readable Output
 
 >##### The assignment has been successfully created.
+>
 >### Assignment detail
+>
 >|Assignment ID|Assigned By|Assigned Date|Assigned To|Event Type|
 >|---|---|---|---|---|
->| 1 | test_user_2 | 2023-07-24T08:52:59.367115Z | test.user@mail.com | created |
+>| 1 | test_user_2 | 2023-07-24T08:52:59.367115Z | <test.user@mail.com> | created |
 
 
 ### vectra-entity-assignment-update
@@ -1685,9 +1738,11 @@ Update an assignment in the entity.
 | Vectra.Entity.Assignments.assigned_to.username | String | Username of the user who is currently assigned to the entity. | 
 
 #### Command Example
+
 ```!vectra-entity-assignment-update assignment_id=1 user_id=2```
 
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Assignments(val.assignment_id && val.assignment_id == obj.assignment_id)": {
@@ -1731,10 +1786,13 @@ Update an assignment in the entity.
   }
 }
 ```
+
 #### Human Readable Output
 
 >##### The assignment has been successfully updated.
+>
 >### Assignment detail
+>
 >|Assignment ID|Assigned By|Assigned Date|Assigned To|Event Type|
 >|---|---|---|---|---|
 >| 1 | api_client | 2023-07-21T12:44:10Z | test_user_2 | reassigned |
@@ -1794,9 +1852,11 @@ Resolve an assignment in the entity.
 | Vectra.Entity.Assignments.assigned_to.username | String | Username of the user who is currently assigned to the entity. | 
 
 #### Command Example
+
 ```!vectra-entity-assignment-resolve assignment_id=116 outcome="Custom outcome" detection_ids=1431,1432,1433 triage_as="triage rule" ```
 
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Assignments(val.assignment_id && val.assignment_id == obj.assignment_id)": {
@@ -1865,6 +1925,7 @@ Resolve an assignment in the entity.
   }
 }
 ```
+
 #### Human Readable Output
 
 >##### The assignment has been successfully resolved.
@@ -1891,12 +1952,15 @@ Mark the detections of the entity as fixed with the provided entity ID in the ar
 There is no context output for this command.
 
 #### Command Example
+
 ```!vectra-entity-detections-mark-fixed entity_id=1 entity_type="account"```
 
 #### Context Example
+
 ```json
 {}
 ```
+
 #### Human Readable Output
 
 >##### The detections  (1431, 1432) of the provided entity ID have been successfully marked as fixed.
@@ -1934,9 +1998,11 @@ Download pcap of the detection.
 | File.Extension | String | The file extension. | 
 
 #### Command Example
+
 ```!vectra-detection-pcap-download detection_id="116"```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -1954,6 +2020,7 @@ Download pcap of the detection.
   }
 }
 ```
+
 #### Human Readable Output
 
 >Uploaded file: IP-192.168.55.10_hidden_dns_tunnel_1382.pcap
@@ -2020,9 +2087,11 @@ Returns a list of all assignments.
 | Vectra.Entity.Assignments.assigned_to.username | String | Username of the user who is currently assigned to the entity. | 
 
 #### Command Example
+
 ```!vectra-assignment-list```
 
 #### Context Example
+
 ```json
 {
     "Vectra": {
@@ -2134,13 +2203,15 @@ Returns a list of all assignments.
   }
 
 ```
+
 #### Human Readable Output
 
 >### Assignments Table (Showing Page 1 out of 1)
+>
 >|Account ID|Host ID|Assignment ID|Assigned By|Assigned To|Date Assigned|Resolved By|Date Resolved|Outcome ID|Outcome|
 >|---|---|---|---|---|---|---|---|---|---|
->|  | 220 | 214 | test.user4@mail.com | test.user2@mail.com | 2023-08-18T10:55:29Z |  |  |  |  |
->| 108 |  | 212 | test.user4@mail.com | test.user1@mail.com | 2023-08-18T06:29:56Z | test.user4@mail.com | 2023-08-18T06:32:09Z | 1 | Benign True Positive |
+>|  | 220 | 214 | <test.user4@mail.com> | <test.user2@mail.com> | 2023-08-18T10:55:29Z |  |  |  |  |
+>| 108 |  | 212 | <test.user4@mail.com> | <test.user1@mail.com> | 2023-08-18T06:29:56Z | <test.user4@mail.com> | 2023-08-18T06:32:09Z | 1 | Benign True Positive |
 
 
 ### vectra-assignment-outcome-list
@@ -2170,9 +2241,11 @@ Returns a list of all entity assignment outcomes.
 | Vectra.Entity.Assignments.Outcomes.category | String | Category of the assignment outcome. | 
 
 #### Command Example
+
 ```!vectra-assignment-outcome-list page=1 page_size=5```
 
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -2221,9 +2294,11 @@ Returns a list of all entity assignment outcomes.
 }
 
 ```
+
 #### Human Readable Output
 
 >### Assignment Outcomes Table (Showing Page 1 out of 1)
+>
 >|ID|Title|Category|Built IN|User Selectable|
 >|---|---|---|---|---|
 >| 1 | Benign True Positive | benign_true_positive | true | true |
@@ -2265,9 +2340,11 @@ Returns a list of notes for a specified entity.
 | Vectra.Entity.Notes.entity_type | String | Type of the entity associated with the note. | 
 
 #### Command Example
+
 ```!vectra-entity-note-list entity_id="107" entity_type="account"```
 
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -2308,13 +2385,15 @@ Returns a list of notes for a specified entity.
 }
 
 ```
+
 #### Human Readable Output
 
 >### Entity Notes Table
+>
 >|Note ID|Note|Created By|Created Date|Modified By|Modified Date|
 >|---|---|---|---|---|---|
->| 1070 | From XSOAR | test_user@mail.com | 2023-08-25T07:09:08Z | test_user@mail.com | 2023-08-25T08:10:08Z |
->| 1069 | Test note | test_user@mail.com | 2023-08-25T07:08:58Z | test_user@mail.com | 2023-08-25T08:10:08Z |
+>| 1070 | From XSOAR | <test_user@mail.com> | 2023-08-25T07:09:08Z | <test_user@mail.com> | 2023-08-25T08:10:08Z |
+>| 1069 | Test note | <test_user@mail.com> | 2023-08-25T07:08:58Z | <test_user@mail.com> | 2023-08-25T08:10:08Z |
 >| 922 | [Mirrored From XSOAR] XSOAR Incident ID: 14228<br>Note:XSOAR note<br>Added By: admin | api_client | 2023-08-16T05:23:33Z |  |  |
 
 
@@ -2367,9 +2446,11 @@ Returns a list of all groups.
 | Vectra.Group.cognito_managed | Boolean | Whether the group is managed by Cognito or not. | 
 
 #### Command Example
+
 ```!vectra-group-list```
 
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -2469,9 +2550,11 @@ Returns a list of all groups.
   }
 }
 ```
+
 #### Human Readable Output
 
 >### Groups Table
+>
 >|Group ID|Name|Group Type|Description|Importance|Members|Last Modified Timestamp|
 >|---|---|---|---|---|---|---|
 >| 1 | Cognito - Box | domain | Domains used by the Box service | medium | \*\.abc\.com, \*\.xyz\.net | 2023-05-31T13:57:53Z |
@@ -2517,9 +2600,11 @@ Assign members to the specified group.
 | Vectra.Group.rules.description | String | Description of the rule. | 
 
 #### Command Example
+
 ```!vectra-group-assign group_id=23 members="*.domain4.com,*.domain5.com"```
 
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -2543,10 +2628,13 @@ Assign members to the specified group.
   }
 }
 ```
+
 #### Human Readable Output
 
 >### Member(s) \*.domain4.com, \*.domain5.com have been assigned to the group.
+>
 >### Updated group details:
+>
 >|Group ID|Name|Group Type|Description|Members|Last Modified Timestamp|
 >|---|---|---|---|---|---|
 >| 1 | xsoar-group-accout-test | domain | xsoar-group-accout-test | \*\.domain1\.net, \*\.domain2\.com, \*\.domain3\.com, \*\.domain4\.com, \*\.domain5\.com | 2023-09-04T06:30:01Z |
@@ -2590,9 +2678,11 @@ Unassign members from the specified group.
 | Vectra.Group.rules.description | String | Description of the rule. | 
 
 #### Command Example
+
 ```!vectra-group-unassign group_id=23 members="*.domain4.com,*.domain5.com"```
 
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -2610,10 +2700,13 @@ Unassign members from the specified group.
   }
 }
 ```
+
 #### Human Readable Output
 
 >### Member(s) \*.domain4.com, \*.domain5.com have been unassigned from the group.
+>
 >### Updated group details:
+>
 >|Group ID|Name|Group Type|Description|Members|Last Modified Timestamp|
 >|---|---|---|---|---|---|
 >| 1 | xsoar-group-accout-test | domain | xsoar-group-accout-test | \*\.domain1\.net, \*\.domain2\.com, \*\.domain3\.com | 2023-09-04T07:30:01Z |

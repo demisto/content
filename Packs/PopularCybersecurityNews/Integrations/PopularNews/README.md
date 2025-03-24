@@ -6,6 +6,7 @@ How to use this integration ?
 4. Additionally, the playbook allows the user to configure to choose between the three sources using the Playbook inputs.
 
 This integration was integrated and tested with version 1.0.0 of Popular News
+
 ## Configure Popular News in Cortex
 
 
@@ -14,9 +15,12 @@ This integration was integrated and tested with version 1.0.0 of Popular News
 |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### get-news-KrebsOnSecurity
+
 ***
 Get News from KrebsOnSecurity
 
@@ -24,6 +28,7 @@ Get News from KrebsOnSecurity
 #### Base Command
 
 `get-news-KrebsOnSecurity`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -35,6 +40,7 @@ Get News from KrebsOnSecurity
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -42,6 +48,7 @@ There is no context output for this command.
 
 
 ### get-news-Threatpost
+
 ***
 Get News from Threatpost
 
@@ -49,6 +56,7 @@ Get News from Threatpost
 #### Base Command
 
 `get-news-Threatpost`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -60,6 +68,7 @@ Get News from Threatpost
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -67,6 +76,7 @@ There is no context output for this command.
 
 
 ### get-news-TheHackerNews
+
 ***
 Get News from TheHackerNews
 
@@ -74,6 +84,7 @@ Get News from TheHackerNews
 #### Base Command
 
 `get-news-TheHackerNews`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -85,6 +96,7 @@ Get News from TheHackerNews
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -92,6 +104,7 @@ There is no context output for this command.
 
 
 ### get-news-generic-all
+
 ***
 Get News from all outlets
 
@@ -99,6 +112,7 @@ Get News from all outlets
 #### Base Command
 
 `get-news-generic-all`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -110,6 +124,7 @@ Get News from all outlets
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

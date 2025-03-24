@@ -1,4 +1,5 @@
 Integration for sending notifications to a Google Chat space via Incoming Webhook.
+
 ## Configure Google Chat via Webhook in Cortex
 
 
@@ -63,7 +64,7 @@ Send a customizable card to Google Chat Space via Incoming Webhook
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| blocks | JSON blocks copied from https://addons.gsuite.google.com/uikit/builder. | Required | 
+| blocks | JSON blocks copied from <https://addons.gsuite.google.com/uikit/builder>. | Required | 
 | threadName | If replying to a thread, use this argument to specify the thread name to reply to. | Optional | 
 
 #### Context Output

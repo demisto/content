@@ -250,6 +250,7 @@ Retrieves an IronDefense event.
 | IronDefense.Event.vue_url | String | The url for displaying the event within IronVUE. | 
 | IronDefense.Event.Context.name | String | The name of the context table. | 
 | IronDefense.Event.Context.columns | String | Column values for the context table. | 
+
 ### irondefense-get-alerts
 
 ***
@@ -310,6 +311,7 @@ Pulls Alerts from IronDefense.
 | IronDefense.Query.GetAlerts.limit | Number | The maximum number of results that were requested to be returned. | 
 | IronDefense.Query.GetAlerts.offset | Number | The number of results that were skipped - used for paging the results. | 
 | IronDefense.Query.GetAlerts.total | Number | The total number of results possible from the query. | 
+
 ### irondefense-get-alert-irondome-information
 
 ***
@@ -397,6 +399,7 @@ Retrieves IronDome information for an IronDefense alert.
 | IronDome.Notification.dome_notification.severity_malicious_details.generated_threat_intel_rules.vue_url | String | The IronVUE URL of a Threat Intelligence rule that was automatically created based on an IronDome correlation. | 
 | IronDome.Notification.dome_notification.high_cognitive_system_score_details.enterprise_alert_score | Number | The alert score for the enterprise. | 
 | IronDome.Notification.dome_notification.high_cognitive_system_score_details.cognitive_system_score | Number | The cognitive system score. | 
+
 ### irondefense-get-events-from-alert
 
 ***

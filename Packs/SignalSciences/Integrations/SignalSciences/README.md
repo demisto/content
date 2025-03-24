@@ -3501,6 +3501,7 @@
 
 
 ### sigsci-get-events
+
 ***
 Fetches events from Signal Sciences.
 
@@ -3508,6 +3509,7 @@ Fetches events from Signal Sciences.
 #### Base Command
 
 `sigsci-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

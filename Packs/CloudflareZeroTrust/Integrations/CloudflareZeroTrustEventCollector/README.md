@@ -6,7 +6,7 @@ This integration was integrated and tested with version 1 of Cloudflare Zero Tru
 
 | **Parameter** | **Required** | **Additional Info** |
 | --- | --- | --- |
-| Server URL | True | The base URL for the Cloudflare API (e.g., https://api.cloudflare.com). |
+| Server URL | True | The base URL for the Cloudflare API (e.g., <https://api.cloudflare.com>). |
 | Trust any certificate (not secure) | False | |
 | Use system proxy settings | False | |
 | Maximum number of account audit logs per fetch | False | |

@@ -24,6 +24,7 @@ This integration was integrated and tested with v21.11 of SOCRadar.
 4. Click **Test** to validate API key and connection to SOCRadar Threat Feeds/IOC API.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -35,6 +36,7 @@ various API endpoints that SOCRadar provides.
 For the information about the SOCRadar API keys and how to obtain them, please see [SOCRadar API](https://platform.socradar.com/docs/api/intro/) documentation.
 
 ### socradar-get-indicators
+
 ***
 Retrieves SOCRadar Recommended Threat Intelligences Collections.
 
@@ -42,6 +44,7 @@ Retrieves SOCRadar Recommended Threat Intelligences Collections.
 #### Base Command
 
 `socradar-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -75,6 +78,7 @@ Retrieves SOCRadar Recommended Threat Intelligences Collections.
 | SOCRadarThreatFeed.Indicators[0].Geo Location.ZipCode | String | Zip code field Geographical location information of the IP type indicator. | 
 
 #### Command Example
+
 ```!socradar-get-indicators collections_to_fetch="SOCRadar-APT-Recommended-Block-Domain" limit=2```
 
 #### Context Example
@@ -115,6 +119,7 @@ Retrieves SOCRadar Recommended Threat Intelligences Collections.
 #### Human Readable Output
 
 >### Indicators from SOCRadar ThreatFeed Collections (SOCRadar-APT-Recommended-Block-Domain):
+>
 >|Feed Maintainer Name|First Seen Date|Indicator|Indicator Type|Last Seen Date|Seen Count
 >|---|---|---|---|---|---|
 >| SOCRadar-APT Feed | 2021-07-15 07:04:29 | dump-indicator.domain | Domain | 2021-07-16 07:04:49 | 2
@@ -122,12 +127,14 @@ Retrieves SOCRadar Recommended Threat Intelligences Collections.
 
 
 ### socradar-reset-fetch-indicators
+
 ***
 Resets the indicator fetch history.
 
 #### Base Command
 
 `socradar-reset-fetch-indicators`
+
 #### Input
 
 There are no input arguments for this command.
@@ -137,6 +144,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!socradar-reset-fetch-indicators```
 
 #### Human Readable Output

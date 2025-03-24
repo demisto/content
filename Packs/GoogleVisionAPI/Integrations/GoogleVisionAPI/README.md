@@ -10,9 +10,12 @@ Image processing with Google Vision API
 | Trust any certificate (not secure) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### google-vision-detect-logos
+
 ***
 Detects brand logos in the given image.
 
@@ -20,6 +23,7 @@ Detects brand logos in the given image.
 #### Base Command
 
 `google-vision-detect-logos`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

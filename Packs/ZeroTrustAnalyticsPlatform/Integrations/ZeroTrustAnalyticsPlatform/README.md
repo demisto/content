@@ -26,9 +26,12 @@ This integration was integrated and tested with version 2021-06-25 of ZeroTrustA
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### get-mapping-fields
+
 ***
 Get mapping fields from remote incident.
 
@@ -36,6 +39,7 @@ Get mapping fields from remote incident.
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -47,6 +51,7 @@ Get mapping fields from remote incident.
 There is no context output for this command.
 
 #### Command Example
+
 ```!get-mapping-fields```
 
 #### Human Readable Output
@@ -54,6 +59,7 @@ There is no context output for this command.
 
 
 ### get-remote-data
+
 ***
 Get remote data from a remote incident. This command should only be called manually for debugging purposes.
 
@@ -61,6 +67,7 @@ Get remote data from a remote incident. This command should only be called manua
 #### Base Command
 
 `get-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -74,6 +81,7 @@ Get remote data from a remote incident. This command should only be called manua
 There is no context output for this command.
 
 #### Command Example
+
 ```
 !get-remote-data id=1 lastUpdate=2000-01-1
 ```
@@ -83,6 +91,7 @@ There is no context output for this command.
 
 
 ### ztap-get-alert-entries
+
 ***
 Get the entries data from a remote incident.
 
@@ -90,6 +99,7 @@ Get the entries data from a remote incident.
 #### Base Command
 
 `ztap-get-alert-entries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -102,6 +112,7 @@ Get the entries data from a remote incident.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ztap-get-alert-entries id=1```
 
 #### Human Readable Output

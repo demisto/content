@@ -1,4 +1,5 @@
 The script is doing the following things:
+
 1. Extract the `index.zip` file from the production public bucket - `marketplace-dist`.
 2. Filter new packs since the given date.
 3. Retrieve data from the marketplace metadata file for each pack.

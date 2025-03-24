@@ -1,6 +1,7 @@
 Returns a string concatenated with given prefix & suffix which supports DT expressions.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Returns a string concatenated with given prefix & suffix which supports DT expre
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -24,19 +26,23 @@ Returns a string concatenated with given prefix & suffix which supports DT expre
 | keep_symbol_to_null | Set to true not to replace a value if the variable is null, otherwise false. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ## Getting Started
+
 ---
 The transformer concatenates prefix and suffix which supports DT expressions to the string.
 
 ## Examples
+
 ---
 
 ### Build an email address from a user ID by appending a domain
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | jdoe | |
@@ -49,6 +55,7 @@ The transformer concatenates prefix and suffix which supports DT expressions to 
 | keep_symbol_to_null | | |
 
 #### Context Data
+
 ```
 {
   "domain": "paloaltonetworks.com"
@@ -56,6 +63,7 @@ The transformer concatenates prefix and suffix which supports DT expressions to 
 ```
 
 #### Output
+
 ```
 jdoe@paloaltonetworks.com
 ```
@@ -65,6 +73,7 @@ jdoe@paloaltonetworks.com
 ### Build an email address by adding a user ID to the domain
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | paloaltonetworks.com | |
@@ -77,6 +86,7 @@ jdoe@paloaltonetworks.com
 | keep_symbol_to_null | | |
 
 #### Context Data
+
 ```
 {
   "userid": "jdoe"
@@ -84,6 +94,7 @@ jdoe@paloaltonetworks.com
 ```
 
 #### Output
+
 ```
 jdoe@paloaltonetworks.com
 ```
@@ -93,6 +104,7 @@ jdoe@paloaltonetworks.com
 ### Change the variable start and end marker to the windows command shell style such as %name%.
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | paloaltonetworks.com | |
@@ -105,6 +117,7 @@ jdoe@paloaltonetworks.com
 | keep_symbol_to_null | | |
 
 #### Context Data
+
 ```
 {
   "userid": "jdoe"
@@ -112,6 +125,7 @@ jdoe@paloaltonetworks.com
 ```
 
 #### Output
+
 ```
 jdoe@paloaltonetworks.com
 ```
@@ -121,6 +135,7 @@ jdoe@paloaltonetworks.com
 ### Change the variable start and end marker to the UNIX shell style such as $name.
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | paloaltonetworks.com | |
@@ -133,6 +148,7 @@ jdoe@paloaltonetworks.com
 | keep_symbol_to_null | | |
 
 #### Context Data
+
 ```
 {
   "userid": "jdoe"
@@ -140,6 +156,7 @@ jdoe@paloaltonetworks.com
 ```
 
 #### Output
+
 ```
 jdoe@paloaltonetworks.com
 ```
@@ -149,6 +166,7 @@ jdoe@paloaltonetworks.com
 ### Keep variable names if they are missing in the context.
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | paloaltonetworks.com | |
@@ -161,12 +179,14 @@ jdoe@paloaltonetworks.com
 | keep_symbol_to_null | true | |
 
 #### Context Data
+
 ```
 {
 }
 ```
 
 #### Output
+
 ```
 ${userid}@paloaltonetworks.com
 ```
@@ -176,6 +196,7 @@ ${userid}@paloaltonetworks.com
 ### Use DTs to build variables.
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | paloaltonetworks.com | |
@@ -188,6 +209,7 @@ ${userid}@paloaltonetworks.com
 | keep_symbol_to_null | | |
 
 #### Context Data
+
 ```
 {
   "userid": "jdoe"
@@ -195,6 +217,7 @@ ${userid}@paloaltonetworks.com
 ```
 
 #### Output
+
 ```
 JDOE@paloaltonetworks.com
 ```
@@ -204,6 +227,7 @@ JDOE@paloaltonetworks.com
 ### Use nested DTs to build variables.
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | John Doe | |
@@ -216,6 +240,7 @@ JDOE@paloaltonetworks.com
 | keep_symbol_to_null | | |
 
 #### Context Data
+
 ```
 {
   "message-1": "This is a test message.",
@@ -224,6 +249,7 @@ JDOE@paloaltonetworks.com
 ```
 
 #### Output
+
 ```
 Hello, John Doe. This is a test message.
 ```

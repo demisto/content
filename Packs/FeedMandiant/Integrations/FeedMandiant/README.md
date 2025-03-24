@@ -16,7 +16,7 @@ Mandiant Feed Integration.
 | feedExpirationPolicy | The feed's expiration policy. | False |
 | Mandiant indicator type | The indicators' type to fetch. Indicator type might include the following: Domains, IPs, Files and URLs. | False |
 | First fetch time | The maximum value allowed is 90 days. | False |
-| Server URL (e.g. https://api.intelligence.fireeye.com) |  | True |
+| Server URL (e.g. <https://api.intelligence.fireeye.com>) |  | True |
 | Maximum number of indicators per fetch |  | False |
 | Tags | Supports CSV values. | False |
 | Timeout | API calls timeout. | False |
@@ -27,9 +27,12 @@ Mandiant Feed Integration.
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### feed-mandiant-get-indicators
+
 ***
 get mandiant indicators
 
@@ -37,6 +40,7 @@ get mandiant indicators
 #### Base Command
 
 `feed-mandiant-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

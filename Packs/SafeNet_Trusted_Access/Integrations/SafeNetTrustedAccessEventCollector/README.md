@@ -5,7 +5,7 @@ Retrieve access, authentication, and audit logs and stores them in a Security In
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| URL | The URL consists of the root part of the REST API Endpoint URL provided in SafeNet Trusted Access, and has the form https://api.\[name\].com | True |
+| URL | The URL consists of the root part of the REST API Endpoint URL provided in SafeNet Trusted Access, and has the form <https://api.\[name\].com> | True |
 | Tenant Code | Tenant code for your virtual server or account. | True |
 | API Key for the authentication. |  | True |
 | The product name corresponding to the integration that originated the events |  | False |
@@ -16,9 +16,12 @@ Retrieve access, authentication, and audit logs and stores them in a Security In
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### sta-get-events
+
 ***
 Get access, authentication, and audit logs from SafeNet Trusted Access.
 
@@ -26,6 +29,7 @@ Get access, authentication, and audit logs from SafeNet Trusted Access.
 #### Base Command
 
 `sta-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -39,12 +43,17 @@ Get access, authentication, and audit logs from SafeNet Trusted Access.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!sta-get-events should_push_events=false since="10 seconds"```
+
 #### Human Readable Output
 
 >### Event Logs
+>
 >Marker: 111111
+>
 >|category|context|details|id|logVersion|timeStamp|
 >|---|---|---|---|---|---|
 >| AUDIT | tenantId: TENENTID<br/>originatingAddress: 1.1.1.1<br/>principalId: ID<br/>globalAccessId: ID | type: AUTHENTICATION<br/>serial: SERIAL<br/>action: 0<br/>actionText: AUTH_ATTEMPT<br/>result: 1<br/>resultText: AUTH_SUCCESS<br/>agentId: ID<br/>message: MSG <br/>credentialType: TYPE | $ID | 1.0 | 2022-01-01T00:00:00.00000Z |

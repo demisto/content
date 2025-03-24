@@ -1,6 +1,7 @@
 Downloads PCAPs related to the requested events. This supports rate throttling.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Downloads PCAPs related to the requested events. This supports rate throttling.
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * event-pcap-download
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -25,5 +29,6 @@ This script uses the following commands and scripts.
 | waitms | Downloads `burstsize` files every time, and wait `waitms` milliseconds each time. The defaults are 10 files and 500ms. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

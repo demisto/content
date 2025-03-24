@@ -6,7 +6,7 @@ the API available as part of Vision Licensing and integrate the data into XSOAR.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://example.net) |  | True |
+| Server URL (e.g. <https://example.net>) |  | True |
 | Access Token |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |

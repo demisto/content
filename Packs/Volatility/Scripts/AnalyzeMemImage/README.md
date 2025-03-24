@@ -1,6 +1,7 @@
 Runs common memory image analysis commands.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Runs common memory image analysis commands.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ Runs common memory image analysis commands.
 | system | The system with `Volatility` installed to be used for the analysis. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

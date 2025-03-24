@@ -1,6 +1,7 @@
 Stops the scheduled task whose ID is given in the taskID argument.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Stops the scheduled task whose ID is given in the taskID argument.
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ Stops the scheduled task whose ID is given in the taskID argument.
 | taskID | The ID of the schedule to stop. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

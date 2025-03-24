@@ -1,6 +1,7 @@
 This script gets content files as input from the context, commits the files in the correct folder and creates the pull request text.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,12 +10,15 @@ This script gets content files as input from the context, commits the files in t
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * Pull Request Creation - Github
 * Pull Request Creation - Bitbucket
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -28,6 +32,7 @@ This script is used in the following playbooks and scripts.
 | template | Pull request description template. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

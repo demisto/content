@@ -117,8 +117,11 @@ Create a new ticket.
 | HelpdeskAdvanced.Ticket.UserID | string | The user ID of the ticket. | 
 
 #### Command example
+
 ```!hda-create-ticket object_type_id=T2 ticket_priority_id=P4 ticket_status_id=S3```
+
 #### Context Example
+
 ```json
 {
     "HelpdeskAdvanced": {
@@ -211,6 +214,7 @@ Create a new ticket.
 #### Human Readable Output
 
 >### Ticket Created
+>
 >|Object Description|Object Entity|Ticket Classification ID|Is New|Expiration Date|First Update User ID|Owner User ID|Date|Assigned User ID|
 >|---|---|---|---|---|---|---|---|---|
 >| 12345678C:  | Incident | INC | false | 2023-10-04T15:45:00Z | S00000C | S00000C | 2023-10-04T07:45:09Z | S00000C |
@@ -276,8 +280,11 @@ List tickets.
 | HelpdeskAdvanced.Ticket.UrgencyID | string | The urgency ID of the ticket. | 
 
 #### Command example
+
 ```!hda-list-tickets```
+
 #### Context Example
+
 ```json
 {
     "HelpdeskAdvanced": {
@@ -327,6 +334,7 @@ List tickets.
 #### Human Readable Output
 
 >### Tickets
+>
 >|Ticket ID|Subject|Solution|Date|Service ID|Problem|Contact ID|Owner User ID|Account ID|
 >|---|---|---|---|---|---|---|---|---|
 >| 10000000C | Problem |  | 2019-04-25T07:03:48Z | S000X | Problem | S24007C | S00000C | C00C |
@@ -351,6 +359,7 @@ Add an attachment to a ticket.
 #### Context Output
 
 There is no context output for this command.
+
 ### hda-list-ticket-attachments
 
 ***
@@ -396,8 +405,11 @@ List attachments for a ticket.
 | HelpdeskAdvanced.Ticket.Attachment.UniqueID | string | A unique ID for the attachment. | 
 
 #### Command example
+
 ```!hda-list-ticket-attachments ticket_id=A0000001C```
+
 #### Context Example
+
 ```json
 {
     "HelpdeskAdvanced": {
@@ -437,6 +449,7 @@ List attachments for a ticket.
 #### Human Readable Output
 
 >### Attachments of A0000001C
+>
 >|File Name|Last Update|Description|Object Description|First Update User ID|Object Entity|Content Type|
 >|---|---|---|---|---|---|---|
 >| test.txt | 2023-09-29T08:30:04Z | test.txt | test.txt | S00000C | Attachment | text/plain |
@@ -462,8 +475,11 @@ Add a comment to a ticket.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!hda-add-ticket-comment comment="here be comment" site_visible=True ticket_id=A0000001C```
+
 #### Human Readable Output
 
 >Comment was succesfully added to A0000001C
@@ -491,8 +507,11 @@ List ticket statuses.
 | HelpdeskAdvanced.TicketStatus.Name | String | The status name. | 
 
 #### Command example
+
 ```!hda-list-ticket-statuses```
+
 #### Context Example
+
 ```json
 {
     "HelpdeskAdvanced": {
@@ -513,6 +532,7 @@ List ticket statuses.
 #### Human Readable Output
 
 >### Results
+>
 >|Description|ID|
 >|---|---|
 >| New | S1 |
@@ -538,8 +558,11 @@ Change the status of a ticket.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!hda-change-ticket-status status_id=S2 ticket_id=1111111111C note=testing debug-mode=true```
+
 #### Human Readable Output
 
 >Changed status of ticket 1111111111C to S2 successfully.
@@ -607,8 +630,11 @@ Get ticket history.
 | HelpdeskAdvanced.TicketHistory.Username | string | The username associated with the ticket. | 
 
 #### Command example
+
 ```!hda-get-ticket-history ticket_id=1111111C```
+
 #### Context Example
+
 ```json
 {
     "HelpdeskAdvanced": {
@@ -641,6 +667,7 @@ Get ticket history.
 #### Human Readable Output
 
 >### Ticket History: 1111111C
+>
 >|Update Date|Ticket ID|Operation Type ID|Operation Description|Full Name|
 >|---|---|---|---|
 >| 2023-10-04T07:45:35Z | 1111111C |  | Status change | John Doe |
@@ -675,8 +702,11 @@ List users.
 | HelpdeskAdvanced.User.Phone | string | The user's phone number. | 
 
 #### Command example
+
 ```!hda-list-users```
+
 #### Context Example
+
 ```json
 {
     "HelpdeskAdvanced": {
@@ -696,9 +726,10 @@ List users.
 #### Human Readable Output
 
 >### PAT HelpDeskAdvanced Users
+>
 >|Phone|ID|First Name|Last Name|E Mail|
 >|---|---|---|---|---|
->|  | #GUEST# |  | Guest | Guest@example.com |
+>|  | #GUEST# |  | Guest | <Guest@example.com> |
 
 
 ### hda-list-groups
@@ -728,8 +759,11 @@ List groups.
 | HelpdeskAdvanced.Group.Description | string | The group description. | 
 
 #### Command example
+
 ```!hda-list-groups```
+
 #### Context Example
+
 ```json
 {
     "HelpdeskAdvanced": {
@@ -747,6 +781,7 @@ List groups.
 #### Human Readable Output
 
 >### PAT HelpDeskAdvanced Groups
+>
 >|Group ID|Description|Object Type ID|
 >|---|---|---|
 >| G000C | Example | 65 |

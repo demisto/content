@@ -107,6 +107,7 @@ Set device-alert status to resolved or unresolved.
 #### Context Output
 
 There is no context output for this command.
+
 ### xdome-get-device-vulnerability-relations
 
 ***

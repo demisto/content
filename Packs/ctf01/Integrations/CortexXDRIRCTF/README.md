@@ -23,6 +23,7 @@ Gets mapping fields from remote incident. Note: This method will not update the 
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-get-incident-extra-data-ctf
 
 ***

@@ -18,9 +18,12 @@ This is the default integration for this content pack when configured by the Dat
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### deepinstinctv3-get-device
+
 ***
 Get device information from its ID
 
@@ -28,6 +31,7 @@ Get device information from its ID
 #### Base Command
 
 `deepinstinctv3-get-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -71,6 +75,7 @@ Get device information from its ID
 | deepinstinctv3.devices.tenant_id | number | Device tenant ID | 
 
 ### deepinstinctv3-get-events
+
 ***
 Get all events after given event ID
 
@@ -78,6 +83,7 @@ Get all events after given event ID
 #### Base Command
 
 `deepinstinctv3-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -121,6 +127,7 @@ Get all events after given event ID
 | deepinstinctv3.Events.events.sandbox_status | string | event sandbox status | 
 
 ### deepinstinctv3-get-suspicious-events
+
 ***
 Get all suspicious events after given event ID
 
@@ -128,6 +135,7 @@ Get all suspicious events after given event ID
 #### Base Command
 
 `deepinstinctv3-get-suspicious-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -161,6 +169,7 @@ Get all suspicious events after given event ID
 | deepinstinctv3.Suspicious-Events.events.path | unknown | event file path | 
 
 ### deepinstinctv3-get-all-groups
+
 ***
 Get all groups
 
@@ -168,6 +177,7 @@ Get all groups
 #### Base Command
 
 `deepinstinctv3-get-all-groups`
+
 #### Input
 
 There are no input arguments for this command.
@@ -184,6 +194,7 @@ There are no input arguments for this command.
 | deepinstinctv3.Groups.policy_id | number | group policy ID | 
 
 ### deepinstinctv3-get-all-policies
+
 ***
 Get list of all policies
 
@@ -191,6 +202,7 @@ Get list of all policies
 #### Base Command
 
 `deepinstinctv3-get-all-policies`
+
 #### Input
 
 There are no input arguments for this command.
@@ -207,6 +219,7 @@ There are no input arguments for this command.
 | deepinstinctv3.Policies.msp_name | string | msp name | 
 
 ### deepinstinctv3-add-hash-to-deny-list
+
 ***
 Add file hash to Deny List
 
@@ -214,6 +227,7 @@ Add file hash to Deny List
 #### Base Command
 
 `deepinstinctv3-add-hash-to-deny-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -226,7 +240,9 @@ Add file hash to Deny List
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-add-hash-to-allow-list
+
 ***
 Add file hash to Allow List
 
@@ -234,6 +250,7 @@ Add file hash to Allow List
 #### Base Command
 
 `deepinstinctv3-add-hash-to-allow-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -246,7 +263,9 @@ Add file hash to Allow List
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-remove-hash-from-deny-list
+
 ***
 Remove hash from Deny List
 
@@ -254,6 +273,7 @@ Remove hash from Deny List
 #### Base Command
 
 `deepinstinctv3-remove-hash-from-deny-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -265,7 +285,9 @@ Remove hash from Deny List
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-remove-hash-from-allow-list
+
 ***
 Remove hash from Allow List
 
@@ -273,6 +295,7 @@ Remove hash from Allow List
 #### Base Command
 
 `deepinstinctv3-remove-hash-from-allow-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -284,7 +307,9 @@ Remove hash from Allow List
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-add-devices-to-group
+
 ***
 Add multiple devices to a group
 
@@ -292,6 +317,7 @@ Add multiple devices to a group
 #### Base Command
 
 `deepinstinctv3-add-devices-to-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -303,7 +329,9 @@ Add multiple devices to a group
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-remove-devices-from-group
+
 ***
 Remove list of devices from groups
 
@@ -311,6 +339,7 @@ Remove list of devices from groups
 #### Base Command
 
 `deepinstinctv3-remove-devices-from-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -322,7 +351,9 @@ Remove list of devices from groups
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-delete-files-remotely
+
 ***
 Delete multiple files remotely
 
@@ -330,6 +361,7 @@ Delete multiple files remotely
 #### Base Command
 
 `deepinstinctv3-delete-files-remotely`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -340,7 +372,9 @@ Delete multiple files remotely
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-terminate-processes
+
 ***
 Terminate list of processes
 
@@ -348,6 +382,7 @@ Terminate list of processes
 #### Base Command
 
 `deepinstinctv3-terminate-processes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -358,7 +393,9 @@ Terminate list of processes
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-close-events
+
 ***
 Close list of events
 
@@ -366,6 +403,7 @@ Close list of events
 #### Base Command
 
 `deepinstinctv3-close-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -376,7 +414,9 @@ Close list of events
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-disable-device
+
 ***
 Disable device at next check-in
 
@@ -384,6 +424,7 @@ Disable device at next check-in
 #### Base Command
 
 `deepinstinctv3-disable-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -394,7 +435,9 @@ Disable device at next check-in
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-enable-device
+
 ***
 Enable device at next check-in
 
@@ -402,6 +445,7 @@ Enable device at next check-in
 #### Base Command
 
 `deepinstinctv3-enable-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -412,7 +456,9 @@ Enable device at next check-in
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-isolate-from-network
+
 ***
 Isolate device(s) from Network
 
@@ -420,6 +466,7 @@ Isolate device(s) from Network
 #### Base Command
 
 `deepinstinctv3-isolate-from-network`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -430,7 +477,9 @@ Isolate device(s) from Network
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-release-from-isolation
+
 ***
 Release device(s) from isolation
 
@@ -438,6 +487,7 @@ Release device(s) from isolation
 #### Base Command
 
 `deepinstinctv3-release-from-isolation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -448,7 +498,9 @@ Release device(s) from isolation
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-remote-file-upload
+
 ***
 Upload file associated with given event id at next check-in
 
@@ -456,6 +508,7 @@ Upload file associated with given event id at next check-in
 #### Base Command
 
 `deepinstinctv3-remote-file-upload`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -466,7 +519,9 @@ Upload file associated with given event id at next check-in
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-upload-logs
+
 ***
 Upload device logs from given device at next check-in
 
@@ -474,6 +529,7 @@ Upload device logs from given device at next check-in
 #### Base Command
 
 `deepinstinctv3-upload-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -484,7 +540,9 @@ Upload device logs from given device at next check-in
 #### Context Output
 
 There is no context output for this command.
+
 ### deepinstinctv3-remove-device
+
 ***
 Remove agent from device at next check-in
 
@@ -492,6 +550,7 @@ Remove agent from device at next check-in
 #### Base Command
 
 `deepinstinctv3-remove-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -3,6 +3,7 @@ The output (found at the TransformIndicatorToCSFalconIOC.JsonOutput context path
 This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* command. (Available from Cortex XSOAR 6.0.0).
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,6 +13,7 @@ This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* c
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -25,6 +27,7 @@ This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* c
 | applied_globally | Whether the indicator is applied globally. <br/>Either applied_globally or host_groups must be provided. Default set to True. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -46,9 +49,13 @@ This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* c
 
 
 ## Script Examples
+
 ### Example command
+
 ```!TransformIndicatorToCSFalconIOC query="type:IP" action=no_action platforms=linux```
+
 ### Context Example
+
 ```json
 {
     "TransformIndicatorToCSFalconIOC": {
@@ -137,6 +144,7 @@ This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* c
 ### Human Readable Output
 
 >### TransformIndicatorToCSFalconIOC is done:
+>
 >|value|expiration|Severity|Tags|type|
 >|---|---|---|---|---|
 >| 9.6.3.5 | 2022-02-16T13:02:26Z | Informational | test | ipv4 |

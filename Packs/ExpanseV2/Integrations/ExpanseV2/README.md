@@ -1721,6 +1721,7 @@ Retrieve services
 | activity_status | Returns only results whose activity status matches one of the given values. Possible values are: Active, Inactive. | Optional | 
 | tag | Returns only results that are associated with the provided tag names (comma separated string). | Optional | 
 | cloud_management_status | Returns only results whose cloud management status is the following.
+
         (comma separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud'). | Optional |
 | sort | Sort by specified properties. Possible values are: firstObserved, -firstObserved, lastObserved, -lastObserved, name, -name. Default is firstObserved. | Optional | 
 

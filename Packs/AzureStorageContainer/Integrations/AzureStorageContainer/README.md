@@ -1,4 +1,5 @@
 # Azure Storage Container
+
 Create and Manage Azure Storage Container services.
 This integration was integrated and tested with version "2020-10-02" of Azure Storage Container
 
@@ -17,21 +18,30 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
 
 
 ## ## Shared Access Signatures Information (SAS)
+
 * The required SAS token for this integration should be taken at the **storage account level and not at container level**.
 
 ## Shared Access Signatures (SAS) Permissions
+
 In order to use the integration use-cases, 
 please make sure your SAS token contains the following permissions:
+
   1. 'Blob' and 'File' service.
   2. 'Service', 'Container' and 'Object' resource types.
   3. 'Read', 'Write', 'Delete', 'List', 'Create', 'Add', 'Update' and 'Immutable storage' permissions.
   4. 'Blob versioning permissions'
+
 ## Shared Key Permissions
+
 To set the AllowSharedKeyAccess property for an Azure Storage account, a user needs to have the permissions to create and manage storage accounts.
+
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-storage-container-list
+
 ***
 List Containers under the specified storage account.
 
@@ -39,6 +49,7 @@ List Containers under the specified storage account.
 #### Base Command
 
 `azure-storage-container-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -56,9 +67,11 @@ List Containers under the specified storage account.
 
 
 #### Command Example
+
 ```!azure-storage-container-list prefix="xs"```
 
 #### Context Example
+
 ```json
 {
     "AzureStorageContainer": {
@@ -72,14 +85,17 @@ List Containers under the specified storage account.
 #### Human Readable Output
 
 >### Containers List:
+>
 > Current page size: 50
 > Showing page 1 out others that may exist
+>
 >|Name|
 >|---|
 >| xsoar |
 
 
 ### azure-storage-container-create
+
 ***
 Create a new Container under the specified account.
 
@@ -87,11 +103,12 @@ Create a new Container under the specified account.
 #### Base Command
 
 `azure-storage-container-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| container_name | The name of the Container to create. Rules for naming containers can be found here:<br/>https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata<br/>. | Required | 
+| container_name | The name of the Container to create. Rules for naming containers can be found here:<br/><https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata><br/>. | Required | 
 
 
 #### Context Output
@@ -99,6 +116,7 @@ Create a new Container under the specified account.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-container-create container_name="xsoar"```
 
 #### Human Readable Output
@@ -106,6 +124,7 @@ There is no context output for this command.
 >Container xsoar successfully created.
 
 ### azure-storage-container-property-get
+
 ***
 Retrieve properties for the specified Container.
 
@@ -113,6 +132,7 @@ Retrieve properties for the specified Container.
 #### Base Command
 
 `azure-storage-container-property-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -134,9 +154,11 @@ Retrieve properties for the specified Container.
 
 
 #### Command Example
+
 ```!azure-storage-container-property-get container_name="xsoar"```
 
 #### Context Example
+
 ```json
 {
     "AzureStorageContainer": {
@@ -166,12 +188,14 @@ Retrieve properties for the specified Container.
 #### Human Readable Output
 
 >### Container xsoar Properties:
+>
 >|Last Modified|Etag|Lease Status|Lease State|Has Immutability Policy|Has Legal Hold|
 >|---|---|---|---|---|---|
 >| 2021-11-28T12:42:58 | "0x8D9B26C9BBF026C" | unlocked | available | false | false |
 
 
 ### azure-storage-container-delete
+
 ***
 Marks the specified Container for deletion. The Container and any Blobs contained within it, will be deleted during garbage collection.
 
@@ -179,6 +203,7 @@ Marks the specified Container for deletion. The Container and any Blobs containe
 #### Base Command
 
 `azure-storage-container-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -191,6 +216,7 @@ Marks the specified Container for deletion. The Container and any Blobs containe
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-container-delete container_name="xsoar"```
 
 #### Human Readable Output
@@ -198,6 +224,7 @@ There is no context output for this command.
 >Container xsoar successfully deleted.
 
 ### azure-storage-container-blob-list
+
 ***
 List Blobs under the specified container.
 
@@ -205,6 +232,7 @@ List Blobs under the specified container.
 #### Base Command
 
 `azure-storage-container-blob-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -224,9 +252,11 @@ List Blobs under the specified container.
 
 
 #### Command Example
+
 ```!azure-storage-container-blob-list container_name="xsoar"```
 
 #### Context Example
+
 ```json
 {
     "AzureStorageContainer": {
@@ -245,14 +275,17 @@ List Blobs under the specified container.
 #### Human Readable Output
 
 >### xsoar Container Blobs List:
+>
 > Current page size: 50
 > Showing page 1 out others that may exist
+>
 >|Name|
 >|---|
 >| xsoar.txt |
 
 
 ### azure-storage-container-blob-create
+
 ***
 Create a new Blob under the specified Container.
 
@@ -260,6 +293,7 @@ Create a new Blob under the specified Container.
 #### Base Command
 
 `azure-storage-container-blob-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -274,6 +308,7 @@ Create a new Blob under the specified Container.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-container-blob-create container_name="xsoar" file_entry_id="16488@b5e40781-86c8-4799-8f10-ace443e93234" blob_name="xsoar.txt"```
 
 #### Human Readable Output
@@ -281,6 +316,7 @@ There is no context output for this command.
 >Blob successfully created.
 
 ### azure-storage-container-blob-update
+
 ***
 Update the content of an existing Blob.
 
@@ -288,6 +324,7 @@ Update the content of an existing Blob.
 #### Base Command
 
 `azure-storage-container-blob-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -302,6 +339,7 @@ Update the content of an existing Blob.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-container-blob-update container_name="xsoar" file_entry_id="16488@b5e40781-86c8-4799-8f10-ace443e93234" blob_name="xsoar.txt"```
 
 #### Human Readable Output
@@ -309,6 +347,7 @@ There is no context output for this command.
 >Blob xsoar.txt successfully updated.
 
 ### azure-storage-container-blob-get
+
 ***
 Retrieve Blob from Container.
 
@@ -316,6 +355,7 @@ Retrieve Blob from Container.
 #### Base Command
 
 `azure-storage-container-blob-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -341,9 +381,11 @@ Retrieve Blob from Container.
 
 
 #### Command Example
+
 ```!azure-storage-container-blob-get container_name="xsoar" blob_name="xsoar.txt"```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -367,6 +409,7 @@ Retrieve Blob from Container.
 
 
 ### azure-storage-container-blob-tag-get
+
 ***
 Retrieve the tags of the specified Blob.
 
@@ -374,6 +417,7 @@ Retrieve the tags of the specified Blob.
 #### Base Command
 
 `azure-storage-container-blob-tag-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -393,9 +437,11 @@ Retrieve the tags of the specified Blob.
 
 
 #### Command Example
+
 ```!azure-storage-container-blob-tag-get container_name="xsoar" blob_name="xsoar.txt"```
 
 #### Context Example
+
 ```json
 {
     "AzureStorageContainer": {
@@ -418,12 +464,14 @@ Retrieve the tags of the specified Blob.
 #### Human Readable Output
 
 >### Blob xsoar.txt Tags:
+>
 >|Key|Value|
 >|---|---|
 >| tag-name-1 | tag-value-1 |
 
 
 ### azure-storage-container-blob-tag-set
+
 ***
 Sets the tags for the specified Blob. The command replace the entire tags of the Blob and can be used to remove tags.
 
@@ -431,6 +479,7 @@ Sets the tags for the specified Blob. The command replace the entire tags of the
 #### Base Command
 
 `azure-storage-container-blob-tag-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -445,6 +494,7 @@ Sets the tags for the specified Blob. The command replace the entire tags of the
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-container-blob-tag-set container_name="xsoar" blob_name="xsoar.txt" tags=`{ "tag-name-1": "tag-value-1" }````
 
 #### Human Readable Output
@@ -452,6 +502,7 @@ There is no context output for this command.
 >xsoar.txt Tags successfully updated.
 
 ### azure-storage-container-blob-delete
+
 ***
 Marks the specified Blob for deletion. The Blob will be deleted during garbage collection.
 
@@ -459,6 +510,7 @@ Marks the specified Blob for deletion. The Blob will be deleted during garbage c
 #### Base Command
 
 `azure-storage-container-blob-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -472,6 +524,7 @@ Marks the specified Blob for deletion. The Blob will be deleted during garbage c
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-container-blob-delete container_name="xsoar" blob_name="xsoar.txt"```
 
 #### Human Readable Output
@@ -479,6 +532,7 @@ There is no context output for this command.
 >Blob xsoar.txt successfully deleted.
 
 ### azure-storage-container-blob-property-get
+
 ***
 Retrieve Blob properties.
 
@@ -486,6 +540,7 @@ Retrieve Blob properties.
 #### Base Command
 
 `azure-storage-container-blob-property-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -511,9 +566,11 @@ Retrieve Blob properties.
 
 
 #### Command Example
+
 ```!azure-storage-container-blob-property-get container_name="xsoar" blob_name="xsoar.txt"```
 
 #### Context Example
+
 ```json
 {
     "AzureStorageContainer": {
@@ -549,12 +606,14 @@ Retrieve Blob properties.
 #### Human Readable Output
 
 >### Blob xsoar.txt Properties:
+>
 >|Creation Time|Last Modified|Content Length|Content Type|Etag|
 >|---|---|---|---|---|
 >| 2021-11-28T12:43:09 | 2021-11-28T12:43:17 | 11 | application/octet-stream | "0x8D9B26CA6AD74B3" |
 
 
 ### azure-storage-container-blob-property-set
+
 ***
 Set Blob properties.
 
@@ -562,6 +621,7 @@ Set Blob properties.
 #### Base Command
 
 `azure-storage-container-blob-property-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -583,6 +643,7 @@ Set Blob properties.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-container-blob-property-set container_name="xsoar" blob_name="xsoar.txt" content_type="text/plain"```
 
 #### Human Readable Output
@@ -598,6 +659,7 @@ Retrieve Blob properties.
 #### Base Command
 
 `azure-storage-container-sas-create`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                        | **Required** |
@@ -610,9 +672,11 @@ Retrieve Blob properties.
 | account_key | The account key to create the SAS token with.                                                                                                                                                                                         |  |
 
 #### Command Example
+
 ```!azure-storage-container-sas-create account_key="TestAccountKey" expiry_time="1" signed_resources="test signed_permissions="test signed_ip="127.0.0.1"```
 
 ### azure-storage-container-block-public-access
+
 ***
 Block public access to a container..
 
@@ -620,6 +684,7 @@ Block public access to a container..
 #### Base Command
 
 `azure-storage-container-block-public-access`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -631,6 +696,7 @@ Block public access to a container..
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-storage-container-block-public-access container_name="xsoar"```
 
 #### Human Readable Output

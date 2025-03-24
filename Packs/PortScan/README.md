@@ -4,6 +4,7 @@ This pack helps you speed response by providing the necessary configuration and 
 
 
 ##### What does this pack do?
+
 - Gathers information about IPs and enriches hostnames associated with the port scan.
 - Identifies critical assets involved in the incident, and escalates the incident accordingly.
 - Identifies malware associated with internal network scans, hunts instances of the malware across the organization and blocks it.

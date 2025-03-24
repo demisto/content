@@ -6,7 +6,7 @@ This integration was integrated and tested with version 4.6 of SymantecEDR
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (i.e., https://host:port) | Symantec EDR \(On Prem\) Appliance URL | True |
+| Server URL (i.e., <https://host:port>) | Symantec EDR \(On Prem\) Appliance URL | True |
 | Client ID | OAuth Client ID and Client Secret to authorize third-party applications to communicate with Symantec EDR. | True |
 | Client Secret |  | True |
 | Fetch incidents |  | False |
@@ -26,9 +26,12 @@ This integration was integrated and tested with version 4.6 of SymantecEDR
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### symantec-edr-endpoint-isolate
+
 ***
 Isolates or quarantines endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint device IDs.
 
@@ -36,6 +39,7 @@ Isolates or quarantines endpoints by cutting connections that the endpoint(s) ha
 #### Base Command
 
 `symantec-edr-endpoint-isolate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,8 +56,11 @@ Isolates or quarantines endpoints by cutting connections that the endpoint(s) ha
 | SymantecEDR.Command.isolate_endpoint.message | String | Message explaining the error code. | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-isolate device_id=393b8e82-fe40-429f-8e5e-c6b79a0f2b1c```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -71,12 +78,14 @@ Isolates or quarantines endpoints by cutting connections that the endpoint(s) ha
 #### Human Readable Output
 
 >### Command Isolate Endpoint
+>
 >|Message|CommandId|
 >|---|---|
 >| Command isolate_endpoint successfully requested | fd6d14933c7e422685634b613cb7963a-2023-02-15 |
 
 
 ### symantec-edr-domain-file-association-list
+
 ***
 List of domain and file association.
 
@@ -84,6 +93,7 @@ List of domain and file association.
 #### Base Command
 
 `symantec-edr-domain-file-association-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -91,7 +101,7 @@ List of domain and file association.
 | limit | The limit for the number of events listed per page.<br/>Default is '50'. | Optional | 
 | page | The page number to view. Each page contains page_size values. Must be used along with page_size.<br/>Default is '1'. | Optional | 
 | page_size | The number of results per page to display. | Optional | 
-| query | Specify a search query as a Lucene query string.<br/>Example: query="last_seen: 2022-10-22T11:23:26.561Z"<br/><br/>Note: Refer to Symantec (EDR On-Premise) API document for more details https://apidocs.securitycloud.symantec.com/#. | Optional | 
+| query | Specify a search query as a Lucene query string.<br/>Example: query="last_seen: 2022-10-22T11:23:26.561Z"<br/><br/>Note: Refer to Symantec (EDR On-Premise) API document for more details <https://apidocs.securitycloud.symantec.com/#>. | Optional | 
 | search_object | Specify a filter option in lieu of “query”. These filters will improve the query performance. Possible values are: domain, sha256. | Optional | 
 | search_value | Specify a search value. Supports a comma-separated query with multiple search values. | Optional | 
 
@@ -100,7 +110,7 @@ List of domain and file association.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SymantecEDR.DomainFileAssociation.data_source_url | String | The URL that was accessed. Example: "http://www.westfallave.com/insight/cloudcar.exe". | 
+| SymantecEDR.DomainFileAssociation.data_source_url | String | The URL that was accessed. Example: "<http://www.westfallave.com/insight/cloudcar.exe>". | 
 | SymantecEDR.DomainFileAssociation.data_source_url_domain | String | Domain name of the accessed URL. Example: "westfallave.com". | 
 | SymantecEDR.DomainFileAssociation.device_ip | String | The IPv6 or IPv4 address of the endpoint when this association was last updated. Example: "127.0.0.1". | 
 | SymantecEDR.DomainFileAssociation.device_name | String | The host name or, if unavailable, the IP address of the endpoint when this association was last updated. Example: "170915-000020". | 
@@ -112,8 +122,11 @@ List of domain and file association.
 | SymantecEDR.DomainFileAssociation.signature_company_name | String | The signer company name of the downloaded file. Example: "Microsoft Windows". | 
 
 #### Command example
+
 ```!symantec-edr-domain-file-association-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -138,12 +151,14 @@ List of domain and file association.
 #### Human Readable Output
 
 >### Domain File Association List
+>
 >|FirstSeen|LastSeen|DataSourceUrl|DataSourceUrlDomain|Sha2|Name|SignatureCompanyName|DeviceUid|DeviceIp|DeviceName|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2022-10-22T11:23:26.561Z | 2022-10-22T11:23:26.561Z | http:<span>//</span>msedge.b.tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/685cae66-5fe2-498e-b4f1-ed26aafa2801?p1=1667042599&p2=404&p3=2&p4=c3swnk6uktun4vjyhudntbuxv8bilxgbgat1s%2flgzbqw4kjyc0zs8ox7mi1oaisl96huewngvdr%2bnfbl7erlxa%3d%3d | msedge.b.tlu.dl.delivery.mp.microsoft.com | 1291d6eb30cd1683544666692a382aecf325dc2624da9ef395047a64642059dc | microsoftedge_x64_106.0.1370.52_106.0.1370.47.exe | Microsoft Corporation | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 172.16.14.42 | win-tfb8l7bi77h |
 
 
 ### symantec-edr-endpoint-domain-association-list
+
 ***
 List of endpoint and domain association.
 
@@ -151,6 +166,7 @@ List of endpoint and domain association.
 #### Base Command
 
 `symantec-edr-endpoint-domain-association-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -158,7 +174,7 @@ List of endpoint and domain association.
 | limit | The limit for the number of events listed per page.<br/>Default is '50'. | Optional | 
 | page_size | The number of results per page to display. | Optional | 
 | page | The page number to view. Each page contains page_size values. Must be used along with page_size.<br/>Default is '1'. | Optional | 
-| query | Specify a search query as a Lucene query string.<br/>Example: query="first_seen: [2022-10-01T07:00:58.030Z  TO 2022-10-21T06:41:54.452Z]" <br/><br/>Note: For more details refer to Symantec EDR (On-Prem) API document https://apidocs.securitycloud.symantec.com/#. | Optional | 
+| query | Specify a search query as a Lucene query string.<br/>Example: query="first_seen: [2022-10-01T07:00:58.030Z  TO 2022-10-21T06:41:54.452Z]" <br/><br/>Note: For more details refer to Symantec EDR (On-Prem) API document <https://apidocs.securitycloud.symantec.com/#>. | Optional | 
 | search_object | Specify a filters option in lieu of “query”. These filters will improve query performance. Possible values are: domain, device_uid. | Optional | 
 | search_value | Specify a search value. Supports a comma-separated query with multiple search values. | Optional | 
 
@@ -167,7 +183,7 @@ List of endpoint and domain association.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SymantecEDR.EndpointDomainAssociation.data_source_url | String | The URL that was accessed. Example: "http://www.westfallave.com/insight/cloudcar.exe". | 
+| SymantecEDR.EndpointDomainAssociation.data_source_url | String | The URL that was accessed. Example: "<http://www.westfallave.com/insight/cloudcar.exe>". | 
 | SymantecEDR.EndpointDomainAssociation.data_source_url_domain | String | Domain name of the accessed URL. Example: "westfallave.com". | 
 | SymantecEDR.EndpointDomainAssociation.device_ip | String | The IPv6 or IPv4 address of the endpoint when this association was last updated. Example: "127.0.0.1". | 
 | SymantecEDR.EndpointDomainAssociation.device_name | String | The host name or, if unavailable, the IP address of the endpoint when this association was last updated. Example: "170915-000020". | 
@@ -176,8 +192,11 @@ List of endpoint and domain association.
 | SymantecEDR.EndpointDomainAssociation.last_seen | String | The timestamp \(in ISO 8601 format\) that specifies the last time detected of the event that resulted in the update of this association. Example: "2018-01-30T04:13:10.669Z." | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-domain-association-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -199,12 +218,14 @@ List of endpoint and domain association.
 #### Human Readable Output
 
 >### Endpoint Domain Association List
+>
 >|FirstSeen|LastSeen|DataSourceUrl|DataSourceUrlDomain|DeviceUid|DeviceIp|DeviceName|
 >|---|---|---|---|---|---|---|
 >| 2022-10-21T19:06:39.998Z | 2022-10-21T19:06:39.998Z | http:<span>//</span>ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/disallowedcertstl.cab?4653cf2caa3508f4 | ctldl.windowsupdate.com | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 172.16.14.42 | WIN-TFB8L7BI77H |
 
 
 ### symantec-edr-endpoint-file-association-list
+
 ***
 List of domain and file association.
 
@@ -212,6 +233,7 @@ List of domain and file association.
 #### Base Command
 
 `symantec-edr-endpoint-file-association-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -219,7 +241,7 @@ List of domain and file association.
 | limit | The limit for the number of events listed per page.<br/>Default is '50'. | Optional | 
 | page_size | The number of results per page to display. | Optional | 
 | page | The page number to view. Each page contains page_size values. Must be used along with page_size.<br/>Default is '1'. | Optional | 
-| query | Specify a search query as a Lucene query string.<br/>Example: query="first_seen: [2022-10-01T07:00:58.030Z  TO 2022-10-21T06:41:54.452Z]" <br/><br/>Note: For more details refer to Symantec EDR (On-Prem) API document https://apidocs.securitycloud.symantec.com/#. | Optional | 
+| query | Specify a search query as a Lucene query string.<br/>Example: query="first_seen: [2022-10-01T07:00:58.030Z  TO 2022-10-21T06:41:54.452Z]" <br/><br/>Note: For more details refer to Symantec EDR (On-Prem) API document <https://apidocs.securitycloud.symantec.com/#>. | Optional | 
 | search_object | Specify a filters option in lieu of “query”. These filters will improve query performance. Possible values are: device_uid, sha256. | Optional | 
 | search_value | Specify a search value. Supports a comma-separated query with multiple search values. | Optional | 
 
@@ -238,8 +260,11 @@ List of domain and file association.
 | SymantecEDR.EndpointFileAssociation.sha2 | String | The SHA256 checksum of the file \(hex string\). Example: eaab690ebd8ddf9ae452de1bc03b73c8154264dbd7a292334733b47a668ebf31. | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-file-association-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -262,12 +287,14 @@ List of domain and file association.
 #### Human Readable Output
 
 >### Endpoint File Association List
+>
 >|FirstSeen|LastSeen|Sha2|Name|Folder|DeviceUid|DeviceIp|DeviceName|
 >|---|---|---|---|---|---|---|---|
 >| 2022-10-21T07:00:17.831Z | 2022-12-09T10:03:21.866Z | 1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164 | 3353b940c074fd0c.automaticdestinations-ms | csidl_profile\appdata\roaming\microsoft\windows\recent\automaticdestinations | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 172.16.14.42 | win-tfb8l7bi77h |
 
 
 ### symantec-edr-domain-instance-list
+
 ***
 Get domain instances.
 
@@ -275,6 +302,7 @@ Get domain instances.
 #### Base Command
 
 `symantec-edr-domain-instance-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -289,7 +317,7 @@ Get domain instances.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SymantecEDR.DomainInstance.data_source_url | String | Last URL accessed on this domain. Example: http://www.&lt;domain&gt;.com/shample/shample.exe. | 
+| SymantecEDR.DomainInstance.data_source_url | String | Last URL accessed on this domain. Example: <http://www.&lt;domain&gt;.com/shample/shample.exe>. | 
 | SymantecEDR.DomainInstance.data_source_url_domain | String | The name of the domain. Example: skyscan.com. | 
 | SymantecEDR.DomainInstance.disposition | Number | Domain disposition: 0 = healthy/good, 1 = unknown, 2 = suspicious, 3 = bad. | 
 | SymantecEDR.DomainInstance.first_seen | String | The timestamp \(in ISO 8601 format\) that specifies the creation time of the event that resulted into the creation of this instance. Example: YYYY-MM-DDTHH:MM:SS.sssZ | 
@@ -297,8 +325,11 @@ Get domain instances.
 | SymantecEDR.DomainInstance.external_ip | String | The IP address \(IPv4 or IPv6\) of the device/machine that accepted the connection. Example: 127.0.0.1. | 
 
 #### Command example
+
 ```!symantec-edr-domain-instance-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -319,12 +350,14 @@ Get domain instances.
 #### Human Readable Output
 
 >### Domain Instances List
+>
 >|DataSourceUrlDomain|FirstSeen|LastSeen|Disposition|
 >|---|---|---|---|
 >| ctldl.windowsupdate.com | 2022-10-21T13:05:38.000Z | 2023-02-14T13:50:42.000Z | Healthy |
 
 
 ### symantec-edr-endpoint-instance-list
+
 ***
 Get endpoint instances.
 
@@ -332,6 +365,7 @@ Get endpoint instances.
 #### Base Command
 
 `symantec-edr-endpoint-instance-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -355,8 +389,11 @@ Get endpoint instances.
 | SymantecEDR.EndpointInstance.ip_addresses | Unknown | Array of all the IP addresses \(IPv4 or IPv6\) associated with the endpoint. Example: \["192.168.0.250"\]. | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-instance-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -375,12 +412,14 @@ Get endpoint instances.
 #### Human Readable Output
 
 >### Endpoint Instances List
+>
 >|DeviceUid|DeviceName|DeviceIp|Time|
 >|---|---|---|---|
 >| c0e1b083-9aba-48c0-9ba1-39c0c37c5851 | 172.16.14.58 | 172.16.14.58 | 2022-11-28T10:29:47.251Z |
 
 
 ### symantec-edr-file-instance-list
+
 ***
 Get File Instances
 
@@ -388,6 +427,7 @@ Get File Instances
 #### Base Command
 
 `symantec-edr-file-instance-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -410,8 +450,11 @@ Get File Instances
 | SymantecEDR.FileInstance.sha2 | String | The SHA256 checksum of the file \(hex string\) Example: eaab690ebd8ddf9ae452de1bc03b73c8154264dbd7a292334733b47a668ebf31. | 
 
 #### Command example
+
 ```!symantec-edr-file-instance-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -429,14 +472,18 @@ Get File Instances
 #### Human Readable Output
 
 >### File Instances List
+>
 >|FirstSeen|LastSeen|Sha2|Name|Folder|
 >|---|---|---|---|---|
 >| 2022-10-21T07:00:17.831Z | 2022-12-09T10:03:21.866Z | 1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164 | 3353b940c074fd0c.automaticdestinations-ms | csidl_profile\appdata\roaming\microsoft\windows\recent\automaticdestinations |
 
 
 #### Command example
+
 ```!symantec-edr-file-instance-list file_sha2=302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -454,6 +501,7 @@ Get File Instances
 #### Human Readable Output
 
 >### File Instances List
+>
 >|FirstSeen|LastSeen|Sha2|Name|Folder|
 >|---|---|---|---|---|
 >| 2022-10-21T07:00:39.964Z | 2023-02-15T11:26:41.104Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | csidl_program_files\google\chrome\application\106.0.5249.119 |
@@ -461,6 +509,7 @@ Get File Instances
 
 
 ### symantec-edr-system-activity-list
+
 ***
 Get system activities or logs.
 
@@ -468,6 +517,7 @@ Get system activities or logs.
 #### Base Command
 
 `symantec-edr-system-activity-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -478,7 +528,7 @@ Get system activities or logs.
 | start_time | The earliest time from which to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks'). | Optional | 
 | end_time | From current time to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks', now). | Optional | 
 | query | A search query as a Lucene query string.<br/>Example: query="type_id:(4096 OR 4098 OR 4123)". | Optional | 
-| type_id | Request for specific system activities from the following events:  \n0 = Application Activity \n1000 = System Health \nRefer to this &lt;a href=\"https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html\"&gt;the following&lt;/a&gt; to check the type_id for the event type. | Optional | 
+| type_id | Request for specific system activities from the following events:  \n0 = Application Activity \n1000 = System Health \nRefer to this &lt;a href=\"<https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html\"&gt;the> following&lt;/a&gt; to check the type_id for the event type. | Optional | 
 | severity | The severity. Possible values are: info, warning, minor, major, critical, fatal. | Optional | 
 | status | The overall success or failure of the action reported by the event. Possible values are: \nUnknown (0)\nSuccess (1)\nFailure  (2). Possible values are: Unknown, Success, Failure. | Optional | 
 
@@ -488,7 +538,7 @@ Get system activities or logs.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SymantecEDR.SystemActivity.device_time | String | The timestamp \(in ISO 8601 format\) that specifies the time at which the event occurred. | 
-| SymantecEDR.SystemActivity.type_id | Number | The unique identifier for an event. Following is this events link and summary type IDs: https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.htmlSystem Activity Log Event Type: Viewing Symantec EDR appliance activities in the System Activity log \(broadcom.com\) | 
+| SymantecEDR.SystemActivity.type_id | Number | The unique identifier for an event. Following is this events link and summary type IDs: <https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.htmlSystem> Activity Log Event Type: Viewing Symantec EDR appliance activities in the System Activity log \(broadcom.com\) | 
 | SymantecEDR.SystemActivity.severity_id | Number | Event severity that specifies the importance of the event. Possible values are: 1 = info \(default\), 2 = warning, 3 = minor, 4 = major, 5 = critical, 6 = fatal. | 
 | SymantecEDR.SystemActivity.message | String | Human-readable \(possibly multi-line\) event message or description of the event. | 
 | SymantecEDR.SystemActivity.device_ip | String | The IPv6 or IPv4 address of the device that originated the event. | 
@@ -516,8 +566,11 @@ Get system activities or logs.
 | SymantecEDR.SystemActivity.data_sepm_server_db_name | String | SEPM database name. | 
 
 #### Command example
+
 ```!symantec-edr-system-activity-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -547,12 +600,14 @@ Get system activities or logs.
 #### Human Readable Output
 
 >### System Activities List
+>
 >|Time|TypeId|SeverityId|Message|DeviceIp|AtpNodeRole|StatusId|
 >|---|---|---|---|---|---|---|
 >| 2023-02-15T11:33:54.112Z | 1 | Info | Command submit_to_sandbox with command id 98a42ac7c11c4610b4b977a0371bf0c9-2023-02-15 completed. | 192.168.20.8 | All in One | Success |
 
 
 ### symantec-edr-audit-event-list
+
 ***
 Get Audit Events
 
@@ -560,6 +615,7 @@ Get Audit Events
 #### Base Command
 
 `symantec-edr-audit-event-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -570,7 +626,7 @@ Get Audit Events
 | page | The page number to view. Each page contains page_size values. Must be used along with page_size.<br/>Default is '1'. | Optional | 
 | page_size | The number of results per page to display. | Optional | 
 | query | A search query as a Lucene query string.<br/>Example: query="type_id:(4096 OR 4098 OR 4123)"<br/><br/>The search query is broken up into terms and operators. <br/><br/>There are two types of terms: Single Terms and Phrases.<br/>      (a) A Single Term is a single word such as "test" or "hello"<br/>      (b) A Phrase is a group of words surrounded by double quotes such as "hello dolly"<br/><br/>When creating a search query string, consider the following:<br/><br/>1. You can search any field by specifying the field name followed by a colon ":" and then the term you are looking for<br/>2. Escape special characters that are part of the query syntax. To escape a special character use the \ before the character. The current list of special characters are '+, -, &amp;&amp;, \|\|, !, ( ), { }, [ ], ^, ", ~ ,*, ?, \, :'<br/>3. Date value should follow ISO 8601 date stamp standard format (yyyy-MM-dd'T'HH:mm:ss.SSSXXX)<br/>4. Supported Boolean operators for complex query are: AND OR + - NOT Note: Boolean operators must be ALL CAPS<br/>5. Multiple terms can be combined together with Boolean operators to form a more complex query in the query clause<br/>6. Use parentheses to group clauses to form sub-queries<br/>7. Defaults to all events for the start_time and end_time specified in the query<br/>8. The maximum length of the query string is 10240 characters. | Optional | 
-| type_id | The type ID. Refer to the event summary type IDs link: https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html. | Optional | 
+| type_id | The type ID. Refer to the event summary type IDs link: <https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html>. | Optional | 
 
 
 #### Context Output
@@ -579,7 +635,7 @@ Get Audit Events
 | --- | --- | --- |
 | SymantecEDR.AuditEvent.user_agent_ip | String | IP address of the endpoint that originated or caused the event. | 
 | SymantecEDR.AuditEvent.entity_result.data.incident_management.uuid | String | The GUID assigned for this incident | 
-| SymantecEDR.AuditEvent.entity_result.type | String | The type of the managed entity.Depending on this entity type, data would contain the corresponding entity content. Refer to this link  https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf section 3.74 Entity for all the Possible values for managed entity types | 
+| SymantecEDR.AuditEvent.entity_result.type | String | The type of the managed entity.Depending on this entity type, data would contain the corresponding entity content. Refer to this link  <https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf> section 3.74 Entity for all the Possible values for managed entity types | 
 | SymantecEDR.AuditEvent.entity_result.uid | String | Unique identifier associated with the managed entity. | 
 | SymantecEDR.AuditEvent.entity_result.name | String | The name of the managed entity. | 
 | SymantecEDR.AuditEvent.status_id | Number | The overall success or failure of the action reported by the event. Values are: 0 = Unknown 1 = Success 2 = Failure. | 
@@ -600,7 +656,7 @@ Get Audit Events
 | SymantecEDR.AuditEvent.device_time | Date | The timestamp \(in ISO 8601 format\) that specifies the time at which the event occurred. Example: YYYY-MM-DDTHH:MM:SS.sssZ. | 
 | SymantecEDR.AuditEvent.product_ver | String | The version of the product that originated the event. Example: 4.6.8-8. | 
 | SymantecEDR.AuditEvent.device_end_time | Date | The end time of an event \(in format yyyy-MM-dd'T'HH:mm:ss.SSSZ\). This is used with the aggregation count field. | 
-| SymantecEDR.AuditEvent.type_id | Number | The unique identifier for an event. The following events are supported: For type_id details refer to “https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html”. | 
+| SymantecEDR.AuditEvent.type_id | Number | The unique identifier for an event. The following events are supported: For type_id details refer to “<https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html”>. | 
 | SymantecEDR.AuditEvent.uuid | String | The unique ID for this event. UUID uniquely identifies an event with a single event type \(type_id\). | 
 | SymantecEDR.AuditEvent.product_name | String | The name of the product that originated the event. Example: "Symantec Endpoint Detection and Response”. | 
 | SymantecEDR.AuditEvent.status_detail | String | The type of success or failure for the audit events. | 
@@ -608,8 +664,11 @@ Get Audit Events
 | SymantecEDR.AuditEvent.user_uid | String | Unique ID of the user who originated the event or the user on whose behalf the event occurred. | 
 
 #### Command example
+
 ```!symantec-edr-audit-event-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -647,12 +706,14 @@ Get Audit Events
 #### Human Readable Output
 
 >### Audit Event List
+>
 >|Time|TypeId|FeatureName|Message| UserAgentIp |UserName|Severity|DeviceName|DeviceIp|Uuid|StatusId|
 >|---|---|---|-------------|---|---|---|---|---|---|---|
 >| 2023-02-15T11:34:25.912Z | 21 | Incident | Incident Closed Successfully. | 127.0.0.1 | SEDR API | Info | localhost.localdomain | 192.168.20.8 | b36e1f80-ad24-11ed-e0f5-00000001b4f0 | Success |
 
 
 ### symantec-edr-event-list
+
 ***
 Get events or system alerts from EDR on-premise.
 
@@ -660,6 +721,7 @@ Get events or system alerts from EDR on-premise.
 #### Base Command
 
 `symantec-edr-event-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -670,7 +732,7 @@ Get events or system alerts from EDR on-premise.
 | start_time | The earliest time from which to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks'). | Optional | 
 | end_time | From current time to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks', now). | Optional | 
 | query | A search query as a Lucene query string.<br/>Example: query="type_id:(4096 OR 4098 OR 4123)". | Optional | 
-| type_id | The type ID. Refer to event summary type IDs link: https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html. | Optional | 
+| type_id | The type ID. Refer to event summary type IDs link: <https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html>. | Optional | 
 | severity | The severity. Possible values are: info, warning, minor, major, critical, fatal. | Optional | 
 
 
@@ -678,7 +740,7 @@ Get events or system alerts from EDR on-premise.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SymantecEDR.Event.type_id | Number | The unique identifier for an event. Refer to “https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf”. | 
+| SymantecEDR.Event.type_id | Number | The unique identifier for an event. Refer to “<https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf”>. | 
 | SymantecEDR.Event.severity_id | Number | Event severity that specifies the importance of the event. Values are: 1 = info \(default\), 2 = warning, 3 = minor, 4 = major, 5 = critical, 6 = fatal. | 
 | SymantecEDR.Event.device_time | Date | The timestamp \(in ISO 8601 format\) that specifies the time at which the event occurred. | 
 | SymantecEDR.Event.log_time | Date | The time the event was logged. | 
@@ -690,7 +752,7 @@ Get events or system alerts from EDR on-premise.
 | SymantecEDR.Event.user_domain | String | Event user associated with the domain. | 
 | SymantecEDR.Event.user_sid | String | Unique ID of the user who originated the event or the user on whose behalf the event occurred. | 
 | SymantecEDR.Event.device_domain | String | The domain where device resides. Example: "internal.somecompany.com”. | 
-| SymantecEDR.Event.operation | Number | The OS operation that initiated the event. Refer to “https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf”. | 
+| SymantecEDR.Event.operation | Number | The OS operation that initiated the event. Refer to “<https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf”>. | 
 | SymantecEDR.Event.event_actor.pid | Number | The process identifier as reported by the operating system. | 
 | SymantecEDR.Event.event_actor.uid | String | The unique identifier of the process. Example: "2ef07353-c1d2-409d-addd-2eed37a87e56". Applicable events: 8007. | 
 | SymantecEDR.Event.event_actor.cmd_line | String | The command line that was used to launch the process. Applicable events: 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009, 8081. | 
@@ -732,8 +794,11 @@ Get events or system alerts from EDR on-premise.
 | SymantecEDR.Event.log_name | String | The index of the event. Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for events. | 
 
 #### Command example
+
 ```!symantec-edr-event-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -786,12 +851,14 @@ Get events or system alerts from EDR on-premise.
 #### Human Readable Output
 
 >### Event List
+>
 >|Time|TypeId|Description|DeviceName|SeverityId|DeviceIp|Operation|DeviceDomain|UserName|
 >|---|---|---|---|---|---|---|---|---|
 >| 2023-02-15T11:29:31.248Z | 8001 |  logged:  | WIN-TFB8L7BI77H | Info | 172.16.14.42 | 2 | WORKGROUP | SYSTEM |
 
 
 ### symantec-edr-incident-event-list
+
 ***
 Get events for incidents.
 
@@ -799,6 +866,7 @@ Get events for incidents.
 #### Base Command
 
 `symantec-edr-incident-event-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -809,7 +877,7 @@ Get events for incidents.
 | start_time | The earliest time from which to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks').<br/><br/>. | Optional | 
 | end_time | From current time to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks', now).<br/>. | Optional | 
 | query | A search query as a Lucene query string.<br/><br/>Example:<br/>query="type_id:(4096 OR 4098 OR 4123)". | Optional | 
-| type_id | The unique identifier for an event. Refer to this link for Event Type IDs :<br/> https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html. | Optional | 
+| type_id | The unique identifier for an event. Refer to this link for Event Type IDs :<br/> <https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html>. | Optional | 
 | severity | The severity. Default: All severity types. Possible values are: info, warning, minor, major, critical, fatal. | Optional | 
 
 
@@ -868,7 +936,7 @@ Get events for incidents.
 | SymantecEDR.IncidentEvent.enriched_data.category_id | Number | The possible values of supported category_id. 0 = All Events, 1 = Suspicious N-Gram, 2 = Process Launch , 3 = Process Termination , 100 = Suspicious Protocol-Port Usage By System Processes, 102 = Suspicious PowerShell commands | 
 | SymantecEDR.IncidentEvent.enriched_data.rule_description | String | Enriched rule description | 
 | SymantecEDR.IncidentEvent.event_uuid | String | The unique event UUID | 
-| SymantecEDR.IncidentEvent.attacks.technique_uid | String | The MITRE technique ID for the attack. Possible values are listed in https://attack.mitre.org/techniques/enterprise. | 
+| SymantecEDR.IncidentEvent.attacks.technique_uid | String | The MITRE technique ID for the attack. Possible values are listed in <https://attack.mitre.org/techniques/enterprise>. | 
 | SymantecEDR.IncidentEvent.attacks.technique_name | String | The MITRE technique name for the attack. | 
 | SymantecEDR.IncidentEvent.attacks.tactic_ids | Number | The MITRE tactic ID\(s\) for the attack. Tactic ID values are: 1 = Initial Access , 2 = Execution , 3 = Persistence , 4 = Privilege Escalation , 5 = Defense Evasion , 6 = Credential Access , 7 = Discovery , 8 = Lateral Movement , 9 = Collection , 10 = Exfltration , 11 = Command and Control | 
 | SymantecEDR.IncidentEvent.attacks.tactic_uids | String | THe tactic Unique IDs. | 
@@ -879,8 +947,11 @@ Get events for incidents.
 | SymantecEDR.IncidentEvent.log_name | String | The index of the event.  Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for events. | 
 
 #### Command example
+
 ```!symantec-edr-incident-event-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -912,12 +983,14 @@ Get events for incidents.
 #### Human Readable Output
 
 >### Event for Incident List
+>
 >|Time|TypeId|Description|DeviceName|DeviceIp|EventUuid|Incident|UserName|
 >|---|---|---|---|---|---|---|---|
 >| 2023-01-26T18:55:27.296Z | 4117 |  logged:  | WIN-TFB8L7BI77H | 172.16.14.42 | ff61e400-9daa-11ed-dcb5-00000000e61e | ffcc1780-9daa-11ed-e218-000000000001 | Administrator |
 
 
 ### symantec-edr-incident-list
+
 ***
 Get incidents from Symantec EDR on-premise API.
 
@@ -925,6 +998,7 @@ Get incidents from Symantec EDR on-premise API.
 #### Base Command
 
 `symantec-edr-incident-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -962,8 +1036,11 @@ Get incidents from Symantec EDR on-premise API.
 | SymantecEDR.Incident.resolution | Number | The resolution of the closed incident. Possible values are: 0 =INSUFFICIENT_DATA. The incident does not have sufficient information to make a determination. 1 = SECURITY_RISK. The incident indicates a true security threat. 2 = FALSE_POSITIVE. The incident has been incorrectly reported as a security threat. 3 = MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there. 4 = NOT_SET. The incident resolution was not set. 5 = BENIGN. The incident detected the activity as expected but is not a security threat. 6 = TEST. The incident was generated due to internal security testing. | 
 
 #### Command example
+
 ```!symantec-edr-incident-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -991,12 +1068,14 @@ Get incidents from Symantec EDR on-premise API.
 #### Human Readable Output
 
 >### Incident List
+>
 >|IncidentId|Description|IncidentCreated|DetectionType|LastUpdated|Priority|IncidentState|AtpRuleId|RuleName|IncidentUuid|LogName|RecommendedAction|Resolution|FirstSeen|LastSeen|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 100021 | Sandbox detection: eicar_com.zip | 2023-02-03T12:13:37.018Z | Sandboxing | 2023-02-15T11:27:46.747Z | High | Closed | CynicIncident | Critical Cynic Detections | 2fd76da0-a3bc-11ed-d519-000000000002 | epmp_incident-2023-02-03 | You can isolate the endpoint(s), remove the file(s) and/or clean the system(s). | MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there. | 2023-02-03T12:13:36.142Z | 2023-02-07T07:33:43.129Z |
 
 
 ### symantec-edr-incident-comment-get
+
 ***
 Get incident comments based on incident UUID.
 
@@ -1004,6 +1083,7 @@ Get incident comments based on incident UUID.
 #### Base Command
 
 `symantec-edr-incident-comment-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1026,8 +1106,11 @@ Get incident comments based on incident UUID.
 | SymantecEDR.IncidentComment.user_id | String | The ID of the user who registered the comment. Example: 100000. | 
 
 #### Command example
+
 ```!symantec-edr-incident-comment-get incident_id=100022 limit=1```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1047,12 +1130,14 @@ Get incident comments based on incident UUID.
 #### Human Readable Output
 
 >### Incident Comment List
+>
 >|IncidentId|Comment|Time|UserId|IncidentResponderName|
 >|---|---|---|---|---|
 >| 100022 | added as part of testing xsoar command examples | 2023-02-15T11:33:54.470Z | 100000 | SEDR API |
 
 
 ### symantec-edr-deny-list-policy-get
+
 ***
 Get deny list policies.
 
@@ -1060,6 +1145,7 @@ Get deny list policies.
 #### Base Command
 
 `symantec-edr-deny-list-policy-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1084,8 +1170,11 @@ Get deny list policies.
 | SymantecEDR.DenyListPolicy.target_value | String | The value of this deny list policy. Example: 1.1.1.1. | 
 
 #### Command example
+
 ```!symantec-edr-deny-list-policy-get limit=10```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1109,6 +1198,7 @@ Get deny list policies.
 #### Human Readable Output
 
 >### Deny List Policy List
+>
 >|Id|TargetType|TargetValue|Comment|
 >|---|---|---|---|
 >| 5 | url | https:<span>//</span>facebook.com | Used for API testing |
@@ -1116,6 +1206,7 @@ Get deny list policies.
 
 
 ### symantec-edr-allow-list-policy-get
+
 ***
 Get allow list policies.
 
@@ -1123,6 +1214,7 @@ Get allow list policies.
 #### Base Command
 
 `symantec-edr-allow-list-policy-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1147,8 +1239,11 @@ Get allow list policies.
 | SymantecEDR.AllowListPolicy.target_value | String | The value of this allow list policy. Example: 1.1.1.1. | 
 
 #### Command example
+
 ```!symantec-edr-allow-list-policy-get limit=10```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1167,12 +1262,14 @@ Get allow list policies.
 #### Human Readable Output
 
 >### Allow List Policy List
+>
 >|Id|TargetType|TargetValue|Comment|
 >|---|---|---|---|
 >| 1 | url | https:<span>//</span>twitter.com/ | Allow List for API testing |
 
 
 ### symantec-edr-incident-update
+
 ***
 Incidents patch command to close an incident, update the resolution of a closed incident, or add comments to the incident.
 
@@ -1180,6 +1277,7 @@ Incidents patch command to close an incident, update the resolution of a closed 
 #### Base Command
 
 `symantec-edr-incident-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1194,37 +1292,48 @@ Incidents patch command to close an incident, update the resolution of a closed 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!symantec-edr-incident-update action_type=add_comment incident_id=100022 value="added as part of testing xsoar command examples"```
+
 #### Human Readable Output
 
 >### Incident Add Comment
+>
 >|incident_id|Message|
 >|---|---|
 >| 100022 | Successfully Updated |
 
 
 #### Command example
+
 ```!symantec-edr-incident-update action_type=update_resolution incident_id=100021 value=3```
+
 #### Human Readable Output
 
 >### Incident Update Status
+>
 >|incident_id|Message|
 >|---|---|
 >| 100021 | Successfully Updated |
 
 
 #### Command example
+
 ```!symantec-edr-incident-update action_type=close_incident incident_id=100022```
+
 #### Human Readable Output
 
 >### Incident Close Incident
+>
 >|incident_id|Message|
 >|---|---|
 >| 100022 | Successfully Updated |
 
 
 ### symantec-edr-endpoint-status
+
 ***
 Get the command status.
 
@@ -1232,6 +1341,7 @@ Get the command status.
 #### Base Command
 
 `symantec-edr-endpoint-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1251,8 +1361,11 @@ Get the command status.
 | SymantecEDR.CommandStatus.status.target | String | The SHA256 of a file. | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-status command_id=b44a351058454c81af41ca98a20d622c-2022-12-18```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1269,12 +1382,14 @@ Get the command status.
 #### Human Readable Output
 
 >### Command Status
+>
 >|State|Command Issuer Name|Message|ErrorCode|
 >|---|---|---|---|
 >| 0 | ATP API | File was not found on endpoint | 301 |
 
 
 ### symantec-edr-endpoint-rejoin
+
 ***
 Rejoins endpoints by re-establishing connections that the endpoint(s) has to internal networks and external networks, based on the endpoint IDs.
 
@@ -1282,6 +1397,7 @@ Rejoins endpoints by re-establishing connections that the endpoint(s) has to int
 #### Base Command
 
 `symantec-edr-endpoint-rejoin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1298,8 +1414,11 @@ Rejoins endpoints by re-establishing connections that the endpoint(s) has to int
 | SymantecEDR.Command.rejoin_endpoint.message | String | Message explaining error code. Values: -1 = Error  0 = Command rejoin_endpoint successfully requested  1 = Command rejoin_endpoint not supported for target command type  2 = Command rejoin_endpoint failed because the target command is already in terminal state  3 = Command rejoin_endpoint is already in progress for the target command | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-rejoin device_id=393b8e82-fe40-429f-8e5e-c6b79a0f2b1c```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1317,12 +1436,14 @@ Rejoins endpoints by re-establishing connections that the endpoint(s) has to int
 #### Human Readable Output
 
 >### Command Rejoin Endpoint
+>
 >|Message|CommandId|
 >|---|---|
 >| Command rejoin_endpoint successfully requested | 1c576eed2f1b4c3dbefa72594f1d3328-2023-02-15 |
 
 
 ### symantec-edr-endpoint-delete-file
+
 ***
 Deletes a file, i.e., deletes all instances of the file, based on the file hash that you have specified from the endpoint using the device ID.
 
@@ -1330,6 +1451,7 @@ Deletes a file, i.e., deletes all instances of the file, based on the file hash 
 #### Base Command
 
 `symantec-edr-endpoint-delete-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1347,8 +1469,11 @@ Deletes a file, i.e., deletes all instances of the file, based on the file hash 
 | SymantecEDR.Command.delete_endpoint_file.message | String | Message explaining error code. Possible Values: -1 = Error  0 = Command delete_endpoint_file successfully requested  1 = Command delete_endpoint_file not supported for target command type  2 = Command delete_endpoint_file failed because the target command is already in terminal state  3 = Command delete_endpoint_file is already in progress for the target command. | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-delete-file device_id=393b8e82-fe40-429f-8e5e-c6b79a0f2b1c sha2=302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1366,12 +1491,14 @@ Deletes a file, i.e., deletes all instances of the file, based on the file hash 
 #### Human Readable Output
 
 >### Command Delete Endpoint
+>
 >|Message|CommandId|
 >|---|---|
 >| Command delete_endpoint_file successfully requested | 1d8cd7cf132746de862cfe208211df7b-2023-02-15 |
 
 
 ### symantec-edr-endpoint-cancel-command
+
 ***
 Cancel a command that is already in progress. Cancel the command execution on all the endpoints where it is still in progress. \nOnly one command can be cancelled at a time.
 
@@ -1379,6 +1506,7 @@ Cancel a command that is already in progress. Cancel the command execution on al
 #### Base Command
 
 `symantec-edr-endpoint-cancel-command`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1395,8 +1523,11 @@ Cancel a command that is already in progress. Cancel the command execution on al
 | SymantecEDR.Command.cancel.message | String | Message explaining error code. Possible Values: -1 = Error  0 = Command cancel successfully requested  1 = Command cancel not supported for target command type  2 = Command cancel failed because the target command is already in terminal state  3 = Command cancel is already in progress for the target command. | 
 
 #### Command example
+
 ```!symantec-edr-endpoint-cancel-command command_id=bee3647b420f4e1bab822ca283fbeb00-2022-12-18```
+
 #### Context Example
+
 ```json
 {
     "SymantecEDR": {
@@ -1414,6 +1545,7 @@ Cancel a command that is already in progress. Cancel the command execution on al
 #### Human Readable Output
 
 >### Command Cancel Endpoint
+>
 >|Message|CommandId|
 >|---|---|
 >| Command cancel_command not supported for target command type. | bee3647b420f4e1bab822ca283fbeb00-2022-12-18 |

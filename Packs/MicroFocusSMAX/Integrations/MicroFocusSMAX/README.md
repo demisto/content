@@ -19,9 +19,12 @@ This integration was integrated and tested with version 2021.08 of MicroFocus SM
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### microfocus-smax-get-entity
+
 ***
 Get any entity details
 
@@ -29,6 +32,7 @@ Get any entity details
 #### Base Command
 
 `microfocus-smax-get-entity`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -47,9 +51,11 @@ Get any entity details
 
 
 #### Command Example
+
 ```!microfocus-smax-get-entity entity_type="Incident" entity_id="16989" entity_fields="Description,Urgency,Status,RegisteredForActualService"```
 
 #### Context Example
+
 ```json
 {
     "MicroFocus": {
@@ -75,12 +81,14 @@ Get any entity details
 #### Human Readable Output
 
 >### Entity Details:
+>
 >|Description|DisplayLabel|Id|LastUpdateTime|RegisteredForActualService|Status|Type|Urgency|
 >|---|---|---|---|---|---|---|---|
 >| Test Description | test66122 | 16989 | 1635339214960 | 11639 | Ready | Incident | SlightDisruption |
 
 
 ### microfocus-smax-query-entities
+
 ***
 Query entities' details using a collection query filter
 
@@ -88,6 +96,7 @@ Query entities' details using a collection query filter
 #### Base Command
 
 `microfocus-smax-query-entities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -112,9 +121,11 @@ Query entities' details using a collection query filter
 
 
 #### Command Example
+
 ```!microfocus-smax-query-entities entity_type="Incident" query_filter="Status = 'Ready'" entity_fields="Status,Urgency" order_by="Id desc" size="5"```
 
 #### Context Example
+
 ```json
 {
     "MicroFocus": {
@@ -186,6 +197,7 @@ Query entities' details using a collection query filter
 #### Human Readable Output
 
 >### Result Details:
+>
 >|Id|LastUpdateTime|Status|Type|Urgency|
 >|---|---|---|---|---|
 >| 17658 | 1635338444483 | Ready | Incident | NoDisruption |
@@ -196,6 +208,7 @@ Query entities' details using a collection query filter
 
 
 ### microfocus-smax-create-entities
+
 ***
 Create new entities
 
@@ -203,6 +216,7 @@ Create new entities
 #### Base Command
 
 `microfocus-smax-create-entities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -220,9 +234,11 @@ Create new entities
 
 
 #### Command Example
+
 ```!microfocus-smax-create-entities entities=`[ { "entity_type": "Incident", "properties": { "DisplayLabel": "Test incident", "Description": "Test incident description", "RegisteredForActualService": "11639", "Urgency": "NoDisruption" } } ]````
 
 #### Context Example
+
 ```json
 {
     "MicroFocus": {
@@ -244,12 +260,14 @@ Create new entities
 #### Human Readable Output
 
 >### Entities Creation Details:
+>
 >|CompletionStatus|Id|LastUpdateTime|Type|
 >|---|---|---|---|
 >| OK | 17013 | 1635341339329 | Incident |
 
 
 ### microfocus-smax-update-entities
+
 ***
 Update entities
 
@@ -257,6 +275,7 @@ Update entities
 #### Base Command
 
 `microfocus-smax-update-entities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -274,9 +293,11 @@ Update entities
 
 
 #### Command Example
+
 ```!microfocus-smax-update-entities entities=`[ { "entity_type": "Incident", "properties": { "Id": "16989", "Description": "Test Description" } } ]````
 
 #### Context Example
+
 ```json
 {
     "MicroFocus": {
@@ -298,12 +319,14 @@ Update entities
 #### Human Readable Output
 
 >### Entities Update Details:
+>
 >|CompletionStatus|Id|LastUpdateTime|Type|
 >|---|---|---|---|
 >| OK | 16989 | 1635339214960 | Incident |
 
 
 ### microfocus-smax-create-incident
+
 ***
 Create a new incident
 
@@ -311,6 +334,7 @@ Create a new incident
 #### Base Command
 
 `microfocus-smax-create-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -335,9 +359,11 @@ Create a new incident
 
 
 #### Command Example
+
 ```!microfocus-smax-create-incident incident_name="Test incident" incident_description="Test incident description" impacted_service="11639" other_properities=`{"Status": "Ready","Urgency": "NoDisruption"}````
 
 #### Context Example
+
 ```json
 {
     "MicroFocus": {
@@ -359,12 +385,14 @@ Create a new incident
 #### Human Readable Output
 
 >### Incident Creation Results:
+>
 >|CompletionStatus|Id|LastUpdateTime|Type|
 >|---|---|---|---|
 >| OK | 17015 | 1635341345342 | Incident |
 
 
 ### microfocus-smax-update-incident
+
 ***
 Update an incident
 
@@ -372,6 +400,7 @@ Update an incident
 #### Base Command
 
 `microfocus-smax-update-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -397,9 +426,11 @@ Update an incident
 
 
 #### Command Example
+
 ```!microfocus-smax-update-incident incident_id="17007" incident_description="Test Description" incident_status="Complete" incident_solution="Test Solution"```
 
 #### Context Example
+
 ```json
 {
     "MicroFocus": {
@@ -421,12 +452,14 @@ Update an incident
 #### Human Readable Output
 
 >### Incident Update Results:
+>
 >|CompletionStatus|Id|LastUpdateTime|Type|
 >|---|---|---|---|
 >| OK | 17007 | 1635339537768 | Incident |
 
 
 ### microfocus-smax-create-request
+
 ***
 Create a new request
 
@@ -434,6 +467,7 @@ Create a new request
 #### Base Command
 
 `microfocus-smax-create-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -457,9 +491,11 @@ Create a new request
 
 
 #### Command Example
+
 ```!microfocus-smax-create-request request_name="Test Request" request_description="Test Request Description" requested_by="10388" requested_for="10388"```
 
 #### Context Example
+
 ```json
 {
     "MicroFocus": {
@@ -481,12 +517,14 @@ Create a new request
 #### Human Readable Output
 
 >### Request Creation Results:
+>
 >|CompletionStatus|Id|LastUpdateTime|Type|
 >|---|---|---|---|
 >| OK | 17549 | 1635341351250 | Request |
 
 
 ### microfocus-smax-update-request
+
 ***
 Update a request
 
@@ -494,6 +532,7 @@ Update a request
 #### Base Command
 
 `microfocus-smax-update-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -517,9 +556,11 @@ Update a request
 
 
 #### Command Example
+
 ```!microfocus-smax-update-request request_id="17009" request_description="Test Description" request_status="RequestStatusPendingSpecialOperation"```
 
 #### Context Example
+
 ```json
 {
     "MicroFocus": {
@@ -541,6 +582,7 @@ Update a request
 #### Human Readable Output
 
 >### Request Update Results:
+>
 >|CompletionStatus|Id|LastUpdateTime|Type|
 >|---|---|---|---|
 >| OK | 17009 | 1635339631068 | Request |

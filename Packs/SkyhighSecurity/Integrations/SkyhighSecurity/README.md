@@ -1,5 +1,6 @@
 
 ### Additional information
+
 Skyhigh Security is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
 This integration was integrated and tested with version 1 of Skyhigh Security.
 
@@ -13,7 +14,7 @@ The solution is to restart the last-run.
 
    | **Parameter**  | **Description** | **Required** |
    | ---- | -------- | ------------ |
-   | Base URL (e.g., https://www.myshn.net)|    | True   |
+   | Base URL (e.g., <https://www.myshn.net>)|    | True   |
    | Password | The username and password to use for the connection | True |
    | Maximum number of incidents to fetch every time. Default is 50. Maximum is 500. | False  |
    | First fetch in timestamp format (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days. |   | False   |

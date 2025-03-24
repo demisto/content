@@ -1,5 +1,6 @@
 Agari Phishing Defense stops phishing, BEC, and other identity deception attacks that trick employees into harming your business.
 This integration was integrated and tested with a standard version of Agari Phishing Defense.
+
 ## Configure Agari Phishing Defense in Cortex
 
 
@@ -19,9 +20,12 @@ This integration was integrated and tested with a standard version of Agari Phis
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### apd-list-policy-events
+
 ***
 Retrieves a list of policy events.
 
@@ -29,6 +33,7 @@ Retrieves a list of policy events.
 #### Base Command
 
 `apd-list-policy-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -63,9 +68,11 @@ Retrieves a list of policy events.
 
 
 #### Command Example
+
 ```!apd-list-policy-events limit=2```
 
 #### Context Example
+
 ```json
 {
     "AgariPhishingDefense": {
@@ -98,6 +105,7 @@ Retrieves a list of policy events.
 #### Human Readable Output
 
 >### Policy Events
+>
 >|Event ID|Alert Definition Name|Policy Action|Notified Original Recipients|Created|Updated|
 >|---|---|---|---|---|---|
 >| 549904303 | Spoof of Partner Domains | none | false | 2020-12-03T04:32:23Z | 2020-12-03T04:32:23Z |
@@ -105,6 +113,7 @@ Retrieves a list of policy events.
 
 
 ### apd-list-message-data
+
 ***
 Retrieves a list of messages.
 
@@ -112,6 +121,7 @@ Retrieves a list of messages.
 #### Base Command
 
 `apd-list-message-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -174,9 +184,11 @@ Retrieves a list of messages.
 
 
 #### Command Example
+
 ```!apd-list-message-data limit=2```
 
 #### Context Example
+
 ```json
 {
     "AgariPhishingDefense": {
@@ -247,13 +259,15 @@ Retrieves a list of messages.
 #### Human Readable Output
 
 >### Messages
+>
 >|ID|From|To|Subject|Message Trust Score|Domain Reputation|IP|Authenticity|Attack Types|Date|
 >|---|---|---|---|---|---|---|---|---|---|
->| 785d91a8-34fb-11eb-bf90-f6ba445dac4f | Accounts@abc.com | acoyle@xyz.com | Please approve and forward expense report "December Expenses" | 0.6 | 9.0 | 1.2.3.4 | 0.085819915 | spoof (Domain spoof) | 2020-12-03T02:07:02+00:00 |
->| 7852dc68-34fb-11eb-bf90-f6ba445dac4f | help@xyz.com | aarmstrong@xyz.com | Please approve and forward expense report "December Expenses" | 0.8 | 8.6 | 2.2.3.4 | 0.07902577 | spoof (Domain spoof) | 2020-12-03T02:07:02+00:00 |
+>| 785d91a8-34fb-11eb-bf90-f6ba445dac4f | <Accounts@abc.com> | <acoyle@xyz.com> | Please approve and forward expense report "December Expenses" | 0.6 | 9.0 | 1.2.3.4 | 0.085819915 | spoof (Domain spoof) | 2020-12-03T02:07:02+00:00 |
+>| 7852dc68-34fb-11eb-bf90-f6ba445dac4f | <help@xyz.com> | <aarmstrong@xyz.com> | Please approve and forward expense report "December Expenses" | 0.8 | 8.6 | 2.2.3.4 | 0.07902577 | spoof (Domain spoof) | 2020-12-03T02:07:02+00:00 |
 
 
 ### apd-remediate-message
+
 ***
 Remediate suspected message.
 
@@ -261,6 +275,7 @@ Remediate suspected message.
 #### Base Command
 
 `apd-remediate-message`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -274,9 +289,11 @@ Remediate suspected message.
 There is no context output for this command.
 
 #### Command Example
+
 ```!apd-remediate-message id="0e43a684-2e0e-11eb-815a-0a8f2da72108" operation="move"```
 
 #### Context Example
+
 ```json
 {}
 ```

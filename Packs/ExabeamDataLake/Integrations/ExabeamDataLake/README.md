@@ -51,8 +51,11 @@ Get events from Exabeam Data Lake.
 | ExabeamDataLake.Event._source.message | str | The message of the event. | 
 
 #### Command example
+
 ```!exabeam-data-lake-search query="risk_score:3" start_time="2024.02.27" end_time="2024.02.28" limit=2```
+
 #### Context Example
+
 ```json
 {
     "ExabeamDataLake": {
@@ -149,6 +152,7 @@ Get events from Exabeam Data Lake.
 #### Human Readable Output
 
 >### Logs
+>
 >|Created_at|Id|Message|Product|Vendor|
 >|---|---|---|---|---|
 >| 2024-02-28T16:15:50.614Z | some_id | <86>1 2024-02-28T16:15:50.609Z exabeam-analytics-master Exabeam - - - timestamp="2024-02-28T16:15:29.192Z" id="ghardin-20240228143533" score="3" user="ghardin" event_time="2024-02-28 14:35:35" event_type="dlp-alert" domain="kenergy" time="1709130935833" source="ObserveIT" vendor="ObserveIT" lockout_id="NA" session_id="ghardin-20240228143533" session_order="2" account="ghardin" getvalue('zone_info', src)="new york office" alert_name=" rule violation" local_asset="lt-ghardin-888" alert_type="DATA EXFILTRATION" os="Win" rule_name="Abnormal DLP alert name for user" rule_description="Exabeam noted that this alert name has been triggered for this user in the past yet it is still considered abnormal activity. This activity may be an early indication of compromise of a user by malware or other malicious actors." rule_reason="Abnormal DLP alert with name  rule violation for user"  | Exabeam AA | Exabeam |

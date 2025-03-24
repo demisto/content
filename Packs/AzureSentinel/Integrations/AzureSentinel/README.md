@@ -902,7 +902,7 @@ Creates a single incident in Azure Sentinel.
 >
 >|ID|Incident Number|Title|Description|Severity|Status|Incident Url|Label|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | 2 | test |testing | Low | New |https://portal.azure.com/#asset/Microsoft_Azure_Security_Insights/Incident/subscriptions/xxxxxx/resourceGroups/xxxxxx/providers/Microsoft.OperationalInsights/workspaces/xxxxxx/providers/Microsoft.SecurityInsights/Incidents/2b43defc-6c4b-434f-a152-6bdca46b6ef3| {'Name': 'value', 'Type': 'User'} | 2021-08-23T13:30:49Z | 2021-08-23T13:30:49Z | 0 | 0 | 0 | 
+>| 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | 2 | test |testing | Low | New |<https://portal.azure.com/#asset/Microsoft_Azure_Security_Insights/Incident/subscriptions/xxxxxx/resourceGroups/xxxxxx/providers/Microsoft.OperationalInsights/workspaces/xxxxxx/providers/Microsoft.SecurityInsights/Incidents/2b43defc-6c4b-434f-a152-6bdca46b6ef3>| {'Name': 'value', 'Type': 'User'} | 2021-08-23T13:30:49Z | 2021-08-23T13:30:49Z | 0 | 0 | 0 | 
 
 ### azure-sentinel-delete-incident
 

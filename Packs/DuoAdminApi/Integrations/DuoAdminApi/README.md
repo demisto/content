@@ -14,9 +14,12 @@ This integration was integrated and tested with version 4.4.0 of DUO Admin
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### duoadmin-get-authentication-logs-by-user
+
 ***
 Returns authentication logs associated with a user. Limited to 30 at a time
 
@@ -24,6 +27,7 @@ Returns authentication logs associated with a user. Limited to 30 at a time
 #### Base Command
 
 `duoadmin-get-authentication-logs-by-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,6 +59,7 @@ Returns authentication logs associated with a user. Limited to 30 at a time
 | DuoAdmin.UserDetails.auth_logs.factor | string | The authentication factor | 
 
 ### duoadmin-dissociate-device-from-user
+
 ***
 Dissociates a device from a user
 
@@ -62,6 +67,7 @@ Dissociates a device from a user
 #### Base Command
 
 `duoadmin-dissociate-device-from-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -73,7 +79,9 @@ Dissociates a device from a user
 #### Context Output
 
 There is no context output for this command.
+
 ### duoadmin-delete-u2f-token
+
 ***
 Delete a u2f token
 
@@ -81,6 +89,7 @@ Delete a u2f token
 #### Base Command
 
 `duoadmin-delete-u2f-token`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -91,7 +100,9 @@ Delete a u2f token
 #### Context Output
 
 There is no context output for this command.
+
 ### duoadmin-get-users
+
 ***
 Return usernames and their user id
 
@@ -99,6 +110,7 @@ Return usernames and their user id
 #### Base Command
 
 `duoadmin-get-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -119,6 +131,7 @@ Return usernames and their user id
 | DuoAdmin.UserDetails.phones | unknown | Phone numbers | 
 
 ### duoadmin-get-devices-by-user
+
 ***
 Return devices associated with a user
 
@@ -126,6 +139,7 @@ Return devices associated with a user
 #### Base Command
 
 `duoadmin-get-devices-by-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -143,6 +157,7 @@ Return devices associated with a user
 | DuoAdmin.UserDetails.phones.last_seen | date | Last time the device was used | 
 
 ### duoadmin-get-u2f-tokens-by-user
+
 ***
 Returns a list of U2F tokens associated with the given username
 
@@ -150,6 +165,7 @@ Returns a list of U2F tokens associated with the given username
 #### Base Command
 
 `duoadmin-get-u2f-tokens-by-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -164,6 +180,7 @@ Returns a list of U2F tokens associated with the given username
 | DuoAdmin.UserDetails.u2ftokens | Unknown | The list of  tokens | 
 
 ### duoadmin-get-devices
+
 ***
 Returns all existing devices
 
@@ -171,6 +188,7 @@ Returns all existing devices
 #### Base Command
 
 `duoadmin-get-devices`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -188,6 +206,7 @@ Returns all existing devices
 | DuoAdmin.Phones.users | Unknown | Users associated with this device | 
 
 ### duoadmin-associate-device-to-user
+
 ***
 Associates a device to a user
 
@@ -195,6 +214,7 @@ Associates a device to a user
 #### Base Command
 
 `duoadmin-associate-device-to-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -206,7 +226,9 @@ Associates a device to a user
 #### Context Output
 
 There is no context output for this command.
+
 ### duoadmin-get-admins
+
 ***
 Returns administrator accounts
 
@@ -214,6 +236,7 @@ Returns administrator accounts
 #### Base Command
 
 `duoadmin-get-admins`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -235,6 +258,7 @@ Returns administrator accounts
 | DuoAdmin.UserDetails.status | string | Admin Status | 
 
 ### duoadmin-get-bypass-codes
+
 ***
 Retrieves the information from the bypass code table
 
@@ -242,6 +266,7 @@ Retrieves the information from the bypass code table
 #### Base Command
 
 `duoadmin-get-bypass-codes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -265,6 +290,7 @@ Retrieves the information from the bypass code table
 | DuoAdmin.UserDetails.user.user_id | unknown | User Id | 
 
 ### duoadmin-modify-admin
+
 ***
 Modify the administrator user.
 
@@ -272,6 +298,7 @@ Modify the administrator user.
 #### Base Command
 
 `duoadmin-modify-admin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -286,7 +313,9 @@ Modify the administrator user.
 #### Context Output
 
 There is no context output for this command.
+
 ### duoadmin-modify-user
+
 ***
 Modify the user account.
 
@@ -294,6 +323,7 @@ Modify the user account.
 #### Base Command
 
 `duoadmin-modify-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

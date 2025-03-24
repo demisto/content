@@ -3,6 +3,7 @@ Returns a map entry with a marker on the given coordinate (lat, lng).
 **Note**: To use the `address` field, make sure you have set up an instance of the `GoogleMaps` integration.  
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,6 +13,7 @@ Returns a map entry with a marker on the given coordinate (lat, lng).
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,5 +23,6 @@ Returns a map entry with a marker on the given coordinate (lat, lng).
 | address | A location description. For example, `1600 pennsylvania ave, DC` or `Mount Kilimanjaro`.|
 
 ## Outputs
+
 ---
 There are no outputs for this script.

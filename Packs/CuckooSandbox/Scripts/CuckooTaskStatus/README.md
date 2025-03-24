@@ -3,6 +3,7 @@ Deprecated. Use the 'cuckoo-view-task' command instead.
 Checks the current status of a task in Cuckoo sandbox.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,11 +13,14 @@ Checks the current status of a task in Cuckoo sandbox.
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * cuckoo-view-task
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -24,5 +28,6 @@ This script uses the following commands and scripts.
 | taskID | The ID of the task to check. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

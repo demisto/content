@@ -1,4 +1,5 @@
 #### Get Agent, Switches and Events from your Sepio Prime
+
 #### This integration was integrated and tested with version 20.07.22.0958 of Sepio Prime
 
 ## Configure Sepio in Cortex
@@ -6,7 +7,7 @@
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://sepio\-prime.com\) | True |
+| url | Server URL \(e.g. <https://sepio\-prime.com\>) | True |
 | credentials | Username | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
@@ -18,11 +19,14 @@
 | max_alerts | Maximum number of alerts to fetch at a time | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 For the commands sepio-set-agent-mode, sepio-set-peripherals-mode you need user with Manager profile,
 other commands need user with User profile.
+
 ### sepio-query-agents
+
 ***
 Get Agents
 
@@ -30,6 +34,7 @@ Get Agents
 #### Base Command
 
 `sepio-query-agents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -64,9 +69,11 @@ Get Agents
 
 
 #### Command Example
+
 ```!sepio-query-agents uuid=BFEBFBFF000806EAL1HF8C4003Z ip_address=192.168.10.107 host_identifier=DESKTOP-ANTONY has_known_attack_tools=False has_unapproved_peripherals=False has_vulnerable_peripherals=False limit=1000```
 
 #### Context Example
+
 ```
 {
     "Sepio": {
@@ -96,12 +103,14 @@ Get Agents
 #### Human Readable Output
 
 >### Agents
+>
 >|UUID|IpAddress|HostIdentifier|HasUnapprovedPeripherals|HasVulnerablePeripherals|HasKnownAttackTools|
 >|---|---|---|---|---|---|
 >| BFEBFBFF000806EAL1HF8C4003Z | 192.168.10.107 | DESKTOP-ANTONY | false | false | false |
 
 
 ### sepio-query-peripherals
+
 ***
 Get Peripherals
 
@@ -109,6 +118,7 @@ Get Peripherals
 #### Base Command
 
 `sepio-query-peripherals`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -145,9 +155,11 @@ Get Peripherals
 
 
 #### Command Example
+
 ```!sepio-query-peripherals host_uuid=BFEBFBFF000806EAL1HF8C4003Z vendor_name="Logitech, Inc." product_name="Keyboard K120" limit=20```
 
 #### Context Example
+
 ```
 {
     "Sepio": {
@@ -208,6 +220,7 @@ Get Peripherals
 #### Human Readable Output
 
 >### Peripherals
+>
 >|HostUUID|DeviceID|Status|IsUnapprovedPeripheral|IsVulnerablePeripheral|IsKnownAttackTool|
 >|---|---|---|---|---|---|
 >| BFEBFBFF000806EAL1HF8C4003Z | USB\VID_046D&PID_C31C\5&20DBD6CE&0&1 | OK | false | false | false |
@@ -216,6 +229,7 @@ Get Peripherals
 
 
 ### sepio-query-switches
+
 ***
 Get Switches
 
@@ -223,6 +237,7 @@ Get Switches
 #### Base Command
 
 `sepio-query-switches`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -251,9 +266,11 @@ Get Switches
 
 
 #### Command Example
+
 ```!sepio-query-switches switch_name=sepio2960g ios_version=12.2(52)SE ip_address=192.168.100.25 model=WS-C2960G-24TC-L```
 
 #### Context Example
+
 ```
 {
     "Sepio": {
@@ -275,12 +292,14 @@ Get Switches
 #### Human Readable Output
 
 >### Switches
+>
 >|SwitchID|Status|IsAlarmed|
 >|---|---|---|
 >| DC:7B:94:96:17:80_FOC1428V67S | Normal | false |
 
 
 ### sepio-query-switch-ports
+
 ***
 Get Switch Ports
 
@@ -288,6 +307,7 @@ Get Switch Ports
 #### Base Command
 
 `sepio-query-switch-ports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -319,9 +339,11 @@ Get Switch Ports
 
 
 #### Command Example
+
 ```!sepio-query-switch-ports switch_name=sepio2960g switch_ip_address=192.168.100.25 port_id=Gi0/17 link_partner_data_contains=042AE2D31AC0,04D590D51701```
 
 #### Context Example
+
 ```
 {
     "Sepio": {
@@ -349,12 +371,14 @@ Get Switch Ports
 #### Human Readable Output
 
 >### Ports
+>
 >|SwitchID|PortID|Status|IsAlarmed|AlarmInfo|
 >|---|---|---|---|---|
 >| DC:7B:94:96:17:80_FOC1428V67S | Gi0/17 | connected | false |  |
 
 
 ### sepio-query-system-events
+
 ***
 Get Events
 
@@ -362,6 +386,7 @@ Get Events
 #### Base Command
 
 `sepio-query-system-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -389,9 +414,11 @@ Get Events
 
 
 #### Command Example
+
 ```!sepio-query-system-events start_datetime=2020-07-16T16:50:00Z end_datetime=2020-07-21T11:02:00Z min_severity=Warning peripheral_type=1,2,3,4```
 
 #### Context Example
+
 ```
 {
     "Sepio": {
@@ -424,6 +451,7 @@ Get Events
 #### Human Readable Output
 
 >### Events
+>
 >|EventID|CreationDatetime|Category|Source|Description|
 >|---|---|---|---|---|
 >| 1067 | 2020-07-16T16:53:29.240559 | USB | DESKTOP-ANTONY (192.168.10.107) | New USB peripheral detected |
@@ -431,6 +459,7 @@ Get Events
 
 
 ### sepio-set-agent-mode
+
 ***
 Set Agent Mode
 
@@ -438,6 +467,7 @@ Set Agent Mode
 #### Base Command
 
 `sepio-set-agent-mode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -453,6 +483,7 @@ Set Agent Mode
 There is no context output for this command.
 
 #### Command Example
+
 ```!sepio-set-agent-mode mode=Free uuid=BFEBFBFF000806EAL1HF8C4003Z```
 
 #### Human Readable Output
@@ -460,6 +491,7 @@ There is no context output for this command.
 >Agent ['BFEBFBFF000806EAL1HF8C4003Z'] mode has been changed successfully to 'Free'
 
 ### sepio-set-peripherals-mode
+
 ***
 Set Agent Peripherals Mode
 
@@ -467,6 +499,7 @@ Set Agent Peripherals Mode
 #### Base Command
 
 `sepio-set-peripherals-mode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -484,6 +517,7 @@ Set Agent Peripherals Mode
 There is no context output for this command.
 
 #### Command Example
+
 ```!sepio-set-peripherals-mode mode=Approve uuid=BFEBFBFF000806EAL1HF8C4003Z vid=046D pid=C31C```
 
 #### Human Readable Output

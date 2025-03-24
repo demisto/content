@@ -66,6 +66,7 @@ Google Calendar is a time-management and scheduling calendar service developed b
 
 
 ### google-calendar-acl-add
+
 ***
 Creates an access control rule.
 
@@ -73,6 +74,7 @@ Creates an access control rule.
 #### Base Command
 
 `google-calendar-acl-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -100,10 +102,12 @@ Creates an access control rule.
 
 
 #### Command Example
+
 ```!google-calendar-acl-add calendar_id=calenderId role=freeBusyReader scope_type=user scope_value=useracl@domain.com user_id=user1@domain.com```
 
 
 #### Context Example
+
 ```
 {
     "GoogleCalendar": {
@@ -124,12 +128,14 @@ Creates an access control rule.
 #### Human Readable Output
 
 >### Giving an access control rule for calendar id "calenderId".
+>
 >|Id|Role|Scope Type|Scope Value|
 >|---|---|---|---|
->| user:useracl@domain.com | freeBusyReader | user | useracl@domain.com |
+>| user:useracl@domain.com | freeBusyReader | user | <useracl@domain.com> |
 
 
 ### google-calendar-acl-list
+
 ***
 Returns the rules in the access control list for the calendar.
 
@@ -137,6 +143,7 @@ Returns the rules in the access control list for the calendar.
 #### Base Command
 
 `google-calendar-acl-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -168,9 +175,11 @@ Returns the rules in the access control list for the calendar.
 
 
 #### Command Example
+
 ```!google-calendar-acl-list calendar_id=calenderID user_id=user1@domain.com max_results=2```
 
 #### Context Example
+
 ```
 {
     "GoogleCalendar": {
@@ -210,9 +219,11 @@ Returns the rules in the access control list for the calendar.
 #### Human Readable Output
 
 >### Next Page Token: EKiDnZGM_OsCGAAgADIkCgwI1Iqk-gUQgOitlAMSFCoSeHh4eEBuaW1ibGVkYXRhLmlv
+>
 >### Total Retrieved ACL: 2
+>
 >|Id|Role|Scope Type|Scope Value|
 >|---|---|---|---|
->| user:user1@domain.com | owner | user | user1@domain.com |
->| user:user2@domain.com | reader | user | user2@domain.com |
+>| user:user1@domain.com | owner | user | <user1@domain.com> |
+>| user:user2@domain.com | reader | user | <user2@domain.com> |
 

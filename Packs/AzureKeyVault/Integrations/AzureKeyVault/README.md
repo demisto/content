@@ -1382,6 +1382,7 @@ There are no input arguments for this command.
 | AzureKeyVault.Subscription.authorizationSource | String | Authorization source. | 
 | AzureKeyVault.Subscription.managedByTenants | Unknown | Managed by tenants. | 
 | AzureKeyVault.Subscription.tenantId | String | Tenant ID. | 
+
 ### azure-key-vault-resource-group-list
 
 ***

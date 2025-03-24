@@ -1,20 +1,24 @@
 Cisco Email Security is an email security gateway . It detects and blocks a wide variety of email-borne threats, such as malware, spam and phishing.
 This integration was integrated and tested with version 13 of CiscoEmailSecurity
+
 ## Configure CiscoEmailSecurity in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| base_url | Server URL \(e.g. https://192.168.0.1\) | True |
+| base_url | Server URL \(e.g. <https://192.168.0.1\>) | True |
 | credentials | API Username | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | timeout | request timeout | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cisco-email-security-report-get
+
 ***
 Retrieves details of an email security report by counter type.
 
@@ -22,6 +26,7 @@ Retrieves details of an email security report by counter type.
 #### Base Command
 
 `cisco-email-security-report-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -74,6 +79,7 @@ Retrieves details of an email security report by counter type.
 
 
 ### cisco-email-security-messages-search
+
 ***
 Executes a search for messages in Cisco Email Security.
 
@@ -81,6 +87,7 @@ Executes a search for messages in Cisco Email Security.
 #### Base Command
 
 `cisco-email-security-messages-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -141,6 +148,7 @@ Executes a search for messages in Cisco Email Security.
 
 
 ### cisco-email-security-message-details-get
+
 ***
 Retrieves details of a message.
 
@@ -148,6 +156,7 @@ Retrieves details of a message.
 #### Base Command
 
 `cisco-email-security-message-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -193,6 +202,7 @@ Retrieves details of a message.
 
 
 ### cisco-email-security-spam-quarantine-search
+
 ***
 Executes a search for spam quarantine.
 
@@ -200,6 +210,7 @@ Executes a search for spam quarantine.
 #### Base Command
 
 `cisco-email-security-spam-quarantine-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -227,6 +238,7 @@ There is no context output for this command.
 
 
 ### cisco-email-security-spam-quarantine-message-details-get
+
 ***
 Retrieves details for a quarantined message.
 
@@ -234,6 +246,7 @@ Retrieves details for a quarantined message.
 #### Base Command
 
 `cisco-email-security-spam-quarantine-message-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -248,6 +261,7 @@ There is no context output for this command.
 
 
 ### cisco-email-security-dlp-details-get
+
 ***
 Retrieves details on a DLP.
 
@@ -255,6 +269,7 @@ Retrieves details on a DLP.
 #### Base Command
 
 `cisco-email-security-dlp-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -298,6 +313,7 @@ Retrieves details on a DLP.
 
 
 ### cisco-email-security-amp-details-get
+
 ***
 Retrieves details of an AMP.
 
@@ -305,6 +321,7 @@ Retrieves details of an AMP.
 #### Base Command
 
 `cisco-email-security-amp-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -344,6 +361,7 @@ Retrieves details of an AMP.
 
 
 ### cisco-email-security-url-details-get
+
 ***
 Retrieves details of a URL.
 
@@ -351,6 +369,7 @@ Retrieves details of a URL.
 #### Base Command
 
 `cisco-email-security-url-details-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -391,6 +410,7 @@ Retrieves details of a URL.
 
 
 ### cisco-email-security-spam-quarantine-messages-delete
+
 ***
 Deletes quarantined messages.
 
@@ -398,6 +418,7 @@ Deletes quarantined messages.
 #### Base Command
 
 `cisco-email-security-spam-quarantine-messages-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -412,6 +433,7 @@ There is no context output for this command.
 
 
 ### cisco-email-security-spam-quarantine-messages-release
+
 ***
 Releases quarantined messages.
 
@@ -419,6 +441,7 @@ Releases quarantined messages.
 #### Base Command
 
 `cisco-email-security-spam-quarantine-messages-release`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -433,6 +456,7 @@ There is no context output for this command.
 
 
 ### cisco-email-security-list-entries-get
+
 ***
 Retrieves a list of entries.
 
@@ -440,6 +464,7 @@ Retrieves a list of entries.
 #### Base Command
 
 `cisco-email-security-list-entries-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -468,6 +493,7 @@ Retrieves a list of entries.
 
 
 ### cisco-email-security-list-entry-add
+
 ***
 Performs actions on list entries. Supports add, edit, and append.
 
@@ -475,6 +501,7 @@ Performs actions on list entries. Supports add, edit, and append.
 #### Base Command
 
 `cisco-email-security-list-entry-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -495,6 +522,7 @@ There is no context output for this command.
 
 
 ### cisco-email-security-list-entry-delete
+
 ***
 Deletes a list entry.
 
@@ -502,6 +530,7 @@ Deletes a list entry.
 #### Base Command
 
 `cisco-email-security-list-entry-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

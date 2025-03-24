@@ -1692,6 +1692,7 @@ Returns a comment through the case number.
 | LastModifiedDate | string | The last modified date.  | 
 | LastModifiedById | string | The last modified date by ID. | 
 | IsDeleted | boolean | Whether the object has been moved to the Recycle Bin \(true\). Label is Deleted. | 
+
 ### salesforce-post-casecomment
 
 ***
@@ -1712,6 +1713,7 @@ The post comment through the case number.
 #### Context Output
 
 There is no context output for this command.
+
 ### salesforce-get-user
 
 ***
@@ -1743,6 +1745,7 @@ Returns the UserName through the case number.
 | Name | string | Concatenation of FirstName and LastName. Limited to 121 characters. | 
 | Username | string | Contains the name that a user enters to log in to the API or the user interface. Required. Must be in the form of an email address, all characters should be lowercase, and unique across all organizations. Each added user counts as a license. Every organization has a maximum number of licenses. If you attempt to exceed the maximum number of licenses by inserting user records, the attempt to create a user is rejected. | 
 | UserRoleId | string | The ID of the user’s UserRole. Label is Role ID. | 
+
 ### salesforce-get-org
 
 ***

@@ -88,4 +88,4 @@ There is no context output for this command.
 
 >|action_by|additional_details|created_at|created_by|event_id|event_type|ip_address|session_id|source|type|
 >|---|---|---|---|---|---|---|---|---|---|
->|  |  | 2022-04-10T05:39:15-07:00 | type: user<br/>id: 0000000000<br/>name: John Doe<br/>login: johndoe@example.com | event_id | ADD_LOGIN_ACTIVITY_DEVICE | ip_address |  | type: user<br/>id: 0000000000<br/>name: John Doe<br/>login: johndoe@example.com | event |
+>|  |  | 2022-04-10T05:39:15-07:00 | type: user<br/>id: 0000000000<br/>name: John Doe<br/>login: <johndoe@example.com> | event_id | ADD_LOGIN_ACTIVITY_DEVICE | ip_address |  | type: user<br/>id: 0000000000<br/>name: John Doe<br/>login: <johndoe@example.com> | event |

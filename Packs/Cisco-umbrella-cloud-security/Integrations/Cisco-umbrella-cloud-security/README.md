@@ -1,5 +1,6 @@
 
 This integration was integrated and tested with version 1.0 of Cisco Umbrella Cloud Security.
+
 ## Configure Cisco Umbrella Cloud Security in Cortex
 
 
@@ -12,9 +13,12 @@ This integration was integrated and tested with version 1.0 of Cisco Umbrella Cl
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### umbrella-get-destination-lists
+
 ***
 Get's all destination lists in organization
 
@@ -22,6 +26,7 @@ Get's all destination lists in organization
 #### Base Command
 
 `umbrella-get-destination-lists`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -37,6 +42,7 @@ Get's all destination lists in organization
 
 
 ### umbrella-add-domain
+
 ***
 Adds domains to given destination list
 
@@ -44,6 +50,7 @@ Adds domains to given destination list
 #### Base Command
 
 `umbrella-add-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -61,6 +68,7 @@ There is no context output for this command.
 
 
 ### umbrella-get-destination-domains
+
 ***
 Get's the domains listed in a destination list
 
@@ -68,6 +76,7 @@ Get's the domains listed in a destination list
 #### Base Command
 
 `umbrella-get-destination-domains`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -87,6 +96,7 @@ Get's the domains listed in a destination list
 | Umbrella.Destinations.comment | Unknown | Comment associated with domain within destination list | 
 
 ### umbrella-remove-domain
+
 ***
 Removes domains to given destination list
 
@@ -94,6 +104,7 @@ Removes domains to given destination list
 #### Base Command
 
 `umbrella-remove-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -108,6 +119,7 @@ Removes domains to given destination list
 There is no context output for this command.
 
 ### umbrella-get-destination-domain
+
 ***
 Gets the domain from a destination list
 
@@ -115,6 +127,7 @@ Gets the domain from a destination list
 #### Base Command
 
 `umbrella-get-destination-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -134,6 +147,7 @@ Gets the domain from a destination list
 | Umbrella.Destinations.comment | Unknown | Comment associated with domain within destination list | 
 
 ### umbrella-search-destination-domains
+
 ***
 Search for multiple domains in a destination list
 
@@ -141,6 +155,7 @@ Search for multiple domains in a destination list
 #### Base Command
 
 `umbrella-search-destination-domains`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

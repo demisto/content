@@ -1,6 +1,7 @@
 Search entries in the war room for the pattern text, and set tags to the entries found.
 
 ---
+
 ## Script Data
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Search entries in the war room for the pattern text, and set tags to the entries
 
 
 ---
+
 ## Inputs
 
 | **Argument Name** | **Description** |
@@ -32,6 +34,7 @@ Search entries in the war room for the pattern text, and set tags to the entries
 | summary | The flag to control the output of results |
 
 --
+
 ## Outputs
 
 There are no outputs for this script.

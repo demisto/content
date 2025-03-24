@@ -5,7 +5,7 @@ This integration uses the XSOAR API to perform basic but essentials actions on f
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://example.net) | Make sure XSOAR config 'External Host Name' is set and let this field empty otherwise set the external ip of XSOAR. Using https://127.0.0.1 don't work. | False |
+| Server URL (e.g. <https://example.net>) | Make sure XSOAR config 'External Host Name' is set and let this field empty otherwise set the external ip of XSOAR. Using <https://127.0.0.1> don't work. | False |
 | XSOAR Server API Key |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -39,6 +39,7 @@ Copies a file from this incident to the specified incident. Usefull if you want 
 #### Context Output
 
 There is no context output for this command.
+
 ### file-management-delete-file
 
 ***
@@ -57,6 +58,7 @@ Delete the file from the incident and from the XSOAR server
 #### Context Output
 
 There is no context output for this command.
+
 ### file-management-check-file
 
 ***
@@ -139,6 +141,7 @@ Rename a file. Warning: use this only if necessary, it's HEAVY to run, this will
 #### Context Output
 
 There is no context output for this command.
+
 ### file-management-download-file
 
 ***

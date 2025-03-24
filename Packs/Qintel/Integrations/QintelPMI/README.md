@@ -102,6 +102,7 @@ Queries Qintel for CVE intelligence
 
 >**Vulnerability in Example System affecting versions: 1.0, 1.1**
 >**Last observed: 2021-04-20 04:00:00**
+>
 >|actor|actor_type|exploit_type|exploit_notes|date_observed|
 >|---|---|---|---|---|
 >| Unattributed Threat Actor | other | cve |  | 2021-04-20 04:00:00 |
