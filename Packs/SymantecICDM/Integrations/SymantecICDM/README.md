@@ -1,5 +1,5 @@
 Query the Symantec Endpoint Security Cloud Portal (ICDM).
-This integration was integrated and tested with version xx of SymantecICDM.
+This integration was integrated and tested with version 1 of SymantecICDM.
 
 ## Configure Symantec Endpoint Security (ICDM) in Cortex
 
