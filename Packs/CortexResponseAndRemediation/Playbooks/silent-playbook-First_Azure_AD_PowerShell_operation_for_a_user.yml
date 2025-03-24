@@ -279,7 +279,6 @@ tasks:
       updated_after:
         simple: 1 day
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -315,7 +314,6 @@ tasks:
       query:
         simple: let _start = now(-1d); AlertEvidence | where Timestamp >= _start | where AccountUpn == "${Core.OriginalAlert.raw_abioc.event.identity_invoked_by_name}"
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -692,7 +690,6 @@ tasks:
       risk_level:
         simple: high
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1126,7 +1123,6 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1421,7 +1417,6 @@ tasks:
       user:
         simple: ${Core.OriginalAlert.event.identity_name}
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1433,7 +1428,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1584,7 +1579,6 @@ tasks:
       user:
         simple: ${Core.OriginalAlert.event.identity_name}
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
