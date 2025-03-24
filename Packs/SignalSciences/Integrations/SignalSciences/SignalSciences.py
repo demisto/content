@@ -246,7 +246,7 @@ def is_legal_interval_for_alert(interval):
     if not represents_int(interval):
         return False
     interval_int = int(interval)
-    return (interval_int == 1 or interval_int == 10 or interval_int == 60)
+    return interval_int == 1 or interval_int == 10 or interval_int == 60
 
 
 def validate_list_description_length(description):
