@@ -281,7 +281,7 @@ def execute_test_module_command(client: MobileIronCloudClient):
     """This definition is for test command to get Ping response from Cloud"""
 
     response = client.get_tenant_partitions()
-    if response:    # noqa: RET503
+    if response:  # noqa: RET503
         return "ok"
 
 

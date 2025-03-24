@@ -39,9 +39,7 @@ class TestMain(unittest.TestCase):
             {
                 "ContentsFormat": formats["html"],
                 "Type": entryTypes["note"],
-                "Contents": (
-                    "<div style=display:block;text-align:center;><h1 style=color:#FF1744;font-size:275%;>1</h1></div>"
-                ),
+                "Contents": ("<div style=display:block;text-align:center;><h1 style=color:#FF1744;font-size:275%;>1</h1></div>"),
             }
         )
 

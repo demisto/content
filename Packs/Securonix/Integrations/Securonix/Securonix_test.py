@@ -582,9 +582,13 @@ def test_commands(command, args, response, expected_result, mocker):
         assert expected_result[0].get("File") == result[1].get("File")
     elif command == list_violation_data:
         assert expected_result == result[0].outputs  # list_violation_data returns CommandResult object
-    elif (
-        command in (add_whitelist_entry, create_lookup_table, get_incident_workflow,
-                    get_incident_status, get_incident_available_actions, add_comment_to_incident)
+    elif command in (
+        add_whitelist_entry,
+        create_lookup_table,
+        get_incident_workflow,
+        get_incident_status,
+        get_incident_available_actions,
+        add_comment_to_incident,
     ):
         assert expected_result == result[0]
     else:

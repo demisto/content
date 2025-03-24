@@ -66,4 +66,4 @@ def test_get_shifts(mocker):
 | __22:00 - 23:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |  |
 | __23:00 - 24:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |  |
 """  # noqa E501
-)
+    )

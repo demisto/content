@@ -233,7 +233,7 @@ def replace_problematic_characters_in_dict(data):
 
 
 def replace_problematic_characters_in_list(data):
-    return list(map(lambda item: replace_problematic_character_keys(item), data))   # noqa: C417
+    return list(map(lambda item: replace_problematic_character_keys(item), data))  # noqa: C417
 
 
 def replace_problematic_character_keys(data):
@@ -329,7 +329,7 @@ def execute_test_module_command(client: MobileIronCoreClient):
     :rtype: string.
     """
     response = client.ping()
-    if response and response.get("results"):    # noqa: RET503
+    if response and response.get("results"):  # noqa: RET503
         return "ok"
 
 

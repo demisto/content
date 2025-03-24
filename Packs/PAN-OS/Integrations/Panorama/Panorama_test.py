@@ -3720,7 +3720,7 @@ def test_panorama_apply_dns_command2(mocker):
     assert (
         request_params.get("xpath")
         == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/"
-           "profiles/spyware/entry[@name='fake_profile_name']"
+        "profiles/spyware/entry[@name='fake_profile_name']"
     )  # noqa
 
 
@@ -6123,7 +6123,7 @@ def test_pan_os_delete_pbf_rule_command_main_flow(mocker, args, params, expected
             {"name": "address", "element_to_change": "fqdn", "element_value": "1.1.1.1"},
             integration_panorama_params,
             {
-                "xpath": "/config/devices/entry/device-group/entry[@name='Lab-Devices']/address" '/entry[@name="address"]/fqdn',    # noqa: ISC001
+                "xpath": "/config/devices/entry/device-group/entry[@name='Lab-Devices']/address" '/entry[@name="address"]/fqdn',  # noqa: ISC001
                 "element": "<fqdn>1.1.1.1</fqdn>",
                 "action": "edit",
                 "type": "config",

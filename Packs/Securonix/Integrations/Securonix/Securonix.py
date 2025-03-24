@@ -328,9 +328,7 @@ def validate_delete_whitelist_parameters(
     """
     # Validate whitelist_type parameter.
     if whitelist_type and whitelist_type not in VALID_WHITELIST_TYPE:
-        raise ValueError(
-            f"{whitelist_type} is an invalid value for whitelist_type.Valid whitelist types are {VALID_ENTITY_TYPE}"
-        )
+        raise ValueError(f"{whitelist_type} is an invalid value for whitelist_type.Valid whitelist types are {VALID_ENTITY_TYPE}")
 
     # Validate entity_id parameter.
     if whitelist_type == "Global" and not entity_id:
@@ -3132,9 +3130,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     # At max 10,000 incidents should be updated.
     updated_incident_ids = updated_incident_ids[:10000]
 
-    demisto.debug(
-        f"Number of incidents modified between {from_epoch_time} to {to_epoch_time} are {len(updated_incident_ids)}."
-    )
+    demisto.debug(f"Number of incidents modified between {from_epoch_time} to {to_epoch_time} are {len(updated_incident_ids)}.")
     demisto.debug(f"List of modified incident ids between {from_epoch_time} to {to_epoch_time} is {updated_incident_ids}.")
 
     return GetModifiedRemoteDataResponse(updated_incident_ids)
@@ -3164,9 +3160,7 @@ def get_remote_data_command(
 
     command_last_run_dt = arg_to_datetime(arg=args.get("lastUpdate"), arg_name="lastUpdate", required=True)
     command_last_run_epoch = date_to_timestamp(command_last_run_dt, date_format=timestamp_format)
-    demisto.debug(
-        f"The time when the last time get-remote-data command is called for current incident is {command_last_run_dt}."
-    )
+    demisto.debug(f"The time when the last time get-remote-data command is called for current incident is {command_last_run_dt}.")
 
     # Retrieve the latest incident data from the Securonix platform.
     remote_incident_data = client.get_incident_request(incident_id=sx_incident_id)
@@ -3208,9 +3202,7 @@ def get_remote_data_command(
                 }
             )
         else:
-            demisto.debug(
-                f"Not closing the XSOAR incident as its respective Securonix incident {sx_incident_id} is still open."
-            )
+            demisto.debug(f"Not closing the XSOAR incident as its respective Securonix incident {sx_incident_id} is still open.")
 
     # Update the comments.
     comment_entries = filter_comment_activity_entries(filtered_history_entries)

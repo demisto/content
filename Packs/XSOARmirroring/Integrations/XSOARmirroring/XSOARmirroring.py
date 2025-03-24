@@ -130,9 +130,7 @@ class Client(BaseClient):
                 )
 
         if not entry.get("note", False):
-            demisto.debug(
-                f'the entry has inv_id {incident_id}\nformat {entry.get("format")}\n contents {entry.get("contents")}'
-            )
+            demisto.debug(f'the entry has inv_id {incident_id}\nformat {entry.get("format")}\n contents {entry.get("contents")}')
             self._http_request(
                 method="POST",
                 url_suffix="/entry/formatted",

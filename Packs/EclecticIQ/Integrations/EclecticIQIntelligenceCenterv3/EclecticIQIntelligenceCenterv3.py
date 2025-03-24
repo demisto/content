@@ -276,8 +276,10 @@ class EclecticIQ_api:
             try:
                 err = r.json()
                 detail = err["errors"][0]["detail"]
-                msg = (f"EclecticIQ VA returned an error, code:{r.status_code},"
-                       f" reason:[{r.reason}], URL: [{r.url}], details:[{detail}]")
+                msg = (
+                    f"EclecticIQ VA returned an error, code:{r.status_code},"
+                    f" reason:[{r.reason}], URL: [{r.url}], details:[{detail}]"
+                )
             except Exception:
                 msg = f"EclecticIQ VA returned an error, code:{r.status_code}, reason:[{r.reason}], URL: [{r.url}]"
             raise Exception(msg)

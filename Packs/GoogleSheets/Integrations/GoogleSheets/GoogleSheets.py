@@ -201,7 +201,7 @@ def make_markdown_matrix(sheets: list) -> str:
         markdown += f'### ***Name: {sheet.get("title", {})}     Sheet Id: {sheet.get("sheetId", {})}***'
 
         # find the max number of columns in the table
-        max_row_len = max(list(map(lambda elem: len(elem.get("values")), sheet.get("rowData"))))    # noqa: C417
+        max_row_len = max(list(map(lambda elem: len(elem.get("values")), sheet.get("rowData"))))  # noqa: C417
         if max_row_len == 0:
             markdown += "\n**Empty Sheet**\n"
         else:
