@@ -2964,7 +2964,7 @@ def send_assets_and_vulnerabilities_to_xsiam(
 
     demisto.debug(
         f"Sending {len(vulnerabilities)} vulnerabilities to XSIAM with snapshot ID: {snapshot_id}. "
-        f"Total assets collected so far: {cumulative_vulns_count}. "
+        f"Total vulnerabilities collected so far: {cumulative_vulns_count}. "
         f"Reported items count: {total_vulns_to_report}."
     )
     send_data_to_xsiam(
