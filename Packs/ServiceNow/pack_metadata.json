@@ -29,7 +29,6 @@
     ],
     "defaultDataSource": "ServiceNow v2",
     "supportedModules": [
-        "identity_threat",
         "C1",
         "C3",
         "X0",
