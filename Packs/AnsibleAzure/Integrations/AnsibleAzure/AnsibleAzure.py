@@ -1,9 +1,9 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import ssh_agent_setup
 
 # Import Generated code
 from AnsibleApiModule import *  # noqa: E402
+from CommonServerPython import *  # noqa: F401
 
 host_type = "local"
 
@@ -198,7 +198,7 @@ def main() -> None:
             return_results(generic_ansible("Azure", "azure_rm_dnszone_info", args, int_params, host_type, creds_mapping))
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 # ENTRY POINT
