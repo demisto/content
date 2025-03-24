@@ -206,9 +206,7 @@ def test_2_imgaes_with_same_name_gmail_format(mocker):
     from DisplayHTMLWithImages import main
 
     mocked_incident = {
-        "CustomFields": {
-            "emailbody": '<img src="cid:ii_lyfigebl1" alt="image.png"><img src="cid:ii_wweegebl1" alt="image.png">'
-        },
+        "CustomFields": {"emailbody": '<img src="cid:ii_lyfigebl1" alt="image.png"><img src="cid:ii_wweegebl1" alt="image.png">'},
     }
     mocked_files = [{"Name": "image.png", "EntryID": "37@119"}, {"Name": "image.png", "EntryID": "38@119"}]
 

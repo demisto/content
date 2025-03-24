@@ -69,7 +69,7 @@ def main():
         entry = {
             "Type": entryTypes["note"],
             "HumanReadable": f"Similarity to {REPUTATIONS[max_score_indicator['score']]}"
-                             f" {max_score_indicator['indicator_type']}:{max_score_indicator['value']}",
+            f" {max_score_indicator['indicator_type']}:{max_score_indicator['value']}",
             "ReadableContentsFormat": formats["markdown"],
             "Contents": max_score,
             "ContentsFormat": formats["text"],

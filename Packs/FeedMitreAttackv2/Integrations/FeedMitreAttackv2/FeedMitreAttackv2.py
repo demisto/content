@@ -647,9 +647,7 @@ def attack_pattern_reputation_command(client, args):
         attack_obj = map_fields_by_type("Attack Pattern", json.loads(str(attack_pattern)))
         custom_fields = attack_obj or {}
         score = INDICATOR_TYPE_TO_SCORE.get("Attack Pattern")
-        md = (
-            f"## MITRE ATTACK \n ## Name: {value} - ID: {attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
-        )
+        md = f"## MITRE ATTACK \n ## Name: {value} - ID: {attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
         command_results.append(build_command_result(value, score, md, attack_obj))
 
     if not command_results:

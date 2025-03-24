@@ -27,9 +27,7 @@ def ads(html, termlist):
 def main():  # pragma: no cover
     u = demisto.args()["url"]
     r = requests.get(u)
-    reasy = requests.get(
-        demisto.args().get("easylist", "https://easylist.github.io/easylist/easylist.txt")
-    )
+    reasy = requests.get(demisto.args().get("easylist", "https://easylist.github.io/easylist/easylist.txt"))
     res = ads(r.text, reasy.text)
     nicerRes = [{"URL": k, "Count": res[k]} for k in res]
     totalAds = reduce(lambda x, y: x + y["Count"], nicerRes, 0)

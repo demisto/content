@@ -7,10 +7,15 @@ from CommonServerPython import *  # noqa: F401
 
 
 def exists_indicator(indicator: str) -> bool:
-    return (
+    # res =  (
+    #     (contents := execute_command("getIndicator", {"value": indicator}))
+    #     and len(contents) > 0
+    #     and contents[0].get("value") in [indicator]
+    # )
+    # return res
+    return bool(
         (contents := execute_command("getIndicator", {"value": indicator}))
-        and len(contents) > 0
-        and contents[0].get("value") in [indicator]
+        and (len(contents) > 0 and contents[0].get("value") in [indicator])
     )
 
 

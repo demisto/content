@@ -33,7 +33,7 @@ def ip_cidr(cidr: str) -> dict[str, str]:
         return {}
 
 
-def cidr_command(args: dict[str, str]) -> CommandResults:   # pragma: no cover
+def cidr_command(args: dict[str, str]) -> CommandResults:  # pragma: no cover
     """Perform command on given IP/CIDR
 
     Args:

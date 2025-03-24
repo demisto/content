@@ -71,7 +71,7 @@ class MockIntegrationContext:
         return equals_object(MockIntegrationContext.decode_values(self.__ctx), MockIntegrationContext.decode_values(ctx))
 
     def print(self) -> None:
-        print(json.dumps(MockIntegrationContext.decode_values(self.__ctx), indent=2))   # noqa: T201
+        print(json.dumps(MockIntegrationContext.decode_values(self.__ctx), indent=2))  # noqa: T201
 
 
 class MockUUID:

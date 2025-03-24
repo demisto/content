@@ -172,6 +172,6 @@ def test_main(mocker):
 
     main()
 
-    return_results_mock.call_args[0][0] == expected_hr_output   # noqa: B015
+    return_results_mock.call_args[0][0] == expected_hr_output  # noqa: B015
     assert execute_command_mock.call_args[0][0] == "extractIndicators"
     assert execute_command_mock.call_args[0][1]["text"] == "paragraphs   author title"

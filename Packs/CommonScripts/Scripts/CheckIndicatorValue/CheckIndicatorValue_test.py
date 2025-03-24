@@ -156,7 +156,7 @@ def test_check_indicators(mocker, encoded_indicators, existing_indicators, encod
     mocker.patch("CheckIndicatorValue.execute_command", side_effect=GetIndicator(existing_indicators).get_indicator)
 
     results = check_indicators(argToList(encoded_indicators), encoding)
-    assert equals_object(results, expected_results)
+    assert results == expected_results
 
 
 def test_main(mocker):

@@ -60,14 +60,10 @@ class Client(BaseClient):
 
         except requests.exceptions.SSLError as err:
             demisto.debug(str(err))
-            raise Exception(
-                f"Connection error in the API call to {INTEGRATION_NAME}.\nCheck your not secure parameter.\n\n{err}"
-            )
+            raise Exception(f"Connection error in the API call to {INTEGRATION_NAME}.\nCheck your not secure parameter.\n\n{err}")
         except requests.ConnectionError as err:
             demisto.debug(str(err))
-            raise Exception(
-                f"Connection error in the API call to {INTEGRATION_NAME}.\nCheck your Server URL parameter.\n\n{err}"
-            )
+            raise Exception(f"Connection error in the API call to {INTEGRATION_NAME}.\nCheck your Server URL parameter.\n\n{err}")
         except requests.exceptions.HTTPError as err:
             demisto.debug(str(err))
             raise Exception(f"Connection error in the API call to {INTEGRATION_NAME}.\n")

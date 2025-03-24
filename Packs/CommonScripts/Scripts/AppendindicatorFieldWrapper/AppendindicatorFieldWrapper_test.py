@@ -60,6 +60,4 @@ def test_missing_arguments(mocker, args, expected_err_message):
     AppendindicatorFieldWrapper.main()
 
     assert return_error_mock.call_count == 1
-    assert return_error_mock.call_args[0][0] == (
-        f"Failed to execute AppendindicatorFieldWrapper. Error: {expected_err_message}"
-    )
+    assert return_error_mock.call_args[0][0] == (f"Failed to execute AppendindicatorFieldWrapper. Error: {expected_err_message}")

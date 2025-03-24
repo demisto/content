@@ -75,7 +75,7 @@ def get_integration_conf(integration_search_json: dict, instance_brand: str, ign
         json object for the corresponding
     """
 
-    for conf in integration_search_json[CONFIGURATIONS]:    # noqa: RET503
+    for conf in integration_search_json[CONFIGURATIONS]:  # noqa: RET503
         if "id" in conf and conf["id"] != instance_brand:
             continue
         if ignore_deprecated and (DEPRECATED in conf) and conf[DEPRECATED] is True:

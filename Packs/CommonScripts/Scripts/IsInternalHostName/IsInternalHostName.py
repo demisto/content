@@ -18,9 +18,7 @@ def main():
             else:
                 internalRegexMatch = None
             internalDomainMatch = re.match(".*\." + domainName + "$", element)
-            context_entry.append(
-                {"Hostname": element, "IsInternal": bool(internalRegexMatch or internalDomainMatch)}
-            )
+            context_entry.append({"Hostname": element, "IsInternal": bool(internalRegexMatch or internalDomainMatch)})
 
             if context_entry[-1]["IsInternal"]:
                 readable = element + " is internal"

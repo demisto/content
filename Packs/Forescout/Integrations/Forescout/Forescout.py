@@ -505,9 +505,7 @@ def http_request(
         )
         return_error(err_msg)
     except requests.exceptions.SSLError:
-        err_msg = (
-            "SSL Certificate Verification Failed - try selecting 'Trust any certificate' in the integration configuration."
-        )
+        err_msg = "SSL Certificate Verification Failed - try selecting 'Trust any certificate' in the integration configuration."
         return_error(err_msg)
     except requests.exceptions.ProxyError:
         err_msg = "Proxy Error - if 'Use system proxy' in the integration configuration has been selected, try deselecting it."

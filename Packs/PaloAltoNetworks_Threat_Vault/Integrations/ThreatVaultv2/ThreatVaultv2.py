@@ -198,9 +198,7 @@ def validate_arguments_search_command(
         )
 
     if release_date and release_version:
-        raise ValueError(
-            "There can only be one argument from the following list in the command: release-date, release-version"
-        )
+        raise ValueError("There can only be one argument from the following list in the command: release-date, release-version")
 
     if (from_release_date or from_release_version) and (release_date or release_version):
         raise ValueError(

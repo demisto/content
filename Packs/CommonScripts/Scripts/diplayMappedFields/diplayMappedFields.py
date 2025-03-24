@@ -51,7 +51,7 @@ def format_data_to_rows(items):
 
 def convert_to_html(rows):
     html = [
-        """<table style="border-collapse:collapse;"><tbody style="font-family:Lato,Assistant,sans-serif;font-weight:600;font-size:12px;text-align:left;padding: 1px 0px 0px;margin:0px 5px 0px 0px;contrast:4.95">"""   # noqa: E501
+        """<table style="border-collapse:collapse;"><tbody style="font-family:Lato,Assistant,sans-serif;font-weight:600;font-size:12px;text-align:left;padding: 1px 0px 0px;margin:0px 5px 0px 0px;contrast:4.95">"""  # noqa: E501
     ]  # noqa: E501
     for row in rows:
         html.append("<tr>")
