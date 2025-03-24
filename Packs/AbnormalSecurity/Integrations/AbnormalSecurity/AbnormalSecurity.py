@@ -942,9 +942,8 @@ def fetch_incidents(
         last_fetch = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
 
         current_datetime = get_current_datetime()
-
         start_time = last_fetch
-        end_time = datetime.now(timezone.utc)
+        end_time = get_current_datetime()
 
         if polling_lag is not None:
             start_time = start_time - polling_lag
