@@ -46,7 +46,7 @@ def test_check_whitelist_command_not_whitelisted(mocker):
 
     mocker.patch.object(ThinkstCanary, "check_whitelist", return_value={"is_ip_ignored": False, "is_whitelist_enabled": True})
     ThinkstCanary.check_whitelist_command()
-    assert demisto.results.call_args_list[0][0][0].get("HumanReadable") == "The IP address 1.2.3.4:Any is not " "Whitelisted"
+    assert demisto.results.call_args_list[0][0][0].get("HumanReadable") == "The IP address 1.2.3.4:Any is not Whitelisted"
 
 
 def test_check_whitelist_commands_whitelisted(mocker):

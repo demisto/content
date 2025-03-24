@@ -48,7 +48,7 @@ def handle_data(data: dict[str, Any], fields: list[str]) -> dict[str, Any]:
         ips = list(set(recursive_find(IPADDRESS_KEYS, data)))
         out_dict["ip"] = ips if ips else None
     if "fqdn" in fields:
-        fqdns = list(set([fq for fq in recursive_find(FQDN_KEYS, data) if fq.count(".") > 0]))
+        fqdns = list({fq for fq in recursive_find(FQDN_KEYS, data) if fq.count(".") > 0})
         out_dict["fqdn"] = fqdns if fqdns else None
     return out_dict
 
@@ -71,7 +71,7 @@ def attribution_command(args: dict[str, Any]) -> CommandResults:
             continue
         rrn = asset["rrn"]
         asset_dict[rrn] = {"rrn": rrn}
-        for k in asset.keys():
+        for k in asset:
             if k == "name" and "resourceName" in fields:
                 asset_dict[rrn]["resourceName"] = asset["name"]
             elif k == "data" and isinstance(asset[k], dict):

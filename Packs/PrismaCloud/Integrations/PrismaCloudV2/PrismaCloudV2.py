@@ -1526,9 +1526,7 @@ def close_alert_in_prisma_cloud(client: Client, ids: List[str], delta: Dict[str,
     """
     close_notes = delta.get("closeNotes")
     close_reason = delta.get("closeReason")
-    dismissal_note = (
-        f"{INCIDENT_OUTGOING_MIRROR_DISMISSAL_NOTE} - Closing Reason: {close_reason}, " f"Closing Notes: {close_notes}."
-    )
+    dismissal_note = f"{INCIDENT_OUTGOING_MIRROR_DISMISSAL_NOTE} - Closing Reason: {close_reason}, Closing Notes: {close_notes}."
     time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE)
 
     client.alert_dismiss_request(dismissal_note=dismissal_note, time_range=time_filter, alert_ids=ids)
@@ -1924,8 +1922,8 @@ def network_search_v1_command(client: Client, args: Dict[str, Any], return_v1_ou
     if return_v1_output:
         response = command_results.raw_response
         command_results = command_results.to_context()
-        command_results["EntryContext"].update(
-            {  # type: ignore[index]
+        command_results["EntryContext"].update(  # type: ignore[index]
+            {
                 "Redlock.Network.Node(val.id == obj.id)": response.get("nodes", []),  # type: ignore[attr-defined]
                 "Redlock.Network.Connection(val.id == obj.from)": response.get("connections", []),  # type: ignore[attr-defined]
             }
@@ -3095,7 +3093,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDa
         return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
 
     except Exception as e:
-        demisto.debug(f"Error in Prisma Cloud v2 incoming mirror for incident: {remote_alert_id}\n" f"Error message: {e!s}")
+        demisto.debug(f"Error in Prisma Cloud v2 incoming mirror for incident: {remote_alert_id}\nError message: {e!s}")
 
         if not mirrored_data:
             mirrored_data = {"id": remote_alert_id}
@@ -3146,7 +3144,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
             demisto.debug(f"Skipping the update of remote incident {remote_incident_id} as it has not changed.")
 
     except Exception as e:
-        demisto.error(f"Error in Prisma Cloud V2 outgoing mirror for incident {remote_incident_id}. " f"Error message: {e!s}")
+        demisto.error(f"Error in Prisma Cloud V2 outgoing mirror for incident {remote_incident_id}. Error message: {e!s}")
 
     return remote_incident_id
 

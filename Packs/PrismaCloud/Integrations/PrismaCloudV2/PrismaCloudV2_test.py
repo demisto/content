@@ -1745,7 +1745,7 @@ def test_alert_to_incident_context(prisma_cloud_v2_client, alert, expected_incid
 
 
 @pytest.mark.parametrize(
-    "last_run, params, incidents, fetched_ids, updated_last_run_time, " "expected_fetched_ids, expected_updated_last_run_time",
+    "last_run, params, incidents, fetched_ids, updated_last_run_time, expected_fetched_ids, expected_updated_last_run_time",
     (
         input_data.fetch_first_run,
         input_data.fetch_no_incidents,

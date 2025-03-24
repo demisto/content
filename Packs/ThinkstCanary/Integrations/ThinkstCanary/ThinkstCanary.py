@@ -137,7 +137,7 @@ def list_canaries():
     """
     res = http_request("GET", SERVER + "devices/all")
     new_devices = [
-        {new_key: device[old_key] if old_key in device else None for old_key, new_key in list(RELEVANT_DEVICE_ENTRIES.items())}
+        {new_key: device.get(old_key, None) for old_key, new_key in list(RELEVANT_DEVICE_ENTRIES.items())}
         for device in res["devices"]
     ]
     return res, new_devices
@@ -164,9 +164,7 @@ def list_tokens():
     res = http_request("GET", SERVER + "canarytokens/fetch")
     new_tokens = []
     for token in res["tokens"]:
-        new_tokens.append(
-            {new_key: token[old_key] if old_key in token else None for old_key, new_key in list(RELEVANT_TOKEN_ENTRIES.items())}
-        )
+        new_tokens.append({new_key: token.get(old_key, None) for old_key, new_key in list(RELEVANT_TOKEN_ENTRIES.items())})
     return res, new_tokens
 
 

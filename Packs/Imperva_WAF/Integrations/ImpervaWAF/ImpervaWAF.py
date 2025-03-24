@@ -110,14 +110,14 @@ class Client(BaseClient):
             # generate human readable for sourceIpAddresses type
             if match_type == "sourceIpAddresses":
                 if tmp_match.get("userDefined"):
-                    for i, element in enumerate(tmp_match["userDefined"]):
+                    for i, _element in enumerate(tmp_match["userDefined"]):
                         tmp_match["userDefined"][i] = {"IP Address": tmp_match["userDefined"][i]}
                     human_readable += "\n\n" + tableToMarkdown(
                         f"Match operation: {operation}\n Source IP addresses:", tmp_match["userDefined"], removeNull=True
                     )
 
                 if tmp_match.get("ipGroups"):
-                    for i, element in enumerate(tmp_match["ipGroups"]):
+                    for i, _element in enumerate(tmp_match["ipGroups"]):
                         tmp_match["ipGroups"][i] = {"Group name": tmp_match["ipGroups"][i]}
                     human_readable += "\n\n" + tableToMarkdown(
                         f"Match operation: {operation}\n IP Groups:", tmp_match["ipGroups"], removeNull=True
@@ -126,7 +126,7 @@ class Client(BaseClient):
             # generate human readable for sourceGeolocation type
             elif match_type == "sourceGeolocation":
                 if tmp_match.get("values"):
-                    for i, element in enumerate(tmp_match["values"]):
+                    for i, _element in enumerate(tmp_match["values"]):
                         tmp_match["values"][i] = {"Country name": tmp_match["values"][i]}
                     human_readable += "\n\n" + tableToMarkdown(
                         f"Match operation: {operation}\n Countries to match:", tmp_match["values"], removeNull=True
@@ -232,7 +232,7 @@ def generate_ip_groups_entries(args):
         try:
             json_entries = json.loads(json_entries)
         except Exception:
-            raise Exception(f"Failed to parse json-entries as JSON data, " f" received object:\n{json_entries}")
+            raise Exception(f"Failed to parse json-entries as JSON data,  received object:\n{json_entries}")
         body = {"entries": json_entries}
     return body
 
@@ -250,7 +250,7 @@ def ip_group_list_command(client, args):
     groups = []
     if raw_res.get("names"):
         groups = raw_res["names"]
-        for i, element in enumerate(groups):
+        for i, _element in enumerate(groups):
             groups[i] = {"Name": groups[i]}
 
     human_readable = tableToMarkdown("IP groups", groups, removeNull=True)
@@ -289,7 +289,7 @@ def server_groups_list_command(client, args):
     server_groups = []
     if raw_res.get("server-groups"):
         server_groups = raw_res["server-groups"]
-        for i, element in enumerate(server_groups):
+        for i, _element in enumerate(server_groups):
             server_groups[i] = {"Name": server_groups[i], "SiteName": site}
 
     human_readable = tableToMarkdown(f"Server groups in {site}", server_groups, removeNull=True)
@@ -326,7 +326,7 @@ def custom_policy_list_command(client, args):
     policies = []
     if raw_res.get("customWebPolicies"):
         policies = raw_res["customWebPolicies"]
-        for i, element in enumerate(policies):
+        for i, _element in enumerate(policies):
             policies[i] = {"Name": policies[i]}
 
     human_readable = tableToMarkdown("Custom web policies", policies, removeNull=True)
@@ -380,7 +380,7 @@ def create_custom_policy_command(client, args):
         try:
             match_criteria_json = json.loads(match_criteria_json)
         except Exception:
-            raise Exception(f"Failed to parse match-criteria-json as JSON data," f" received object:\n{match_criteria_json}")
+            raise Exception(f"Failed to parse match-criteria-json as JSON data, received object:\n{match_criteria_json}")
 
         body["matchCriteria"] = match_criteria_json
     else:
@@ -410,9 +410,7 @@ def update_custom_policy_command(client, args):
         try:
             match_criteria_json = json.loads(match_criteria_json)
         except Exception:
-            raise DemistoException(
-                f"Failed to parse match-criteria-json as JSON data," f" received object:\n{match_criteria_json}"
-            )
+            raise DemistoException(f"Failed to parse match-criteria-json as JSON data, received object:\n{match_criteria_json}")
 
         body["matchCriteria"] = match_criteria_json
     else:

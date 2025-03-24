@@ -27,7 +27,7 @@ class Client(BaseClient):
     """A client class that implements logic to authenticate with the application."""
 
     def __init__(self, username, password, customer_name, **kwargs):
-        super(Client, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._username = username
         self._password = password
         self._customer_name = customer_name
@@ -209,7 +209,7 @@ def get_user_error_handler(res: requests.Response):
     """
     err_msg = get_error_details(res)
     if "user_inactive_or_not_exist" in err_msg:
-        return None
+        return
 
     raise DemistoException(err_msg, res=res)
 

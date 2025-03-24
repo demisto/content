@@ -531,7 +531,17 @@ def create_ticket_command(client, args) -> tuple[str, dict, dict]:
             impact = dict_of_obj.get(args.get("priority"), args.get("priority"))
     machine = args.get("machine")
     asset = args.get("asset")
-    body_from_args = create_body_from_args(hd_queue_id, title, summary, impact, category, status, priority, machine, asset)
+    body_from_args = create_body_from_args(
+        hd_queue_id,
+        title,
+        summary,
+        impact,  # type: ignore
+        category,  # type: ignore
+        status,  # type: ignore
+        priority,  # type: ignore
+        machine,
+        asset,
+    )
     if custom_fields:
         splited = split_fields(custom_fields)
         body_from_args.update(splited)
@@ -551,16 +561,16 @@ def create_ticket_command(client, args) -> tuple[str, dict, dict]:
     return ticket_view, {}, {}
 
 
-def create_body_from_args(
-    hd_queue_id: str | int = None,
-    title: str | int = None,
-    summary: str | int = None,
-    impact: str | int = None,
-    category: str | int = None,
-    status: str | int = None,
-    priority: str | int = None,
-    machine: str | int = None,
-    asset: str | int = None,
+def create_body_from_args(  # type: ignore
+    hd_queue_id: str | int = None,  # type: ignore
+    title: str | int = None,  # type: ignore
+    summary: str | int = None,  # type: ignore
+    impact: str | int = None,  # type: ignore
+    category: str | int = None,  # type: ignore
+    status: str | int = None,  # type: ignore
+    priority: str | int = None,  # type: ignore
+    machine: str | int = None,  # type: ignore
+    asset: str | int = None,  # type: ignore
 ) -> dict:
     """Function which creates the body of the request from user arguments.
      Args:
@@ -625,15 +635,15 @@ def update_ticket_command(client, args) -> tuple[str, dict, dict]:
     asset = args.get("asset")
     custom_fields = args.get("custom_fields")
 
-    body_from_args = create_body_from_args(
-        title=title,
-        summary=summary,
-        impact=impact,
-        category=category,
-        status=status,
-        priority=priority,
-        machine=machine,
-        asset=asset,
+    body_from_args = create_body_from_args(  # type: ignore
+        title=title,  # type: ignore
+        summary=summary,  # type: ignore
+        impact=impact,  # type: ignore
+        category=category,  # type: ignore
+        status=status,  # type: ignore
+        priority=priority,  # type: ignore
+        machine=machine,  # type: ignore
+        asset=asset,  # type: ignore
     )
     if custom_fields:
         splited = split_fields(custom_fields)
@@ -782,10 +792,11 @@ def get_fields_by_queue(client, queue: list | None) -> list:
         fields_by_queue = client.queues_list_fields_request(queue_number=str(q))
         fields_by_queue = fields_by_queue.get("Fields", [])
         for field in fields_by_queue:
-            if field.get("jsonKey") not in fields:
+            if field.get("jsonKey") not in fields and (
+                field.get("jsonKey") != "related_tickets" and field.get("jsonKey") != "referring_tickets"
+            ):
                 # get internal error 500 from server with related tickets
-                if field.get("jsonKey") != "related_tickets" and field.get("jsonKey") != "referring_tickets":
-                    fields.append(field.get("jsonKey"))
+                fields.append(field.get("jsonKey"))
     return fields
 
 
@@ -929,7 +940,7 @@ def main():
         else:
             raise NotImplementedError(f"{command} is not an existing QuestKace command")
     except Exception as e:
-        return_error(f"Error from QuestKace Integration.\n" f"Failed to execute {demisto.command()} command.\n\n Error: {e!s}")
+        return_error(f"Error from QuestKace Integration.\nFailed to execute {demisto.command()} command.\n\n Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
