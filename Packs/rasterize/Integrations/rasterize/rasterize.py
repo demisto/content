@@ -138,12 +138,11 @@ def excepthook_recv_loop(args):
 
 
 class TabLifecycleManager:
-    def __init__(self, browser, chrome_port, offline_mode, path):
+    def __init__(self, browser, chrome_port, offline_mode):
         self.browser = browser
         self.chrome_port = chrome_port
         self.offline_mode = offline_mode
         self.tab = None
-        self.path: str = path
 
     def __enter__(self):
         try:
@@ -243,17 +242,23 @@ class PychromeEventHandler:
                 self.tab_ready_event.set()
 
     def retry_loading(self):
-        retry_count = 0
-        max_retries = DEFAULT_RETRIES_COUNT  # Set your max retry count
-        while retry_count < max_retries:
-            retry_count += 1
-            demisto.debug(f'Retrying loading URL {self.path} Attempt {retry_count}')
-            if self.navigation_timeout > 0:
-                self.tab.Page.navigate(url=self.path, _timeout=self.navigation_timeout)
-            else:
-                self.tab.Page.navigate(url=self.path)
+        """
+        Attempts to reload the page multiple times if a chrome-error is encountered.
+        """
+        for retry_count in range(1, DEFAULT_RETRIES_COUNT + 1):
+            demisto.debug(f'Retrying loading URL {self.path}. Attempt {retry_count}')
+            try:
+                if self.navigation_timeout > 0:
+                    self.tab.Page.navigate(url=self.path, _timeout=self.navigation_timeout)
+                else:
+                    self.tab.Page.navigate(url=self.path)
+            except Exception as e:
+                demisto.debug(f'Error during navigation attempt {retry_count}: {e}')
+
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # Wait for the page to load
+
             frame_url = self.tab.Page.getFrameTree()['frameTree']['frame']['url']
+
             if "chrome-error" not in frame_url:
                 demisto.debug('Retry successful.')
                 self.tab_ready_event.set()
@@ -345,8 +350,7 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
             else:
                 demisto.debug(
                     f"Failed to connect to Chrome on port {port} on iteration {i + 1}. ConnectionError, {exp_str=}, {exp=}")
-            try:
-                
+
         # Mild backoff
         time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + i * 2)  # pylint: disable=E9003
 
@@ -865,7 +869,7 @@ def rasterize_thread(browser, chrome_port, path: str,
                      height: int = DEFAULT_HEIGHT
                      ):
     demisto.debug(f'rasterize_thread, starting TabLifecycleManager, {path=}, {rasterize_type=}')
-    with TabLifecycleManager(browser, chrome_port, offline_mode, path) as tab:
+    with TabLifecycleManager(browser, chrome_port, offline_mode) as tab:
         try:
             tab.call_method("Emulation.setVisibleSize", width=width, height=height)
         except Exception as ex:
