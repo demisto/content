@@ -54,9 +54,9 @@ MESSAGES: dict[str, str] = {
     "INVALID_SCHEMA_ERROR": "Invalid API URL. Supplied schema is invalid, supports http(s).",
     "INVALID_API_URL": "Invalid API URL.",
     "CONNECTION_ERROR": "Connectivity failed. Check your internet connection or the API URL.",
-    "INVALID_ALERT_DETAILS": 'For fetching Alert Details Report, "infection_id" and "infection_type" ' "arguments are required.",
+    "INVALID_ALERT_DETAILS": 'For fetching Alert Details Report, "infection_id" and "infection_type" arguments are required.',
     "INVALID_REPORT_TYPE": "The given value for report_type is invalid.",
-    "INVALID_REPORT_OUTPUT_TYPE": "The given value for the argument type (report's format) is invalid. Valid value(" "s): {}.",
+    "INVALID_REPORT_OUTPUT_TYPE": "The given value for the argument type (report's format) is invalid. Valid value(s): {}.",
     "NO_RECORDS_FOUND": "No {} were found for the given argument(s).",
     "INVALID_INT_VALUE": "The given value for {} is invalid. Expected integer value.",
     "FETCH_LIMIT_VALIDATION": "Value of Fetch Limit should be an integer and between range 1 to 200.",
@@ -582,7 +582,7 @@ def pascal_case(st) -> str:
     """
     if st.find("-") != -1 or st.find("_") != -1:
         st = "".join(a.capitalize() for a in re.split("-|_", st))
-    return st[:1].upper() + st[1 : len(st)]
+    return st[:1].upper() + st[1: len(st)]
 
 
 def remove_dash_and_underscore_from_key(d):  # type: ignore

@@ -470,7 +470,7 @@ def test_command_called_from_main_success(mocker, client):
     mocker.patch.object(
         FireEyeNX,
         "get_reports_command",
-        return_value="No report contents were " "found for the given argument(s).",
+        return_value="No report contents were found for the given argument(s).",
     )
     FireEyeNX.main()
     assert FireEyeNX.get_reports_command.called
@@ -653,7 +653,7 @@ def test_reports_command_missing_alert_argument():
     with pytest.raises(ValueError) as e:
         get_reports_params(args=args)
 
-    assert str(e.value) == 'For fetching Alert Details Report, "infection_id" and ' '"infection_type" arguments are required.'
+    assert str(e.value) == 'For fetching Alert Details Report, "infection_id" and "infection_type" arguments are required.'
 
 
 @pytest.mark.parametrize(

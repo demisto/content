@@ -62,11 +62,9 @@ def http_request(url_suffix, commands=None):
 
         raise DemistoException(res.text)
 
-    if url_suffix == "/login":
-        if "status" in resp_json["Ok"]:
-            if resp_json["Ok"]["status"] is not True:
-                demisto.setIntegrationContext({"session_token": None, "token_expires": None})
-                raise DemistoException("Invalid credentials.")
+    if url_suffix == "/login" and "status" in resp_json["Ok"] and resp_json["Ok"]["status"] is not True:
+        demisto.setIntegrationContext({"session_token": None, "token_expires": None})
+        raise DemistoException("Invalid credentials.")
 
     return resp_json["Ok"]
 
@@ -271,7 +269,7 @@ def unwhitelist_ip_command(args):
 
 @logger
 def get_entities(entity_name, entity_id, entity_ip, timeframe):
-    commands = {"command": "list", "query": dict()}  # type: dict
+    commands = {"command": "list", "query": {}}  # type: dict
 
     if entity_name is not None:
         entity_names = entity_name.split(",")
@@ -335,9 +333,8 @@ def get_entities_command(args):
         if e_id:
             e_risk = get_entity_risk(e_id)
 
-        if isinstance(e_risk, list) and e_risk:
-            if isinstance(e_risk[-1], dict) and "risk" in e_risk[-1]:
-                risk_score = e_risk[-1]["risk"]
+        if isinstance(e_risk, list) and e_risk and isinstance(e_risk[-1], dict) and "risk" in e_risk[-1]:
+            risk_score = e_risk[-1]["risk"]
 
         entity["risk"] = risk_score
 
@@ -355,9 +352,8 @@ def get_entities_command(args):
             if "interval_time_stop" in actor:
                 actor["interval_time_stop"] = pretty_time(actor["interval_time_stop"])
 
-            if "fingerprint" in actor and actor.get("fingerprint") is not None:
-                if "last_seen" in actor.get("fingerprint", {}):
-                    actor["fingerprint"]["last_seen"] = pretty_time(actor["fingerprint"]["last_seen"])
+            if "fingerprint" in actor and actor.get("fingerprint") is not None and "last_seen" in actor.get("fingerprint", {}):
+                actor["fingerprint"]["last_seen"] = pretty_time(actor["fingerprint"]["last_seen"])
 
             dbscore = set_dbot_score(risk_score)
 

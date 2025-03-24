@@ -14,7 +14,7 @@ import json
 
 import demistomock as demisto
 from Inventa import Client, format_pii_entities, generate_datasubject_payload, main, validate_incident_inputs_command
-from pytest import raises
+from pytest import raises  # noqa: PT013
 
 constraints_cmds = ["inventa-get-datasubjects", "inventa-get-datasubject-id"]
 

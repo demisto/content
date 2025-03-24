@@ -51,7 +51,7 @@ class Client(BaseClient):
         for entity in pii_entities:
             if kwargs.get(entity.lower(), None):
                 query = f"{query}{entity}={kwargs[entity.lower()]}&"
-        query = query[0 : len(query) - 1]
+        query = query[0: len(query) - 1]
 
         found_piis = self._http_request(method="GET", url_suffix=f"/pii/api/piis{query}", return_empty_response=True, retries=5)
 
@@ -139,9 +139,9 @@ class Client(BaseClient):
 
 
 def format_pii_entities(pii_entities):
-    entities_listed = [[subitem for subitem in pii_entities[item]] for item in pii_entities]
+    entities_listed = [list(pii_entities[item]) for item in pii_entities]
     # return entities_listed
-    result = list()
+    result = []
     for item in entities_listed:
         result.extend(item)
     result = {"entities": [item["entityName"] for item in result]}
@@ -278,7 +278,7 @@ def get_datasubject_details_command(client: Client, ticket_id: int) -> CommandRe
 def get_dsar_piis_command(client: Client, ticket_id: int) -> CommandResults:
     dsar = client.get_dsar(ticket_id)
     piis = dsar.get("piis", [])
-    pii_list = list()
+    pii_list = []
     for pii in piis:
         pii_list.append(pii.get("piiEntityType", ""))
 
