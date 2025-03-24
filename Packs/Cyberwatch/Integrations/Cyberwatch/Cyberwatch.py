@@ -82,9 +82,7 @@ class Client(BaseClient):
         path = "/api/v3/vulnerabilities/cve_announcements"
 
         if "per_page" not in params:
-            demisto.info(
-                'Fetching 500 CVEs per request by default. You can override this by specifying the "per_page" parameter'
-            )
+            demisto.info('Fetching 500 CVEs per request by default. You can override this by specifying the "per_page" parameter')
             params["per_page"] = 500
 
         if "hard_limit" not in params:

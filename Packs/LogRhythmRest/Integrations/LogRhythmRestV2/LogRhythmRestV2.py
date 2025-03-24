@@ -2617,7 +2617,7 @@ def fetch_incidents_command(
     case_priority_filter: str = "",
     fetch_case_evidences=False,
 ):  # pragma: no cover
-    if fetch_type == "Both":    # noqa: RET503
+    if fetch_type == "Both":  # noqa: RET503
         case_incidents = fetch_cases(
             client, cases_max_fetch, fetch_time, fetch_case_evidences, case_tags_filter, case_status_filter, case_priority_filter
         )

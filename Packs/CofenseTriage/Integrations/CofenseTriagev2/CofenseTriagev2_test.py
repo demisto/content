@@ -657,7 +657,7 @@ class TestTriageReport:
         )
         stubbed_triagereporter_init = mocker.patch("CofenseTriagev2.TriageReporter")
 
-        TriageReport.fetch(triage_instance, "6").reporter   # noqa: B018
+        TriageReport.fetch(triage_instance, "6").reporter  # noqa: B018
 
         stubbed_triagereporter_init.assert_called_once_with(triage_instance, 5331)
 
