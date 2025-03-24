@@ -683,7 +683,7 @@ class URLFormatter:
                                   re.I)
 
     # Scheme slash fixer
-    scheme_fix = re.compile(r"https?(:[/|\\\]*)")
+    scheme_fix = re.compile("https?(:[/|\\\]*)")
 
     def __init__(self, original_url):
         """
