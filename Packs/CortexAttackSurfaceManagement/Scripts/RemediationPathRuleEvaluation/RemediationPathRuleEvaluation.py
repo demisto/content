@@ -39,7 +39,7 @@ def match_remediation_rule(alert_context: dict[str, Any], rules: list) -> list:
     for rule in rules:
         match = True
         conditions = rule["criteria"]
-        if len(conditions) == 0:    # pragma: no cover
+        if len(conditions) == 0:  # pragma: no cover
             demisto.info("Invalid Remediation Path Rule - no criteria condition to evaluate.")
             match = False
         else:
@@ -115,7 +115,7 @@ def evaluate_criteria(cond: dict, alert_context: dict) -> bool:
         elif isinstance(alert_context_value, str):
             if field == "ip":
                 return value == alert_context_value.lower()
-            else:   # pragma: no cover
+            else:  # pragma: no cover
                 demisto.info(f"Criteria field {field} not supported at this time.")
                 return False
         # list fields
@@ -128,12 +128,12 @@ def evaluate_criteria(cond: dict, alert_context: dict) -> bool:
                     tags.add(tag.get("key").lower())
 
                 return value in tags
-            else:   # pragma: no cover
+            else:  # pragma: no cover
                 demisto.info(f"Criteria field {field} not supported at this time.")
                 return False
         else:
             return False
-    else:   # pragma: no cover
+    else:  # pragma: no cover
         demisto.info(f"Condition Operator {operator} is not supported at this time.")
         return False
 

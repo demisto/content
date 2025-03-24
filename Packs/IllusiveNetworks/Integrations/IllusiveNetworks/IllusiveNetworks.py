@@ -634,9 +634,7 @@ def get_incident_events_command(client: Client, args: dict) -> tuple:
         else:
             raise DemistoException(f"{e.args[0]}")
 
-    readable_output = tableToMarkdown(
-        "Illusive get incident's events", events, metadata=f"Number of events {len(events)}"
-    )
+    readable_output = tableToMarkdown("Illusive get incident's events", events, metadata=f"Number of events {len(events)}")
 
     outputs = {
         "Illusive.Incident(val.incidentId == obj.incidentId)": {

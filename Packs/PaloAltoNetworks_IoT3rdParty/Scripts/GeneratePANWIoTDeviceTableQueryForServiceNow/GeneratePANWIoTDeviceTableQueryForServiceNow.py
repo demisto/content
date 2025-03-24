@@ -14,7 +14,7 @@ def main():
     for i, entry in enumerate(device_list):
         query_str += entry["deviceid"] + ","
         if (i + 1) % DEFAULT_VALUE_SIZE == 0 or i == (len(device_list) - 1):
-            query_strs.append(query_str[0: len(query_str) - 1])
+            query_strs.append(query_str[0 : len(query_str) - 1])
             query_str = "mac_addressIN"
     res["query"] = query_strs
     output_description = f"{output_description} total number of query is {len(query_strs)}"

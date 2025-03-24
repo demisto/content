@@ -194,7 +194,7 @@ def get_scan_engines_command(client: Client, page: int, size: int) -> CommandRes
     params = {"page": page, "size": size}
     endpoint = "/v4/integration/scan/engine"
     if int(size) > 500:
-        return_error("You're over the maximum size limit(500), please choose a lower size value")   # noqa: RET503
+        return_error("You're over the maximum size limit(500), please choose a lower size value")  # noqa: RET503
     else:
         response = client.make_request(method=method, url_suffix=endpoint, params=params)
         if response:
@@ -256,7 +256,7 @@ def last_sites_command(client: Client, page: int, size=int) -> CommandResults:  
     params = {"page": page, "size": size}
 
     if int(size) > 500:
-        return_error("Exceed size limit")   # noqa: RET503
+        return_error("Exceed size limit")  # noqa: RET503
 
     else:
         method = "POST"
@@ -289,7 +289,7 @@ def search_vulnerabilities_command(client: Client, query: str, page: int, size=i
     query = query
     params = {"page": page, "size": size}
     if int(size) > 500:
-        return_error("Exceed size limit")   # noqa: RET503
+        return_error("Exceed size limit")  # noqa: RET503
     else:
         method = "POST"
         endpoint = "/v4/integration/vulnerabilities"

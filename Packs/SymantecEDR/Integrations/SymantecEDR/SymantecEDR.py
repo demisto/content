@@ -27,9 +27,7 @@ DEFAULT_PAGE_SIZE = 50
 PAGE_NUMBER_ERROR_MSG = (
     "Invalid Input Error: page number should be greater than zero. Note: Page must be used along with page_size"
 )
-PAGE_SIZE_ERROR_MSG = (
-    "Invalid Input Error: page size should be greater than zero. Note: Page must be used along with page_size"
-)
+PAGE_SIZE_ERROR_MSG = "Invalid Input Error: page size should be greater than zero. Note: Page must be used along with page_size"
 
 INVALID_QUERY_ERROR_MSG = (
     'Invalid query arguments. Either use any optional filter in lieu of "query" or explicitly use only "query" argument'
@@ -768,7 +766,7 @@ def get_data_of_current_page(response_data: list[dict[str, Any]], offset: int = 
     """
 
     if offset >= 0 and limit >= 0:
-        return response_data[offset: (offset + limit)]
+        return response_data[offset : (offset + limit)]
     return response_data[:limit]
 
 

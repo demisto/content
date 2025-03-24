@@ -1026,7 +1026,7 @@ def test_extract_headers_for_readable_output(raw_response, expected):
 
 @pytest.mark.parametrize(
     "raw_response, offset, limit, expected",
-    [(HEADER_LIST, 0, 3, HEADER_LIST[:3]), (HEADER_LIST, 2, 3, HEADER_LIST[2: 2 + 3])],
+    [(HEADER_LIST, 0, 3, HEADER_LIST[:3]), (HEADER_LIST, 2, 3, HEADER_LIST[2 : 2 + 3])],
 )
 def test_get_data_of_current_page(raw_response, offset, limit, expected):
     """

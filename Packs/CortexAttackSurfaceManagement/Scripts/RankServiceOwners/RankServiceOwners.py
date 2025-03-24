@@ -519,7 +519,7 @@ class OwnerFeaturizationPipeline:
             src_path_length = 1
             while src.startswith("Chain: "):
                 src_path_length += 1
-                src = src[len("Chain: "):]
+                src = src[len("Chain: ") :]
             if min_path_length is None or src_path_length < min_path_length:
                 min_path_length = src_path_length
         return min_path_length
@@ -587,7 +587,7 @@ class OwnerFeaturizationPipeline:
 
 def write_output_to_context_key(final_owners: list[dict[str, str]], owner_related_field: str, platform_tenant: str):
     if not final_owners or not owner_related_field:
-        return_results(CommandResults(readable_output='No owners found'))
+        return_results(CommandResults(readable_output="No owners found"))
 
     # For platform we are assuming that a multi-array normalized field will be used.
     if platform_tenant.lower() == "true":
@@ -601,7 +601,7 @@ def write_output_to_context_key(final_owners: list[dict[str, str]], owner_relate
         res = demisto.executeCommand("setAlert", {owner_related_field: final_owners})
 
     if isError(res):
-        raise ValueError(f'Unable to update field: {res}')
+        raise ValueError(f"Unable to update field: {res}")
 
     return_results(CommandResults(readable_output=f"Owners ranked and written to {owner_related_field}"))
 

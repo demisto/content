@@ -561,36 +561,36 @@ def test_fetch_incidents(
             "occurred": "2023-01-04T20:00:30.158Z",
             "dbotMirrorId": "7094dee0-8c6a-11ed-b0f8-a7e340234a4e",
             "rawJSON": '{"companyId": "10228d9c-ff18-4251-ac19-514185e00f17", "contactSummary": '
-                       '{"uuid": "40a48c60-9563-11ed-9e5e-d35390b2bcbf", "timestamp": "2023-01-16T06:01:43.718Z",'
-                       ' "adversaryHost": "activity.lumu.io", "endpointIp": "192.168.1.100", "endpointName": "LUMU-100",'
-                       ' "fromPlayback": false}, "lumu_event_type": "IncidentUpdated", "lumu_source_name": "lumu",'
-                       ' "timestamp": "2023-01-04T20:00:30.158Z", "statusTimestamp": "2023-01-04T20:00:30.158Z",'
-                       ' "status": 1, "contacts": 1007, "adversaries": ["activity.lumu.io"], "adversaryId": "activity.lumu.io",'
-                       ' "adversaryTypes": ["Spam"], "description": "Activity Test Query",'
-                       ' "labelDistribution": {"0": 999, "4055": 4, "4061": 3, "1580": 1}, "totalEndpoints": 4,'
-                       ' "lastContact": "2023-01-16T06:01:43.718Z", "unread": false, "hasPlaybackContacts": false,'
-                       ' "firstContact": "2023-01-04T20:00:06.375Z", "lumu_incidentId": "7094dee0-8c6a-11ed-b0f8-a7e340234a4e",'
-                       ' "lumu_status": "open", "comment": "from fetching process", "severity": 2,'
-                       ' "mirror_instance": "", "mirror_id": "7094dee0-8c6a-11ed-b0f8-a7e340234a4e",'
-                       ' "mirror_direction": null, "mirror_last_sync": "2023-01-25T00:00:00Z", "mirror_tags": []}',
+            '{"uuid": "40a48c60-9563-11ed-9e5e-d35390b2bcbf", "timestamp": "2023-01-16T06:01:43.718Z",'
+            ' "adversaryHost": "activity.lumu.io", "endpointIp": "192.168.1.100", "endpointName": "LUMU-100",'
+            ' "fromPlayback": false}, "lumu_event_type": "IncidentUpdated", "lumu_source_name": "lumu",'
+            ' "timestamp": "2023-01-04T20:00:30.158Z", "statusTimestamp": "2023-01-04T20:00:30.158Z",'
+            ' "status": 1, "contacts": 1007, "adversaries": ["activity.lumu.io"], "adversaryId": "activity.lumu.io",'
+            ' "adversaryTypes": ["Spam"], "description": "Activity Test Query",'
+            ' "labelDistribution": {"0": 999, "4055": 4, "4061": 3, "1580": 1}, "totalEndpoints": 4,'
+            ' "lastContact": "2023-01-16T06:01:43.718Z", "unread": false, "hasPlaybackContacts": false,'
+            ' "firstContact": "2023-01-04T20:00:06.375Z", "lumu_incidentId": "7094dee0-8c6a-11ed-b0f8-a7e340234a4e",'
+            ' "lumu_status": "open", "comment": "from fetching process", "severity": 2,'
+            ' "mirror_instance": "", "mirror_id": "7094dee0-8c6a-11ed-b0f8-a7e340234a4e",'
+            ' "mirror_direction": null, "mirror_last_sync": "2023-01-25T00:00:00Z", "mirror_tags": []}',
         },
         {
             "name": "lumu - CryptoMining domain - ec869190-85aa-11ed-a600-d53ba4d2bb70",
             "occurred": "2022-12-27T05:54:27.753Z",
             "dbotMirrorId": "ec869190-85aa-11ed-a600-d53ba4d2bb70",
             "rawJSON": '{"companyId": "10228d9c-ff18-4251-ac19-514185e00f17", "contactSummary":'
-                       ' {"uuid": "469a6d60-9563-11ed-9d32-d35390a7eb2e", "timestamp": "2023-01-16T06:01:53.718Z",'
-                       ' "adversaryHost": "greetland.net", "endpointIp": "192.168.1.200", "endpointName": "LUMU-200", '
-                       '"fromPlayback": false}, "lumu_event_type": "IncidentUpdated", "lumu_source_name": "lumu",'
-                       ' "timestamp": "2022-12-27T05:54:27.753Z", "statusTimestamp": "2022-12-27T05:54:27.753Z", "status": 1,'
-                       ' "contacts": 1028, "adversaries": ["greetland.net"], "adversaryId": "greetland.net",'
-                       ' "adversaryTypes": ["Mining"], "description": "CryptoMining domain", "labelDistribution":'
-                       ' {"2148": 5, "805": 8, "0": 1015}, "totalEndpoints": 5, "lastContact": "2023-01-16T06:01:53.718Z",'
-                       ' "unread": false, "hasPlaybackContacts": false, "firstContact": "2022-12-25T23:43:56Z",'
-                       ' "lumu_incidentId": "ec869190-85aa-11ed-a600-d53ba4d2bb70", "lumu_status": "open",'
-                       ' "comment": "from fetching process", "severity": 2, "mirror_instance": "", "mirror_id":'
-                       ' "ec869190-85aa-11ed-a600-d53ba4d2bb70", "mirror_direction": null, "mirror_last_sync":'
-                       ' "2023-01-25T00:00:00Z", "mirror_tags": []}',
+            ' {"uuid": "469a6d60-9563-11ed-9d32-d35390a7eb2e", "timestamp": "2023-01-16T06:01:53.718Z",'
+            ' "adversaryHost": "greetland.net", "endpointIp": "192.168.1.200", "endpointName": "LUMU-200", '
+            '"fromPlayback": false}, "lumu_event_type": "IncidentUpdated", "lumu_source_name": "lumu",'
+            ' "timestamp": "2022-12-27T05:54:27.753Z", "statusTimestamp": "2022-12-27T05:54:27.753Z", "status": 1,'
+            ' "contacts": 1028, "adversaries": ["greetland.net"], "adversaryId": "greetland.net",'
+            ' "adversaryTypes": ["Mining"], "description": "CryptoMining domain", "labelDistribution":'
+            ' {"2148": 5, "805": 8, "0": 1015}, "totalEndpoints": 5, "lastContact": "2023-01-16T06:01:53.718Z",'
+            ' "unread": false, "hasPlaybackContacts": false, "firstContact": "2022-12-25T23:43:56Z",'
+            ' "lumu_incidentId": "ec869190-85aa-11ed-a600-d53ba4d2bb70", "lumu_status": "open",'
+            ' "comment": "from fetching process", "severity": 2, "mirror_instance": "", "mirror_id":'
+            ' "ec869190-85aa-11ed-a600-d53ba4d2bb70", "mirror_direction": null, "mirror_last_sync":'
+            ' "2023-01-25T00:00:00Z", "mirror_tags": []}',
         },
     ]  # noqa: E501
 
@@ -629,16 +629,16 @@ def test_get_remote_data_command(mock_retrieve_a_specific_incident_details_reque
         {
             "Type": 1,
             "Contents": "mute - from XSOAR Cortex 20230124_120758 ,"
-                        " hmacsha256:90369dbefcf13550a9451e52e3c750f6f28159e71b403aa6402cb544cc678748",
+            " hmacsha256:90369dbefcf13550a9451e52e3c750f6f28159e71b403aa6402cb544cc678748",
             "ContentsFormat": "markdown",
             "Note": True,
         },
         {
             "Type": 1,
             "Contents": "Incident ID:  14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343 \nDate of first contact:"
-                        " N/A \nAdversary type: Spam \nDescription: Activity Test Query \nTotal contacts:"
-                        " 95 \nTotal Endpoints: 3 \nURL: https://portal.lumu.io/compromise/incidents/show/14fd84b0"
-                        "-9bdd-11ed-a0c7-dd6f8e69d343/detections",
+            " N/A \nAdversary type: Spam \nDescription: Activity Test Query \nTotal contacts:"
+            " 95 \nTotal Endpoints: 3 \nURL: https://portal.lumu.io/compromise/incidents/show/14fd84b0"
+            "-9bdd-11ed-a0c7-dd6f8e69d343/detections",
             "ContentsFormat": "markdown",
             "Note": True,
         },
@@ -651,9 +651,9 @@ def test_get_remote_data_command(mock_retrieve_a_specific_incident_details_reque
         "adversaries": ["activity.lumu.io"],
         "adversaryTypes": ["Spam"],
         "description": "Activity Test Query - Incident ID:  14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343 \nDate of first contact:"
-                       " N/A \nAdversary type: Spam \nDescription: Activity Test Query \nTotal contacts: 95"
-                       " \nTotal Endpoints: 3 \nURL: https://portal.lumu.io/compromise/incidents/show/"
-                       "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343/detections",
+        " N/A \nAdversary type: Spam \nDescription: Activity Test Query \nTotal contacts: 95"
+        " \nTotal Endpoints: 3 \nURL: https://portal.lumu.io/compromise/incidents/show/"
+        "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343/detections",
         "labelDistribution": {"0": 26, "989": 69},
         "totalEndpoints": 3,
         "lastContact": "2023-01-24T21:17:50Z",
@@ -663,7 +663,7 @@ def test_get_remote_data_command(mock_retrieve_a_specific_incident_details_reque
                 "userId": 0,
                 "action": "mute",
                 "comment": "from XSOAR Cortex 20230124_120758 , "
-                           "hmacsha256:90369dbefcf13550a9451e52e3c750f6f28159e71b403aa6402cb544cc678748",
+                "hmacsha256:90369dbefcf13550a9451e52e3c750f6f28159e71b403aa6402cb544cc678748",
             }
         ],
         "status": "muted",
@@ -686,7 +686,7 @@ def test_get_remote_data_command(mock_retrieve_a_specific_incident_details_reque
         },
         "lumu_incidentId": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
         "comment": "mute - from XSOAR Cortex 20230124_120758 , "
-                   "hmacsha256:90369dbefcf13550a9451e52e3c750f6f28159e71b403aa6402cb544cc678748",
+        "hmacsha256:90369dbefcf13550a9451e52e3c750f6f28159e71b403aa6402cb544cc678748",
         "incomming_mirror_error": "",
         "name": "lumu - Activity Test Query - 14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
         "lumu_status": "muted",

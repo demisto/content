@@ -142,9 +142,7 @@ def add_entry_to_componentlist():
             list_entry_json = '{"items":["' + componentlist_entry + '"]}'
             r = requests.put(url=full_url + list_id + "/append", headers=CLIENT_HEADERS, data=list_entry_json, verify=VERIFY_CERT)
             if 200 <= r.status_code <= 299:
-                demisto.results(
-                    f"added componentlist entry ({componentlist_entry}) to componentlist name ({componentlist_name})"
-                )
+                demisto.results(f"added componentlist entry ({componentlist_entry}) to componentlist name ({componentlist_name})")
             else:
                 return_error(
                     f"Failed to add componentlist entry({componentlist_entry}) to componentlist name ({componentlist_name})."
@@ -210,9 +208,7 @@ def rm_entry_from_componentlist():
     list_entry_json = '{"items":["' + componentlist_entry + '"]}'
     r = requests.post(url=full_url + list_id + "/delete", headers=CLIENT_HEADERS, data=list_entry_json, verify=VERIFY_CERT)
     if 200 <= r.status_code <= 299:
-        demisto.results(
-            f"removed componentlist entry ({componentlist_entry}) from componentlist name ({componentlist_name})"
-        )
+        demisto.results(f"removed componentlist entry ({componentlist_entry}) from componentlist name ({componentlist_name})")
     else:
         return_error(
             f"Failed to remove componentlist entry({componentlist_entry}) from componentlist name"
