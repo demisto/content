@@ -695,9 +695,7 @@ def get_field_args(args) -> tuple:
     similar_categorical_field = [] if use_all_field else extract_fields_from_args(args.get("similarCategoricalField"))
     similar_json_field = ["CustomFields"] if use_all_field else extract_fields_from_args(args.get("similarJsonField"))
 
-    demisto.debug(
-        f"{exact_match_fields=}\n{similar_text_field=}\n{similar_categorical_field=}\n{similar_json_field=}"
-    )
+    demisto.debug(f"{exact_match_fields=}\n{similar_text_field=}\n{similar_categorical_field=}\n{similar_json_field=}")
     return exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field
 
 

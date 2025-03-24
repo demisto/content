@@ -527,7 +527,7 @@ def create_dxl_config(instance_cert: InstanceCertificates) -> DxlClientConfig:
         tempfile.NamedTemporaryFile(mode="w+", dir="./", suffix=".crt") as client_cert_file,
         tempfile.NamedTemporaryFile(mode="w+", dir="./", suffix=".key") as private_key_file,
     ):
-        broker_certs_file.delete    # noqa: B018
+        broker_certs_file.delete  # noqa: B018
         create_temp_credentials(broker_certs_file, instance_cert.broker_ca_bundle)
         create_temp_credentials(client_cert_file, instance_cert.client_cert)
         create_temp_credentials(private_key_file, instance_cert.private_key)

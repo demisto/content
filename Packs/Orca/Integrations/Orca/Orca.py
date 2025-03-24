@@ -34,7 +34,7 @@ class OrcaClient:
             demisto.debug(str(e))
 
             # Try to get error message from response
-            response = getattr(e, "res")    # type: ignore[attr-defined]
+            response = e.res  # type: ignore[attr-defined]  # pylint: disable=E1101
             message = invalid_token_string
             if isinstance(response, Response):
                 message = response.json().get("error") or invalid_token_string

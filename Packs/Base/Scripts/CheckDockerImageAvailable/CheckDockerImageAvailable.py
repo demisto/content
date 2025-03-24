@@ -139,8 +139,10 @@ def main():  # pragma: no cover
         demisto.info(f"Docker image check [{docker_full_name}] downloaded layer content of len: {cont_len}")
 
         if cont_len < expected_len:
-            raise ValueError(f"Content returned is shorter than expected length:"
-                             f" {expected_len}. Content: {res.content}")    # type: ignore[str-bytes-safe]
+            raise ValueError(
+                f"Content returned is shorter than expected length:"  # type: ignore[str-bytes-safe]
+                f" {expected_len}. Content: {res.content}"  # type: ignore[str-bytes-safe]
+            )
 
         demisto.results("ok")
 

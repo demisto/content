@@ -76,9 +76,7 @@ class Client(BaseClient):
                     )
             except requests.exceptions.SSLError as err:
                 demisto.debug(str(err))
-                raise Exception(
-                    f"SSL error in the API call to {INTEGRATION_NAME}.\nCheck your not secure parameter.\n\n{err}"
-                )
+                raise Exception(f"SSL error in the API call to {INTEGRATION_NAME}.\nCheck your not secure parameter.\n\n{err}")
             except requests.ConnectionError as err:
                 demisto.debug(str(err))
                 raise Exception(

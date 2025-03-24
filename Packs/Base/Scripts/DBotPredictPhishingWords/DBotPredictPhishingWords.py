@@ -220,7 +220,7 @@ def predict_single_incident_full_output(
     explain_result_hr["TextTokensHighlighted"] = highlighted_text_markdown
     explain_result_hr["Label"] = predicted_label
     explain_result_hr["Probability"] = "%.2f" % predicted_prob  # noqa: UP031
-    explain_result_hr["Confidence"] = "%.2f" % predicted_prob   # noqa: UP031
+    explain_result_hr["Confidence"] = "%.2f" % predicted_prob  # noqa: UP031
     explain_result_hr["PositiveWords"] = ", ".join([w.lower() for w in positive_words])
     explain_result_hr["NegativeWords"] = ", ".join([w.lower() for w in negative_words])
     incident_context = demisto.incidents()[0]

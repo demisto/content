@@ -24,17 +24,17 @@ POLICY_TYPE_MAP: dict[str, "PolicyTypeType"] = {
 }
 CREATE_ACCOUNT_FAILURE_MAP: dict["CreateAccountFailureReasonType", str] = {
     "ACCOUNT_LIMIT_EXCEEDED": "The account couldn't be created because you reached the limit"
-                              " on the number of accounts in your organization.",
+    " on the number of accounts in your organization.",
     "CONCURRENT_ACCOUNT_MODIFICATION": "You already submitted a request with the same information.",
     "EMAIL_ALREADY_EXISTS": "The account could not be created because another Amazon Web Services account with that email"
-                            " address already exists.",
+    " address already exists.",
     "FAILED_BUSINESS_VALIDATION": "The Amazon Web Services account that owns your organization failed to receive business"
-                                  " license validation.",
+    " license validation.",
     "GOVCLOUD_ACCOUNT_ALREADY_EXISTS": "The account in the Amazon Web Services GovCloud (US) Region could not be created"
-                                       " because this"
+    " because this"
     " Region already includes an account with that email address.",
     "INVALID_IDENTITY_FOR_BUSINESS_VALIDATION": "The Amazon Web Services account that owns your organization can't complete"
-                                                " business license validation"
+    " business license validation"
     "because it doesn't have valid identity data.",
     "INVALID_ADDRESS": "The account could not be created because the address you provided is not valid.",
     "INVALID_EMAIL": "The account could not be created because the email address you provided is not valid.",
@@ -43,7 +43,7 @@ CREATE_ACCOUNT_FAILURE_MAP: dict["CreateAccountFailureReasonType", str] = {
     "INTERNAL_FAILURE": "The account could not be created because of an internal failure. Try again later."
     " If the problem persists, contact Amazon Web Services Customer Support.",
     "MISSING_BUSINESS_VALIDATION": "The Amazon Web Services account that owns your organization has not received Business"
-                                   " Validation.",
+    " Validation.",
     "MISSING_PAYMENT_INSTRUMENT": "You must configure the management account with a valid payment method, such as a credit card.",
     "PENDING_BUSINESS_VALIDATION": "The Amazon Web Services account that owns your organization is still in the"
     " process of completing business license validation.",

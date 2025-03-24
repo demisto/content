@@ -36,9 +36,7 @@ MESSAGE_WARNING_TRUNCATED = (
 MESSAGE_CLUSTERING_NOT_VALID = "Clustering cannot be created with this dataset"
 MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched incidents."
 MESSAGE_INVALID_FIELD = "- %s field(s) has/have too many missing values and won't be used in the model."
-MESSAGE_NO_FIELD_NAME_OR_CLUSTERING = (
-    "- Empty or incorrect fieldsForClustering for training OR fieldForClusterName is incorrect."
-)
+MESSAGE_NO_FIELD_NAME_OR_CLUSTERING = "- Empty or incorrect fieldsForClustering for training OR fieldForClusterName is incorrect."
 
 REGEX_DATE_PATTERN = [
     re.compile(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),  # guardrails-disable-line
@@ -677,12 +675,9 @@ def create_summary(model_processed: PostProcessing, fields_for_clustering: list[
     percentage_clusterized_samples = round(100 * (number_of_clusterized / number_of_sample), 0)
     summary = {
         "Total number of samples ": str(number_of_sample),
-        "Percentage of clusterized samples after selection (after Phase 1 and Phase 2)":
-            f"{percentage_selected_samples}  ({nb_clusterized_after_selection}/{number_of_sample})",
-        "Percentage of clusterized samples (after Phase 1)":
-            f"{percentage_clusterized_samples}  ({number_of_clusterized}/{number_of_sample})",
-        "Percentage of cluster selected (Number of high quality groups/Total number of groups)":
-            f"{percentage_clusters_selected}  ({number_clusters_selected}/{nb_clusters})",
+        "Percentage of clusterized samples after selection (after Phase 1 and Phase 2)": f"{percentage_selected_samples}  ({nb_clusterized_after_selection}/{number_of_sample})",   # noqa: E501
+        "Percentage of clusterized samples (after Phase 1)": f"{percentage_clusterized_samples}  ({number_of_clusterized}/{number_of_sample})",  # noqa: E501
+        "Percentage of cluster selected (Number of high quality groups/Total number of groups)": f"{percentage_clusters_selected}  ({number_clusters_selected}/{nb_clusters})",  # noqa: E501
         "Fields used for training": " , ".join(fields_for_clustering),
         "Fields used for cluster name": field_for_cluster_name[0] if field_for_cluster_name else "",
         "Training time": str(model_processed.date_training),
@@ -770,7 +765,7 @@ def remove_not_valid_field(
     valid_field = mask[mask].index.tolist()
     invalid_field = mask[~mask].index.tolist()
     if invalid_field:
-        global_msg += "%s \n" % MESSAGE_INVALID_FIELD % " , ".join(invalid_field)   # noqa: UP031
+        global_msg += "%s \n" % MESSAGE_INVALID_FIELD % " , ".join(invalid_field)  # noqa: UP031
     return valid_field, global_msg
 
 

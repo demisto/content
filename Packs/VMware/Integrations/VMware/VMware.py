@@ -10,7 +10,7 @@ import urllib3
 from CommonServerPython import *  # noqa: F401
 from pyVim.connect import Disconnect, SmartConnect
 from pyVmomi import vim, vmodl  # type: ignore
-from vmware.vapi.vsphere.client import create_vsphere_client    # pylint: disable=E0401
+from vmware.vapi.vsphere.client import create_vsphere_client  # pylint: disable=E0401
 
 REDIRECT_STD_OUT = argToBoolean(demisto.params().get("redirect_std_out", "false"))
 real_demisto_info = demisto.info

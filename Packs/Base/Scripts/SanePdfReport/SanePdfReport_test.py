@@ -38,7 +38,7 @@ def test_sane_pdf_report(mocker):
         "args",
         return_value={
             "sane_pdf_report_base64": "W3sidHlwZSI6Im1hcmtkb3duIiwiZGF0YSI6eyJ0ZXh0IjoiaGVsbG8gd29ybGQiLCJncm91cHMiOlt7Im"
-                                      "5hbWUiOiIiLCJkYXRhIjpbMl0s"
+            "5hbWUiOiIiLCJkYXRhIjpbMl0s"
             "Imdyb3VwcyI6bnVsbCwiY291bnQiOjIsImZsb2F0RGF0YSI6WzJdfV19LCJsYXlvdXQiOnsiY29sdW1uUG9zIjowLCJoIjoxLCJpIjoiYjRm"
             "YzAzYTAtMTZhMi0xMWViLWFhNmUtOTMzMWU5NjVhYjA2Iiwicm93UG9zIjowLCJ3Ijo2fSwicXVlcnkiOnsidHlwZSI6ImluY2lkZW50Iiwi"
             "ZmlsdGVyIjp7InF1ZXJ5IjoiIiwicGVyaW9kIjp7ImJ5RnJvbSI6ImRheXMiLCJmcm9tVmFsdWUiOjd9fX0sImF1dG9tYXRpb24iOnsibmFt"
