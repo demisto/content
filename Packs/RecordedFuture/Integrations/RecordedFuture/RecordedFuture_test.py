@@ -364,13 +364,9 @@ class TestRFClient:
 
         client = create_client()
 
-        mocker.patch.object(
-            demisto, "params", return_value={"collective_insights": "On"}
-        )
+        mocker.patch.object(demisto, "params", return_value={"collective_insights": "On"})
 
-        demisto.callingContext = {
-            "context": {"ExecutionContext": "to be removed", "Incidents": []}
-        }
+        demisto.callingContext = {"context": {"ExecutionContext": "to be removed", "Incidents": []}}
 
         assert client._get_writeback_data() == {"context": {"Incidents": []}}
 
@@ -696,9 +692,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.fetch_incidents()
 
@@ -732,9 +726,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.entity_search()
 
@@ -759,9 +751,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.get_intelligence()
 
@@ -786,9 +776,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.get_links()
 
@@ -813,9 +801,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.get_single_alert()
 
@@ -840,9 +826,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.get_alerts()
 
@@ -867,9 +851,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.get_alert_rules()
 
@@ -894,9 +876,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         alert_data = {"mock": "data"}
         response = client.alert_set_status(alert_data)
@@ -942,9 +922,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         alert_data = {"mock": "data"}
         response = client.alert_set_note(alert_data)
@@ -990,9 +968,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.get_triage()
 
@@ -1017,9 +993,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "threat map response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.get_threat_map()
 
@@ -1044,9 +1018,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "threat links response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.get_threat_links()
 
@@ -1071,9 +1043,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "detection rules response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.get_detection_rules()
 
@@ -1098,15 +1068,11 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "collective insight response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.submit_detection_to_collective_insight()
 
-        mock_call.assert_called_once_with(
-            url_suffix="/v2/collective-insights/detections"
-        )
+        mock_call.assert_called_once_with(url_suffix="/v2/collective-insights/detections")
 
         assert response == mock_call_response
 
@@ -1143,9 +1109,7 @@ class TestActions:
         result_actions = actions._process_result_actions(response=response)  # type: ignore
         assert result_actions is None
 
-    def test_process_result_actions_no_or_empty_result_actions_in_response(
-        self, mocker
-    ):
+    def test_process_result_actions_no_or_empty_result_actions_in_response(self, mocker):
         from RecordedFuture import Actions
 
         mock_client = mocker.Mock()
@@ -1203,9 +1167,7 @@ class TestActions:
         assert r_a.readable_output == "mock_readable_output"
         assert r_a.outputs_key_field == "mock_outputs_key_field"
 
-    def test_process_result_actions_create_indicator_and_default_command_results(
-        self, mocker
-    ):
+    def test_process_result_actions_create_indicator_and_default_command_results(self, mocker):
         import RecordedFuture
 
         spy_create_indicator = mocker.spy(
@@ -1362,9 +1324,7 @@ class TestActions:
         mock_demisto_set_last_run.assert_called_once_with(mock_demisto_last_run_value)
 
         # Verify that we update alert status.
-        mock_client_alert_set_status.assert_called_once_with(
-            mock_alerts_update_data_value
-        )
+        mock_client_alert_set_status.assert_called_once_with(mock_alerts_update_data_value)
 
     def test_malware_search_command(self, mocker):
         from RecordedFuture import Actions
@@ -1373,15 +1333,11 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_entity_search = mocker.patch.object(
-            client, "entity_search", return_value=mock_response
-        )
+        mock_client_entity_search = mocker.patch.object(client, "entity_search", return_value=mock_response)
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = (
-            "mock_process_result_actions_return_value"
-        )
+        mock_process_result_actions_return_value = "mock_process_result_actions_return_value"
         mock_process_result_actions = mocker.patch.object(
             actions,
             "_process_result_actions",
@@ -1403,15 +1359,11 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_entity_lookup = mocker.patch.object(
-            client, "entity_lookup", return_value=mock_response
-        )
+        mock_client_entity_lookup = mocker.patch.object(client, "entity_lookup", return_value=mock_response)
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = (
-            "mock_process_result_actions_return_value"
-        )
+        mock_process_result_actions_return_value = "mock_process_result_actions_return_value"
         mock_process_result_actions = mocker.patch.object(
             actions,
             "_process_result_actions",
@@ -1433,15 +1385,11 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_get_intelligence = mocker.patch.object(
-            client, "get_intelligence", return_value=mock_response
-        )
+        mock_client_get_intelligence = mocker.patch.object(client, "get_intelligence", return_value=mock_response)
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = (
-            "mock_process_result_actions_return_value"
-        )
+        mock_process_result_actions_return_value = "mock_process_result_actions_return_value"
         mock_process_result_actions = mocker.patch.object(
             actions,
             "_process_result_actions",
@@ -1463,15 +1411,11 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_get_links = mocker.patch.object(
-            client, "get_links", return_value=mock_response
-        )
+        mock_client_get_links = mocker.patch.object(client, "get_links", return_value=mock_response)
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = (
-            "mock_process_result_actions_return_value"
-        )
+        mock_process_result_actions_return_value = "mock_process_result_actions_return_value"
         mock_process_result_actions = mocker.patch.object(
             actions,
             "_process_result_actions",
@@ -1493,15 +1437,11 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_get_single_alert = mocker.patch.object(
-            client, "get_single_alert", return_value=mock_response
-        )
+        mock_client_get_single_alert = mocker.patch.object(client, "get_single_alert", return_value=mock_response)
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = (
-            "mock_process_result_actions_return_value"
-        )
+        mock_process_result_actions_return_value = "mock_process_result_actions_return_value"
         mock_process_result_actions = mocker.patch.object(
             actions,
             "_process_result_actions",
@@ -1524,9 +1464,7 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_get_single_alert = mocker.patch.object(
-            client, "get_single_alert", return_value=mock_response
-        )
+        mock_client_get_single_alert = mocker.patch.object(client, "get_single_alert", return_value=mock_response)
 
         actions = Actions(client)
 
@@ -1553,9 +1491,7 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_get_alerts = mocker.patch.object(
-            client, "get_alerts", return_value=mock_response
-        )
+        mock_client_get_alerts = mocker.patch.object(client, "get_alerts", return_value=mock_response)
 
         actions = Actions(client)
 
@@ -1572,9 +1508,7 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_get_alert_rules = mocker.patch.object(
-            client, "get_alert_rules", return_value=mock_response
-        )
+        mock_client_get_alert_rules = mocker.patch.object(client, "get_alert_rules", return_value=mock_response)
 
         actions = Actions(client)
 
@@ -1591,15 +1525,11 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_alert_set_status = mocker.patch.object(
-            client, "alert_set_status", return_value=mock_response
-        )
+        mock_client_alert_set_status = mocker.patch.object(client, "alert_set_status", return_value=mock_response)
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = (
-            "mock_process_result_actions_return_value"
-        )
+        mock_process_result_actions_return_value = "mock_process_result_actions_return_value"
         mock_process_result_actions = mocker.patch.object(
             actions,
             "_process_result_actions",
@@ -1621,15 +1551,11 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_alert_set_note = mocker.patch.object(
-            client, "alert_set_note", return_value=mock_response
-        )
+        mock_client_alert_set_note = mocker.patch.object(client, "alert_set_note", return_value=mock_response)
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = (
-            "mock_process_result_actions_return_value"
-        )
+        mock_process_result_actions_return_value = "mock_process_result_actions_return_value"
         mock_process_result_actions = mocker.patch.object(
             actions,
             "_process_result_actions",
@@ -1651,15 +1577,11 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_get_triage = mocker.patch.object(
-            client, "get_triage", return_value=mock_response
-        )
+        mock_client_get_triage = mocker.patch.object(client, "get_triage", return_value=mock_response)
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = (
-            "mock_process_result_actions_return_value"
-        )
+        mock_process_result_actions_return_value = "mock_process_result_actions_return_value"
         mock_process_result_actions = mocker.patch.object(
             actions,
             "_process_result_actions",
@@ -1681,15 +1603,11 @@ class TestActions:
 
         mock_response = "mock_threat_map"
 
-        mock_client_get_threat_map = mocker.patch.object(
-            client, "get_threat_map", return_value=mock_response
-        )
+        mock_client_get_threat_map = mocker.patch.object(client, "get_threat_map", return_value=mock_response)
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = (
-            "mock_process_result_actions_return_value"
-        )
+        mock_process_result_actions_return_value = "mock_process_result_actions_return_value"
         mock_process_result_actions = mocker.patch.object(
             actions,
             "_process_result_actions",
@@ -1711,9 +1629,7 @@ class TestActions:
 
         mock_response = "mock_threat_links"
 
-        mock_client_get_threat_links = mocker.patch.object(
-            client, "get_threat_links", return_value=mock_response
-        )
+        mock_client_get_threat_links = mocker.patch.object(client, "get_threat_links", return_value=mock_response)
 
         actions = Actions(client)
 
@@ -1737,9 +1653,7 @@ class TestActions:
 
         mock_response = "mock_detection_rules"
 
-        mock_get_detection_rules = mocker.patch.object(
-            client, "get_detection_rules", return_value=mock_response
-        )
+        mock_get_detection_rules = mocker.patch.object(client, "get_detection_rules", return_value=mock_response)
 
         actions = Actions(client)
 
@@ -1788,12 +1702,8 @@ class TestActions:
         import platform
 
         mocker.patch.object(demisto, "command", return_value="test-module")
-        mocker.patch.object(
-            demisto, "demistoVersion", return_value={"version": "mock_version"}
-        )
-        mocker.patch.object(
-            demisto, "params", return_value={"token": {"password": "mocktoken"}}
-        )
+        mocker.patch.object(demisto, "demistoVersion", return_value={"version": "mock_version"})
+        mocker.patch.object(demisto, "params", return_value={"token": {"password": "mocktoken"}})
         mocker.patch.object(platform, "platform", return_value="mock_platform")
         mocker.patch.object(RecordedFuture.Client, "whoami")
         mocked_return_res = mocker.patch.object(RecordedFuture, "return_results")
@@ -1806,12 +1716,8 @@ class TestActions:
         import platform
 
         mocker.patch.object(demisto, "command", return_value="test-module")
-        mocker.patch.object(
-            demisto, "demistoVersion", return_value={"version": "mock_version"}
-        )
-        mocker.patch.object(
-            demisto, "params", return_value={"token": {"password": "mocktoken"}}
-        )
+        mocker.patch.object(demisto, "demistoVersion", return_value={"version": "mock_version"})
+        mocker.patch.object(demisto, "params", return_value={"token": {"password": "mocktoken"}})
         mocker.patch.object(platform, "platform", return_value="mock_platform")
         mock_whoami = mocker.patch.object(RecordedFuture.Client, "whoami")
         mock_whoami.side_effect = Exception("Side effect triggered")
