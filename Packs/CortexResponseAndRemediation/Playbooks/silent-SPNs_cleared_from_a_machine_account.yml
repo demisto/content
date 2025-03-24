@@ -1359,5 +1359,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 issilent: true
-marketplaces: ["marketplacev2"]
+marketplaces: ["marketplacev2", "platform"]
 fromversion: 8.9.0
