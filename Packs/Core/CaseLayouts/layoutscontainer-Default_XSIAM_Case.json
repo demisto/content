@@ -40,5 +40,8 @@
     "system": true,
     "version": -1,
     "fromVersion": "8.7.0",
-    "marketplaces":  ["marketplacev2"]
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ]
 }
