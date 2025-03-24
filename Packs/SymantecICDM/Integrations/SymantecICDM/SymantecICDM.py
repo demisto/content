@@ -404,6 +404,7 @@ def build_network_insight_result(
     indicator = get_network_indicator_by_type(
         type=arg_type, indicator=raw_result["indicator"], dbot_score=dbot_score
     )
+
     command_result = CommandResults(
         outputs_prefix=insight_context_prefix[arg_type],
         outputs_key_field=OUTPUT_KEY,
@@ -654,6 +655,7 @@ def symantec_protection_file_command(
             outputs_key_field="file",
             outputs=result,
             raw_response=result,
+            readable_output=tableToMarkdown(result.get('file'), result.get('state', []))
         )
         command_results.append(command_result)
 
@@ -676,6 +678,7 @@ def symantec_protection_network_command(
             outputs_prefix=f"{PROTECTION_CONTEXT_PREFIX}.Network",
             outputs_key_field="network",
             outputs=result,
+            readable_output=tableToMarkdown(result.get('network'), result.get('state', []))
         )
         command_results.append(command_result)
 
@@ -695,9 +698,10 @@ def symantec_protection_cve_command(
     command_results = []
     for result in results:
         command_result = CommandResults(
-            outputs_prefix=f"{PROTECTION_CONTEXT_PREFIX}.Network",
-            outputs_key_field="file",  # Based on the documentation, the CVE is in the 'file' field
+            outputs_prefix=f"{PROTECTION_CONTEXT_PREFIX}.CVE",
+            outputs_key_field="cve",  # Documentation shows 'file', but actual return values has 'cve' field
             outputs=result,
+            readable_output=tableToMarkdown(result.get('cve'), result.get('state', []))
         )
         command_results.append(command_result)
 

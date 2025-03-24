@@ -204,16 +204,16 @@ script:
       description: Comma-separated list of file Sha256 hashes.
       isArray: true
     outputs:
-    - contextPath: Symantec.Protection.file
+    - contextPath: Symantec.Protection.File.file
       description: 'input file sha256.'
       type: String
-    - contextPath: Symantec.Protection.state.technology
+    - contextPath: Symantec.Protection.File.state.technology
       description: 'Symantec technology providing protection.'
       type: String
-    - contextPath: Symantec.Protection.state.firstDefsetVersion
+    - contextPath: Symantec.Protection.File.state.firstDefsetVersion
       description: 'The first definition version with protection.'
       type: String
-    - contextPath: Symantec.Protection.state.threatName
+    - contextPath: Symantec.Protection.File.state.threatName
       description: 'The name of the threat the file is detected as.'
       type: String
   - name: symantec-protection-network
@@ -223,16 +223,16 @@ script:
       description: Comma-separated list of domains or IPs.
       isArray: true
     outputs:
-    - contextPath: Symantec.Protection.network
+    - contextPath: Symantec.Protection.Network.network
       description: 'input domain or ip.'
       type: String
-    - contextPath: Symantec.Protection.state.technology
+    - contextPath: Symantec.Protection.Network.state.technology
       description: 'Symantec technology providing protection.'
       type: String
-    - contextPath: Symantec.Protection.state.firstDefsetVersion
+    - contextPath: Symantec.Protection.Network.state.firstDefsetVersion
       description: 'The first definition version with protections.'
       type: String
-    - contextPath: Symantec.Protection.state.threatName
+    - contextPath: Symantec.Protection.Network.state.threatName
       description: 'The name of the threat the domain or is detected as.'
       type: String
   - name: symantec-protection-cve
@@ -242,16 +242,16 @@ script:
       description: Comma-separated list of CVEs.
       isArray: true
     outputs:
-    - contextPath: Symantec.Protection.file
+    - contextPath: Symantec.Protection.CVE.cve
       description: 'input CVE.'
       type: String
-    - contextPath: Symantec.Protection.state.technology
+    - contextPath: Symantec.Protection.CVE.state.technology
       description: 'Symantec technology providing protection.'
       type: String
-    - contextPath: Symantec.Protection.state.firstDefsetVersion
+    - contextPath: Symantec.Protection.CVE.state.firstDefsetVersion
       description: 'The first definition version with protections.'
       type: String
-    - contextPath: Symantec.Protection.state.threatName
+    - contextPath: Symantec.Protection.CVE.state.threatName
       description: 'The name of the threat the domain or is detected as.'
       type: String
   runonce: false
