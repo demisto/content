@@ -61,6 +61,7 @@ User risk commands - get the user entity risk.
 | domain | The domain. | Optional | 
 
 Specify one of the following:
+
 - upn
 - email address and domain
 - sam account and domain
@@ -185,6 +186,7 @@ Updates the user entity risk.
 
 
 Specify one of the following:
+
 - upn
 - email address and domain
 - sam account and domain

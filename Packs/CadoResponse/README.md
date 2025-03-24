@@ -16,5 +16,5 @@ _Note, this Content Pack requires a deployed instance of Cado Response._
 
 ---
 
-- Try Cado Response for free by visiting: (<https://www.cadosecurity.com/free-investigation)[https://www.cadosecurity.com/free-investigation>]
-- For instructions on how to set up the Cado Response and Cortex XSOAR integration, see Cado’s technical documentation here: (<https://docs.cadosecurity.com/docs/cado-response/integrations/cortex-xsoar)[https://docs.cadosecurity.com/docs/cado-response/integrations/cortex-xsoar>]
+- Try Cado Response for free by visiting: [<https://www.cadosecurity.com/free-investigation](https://www.cadosecurity.com/free-investigation>)
+- For instructions on how to set up the Cado Response and Cortex XSOAR integration, see Cado’s technical documentation here: [<https://docs.cadosecurity.com/docs/cado-response/integrations/cortex-xsoar](https://docs.cadosecurity.com/docs/cado-response/integrations/cortex-xsoar>)

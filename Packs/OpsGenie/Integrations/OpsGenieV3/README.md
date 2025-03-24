@@ -1911,10 +1911,12 @@ Removed the following commands in this version:
 * ***opsgenie-list-schedules*** - this command was replaced by *opsgenie-get-schedules*.
 
 ### Arguments
+
 * In the ***opsgenie-get-on-call*** command, the *schedule-id* argument was replaced by the *schedule_id* and *schedule_name* arguments.
 * In the ***opsgenie-create-alert*** command, the default value of the *priority* argument was changed to 'P3'.
 
 ### Outputs
+
 * In the ***opsgenie-create-alert*** command the following outputs were replaced:
   * *OpsGenieV2.CreatedAlert.action* - replaced by *OpsGenie.Alert.action*.
   * *OpsGenieV2.CreatedAlert.alertId* - replaced by *OpsGenie.Alert.alertId*.

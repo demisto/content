@@ -30,6 +30,7 @@ This pack should only be installed after installing the Azure Logs pack.
 ### Timestamp Ingestion:
 
 For *msft_azure_aks_raw*, timestamp ingestion is according to one of the following fields;
+
 * requestreceivedtime
 * TimeGenerated
 * properties.log.requestReceivedTimestamp

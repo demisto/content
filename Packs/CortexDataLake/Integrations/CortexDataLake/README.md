@@ -56,6 +56,7 @@ In order for the integration to work, the following URLs need to be accessible:
 ## Fetched Incidents Data
 
 The integration can fetch incidents from the following tables:
+
 * firewall.auth
 * firewall.decryption
 * firewall.extpcap

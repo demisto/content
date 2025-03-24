@@ -103,6 +103,7 @@ This integration supports in mirroring from QRadar offenses to Cortex XSOAR.
 When a field of an offense is updated in QRadar services, the update is mirrored in Cortex XSOAR.
 
 ### Mirroring Events
+
 - Mirroring events from QRadar to Cortex XSOAR is supported via the **Mirror Offense and Events** option.
 - Events will only be mirrored in the incoming direction.
 - Mirroring events will only work when the **Long running instance** parameter is enabled.

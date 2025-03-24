@@ -144,6 +144,7 @@ IP to check
 ##### Human Readable Output
 
 ### X-Force IP Reputation for: 8.8.8.8
+
 <https://exchange.xforce.ibmcloud.com/ip/8.8.8.8>
 
 |Reason|Score|Subnets|
@@ -206,6 +207,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 ##### Human Readable Output
 
 ### X-Force URL Reputation for: <https://www.google.com>
+
 <https://exchange.xforce.ibmcloud.com/url/https://www.google.com>
 
 |Categories|Score|
@@ -336,6 +338,7 @@ Check file reputation
 ##### Human Readable Output
 
 ### X-Force md5 Reputation for f2b8d790dab6d2c6945f9a0bce441921
+
 <https://exchange.xforce.ibmcloud.com/malware/f2b8d790dab6d2c6945f9a0bce441921>
 
 |Created Date|Source|Type|
@@ -398,6 +401,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 ##### Human Readable Output
 
 ### X-Force Domain Reputation for: google.com
+
 <https://exchange.xforce.ibmcloud.com/url/google.com>
 
 |Categories|Score|
@@ -503,6 +507,7 @@ Search for details about the given CVE
 ##### Human Readable Output
 
 ### X-Force CVE Reputation for CVE-2020-3142
+
 <https://exchange.xforce.ibmcloud.com/vulnerability/search/CVE-2020-3142>
 
 |Access Vector|Affected Platforms|Complexity|Description|Exploitability|Reported|Risk Level|STD Code|Title|Version|
@@ -654,6 +659,7 @@ Return the latest vulnerabilities found
 ##### Human Readable Output
 
 ### X-Force CVE Reputation for CVE-2020-10508
+
 <https://exchange.xforce.ibmcloud.com/vulnerability/search/CVE-2020-10508>
 
 |Access Vector|Affected Platforms|Complexity|Description|Exploitability|Reported|Risk Level|STD Code|Title|Version|
@@ -661,6 +667,7 @@ Return the latest vulnerabilities found
 | Network | Sunnet eHRD 9.0<br />Sunnet eHRD 8.0 | Low | Sunnet eHRD could allow a remote attacker to obtain sensitive information, caused by improperly storing system files. By using a specific URL, a remote attacker could exploit this vulnerability to obtain sensitive information. | Unproven | 2020-03-27T00:00:00Z | 5.3 | CVE-2020-10508 | Sunnet eHRD information disclosure | 3.0 |
 
 ### X-Force CVE Reputation for CVE-2020-10509
+
 <https://exchange.xforce.ibmcloud.com/vulnerability/search/CVE-2020-10509>
 
 |Access Vector|Affected Platforms|Complexity|Description|Exploitability|Reported|Risk Level|STD Code|Title|Version|
@@ -985,6 +992,7 @@ Gets list of all vulnerabilities associated with the search term.
 ##### Human Readable Output
 
 ### X-Force CVE Reputation for CVE-2014-0964
+
 <https://exchange.xforce.ibmcloud.com/vulnerability/search/CVE-2014-0964>
 
 |Access Vector|Affected Platforms|Complexity|Description|Exploitability|Reported|Risk Level|STD Code|Title|Version|
@@ -992,6 +1000,7 @@ Gets list of all vulnerabilities associated with the search term.
 | Network | IBM WebSphere Application Server 6.0.2<br />IBM WebSphere Application Server 6.1 | Medium | IBM WebSphere Application Server is not vulnerable to the Heartbleed vulnerability (CVE-2014-0160) where secure data might not be protected. However, there is a potential denial of service on IBM WebSphere Application Server Version 6.1 and 6.0.2 when running the Heartbleed scanning tools or if sending specially-crafted Heartbeat messages. | Unproven | 2014-05-08T00:00:00Z | 7.1 | CVE-2014-0964<br />BID-67322 | IBM WebSphere Application Server and Scanning Tool denial of service | 2.0 |
 
 ### X-Force CVE Reputation for BID-67054
+
 <https://exchange.xforce.ibmcloud.com/vulnerability/search/BID-67054>
 
 |Access Vector|Affected Platforms|Complexity|Description|Exploitability|Reported|Risk Level|STD Code|Title|Version|
@@ -999,6 +1008,7 @@ Gets list of all vulnerabilities associated with the search term.
 | Network | HP Integrated Lights-Out 2 (iLO2) 2.23 | Low | HP Integrated Lights-Out 2 (iLO 2) is vulnerable to a denial of service, caused by an error when scanned by vulnerability assessment tools scan for the Heartbleed vulnerability. A remote attacker could exploit this vulnerability to cause the server to crash. | Unproven | 2014-04-24T00:00:00Z | 7.8 | BID-67054<br />SA58224<br />CVE-2014-2601 | HP Integrated Lights-Out 2 Heartbleed denial of service | 2.0 |
 
 ### X-Force CVE Reputation for CVE-2014-0160
+
 <https://exchange.xforce.ibmcloud.com/vulnerability/search/CVE-2014-0160>
 
 |Access Vector|Affected Platforms|Complexity|Description|Exploitability|Reported|Risk Level|STD Code|Title|Version|

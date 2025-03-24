@@ -975,6 +975,7 @@ When mirroring incidents, you can make changes in Jira, which will be reflected 
 You can also attach files from either of the systems, which will then be available in the other system. 
 
 This is made possible by the addition of 3 new functions to the integration, which are applied with the following options:
+
 * External schema support
 * Can sync mirror in
 * Can sync mirror out
@@ -989,6 +990,7 @@ This is made possible by the addition of 3 new functions to the integration, whi
 4. Save your changes.
     
 ##### 5 fields have been added to support the mirroring feature:
+
 * **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both.
   * You can choose the mirror direction when configuring the Jira instance using the **Incident Mirroring Direction** field.
 
@@ -1046,6 +1048,7 @@ match.
 
 
 **Notes**
+
 * The final 'source of truth' of the incident for Cortex XSOAR are the values in Cortex XSOAR. 
   Meaning, if you change the severity in Cortex XSOAR and then change it back in Jira, the final value that will be presented is the one in Cortex XSOAR.
   You can see a list of these fields for each incident under "Context Data" -> "dbotDirtyFields".

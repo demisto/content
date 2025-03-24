@@ -156,6 +156,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ip command
 
 ##### Required Permissions
+
 __none__
 
 ##### Base Command
@@ -277,6 +278,7 @@ __none__
 domain command
 
 ##### Required Permissions
+
 __none__
 
 ##### Base Command
@@ -523,6 +525,7 @@ __none__
 expanse-get-certificate command
 
 ##### Required Permissions
+
 __none__
 
 ##### Base Command
@@ -639,6 +642,7 @@ __none__
 expanse-get-behavior command
 
 ##### Required Permissions
+
 __none__
 
 ##### Base Command
@@ -739,6 +743,7 @@ __none__
 expanse-get-exposures command
 
 ##### Required Permissions
+
 __none__
 
 ##### Base Command
@@ -910,6 +915,7 @@ __none__
 expanse-get-domains-for-certificate command
 
 ##### Required Permissions
+
 __none__
 
 ##### Base Command

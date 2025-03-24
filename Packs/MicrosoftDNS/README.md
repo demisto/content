@@ -29,6 +29,7 @@ You can configure the vendor and product by replacing [vendor]\_[product]\_raw w
 When configuring the instance, you should use a yml file that configures the vendor and product, as shown in the below configuration for the Microsoft DNS product.
 
 **Pay Attention**:
+
 - There are two integrations available in this content pack.
 - Timestamp log ingestion is supported in either of the following formats in UTC (00:00) time.
   - *%m/%d/%Y %I:%M:%S %p*

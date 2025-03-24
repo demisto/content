@@ -9,6 +9,7 @@ This integration was integrated and tested with Splunk Enterprise v9.0.4 and Ent
 ## Use Cases
 
 ---
+
 - Query Splunk for events.
 - Create a new event in Splunk.
 - Get results of a search that was executed in Splunk.
