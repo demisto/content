@@ -22,9 +22,7 @@ class Client(BaseClient):
     Interaction with the appNovi API
     """
 
-    def get_search_results(
-        self, search_term: str, max_results: int = 25
-    ) -> dict[str, Any]:
+    def get_search_results(self, search_term: str, max_results: int = 25) -> dict[str, Any]:
         """Gets the IP reputation using the '/ip' API endpoint
 
         :type search_term: ``str``
@@ -69,9 +67,7 @@ class Client(BaseClient):
             url_suffix="/components/types",
         )
 
-    def get_prop_search_results(
-        self, prop: str, value: str, max_results: int = 25
-    ) -> dict:
+    def get_prop_search_results(self, prop: str, value: str, max_results: int = 25) -> dict:
         return self._http_request(
             method="GET",
             url_suffix="/components/propsearch",
@@ -134,7 +130,6 @@ def test_module(client: Client) -> str:
 
 
 def search_appnovi_command(client: Client, args: dict[str, Any]) -> CommandResults:
-
     search_term = args.get("search_term", None)
     if not search_term:
         raise ValueError("Search term not specified")
@@ -150,12 +145,8 @@ def search_appnovi_command(client: Client, args: dict[str, Any]) -> CommandResul
         "connections": "connections",
     }
 
-    readable_output = (
-        "### Search Results\n" + " | ".join(table_layout.keys()) + " | sources" + "\n"
-    )
-    readable_output += (
-        "|".join(["-----" for th in table_layout]) + "|----" + "\n"
-    )
+    readable_output = "### Search Results\n" + " | ".join(table_layout.keys()) + " | sources" + "\n"
+    readable_output += "|".join(["-----" for th in table_layout]) + "|----" + "\n"
 
     for result in results["components"]:
         readable_output += (
@@ -174,16 +165,13 @@ def search_appnovi_command(client: Client, args: dict[str, Any]) -> CommandResul
 
 
 def search_appnovi_prop_command(client: Client, args: dict[str, Any]) -> CommandResults:
-
     search_prop = args.get("property", None)
     search_value = args.get("value", None)
 
     if not search_prop or not search_value:
         raise ValueError("Search terms not specified")
 
-    results = client.get_prop_search_results(
-        search_prop, search_value, args.get("max_results", 25)
-    )
+    results = client.get_prop_search_results(search_prop, search_value, args.get("max_results", 25))
 
     table_layout = {
         "name": "name",
@@ -194,12 +182,8 @@ def search_appnovi_prop_command(client: Client, args: dict[str, Any]) -> Command
         "connections": "connections",
     }
 
-    readable_output = (
-        "### Search Results\n" + " | ".join(table_layout.keys()) + " | sources" + "\n"
-    )
-    readable_output += (
-        "|".join(["-----" for th in table_layout]) + "|----" + "\n"
-    )
+    readable_output = "### Search Results\n" + " | ".join(table_layout.keys()) + " | sources" + "\n"
+    readable_output += "|".join(["-----" for th in table_layout]) + "|----" + "\n"
 
     for result in results["components"]:
         readable_output += (
@@ -217,9 +201,7 @@ def search_appnovi_prop_command(client: Client, args: dict[str, Any]) -> Command
     )
 
 
-def search_appnovi_connected_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def search_appnovi_connected_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Search for components connected to other components.
     Can be limited in the types of things returned"""
 
@@ -249,10 +231,7 @@ def search_appnovi_connected_command(
     readable_output += "|".join(["-----" for th in table_layout]) + "\n"
 
     for result in results:
-        readable_output += (
-            " | ".join([str(dict_by_path(result, f)) for f in table_layout.values()])
-            + "\n"
-        )
+        readable_output += " | ".join([str(dict_by_path(result, f)) for f in table_layout.values()]) + "\n"
 
     return CommandResults(
         readable_output=readable_output,
@@ -262,9 +241,7 @@ def search_appnovi_connected_command(
     )
 
 
-def search_appnovi_cve_servers_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def search_appnovi_cve_servers_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Find Servers with CVE
     This is a convenience command using the connected search"""
 
@@ -272,9 +249,7 @@ def search_appnovi_cve_servers_command(
     if not cve:
         raise ValueError("CVE not specified")
 
-    results = client.get_connected_results(
-        {"type": "cve", "value": cve.upper()}, None, ["Server"]
-    )
+    results = client.get_connected_results({"type": "cve", "value": cve.upper()}, None, ["Server"])
 
     table_layout = {
         "name": "name",
@@ -288,10 +263,7 @@ def search_appnovi_cve_servers_command(
     readable_output += "|".join(["-----" for th in table_layout]) + "\n"
 
     for result in results:
-        readable_output += (
-            " | ".join([str(dict_by_path(result, f)) for f in table_layout.values()])
-            + "\n"
-        )
+        readable_output += " | ".join([str(dict_by_path(result, f)) for f in table_layout.values()]) + "\n"
 
     return CommandResults(
         readable_output=readable_output,
@@ -314,9 +286,7 @@ def find_server_by_ip_command(client: Client, args: dict[str, Any]) -> CommandRe
     interfaces: list[str] = []
 
     # Let's get any servers or interfaces connected to the IP
-    first_walk = client.get_connected_results(
-        {"type": "ip", "value": ip}, None, ["Server", "Interface"]
-    )
+    first_walk = client.get_connected_results({"type": "ip", "value": ip}, None, ["Server", "Interface"])
 
     # Examine first walk
     for thing in first_walk:
@@ -347,18 +317,11 @@ def find_server_by_ip_command(client: Client, args: dict[str, Any]) -> CommandRe
             "type": "identity.type",
             "value": "identity.value",
         }
-        readable_output = (
-            "### Search Results\n" + " | ".join(table_layout.keys()) + "\n"
-        )
+        readable_output = "### Search Results\n" + " | ".join(table_layout.keys()) + "\n"
         readable_output += "|".join(["-----" for th in table_layout]) + "\n"
 
         for result in servers.values():
-            readable_output += (
-                " | ".join(
-                    [str(dict_by_path(result, f)) for f in table_layout.values()]
-                )
-                + "\n"
-            )
+            readable_output += " | ".join([str(dict_by_path(result, f)) for f in table_layout.values()]) + "\n"
 
     else:
         readable_output += "No Results \n"
@@ -393,9 +356,7 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f"Command being called is {command}")
     try:
         headers = {"Authorization": f"Bearer {api_key}"}
-        client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         command = demisto.command()
 

@@ -13,7 +13,7 @@ def get_asana_client(token):
 
 def get_projects_in_workspace(wid, client):
     res = []
-    projects = client.projects.get_projects({'workspace': wid}, opt_pretty=True)
+    projects = client.projects.get_projects({"workspace": wid}, opt_pretty=True)
 
     for project in projects:
         res.append(project)
@@ -34,13 +34,9 @@ def get_all_projects(token):
         client = get_asana_client(token)
         workspaces = client.workspaces.find_all()  # pylint: disable=no-member
         for workspace in workspaces:
-            projects = get_projects_in_workspace(workspace['gid'], client)
+            projects = get_projects_in_workspace(workspace["gid"], client)
             res.extend(projects)
-        return CommandResults(
-            outputs_prefix='asana',
-            outputs_key_field='projects',
-            outputs=res
-        )
+        return CommandResults(outputs_prefix="asana", outputs_key_field="projects", outputs=res)
     except Exception:
         demisto.results("Request failed")
 
@@ -64,11 +60,7 @@ def get_project(pid, token):
     try:
         client = get_asana_client(token)
         project = client.projects.find_by_id(pid)  # pylint: disable=no-member
-        return CommandResults(
-            outputs_prefix='asana',
-            outputs_key_field='project',
-            outputs=project
-        )
+        return CommandResults(outputs_prefix="asana", outputs_key_field="project", outputs=project)
     except Exception:
         demisto.results("Request failed")
 
@@ -90,10 +82,10 @@ def create_task_in_project(pid, name, token):
     """
     try:
         client = get_asana_client(token)
-        client.tasks.create({'projects': pid, 'name': name})  # pylint: disable=no-member
-        demisto.results(f'Task {name} successfully added to project')
+        client.tasks.create({"projects": pid, "name": name})  # pylint: disable=no-member
+        demisto.results(f"Task {name} successfully added to project")
     except Exception:
-        demisto.results('Task creation failed')
+        demisto.results("Task creation failed")
 
 
 def test_module(token):
@@ -111,7 +103,7 @@ def test_module(token):
     """
     get_asana_client(token)
 
-    return 'ok'
+    return "ok"
 
 
 def main():
@@ -122,27 +114,27 @@ def main():
     """
 
     params = demisto.params()
-    access_token = params.get('accesstoken')
+    access_token = params.get("accesstoken")
     try:
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             demisto.results(test_module(access_token))
 
-        elif demisto.command() == 'asana-get-project':
-            pid = demisto.args()['project_id']
+        elif demisto.command() == "asana-get-project":
+            pid = demisto.args()["project_id"]
             res = get_project(pid, access_token)
             return_results(res)
 
-        elif demisto.command() == 'asana-create-task':
-            pid = demisto.args()['project_id']
-            name = demisto.args()['name']
+        elif demisto.command() == "asana-create-task":
+            pid = demisto.args()["project_id"]
+            name = demisto.args()["name"]
             create_task_in_project(pid, name, access_token)
 
-        elif demisto.command() == 'asana-get-all-projects':
+        elif demisto.command() == "asana-get-all-projects":
             res = get_all_projects(access_token)
             return_results(res)
     except Exception as err:
         return_error(str(err))
 
 
-if __name__ in ["__builtin__", "builtins", '__main__']:
+if __name__ in ["__builtin__", "builtins", "__main__"]:
     main()

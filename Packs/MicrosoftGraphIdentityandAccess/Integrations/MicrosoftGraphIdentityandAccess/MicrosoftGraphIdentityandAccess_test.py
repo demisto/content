@@ -1,6 +1,7 @@
 import pytest
 import MicrosoftGraphIdentityandAccess
 from CommonServerPython import DemistoException
+from MicrosoftApiModule import NotFoundError
 
 ipv4 = {'@odata.type': '#microsoft.graph.iPv4CidrRange', 'cidrAddress': '12.34.221.11/22'}  # noqa
 ipv6 = {'@odata.type': '#microsoft.graph.iPv6CidrRange', 'cidrAddress': '2001:0:9d38:90d6:0:0:0:0/63'}  # noqa
@@ -146,3 +147,23 @@ def test_missing_creds_error_thrown(expected_error):
     with pytest.raises(DemistoException) as e:
         Client("", False, False, client_credentials=True)
     assert str(e.value.message) == expected_error
+
+
+def test_list_role_members_command(mocker):
+    """
+    Given:
+    - A client
+    - A role ID which does not exist or invalid
+
+    When:
+    - Executing the command 'msgraph-identity-directory-role-members-list'
+
+    Then:
+    - Ensure the Exception is caught and a CommandResults with an informative readable_output is returned
+    """
+    from MicrosoftGraphIdentityandAccess import Client, list_role_members_command
+    client = Client("", False, False)
+    message = "Resource '0000c00f' does not exist or one of its queried reference-property objects are not present."
+    mocker.patch.object(Client, 'get_role_members', side_effect=NotFoundError(message=message))
+    result = list_role_members_command(ms_client=client, args={'role_id': '0000c00f', 'limit': 1})
+    assert result.readable_output == 'Role ID: 0000c00f, was not found or invalid'

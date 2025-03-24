@@ -26,7 +26,6 @@ def load_test_data(file_name):
 
 
 class HttpRequestsMocker:
-
     def __init__(self, num_of_events: int):
         self.num_of_events = num_of_events
         self.num_of_calls = 0
@@ -68,7 +67,7 @@ def create_events(start_id: int, amount_of_events: int, start_date: str) -> Dict
 
 def create_mocked_response(response: List[Dict] | Dict, status_code: int = 200) -> requests.Response:
     mocked_response = requests.Response()
-    mocked_response._content = json.dumps(response).encode('utf-8')
+    mocked_response._content = json.dumps(response).encode("utf-8")
     mocked_response.status_code = status_code
     return mocked_response
 
@@ -87,13 +86,13 @@ def test_http_request_token_expired(client: Client, mocker):
     """
     http_mocker = HttpRequestsMocker(1)
     mocker.patch.object(client, "_http_request", side_effect=http_mocker.expired_token_http_request_side_effect)
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"access_token": "old_access_token"})
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"access_token": "old_access_token"})
     set_integration_context_mocker: MagicMock = mocker.patch.object(demisto, "setIntegrationContext")
 
     result = client.http_request(method="GET", url_suffix="/api/v2/reports", params={"start-date": "2021-01-10T00:00:00"})
     events = result["reports"]
     assert len(events) == 1
-    assert set_integration_context_mocker.call_args[0][0] == {'access_token': 'new_access_token'}
+    assert set_integration_context_mocker.call_args[0][0] == {"access_token": "new_access_token"}
 
 
 def test_the_test_module(mocker):
@@ -109,27 +108,24 @@ def test_the_test_module(mocker):
     """
     import CybelAngelEventCollector
 
-    return_results_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, 'return_results')
+    return_results_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, "return_results")
     mocker.patch.object(
-        demisto, 'params',
+        demisto,
+        "params",
         return_value={
             "url": TEST_URL,
             "credentials": {
                 "identifier": "1234",
                 "password": "1234",
             },
-            "max_fetch": 100
-        }
+            "max_fetch": 100,
+        },
     )
-    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, "command", return_value="test-module")
 
     http_mocker = HttpRequestsMocker(100)
 
-    mocker.patch.object(
-        CybelAngelEventCollector.Client,
-        "_http_request",
-        side_effect=http_mocker.valid_http_request_side_effect
-    )
+    mocker.patch.object(CybelAngelEventCollector.Client, "_http_request", side_effect=http_mocker.valid_http_request_side_effect)
 
     CybelAngelEventCollector.main()
     assert return_results_mocker.called
@@ -151,30 +147,27 @@ def test_fetch_events_no_last_run(mocker):
     """
     import CybelAngelEventCollector
 
-    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, 'send_events_to_xsiam')
-    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun', return_value={})
-    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
+    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun", return_value={})
+    mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(
-        demisto, 'params',
+        demisto,
+        "params",
         return_value={
             "url": TEST_URL,
             "credentials": {
                 "identifier": "1234",
                 "password": "1234",
             },
-            "max_fetch": 100
-        }
+            "max_fetch": 100,
+        },
     )
 
-    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
 
     http_mocker = HttpRequestsMocker(100)
 
-    mocker.patch.object(
-        CybelAngelEventCollector.Client,
-        "_http_request",
-        side_effect=http_mocker.valid_http_request_side_effect
-    )
+    mocker.patch.object(CybelAngelEventCollector.Client, "_http_request", side_effect=http_mocker.valid_http_request_side_effect)
 
     CybelAngelEventCollector.main()
     assert send_events_mocker.called
@@ -203,30 +196,29 @@ def test_fetch_events_token_expired(mocker):
     """
     import CybelAngelEventCollector
 
-    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, 'send_events_to_xsiam')
-    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun', return_value={})
-    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
+    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun", return_value={})
+    mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(
-        demisto, 'params',
+        demisto,
+        "params",
         return_value={
             "url": TEST_URL,
             "credentials": {
                 "identifier": "1234",
                 "password": "1234",
             },
-            "max_fetch": 100
-        }
+            "max_fetch": 100,
+        },
     )
-    mocker.patch.object(demisto, 'command', return_value='fetch-events')
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"access_token": "old_access_token"})
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"access_token": "old_access_token"})
     set_integration_context_mocker: MagicMock = mocker.patch.object(demisto, "setIntegrationContext")
 
     http_mocker = HttpRequestsMocker(100)
 
     mocker.patch.object(
-        CybelAngelEventCollector.Client,
-        "_http_request",
-        side_effect=http_mocker.expired_token_http_request_side_effect
+        CybelAngelEventCollector.Client, "_http_request", side_effect=http_mocker.expired_token_http_request_side_effect
     )
 
     CybelAngelEventCollector.main()
@@ -239,7 +231,7 @@ def test_fetch_events_token_expired(mocker):
     assert last_run[CybelAngelEventCollector.LastRun.LATEST_REPORT_TIME] == fetched_events[-1]["_time"]
     assert last_run[CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS][0] == fetched_events[-1]["id"]
 
-    assert set_integration_context_mocker.call_args[0][0] == {'access_token': 'new_access_token'}
+    assert set_integration_context_mocker.call_args[0][0] == {"access_token": "new_access_token"}
 
 
 def test_fetch_events_with_last_run(mocker):
@@ -257,36 +249,33 @@ def test_fetch_events_with_last_run(mocker):
     """
     import CybelAngelEventCollector
 
-    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, 'send_events_to_xsiam')
-    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun', return_value={})
+    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
+    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun", return_value={})
     mocker.patch.object(
         demisto,
-        'getLastRun',
+        "getLastRun",
         return_value={
             CybelAngelEventCollector.LastRun.LATEST_REPORT_TIME: "2024-02-29T13:48:32",
-            CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: [1, 2]
-        }
+            CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: [1, 2],
+        },
     )
     mocker.patch.object(
-        demisto, 'params',
+        demisto,
+        "params",
         return_value={
             "url": TEST_URL,
             "credentials": {
                 "identifier": "1234",
                 "password": "1234",
             },
-            "max_fetch": 100
-        }
+            "max_fetch": 100,
+        },
     )
-    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
 
     http_mocker = HttpRequestsMocker(100)
 
-    mocker.patch.object(
-        CybelAngelEventCollector.Client,
-        "_http_request",
-        side_effect=http_mocker.valid_http_request_side_effect
-    )
+    mocker.patch.object(CybelAngelEventCollector.Client, "_http_request", side_effect=http_mocker.valid_http_request_side_effect)
 
     CybelAngelEventCollector.main()
     assert send_events_mocker.called
@@ -315,37 +304,30 @@ def test_fetch_events_with_last_run_no_events(mocker):
     """
     import CybelAngelEventCollector
 
-    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, 'send_events_to_xsiam')
-    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun', return_value={})
+    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
+    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun", return_value={})
     last_run = {
         CybelAngelEventCollector.LastRun.LATEST_REPORT_TIME: "2024-02-29T13:48:32",
-        CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: [1, 2]
+        CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: [1, 2],
     }
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
     mocker.patch.object(
         demisto,
-        'getLastRun',
-        return_value=last_run
-    )
-    mocker.patch.object(
-        demisto, 'params',
+        "params",
         return_value={
             "url": TEST_URL,
             "credentials": {
                 "identifier": "1234",
                 "password": "1234",
             },
-            "max_fetch": 100
-        }
+            "max_fetch": 100,
+        },
     )
-    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
 
     http_mocker = HttpRequestsMocker(0)
 
-    mocker.patch.object(
-        CybelAngelEventCollector.Client,
-        "_http_request",
-        side_effect=http_mocker.valid_http_request_side_effect
-    )
+    mocker.patch.object(CybelAngelEventCollector.Client, "_http_request", side_effect=http_mocker.valid_http_request_side_effect)
 
     CybelAngelEventCollector.main()
     assert send_events_mocker.called
@@ -372,34 +354,27 @@ def test_fetch_events_without_last_run_no_events(mocker):
     """
     import CybelAngelEventCollector
 
-    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, 'send_events_to_xsiam')
-    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun', return_value={})
+    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
+    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun", return_value={})
 
+    mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(
         demisto,
-        'getLastRun',
-        return_value={}
-    )
-    mocker.patch.object(
-        demisto, 'params',
+        "params",
         return_value={
             "url": TEST_URL,
             "credentials": {
                 "identifier": "1234",
                 "password": "1234",
             },
-            "max_fetch": 100
-        }
+            "max_fetch": 100,
+        },
     )
-    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
 
     http_mocker = HttpRequestsMocker(0)
 
-    mocker.patch.object(
-        CybelAngelEventCollector.Client,
-        "_http_request",
-        side_effect=http_mocker.valid_http_request_side_effect
-    )
+    mocker.patch.object(CybelAngelEventCollector.Client, "_http_request", side_effect=http_mocker.valid_http_request_side_effect)
 
     CybelAngelEventCollector.main()
     assert send_events_mocker.called
@@ -426,38 +401,35 @@ def test_fetch_events_with_last_run_dedup_event(mocker):
     """
     import CybelAngelEventCollector
 
-    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, 'send_events_to_xsiam')
-    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun')
+    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
+    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun")
 
     mocker.patch.object(
         demisto,
-        'getLastRun',
+        "getLastRun",
         return_value={
             CybelAngelEventCollector.LastRun.LATEST_REPORT_TIME: "2021-02-01T00:00:00",
-            CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: 1
-        }
+            CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: 1,
+        },
     )
 
     mocker.patch.object(
-        demisto, 'params',
+        demisto,
+        "params",
         return_value={
             "url": TEST_URL,
             "credentials": {
                 "identifier": "1234",
                 "password": "1234",
             },
-            "max_fetch": 100
-        }
+            "max_fetch": 100,
+        },
     )
-    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
 
     http_mocker = HttpRequestsMocker(0)
 
-    mocker.patch.object(
-        CybelAngelEventCollector.Client,
-        "_http_request",
-        side_effect=http_mocker.valid_http_request_side_effect
-    )
+    mocker.patch.object(CybelAngelEventCollector.Client, "_http_request", side_effect=http_mocker.valid_http_request_side_effect)
 
     CybelAngelEventCollector.main()
     assert send_events_mocker.called
@@ -468,7 +440,7 @@ def test_fetch_events_with_last_run_dedup_event(mocker):
     actual_last_run = set_last_run_mocker.call_args[0][0]
     assert actual_last_run == {
         CybelAngelEventCollector.LastRun.LATEST_REPORT_TIME: "2021-02-01T00:00:00",
-        CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: 1
+        CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: 1,
     }
 
 
@@ -485,38 +457,32 @@ def test_get_events_command_command(mocker):
     """
     import CybelAngelEventCollector
 
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    return_results_mocker = mocker.patch.object(CybelAngelEventCollector, "return_results")
     mocker.patch.object(
         demisto,
-        'getLastRun',
-        return_value={}
-    )
-    return_results_mocker = mocker.patch.object(CybelAngelEventCollector, 'return_results')
-    mocker.patch.object(
-        demisto, 'params',
+        "params",
         return_value={
             "url": TEST_URL,
             "credentials": {
                 "identifier": "1234",
                 "password": "1234",
             },
-            "max_fetch": 100
-        }
+            "max_fetch": 100,
+        },
     )
     mocker.patch.object(
-        demisto, 'args',
+        demisto,
+        "args",
         return_value={
             "start_date": "2024-02-29T13:48:32",
-        }
+        },
     )
-    mocker.patch.object(demisto, 'command', return_value='cybelangel-get-events')
+    mocker.patch.object(demisto, "command", return_value="cybelangel-get-events")
 
     http_mocker = HttpRequestsMocker(100)
 
-    mocker.patch.object(
-        CybelAngelEventCollector.Client,
-        "_http_request",
-        side_effect=http_mocker.valid_http_request_side_effect
-    )
+    mocker.patch.object(CybelAngelEventCollector.Client, "_http_request", side_effect=http_mocker.valid_http_request_side_effect)
 
     CybelAngelEventCollector.main()
     fetched_events = return_results_mocker.call_args[0][0]
@@ -551,6 +517,7 @@ def test_cybelangel_report_list_command(mocker):
      - Validate that the outputs are correctly formatted.
     """
     from CybelAngelEventCollector import cybelangel_report_list_command
+
     client = mock_client()
     mocker.patch.object(
         client,
@@ -580,6 +547,7 @@ def test_cybelangel_report_get_command(mocker):
      - Validate that the readable output includes the report ID.
     """
     from CybelAngelEventCollector import cybelangel_report_get_command
+
     client = mock_client()
     mocker.patch.object(
         client,
@@ -608,6 +576,7 @@ def test_cybelangel_report_get_command_to_pdf(mocker):
      - Ensure the command returns a valid file result in PDF format.
     """
     from CybelAngelEventCollector import cybelangel_report_get_command
+
     client = mock_client()
     mocker.patch.object(
         client,
@@ -642,6 +611,7 @@ def test_cybelangel_mirror_report_get_command(mocker):
      - Ensure the command returns a CommandResults object with the expected report data.
     """
     from CybelAngelEventCollector import cybelangel_mirror_report_get_command
+
     client = mock_client()
     mocker.patch.object(
         client,
@@ -670,6 +640,7 @@ def test_cybelangel_mirror_report_get_command_to_csv(mocker):
      - Ensure the command returns a valid file result in CSV format.
     """
     from CybelAngelEventCollector import cybelangel_mirror_report_get_command
+
     client = mock_client()
     mocker.patch.object(
         client,
@@ -703,6 +674,7 @@ def test_cybelangel_report_comment_create_command(mocker):
      - Ensure the command successfully adds the comment and returns the expected output.
     """
     from CybelAngelEventCollector import cybelangel_report_comment_create_command, Client
+
     client = mock_client()
     report_id = "11223344"
 
@@ -730,6 +702,7 @@ def test_cybelangel_report_comment_create_command_invalid(mocker):
      - Ensure the command raises a ValueError with the correct error message.
     """
     from CybelAngelEventCollector import cybelangel_report_comment_create_command
+
     client = mock_client()
     report_id = "11223344"
 
@@ -752,6 +725,7 @@ def test_cybelangel_archive_report_by_id_get_command(mocker):
      - Validate that the returned file name follows the expected format.
     """
     from CybelAngelEventCollector import cybelangel_archive_report_by_id_get_command
+
     client = mock_client()
     mocker.patch.object(
         client,
@@ -788,6 +762,7 @@ def test_cybelangel_report_comments_get_command(mocker):
      - Validate that the `discussion_id` ends with 'Tenant id'.
     """
     from CybelAngelEventCollector import cybelangel_report_comments_get_command, Client
+
     client = mock_client()
     # case No previous comments exist in this report
     mocker.patch.object(
@@ -796,7 +771,7 @@ def test_cybelangel_report_comments_get_command(mocker):
         return_value=load_test_data("get_comments_res"),
     )
     report_id = "11223344"
-    args = {'report_id': report_id}
+    args = {"report_id": report_id}
     response = cybelangel_report_comments_get_command(client, args)
     assert response.outputs.get("Comment")[0].get("discussion_id").startswith(report_id)  # type: ignore
     assert response.outputs.get("Comment")[0].get("discussion_id").endswith("Tenant id")  # type: ignore
@@ -815,12 +790,14 @@ def test_cybelangel_report_attachment_get_command(mocker):
         and the text of the attachment starts with "sep=" for CSV file.
     """
     from CybelAngelEventCollector import cybelangel_report_attachment_get_command, Client
+
     client = mock_client()
     response = mocker.patch.object(
         Client,
         "get_report_attachment",
-        return_value=type("StringWrapper", (object,), {
-                          "text": "sep=,\nkeyword,email,password\nTest1,Test2,Test3\nTest1,Test2"})()
+        return_value=type(
+            "StringWrapper", (object,), {"text": "sep=,\nkeyword,email,password\nTest1,Test2,Test3\nTest1,Test2"}
+        )(),
     )
     report_id = "11223344"
     attachment_id = "55667788"

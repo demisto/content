@@ -8,18 +8,12 @@ Searches the TIM DB for device indicators based on the provided query string and
 
 def search_indicators(query, max_size):
     result = []
-    indicators = demisto.searchIndicators(
-        query=query,
-        size=max_size, page=0
-    )
+    indicators = demisto.searchIndicators(query=query, size=max_size, page=0)
 
     for indicator in indicators.get("iocs"):
-        indicator_dict = {
-            "value": indicator.get("value"),
-            "type": indicator.get("indicator_type")
-        }
+        indicator_dict = {"value": indicator.get("value"), "type": indicator.get("indicator_type")}
 
-        if (indicator.get("CustomFields")):
+        if indicator.get("CustomFields"):
             indicator_dict = {**indicator_dict, **indicator.get("CustomFields")}
             result.append(indicator_dict)
 
@@ -34,9 +28,10 @@ def main():
         CommandResults(
             outputs_prefix="GetIndicatorCustomFieldsByQuery",
             outputs=outputs,
-            readable_output=tableToMarkdown("Indicator Query Result", outputs)
-        ))
+            readable_output=tableToMarkdown("Indicator Query Result", outputs),
+        )
+    )
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

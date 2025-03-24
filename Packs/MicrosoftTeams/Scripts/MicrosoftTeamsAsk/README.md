@@ -34,6 +34,7 @@ This script uses the following commands and scripts.
 There are no outputs for this script.
 
 ## Usage
+---
 
 The MicrosoftTeamsAsk script sends a message, such as operation approval or information retrieval, in a question format from Cortex XSOAR to Microsoft Teams. The message must have at least two options. For example, "yes" and "no".
 
@@ -45,3 +46,9 @@ After the question is answered in Microsoft Teams, the response is sent to the C
 If a team member responds "yes" the playbook continues running the "yes" branch.
 
 If a task ID is included in the script, and the task condition is met, the playbook closes as soon as a response is received.
+
+
+## Notes
+---
+
+* `MicrosoftTeamsAsk` will not work when run in the playbook debugger. This is because the debugger does not generate entitlements, since they must be tied to an investigation. Entitlements are needed to track the response.

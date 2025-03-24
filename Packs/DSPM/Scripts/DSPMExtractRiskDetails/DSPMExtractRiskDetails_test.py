@@ -5,9 +5,7 @@ from DSPMExtractRiskDetails import set_user_slack_email, get_incident_details_co
 
 
 def test_set_user_slack_email_with_valid_owner_email():
-    incident_details = {
-        "asset Dig Tags": json.dumps({"Owner": ["owner@example.com"]})
-    }
+    incident_details = {"asset Dig Tags": json.dumps({"Owner": ["owner@example.com"]})}
     defaultSlackUser = "default@example.com"
 
     with patch("demistomock.setContext") as mock_setContext:
@@ -16,9 +14,7 @@ def test_set_user_slack_email_with_valid_owner_email():
 
 
 def test_set_user_slack_email_with_empty_owner_list():
-    incident_details = {
-        "asset Dig Tags": json.dumps({"Owner": []})
-    }
+    incident_details = {"asset Dig Tags": json.dumps({"Owner": []})}
     defaultSlackUser = "default@example.com"
 
     with patch("demistomock.setContext") as mock_setContext:
@@ -47,9 +43,7 @@ def test_set_user_slack_email_with_missing_asset_dig_tags():
 
 
 def test_set_user_slack_email_with_null_asset_dig_tags():
-    incident_details = {
-        "asset Dig Tags": None
-    }
+    incident_details = {"asset Dig Tags": None}
     defaultSlackUser = "default@example.com"
 
     with patch("demistomock.setContext") as mock_setContext:
@@ -71,7 +65,7 @@ def test_get_incident_details_command_with_valid_data():
         "servicetype": "S3",
         "firstdetectedon": "2024-10-30T10:30:00Z",
         "assetdigtags": json.dumps({"Owner": ["owner@example.com"]}),
-        "remediateinstruction": "Follow the steps to remediate."
+        "remediateinstruction": "Follow the steps to remediate.",
     }
 
     args = {"incident_object": incident_data}
@@ -83,11 +77,7 @@ def test_get_incident_details_command_with_valid_data():
 
 
 def test_get_incident_details_command_with_missing_fields():
-    incident_data = {
-        "id": "12345",
-        "riskfindingid": "r123",
-        "riskname": "High Risk"
-    }
+    incident_data = {"id": "12345", "riskfindingid": "r123", "riskname": "High Risk"}
 
     args = {"incident_object": incident_data}
     incident_object = get_incident_details_command(args)
@@ -114,14 +104,15 @@ def test_main_success_case():
             "servicetype": "S3",
             "firstdetectedon": "2024-10-30T10:30:00Z",
             "assetdigtags": json.dumps({"Owner": ["owner@example.com"]}),
-            "remediateinstruction": "Follow the steps to remediate."
-        }
+            "remediateinstruction": "Follow the steps to remediate.",
+        },
     }
 
-    with patch("demistomock.args", return_value=args), \
-            patch("demistomock.setContext") as mock_setContext, \
-            patch("DSPMExtractRiskDetails.return_results") as mock_return_results:
-
+    with (
+        patch("demistomock.args", return_value=args),
+        patch("demistomock.setContext") as mock_setContext,
+        patch("DSPMExtractRiskDetails.return_results") as mock_return_results,
+    ):
         main()
 
         mock_setContext.assert_called_once_with("userSlackEmail", "owner@example.com")

@@ -10,9 +10,7 @@ SUSPICIOUS_CATEGORIES = ["SUSPICIOUS_DESTINATION", "SPYWARE_OR_ADWARE"]
 CLOUD_NAME = demisto.params()["cloud"]
 USERNAME = demisto.params()["credentials"]["identifier"]
 PASSWORD = demisto.params()["credentials"]["password"]
-API_KEY = str(demisto.params().get("creds_key", {}).get("password", "")) or str(
-    demisto.params().get("key", "")
-)
+API_KEY = str(demisto.params().get("creds_key", {}).get("password", "")) or str(demisto.params().get("key", ""))
 if not API_KEY:
     raise Exception("API Key is missing. Please provide an API Key.")
 BASE_URL = CLOUD_NAME + "/api/v1"
@@ -72,15 +70,11 @@ class AuthorizationError(DemistoException):
 
 def error_handler(res):
     """
-        Deals with unsuccessful calls
+    Deals with unsuccessful calls
     """
     if res.status_code in (401, 403):
         raise AuthorizationError(res.content)
-    elif (
-        res.status_code == 400
-        and res.request.method == "PUT"
-        and "/urlCategories/" in res.request.url
-    ):
+    elif res.status_code == 400 and res.request.method == "PUT" and "/urlCategories/" in res.request.url:
         raise Exception(
             f"The request failed with the following error: {res.status_code}.\nMessage: {res.text}\n"
             f"This error might be due to an invalid URL or exceeding your organization's quota.\n"
@@ -94,32 +88,32 @@ def error_handler(res):
                 f"The request failed with the following error: {ERROR_CODES_DICT[res.status_code]}.\nMessage: {res.text}"
             )
         else:
-            raise Exception(
-                f"The request failed with the following error: {res.status_code}.\nMessage: {res.text}"
-            )
+            raise Exception(f"The request failed with the following error: {res.status_code}.\nMessage: {res.text}")
 
 
-def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
+def http_request(method, url_suffix, data=None, headers=None, resp_type="json"):
     time_sensitive = is_time_sensitive()
-    demisto.debug(f'{time_sensitive=}')
+    demisto.debug(f"{time_sensitive=}")
     retries = 0 if time_sensitive else 3
     status_list_to_retry = None if time_sensitive else [429]
     timeout = 2 if time_sensitive else REQUEST_TIMEOUT
     try:
-        res = generic_http_request(method=method,
-                                   server_url=BASE_URL,
-                                   timeout=timeout,
-                                   verify=USE_SSL,
-                                   proxy=PROXY,
-                                   client_headers=DEFAULT_HEADERS,
-                                   headers=headers,
-                                   url_suffix=url_suffix,
-                                   data=data or {},
-                                   ok_codes=(200, 204),
-                                   error_handler=error_handler,
-                                   retries=retries,
-                                   status_list_to_retry=status_list_to_retry,
-                                   resp_type=resp_type)
+        res = generic_http_request(
+            method=method,
+            server_url=BASE_URL,
+            timeout=timeout,
+            verify=USE_SSL,
+            proxy=PROXY,
+            client_headers=DEFAULT_HEADERS,
+            headers=headers,
+            url_suffix=url_suffix,
+            data=data or {},
+            ok_codes=(200, 204),
+            error_handler=error_handler,
+            retries=retries,
+            status_list_to_retry=status_list_to_retry,
+            resp_type=resp_type,
+        )
 
     except Exception as e:
         LOG(f"Zscaler request failed with url suffix={url_suffix}\tdata={data}")
@@ -164,14 +158,12 @@ def login():
         try:
             return test_module()
         except AuthorizationError as e:
-            demisto.info(
-                f"Zscaler encountered an authentication error.\nError: {str(e)}"
-            )
+            demisto.info(f"Zscaler encountered an authentication error.\nError: {str(e)}")
     ts, key = obfuscateApiKey(API_KEY)
     add_sensitive_log_strs(key)
     data = {"username": USERNAME, "timestamp": ts, "password": PASSWORD, "apiKey": key}
     json_data = json.dumps(data)
-    result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
+    result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type="response")
     auth = result.headers["Set-Cookie"]
     ctx[SESSION_ID_KEY] = DEFAULT_HEADERS["cookie"] = auth[: auth.index(";")]
     set_integration_context(ctx)
@@ -194,7 +186,7 @@ def blacklist_url(url):
     cmd_url = "/security/advanced/blacklistUrls?action=ADD_TO_LIST"
     data = {"blacklistUrls": urls_to_blacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type="response")
     list_of_urls = ""
     for url in urls_to_blacklist:
         list_of_urls += "- " + url + "\n"
@@ -210,20 +202,16 @@ def unblacklist_url(url):
     if len(urls_to_unblacklist) == 1:  # Given only one URL to unblacklist
         if urls_to_unblacklist[0] not in blacklisted_urls:
             raise Exception("Given URL is not blacklisted.")
-    elif not any(
-        url in urls_to_unblacklist for url in blacklisted_urls
-    ):  # Given more than one URL to blacklist
+    elif not any(url in urls_to_unblacklist for url in blacklisted_urls):  # Given more than one URL to blacklist
         raise Exception("Given URLs are not blacklisted.")
 
     data = {"blacklistUrls": urls_to_unblacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type="response")
     list_of_urls = ""
     for url in urls_to_unblacklist:
         list_of_urls += "- " + url + "\n"
-    return (
-        "Removed the following URLs from the blacklist successfully:\n" + list_of_urls
-    )
+    return "Removed the following URLs from the blacklist successfully:\n" + list_of_urls
 
 
 def blacklist_ip(ip):
@@ -231,14 +219,11 @@ def blacklist_ip(ip):
     cmd_url = "/security/advanced/blacklistUrls?action=ADD_TO_LIST"
     data = {"blacklistUrls": ips_to_blacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type="response")
     list_of_ips = ""
     for ip in ips_to_blacklist:
         list_of_ips += "- " + ip + "\n"
-    return (
-        "Added the following IP addresses to the blacklist successfully:\n"
-        + list_of_ips
-    )
+    return "Added the following IP addresses to the blacklist successfully:\n" + list_of_ips
 
 
 def unblacklist_ip(ip):
@@ -249,20 +234,15 @@ def unblacklist_ip(ip):
     if len(ips_to_unblacklist) == 1:  # Given only one IP address to blacklist
         if ips_to_unblacklist[0] not in blacklisted_ips:
             raise Exception("Given IP address is not blacklisted.")
-    elif not set(ips_to_unblacklist).issubset(
-        set(blacklisted_ips)
-    ):  # Given more than one IP address to blacklist
+    elif not set(ips_to_unblacklist).issubset(set(blacklisted_ips)):  # Given more than one IP address to blacklist
         raise Exception("Given IP addresses are not blacklisted.")
     data = {"blacklistUrls": ips_to_unblacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type="response")
     list_of_ips = ""
     for ip in ips_to_unblacklist:
         list_of_ips += "- " + ip + "\n"
-    return (
-        "Removed the following IP addresses from the blacklist successfully:\n"
-        + list_of_ips
-    )
+    return "Removed the following IP addresses from the blacklist successfully:\n" + list_of_ips
 
 
 def whitelist_url(url):
@@ -294,22 +274,16 @@ def unwhitelist_url(url):
     if len(urls_to_unwhitelist) == 1:  # Given only one URL to whitelist
         if urls_to_unwhitelist[0] not in whitelist_urls["whitelistUrls"]:
             raise Exception("Given host address is not whitelisted.")
-    elif not set(urls_to_unwhitelist).issubset(
-        set(whitelist_urls["whitelistUrls"])
-    ):  # Given more than one URL to whitelist
+    elif not set(urls_to_unwhitelist).issubset(set(whitelist_urls["whitelistUrls"])):  # Given more than one URL to whitelist
         raise Exception("Given host addresses are not whitelisted.")
     # List comprehension to remove requested URLs from the whitelist
-    whitelist_urls["whitelistUrls"] = [
-        x for x in whitelist_urls["whitelistUrls"] if x not in urls_to_unwhitelist
-    ]
+    whitelist_urls["whitelistUrls"] = [x for x in whitelist_urls["whitelistUrls"] if x not in urls_to_unwhitelist]
     json_data = json.dumps(whitelist_urls)
     http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS)
     list_of_urls = ""
     for url in whitelist_urls:
         list_of_urls += "- " + url + "\n"
-    return (
-        "Removed the following URLs from the whitelist successfully:\n" + list_of_urls
-    )
+    return "Removed the following URLs from the whitelist successfully:\n" + list_of_urls
 
 
 def whitelist_ip(ip):
@@ -341,23 +315,16 @@ def unwhitelist_ip(ip):
     if len(ips_to_unwhitelist) == 1:  # Given only one IP to whitelist
         if ips_to_unwhitelist[0] not in whitelist_ips["whitelistUrls"]:
             raise Exception("Given IP address is not whitelisted.")
-    elif not set(ips_to_unwhitelist).issubset(
-        set(whitelist_ips["whitelistUrls"])
-    ):  # Given more than one IP to whitelist
+    elif not set(ips_to_unwhitelist).issubset(set(whitelist_ips["whitelistUrls"])):  # Given more than one IP to whitelist
         raise Exception("Given IP address is not whitelisted.")
     # List comprehension to remove requested IPs from the whitelist
-    whitelist_ips["whitelistUrls"] = [
-        x for x in whitelist_ips["whitelistUrls"] if x not in ips_to_unwhitelist
-    ]
+    whitelist_ips["whitelistUrls"] = [x for x in whitelist_ips["whitelistUrls"] if x not in ips_to_unwhitelist]
     json_data = json.dumps(whitelist_ips)
     http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS)
     list_of_ips = ""
     for ip in ips_to_unwhitelist:
         list_of_ips += "- " + ip + "\n"
-    return (
-        "Removed the following IP addresses from the whitelist successfully:\n"
-        + list_of_ips
-    )
+    return "Removed the following IP addresses from the whitelist successfully:\n" + list_of_ips
 
 
 def get_blacklist_command(args):
@@ -405,7 +372,7 @@ def get_blacklist_command(args):
 
 def get_blacklist():
     cmd_url = "/security/advanced"
-    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS, resp_type='content')
+    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS, resp_type="content")
     return json.loads(result)
 
 
@@ -431,7 +398,7 @@ def get_whitelist_command():
 
 def get_whitelist():
     cmd_url = "/security"
-    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS, resp_type='content')
+    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS, resp_type="content")
     return json.loads(result)
 
 
@@ -467,12 +434,8 @@ def url_lookup(args):
         if len(data["urlClassificationsWithSecurityAlert"]) == 0:
             data["urlClassificationsWithSecurityAlert"] = ""
         else:
-            data["urlClassificationsWithSecurityAlert"] = "".join(
-                data["urlClassificationsWithSecurityAlert"]
-            )
-            ioc_context["urlClassificationsWithSecurityAlert"] = data[
-                "urlClassificationsWithSecurityAlert"
-            ]
+            data["urlClassificationsWithSecurityAlert"] = "".join(data["urlClassificationsWithSecurityAlert"])
+            ioc_context["urlClassificationsWithSecurityAlert"] = data["urlClassificationsWithSecurityAlert"]
             if data["urlClassificationsWithSecurityAlert"] in SUSPICIOUS_CATEGORIES:
                 score = Common.DBotScore.SUSPICIOUS
             else:
@@ -486,11 +449,9 @@ def url_lookup(args):
                 indicator=ioc_context["Data"],
                 indicator_type=DBotScoreType.URL,
                 integration_name=INTEGRATION_NAME,
-                malicious_description=data.get(
-                    "urlClassificationsWithSecurityAlert", None
-                ),
+                malicious_description=data.get("urlClassificationsWithSecurityAlert", None),
                 score=score,
-                reliability=demisto.params().get("reliability")
+                reliability=demisto.params().get("reliability"),
             ),
         )
 
@@ -533,12 +494,8 @@ def ip_lookup(ip):
         if len(data["urlClassificationsWithSecurityAlert"]) == 0:
             data["ipClassificationsWithSecurityAlert"] = ""
         else:
-            data["ipClassificationsWithSecurityAlert"] = "".join(
-                data["urlClassificationsWithSecurityAlert"]
-            )
-            ioc_context["ipClassificationsWithSecurityAlert"] = data[
-                "ipClassificationsWithSecurityAlert"
-            ]
+            data["ipClassificationsWithSecurityAlert"] = "".join(data["urlClassificationsWithSecurityAlert"])
+            ioc_context["ipClassificationsWithSecurityAlert"] = data["ipClassificationsWithSecurityAlert"]
             if data["urlClassificationsWithSecurityAlert"] in SUSPICIOUS_CATEGORIES:
                 score = Common.DBotScore.SUSPICIOUS
             else:
@@ -554,9 +511,7 @@ def ip_lookup(ip):
                 indicator=data["ip"],
                 indicator_type=DBotScoreType.IP,
                 integration_name=INTEGRATION_NAME,
-                malicious_description=data.get(
-                    "ipClassificationsWithSecurityAlert", None
-                ),
+                malicious_description=data.get("ipClassificationsWithSecurityAlert", None),
                 score=score,
                 reliability=demisto.params().get("reliability"),
             ),
@@ -587,16 +542,16 @@ def lookup_request(ioc, multiple=True):
         ioc_list = [ioc]
     ioc_list = [url.replace("https://", "").replace("http://", "") for url in ioc_list]
     json_data = json.dumps(ioc_list)
-    response = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='content')
+    response = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type="content")
     return response
 
 
 def category_add(category_id, data, retaining_parent_category_data, data_type):
     if not any((data, retaining_parent_category_data)):
-        return_error(f'Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.')
+        return_error(f"Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.")
 
     category_data = get_category_by_id(category_id)
-    demisto.debug(f'{category_data=}')
+    demisto.debug(f"{category_data=}")
     if category_data:  # check if the category exists
         data_list = argToList(data)
         all_data = data_list[:]
@@ -604,7 +559,7 @@ def category_add(category_id, data, retaining_parent_category_data, data_type):
         category_data["urls"] = all_data
         retaining_parent_category_data_list = argToList(retaining_parent_category_data)
         if not any((data_list, retaining_parent_category_data_list)):
-            return_error(f'Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.')
+            return_error(f"Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.")
 
         add_or_remove_urls_from_category(
             ADD, data_list, category_data, retaining_parent_category_data_list
@@ -618,10 +573,13 @@ def category_add(category_id, data, retaining_parent_category_data, data_type):
             context["Description"] = category_data["description"]
         ec = {"Zscaler.Category(val.ID && val.ID === obj.ID)": context}
 
-        added_data = "\n".join(f"- {item}" for item in data_list) + \
-            "\n".join(f"- {item}" for item in retaining_parent_category_data_list)
-        hr = (f"Added the following {data_type.upper()}, retaining-parent-category-{data_type} "
-              f"addresses to category {category_id}:\n{added_data}\n")
+        added_data = "\n".join(f"- {item}" for item in data_list) + "\n".join(
+            f"- {item}" for item in retaining_parent_category_data_list
+        )
+        hr = (
+            f"Added the following {data_type.upper()}, retaining-parent-category-{data_type} "
+            f"addresses to category {category_id}:\n{added_data}\n"
+        )
         entry = {
             "Type": entryTypes["note"],
             "Contents": category_data,
@@ -637,21 +595,19 @@ def category_add(category_id, data, retaining_parent_category_data, data_type):
 
 def category_remove(category_id, data, retaining_parent_category_data, data_type):
     if not any((data, retaining_parent_category_data)):
-        return_error(f'Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.')
+        return_error(f"Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.")
 
     category_data = get_category_by_id(category_id)  # check if the category exists
-    demisto.debug(f'{category_data=}')
+    demisto.debug(f"{category_data=}")
 
     if category_data:
-        removed_data = ''
+        removed_data = ""
         data_list = []
         retaining_parent_category_data_list = []
 
         if data:
             data_list = argToList(data)
-            updated_data = [
-                item for item in category_data["urls"] if item not in data_list
-            ]
+            updated_data = [item for item in category_data["urls"] if item not in data_list]
             if updated_data == category_data["urls"]:
                 return return_error(f"Could not find given {data_type.upper()} in the category.")
             category_data["urls"] = updated_data
@@ -664,7 +620,8 @@ def category_remove(category_id, data, retaining_parent_category_data, data_type
                 removed_data += f"- {item}\n"
 
         add_or_remove_urls_from_category(
-            REMOVE, data_list, category_data, retaining_parent_category_data_list)  # remove the urls from list
+            REMOVE, data_list, category_data, retaining_parent_category_data_list
+        )  # remove the urls from list
 
         context = {
             "ID": category_id,
@@ -703,7 +660,7 @@ def add_or_remove_urls_from_category(action, urls, category_data, retaining_pare
 
     """
 
-    demisto.debug('##### add_or_remove_urls_from_category function is now running')
+    demisto.debug("##### add_or_remove_urls_from_category function is now running")
     cmd_url = "/urlCategories/" + category_data.get("id") + "?action=" + action
     data = {
         "customCategory": category_data.get("customCategory"),
@@ -711,16 +668,14 @@ def add_or_remove_urls_from_category(action, urls, category_data, retaining_pare
         "id": category_data.get("id"),
     }
     if retaining_parent_category_data:
-        data['dbCategorizedUrls'] = retaining_parent_category_data
+        data["dbCategorizedUrls"] = retaining_parent_category_data
     if "description" in category_data:
         data["description"] = category_data["description"]
     if "configuredName" in category_data:
         data["configuredName"] = category_data["configuredName"]
-    demisto.debug(f'{data=}')
+    demisto.debug(f"{data=}")
     json_data = json.dumps(data)
-    http_request(
-        "PUT", cmd_url, json_data
-    )  # if the request is successful, it returns an empty response
+    http_request("PUT", cmd_url, json_data)  # if the request is successful, it returns an empty response
 
 
 def url_quota_command():
@@ -743,13 +698,9 @@ def url_quota_command():
 
 
 def get_categories_command(args):
-    display_urls = argToBoolean(
-        args.get("displayURL")
-    )  # urls returned to context data even if set to false
+    display_urls = argToBoolean(args.get("displayURL"))  # urls returned to context data even if set to false
     custom_only = argToBoolean(args.get("custom_categories_only", False))
-    ids_and_names_only = argToBoolean(
-        args.get("get_ids_and_names_only", False)
-    )  # won't get URLs at all
+    ids_and_names_only = argToBoolean(args.get("get_ids_and_names_only", False))  # won't get URLs at all
     categories = []
     raw_categories = get_categories(custom_only, ids_and_names_only)
     for raw_category in raw_categories:
@@ -802,15 +753,7 @@ def sandbox_report_command():
 
     report = "Full Details" if details == "full" else "Summary"
     ctype = demisto.get(res, f"{report}.Classification.Type")
-    dbot_score = (
-        3
-        if ctype == "MALICIOUS"
-        else 2
-        if ctype == "SUSPICIOUS"
-        else 1
-        if ctype == "BENIGN"
-        else 0
-    )
+    dbot_score = 3 if ctype == "MALICIOUS" else 2 if ctype == "SUSPICIOUS" else 1 if ctype == "BENIGN" else 0
 
     ec = {
         outputPaths["dbotscore"]: {
@@ -823,38 +766,27 @@ def sandbox_report_command():
     }
 
     human_readable_report = ec["DBotScore"].copy()
-    human_readable_report["Detected Malware"] = str(
-        demisto.get(res, f"{report}.Classification.DetectedMalware")
-    )
-    human_readable_report["Zscaler Score"] = demisto.get(
-        res, f"{report}.Classification.Score"
-    )
-    human_readable_report["Category"] = demisto.get(
-        res, f"{report}.Classification.Category"
-    )
+    human_readable_report["Detected Malware"] = str(demisto.get(res, f"{report}.Classification.DetectedMalware"))
+    human_readable_report["Zscaler Score"] = demisto.get(res, f"{report}.Classification.Score")
+    human_readable_report["Category"] = demisto.get(res, f"{report}.Classification.Category")
     ec[outputPaths["file"]] = {
         "MD5": md5,
         "Zscaler": {
-            "DetectedMalware": demisto.get(
-                res, f"{report}.Classification.DetectedMalware"
-            ),
+            "DetectedMalware": demisto.get(res, f"{report}.Classification.DetectedMalware"),
             "FileType": demisto.get(res, f"{report}.File Properties.File Type"),
         },
     }
     if dbot_score == 3:
         ec[outputPaths["file"]]["Malicious"] = {
             "Vendor": "Zscaler",
-            "Description": "Classified as Malicious, with threat score: "
-                           + str(human_readable_report["Zscaler Score"]),
+            "Description": "Classified as Malicious, with threat score: " + str(human_readable_report["Zscaler Score"]),
         }
     entry = {
         "Type": entryTypes["note"],
         "Contents": res,
         "ContentsFormat": formats["json"],
         "ReadableContentsFormat": formats["markdown"],
-        "HumanReadable": tableToMarkdown(
-            "Full Sandbox Report", human_readable_report, removeNull=True
-        ),
+        "HumanReadable": tableToMarkdown("Full Sandbox Report", human_readable_report, removeNull=True),
         "EntryContext": ec,
     }
 
@@ -874,9 +806,7 @@ def login_command():
     if session_id:
         try:
             DEFAULT_HEADERS["cookie"] = session_id
-            demisto.info(
-                "Zscaler logout active session triggered by zscaler-login command."
-            )
+            demisto.info("Zscaler logout active session triggered by zscaler-login command.")
             logout()
         except Exception as e:
             demisto.info(f"Zscaler logout failed with: {str(e)}")
@@ -888,16 +818,12 @@ def logout_command():
     ctx = get_integration_context() or {}
     session_id = ctx.get(SESSION_ID_KEY)
     if not session_id:
-        return CommandResults(
-            readable_output="No API session was found. No action was performed."
-        )
+        return CommandResults(readable_output="No API session was found. No action was performed.")
     try:
         DEFAULT_HEADERS["cookie"] = session_id
         raw_res = logout()
     except AuthorizationError:
-        return CommandResults(
-            readable_output="API session is not authenticated. No action was performed."
-        )
+        return CommandResults(readable_output="API session is not authenticated. No action was performed.")
     return CommandResults(
         readable_output="API session logged out of Zscaler successfully.",
         raw_response=raw_res,
@@ -962,9 +888,7 @@ def get_departments_command(args):
     response = http_request("GET", cmd_url)
 
     if len(response) < 10:
-        human_readable = tableToMarkdown(
-            f"Departments ({len(response)})", response
-        )
+        human_readable = tableToMarkdown(f"Departments ({len(response)})", response)
     else:
         human_readable = f"Retrieved {len(response)} departments"
 
@@ -990,9 +914,7 @@ def get_usergroups_command(args):
     response = http_request("GET", cmd_url)
 
     if len(response) < 10:
-        human_readable = tableToMarkdown(
-            f"User groups ({len(response)})", response
-        )
+        human_readable = tableToMarkdown(f"User groups ({len(response)})", response)
     else:
         human_readable = f"Retrieved {len(response)} user groups"
 
@@ -1012,7 +934,7 @@ def set_user_command(args):
     params = json.loads(args.get("user"))
     cmd_url = f"/users/{userId}"
 
-    response = http_request("PUT", cmd_url, json.dumps(params), DEFAULT_HEADERS, resp_type='response')
+    response = http_request("PUT", cmd_url, json.dumps(params), DEFAULT_HEADERS, resp_type="response")
     responseJson = response.json()
     if response.status_code == 200:
         entry = {
@@ -1020,9 +942,7 @@ def set_user_command(args):
             "Contents": responseJson,
             "ContentsFormat": formats["json"],
             "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": "Successfully updated the user (id: {} name: {})".format(
-                responseJson["id"], responseJson["name"]
-            ),
+            "HumanReadable": "Successfully updated the user (id: {} name: {})".format(responseJson["id"], responseJson["name"]),
             "EntryContext": {"Zscaler.Users": responseJson},
         }
         return entry
@@ -1062,9 +982,7 @@ def create_ip_destination_group(args: dict):
         "Countries": response.get("countries", []),
         "IsNonEditable": response.get("isNonEditable", False),
     }
-    markdown = tableToMarkdown(
-        "IPv4 Destination group created", content, headers, removeNull=True
-    )
+    markdown = tableToMarkdown("IPv4 Destination group created", content, headers, removeNull=True)
     results = CommandResults(
         readable_output=markdown,
         outputs_prefix="Zscaler.IPDestinationGroup",
@@ -1131,36 +1049,14 @@ def list_ip_destination_groups(args: dict):
         type_params = [f"type={t}" for t in category_type]
         type_params_str = "&".join(type_params)
         if include_ipv6:
-            ipv4_cmd_url = (
-                "/ipDestinationGroups"
-                + lite_endpoint
-                + exclude_type_param
-                + type_params_str
-            )
-            ipv6_cmd_url = (
-                "/ipDestinationGroups/ipv6DestinationGroups"
-                + lite_endpoint
-                + exclude_type_param
-                + type_params_str
-            )
+            ipv4_cmd_url = "/ipDestinationGroups" + lite_endpoint + exclude_type_param + type_params_str
+            ipv6_cmd_url = "/ipDestinationGroups/ipv6DestinationGroups" + lite_endpoint + exclude_type_param + type_params_str
             ipv4_responses = http_request("GET", ipv4_cmd_url)
             ipv6_responses = http_request("GET", ipv6_cmd_url)
-            ipv4_contents_filter = (
-                get_contents_lite(ipv4_responses)
-                if lite
-                else get_contents(ipv4_responses)
-            )
-            ipv4_contents = (
-                ipv4_contents_filter if all_results else ipv4_contents_filter[:limit]
-            )
-            ipv6_contents_filter = (
-                get_contents_lite(ipv6_responses)
-                if lite
-                else get_contents(ipv6_responses)
-            )
-            ipv6_contents = (
-                ipv6_contents_filter if all_results else ipv6_contents_filter[:limit]
-            )
+            ipv4_contents_filter = get_contents_lite(ipv4_responses) if lite else get_contents(ipv4_responses)
+            ipv4_contents = ipv4_contents_filter if all_results else ipv4_contents_filter[:limit]
+            ipv6_contents_filter = get_contents_lite(ipv6_responses) if lite else get_contents(ipv6_responses)
+            ipv6_contents = ipv6_contents_filter if all_results else ipv6_contents_filter[:limit]
             markdown = tableToMarkdown(
                 f"IPv4 Destination groups ({len(ipv4_contents)})",
                 ipv4_contents,
@@ -1183,16 +1079,9 @@ def list_ip_destination_groups(args: dict):
             )
             return results
         else:
-            cmd_url = (
-                "/ipDestinationGroups"
-                + lite_endpoint
-                + exclude_type_param
-                + type_params_str
-            )
+            cmd_url = "/ipDestinationGroups" + lite_endpoint + exclude_type_param + type_params_str
             responses = http_request("GET", cmd_url)
-            contents_filter = (
-                get_contents_lite(responses) if lite else get_contents(responses)
-            )
+            contents_filter = get_contents_lite(responses) if lite else get_contents(responses)
             contents = contents_filter if all_results else contents_filter[:limit]
             markdown = tableToMarkdown(
                 f"IPv4 Destination groups ({len(contents)})",
@@ -1250,9 +1139,7 @@ def edit_ip_destination_group(args: dict):
 
     payload["name"] = args.get("name", response_data["name"])
     payload["countries"] = argToList(args.get("countries", response_data["countries"]))
-    payload["ipCategories"] = argToList(
-        args.get("ip_categories", response_data["ipCategories"])
-    )
+    payload["ipCategories"] = argToList(args.get("ip_categories", response_data["ipCategories"]))
     payload["addresses"] = argToList(args.get("addresses", response_data["addresses"]))
     payload["description"] = args.get("description", response_data["description"])
     payload["isNonEditable"] = args.get("is_non_editable", False)
@@ -1270,14 +1157,9 @@ def edit_ip_destination_group(args: dict):
         "IpCategories": response.get("ipCategories", []),
         "Countries": response.get("countries", []),
     }
-    markdown = tableToMarkdown(
-        "IPv4 Destination group updated", content, headers, removeNull=True
-    )
+    markdown = tableToMarkdown("IPv4 Destination group updated", content, headers, removeNull=True)
     results = CommandResults(
-        readable_output=markdown,
-        outputs_prefix="Zscaler.IPDestinationGroup",
-        outputs_key_field="ID",
-        outputs=content
+        readable_output=markdown, outputs_prefix="Zscaler.IPDestinationGroup", outputs_key_field="ID", outputs=content
     )
     return results
 
@@ -1287,15 +1169,10 @@ def delete_ip_destination_groups(args: dict):
     for ip_group_id in ip_group_ids:
         cmd_url = f"/ipDestinationGroups/{ip_group_id}"
         _ = http_request("DELETE", cmd_url, None, DEFAULT_HEADERS)
-    markdown = "### IP Destination Group {} deleted successfully".format(
-        ",".join(ip_group_ids)
-    )
+    markdown = "### IP Destination Group {} deleted successfully".format(",".join(ip_group_ids))
 
     results = CommandResults(
-        readable_output=markdown,
-        outputs_prefix="Zscaler.IPDestinationGroup",
-        outputs_key_field=None,
-        outputs=None
+        readable_output=markdown, outputs_prefix="Zscaler.IPDestinationGroup", outputs_key_field=None, outputs=None
     )
     return results
 
@@ -1342,19 +1219,19 @@ def main():  # pragma: no cover
                 return_results(unwhitelist_ip(args.get("ip")))
             elif command == "zscaler-category-add-url":
                 return_results(
-                    category_add(args.get("category-id"), args.get("url"), args.get('retaining-parent-category-url'), "url")
+                    category_add(args.get("category-id"), args.get("url"), args.get("retaining-parent-category-url"), "url")
                 )
             elif command == "zscaler-category-add-ip":
-                return_results(category_add(args.get("category-id"), args.get("ip"), args.get('retaining-parent-category-ip'),
-                               "ip"))
+                return_results(
+                    category_add(args.get("category-id"), args.get("ip"), args.get("retaining-parent-category-ip"), "ip")
+                )
             elif command == "zscaler-category-remove-url":
                 return_results(
-                    category_remove(args.get("category-id"), args.get("url"), args.get('retaining-parent-category-url'),
-                                    "url"))
+                    category_remove(args.get("category-id"), args.get("url"), args.get("retaining-parent-category-url"), "url")
+                )
             elif command == "zscaler-category-remove-ip":
                 return_results(
-                    category_remove(args.get("category-id"), args.get("ip"), args.get('retaining-parent-category-ip'),
-                                    "ip")
+                    category_remove(args.get("category-id"), args.get("ip"), args.get("retaining-parent-category-ip"), "ip")
                 )
             elif command == "zscaler-get-categories":
                 return_results(get_categories_command(args))
@@ -1389,10 +1266,7 @@ def main():  # pragma: no cover
         finally:
             try:
                 # activate changes only when required
-                if (
-                    demisto.params().get("auto_activate")
-                    and command in AUTO_ACTIVATE_CHANGES_COMMANDS
-                ):
+                if demisto.params().get("auto_activate") and command in AUTO_ACTIVATE_CHANGES_COMMANDS:
                     activate_changes()
                 if demisto.params().get("auto_logout"):
                     logout()
