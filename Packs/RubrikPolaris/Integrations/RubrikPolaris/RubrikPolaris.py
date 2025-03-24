@@ -3992,7 +3992,7 @@ def rubrik_sonar_user_access_list_command(client: PolarisClient, args: Dict[str,
         include_whitelisted_results,
         user_email,
         base_url,
-        page_number,    # type: ignore
+        page_number,  # type: ignore
         limit,  # type: ignore
     )
 
