@@ -16,8 +16,8 @@ import websocket
 import uuid
 import json
 from concurrent.futures import ThreadPoolExecutor
-from enum import Enum
-from threading import Event
+from enum import StrEnum
+from threading import Event, ExceptHookArgs
 from io import BytesIO
 from PIL import Image, ImageDraw
 from pdf2image import convert_from_path
@@ -28,7 +28,7 @@ from pychrome import Browser, Tab
 # region constants and configurations
 
 pypdf_logger = logging.getLogger("PyPDF2")
-pypdf_logger.setLevel(logging.ERROR)  # Supress warnings, which would come out as XSOAR errors while not being errors
+pypdf_logger.setLevel(logging.ERROR)  # Suppress warnings, which would come out as XSOAR errors while not being errors
 
 # Chrome respects proxy env params
 handle_proxy()
@@ -52,12 +52,13 @@ CHROME_OPTIONS = ["--headless",
                   f'--user-agent="{USER_AGENT}"',
                   ]
 
-WITH_ERRORS = demisto.params().get('with_error', True)
-IS_HTTPS = argToBoolean(demisto.params().get('is_https', False))
+PARAMS = demisto.params()
+WITH_ERRORS = PARAMS.get('with_error', True)
+IS_HTTPS = argToBoolean(PARAMS.get('is_https', False))
 
 # The default wait time before taking a screenshot
-DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
-DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
+DEFAULT_WAIT_TIME = max(int(PARAMS.get('wait_time', 0)), 0)
+DEFAULT_PAGE_LOAD_TIME = int(PARAMS.get('max_page_load_time', 180))
 TAB_CLOSE_WAIT_TIME = 1
 
 # Used it in several places
@@ -70,7 +71,7 @@ INSTANCE_ID = "instance_id"
 CHROME_INSTANCE_OPTIONS = "chrome_options"
 RASTERIZATION_COUNT = "rasterization_count"
 
-BLOCKED_URLS = argToList(demisto.params().get('blocked_urls', '').lower())
+BLOCKED_URLS = argToList(PARAMS.get('blocked_urls', '').lower())
 
 try:
     env_max_rasterizations_count = os.getenv('MAX_RASTERIZATIONS_COUNT', '500')
@@ -111,7 +112,7 @@ CHROME_LOG_FILE_PATH = "/var/chrome_headless.log"
 CHROME_INSTANCES_FILE_PATH = '/var/chrome_instances.json'
 
 
-class RasterizeType(Enum):
+class RasterizeType(StrEnum):
     PNG = 'png'
     PDF = 'pdf'
     JSON = 'json'
@@ -121,7 +122,7 @@ class RasterizeType(Enum):
 
 # region utility classes
 
-def excepthook_recv_loop(args):
+def excepthook_recv_loop(args: ExceptHookArgs):
     """
     Suppressing exceptions that might happen after the tab was closed.
     """
@@ -198,29 +199,45 @@ class TabLifecycleManager:
 
 
 class PychromeEventHandler:
-    request_id = None
-    screen_lock = threading.Lock()
+    """
+    Handles events for a Pychrome browser tab.
 
-    def __init__(self, browser, tab, tab_ready_event):
+    Attributes:
+        browser (Browser): The browser instance.
+        tab (Tab): The tab being handled.
+        tab_ready_event (Event): Event to signal when the tab is ready.
+        request_id (str): ID of the current request.
+        start_frame (str): ID of the starting frame.
+        is_mailto (bool): Flag to indicate if the URL is a mailto link.
+        screen_lock (threading.Lock): Lock for thread-safe operations.
+    """
+    def __init__(self, browser: Browser, tab: Tab, tab_ready_event: Event):
         self.browser = browser
         self.tab = tab
         self.tab_ready_event = tab_ready_event
-        self.start_frame = None
-        self.is_mailto = False
+        self.screen_lock = threading.Lock()
+        self.is_mailto: bool = False
+        self.start_frame: str
+        self.request_id: str
 
-    def page_frame_started_loading(self, frameId):
+    def page_frame_started_loading(self, frameId: str):
+        """
+        Handles the event when a page frame starts loading.
+        """
         demisto.debug(f'PychromeEventHandler.page_frame_started_loading, {frameId=}')
         self.start_frame = frameId
         if self.request_id:
             # We're in redirect
             demisto.debug(f'Frame (reload) started loading: {frameId}, clearing {self.request_id=}')
-            self.request_id = None
+            self.request_id = ""
             self.response_received = False
-            # self.start_frame = None
         else:
             demisto.debug(f'Frame started loading: {frameId}, no request_id')
 
-    def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # noqa: F841
+    def network_data_received(self, requestId: str, **kwargs):
+        """
+        Handles the event when network data is received.
+        """
         demisto.debug(f'PychromeEventHandler.network_data_received, {requestId=}')
         if requestId and not self.request_id:
             demisto.debug(f'PychromeEventHandler.network_data_received, Using {requestId=}')
@@ -228,14 +245,20 @@ class PychromeEventHandler:
         else:
             demisto.debug(f'PychromeEventHandler.network_data_received, Not using {requestId=}')
 
-    def page_frame_stopped_loading(self, frameId):
+    def page_frame_stopped_loading(self, frameId: str):
+        """
+        Handles the event when a page frame stops loading.
+        """
         demisto.debug(f'PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}')
         if self.start_frame == frameId:
             demisto.debug('PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event')
             self.tab_ready_event.set()
 
     def network_request_will_be_sent(self, documentURL: str, **kwargs):
-        '''Triggered when a request is sent by the browser, catches mailto URLs.'''
+        """
+        Handles the event when a network request is about to be sent.
+        catches mailto URLs.
+        """
         demisto.debug(f'PychromeEventHandler.network_request_will_be_sent, {documentURL=}, {self.is_mailto=}')
         self.is_mailto = documentURL.lower().startswith('mailto:')
 
@@ -246,6 +269,9 @@ class PychromeEventHandler:
             demisto.debug('Fetch events enabled.')
 
     def handle_request_paused(self, **kwargs):
+        """
+        Handles the event when a request is paused.
+        """
         request_id = kwargs.get("requestId")
         request_url = kwargs.get("request", {}).get("url")
 
@@ -306,7 +332,6 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
             # Use list_tab to ping the browser and make sure it's available
             tabs_count = len(browser.list_tab())
             demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
-            # if tabs_count < MAX_CHROME_TABS_COUNT:
             demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs")
             return browser
         except requests.exceptions.ConnectionError as exp:
@@ -345,7 +370,7 @@ def read_json_file(json_file_path: str = CHROME_INSTANCES_FILE_PATH) -> dict[str
 
 def increase_counter_chrome_instances_file(chrome_port: str = ''):
     """
-    he function will increase the counter of the port "chrome_port"ץ
+    he function will increase the counter of the port "chrome_port"
     If the file "CHROME_INSTANCES_FILE_PATH" exists the function will increase the counter of the port "chrome_port."
 
     :param chrome_port: Port for Chrome instance.
@@ -361,7 +386,7 @@ def increase_counter_chrome_instances_file(chrome_port: str = ''):
 
 def terminate_port_chrome_instances_file(chrome_port: str = ''):
     """
-    he function will increase the counter of the port "chrome_port"ץ
+    he function will increase the counter of the port "chrome_port"
     If the file "CHROME_INSTANCES_FILE_PATH" exists the function will increase the counter of the port "chrome_port."
 
     :param chrome_port: Port for Chrome instance.
@@ -650,13 +675,22 @@ def generate_chrome_port() -> str | None:
     return None
 
 
-def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[PychromeEventHandler, Event]:  # pragma: no cover
+def setup_tab_event(browser: Browser, tab: Tab) -> tuple[PychromeEventHandler, Event]:  # pragma: no cover
+    """
+    Sets up event handlers for a browser tab.
+
+    Args:
+        browser (Browser): The browser instance.
+        tab (Tab): The tab to set up events for.
+
+    Returns:
+        Tuple[PychromeEventHandler, Event]: A tuple containing the event handler and a ready event.
+    """
     tab_ready_event = Event()
     tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event)
 
     tab.Network.enable()
     tab.Network.dataReceived = tab_event_handler.network_data_received
-    # tab.Network.responseReceived = tab_event_handler.network_response_received
     tab.Network.requestWillBeSent = tab_event_handler.network_request_will_be_sent
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
@@ -861,17 +895,17 @@ def rasterize_thread(browser: Browser, chrome_port, path: str,
             demisto.info(f'Failed to set the chrome tab size due to {ex}')
             raise ex
         demisto.debug(f'Determining rasterization type: {rasterize_type=}, for {path=}, {tab.id=}')
-        if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
+        if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG:
             demisto.debug(f'Executing screenshot_image for PNG, {path=}, {tab.id=}')
             return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                     full_screen=full_screen, include_url=include_url)
 
-        elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower() == RasterizeType.PDF.value:
+        elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower() == RasterizeType.PDF:
             demisto.debug(f'Executing screenshot_pdf, {path=}, {tab.id=}')
             return screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                   include_url=include_url)
 
-        elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower() == RasterizeType.JSON.value:
+        elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower() == RasterizeType.JSON:
             demisto.debug(f'Executing screenshot_image for JSON, {path=}, {tab.id=}')
             return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                     full_screen=full_screen, include_url=include_url, include_source=True)
@@ -1133,6 +1167,7 @@ def rasterize_pdf_command(args: dict[str, str]):  # pragma: no cover
 
 
 def rasterize_html_command(args: dict) -> dict:
+    """Rasterizes an HTML file and returns the rasterized image."""
     entry_id = args['EntryID']
     width, height = get_width_height(args)
     full_screen = argToBoolean(args.get('full_screen', False))
@@ -1142,7 +1177,7 @@ def rasterize_html_command(args: dict) -> dict:
     wait_time = int(args.get('wait_time', 0))
 
     file_name = f'{file_name}.{rasterize_type}'
-    file_path = demisto.getFilePath(entry_id).get('path')
+    file_path = demisto.getFilePath(entry_id)['path']
     os.rename(f'./{file_path}', 'file.html')
 
     output = perform_rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
