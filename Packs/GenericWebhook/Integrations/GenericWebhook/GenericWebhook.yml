@@ -14,7 +14,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: "The username and password is required in XSOAR 8.5 and above. Using the `_header:` feature without using an engine will not work."
+- additionalinfo: "The username and password is required in Cortex XSOAR 8.5 and above. Using the `_header:` feature without using an engine will not work. The value should only use ASCII characters, and the length may have a limit depending on the server or framework. For additional information on restrictions, refer to the integration documentation."
   display: Username
   name: credentials
   type: 9
@@ -57,7 +57,7 @@ display: Generic Webhook
 name: Generic Webhook
 script:
   commands: []
-  dockerimage: demisto/fastapi:0.115.5.117397
+  dockerimage: demisto/fastapi:0.115.9.2587379
   longRunning: true
   longRunningPort: true
   script: '-'
