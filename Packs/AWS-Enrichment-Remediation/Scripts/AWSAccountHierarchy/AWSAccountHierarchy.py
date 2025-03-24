@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any
+from typing import Any
 import traceback
 
 
@@ -21,7 +21,7 @@ def lookup(parent_obj: str, level: int, instance_to_use: str) -> tuple[str, dict
         dict: dictionary of id, name and level of the lookup object.
 
     """
-    temp: Dict[str, str] = {}
+    temp: dict[str, str] = {}
     try:
         if "ou-" in parent_obj:
             ou_info = execute_command(
@@ -46,9 +46,7 @@ def lookup(parent_obj: str, level: int, instance_to_use: str) -> tuple[str, dict
             root_info = execute_command("aws-org-root-list", {"using": instance_to_use})
             if not root_info:
                 return "NONE", temp
-            root = root_info.get("AWS.Organizations.Root(val.Id && val.Id == obj.Id)")[
-                0
-            ]
+            root = root_info.get("AWS.Organizations.Root(val.Id && val.Id == obj.Id)")[0]
             temp["level"] = str(level)
             temp["id"] = root.get("Id", "")
             temp["name"] = root.get("Name", "")
@@ -64,7 +62,7 @@ def lookup(parent_obj: str, level: int, instance_to_use: str) -> tuple[str, dict
 """ COMMAND FUNCTION """
 
 
-def aws_account_heirarchy(args: Dict[str, Any]) -> CommandResults:
+def aws_account_heirarchy(args: dict[str, Any]) -> CommandResults:
     """
     Determine AWS account hierarchy by looking up parent objects until the root level is reached.
     Args:
@@ -81,14 +79,8 @@ def aws_account_heirarchy(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("account_id not specified")
     # Using `demisto.executeCommand` instead of `execute_command` because for
     # multiple integration instances we can expect one too error out.
-    account_info = demisto.executeCommand(
-        "aws-org-account-list", {"account_id": account_id}
-    )
-    account_returned = [
-        account
-        for account in account_info
-        if (not isError(account) and account.get("Contents").get("Arn"))
-    ]
+    account_info = demisto.executeCommand("aws-org-account-list", {"account_id": account_id})
+    account_returned = [account for account in account_info if (not isError(account) and account.get("Contents").get("Arn"))]
     if not account_returned:
         return CommandResults(readable_output="could not find specified account info")
     else:
@@ -103,14 +95,10 @@ def aws_account_heirarchy(args: Dict[str, Any]) -> CommandResults:
             "arn": match_account.get("Arn", ""),
         }
     ]
-    account_parent = demisto.executeCommand(
-        "aws-org-parent-list", {"child_id": account_id, "using": instance_to_use}
-    )
+    account_parent = demisto.executeCommand("aws-org-parent-list", {"child_id": account_id, "using": instance_to_use})
     if isError(account_parent):
         return CommandResults(readable_output="could not find specified account parent")
-    next_one, to_append = lookup(
-        account_parent[0].get("Contents", {})[0].get("Id", ""), level, instance_to_use
-    )
+    next_one, to_append = lookup(account_parent[0].get("Contents", {})[0].get("Id", ""), level, instance_to_use)
     if next_one == "NONE":
         return CommandResults(readable_output="could not find specified ou/root info")
     hierarchy.append(to_append)
@@ -119,9 +107,7 @@ def aws_account_heirarchy(args: Dict[str, Any]) -> CommandResults:
             level += 1
             next_one, to_append = lookup(next_one, level, instance_to_use)
             if next_one == "NONE" or next_one is None:
-                return CommandResults(
-                    readable_output="could not find specified ou/root info"
-                )
+                return CommandResults(readable_output="could not find specified ou/root info")
             hierarchy.append(to_append)
     except TypeError:
         return CommandResults(readable_output="could not find specified ou/root info")
