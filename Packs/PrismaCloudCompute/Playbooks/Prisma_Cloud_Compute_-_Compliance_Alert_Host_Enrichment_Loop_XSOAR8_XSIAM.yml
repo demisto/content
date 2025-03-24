@@ -814,3 +814,4 @@ fromversion: 8.0.0
 marketplaces:
 - xsoar_saas
 - marketplacev2
+- platform
