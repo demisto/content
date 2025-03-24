@@ -1,6 +1,15 @@
 # Box
-This pack includes Cortex XSIAM content. 
 <~XSIAM>
+
+This pack includes Cortex XSIAM content. 
+
+### This pack includes:
+- Collection of Box event log messages.
+- Log Normalization - XDM mapping for key event types.
+
+## Supported Event Types:
+- All event types from [./2.0/events](https://developer.box.com/reference/get-events/) API call.
+
 ## Time Zone support for XSIAM
 For supporting Time Zone parsing, time should be set to UTC +0000 [Product documentation](https://support.box.com/hc/en-us/articles/360044194253-Language-and-Time-Zones):
 1. Sign into your Box account.
