@@ -396,7 +396,6 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
-
     def get_alert_ai_summary(self, alert_id: str) -> dict[str, Any]:
         """ Get alert AI summary. """
         try:
@@ -409,7 +408,6 @@ class RecoClient(BaseClient):
         except Exception as e:
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
-
 
     def get_exposed_publicly_files_at_risk(self) -> list[dict[str, Any]]:
         """Get exposed publicly files at risk. Returns a list of exposed publicly files at risk with analysis."""
@@ -451,7 +449,6 @@ class RecoClient(BaseClient):
         except Exception as e:
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
-
 
     def get_files_exposed_to_email(self, email_account) -> list[dict[str, Any]]:
         """Get files exposed to email. Returns a list of files exposed to email with analysis."""
@@ -509,7 +506,6 @@ class RecoClient(BaseClient):
         except Exception as e:
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
-
 
     def get_list_of_private_emails_with_access(self) -> list[dict[str, Any]]:
         """Get files exposed to email. Returns a list of private email addresses with access."""
@@ -1151,12 +1147,13 @@ def add_leaving_org_user(reco_client: RecoClient, email_address: str) -> Command
         readable_output=f"User {email_address} labeled as leaving org user",
     )
 
+
 def get_alert_ai_summary(reco_client: RecoClient, alert_id: str) -> CommandResults:
     response = reco_client.get_alert_ai_summary(alert_id)
     content = json.dumps(response)
-    ## check if markdown exists
+    # check if markdown exists
     if response.get("markdown") is not None:
-        content = response.get("markdown")
+        content = str(response.get("markdown"))
     return CommandResults(
         readable_output=content,
         outputs_prefix="Reco.AlertSummary.markdown",
