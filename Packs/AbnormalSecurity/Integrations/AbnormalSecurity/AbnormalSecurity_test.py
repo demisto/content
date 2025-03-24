@@ -601,7 +601,7 @@ def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
     # Calculate expected timestamps
     original_timestamp = datetime.fromisoformat(last_run["last_fetch"][:-1]).replace(tzinfo=UTC)
     adjusted_start_time = original_timestamp - polling_lag
-    expected_start_time = adjusted_start_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    expected_start_time = adjusted_start_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Mock the get_current_datetime function to return a fixed time
     fixed_current_time = datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC)
@@ -609,9 +609,9 @@ def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
 
     # Calculate expected end time based on the fixed current time
     adjusted_end_time = fixed_current_time - polling_lag
-    expected_end_time = adjusted_end_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    expected_end_time = adjusted_end_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    expected_filter = f"remediationTimestamp gte {expected_start_time} and remediationTimestamp lte {expected_end_time}"
+    expected_filter = f"latestTimeRemediated gte {expected_start_time} and latestTimeRemediated lte {expected_end_time}"
 
     # Call fetch_incidents with the polling lag
     _, incidents = fetch_incidents(
@@ -868,9 +868,9 @@ def test_pagination_methods_in_fetch_incidents(mocker):
     get_paginated_threats_spy.assert_called_once()
     threats_call_kwargs = get_paginated_threats_spy.call_args.kwargs
 
-    # Verify the filter contains remediationTimestamp with adjusted time due to polling lag
-    assert "remediationTimestamp gte" in threats_call_kwargs['filter_']
-    assert "remediationTimestamp lte" in threats_call_kwargs['filter_']
+    # Verify the filter contains latestTimeRemediated with adjusted time due to polling lag
+    assert "latestTimeRemediated gte" in threats_call_kwargs['filter_']
+    assert "latestTimeRemediated lte" in threats_call_kwargs['filter_']
     assert threats_call_kwargs['max_incidents_to_fetch'] == max_incidents
 
     # 2. Verify abuse campaigns pagination (this is called next in the code)

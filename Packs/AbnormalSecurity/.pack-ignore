@@ -5,7 +5,7 @@ ignore=IM111
 ignore=MR108
 
 [file:AbnormalSecurityEventCollector.yml]
-ignore=MR108
+ignore=MR108,ST111
 
 [known_words]
 gte
