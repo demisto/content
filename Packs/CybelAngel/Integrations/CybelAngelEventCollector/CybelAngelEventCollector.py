@@ -14,7 +14,7 @@ from requests import Response
 urllib3.disable_warnings()
 
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 DEFAULT_MAX_FETCH = 5000
 VENDOR = "cybelangel"
 PRODUCT = "platform"
@@ -27,7 +27,6 @@ class LastRun(str, Enum):
 
 
 class Client(BaseClient):
-
     def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool, **kwargs):
         self.client_id = client_id
         self.client_secret = client_secret
@@ -50,14 +49,10 @@ class Client(BaseClient):
         headers = {
             "Authorization": f"Bearer {token}",
             "Accept": "application/json",
-            "Content-Type": (
-                "application/json"
-                if not pdf
-                else "application/pdf, application/json"
-            ),
+            "Content-Type": ("application/json" if not pdf else "application/pdf, application/json"),
         }
 
-        demisto.debug(f'Running http-request with URL {url_suffix} and {params=}')
+        demisto.debug(f"Running http-request with URL {url_suffix} and {params=}")
 
         response = self._http_request(
             method,
@@ -76,10 +71,10 @@ class Client(BaseClient):
             return cve_response
 
         else:
-            demisto.debug('Access token has expired, retrieving new access token')
+            demisto.debug("Access token has expired, retrieving new access token")
 
         token = self.get_access_token(create_new_token=True)
-        headers["Authorization"] = f'Bearer {token}'
+        headers["Authorization"] = f"Bearer {token}"
 
         return self._http_request(
             method,
@@ -97,10 +92,7 @@ class Client(BaseClient):
         Note:
             The order of the events returned is random, hence need to sort them out to return the oldest events first.
         """
-        params = {
-            "start-date": start_date,
-            "end-date": end_date
-        }
+        params = {"start-date": start_date, "end-date": end_date}
         reports = self.get_reports_list(params)
         for report in reports:
             if updated_at := report.get("updated_at"):
@@ -111,29 +103,30 @@ class Client(BaseClient):
             report["_time"] = _time_field
 
         reports = sorted(
-            reports, key=lambda _report: dateparser.parse(_report["_time"])  # type: ignore[arg-type, return-value]
+            reports,
+            key=lambda _report: dateparser.parse(_report["_time"]),  # type: ignore[arg-type, return-value]
         )
         return reports[:limit]
 
     def get_access_token(self, create_new_token: bool = False) -> str:
         """
-       Obtains access and refresh token from CybleAngel server.
-       Access token is used and stored in the integration context until expiration time.
-       After expiration, new refresh token and access token are obtained and stored in the
-       integration context.
+        Obtains access and refresh token from CybleAngel server.
+        Access token is used and stored in the integration context until expiration time.
+        After expiration, new refresh token and access token are obtained and stored in the
+        integration context.
 
-        Returns:
-            str: the access token.
-       """
+         Returns:
+             str: the access token.
+        """
         integration_context = get_integration_context()
-        current_access_token = integration_context.get('access_token')
+        current_access_token = integration_context.get("access_token")
         if current_access_token and not create_new_token:
             return current_access_token
         new_access_token = self.get_token_request()
         integration_context = {
-            'access_token': new_access_token,
+            "access_token": new_access_token,
         }
-        demisto.debug(f'updating access token at {datetime.now()}')
+        demisto.debug(f"updating access token at {datetime.now()}")
         set_integration_context(context=integration_context)
         return new_access_token
 
@@ -144,17 +137,17 @@ class Client(BaseClient):
         Returns:
            tuple[str, str]: token and its expiration date
         """
-        url = 'https://auth.cybelangel.com/oauth/token'
+        url = "https://auth.cybelangel.com/oauth/token"
 
         token_response = self._http_request(
-            'POST',
+            "POST",
             full_url=url,
             json_data={
                 "client_id": self.client_id,
                 "client_secret": self.client_secret,
                 "audience": "https://platform.cybelangel.com/",
-                "grant_type": "client_credentials"
-            }
+                "grant_type": "client_credentials",
+            },
         )
         if access_token := token_response.get("access_token"):
             return access_token
@@ -171,8 +164,7 @@ class Client(BaseClient):
         Returns:
             List: List of reports, or an empty list if no reports are found.
         """
-        return self.http_request(method='GET', url_suffix="/api/v2/reports",
-                                 params=params).get("reports") or []  # type: ignore
+        return self.http_request(method="GET", url_suffix="/api/v2/reports", params=params).get("reports") or []  # type: ignore
 
     def get_report_by_id(self, id: str, pdf: bool) -> dict[str, Any] | Response:
         """
@@ -246,9 +238,7 @@ class Client(BaseClient):
         method = "POST" if data else "GET"
         return self.http_request(method, f"/api/v1/reports/{id}/comments", data=data)
 
-    def get_report_attachment(
-        self, report_id: str, attachment_id: str
-    ) -> dict[str, Any] | Response:
+    def get_report_attachment(self, report_id: str, attachment_id: str) -> dict[str, Any] | Response:
         """
         Retrieves an attachment from a report.
 
@@ -259,9 +249,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any] | Response: The report attachment data or response object.
         """
-        return self.http_request(
-            "GET", f"/api/v1/reports/{report_id}/attachments/{attachment_id}", pdf=True
-        )
+        return self.http_request("GET", f"/api/v1/reports/{report_id}/attachments/{attachment_id}", pdf=True)
 
     def post_report_remediation_request(self, data: dict) -> dict[str, Any] | Response:
         """
@@ -273,9 +261,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any] | Response: The response from the API.
         """
-        return self.http_request(
-            "POST", "/api/v1/reports/remediation-request", data=data
-        )
+        return self.http_request("POST", "/api/v1/reports/remediation-request", data=data)
 
 
 def dedup_fetched_events(
@@ -290,12 +276,12 @@ def dedup_fetched_events(
     for event in events:
         event_id = event.get("id")
         if event_id not in last_run_fetched_event_ids:
-            demisto.debug(f'event with ID {event_id} has not been fetched.')
+            demisto.debug(f"event with ID {event_id} has not been fetched.")
             un_fetched_events.append(event)
         else:
-            demisto.debug(f'event with ID {event_id} for has been fetched')
+            demisto.debug(f"event with ID {event_id} for has been fetched")
 
-    demisto.debug(f'{un_fetched_events=}')
+    demisto.debug(f"{un_fetched_events=}")
     return un_fetched_events
 
 
@@ -312,8 +298,7 @@ def test_module(client: Client) -> str:
     Tests that the authentication to the api is ok.
     """
     client.get_reports(
-        start_date=(datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT),
-        end_date=datetime.now().strftime(DATE_FORMAT)
+        start_date=(datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT), end_date=datetime.now().strftime(DATE_FORMAT)
     )
     return "ok"
 
@@ -342,29 +327,26 @@ def fetch_events(client: Client, first_fetch: str, last_run: dict, max_fetch: in
     if not last_run_time:
         last_run_time = dateparser.parse(first_fetch).strftime(DATE_FORMAT)  # type: ignore[union-attr]
         if not last_run_time:
-            demisto.error(f'First fetch {first_fetch} is not valid')
-            raise ValueError(f'First fetch {first_fetch} not valid')
+            demisto.error(f"First fetch {first_fetch} is not valid")
+            raise ValueError(f"First fetch {first_fetch} not valid")
     else:
         last_run_time = dateparser.parse(last_run_time).strftime(DATE_FORMAT)  # type: ignore[union-attr]
     now = datetime.now()
     reports = client.get_reports(start_date=last_run_time, end_date=now.strftime(DATE_FORMAT), limit=max_fetch)
     reports = dedup_fetched_events(reports, last_run_fetched_event_ids=last_run.get(LastRun.LATEST_FETCHED_REPORTS_IDS) or set())
     if not reports:
-        demisto.debug(f'No reports found when last run is {last_run}')
+        demisto.debug(f"No reports found when last run is {last_run}")
         return [], {
             LastRun.LATEST_REPORT_TIME: last_run_time,
-            LastRun.LATEST_FETCHED_REPORTS_IDS: last_run.get(LastRun.LATEST_FETCHED_REPORTS_IDS)
+            LastRun.LATEST_FETCHED_REPORTS_IDS: last_run.get(LastRun.LATEST_FETCHED_REPORTS_IDS),
         }
 
     latest_report_time, latest_fetched_report_ids = get_latest_event_time_and_ids(reports)
-    demisto.debug(f'latest-report-time: {latest_report_time}')
-    demisto.debug(f'latest-fetched-report-ids {latest_fetched_report_ids}')
+    demisto.debug(f"latest-report-time: {latest_report_time}")
+    demisto.debug(f"latest-fetched-report-ids {latest_fetched_report_ids}")
 
     last_run.update(
-        {
-            LastRun.LATEST_REPORT_TIME: latest_report_time,
-            LastRun.LATEST_FETCHED_REPORTS_IDS: latest_fetched_report_ids
-        }
+        {LastRun.LATEST_REPORT_TIME: latest_report_time, LastRun.LATEST_FETCHED_REPORTS_IDS: latest_fetched_report_ids}
     )
     return reports, last_run
 
@@ -381,7 +363,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     reports = client.get_reports(
         dateparser.parse(args["start_date"]).strftime(DATE_FORMAT),  # type: ignore[union-attr]
         end_date=end_date,
-        limit=arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH
+        limit=arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH,
     )
 
     return CommandResults(
@@ -389,7 +371,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
         outputs_key_field="id",
         outputs=reports,
         raw_response=reports,
-        readable_output=tableToMarkdown("Reports", reports, headers=["id", "created_at", "updated_at"], removeNull=True)
+        readable_output=tableToMarkdown("Reports", reports, headers=["id", "created_at", "updated_at"], removeNull=True),
     )
 
 
@@ -459,7 +441,7 @@ def cybelangel_report_get_command(client: Client, args: dict) -> CommandResults 
             "updated_at",
             "report_content",
         ],
-        removeNull=True
+        removeNull=True,
     )
     return CommandResults(
         outputs_prefix="CybelAngel.Report",
@@ -493,8 +475,12 @@ def cybelangel_mirror_report_get_command(client: Client, args: dict) -> CommandR
             response.content,  # type: ignore
             file_type=EntryType.ENTRY_INFO_FILE,
         )
-    human_readable = tableToMarkdown(f"Mirror details for Report ID {report_id}", response,
-                                     headers=["report_id", "created_at", "available_files_count", "updated_at"], removeNull=True)
+    human_readable = tableToMarkdown(
+        f"Mirror details for Report ID {report_id}",
+        response,
+        headers=["report_id", "created_at", "available_files_count", "updated_at"],
+        removeNull=True,
+    )
     return CommandResults(
         outputs_prefix="CybelAngel.ReportMirror",
         outputs_key_field="report_id",
@@ -614,10 +600,7 @@ def cybelangel_report_comment_create_command(client: Client, args: dict) -> Comm
     parent_id = args.get("parent_id")
     assigned = argToBoolean(args.get("assigned", "false"))
 
-    data = {
-        "content": content,
-        "discussion_id": discussion_id
-    }
+    data = {"content": content, "discussion_id": discussion_id}
     if parent_id:
         data["parent_id"] = parent_id
     if assigned:
@@ -682,22 +665,21 @@ def cybelangel_report_remediation_request_create_command(client: Client, args: d
         outputs_prefix="CybelAngel.RemediationRequest",
         outputs_key_field="report_id",
         outputs=response,
-        readable_output=f"Remediation request was created for {report_id}"
+        readable_output=f"Remediation request was created for {report_id}",
     )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
-
     params = demisto.params()
     args = demisto.args()
-    client_id: str = params.get('credentials', {}).get('identifier', '')
-    client_secret: str = params.get('credentials', {}).get('password', '')
-    base_url: str = params.get('url', '').rstrip('/')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    client_id: str = params.get("credentials", {}).get("identifier", "")
+    client_secret: str = params.get("credentials", {}).get("password", "")
+    base_url: str = params.get("url", "").rstrip("/")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
     max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
     first_fetch = params.get("first_fetch") or DEFAULT_FIRST_FETCH
 
@@ -714,18 +696,14 @@ def main() -> None:
     }
 
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.info(f"Command being called is {command}")
     try:
         client = Client(
-            client_id=client_id,
-            client_secret=client_secret,
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy
+            client_id=client_id, client_secret=client_secret, base_url=base_url, verify=verify_certificate, proxy=proxy
         )
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             events, last_run = fetch_events(client, first_fetch=first_fetch, last_run=demisto.getLastRun(), max_fetch=max_fetch)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to XSIAM')
@@ -739,8 +717,8 @@ def main() -> None:
         return_error(f"Failed to execute {command} command.\nError:\ntype:{type(e)}, error:{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
