@@ -1,0 +1,74 @@
+args:
+- description: A comma-separated list of columns for the context key.
+  name: keys
+  required: true
+- description: A value for the 1st key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val1
+  required: true
+- description: A value for the 2nd key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val2
+- description: A value for the 3rd key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val3
+- description: A value for the 4th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val4
+- description: A value for the 5th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val5
+- description: A value for the 6th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val6
+- description: A value for the 7th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val7
+- description: A value for the 8th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val8
+- description: A value for the 9th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val9
+- description: A value for the 10th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val10
+- description: A value for the 11th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val11
+- description: A value for the 12th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val12
+- description: A value for the 13th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val13
+- description: A value for the 14th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val14
+- description: A value for the 15th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val15
+- description: A value for the 16th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val16
+- description: A value for the 17th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val17
+- description: A value for the 18th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val18
+- description: A value for the 19th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val19
+- description: A value for the 20th key. (Can be a string or context path or `TIMESTAMP` to get the current timestamp in ISO format.)
+  name: val20
+- description: Context key to populate.
+  name: context_key
+  required: true
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Whether to overwrite what is in the context key or not (default is to append).
+  name: overwrite
+  predefined:
+  - "true"
+  - "false"
+comment: |-
+  Automation used to more easily populate Cortex XSOAR context. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+  `!ContextSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" context_key="key"`.
+commonfields:
+  id: ContextSetup
+  version: -1
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+name: ContextSetup
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.10.0
+tests:
+- No tests
