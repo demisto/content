@@ -2,8 +2,9 @@ from collections.abc import Callable
 
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 from MicrosoftApiModule import *  # noqa: E402
+
+from CommonServerUserPython import *
 
 """ CONSTANTS """
 
@@ -732,7 +733,7 @@ def main():
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command. Error: {str(e)}")
+        return_error(f"Failed to execute {command} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
