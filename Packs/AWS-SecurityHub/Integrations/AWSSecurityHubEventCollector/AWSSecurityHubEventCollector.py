@@ -161,7 +161,7 @@ def fetch_events(
             events.extend(events_batch)
 
     except Exception as e:
-        demisto.error(f"Error while fetching events." f"Events fetched so far: {len(events)}" f"Error: {e}")
+        demisto.error(f"Error while fetching events.Events fetched so far: {len(events)}Error: {e}")
         error = e
 
     # --- Set next_run data ---

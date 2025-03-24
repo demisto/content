@@ -1,6 +1,6 @@
 import json
 
-from pytest import raises
+from pytest import raises  # noqa: PT013
 
 MOCK_APIKEY = "not"
 MOCK_PARAMS = {"credentials": {"password": MOCK_APIKEY}}

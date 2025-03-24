@@ -39,7 +39,7 @@ def get_reputation_reliability(reliability):
         return DBotScoreReliability.D
     if reliability == "E - Unreliable":
         return DBotScoreReliability.E
-    if reliability == "F - Reliability cannot be judged":
+    if reliability == "F - Reliability cannot be judged":  # noqa: RET503
         return DBotScoreReliability.F
 
 

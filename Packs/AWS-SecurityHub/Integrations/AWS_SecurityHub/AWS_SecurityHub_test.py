@@ -22,8 +22,8 @@ xx,comparison=EQUALS",
         {
             "Id": [
                 {
-                    "Value": "x:x:x:someplace-removed-1:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx-xx-\
-xxx-xx",
+                    "Value": "x:x:x:someplace-removed-1:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx\
+-xx-xxx-xx",
                     "Comparison": "EQUALS",
                 }
             ]
@@ -39,15 +39,15 @@ comparison=EQUALS",
         {
             "Id": [
                 {
-                    "Value": "x:x:x:someplace-removed-1:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx-xx-\
-xxx-xx",
+                    "Value": "x:x:x:someplace-removed-1:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx\
+-xx-xxx-xx",
                     "Comparison": "EQUALS",
                 }
             ],
             "Id2": [
                 {
-                    "Value": "x:x:x:someplace-removed-2:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx-xx-\
-xxx-xx",
+                    "Value": "x:x:x:someplace-removed-2:numberhere:subscription/xxx-xxx-security-xxx-xxxx/v/1.0.0/xx.x/xx/xx-xx\
+-xx-xxx-xx",
                     "Comparison": "EQUALS",
                 }
             ],

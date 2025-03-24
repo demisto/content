@@ -40,7 +40,7 @@ def is_email_valid(email: str) -> bool:
     :return:  True if email is in valid format.
     """
 
-    return True if re.match(emailRegex, email) else False
+    return bool(re.match(emailRegex, email))
 
 
 def prepare_args_for_activities_list(args: dict[str, str]) -> dict[str, str]:
@@ -166,7 +166,7 @@ def activities_list_command(client: GSuiteClient, args: dict[str, Any]) -> Comma
             ["Time", "Application Name", "Email", "ProfileId", "IpAddress", "Events"],
         )
         if response.get("items")
-        else "No activities found for the given " "argument(s). "
+        else "No activities found for the given argument(s). "
     )
     # Context
     context_outputs = prepare_output_for_activities_list(response)

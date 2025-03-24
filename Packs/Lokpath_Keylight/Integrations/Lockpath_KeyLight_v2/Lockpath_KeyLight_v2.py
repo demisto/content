@@ -273,7 +273,7 @@ class Client(BaseClient):
         if len(field_map) == INTEGRATION_CONTEXT_SIZE:
             min_time = update
             min_component = ""
-            for component in field_map.keys():
+            for component in field_map:
                 updated = field_map.get(component).get("updated")
                 if parse_date_string(updated) < parse_date_string(min_time):
                     min_time = updated
@@ -427,7 +427,7 @@ def get_records_command(client: Client, args: dict) -> None:
     records = []
     for record in res:
         temp_dict = record.get("Fields").copy()
-        for key in temp_dict.keys():
+        for key in temp_dict:
             if isinstance(temp_dict[key], dict):
                 temp_dict[key] = temp_dict[key].get("Value")
         temp_dict["Id"] = record.get("ID")
@@ -634,7 +634,7 @@ def main():
     except Exception as e:
         if not logged_in:
             return_error(
-                f"Could not connect to instance. Make sure your credentials are correct and haven't changed." f" Error: {e!s}"
+                f"Could not connect to instance. Make sure your credentials are correct and haven't changed. Error: {e!s}"
             )
         else:
             return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}", error=traceback.format_exc())

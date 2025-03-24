@@ -2,7 +2,7 @@ import json
 
 import CommonServerPython as csp
 import demistomock as demisto
-from pytest import raises
+from pytest import raises  # noqa: PT013
 
 
 def test_script(mocker):

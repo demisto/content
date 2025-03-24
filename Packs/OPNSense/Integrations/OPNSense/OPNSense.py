@@ -202,7 +202,7 @@ def output_format(res, output_type_name=None, readable_title=None):
 def rule_reformat_result(data):
     """reformat data result from api when getting rule"""
     result = {"rule": {}}  # type: Dict[str, Any]
-    for key in data["rule"].keys():
+    for key in data["rule"]:
         if key in [
             "enabled",
             "sequence",
@@ -219,11 +219,11 @@ def rule_reformat_result(data):
             result["rule"][key] = data["rule"][key]
         elif key in ["action", "interface", "direction", "ipprotocol", "protocol", "gateway"]:
             tmpvalue = ""
-            for subkey in data["rule"][key].keys():
+            for subkey in data["rule"][key]:
                 if data["rule"][key][subkey]["selected"] == 1:
                     tmpvalue = subkey
                     break
-                elif data["rule"][key][subkey]["selected"] == 0:
+                if data["rule"][key][subkey]["selected"] == 0:
                     pass
             result["rule"][key] = tmpvalue
         else:
@@ -234,16 +234,16 @@ def rule_reformat_result(data):
 def alias_reformat_result(data):
     """reformat data result from api when getting alias"""
     result = {"alias": {}}  # type: Dict[str, Any]
-    for key in data["alias"].keys():
+    for key in data["alias"]:
         if key in ["enabled", "name", "counters", "updatefreq", "description"]:
             result["alias"][key] = data["alias"][key]
         elif key in ["content", "type", "proto", "interface"]:
             tmpvalue = ""
-            for subkey in data["alias"][key].keys():
+            for subkey in data["alias"][key]:
                 if data["alias"][key][subkey]["selected"] == 1:
                     tmpvalue = subkey
                     break
-                elif data["alias"][key][subkey]["selected"] == 0:
+                if data["alias"][key][subkey]["selected"] == 0:
                     pass
             result["alias"][key] = tmpvalue
         else:
@@ -313,7 +313,7 @@ def alias_mod_command(client, args):
     original = alias_reformat_result(data)
     original["alias"]["content"] = format_content
     modified = {"alias": {}}  # type: Dict[str, Any]
-    for key in original["alias"].keys():
+    for key in original["alias"]:
         newvalue = args.get(key, original["alias"][key])
         modified["alias"][key] = newvalue
     result = client.alias_setItem(uuid, modified)
@@ -466,7 +466,7 @@ def category_mod_command(client, args):
     uuid = args.get("uuid")
     original = client.category_getItem({"uuid": uuid})
     modified = {"category": {}}  # type: Dict[str, Any]
-    for key in original["category"].keys():
+    for key in original["category"]:
         newvalue = args.get(key, original["category"][key])
         modified["category"][key] = newvalue
     result = client.category_setItem(uuid, modified)
@@ -535,7 +535,7 @@ def fw_rule_mod_command(client, args):
     data = client.firewall_getRule({"uuid": uuid})
     original = rule_reformat_result(data)
     modified = {"rule": {}}  # type: Dict[str, Any]
-    for key in original["rule"].keys():
+    for key in original["rule"]:
         newvalue = args.get(key, original["rule"][key])
         modified["rule"][key] = newvalue
     result = client.firewall_setRule(uuid, modified)

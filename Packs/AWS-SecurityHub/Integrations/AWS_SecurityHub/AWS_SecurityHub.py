@@ -1003,7 +1003,7 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any], res
     delta = parsed_args.delta
     remote_incident_id = parsed_args.remote_incident_id
     data = parsed_args.data
-    demisto.debug(f"Got the following {parsed_args.inc_status=}, {data=}, {delta=} " f"and remote ID: {remote_incident_id}.")
+    demisto.debug(f"Got the following {parsed_args.inc_status=}, {data=}, {delta=} and remote ID: {remote_incident_id}.")
 
     if parsed_args.incident_changed and delta:
         demisto.debug(
