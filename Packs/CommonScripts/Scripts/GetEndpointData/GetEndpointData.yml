@@ -29,9 +29,9 @@ args:
   - 'false'
 comment: This script gathers endpoint data from multiple integrations and returns an endpoint entity with consolidated information to the context.
 commonfields:
-  id: get-endpoint-data
+  id: get-endpoint-data-modified
   version: -1
-name: get-endpoint-data
+name: get-endpoint-data-modified
 outputs:
 - contextPath: Endpoint.Hostname.value
   description: The endpoint's hostname.

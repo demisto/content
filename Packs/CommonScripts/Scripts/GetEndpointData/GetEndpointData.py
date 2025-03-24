@@ -302,6 +302,13 @@ def initialize_commands(module_manager: ModuleManager) -> tuple[EndpointCommandR
             post_processing=cylance_filtering
         ),
         Command(
+            brand='FireEyeHX v2',
+            name='fireeye-hx-get-host-information',
+            output_keys=["FireEyeHX.Hosts"],
+            args_mapping={'agentId': 'agent_id', 'hostName': 'agent_hostname'},  # command can use agentId or hostName,
+            output_mapping={'_id': 'ID', 'hostname': 'Hostname', 'primary_ip_address': 'IPAddress'}
+        ),
+        Command(
             brand='Microsoft Defender Advanced Threat Protection',
             name='endpoint',
             output_keys=["Endpoint"],
