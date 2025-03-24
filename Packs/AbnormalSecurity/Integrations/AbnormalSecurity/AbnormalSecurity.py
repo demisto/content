@@ -865,7 +865,7 @@ def generate_threat_incidents(client, threats, max_page_number, start_datetime, 
                 break
 
         received_time = ""
-        threat_details["messages"] = all_messages or all_filtered_messages
+        threat_details["messages"] = all_filtered_messages or all_messages
         if threat_details.get("messages", []):
             received_time = threat_details["messages"][0].get("receivedTime")
 
