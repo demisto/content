@@ -205,10 +205,28 @@ class Client(BaseClient):
         """
         Status could be approve or reject
         """
-        collection_name = "violation"
-        response = self.poller.search_feed_by_id(collection_name=collection_name, feed_id=feed_id)
-        if response.raw_dict.get('status') == 'detected' and response.raw_dict.get('approveState') == 'under_review':
-            return self.poller.change_status(feed_id=feed_id, status=status)
+        approve_statuses = {
+            "approve": True,
+            "reject": False
+        }
+        approve_status = approve_statuses.get(status)
+        response = self.poller.search_feed_by_id(collection_name=Endpoints.VIOLATION.value, feed_id=feed_id)
+        demisto.debug('change_violation_status', approve_status, response.raw_dict.get('violation', {}).get('status', None), response.raw_dict.get('violation', {}).get('approveState', None))
+        if response.raw_dict.get('violation', {}).get('status', None) == 'detected' and response.raw_dict.get('violation', {}).get('approveState', None) == 'under_review':
+            response = self._http_request(
+                method="POST",
+                url_suffix=Endpoints.CHANGE_APPROVE.value,
+                timeout=TIMEOUT,
+                retries=RETRIES,
+                status_list_to_retry=STATUS_LIST_TO_RETRY,
+                headers=self.additional_headers,
+                json_data={
+                    "violationId": feed_id,
+                    "approve": approve_status
+                },
+                resp_type = "response"
+            )
+            return response.status_code
         else:
             return "Can not change the status of the selected feed"
 
@@ -776,7 +794,7 @@ class BuilderCommandResponses:
         status = str(self.args.get("status"))
         result = self.client.change_violation_status(feed_id=id_, status=status)
         demisto.debug(f"change_violation_status {id_} {status} {result}")
-        if result is None:
+        if result == 200:
             return "Request to change violation status sent"
         else:
             return result
