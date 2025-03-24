@@ -92,10 +92,12 @@ def create_final_context(failure_message: str, used_integration: str, ip_list_ar
     return context
 
 # TODO think about adding the command name to the human readable.
-def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verbose, rule_name: str, ip_list_arr: list[str]) -> list[CommandResults]:
+def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verbose, rule_name: str, ip_list_arr: list[str]) -> list:  # a list of command results
+    demisto.debug(f"In prepare_context_and_hr_multiple_executions, {len(responses)=} {responses=}")
     results = []
     failed_messages = []
     used_integration = responses[0][0].get('Metadata', {}).get('brand')  # all executions are for the same brand.
+    demisto.debug(f"In prepare_context_and_hr_multiple_executions, {used_integration=}")
 
     for res in responses:
         for entry in res:
@@ -326,7 +328,7 @@ def pan_os_push_to_device(args: dict) -> PollResult:
             outputs=context_output,
             readable_output=tableToMarkdown('Push to Device Group:', context_output, removeNull=True)
         )
-        demisto.setContext('Push.ID', job_id)
+        demisto.setContext('push_job_id', job_id)
     else:
         push_cr = CommandResults(
             readable_output=res_push_to_device[0].get('Contents') or 'There are no changes to push.'
@@ -350,13 +352,35 @@ def pan_os_push_to_device(args: dict) -> PollResult:
 )
 def pan_os_push_status(args: dict):
     push_job_id = args['push_job_id']
-    return run_execute_command("pan-os-push-to-device-group", {'push_job_id': push_job_id})
-    # TODO check and continue
+    res_push_device_status = run_execute_command("pan-os-push-status", {'job_id': push_job_id})
+    push_status = res_push_device_status[0].get('Contents', {}).get('response', {}).get('result', {}).get('job', {}).get('status', '')
+
+    continue_to_poll = True if push_status and push_status != 'FIN' else False
+    demisto.debug(f"{push_status=}")
+    demisto.debug(f"{continue_to_poll=}")
+    context_output = {
+        'Status': push_status,
+        'JobID': push_job_id,
+    }
+    push_cr = CommandResults(
+        outputs_key_field='JobID',
+        outputs=context_output,  # update it according to the output from the execution.
+        readable_output=tableToMarkdown('Push to Device Group:', context_output, removeNull=True)
+    )
+    args['continue_to_poll'] = continue_to_poll
+    return PollResult(
+        response=push_cr,
+        continue_to_poll=continue_to_poll,
+        partial_result=CommandResults(
+            readable_output=f'Waiting for Job-ID {push_job_id} to finish push changes...'
+        )
+    )
 
 
 def final_part_pan_os(args: dict, responses: list) -> list[CommandResults]:
     tag = args.get('tag')
     ip_list = args.get('ip_list')
+    demisto.setContext('push_job_id', '')  # delete any previous value if exists
     responses.append(run_execute_command('pan-os-register-ip-tag', {'tag': tag, 'IPs': ip_list}))
     results = prepare_context_and_hr_multiple_executions(responses, args['verbose'], '', ip_list)
     return results
@@ -429,7 +453,6 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
         'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 60)),
         'timeout': arg_to_number(args.get('timeout', 600)),
         'polling': True,
-        'push_job_id': ''
     }
     demisto.debug(f"The initial {args_for_next_run=}")
     args_for_next_run = args | args_for_next_run
@@ -449,9 +472,19 @@ def manage_pan_os_flow(args: dict):
     incident_context = demisto.context()
     demisto.debug(f"The context in the beginning of manage_pan_os_flow {incident_context=}")
     auto_commit = args['auto_commit']
-    push_job_id = None
+    commit_job_id = None
     res_push_status = None
-    if commit_job_id := args.get('commit_job_id'):
+    responses = []
+    if push_job_id := demisto.get(incident_context, 'push_job_id'):
+        demisto.debug(f"Has a {push_job_id=}")
+        args['push_job_id'] = push_job_id
+        res_push_status = pan_os_push_status(args)
+        if not args['continue_to_poll']:
+            demisto.debug("Finished polling, finishing the flow")
+            return final_part_pan_os(args, [res_push_status])  # TODO save the responses between polling runs
+        else:
+            return res_push_status
+    elif commit_job_id := args.get('commit_job_id'):
         demisto.debug(f"Has a {commit_job_id=}")
         poll_commit_status = pan_os_commit_status(args)
         if not args['continue_to_poll']:
@@ -460,16 +493,11 @@ def manage_pan_os_flow(args: dict):
                 demisto.debug("Triggering pan_os_push_to_device")
                 poll_push_to_device = pan_os_push_to_device(args)
                 demisto.debug(f"returning {poll_commit_status=} {poll_push_to_device=}")
-                return poll_push_to_device ,None
+                return poll_push_to_device
             else:
                 demisto.debug("Not a Panorama instance, not pushing to device. Continue to register the IP.")
         else:
-            return poll_commit_status, None
-    elif push_job_id := demisto.get(demisto.context(), 'Push.ID'):
-        demisto.debug(f"Has a {push_job_id=}")
-        args['push_job_id'] = push_job_id
-        res_push_status = pan_os_push_status(args)
-        return_results(res_push_status)
+            return poll_commit_status
 
     # check if we are in the initial run or should execute pan-os-register-ip-tag
     if commit_job_id or push_job_id:
@@ -477,9 +505,9 @@ def manage_pan_os_flow(args: dict):
         responses = args.get('panorama', [])
         if res_push_status:
             responses.append(res_push_status)
-        return final_part_pan_os(args, responses), None
+        return final_part_pan_os(args, responses)
     else:
-        res, should_commit = start_pan_os_flow(args)
+        res, should_commit = start_pan_os_flow(args)  # TODO save res to the context
         demisto.debug(f"The length of the responses is {len(res)}")
         if should_commit:
             poll_result = pan_os_commit(args, res)
@@ -488,17 +516,17 @@ def manage_pan_os_flow(args: dict):
             if not args['continue_to_poll']:
                 result = final_part_pan_os(args, res)
                 demisto.debug(f"The result after continue_to_poll is false {result=}")
-                return result, None
-            return poll_result, res
+                return result
+            return poll_result
         elif isinstance(res[0], CommandResults): # already did the final part in start_pan_os_flow
-            return res, None
+            return res
         else:
             cr_should_commit = CommandResults(readable_output=f"Not commiting the changes in Panorama, since "
                                                               f"{auto_commit=}. Please do so manually for the changes "
                                                               f"to take affect.")
             result = final_part_pan_os(args, res)
             result.append(cr_should_commit)
-            return result, None
+            return result
 
 
 def run_execute_command(command_name: str, args: dict[str, Any]) -> list[dict]:
@@ -612,9 +640,9 @@ def main():
                         'push_job_id': args.get('push_job_id'),
                         'polling': True
                     }
-                    result, responses = manage_pan_os_flow(brand_args)  # TODO in the end of the flow return CommandResult list
-                    if not isinstance(result, list) or len(result) == 2:
-                        demisto.debug(f"We are in a polling scenario {result=} {isinstance(result, list)=}")
+                    result = manage_pan_os_flow(brand_args)  # TODO in the end of the flow return CommandResult list
+                    if not isinstance(result, list):
+                        demisto.debug(f"We are in a polling scenario {result=}")
                         # if we are in polling situation, save the existing results from other brands
                         # if args.get('commit_job_id') or args.get('push_job_id'):
                         #     # during a polling execution, we want to add the new values without overwriting the previous ones
