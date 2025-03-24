@@ -50,7 +50,7 @@ TOKEN = "token"
 
 def build_url(base_url, params):
     query_string = urlencode(params)
-    full_url = urljoin(base_url, '?' + query_string)
+    full_url = urljoin(base_url, "?" + query_string)
     return full_url
 
 
@@ -72,14 +72,17 @@ def build_zf_client(token=TOKEN) -> ZFClient:
     return ZFClient(
         base_url=BASE_URL,
         ok_codes=OK_CODES,
-        username='',
+        username="",
         token=token,
         only_escalated=False,
     )
 
 
 def get_formatted_date(str_date: str):
-    formatted_date = parse_date(str_date, date_formats=(DATE_FORMAT,),)
+    formatted_date = parse_date(
+        str_date,
+        date_formats=(DATE_FORMAT,),
+    )
     if formatted_date is None:
         raise ValueError("date must be a valid string date")
     return formatted_date.strftime(DATE_FORMAT)
@@ -121,10 +124,13 @@ def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
         And 0 incidents
     """
     alerts_empty_response = load_json("test_data/alerts/list_no_records.json")
-    requests_mock.get(ALERTS_ENDPOINT, response_list=[
-        {"json": alerts_empty_response},
-        {"json": alerts_empty_response},
-    ])
+    requests_mock.get(
+        ALERTS_ENDPOINT,
+        response_list=[
+            {"json": alerts_empty_response},
+            {"json": alerts_empty_response},
+        ],
+    )
     client = build_zf_client()
     last_run: dict = {}
     first_fetch_time = "2023-06-01T00:00:00.000000"
@@ -204,16 +210,12 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
         "sort_direction": "asc",
         "sort_field": "timestamp",
     }
-    first_page_alert_response = load_json(
-        "test_data/alerts/list_10_records_page1_5records.json")
+    first_page_alert_response = load_json("test_data/alerts/list_10_records_page1_5records.json")
     mock_url = build_url(alerts_url, mock_params)
     requests_mock.get(mock_url, json=first_page_alert_response)
-    second_page_alert_response = load_json(
-        "test_data/alerts/list_10_records_page2_5records.json")
-    expected_last_modified = get_formatted_date(
-        second_page_alert_response["alerts"][-1]["timestamp"])
-    requests_mock.get(first_page_alert_response.get(
-        "next", ""), json=second_page_alert_response)
+    second_page_alert_response = load_json("test_data/alerts/list_10_records_page2_5records.json")
+    expected_last_modified = get_formatted_date(second_page_alert_response["alerts"][-1]["timestamp"])
+    requests_mock.get(first_page_alert_response.get("next", ""), json=second_page_alert_response)
     client = build_zf_client()
     first_fetch_time = "2023-06-01T00:00:00.000000"
     spy = mocker.spy(client, "get_alerts")
@@ -228,10 +230,16 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
     assert next_run["last_modified_fetched"] == expected_last_modified
     assert len(incidents) == 9
     assert set(next_run["zf-ids"]) == {
-        "224850129", "224850127", "224850128",
-        "224850131", "224851768", "224851769",
-        "224851770", "224870860", "224851772",
-        "224870861"
+        "224850129",
+        "224850127",
+        "224850128",
+        "224850131",
+        "224851768",
+        "224851769",
+        "224851770",
+        "224870860",
+        "224851772",
+        "224870861",
     }
     for incident in incidents:
         assert "mirror_instance" in incident["rawJSON"]
@@ -365,12 +373,12 @@ def test_get_alert_command(requests_mock, mocker):
 
 def test_get_alert_command_raises_exception_on_alert_not_found(requests_mock, mocker):
     """
-        Given
-            An alert ID
-        When
-            /alerts/{alert_id}/ returns an error
-        Then
-            It should raise an exception specific to that endpoint
+    Given
+        An alert ID
+    When
+        /alerts/{alert_id}/ returns an error
+    Then
+        It should raise an exception specific to that endpoint
     """
     alert_id = 123
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json={}, status_code=404)
@@ -411,7 +419,7 @@ def test_alert_user_assignment_command(requests_mock, mocker):
     assert int(alert_id) == alert_id_called_in_assignment
     assert username == username_called
     spy_fetch.assert_called_once()
-    alert_id_called_in_fetch, = spy_fetch.call_args[0]
+    (alert_id_called_in_fetch,) = spy_fetch.call_args[0]
     assert int(alert_id) == alert_id_called_in_fetch
     assert isinstance(results.outputs, dict)
     assert results.outputs_prefix == "ZeroFox.Alert"
@@ -441,10 +449,10 @@ def test_close_alert_command(requests_mock, mocker):
     results = close_alert_command(client, args)
 
     spy_close.assert_called_once()
-    alert_id_called_in_close, = spy_close.call_args[0]
+    (alert_id_called_in_close,) = spy_close.call_args[0]
     assert int(alert_id) == alert_id_called_in_close
     spy_fetch.assert_called_once()
-    alert_id_called_in_fetch, = spy_fetch.call_args[0]
+    (alert_id_called_in_fetch,) = spy_fetch.call_args[0]
     assert int(alert_id) == alert_id_called_in_fetch
     assert isinstance(results.outputs, dict)
     assert results.outputs_prefix == "ZeroFox.Alert"
@@ -496,10 +504,10 @@ def test_open_alert_command(requests_mock, mocker):
     results = open_alert_command(client, args)
 
     spy_open.assert_called_once()
-    alert_id_called_in_open, = spy_open.call_args[0]
+    (alert_id_called_in_open,) = spy_open.call_args[0]
     assert int(alert_id) == alert_id_called_in_open
     spy_fetch.assert_called_once()
-    alert_id_called_in_fetch, = spy_fetch.call_args[0]
+    (alert_id_called_in_fetch,) = spy_fetch.call_args[0]
     assert int(alert_id) == alert_id_called_in_fetch
     assert isinstance(results.outputs, dict)
     assert results.outputs_prefix == "ZeroFox.Alert"
@@ -529,10 +537,10 @@ def test_alert_request_takedown_command(requests_mock, mocker):
     results = alert_request_takedown_command(client, args)
 
     spy_request_takedown.assert_called_once()
-    alert_id_called_in_request, = spy_request_takedown.call_args[0]
+    (alert_id_called_in_request,) = spy_request_takedown.call_args[0]
     assert int(alert_id) == alert_id_called_in_request
     spy_fetch.assert_called_once()
-    alert_id_called_in_fetch, = spy_fetch.call_args[0]
+    (alert_id_called_in_fetch,) = spy_fetch.call_args[0]
     assert int(alert_id) == alert_id_called_in_fetch
     assert isinstance(results.outputs, dict)
     assert results.outputs_prefix == "ZeroFox.Alert"
@@ -552,8 +560,7 @@ def test_alert_cancel_takedown_command(requests_mock, mocker):
     """
     alert_id = "123"
     alert_response = load_json("test_data/alerts/opened_alert.json")
-    requests_mock.post(
-        f"/1.0/alerts/{alert_id}/cancel_takedown/", status_code=200)
+    requests_mock.post(f"/1.0/alerts/{alert_id}/cancel_takedown/", status_code=200)
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
     client = build_zf_client()
     spy_cancel_takedown = mocker.spy(client, "alert_cancel_takedown")
@@ -563,10 +570,10 @@ def test_alert_cancel_takedown_command(requests_mock, mocker):
     results = alert_cancel_takedown_command(client, args)
 
     spy_cancel_takedown.assert_called_once()
-    alert_id_called_in_cancel, = spy_cancel_takedown.call_args[0]
+    (alert_id_called_in_cancel,) = spy_cancel_takedown.call_args[0]
     assert int(alert_id) == alert_id_called_in_cancel
     spy_fetch.assert_called_once()
-    alert_id_called_in_fetch, = spy_fetch.call_args[0]
+    (alert_id_called_in_fetch,) = spy_fetch.call_args[0]
     assert int(alert_id) == alert_id_called_in_fetch
     assert isinstance(results.outputs, dict)
     assert results.outputs_prefix == "ZeroFox.Alert"
@@ -608,7 +615,7 @@ def test_modify_alert_tags_command(requests_mock, mocker):
     assert action_in_request == action_called
     assert tags_in_request == tags_called
     spy_fetch.assert_called_once()
-    alert_id_called_in_fetch, = spy_fetch.call_args[0]
+    (alert_id_called_in_fetch,) = spy_fetch.call_args[0]
     assert int(alert_id) == alert_id_called_in_fetch
     assert isinstance(results.outputs, dict)
     assert results.outputs_prefix == "ZeroFox.Alert"
@@ -669,7 +676,7 @@ def test_create_entity_command_with_true_flag(requests_mock, mocker):
     assert organization_called == organization
 
     assert isinstance(results.outputs, dict)
-    assert results.outputs_prefix == 'ZeroFox.Entity'
+    assert results.outputs_prefix == "ZeroFox.Entity"
 
 
 def test_create_entity_command_with_false_flag(requests_mock, mocker):
@@ -727,7 +734,7 @@ def test_create_entity_command_with_false_flag(requests_mock, mocker):
     assert organization_called == organization
 
     assert isinstance(results.outputs, dict)
-    assert results.outputs_prefix == 'ZeroFox.Entity'
+    assert results.outputs_prefix == "ZeroFox.Entity"
 
 
 def test_list_alerts_command_with_no_records(requests_mock, mocker):
@@ -789,8 +796,7 @@ def test_list_entities_command_with_no_records(requests_mock, mocker):
         And return an empty list as output
         And with the correct output prefix
     """
-    entities_response = load_json(
-        "test_data/entities/entities_no_records.json")
+    entities_response = load_json("test_data/entities/entities_no_records.json")
     requests_mock.get("/1.0/entities/", json=entities_response)
     client = build_zf_client()
     spy = mocker.spy(client, "list_entities")
@@ -958,11 +964,14 @@ def test_modify_alert_notes_command(requests_mock, mocker):
     results = modify_alert_notes_command(client, args)
 
     spy_modify.assert_called_once()
-    alert_id_called, notes_called, = spy_modify.call_args[0]
+    (
+        alert_id_called,
+        notes_called,
+    ) = spy_modify.call_args[0]
     assert int(alert_id) == alert_id_called
     assert notes_called == notes
     spy_fetch.assert_called_once()
-    alert_id_called_in_fetch, = spy_fetch.call_args[0]
+    (alert_id_called_in_fetch,) = spy_fetch.call_args[0]
     assert int(alert_id) == alert_id_called_in_fetch
     assert isinstance(results.outputs, dict)
     assert results.outputs_prefix == "ZeroFox.Alert"
@@ -995,33 +1004,35 @@ def test_modify_alert_notes_command_raises_exception_on_endpoint_error(requests_
 
 def test_append_extra_notes_to_alert(requests_mock, mocker):
     """
-        Given
-            There is an alert id
-            And the alert has "some notes" as notes
-        When
-            Calling modify_alert_notes_command
-            With the action "append"
-            and the notes "more notes"
-        Then
-            It should call the modify alert notes with the alert id
-            And the combined notes "some notes\nmore notes"
-            And call fetch alert with the alert id
-            And return the alert as output
-            And with the correct output prefix
-        """
+    Given
+        There is an alert id
+        And the alert has "some notes" as notes
+    When
+        Calling modify_alert_notes_command
+        With the action "append"
+        and the notes "more notes"
+    Then
+        It should call the modify alert notes with the alert id
+        And the combined notes "some notes\nmore notes"
+        And call fetch alert with the alert id
+        And return the alert as output
+        And with the correct output prefix
+    """
     alert_id = "123"
     alert_response = load_json("test_data/alerts/opened_alert.json")
     notes = "more notes"
     alert_response.get("alert").update({"notes": "some notes"})
-    alert_response_post_change = load_json(
-        "test_data/alerts/opened_alert.json")
+    alert_response_post_change = load_json("test_data/alerts/opened_alert.json")
     new_notes = f"some notes\n{notes}"
     alert_response_post_change.get("alert").update({"notes": new_notes})
     requests_mock.post(f"/1.0/alerts/{alert_id}/")
-    requests_mock.get(f"/1.0/alerts/{alert_id}/", response_list=[
-        {"json": alert_response},
-        {"json": alert_response_post_change},
-    ])
+    requests_mock.get(
+        f"/1.0/alerts/{alert_id}/",
+        response_list=[
+            {"json": alert_response},
+            {"json": alert_response_post_change},
+        ],
+    )
     client = build_zf_client()
     mocker.spy(client, "modify_alert_notes")
     fetch_spy = mocker.spy(client, "get_alert")
@@ -1029,7 +1040,7 @@ def test_append_extra_notes_to_alert(requests_mock, mocker):
 
     results = modify_alert_notes_command(client, args)
 
-    alert_id_called_in_fetch, = fetch_spy.call_args[0]
+    (alert_id_called_in_fetch,) = fetch_spy.call_args[0]
     assert int(alert_id) == alert_id_called_in_fetch
     assert isinstance(results.outputs, dict)
     assert results.outputs.get("Notes") == new_notes
@@ -1114,7 +1125,7 @@ def test_compromised_domain_command(requests_mock, mocker):
     results = compromised_domain_command(client, args)
 
     spy_c2_domains.assert_called_once()
-    c2_domains_domain_arg, = spy_c2_domains.call_args[0]
+    (c2_domains_domain_arg,) = spy_c2_domains.call_args[0]
     assert c2_domains_domain_arg == domain
     spy_phishing.assert_called_once()
     phishing_domain_arg = spy_phishing.call_args.kwargs.get("domain")
@@ -1170,17 +1181,15 @@ def test_compromised_email_command(requests_mock, mocker):
     results = compromised_email_command(client, args)
 
     spy_email_addresses.assert_called_once()
-    email_addresses_email_arg, = spy_email_addresses.call_args[0]
+    (email_addresses_email_arg,) = spy_email_addresses.call_args[0]
     assert email_addresses_email_arg == email
 
     spy_compromised_credentials.assert_called_once()
-    compromised_credentials_email_arg, =\
-        spy_compromised_credentials.call_args[0]
+    (compromised_credentials_email_arg,) = spy_compromised_credentials.call_args[0]
     assert compromised_credentials_email_arg == email
 
     spy_botnet_compromised_credentials.assert_called_once()
-    botnet_compromised_credentials_email_arg, =\
-        spy_botnet_compromised_credentials.call_args[0]
+    (botnet_compromised_credentials_email_arg,) = spy_botnet_compromised_credentials.call_args[0]
     assert botnet_compromised_credentials_email_arg == email
 
     assert len(results.outputs) == 3
@@ -1214,7 +1223,7 @@ def test_malicious_ip_command(requests_mock, mocker):
     results = malicious_ip_command(client, args)
 
     spy_botnet.assert_called_once()
-    spy_botnet_ip_arg, = spy_botnet.call_args[0]
+    (spy_botnet_ip_arg,) = spy_botnet.call_args[0]
     assert spy_botnet_ip_arg == ip
     spy_phishing.assert_called_once()
     phishing_ip_arg = spy_phishing.call_args.kwargs.get("ip")
@@ -1254,8 +1263,7 @@ def test_malicious_hash_command(requests_mock, mocker):
     assert spy_malware.call_count == 4
     for hash_type_index in range(len(hash_types)):
         hash_type = hash_types[hash_type_index]
-        spy_malware_hash_type_arg, spy_malware_hash_arg = \
-            spy_malware.call_args_list[hash_type_index][0]
+        spy_malware_hash_type_arg, spy_malware_hash_arg = spy_malware.call_args_list[hash_type_index][0]
         assert spy_malware_hash_type_arg == hash_type
         assert spy_malware_hash_arg == hash
     assert len(results.outputs) == 4
@@ -1286,7 +1294,7 @@ def test_search_exploits_command(requests_mock, mocker):
     results = search_exploits_command(client, args)
 
     spy_exploits.assert_called_once()
-    since_called_arg, = spy_exploits.call_args[0]
+    (since_called_arg,) = spy_exploits.call_args[0]
     assert since_called_arg == since
     assert len(results.outputs) == 10
     assert results.outputs_prefix == "ZeroFox.Exploits"
@@ -1313,12 +1321,14 @@ def test_send_alert_attachment_command(requests_mock, mocker):
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
     client = build_zf_client()
     spy_send_attachment = mocker.spy(client, "send_alert_attachment")
-    mocker.patch('builtins.open', mocker.mock_open(read_data=b"data"))
+    mocker.patch("builtins.open", mocker.mock_open(read_data=b"data"))
     mocker.patch.object(
-        demisto, 'getFilePath', return_value={
-            'id': entry_id,
-            'name': entry_id,
-            'path': './test_data/attachments/attachment.txt',
+        demisto,
+        "getFilePath",
+        return_value={
+            "id": entry_id,
+            "name": entry_id,
+            "path": "./test_data/attachments/attachment.txt",
         },
     )
     spy_fetch = mocker.spy(client, "get_alert")
@@ -1336,7 +1346,7 @@ def test_send_alert_attachment_command(requests_mock, mocker):
     assert file_name == entry_id
     assert attachment_type == attachment_type_called
     spy_fetch.assert_called_once()
-    alert_id_called_in_fetch, = spy_fetch.call_args[0]
+    (alert_id_called_in_fetch,) = spy_fetch.call_args[0]
     assert alert_id == alert_id_called_in_fetch
     assert isinstance(results.outputs, dict)
     assert results.outputs_prefix == "ZeroFox.Alert"
@@ -1356,8 +1366,7 @@ def test_get_alert_attachments_command(requests_mock, mocker):
     alert_id = "123"
     attachments_response = load_json("test_data/alerts/attachments.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
-    requests_mock.get(
-        f"/1.0/alerts/{alert_id}/attachments/", json=attachments_response)
+    requests_mock.get(f"/1.0/alerts/{alert_id}/attachments/", json=attachments_response)
     client = build_zf_client()
     spy_get_attachments = mocker.spy(client, "get_alert_attachments")
     args = {"alert_id": alert_id}
@@ -1365,7 +1374,7 @@ def test_get_alert_attachments_command(requests_mock, mocker):
     results = get_alert_attachments_command(client, args)
 
     spy_get_attachments.assert_called_once()
-    alert_id_called, = spy_get_attachments.call_args[0]
+    (alert_id_called,) = spy_get_attachments.call_args[0]
     assert alert_id == alert_id_called
     assert isinstance(results.outputs, list)
     assert results.outputs_prefix == "ZeroFox.AlertAttachments"
@@ -1386,19 +1395,12 @@ def test_get_existing_compromised_credentials(requests_mock, mocker):
     client = build_zf_client()
     mocker.patch.object(demisto, "uniqueFile", return_value=file_id)
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
-    requests_mock.get(
-        f"/2.0/alerts/{alert_id}/breach_csv/", text=breach_data)
+    requests_mock.get(f"/2.0/alerts/{alert_id}/breach_csv/", text=breach_data)
     args = {"alert_id": alert_id}
 
     results = get_compromised_credentials_command(client, args)
 
-    expected = {
-        'Contents': '',
-        'ContentsFormat': 'text',
-        'File': 'breach_123.csv',
-        'FileID': file_id,
-        'Type': 3
-    }
+    expected = {"Contents": "", "ContentsFormat": "text", "File": "breach_123.csv", "FileID": file_id, "Type": 3}
 
     assert results == expected
 
