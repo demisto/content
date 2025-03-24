@@ -642,10 +642,19 @@ def test_build_indicators_with_hostname():
         - Successfully creates indicator and relationship.
     """
     from FeedMISP import build_indicators
+
     client = Mock()
-    response = {"response": {"Attribute": [{"type": "hostname",
-                                            "value": {"value": "www.test.com"},
-                                            "Tag": [{"name": 'misp-galaxy:mitre-attack-pattern="T1111"'}]}]}}
+    response = {
+        "response": {
+            "Attribute": [
+                {
+                    "type": "hostname",
+                    "value": {"value": "www.test.com"},
+                    "Tag": [{"name": 'misp-galaxy:mitre-attack-pattern="T1111"'}],
+                }
+            ]
+        }
+    }
     result = build_indicators(client, response, ["hostname"], "color", "url", "reputation", ["feed_tags"])
     assert result[0].get("Relationships", [])[0].get("entityAType") == "Domain"
     assert result[0].get("Relationships", [])[0].get("entityBType") == "Attack Pattern"

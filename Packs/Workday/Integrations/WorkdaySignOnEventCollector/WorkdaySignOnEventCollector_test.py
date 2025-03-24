@@ -322,19 +322,19 @@ def test_generate_test_payload() -> None:
     )
 
 
-@pytest.mark.parametrize("api_version, from_time, to_time, expected_version", [
-    # Given valid api_version and time range
-    ("v42.1", "2021-09-01T11:00:00Z", "2021-09-01T12:00:00Z", "v42.1"),
-
-    # Given default api_version and time range
-    ("v40.0", "2021-09-01T11:00:00Z", "2021-09-01T12:00:00Z", "v40.0"),
-
-    # Given valid api_version and different time range
-    ("v50.0", "2021-10-01T11:00:00Z", "2021-10-01T12:00:00Z", "v50.0"),
-
-    # Given invalid api_version should fallback to default
-    ("invalid", "2021-09-01T11:00:00Z", "2021-09-01T12:00:00Z", "v40.0"),
-])
+@pytest.mark.parametrize(
+    "api_version, from_time, to_time, expected_version",
+    [
+        # Given valid api_version and time range
+        ("v42.1", "2021-09-01T11:00:00Z", "2021-09-01T12:00:00Z", "v42.1"),
+        # Given default api_version and time range
+        ("v40.0", "2021-09-01T11:00:00Z", "2021-09-01T12:00:00Z", "v40.0"),
+        # Given valid api_version and different time range
+        ("v50.0", "2021-10-01T11:00:00Z", "2021-10-01T12:00:00Z", "v50.0"),
+        # Given invalid api_version should fallback to default
+        ("invalid", "2021-09-01T11:00:00Z", "2021-09-01T12:00:00Z", "v40.0"),
+    ],
+)
 def test_generate_test_payload_with_version(api_version, from_time, to_time, expected_version) -> None:
     """
     Given:
@@ -351,7 +351,7 @@ def test_generate_test_payload_with_version(api_version, from_time, to_time, exp
 
     # Given: Initialize a Client object with sample data
     mock_params = {
-        "base_url": "https://something.test",   # disable-secrets-detection
+        "base_url": "https://something.test",  # disable-secrets-detection
         "verify_certificate": True,
         "proxy": False,
         "tenant_name": "test_tenant",
@@ -361,9 +361,7 @@ def test_generate_test_payload_with_version(api_version, from_time, to_time, exp
         },
         "api_version": api_version,
     }
-    client = Client(
-        params=mock_params
-    )
+    client = Client(params=mock_params)
 
     # When: Generate the SOAP request payload for testing
     payload = client.generate_test_payload(from_time=from_time, to_time=to_time)
@@ -537,9 +535,7 @@ class TestGetSignOnEventsCommand(unittest.TestCase):
         ]
 
         # Setup: Use patch to mock the fetch_sign_on_logs function
-        with patch(
-            "WorkdaySignOnEventCollector.fetch_sign_on_logs", return_value=mock_events
-        ):
+        with patch("WorkdaySignOnEventCollector.fetch_sign_on_logs", return_value=mock_events):
             client = Client(params=mock_params)
 
             # When: Calling the get_sign_on_events_command
@@ -598,9 +594,10 @@ def test_fetch_sign_on_events_command_single_page() -> None:
     }
 
     # When: Calling the fetch_sign_on_events_command
-    with patch.object(
-        Client, "retrieve_events", return_value=mock_retrieve_response
-    ), patch("demistomock.getLastRun", return_value=mock_last_run):
+    with (
+        patch.object(Client, "retrieve_events", return_value=mock_retrieve_response),
+        patch("demistomock.getLastRun", return_value=mock_last_run),
+    ):
         client = Client(params=mock_params)
         events, new_last_run = fetch_sign_on_events_command(client, 10, mock_last_run)
 
@@ -695,28 +692,26 @@ def test_escaping_user_name(username, escaped_username, password, escaped_passwo
         "credentials": {"identifier": username, "password": password},
         "insecure": True,
     }
-    client = Client(params=mock_params
-                    )
+    client = Client(params=mock_params)
     assert client.username == escaped_username
     assert client.password == escaped_password
 
 
-@pytest.mark.parametrize("params, default, expected", [
-    # Given valid api_version, when get_api_version is called, then it returns the valid api_version
-    ({"api_version": "v42.1"}, "v40.0", "v42.1"),
-
-    # Given invalid api_version, when get_api_version is called, then it returns the default value
-    ({"api_version": "42.1"}, "v40.0", "v40.0"),
-
-    # Given missing api_version, when get_api_version is called, then it returns the default value
-    ({}, "v40.0", "v40.0"),
-
-    # Given invalid api_version with custom default, when get_api_version is called, then it returns the custom default value
-    ({"api_version": "invalid_format"}, "v50.0", "v50.0"),
-
-    # Given another valid api_version, when get_api_version is called, then it returns the valid api_version
-    ({"api_version": "v50.0"}, "v40.0", "v50.0")
-])
+@pytest.mark.parametrize(
+    "params, default, expected",
+    [
+        # Given valid api_version, when get_api_version is called, then it returns the valid api_version
+        ({"api_version": "v42.1"}, "v40.0", "v42.1"),
+        # Given invalid api_version, when get_api_version is called, then it returns the default value
+        ({"api_version": "42.1"}, "v40.0", "v40.0"),
+        # Given missing api_version, when get_api_version is called, then it returns the default value
+        ({}, "v40.0", "v40.0"),
+        # Given invalid api_version with custom default, when get_api_version is called, then it returns the custom default value
+        ({"api_version": "invalid_format"}, "v50.0", "v50.0"),
+        # Given another valid api_version, when get_api_version is called, then it returns the valid api_version
+        ({"api_version": "v50.0"}, "v40.0", "v50.0"),
+    ],
+)
 def test_get_api_version(params, default, expected):
     """
     Test get_api_version with various inputs using parameterization.

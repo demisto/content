@@ -284,9 +284,7 @@ def disable_user_account_command(client: MsGraphClient, args: dict):
 def unblock_user_command(client: MsGraphClient, args: dict):
     user = args.get("user")
     client.unblock_user(user)
-    human_readable = (
-        f'"{user}" unblocked. It might take several minutes for the changes to take effect across all applications. '
-    )
+    human_readable = f'"{user}" unblocked. It might take several minutes for the changes to take effect across all applications. '
     return human_readable, None, None
 
 

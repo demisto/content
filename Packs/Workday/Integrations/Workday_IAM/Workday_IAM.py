@@ -204,9 +204,7 @@ def is_termination_event(workday_user, demisto_user, deactivation_date_field, fi
     today = datetime.today()
 
     if (employment_status == "terminated" and prehire_flag is False) or (deactivation_date and deactivation_date <= today):
-        demisto.debug(
-            f"A termination event was detected for user with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}."
-        )
+        demisto.debug(f"A termination event was detected for user with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.")
         return True
 
     return False
@@ -290,8 +288,11 @@ def is_rehire_event(demisto_user, workday_user, changed_fields):
 
 
 def is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_enable_ad):
-    if (demisto_user and demisto_user.get(AD_ACCOUNT_STATUS_FIELD, "") == "Pending"
-            and has_reached_threshold_date(days_before_hire_to_enable_ad, workday_user)):
+    if (
+        demisto_user
+        and demisto_user.get(AD_ACCOUNT_STATUS_FIELD, "") == "Pending"
+        and has_reached_threshold_date(days_before_hire_to_enable_ad, workday_user)
+    ):
         demisto.debug(
             f"An Active Directory activation event was detected for user "
             f"with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}."
@@ -325,8 +326,9 @@ def is_ad_deactivation_event(demisto_user, workday_user, days_before_hire_to_ena
     ):
         return False
 
-    if (demisto_user.get(AD_ACCOUNT_STATUS_FIELD, "") == "Enabled" and not
-            has_reached_threshold_date(days_before_hire_to_enable_ad, workday_user)):
+    if demisto_user.get(AD_ACCOUNT_STATUS_FIELD, "") == "Enabled" and not has_reached_threshold_date(
+        days_before_hire_to_enable_ad, workday_user
+    ):
         demisto.debug(
             f"An Active Directory deactivation event was detected for user "
             f"with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}."

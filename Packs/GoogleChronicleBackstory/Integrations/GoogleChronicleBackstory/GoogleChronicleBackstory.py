@@ -2240,9 +2240,7 @@ def deduplicate_detections(detection_context: list[dict[str, Any]], detection_id
         }
         new_detection_identifiers.append(current_detection_identifier)
         if detection_identifiers and current_detection_identifier in detection_identifiers:
-            demisto.info(
-                f"[CHRONICLE] Skipping insertion of current detection since it already exists. Detection: {detection}"
-            )
+            demisto.info(f"[CHRONICLE] Skipping insertion of current detection since it already exists. Detection: {detection}")
             continue
         unique_detections.append(detection)
     return new_detection_identifiers, unique_detections
@@ -2266,9 +2264,7 @@ def deduplicate_curatedrule_detections(detection_context: list[dict[str, Any]], 
         current_detection_identifier = {"id": detection.get("id", "")}
         new_detection_identifiers.append(current_detection_identifier)
         if detection_identifiers and current_detection_identifier in detection_identifiers:
-            demisto.info(
-                f"[CHRONICLE] Skipping insertion of current detection since it already exists. Detection: {detection}"
-            )
+            demisto.info(f"[CHRONICLE] Skipping insertion of current detection since it already exists. Detection: {detection}")
             continue
         unique_detections.append(detection)
     return new_detection_identifiers, unique_detections

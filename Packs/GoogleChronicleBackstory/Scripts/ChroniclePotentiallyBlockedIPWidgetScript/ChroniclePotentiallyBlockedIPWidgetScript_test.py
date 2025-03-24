@@ -49,9 +49,7 @@ def test_get_html_representation_when_ip_is_not_blocked():
     """
 
     html_representation = ChroniclePotentiallyBlockedIPWidgetScript.get_html_representation("0.0.0.0", "No")
-    assert (
-        html_representation == "<div style='color:green; text-align:center;'><h1>0.0.0.0<br/>IP Address Not Blocked</h1></div>"
-    )
+    assert html_representation == "<div style='color:green; text-align:center;'><h1>0.0.0.0<br/>IP Address Not Blocked</h1></div>"
 
 
 def test_get_html_representation_when_ip_is_potentially_blocked():

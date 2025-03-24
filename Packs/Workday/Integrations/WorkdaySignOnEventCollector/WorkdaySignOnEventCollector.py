@@ -505,8 +505,7 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f"Command being called is {command}")
     try:
-        client = Client(params=params
-                        )
+        client = Client(params=params)
 
         if command == "test-module":
             return_results(module_of_testing(client))
@@ -544,11 +543,7 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(
-            f"Failed to execute {demisto.command()} command.\n"
-            f"Error:\n{str(e)}\n"
-            f"Traceback:\n{traceback.format_exc()}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}\nTraceback:\n{traceback.format_exc()}")
 
 
 """ ENTRY POINT """
