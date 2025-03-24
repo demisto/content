@@ -372,3 +372,12 @@ repos:
     - --diff
     - git diff HEAD
     skip: true
+
+- id: validate-validation-config-file
+  name: Validation for validate_config file
+  description: Validate the validation config file
+  entry: validate-validation-config-file
+  language: python
+  pass_filenames: false
+  args:
+  - --config-path=validation_config.toml
