@@ -675,7 +675,7 @@ def create_summary(model_processed: PostProcessing, fields_for_clustering: list[
     percentage_clusterized_samples = round(100 * (number_of_clusterized / number_of_sample), 0)
     summary = {
         "Total number of samples ": str(number_of_sample),
-        "Percentage of clusterized samples after selection (after Phase 1 and Phase 2)": f"{percentage_selected_samples}  ({nb_clusterized_after_selection}/{number_of_sample})",   # noqa: E501
+        "Percentage of clusterized samples after selection (after Phase 1 and Phase 2)": f"{percentage_selected_samples}  ({nb_clusterized_after_selection}/{number_of_sample})",  # noqa: E501
         "Percentage of clusterized samples (after Phase 1)": f"{percentage_clusterized_samples}  ({number_of_clusterized}/{number_of_sample})",  # noqa: E501
         "Percentage of cluster selected (Number of high quality groups/Total number of groups)": f"{percentage_clusters_selected}  ({number_clusters_selected}/{nb_clusters})",  # noqa: E501
         "Fields used for training": " , ".join(fields_for_clustering),
