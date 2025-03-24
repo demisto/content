@@ -975,7 +975,12 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
         # If not we'll treat it as a summary
         summary = indicator  # type: ignore
 
-    response = tc_get_indicators(client, indicator_id=indicator_id, summary=summary, fields_to_return=fields_to_return)  # type: ignore
+    response = tc_get_indicators(
+        client,
+        indicator_id=indicator_id,
+        summary=summary,
+        fields_to_return=fields_to_return,  # type: ignore
+    )
     ec, human_readable = create_context(response, include_dbot_score=True, fields_to_return=fields_to_return)
     if not ec:
         return_results(
