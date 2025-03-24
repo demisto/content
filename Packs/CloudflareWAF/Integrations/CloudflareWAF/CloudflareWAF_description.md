@@ -15,6 +15,8 @@ Cloudflare WAF supports two different authentication methods for API access:
 Each method has its own setup process and security implications. Below, you will find details on how to obtain and use each authentication method.
 note: *Any user role can create user based API tokens and the permissions they can assign to a token is any subset of their existing user permissions*
 
+Note: When both an API token and a global API key/email are provided, the API token will take priority.
+
 # Authenticating Using API Token (Recommended)
 
 ## How to create an API Token

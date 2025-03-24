@@ -495,3 +495,71 @@ def test_cloudflare_waf_ip_list_item_delete_command(requests_mock, mock_client):
     result = cloudflare_waf_ip_list_item_delete_command(mock_client, {'list_id': list_id, 'items': items})
 
     assert result.raw_response['operation_id'] == 'operation_id'
+
+
+def test_get_headers_with_api_token():
+    """
+    Scenario: Use API Token authentication.
+    Given:
+     - User has provided an API token using the credentials parameter.
+    When:
+     - get_headers is called.
+    Then:
+     - Ensure the 'Authorization' header is correctly set with the bearer token.
+     - Ensure the 'Content-Type' header is set to 'application/json'.
+    """
+    from CloudflareWAF import get_headers
+
+    params = {
+        'credentials': {'password': 'test_token'}
+    }
+    expected = {
+        'Authorization': 'Bearer test_token',
+        'Content-Type': 'application/json'
+    }
+    result = get_headers(params)
+    assert json.loads(result) == expected
+
+
+def test_get_headers_with_global_api_key():
+    """
+    Scenario: Use Global API Key and Email for authentication.
+    Given:
+     - User has provided a global API key and email.
+    When:
+     - get_headers is called.
+    Then:
+     - Ensure the 'X-Auth-Email' and 'X-Auth-Key' headers are correctly set.
+     - Ensure the 'Content-Type' header is set to 'application/json'.
+    """
+    from CloudflareWAF import get_headers
+
+    params = {
+        'global_api_key': {'password': 'test_key'},
+        'email': 'user@example.com'
+    }
+    expected = {
+        'X-Auth-Email': 'user@example.com',
+        'X-Auth-Key': 'test_key',
+        'Content-Type': 'application/json'
+    }
+    result = get_headers(params)
+    assert json.loads(result) == expected
+
+
+def test_get_headers_missing_authentication():
+    """
+    Scenario: Missing all authentication methods.
+    Given:
+     - No API token.
+     - No global API key and email.
+    When:
+     - get_headers is called.
+    Then:
+     - Raise ValueError indicating that authentication parameters are missing.
+    """
+    from CloudflareWAF import get_headers
+
+    params = {}
+    with pytest.raises(ValueError, match="Missing authentication parameters"):
+        get_headers(params)

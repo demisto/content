@@ -1245,8 +1245,8 @@ def get_headers(params: dict) -> str:
     """
     headers = {}
 
-    api_token = params.get('credentials', {}).get('password') or params.get('credentials')
-    global_api_key = params.get('global_api_key', {}).get('password') or params.get('global_api_key')
+    api_token = params.get('credentials', {}).get('password')
+    global_api_key = params.get('global_api_key', {}).get('password')
     email = params.get('email')
 
     if api_token:
@@ -1254,7 +1254,7 @@ def get_headers(params: dict) -> str:
             'Authorization': f'Bearer {api_token}',
             'Content-Type': 'application/json'
         }
-    elif isinstance(global_api_key, str) and global_api_key and email:
+    elif global_api_key and email:
         headers = {
             'X-Auth-Email': email,
             'X-Auth-Key': global_api_key,
@@ -1270,7 +1270,7 @@ def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
 
-    base_url = params.get('server')
+    base_url: str = params.get('server', 'https://api.cloudflare.com/client/v4/')
     account_id = params.get('account_id')
     zone_id = params.get('zone_id')
     proxy = argToBoolean(params.get('proxy', False))
@@ -1298,7 +1298,7 @@ def main() -> None:
     }
     try:
         credentials = get_headers(params)
-        client: Client = Client(credentials, account_id, proxy, insecure, base_url, zone_id)  # type: ignore
+        client: Client = Client(credentials, account_id, proxy, insecure, base_url, zone_id)
 
         if command == 'test-module':
             return_results(test_module(client))
