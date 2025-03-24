@@ -2673,9 +2673,11 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())
         if isinstance(e, NotFoundError):
-            return_error(f"{e!s}. There is a possibility that the organization's name is incorrect")
-            return
-        return_error(str(e))
+            err = f"{e!s}. There is a possibility that the organization's name is incorrect"
+        else:
+            err = str(e)
+
+        return_error(err)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

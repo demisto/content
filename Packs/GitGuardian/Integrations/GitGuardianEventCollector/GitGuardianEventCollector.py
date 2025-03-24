@@ -405,7 +405,8 @@ def main() -> None:  # pragma: no cover
             send_events_to_xsiam(incidents + audit_logs, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f"GG: Setting next run: {next_run}.")
             demisto.setLastRun(next_run)
-
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
     # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")

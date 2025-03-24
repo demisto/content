@@ -1428,68 +1428,75 @@ def fetch_incidents():
 
 """ EXECUTION CODE """
 
-LOG(f"command is {demisto.command()}")
-try:
-    if not re.match(r"[0-9a-z_.-]+", CORPNAME):
-        raise ValueError("Corporation Name should match the pattern [0-9a-z_.-]+")
 
-    if demisto.command() == "test-module":
-        test_module()
-    elif demisto.command() == "fetch-incidents":
-        fetch_incidents()
-    elif demisto.command() == "sigsci-get-whitelist":
-        get_whitelist_command()
-    elif demisto.command() == "sigsci-get-blacklist":
-        get_blacklist_command()
-    elif demisto.command() == "sigsci-whitelist-add-ip":
-        add_ip_to_whitelist_command()
-    elif demisto.command() == "sigsci-blacklist-add-ip":
-        add_ip_to_blacklist_command()
-    elif demisto.command() == "sigsci-whitelist-remove-ip":
-        whitelist_remove_ip_command()
-    elif demisto.command() == "sigsci-blacklist-remove-ip":
-        blacklist_remove_ip_command()
-    elif demisto.command() == "sigsci-get-sites":
-        get_sites_command()
-    elif demisto.command() == "sigsci-create-corp-list":
-        create_corp_list_command()
-    elif demisto.command() == "sigsci-get-corp-list":
-        get_corp_list_command()
-    elif demisto.command() == "sigsci-delete-corp-list":
-        delete_corp_list_command()
-    elif demisto.command() == "sigsci-update-corp-list":
-        update_corp_list_command()
-    elif demisto.command() == "sigsci-get-all-corp-lists":
-        get_all_corp_lists_command()
-    elif demisto.command() == "sigsci-create-site-list":
-        create_site_list_command()
-    elif demisto.command() == "sigsci-get-site-list":
-        get_site_list_command()
-    elif demisto.command() == "sigsci-delete-site-list":
-        delete_site_list_command()
-    elif demisto.command() == "sigsci-update-site-list":
-        update_site_list_command()
-    elif demisto.command() == "sigsci-get-all-site-lists":
-        get_all_site_lists_command()
-    elif demisto.command() == "sigsci-add-alert":
-        add_alert_command()
-    elif demisto.command() == "sigsci-get-alert":
-        get_alert_command()
-    elif demisto.command() == "sigsci-delete-alert":
-        delete_alert_command()
-    elif demisto.command() == "sigsci-update-alert":
-        update_alert_command()
-    elif demisto.command() == "sigsci-get-all-alerts":
-        get_all_alerts_command()
-    elif demisto.command() == "sigsci-get-events":
-        get_events_command()
-    elif demisto.command() == "sigsci-expire-event":
-        expire_event_command()
-    elif demisto.command() == "sigsci-get-event-by-id":
-        get_event_by_id_command()
-    elif demisto.command() == "sigsci-get-requests":
-        get_requests_command()
-    elif demisto.command() == "sigsci-get-request-by-id":
-        get_request_by_id_command()
-except Exception as e:
-    return_error(e)
+def main() -> None:
+
+    LOG(f"command is {demisto.command()}")
+    try:
+        if not re.match(r"[0-9a-z_.-]+", CORPNAME):
+            raise ValueError("Corporation Name should match the pattern [0-9a-z_.-]+")
+
+        if demisto.command() == "test-module":
+            test_module()
+        elif demisto.command() == "fetch-incidents":
+            fetch_incidents()
+        elif demisto.command() == "sigsci-get-whitelist":
+            get_whitelist_command()
+        elif demisto.command() == "sigsci-get-blacklist":
+            get_blacklist_command()
+        elif demisto.command() == "sigsci-whitelist-add-ip":
+            add_ip_to_whitelist_command()
+        elif demisto.command() == "sigsci-blacklist-add-ip":
+            add_ip_to_blacklist_command()
+        elif demisto.command() == "sigsci-whitelist-remove-ip":
+            whitelist_remove_ip_command()
+        elif demisto.command() == "sigsci-blacklist-remove-ip":
+            blacklist_remove_ip_command()
+        elif demisto.command() == "sigsci-get-sites":
+            get_sites_command()
+        elif demisto.command() == "sigsci-create-corp-list":
+            create_corp_list_command()
+        elif demisto.command() == "sigsci-get-corp-list":
+            get_corp_list_command()
+        elif demisto.command() == "sigsci-delete-corp-list":
+            delete_corp_list_command()
+        elif demisto.command() == "sigsci-update-corp-list":
+            update_corp_list_command()
+        elif demisto.command() == "sigsci-get-all-corp-lists":
+            get_all_corp_lists_command()
+        elif demisto.command() == "sigsci-create-site-list":
+            create_site_list_command()
+        elif demisto.command() == "sigsci-get-site-list":
+            get_site_list_command()
+        elif demisto.command() == "sigsci-delete-site-list":
+            delete_site_list_command()
+        elif demisto.command() == "sigsci-update-site-list":
+            update_site_list_command()
+        elif demisto.command() == "sigsci-get-all-site-lists":
+            get_all_site_lists_command()
+        elif demisto.command() == "sigsci-add-alert":
+            add_alert_command()
+        elif demisto.command() == "sigsci-get-alert":
+            get_alert_command()
+        elif demisto.command() == "sigsci-delete-alert":
+            delete_alert_command()
+        elif demisto.command() == "sigsci-update-alert":
+            update_alert_command()
+        elif demisto.command() == "sigsci-get-all-alerts":
+            get_all_alerts_command()
+        elif demisto.command() == "sigsci-get-events":
+            get_events_command()
+        elif demisto.command() == "sigsci-expire-event":
+            expire_event_command()
+        elif demisto.command() == "sigsci-get-event-by-id":
+            get_event_by_id_command()
+        elif demisto.command() == "sigsci-get-requests":
+            get_requests_command()
+        elif demisto.command() == "sigsci-get-request-by-id":
+            get_request_by_id_command()
+    except Exception as e:
+        return_error(e)
+
+
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()
