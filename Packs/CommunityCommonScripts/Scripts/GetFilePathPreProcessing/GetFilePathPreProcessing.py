@@ -11,7 +11,8 @@ if attachments is not None:
 
     # The logic for finding the incident that we want to drop the new files to should be here
     incident = "123"
-    demisto.executeCommand("executeCommandAt", {"command": "CreateFileFromPathObject",
-                           "arguments": {"object": files}, "incidents": incident})
+    demisto.executeCommand(
+        "executeCommandAt", {"command": "CreateFileFromPathObject", "arguments": {"object": files}, "incidents": incident}
+    )
     time.sleep(10)
 demisto.results(False)
