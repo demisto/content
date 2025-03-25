@@ -20,7 +20,7 @@ For supporting Time Zone parsing, time should be set to UTC +0000 [Product docum
 6. Click **Save Changes** in the top right to save your settings.
 
 ## Enabling Box Event Collector
-In order to configure the Box Event Collector to receive log messages:
+To configure the Box Event Collector to receive log messages:
 1. Make sure you have the Box pack installed on your XSIAM tenant.
 2. Go to **Settings** &rarr; **Configurations** &rarr; **Automation & Feed Integrations**
 3. At the search bar, type **Box** and press on **+ Add instance**
