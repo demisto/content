@@ -7,11 +7,19 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "IT Services",
+        "Authentication & Identity Management"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "IT",
+        "Compliance"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Celonis"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
