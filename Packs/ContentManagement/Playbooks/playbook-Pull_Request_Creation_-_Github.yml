@@ -1094,7 +1094,7 @@ inputs:
 - key: CICDKeepPlaceholdersInFiles
   value: {}
   required: false
-  description: Should the files be committed without changing any content with ${} to the data in the context.
+  description: Set to true if the files should be preserving ${} placeholders instead of replacing them with the context data.
   playbookInputQuery: null
 outputs: []
 tests:

@@ -307,7 +307,7 @@ def split_yml_file(content_file: ContentFile):  # pragma: no cover
 
 
 def commit_git(git_integration: str, branch_name: str, content_file: ContentFile,
-               new_files: List, modified_files: List, keep_placeholders_in_files: bool):  # pragma: no cover
+               new_files: List, modified_files: List, keep_placeholders_in_files: bool):
     if git_integration == 'Gitlab':
         commit_content_item_gitlab(branch_name, content_file, new_files, modified_files)
     elif git_integration == 'GitHub':

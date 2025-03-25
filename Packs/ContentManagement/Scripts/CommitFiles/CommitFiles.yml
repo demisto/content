@@ -1,5 +1,5 @@
 args:
-- description: Should the script keep all placeholders (${}) in the files or replace them with the data from the context.
+- description: Set to true if the files should be committed while preserving ${} placeholders instead of replacing them with context data.
   isArray: false
   name: cicd_keep_placeholders_in_files
   defaultValue: true
