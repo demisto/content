@@ -1,0 +1,265 @@
+category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
+- Optimize
+commonfields:
+  id: SymantecICDM
+  version: -1
+name: SymantecICDM
+display: Symantec Endpoint Security (ICDM)
+description: Query the Symantec Endpoint Security Cloud Portal (ICDM).
+configuration:
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  section: Collect
+  type: 15
+- defaultvalue: https://api.sep.securitycloud.symantec.com
+  display: Server URL (e.g. https://api.sep.securitycloud.symantec.com)
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  section: Collect
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  section: Connect
+  type: 13
+- defaultvalue: "100"
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  section: Collect
+  type: 0
+- display: ""
+  displaypassword: API Key
+  hiddenusername: true
+  name: credentials
+  required: true
+  section: Connect
+  type: 9
+- defaultvalue: 30 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  section: Collect
+  type: 0
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  section: Collect
+  advanced: true
+  type: 19
+- display: Ignore Domains (e.g. domain.local)
+  additionalinfo: Comma-separated list of domains that shall be ignored for Urls and (Sub-)Domains reputation lookup
+  name: ignored_domains
+  required: false
+  section: Optimize
+  type: 0
+- display: Ignore Private IPs (e.g. 192.168.0.1)
+  name: ignore_private_ip
+  required: false
+  section: Optimize
+  type: 8
+  defaultvalue: 'true'
+script:
+  commands:
+  - name: file
+    description: Get file reputation for given SHA256.
+    arguments:
+    - name: file
+      default: true
+      description: List of files.
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+  - name: ip
+    description: Get ip reputation.
+    arguments:
+    - name: ip
+      default: true
+      description: List of IPs.
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+  - name: url
+    description: Get reputation for given url.
+    arguments:
+    - name: url
+      default: true
+      description: List of URLs.
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+  - name: domain
+    description: Get reputation for given domain.
+    arguments:
+    - name: domain
+      default: true
+      description: List of domains.
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Domain.Name
+      type: String
+      description: The domain name.
+  - name: symantec-protection-file
+    description: Get information whether a given file has been blocked by any Symantec technologies.
+    arguments:
+    - name: file
+      description: Comma-separated list of file Sha256 hashes.
+      isArray: true
+    outputs:
+    - contextPath: Symantec.Protection.File.file
+      description: 'input file sha256.'
+      type: String
+    - contextPath: Symantec.Protection.File.state.technology
+      description: 'Symantec technology providing protection.'
+      type: String
+    - contextPath: Symantec.Protection.File.state.firstDefsetVersion
+      description: 'The first definition version with protection.'
+      type: String
+    - contextPath: Symantec.Protection.File.state.threatName
+      description: 'The name of the threat the file is detected as.'
+      type: String
+  - name: symantec-protection-network
+    description: Get  information whether given domain or ip has been blocked by any Symantec technologies.
+    arguments:
+    - name: network
+      description: Comma-separated list of domains or IPs.
+      isArray: true
+    outputs:
+    - contextPath: Symantec.Protection.Network.network
+      description: 'input domain or ip.'
+      type: String
+    - contextPath: Symantec.Protection.Network.state.technology
+      description: 'Symantec technology providing protection.'
+      type: String
+    - contextPath: Symantec.Protection.Network.state.firstDefsetVersion
+      description: 'The first definition version with protections.'
+      type: String
+    - contextPath: Symantec.Protection.Network.state.threatName
+      description: 'The name of the threat the domain or is detected as.'
+      type: String
+  - name: symantec-protection-cve
+    description: Get returns information whether a given CVE has been blocked by any Symantec technologies.
+    arguments:
+    - name: cve
+      description: Comma-separated list of CVEs.
+      isArray: true
+    outputs:
+    - contextPath: Symantec.Protection.CVE.cve
+      description: 'input CVE.'
+      type: String
+    - contextPath: Symantec.Protection.CVE.state.technology
+      description: 'Symantec technology providing protection.'
+      type: String
+    - contextPath: Symantec.Protection.CVE.state.firstDefsetVersion
+      description: 'The first definition version with protections.'
+      type: String
+    - contextPath: Symantec.Protection.CVE.state.threatName
+      description: 'The name of the threat the domain or is detected as.'
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  isfetch: true
+  dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
