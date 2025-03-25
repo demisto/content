@@ -316,36 +316,6 @@ def wait_for_chrome_startup(port: str) -> bool:
     return False
 
 
-def attempt_browser_connection(browser_url: str, port: str) -> Optional[pychrome.Browser]:
-    """
-    Attempt to establish connection with Chrome browser.
-
-    Args:
-        browser_url (str): URL to connect to browser
-        port (str): Port number
-
-    Returns:
-        Optional[pychrome.Browser]: Browser instance if successful, None otherwise
-    """
-    try:
-        browser = pychrome.Browser(url=browser_url)
-        # Use list_tab to ping the browser and make sure it's available
-        tabs_count = len(browser.list_tab())
-
-        demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs, {MAX_CHROME_TABS_COUNT=}")
-        # if tabs_count < MAX_CHROME_TABS_COUNT:
-        return browser
-
-    except requests.exceptions.ConnectionError as exp:
-        exp_str = str(exp)
-        if "connection refused" in exp_str:
-            demisto.debug(f"Failed to connect to Chrome on port {port}. Connection refused")
-        else:
-            demisto.debug(f"Failed to connect to Chrome on port {port}. ConnectionError, exp_str={exp_str}, exp={exp}")
-
-    return None
-
-
 def get_chrome_browser(port: str) -> Optional[pychrome.Browser]:
     """
     Get a Chrome browser instance on the specified port.
@@ -365,9 +335,24 @@ def get_chrome_browser(port: str) -> Optional[pychrome.Browser]:
     for i in range(DEFAULT_RETRIES_COUNT):
         demisto.debug(f"Trying to connect to {browser_url}, iteration {i + 1}/{DEFAULT_RETRIES_COUNT}")
 
-        browser = attempt_browser_connection(browser_url, port)
-        if browser:
+        try:
+            browser = pychrome.Browser(url=browser_url)
+            # Use list_tab to ping the browser and make sure it's available
+            tabs_count = len(browser.list_tab())
+
+            demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs, {MAX_CHROME_TABS_COUNT=}")
+            # if tabs_count < MAX_CHROME_TABS_COUNT:
             return browser
+
+        except requests.exceptions.ConnectionError as exp:
+            exp_str = str(exp)
+            connection_refused = "connection refused"
+            if connection_refused in exp_str:
+                demisto.debug(f"Failed to connect to Chrome on port {port} on iteration {i + 1}. {connection_refused}")
+            else:
+                demisto.debug(
+                    f"Failed to connect to Chrome on port {port} on iteration {i + 1}. ConnectionError, {exp_str=}, {exp=}"
+                )
 
         # Mild backoff
         time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + i * 2)  # pylint: disable=E9003
