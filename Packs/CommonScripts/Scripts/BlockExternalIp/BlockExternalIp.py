@@ -1,3 +1,4 @@
+import ast
 import datetime
 from time import sleep
 from typing import Any, Dict
@@ -6,6 +7,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+POLLING = False
 
 """ STANDALONE FUNCTION """
 
@@ -168,10 +170,40 @@ def get_relevant_context(original_context: dict[str, Any], key: str) -> dict | l
 
 def check_value_exist_in_context(value: str, context: list[dict], key: str) -> bool:
     for item in context:
-        match = item.get(key)
+        match = item.get(key, '')
+        demisto.debug(f"The {match=}")
         if match and match == value:
+            demisto.debug(f"The {value=} was found")
             return True
+        elif match:
+            match_split = match.split('or') if isinstance(match, str) else match.get('#text', '').split('or')
+            match_split_strip = [m.strip() for m in match_split]
+            demisto.debug(f"{match_split_strip=}")
+            if value in match_split_strip:
+                demisto.debug(f"The {value=} was found in an 'or' case")
+                return True
     return False
+
+
+def get_match_by_name(name: str, context: list | dict):
+    for item in context:
+        address_group_name = item.get('Name', '')
+        if address_group_name and address_group_name == name:
+            match = item.get('Match', '')
+            if isinstance(match, dict):
+                match = match.get('#text')
+            demisto.debug(f"The {name=} was found, returning the {match}")
+            return match
+    return ''  # when creating a dynamic address group a match value is a required, so it won't get here
+
+
+def update_brands_to_run(brands_to_run: list) -> tuple[list, set]:
+    incident_context = demisto.context()
+    executed_brands = incident_context.get('executed_brands', '')
+    executed_brands = ast.literal_eval(incident_context.get('executed_brands', '')) if executed_brands else []
+    updated_brands_to_run = {b for b in brands_to_run if b not in executed_brands}
+    demisto.debug(f"Removed {executed_brands=} from {brands_to_run=}")
+    return executed_brands, updated_brands_to_run
 
 
 """ COMMAND FUNCTION """
@@ -271,9 +303,12 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
    timeout=600,
    requires_polling_arg=True,
 )
-def pan_os_commit_status(args: dict) -> PollResult:
+def pan_os_commit_status(args: dict, responses: list) -> PollResult:
     commit_job_id = args['commit_job_id']
     res_commit_status = run_execute_command("pan-os-commit-status", {'job_id': commit_job_id})
+    demisto.debug(f"Before adding the new response {len(responses)=}")
+    responses.append(res_commit_status)
+    demisto.debug(f"After adding the new response {len(responses)=}")
     result_commit_status = res_commit_status[0].get('Contents', {}).get('response', {}).get('result', {}).get('job', {})
     job_result = result_commit_status.get('result')
     demisto.debug(f"The result is {job_result=}")
@@ -282,7 +317,9 @@ def pan_os_commit_status(args: dict) -> PollResult:
         'Status': 'Success' if job_result == 'OK' else 'Failure',
     }
     continue_to_poll = result_commit_status.get('status') != 'FIN'
-    args['continue_to_poll'] = continue_to_poll
+    global POLLING
+    POLLING = continue_to_poll
+    #args['continue_to_poll'] = continue_to_poll
     demisto.debug(f"after pan-os-commit-status {continue_to_poll=} {commit_job_id=}")
     return PollResult(
         response=CommandResults(
@@ -295,8 +332,9 @@ def pan_os_commit_status(args: dict) -> PollResult:
     )
 
 
-def pan_os_check_trigger_push_to_device() -> bool:
+def pan_os_check_trigger_push_to_device(responses: list) -> bool:
     res_pan_os = run_execute_command("pan-os", {'cmd': '<show><system><info></info></system></show>', 'type': 'op'})
+    responses.append(res_pan_os)
     context = get_relevant_context(res_pan_os[0].get('EntryContext', {}), 'Panorama.Command')
     model = context.get('response', {}).get('result', {}).get('system', {}).get('model', '')
     if model == "Panorama":
@@ -310,8 +348,11 @@ def pan_os_check_trigger_push_to_device() -> bool:
    timeout=600,
    requires_polling_arg=True,
 )
-def pan_os_push_to_device(args: dict) -> PollResult:
+def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
     res_push_to_device = run_execute_command("pan-os-push-to-device-group", {'polling': True})
+    demisto.debug(f"Before adding the new response {len(responses)=}")
+    responses.append(res_push_to_device)
+    demisto.debug(f"After adding the new response {len(responses)=}")
     polling_args = res_push_to_device[0].get('Metadata', {}).get('pollingArgs', {})
     job_id = polling_args.get('push_job_id')
     device_group = polling_args.get('device-group')
@@ -334,6 +375,9 @@ def pan_os_push_to_device(args: dict) -> PollResult:
             readable_output=res_push_to_device[0].get('Contents') or 'There are no changes to push.'
         )
         continue_to_poll = False
+    global POLLING
+    POLLING = continue_to_poll
+    #args['continue_to_poll'] = continue_to_poll
 
     return PollResult(
         response=push_cr,
@@ -350,9 +394,12 @@ def pan_os_push_to_device(args: dict) -> PollResult:
    timeout=600,
    requires_polling_arg=True,
 )
-def pan_os_push_status(args: dict):
+def pan_os_push_status(args: dict, responses: list):
     push_job_id = args['push_job_id']
     res_push_device_status = run_execute_command("pan-os-push-status", {'job_id': push_job_id})
+    demisto.debug(f"Before adding the new response {len(responses)=}")
+    responses.append(res_push_device_status)
+    demisto.debug(f"After adding the new response {len(responses)=}")
     push_status = res_push_device_status[0].get('Contents', {}).get('response', {}).get('result', {}).get('job', {}).get('status', '')
 
     continue_to_poll = True if push_status and push_status != 'FIN' else False
@@ -367,7 +414,9 @@ def pan_os_push_status(args: dict):
         outputs=context_output,  # update it according to the output from the execution.
         readable_output=tableToMarkdown('Push to Device Group:', context_output, removeNull=True)
     )
-    args['continue_to_poll'] = continue_to_poll
+    global POLLING
+    POLLING = continue_to_poll
+    #args['continue_to_poll'] = continue_to_poll
     return PollResult(
         response=push_cr,
         continue_to_poll=continue_to_poll,
@@ -381,6 +430,7 @@ def final_part_pan_os(args: dict, responses: list) -> list[CommandResults]:
     tag = args.get('tag')
     ip_list = args.get('ip_list')
     demisto.setContext('push_job_id', '')  # delete any previous value if exists
+    demisto.setContext('responses', '')  # delete any previous value if exists
     responses.append(run_execute_command('pan-os-register-ip-tag', {'tag': tag, 'IPs': ip_list}))
     results = prepare_context_and_hr_multiple_executions(responses, args['verbose'], '', ip_list)
     return results
@@ -398,10 +448,16 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
     responses.append(res_list_add_group)
     context_list_add_group = get_relevant_context(res_list_add_group[0].get('EntryContext', {}), "Panorama.AddressGroups")
     if not check_value_exist_in_context(tag, context_list_add_group, 'Match'):
-        # TODO check if the group already exists we should update the tag.
+        # check if the group already exists we should update the tag.
         demisto.debug(f"The {tag=} doesn't exist in the address groups")
-        res_create_add_group = run_execute_command("pan-os-create-address-group", {'name': address_group, 'type': 'dynamic', 'match': tag})
-        responses.append(res_create_add_group)
+        if check_value_exist_in_context(address_group, context_list_add_group, 'Name'):
+            current_match = get_match_by_name(address_group, context_list_add_group)
+            new_match = f'{current_match} or {tag}' if current_match else tag
+            res_edit_add_group = run_execute_command("pan-os-edit-address-group", {'name': address_group, 'type': 'dynamic', 'match': new_match})
+            responses.append(res_edit_add_group)
+        else:
+            res_create_add_group = run_execute_command("pan-os-create-address-group", {'name': address_group, 'type': 'dynamic', 'match': tag})
+            responses.append(res_create_add_group)
         res_list_rules = run_execute_command("pan-os-list-rules", {'pre_post': 'pre-rulebase'})
         context_list_rules = get_relevant_context(res_list_rules[0].get('EntryContext', {}), 'Panorama.SecurityRule')
         if check_value_exist_in_context(rule_name, context_list_rules, 'Name'):
@@ -440,13 +496,14 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
             readable_output=tableToMarkdown('Commit Status:', context_output, removeNull=True)
         )
         demisto.debug(f"Initiated a commit execution {continue_to_poll=} {job_id=}")
-        args['continue_to_poll'] = continue_to_poll
 
     else:  # nothing to commit in pan-os, no reason to poll.
         commit_output = res_commit[0].get('Contents') or 'There are no changes to commit.'  # type: ignore[assignment]
         demisto.debug(f"No job_id, {commit_output}")
         continue_to_poll = False
-        args['continue_to_poll'] = continue_to_poll
+    global POLLING
+    POLLING = continue_to_poll
+    #args['continue_to_poll'] = continue_to_poll
 
     args_for_next_run = {
         'commit_job_id': job_id,
@@ -477,56 +534,65 @@ def manage_pan_os_flow(args: dict):
     responses = []
     if push_job_id := demisto.get(incident_context, 'push_job_id'):
         demisto.debug(f"Has a {push_job_id=}")
+        responses = ast.literal_eval(incident_context.get('responses', ''))
         args['push_job_id'] = push_job_id
-        res_push_status = pan_os_push_status(args)
-        if not args['continue_to_poll']:
+        res_push_status = pan_os_push_status(args, responses)
+        if not POLLING:
             demisto.debug("Finished polling, finishing the flow")
-            return final_part_pan_os(args, [res_push_status])  # TODO save the responses between polling runs
+            return final_part_pan_os(args, responses)
         else:
+            demisto.debug(f"Poll for the push status. Save the responses to the context {len(responses)=}")
+            demisto.setContext('responses', str(responses))
             return res_push_status
     elif commit_job_id := args.get('commit_job_id'):
         demisto.debug(f"Has a {commit_job_id=}")
-        poll_commit_status = pan_os_commit_status(args)
-        if not args['continue_to_poll']:
-            demisto.debug("Finished polling, checking if we need to trigger pan_os_push_to_device")
-            if pan_os_check_trigger_push_to_device():
+        responses_str = incident_context.get('responses', '')
+        responses = ast.literal_eval(responses_str)
+        poll_commit_status = pan_os_commit_status(args, responses)
+        if not POLLING:
+            demisto.debug("Finished polling for the commit status, checking if we need to trigger pan_os_push_to_device")
+            if pan_os_check_trigger_push_to_device(responses):
                 demisto.debug("Triggering pan_os_push_to_device")
-                poll_push_to_device = pan_os_push_to_device(args)
-                demisto.debug(f"returning {poll_commit_status=} {poll_push_to_device=}")
-                return poll_push_to_device
+                poll_push_to_device = pan_os_push_to_device(args, responses)
+                if not POLLING:
+                    demisto.debug("Nothing to push. Finish the process.")
+                    return final_part_pan_os(args, responses)
+                else:
+                    demisto.debug(f"Poll for the push status. Save the responses to the context {len(responses)=}")
+                    demisto.setContext('responses', str(responses))
+                    return poll_push_to_device
             else:
                 demisto.debug("Not a Panorama instance, not pushing to device. Continue to register the IP.")
+                return final_part_pan_os(args, responses)
         else:
+            demisto.debug(f"Poll for the commit status. Save the responses to the context {len(responses)=}")
+            demisto.setContext('responses', str(responses))
             return poll_commit_status
 
-    # check if we are in the initial run or should execute pan-os-register-ip-tag
-    if commit_job_id or push_job_id:
-        demisto.debug(f"{commit_job_id=} or {push_job_id=}")
-        responses = args.get('panorama', [])
-        if res_push_status:
-            responses.append(res_push_status)
-        return final_part_pan_os(args, responses)
-    else:
-        res, should_commit = start_pan_os_flow(args)  # TODO save res to the context
-        demisto.debug(f"The length of the responses is {len(res)}")
-        if should_commit:
-            poll_result = pan_os_commit(args, res)
-            demisto.debug(f"The result that returned from the commit execution is {poll_result=} and {args=}")
-            demisto.debug(f"The length of the responses after adding the res_commit is {len(res)}")
-            if not args['continue_to_poll']:
-                result = final_part_pan_os(args, res)
-                demisto.debug(f"The result after continue_to_poll is false {result=}")
-                return result
-            return poll_result
-        elif isinstance(res[0], CommandResults): # already did the final part in start_pan_os_flow
-            return res
-        else:
-            cr_should_commit = CommandResults(readable_output=f"Not commiting the changes in Panorama, since "
-                                                              f"{auto_commit=}. Please do so manually for the changes "
-                                                              f"to take affect.")
-            result = final_part_pan_os(args, res)
-            result.append(cr_should_commit)
+    # if we are here, it is the beginning of the flow
+    responses, should_commit = start_pan_os_flow(args)
+    demisto.debug(f"The length of the responses is {len(responses)}")
+    if should_commit:
+        poll_result = pan_os_commit(args, responses)
+        demisto.debug(f"The result that returned from the commit execution is {poll_result=} and {args=}")
+        demisto.debug(f"The length of the responses after adding the res_commit is {len(responses)}")
+        if not POLLING:
+            result = final_part_pan_os(args, responses)
+            demisto.debug(f"The result after continue_to_poll is false {result=}")
             return result
+        else:
+            demisto.debug(f"Poll for the commit status. Save the responses to the context {len(responses)=}")
+            demisto.setContext('responses', str(responses))
+            return poll_result
+    elif isinstance(responses[0], CommandResults): # already did the final part in start_pan_os_flow
+        return responses
+    else:
+        cr_should_commit = CommandResults(readable_output=f"Not commiting the changes in Panorama, since "
+                                                          f"{auto_commit=}. Please do so manually for the changes "
+                                                          f"to take affect.")
+        result = final_part_pan_os(args, responses)
+        result.append(cr_should_commit)
+        return result
 
 
 def run_execute_command(command_name: str, args: dict[str, Any]) -> list[dict]:
@@ -572,48 +638,54 @@ def main():
         demisto.debug(f"BEI: the enabled modules are: {enabled_brands=}")
         demisto.debug(f"BEI: {brands_to_run=}")
 
+        executed_brands, updated_brands_to_run = update_brands_to_run(brands_to_run)
+
         results = []
-        for brand in brands_to_run:
+        for brand in updated_brands_to_run:
             demisto.debug(f"BEI: the current brand is {brand}")
             if brand in enabled_brands:
                 if brand == "Zscaler":
-                    args = {
+                    brand_args = {
                         'ip': ip_list_arg
                     }
                     command_name = 'zscaler-blacklist-ip'
-                    result = run_execute_command(command_name, args)
+                    result = run_execute_command(command_name, brand_args)
                     results.append(prepare_context_and_hr(result, verbose, ip_list_arr))
+                    executed_brands.append(brand)
 
                 elif brand == "Cisco ASA":
                     command_name = 'cisco-asa-create-rule'
                     for ip in ip_list_arr:
-                        args = {
+                        brand_args = {
                             "destination": ip,
                             "interface_type": "Global",
                             "source": "0.0.0.0",
                             "permit": False
                         }
-                        result = run_execute_command(command_name, args)
+                        result = run_execute_command(command_name, brand_args)
                         results.append(prepare_context_and_hr(result, verbose, [ip]))
+                    executed_brands.append(brand)
 
                 elif brand == "F5Silverline":
                     command_name = "f5-silverline-ip-object-add"
                     for ip in ip_list_arr:
-                        args = {
+                        brand_args = {
                             "list_type": "denylist",
                             "cidr_range": ip,
                             "tags": tag
                         }
-                        result = run_execute_command(command_name, args)
+                        result = run_execute_command(command_name, brand_args)
                         results.append(prepare_context_and_hr(result, verbose, [ip]))
+                    executed_brands.append(brand)
 
                 elif brand == "FortiGate":
                     command_name = "fortigate-ban-ip"
-                    args = {
+                    brand_args = {
                         "ip_address": ip_list_arg
                     }
-                    result = run_execute_command(command_name, args)
+                    result = run_execute_command(command_name, brand_args)
                     results.append(prepare_context_and_hr(result, verbose, ip_list_arr))
+                    executed_brands.append(brand)
 
                 elif brand == "Palo Alto Networks - Prisma SASE":
                     for ip in ip_list_arr:
@@ -625,6 +697,7 @@ def main():
                             'auto_commit': auto_commit,
                         }
                         results.append(prisma_sase_block_ip(brand_args))
+                    executed_brands.append(brand)
 
                 elif brand == "Panorama":
                     brand_args = {
@@ -640,34 +713,13 @@ def main():
                         'push_job_id': args.get('push_job_id'),
                         'polling': True
                     }
-                    result = manage_pan_os_flow(brand_args)  # TODO in the end of the flow return CommandResult list
-                    if not isinstance(result, list):
-                        demisto.debug(f"We are in a polling scenario {result=}")
-                        # if we are in polling situation, save the existing results from other brands
-                        # if args.get('commit_job_id') or args.get('push_job_id'):
-                        #     # during a polling execution, we want to add the new values without overwriting the previous ones
-                        #     prev_context = args.get('script_context', {})
-                        #     prev_responses = prev_context.get('panorama', [])
-                        #     responses = prev_responses.append(responses) if responses else prev_responses
-                        #     results = prev_context.get('command_results_list', [])
-                        #
-                        # script_context = {
-                        #     'panorama': responses,
-                        #     'command_results_list': results
-                        # }
-                        #result.args_for_next_run['script_context'] = script_context
-                        #demisto.debug(f"After updating {result.args_for_next_run=}")
-                        return_results(result)
-
-                    else:
-                        demisto.debug(f"The result object is {result}")
-                        script_context = args.get('script_context', {})
-                        demisto.debug(f"{script_context=}")
-                        results_from_context = script_context.get('command_results_list', [])
-                        results_from_context.append(result)
-                        demisto.debug(f"{results_from_context=}")
-                        results = results_from_context
-                        return_results(results)
+                    result = manage_pan_os_flow(brand_args)
+                    if not POLLING:
+                        demisto.debug("Not in a polling mode, adding Panorama to the executed_brands.")
+                        executed_brands.append(brand)
+                    demisto.setContext('executed_brands', str(executed_brands))
+                    demisto.debug(f"Before returning {result=} in panorama")
+                    return_results(result)
 
                 else:
                     return_error(f"The brand {brand} isn't a part of the supported integration for 'block-external-ip'. "
@@ -675,7 +727,11 @@ def main():
                                  f"CheckPointFirewall_v2, FortiGate, F5Silverline, Cisco ASA, Zscaler.")
             else:
                 demisto.info(f"The brand {brand} isn't enabled.")
-        demisto.debug(f"returning at the end of main() {results=}")
+        demisto.debug(f"returning at the end of main(), {results=}")
+        # TODO add a global variable that will check if we continue to poll or finished everything. If finished - delete the executed_brands
+        if not POLLING:
+            demisto.debug("Not in a polling mode, initializing the executed_brands.")
+            demisto.setContext('executed_brands', '')
         return_results(results)
 
     except Exception as ex:
