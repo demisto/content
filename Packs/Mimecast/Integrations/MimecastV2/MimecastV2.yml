@@ -144,7 +144,7 @@ configuration:
   name: max_fetch
   type: 0
   required: false
-  additionalinfo: Limit For each fetched incident type separately. Recommended value is 100. Maximum value is 200.
+  additionalinfo: Limit for each fetched incident type. Recommended value is 100. Maximum value is 200.
   section: Collect
   advanced: true
 - display: Trust any certificate (not secure)
@@ -162,7 +162,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-  additionalinfo: Please set the Incidents Fetch Interval to a maximum of 15 minutes if the number of incidents is expected to exceed the specified max fetch limit in each fetch cycle.
+  additionalinfo: Set the Incidents Fetch Interval to a maximum of 15 minutes if the number of incidents is expected to exceed the specified max fetch limit in each fetch cycle.
   section: Collect
 description: Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
 display: Mimecast v2

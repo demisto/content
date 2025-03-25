@@ -2,7 +2,7 @@
     "name": "PolySwarm",
     "description": "Real-time threat intelligence from a crowdsourced network of security experts and antivirus companies.",
     "support": "partner",
-    "currentVersion": "2.0.7",
+    "currentVersion": "2.0.8",
     "author": "PolySwarm",
     "url": "",
     "email": "support@polyswarm.io",

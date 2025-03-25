@@ -5,12 +5,13 @@ import io
 
 
 def util_load_json(path: str):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with io.open(path, mode="r", encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 def test_get_agent_list_command(mocker):
     from PicusNG import Client, get_agent_list_command
+
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
     client = Client(api_key="foo", base_url="base_url", verify=False, proxy=False)
     mock_response = util_load_json("test_data/get_AgentList.json")
@@ -21,6 +22,7 @@ def test_get_agent_list_command(mocker):
 
 def test_get_agent_detail_command(mocker):
     from PicusNG import Client, get_agent_detail_command
+
     demisto_mock = mocker.patch("PicusNG.demisto")
     demisto_mock.args.return_value.get.return_value = "1"
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
@@ -33,6 +35,7 @@ def test_get_agent_detail_command(mocker):
 
 def test_get_integration_agent_list_command(mocker):
     from PicusNG import Client, get_integration_agent_list_command
+
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
     client = Client(api_key="foo", base_url="base_url", verify=False, proxy=False)
     mock_response = util_load_json("test_data/get_IntegrationAgentList.json")
@@ -43,6 +46,7 @@ def test_get_integration_agent_list_command(mocker):
 
 def test_get_template_list_command(mocker):
     from PicusNG import Client, get_template_list_command
+
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
     client = Client(api_key="foo", base_url="base_url", verify=False, proxy=False)
     mock_response = util_load_json("test_data/get_TemplateList.json")
@@ -53,6 +57,7 @@ def test_get_template_list_command(mocker):
 
 def test_create_simulation_command(mocker):
     from PicusNG import Client, create_simulation_command
+
     demisto_mock = mocker.patch("PicusNG.demisto")
     demisto_mock.args.return_value.get.side_effect = ["1", "1", "1", "1", "1"]
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
@@ -65,6 +70,7 @@ def test_create_simulation_command(mocker):
 
 def test_get_simulation_list_command(mocker):
     from PicusNG import Client, get_simulation_list_command
+
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
     client = Client(api_key="foo", base_url="base_url", verify=False, proxy=False)
     mock_response = util_load_json("test_data/get_SimulationList.json")
@@ -75,6 +81,7 @@ def test_get_simulation_list_command(mocker):
 
 def test_simulate_now_command(mocker):
     from PicusNG import Client, simulate_now_command
+
     demisto_mock = mocker.patch("PicusNG.demisto")
     demisto_mock.args.return_value.get.return_value = "1"
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
@@ -87,6 +94,7 @@ def test_simulate_now_command(mocker):
 
 def test_get_simulation_detail_command(mocker):
     from PicusNG import Client, get_simulation_detail_command
+
     demisto_mock = mocker.patch("PicusNG.demisto")
     demisto_mock.args.return_value.get.return_value = "1"
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
@@ -99,6 +107,7 @@ def test_get_simulation_detail_command(mocker):
 
 def test_get_latest_simulation_result_command(mocker):
     from PicusNG import Client, get_latest_simulation_result_command
+
     demisto_mock = mocker.patch("PicusNG.demisto")
     demisto_mock.args.return_value.get.return_value = "1"
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
@@ -111,6 +120,7 @@ def test_get_latest_simulation_result_command(mocker):
 
 def test_get_simulation_result_command(mocker):
     from PicusNG import Client, get_simulation_result_command
+
     demisto_mock = mocker.patch("PicusNG.demisto")
     demisto_mock.args.return_value.get.return_value = "1"
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
@@ -123,6 +133,7 @@ def test_get_simulation_result_command(mocker):
 
 def test_get_simulation_threats_command(mocker):
     from PicusNG import Client, get_simulation_threats_command
+
     demisto_mock = mocker.patch("PicusNG.demisto")
     demisto_mock.args.return_value.get.return_value = "1"
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
@@ -135,6 +146,7 @@ def test_get_simulation_threats_command(mocker):
 
 def test_get_simulation_actions_command(mocker):
     from PicusNG import Client, get_simulation_actions_command
+
     demisto_mock = mocker.patch("PicusNG.demisto")
     demisto_mock.args.return_value.get.return_value = "1"
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
@@ -147,6 +159,7 @@ def test_get_simulation_actions_command(mocker):
 
 def test_get_mitigation_devices_command(mocker):
     from PicusNG import Client, get_mitigation_devices_command
+
     demisto_mock = mocker.patch("PicusNG.demisto")
     demisto_mock.args.return_value.get.return_value = "1"
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
@@ -159,6 +172,7 @@ def test_get_mitigation_devices_command(mocker):
 
 def test_get_signature_list_command(mocker):
     from PicusNG import Client, get_signature_list_command
+
     demisto_mock = mocker.patch("PicusNG.demisto")
     demisto_mock.args.return_value.get.return_value = "1"
     mocker.patch("PicusNG.Client.get_access_token", return_value="access_token")
@@ -171,6 +185,7 @@ def test_get_signature_list_command(mocker):
 
 def test_filterInsecureAttacks(mocker):
     from PicusNG import filterInsecureAttacks
+
     threatinfo_mock = mocker.patch("PicusNG.demisto")
     threatinfo_mock.args.return_value.get.return_value = "111=unblocked,222=blocked,333=unblocked"
     result = filterInsecureAttacks().outputs
