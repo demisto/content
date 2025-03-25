@@ -73,18 +73,6 @@ repos:
 
 - repo: local
   hooks:
-  - id: xsoar-lint
-    name: xsoar-lint
-    description: Run xsoar-linter on the code in content packs
-    entry: demisto-sdk xsoar-lint
-    files: ^Packs\/.*\.py$
-    exclude: _test\.py|\.vulture_whitelist\.py|test_data|tests_data|TestData
-    require_serial: true
-    language: system
-    # skip nightly since we don't care about warnings in nightly
-    skip:nightly: true
-    skip:docker_autoupdate: true
-
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
