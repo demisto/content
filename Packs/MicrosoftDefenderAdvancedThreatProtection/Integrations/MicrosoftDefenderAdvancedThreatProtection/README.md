@@ -7378,26 +7378,26 @@ Run this command to get the vulnerabilities from a specific machine.
   "MicrosoftATP": {
       "PublicVulnerability": {
         "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicVulnerabilityDto)",
-        "cveSupportability": "Supported",
-        "cvssV3": 3.7,
-        "cvssVector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L/E:F/RL:O/RC:C",
-        "description": "Summary: Foo is vulnerable to a denial of service due to improper server configuration validation.",  # noqa: E501
-        "epss": 0,
-        "exploitInKit": False,
-        "exploitTypes": [
+        "CVESupportability": "Supported",
+        "CVSSV3": 3.7,
+        "CVSSVector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L/E:F/RL:O/RC:C",
+        "Description": "Summary: Foo is vulnerable to a denial of service due to improper server configuration validation.",  # noqa: E501
+        "EPSS": 0,
+        "ExploitInKit": False,
+        "ExploitTypes": [
             "Remote"
         ],
-        "exploitUris": [],
-        "exploitVerified": False,
-        "exposedMachines": 1,
-        "firstDetected": "20XX-MM-DDThh:mm:ssZ",
-        "id": "CVE-20XX-1234",
-        "name": "CVE-20XX-1234",
-        "publicExploit": False,
-        "publishedOn": "20XX-MM-DDThh:mm:ssZ",
-        "severity": "Low",
-        "tags": [],
-        "updatedOn": "20XX-MM-DDThh:mm:ssZ"
+        "ExploitUris": [],
+        "ExploitVerified": False,
+        "ExposedMachines": 1,
+        "FirstDetected": "20XX-MM-DDThh:mm:ssZ",
+        "ID": "CVE-20XX-1234",
+        "Name": "CVE-20XX-1234",
+        "PublicExploit": False,
+        "PublishedOn": "20XX-MM-DDThh:mm:ssZ",
+        "Severity": "Low",
+        "Tags": [],
+        "UpdatedOn": "20XX-MM-DDThh:mm:ssZ"
     }
   }
 }
@@ -7453,18 +7453,18 @@ Run this command to get the sofware installed on a specific machine.
   "MicrosoftATP": {
       "Software": {
         "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#Software",
-        "id": "some_id",
-        "name": "some_name",
-        "vendor": "some_vendor",
-        "weaknesses": 0,
-        "publicExploit": false,
-        "activeAlert": false,
-        "exposedMachines": 0,
-        "installedMachines": 1,
-        "impactScore": 0,
-        "isNormalized": false,
-        "category": "",
-        "distributions": []
+        "ID": "some_id",
+        "Name": "some_name",
+        "Vendor": "some_vendor",
+        "Weaknesses": 0,
+        "PublicExploit": false,
+        "ActiveAlert": false,
+        "ExposedMachines": 0,
+        "InstalledMachines": 1,
+        "ImpactScore": 0,
+        "IsNormalized": false,
+        "Category": "",
+        "Distributions": []
     }
   }
 }
@@ -7514,17 +7514,17 @@ Run this command to get the missing security updates (KBs) from a specific machi
   "MicrosoftATP": {
       "PublicProductFix": {
         "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicProductFixDto)",
-        "id": "1234567",
-        "name": "March 20XX Security Updates",
-        "productsNames": [
+        "ID": "1234567",
+        "Name": "March 20XX Security Updates",
+        "ProductsNames": [
             "windows_10",
             "edge",
             "internet_explorer"
         ],
-        "url": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567",
-        "machineMissedOn": 1,
-        "cveAddressed": 97,
-        "osBuild": 12345
+        "URL": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567",
+        "MachineMissedOn": 1,
+        "CVEAddressed": 97,
+        "OSBuild": 12345
     }
   }
 }
@@ -7532,5 +7532,5 @@ Run this command to get the missing security updates (KBs) from a specific machi
 
 #### Human Readable Output
 >### Microsoft Defender ATP Security Update:
->|id|name|osBuild|url|machineMissedOn|cveAddressed|\n|---|---|---|---|---|---|
+>|ID|Name|OSBuild|URL|MachineMissedOn|CVEAddressed|\n|---|---|---|---|---|---|
 >| 1234567 | March 20XX Security Updates | 12345 | [https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567](https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567) | 1 | 97 |
