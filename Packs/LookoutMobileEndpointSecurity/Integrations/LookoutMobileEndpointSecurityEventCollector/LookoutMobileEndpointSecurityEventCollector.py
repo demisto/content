@@ -99,7 +99,7 @@ def stream_events(sse_client: SSEClient, fetch_interval: int):
 
         if events_data:
             demisto.debug(f"Got {len(events_data.get('events', {}))} events from API")
-            for event in events_data.get('events'):
+            for event in events_data.get('events', {}):
 
                 event["_time"] = event.get("created_time")
                 event["SOURCE_LOG_TYPE"] = event.get("type")
@@ -186,7 +186,7 @@ def perform_long_running_loop(client: Client, fetch_interval: int):
         fetch_interval (int): Fetch time for this fetching events cycle.
     """
     response = create_response_object(client)
-    sse_client = SSEClient(response)
+    sse_client = SSEClient(response)  # type: ignore
     demisto.debug(f'Connected successfully with {response=}')
 
     stream_events(sse_client, fetch_interval)

@@ -1,15 +1,11 @@
-import json
-from LookoutMobileEndpointSecurityEventCollector import create_response_object, stream_events
 import pytest
 import demistomock as demisto
+from LookoutMobileEndpointSecurityEventCollector import create_response_object, stream_events
 
-EVENTS_OUTPUT = '{"events":[{"id":"1","created_time":"2025-03-24T11:13:24.915+00:00","type":"DEVICE","change_type":"UPDATED","device":{"guid":"guid","platform":"IOS","status":{"security_status":"SECURE","activation_status":"ACTIVATED","protection_status":"PROTECTED"},"hardware":{"manufacturer":"apple","model":"iphone17,2"},"software":{"os_version":"18.3.1","sdk_version":"0"},"client":{"ota_version":"1","package_name":"name","package_version":"9.2.0"},"parent_status":{}},"target":{"guid":"guid","type":"DEVICE"},"actor":{"guid":"guid","type":"DEVICE"}},{"id":"2","created_time":"2025-03-24T11:13:28.375+00:00","type":"THREAT","change_type":"CREATED","threat":{"guid":"guid","status":"RESOLVED","severity":"LOW","type":"WEB_CONTENT","classifications":["UNAUTHORIZED_CONTENT"],"details":{"reason":"OBJECTIONABLE_CONTENT","response":"NONE","reputation":0.6}},"target":{"guid":"guid","type":"THREAT"},"actor":{"guid":"guid","type":"DEVICE"}}]}'
+EVENTS_OUTPUT = '{"events":[{"id":"1","created_time":"2025-03-24T11:13:24.915+00:00","type":"DEVICE","change_type":"UPDATED","device":{"guid":"guid","platform":"IOS","status":{"security_status":"SECURE","activation_status":"ACTIVATED","protection_status":"PROTECTED"},"hardware":{"manufacturer":"apple","model":"iphone17,2"},"software":{"os_version":"18.3.1","sdk_version":"0"},"client":{"ota_version":"1","package_name":"name","package_version":"9.2.0"},"parent_status":{}},"target":{"guid":"guid","type":"DEVICE"},"actor":{"guid":"guid","type":"DEVICE"}},{"id":"2","created_time":"2025-03-24T11:13:28.375+00:00","type":"THREAT","change_type":"CREATED","threat":{"guid":"guid","status":"RESOLVED","severity":"LOW","type":"WEB_CONTENT","classifications":["UNAUTHORIZED_CONTENT"],"details":{"reason":"OBJECTIONABLE_CONTENT","response":"NONE","reputation":0.6}},"target":{"guid":"guid","type":"THREAT"},"actor":{"guid":"guid","type":"DEVICE"}}]}'  # noqa: E501
 
-def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
 
-class Event(object):
+class Event:
     """Representation of an event from the event stream."""
 
     def __init__(self, id=None, event='message', data='', retry=None):
@@ -17,7 +13,7 @@ class Event(object):
         self.event = event
         self.data = data
         self.retry = retry
-    
+
 
 @pytest.fixture(autouse=True)
 def client(mocker):
@@ -34,6 +30,7 @@ def client(mocker):
         event_type_query=event_type_query,
         app_key=app_key,
     )
+
 
 @pytest.fixture(autouse=True)
 def sse_client(mocker):
