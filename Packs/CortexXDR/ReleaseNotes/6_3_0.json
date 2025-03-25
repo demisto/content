@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Deleted the **Override severity** parameter. Use *Override severity value* instead, by default it is set to none meaning not overriding the original severity. If you use an already existing instance the original value will not change.\n- Updated the *API Key ID* parameter to be required.\n- Updated the *API Key* parameter to be required."
-}
