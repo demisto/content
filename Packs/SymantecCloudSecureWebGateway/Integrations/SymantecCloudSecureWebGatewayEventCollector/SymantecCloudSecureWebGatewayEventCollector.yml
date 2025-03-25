@@ -50,4 +50,5 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 8.2.0
