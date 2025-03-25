@@ -2,7 +2,7 @@
     "name": "ReversingLabs A1000",
     "description": "Powerful threat detection and file analysis platform. Get detailed information on each file's status and threat capabilities.",
     "support": "partner",
-    "currentVersion": "2.4.1",
+    "currentVersion": "2.4.4",
     "author": "ReversingLabs",
     "url": "https://www.reversinglabs.com/products/malware-threat-hunting-and-investigations",
     "email": "support@reversinglabs.com",

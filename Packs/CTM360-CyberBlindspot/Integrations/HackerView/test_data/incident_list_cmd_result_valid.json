@@ -1,0 +1,108 @@
+[
+    {
+        "name": "TLS Certificate is Self Signed",
+        "occurred": "2024-07-05T06:28:28+00:00",
+        "external_status": "active",
+        "severity": 3,
+        "CustomFields": {
+            "updated_date": "2024-10-26T12:15:24+00:00",
+            "id": "HVI-75466160",
+            "timestamp": 1720161042000,
+            "confidence": "confirmed",
+            "cve_id": "",
+            "cwe": [],
+            "issue_category": [
+                "Web Communication"
+            ],
+            "potential_attack_type": [],
+            "potential_impact": [],
+            "progress_status": "New",
+            "resolved_ip": "229.13.147.132",
+            "environments": [
+                "Marketing",
+                "JavaScript",
+                "Web Server"
+            ],
+            "ip": "",
+            "technologies": [
+                "Apache",
+                "Google Analytics"
+            ],
+            "domain": "doughnutkitten.com",
+            "host": "doughnutkitten.com",
+            "asset_type": "host",
+            "asset": "doughnutkitten.com"
+        },
+        "rawJson": "{\"name\":\"TLS Certificate is Self Signed\",\"occurred\":\"2024-07-05T06: 28: 28+00: 00\",\"external_status\":\"active\",\"severity\":3,\"CustomFields\":{\"updated_date\":\"2024-10-26T12:15:24+00:00\",\"id\":\"HVI-75466160\",\"timestamp\":1720161042000,\"confidence\":\"confirmed\",\"cve_id\":\"\",\"cwe\":[],\"issue_category\":[\"Web Communication\"],\"potential_attack_type\":[],\"potential_impact\":[],\"progress_status\":\"New\",\"resolved_ip\":\"229.13.147.132\",\"environments\":[\"Marketing\",\"JavaScript\",\"Web Server\"],\"ip\":\"\",\"technologies\":[\"Apache\",\"Google Analytics\"],\"domain\":\"doughnutkitten.com\",\"host\":\"doughnutkitten.com\",\"asset_type\":\"host\",\"asset\":\"doughnutkitten.com\"}}"
+    },
+    {
+        "name": "SSL Expiring in 30 days",
+        "occurred": "2024-07-05T06:42:36+00:00",
+        "external_status": "inactive",
+        "severity": 0.5,
+        "CustomFields": {
+            "updated_date": "2024-07-10T10:55:13+00:00",
+            "id": "HVI-11136324",
+            "timestamp": 1720161795000,
+            "confidence": "confirmed",
+            "cve_id": "",
+            "cwe": [],
+            "issue_category": [
+                "Web Communication"
+            ],
+            "potential_attack_type": [],
+            "potential_impact": [],
+            "progress_status": "New",
+            "resolved_ip": "154.134.143.229",
+            "environments": [
+                "Development",
+                "Hosting"
+            ],
+            "ip": "",
+            "technologies": [
+                "Vercel Inc Vercel"
+            ],
+            "domain": "hacksplaining.com",
+            "host": "hacksplaining.com",
+            "asset_type": "host",
+            "asset": "hacksplaining.com"
+        },
+        "rawJson": "{\"name\":\"SSL Expiring in 30 days\",\"occurred\":\"2024-07-05T06:42:36+00:00\",\"external_status\":\"inactive\",\"severity\":0.5,\"CustomFields\":{\"updated_date\":\"2024-07-10T10:55:13+00:00\",\"id\":\"HVI-11136324\",\"timestamp\":1720161795000,\"confidence\":\"confirmed\",\"cve_id\":\"\",\"cwe\":[],\"issue_category\":[\"Web Communication\"],\"potential_attack_type\":[],\"potential_impact\":[],\"progress_status\":\"New\",\"resolved_ip\":\"154.134.143.229\",\"environments\":[\"Development\",\"Hosting\"],\"ip\":\"\",\"technologies\":[\"Vercel Inc Vercel\"],\"domain\":\"hacksplaining.com\",\"host\":\"hacksplaining.com\",\"asset_type\":\"host\",\"asset\":\"hacksplaining.com\"}}"
+    },
+    {
+        "name": "TLS Certificate is Self Signed",
+        "occurred": "2024-07-05T07:02:47+00:00",
+        "external_status": "active",
+        "severity": 3,
+        "CustomFields": {
+            "updated_date": "2024-10-26T11:22:06+00:00",
+            "id": "HVI-98944790",
+            "timestamp": 1720163092000,
+            "confidence": "confirmed",
+            "cve_id": "",
+            "cwe": [],
+            "issue_category": [
+                "Web Communication"
+            ],
+            "potential_attack_type": [],
+            "potential_impact": [],
+            "progress_status": "New",
+            "resolved_ip": "229.13.147.132",
+            "environments": [
+                "Marketing",
+                "JavaScript",
+                "Web Server"
+            ],
+            "ip": "",
+            "technologies": [
+                "Apache",
+                "Google Analytics"
+            ],
+            "domain": "doughnutkitten.com",
+            "host": "www.doughnutkitten.com",
+            "asset_type": "host",
+            "asset": "www.doughnutkitten.com"
+        },
+        "rawJson": "{\"name\":\"TLS Certificate is Self Signed\",\"occurred\":\"2024-07-05T07:02:47+00:00\",\"external_status\":\"active\",\"severity\":3,\"CustomFields\":{\"updated_date\":\"2024-10-26T11:22:06+00:00\",\"id\":\"HVI-98944790\",\"timestamp\":1720163092000,\"confidence\":\"confirmed\",\"cve_id\":\"\",\"cwe\":[],\"issue_category\":[\"Web Communication\"],\"potential_attack_type\":[],\"potential_impact\":[],\"progress_status\":\"New\",\"resolved_ip\":\"229.13.147.132\",\"environments\":[\"Marketing\",\"JavaScript\",\"Web Server\"],\"ip\":\"\",\"technologies\":[\"Apache\",\"Google Analytics\"],\"domain\":\"doughnutkitten.com\",\"host\":\"www.doughnutkitten.com\",\"asset_type\":\"host\",\"asset\":\"www.doughnutkitten.com\"}}"
+    }
+]

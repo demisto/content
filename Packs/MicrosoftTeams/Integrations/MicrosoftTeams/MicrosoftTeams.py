@@ -108,6 +108,88 @@ MAX_SAMPLES = 10
 TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, }  # See: https://login.microsoftonline.com/error?code=
 REGEX_SEARCH_ERROR_DESC = r"^[^:]*:\s(?P<desc>.*?\.)"
 
+
+class GraphPermissions(str, Enum):
+    """
+    Graph permission names that are relevant for the various integration commands.
+    """
+    GROUP_READWRITE_ALL = 'Group.ReadWrite.All'
+    GROUP_READ_ALL = 'Group.Read.All'
+    GROUPMEMBER_READ_ALL = 'GroupMember.Read.All'
+    USER_READWRITE_ALL = 'User.ReadWrite.All'
+    USER_READ = 'User.Read'
+    USER_READ_ALL = 'User.Read.All'
+    CHANNEL_READBASIC_ALL = 'Channel.ReadBasic.All'
+    CHANNEL_DELETE_ALL = 'Channel.Delete.All'
+    CHANNEL_CREATE = 'Channel.Create'
+    CHANNELMEMBER_READ_ALL = 'ChannelMember.Read.All'
+    CHANNELMEMBER_READWRITE_ALL = 'ChannelMember.ReadWrite.All'
+    CHAT_READ = 'Chat.Read'
+    CHAT_READBASIC = 'Chat.ReadBasic'
+    CHAT_READWRITE = 'Chat.ReadWrite'
+    CHAT_READWRITE_ALL = 'Chat.ReadWrite.All'
+    CHAT_CREATE = 'Chat.Create'
+    CHATMEMBER_READWRITE = 'ChatMember.ReadWrite'
+    CHATMESSAGE_SEND = 'ChatMessage.Send'
+    ONLINEMEETINGS_READWRITE = 'OnlineMeetings.ReadWrite'
+    ONLINEMEETINGS_READWRITE_ALL = 'OnlineMeetings.ReadWrite.All'
+    TEAMSAPPINSTALLATION_READWRITESELFFORCHAT = 'TeamsAppInstallation.ReadWriteSelfForChat'
+    APPCATALOG_READ_ALL = 'AppCatalog.Read.All'
+    CALLS_INITIATE_ALL = 'Calls.Initiate.All'
+
+
+Perms = GraphPermissions  # alias for brevity
+COMMANDS_REQUIRED_PERMISSIONS: dict[str, list[GraphPermissions]] = {
+    # Note: at the moment, the required permission names between credentials and auth code are the same.
+    # Credentials require Application permissions while auth code requires delegated permissions
+    'send-notification': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
+    'mirror-investigation': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNEL_CREATE,
+                             Perms.CHANNEL_DELETE_ALL],
+    'close-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNEL_DELETE_ALL],
+    'microsoft-teams-ring-user': [Perms.USER_READ_ALL, Perms.CALLS_INITIATE_ALL],
+    'microsoft-teams-add-user-to-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.USER_READ_ALL, Perms.CHANNEL_READBASIC_ALL,
+                                            Perms.CHANNELMEMBER_READWRITE_ALL],
+    'add-user-to-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.USER_READ_ALL, Perms.CHANNEL_READBASIC_ALL,
+                            Perms.CHANNELMEMBER_READWRITE_ALL],
+    'microsoft-teams-create-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.USER_READ_ALL, Perms.CHANNEL_CREATE],
+    'create-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.USER_READ_ALL, Perms.CHANNEL_CREATE],
+    'microsoft-teams-create-meeting': [Perms.USER_READ_ALL, Perms.ONLINEMEETINGS_READWRITE],
+    'microsoft-teams-user-remove-from-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL,
+                                                 Perms.CHANNELMEMBER_READWRITE_ALL],
+    'microsoft-teams-channel-user-list': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNELMEMBER_READ_ALL],
+    'microsoft-teams-chat-create': [Perms.USER_READ_ALL, Perms.CHAT_CREATE, Perms.APPCATALOG_READ_ALL,
+                                    Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT],
+    'microsoft-teams-message-send-to-chat': [Perms.USER_READ_ALL, Perms.CHAT_CREATE, Perms.CHATMESSAGE_SEND,
+                                             Perms.APPCATALOG_READ_ALL, Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT],
+    'microsoft-teams-chat-add-user': [Perms.CHAT_READBASIC, Perms.CHATMEMBER_READWRITE],
+    'microsoft-teams-chat-member-list': [Perms.USER_READ_ALL, Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
+    'microsoft-teams-chat-list': [Perms.USER_READ_ALL, Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
+    'microsoft-teams-chat-message-list': [Perms.USER_READ_ALL, Perms.CHAT_READ, Perms.CHAT_CREATE],
+    'microsoft-teams-chat-update': [Perms.USER_READ_ALL, Perms.CHAT_READWRITE],
+    'microsoft-teams-message-update': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
+    'microsoft-teams-integration-health': [],
+    'microsoft-teams-create-messaging-endpoint': [],
+    'microsoft-teams-generate-login-url': [],
+    'microsoft-teams-auth-test': [],
+    'microsoft-teams-auth-reset': [],
+    'microsoft-teams-token-permissions-list': [],
+}
+HIGHER_PERMISSIONS: dict[GraphPermissions, list[GraphPermissions]] = {
+    # dict with some elevated permissions and some of the permissions they can replace
+    # Note: This dict is not meant to be comprehensive, rather handle possible common cases of substitute permissions.
+    Perms.CHAT_READWRITE: [Perms.CHATMESSAGE_SEND, Perms.CHAT_READ, Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
+    Perms.CHAT_READWRITE_ALL: [Perms.CHAT_READWRITE, Perms.CHAT_READ, Perms.CHATMESSAGE_SEND,
+                               Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
+    Perms.CHAT_READ: [Perms.CHAT_READBASIC],
+    Perms.USER_READ_ALL: [Perms.USER_READ],
+    Perms.USER_READWRITE_ALL: [Perms.USER_READ_ALL, Perms.USER_READ],
+    Perms.ONLINEMEETINGS_READWRITE_ALL: [Perms.ONLINEMEETINGS_READWRITE],
+    Perms.GROUP_READ_ALL: [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
+    Perms.GROUP_READWRITE_ALL: [Perms.GROUP_READ_ALL, Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_CREATE,
+                                Perms.CHANNEL_READBASIC_ALL, Perms.CHANNEL_DELETE_ALL],
+    Perms.CHANNELMEMBER_READWRITE_ALL: [Perms.CHANNELMEMBER_READ_ALL]
+}
+
 # must be synced with ones in TeamsAsk
 MS_TEAMS_ASK_MESSAGE_KEYS = {'message_text', 'options', 'entitlement', 'investigation_id', 'task_id', 'form_type'}
 
@@ -394,8 +476,10 @@ def get_team_member(integration_context: dict, team_member_id: str) -> dict:
         team_members: list = team.get('team_members', [])
         for member in team_members:
             if member.get('id') == team_member_id:
+                demisto.debug(f'get_team_member details: {member=}')
                 team_member['username'] = member.get('name', '')
-                team_member['user_email'] = member.get('userPrincipalName', '')
+                team_member['user_email'] = member.get('email', '')
+                team_member['user_principal_name'] = member.get('userPrincipalName', '')
                 return team_member
 
     raise ValueError('Team member was not found')
@@ -408,15 +492,16 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
     :param integration_context: Cached object to search for team member in
     :return: Team member ID
     """
-    demisto.debug(f"requested team member: {requested_team_member}")
+    demisto.debug(f"Requested team member: {requested_team_member}")
     teams: list = json.loads(integration_context.get('teams', '[]'))
-    demisto.debug(f"we've got {len(teams)} teams saved in integration context")
+    demisto.debug(f"We've got {len(teams)} teams saved in integration context")
     for team in teams:
         team_members: list = team.get('team_members', [])
         for team_member in team_members:
-            if requested_team_member in {team_member.get('name', ''), team_member.get('userPrincipalName', '').lower()}:
-                return team_member.get('id')
-
+            member_properties = [team_member.get('email', '').lower(), team_member.get(
+                'userPrincipalName', '').lower(), team_member.get('name', '').lower()]
+            if requested_team_member.lower() in [value.lower() for value in member_properties]:
+                return team_member.get("id")
     raise ValueError(f'Team member {requested_team_member} was not found')
 
 
@@ -745,6 +830,9 @@ def get_graph_access_token() -> str:
         'client_secret': BOT_PASSWORD
     }
     if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
+        if not AUTH_CODE:
+            raise ValueError('No authorization code configured. Please use the !microsoft-teams-generate-login-url command'
+                             ' and follow the instructions to generate one.')
         data['redirect_uri'] = REDIRECT_URI
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         if refresh_token := refresh_token or get_refresh_token_from_auth_code_param():
@@ -823,7 +911,10 @@ def http_request(
 
         if not response.ok:
             error: str = error_parser(response, api)
-            raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error}')
+            if response.status_code == 403 and (detailed_error_message := insufficient_permissions_error_handler()):
+                error = f'{detailed_error_message}\n\n(Error Message): {error}'
+
+            raise ValueError(f'Error code [{response.status_code}] in API call to Microsoft Teams:\n{error}')
 
         if response.status_code in {202, 204}:
             # Delete channel or remove user from channel return 204 if successful
@@ -837,7 +928,7 @@ def http_request(
         try:
             return response.json()
         except ValueError:
-            raise ValueError(f'Error in API call to Microsoft Teams: {response.text}')
+            raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {response.text}')
     except requests.exceptions.ConnectTimeout:
         error_message = 'Connection Timeout Error - potential reason may be that Microsoft Teams is not ' \
                         'accessible from your host.'
@@ -1518,16 +1609,20 @@ def add_bot_to_chat(chat_id: str):
 
     # bot is already part of the chat
     if is_bot_in_chat(chat_id):
+        demisto.debug(f"Bot is already part of the chat - chat ID: {chat_id}")
         return
     res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps",
                        params={"$filter": f"externalId eq '{BOT_ID}'"})
-    app_data = res.get('value')[0]      # type: ignore
-    bot_internal_id = app_data.get('id')
-
-    request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
-    http_request('POST', f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/installedApps', json_=request_json)
-
-    demisto.debug(f"Bot {app_data.get('displayName')} with {BOT_ID} ID was added to chat successfully")
+    demisto.debug(f"res is: {res}")
+    demisto.debug(f"res type is: {type(res)}")
+    if isinstance(res, dict):
+        app_data = res.get('value')[0]      # type: ignore
+        bot_internal_id = app_data.get('id')
+        request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
+        http_request('POST', f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/installedApps', json_=request_json)
+        demisto.debug(f"Bot {app_data.get('displayName')} with {BOT_ID} ID was added to chat successfully")
+    else:
+        demisto.debug("Bot not in catalog")
 
 
 def chat_create_command():
@@ -1891,6 +1986,7 @@ def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = 
                 return channel.get('channel_id')
     url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_aad_id}/channels'
     response: dict = cast(dict[Any, Any], http_request('GET', url))
+    demisto.debug(f"Get channels response: {json.dumps(response)}")
     channel_id: str = ''
     channels: list = response.get('value', [])
     for channel in channels:
@@ -1912,8 +2008,10 @@ def get_channel_type(channel_id, team_id) -> str:
     """
     url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}'
     response: dict = cast(dict[Any, Any], http_request('GET', url))
-    demisto.debug(f"The channel membershipType = {response.get('membershipType')}")
-    return response.get('membershipType', 'standard')
+    membershipType = response.get('membershipType', 'standard')
+    demisto.debug(f"The channel membershipType = {membershipType}")
+    demisto.debug(f"Get channel response: {json.dumps(response)}")
+    return membershipType
 
 
 def get_team_members(service_url: str, team_id: str) -> list:
@@ -1928,6 +2026,25 @@ def get_team_members(service_url: str, team_id: str) -> list:
     return response
 
 
+def update_integration_context_with_all_team_members(integration_context):
+    """
+    Retrieves all members from all teams and updates members in integration context.
+    """
+    service_url: str = integration_context.get('service_url', '')
+    teams: list = json.loads(integration_context.get('teams', '[]'))
+    for team in teams:
+        team_id = team.get('team_id', '')
+        team_name = team.get('team_name', '')
+        demisto.debug(f'Request members for {team_id=} {team_name=}')
+        url = f'{service_url}/v3/conversations/{team_id}/members'
+        team_members: list = cast(list[Any], http_request('GET', url, api='bot'))
+        demisto.debug(f'Updating {team_name=} with {team_members=}')
+        team['team_members'] = team_members
+    demisto.debug(f'Setting integration_context with {teams=}')
+    integration_context['teams'] = json.dumps(teams)
+    set_integration_context(integration_context)
+
+
 def get_channel_members(team_id: str, channel_id: str) -> list[dict[str, Any]]:
     """
     Retrieves channel members given a channel
@@ -1940,26 +2057,35 @@ def get_channel_members(team_id: str, channel_id: str) -> list[dict[str, Any]]:
     return response.get('value', [])
 
 
-def update_message(service_url: str, conversation_id: str, activity_id: str, text: str):
+def update_message(service_url: str, conversation_id: str, message_id: str, text: str, format_as_card: bool = True) -> dict:
     """
     Updates a message in Microsoft Teams channel
     :param service_url: Bot service URL to query
     :param conversation_id: Conversation ID of message to update
-    :param activity_id: Activity ID of message to update
+    :param message_id: ID of message to update, also referred to as Activity ID in the bot API
     :param text: Text to update in the message
-    :return: None
+    :param format_as_card: Whether to format the text as an adaptive card
+    :return: dict
     """
-    body = [{
-        'type': 'TextBlock',
-        'text': text
-    }]
-    adaptive_card: dict = create_adaptive_card(body=body)
-    conversation = {
-        'type': 'message',
-        'attachments': [adaptive_card]
-    }
-    url: str = f'{service_url}/v3/conversations/{conversation_id}/activities/{activity_id}'
-    http_request('PUT', url, json_=conversation, api='bot')
+    if format_as_card:
+        body = [{
+            'type': 'TextBlock',
+            'text': text
+        }]
+        adaptive_card: dict = create_adaptive_card(body=body)
+        conversation = {
+            'type': 'message',
+            'attachments': [adaptive_card]
+        }
+    else:
+        conversation = {
+            'type': 'message',
+            'text': text
+        }
+    url: str = f'{service_url}/v3/conversations/{conversation_id}/activities/{message_id}'  # type:ignore
+    res: dict = http_request('PUT', url, json_=conversation, api='bot')  # type:ignore
+
+    return res
 
 
 def close_channel_request(team_aad_id: str, channel_id: str):
@@ -2041,16 +2167,26 @@ def create_personal_conversation(integration_context: dict, team_member_id: str)
     return response.get('id', '')
 
 
-def send_message_request(service_url: str, channel_id: str, conversation: dict):
+def send_message_request(service_url: str,
+                         channel_id: str,
+                         conversation: dict,
+                         message_id: str = '',
+                         team_aad_id: str = '') -> dict:
     """
     Sends an HTTP request to send message to Microsoft Teams
     :param channel_id: ID of channel to send message in
     :param conversation: Conversation message object to send
+    :param message_id: ID of message to post the reply in
     :param service_url: Bot service URL to query
-    :return: None
+    :return: dict
     """
-    url: str = f'{service_url}/v3/conversations/{channel_id}/activities'
-    http_request('POST', url, json_=conversation, api='bot')
+    if not message_id:
+        url: str = f'{service_url}/v3/conversations/{channel_id}/activities'
+        res: dict = http_request('POST', url, json_=conversation, api='bot')  # type:ignore
+    else:
+        url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_aad_id}/channels/{channel_id}/messages/{message_id}/replies'  # type:ignore
+        res: dict = http_request('POST', url, json_=conversation)  # type:ignore
+    return res
 
 
 def process_mentioned_users_in_message(message: str) -> tuple[list, str]:
@@ -2082,9 +2218,11 @@ def send_message():
     message_type: str = demisto.args().get('messageType', '')
     original_message: str = demisto.args().get('originalMessage', '')
     message: str = demisto.args().get('message', '')
+    message_id: str = demisto.args().get('message_id', '')
+    team_name: str = demisto.args().get('team', '') or demisto.params().get('team', '')
     external_form_url_header: str | None = demisto.args().get(
         'external_form_url_header') or demisto.params().get('external_form_url_header')
-    demisto.debug(f"in send message with message type: {message_type}, and channel name:{demisto.args().get('channel')}")
+    demisto.debug(f"In send message with message type: {message_type}, and channel name:{demisto.args().get('channel')}")
     try:
         adaptive_card: dict = json.loads(demisto.args().get('adaptive_card', '{}'))
     except ValueError:
@@ -2135,10 +2273,19 @@ def send_message():
     integration_context: dict = get_integration_context()
     channel_id = ''
     personal_conversation_id = ''
+    if team_name:
+        team_aad_id: str = get_team_aad_id(team_name)
+    else:
+        team_aad_id = ''
     if channel_name:
-        channel_id = get_channel_id_for_send_notification(channel_name, message_type)
+        channel_id = get_channel_id_for_send_notification(team_aad_id, channel_name, message_type)
     elif team_member:
-        team_member_id: str = get_team_member_id(team_member, integration_context)
+        try:
+            team_member_id: str = get_team_member_id(team_member, integration_context)
+        except Exception:
+            demisto.debug(f"Did not find '{team_member=}' will update integration context with all team members.")
+            update_integration_context_with_all_team_members(integration_context)
+            team_member_id = get_team_member_id(team_member, integration_context)
         personal_conversation_id = create_personal_conversation(integration_context, team_member_id)
 
     recipient: str = channel_id or personal_conversation_id
@@ -2161,11 +2308,21 @@ def send_message():
             mentioned_users, formatted_message_with_mentions = process_mentioned_users_in_message(formatted_message)
             entities = mentioned_users_to_entities(mentioned_users, integration_context)
             demisto.info(f'msg: {formatted_message_with_mentions}, ent: {entities}')
-            conversation = {
-                'type': 'message',
-                'text': formatted_message_with_mentions,
-                'entities': entities
-            }
+            if not message_id:
+                conversation = {
+                    'type': 'message',
+                    'text': formatted_message_with_mentions,
+                    'entities': entities
+                }
+            else:
+                conversation = {
+                    'body': {
+                        'contentType': 'html',
+                        'content': formatted_message_with_mentions
+                    }
+                }
+                if entities:
+                    conversation['body']['mentions'] = entities
     else:  # Adaptive card
         entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get('entitlement', ''))
         if entitlement_match_ac:
@@ -2179,19 +2336,70 @@ def send_message():
     if not service_url:
         raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
 
-    send_message_request(service_url, recipient, conversation)
-    demisto.results('Message was sent successfully.')
+    res: dict = send_message_request(service_url, recipient, conversation, message_id, team_aad_id)
+    results = CommandResults(
+        outputs={"ID": res.get('id')},
+        outputs_prefix='MicrosoftTeams.Message',
+        readable_output='Message was sent successfully.',
+        raw_response=res
+    )
+    return_results(results)
 
 
-def get_channel_id_for_send_notification(channel_name: str, message_type: str):
+def message_update_command():
+    message: str = demisto.args().get('message', '')
+    message_id: str = demisto.args().get('message_id', '')
+    team_name: str = demisto.args().get('team', '') or demisto.params().get('team', '')
+    channel_name: str = demisto.args().get('channel', '')
+    format_as_card: bool = argToBoolean(demisto.args().get('format_as_card', 'true'))
+
+    team_member: str = demisto.args().get('team_member', '') or demisto.args().get('to', '')
+    if re.match(r'\b[^@]+@[^@]+\.[^@]+\b', team_member):  # team member is an email
+        team_member = team_member.lower()
+
+    if not (team_member or channel_name):
+        raise ValueError('No channel or team member to send message were provided.')
+
+    if team_member and channel_name:
+        raise ValueError('Provide either channel or team member to send message to, not both.')
+
+    integration_context: dict = get_integration_context()
+    channel_id = ''
+    personal_conversation_id = ''
+    if team_name:
+        team_aad_id: str = get_team_aad_id(team_name)
+    else:
+        team_aad_id = ''
+    if channel_name:
+        channel_id = get_channel_id_for_send_notification(team_aad_id, channel_name, '')
+    elif team_member:
+        team_member_id: str = get_team_member_id(team_member, integration_context)
+        personal_conversation_id = create_personal_conversation(integration_context, team_member_id)
+
+    recipient: str = channel_id or personal_conversation_id
+
+    service_url: str = integration_context.get('service_url', '')
+    if not service_url:
+        raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
+
+    res: dict = update_message(service_url, recipient, message_id, message, format_as_card=format_as_card)
+
+    results = CommandResults(
+        outputs={"ID": res.get('id')},
+        outputs_prefix='MicrosoftTeams.Message',
+        readable_output='Message was sent successfully.',
+        raw_response=res
+    )
+    return_results(results)
+
+
+def get_channel_id_for_send_notification(team_aad_id: str, channel_name: str, message_type: str):
     """
     Returns the channel ID to send the message to
     :param channel_name: The name of the channel.
     :param message_type: The type of message to be sent.
     :return: the channel ID
     """
-    team_name: str = demisto.args().get('team', '') or demisto.params().get('team', '')
-    team_aad_id: str = get_team_aad_id(team_name)
     investigation_id = ''
     if message_type == MESSAGE_TYPES['mirror_entry']:
         # Got an entry from the War Room to mirror to Teams
@@ -2247,7 +2455,15 @@ def mirror_investigation():
     else:
         channel_name: str = demisto.args().get('channel_name', '') or f'incident-{investigation_id}'
         channel_description: str = f'Channel to mirror incident {investigation_id}'
-        channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
+        try:
+            channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
+
+        except ValueError as e:
+            if "Channel name already existed" in str(e):
+                channel_id = get_channel_id(channel_name, team_aad_id)
+            else:
+                raise e
+
         service_url: str = integration_context.get('service_url', '')
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
@@ -2423,11 +2639,19 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
     team_member: dict = get_team_member(integration_context, user_id)
     if team_member:
         # enrich our data with the sender info
+        demisto.debug(f'direct_message_handler for: {team_member=}')
         request_body['from'].update(team_member)
 
     username: str = team_member.get('username', '')
     user_email: str = team_member.get('user_email', '')
-    demisto_user = demisto.findUser(email=user_email) if user_email else demisto.findUser(username=username)
+    user_upn = team_member.get('user_principal_name', '')
+    demisto_user = demisto.findUser(email=user_email)
+    if not demisto_user:
+        demisto_user = demisto.findUser(username=username)
+    if not demisto_user:
+        demisto_user = demisto.findUser(email=user_upn)
+    if not demisto_user:
+        demisto.debug('direct_message_handler Failed to find user by email, username and UPN')
 
     formatted_message = ''
 
@@ -2516,6 +2740,7 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
         content=response
     )
     activity_id: str = request_body.get('replyToId', '')
+    demisto.debug(f"Request data: {request_body}")
     service_url: str = integration_context.get('service_url', '')
     if not service_url:
         raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
@@ -2782,6 +3007,25 @@ def long_running_loop():
             time.sleep(5)
 
 
+def get_token_permissions(access_token: str) -> list[str]:
+    """
+    Decodes the provided access token and retrieves a list of API permissions associated with the token.
+
+    :param access_token: the access token to decode.
+    :return: A list of the token's API permission roles.
+    """
+    decoded_token = jwt.decode(access_token, options={"verify_signature": False})
+
+    if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+        roles = decoded_token.get('roles', [])
+
+    else:  # Authorization code flow
+        roles = decoded_token.get('scp', '')
+        roles = roles.split()
+
+    return roles
+
+
 def token_permissions_list_command():
     """
     Gets the Graph access token stored in the integration context and displays the token's API permissions in the war room.
@@ -2798,18 +3042,11 @@ def token_permissions_list_command():
 
     # Decode the token and extract the roles:
     if access_token:
-        decoded_token = jwt.decode(access_token, options={"verify_signature": False})
-
-        if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
-            roles = decoded_token.get('roles', [])
-
-        else:  # Authorization code flow
-            roles = decoded_token.get('scp', '')
-            roles = roles.split()
+        roles = get_token_permissions(access_token)
 
         if roles:
-            hr = tableToMarkdown(f'The current API permissions in the Teams application are: ({len(roles)})',
-                                 sorted(roles), headers=['Permission'])
+            hr = tableToMarkdown(f'The current API permissions in the Teams application are: ({len(roles)})\n'
+                                 f'Authorization type is: {AUTH_TYPE}', sorted(roles), headers=['Permission'])
         else:
             hr = 'No permissions obtained for the used graph access token.'
 
@@ -2838,7 +3075,7 @@ def create_messaging_endpoint_command():
 
     # Get instance name and server url:
     urls = demisto.demistoUrls()
-    instance_name = demisto.integrationInstance()
+    instance_name = urllib.parse.quote(demisto.integrationInstance())
     xsoar_url = urls.get('server', '')
     engine_url = demisto.args().get('engine_url', '')
 
@@ -2995,6 +3232,103 @@ def auth_type_switch_handling():
         set_integration_context(integration_context)
 
 
+def expand_permission_list(permissions: list[str]) -> set[str]:
+    """
+    Takes the given permission list and extends it to include relevant lower privileged sub permissions
+    that are supported by the given permissions. (e.g. if theres Chat.ReadWrite then Chat.Read is implicitly supported)
+    :param permissions: Permissions list extracted from the cached graph token
+
+    :return: Extended permissions list including lower privileged permissions supported by the original permissions.
+    """
+    expanded_permissions = set()
+    for permission in permissions:
+        expanded_permissions.add(permission)
+        if permission in HIGHER_PERMISSIONS:
+            expanded_permissions.update(HIGHER_PERMISSIONS[GraphPermissions(permission)])
+
+    demisto.debug(f'Expanded token permission list: {expanded_permissions}')
+    return expanded_permissions
+
+
+def create_missing_permissions_section(missing_permissions: list[str], permission_type: str) -> str:
+    """
+    Generates a detailed error message for the missing permissions.
+
+    :param missing_permissions: List of missing permissions
+    :param permission_type: The type of permissions ('Application' or 'Delegated')
+    :return: Error message string
+    """
+    error_message = f"""\
+The current access token is missing the following permissions:
+{permission_type} - {", ".join(missing_permissions)}
+
+To resolve the issue, add the missing permissions to your bot in the Azure portal:
+Click API permissions > Add a permission > Microsoft Graph > {permission_type} permissions, add the required missing permissions \
+and grant admin consent.
+
+Once done, reset your token using the "!microsoft-teams-auth-reset" command.
+"""
+
+    if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
+        error_message += (
+            'Then, generate a new auth code using "!microsoft-teams-generate-login-url".\n'
+        )
+
+    error_message += (
+        'The "!microsoft-teams-token-permissions-list" command can be used to '
+        'list the permissions of the currently used graph access token.'
+    )
+
+    return error_message
+
+
+def insufficient_permissions_error_handler() -> str:
+    """
+    Retrieve the known permission requirements for the failed command and give a detailed error message
+    indicating the missing permissions and how to resolve the issue.
+
+    :return: Error message string with instructions regarding the missing permissions
+    """
+    command: str = demisto.command()
+    error_message = []
+    demisto.debug(f"Authentication type is: {AUTH_TYPE}")
+    missing_permissions = []
+    required_permissions_for_command: list = COMMANDS_REQUIRED_PERMISSIONS.get(command, [])
+    permission_type = 'Application' if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW else 'Delegated'
+    if not required_permissions_for_command:
+        demisto.error('Got an insufficient permissions error from Microsoft Graph. '
+                      f'Could not resolve permission requirements for {command=}')
+        return ''
+
+    # Get current token permissions
+    integration_context: dict = get_integration_context()
+    graph_access_token: str = integration_context.get('graph_access_token', '')
+    if not graph_access_token:
+        demisto.error('Could not find a cached graph access token '
+                      f'while trying to resolve permission requirements for {command=}')
+        return ''
+
+    graph_token_api_permissions = get_token_permissions(graph_access_token)
+    expanded_permissions = expand_permission_list(graph_token_api_permissions)
+
+    missing_permissions = [permission for permission in required_permissions_for_command
+                           if permission not in expanded_permissions]
+
+    # Start building the error message
+    error_message.append(
+        f'The {command} command using the {AUTH_TYPE} Flow, requires the following API permissions:')
+
+    error_message.append(f'{permission_type} - {", ".join(required_permissions_for_command)}\n')
+
+    if missing_permissions:
+        error_message.append(create_missing_permissions_section(missing_permissions, permission_type))
+    else:
+        error_message.append('Your current graph access token appears to have all the required permissions.')
+        error_message.append('The issue may be related to an API scope issue, or a change in the Microsoft Teams API.')
+
+    return '\n'.join(error_message)
+
+
 def main():   # pragma: no cover
     """ COMMANDS MANAGER / SWITCH PANEL """
     demisto.debug("Main started...")
@@ -3019,7 +3353,8 @@ def main():   # pragma: no cover
         'microsoft-teams-generate-login-url': generate_login_url_command,
         'microsoft-teams-auth-reset': reset_graph_auth_command,
         'microsoft-teams-token-permissions-list': token_permissions_list_command,
-        'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command
+        'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command,
+        'microsoft-teams-message-update': message_update_command
     }
 
     commands_auth_code: dict = {

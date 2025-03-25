@@ -12,7 +12,7 @@ comment: Common Core XQL Client provides generic infrastructure.
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/python3:3.10.14.99144
+dockerimage: demisto/python3:3.11.11.1940698
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

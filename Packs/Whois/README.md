@@ -22,4 +22,4 @@ You can use the following arguments to mitigate this:
 
 For more information, visit our  [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/tim---process-domains-with-whois)
 
-![TIM - Process Domains With Whois](https://raw.githubusercontent.com/demisto/content/master/Packs/Whois/doc_files/TIM_-_Process_Domains_With_Whois.png)
+![TIM - Process Domains With Whois](doc_files/TIM_-_Process_Domains_With_Whois.png)

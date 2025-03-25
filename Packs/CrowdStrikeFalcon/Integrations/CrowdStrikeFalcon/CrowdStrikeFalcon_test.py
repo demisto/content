@@ -2674,7 +2674,7 @@ def test_get_ioc_command_does_not_exist(requests_mock):
     )
     with pytest.raises(DemistoException) as excinfo:
         get_ioc_command(ioc_type='md5', value='testmd5')
-    assert [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}] == excinfo.value.args[0]
+    assert excinfo.value.args[0] == [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]
 
 
 def test_get_ioc_command_exists(requests_mock):
@@ -2962,7 +2962,7 @@ def test_get_custom_ioc_command_does_not_exist(requests_mock):
     )
     with pytest.raises(DemistoException) as excinfo:
         get_custom_ioc_command(ioc_type='md5', value='testmd5')
-    assert [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}] == excinfo.value.args[0]
+    assert excinfo.value.args[0] == [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]
 
 
 def test_get_custom_ioc_command_by_id(requests_mock):
@@ -4254,7 +4254,7 @@ def test_get_remote_detection_data(mocker):
                               'behaviors.display_name': 'SampleTemplateDetection'}
 
 
-def test_get_remote_edpoint_or_idp_or_mobile_detection_data__idp(mocker):
+def test_get_remote_detection_data_for_multiple_types__idp(mocker):
     """
     Given
         - an idp detection ID on the remote system
@@ -4263,11 +4263,11 @@ def test_get_remote_edpoint_or_idp_or_mobile_detection_data__idp(mocker):
     Then
         - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
     """
-    from CrowdStrikeFalcon import get_remote_epp_or_idp_or_mobile_detection_data
+    from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
     detection_entity = input_data.response_idp_detection.copy()
     mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
     mocker.patch.object(demisto, 'debug', return_value=None)
-    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(
+    mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(
         input_data.remote_idp_detection_id)
     detection_entity['severity'] = 2
     assert mirrored_data == detection_entity
@@ -4277,7 +4277,7 @@ def test_get_remote_edpoint_or_idp_or_mobile_detection_data__idp(mocker):
                               'id': 'ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56'}
 
 
-def test_get_remote_epp_or_idp_or_mobile_detection_data__mobile_detection(mocker):
+def test_get_remote_detection_data_for_multiple_types__mobile_detection(mocker):
     """
     Given
         - an idp detection ID on the remote system
@@ -4286,11 +4286,11 @@ def test_get_remote_epp_or_idp_or_mobile_detection_data__mobile_detection(mocker
     Then
         - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
     """
-    from CrowdStrikeFalcon import get_remote_epp_or_idp_or_mobile_detection_data
+    from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
     detection_entity = input_data.response_mobile_detection.copy()
     mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
     mocker.patch.object(demisto, 'debug', return_value=None)
-    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(
+    mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(
         input_data.remote_mobile_detection_id)
     detection_entity['severity'] = 90
     assert mirrored_data == detection_entity
@@ -4300,7 +4300,7 @@ def test_get_remote_epp_or_idp_or_mobile_detection_data__mobile_detection(mocker
                               'mobile_detection_id': '1111111111111111111'}
 
 
-def test_get_remote_epp_or_idp_or_mobile_detection_data__endpoint_detection(mocker):
+def test_get_remote_detection_data_for_multiple_types__endpoint_detection(mocker):
     """
     Given
         - an endpoint detection ID on the remote system
@@ -4309,11 +4309,11 @@ def test_get_remote_epp_or_idp_or_mobile_detection_data__endpoint_detection(mock
     Then
         - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
     """
-    from CrowdStrikeFalcon import get_remote_epp_or_idp_or_mobile_detection_data
+    from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
     detection_entity = input_data.response_detection_new_version.copy()
     mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
     mocker.patch.object(demisto, 'debug', return_value=None)
-    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(
+    mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(
         input_data.remote_detection_id_new_version)
     detection_entity['severity'] = 90
     assert mirrored_data == detection_entity
@@ -4324,7 +4324,7 @@ def test_get_remote_epp_or_idp_or_mobile_detection_data__endpoint_detection(mock
 
 
 @pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_incident_entries_args)
-def test_set_xsoar_incident_entries(mocker, updated_object, entry_content, close_incident):
+def test_set_xsoar_entries__incident(mocker, updated_object, entry_content, close_incident):
     """
     Given
         - the incident status from the remote system
@@ -4334,12 +4334,12 @@ def test_set_xsoar_incident_entries(mocker, updated_object, entry_content, close
     Then
         - adds the relevant entry (closure/reopen) to the entries
     """
-    from CrowdStrikeFalcon import set_xsoar_incident_entries
+    from CrowdStrikeFalcon import set_xsoar_entries
     mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
     mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
     reopen_statuses = ['New', 'Reopened', 'In Progress']
-    set_xsoar_incident_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
+    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, "Incident", reopen_statuses)
     if entry_content:
         assert entry_content in entries[0].get('Contents')
     else:
@@ -4347,7 +4347,7 @@ def test_set_xsoar_incident_entries(mocker, updated_object, entry_content, close
 
 
 @pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_incident_entries_args)
-def test_set_xsoar_incident_entries_reopen(mocker, updated_object):
+def test_set_xsoar_entries__reopen(mocker, updated_object):
     """
     Given
         - the incident status from the remote system
@@ -4358,12 +4358,12 @@ def test_set_xsoar_incident_entries_reopen(mocker, updated_object):
     Then
         - add the relevant entries only if the status is Reopened.
     """
-    from CrowdStrikeFalcon import set_xsoar_incident_entries
+    from CrowdStrikeFalcon import set_xsoar_entries
     mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
     mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
     reopen_statuses = ['Reopened']  # Add a reopen entry only if the status in CS Falcon is reopened
-    set_xsoar_incident_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
+    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, 'Incident', reopen_statuses)
     if updated_object.get('status') == 'Reopened':
         assert 'dbotIncidentReopen' in entries[0].get('Contents')
     else:
@@ -4371,7 +4371,7 @@ def test_set_xsoar_incident_entries_reopen(mocker, updated_object):
 
 
 @pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_incident_entries_args)
-def test_set_xsoar_incident_entries_empty(mocker, updated_object):
+def test_set_xsoar_entries__empty(mocker, updated_object):
     """
     Given
         - the incident status from the remote system
@@ -4382,59 +4382,13 @@ def test_set_xsoar_incident_entries_empty(mocker, updated_object):
     Then
         - A reopen entry wasn't added in any case.
     """
-    from CrowdStrikeFalcon import set_xsoar_incident_entries
+    from CrowdStrikeFalcon import set_xsoar_entries
     mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
     mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
     reopen_statuses = []  # don't add a reopen entry in any case
-    set_xsoar_incident_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
+    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, 'Incident', reopen_statuses)
     assert entries == []
-
-
-@pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_detection_entries_args)
-def test_set_xsoar_detection_entries(mocker, updated_object, entry_content, close_incident):
-    """
-    Given
-        - the detection status from the remote system
-        - the close_incident parameter that was set when setting the integration
-    When
-        - running get_remote_data_command with changes to make on a detection
-    Then
-        - adds the relevant entry (closure/reopen) to the entries
-    """
-    from CrowdStrikeFalcon import set_xsoar_detection_entries
-    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
-    entries = []
-    reopen_statuses = ['New', 'In progress', 'True positive', 'False positive', 'Reopened', 'Ignored']
-    set_xsoar_detection_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
-    if entry_content:
-        assert entry_content in entries[0].get('Contents')
-    else:
-        assert entries == []
-
-
-@pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_detections_entries_args)
-def test_set_xsoar_detection_entries_reopen_check(mocker, updated_object):
-    """
-    Given
-        - the incident status from the remote system
-        - the close_incident parameter that was set when setting the integration
-        - the reopen statuses set.
-    When
-        - running get_remote_data_command with changes to make on a detection
-    Then
-        - add the relevant entries only if the status is Reopened.
-    """
-    from CrowdStrikeFalcon import set_xsoar_detection_entries
-    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
-    mocker.patch.object(demisto, 'debug', return_value=None)
-    entries = []
-    reopen_statuses = ['Reopened']  # Add a reopen entry only if the status in CS Falcon is reopened
-    set_xsoar_detection_entries(updated_object, entries, input_data.remote_detection_id, reopen_statuses)
-    if updated_object.get('status') == 'reopened':
-        assert 'dbotIncidentReopen' in entries[0].get('Contents')
-    else:
-        assert entries == []
 
 
 @pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_detections_entries_args)
@@ -4449,17 +4403,17 @@ def test_set_xsoar_detection_entries_empty_check(mocker, updated_object):
     Then
         - add the relevant entries only if the status is Reopened.
     """
-    from CrowdStrikeFalcon import set_xsoar_detection_entries
+    from CrowdStrikeFalcon import set_xsoar_entries
     mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
     mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
     reopen_statuses = []  # don't add a reopen entry in any case
-    set_xsoar_detection_entries(updated_object, entries, input_data.remote_detection_id, reopen_statuses)
+    set_xsoar_entries(updated_object, entries, input_data.remote_detection_id, 'Detection', reopen_statuses)
     assert entries == []
 
 
 @pytest.mark.parametrize('updated_object', input_data.set_xsoar_idp_or_mobile_detection_entries)
-def test_set_xsoar_idp_or_mobile_detection_entries(mocker, updated_object):
+def test_set_xsoar_entries___idp_or_mobile_detection(mocker, updated_object):
     """
     Given
         - the incident status from the remote system
@@ -4470,12 +4424,12 @@ def test_set_xsoar_idp_or_mobile_detection_entries(mocker, updated_object):
     Then
         - add the relevant entries only if the status is Reopened.
     """
-    from CrowdStrikeFalcon import set_xsoar_idp_or_mobile_detection_entries
+    from CrowdStrikeFalcon import set_xsoar_entries
     mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
     mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
     reopen_statuses = ['Reopened']  # Add a reopen entry only if the status in CS Falcon is reopened
-    set_xsoar_idp_or_mobile_detection_entries(updated_object, entries, input_data.remote_idp_detection_id, 'IDP', reopen_statuses)
+    set_xsoar_entries(updated_object, entries, input_data.remote_idp_detection_id, 'IDP', reopen_statuses)
     if updated_object.get('status') == 'reopened':
         assert 'dbotIncidentReopen' in entries[0].get('Contents')
     elif updated_object.get('status') == 'closed':
@@ -4487,7 +4441,7 @@ def test_set_xsoar_idp_or_mobile_detection_entries(mocker, updated_object):
 
 
 @pytest.mark.parametrize('updated_object', input_data.set_xsoar_idp_or_mobile_detection_entries)
-def test_set_xsoar_idp_or_mobile_detection_entries_empty_reopen_statuses(mocker, updated_object):
+def test_set_xsoar_entries__empty_reopen_statuses(mocker, updated_object):
     """
     Given
         - the incident status from the remote system
@@ -4498,12 +4452,12 @@ def test_set_xsoar_idp_or_mobile_detection_entries_empty_reopen_statuses(mocker,
     Then
         - add the relevant entries.
     """
-    from CrowdStrikeFalcon import set_xsoar_idp_or_mobile_detection_entries
+    from CrowdStrikeFalcon import set_xsoar_entries
     mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
     mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
     reopen_statuses = []  # don't add a reopen entry in any case
-    set_xsoar_idp_or_mobile_detection_entries(updated_object, entries, input_data.remote_idp_detection_id, 'IDP', reopen_statuses)
+    set_xsoar_entries(updated_object, entries, input_data.remote_idp_detection_id, 'IDP', reopen_statuses)
     if updated_object.get('status') == 'closed':
         assert 'dbotIncidentClose' in entries[0].get('Contents')
         assert 'closeReason' in entries[0].get('Contents')
@@ -4554,6 +4508,26 @@ def test_get_modified_remote_data_command(mocker):
 
 @pytest.mark.parametrize('status',
                          ['new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'])
+def test_update_detection_request_good__legacy(mocker, status):
+    """
+    Given
+        - list of detections IDs
+        - status to change for the given detection in the remote system, which is one of the permitted statuses
+    When
+        - running update_remote_system_command
+    Then
+        - the resolve_detection command is called successfully with the right arguments
+    """
+    from CrowdStrikeFalcon import update_detection_request
+    mock_resolve_detection = mocker.patch('CrowdStrikeFalcon.resolve_detection')
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
+    update_detection_request([input_data.remote_detection_id], status)
+    assert mock_resolve_detection.call_args[1]['ids'] == [input_data.remote_detection_id]
+    assert mock_resolve_detection.call_args[1]['status'] == status
+
+
+@pytest.mark.parametrize('status',
+                         ['new', 'in_progress', 'closed', 'reopened'])
 def test_update_detection_request_good(mocker, status):
     """
     Given
@@ -4566,13 +4540,14 @@ def test_update_detection_request_good(mocker, status):
     """
     from CrowdStrikeFalcon import update_detection_request
     mock_resolve_detection = mocker.patch('CrowdStrikeFalcon.resolve_detection')
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', False)
     update_detection_request([input_data.remote_detection_id], status)
     assert mock_resolve_detection.call_args[1]['ids'] == [input_data.remote_detection_id]
     assert mock_resolve_detection.call_args[1]['status'] == status
 
 
 @pytest.mark.parametrize('status', ['other', ''])
-def test_update_detection_request_bad(status):
+def test_update_detection_request_bad__lagacy(status):
     """
     Given
         - list of detections IDs
@@ -4583,6 +4558,25 @@ def test_update_detection_request_bad(status):
         - an exception is raised
     """
     from CrowdStrikeFalcon import update_detection_request
+    with pytest.raises(DemistoException) as de:
+        update_detection_request([input_data.remote_detection_id], status)
+    assert 'CrowdStrike Falcon Error' in str(de.value)
+
+
+@pytest.mark.parametrize('status', ['true_positive', ''])
+def test_update_detection_request_bad(status, mocker):
+    """
+    Given
+        - list of detections IDs
+        - status to change for the given detection in the remote system, which is not one of the permitted statuses
+            'true_positive' is not a valid status for the new version of the API
+    When
+        - running update_remote_system_command
+    Then
+        - an exception is raised
+    """
+    from CrowdStrikeFalcon import update_detection_request
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', False)
     with pytest.raises(DemistoException) as de:
         update_detection_request([input_data.remote_detection_id], status)
     assert 'CrowdStrike Falcon Error' in str(de.value)
@@ -4752,21 +4746,45 @@ def test_remote_incident_handle_tags(mocker, tags, action_name):
         assert mock_update_incident_request.call_args_list[0].kwargs['json']['action_parameters'][0]['name'] == action_name
 
 
-def test_get_mapping_fields_command():
+def test_get_mapping_fields_command(mocker):
     """
     Given
         - nothing
     When
-        - running get_mapping_fields_command
+        - running get_mapping_fields_command on the new version of the API
     Then
         - the result fits the expected mapping scheme
     """
     from CrowdStrikeFalcon import get_mapping_fields_command
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', False)
     result = get_mapping_fields_command()
     assert result.scheme_types_mappings[0].type_name == 'CrowdStrike Falcon Incident'
     assert result.scheme_types_mappings[0].fields.keys() == {'status', 'tag'}
     assert result.scheme_types_mappings[1].type_name == 'CrowdStrike Falcon Detection'
     assert result.scheme_types_mappings[1].fields.keys() == {'status'}
+    assert result.scheme_types_mappings[2].type_name == 'CrowdStrike Falcon OFP Detection'
+    assert result.scheme_types_mappings[2].fields.keys() == {'status'}
+    assert result.scheme_types_mappings[3].type_name == 'CrowdStrike Falcon On-Demand Scans Detection'
+    assert result.scheme_types_mappings[3].fields.keys() == {'status'}
+
+
+def test_get_mapping_fields_command__legacy(mocker):
+    """
+    Given
+        - nothing
+    When
+        - running get_mapping_fields_command on the legacy version of the API
+    Then
+        - the result fits the expected mapping scheme
+    """
+    from CrowdStrikeFalcon import get_mapping_fields_command
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
+    result = get_mapping_fields_command()
+    assert result.scheme_types_mappings[0].type_name == 'CrowdStrike Falcon Incident'
+    assert result.scheme_types_mappings[0].fields.keys() == {'status', 'tag'}
+    assert result.scheme_types_mappings[1].type_name == 'CrowdStrike Falcon Detection - LAGACY'
+    assert result.scheme_types_mappings[1].fields.keys() == {'status'}
+    assert len(result.scheme_types_mappings) == 2
 
 
 def test_error_in_get_detections_by_behaviors(mocker):

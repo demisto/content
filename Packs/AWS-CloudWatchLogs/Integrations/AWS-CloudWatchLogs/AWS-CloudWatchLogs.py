@@ -144,7 +144,7 @@ def filter_log_events(args, aws_client):
         if args.get('limit') is not None:
             kwargs.update({'limit': int(args.get('limit'))})
         if args.get('interleaved') is not None:
-            kwargs.update({'interleaved': True if args.get('interleaved') == 'True' else False})
+            kwargs.update({'interleaved': args.get('interleaved') == 'True'})
 
         response = client.filter_log_events(**kwargs)
         for event in response['events']:
@@ -435,6 +435,7 @@ def main():
                            retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
     command = demisto.command()
     args = demisto.args()
+    result = ""
 
     if command == 'test-module':
         # This is the call made when pressing the integration test button.

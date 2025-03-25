@@ -799,6 +799,10 @@ def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> tup
             limit -= REQUEST_MAX_PULL
             offset += REQUEST_MAX_PULL
         pagination_message = f"Showing {len(output)} rows." if len(output) > 0 else None  # type: ignore
+    else:
+        pagination_message = 'No pagination.'
+        output = []
+        demisto.debug(f"No pagination params -> {pagination_message}")
 
     return output, pagination_message
 

@@ -300,6 +300,9 @@ class Client(BaseClient):
                             'Malware Family': lum_indicator["name"],
                             'rawJSON': dict(lum_indicator)
                         }
+                    else:
+                        indicator = {}
+                        demisto.debug(f"{indicator_type=} -> {indicator=}")
                     luminar_indicators_list.append(indicator)
         return luminar_indicators_list
 

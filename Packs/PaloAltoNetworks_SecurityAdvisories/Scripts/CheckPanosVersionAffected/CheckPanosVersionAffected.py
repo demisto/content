@@ -22,6 +22,7 @@ class Advisory:
     :param description: Human readable description of Advisory
     :param affected_version_list: List of PAN-OS affected versions exactly
     """
+
     data_type: str
     data_format: str
     cve_id: str
@@ -50,6 +51,12 @@ def return_result_dataclass(result: list[Advisory]):
         summary_list = [vars(x) for x in result]
         title = result[0]._title
         output_prefix = result[0]._output_prefix
+    else:
+        title = ""
+        summary_list = []
+        outputs = []
+        output_prefix = ""
+        demisto.debug(f"The result isn't of type list. {title=} {summary_list=} {outputs=} {output_prefix=}")
 
     readable_output = tableToMarkdown(title, summary_list)
     command_result = CommandResults(
@@ -101,5 +108,5 @@ def main():
     return_results(return_result_dataclass(matched_advisories))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

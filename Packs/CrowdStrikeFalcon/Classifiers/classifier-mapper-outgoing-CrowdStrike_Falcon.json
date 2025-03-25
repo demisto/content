@@ -27,6 +27,22 @@
                 }
             }
         },
+        "CrowdStrike Falcon On-Demand Scans Detection": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "status": {
+                    "simple": "state"
+                }
+            }
+        },
+        "CrowdStrike Falcon OFP Detection": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "status": {
+                    "simple": "state"
+                }
+            }
+        },
         "CrowdStrike Falcon Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
@@ -42,5 +58,8 @@
     "name": "CrowdStrike Falcon - Outgoing Mapper",
     "type": "mapping-outgoing",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

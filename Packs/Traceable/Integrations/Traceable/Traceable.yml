@@ -177,7 +177,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.12.8.1983910
   commands:
   - name: list_incident_cache
     description: List the entries present in the Traceable instance cache.

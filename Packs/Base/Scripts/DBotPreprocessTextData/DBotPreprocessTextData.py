@@ -470,7 +470,7 @@ def main():
 
     if output_original_text_fields:
         for field in text_fields:
-            whitelist_fields += [x.strip() for x in field.split('|')]
+            whitelist_fields += [x.strip() for x in field.split('|')]  # type: ignore[operator]
     if whitelist_fields and len(whitelist_fields) > 0:
         whitelist_fields.append(DBOT_PROCESSED_TEXT_FIELD)
         data = whitelist_dict_fields(data, whitelist_fields)

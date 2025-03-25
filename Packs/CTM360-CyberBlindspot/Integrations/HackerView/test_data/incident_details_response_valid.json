@@ -1,0 +1,36 @@
+[
+    {
+        "id": "HVI-11145070",
+        "timestamp": 1725453245000,
+        "confidence": "confirmed",
+        "cve_id": "CVE-2022-1292",
+        "cwe": [
+            "CWE-78"
+        ],
+        "issue_category": [
+            "Common Vulnerabilities"
+        ],
+        "issue_id": 20221292,
+        "issue_name": "Openssl 3.0.2 Vulnerability detected",
+        "status": "active",
+        "progress_status": "New",
+        "severity": "critical",
+        "first_seen": "04-09-2024 12:34:03",
+        "last_seen": "26-10-2024 12:30:30",
+        "environments": [
+            "Web Server",
+            "Library"
+        ],
+        "ip": "10.161.216.126",
+        "ticket_id": "HVI-11145070",
+        "ip_type": "dedicated",
+        "technologies": [
+            "OpenSSL",
+            "Apache"
+        ],
+        "port": 443,
+        "asset_type": "ip",
+        "asset": "10.161.216.126",
+        "last_updated": 1733839847270
+    }
+]

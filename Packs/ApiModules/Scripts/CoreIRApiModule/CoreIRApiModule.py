@@ -1363,7 +1363,7 @@ class CoreClient(BaseClient):
             resp_type='response',
         )
 
-    def action_status_get(self, action_id) -> Dict[str, Any]:
+    def action_status_get(self, action_id) -> Dict[str, Dict[str, Any]]:
         request_data: Dict[str, Any] = {
             'group_action_id': action_id,
         }
@@ -1376,7 +1376,7 @@ class CoreClient(BaseClient):
         )
         demisto.debug(f"action_status_get = {reply}")
 
-        return reply.get('reply').get('data')
+        return reply.get('reply')
 
     @logger
     def get_file(self, file_link):
@@ -1757,6 +1757,7 @@ def run_polling_command(client: CoreClient,
         outputs_result_func[0].get(polling_field)
     cond = result not in polling_value if stop_polling else result in polling_value
     if values_raise_error and result in values_raise_error:
+        return_results(command_results)
         raise DemistoException(f"The command {cmd} failed. Received status {result}")
     if cond:
         # schedule next poll
@@ -1959,22 +1960,36 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
     demisto.debug(f'action_status_get_command {action_id_list=}')
     result = []
     for action_id in action_id_list:
-        data = client.action_status_get(action_id)
+        reply = client.action_status_get(action_id)
+        data = reply.get('data') or {}
+        error_reasons = reply.get('errorReasons', {})
 
         for endpoint_id, status in data.items():
-            result.append({
+            action_result = {
                 'action_id': action_id,
                 'endpoint_id': endpoint_id,
                 'status': status,
-            })
+            }
+            if error_reason := error_reasons.get(endpoint_id):
+                action_result['ErrorReasons'] = error_reason
+                action_result['error_description'] = (error_reason.get('errorDescription')
+                                                      or get_missing_files_description(error_reason.get('missing_files'))
+                                                      or 'An error occurred while processing the request.')
+            result.append(action_result)
 
     return CommandResults(
-        readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
+        readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True,
+                                        headers=['action_id', 'endpoint_id', 'status', 'error_description']),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.'
                        f'GetActionStatus(val.action_id == obj.action_id)',
         outputs=result,
         raw_response=result
     )
+
+
+def get_missing_files_description(missing_files):
+    if isinstance(missing_files, list) and len(missing_files) > 0 and isinstance(missing_files[0], dict):
+        return missing_files[0].get('description')
 
 
 def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
@@ -2444,7 +2459,7 @@ def form_powershell_command(unescaped_string: str) -> str:
         else:
             escaped_string += char
 
-    return f"powershell -Command '{escaped_string}'"
+    return f"powershell -Command \"{escaped_string}\""
 
 
 def run_script_execute_commands_command(client: CoreClient, args: Dict) -> CommandResults:
@@ -4246,7 +4261,8 @@ def parse_role_names(role_data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, custom_message: str | None) -> str | None:
+def enrich_error_message_id_group_role(e: DemistoException | Exception,
+                                       type_: str | None, custom_message: str | None) -> str | None:
     """
     Attempts to parse additional info from an exception and return it as string. Returns `None` if it can't do that.
 
@@ -4259,11 +4275,19 @@ def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, c
         ValueError: If the error message indicates that the resource was not found, a more detailed error message
             is constructed using the `find_the_cause_error` function and raised with the original error as the cause.
     """
-    if (
-        e.res is not None
+    demisto_error_condition = (
+        isinstance(e, DemistoException)
+        and e.res is not None
         and e.res.status_code == 500
         and 'was not found' in str(e)
-    ):
+    )
+    exception_condition = (
+        isinstance(e, Exception)
+        and str(e) is not None
+        and '"err_code": 500' in str(e)
+        and 'was not found' in str(e)
+    )
+    if demisto_error_condition or exception_condition:
         error_message: str = ''
         pattern = r"(id|Group|Role) \\?'([/A-Za-z 0-9_]+)\\?'"
         if match := re.search(pattern, str(e)):
@@ -4449,14 +4473,21 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
 
     """
 
-    def _warn_if_module_is_disabled(e: DemistoException) -> None:
-        if (
-            e is not None
-            and e.res is not None
-            and e.res.status_code == 500
+    def _warn_if_module_is_disabled(e: DemistoException | Exception) -> None:
+        demisto_error_condition = (isinstance(e, DemistoException)
+                                   and e is not None
+                                   and e.res is not None
+                                   and e.res.status_code == 500
+                                   and 'No identity threat' in str(e)
+                                   and "An error occurred while processing XDR public API" in e.message)
+        exception_condition = (
+            isinstance(e, Exception)
+            and str(e) is not None
+            and '"err_code": 500' in str(e)
             and 'No identity threat' in str(e)
-            and "An error occurred while processing XDR public API" in e.message
-        ):
+            and "An error occurred while processing XDR public API" in str(e)
+        )
+        if demisto_error_condition or exception_condition:
             return_warning(f'Please confirm the XDR Identity Threat Module is enabled.\nFull error message: {e}', exit=True)
 
     match command:
@@ -4477,7 +4508,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
     if id_ := args.get(id_key):
         try:
             outputs = client.risk_score_user_or_host(id_).get('reply', {})
-        except DemistoException as e:
+        except Exception as e:
             _warn_if_module_is_disabled(e)
             if error_message := enrich_error_message_id_group_role(e=e, type_="id", custom_message=""):
                 not_found_message = 'was not found'
@@ -4495,7 +4526,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
 
         try:
             outputs = get_func().get('reply', [])[:list_limit]
-        except DemistoException as e:
+        except Exception as e:
             _warn_if_module_is_disabled(e)
             raise
         table_for_markdown = [parse_risky_users_or_hosts(user, *table_headers) for user in outputs]

@@ -1,0 +1,119 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "AI Playground"
+    ],
+    "caseInsensitive": true,
+    "cliName": "anythingllmdocuments",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Action",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "action",
+            "orgType": "singleSelect",
+            "required": false,
+            "script": "",
+            "selectValues": [
+                "",
+                "Embed",
+                "Delete"
+            ],
+            "type": "singleSelect",
+            "width": 100
+        },
+        {
+            "displayName": "Title",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "title",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 419
+        },
+        {
+            "displayName": "Author",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "author",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 262
+        },
+        {
+            "displayName": "Source",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "source",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 238
+        },
+        {
+            "displayName": "Description",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "description",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 204
+        },
+        {
+            "displayName": "Link",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "link",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_anythingllmdocuments",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Anything LLM Documents",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "AnyLlmDocumentsUpdate",
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

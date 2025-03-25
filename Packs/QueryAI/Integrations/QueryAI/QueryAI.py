@@ -69,7 +69,7 @@ class Client(BaseClient):   # type: ignore
         if connection_params:
             connection_params = safe_load_json(connection_params)
         else:
-            connection_params = self.connection_params
+            connection_params = self.connection_params  # type: ignore[assignment]
 
         if not alias:
             alias = self.alias

@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Block Domain - Symantec Messaging Gateway ](../docs_files/Block_Domain_-_Symantec_Messaging_Gateway.png)
+![Block Domain - Symantec Messaging Gateway ](../doc_files/Block_Domain_-_Symantec_Messaging_Gateway.png)

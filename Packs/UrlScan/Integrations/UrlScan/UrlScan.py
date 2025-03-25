@@ -349,6 +349,9 @@ def format_results(client, uuid, use_url_as_name, scan_lists_attempts=True):
             cert_ec.append(ec_info)
         CERT_HEADERS = ['Subject Name', 'Issuer', 'Validity']
         cont['Certificates'] = cert_ec
+    else:
+        CERT_HEADERS = []
+        demisto.debug(f"certificates isn't in {scan_lists=}. {CERT_HEADERS=}")
     url_cont['Data'] = url_query
     if 'urls' in scan_lists:
         url_cont['Data'] = demisto.args().get('url')

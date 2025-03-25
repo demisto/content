@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 
 import re
 import time
-from typing import Tuple
 import urllib3
 import base64
 import hashlib
@@ -330,7 +329,7 @@ def delete_file_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output=f"File {entry_id} deleted !", outputs=new_files, outputs_prefix="File")
 
 
-def get_entry_file_path_name(file_input: str) -> Tuple[str, str]:
+def get_entry_file_path_name(file_input: str) -> tuple[str, str]:
     """Get the path and the name of a file
     Arguments:
         file_input {str} -- can be an entryID or a path under the key incident.attachments.path
@@ -456,7 +455,7 @@ def download_file_command(client: Client, args: dict) -> CommandResults:
     inc = demisto.incident()
     incident_id = args.get('incidentID', inc.get("investigationId") if not inc.get("id") else inc.get("id"))
     file_name = args.get("fileName", "")
-    file_uri = re.sub("\/?markdown\/image\/", "", args.get("fileURI", ""))
+    file_uri = re.sub(".*\/markdown\/image\/", "", args.get("fileURI", ""))
     target = args.get('target', 'war room entry')
 
     if not incident_id:
@@ -488,14 +487,14 @@ def download_file_command(client: Client, args: dict) -> CommandResults:
                           outputs_prefix="File")
 
 
-def get_file_hahs_command(client: Client, args: dict) -> CommandResults:
+def get_file_hash_command(client: Client, args: dict) -> CommandResults:
     """Get the file hash
     Arguments:
         fileURI {str} -- URI of the file
     Returns:
         CommandResults -- Readable output
     """
-    file_uri = re.sub("\/?markdown\/image\/", "", args.get("fileURI", ""))
+    file_uri = re.sub(".*\/markdown\/image\/", "", args.get("fileURI", ""))
     if not file_uri:
         return_error("Please provide file URI")
     # download file
@@ -563,6 +562,11 @@ def main() -> None:
             return_results(delete_file_command(client, args))
         elif command == 'file-management-delete-attachment':
             return_results(delete_attachment_command(client, args))
+        elif command == 'file-management-delete-custom-attachment':
+            if args.get('fieldName', "") != "attachment":
+                return_results(delete_attachment_command(client, args))
+            else:
+                return_error("Use command file-management-delete-attachment instead")
         elif command == 'file-management-check-file':
             return_results(check_file_command(client, args))
         elif command == 'file-management-rename-file':
@@ -570,7 +574,7 @@ def main() -> None:
         elif command == 'file-management-download-file':
             return_results(download_file_command(client, args))
         elif command == 'file-management-get-file-hash':
-            return_results(get_file_hahs_command(client, args))
+            return_results(get_file_hash_command(client, args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
 

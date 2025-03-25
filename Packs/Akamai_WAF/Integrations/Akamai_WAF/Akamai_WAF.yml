@@ -1544,7 +1544,7 @@ script:
     - contextPath: Akamai.EdgeDns.ZoneRecordSets
       description: A collection of Edge DNS zone's record sets.
       type: Dictionary
-  dockerimage: demisto/auth-utils:1.0.0.115527
+  dockerimage: demisto/auth-utils:1.0.0.1839651
   script: ''
   subtype: python3
   type: python

@@ -195,18 +195,19 @@ switch (command) {
         }
         var headers = 'headers' in args ? argToList(args.headers) : undefined;
         var waitForSearchComplete = args.waitForSearchComplete == 'true';
-        var s = search(query, args.from, args.to, limit, a2i(args.offset, 0), args.timezone,
+        commandLimit = a2i(args.limit, limit)
+        var s = search(query, args.from, args.to, commandLimit, a2i(args.offset, 0), args.timezone,
             a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, args.byReceiptTime, a2i(params.sleepBetweenChecks, defaultSleep),
             waitForSearchComplete);
         var md = '';
         var ec = {};
         if (s.messages && s.messages.length > 0) {
             md = tableToMarkdown('SumoLogic Search Messages', s.messages, headers) + '\n';
-            ec.Search = {Messages: s.messages.length > limit ? s.messages.slice(0, limit) : s.messages};
+            ec.Search = {Messages: s.messages.length > commandLimit ? s.messages.slice(0, commandLimit) : s.messages};
         }
         if (s.records && s.records.length > 0) {
             md += tableToMarkdown('SumoLogic Search Records', s.records, headers);
-            ec.Search = {Records: s.records.length > limit ? s.records.slice(0, limit) : s.records};
+            ec.Search = {Records: s.records.length > commandLimit ? s.records.slice(0, commandLimit) : s.records};
         }
         if (!md) {
             md = 'No results found';

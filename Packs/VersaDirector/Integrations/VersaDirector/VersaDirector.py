@@ -1697,6 +1697,7 @@ def create_client_header(
                                           'Content-Type': 'application/json'}
         else:
             return_error("Basic Authentication method chosen but Username or Password parameters are missing.")
+            return None
 
     elif not use_basic_auth:
         # Auth Token authentication using Auth token parameter
@@ -3506,6 +3507,7 @@ def test_module(
     case_not_client_id_and_not_client_secret_and_not_access_token = bool(not client_id and not client_secret and not access_token)
 
     # Case: using Basic authentication with Username and Password parameter
+    message = ""
     if use_basic_auth and client:
         if case_missing_username_or_password:
             return_error("Basic Authentication method chosen but Username or Password parameters are missing.")

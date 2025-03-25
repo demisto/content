@@ -32,8 +32,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Containment Plan - Clear User Sessions
 * Block Account - Generic v2
+* Containment Plan - Clear User Sessions
 
 ### Integrations
 
@@ -41,13 +41,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
+* MatchRegexV2
 * SearchIncidentsV2
 
 ### Commands
 
-* core-list-risky-users
-* core-get-cloud-original-alerts
 * closeInvestigation
+* core-get-cloud-original-alerts
+* core-list-risky-users
 
 ## Playbook Inputs
 

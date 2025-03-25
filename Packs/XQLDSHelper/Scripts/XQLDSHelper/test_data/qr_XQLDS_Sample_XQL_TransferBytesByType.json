@@ -1,0 +1,20 @@
+{
+  "execution_id": "b9acba73e60c44_98933_inv",
+  "number_of_results": 2,
+  "query_cost": {
+    "3204872200335": 0.003968888888888889
+  },
+  "query_name": "",
+  "remaining_quota": 64.92837138888889,
+  "results": [
+    {
+      "name": "Total Bytes Sent (MB)",
+      "value": "1001"
+    },
+    {
+      "name": "Total Bytes Received (MB)",
+      "value": "2368.7"
+    }
+  ],
+  "status": "SUCCESS"
+}

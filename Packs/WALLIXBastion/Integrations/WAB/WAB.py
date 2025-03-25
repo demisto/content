@@ -254,6 +254,51 @@ class Client(BaseClient):
 
         return CommandResults(readable_output="Success!", raw_response=response)
 
+    def add_global_domain(self, args: Dict[str, Any]):
+        domain_post_domain_name = str_arg(args, "domain_post_domain_name")
+        domain_post_domain_real_name = str_arg(args, "domain_post_domain_real_name")
+        domain_post_description = str_arg(args, "domain_post_description")
+        domain_post_enable_password_change = bool_arg(args, "domain_post_enable_password_change")
+        domain_post_kerberos_kdc = str_arg(args, "domain_post_kerberos_kdc")
+        domain_post_kerberos_realm = str_arg(args, "domain_post_kerberos_realm")
+        domain_post_kerberos_port = int_arg(args, "domain_post_kerberos_port")
+        domain_post_password_change_policy = str_arg(args, "domain_post_password_change_policy", nullable=True)
+        domain_post_password_change_plugin = str_arg(args, "domain_post_password_change_plugin", nullable=True)
+        domain_post_password_change_plugin_parameters = json_arg(
+            args, "domain_post_password_change_plugin_parameters", nullable=True
+        )
+        domain_post_ca_private_key = str_arg(args, "domain_post_ca_private_key")
+        domain_post_passphrase = str_arg(args, "domain_post_passphrase")
+        domain_post_vault_plugin = str_arg(args, "domain_post_vault_plugin", nullable=True)
+        domain_post_vault_plugin_parameters = json_arg(args, "domain_post_vault_plugin_parameters", nullable=True)
+
+        kerberos = assign_params(kdc=domain_post_kerberos_kdc, realm=domain_post_kerberos_realm, port=domain_post_kerberos_port)
+
+        body = assign_params(
+            values_to_ignore=(None,),
+            domain_name=domain_post_domain_name,
+            domain_real_name=domain_post_domain_real_name,
+            description=domain_post_description,
+            enable_password_change=domain_post_enable_password_change,
+            kerberos=kerberos or None,
+            password_change_policy=domain_post_password_change_policy,
+            password_change_plugin=domain_post_password_change_plugin,
+            password_change_plugin_parameters=domain_post_password_change_plugin_parameters,
+            ca_private_key=domain_post_ca_private_key,
+            passphrase=domain_post_passphrase,
+            vault_plugin=domain_post_vault_plugin,
+            vault_plugin_parameters=domain_post_vault_plugin_parameters,
+        )
+        response = self._http_request("post", "/domains", json_data=body)
+
+        return CommandResults(
+            outputs_prefix="WAB.add_global_domain",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-add-global-domain", response),
+            raw_response=response,
+        )
+
     def get_account_references(self, args: Dict[str, Any]):
         account_id = str_arg(args, "account_id")
         q = str_arg(args, "q")
@@ -373,6 +418,92 @@ class Client(BaseClient):
         account_id = str_arg(args, "account_id")
 
         response = self._http_request("delete", f"/accounts/{account_id}")
+
+        return CommandResults(readable_output="Success!", raw_response=response)
+
+    def get_application_account_credentials(self, args: Dict[str, Any]):
+        application_id = str_arg(args, "application_id")
+        domain_id = str_arg(args, "domain_id")
+        account_id = str_arg(args, "account_id")
+        q = str_arg(args, "q")
+        sort = str_arg(args, "sort")
+        offset = int_arg(args, "offset")
+        limit = int_arg(args, "limit")
+        fields = str_arg(args, "fields")
+
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        response = self._http_request(
+            "get", f"/applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}/credentials", params=params
+        )
+
+        return CommandResults(
+            outputs_prefix="WAB.app_account_credential_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-application-account-credentials", response),
+            raw_response=response,
+        )
+
+    def add_credential_to_application_account(self, args: Dict[str, Any]):
+        application_id = str_arg(args, "application_id")
+        domain_id = str_arg(args, "domain_id")
+        account_id = str_arg(args, "account_id")
+        app_account_credential_post_password = str_arg(args, "app_account_credential_post_password")
+        app_account_credential_post_type = "password"
+
+        body = assign_params(
+            values_to_ignore=(None,), type=app_account_credential_post_type, password=app_account_credential_post_password
+        )
+        response = self._http_request(
+            "post", f"/applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}/credentials", json_data=body
+        )
+
+        return CommandResults(
+            outputs_prefix="WAB.add_credential_to_application_account",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-add-credential-to-application-account", response),
+            raw_response=response,
+        )
+
+    def get_application_account_credential(self, args: Dict[str, Any]):
+        application_id = str_arg(args, "application_id")
+        domain_id = str_arg(args, "domain_id")
+        account_id = str_arg(args, "account_id")
+        credential_id = str_arg(args, "credential_id")
+        fields = str_arg(args, "fields")
+
+        params = assign_params(values_to_ignore=(None,), fields=fields)
+        response = self._http_request(
+            "get",
+            f"/applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}/credentials/{credential_id}",
+            params=params,
+        )
+
+        return CommandResults(
+            outputs_prefix="WAB.app_account_credential_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-application-account-credential", response),
+            raw_response=response,
+        )
+
+    def edit_credential_of_application_account(self, args: Dict[str, Any]):
+        application_id = str_arg(args, "application_id")
+        domain_id = str_arg(args, "domain_id")
+        account_id = str_arg(args, "account_id")
+        credential_id = str_arg(args, "credential_id")
+        app_account_credential_put_password = str_arg(args, "app_account_credential_put_password")
+        app_account_credential_put_type = "password"
+
+        body = assign_params(
+            values_to_ignore=(None,), type=app_account_credential_put_type, password=app_account_credential_put_password
+        )
+        response = self._http_request(
+            "put",
+            f"/applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}/credentials/{credential_id}",
+            json_data=body,
+        )
 
         return CommandResults(readable_output="Success!", raw_response=response)
 
@@ -506,6 +637,34 @@ class Client(BaseClient):
             raw_response=response,
         )
 
+    def add_local_domain_in_application(self, args: Dict[str, Any]):
+        application_id = str_arg(args, "application_id")
+        localdomain_app_post_domain_name = str_arg(args, "localdomain_app_post_domain_name")
+        localdomain_app_post_description = str_arg(args, "localdomain_app_post_description")
+        localdomain_app_post_enable_password_change = bool_arg(args, "localdomain_app_post_enable_password_change")
+        localdomain_app_post_password_change_policy = str_arg(args, "localdomain_app_post_password_change_policy", nullable=True)
+        localdomain_app_post_password_change_plugin = str_arg(args, "localdomain_app_post_password_change_plugin", nullable=True)
+        password_change_plugin_parameters = json_arg(args, "password_change_plugin_parameters")
+
+        body = assign_params(
+            values_to_ignore=(None,),
+            domain_name=localdomain_app_post_domain_name,
+            description=localdomain_app_post_description,
+            enable_password_change=localdomain_app_post_enable_password_change,
+            password_change_policy=localdomain_app_post_password_change_policy,
+            password_change_plugin=localdomain_app_post_password_change_plugin,
+            password_change_plugin_parameters=password_change_plugin_parameters,
+        )
+        response = self._http_request("post", f"/applications/{application_id}/localdomains", json_data=body)
+
+        return CommandResults(
+            outputs_prefix="WAB.add_local_domain_in_application",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-add-local-domain-in-application", response),
+            raw_response=response,
+        )
+
     def get_local_domain_data_for_application(self, args: Dict[str, Any]):
         application_id = str_arg(args, "application_id")
         domain_id = str_arg(args, "domain_id")
@@ -521,6 +680,14 @@ class Client(BaseClient):
             readable_output=to_markdown("wab-get-local-domain-data-for-application", response),
             raw_response=response,
         )
+
+    def delete_local_domain_from_application(self, args: Dict[str, Any]):
+        application_id = str_arg(args, "application_id")
+        domain_id = str_arg(args, "domain_id")
+
+        response = self._http_request("delete", f"/applications/{application_id}/localdomains/{domain_id}")
+
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_applications(self, args: Dict[str, Any]):
         q = str_arg(args, "q")
@@ -1366,6 +1533,108 @@ class Client(BaseClient):
 
         return CommandResults(readable_output="Success!", raw_response=response)
 
+    def get_device_account_credentials(self, args: Dict[str, Any]):
+        device_id = str_arg(args, "device_id")
+        domain_id = str_arg(args, "domain_id")
+        account_id = str_arg(args, "account_id")
+        key_format = str_arg(args, "key_format")
+        q = str_arg(args, "q")
+        sort = str_arg(args, "sort")
+        offset = int_arg(args, "offset")
+        limit = int_arg(args, "limit")
+        fields = str_arg(args, "fields")
+
+        params = assign_params(
+            values_to_ignore=(None,), key_format=key_format, q=q, sort=sort, offset=offset, limit=limit, fields=fields
+        )
+        response = self._http_request(
+            "get", f"/devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}/credentials", params=params
+        )
+
+        return CommandResults(
+            outputs_prefix="WAB.credential_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-device-account-credentials", response),
+            raw_response=response,
+        )
+
+    def add_credential_to_device_account(self, args: Dict[str, Any]):
+        device_id = str_arg(args, "device_id")
+        domain_id = str_arg(args, "domain_id")
+        account_id = str_arg(args, "account_id")
+        credential_post_type = str_arg(args, "credential_post_type")
+        credential_post_password = str_arg(args, "credential_post_password")
+        credential_post_private_key = str_arg(args, "credential_post_private_key")
+        credential_post_passphrase = str_arg(args, "credential_post_passphrase")
+
+        body = assign_params(
+            values_to_ignore=(None,),
+            type=credential_post_type,
+            password=credential_post_password,
+            private_key=credential_post_private_key,
+            passphrase=credential_post_passphrase,
+        )
+        response = self._http_request(
+            "post", f"/devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}/credentials", json_data=body
+        )
+
+        return CommandResults(
+            outputs_prefix="WAB.add_credential_to_device_account",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-add-credential-to-device-account", response),
+            raw_response=response,
+        )
+
+    def get_device_account_credential(self, args: Dict[str, Any]):
+        device_id = str_arg(args, "device_id")
+        domain_id = str_arg(args, "domain_id")
+        account_id = str_arg(args, "account_id")
+        credential_id = str_arg(args, "credential_id")
+        key_format = str_arg(args, "key_format")
+        fields = str_arg(args, "fields")
+
+        params = assign_params(values_to_ignore=(None,), key_format=key_format, fields=fields)
+        response = self._http_request(
+            "get",
+            f"/devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}/credentials/{credential_id}",
+            params=params,
+        )
+
+        return CommandResults(
+            outputs_prefix="WAB.credential_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-device-account-credential", response),
+            raw_response=response,
+        )
+
+    def edit_credential_of_device_account(self, args: Dict[str, Any]):
+        device_id = str_arg(args, "device_id")
+        domain_id = str_arg(args, "domain_id")
+        account_id = str_arg(args, "account_id")
+        credential_id = str_arg(args, "credential_id")
+        credential_put_type = str_arg(args, "credential_put_type")
+        credential_put_password = str_arg(args, "credential_put_password")
+        credential_put_private_key = str_arg(args, "credential_put_private_key")
+        credential_put_passphrase = str_arg(args, "credential_put_passphrase")
+
+        body = assign_params(
+            values_to_ignore=(None,),
+            type=credential_put_type,
+            password=credential_put_password,
+            private_key=credential_put_private_key,
+            passphrase=credential_put_passphrase,
+        )
+        response = self._http_request(
+            "put",
+            f"/devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}/credentials/{credential_id}",
+            json_data=body,
+        )
+
+        return CommandResults(readable_output="Success!", raw_response=response)
+
     def get_all_accounts_on_device_local_domain(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
         domain_id = str_arg(args, "domain_id")
@@ -1557,6 +1826,38 @@ class Client(BaseClient):
             raw_response=response,
         )
 
+    def add_local_domain_in_device(self, args: Dict[str, Any]):
+        device_id = str_arg(args, "device_id")
+        localdomain_post_domain_name = str_arg(args, "localdomain_post_domain_name")
+        localdomain_post_description = str_arg(args, "localdomain_post_description")
+        localdomain_post_enable_password_change = bool_arg(args, "localdomain_post_enable_password_change")
+        localdomain_post_password_change_policy = str_arg(args, "localdomain_post_password_change_policy", nullable=True)
+        localdomain_post_password_change_plugin = str_arg(args, "localdomain_post_password_change_plugin", nullable=True)
+        localdomain_post_ca_private_key = str_arg(args, "localdomain_post_ca_private_key")
+        localdomain_post_passphrase = str_arg(args, "localdomain_post_passphrase")
+        password_change_plugin_parameters = json_arg(args, "password_change_plugin_parameters")
+
+        body = assign_params(
+            values_to_ignore=(None,),
+            domain_name=localdomain_post_domain_name,
+            description=localdomain_post_description,
+            enable_password_change=localdomain_post_enable_password_change,
+            password_change_policy=localdomain_post_password_change_policy,
+            password_change_plugin=localdomain_post_password_change_plugin,
+            ca_private_key=localdomain_post_ca_private_key,
+            passphrase=localdomain_post_passphrase,
+            password_change_plugin_parameters=password_change_plugin_parameters,
+        )
+        response = self._http_request("post", f"/devices/{device_id}/localdomains", json_data=body)
+
+        return CommandResults(
+            outputs_prefix="WAB.add_local_domain_in_device",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-add-local-domain-in-device", response),
+            raw_response=response,
+        )
+
     def get_local_domain_of_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
         domain_id = str_arg(args, "domain_id")
@@ -1572,6 +1873,14 @@ class Client(BaseClient):
             readable_output=to_markdown("wab-get-local-domain-of-device", response),
             raw_response=response,
         )
+
+    def delete_local_domain_from_device(self, args: Dict[str, Any]):
+        device_id = str_arg(args, "device_id")
+        domain_id = str_arg(args, "domain_id")
+
+        response = self._http_request("delete", f"/devices/{device_id}/localdomains/{domain_id}")
+
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_services_of_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -1756,6 +2065,92 @@ class Client(BaseClient):
 
         return CommandResults(readable_output="Success!", raw_response=response)
 
+    def get_global_domain_account_credentials(self, args: Dict[str, Any]):
+        domain_id = str_arg(args, "domain_id")
+        account_id = str_arg(args, "account_id")
+        q = str_arg(args, "q")
+        sort = str_arg(args, "sort")
+        offset = int_arg(args, "offset")
+        limit = int_arg(args, "limit")
+        fields = str_arg(args, "fields")
+
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        response = self._http_request("get", f"/domains/{domain_id}/accounts/{account_id}/credentials", params=params)
+
+        return CommandResults(
+            outputs_prefix="WAB.credential_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-global-domain-account-credentials", response),
+            raw_response=response,
+        )
+
+    def get_global_domain_account_credential(self, args: Dict[str, Any]):
+        domain_id = str_arg(args, "domain_id")
+        account_id = str_arg(args, "account_id")
+        credential_id = str_arg(args, "credential_id")
+        fields = str_arg(args, "fields")
+
+        params = assign_params(values_to_ignore=(None,), fields=fields)
+        response = self._http_request(
+            "get", f"/domains/{domain_id}/accounts/{account_id}/credentials/{credential_id}", params=params
+        )
+
+        return CommandResults(
+            outputs_prefix="WAB.credential_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-global-domain-account-credential", response),
+            raw_response=response,
+        )
+
+    def edit_credential_of_global_domain_account(self, args: Dict[str, Any]):
+        domain_id = str_arg(args, "domain_id")
+        account_id = str_arg(args, "account_id")
+        credential_id = str_arg(args, "credential_id")
+        credential_put_type = str_arg(args, "credential_put_type")
+        credential_put_password = str_arg(args, "credential_put_password")
+        credential_put_private_key = str_arg(args, "credential_put_private_key")
+        credential_put_passphrase = str_arg(args, "credential_put_passphrase")
+
+        body = assign_params(
+            values_to_ignore=(None,),
+            type=credential_put_type,
+            password=credential_put_password,
+            private_key=credential_put_private_key,
+            passphrase=credential_put_passphrase,
+        )
+        response = self._http_request(
+            "put", f"/domains/{domain_id}/accounts/{account_id}/credentials/{credential_id}", json_data=body
+        )
+
+        return CommandResults(readable_output="Success!", raw_response=response)
+
+    def add_credential_to_global_domain_account(self, args: Dict[str, Any]):
+        domain_name = str_arg(args, "domain_name")
+        account_id = str_arg(args, "account_id")
+        credential_post_type = str_arg(args, "credential_post_type")
+        credential_post_password = str_arg(args, "credential_post_password")
+        credential_post_private_key = str_arg(args, "credential_post_private_key")
+        credential_post_passphrase = str_arg(args, "credential_post_passphrase")
+
+        body = assign_params(
+            values_to_ignore=(None,),
+            type=credential_post_type,
+            password=credential_post_password,
+            private_key=credential_post_private_key,
+            passphrase=credential_post_passphrase,
+        )
+        response = self._http_request("post", f"/domains/{domain_name}/accounts/{account_id}/credentials", json_data=body)
+
+        return CommandResults(
+            outputs_prefix="WAB.add_credential_to_global_domain_account",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-add-credential-to-global-domain-account", response),
+            raw_response=response,
+        )
+
     def get_accounts_of_global_domain(self, args: Dict[str, Any]):
         domain_id = str_arg(args, "domain_id")
         q = str_arg(args, "q")
@@ -1907,6 +2302,46 @@ class Client(BaseClient):
             raw_response=response,
         )
 
+    def delete_global_domain(self, args: Dict[str, Any]):
+        domain_id = str_arg(args, "domain_id")
+
+        response = self._http_request("delete", f"/domains/{domain_id}")
+
+        return CommandResults(readable_output="Success!", raw_response=response)
+
+    def get_external_authentications(self, args: Dict[str, Any]):
+        q = str_arg(args, "q")
+        sort = str_arg(args, "sort")
+        offset = int_arg(args, "offset")
+        limit = int_arg(args, "limit")
+        fields = str_arg(args, "fields")
+
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        response = self._http_request("get", "/externalauths", params=params)
+
+        return CommandResults(
+            outputs_prefix="WAB.externalauth_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-external-authentications", response),
+            raw_response=response,
+        )
+
+    def get_external_authentication(self, args: Dict[str, Any]):
+        authentication_id = str_arg(args, "authentication_id")
+        fields = str_arg(args, "fields")
+
+        params = assign_params(values_to_ignore=(None,), fields=fields)
+        response = self._http_request("get", f"/externalauths/{authentication_id}", params=params)
+
+        return CommandResults(
+            outputs_prefix="WAB.externalauth_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-external-authentication", response),
+            raw_response=response,
+        )
+
     def get_external_authentication_group_mappings(self, args: Dict[str, Any]):
         group_by = str_arg(args, "group_by")
         q = str_arg(args, "q")
@@ -2012,10 +2447,10 @@ class Client(BaseClient):
         notification_post_notification_name = str_arg(args, "notification_post_notification_name")
         notification_post_description = str_arg(args, "notification_post_description")
         notification_post_enabled = bool_arg(args, "notification_post_enabled")
-        notification_post_type = str_arg(args, "notification_post_type")
         notification_post_destination = str_arg(args, "notification_post_destination")
         notification_post_language = str_arg(args, "notification_post_language")
         notification_post_events = list_arg(args, "notification_post_events")
+        notification_post_type = "email"
 
         body = assign_params(
             values_to_ignore=(None,),
@@ -2056,10 +2491,10 @@ class Client(BaseClient):
         notification_put_notification_name = str_arg(args, "notification_put_notification_name")
         notification_put_description = str_arg(args, "notification_put_description")
         notification_put_enabled = bool_arg(args, "notification_put_enabled")
-        notification_put_type = str_arg(args, "notification_put_type")
         notification_put_destination = str_arg(args, "notification_put_destination")
         notification_put_language = str_arg(args, "notification_put_language")
         notification_put_events = list_arg(args, "notification_put_events")
+        notification_put_type = "email"
 
         params = assign_params(values_to_ignore=(None,), force=force)
         body = assign_params(
@@ -2809,6 +3244,35 @@ class Client(BaseClient):
             raw_response=response,
         )
 
+    def add_user_group(self, args: Dict[str, Any]):
+        usergroups_post_group_name = str_arg(args, "usergroups_post_group_name")
+        usergroups_post_profile = str_arg(args, "usergroups_post_profile", nullable=True)
+        usergroups_post_description = str_arg(args, "usergroups_post_description")
+        usergroups_post_timeframes = list_arg(args, "usergroups_post_timeframes")
+        usergroups_post_users = list_arg(args, "usergroups_post_users")
+        usergroups_post_language = str_arg(args, "usergroups_post_language")
+        usergroups_post_email_list = str_arg(args, "usergroups_post_email_list")
+
+        body = assign_params(
+            values_to_ignore=(None,),
+            group_name=usergroups_post_group_name,
+            profile=usergroups_post_profile,
+            description=usergroups_post_description,
+            timeframes=usergroups_post_timeframes,
+            users=usergroups_post_users,
+            language=usergroups_post_language,
+            email_list=usergroups_post_email_list,
+        )
+        response = self._http_request("post", "/usergroups", json_data=body)
+
+        return CommandResults(
+            outputs_prefix="WAB.add_user_group",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-add-user-group", response),
+            raw_response=response,
+        )
+
     def get_user_group(self, args: Dict[str, Any]):
         group_id = str_arg(args, "group_id")
         fields = str_arg(args, "fields")
@@ -2823,6 +3287,39 @@ class Client(BaseClient):
             readable_output=to_markdown("wab-get-user-group", response),
             raw_response=response,
         )
+
+    def edit_user_group(self, args: Dict[str, Any]):
+        group_id = str_arg(args, "group_id")
+        force = bool_arg(args, "force")
+        usergroups_put_group_name = str_arg(args, "usergroups_put_group_name")
+        usergroups_put_profile = str_arg(args, "usergroups_put_profile", nullable=True)
+        usergroups_put_description = str_arg(args, "usergroups_put_description")
+        usergroups_put_timeframes = list_arg(args, "usergroups_put_timeframes")
+        usergroups_put_users = list_arg(args, "usergroups_put_users")
+        usergroups_put_language = str_arg(args, "usergroups_put_language")
+        usergroups_put_email_list = str_arg(args, "usergroups_put_email_list")
+
+        params = assign_params(values_to_ignore=(None,), force=force)
+        body = assign_params(
+            values_to_ignore=(None,),
+            group_name=usergroups_put_group_name,
+            profile=usergroups_put_profile,
+            description=usergroups_put_description,
+            timeframes=usergroups_put_timeframes,
+            users=usergroups_put_users,
+            language=usergroups_put_language,
+            email_list=usergroups_put_email_list,
+        )
+        response = self._http_request("put", f"/usergroups/{group_id}", params=params, json_data=body)
+
+        return CommandResults(readable_output="Success!", raw_response=response)
+
+    def delete_user_group(self, args: Dict[str, Any]):
+        group_id = str_arg(args, "group_id")
+
+        response = self._http_request("delete", f"/usergroups/{group_id}")
+
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_users(self, args: Dict[str, Any]):
         password_hash = bool_arg(args, "password_hash")
@@ -3366,19 +3863,26 @@ def main() -> None:
             "wab-add-password-target-to-target-group": client.add_password_target_to_target_group,
             "wab-add-restriction-to-target-group": client.add_restriction_to_target_group,
             "wab-add-timeframe-period": client.add_timeframe_period,
+            "wab-add-global-domain": client.add_global_domain,
             "wab-get-account-references": client.get_account_references,
             "wab-get-account-reference": client.get_account_reference,
             "wab-change-password-or-ssh-key-of-account": client.change_password_or_ssh_key_of_account,
             "wab-get-all-accounts": client.get_all_accounts,
             "wab-get-one-account": client.get_one_account,
             "wab-delete-account": client.delete_account,
+            "wab-get-application-account-credentials": client.get_application_account_credentials,
+            "wab-add-credential-to-application-account": client.add_credential_to_application_account,
+            "wab-get-application-account-credential": client.get_application_account_credential,
+            "wab-edit-credential-of-application-account": client.edit_credential_of_application_account,
             "wab-get-application-accounts": client.get_application_accounts,
             "wab-add-account-to-local-domain-of-application": client.add_account_to_local_domain_of_application,
             "wab-get-application-account": client.get_application_account,
             "wab-edit-account-on-local-domain-of-application": client.edit_account_on_local_domain_of_application,
             "wab-delete-account-from-local-domain-of-application": client.delete_account_from_local_domain_of_application,
             "wab-get-local-domains-data-for-application": client.get_local_domains_data_for_application,
+            "wab-add-local-domain-in-application": client.add_local_domain_in_application,
             "wab-get-local-domain-data-for-application": client.get_local_domain_data_for_application,
+            "wab-delete-local-domain-from-application": client.delete_local_domain_from_application,
             "wab-get-applications": client.get_applications,
             "wab-get-application": client.get_application,
             "wab-edit-application": client.edit_application,
@@ -3423,6 +3927,10 @@ def main() -> None:
             "wab-get-connection-policy": client.get_connection_policy,
             "wab-edit-connection-policy": client.edit_connection_policy,
             "wab-delete-connection-policy": client.delete_connection_policy,
+            "wab-get-device-account-credentials": client.get_device_account_credentials,
+            "wab-add-credential-to-device-account": client.add_credential_to_device_account,
+            "wab-get-device-account-credential": client.get_device_account_credential,
+            "wab-edit-credential-of-device-account": client.edit_credential_of_device_account,
             "wab-get-all-accounts-on-device-local-domain": client.get_all_accounts_on_device_local_domain,
             "wab-add-account-to-local-domain-on-device": client.add_account_to_local_domain_on_device,
             "wab-get-one-account-on-device-local-domain": client.get_one_account_on_device_local_domain,
@@ -3432,7 +3940,9 @@ def main() -> None:
             "wab-get-certificate-on-device": client.get_certificate_on_device,
             "wab-revoke-certificate-of-device": client.revoke_certificate_of_device,
             "wab-get-local-domains-of-device": client.get_local_domains_of_device,
+            "wab-add-local-domain-in-device": client.add_local_domain_in_device,
             "wab-get-local-domain-of-device": client.get_local_domain_of_device,
+            "wab-delete-local-domain-from-device": client.delete_local_domain_from_device,
             "wab-get-services-of-device": client.get_services_of_device,
             "wab-add-service-in-device": client.add_service_in_device,
             "wab-get-service-of-device": client.get_service_of_device,
@@ -3443,6 +3953,10 @@ def main() -> None:
             "wab-get-device": client.get_device,
             "wab-edit-device": client.edit_device,
             "wab-delete-device": client.delete_device,
+            "wab-get-global-domain-account-credentials": client.get_global_domain_account_credentials,
+            "wab-get-global-domain-account-credential": client.get_global_domain_account_credential,
+            "wab-edit-credential-of-global-domain-account": client.edit_credential_of_global_domain_account,
+            "wab-add-credential-to-global-domain-account": client.add_credential_to_global_domain_account,
             "wab-get-accounts-of-global-domain": client.get_accounts_of_global_domain,
             "wab-add-account-in-global-domain": client.add_account_in_global_domain,
             "wab-get-account-of-global-domain": client.get_account_of_global_domain,
@@ -3451,6 +3965,9 @@ def main() -> None:
             "wab-delete-resource-from-global-domain-account": client.delete_resource_from_global_domain_account,
             "wab-get-global-domains": client.get_global_domains,
             "wab-get-global-domain": client.get_global_domain,
+            "wab-delete-global-domain": client.delete_global_domain,
+            "wab-get-external-authentications": client.get_external_authentications,
+            "wab-get-external-authentication": client.get_external_authentication,
             "wab-get-external-authentication-group-mappings": client.get_external_authentication_group_mappings,
             "wab-get-ldap-users-of-domain": client.get_ldap_users_of_domain,
             "wab-get-ldap-user-of-domain": client.get_ldap_user_of_domain,
@@ -3503,7 +4020,10 @@ def main() -> None:
             "wab-edit-timeframe": client.edit_timeframe,
             "wab-delete-timeframe": client.delete_timeframe,
             "wab-get-user-groups": client.get_user_groups,
+            "wab-add-user-group": client.add_user_group,
             "wab-get-user-group": client.get_user_group,
+            "wab-edit-user-group": client.edit_user_group,
+            "wab-delete-user-group": client.delete_user_group,
             "wab-get-users": client.get_users,
             "wab-add-user": client.add_user,
             "wab-get-user": client.get_user,

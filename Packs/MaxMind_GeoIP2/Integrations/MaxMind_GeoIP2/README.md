@@ -202,4 +202,4 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/42912128/51251659-864b7800-19a2-11e9-9273-6508d2db872e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/42912128/51251659-864b7800-19a2-11e9-9273-6508d2db872e.png" alt="screen shot 2019-01-16 at 15 22 07"></a></p>
+<p><a href="../../doc_files/51251659-864b7800-19a2-11e9-9273-6508d2db872e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/51251659-864b7800-19a2-11e9-9273-6508d2db872e.png" alt="screen shot 2019-01-16 at 15 22 07"></a></p>

@@ -283,7 +283,7 @@ def test_enrich_with_url():
     obj = {}
     baseUrl = 'http://test.com'
     id = '1'
-    expectedUrl = f'{baseUrl}/#/app/analytics/entity/Alert/{id}'
+    expectedUrl = f'{baseUrl}/analytics/entity/Alert/{id}'
 
     enrich_with_url(obj, baseUrl, id)
     assert obj['Url'] == expectedUrl

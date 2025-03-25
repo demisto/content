@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The integration 'Cyberint' contains a new required parameter: Company Name"
+}

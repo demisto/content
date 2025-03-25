@@ -31,7 +31,7 @@ class Client(BaseClient):
         self.proxy = proxy
         self.auth = (username, password)
         self.aio_auth = aiohttp.BasicAuth(username, password)
-        super(Client, self).__init__(base_url, **kwargs)
+        super().__init__(base_url, **kwargs)
 
     def _check_for_error(self, resp):
         """
@@ -164,7 +164,7 @@ class Client(BaseClient):
             address = urljoin(self._base_url, '/storm')
             query = {'query': my_query}
             async with sess.get(address, json=query, auth=self.aio_auth) as resp:
-                async for byts, x in resp.content.iter_chunks():
+                async for byts, _x in resp.content.iter_chunks():
                     if not byts:
                         break
                     mesg = json.loads(byts)
@@ -184,7 +184,7 @@ def validate_timezone_helper(TIMEZONE):
         return_error(f'Error: Timezone format "{TIMEZONE}" invalid')
     else:
         tz = pytz.timezone(TIMEZONE)
-    return tz
+    return tz  # pylint: disable=E0606
 
 
 def convert_raw_into_nodes_helper(results):
@@ -214,13 +214,13 @@ def get_full_tags_helper(data):
     """
     tags = []
 
-    temp_tags = [t for t in data.keys()]
+    temp_tags = list(data.keys())
     if temp_tags:
         tags.append(temp_tags.pop(0))
     else:
         return tags
 
-    for i in range(0, len(temp_tags)):
+    for _i in range(0, len(temp_tags)):
         if temp_tags:
             temp = temp_tags.pop(0)
         else:
@@ -258,8 +258,8 @@ def model_query_helper(model, query):
     Returns properties for given node type. Raises error not found if not present.
     """
     parsed_data = {'query': query}
-    mod_types = [t for t in model['types'].keys()]
-    mod_forms = [f for f in model['forms'].keys()]
+    mod_types = list(model['types'].keys())
+    mod_forms = list(model['forms'].keys())
 
     if (query not in mod_types) and (query not in mod_forms):
         raise Exception(f'Error: Query "{query}" not found in model. Try adjusting syntax (i.e. "inet:ipv4").')
@@ -613,7 +613,7 @@ def storm_query_command(client, args):
 
     if len(nodes) == 1:
         name_single = 'Synapse Node Properties'
-        headers_single = [h for h in data[0][1]['props'].keys()]
+        headers_single = list(data[0][1]['props'].keys())
         readable_output += tableToMarkdown(name_single, data[0][1]['props'], headers=headers_single, removeNull=False)
 
     results = CommandResults(
@@ -819,7 +819,7 @@ def query_model_command(client, args):
 
     if full_resp.get('Form'):
         name_form = f'Synapse `{full_resp.get("Valu")}` Form Properties'
-        headers_form = [h for h in q_form['Properties'].keys()]
+        headers_form = list(q_form['Properties'].keys())
         readable_output += tableToMarkdown(name_form, q_form['Properties'], headers=headers_form, removeNull=False)
 
     results = CommandResults(

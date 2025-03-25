@@ -1,0 +1,2555 @@
+[
+  "######### markdown",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "## ${.recordset=>val[0].text}"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_text.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "## Sample Text",
+        "Contents": null
+      }
+    }
+  },
+  "######### markdown-table",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown-table",
+            "markdown-table": {
+              "title": "Applications",
+              "sort": {
+                "by": "count",
+                "order": "asc"
+              },
+              "columns": [
+                {
+                  "field": "app",
+                  "label": "Application"
+                },
+                {
+                  "field": "count",
+                  "label": "# of sessions"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "### Applications\n|Application|# of sessions|\n|---|---|\n| app1 | 10 |\n| app2 | 20 |\n| app3 | 30 |\n",
+        "Contents": null
+      }
+    }
+  },
+  "######### number",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "number",
+            "number": {
+              "field": "n",
+              "params": {
+                "name": "Sample Number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_number.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "number",
+        "Contents": {
+          "params": {
+            "name": "Sample Number"
+          },
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### number-trend",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "number-trend",
+            "number-trend": {
+              "prev-field": "last_n",
+              "curr-field": "curr_n"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_number_trend.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "number",
+        "Contents": {
+          "stats": {
+            "prevSum": 1000,
+            "currSum": 2000
+          }
+        }
+      }
+    }
+  },
+  "######### pie - records (default-colors)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "pie",
+            "pie": {
+              "group": "records",
+              "records": {
+                "name-field": "app",
+                "data-field": "count"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "pie",
+        "Contents": {
+          "stats": [
+            {
+              "name": "app1",
+              "data": [
+                10
+              ],
+              "color": "rgb(0, 230, 0)"
+            },
+            {
+              "name": "app2",
+              "data": [
+                20
+              ],
+              "color": "rgb(230, 0, 0)"
+            },
+            {
+              "name": "app3",
+              "data": [
+                30
+              ],
+              "color": "rgb(0, 0, 230)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### pie - records (colors: str)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "pie",
+            "pie": {
+              "group": "records",
+              "records": {
+                "name-field": "app",
+                "data-field": "count",
+                "colors": "rgb(0, 0, 0)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "pie",
+        "Contents": {
+          "stats": [
+            {
+              "name": "app1",
+              "data": [
+                10
+              ],
+              "color": "rgb(0, 0, 0)"
+            },
+            {
+              "name": "app2",
+              "data": [
+                20
+              ],
+              "color": "rgb(0, 0, 0)"
+            },
+            {
+              "name": "app3",
+              "data": [
+                30
+              ],
+              "color": "rgb(0, 0, 0)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### pie - records (colors: fields)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "pie",
+            "pie": {
+              "group": "records",
+              "records": {
+                "name-field": "app",
+                "data-field": "count",
+                "colors": {
+                  "app1": "rgb(0, 0, 0)"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "pie",
+        "Contents": {
+          "stats": [
+            {
+              "name": "app1",
+              "data": [
+                10
+              ],
+              "color": "rgb(0, 0, 0)"
+            },
+            {
+              "name": "app2",
+              "data": [
+                20
+              ],
+              "color": "rgb(230, 0, 0)"
+            },
+            {
+              "name": "app3",
+              "data": [
+                30
+              ],
+              "color": "rgb(0, 0, 230)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### pie - records (colors: order - asc)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "pie",
+            "pie": {
+              "group": "records",
+              "records": {
+                "name-field": "app",
+                "data-field": "count",
+                "sort": {
+                  "by": "count",
+                  "order": "asc"
+                },
+                "colors": [
+                  "rgb(0, 0, 0)",
+                  "rgb(0, 0, 255)"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "pie",
+        "Contents": {
+          "stats": [
+            {
+              "name": "app1",
+              "data": [
+                10
+              ],
+              "color": "rgb(0, 0, 0)"
+            },
+            {
+              "name": "app2",
+              "data": [
+                20
+              ],
+              "color": "rgb(0, 0, 255)"
+            },
+            {
+              "name": "app3",
+              "data": [
+                30
+              ],
+              "color": "rgb(0, 230, 0)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### pie - records (colors: order - desc)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "pie",
+            "pie": {
+              "group": "records",
+              "records": {
+                "name-field": "app",
+                "data-field": "count",
+                "sort": {
+                  "by": "count",
+                  "order": "desc"
+                },
+                "colors": [
+                  "rgb(0, 0, 0)",
+                  "rgb(0, 0, 255)"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "pie",
+        "Contents": {
+          "stats": [
+            {
+              "name": "app3",
+              "data": [
+                30
+              ],
+              "color": "rgb(0, 0, 0)"
+            },
+            {
+              "name": "app2",
+              "data": [
+                20
+              ],
+              "color": "rgb(0, 0, 255)"
+            },
+            {
+              "name": "app1",
+              "data": [
+                10
+              ],
+              "color": "rgb(0, 230, 0)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### line - fields (default labels & colors)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "line",
+            "line": {
+              "x": {
+                "by": "_time",
+                "order": "asc",
+                "field": "time_eng"
+              },
+              "y": {
+                "group": "fields",
+                "fields": {
+                  "total_bytes_sent_mb": {},
+                  "total_bytes_received_mb": {}
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_transfer_bytes_by_hour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "line",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 15 12 PM",
+              "groups": [
+                {
+                  "name": "total_bytes_sent_mb",
+                  "data": [
+                    26.4
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                },
+                {
+                  "name": "total_bytes_received_mb",
+                  "data": [
+                    14
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 13 PM",
+              "groups": [
+                {
+                  "name": "total_bytes_sent_mb",
+                  "data": [
+                    28
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                },
+                {
+                  "name": "total_bytes_received_mb",
+                  "data": [
+                    18.7
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 14 PM",
+              "groups": [
+                {
+                  "name": "total_bytes_sent_mb",
+                  "data": [
+                    32.3
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                },
+                {
+                  "name": "total_bytes_received_mb",
+                  "data": [
+                    214.9
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### line - fields (labels & colors)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "line",
+            "line": {
+              "x": {
+                "by": "_time",
+                "order": "asc",
+                "field": "time_eng"
+              },
+              "y": {
+                "group": "fields",
+                "fields": {
+                  "total_bytes_sent_mb": {
+                    "label": "Total Bytes Sent (MB)",
+                    "color": "rgb(122, 204, 0)"
+                  },
+                  "total_bytes_received_mb": {
+                    "label": "Total Bytes Received (MB)",
+                    "color": "rgb(0, 122, 204)"
+                  }
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_transfer_bytes_by_hour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "line",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 15 12 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    26.4
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    14
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 13 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    28
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    18.7
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 14 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    32.3
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    214.9
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### line - records (colors: default)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "line",
+            "line": {
+              "x": {
+                "by": "_time",
+                "order": "asc",
+                "field": "time_eng"
+              },
+              "y": {
+                "group": "records",
+                "records": {
+                  "name-field": "app",
+                  "data-field": "count"
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_app_sessions_by_hour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "line",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 14 19 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 20 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### line - records (colors: str)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "line",
+            "line": {
+              "x": {
+                "by": "_time",
+                "order": "asc",
+                "field": "time_eng"
+              },
+              "y": {
+                "group": "records",
+                "records": {
+                  "name-field": "app",
+                  "data-field": "count",
+                  "colors": "rgb(0, 0, 0)"
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_app_sessions_by_hour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "line",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 14 19 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 20 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### line - records (colors: fields)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "line",
+            "line": {
+              "x": {
+                "by": "_time",
+                "order": "asc",
+                "field": "time_eng"
+              },
+              "y": {
+                "group": "records",
+                "records": {
+                  "name-field": "app",
+                  "data-field": "count",
+                  "colors": {
+                    "app1": "rgb(0, 0, 0)"
+                  }
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_app_sessions_by_hour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "line",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 14 19 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 20 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### line - records (colors: order)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "line",
+            "line": {
+              "x": {
+                "by": "_time",
+                "order": "asc",
+                "field": "time_eng"
+              },
+              "y": {
+                "group": "records",
+                "records": {
+                  "name-field": "app",
+                  "data-field": "count",
+                  "colors": [
+                    "rgb(0, 0, 0)"
+                  ]
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_app_sessions_by_hour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "line",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 14 19 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 20 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### single-bar - records (default-colors)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "single-bar",
+            "single-bar": {
+              "group": "records",
+              "records": {
+                "name-field": "app",
+                "data-field": "count"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "stats": [
+            {
+              "name": "app1",
+              "data": [
+                10
+              ],
+              "color": "rgb(0, 230, 0)"
+            },
+            {
+              "name": "app2",
+              "data": [
+                20
+              ],
+              "color": "rgb(230, 0, 0)"
+            },
+            {
+              "name": "app3",
+              "data": [
+                30
+              ],
+              "color": "rgb(0, 0, 230)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### single-bar - records (colors: str)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "single-bar",
+            "single-bar": {
+              "group": "records",
+              "records": {
+                "name-field": "app",
+                "data-field": "count",
+                "colors": "rgb(0, 0, 0)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "stats": [
+            {
+              "name": "app1",
+              "data": [
+                10
+              ],
+              "color": "rgb(0, 0, 0)"
+            },
+            {
+              "name": "app2",
+              "data": [
+                20
+              ],
+              "color": "rgb(0, 0, 0)"
+            },
+            {
+              "name": "app3",
+              "data": [
+                30
+              ],
+              "color": "rgb(0, 0, 0)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### single-bar - records (colors: fields)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "single-bar",
+            "single-bar": {
+              "group": "records",
+              "records": {
+                "name-field": "app",
+                "data-field": "count",
+                "colors": {
+                  "app1": "rgb(0, 0, 0)"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "stats": [
+            {
+              "name": "app1",
+              "data": [
+                10
+              ],
+              "color": "rgb(0, 0, 0)"
+            },
+            {
+              "name": "app2",
+              "data": [
+                20
+              ],
+              "color": "rgb(230, 0, 0)"
+            },
+            {
+              "name": "app3",
+              "data": [
+                30
+              ],
+              "color": "rgb(0, 0, 230)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### single-bar - records (colors: order - asc)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "single-bar",
+            "single-bar": {
+              "group": "records",
+              "records": {
+                "name-field": "app",
+                "data-field": "count",
+                "sort": {
+                  "by": "count",
+                  "order": "asc"
+                },
+                "colors": [
+                  "rgb(0, 0, 0)",
+                  "rgb(0, 0, 255)"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "stats": [
+            {
+              "name": "app1",
+              "data": [
+                10
+              ],
+              "color": "rgb(0, 0, 0)"
+            },
+            {
+              "name": "app2",
+              "data": [
+                20
+              ],
+              "color": "rgb(0, 0, 255)"
+            },
+            {
+              "name": "app3",
+              "data": [
+                30
+              ],
+              "color": "rgb(0, 230, 0)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### single-bar - records (colors: order - desc)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "single-bar",
+            "single-bar": {
+              "group": "records",
+              "records": {
+                "name-field": "app",
+                "data-field": "count",
+                "sort": {
+                  "by": "count",
+                  "order": "desc"
+                },
+                "colors": [
+                  "rgb(0, 0, 0)",
+                  "rgb(0, 0, 255)"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "stats": [
+            {
+              "name": "app3",
+              "data": [
+                30
+              ],
+              "color": "rgb(0, 0, 0)"
+            },
+            {
+              "name": "app2",
+              "data": [
+                20
+              ],
+              "color": "rgb(0, 0, 255)"
+            },
+            {
+              "name": "app1",
+              "data": [
+                10
+              ],
+              "color": "rgb(0, 230, 0)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### stacked-bar - fields (default labels & colors)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "stacked-bar",
+            "stacked-bar": {
+              "x": {
+                "by": "_time",
+                "order": "asc",
+                "field": "time_eng"
+              },
+              "y": {
+                "group": "fields",
+                "fields": {
+                  "total_bytes_sent_mb": {},
+                  "total_bytes_received_mb": {}
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_transfer_bytes_by_hour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 15 12 PM",
+              "groups": [
+                {
+                  "name": "total_bytes_sent_mb",
+                  "data": [
+                    26.4
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                },
+                {
+                  "name": "total_bytes_received_mb",
+                  "data": [
+                    14
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 13 PM",
+              "groups": [
+                {
+                  "name": "total_bytes_sent_mb",
+                  "data": [
+                    28
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                },
+                {
+                  "name": "total_bytes_received_mb",
+                  "data": [
+                    18.7
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 14 PM",
+              "groups": [
+                {
+                  "name": "total_bytes_sent_mb",
+                  "data": [
+                    32.3
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                },
+                {
+                  "name": "total_bytes_received_mb",
+                  "data": [
+                    214.9
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### stacked-bar - fields (labels & colors)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "stacked-bar",
+            "stacked-bar": {
+              "x": {
+                "by": "_time",
+                "order": "asc",
+                "field": "time_eng"
+              },
+              "y": {
+                "group": "fields",
+                "fields": {
+                  "total_bytes_sent_mb": {
+                    "label": "Total Bytes Sent (MB)",
+                    "color": "rgb(122, 204, 0)"
+                  },
+                  "total_bytes_received_mb": {
+                    "label": "Total Bytes Received (MB)",
+                    "color": "rgb(0, 122, 204)"
+                  }
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_transfer_bytes_by_hour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 15 12 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    26.4
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    14
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 13 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    28
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    18.7
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 14 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    32.3
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    214.9
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### stacked-bar - records (colors: default)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "stacked-bar",
+            "stacked-bar": {
+              "x": {
+                "by": "_time",
+                "order": "asc",
+                "field": "time_eng"
+              },
+              "y": {
+                "group": "records",
+                "records": {
+                  "name-field": "app",
+                  "data-field": "count"
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_app_sessions_by_hour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 14 19 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 20 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### stacked-bar - records (colors: str)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "stacked-bar",
+            "stacked-bar": {
+              "x": {
+                "by": "_time",
+                "order": "asc",
+                "field": "time_eng"
+              },
+              "y": {
+                "group": "records",
+                "records": {
+                  "name-field": "app",
+                  "data-field": "count",
+                  "colors": "rgb(0, 0, 0)"
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_app_sessions_by_hour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 14 19 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 20 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### stacked-bar - records (colors: fields)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "stacked-bar",
+            "stacked-bar": {
+              "x": {
+                "by": "_time",
+                "order": "asc",
+                "field": "time_eng"
+              },
+              "y": {
+                "group": "records",
+                "records": {
+                  "name-field": "app",
+                  "data-field": "count",
+                  "colors": {
+                    "app1": "rgb(0, 0, 0)"
+                  }
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_app_sessions_by_hour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 14 19 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 20 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(230, 0, 0)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### stacked-bar - records (colors: order)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "stacked-bar",
+            "stacked-bar": {
+              "x": {
+                "by": "_time",
+                "order": "asc",
+                "field": "time_eng"
+              },
+              "y": {
+                "group": "records",
+                "records": {
+                  "name-field": "app",
+                  "data-field": "count",
+                  "colors": [
+                    "rgb(0, 0, 0)"
+                  ]
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_app_sessions_by_hour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 14 19 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 20 PM",
+              "groups": [
+                {
+                  "name": "app1",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "app2",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(0, 230, 230)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### duration",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### empty response & minimum entry settings: markdown",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown"
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "",
+        "Contents": null
+      }
+    }
+  },
+  "######### empty response: markdown - default text",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "default": {
+              "scope": "no_recordset",
+              "entry": "## No data"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "## No data",
+        "Contents": null
+      }
+    }
+  },
+  "######### empty response: markdown - default entry",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {},
+            "default": {
+              "scope": "no_recordset",
+              "entry": {
+                "Type": 1,
+                "ContentsFormat": "markdown",
+                "HumanReadable": "**No entries.**",
+                "Contents": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "**No entries.**",
+        "Contents": null
+      }
+    }
+  },
+  "######### empty response & minimum entry settings: markdown-table",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown-table"
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "",
+        "Contents": null
+      }
+    }
+  },
+  "######### empty response: markdown-table - default text",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown-table",
+            "markdown-table": {},
+            "default": {
+              "scope": "no_recordset",
+              "entry": "## No data"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "## No data",
+        "Contents": null
+      }
+    }
+  },
+  "######### empty response: markdown-table - default entry",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown-table",
+            "markdown-table": {},
+            "default": {
+              "scope": "no_recordset",
+              "entry": {
+                "Type": 1,
+                "ContentsFormat": "markdown",
+                "HumanReadable": "**No entries.**",
+                "Contents": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "**No entries.**",
+        "Contents": null
+      }
+    }
+  },
+  "######### empty response & minimum entry settings: number",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "number",
+            "number": {
+              "field": "n"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "number",
+        "Contents": {
+          "stats": 0
+        }
+      }
+    }
+  },
+  "######### empty response & minimum entry settings: number-trend",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "number-trend",
+            "number-trend": {
+              "prev-field": "last_n",
+              "curr-field": "curr_n"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "number",
+        "Contents": {
+          "stats": {
+            "prevSum": 0,
+            "currSum": 0
+          }
+        }
+      }
+    }
+  },
+  "######### empty response & minimum entry settings: pie - records",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "pie",
+            "pie": {
+              "group": "records",
+              "records": {
+                "name-field": "app",
+                "data-field": "count"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "pie",
+        "Contents": {
+          "stats": []
+        }
+      }
+    }
+  },
+  "######### empty response & minimum entry settings: pie - fields",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "pie",
+            "pie": {
+              "group": "fields",
+              "fields": {}
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "pie",
+        "Contents": {
+          "stats": []
+        }
+      }
+    }
+  },
+  "######### empty response & minimum entry settings: line - records",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "line",
+            "line": {
+              "x": {
+                "by": "time_ymd"
+              },
+              "y": {
+                "group": "records",
+                "records": {
+                  "name-field": "app",
+                  "data-field": "count"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "line",
+        "Contents": {
+          "stats": []
+        }
+      }
+    }
+  },
+  "######### empty response & minimum entry settings: line - fields",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "line",
+            "line": {
+              "x": {
+                "by": "time_ymd"
+              },
+              "y": {
+                "group": "fields",
+                "fields": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "line",
+        "Contents": {
+          "stats": []
+        }
+      }
+    }
+  },
+  "######### empty response & minimum entry settings: single-bar - records",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "single-bar",
+            "single-bar": {
+              "group": "records",
+              "records": {
+                "name-field": "app",
+                "data-field": "count"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "stats": []
+        }
+      }
+    }
+  },
+  "######### empty response & minimum entry settings: single-bar - fields",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "single-bar",
+            "single-bar": {
+              "group": "fields",
+              "fields": {}
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "stats": []
+        }
+      }
+    }
+  },
+  "######### empty response & minimum entry settings: stacked-bar - records",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "stacked-bar",
+            "stacked-bar": {
+              "x": {
+                "by": "time_ymd"
+              },
+              "y": {
+                "group": "records",
+                "records": {
+                  "name-field": "app",
+                  "data-field": "count"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "stats": []
+        }
+      }
+    }
+  },
+  "######### empty response & minimum entry settings: stacked-bar - fields",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "stacked-bar",
+            "stacked-bar": {
+              "x": {
+                "by": "time_ymd"
+              },
+              "y": {
+                "group": "fields",
+                "fields": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "stats": []
+        }
+      }
+    }
+  },
+  "######### empty response & minimum entry settings: duration",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 0
+        }
+      }
+    }
+  }
+]

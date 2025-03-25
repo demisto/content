@@ -352,6 +352,9 @@ def main():
         if filtered_users_names:
             readable_outputs, users_ids = get_user_data(get_user_data_command)
             results_for_verbose.extend(readable_outputs)
+        else:
+            users_ids = {}
+            demisto.debug(f"{filtered_users_names=} -> {users_ids=}")
 
         for user_name in filtered_users_names:
             #################################

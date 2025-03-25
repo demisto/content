@@ -1,0 +1,64 @@
+{
+    "alert": {
+        "id": 1234567,
+        "acknowledged_by": null,
+        "acknowledged_date": null,
+        "alert_data": {
+            "application": null,
+            "csv": {
+                "id": "X",
+                "mimetype": "text/csv",
+                "name": "Company Customer Credentials Exposed.csv"
+            },
+            "designated_url": "https://www.barclaycardus.com/servicing/authenticate"
+        },
+        "analysis_report": null,
+        "attachments": [
+            {
+                "id": "X",
+                "mimetype": "image/png",
+                "name": "Compromised Account As Appears On Argos.png"
+            }
+        ],
+        "category": "data",
+        "closed_by": null,
+        "closure_date": null,
+        "closure_reason": null,
+        "confidence": 100,
+        "created_by": {
+            "email": "email@cyberint.com"
+        },
+        "created_date": "2020-12-30T00:00:56",
+        "description": "Cyberint detected breached credentials of several Barclays customers, which were uploaded to an anti-virus repository. The credentials seem to have been obtained through malware, sending user inputs to the operator, and the various credentials were logged in the uploaded .txt files. As such, the file contains users’ credentials not only for barclaycardus.com but for other websites as well. \nBreached customers credentials may be used by Threat Actors to carry out fraudulent transactions on their behalf, exposing Barclays to both financial impact and legal claims.\n\n\n\n",
+        "environment": "Argos Demo",
+        "impacts": [
+            "data_compromise",
+            "unauthorized_access",
+            "account_takeover",
+            "revenue_loss",
+            "brand_degradation",
+            "customer_churn",
+            "financial_penalties"
+        ],
+        "iocs": [],
+        "modification_date": "2020-12-30T00:00:56",
+        "publish_date": "2020-11-28T12:45:36",
+        "recommendation": "1. Cyberint recommends enforcing password reset on the compromised accounts. \n2. In addition, CyberInt advises Barclays to investigate internally whether any of the accounts have been involved in fraudulent transactions, at least up to the time of detection. In case the accounts were involved in any fraudulent activity, it is recommended to identify and extract relevant IOC’s where possible and monitor them within the bank's systems.\n3. To reduce the chance of customer account takeovers by TAs, Cyberint recommends Barclays implement MFA and CAPTCHA mechanisms. The former will help set another obstacle for a TA trying to abuse the account, and the latter can help blocking credentials-stuffing tools.",
+        "ref_id": "ARG-3",
+        "related_entities": [],
+        "severity": "high",
+        "source": "argos.1",
+        "source_category": "antivirus_repository",
+        "status": "open",
+        "tags": [],
+        "targeted_brands": [],
+        "targeted_vectors": [
+            "customer"
+        ],
+        "threat_actor": "",
+        "ticket_id": null,
+        "title": "Company Customer Credentials Exposed",
+        "type": "compromised_customer_credentials",
+        "update_date": "2022-01-24T13:23:45"
+    }
+}

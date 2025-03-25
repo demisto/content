@@ -1,0 +1,12 @@
+!cov-mgsec-get-aro query="since=2023-11-30 18:00:00"
+!cov-mgsec-list-org
+!cov-mgsec-transition-aro aro_id="7ea9b17d-7529-4b17-b0e7-92334d6c674b" resolution="Resolved" comment="Risk mitigated."
+!cov-mgsec-comment-aro aro_id="b25e461e-75e9-415b-a631-6d0f4516f33a" comment="Risk mitigated."
+!cov-mgsec-broker-ping
+!cov-mgsec-broker-list-org
+!cov-mgsec-list-escalation-contacts org_id=cb7e26b7-9d62-4cc7-acf1-4264327ac552
+!cov-mgsec-list-key-contacts org_id=cb7e26b7-9d62-4cc7-acf1-4264327ac552
+!cov-mgsec-list-language org_id=cb7e26b7-9d62-4cc7-acf1-4264327ac552
+!cov-mgsec-broker-endpoint-action-by-host action_type=DEFENDER_QUICK_SCAN host_identifier=test-hostname org_id=00000000-1111-2222-3333-444444444444
+!cov-mgsec-broker-endpoint-action-by-aro action_type=DEFENDER_QUICK_SCAN aro_id=00000000-1111-2222-3333-444444444444
+!cov-mgsec-broker-cloud-action-by-aro action_type=DISABLE_USER aro_id=00000000-1111-2222-3333-444444444444

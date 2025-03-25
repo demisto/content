@@ -707,7 +707,7 @@ script:
       name: workspace_name
     description: Delete a Log Analytics workspace table. We recommend you delete the search job when you're done querying the table. This reduces workspace clutter and extra charges for data retention.
     name: azure-log-analytics-delete-search-job
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.117163
   runonce: false
   script: '-'
   subtype: python3

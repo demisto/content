@@ -63,9 +63,9 @@ class AWSClient:
         self.config = Config(
             connect_timeout=connect_timeout,
             read_timeout=read_timeout,
-            retries=dict(
-                max_attempts=int(retries)
-            ),
+            retries={
+                "max_attempts": int(retries)
+            },
             proxies=proxies
         )
 
@@ -73,7 +73,7 @@ class AWSClient:
         command_config = {}
         retries = demisto.getArg('retries')  # Supports retries and timeout parameters on the command execution level
         if retries is not None:
-            command_config['retries'] = dict(max_attempts=int(retries))
+            command_config['retries'] = {"max_attempts": int(retries)}
         timeout = demisto.getArg('timeout')
         if timeout is not None:
             (read_timeout, connect_timeout) = AWSClient.get_timeout(timeout)
@@ -86,6 +86,7 @@ class AWSClient:
     def aws_session(self, service, region=None, role_arn=None, role_session_name=None, role_session_duration=None,
                     role_policy=None):
         kwargs = {}
+        client = None
 
         self.update_config()
 

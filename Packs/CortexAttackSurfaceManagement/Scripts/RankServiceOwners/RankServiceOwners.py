@@ -1,25 +1,24 @@
+from collections.abc import Iterable, Callable
+from typing import Any
+import google.cloud.storage
+import numpy as np
+import posixpath
+import dill as pickle
+import os
+import itertools
+import string
+import re
+import math
+from itertools import groupby
+import traceback
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+demisto.debug('pack name = Cortex Attack Surface Management, pack version = 1.7.65')
+
+
 """Script for identifying and recommending the most likely owners of a discovered service
 from those surfaced by Cortex ASM Enrichment.
 """
-
-import traceback
-from itertools import groupby
-import math
-
-import re
-import string
-import itertools
-import os
-import dill as pickle
-import posixpath
-import numpy as np
-import google.cloud.storage
-
-
-from typing import Any
-from collections.abc import Iterable, Callable
 
 
 STRING_DELIMITER = ' | '  # delimiter used for joining source fields and any additional fields of type string
@@ -614,6 +613,27 @@ class OwnerFeaturizationPipeline():
         return X
 
 
+def write_output_to_context_key(final_owners: list[dict[str, str]], owner_related_field: str, platform_tenant: str):
+    if not final_owners or not owner_related_field:
+        return_results(CommandResults(readable_output='No owners found'))
+
+    # For platform we are assuming that a multi-array normalized field will be used.
+    if platform_tenant.lower() == "true":
+        # Get list of emails, unless "n/a" and then use name.
+        final_owners_list = [
+            owner["email"] if "email" in owner and owner["email"].lower() != "n/a" else owner.get("name", "n/a")
+            for owner in final_owners
+        ]
+        res = demisto.executeCommand("setIssue", {owner_related_field: final_owners_list})
+    else:
+        res = demisto.executeCommand("setAlert", {owner_related_field: final_owners})
+
+    if isError(res):
+        raise ValueError(f'Unable to update field: {res}')
+
+    return_results(CommandResults(readable_output=f"Owners ranked and written to {owner_related_field}"))
+
+
 def main():
     try:
         # parse inputs
@@ -621,17 +641,15 @@ def main():
         if isinstance(unranked, dict):
             unranked = [unranked]
         asm_system_ids = demisto.args().get("asmsystemids", [])
-
+        owner_related_field = demisto.args().get("ownerrelatedfield", "asmserviceowner")
+        platform_tenant_usage = demisto.args().get("tenantcommand", "False")
         # deduplicate/normalize, score, and rank owners
         normalized = aggregate(canonicalize(unranked))
         final_owners = justify(rank(score(owners=normalized, asm_system_ids=asm_system_ids)))
 
-        # write output to context
-        if final_owners:
-            demisto.executeCommand("setAlert", {"asmserviceowner": final_owners})
-            return_results(CommandResults(readable_output='Service owners ranked and written to asmserviceowner'))
-        else:
-            return_results(CommandResults(readable_output='No service owners found'))
+        write_output_to_context_key(final_owners=final_owners,
+                                    owner_related_field=owner_related_field,
+                                    platform_tenant=platform_tenant_usage)
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback

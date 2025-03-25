@@ -915,6 +915,8 @@ tasks:
         complex:
           root: File
           accessor: EntryID
+      project_name:
+        simple: Demisto
     separatecontext: false
     view: |-
       {
@@ -988,6 +990,8 @@ tasks:
     scriptarguments:
       as_user:
         simple: testfromurl
+      project_name:
+        simple: Demisto
       script_url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/IndicatorsList.txt
     separatecontext: false

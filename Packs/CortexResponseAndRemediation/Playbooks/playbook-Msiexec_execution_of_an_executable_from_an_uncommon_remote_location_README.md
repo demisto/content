@@ -66,6 +66,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * core-get-domain-analytics-prevalence
 * core-isolate-endpoint
 * core-terminate-causality
+* extractIndicators
 * wildfire-get-verdict
 
 ## Playbook Inputs
