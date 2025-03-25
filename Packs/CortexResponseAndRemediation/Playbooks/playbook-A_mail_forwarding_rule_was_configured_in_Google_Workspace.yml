@@ -1805,7 +1805,7 @@ tasks:
       id: 0544fa30-fdab-4d99-8803-3f1dc679c109
       version: -1
       name: Steps without Google Workspace Admin integration
-      description: "The investigation identified several **pieces of suspicious evidence**, suggesting that the user who created the forwarding rule may have been **compromised**.\n\n#### The following evidence was found: \n${Evidences}\n\nDue to the lack of integration _Google Workspace Admin_, you will need to suspend user ${Core.OriginalAlert.raw_abioc.event.identity_name} **manually**.\n\n> We recommend connecting the integration for next time.\n>\n\n> _**Notice:**_ After this task, the alert **may be closed**.\n>\n"
+      description: "The investigation identified several **pieces of suspicious evidence**, suggesting that the user who created the forwarding rule may have been **compromised**.\n\n#### The following evidence was found: \n${Evidences}\n\nDue to the lack of integration with _Google Workspace Admin_, you will need to suspend user ${Core.OriginalAlert.raw_abioc.event.identity_name} **manually**.\n\n> We recommend setting up the integration for future use.\n>\n\n> _**Notice:**_ After this task, the alert **may be closed**.\n>\n"
       type: regular
       iscommand: false
       brand: ""
@@ -1874,14 +1874,14 @@ tasks:
       version: -1
       name: Steps without Gmail integration
       description: |
-        Due to the lack of integration _Gmail_, we will recommend the following steps:
-        1. Manually removing the suspicious email address from the suspicious user.
-        2. Updating the suspicious user about the above action.
+        Due to the lack of integration with _Gmail_, we will recommend the following steps:
+        1. Manually removing the suspicious forwarding rule from the user.
+        2. Updating the user about the above action.
 
         * **User ID**: ${Core.OriginalAlert.event.raw_log.actor.profileId}
         * **Forwarding Email Address**: ${Core.OriginalAlert.event.raw_log.events.parameters.value}
 
-        > In addition, we will recommend connecting the missing integration for next time.
+        > In addition, we recommend setting up the integration for future use.
         >
 
         > _**Notice:**_ After this task, the alert **may be closed**.
