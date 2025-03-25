@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -77,6 +78,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -101,6 +103,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "2"
@@ -149,8 +152,13 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      filter: {}
+      hostname: {}
       ids:
         simple: ${inputs.Endpoint_id}
+      platform_name: {}
+      site_name: {}
+      status: {}
     separatecontext: false
     view: |-
       {
@@ -175,6 +183,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "2"
@@ -257,8 +266,8 @@ inputs:
 - key: Endpoint_id
   value: {}
   required: false
-  description: The endpoint ID/device ID that you want to unisolate.
-  playbookInputQuery: null
+  description: 'The endpoint ID/device ID that you want to unisolate.'
+  playbookInputQuery:
 outputs: []
 tests:
 - Test - CrowdStrike Falcon
