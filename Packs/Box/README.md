@@ -24,6 +24,6 @@ In order to configure the Box Event Collector to receive log messages:
 1. Make sure you have the Box pack installed on your XSIAM tenant.
 2. Go to **Settings** &rarr; **Configurations** &rarr; **Automation & Feed Integrations**
 3. At the search bar, type **Box** and press on **+ Add instance**
-4. Follow the integration steps in order to send logs from Box to your XSIAM tenant.
+4. Follow the integration steps to send logs from Box to your Cortex XSIAM tenant.
    
 </~XSIAM>
