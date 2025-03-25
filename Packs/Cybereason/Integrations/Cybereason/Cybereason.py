@@ -498,7 +498,7 @@ def query_malops_command(client: Client, args: dict):
             'values': [within_last_days_timestamp],
             'filterType': 'GreaterThan'
         })
-    
+
     demisto.info(f"GUID List to be filtered in query_malops_command : {guid_list}")
 
     malop_process_type, malop_loggon_session_type = query_malops(client, total_result_limit, per_group_limit,
@@ -1600,7 +1600,6 @@ def fetch_incidents(client: Client):
         raise Exception('Given filter to fetch by is invalid.')
 
     integration_context = get_integration_context()
-    token = integration_context.get('jsession_id')
     valid_until = integration_context.get('valid_until')
     demisto.debug(f"Fetch Incidents: Token is valid until: {valid_until}")
     end_time = integration_context.get('end_time')
@@ -1615,8 +1614,13 @@ def fetch_incidents(client: Client):
         offset = 0
     if not total_malops_fetched:
         total_malops_fetched = 0
-    demisto.info(f"Fetch Incidents: Polling started..... offset: {offset}, total_malops_fetched: {total_malops_fetched}, start_time {start_time}, end_time {end_time}")
-
+    demisto.info(
+        f"Fetch Incidents: Polling started..... "
+        f"offset: {offset}, "
+        f"total_malops_fetched: {total_malops_fetched}, "
+        f"start_time {start_time}, "
+        f"end_time {end_time}"
+    )
     malop_management_response = get_malop_management_data(client, start_time, end_time, offset)
 
     edr_guid_list, non_edr_guid_list = [], []
@@ -1624,7 +1628,10 @@ def fetch_incidents(client: Client):
     malop_management_response = malop_management_response.get("data", {}).get("data", [])
     malop_count_per_poll = len(malop_management_response)
     demisto.info(
-        f"Fetch Incidents: Malop stats: Malop per paginated call {malop_count_per_poll}. Malops per polling cycle {total_malops_available}")
+        f"Fetch Incidents: Malop stats: "
+        f"Malop per paginated call {malop_count_per_poll}. "
+        f"Malops per polling cycle {total_malops_available}"
+    )
     total_malops_fetched += malop_count_per_poll
     for malop in malop_management_response:
         if malop.get("isEdr"):
@@ -1679,7 +1686,7 @@ def fetch_incidents(client: Client):
                     continue
                 incidents.append(incident)
                 demisto.info(f"Fetch Incidents: EPP Malop conversion to XSOAR Incident succeded with Malop ID {non_edr_malop}")
-                
+
         else:
             demisto.info("Fetch Incidents: No EPP Malops found while polling")
     else:
@@ -1696,10 +1703,18 @@ def fetch_incidents(client: Client):
     if total_malops_fetched < total_malops_available:
         offset += malop_count_per_poll
         demisto.debug(
-            f"Fetch Incidents: Total malop fetched: {total_malops_fetched} is less than total malops available: {total_malops_available}. Updaring offset to {offset}")   
+            f"Fetch Incidents: Total malop fetched: {total_malops_fetched} "
+            f"is less than total malops available: {total_malops_available}. "
+            f"Updating offset to {offset}"
+        )
     else:
         offset = 0
-        demisto.debug(f"Fetch Incidents: All Malops polled, no new Malops available in next page. Current stats: Total Malops Available: {total_malops_available} Total Malops Fetched: {total_malops_fetched}")
+        demisto.debug(
+            f"Fetch Incidents: All Malops polled, "
+            f"no new Malops available in next page. "
+            f"Current stats: Total Malops Available: {total_malops_available} "
+            f"Total Malops Fetched: {total_malops_fetched}"
+        )
         start_time = ""
         end_time = ""
         total_malops_fetched = ""
