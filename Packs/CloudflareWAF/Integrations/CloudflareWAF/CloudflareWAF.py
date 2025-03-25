@@ -1271,7 +1271,7 @@ def main() -> None:
     args: dict[str, Any] = demisto.args()
 
     base_url: str = params.get('server', 'https://api.cloudflare.com/client/v4/')
-    account_id = params.get('account_id')
+    account_id: str = params.get('account_id', '')
     zone_id = params.get('zone_id')
     proxy = argToBoolean(params.get('proxy', False))
     insecure = argToBoolean(params.get('insecure', True))
