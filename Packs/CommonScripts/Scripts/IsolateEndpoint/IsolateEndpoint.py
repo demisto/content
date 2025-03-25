@@ -2,7 +2,6 @@ from CommonServerPython import *
 from collections.abc import Callable
 from itertools import zip_longest
 
-
 """ COMMAND CLASS """
 
 
@@ -217,7 +216,7 @@ def check_conditions_microsoft_atp_isolate_machine(endpoint_output: dict, human_
                                          human_readable_outputs=human_readable_outputs)
         return False
 
-    if not args.get('agent_id'):   # Appending agent_id as it's required for microsoft-atp-isolate-machine.
+    if not args.get('agent_id'):  # Appending agent_id as it's required for microsoft-atp-isolate-machine.
         args['agent_id'] = agent_id
     return True
 
@@ -263,7 +262,7 @@ def check_module_and_args_for_command(module_manager: ModuleManager, command: Co
 
 def is_endpoint_isolatable(endpoint_data: dict, args: dict, endpoint_output: dict, human_readable_outputs: list) -> bool:
     """
-    Determines whether an endpoint can be isolated based on its OS type, current isolation status, and connectivity.
+    Determines whether an endpoint can be isolated based on its current isolation status, and connectivity.
 
     Args:
         endpoint_data (dict): A dictionary containing endpoint details, including OS version, isolation status, and online status.
@@ -398,8 +397,8 @@ def check_which_args_missing_in_output(zipped_args: list, valid_args: list, outp
         are_args_found = False
         for entry in valid_args:
             if (agent_id and entry.get('agent_id') == agent_id) or \
-               (agent_hostname and entry.get('agent_hostname') == agent_hostname) or \
-               (agent_ip and entry.get('agent_ip') == agent_ip):  # Checks if any of the args exists in valid_args
+                (agent_hostname and entry.get('agent_hostname') == agent_hostname) or \
+                (agent_ip and entry.get('agent_ip') == agent_ip):  # Checks if any of the args exists in valid_args
                 are_args_found = True
         if not are_args_found:
             endpoint_data: dict = {}
@@ -421,12 +420,32 @@ def get_args_from_endpoint_data(endpoint_data: dict) -> dict:
     Returns:
         dict: A dictionary with extracted values, including 'agent_id', 'agent_hostname', 'agent_ip', and 'agent_brand'.
     """
-    agent_hostname = endpoint_data.get('Hostname', {}).get('Value', '')
-    agent_id = endpoint_data.get('ID', {}).get('Value', '')
-    agent_ip = endpoint_data.get('IPAddress', {}).get('Value', '')
-    agent_brand = endpoint_data.get('ID', {}).get('Source', '')
-    args = {'agent_id': agent_id, 'agent_hostname': agent_hostname, 'agent_ip': agent_ip, 'agent_brand': agent_brand}
-    return args
+    agent_hostname = endpoint_data.get('Hostname', {})
+    agent_brand = ''
+    if isinstance(agent_hostname, dict):
+        agent_brand = agent_hostname.get('Source', '')
+        agent_hostname = agent_hostname.get('Value', '')
+    elif isinstance(agent_hostname, list):
+        agent_brand = agent_hostname[0].get('Source', '')
+        agent_hostname = agent_hostname[0].get('Value', '')
+
+    agent_id = endpoint_data.get('ID', {})
+    if isinstance(agent_id, dict):
+        agent_id = agent_id.get('Value', '')
+    elif isinstance(agent_id, list):
+        agent_id = agent_id[0].get('Value', '')
+
+    agent_ip = endpoint_data.get('IPAddress', {})
+    if isinstance(agent_ip, dict):
+        agent_ip = agent_ip.get('Value', '')
+    elif isinstance(agent_ip, list):
+        agent_ip = agent_ip[0].get('Value', '')
+
+    return ({'agent_id': agent_id,
+             'agent_hostname': agent_hostname,
+             'agent_ip': agent_ip,
+             'agent_brand': agent_brand
+             })
 
 
 def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> list:
