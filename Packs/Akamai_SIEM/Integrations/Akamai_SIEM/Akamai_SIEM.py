@@ -138,6 +138,7 @@ class Client(BaseClient):
     ) -> tuple[list[str], str | None]:
         params = self.prepare_params(offset=offset, limit=limit, from_epoch=from_epoch)
         raw_response = self.execute_get_events_request(params, config_ids)
+        demisto.info(f'got response, printing 300 first and last chars: {raw_response[:300]} ::: {raw_response[-300:]} ')
         events: list[str] = raw_response.split("\n")
         offset = None
         try:
@@ -146,6 +147,7 @@ class Client(BaseClient):
             offset_context = events.pop()
             loaded_offset_context = json.loads(offset_context)
             offset = loaded_offset_context.get("offset")
+            demisto.info(f"got new offset: {offset}")
         except Exception as e:
             demisto.error(f"couldn't decode offset with {offset_context=}, reason {e}")
         return events, offset
