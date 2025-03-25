@@ -1,14 +1,17 @@
-import demistomock as demisto
-from typing import Any
-from CommonServerPython import *
 import json
 from collections import defaultdict
+from typing import Any
 
-INTEGRATION = 'ServiceNow v2'
-NOTE_INCIDENTS = ("### Note: The active incidents, created 30 days ago and listed in the tables for both enabled and"
-                  " disabled instances, are still being mirrored.\n ### If the issue is no longer relevant and does not"
-                  " require further attention, it is recommended to close related incidents promptly to prevent"
-                  " potential system overload.")
+import demistomock as demisto
+from CommonServerPython import *
+
+INTEGRATION = "ServiceNow v2"
+NOTE_INCIDENTS = (
+    "### Note: The active incidents, created 30 days ago and listed in the tables for both enabled and"
+    " disabled instances, are still being mirrored.\n ### If the issue is no longer relevant and does not"
+    " require further attention, it is recommended to close related incidents promptly to prevent"
+    " potential system overload."
+)
 
 
 def http_request_wrapper(method: str, url: str, body: dict | None = None):
@@ -24,11 +27,11 @@ def http_request_wrapper(method: str, url: str, body: dict | None = None):
         dict: Parsed JSON response or an empty dictionary if parsing fails.
     """
     http_result = demisto.internalHttpRequest(method, url, body=json.dumps(body))
-    http_result_body_raw_response = cast(dict, http_result).get('body', '{}')
+    http_result_body_raw_response = cast(dict, http_result).get("body", "{}")
     try:
         http_result_body_response = json.loads(http_result_body_raw_response)
     except json.JSONDecodeError as e:
-        raise DemistoException(f'Unable to load response {http_result_body_raw_response}: {str(e)}')
+        raise DemistoException(f"Unable to load response {http_result_body_raw_response}: {e!s}")
     return http_result_body_response
 
 
@@ -39,12 +42,12 @@ def get_integrations_details() -> dict[str, Any]:
     :return: A Dictionary containing the details of the integrations and their health status.
     :rtype: Dict[str, Any]
     """
-    integrations_search_response = http_request_wrapper(method='POST', url='settings/integration/search')
-    instances, health = integrations_search_response.get('instances', {}), integrations_search_response.get('health', {})
+    integrations_search_response = http_request_wrapper(method="POST", url="settings/integration/search")
+    instances, health = integrations_search_response.get("instances", {}), integrations_search_response.get("health", {})
     instances_health = {}
     for instance in instances:
-        instance_name = instance.get('name')
-        if instance.get('brand') == INTEGRATION:
+        instance_name = instance.get("name")
+        if instance.get("brand") == INTEGRATION:
             instances_health[instance_name] = instance
             if instance_name in health:
                 instances_health[instance_name].update({"health": health[instance_name]})
@@ -64,11 +67,13 @@ def filter_instances_data(instances_data: dict[str, Any]) -> tuple[dict, list]:
     filtered_data = {}
     disabled_instances = []
     for instance_name, data in instances_data.items():
-        if data.get('enabled') == 'true':
+        if data.get("enabled") == "true":
             filtered_data[instance_name] = data
             continue
-        if (int(data.get('health', {}).get('incidentsPulled', 0)) > 0
-                and data.get('configvalues', {}).get('mirror_direction', '') != 'None'):
+        if (
+            int(data.get("health", {}).get("incidentsPulled", 0)) > 0
+            and data.get("configvalues", {}).get("mirror_direction", "") != "None"
+        ):
             disabled_instances.append(instance_name)
         else:
             filtered_data[instance_name] = data
@@ -87,15 +92,11 @@ def categorize_active_incidents(disabled_instances: list[str]) -> tuple[dict, di
     :return: A Tuple containing the active incidents for enabled instances and for disabled instances.
     :rtype: Tuple[Dict, list]
     """
-    query = {
-        'filter': {
-            'query': f'sourceBrand: "{INTEGRATION}" and status: Active and created: >="30 days ago"'
-        }
-    }
-    incidents_response = http_request_wrapper(method='POST', url='incidents/search', body=query)
+    query = {"filter": {"query": f'sourceBrand: "{INTEGRATION}" and status: Active and created: >="30 days ago"'}}
+    incidents_response = http_request_wrapper(method="POST", url="incidents/search", body=query)
     categorized_incidents: dict[str, Any] = {"enabled": defaultdict(list), "disabled": defaultdict(list)}
 
-    for incident in incidents_response.get('data', {}):
+    for incident in incidents_response.get("data", {}):
         source_instance = incident.get("sourceInstance")
         incident_name = incident.get("name")
 
@@ -119,10 +120,7 @@ def parse_disabled_instances(disabled_incidents_instances: dict[str, Any]) -> st
     :rtype: ``str``
     """
     markdown_data = [
-        {'Instance': instance,
-         "Total": len(incidents),
-         "Active incidents more than created 30 days ago": "\n".join(incidents
-                                                                     )}
+        {"Instance": instance, "Total": len(incidents), "Active incidents more than created 30 days ago": "\n".join(incidents)}
         for instance, incidents in disabled_incidents_instances.items()
     ]
     return tableToMarkdown(
@@ -147,19 +145,18 @@ def parse_enabled_instances(enabled_instances_health: dict[str, Any], enabled_in
     human_readable_dict = []
     for instance_name, instance_data in enabled_instances_health.items():
         filtered_data = {
-            'Instance Name': instance_name,
-            'Size In Bytes': instance_data.get('sizeInBytes', ''),
-            'Number of Incidents Pulled in Last Fetch': instance_data.get('health', {}).get('incidentsPulled', ''),
-            'Last Pull Time': instance_data.get('health').get('lastPullTime', ''),
-            'Query': instance_data.get('configvalues').get('sysparm_query', ''),
-            'Last Error': instance_data.get('health').get('lastError', ''),
+            "Instance Name": instance_name,
+            "Size In Bytes": instance_data.get("sizeInBytes", ""),
+            "Number of Incidents Pulled in Last Fetch": instance_data.get("health", {}).get("incidentsPulled", ""),
+            "Last Pull Time": instance_data.get("health").get("lastPullTime", ""),
+            "Query": instance_data.get("configvalues").get("sysparm_query", ""),
+            "Last Error": instance_data.get("health").get("lastError", ""),
         }
         if instance_name in enabled_incidents_instances:
             filtered_data["Names of Active Incidents Created 30 days ago"] = enabled_incidents_instances[instance_name]
             filtered_data["Total Active Incidents Created 30 days ago"] = len(enabled_incidents_instances[instance_name])
         human_readable_dict.append(filtered_data)
-    return tableToMarkdown(name="Enabled Instances Health Information", t=human_readable_dict,
-                           removeNull=True)
+    return tableToMarkdown(name="Enabled Instances Health Information", t=human_readable_dict, removeNull=True)
 
 
 def main():
@@ -169,12 +166,13 @@ def main():
         enabled_incidents_instances, disabled_incidents_instances = categorize_active_incidents(disabled_instances)
         disabled_instances_hr = parse_disabled_instances(disabled_incidents_instances)
         enabled_instances_hr = parse_enabled_instances(enabled_instances_health, enabled_incidents_instances)
-        return_results(CommandResults(
-            readable_output=f'{enabled_instances_hr} \n --- \n {disabled_instances_hr}\n{NOTE_INCIDENTS}'))
+        return_results(
+            CommandResults(readable_output=f"{enabled_instances_hr} \n --- \n {disabled_instances_hr}\n{NOTE_INCIDENTS}")
+        )
 
     except Exception as e:
-        return_error(f'Failed to execute ServiceNowTroubleshoot. Error: {str(e)}')
+        return_error(f"Failed to execute ServiceNowTroubleshoot. Error: {e!s}")
 
 
-if __name__ in ["__builtin__", "builtins", '__main__']:
+if __name__ in ["__builtin__", "builtins", "__main__"]:
     main()
