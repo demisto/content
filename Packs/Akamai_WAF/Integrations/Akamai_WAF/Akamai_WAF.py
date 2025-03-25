@@ -2842,7 +2842,7 @@ def new_papi_edgehostname_command_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         edgeHostnameLink = raw_response.get('edgeHostnameLink', '')
         domain_prefix = raw_response.get('domainPrefix')
-        regex_match = re.search('ehn_\d+', edgeHostnameLink)
+        regex_match = re.search(r'ehn_\d+', edgeHostnameLink)
         edge_hostname_id = regex_match.group(0) if regex_match else ''
         entry_context.append(assign_params(**{
             "EdgeHostnameLink": edgeHostnameLink,
@@ -2948,7 +2948,7 @@ def new_papi_cpcode_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         cpcodeLink = raw_response.get('cpcodeLink', '')
         cpcode_name = raw_response.get('cpcodeName')
-        regex_match = re.search('cpc_\d+', cpcodeLink)
+        regex_match = re.search(r'cpc_\d+', cpcodeLink)
         cpcode_id = regex_match.group(0) if regex_match else ''
         entry_context.append(assign_params(**{
             "CpcodeLink": cpcodeLink,
@@ -3004,7 +3004,7 @@ def activate_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
     human_readable = []
     if raw_response:
         activationLink = raw_response.get('activationLink', '')
-        regex_match = re.search('atv_\d+', activationLink)
+        regex_match = re.search(r'atv_\d+', activationLink)
         entry_context.append(assign_params(**{
             "ActivationLink": activationLink,
             "ActivationId": regex_match.group(0) if regex_match else '',
