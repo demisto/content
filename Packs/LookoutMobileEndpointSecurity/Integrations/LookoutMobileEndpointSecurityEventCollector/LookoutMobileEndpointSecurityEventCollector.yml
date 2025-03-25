@@ -57,26 +57,6 @@ description: Lookout Mobile Endpoint Security (MES) provides visibility and prot
 display: Lookout Mobile Endpoint Security Event Collector
 name: LookoutMobileEndpointSecurityEventCollector
 script:
-  commands:
-  - arguments:
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: If true, the command will create events, otherwise it will only display them.
-      name: should_push_events
-      predefined:
-      - 'true'
-      - 'false'
-      required: true
-    - default: false
-      description: Maximum number of results to return.
-      name: limit
-      required: true
-    - default: false
-      description: Date from which to get events.
-      name: from_date
-      required: false
-    description: Gets events from Lookout Mobile Endpoint Security.
-    name: lookout_mobile_endpoint_security-get-events
   dockerimage: devdemisto/sse-client:1.0.0.2913487
   script: '-'
   subtype: python3
