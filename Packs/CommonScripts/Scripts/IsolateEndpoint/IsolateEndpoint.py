@@ -398,7 +398,7 @@ def check_which_args_missing_in_output(zipped_args: list, valid_args: list, outp
         for entry in valid_args:
             if (agent_id and entry.get('agent_id') == agent_id) or \
                 (agent_hostname and entry.get('agent_hostname') == agent_hostname) or \
-                (agent_ip and entry.get('agent_ip') == agent_ip):  # Checks if any of the args exists in valid_args
+                    (agent_ip and entry.get('agent_ip') == agent_ip):  # Checks if any of the args exists in valid_args
                 are_args_found = True
         if not are_args_found:
             endpoint_data: dict = {}
@@ -581,9 +581,8 @@ def main():
         commands = initialize_commands()
         zipped_args = map_zipped_args(agent_ids, agent_ips, agent_hostnames)
 
-        # TODO to change
         endpoint_data_results = structure_endpoints_data(
-            execute_command(command="get-endpoint-data-modified", args=args)
+            execute_command(command="get-endpoint-data", args=args)
         )
 
         demisto.debug(f'These are the results from get_endpoint_data_results execute_command {endpoint_data_results}')
