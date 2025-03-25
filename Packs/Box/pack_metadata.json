@@ -8,11 +8,18 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
+        "Identity and Access Management",
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Compliance",
+        "Breach"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "box"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
