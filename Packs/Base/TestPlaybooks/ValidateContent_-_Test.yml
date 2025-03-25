@@ -1,5 +1,5 @@
 id: ValidateContent - Test
-version: 3
+version: -1
 name: ValidateContent - Test
 starttaskid: "0"
 tasks:
@@ -197,4 +197,5 @@ view: |-
   }
 inputs: []
 outputs: []
-dirtyInputs: true
+fromversion: 6.10.0
+description: ''
