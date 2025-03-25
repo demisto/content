@@ -1,6 +1,9 @@
 [file:playbook-Azure_AD_account_unlock_or_password_reset.yml]
 ignore=GR103
 
+[file:silent-playbook-First_Azure_AD_PowerShell_operation_for_a_user.yml]
+ignore=GR103
+
 [file:silent-playbook-Azure_AD_account_unlock_or_password_reset_Test.yml]
 ignore=GR103
 
