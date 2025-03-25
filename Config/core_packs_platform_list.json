@@ -1,16 +1,280 @@
 {
-    "core_packs_list": [
-        "Base",
-        "CommonPlaybooks",
-        "CommonScripts",
-        "Core",
-        "FiltersAndTransformers"
-    ],
-    "update_core_packs_list": [
-        "Base",
-        "CommonPlaybooks",
-        "CommonScripts",
-        "Core",
-        "FiltersAndTransformers"
+    "packs": [
+        {
+            "id": "AutoFocus",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "Base",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "CommonPlaybooks",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "CommonScripts",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "CommonTypes",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "Core",
+            "supportedModules": [
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "CoreAlertFields",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "CortexAttackSurfaceManagement",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "DemistoLocking",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "DemistoRESTAPI",
+            "supportedModules": [
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "EDL",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "FeedMitreAttackv2",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "FeedUnit42v2",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "FiltersAndTransformers",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "HelloWorld",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "ImageOCR",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "Palo_Alto_Networks_WildFire",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "PrismaCloud",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "ThreatIntelligenceManagement",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "Unit42Intel",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "VirusTotal",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "Whois",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "rasterize",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "CortexResponseAndRemediation",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "Jira",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "MicrosoftTeams",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "Slack",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "ServiceNow",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS"
+            ]
+        }
     ]
-  }
+}

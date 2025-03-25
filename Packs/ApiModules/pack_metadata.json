@@ -2,7 +2,7 @@
     "name": "ApiModules",
     "description": "API Modules",
     "support": "xsoar",
-    "currentVersion": "2.2.41",
+    "currentVersion": "2.2.42",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,6 +14,13 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

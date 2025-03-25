@@ -1,0 +1,206 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: FeedDomainTools
+  version: -1
+configuration:
+- additionalinfo: API Username and API Key
+  display: API Username
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  section: Connect
+- display: Session ID
+  name: session_id
+  defaultvalue: dt-cortex-feeds
+  required: false
+  hidden: false
+  type: 0
+  section: Collect
+  additionalinfo: The session id to serve as unique identifier. On it's initial use, it will retrieve data from the past 5 days. Defaults to 'dt-cortex-feeds'.
+- display: After
+  name: after
+  defaultvalue: "-3600"
+  required: false
+  hidden: false
+  type: 0
+  section: Collect
+  additionalinfo: The start of the query window in seconds, relative to the current time, inclusive. Defaults to -3600.
+- display: Top
+  name: top
+  defaultvalue: 5000
+  required: false
+  hidden: false
+  type: 0
+  additionalinfo: Limits the number of results in the response payload. Defaults to 5000.
+  section: Collect
+- display: Feed Type
+  name: feed_type
+  defaultvalue: ALL
+  required: false
+  hidden: false
+  type: 15
+  options:
+  - ALL
+  - NOD
+  - NAD
+  additionalinfo: The DomainTools feed type fo fetch. Defaults to 'ALL'.
+  section: Collect
+- display: Fetch indicators
+  name: feed
+  defaultvalue: "true"
+  type: 8
+  required: false
+  section: Collect
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  section: Collect
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data.
+  section: Collect
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  section: Collect
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+  section: Collect
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+  section: Collect
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: "true"
+  type: 8
+  required: false
+  section: Collect
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- name: feedTags
+  display: Tags
+  type: 0
+  additionalinfo: Supports CSV values.
+  section: Collect
+- name: tlp_color
+  display: Traffic Light Protocol Color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  required: false
+  section: Collect
+display: FeedDomainTools
+description: "Real-Time Threat Intelligence Feeds provide data on the different stages of the domain lifecycle: from first-observed in the wild, to newly re-activated after a period of quiet. Newly Active Domains surfaces apex-level domains seen for the first time or after ten or more days of inactivity. Newly Observed Domains surfaces domains that we observe for the first time."
+name: FeedDomainTools
+script:
+  commands:
+  - name: domaintools-get-indicators
+    deprecated: false
+    description: Gets indicators from the feed.
+    execution: false
+    arguments:
+    - name: feed_type
+      defaultValue: 'nod'
+      description: The DomainTools integration feed type to fetch.
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: session_id
+      description: The session id to serve as unique indentifier. On it's initial use, it will retrieve data from the past 5 days.
+      defaultValue: dt-cortex-feeds
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: domain
+      description: The top level domain to query (e.g. `*.com`).
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: after
+      description: The start of the query window in seconds, relative to the current time, inclusive. Defaults to 3600 seconds (1h).
+      defaultValue: "-3600"
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: before
+      description: The end of the query window in seconds, relative to the current time, inclusive.
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: top
+      description: Limits the number of results in the response payload.
+      defaultValue: 50
+      isArray: false
+      default: false
+      required: false
+      secret: false
+  dockerimage: demisto/vendors-sdk:1.0.0.2432953
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.5.0
+sectionOrder:
+- Connect
+- Collect
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+tests:
+- No tests (auto formatted)
+
