@@ -1713,31 +1713,6 @@ def fetch_domains():
     )
 
 
-def parsed_domain_rdap_command():
-    """
-    Returns parsed domain rdap data in a given domain
-    """
-    domain = demisto.args()['domain']
-    results = parsed_domain_rdap(domain=domain)
-
-    _raw_response = results.get("_raw") or {}
-    flat_response = results.get("flat") or {}
-
-    for key, val in flat_response.items():
-        if "|" in val:
-            flat_response[key] = ", ".join([v.strip() for v in val.split("|")])
-
-    headers = list(flat_response.keys())
-
-    human_readable = tableToMarkdown(f'DomainTools parsed domain rdap result for {domain}', flat_response, headers=headers)
-
-    return CommandResults(
-        readable_output=human_readable,
-        raw_response=_raw_response,
-        ignore_auto_extract=True
-    )
-
-
 def main():
     """
     Main Demisto function.
