@@ -262,12 +262,12 @@ class PychromeEventHandler:
 # endregion
 
 
-def count_running_chromes(port: int) -> int:
+def count_running_chromes(port: str) -> int:
     """
     Count the number of running Chrome processes on a specified port.
 
     Args:
-        port (int): The port number to check for running Chrome processes.
+        port (str): The port number to check for running Chrome processes.
 
     Returns:
         int: The number of running Chrome processes on the specified port.
@@ -678,7 +678,7 @@ def generate_chrome_port() -> str | None:
     random.shuffle(ports_list)
     demisto.debug(f"Searching for Chrome on these ports: {ports_list}")
     for chrome_port in ports_list:
-        len_running_chromes = count_running_chromes(chrome_port)
+        len_running_chromes = count_running_chromes(str(chrome_port))
         demisto.debug(f"Found {len_running_chromes=} on port {chrome_port}")
 
         if len_running_chromes == 0:
