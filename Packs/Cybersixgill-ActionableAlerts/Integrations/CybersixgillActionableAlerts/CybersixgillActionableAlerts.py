@@ -173,8 +173,8 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
                     content_item['Created Time'] = "Created Time: " + item.get("create_time", "")
     else:
         aggregate_alert_id = item_info.get('aggregate_alert_id', None)
-        if aggregate_alert_id and aggregate_alert_id.isdigit():
-            aggregate_alert_id = int(aggregate_alert_id)
+        if not isinstance(aggregate_alert_id, int):
+            aggregate_alert_id = None
         content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=item_info.get('id'),
                                                                      aggregate_alert_id=aggregate_alert_id,
                                                                      fetch_only_current_item=True,
