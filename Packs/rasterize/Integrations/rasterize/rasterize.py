@@ -618,22 +618,6 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     return browser, chrome_port
 
 
-def cleanup_existing_instances(chrome_instances_contents: dict) -> None:
-    """
-    Clean up existing Chrome instances.
-    
-    Args:
-        chrome_instances_contents (Dict): Existing chrome instances
-    """
-    for chrome_port in chrome_instances_contents:
-        if chrome_port == "None":
-            terminate_port_chrome_instances_file(chrome_port)
-            demisto.debug(f"cleanup_existing_instances {chrome_port=}, removing the port from chrome_instances file")
-            continue
-        demisto.debug(f"cleanup_existing_instances {chrome_port=}, terminating the port")
-        terminate_chrome(chrome_port=chrome_port)
-
-
 def chrome_manager_one_port() -> tuple[Any | None, str | None]:
     """
     Manages Chrome instances based on user-specified chrome options and integration instance ID.
@@ -659,12 +643,14 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
     # it can compare between the fetched 'None' string and the 'None' that assigned.
     instance_id = demisto.callingContext.get("context", {}).get("IntegrationInstanceID", "None") or "None"
     chrome_options = demisto.params().get("chrome_options", "None")
+    demisto.debug(f"Starting chrome_manager_one_port with instance_id: {instance_id}, chrome_options: {chrome_options}")
+    
     chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
-    demisto.debug(f"chrome_manager_one_port {chrome_instances_contents=} {chrome_options=} {instance_id=}")
+    demisto.debug(f"Existing chrome instances: {chrome_instances_contents}")
     
     # If no instances exist, generate new one
     if not chrome_instances_contents:
-        demisto.debug("chrome_manager_one_port: condition chrome_instances_contents is empty")
+        demisto.debug("No existing Chrome instances found. Generating new instance.")
         return generate_new_chrome_instance(instance_id, chrome_options)
     
     chrome_options_dict = {
@@ -674,13 +660,26 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
 
     if chrome_options in chrome_options_dict:
         demisto.debug(
-            "chrome_manager_one_port: condition chrome_options in chrome_options_dict is {chrome_options in chrome_options_dict}"
+            f"chrome_manager_one_port: Reusing existing Chrome instance with the specified options {chrome_port}."
         )
-        if browser:= get_chrome_browser(chrome_port):
+        if browser:= get_chrome_browser():
+            demisto.debug("Successfully connected to existing Chrome instance")
             return browser, chrome_port
-
-    # Clean up existing instances and generate new one
-    cleanup_existing_instances(chrome_instances_contents)
+        
+        # Handle failed connection to existing browser
+        demisto.debug(f"Failed to connect to existing Chrome instance on port {chrome_port}. Cleaning up.")
+        terminate_chrome(chrome_port=chrome_port)
+    else:
+        demisto.debug("No matching Chrome options found. Cleaning up existing instances.")
+        for chrome_port_ in chrome_instances_contents:
+            if chrome_port_ == "None":
+                terminate_port_chrome_instances_file(chrome_port_)
+                demisto.debug(f"chrome_manager {chrome_port_=}, removing the port from chrome_instances file")
+                continue
+            demisto.debug(f"chrome_manager {chrome_port_=}, terminating the port")
+            terminate_chrome(chrome_port=chrome_port_)
+    # Generate new instance
+    demisto.debug("Generating new Chrome instance")
     return generate_new_chrome_instance(instance_id, chrome_options)
 
 
@@ -1044,7 +1043,7 @@ def perform_rasterize(
             f"active tabs len: {len(browser.list_tab())}"
         )
 
-        chrome_instances_file_content: dict = read_json_file()  # CR fix name
+        chrome_instances_file_content: dict = read_json_file()
 
         rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
             rasterization_threads
