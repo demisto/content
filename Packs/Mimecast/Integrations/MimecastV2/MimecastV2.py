@@ -152,8 +152,6 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, limit: in
     len_of_results = 0
     results = []
     dropped = 0
-    if current_next_page:  # For debugging
-        demisto.debug(f"current_next_page exists with value {current_next_page}")
     next_page = current_next_page or ''
     while True:
         pagination = {'pageSize': limit}
