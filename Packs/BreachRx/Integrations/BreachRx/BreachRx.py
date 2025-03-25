@@ -77,7 +77,7 @@ query GetActionsForIncident($incidentId: Int!) {
 
 get_incident_by_name = gql("""
 query GetIncidentByName($name: String, $identifier: String) {
-  incidents(first: 1, where: {
+  incidents(take: 1, where: {
     name: {
       contains: $name,
       mode: insensitive
