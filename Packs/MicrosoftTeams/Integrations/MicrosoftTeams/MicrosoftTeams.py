@@ -318,9 +318,11 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     """
 
     integration_context: dict = get_integration_context()
-    integration_context["current_refresh_token"] = ""
-    integration_context["graph_access_token"] = ""
-    integration_context["graph_valid_until"] = ""
+    integration_context.pop('current_refresh_token', '')
+    integration_context.pop('graph_access_token', '')
+    integration_context.pop('graph_valid_until', '')
+    integration_context['authcode_token_params'] = '{}'
+    integration_context['credentials_token_params'] = '{}'
     set_integration_context(integration_context)
 
     if error_codes or error_desc:
@@ -806,7 +808,8 @@ def get_graph_access_token() -> str:
     """
     integration_context: dict = get_integration_context()
     if 'graph_access_token' in integration_context:
-        # Migrate cached tokens to new format
+        # Migrate cached tokens to new format to avoid requiring reauthentication of existing instances
+        # This should happen at most once
         token_params = {
             'graph_access_token': integration_context.pop('graph_access_token', ''),
             'current_refresh_token': integration_context.pop('current_refresh_token', ''),
@@ -816,9 +819,11 @@ def get_graph_access_token() -> str:
             integration_context['credentials_token_params'] = json.dumps(token_params)
         else:
             integration_context['authcode_token_params'] = json.dumps(token_params)
-    else:
-        token_params = json.loads(integration_context.get('credentials_token_params', '') if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW
-                                  else integration_context.get('authcode_token_params', ''))
+
+        set_integration_context(integration_context)
+
+    token_params = json.loads(integration_context.get('credentials_token_params', '') if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW
+                              else integration_context.get('authcode_token_params', ''))
 
     refresh_token = token_params.get('current_refresh_token', '')
     access_token: str = token_params.get('graph_access_token', '')
