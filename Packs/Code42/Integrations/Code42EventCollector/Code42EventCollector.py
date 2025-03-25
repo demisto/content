@@ -8,12 +8,9 @@ from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa
 
-import urllib3
 from typing import Any
 from enum import Enum
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 DEFAULT_FILE_EVENTS_MAX_FETCH = 50000
 DEFAULT_AUDIT_EVENTS_MAX_FETCH = 100000
@@ -113,14 +110,13 @@ class Client:
             sort_dir="asc",
             sort_key=EventSearchTerm.EVENT_INSERTED,
         )
-        demisto.debug(f'First query: {query.dict()}')
         for filter in query.groups[0].filters:
             filter.term = EventSearchTerm.EVENT_INSERTED
+        demisto.debug(f'First query: {query.dict()}')
 
         response = self.code42_client.file_events.v2.search(
             query
         )
-
         if response.total_count == 0:
             return []
         file_events = response.file_events
@@ -128,17 +124,23 @@ class Client:
             response = self.code42_client.file_events.v2.search(query)
             if current_events := response.file_events:
                 file_events.extend(current_events)
-        demisto.debug(f'Final query: {query.dict()}')
+            demisto.debug(f'New query: {query.dict()}')
+
         demisto.debug(
-            f'Fetched {len(file_events)} events. First ID : {file_events[0].event.id!r}. Last ID: {file_events[-1].event.id!r}')
+            f'Fetched {len(file_events)} events. First: ID={file_events[0].event.id!r}, Time={file_events[0].event.inserted}. '
+            f'Last: ID={file_events[-1].event.id!r}, Time={file_events[-1].event.inserted}')
 
         file_events = file_events[:limit]
 
-        for event in file_events:
+        sorted_file_events = sorted(file_events, key=lambda x: x.event.inserted)
+        demisto.debug(f'[TEMP] Are the events in order?: {sorted_file_events == file_events}')
+        demisto.debug('[TEMP] 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(100), file_events)))
+
+        for event in sorted_file_events:
             event.eventType = EventType.FILE
             event._time = event.event.inserted
 
-        return [event.dict() for event in file_events]
+        return [event.dict() for event in sorted_file_events]
 
 
 def dedup_fetched_events(
