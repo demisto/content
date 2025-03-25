@@ -143,6 +143,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, list[GraphPermissions]] = {
     # Note: at the moment, the required permission names between credentials and auth code are the same.
     # Credentials require Application permissions while auth code requires delegated permissions
     'send-notification': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
+    'send-notification-quick-action': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
     'mirror-investigation': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNEL_CREATE,
                              Perms.CHANNEL_DELETE_ALL],
     'close-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNEL_DELETE_ALL],
