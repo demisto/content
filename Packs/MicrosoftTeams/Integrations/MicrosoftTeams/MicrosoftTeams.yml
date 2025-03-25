@@ -778,11 +778,6 @@ script:
       required: true
     description: |-
       Sends a message to the specified teams.
-      To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;.
-
-      If sending a reply to a message, the message ID must be provided and the reply will be sent via the Graph API which means
-      the message will appear from the account used to authorize the integration instance and not the bot. Setting the account's name
-      and picture to match the bot will make it appear to be from the same source.
     name: teams-send-notification-quick-action
     prettyname: Send Teams Message
     hidden: true
