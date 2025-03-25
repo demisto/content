@@ -514,7 +514,7 @@ script:
       prettyname: Channel
       required: true
     description: Sends a message to a user, group, or channel.
-    name: send-notification-quick-action
+    name: slack-send-notification-quick-action
     prettyname: Send Slack Message
     hidden: true
     quickaction: true
