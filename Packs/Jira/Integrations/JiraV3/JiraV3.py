@@ -2256,7 +2256,7 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     # Validate that no more args are sent when the issue_json arg is used
     if "issue_json" in args and len(args) > 1:
         raise DemistoException(
-            "When using the argument `issue_json`, additional arguments cannot be used.ֿֿֿ\n see the argument description"
+            "When using the argument `issue_json`, additional arguments should be placed within the `fields` in the json.ֿֿֿ"
         )
 
     args_for_api = deepcopy(args)

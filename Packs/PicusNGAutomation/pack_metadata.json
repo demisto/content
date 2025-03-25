@@ -2,7 +2,7 @@
     "name": "PicusNGAutomation",
     "description": "Run commands on Picus NG and automate security validation with playbooks.",
     "support": "partner",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.13",
     "author": "Picus Security",
     "url": "http://support.picussecurity.com",
     "email": "blueteam@picussecurity.com",

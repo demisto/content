@@ -3,7 +3,7 @@
     "description": "Fully automated malware analysis",
     "support": "xsoar",
     "serverMinVersion": "5.0.0",
-    "currentVersion": "1.2.40",
+    "currentVersion": "1.2.41",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -2,7 +2,7 @@
     "name": "Sumo Logic Cloud SIEM",
     "description": "Sumo Logic Cloud SIEM provides threat detection and incident response for modern IT environments. This content pack will allow you to apply automation to perform actual SOC analyst workflows. Using this content pack you will be able to fetch Incidents via Insights, update status of an Insight, add items to match list, add Threat Intel Indicators to Threat Intel Sources, and so on.",
     "support": "partner",
-    "currentVersion": "1.1.28",
+    "currentVersion": "1.1.29",
     "author": "Sumo Logic",
     "url": "https://www.sumologic.com/solutions/cloud-siem-enterprise/",
     "email": "support@sumologic.com",
