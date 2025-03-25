@@ -30,7 +30,6 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, verify: bool, proxy: bool, event_type_query: str, app_key: str):
-
         self.event_type_query = event_type_query
         self.app_key = app_key
         self.base_url = base_url
@@ -42,18 +41,6 @@ class Client(BaseClient):
         headers = {'Authorization': f'Bearer {self.app_key}'}
         response = self._http_request(method="POST", data=data, url_suffix='oauth2/token', headers=headers)
         return response
-
-    def get_token(self) -> str:
-        """Returns the token, or refreshes it if the time of it was exceeded
-        """
-        integration_context = demisto.getIntegrationContext()
-        time_now = int(time.time() * 1000)
-
-        if integration_context.get('token_expiration', 0) <= time_now:
-            demisto.debug("Refreshing token")
-            return self.refresh_token()
-
-        return integration_context.get('access_token', '')
 
     def refresh_token(self) -> str:
         """Refreshes the token and updated the integration context
@@ -68,6 +55,18 @@ class Client(BaseClient):
 
         demisto.debug("Updated integration context with new token")
         return access_token
+
+    def get_token(self) -> str:
+        """Returns the token, or refreshes it if the time of it was exceeded
+        """
+        integration_context = demisto.getIntegrationContext()
+        time_now = int(time.time() * 1000)
+
+        if integration_context.get('token_expiration', 0) <= time_now:
+            demisto.debug("Refreshing token")
+            return self.refresh_token()
+
+        return integration_context.get('access_token', '')
 
 
 def set_the_context(key: str, val):  # pragma: no cover

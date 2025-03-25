@@ -57,6 +57,7 @@ description: Lookout Mobile Endpoint Security (MES) provides visibility and prot
 display: Lookout Mobile Endpoint Security Event Collector
 name: LookoutMobileEndpointSecurityEventCollector
 script:
+  commands: []
   dockerimage: devdemisto/sse-client:1.0.0.2913487
   script: '-'
   subtype: python3
