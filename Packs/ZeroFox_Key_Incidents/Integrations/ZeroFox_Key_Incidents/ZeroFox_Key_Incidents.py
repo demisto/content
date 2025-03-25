@@ -1,4 +1,5 @@
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 
 import urllib3
 import json
@@ -14,15 +15,11 @@ MAX_ALERT_IDS_STORED = 300
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+
 class ZFClient(BaseClient):
-    def __init__(
-        self, username, token, *args, **kwargs
-    ):
+    def __init__(self, username, token, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.credentials = {
-            "username": username,
-            "password": token
-        }
+        self.credentials = {"username": username, "password": token}
 
     def _make_rest_call(
         self,
@@ -34,7 +31,7 @@ class ZFClient(BaseClient):
         data: dict[str, Any] | None = None,
         ok_codes: tuple[int, ...] = None,
         empty_response: bool = False,
-        **kwargs
+        **kwargs,
     ) -> dict[str, Any]:
         """
         :param method: HTTP request type
@@ -62,9 +59,8 @@ class ZFClient(BaseClient):
             empty_valid_codes=(200, 201),
             return_empty_response=empty_response,
             error_handler=self.handle_zerofox_error,
-            **kwargs
+            **kwargs,
         )
-
 
     def handle_zerofox_error(self, raw_response: Response):
         status_code = raw_response.status_code
@@ -136,7 +132,10 @@ class ZFClient(BaseClient):
         )
         return response_content
 
+
 """ HELPERS """
+
+
 class ZeroFoxInternalException(Exception):
     def __init__(self, status_code: int, cause: str):
         self.status_code = status_code
@@ -165,18 +164,13 @@ def remove_none_dict(input_dict: dict[Any, Any]) -> dict[Any, Any]:
     :param input_dict: any dictionary in the world is OK
     :return: same dictionary but without None values
     """
-    return {
-        key: value for key, value in input_dict.items()
-        if value is not None
-    }
+    return {key: value for key, value in input_dict.items() if value is not None}
 
 
 """ COMMAND FUNCTIONS """
 
-def get_key_incidents_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+
+def get_key_incidents_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     start_time: str = args.get("start_time", "")
     end_time: str = args.get("end_time", "")
     key_incidents = client.get_key_incidents(start_time, end_time)
@@ -189,7 +183,7 @@ def get_key_incidents_command(
         )
     return CommandResults(
         outputs=key_incidents,
-        readable_output=tableToMarkdown("Key Incidents", outputs),
+        readable_output=tableToMarkdown("Key Incidents", key_incidents),
         outputs_prefix="ZeroFox_Key_Incidents.Key_Incidents",
     )
 
@@ -217,13 +211,9 @@ def main():
     params = demisto.params()
     USERNAME: str = params.get("credentials", {}).get("identifier")
     API_KEY: str = params.get("credentials", {}).get("password")
-    BASE_URL: str = (
-        params["url"][:-1]
-        if params["url"].endswith("/")
-        else params["url"]
-    )
+    BASE_URL: str = params["url"][:-1] if params["url"].endswith("/") else params["url"]
     USE_SSL: bool = not params.get("insecure", False)
-    PROXY: bool = params.get('proxy', False)
+    PROXY: bool = params.get("proxy", False)
 
     commands: dict[str, Callable[[ZFClient, dict[str, Any]], Any]] = {
         "zerofox-get-key-incidents": get_key_incidents_command,
