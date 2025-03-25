@@ -319,7 +319,6 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
     continue_to_poll = result_commit_status.get('status') != 'FIN'
     global POLLING
     POLLING = continue_to_poll
-    #args['continue_to_poll'] = continue_to_poll
     demisto.debug(f"after pan-os-commit-status {continue_to_poll=} {commit_job_id=}")
     return PollResult(
         response=CommandResults(
@@ -377,7 +376,6 @@ def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
         continue_to_poll = False
     global POLLING
     POLLING = continue_to_poll
-    #args['continue_to_poll'] = continue_to_poll
 
     return PollResult(
         response=push_cr,
@@ -416,7 +414,6 @@ def pan_os_push_status(args: dict, responses: list):
     )
     global POLLING
     POLLING = continue_to_poll
-    #args['continue_to_poll'] = continue_to_poll
     return PollResult(
         response=push_cr,
         continue_to_poll=continue_to_poll,
@@ -430,7 +427,7 @@ def final_part_pan_os(args: dict, responses: list) -> list[CommandResults]:
     tag = args.get('tag')
     ip_list = args.get('ip_list')
     demisto.setContext('push_job_id', '')  # delete any previous value if exists
-    demisto.setContext('responses', '')  # delete any previous value if exists
+    demisto.setContext('panorama_responses', '')  # delete any previous value if exists
     responses.append(run_execute_command('pan-os-register-ip-tag', {'tag': tag, 'IPs': ip_list}))
     results = prepare_context_and_hr_multiple_executions(responses, args['verbose'], '', ip_list)
     return results
@@ -463,7 +460,7 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
         if check_value_exist_in_context(rule_name, context_list_rules, 'Name'):
             responses.append(run_execute_command("pan-os-edit-rule", {'rulename': rule_name, 'element_to_change': 'source', 'element_value': address_group, 'pre_post': 'pre-rulebase'}))
         else:
-            create_rule_args = {'action': 'deny', 'rulename': rule_name, 'pre_post': 'pre-rulebase'}
+            create_rule_args = {'action': 'deny', 'rulename': rule_name, 'pre_post': 'pre-rulebase', 'source': address_group}
             if log_forwarding_name:
                 args['log_forwarding'] = log_forwarding_name
             responses.append(run_execute_command("pan-os-create-rule", create_rule_args))
@@ -503,7 +500,6 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
         continue_to_poll = False
     global POLLING
     POLLING = continue_to_poll
-    #args['continue_to_poll'] = continue_to_poll
 
     args_for_next_run = {
         'commit_job_id': job_id,
@@ -534,7 +530,7 @@ def manage_pan_os_flow(args: dict):
     responses = []
     if push_job_id := demisto.get(incident_context, 'push_job_id'):
         demisto.debug(f"Has a {push_job_id=}")
-        responses = ast.literal_eval(incident_context.get('responses', ''))
+        responses = ast.literal_eval(incident_context.get('panorama_responses', ''))
         args['push_job_id'] = push_job_id
         res_push_status = pan_os_push_status(args, responses)
         if not POLLING:
@@ -542,12 +538,11 @@ def manage_pan_os_flow(args: dict):
             return final_part_pan_os(args, responses)
         else:
             demisto.debug(f"Poll for the push status. Save the responses to the context {len(responses)=}")
-            demisto.setContext('responses', str(responses))
+            demisto.setContext('panorama_responses', str(responses))
             return res_push_status
     elif commit_job_id := args.get('commit_job_id'):
         demisto.debug(f"Has a {commit_job_id=}")
-        responses_str = incident_context.get('responses', '')
-        responses = ast.literal_eval(responses_str)
+        responses = ast.literal_eval(incident_context.get('panorama_responses', ''))
         poll_commit_status = pan_os_commit_status(args, responses)
         if not POLLING:
             demisto.debug("Finished polling for the commit status, checking if we need to trigger pan_os_push_to_device")
@@ -559,14 +554,14 @@ def manage_pan_os_flow(args: dict):
                     return final_part_pan_os(args, responses)
                 else:
                     demisto.debug(f"Poll for the push status. Save the responses to the context {len(responses)=}")
-                    demisto.setContext('responses', str(responses))
+                    demisto.setContext('panorama_responses', str(responses))
                     return poll_push_to_device
             else:
                 demisto.debug("Not a Panorama instance, not pushing to device. Continue to register the IP.")
                 return final_part_pan_os(args, responses)
         else:
             demisto.debug(f"Poll for the commit status. Save the responses to the context {len(responses)=}")
-            demisto.setContext('responses', str(responses))
+            demisto.setContext('panorama_responses', str(responses))
             return poll_commit_status
 
     # if we are here, it is the beginning of the flow
@@ -582,7 +577,7 @@ def manage_pan_os_flow(args: dict):
             return result
         else:
             demisto.debug(f"Poll for the commit status. Save the responses to the context {len(responses)=}")
-            demisto.setContext('responses', str(responses))
+            demisto.setContext('panorama_responses', str(responses))
             return poll_result
     elif isinstance(responses[0], CommandResults): # already did the final part in start_pan_os_flow
         return responses
@@ -728,7 +723,6 @@ def main():
             else:
                 demisto.info(f"The brand {brand} isn't enabled.")
         demisto.debug(f"returning at the end of main(), {results=}")
-        # TODO add a global variable that will check if we continue to poll or finished everything. If finished - delete the executed_brands
         if not POLLING:
             demisto.debug("Not in a polling mode, initializing the executed_brands.")
             demisto.setContext('executed_brands', '')
