@@ -2,7 +2,7 @@
     "name": "Gatewatcher AionIQ",
     "description": "This pack provide integration with Gatewatcher NDR solution : AIonIQ",
     "support": "partner",
-    "currentVersion": "1.2.0",
+    "currentVersion": "1.3.0",
     "author": "Gatewatcher",
     "url": "https://www.gatewatcher.com/",
     "email": "integration@gatewatcher.com",
@@ -14,13 +14,20 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "FabienMht",
         "CesarGW",
         "ThibaultReboul",
-	"clement-lyonnet"
+        "clement-lyonnet"
     ],
-    "defaultDataSource": "GCenter 103"
+    "defaultDataSource": "GCenter 103",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

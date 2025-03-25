@@ -614,15 +614,24 @@ class OwnerFeaturizationPipeline():
 
 
 def write_output_to_context_key(final_owners: list[dict[str, str]], owner_related_field: str, platform_tenant: str):
-    stringify_platform_tenant = str(platform_tenant)
-    set_alert_issue_map = {"True": "setIssue", "False": "setAlert"}
-    if final_owners and owner_related_field:
-        res = demisto.executeCommand(set_alert_issue_map[stringify_platform_tenant], {owner_related_field: final_owners})
-        if isError(res):
-            raise ValueError('Unable to update field')
-        return_results(CommandResults(readable_output=f"Owners ranked and written to {owner_related_field}"))
-    else:
+    if not final_owners or not owner_related_field:
         return_results(CommandResults(readable_output='No owners found'))
+
+    # For platform we are assuming that a multi-array normalized field will be used.
+    if platform_tenant.lower() == "true":
+        # Get list of emails, unless "n/a" and then use name.
+        final_owners_list = [
+            owner["email"] if "email" in owner and owner["email"].lower() != "n/a" else owner.get("name", "n/a")
+            for owner in final_owners
+        ]
+        res = demisto.executeCommand("setIssue", {owner_related_field: final_owners_list})
+    else:
+        res = demisto.executeCommand("setAlert", {owner_related_field: final_owners})
+
+    if isError(res):
+        raise ValueError(f'Unable to update field: {res}')
+
+    return_results(CommandResults(readable_output=f"Owners ranked and written to {owner_related_field}"))
 
 
 def main():
