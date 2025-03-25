@@ -1,7 +1,7 @@
 [MODEL: dataset="celonis_celonis_raw"]
 alter event_type = coalesce(event , authenticationEventType)
 | alter 
-    xdm.event.type = event_type,//coalesce(event , authenticationEventType),
+    xdm.event.type = event_type,
     xdm.source.user.upn = coalesce(email , message -> email , message -> userEmail , arrayindex(regextract(userId , "\((.*?)\)"),0)),
     xdm.event.outcome = if(to_string(success) = "true", XDM_CONST.OUTCOME_SUCCESS, to_string(success) = "false", XDM_CONST.OUTCOME_FAILED, to_string(message -> ["login-history-enabled"]) = "true", XDM_CONST.OUTCOME_SUCCESS, to_string(message -> ["login-history-enabled"]) = "false", XDM_CONST.OUTCOME_FAILED, null),
     xdm.auth.privilege_level = if(lowercase(userRole) = "admin" , XDM_CONST.PRIVILEGE_LEVEL_ADMIN),
