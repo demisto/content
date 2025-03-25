@@ -2,20 +2,37 @@
     "name": "Azure Kubernetes Services",
     "description": "Deploy and manage containerized applications with a fully managed Kubernetes service.",
     "support": "xsoar",
-    "currentVersion": "1.2.4",
+    "currentVersion": "1.2.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-01-17T14:56:54Z",
     "categories": [
-        "Cloud Service Provider"
+        "Cloud Service Provider",
+        "Cloud Services",
+        "IT Services",
+        "CI/CD"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "azure",
+        "aks",
+        "kubernetes",
+        "kubernetes services"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

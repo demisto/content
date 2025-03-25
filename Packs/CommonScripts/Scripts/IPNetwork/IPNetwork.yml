@@ -1,5 +1,5 @@
 args:
-- description: IP/CIDR, e.g. 192.168.0.0/24
+- description: IP/CIDR, e.g. 192.168.0.0/24.
   name: cidr
   required: true
 commonfields:
@@ -15,7 +15,7 @@ comment: |
       5. Max prefix len
       6. Num addresses
       7. Private
-      8. Version
+      8. Version.
 outputs:
 - contextPath: Network.CIDR
   description: Network CIDR.
@@ -47,6 +47,8 @@ tags:
 - ip
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.12.66339
+dockerimage: demisto/python3:3.12.8.1983910
 runas: DBotWeakRole
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
