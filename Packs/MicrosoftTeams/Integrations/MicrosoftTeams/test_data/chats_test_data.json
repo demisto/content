@@ -949,5 +949,49 @@
     "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#chats(id,chatType)",
     "@odata.count": 0,
     "value": []
-  }
+  },
+  "get_oneOnOne_chat_id_response":
+  {
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#chats(members())",
+    "@odata.count": 1,
+    "@odata.nextLink": "https://graph.microsoft.com/v1.0/me/chats?$expand=members&$filter=chatType+eq+%27oneOnOne%27+and+members%2fany(m%3am%2fmicrosoft.graph.aadUserConversationMember%2fuserId+eq+%27d74fc2ed-cb0e-4288-a219-b5c71abaf2aa%27)&$skiptoken=M2UyZDAwMDAwMDMxMzkzYTMyNjQ2MTM0NjMzMjM5NjYzNjY0MzczMDM0MzE2NTYzNjEzNzMwNjIzNjMzMzg2MjM0MzM2NDM0MzUzNDMzMzc0MDc0Njg3MjY1NjE2NDJlNzYzMjAxZThmYjY4M2Y3ODAxMDAwMDg4NjA5ODdhNzgwMTAwMDB8MTYxNjk2NDUwOTgzMg%3d%3dtest",
+    "value": [
+        {
+            "id": "19:82fe7758-5bb3-4f0d-a43f-e555fd399c6f_8c0a1a67-50ce-4114-bb6c-da9c5dbcf6ca@unq.gbl.spaces",
+            "topic": null,
+            "createdDateTime": "2020-12-04T23:10:28.51Z",
+            "lastUpdatedDateTime": "2020-12-04T23:10:28.51Z",
+            "chatType": "oneOnOne",
+            "webUrl": "https://teams.microsoft.com/l/chat/19%3A82fe7758-5bb3-4f0d-a43f-e555fd399c6f_8c0a1a67-50ce-4114-bb6c-da9c5dbcf6ca@unq.gbl.spaces/0?tenantId=pbae9ao6-01ql-249o-5me3-4738p3e1m941",
+            "tenantId": "pbae9ao6-01ql-249o-5me3-4738p3e1m941",
+            "viewpoint": null,
+            "onlineMeetingInfo": null,
+            "members": [
+                {
+                    "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                    "displayName": "Peter Parker",
+                    "email": "parkerp@teamsgraph.onmicrosoft.com",
+                    "id": "MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMz6Jk45=",
+                    "roles": [],
+                    "userId": "d74fc2ed-cb0e-4288-a219-b5c71abaf2aa"
+                    },
+                {
+                    "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                    "displayName": "Adele Vance",
+                    "email": "AdeleV@contoso.onmicrosoft.com",
+                    "id": "MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJ989kMTQ=",
+                    "roles": [],
+                    "userId": "87d349ed-44d7-43e1-9a83-5f2406dee5bd"
+                }
+                ]
+            }
+        ]
+    },
+    "get_oneOnOne_chat_id_no_chat_response":
+    {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#chats(members())",
+        "@odata.count": 0,
+        "@odata.nextLink": null,
+        "value": []
+    }
 }
