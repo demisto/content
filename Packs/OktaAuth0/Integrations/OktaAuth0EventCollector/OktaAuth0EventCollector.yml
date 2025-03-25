@@ -64,6 +64,7 @@ script:
   dockerimage: demisto/python3:3.11.10.115186
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 8.2.0
 tests:
 - No tests (auto formatted)

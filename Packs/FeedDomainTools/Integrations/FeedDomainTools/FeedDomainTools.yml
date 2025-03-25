@@ -200,6 +200,7 @@ sectionOrder:
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)
 
