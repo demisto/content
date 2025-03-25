@@ -1291,5 +1291,5 @@
     "version": -1,
     "fromVersion": "6.8.0",
     "description": "",
-    "marketplaces": ["xsoar", "marketplacev2", "xpanse"]
+    "marketplaces": ["marketplacev2", "xpanse"]
 }
