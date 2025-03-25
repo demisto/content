@@ -705,7 +705,6 @@ def main():
                         'verbose': verbose,
                         'brands': brands_to_run,
                         'commit_job_id': args.get('commit_job_id'),
-                        'push_job_id': args.get('push_job_id'),
                         'polling': True
                     }
                     result = manage_pan_os_flow(brand_args)
@@ -714,7 +713,7 @@ def main():
                         executed_brands.append(brand)
                     demisto.setContext('executed_brands', str(executed_brands))
                     demisto.debug(f"Before returning {result=} in panorama")
-                    return_results(result)
+                    results.append(result)
 
                 else:
                     return_error(f"The brand {brand} isn't a part of the supported integration for 'block-external-ip'. "
