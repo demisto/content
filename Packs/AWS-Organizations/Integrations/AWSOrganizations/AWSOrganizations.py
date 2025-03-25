@@ -133,7 +133,7 @@ def paginate(
 
 
 def next_token_output_dict(outputs_prefix: str, next_token: str | None, page_outputs: Any, page_outputs_key: str = 'Id') -> dict:
-    """Creates a dict for CommandResults.output with the next token.
+    """Creates a dict for CommandResults.output with the next token test.
     """
     return {
         (f'AWS.Organizations.{outputs_prefix}(val.{page_outputs_key} && val.{page_outputs_key} == obj.{page_outputs_key})'):

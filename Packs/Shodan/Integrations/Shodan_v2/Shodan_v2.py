@@ -108,7 +108,7 @@ def add_time_to_events(events: list[dict]):
     Args:
         events: list[dict] - list of events to add the _time key to.
     Returns:
-        list: The events with the _time key.
+        list: The events with the _time key. test
     """
     if events:
         for event in events:

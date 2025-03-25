@@ -59,21 +59,12 @@ Send Email reputation query.
 | --- | --- | --- |
 | email | List of emails. | Required | 
 
-#### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Hudsonrock.Email | string | Email reputation. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 ### hudsonrock-get-username
 
 ***
-Send username reputation query.
+Send username repxutation query.
 
 #### Base Command
 

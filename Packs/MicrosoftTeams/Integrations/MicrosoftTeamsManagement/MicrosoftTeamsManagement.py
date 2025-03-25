@@ -303,7 +303,7 @@ class Client:
             json_data={
                 'displayName': display_name,
                 # from Microsoft docs: "mailNickname property must be specified when a group is created.
-                # If this property is not specified, it will be computed from the displayName.
+                # If this property is not specified, it will be computed from the displayName. test
                 # Known issue: this property is currently ignored."
                 'mailNickname': display_name,
                 'description': description,
