@@ -1026,8 +1026,9 @@ def get_alert_ai_summary(reco_client: RecoClient, alert_id: str) -> CommandResul
     response = reco_client.get_alert_ai_summary(alert_id)
     content = json.dumps(response)
     # check if markdown exists
-    if response.get("markdown") is not None:
+    if response.get("markdown"):
         content = str(response.get("markdown"))
+        
     return CommandResults(
         readable_output=content,
         outputs_prefix="Reco.AlertSummary.markdown",
