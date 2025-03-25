@@ -18,7 +18,7 @@ The playbook in this pack enriches information about the event forensics.
 
 <~XSIAM>
 ## Collect Events from Vendor
-To configure the collector for "Proofpoint Targeted Attack Protection", follow the XSIAM documentation [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-from-Proofpoint-Targeted-Attack-Protection).
+To configure the collector for "Proofpoint Targeted Attack Protection", follow the Cortex XSIAM documentation [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-from-Proofpoint-Targeted-Attack-Protection).
 The ingested "Proofpoint Tap" logs can be queried in XQL Search using the *`proofpoint_tap_raw`* dataset.
 
 Notes:
