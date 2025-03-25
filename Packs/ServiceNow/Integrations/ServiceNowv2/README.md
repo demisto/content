@@ -679,7 +679,7 @@ Creates new ServiceNow ticket.
 | additional_fields | Additional fields in the format: fieldname1=value;fieldname2=value; | Optional | 
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
 
-For more information regarding the input_display_value Argument, please see: <https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html>
+For more information regarding the input_display_value argument, see: <https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html>
 
 
 #### Context Output
@@ -837,7 +837,7 @@ Updates the specified ticket.
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
 | clear_fields | A comma-separated list of fields to clear. | Optional | 
 
-For more information regarding the input_display_value Argument, please see: <https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html>
+For more information regarding the input_display_value argument, see: <https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html>
 
 #### Context Output
 
@@ -1378,7 +1378,7 @@ Creates a new record in the specified ServiceNow table.
 | custom_fields | Custom (user defined) fields in the format: fieldname1=value;fieldname2=value;... | Optional | 
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
 
-For more information regarding the input_display_value Argument, please see: <https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html>
+For more information regarding the input_display_value argument, see: <https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html>
 
 
 #### Context Output
@@ -1442,7 +1442,7 @@ Updates a record in the specified ServiceNow table.
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
 | clear_fields | A comma-separated list of fields to clear. | Optional | 
 
-For more information regarding the input_display_value Argument, please see: <https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html>
+For more information regarding the input_display_value argument, see: <https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html>
 
 #### Context Output
 
