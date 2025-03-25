@@ -2,7 +2,7 @@
     "name": "Slack",
     "description": "Interact with Slack API - collect logs, send messages and notifications to your Slack team.",
     "support": "xsoar",
-    "currentVersion": "3.5.12",
+    "currentVersion": "3.5.11",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -42,6 +42,7 @@
         "xpanse",
         "platform"
     ],
+    "defaultDataSource": "Slack Event Collector",
     "supportedModules": [
         "C1",
         "C3",
@@ -50,6 +51,5 @@
         "X3",
         "X5",
         "ENT_PLUS"
-    ],
-    "defaultDataSource": "Slack Event Collector"
+    ]
 }
