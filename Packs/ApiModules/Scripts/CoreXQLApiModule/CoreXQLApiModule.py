@@ -684,7 +684,7 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
     # get the query data either from the integration context (if its not the first run) or from the given args.
     parse_result_file_to_context = argToBoolean(args.get('parse_result_file_to_context', 'false'))
     command_name = args.get('command_name', demisto.command())
-    interval_in_secs = int(args.get('interval_in_seconds', 10))
+    interval_in_secs = int(args.get('interval_in_seconds', 30))
     max_fields = arg_to_number(args.get('max_fields', 20))
     if max_fields is None:
         raise DemistoException('Please provide a valid number for max_fields argument.')
