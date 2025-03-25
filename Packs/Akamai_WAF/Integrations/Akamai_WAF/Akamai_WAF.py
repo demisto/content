@@ -2393,7 +2393,7 @@ class Client(BaseClient):
 
     def patch_datastream(self,
                          stream_id: int,
-                         body: dict,
+                         body: list,
                          activate: str,
                          ) -> dict:
         """
@@ -7138,7 +7138,7 @@ def update_client_list_entries_command(client: Client,
         human readable (markdown format), entry context and raw response
     """
 
-    raw_response: dict = client.update_client_list_entries(list_id=list_id, account_switch_key=account_switch_key)
+    raw_response: dict = client.update_client_list_entries(list_id=str(list_id), account_switch_key=account_switch_key)
 
     title = f'{INTEGRATION_NAME} - Update Client List Entries command'
 
@@ -7163,7 +7163,7 @@ def activate_a_client_list_command(client: Client,
                                    notification_recipients: str,
                                    account_switch_key: str = "",
                                    siebel_ticketid: str = "",
-                                   ) -> dict:
+                                   ) -> tuple[str, dict, Union[list, dict]]:
     """
         Activates a client list on the staging or production network.
     Args:
@@ -7181,7 +7181,7 @@ def activate_a_client_list_command(client: Client,
         human readable (markdown format), entry context and raw response
     """
 
-    notification_list: list = argToList(notification_recipients, seperator=",")
+    notification_list: list = argToList(notification_recipients, separator=",")
     raw_response: dict = client.activate_a_client_list(list_id=list_id,
                                                        account_switch_key=account_switch_key,
                                                        action=action,
