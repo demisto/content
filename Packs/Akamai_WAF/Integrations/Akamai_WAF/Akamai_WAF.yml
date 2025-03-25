@@ -1793,8 +1793,8 @@ script:
   subtype: python3
   type: python
   runonce: false
-  feed: true
-  isFetchSamples: true
+  feed: false
+  isFetchSamples: false
 tests:
 - Akamai_WAF-Test
 fromversion: 5.0.0
