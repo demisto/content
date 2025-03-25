@@ -1,4 +1,5 @@
 import json
+import io
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 
@@ -7,7 +8,7 @@ from WorkdayEventCollector import Client, DATE_FORMAT
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
