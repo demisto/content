@@ -230,20 +230,21 @@ def main():  # pragma: no cover
         elif command == "core-endpoint-alias-change":
             return_results(endpoint_alias_change_command(client, **args))
 
-        elif command == 'core-isolate-endpoint' or command == 'core-isolate-endpoint-quick-action':
-            polling_args = {
-                **args,
-                "endpoint_id_list": args.get('endpoint_id')
-            }
-            return_results(run_polling_command(client=client,
-                                               args=polling_args,
-                                               cmd=command,
-                                               command_function=isolate_endpoint_command,
-                                               command_decision_field="action_id",
-                                               results_function=get_endpoints_command,
-                                               polling_field="is_isolated",
-                                               polling_value=["AGENT_ISOLATED"],
-                                               stop_polling=True))
+        elif command == "core-isolate-endpoint" or command == "core-isolate-endpoint-quick-action":
+            polling_args = {**args, "endpoint_id_list": args.get("endpoint_id")}
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=polling_args,
+                    cmd=command,
+                    command_function=isolate_endpoint_command,
+                    command_decision_field="action_id",
+                    results_function=get_endpoints_command,
+                    polling_field="is_isolated",
+                    polling_value=["AGENT_ISOLATED"],
+                    stop_polling=True,
+                )
+            )
 
         elif command == "core-unisolate-endpoint":
             polling_args = {**args, "endpoint_id_list": args.get("endpoint_id")}
@@ -295,48 +296,51 @@ def main():  # pragma: no cover
         elif command == "core-allowlist-files":
             return_results(allowlist_files_command(client, args))
 
-        elif command == 'core-quarantine-files' or command == 'core-quarantine-files-quick-action':
-            polling_args = {
-                **args,
-                "endpoint_id": argToList(args.get("endpoint_id_list"))[0]
-            }
-            return_results(run_polling_command(client=client,
-                                               args=polling_args,
-                                               cmd=command,
-                                               command_function=quarantine_files_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+        elif command == "core-quarantine-files" or command == "core-quarantine-files-quick-action":
+            polling_args = {**args, "endpoint_id": argToList(args.get("endpoint_id_list"))[0]}
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=polling_args,
+                    cmd=command,
+                    command_function=quarantine_files_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                )
+            )
 
         elif command == "core-get-quarantine-status":
             return_results(get_quarantine_status_command(client, args))
 
-        elif command == 'core-restore-file' or command == 'core-restore-file-quick-action':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd=command,
-                                               command_function=restore_file_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+        elif command == "core-restore-file" or command == "core-restore-file-quick-action":
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=args,
+                    cmd=command,
+                    command_function=restore_file_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                )
+            )
 
-        elif command == 'core-endpoint-scan' or command == 'core-endpoint-scan-quick-action':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd=command,
-                                               command_function=endpoint_scan_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+        elif command == "core-endpoint-scan" or command == "core-endpoint-scan-quick-action":
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=args,
+                    cmd=command,
+                    command_function=endpoint_scan_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                )
+            )
 
         elif command == "core-endpoint-scan-abort":
             return_results(endpoint_scan_abort_command(client, args))
@@ -350,17 +354,19 @@ def main():  # pragma: no cover
         elif command == "core-get-endpoint-device-control-violations":
             return_outputs(*get_endpoint_device_control_violations_command(client, args))
 
-        elif command == 'core-retrieve-files' or command == 'core-retrieve-files-quick-action':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd=command,
-                                               command_function=retrieve_files_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+        elif command == "core-retrieve-files" or command == "core-retrieve-files-quick-action":
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=args,
+                    cmd=command,
+                    command_function=retrieve_files_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                )
+            )
 
         elif command == "core-retrieve-file-details":
             return_entry, file_results = retrieve_file_details_command(client, args, False)
@@ -383,8 +389,8 @@ def main():  # pragma: no cover
         elif command == "core-run-script":
             return_results(run_script_command(client, args))
 
-        elif command == 'core-script-run' or command == 'core-script-run-quick-action':
-            args = args | {'is_core': True}
+        elif command == "core-script-run" or command == "core-script-run-quick-action":
+            args = args | {"is_core": True}
             return_results(script_run_polling_command(args, client))
 
         elif command == "core-run-snippet-code-script":
@@ -531,25 +537,22 @@ def main():  # pragma: no cover
                 )
             )
 
-        elif command == 'core-terminate-causality' or command == 'core-terminate-causality-quick-action':
-            if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION,
-                                         build_number=TERMINATE_BUILD_NUM):
+        elif command == "core-terminate-causality" or command == "core-terminate-causality-quick-action":
+            if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION, build_number=TERMINATE_BUILD_NUM):
                 raise DemistoException("This command is only available for XSIAM 2.4 and above")
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd=command,
-                                               command_function=terminate_causality_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"],
-                                               values_raise_error=["FAILED",
-                                                                   "TIMEOUT",
-                                                                   "ABORTED",
-                                                                   "CANCELED"]
-                                               ))
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=args,
+                    cmd=command,
+                    command_function=terminate_causality_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                    values_raise_error=["FAILED", "TIMEOUT", "ABORTED", "CANCELED"],
+                )
+            )
 
         elif command == "core-get-asset-details":
             return_results(get_asset_details_command(client, args))
