@@ -7,14 +7,10 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM",
-        "IT Services",
-        "Authentication & Identity Management"
+        "Analytics & SIEM"
     ],
     "tags": [
-        "IAM",
-        "IT",
-        "Compliance"
+        "IT"
     ],
     "useCases": [],
     "keywords": [
