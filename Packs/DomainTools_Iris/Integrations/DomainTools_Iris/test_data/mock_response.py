@@ -810,3 +810,67 @@ flattened_parsed_domain_rdap_response = {
     "contact_roles_3": "technical",
     "contact_roles_4": "reseller",
 }
+
+reverseIP_responses = {
+    "ip": {
+        "ip_addresses": {
+            "ip_address": "8.8.8.8",
+            "domain_count": 14910,
+            "domain_names": [
+                "1gkncxfiow5j.com",
+                "3tuga.xyz",
+                "4031leyu.com",
+                "4vrijqda75p3.com",
+                "98587.top",
+                "acxp.net",
+                "aeneascapital.com",
+                "anhuirb.cn",
+                "appx.com.tr",
+                "badmashistatus.com",
+            ],
+        }
+    },
+    "domain": {
+        "ip_addresses": [
+            {
+                "ip_address": "142.250.217.68",
+                "domain_count": 105,
+                "domain_names": [
+                    "bazinv.com",
+                    "energypathco.com",
+                    "tradera.club",
+                    "gsinet.co.uk",
+                    "vendomesucks.com",
+                    "tinglyfish.net",
+                    "dmarc.net",
+                    "jameygijzen.nl",
+                    "signled.cn",
+                    "hechosetri.xyz",
+                ],
+            },
+            {
+                "ip_address": "142.250.217.78",
+                "domain_count": 811,
+                "domain_names": [],
+            },
+        ]
+    },
+}
+
+
+reverseNameserver_response = {
+    "name_server": {
+        "hostname": "domaincontrol.com",
+        "primary": 58848068,
+        "secondary": 41001,
+        "total": 58889069,
+    },
+    "primary_domains": [
+        "0--0----------------------------------------------------------0.com",
+        "0--0.ac",
+        "0--0.dev",
+        "0--0.mobi",
+        "0--0.xyz",
+    ],
+    "secondary_domains": [],
+}
