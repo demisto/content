@@ -1003,76 +1003,77 @@ def perform_rasterize(
     # until https://issues.chromium.org/issues/379034728 is fixed, we can only use one chrome port
     browser, chrome_port = chrome_manager_one_port()
 
-    if not browser:
+    if browser:
+        support_multithreading()
+        with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
+            demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
+            rasterization_threads = []
+            rasterization_results = []
+            for current_path in paths:
+                if not current_path.startswith("http") and not current_path.startswith("file:///"):
+                    protocol = "http" + "s" * IS_HTTPS
+                    current_path = f"{protocol}://{current_path}"
+
+                # Start a new thread in group of max_tabs
+                rasterization_threads.append(
+                    executor.submit(
+                        rasterize_thread,
+                        browser=browser,
+                        chrome_port=chrome_port,
+                        path=current_path,
+                        rasterize_type=rasterize_type,
+                        wait_time=wait_time,
+                        offline_mode=offline_mode,
+                        navigation_timeout=navigation_timeout,
+                        include_url=include_url,
+                        full_screen=full_screen,
+                        width=width,
+                        height=height,
+                    )
+                )
+            # Wait for all tasks to complete
+            executor.shutdown(wait=True)
+            demisto.info(
+                f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations,"
+                f"active tabs len: {len(browser.list_tab())}"
+            )
+
+            chrome_instances_file_content: dict = read_json_file()
+
+            rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
+                rasterization_threads
+            )
+
+            demisto.debug(
+                f"perform_rasterize checking if the chrome in port:{chrome_port} should be deleted:"
+                f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}"
+            )
+            if not chrome_port:
+                demisto.debug("perform_rasterize: the chrome port was not found")
+            elif rasterization_count >= MAX_RASTERIZATIONS_COUNT:
+                demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization")
+                terminate_chrome(chrome_port=chrome_port)
+            else:
+                increase_counter_chrome_instances_file(chrome_port=chrome_port)
+
+            # Get the results
+            for current_thread in rasterization_threads:
+                ret_value, response_body = current_thread.result()
+                if ret_value:
+                    rasterization_results.append((ret_value, response_body))
+                else:
+                    return_results(
+                        CommandResults(
+                            readable_output=str(response_body), entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING)
+                        )
+                    )
+            return rasterization_results
+
+    else:
         message = "Could not use local Chrome for rasterize command"
         demisto.error(message)
         return_error(message)
         return None
-
-    support_multithreading()
-    with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
-        demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
-        rasterization_threads = []
-        rasterization_results = []
-        for current_path in paths:
-            if not current_path.startswith("http") and not current_path.startswith("file:///"):
-                protocol = "http" + "s" * IS_HTTPS
-                current_path = f"{protocol}://{current_path}"
-
-            # Start a new thread in group of max_tabs
-            rasterization_threads.append(
-                executor.submit(
-                    rasterize_thread,
-                    browser=browser,
-                    chrome_port=chrome_port,
-                    path=current_path,
-                    rasterize_type=rasterize_type,
-                    wait_time=wait_time,
-                    offline_mode=offline_mode,
-                    navigation_timeout=navigation_timeout,
-                    include_url=include_url,
-                    full_screen=full_screen,
-                    width=width,
-                    height=height,
-                )
-            )
-        # Wait for all tasks to complete
-        executor.shutdown(wait=True)
-        demisto.info(
-            f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations,"
-            f"active tabs len: {len(browser.list_tab())}"
-        )
-
-        chrome_instances_file_content: dict = read_json_file()
-
-        rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
-            rasterization_threads
-        )
-
-        demisto.debug(
-            f"perform_rasterize checking if the chrome in port:{chrome_port} should be deleted:"
-            f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}"
-        )
-        if not chrome_port:
-            demisto.debug("perform_rasterize: the chrome port was not found")
-        elif rasterization_count >= MAX_RASTERIZATIONS_COUNT:
-            demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization")
-            terminate_chrome(chrome_port=chrome_port)
-        else:
-            increase_counter_chrome_instances_file(chrome_port=chrome_port)
-
-        # Get the results
-        for current_thread in rasterization_threads:
-            ret_value, response_body = current_thread.result()
-            if ret_value:
-                rasterization_results.append((ret_value, response_body))
-            else:
-                return_results(
-                    CommandResults(
-                        readable_output=str(response_body), entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING)
-                    )
-                )
-        return rasterization_results
 
 
 def return_err_or_warn(msg):  # pragma: no cover
