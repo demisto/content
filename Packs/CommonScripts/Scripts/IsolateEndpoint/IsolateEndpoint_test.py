@@ -64,30 +64,48 @@ class TestModuleManager:
         assert module_manager.is_brand_available(command) is False
 
 
-def test_get_args_from_endpoint_data():
+@pytest.mark.parametrize(
+    "endpoint_data, expected_output",
+    [
+        (
+            {
+                "Hostname": {"Value": "host123", "Source": "brand"},
+                "ID": {"Value": "agent"},
+                "IPAddress": {"Value": "8.8.1.1"},
+            },
+            {
+                "agent_id": "agent",
+                "agent_hostname": "host123",
+                "agent_ip": "8.8.1.1",
+                "agent_brand": "brand",
+            }
+        ),
+        (
+            {
+                "Hostname": [{"Value": "host1", "Source": "brand1"}, {"Value": "host2", "Source": "brand2"}],
+                "ID": [{"Value": "agent1"}, {"Value": "agent2"}],
+                "IPAddress": [{"Value": "8.8.2.2"}, {"Value": "8.8.3.3"}],
+            },
+            {
+                "agent_id": "agent1",
+                "agent_hostname": "host1",
+                "agent_ip": "8.8.2.2",
+                "agent_brand": "brand1",
+            }
+        ),
+    ]
+)
+def test_get_args_from_endpoint_data(endpoint_data, expected_output):
     """
     Given:
-        A dictionary containing endpoint data with nested 'Value' and 'Source' fields.
+        Endpoint data where values are either dictionaries or lists of dictionaries.
     When:
-        The get_args_from_endpoint_data function is called with this dictionary.
+        The get_args_from_endpoint_data function is called.
     Then:
-        It extracts and returns the correct values in a new dictionary.
+        It extracts and returns the correct values in a structured dictionary.
     """
-    endpoint_data = {
-        "Hostname": {"Value": "host123"},
-        "ID": {"Value": "agent-456", "Source": "brand-x"},
-        "IPAddress": {"Value": "8.8.1.1"},
-    }
-
-    expected_output = {
-        "agent_id": "agent-456",
-        "agent_hostname": "host123",
-        "agent_ip": "8.8.1.1",
-        "agent_brand": "brand-x",
-    }
-
     result = get_args_from_endpoint_data(endpoint_data)
-    assert result == expected_output
+    assert result == expected_output, f"Failed for input: {endpoint_data}"
 
 
 def test_structure_endpoints_data():
