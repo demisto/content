@@ -1,5 +1,5 @@
 commonfields:
-  id: ea2ad7a7-de0c-4eff-8dcf-c545a2bde398
+  id: JSONDiff
   version: 9
 vcShouldKeepItemLegacyProdMachine: false
 name: JSONDiff
