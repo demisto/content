@@ -2,7 +2,7 @@
     "name": "HelloWorld",
     "description": "This is the Hello World integration for getting started.",
     "support": "community",
-    "currentVersion": "3.0.15",
+    "currentVersion": "3.0.17",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -28,7 +28,14 @@
     },
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "HelloWorldEventCollector"
+    "defaultDataSource": "HelloWorldEventCollector",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

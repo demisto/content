@@ -2,7 +2,7 @@
     "name": "Hoxhunt",
     "description": "Integration with Hoxhunt to manage Hoxhunt incidents",
     "support": "partner",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.0.2",
     "author": "Hoxhunt",
     "url": "https://hoxhunt.com",
     "email": "support@hoxhunt.com",
@@ -25,7 +25,8 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "technology-aegis@hoxhunt.com"
@@ -61,5 +62,11 @@
     ],
     "itemPrefix": [
         "Hox"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

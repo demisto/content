@@ -2,7 +2,7 @@
     "name": "Lumu",
     "description": "SecOps operation, reflect and manage the Lumu Incidents either from XSOAR Cortex or viceversa using the mirroring integration flow",
     "support": "partner",
-    "currentVersion": "1.0.24",
+    "currentVersion": "1.0.25",
     "author": "Lumu",
     "url": "https://lumu.io",
     "email": "support@lumu.io",
@@ -20,7 +20,8 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "eparra@lumu.io"
@@ -30,5 +31,11 @@
         "Shellyber",
         "xsoar-bot",
         "content-bot"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
