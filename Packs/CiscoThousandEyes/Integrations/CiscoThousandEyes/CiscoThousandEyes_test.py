@@ -1,7 +1,7 @@
 import json
 
-import pytest
 import demistomock as demisto
+import pytest
 
 
 def util_load_json(path):
@@ -87,6 +87,7 @@ def test_is_fetch_paginated(fetch_type, next_page_url, request_url, previous_pag
     - Return False if pagination should stop (e.g., next_page_url matches request_url or previous_page_url).
     """
     from CiscoThousandEyes import is_fetch_paginated
+
     result = is_fetch_paginated(fetch_type, next_page_url, request_url, previous_page_url)
     assert result is expected_result, f"Failed {case_id}"
 
@@ -125,7 +126,7 @@ def test_full_fetch_events(mocker):
     assert len(events) == 12
     assert next_run.get("alerts").get("offset") == 2
     assert "nextTrigger" in next_run
-    assert events[0].get('startDate') == "2024-12-22T07:29:00Z"
+    assert events[0].get("startDate") == "2024-12-22T07:29:00Z"
 
 
 def test_test_module_command(mocker):
@@ -145,7 +146,7 @@ def test_test_module_command(mocker):
 
     client = mock_client()
     mocker.patch.object(client, "_http_request", side_effect=mock_http_request)
-    assert test_module(client=client) == 'ok'
+    assert test_module(client=client) == "ok"
 
 
 def test_get_events_command(mocker):
@@ -189,11 +190,7 @@ def test_get_events_command(mocker):
                     "auditEvents": [],
                     "startDate": "2024-11-28T08:59:17Z",
                     "endDate": "2024-12-30T08:56:46Z",
-                    "_links": {
-                        "self": {
-                            "href": "https://example.com"
-                        }
-                    },
+                    "_links": {"self": {"href": "https://example.com"}},
                 }
         return {}
 
@@ -296,13 +293,10 @@ def test_fetch_events_by_nextTrigger(mocker):
                     "auditEvents": [],
                     "startDate": "2024-11-28T08:59:17Z",
                     "endDate": "2024-12-30T08:56:46Z",
-                    "_links": {
-                        "self": {
-                            "href": "https://example.com"
-                        }
-                    },
+                    "_links": {"self": {"href": "https://example.com"}},
                 }
         return {}
+
     mocker.patch.object(demisto, "getLastRun", return_value=last_run)
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(client, "_http_request", side_effect=mock_http_request)
@@ -315,7 +309,7 @@ def test_fetch_events_by_nextTrigger(mocker):
     assert len(events) == 9
     assert "offset" not in next_run.get("alerts")
     assert "nextTrigger" not in next_run
-    assert events[0].get('startDate') == "2024-11-20T14:20:00Z"
+    assert events[0].get("startDate") == "2024-11-20T14:20:00Z"
 
 
 def test_fetch_events_in_multiple_cycles(mocker):
@@ -357,13 +351,10 @@ def test_fetch_events_in_multiple_cycles(mocker):
                     "auditEvents": [],
                     "startDate": "2024-11-28T08:59:17Z",
                     "endDate": "2024-12-30T08:56:46Z",
-                    "_links": {
-                        "self": {
-                            "href": "https://example.com"
-                        }
-                    },
+                    "_links": {"self": {"href": "https://example.com"}},
                 }
         return {}
+
     mocker.patch.object(demisto, "getLastRun", return_value=last_run)
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(client, "_http_request", side_effect=mock_http_request)
@@ -376,7 +367,7 @@ def test_fetch_events_in_multiple_cycles(mocker):
     assert len(first_fetch_events) == 13
     assert next_run.get("alerts").get("offset") == 3
     assert "nextTrigger" in next_run
-    assert first_fetch_events[0].get('startDate') == "2024-12-22T07:29:00Z"
+    assert first_fetch_events[0].get("startDate") == "2024-12-22T07:29:00Z"
 
     call_count = 0
     mocker.patch.object(demisto, "getLastRun", return_value=next_run)

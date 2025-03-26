@@ -1,81 +1,68 @@
-from typing import Dict, Tuple, Callable
-
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from collections.abc import Callable
 
 import urllib3
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
-''' CONSTANTS '''
-DEFAULT_VCS_TYPE = 'github'
+""" CONSTANTS """
+DEFAULT_VCS_TYPE = "github"
 DEFAULT_LIMIT_VALUE = 20
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-
-    def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool, vc_type: str, organization: str,
-                 project: str):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers={'authorization': f'Basic {api_key}'})
+    def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool, vc_type: str, organization: str, project: str):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers={"authorization": f"Basic {api_key}"})
         self.vc_type = vc_type
         self.organization = organization
         self.project = project
         self.api_key = api_key
 
     def get_job_artifacts(self, vc_type: str, organization: str, project: str, job_name: str):
-        return self._http_request(
-            method='GET',
-            url_suffix=f'/project/{vc_type}/{organization}/{project}/{job_name}/artifacts'
-        )
+        return self._http_request(method="GET", url_suffix=f"/project/{vc_type}/{organization}/{project}/{job_name}/artifacts")
 
     def get_workflows_list(self, vc_type: str, organization: str, project: str, page_token: Optional[str] = None):
-        url_suffix = f'insights/{vc_type}/{organization}/{project}/workflows'
-        return self._http_request(
-            method='GET',
-            url_suffix=url_suffix,
-            params={'page-token': page_token} if page_token else None
-        )
+        url_suffix = f"insights/{vc_type}/{organization}/{project}/workflows"
+        return self._http_request(method="GET", url_suffix=url_suffix, params={"page-token": page_token} if page_token else None)
 
-    def get_last_workflow_runs(self, vc_type: str, organization: str, project: str, workflow_name: str,
-                               branch: str, page_token: Optional[str] = None):
-
-        url_suffix = f'insights/{vc_type}/{organization}/{project}/workflows/{workflow_name}'
+    def get_last_workflow_runs(
+        self, vc_type: str, organization: str, project: str, workflow_name: str, branch: str, page_token: Optional[str] = None
+    ):
+        url_suffix = f"insights/{vc_type}/{organization}/{project}/workflows/{workflow_name}"
         params = {}
         if page_token:
-            params['page-token'] = page_token
+            params["page-token"] = page_token
         if branch:
-            params['branch'] = branch
+            params["branch"] = branch
 
         return self._http_request(
-            method='GET',
+            method="GET",
             url_suffix=url_suffix,
             params=params,
         )
 
     def get_workflow_jobs(self, workflow_id: str, page_token: Optional[str] = None):
-        url_suffix = f'/workflow/{workflow_id}/job'
-        return self._http_request(
-            method='GET',
-            url_suffix=url_suffix,
-            params={'page-token': page_token} if page_token else None
-        )
+        url_suffix = f"/workflow/{workflow_id}/job"
+        return self._http_request(method="GET", url_suffix=url_suffix, params={"page-token": page_token} if page_token else None)
 
     def trigger_workflow(self, vc_type: str, organization: str, project: str, parameters: str):
-        url_suffix = f'project/{vc_type}/{organization}/{project}/pipeline'
+        url_suffix = f"project/{vc_type}/{organization}/{project}/pipeline"
 
         return self._http_request(
-            method='POST',
+            method="POST",
             url_suffix=url_suffix,
             json_data=parameters,
-            resp_type='text',
-            headers={'Circle-Token': self.api_key},
+            resp_type="text",
+            headers={"Circle-Token": self.api_key},
         )
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
-def get_response_with_pagination(client_command: Callable, client_command_args: List, limit: int) -> List[Dict]:
+def get_response_with_pagination(client_command: Callable, client_command_args: List, limit: int) -> List[dict]:
     """
     Preforms API calls to CircleCI, using pagination mechanism given by CircleCI.
     CircleCI gives a page token for retrieving next page if more results exists.
@@ -87,20 +74,20 @@ def get_response_with_pagination(client_command: Callable, client_command_args: 
     Returns:
         (List[Dict]): List of the results.
     """
-    results: List[Dict] = []
+    results: List[dict] = []
     response = client_command(*client_command_args)
-    results.extend(response.get('items', []))
+    results.extend(response.get("items", []))
     while len(results) < limit:
-        next_page_token: Optional[str] = response.get('next_page_token')
+        next_page_token: Optional[str] = response.get("next_page_token")
         if not next_page_token:
             break
         response = client_command(*(client_command_args + [next_page_token]))
-        data = response.get('items', [])
+        data = response.get("items", [])
         results.extend(data)
     return results[:limit]
 
 
-def get_common_arguments(client: Client, args: Dict[str, Any]) -> Tuple[str, str, str, int]:
+def get_common_arguments(client: Client, args: dict[str, Any]) -> tuple[str, str, str, int]:
     """
     Performs same logic for getting arguments.
     Args:
@@ -110,15 +97,15 @@ def get_common_arguments(client: Client, args: Dict[str, Any]) -> Tuple[str, str
     Returns:
         (Tuple[str, str, str]): (vcs_type, organization, project, limit).
     """
-    vc_type: str = args.get('vcs_type') or client.vc_type
-    organization: str = args.get('organization') or client.organization
-    project: str = args.get('project') or client.project
-    limit: int = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_VALUE
+    vc_type: str = args.get("vcs_type") or client.vc_type
+    organization: str = args.get("organization") or client.organization
+    project: str = args.get("project") or client.project
+    limit: int = arg_to_number(args.get("limit")) or DEFAULT_LIMIT_VALUE
 
     return vc_type, organization, project, limit
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module_command(client: Client) -> str:
@@ -132,20 +119,22 @@ def test_module_command(client: Client) -> str:
         (str): 'Error connecting to CircleCI. Make sure your URL and API token are configured correctly.' upon failure.
     """
 
-    message: str = 'ok'
+    message: str = "ok"
     try:
-        vc_type, organization, project, _ = get_common_arguments(client, dict())
+        vc_type, organization, project, _ = get_common_arguments(client, {})
         client.get_workflows_list(vc_type, organization, project)
     except DemistoException as e:
-        if 'not found' in str(e).lower():
-            message = 'Error connecting to CircleCI. Check if your organization and repository names are correct.' \
-                      ' If it is a private repository, make sure your API token is valid.'
+        if "not found" in str(e).lower():
+            message = (
+                "Error connecting to CircleCI. Check if your organization and repository names are correct."
+                " If it is a private repository, make sure your API token is valid."
+            )
         else:
             raise e
     return message
 
 
-def circleci_workflows_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def circleci_workflows_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves workflows list details from CircleCI.
     Args:
@@ -164,15 +153,14 @@ def circleci_workflows_list_command(client: Client, args: Dict[str, Any]) -> Com
     response = get_response_with_pagination(client.get_workflows_list, [vc_type, organization, project], limit)
 
     return CommandResults(
-        outputs_prefix='CircleCI.Workflow',
-        outputs_key_field='id',
-        readable_output=tableToMarkdown('CircleCI Workflows', response, removeNull=True,
-                                        headerTransform=camelize_string),
-        outputs=response
+        outputs_prefix="CircleCI.Workflow",
+        outputs_key_field="id",
+        readable_output=tableToMarkdown("CircleCI Workflows", response, removeNull=True, headerTransform=camelize_string),
+        outputs=response,
     )
 
 
-def circleci_artifacts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def circleci_artifacts_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves artifacts list from CircleCI job.
     Args:
@@ -190,27 +178,25 @@ def circleci_artifacts_list_command(client: Client, args: Dict[str, Any]) -> Com
         (CommandResults).
     """
     vc_type, organization, project, limit = get_common_arguments(client, args)
-    job_number: str = args.get('job_number', '')
-    artifact_suffix: Optional[str] = args.get('artifact_suffix')
+    job_number: str = args.get("job_number", "")
+    artifact_suffix: Optional[str] = args.get("artifact_suffix")
 
-    response = get_response_with_pagination(client.get_job_artifacts, [vc_type, organization, project, job_number],
-                                            limit)
+    response = get_response_with_pagination(client.get_job_artifacts, [vc_type, organization, project, job_number], limit)
 
     if artifact_suffix:
-        response = [artifact for artifact in response if artifact.get('path', '').endswith(artifact_suffix)]
+        response = [artifact for artifact in response if artifact.get("path", "").endswith(artifact_suffix)]
     else:
         response = response[:limit]
 
     return CommandResults(
-        outputs_prefix='CircleCI.Artifact',
-        outputs_key_field='url',
-        readable_output=tableToMarkdown('CircleCI Artifacts', response, removeNull=True,
-                                        headerTransform=camelize_string),
-        outputs=response
+        outputs_prefix="CircleCI.Artifact",
+        outputs_key_field="url",
+        readable_output=tableToMarkdown("CircleCI Artifacts", response, removeNull=True, headerTransform=camelize_string),
+        outputs=response,
     )
 
 
-def circleci_workflow_jobs_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def circleci_workflow_jobs_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieve jobs list from CircleCI workflow.
     Args:
@@ -222,20 +208,21 @@ def circleci_workflow_jobs_list_command(client: Client, args: Dict[str, Any]) ->
     Returns:
         (CommandResults).
     """
-    workflow_id: str = args.get('workflow_id', '')
-    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_VALUE
+    workflow_id: str = args.get("workflow_id", "")
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT_VALUE
     response = get_response_with_pagination(client.get_workflow_jobs, [workflow_id], limit)
 
     return CommandResults(
-        outputs_prefix='CircleCI.WorkflowJob',
-        outputs_key_field='id',
-        readable_output=tableToMarkdown(f'CircleCI Workflow {workflow_id} Jobs', response, removeNull=True,
-                                        headerTransform=camelize_string),
-        outputs=response
+        outputs_prefix="CircleCI.WorkflowJob",
+        outputs_key_field="id",
+        readable_output=tableToMarkdown(
+            f"CircleCI Workflow {workflow_id} Jobs", response, removeNull=True, headerTransform=camelize_string
+        ),
+        outputs=response,
     )
 
 
-def circleci_workflow_last_runs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def circleci_workflow_last_runs_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieve jobs list from CircleCI workflow.
     Args:
@@ -251,24 +238,26 @@ def circleci_workflow_last_runs_command(client: Client, args: Dict[str, Any]) ->
         (CommandResults).
     """
     vc_type, organization, project, limit = get_common_arguments(client, args)
-    workflow_name: str = args.get('workflow_name', '')
-    branch: str = args.get('branch', '')
+    workflow_name: str = args.get("workflow_name", "")
+    branch: str = args.get("branch", "")
 
-    response = get_response_with_pagination(client.get_last_workflow_runs,
-                                            [vc_type, organization, project, workflow_name, branch], limit)
+    response = get_response_with_pagination(
+        client.get_last_workflow_runs, [vc_type, organization, project, workflow_name, branch], limit
+    )
 
     return CommandResults(
-        outputs_prefix='CircleCI.WorkflowRun',
-        outputs_key_field='id',
-        readable_output=tableToMarkdown(f'CircleCI Workflow {workflow_name} Last Runs', response, removeNull=True,
-                                        headerTransform=camelize_string),
-        outputs=response
+        outputs_prefix="CircleCI.WorkflowRun",
+        outputs_key_field="id",
+        readable_output=tableToMarkdown(
+            f"CircleCI Workflow {workflow_name} Last Runs", response, removeNull=True, headerTransform=camelize_string
+        ),
+        outputs=response,
     )
 
 
-def circleci_trigger_workflow_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def circleci_trigger_workflow_command(client: Client, args: dict[str, Any]) -> CommandResults:
     vc_type, organization, project, _ = get_common_arguments(client, args)
-    parameters_json: str = args.get('parameters', '')
+    parameters_json: str = args.get("parameters", "")
 
     try:
         parameters = json.loads(parameters_json)
@@ -279,14 +268,14 @@ def circleci_trigger_workflow_command(client: Client, args: Dict[str, Any]) -> C
     response = json.loads(response_json)
 
     return CommandResults(
-        outputs_prefix='CircleCI.WorkflowTrigger',
-        outputs_key_field='id',
+        outputs_prefix="CircleCI.WorkflowTrigger",
+        outputs_key_field="id",
         readable_output=f"CircleCI Workflow created successfully, ID={response.get('number')}",
         outputs=response,
     )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -294,18 +283,17 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
 
-    base_url: str = urljoin(params.get('url', ''), '/api/v2')
-    verify_certificate: bool = not params.get('insecure', False)
-    proxy: bool = params.get('proxy', False)
+    base_url: str = urljoin(params.get("url", ""), "/api/v2")
+    verify_certificate: bool = not params.get("insecure", False)
+    proxy: bool = params.get("proxy", False)
 
-    api_key: str = params.get('api_key_creds', {}).get('password') or params.get('api_key', '')
-    vc_type: str = params.get('vcs_type', '')
-    organization: str = params.get('organization', '')
-    project: str = params.get('project', '')
+    api_key: str = params.get("api_key_creds", {}).get("password") or params.get("api_key", "")
+    vc_type: str = params.get("vcs_type", "")
+    organization: str = params.get("organization", "")
+    project: str = params.get("project", "")
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
-
         client = Client(
             base_url=base_url,
             api_key=api_key,
@@ -313,24 +301,25 @@ def main() -> None:
             proxy=proxy,
             vc_type=vc_type,
             organization=organization,
-            project=project)
+            project=project,
+        )
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module_command(client))
 
-        elif command == 'circleci-workflows-list':
+        elif command == "circleci-workflows-list":
             return_results(circleci_workflows_list_command(client, args))
 
-        elif command == 'circleci-artifacts-list':
+        elif command == "circleci-artifacts-list":
             return_results(circleci_artifacts_list_command(client, args))
 
-        elif command == 'circleci-workflow-jobs-list':
+        elif command == "circleci-workflow-jobs-list":
             return_results(circleci_workflow_jobs_list_command(client, args))
 
-        elif command == 'circleci-workflow-last-runs':
+        elif command == "circleci-workflow-last-runs":
             return_results(circleci_workflow_last_runs_command(client, args))
 
-        elif command == 'circleci-trigger-workflow':
+        elif command == "circleci-trigger-workflow":
             return_results(circleci_trigger_workflow_command(client, args))
 
         else:
@@ -338,10 +327,10 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
