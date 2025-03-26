@@ -1,26 +1,55 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: ExtrahopRevealXEventCollector
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
-  name: url
+- display: Your server URL
+  name: server-url
   required: true
   type: 0
-- display: API Key
-  additionalinfo: The API Key to use for the connection
-  name: apikey
+  section: Connect
+- display: Your Client Id
+  name: client_id
   required: true
-  type: 4
+  type: 0
+  section: Connect
+- display: Your Client Secret
+  displaypassword: Client Secret
+  name: client_secret
+  required: true
+  type: 9
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Collect
+  advanced: true
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
+  defaultvalue: "true"
+- additionalinfo: 'Defines the maximum number of audits events per fetch cycle. Default value: 5000.'
+  defaultvalue: "5000"
+  display: Maximum number of events per fetch
+  name: max_events_per_fetch
+  required: true
+  type: 0
+  section: Collect
+  advanced: true
 description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
 display: ExtrahopRevealXEventCollector
 name: ExtrahopRevealXEventCollector
@@ -52,7 +81,8 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  isfetchevents: true
+  dockerimage: demisto/python3:3.12.8.1983910
 fromversion: 6.1.0
 marketplaces:
 - xsoar
