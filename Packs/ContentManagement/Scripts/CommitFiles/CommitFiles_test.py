@@ -310,33 +310,30 @@ def test_escape_placeholders(given, expected):
 
 
 def test_commit_git_gitlab():
-    from CommitFiles import commit_content_item_gitlab
     with patch("CommitFiles.commit_content_item_gitlab") as mock_commit:
         commit_git("Gitlab", "main", MagicMock(), [], [], False)
         mock_commit.assert_called_once()
 
 
 def test_commit_git_github():
-    from CommitFiles import commit_content_item
     with patch("CommitFiles.commit_content_item") as mock_commit:
         commit_git("GitHub", "main", MagicMock(), [], [], False)
         mock_commit.assert_called_once()
 
 
 def test_commit_git_bitbucket():
-    from CommitFiles import commit_content_item_bitbucket
     with patch("CommitFiles.commit_content_item_bitbucket") as mock_commit:
         commit_git("Bitbucket", "main", MagicMock(), [], [], False)
         mock_commit.assert_called_once()
 
 
 def test_commit_git_azure_devops():
-    from CommitFiles import commit_content_item_azure_devops
     with patch("CommitFiles.commit_content_item_azure_devops") as mock_commit:
         commit_git("AzureDevOps", "main", MagicMock(), [], [], False)
         mock_commit.assert_called_once()
 
 
 def test_commit_git_invalid_integration():
-    with pytest.raises(DemistoException, match="Unexpected git_integration=.* Possible values: Gitlab, GitHub, Bitbucket and AzureDevOps."):
+    with pytest.raises(DemistoException, 
+                       match="Unexpected git_integration=.* Possible values: Gitlab, GitHub, Bitbucket and AzureDevOps."):
         commit_git("Unknown", "main", MagicMock(), [], [], False)
