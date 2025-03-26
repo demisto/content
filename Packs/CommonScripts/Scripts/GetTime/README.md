@@ -26,5 +26,5 @@ Retrieves the current date and time.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| TimeNowUnix | The number of milliseconds since 1970/01/01. | Unknown |
-| TimeNow | The current time in ISO format. | Unknown |
+| TimeNowUnix | The number of milliseconds since 1970/01/01. | Number |
+| TimeNow | The current time. | String |

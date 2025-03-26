@@ -36,8 +36,10 @@ args:
 outputs:
 - contextPath: TimeNowUnix
   description: number of milliseconds since 1970/01/01.
+  type: Number
 - contextPath: TimeNow
   description: current time.
+  type: String
 scripttarget: 0
 tests:
 - GetTime-Test
