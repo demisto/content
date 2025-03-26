@@ -1151,7 +1151,7 @@ def add_filename_suffix(file_names: list, file_extension: str):
     return ret_value
 
 
-def rasterize_command():  # pragma: no cover
+def rasterize_command():
     urls = demisto.getArg('url')
     # Do not remove this line, as rasterize does not support array in `url`.
     urls = [urls] if isinstance(urls, str) else urls
@@ -1163,11 +1163,10 @@ def rasterize_command():  # pragma: no cover
     file_name = demisto.args().get('file_name', 'url')
     include_url = argToBoolean(demisto.args().get('include_url', False))
 
-    file_extension = "png"
-    if rasterize_type == RasterizeType.PDF or str(rasterize_type).lower() == RasterizeType.PDF.value:
-        file_extension = "pdf"
+    file_extension = "pdf" if (
+            rasterize_type == RasterizeType.PDF or str(rasterize_type).lower() == RasterizeType.PDF.value) else "png"
 
-    demisto.debug(f'file_name type is: {type(file_name)}')
+    demisto.debug(f'rasterize_command: file_name type is: {type(file_name)}, {file_name=}, {file_extension=}, {include_url=}')
     file_names = argToList(file_name)
     file_names = add_filename_suffix(file_names, file_extension)
 
