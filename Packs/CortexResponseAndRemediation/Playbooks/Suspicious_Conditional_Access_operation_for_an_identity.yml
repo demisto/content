@@ -1,8 +1,8 @@
-id: silent-Suspicious Conditional Access operation for an identity
+id: Suspicious Conditional Access operation for an identity
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: silent-Suspicious Conditional Access operation for an identity
+name: Suspicious Conditional Access operation for an identity
 description: "**This playbook addresses the following alert**:\n- Suspicious Conditional Access operation for an identity\n\n**Playbook Stages**:\n\n**Triage**:\n- Gather initial information about the initiating user.\n**User Investigation**:\n- **IP Enrichment**:\n  - Analyze the reputation of the initiating user IP addresses.\n- **Azure Detection Analysis**:\n  - Investigate recent Azure security alerts for the initiating user to detect additional suspicious activity.\n  - If any detections found, investigate the related user agent. \n- **User Risk Analysis**:\n  - Assess the risk level of the initiating user based on XSIAM Core and Azure risk score.\n  - Investigate reasons behind any identified risks, including recent detections.\n- **Attacker Geolocation Analysis**:\n  - Investigate the initiating user connection geolocation.\n- **Insights Analysis**:\n  - Investigate the XSIAM insights that related to the initiating user to detect additional suspicious activity.\n\n**User Investigation**:\n- **Search for suspicious MFA activity**:\n  - Search for a policy change that indicates on disabling the need in MFA\n- **Search for suspicious guest user activity**:\n  - Search for a policy change that indicates on allowing \n**Verdict & Containment**:\n- If any suspicious evidence found during the user investigation phase and the integration \"Microsoft Graph User\" integration is enabled, the playbook will revoke the sessions of the initiating user and the destination user. If the integration is not enabled, the playbook will recommend to perform the same action but manually.\n- If the initiating user IP is malicious, or the initiating user risk is HIGH, or more than one suspicious evidence found during the Azure detection analysis and the CA policy investigation phase, and the integration \"Microsoft Graph User\" is enabled, the playbook will revoke the sessions of the initiating user and the destination user and will recommend manually to disable either one of the users or both of the users. If the integration is not enabled, the playbook will recommend to perform the same action but manually.\n\n**Requirements**:\n- `Azure Risky Users` for retrieving user risk scores.\n- `Microsoft 365 Defender` for advanced hunting queries and Azure security alerts.\n- `Microsoft Graph User` for disabling accounts and revoking sessions."
 tags:
 - T1548 - Abuse Elevation Control Mechanism
@@ -299,7 +299,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "29"
@@ -622,10 +621,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 735fb741-3608-48ee-9b89-db7fae38958f
+    taskid: 708384f5-9b6c-4001-a8cb-2e62f37821e4
     type: regular
     task:
-      id: 735fb741-3608-48ee-9b89-db7fae38958f
+      id: 708384f5-9b6c-4001-a8cb-2e62f37821e4
       version: -1
       name: Search for alerts related to the identity
       description: |-
@@ -748,7 +747,6 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "57"
@@ -821,7 +819,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "33"
@@ -929,7 +926,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "78"
@@ -1505,7 +1501,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "37"
@@ -1632,7 +1627,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "66"
@@ -1707,7 +1701,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "66"
@@ -1877,7 +1870,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "66"
@@ -1953,7 +1945,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "66"
@@ -2007,8 +1998,6 @@ view: |-
     }
   }
 inputs: []
-issilent: true
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 8.9.0
