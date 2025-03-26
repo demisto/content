@@ -35,7 +35,7 @@ script:
       name: message
     - description: The alternative webhook for a different team.  If not defined, the integration's default webhook is used.
       name: team_webhook
-    - description: The alternative URL to send in place of the link to the XSOAR Investigation.
+    - description: The alternative URL to send in place of the link to the Cortex XSOAR Investigation.
       name: alternative_url
     - defaultValue: Cortex XSOAR URL
       description: The title for the link, defaults to "Cortex XSOAR URL".

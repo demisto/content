@@ -25,11 +25,11 @@ Send a message to Microsoft Teams via Incoming Webhook.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message | The message to send.  For example: "This is a message from Cortex XSOAR,". Default is None. | Optional |
+| message | The message to send.  For example: "This is a message from Cortex XSOAR". To use newline use \n\n or \r\r. Default is None. | Optional |
 | team_webhook | The alternative webhook for a different team.  If not defined, the integration's default webhook is used. | Optional |
 | alternative_url | The alternative URL to send in place of the link to the Cortex XSOAR Investigation. | Optional |
-| url_title | The title for the link. Defaults to "Cortex XSOAR URL". Default is Cortex XSOAR URL. | Optional |
-| adaptive_cards_format | Whether the adaptive card format be used or a single text message. | Optional |
+| url_title | The title for the link, defaults to "Cortex XSOAR URL". Default is Cortex XSOAR URL. | Optional |
+| adaptive_cards_format | Should the adaptive card format be used or a single text message. Possible values are: true, false. Default is True. | Optional |
 | overwrite_adaptive_card_json | JSON object used to overwrite the default adaptive card JSON. | Optional |
 
 #### Context Output
