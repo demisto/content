@@ -50,4 +50,4 @@ There is no context output for this command.
 
 ### Troubleshooting
 
-If you encounter timeout errors, try increasing the Fetch Delta argument. The fewer events coming from Proofpoint, the higher the delta should be to ensure efficient fetching.
+If you encounter timeout errors, try increasing the *Fetch Delta* argument. The fewer events coming from Proofpoint, the higher the delta should be to ensure efficient fetching.
