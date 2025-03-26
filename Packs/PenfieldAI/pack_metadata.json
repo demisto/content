@@ -2,7 +2,7 @@
     "name": "PenfieldAI",
     "description": "Penfield.AI Incident Assignment for XSOAR",
     "support": "partner",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.9",
     "author": "Penfield.AI",
     "url": "https://penfield.ai/",
     "email": "dev@penfield.ai",

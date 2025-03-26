@@ -1,9 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *
 from collections.abc import Callable
 
+import demistomock as demisto
 import urllib3
-
+from CommonServerPython import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -34,18 +33,14 @@ class Client(BaseClient):
         Using the text files instead of parsing the http page ןs due to blockage of the zoom support site.
         """
         params = demisto.params()
-        list_ips_txt_files = ['Zoom.txt',
-                              'ZoomMeetings.txt',
-                              'ZoomCRC.txt',
-                              'ZoomPhone.txt',
-                              'ZoomCDN.txt']
+        list_ips_txt_files = ["Zoom.txt", "ZoomMeetings.txt", "ZoomCRC.txt", "ZoomPhone.txt", "ZoomCDN.txt"]
 
-        indicators = set(argToList(params.get('zoom_clients_certificate_validation', [])))
-        indicators.update(set(argToList(params.get('zoom_clients_user_browser', []))))
+        indicators = set(argToList(params.get("zoom_clients_certificate_validation", [])))
+        indicators.update(set(argToList(params.get("zoom_clients_user_browser", []))))
 
         for url in list_ips_txt_files:
-            res = self._http_request(method='GET', url_suffix=url, resp_type='text')
-            for ip in res.split('\n'):
+            res = self._http_request(method="GET", url_suffix=url, resp_type="text")
+            for ip in res.split("\n"):
                 indicators.add(ip)
         return indicators
 
@@ -61,22 +56,14 @@ class Client(BaseClient):
 
             for indicator in indicators:
                 if auto_detect_indicator_type(indicator):
-                    result.append(
-                        {"value": indicator, "type": auto_detect_indicator_type(indicator), "FeedURL": self._base_url}
-                    )
+                    result.append({"value": indicator, "type": auto_detect_indicator_type(indicator), "FeedURL": self._base_url})
 
         except requests.exceptions.SSLError as err:
             demisto.debug(str(err))
-            raise Exception(
-                f"Connection error in the API call to {INTEGRATION_NAME}.\n"
-                f"Check your not secure parameter.\n\n{err}"
-            )
+            raise Exception(f"Connection error in the API call to {INTEGRATION_NAME}.\nCheck your not secure parameter.\n\n{err}")
         except requests.ConnectionError as err:
             demisto.debug(str(err))
-            raise Exception(
-                f"Connection error in the API call to {INTEGRATION_NAME}.\n"
-                f"Check your Server URL parameter.\n\n{err}"
-            )
+            raise Exception(f"Connection error in the API call to {INTEGRATION_NAME}.\nCheck your Server URL parameter.\n\n{err}")
         except requests.exceptions.HTTPError as err:
             demisto.debug(str(err))
             raise Exception(f"Connection error in the API call to {INTEGRATION_NAME}.\n")
@@ -98,8 +85,9 @@ def test_module(client: Client, *_) -> str:
     return "ok"
 
 
-def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: str | None = None,
-                     limit: int = -1, enrichment_excluded: bool = False) -> list[dict]:
+def fetch_indicators(
+    client: Client, feed_tags: list = [], tlp_color: str | None = None, limit: int = -1, enrichment_excluded: bool = False
+) -> list[dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
@@ -128,25 +116,23 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: str | None
             "type": type_,
             "service": "Zoom Feed",
             "rawJSON": raw_data,
-            'fields': {},
+            "fields": {},
         }
 
         if feed_tags:
-            indicator_obj["fields"]['tags'] = feed_tags
+            indicator_obj["fields"]["tags"] = feed_tags
 
         if tlp_color:
-            indicator_obj["fields"]['trafficlightprotocol'] = tlp_color
+            indicator_obj["fields"]["trafficlightprotocol"] = tlp_color
 
         if enrichment_excluded:
-            indicator_obj['enrichmentExcluded'] = enrichment_excluded
+            indicator_obj["enrichmentExcluded"] = enrichment_excluded
 
         indicators.append(indicator_obj)
     return indicators
 
 
-def get_indicators_command(
-        client: Client, params: dict, args: dict[str, str]
-) -> CommandResults:
+def get_indicators_command(client: Client, params: dict, args: dict[str, str]) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
@@ -156,20 +142,17 @@ def get_indicators_command(
         Outputs.
     """
     feed_tags = argToList(params.get("feedTags", ""))
-    tlp_color = params.get('tlp_color')
-    limit = arg_to_number(args.get('limit')) or 10
-    enrichment_excluded = params.get('enrichmentExcluded', False)
+    tlp_color = params.get("tlp_color")
+    limit = arg_to_number(args.get("limit")) or 10
+    enrichment_excluded = params.get("enrichmentExcluded", False)
     indicators = fetch_indicators(client, feed_tags, tlp_color, limit, enrichment_excluded)
 
     if indicators:
-        human_readable = tableToMarkdown(
-            "Indicators from Zoom Feed:", indicators, headers=["value", "type"], removeNull=True
-        )
+        human_readable = tableToMarkdown("Indicators from Zoom Feed:", indicators, headers=["value", "type"], removeNull=True)
     else:
         human_readable = "No indicators from Zoom Feed were fetched."
 
-    return CommandResults(readable_output=human_readable,
-                          raw_response=indicators)
+    return CommandResults(readable_output=human_readable, raw_response=indicators)
 
 
 def fetch_indicators_command(client: Client, params: dict) -> list[dict]:
@@ -181,8 +164,8 @@ def fetch_indicators_command(client: Client, params: dict) -> list[dict]:
         Indicators.
     """
     feed_tags = argToList(params.get("feedTags", ""))
-    tlp_color = params.get('tlp_color')
-    enrichment_excluded = params.get('enrichmentExcluded', False)
+    tlp_color = params.get("tlp_color")
+    enrichment_excluded = params.get("enrichmentExcluded", False)
     indicators = fetch_indicators(client, feed_tags, tlp_color, enrichment_excluded=enrichment_excluded)
     return indicators
 
@@ -201,9 +184,10 @@ def main():
     try:
         client = Client(base_url=ZOOM_DOCS_IP_RANGES_URL, verify=insecure, proxy=proxy)
 
-        commands: dict[
-            str, Callable[[Client, dict[str, str], dict[str, str]], str | CommandResults]
-        ] = {"test-module": test_module, "zoom-get-indicators": get_indicators_command}
+        commands: dict[str, Callable[[Client, dict[str, str], dict[str, str]], str | CommandResults]] = {
+            "test-module": test_module,
+            "zoom-get-indicators": get_indicators_command,
+        }
         if command in commands:
             return_results(commands[command](client, demisto.params(), demisto.args()))
 

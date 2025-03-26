@@ -1,8 +1,9 @@
-import pytest
-import demistomock as demisto
 from unittest.mock import patch
+
+import demistomock as demisto
+import pytest
 import SetIndicatorGridField
-from SetIndicatorGridField import parse_rows, main, get_existing_grid_records
+from SetIndicatorGridField import get_existing_grid_records, main, parse_rows
 
 VALID_ROWS_STR = '[[192.168.1.1,"example.com"], [192.168.1.2, ""], ["", "example.net"]]'
 INVALID_ROWS_STR = '[[192.168.1.1, "example.com"],[192.168.1.2],[""]]}'
@@ -17,14 +18,14 @@ INDICATOR_RESPONSE = [
                 "CustomFields": {
                     "gridField": [
                         {"IP": "192.168.1.1", "Hostname": "example.com"},
-                        {"IP": "192.168.1.2", "Hostname": "example.org"}
+                        {"IP": "192.168.1.2", "Hostname": "example.org"},
                     ]
                 },
                 "lastSeen": "2023-10-05T12:34:56Z",
-                "score": 1
+                "score": 1,
             }
         ],
-        "ContentsFormat": "json"
+        "ContentsFormat": "json",
     }
 ]
 
@@ -32,9 +33,9 @@ INDICATOR_RESPONSE = [
 @pytest.mark.parametrize(
     "rows_str, expected_result, expect_exception",
     [
-        (VALID_ROWS_STR, [['192.168.1.1', 'example.com'], ['192.168.1.2', ''], ['', 'example.net']], False),
-        (INVALID_ROWS_STR, [], True)
-    ]
+        (VALID_ROWS_STR, [["192.168.1.1", "example.com"], ["192.168.1.2", ""], ["", "example.net"]], False),
+        (INVALID_ROWS_STR, [], True),
+    ],
 )
 def test_parse_rows(rows_str, expected_result, expect_exception):
     if expect_exception:
@@ -48,25 +49,26 @@ def test_parse_rows(rows_str, expected_result, expect_exception):
     "indicator_value, grid_field, mock_response, expected_records, expect_exception",
     [
         (
-            'example.com', 'gridField',
+            "example.com",
+            "gridField",
             INDICATOR_RESPONSE,
-            [
-                {"IP": "192.168.1.1", "Hostname": "example.com"},
-                {"IP": "192.168.1.2", "Hostname": "example.org"}
-            ],
-            False
+            [{"IP": "192.168.1.1", "Hostname": "example.com"}, {"IP": "192.168.1.2", "Hostname": "example.org"}],
+            False,
         ),
         (
-            'example.com', 'gridField', [{'Type': 4, 'Contents': 'Error'}],
-            'Failed to find indicator example.com. Error: Error',
-            True
-        )
-    ]
+            "example.com",
+            "gridField",
+            [{"Type": 4, "Contents": "Error"}],
+            "Failed to find indicator example.com. Error: Error",
+            True,
+        ),
+    ],
 )
-@patch.object(SetIndicatorGridField, 'return_error')
-@patch.object(demisto, 'executeCommand')
-def test_get_existing_grid_records(mock_executeCommand, mock_return_error, indicator_value,
-                                   grid_field, mock_response, expected_records, expect_exception):
+@patch.object(SetIndicatorGridField, "return_error")
+@patch.object(demisto, "executeCommand")
+def test_get_existing_grid_records(
+    mock_executeCommand, mock_return_error, indicator_value, grid_field, mock_response, expected_records, expect_exception
+):
     # Mocking the response for 'findIndicators' command
     mock_executeCommand.return_value = mock_response
 
@@ -86,21 +88,20 @@ def test_get_existing_grid_records(mock_executeCommand, mock_return_error, indic
         (
             # Test Case 1: Valid context input, no append
             {
-                "input": [{"ip_addr": "192.168.1.2", "hostname": "example.net"},
-                          {"ip_addr": "192.168.1.3", "hostname": "example.com"}],
+                "input": [
+                    {"ip_addr": "192.168.1.2", "hostname": "example.net"},
+                    {"ip_addr": "192.168.1.3", "hostname": "example.com"},
+                ],
                 "headers": "IP,Hostname",
                 "indicator": "example.com",
                 "grid_field": "gridField",
                 "keys_from_context": "ip_addr,hostname",
-                "append": "false"
+                "append": "false",
             },
             False,
             INDICATOR_RESPONSE,
-            [
-                {"IP": "192.168.1.2", "Hostname": "example.net"},
-                {"IP": "192.168.1.3", "Hostname": "example.com"}
-            ],
-            False
+            [{"IP": "192.168.1.2", "Hostname": "example.net"}, {"IP": "192.168.1.3", "Hostname": "example.com"}],
+            False,
         ),
         (
             # Test Case 2: Valid context input, append
@@ -110,16 +111,16 @@ def test_get_existing_grid_records(mock_executeCommand, mock_return_error, indic
                 "indicator": "example.com",
                 "grid_field": "gridField",
                 "keys_from_context": "ip_addr,hostname",
-                "append": "true"
+                "append": "true",
             },
             True,
             INDICATOR_RESPONSE,
             [
                 {"IP": "192.168.1.1", "Hostname": "example.com"},
                 {"IP": "192.168.1.2", "Hostname": "example.org"},
-                {"IP": "192.168.1.3", "Hostname": "example.net"}
+                {"IP": "192.168.1.3", "Hostname": "example.net"},
             ],
-            False
+            False,
         ),
         (
             # Test Case 3: Valid manual input, append
@@ -129,31 +130,31 @@ def test_get_existing_grid_records(mock_executeCommand, mock_return_error, indic
                 "indicator": "example.com",
                 "grid_field": "gridField",
                 "keys_from_context": "ip_addr,hostname",
-                "append": "true"
+                "append": "true",
             },
             True,
             INDICATOR_RESPONSE,
             [
                 {"IP": "192.168.1.1", "Hostname": "example.com"},
                 {"IP": "192.168.1.2", "Hostname": "example.org"},
-                {"IP": "192.168.1.3", "Hostname": "example.net"}
+                {"IP": "192.168.1.3", "Hostname": "example.net"},
             ],
-            False
+            False,
         ),
         (
             # Test Case 4: No input provided
             {
-                "input": '',
+                "input": "",
                 "headers": "IP,Hostname",
                 "indicator": "example.com",
                 "grid_field": "gridField",
                 "keys_from_context": "ip_addr,hostname",
-                "append": "false"
+                "append": "false",
             },
             False,
             INDICATOR_RESPONSE,
             'You must provide the "input" argument.',
-            True
+            True,
         ),
         (
             # Test Case 5: Single row
@@ -162,14 +163,12 @@ def test_get_existing_grid_records(mock_executeCommand, mock_return_error, indic
                 "headers": "IP,Hostname",
                 "indicator": "example.com",
                 "grid_field": "gridField",
-                "append": "false"
+                "append": "false",
             },
             False,
             INDICATOR_RESPONSE,
-            [
-                {"IP": "192.168.1.3", "Hostname": "example.com"}
-            ],
-            False
+            [{"IP": "192.168.1.3", "Hostname": "example.com"}],
+            False,
         ),
         (
             # Test Case 5: Too many cells in a row
@@ -178,12 +177,12 @@ def test_get_existing_grid_records(mock_executeCommand, mock_return_error, indic
                 "headers": "IP,Hostname",
                 "indicator": "example.com",
                 "grid_field": "gridField",
-                "append": "false"
+                "append": "false",
             },
             False,
             INDICATOR_RESPONSE,
-            'Each row must have the same number of elements as there are headers.',
-            True
+            "Each row must have the same number of elements as there are headers.",
+            True,
         ),
         (
             # Test Case 7: No keys from context, bad keys in dictionary
@@ -192,12 +191,12 @@ def test_get_existing_grid_records(mock_executeCommand, mock_return_error, indic
                 "headers": "IP,Hostname",
                 "indicator": "example.com",
                 "grid_field": "gridField",
-                "append": "false"
+                "append": "false",
             },
             False,
             INDICATOR_RESPONSE,
-            'Input dictionary keys must match headers when context keys are not provided.',
-            True
+            "Input dictionary keys must match headers when context keys are not provided.",
+            True,
         ),
         (
             # Test Case 7: No keys from context, valid keys in dictionary
@@ -206,31 +205,37 @@ def test_get_existing_grid_records(mock_executeCommand, mock_return_error, indic
                 "headers": "IP,Hostname",
                 "indicator": "example.com",
                 "grid_field": "gridField",
-                "append": "false"
+                "append": "false",
             },
             False,
             INDICATOR_RESPONSE,
-            [
-                {"IP": "192.168.1.2", "Hostname": "example.net"}
-            ],
-            False
+            [{"IP": "192.168.1.2", "Hostname": "example.net"}],
+            False,
         ),
-    ]
+    ],
 )
-@patch.object(demisto, 'executeCommand')
-@patch.object(demisto, 'args')
-@patch.object(demisto, 'results')
-@patch.object(SetIndicatorGridField, 'return_error')
-def test_main(mock_return_error, mock_results, mock_args, mock_executeCommand,
-              args, append, indicator_response, expected_results, expect_exception):
-
+@patch.object(demisto, "executeCommand")
+@patch.object(demisto, "args")
+@patch.object(demisto, "results")
+@patch.object(SetIndicatorGridField, "return_error")
+def test_main(
+    mock_return_error,
+    mock_results,
+    mock_args,
+    mock_executeCommand,
+    args,
+    append,
+    indicator_response,
+    expected_results,
+    expect_exception,
+):
     # Mocking demisto.args to return the input args
     mock_args.return_value = args
 
     # Mocking the response to the 'findIndicators' command
     mock_executeCommand.side_effect = [
         indicator_response,  # Response for the 'findIndicators' command
-        [{'Type': 1, 'Contents': 'success'}]  # Response for the 'setIndicator' command
+        [{"Type": 1, "Contents": "success"}],  # Response for the 'setIndicator' command
     ]
 
     if expect_exception:
@@ -242,5 +247,5 @@ def test_main(mock_return_error, mock_results, mock_args, mock_executeCommand,
         main()
         mock_results.assert_called_with(f'Successfully updated indicator {args["indicator"]} grid field {args["grid_field"]}.')
         set_command_args = mock_executeCommand.call_args_list[append][0][1]
-        assert set_command_args['value'] == args["indicator"]
-        assert set_command_args[args['grid_field']] == expected_results
+        assert set_command_args["value"] == args["indicator"]
+        assert set_command_args[args["grid_field"]] == expected_results

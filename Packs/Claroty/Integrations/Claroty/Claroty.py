@@ -1,19 +1,22 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
+
 """ IMPORTS """
+import json
 from distutils.util import strtobool
 from typing import Any
-import json
-import requests
+
 import dateparser
+import requests
 import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-class Filter():
+class Filter:
     def __init__(self, filter: str, value: Any, lookup: str = "exact"):
         self.filter = filter
         self.value = value
@@ -23,61 +26,80 @@ class Filter():
         return f"{self.filter}__{self.lookup}={self.value}"
 
 
-''' CONSTANTS '''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-DEFAULT_HEADERS = {'content-type': 'application/json'}
-CTD_TO_DEMISTO_SEVERITY = {
-    "Low": 1,
-    "Medium": 2,
-    "High": 3,
-    "Critical": 4
-}
+""" CONSTANTS """
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+DEFAULT_HEADERS = {"content-type": "application/json"}
+CTD_TO_DEMISTO_SEVERITY = {"Low": 1, "Medium": 2, "High": 3, "Critical": 4}
 ALERT_CTD_FIELD_TO_DEMISTO_FIELD = {
-    'resource_id': "ResourceID",
-    'type': "AlertTypeID",
-    'type__': "AlertType",
-    'severity__': "Severity",
-    'network_id': "NetworkID",
-    'resolved': "Resolved",
-    'description': "Description",
-    'actionable_assets': "RelatedAssets",
-    'alert_indicators': "Indicator",
-    'category__': "Category",
-    'timestamp': "Timestamp"
+    "resource_id": "ResourceID",
+    "type": "AlertTypeID",
+    "type__": "AlertType",
+    "severity__": "Severity",
+    "network_id": "NetworkID",
+    "resolved": "Resolved",
+    "description": "Description",
+    "actionable_assets": "RelatedAssets",
+    "alert_indicators": "Indicator",
+    "category__": "Category",
+    "timestamp": "Timestamp",
 }
 ASSET_CTD_FIELD_TO_DEMISTO_FIELD = {
-    'id': "AssetID",
-    'name': "Name",
-    'insight_names': "InsightName",
-    'vendor': "Vendor",
+    "id": "AssetID",
+    "name": "Name",
+    "insight_names": "InsightName",
+    "vendor": "Vendor",
     "criticality__": "Criticality",
-    'asset_type__': "AssetType",
+    "asset_type__": "AssetType",
     "last_seen": "LastSeen",
     "ipv4": "IP",
     "mac": "MAC",
-    'virtual_zone_name': "VirtualZone",
+    "virtual_zone_name": "VirtualZone",
     "class_type": "ClassType",
-    'site_name': "SiteName",
+    "site_name": "SiteName",
     "project_parsed": "WasParsed",
     "risk_level": "RiskLevel",
     "firmware": "FirmwareVersion",
     "resource_id": "ResourceID",
     "site_id": "SiteID",
-    "insights": "Insights"
+    "insights": "Insights",
 }
-RESOLVE_STRING_TO_TYPE = {
-    "resolve": 1,
-    "archive": 2
-}
-DEFAULT_ALERT_FIELD_LIST = ["resource_id", "type", "severity", "network_id", "resolved", "description",
-                            "alert_indicators", "actionable_assets", "category"]
-DEFAULT_ASSET_FIELD_LIST = ["id", "name", "insight_names", "vendor", "criticality", "asset_type", "last_seen", "ipv4",
-                            "mac", "virtual_zone_name", "class_type", "site_name", "site_id", "project_parsed",
-                            "risk_level", "firmware", "resource_id"]
-WINDOWS_CVE_BASE_URL = "ranger/insight_details/Windows%20CVEs?&format=asset_page&sort=-Score%20(CVSS)" \
-                       "&per_page=1000&page=1&id__exact="
-FULL_MATCH_BASE_URL = "ranger/insight_details/Full%20Match%20CVEs?&format=asset_page&sort=-Score%20(CVSS)" \
-                      "&per_page=1000&page=1&id__exact="
+RESOLVE_STRING_TO_TYPE = {"resolve": 1, "archive": 2}
+DEFAULT_ALERT_FIELD_LIST = [
+    "resource_id",
+    "type",
+    "severity",
+    "network_id",
+    "resolved",
+    "description",
+    "alert_indicators",
+    "actionable_assets",
+    "category",
+]
+DEFAULT_ASSET_FIELD_LIST = [
+    "id",
+    "name",
+    "insight_names",
+    "vendor",
+    "criticality",
+    "asset_type",
+    "last_seen",
+    "ipv4",
+    "mac",
+    "virtual_zone_name",
+    "class_type",
+    "site_name",
+    "site_id",
+    "project_parsed",
+    "risk_level",
+    "firmware",
+    "resource_id",
+]
+WINDOWS_CVE_BASE_URL = (
+    "ranger/insight_details/Windows%20CVEs?&format=asset_page&sort=-Score%20(CVSS)&per_page=1000&page=1&id__exact="
+)
+FULL_MATCH_BASE_URL = (
+    "ranger/insight_details/Full%20Match%20CVEs?&format=asset_page&sort=-Score%20(CVSS)&per_page=1000&page=1&id__exact="
+)
 DEFAULT_RESOLVE_ALERT_COMMENT = "Resolved by Demisto"
 # MAX_ASSET_LIMIT = 75
 # MAX_ALERT_LIMIT = 75
@@ -93,14 +115,14 @@ class Client(BaseClient):
         super().__init__(**kwargs)
         self._headers = DEFAULT_HEADERS
         self._generate_token()
-        self._list_to_filters: dict = {'alerts': [], 'assets': []}
+        self._list_to_filters: dict = {"alerts": [], "assets": []}
 
     def _request_with_token(self, url_suffix: str, method: str = "GET", data=None):
         try:
             return self._http_request(method, url_suffix=url_suffix, data=data)
         except DemistoException:
-            demisto.setIntegrationContext({'jwt_token': None})
-            self._headers.pop('Authorization', None)
+            demisto.setIntegrationContext({"jwt_token": None})
+            self._headers.pop("Authorization", None)
             # assuming it was just the token that expired, retrying to send the request with the new token
             self._generate_token()
 
@@ -109,22 +131,21 @@ class Client(BaseClient):
     def _generate_token(self):
         if not demisto.getIntegrationContext().get("jwt_token"):
             res = self._http_request(
-                'POST',
+                "POST",
                 url_suffix="auth/authenticate",
                 data=json.dumps({"username": self._credentials[0], "password": self._credentials[1]}),
             )
 
-            if res.get('password_expired', None):
+            if res.get("password_expired", None):
                 raise DemistoException("Password expired, please update credentials")
 
-            demisto.setIntegrationContext({'jwt_token': res['token']})
-            self._headers['Authorization'] = demisto.getIntegrationContext()['jwt_token']
-            return self._headers['Authorization']
+            demisto.setIntegrationContext({"jwt_token": res["token"]})
+            self._headers["Authorization"] = demisto.getIntegrationContext()["jwt_token"]
+            return self._headers["Authorization"]
         else:
             return demisto.getIntegrationContext()
 
-    def list_incidents(self, fields: list, sort_by: dict, fetch_from_date: str, page_number: int,
-                       **extra_filters) -> dict:
+    def list_incidents(self, fields: list, sort_by: dict, fetch_from_date: str, page_number: int, **extra_filters) -> dict:
         extra_filters_list = [Filter("timestamp", fetch_from_date, "gte")]
         extra_filters_list += DEFAULT_ALERTS_FILTERS
 
@@ -140,41 +161,39 @@ class Client(BaseClient):
         return self.get_alerts(fields=fields, sort_by=sort_by, filters=extra_filters_list, page_number=page_number)
 
     def get_assets(self, fields: list, sort_by: dict, filters: list, limit: int = 10):
-        url_suffix = self._add_extra_params_to_url('ranger/assets', fields, sort_by, filters, limit)
-        return self._request_with_token(url_suffix, 'GET')
+        url_suffix = self._add_extra_params_to_url("ranger/assets", fields, sort_by, filters, limit)
+        return self._request_with_token(url_suffix, "GET")
 
     def get_alerts(self, fields: list, sort_by: dict, filters: list, limit: int = 10, page_number: int = 1):
-        url_suffix = self._add_extra_params_to_url('ranger/alerts', fields, sort_by, filters, limit, page_number)
-        return self._request_with_token(url_suffix, 'GET')
+        url_suffix = self._add_extra_params_to_url("ranger/alerts", fields, sort_by, filters, limit, page_number)
+        return self._request_with_token(url_suffix, "GET")
 
     def get_alert(self, rid: str) -> dict | str | requests.Response:
-        return self._request_with_token(f'ranger/alerts/{rid}', 'GET')
+        return self._request_with_token(f"ranger/alerts/{rid}", "GET")
 
     def get_ranger_table_filters(self, table: str) -> dict:
         if not self._list_to_filters[table]:
-            self._list_to_filters[table] = self._request_with_token(f'ranger/{table}/filters', 'GET')['filters']
+            self._list_to_filters[table] = self._request_with_token(f"ranger/{table}/filters", "GET")["filters"]
         return self._list_to_filters[table]
 
     def resolve_alert(self, selected_alerts: list, filters: dict, resolve_type: int, resolve_comment: str):
         return self._request_with_token(
-            'ranger/ranger_api/resolve_alerts',
-            'POST',
-            data=json.dumps({
-                "selection_params": {
-                    "select_all": False,
-                    "selected": selected_alerts,
-                    "excluded": [],
-                    "filters": filters
-                },
-                "resolved_as": resolve_type,
-                "comment": resolve_comment
-            })
+            "ranger/ranger_api/resolve_alerts",
+            "POST",
+            data=json.dumps(
+                {
+                    "selection_params": {"select_all": False, "selected": selected_alerts, "excluded": [], "filters": filters},
+                    "resolved_as": resolve_type,
+                    "comment": resolve_comment,
+                }
+            ),
         )
 
     @staticmethod
-    def _add_extra_params_to_url(url_suffix: str, fields: list, sort_by: dict, filters: list[Filter], limit: int = 10,
-                                 page_number: int = 1) -> str:
-        url_suffix += "?fields=" + ',;$'.join(fields)
+    def _add_extra_params_to_url(
+        url_suffix: str, fields: list, sort_by: dict, filters: list[Filter], limit: int = 10, page_number: int = 1
+    ) -> str:
+        url_suffix += "?fields=" + ",;$".join(fields)
         url_suffix += f"&page={page_number}&per_page={limit}"
 
         if sort_by:
@@ -185,25 +204,33 @@ class Client(BaseClient):
         return url_suffix
 
     def enrich_asset_results(self, assets: dict) -> dict:
-        for asset in assets['objects']:
-            full_match_cves = self._request_with_token(f"{FULL_MATCH_BASE_URL}{asset['resource_id']}", 'GET')
-            windows_cves = self._request_with_token(f"{WINDOWS_CVE_BASE_URL}{asset['resource_id']}", 'GET')
+        for asset in assets["objects"]:
+            full_match_cves = self._request_with_token(f"{FULL_MATCH_BASE_URL}{asset['resource_id']}", "GET")
+            windows_cves = self._request_with_token(f"{WINDOWS_CVE_BASE_URL}{asset['resource_id']}", "GET")
             assets_cves = [*full_match_cves["rows"], *windows_cves["rows"]]
-            asset["insights"] = [{"CVE-ID": cve["cells"][0], "Score": cve["cells"][1], "Description": cve["cells"][2],
-                                 "Published": cve["cells"][3], "Modified": cve["cells"][4]} for cve in assets_cves]
+            asset["insights"] = [
+                {
+                    "CVE-ID": cve["cells"][0],
+                    "Score": cve["cells"][1],
+                    "Description": cve["cells"][2],
+                    "Published": cve["cells"][3],
+                    "Modified": cve["cells"][4],
+                }
+                for cve in assets_cves
+            ]
         return assets
 
 
 def test_module(client: Client):
     authentication_result = client._generate_token()
     if not authentication_result.get("jwt_token", False):
-        return f'Token getter failed, adding result - {authentication_result}'
+        return f"Token getter failed, adding result - {authentication_result}"
 
     query_alerts_result = client.get_alerts(DEFAULT_ALERT_FIELD_LIST, get_sort("timestamp"), [], limit=1)
     if query_alerts_result.get("count_total", "Failed") == "Failed":
         return f"Failed getting alerts, json result - {query_alerts_result}"
 
-    return 'ok'
+    return "ok"
 
 
 def get_assets_command(client: Client, args: dict) -> tuple:
@@ -237,26 +264,19 @@ def get_assets_command(client: Client, args: dict) -> tuple:
         relevant_fields.append("insights")
 
     parsed_results_assets, parsed_cves = _parse_assets_result(result, relevant_fields)
-    outputs = {
-        'Claroty.Asset(val.AssetID == obj.AssetID)': parsed_results_assets
-    }
+    outputs = {"Claroty.Asset(val.AssetID == obj.AssetID)": parsed_results_assets}
 
     if parsed_cves and len(parsed_cves) > 0:
-        outputs['CVE(val.ID == obj.ID)'] = parsed_cves
+        outputs["CVE(val.ID == obj.ID)"] = parsed_cves
 
-    readable_output = tableToMarkdown('Claroty Asset List', parsed_results_assets)
-    return (
-        readable_output,
-        outputs,
-        result
-    )
+    readable_output = tableToMarkdown("Claroty Asset List", parsed_results_assets)
+    return (readable_output, outputs, result)
 
 
 def resolve_alert_command(client: Client, args: dict) -> tuple:
     bad_input = False
     selected_alerts_arg = args.get("selected_alerts", [])
-    selected_alert_list = selected_alerts_arg.split(",") \
-        if isinstance(selected_alerts_arg, str) else selected_alerts_arg
+    selected_alert_list = selected_alerts_arg.split(",") if isinstance(selected_alerts_arg, str) else selected_alerts_arg
     for alert in selected_alert_list:
         split_alert = alert.split("-")
         if len(split_alert) != 2 or not split_alert[0].isnumeric() or not split_alert[1].isnumeric():
@@ -269,10 +289,8 @@ def resolve_alert_command(client: Client, args: dict) -> tuple:
     if not bad_input:
         result = client.resolve_alert(selected_alert_list, args.get("filters", {}), resolve_type, resolve_comment)
 
-        outputs = {
-            "Claroty.Resolve_out": result
-        }
-        if result['success']:
+        outputs = {"Claroty.Resolve_out": result}
+        if result["success"]:
             readable_output = "## Alert was resolved successfully"
         else:
             readable_output = "## Alert was not resolved"
@@ -281,11 +299,7 @@ def resolve_alert_command(client: Client, args: dict) -> tuple:
         outputs = {}
         readable_output = "## Bad input"
 
-    return (
-        readable_output,
-        outputs,
-        result
-    )
+    return (readable_output, outputs, result)
 
 
 def get_single_alert_command(client: Client, args: dict) -> tuple:
@@ -294,15 +308,9 @@ def get_single_alert_command(client: Client, args: dict) -> tuple:
     result = client.get_alert(alert_rid)
     parsed_results = _parse_single_alert(result, relevant_fields)
 
-    outputs = {
-        'Claroty.Alert(val.ResourceID == obj.ResourceID)': parsed_results
-    }
-    readable_output = tableToMarkdown('Claroty Alert List', parsed_results)
-    return (
-        readable_output,
-        outputs,
-        result
-    )
+    outputs = {"Claroty.Alert(val.ResourceID == obj.ResourceID)": parsed_results}
+    readable_output = tableToMarkdown("Claroty Alert List", parsed_results)
+    return (readable_output, outputs, result)
 
 
 def query_alerts_command(client: Client, args: dict) -> tuple:
@@ -313,7 +321,7 @@ def query_alerts_command(client: Client, args: dict) -> tuple:
     alert_type = args.get("type", "").lower().replace(" ", "")
     alert_type_exists = False
     if alert_type:
-        alert_filters = client.get_ranger_table_filters('alerts')
+        alert_filters = client.get_ranger_table_filters("alerts")
         filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type", alert_type)
         if filters_url_suffix:
             for filter_type in filters_url_suffix:
@@ -342,15 +350,9 @@ def query_alerts_command(client: Client, args: dict) -> tuple:
         result = {}
         parsed_results = []
 
-    outputs = {
-        'Claroty.Alert(val.ResourceID == obj.ResourceID)': parsed_results
-    }
-    readable_output = tableToMarkdown('Claroty Alert List', parsed_results)
-    return (
-        readable_output,
-        outputs,
-        result
-    )
+    outputs = {"Claroty.Alert(val.ResourceID == obj.ResourceID)": parsed_results}
+    readable_output = tableToMarkdown("Claroty Alert List", parsed_results)
+    return (readable_output, outputs, result)
 
 
 def _add_exclude_resolved_alerts_filters(filters: list[Filter]):
@@ -361,8 +363,9 @@ def _add_exclude_resolved_alerts_filters(filters: list[Filter]):
     return filters
 
 
-def _init_request_values(obj_name: str, sort_by_default_value: str, limit_arg: str, args: dict,
-                         get_sort_order_arg: bool = False) -> tuple[list, dict, int]:
+def _init_request_values(
+    obj_name: str, sort_by_default_value: str, limit_arg: str, args: dict, get_sort_order_arg: bool = False
+) -> tuple[list, dict, int]:
     relevant_fields = get_fields(obj_name, args.get("fields", "").split(","))
 
     sort_order = False
@@ -381,9 +384,9 @@ def _init_request_values(obj_name: str, sort_by_default_value: str, limit_arg: s
 
 
 def _parse_alerts_result(alert_result: dict, fields: list) -> list[dict]:
-    if 'objects' not in alert_result:
+    if "objects" not in alert_result:
         return []
-    obj = alert_result.get('objects', [])
+    obj = alert_result.get("objects", [])
     alerts = []
 
     for obj_fields in obj:
@@ -399,8 +402,9 @@ def _parse_single_alert(alert_obj, fields: list):
             if field == "type":
                 parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD[field]] = alert_obj.get(field)
                 alert_type_value = alert_obj.get("type__", [])
-                parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD["type__"]] = alert_type_value[1:] \
-                    if alert_type_value else None
+                parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD["type__"]] = (
+                    alert_type_value[1:] if alert_type_value else None
+                )
 
             elif field == "alert_indicators":
                 indicator_str_result = ""
@@ -412,13 +416,15 @@ def _parse_single_alert(alert_obj, fields: list):
 
             elif field == "severity":
                 alert_severity_value = alert_obj.get("severity__")
-                parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD["severity__"]] = alert_severity_value[1:]\
-                    if alert_severity_value else None
+                parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD["severity__"]] = (
+                    alert_severity_value[1:] if alert_severity_value else None
+                )
 
             elif field == "category":
                 alert_category_value = alert_obj.get("category__")
-                parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD["category__"]] = alert_category_value[1:]\
-                    if alert_category_value else None
+                parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD["category__"]] = (
+                    alert_category_value[1:] if alert_category_value else None
+                )
 
             elif field == "actionable_assets":
                 assets = alert_obj.get(field, [])
@@ -434,9 +440,9 @@ def _parse_single_alert(alert_obj, fields: list):
 
 
 def _parse_assets_result(assets_result: dict, fields: list) -> tuple:
-    if 'objects' not in assets_result:
+    if "objects" not in assets_result:
         return [], []
-    obj = assets_result.get('objects', [])
+    obj = assets_result.get("objects", [])
     assets = []
     cves = []
 
@@ -454,30 +460,32 @@ def _parse_single_asset(asset_obj: dict, fields: list) -> dict:
         for field in fields:
             if field == "asset_type":
                 asset_type_value = asset_obj.get("asset_type__")
-                parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD["asset_type__"]] = asset_type_value[1:] \
-                    if asset_type_value else None
+                parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD["asset_type__"]] = (
+                    asset_type_value[1:] if asset_type_value else None
+                )
 
             elif field == "criticality":
                 asset_criticality_value = asset_obj.get("criticality__")
-                parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD["criticality__"]] = asset_criticality_value[1:]\
-                    if asset_criticality_value else None
+                parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD["criticality__"]] = (
+                    asset_criticality_value[1:] if asset_criticality_value else None
+                )
 
             elif field == "insights":
                 cves = []
                 highest_cve_score = 0.0
                 for insight in asset_obj.get(field, []):
                     cve = {
-                        'ID': insight['CVE-ID'],
-                        'CVSS': insight['Score'],
-                        'Published': insight['Published'],
-                        'Modified': insight['Modified'],
-                        'Description': insight['Description'],
+                        "ID": insight["CVE-ID"],
+                        "CVSS": insight["Score"],
+                        "Published": insight["Published"],
+                        "Modified": insight["Modified"],
+                        "Description": insight["Description"],
                     }
-                    if float(insight['Score']) > highest_cve_score:
-                        highest_cve_score = float(insight['Score'])
+                    if float(insight["Score"]) > highest_cve_score:
+                        highest_cve_score = float(insight["Score"])
                     cves.append(cve)
-                parsed_asset_result['CVE'] = cves
-                parsed_asset_result['HighestCVEScore'] = highest_cve_score
+                parsed_asset_result["CVE"] = cves
+                parsed_asset_result["HighestCVEScore"] = highest_cve_score
 
             else:
                 parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD[field]] = asset_obj.get(field)
@@ -522,11 +530,17 @@ def add_filter(filter_name: str, filter_value: Any, filter_operation: str = "exa
 def transform_filters_labels_to_values(table_filters, filter_name: str, filter_val: str):
     chosen_filters = []
     for table_filter in table_filters:
-        if table_filter['name'].lower() == filter_name:
-            table_filter_value = next((table_filter_value['value'] for table_filter_value in table_filter['values']
-                                      if filter_val == table_filter_value['label'].lower().replace(" ", "")), None)
+        if table_filter["name"].lower() == filter_name:
+            table_filter_value = next(
+                (
+                    table_filter_value["value"]
+                    for table_filter_value in table_filter["values"]
+                    if filter_val == table_filter_value["label"].lower().replace(" ", "")
+                ),
+                None,
+            )
             if table_filter_value:
-                chosen_filters.append((table_filter['name'], table_filter_value))
+                chosen_filters.append((table_filter["name"], table_filter_value))
 
     return chosen_filters
 
@@ -554,17 +568,15 @@ def get_list_incidents(client: Client, latest_created_time: str, page_number: in
     alert_type = demisto.params().get("alert_type", None)
     alert_type_exists = False
     if alert_type:
-        alert_filters = client.get_ranger_table_filters('alerts')
-        filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type",
-                                                                alert_type.lower().replace(" ", ""))
+        alert_filters = client.get_ranger_table_filters("alerts")
+        filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type", alert_type.lower().replace(" ", ""))
         if filters_url_suffix:
             for filter_type in filters_url_suffix:
                 extra_filters["type"] = filter_type[1]
                 alert_type_exists = True
 
     if bool(alert_type) == alert_type_exists:
-        response = client.list_incidents(field_list, get_sort("timestamp"), latest_created_time, page_number,
-                                         **extra_filters)
+        response = client.list_incidents(field_list, get_sort("timestamp"), latest_created_time, page_number, **extra_filters)
     else:
         response = {}
 
@@ -575,9 +587,9 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     """
     This function will execute each interval (default is 1 minute).
     """
-    last_fetch = last_run.get('last_fetch', None)
-    last_run_rids = last_run.get('last_run_rids', {})
-    page_to_query = last_run.get('page_to_query', 1)
+    last_fetch = last_run.get("last_fetch", None)
+    last_run_rids = last_run.get("last_run_rids", {})
+    page_to_query = last_run.get("page_to_query", 1)
 
     if not last_fetch:
         last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
@@ -590,7 +602,7 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     # Check last queried item's timestamp
     latest_created_time = None
     if items:
-        parsed_date = dateparser.parse(items[-1]['Timestamp'])
+        parsed_date = dateparser.parse(items[-1]["Timestamp"])
         assert parsed_date is not None, f"failed parsing {items[-1]['Timestamp']}"
         latest_created_time = parsed_date.replace(tzinfo=None).strftime(DATE_FORMAT)
 
@@ -605,15 +617,15 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
         rid = item["ResourceID"]
         if rid not in last_run_rids:
             # Make datetime object unaware of timezone for comparison
-            parsed_date = dateparser.parse(item['Timestamp'])
+            parsed_date = dateparser.parse(item["Timestamp"])
             assert parsed_date is not None, f"failed parsing {item['Timestamp']}"
             incident_created_time = parsed_date.replace(tzinfo=None)
 
             incident = {
-                'name': item.get('Description', None),
-                'occurred': incident_created_time.strftime(DATE_FORMAT),
-                'severity': CTD_TO_DEMISTO_SEVERITY.get(item.get('Severity', None), None),
-                'rawJSON': json.dumps(item)
+                "name": item.get("Description", None),
+                "occurred": incident_created_time.strftime(DATE_FORMAT),
+                "severity": CTD_TO_DEMISTO_SEVERITY.get(item.get("Severity", None), None),
+                "rawJSON": json.dumps(item),
             }
 
             incidents.append(incident)
@@ -627,23 +639,23 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     if not current_rids:
         current_rids = last_run_rids
 
-    next_run = {'last_fetch': latest_created_time, 'last_run_rids': current_rids, "page_to_query": page_to_query}
+    next_run = {"last_fetch": latest_created_time, "last_run_rids": current_rids, "page_to_query": page_to_query}
     return next_run, incidents
 
 
 def main():
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
+    username = demisto.params().get("credentials").get("identifier")
+    password = demisto.params().get("credentials").get("password")
 
-    base_url = demisto.params()['url'].rstrip('/')
+    base_url = demisto.params()["url"].rstrip("/")
 
-    verify_certificate = not demisto.params().get('insecure', True)
+    verify_certificate = not demisto.params().get("insecure", True)
 
-    first_fetch_time = demisto.params().get('fetch_time', '7 days').strip()
+    first_fetch_time = demisto.params().get("fetch_time", "7 days").strip()
 
-    proxy = demisto.params().get('proxy', False)
+    proxy = demisto.params().get("proxy", False)
 
-    LOG(f'Command being called is {demisto.command()}')
+    LOG(f"Command being called is {demisto.command()}")
     try:
         client = Client(
             base_url=base_url,
@@ -652,34 +664,31 @@ def main():
             proxy=proxy,
         )
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             result = test_module(client)
             demisto.results(result)
 
-        elif demisto.command() == 'claroty-get-assets':
+        elif demisto.command() == "claroty-get-assets":
             return_outputs(*get_assets_command(client, demisto.args()))
 
-        elif demisto.command() == 'claroty-query-alerts':
+        elif demisto.command() == "claroty-query-alerts":
             return_outputs(*query_alerts_command(client, demisto.args()))
 
-        elif demisto.command() == 'claroty-get-single-alert':
+        elif demisto.command() == "claroty-get-single-alert":
             return_outputs(*get_single_alert_command(client, demisto.args()))
 
-        elif demisto.command() == 'claroty-resolve-alert':
+        elif demisto.command() == "claroty-resolve-alert":
             return_outputs(*resolve_alert_command(client, demisto.args()))
 
-        elif demisto.command() == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(
-                client=client,
-                last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time)
+        elif demisto.command() == "fetch-incidents":
+            next_run, incidents = fetch_incidents(client=client, last_run=demisto.getLastRun(), first_fetch_time=first_fetch_time)
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

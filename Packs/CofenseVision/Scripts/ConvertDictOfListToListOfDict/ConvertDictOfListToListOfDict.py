@@ -3,10 +3,9 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-
     try:
         args: dict = demisto.args()
-        root = args.get('key', [])
+        root = args.get("key", [])
 
         for i in root:
             if isinstance(root[i], int | str):
@@ -28,8 +27,8 @@ def main():
         demisto.results(t)
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Could not convert\n{e}')
+        return_error(f"Could not convert\n{e}")
 
 
-if __name__ in ('builtins', '__builtin__'):
+if __name__ in ("builtins", "__builtin__"):
     main()

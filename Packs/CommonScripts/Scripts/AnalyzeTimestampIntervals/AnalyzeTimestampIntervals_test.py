@@ -1,7 +1,7 @@
-import pytest
-from AnalyzeTimestampIntervals import analyze_intervals
 import random
 
+import pytest
+from AnalyzeTimestampIntervals import analyze_intervals
 
 # Consistent intervals (10,000 ms apart, i.e., 1 event every 10 seconds)
 consistent_timestamps = [1609459200000 + i * 10000 for i in range(100)]
@@ -14,9 +14,17 @@ random.seed(42)  # Ensures reproducibility for tests
 random_intervals = [3000 + random.randint(-1500, 1500) for _ in range(90)]
 
 inconsistent_timestamps = [
-    1609459200000, 1609459205000, 1609459210000, 1609459215000, 1609459220000,
-    1609459227000, 1609459234000, 1609459241000, 1609459248000, 1609459255000
-] + [1609459255000 + sum(random_intervals[:i + 1]) for i in range(90)]
+    1609459200000,
+    1609459205000,
+    1609459210000,
+    1609459215000,
+    1609459220000,
+    1609459227000,
+    1609459234000,
+    1609459241000,
+    1609459248000,
+    1609459255000,
+] + [1609459255000 + sum(random_intervals[: i + 1]) for i in range(90)]
 
 
 def test_consistent_intervals():
@@ -36,8 +44,11 @@ def test_consistent_intervals():
     interval_consistency_threshold = 0.15
 
     result = analyze_intervals(
-        consistent_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window,
-        interval_consistency_threshold=interval_consistency_threshold)
+        consistent_timestamps,
+        verbose=True,
+        max_intervals_per_window=max_intervals_per_window,
+        interval_consistency_threshold=interval_consistency_threshold,
+    )
 
     assert result["MeanIntervalInSeconds"] == pytest.approx(10.0, rel=1e-1)
     assert result["MedianIntervalInSeconds"] == pytest.approx(10.0, rel=1e-1)
@@ -64,8 +75,11 @@ def test_high_frequency_detection():
     interval_consistency_threshold = 0.15
 
     result = analyze_intervals(
-        high_freq_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window,
-        interval_consistency_threshold=interval_consistency_threshold)
+        high_freq_timestamps,
+        verbose=True,
+        max_intervals_per_window=max_intervals_per_window,
+        interval_consistency_threshold=interval_consistency_threshold,
+    )
 
     assert result["MeanIntervalInSeconds"] == pytest.approx(0.1, rel=1e-1)
     assert result["MedianIntervalInSeconds"] == pytest.approx(0.1, rel=1e-1)
@@ -92,8 +106,11 @@ def test_inconsistent_intervals():
     interval_consistency_threshold = 0.15
 
     result = analyze_intervals(
-        inconsistent_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window,
-        interval_consistency_threshold=interval_consistency_threshold)
+        inconsistent_timestamps,
+        verbose=True,
+        max_intervals_per_window=max_intervals_per_window,
+        interval_consistency_threshold=interval_consistency_threshold,
+    )
 
     # Adjusted for the inconsistency of intervals
     assert result["MeanIntervalInSeconds"] == pytest.approx(3.5, rel=1e-1)

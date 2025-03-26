@@ -1,9 +1,9 @@
 from datetime import datetime
 from json import dumps
+from typing import Any
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401 # pylint:# disable=unused-wildcard-import
-from typing import Any
 from requests import Response
 from urllib3 import disable_warnings
 
@@ -12,9 +12,7 @@ disable_warnings()  # pylint: disable=no-member
 
 INTEGRATION_CONTEXT_NAME = "SpyCloud"
 INVALID_CREDENTIALS_ERROR_MSG = (
-    "Authorization Error: The provided API Key "
-    "for SpyCloud is invalid. Please provide a "
-    "valid API Key."
+    "Authorization Error: The provided API Key for SpyCloud is invalid. Please provide a valid API Key."
 )
 MAX_RETRIES = 5
 BACK_OFF_TIME = 0.1
@@ -28,9 +26,7 @@ X_AMAZON_ERROR_TYPE = "x-amzn-ErrorType"
 SPYCLOUD_ERROR = "SpyCloud-Error"
 INVALID_IP_MSG = "Kindly contact SpyCloud support to whitelist your IP Address."
 WRONG_API_URL = "Verify that the API URL parameter is correct and that you have access to the server from your host"
-MONTHLY_QUOTA_EXCEED_MSG = (
-    "You have exceeded your monthly quota. Kindly contact SpyCloud support."
-)
+MONTHLY_QUOTA_EXCEED_MSG = "You have exceeded your monthly quota. Kindly contact SpyCloud support."
 WATCHLIST_ENDPOINT = "breach/data/watchlist"
 DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default
 DEFAULT_DATE = "-1days"
@@ -47,12 +43,7 @@ INCIDENT_NAME = {
     20: "SpyCloud Breach Alert on",
     25: "SpyCloud Malware Alert on",
 }
-SEVERITY_VALUE = {
-    2: IncidentSeverity.INFO,
-    5: IncidentSeverity.INFO,
-    20: IncidentSeverity.HIGH,
-    25: IncidentSeverity.CRITICAL
-}
+SEVERITY_VALUE = {2: IncidentSeverity.INFO, 5: IncidentSeverity.INFO, 20: IncidentSeverity.HIGH, 25: IncidentSeverity.CRITICAL}
 
 
 class Client(BaseClient):
@@ -73,9 +64,7 @@ class Client(BaseClient):
         )
         self.apikey = apikey
 
-    def query_spy_cloud_api(
-        self, end_point: str, params: dict[Any, Any] = None, is_retry: bool = False
-    ) -> dict:
+    def query_spy_cloud_api(self, end_point: str, params: dict[Any, Any] = None, is_retry: bool = False) -> dict:
         """
         Args:
          end_point (str): SpyCloud endpoint.
@@ -124,9 +113,7 @@ class Client(BaseClient):
         elif response.status_code == 403:
             if INVALID_IP in response_headers.get(SPYCLOUD_ERROR, ""):
                 raise DemistoException(
-                    f'{response_headers.get(SPYCLOUD_ERROR, "")}. '
-                    f""
-                    f"{INVALID_IP_MSG}",
+                    f'{response_headers.get(SPYCLOUD_ERROR, "")}. {INVALID_IP_MSG}',
                     res=response,
                 )
             elif INVALID_API_KEY in response_headers.get(SPYCLOUD_ERROR, ""):
@@ -151,7 +138,7 @@ class Client(BaseClient):
             last run in timestamp, or '' if no last run
         """
 
-        last_run = demisto.getLastRun().get('lastRun')
+        last_run = demisto.getLastRun().get("lastRun")
         if last_run:
             last_run = arg_to_datetime(last_run)
             last_run = last_run.strftime("%Y-%m-%d")
@@ -188,15 +175,13 @@ def build_iterators(client: Client, results: list) -> list:
     incident_record = []
     for item in results:
         source_id = item.get("source_id")
-        catalog_resp = client.query_spy_cloud_api(
-            f"breach/catalog/{source_id}", {}
-        ).get("results", [])
+        catalog_resp = client.query_spy_cloud_api(f"breach/catalog/{source_id}", {}).get("results", [])
         breach_title = catalog_resp[0].get("title") if catalog_resp else ""
         item["breach_title"] = breach_title
         severity = item["severity"]
-        email = item.get('email')
-        ip_add = item.get('ip_addresses')
-        username = item.get('username')
+        email = item.get("email")
+        ip_add = item.get("ip_addresses")
+        username = item.get("username")
         name_ext = email or (ip_add[0] if ip_add else username) or item["document_id"]
         incident = {
             "type": INCIDENT_TYPE[severity],
@@ -230,9 +215,7 @@ def create_spycloud_args(args: dict, client: Client) -> dict:
     else:
         since = arg_to_datetime(args.get("first_fetch", DEFAULT_DATE), "Since")
         until = arg_to_datetime(args.get("until", DEFAULT_DATE), "Until")
-        since_modification_date = arg_to_datetime(
-            args.get("since_modification_date", DEFAULT_DATE), "Since Modification Date"
-        )
+        since_modification_date = arg_to_datetime(args.get("since_modification_date", DEFAULT_DATE), "Since Modification Date")
         until_modification_date = arg_to_datetime(
             args.get("until_modification_date", DEFAULT_DATE),
             "Until Modification Date",
@@ -247,13 +230,9 @@ def create_spycloud_args(args: dict, client: Client) -> dict:
             until_modification_date = until_modification_date.strftime("%Y-%m-%d")
     severity_list = argToList(args.get("severity", []))
     supported_severities = {"2", "5", "25", "20"}
-    invalid_severities = [
-        severity for severity in severity_list if severity not in supported_severities
-    ]
+    invalid_severities = [severity for severity in severity_list if severity not in supported_severities]
     if invalid_severities:
-        raise DemistoException(
-            f"Invalid input error: supported values for severity are: {', '.join(supported_severities)}"
-        )
+        raise DemistoException(f"Invalid input error: supported values for severity are: {', '.join(supported_severities)}")
 
     spycloud_args = {
         "type": args.get("type", ""),
@@ -280,9 +259,7 @@ def remove_duplicate(since_response: list, modified_response: list) -> list:
     demisto.debug(f"since_length {len(since_response)}")
     demisto.debug(f"mod_length {len(modified_response)}")
     id_set = {rec["document_id"] for rec in modified_response}
-    modified_response.extend(
-        res for res in since_response if res["document_id"] not in id_set
-    )
+    modified_response.extend(res for res in since_response if res["document_id"] not in id_set)
     return modified_response
 
 
@@ -339,9 +316,7 @@ def fetch_incident(client: Client, args: dict):
         modified_results.extend(modified_response.get("results", []))
         cursor_since = since_response.get("cursor", "")
         cursor_since_modification = modified_response.get("cursor", "")
-        if (not cursor_since or cursor_since == "") and (
-            not cursor_since_modification or cursor_since_modification == ""
-        ):
+        if (not cursor_since or cursor_since == "") and (not cursor_since_modification or cursor_since_modification == ""):
             client.set_last_run()
             break
     incidents = remove_duplicate(since_results, modified_results)
@@ -376,7 +351,7 @@ def main():
         else:
             raise NotImplementedError(f"command {command} is not supported")
     except Exception as e:
-        return_error(f"Failed to execute {command} command. Error: {str(e)}")
+        return_error(f"Failed to execute {command} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
