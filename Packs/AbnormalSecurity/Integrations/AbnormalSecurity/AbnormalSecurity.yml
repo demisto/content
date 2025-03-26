@@ -57,6 +57,7 @@ configuration:
 - defaultvalue: 3 days
   display: First fetch time
   additionalinfo: First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
+  section: Collect
   name: first_fetch
   type: 0
   required: false
