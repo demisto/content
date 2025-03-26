@@ -88,7 +88,6 @@ def test_create_teams_message_with_newlines():
     assert message["attachments"][0]["content"]["body"][1]["text"] == "Hello from \n\rXSOAR"
 
 
-
 def test_create_teams_message_is_workflow():
     """
     Given:
@@ -169,5 +168,3 @@ def test_send_teams_message(
             resp_type='text'
         )
     mock_demisto_info.assert_called_once_with('completed post of message. response text: OK')
-
-
