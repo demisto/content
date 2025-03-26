@@ -1,19 +1,3 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 from typing import Any, Dict, Optional
 
 import demistomock as demisto
@@ -27,134 +11,227 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+VENDOR = 'Extrahop'
+PRODUCT = 'RevealX'
+PAGE_SIZE = 200
+PAGE_NUMBER = 0
+DEFAULT_FETCH_LIMIT = 5000 # TODO Niv: make sure with dar this is the correct value
+
 
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
+    """
+    Client class to interact with the service API
     """
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(
-        self, dummy: str, dummy2: Optional[int]
-    ) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        Args:
-            dummy: string to add in the dummy dict that is returned. This is a required argument.
-            dummy2: int to limit the number of results. This is an optional argument.
-
-        Returns:
-            The dict with the arguments
+    def set_token(self, token: str):
         """
-        return {"dummy": dummy, "dummy2": dummy2}
+        Sets the client token.
+        """
+        self.token = token
 
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    def create_access_token_for_audit(self) -> None:
+        """
+        Creates an access token for audit log access using a specific scope and client credentials.
+        """
+        data = {
+            "grant_type": "client_credentials",
+            "scope": "audit.log:read"
+        }
+        results = self._http_request(
+            method="POST",
+            url_suffix="/oauth2/token",
+            data=data,
+            auth=(self.client_id, self.client_secret),
+            retries=3
+        )
+        self.token = results.get('access_token', '')
+
+    def get_audit_logs(self, start_date: str, end_date: str) -> requests.Response:
+        """
+        Retrieves audit logs for the given date range using the access token.
+        Args:
+            start_date (str): The start date of the logs in ISO 8601 format (e.g., "2025-02-05T14:30:00Z").
+            end_date (str): The end date of the logs in ISO 8601 format (e.g., "2025-02-05T15:00:00Z").
+        Returns:
+            dict: The raw response.
+        """
+        results = self._http_request(
+            method="GET",
+            url_suffix=f"/log/api/external/audit?pageNumber={PAGE_NUMBER}&pageSize={PAGE_SIZE}&from={start_date}&to={end_date}",
+            headers={
+                'Authorization': f'Bearer {self.token}',
+            },
+            resp_type='response',
+            retries=3
+        )
+        return results
+
 
 
 """ HELPER FUNCTIONS """
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def iso8601_to_unix_milliseconds(iso8601_str):
+    """
+    Convert an ISO 8601 formatted date to a Unix timestamp in milliseconds.
+
+    Parameters:
+    iso8601_str (str): The ISO 8601 date string to convert.
+
+    Returns:
+    int: Unix timestamp in milliseconds.
+    """
+    # Parse the ISO 8601 date string to a datetime object
+    dt = datetime.fromisoformat(iso8601_str)
+
+    # Get the Unix timestamp in seconds and convert to milliseconds
+    unix_timestamp_ms = int(dt.timestamp() * 1000)
+
+    return unix_timestamp_ms
 
 """ COMMAND FUNCTIONS """
 
 
+
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises:
-     exceptions if something goes wrong.
-
-    Args:
-        Client: client to use
-
-    Returns:
-        'ok' if test passed, anything else will fail the test.
     """
-
-    # TODO: ADD HERE some code to test connectivity and authentication to your service.
-    # This  should validate all the inputs given in the integration configuration panel,
-    # either manually or by using an API that uses them.
-    client.baseintegration_dummy("dummy", 10)  # No errors, the api is working
+    Tests the connection to the service by creating an access token.
+    Args:
+        client (Client): The client object used to interact with the service.
+    Returns:
+        str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
+    """
+    current_time = get_current_time()
+    start_date = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
+    end_date = current_time.strftime(DATE_FORMAT)
+    fetch_events(client, 1, {'start_date': start_date, 'end_date': end_date})
     return "ok"
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
-    dummy = args.get("dummy")  # dummy is a required argument, no default
-    dummy2 = args.get("dummy2")  # dummy2 is not a required argument
+def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None) -> tuple[list, dict]:
+    last_run = demisto.getLastRun() or {}
+    start_time = (get_events_args or last_run).get('start_date', '') or get_current_time().strftime(DATE_FORMAT)
+    end_time = (get_events_args or {}).get('end_date', get_current_time().strftime(DATE_FORMAT))
 
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy, dummy2)
+    if not get_events_args:  # Only set token for fetch_events case
+        client.set_token(last_run.get('audit_token', ''))
 
-    return CommandResults(
-        outputs_prefix="BaseIntegration",
-        outputs_key_field="",
-        outputs=result,
+    demisto.debug(f'Fetching audit logs events from date={start_time} to date={end_time}.')
+
+    output: list = []
+    while True:
+        try:
+            response = client.get_audit_logs(start_time, end_time)
+        except DemistoException as e:
+            if e.res.status_code == 429:
+                retry_after = int(e.res.headers.get('x-ratelimit-reset', 2))
+                demisto.debug(f"Rate limit reached. Waiting {retry_after} seconds before retrying.")
+                time.sleep(retry_after)  # pylint: disable=E9003
+                continue
+            if e.res.status_code == 401:
+                demisto.debug("Regenerates token for fetching audit logs.")
+                client.create_access_token_for_audit()
+                continue
+            else:
+                raise e
+
+        content: list = response.json().get('content', [])
+
+        if not content:
+            break
+
+        events = sort_events_by_timestamp(content)
+        for event in events:
+            event_date = event.get('timestamp')
+            event['_time'] = event_date
+            output.append(event)
+
+            if len(output) >= fetch_limit:
+                start_time = add_millisecond(event_date)
+                # Safe to add a millisecond and fetch since no two events share the same timestamp.
+                new_last_run = {'start_date': start_time, 'audit_token': client.token}
+                return output, new_last_run
+
+        start_time = add_millisecond(event_date)
+
+    new_last_run = {'start_date': start_time, 'audit_token': client.token}
+    return output, new_last_run
+
+
+def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
+    start_date = args.get('start_date')
+    end_date = args.get('end_date')
+    limit: int = arg_to_number(args.get('limit')) or DEFAULT_FETCH_LIMIT
+
+    output, _ = fetch_events(client, limit, {"start_date": start_date, "end_date": end_date})
+
+    filtered_events = []
+    for event in output:
+        filtered_event = {'User ID': event.get('userId'),
+                          'User Role': event.get('userRole'),
+                          'Event': event.get('event'),
+                          'Timestamp': event.get('timestamp')
+                          }
+        filtered_events.append(filtered_event)
+
+    human_readable = tableToMarkdown(name='Audit Logs Events', t=filtered_events, removeNull=True)
+    command_results = CommandResults(
+        readable_output=human_readable,
+        outputs=output,
+        outputs_prefix='Celonis.Audit',
     )
-
-
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
+    return output, command_results
 
 
 def main():
     """main function, parses params and runs command functions"""
-
-    # TODO: make sure you properly handle authentication
-    # api_key = params.get('apikey')
-
+    """main function, parses params and runs command functions"""
     params = demisto.params()
-    # get the service API url
-    base_url = urljoin(params.get("url"), "/api/v1")
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not argToBoolean(params("insecure", False))
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = argToBoolean(params.get("proxy", False))
-
+    args = demisto.args()
     command = demisto.command()
-    demisto.debug(f"Command being called is {command}")
-    try:
 
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers = {}
+    demisto.debug(f"Command being called is {command}")
+    verify_certificate = not argToBoolean(params("insecure", False))
+    try:
+        base_url = params.get("url") # TODO Niv: Need to be server-UrL
+        verify_certificate = not argToBoolean(params.get("insecure", False))
+        client_id = params.get('credentials', {}).get('identifier')
+        client_secret = params.get('credentials', {}).get('password')
+        fetch_limit = arg_to_number(params.get('max_events_per_fetch')) or DEFAULT_FETCH_LIMIT
 
         client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
+            base_url=base_url,
+            verify=verify_certificate,
+            client_id=client_id,
+            client_secret=client_secret
         )
-        args = demisto.args()
         if command == "test-module":
+            # Command made to test the integration
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
-        # TODO: REMOVE the following dummy command case:
-        elif command == "baseintegration-dummy":
-            result = baseintegration_dummy_command(client, args)
+            return_results(result)
+        elif command == "fetch-events":
+            events, new_last_run_dict = fetch_events(client, fetch_limit)
+            if events:
+                demisto.debug(f'Sending {len(events)} events.')
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(new_last_run_dict)
+            demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
+        elif command == "revealx-get-events":
+            events, command_results = get_events(client, args)
+            if events and argToBoolean(args.get('should_push_events')):
+                demisto.debug(f'Sending {len(events)} events.')
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            return_results(command_results)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-        return_results(
-            result
-        )  # Returns either str, CommandResults and a list of CommandResults
     # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
