@@ -7,7 +7,7 @@ script: ''
 type: python
 tags:
 - Utility
-comment: Loads a json from string input, and returns a json object result.
+comment: compares two JSON files and returns their differences, such as added, removed, or changed fields, in a structured format.
 enabled: true
 args:
 - name: old_json
@@ -25,3 +25,4 @@ dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 engineinfo: {}
 mainengineinfo: {}
+fromversion: 5.0.0
