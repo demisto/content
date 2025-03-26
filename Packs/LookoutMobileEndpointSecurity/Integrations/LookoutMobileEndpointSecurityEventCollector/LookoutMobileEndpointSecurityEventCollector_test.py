@@ -47,7 +47,6 @@ def test_create_response_object(client, mocker, requests_mock):
     Then: The response was build correctly.
     """
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'token_expiration': 0})
-    # headers = {'Accept': 'text/event-stream', 'Authorization': 'Bearer access_token'}
     requests_mock.get('https://www.test.com/mra/stream/v2/events?type=THREAT&id=', status_code='200', json={})
     response = create_response_object(client=client)
     assert response.status_code == '200'

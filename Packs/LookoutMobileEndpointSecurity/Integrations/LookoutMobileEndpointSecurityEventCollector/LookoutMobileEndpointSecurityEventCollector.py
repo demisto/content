@@ -36,7 +36,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
 
     def refresh_token_request(self) -> dict:
-        """request a new access token"""
+        """Request a new access token"""
         data = {'grant_type': 'client_credentials'}
         headers = {'Authorization': f'Bearer {self.app_key}'}
         response = self._http_request(method="POST", data=data, url_suffix='oauth2/token', headers=headers)
@@ -69,7 +69,7 @@ class Client(BaseClient):
         return integration_context.get('access_token', '')
 
 
-def set_the_context(key: str, val):  # pragma: no cover
+def set_the_context(key: str, val):
     """Adds a key-value pair to the integration context dictionary.
         If the key already exists in the integration context, the function will overwrite the existing value with the new one.
     """
@@ -147,7 +147,7 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
 
 
 def get_last_event_id() -> str:
-    """Gets the start stream time from the context if exists. If not,returns current time
+    """Gets the start last event id from the context if exists.
     """
     integration_context = demisto.getIntegrationContext()
     return integration_context.get('last_event_id', '')
