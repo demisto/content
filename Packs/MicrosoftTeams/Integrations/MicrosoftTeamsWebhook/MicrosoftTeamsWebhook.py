@@ -69,6 +69,7 @@ def create_teams_message(
         f"Creating Teams message with parameters: message={message},\n"
         f"title={title}, serverurls={serverurls}, adaptive_cards_format={adaptive_cards_format}, is_workflow={is_workflow}"
     )
+    # replacing special character so it will be shown correctly in the UI.
     message = message.replace('\\n', '\n')
     message = message.replace('\\r', '\r')
 

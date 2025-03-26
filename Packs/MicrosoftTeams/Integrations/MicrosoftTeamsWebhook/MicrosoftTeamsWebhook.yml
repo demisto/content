@@ -31,7 +31,7 @@ script:
   commands:
   - arguments:
     - defaultValue: None
-      description: 'The message to send.  For example: "This is a message from Cortex XSOAR". To use newline use \n\n or \r\r.'
+      description: 'The message to send.  For example: "This is a message from Cortex XSOAR". To use a newline use \n\n or \r\r.'
       name: message
     - description: The alternative webhook for a different team.  If not defined, the integration's default webhook is used.
       name: team_webhook
