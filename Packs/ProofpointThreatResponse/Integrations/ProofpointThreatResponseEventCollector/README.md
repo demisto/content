@@ -13,7 +13,7 @@ This is the default integration for this content pack when configured by the Dat
 | Use system proxy settings |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The time range for the initial data fetch. If timeout errors occur, consider changing this value. | False |
 | Fetch limit - maximum number of incidents per fetch |  | False |
-| Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes. | The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value. | False |
+| Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes. If you encounter timeout errors increase the delta value. | The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value. | False |
 | Fetch incidents with specific event sources. Can be a list of comma-separated values. |  | False |
 | Fetch incidents with specific 'Abuse Disposition' values. Can be a list of comma-separated values. |  | False |
 | Fetch incident with specific states. |  | False |
@@ -47,3 +47,7 @@ Retrieves all incident metadata from Threat Response by specifying filter criter
 #### Context Output
 
 There is no context output for this command.
+
+### Troubleshooting
+
+If you encounter timeout errors, try increasing the Fetch Delta argument. The fewer events coming from Proofpoint, the higher the delta should be to ensure efficient fetching.
