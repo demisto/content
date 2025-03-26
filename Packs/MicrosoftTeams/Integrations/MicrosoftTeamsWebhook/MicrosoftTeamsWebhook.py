@@ -71,7 +71,7 @@ def create_teams_message(
     )
     message = message.replace('\\n', '\n')
     message = message.replace('\\r', '\r')
-    
+
     messagecard: dict = {}
     if adaptive_cards_format:
         demisto.debug("Using adaptive cards format")
@@ -96,7 +96,7 @@ def create_teams_message(
                                         "type": "TextBlock",
                                         "text": message,
                                         "wrap": True
-                                        }
+                                }
                             ],
                             "actions": [
                                 {
@@ -228,8 +228,6 @@ def main() -> None:    # pragma: no cover
     overwrite_adaptive_card_json_param: str = args.get('overwrite_adaptive_card_json', None)
     overwrite_adaptive_card_json: dict | None = json.loads(
         overwrite_adaptive_card_json_param) if overwrite_adaptive_card_json_param else None
-
-    
 
     if args.get('alternative_url'):
         serverurls = args.get('alternative_url', '')

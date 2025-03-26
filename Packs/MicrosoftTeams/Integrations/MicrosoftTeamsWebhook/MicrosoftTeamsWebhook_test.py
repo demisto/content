@@ -32,19 +32,19 @@ def test_create_teams_message():
 def test_send_teams_message_command(requests_mock):
     requests_mock.post(WEBHOOK, status_code=200, json={})
     res = send_teams_message_command(fake_client, MESSAGE, TITLE, SERVERURLS["investigation"])
-    assert res.readable_output == 'message sent successfully'
+    assert res.readable_output == 'Message sent successfully'
 
 
 def test_send_teams_message_command_with_adaptivecards(requests_mock):
     requests_mock.post(WEBHOOK, status_code=200, json={})
     res = send_teams_message_command(fake_client, MESSAGE, TITLE, SERVERURLS["investigation"], True)
-    assert res.readable_output == 'message sent successfully'
+    assert res.readable_output == 'Message sent successfully'
 
 
 def test_send_teams_message_command_with_adaptivecards_overwrite(requests_mock):
     requests_mock.post(WEBHOOK, status_code=200, json={})
     res = send_teams_message_command(fake_client, MESSAGE, TITLE, SERVERURLS["investigation"], True, {"Hello": "World"})
-    assert res.readable_output == 'message sent successfully'
+    assert res.readable_output == 'Message sent successfully'
 
 
 def test_test_module(requests_mock):
@@ -96,11 +96,11 @@ def test_send_teams_message_command_is_workflow(requests_mock):
     When:
       - Executing the send_teams_message_command command.
     Then:
-      - Verify when status is 202 we receive `message sent successfully`.
+      - Verify when status is 202 we receive `Message sent successfully`.
     """
     requests_mock.post(WEBHOOK, status_code=202, json={})
     res = send_teams_message_command(workflow_client, MESSAGE, TITLE, SERVERURLS["investigation"])
-    assert res.readable_output == 'message sent successfully'
+    assert res.readable_output == 'Message sent successfully'
 
 
 def test_send_teams_message_command_with_full_adaptivecards_is_workflow(requests_mock):
@@ -110,11 +110,11 @@ def test_send_teams_message_command_with_full_adaptivecards_is_workflow(requests
     When:
       - Executing the send_teams_message_command command.
     Then:
-      - Verify when status is 202 we receive `message sent successfully`.
+      - Verify when status is 202 we receive `Message sent successfully`.
     """
     requests_mock.post(WEBHOOK, status_code=202, json={})
     res = send_teams_message_command(workflow_client, MESSAGE, TITLE, SERVERURLS["investigation"], True)
-    assert res.readable_output == 'message sent successfully'
+    assert res.readable_output == 'Message sent successfully'
 
 
 @pytest.mark.parametrize(
