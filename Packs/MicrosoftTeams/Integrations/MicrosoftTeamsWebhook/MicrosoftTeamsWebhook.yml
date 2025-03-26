@@ -60,4 +60,4 @@ script:
   type: python
 fromversion: 6.2.0
 tests:
-- No tests (auto formatted)
+- Microsoft Teams Webhook - Test
