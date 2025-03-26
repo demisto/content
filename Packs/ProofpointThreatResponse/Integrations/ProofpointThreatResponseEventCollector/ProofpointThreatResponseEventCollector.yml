@@ -33,7 +33,7 @@ configuration:
   required: false
 - defaultvalue: '6 hours'
   additionalinfo: The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value.
-  display: Fetch delta - The delta time in each batch. e.g., 1 hour, 3 minutes.
+  display: Fetch delta - The delta time in each batch. e.g., 1 hour, 3 minutes. If you encounter timeout errors increase the delta value.
   name: fetch_delta
   type: 0
   section: Collect
@@ -112,8 +112,10 @@ script:
       - ''
     - description: 'Retrieve incidents that were created before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
       name: created_before
+      required: true
     - description: 'Retrieve incidents that were closed after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
       name: closed_after
+      required: true
     - description: 'Retrieve incidents that were closed before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
       name: closed_before
     - auto: PREDEFINED
