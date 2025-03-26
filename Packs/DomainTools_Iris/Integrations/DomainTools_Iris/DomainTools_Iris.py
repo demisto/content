@@ -1063,16 +1063,6 @@ def create_history_table(data, headers):
     return table
 
 
-def change_keys(conv, obj):
-    output = {}
-    for key, value in obj.items():
-        if isinstance(value, dict):
-            output[conv(key)] = change_keys(conv, value)
-        else:
-            output[conv(key)] = value
-    return output
-
-
 ''' COMMANDS '''
 
 
@@ -1544,7 +1534,7 @@ def reverse_nameserver_command():
     """
     Returns the reverse lookup on a given nameserver.
     """
-    nameserver = demisto.args()["nameServer"]
+    nameserver = demisto.args().get("nameServer")
     limit = int(demisto.args().get("limit") or 50)
 
     context: dict[str, list[dict]] = {"Domain": []}
@@ -1659,7 +1649,7 @@ def parsed_domain_rdap_command():
     """
     Returns parsed domain rdap data in a given domain
     """
-    domain = demisto.args()['domain']
+    domain = demisto.args().get('domain')
     results = parsed_domain_rdap(domain=domain)
 
     _raw_response = results.get("_raw") or {}
