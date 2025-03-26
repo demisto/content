@@ -2,7 +2,7 @@
     "name": "AWS - Security Hub",
     "description": "Amazon Web Services Security Hub Service.",
     "support": "xsoar",
-    "currentVersion": "1.3.41",
+    "currentVersion": "1.3.42",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -17,10 +17,17 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "itemPrefix": [
         "AWS Security Hub"
     ],
-    "defaultDataSource": "AWS Security Hub Event Collector"
+    "defaultDataSource": "AWS Security Hub Event Collector",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
