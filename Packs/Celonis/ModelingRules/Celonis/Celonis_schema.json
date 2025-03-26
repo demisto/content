@@ -27,6 +27,6 @@
       "userId": {
         "type": "string",
         "is_array": false
-      } //sss
+      } 
     }
   }
