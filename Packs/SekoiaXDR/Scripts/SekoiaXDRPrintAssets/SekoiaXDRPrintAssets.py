@@ -24,13 +24,9 @@ def get_assets_ids(alert_uuid: str):
     if assets_ids:
         assets_infos = get_assets_info(assets_ids)
         headers = ["name", "description"]
-        readable_output = tableToMarkdown(
-            "Impacted assets:", assets_infos, headers=headers
-        )
+        readable_output = tableToMarkdown("Impacted assets:", assets_infos, headers=headers)
     else:
-        readable_output = (
-            "### {{color:green}}(There is no case information related to this alert.)"
-        )
+        readable_output = "### {{color:green}}(There is no case information related to this alert.)"
 
     return readable_output
 
