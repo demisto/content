@@ -1779,6 +1779,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerror: true
     skipunavailable: false
     quietmode: 0
     isoversize: false
