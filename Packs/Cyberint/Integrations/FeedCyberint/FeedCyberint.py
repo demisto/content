@@ -393,15 +393,16 @@ def get_url_command(
 
     indicator = client.retrieve_url_from_api(value)
 
+    indicator_data = indicator.get("data", {})
     indicator_formatted = [{
-        "type": indicator.get("data", {}).get("entity", {}).get("type"),
-        "value": indicator.get("data", {}).get("entity", {}).get("value"),
-        "malicious_score": indicator.get("data", {}).get("risk", {}).get("malicious_score"),
-        "occurrences_count": indicator.get("data", {}).get("risk", {}).get("occurrences_count"),
-        "ips": indicator.get("data", {}).get("enrichment").get("ips"),
-        "hostname": indicator.get("data", {}).get("enrichment").get("hostname"),
-        "domain": indicator.get("data", {}).get("enrichment").get("domain"),
-        "benign": indicator.get("data", {}).get("benign"),
+        "type": indicator_data.get("entity", {}).get("type"),
+        "value": indicator_data.get("entity", {}).get("value"),
+        "malicious_score": (indicator_data.get("risk") or {}).get("malicious_score"),
+        "occurrences_count": (indicator_data.get("risk") or {}).get("occurrences_count"),
+        "ips": (indicator_data.get("enrichment") or {}).get("ips"),
+        "hostname": (indicator_data.get("enrichment") or {}).get("hostname"),
+        "domain": (indicator_data.get("enrichment") or {}).get("domain"),
+        "benign": indicator_data.get("benign"),
     }]
 
     human_readable = tableToMarkdown(
@@ -412,9 +413,10 @@ def get_url_command(
         removeNull=False,
     )
 
-    detected_activities: list = indicator.get("data", {}).get("risk", {}).get("detected_activities") or []
+    detected_activities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("detected_activities", [])
 
     for activity in detected_activities:
+        activity = activity or {}
         activities_formatted = [{
             "type": activity.get("type", ""),
             "observation_date": activity.get("observation_date", ""),
@@ -432,13 +434,14 @@ def get_url_command(
             removeNull=False,
         )
 
-    related_entities: list = indicator.get("data", {}).get("enrichment", {}).get("related_entities") or []
+    related_entities: list = (indicator.get("data", {}).get("enrichment", {}) or {}).get("related_entities", []) or []
 
     for entity in related_entities:
+        entity = entity or {}
         entities_formatted = [{
-            "entity_id": entity.get("entity_id"),
-            "entity_type": entity.get("entity_type"),
-            "entity_name": entity.get("entity_name"),
+            "entity_id": entity.get("entity_id", ""),
+            "entity_type": entity.get("entity_type", ""),
+            "entity_name": entity.get("entity_name", ""),
         }]
 
         human_readable += tableToMarkdown(
@@ -477,18 +480,19 @@ def get_ipv4_command(
 
     indicator = client.retrieve_ipv4_from_api(value)
 
+    indicator_data = indicator.get("data", {})
     indicator_formatted = [{
-        "type": indicator.get("data", {}).get("entity", {}).get("type"),
-        "value": indicator.get("data", {}).get("entity", {}).get("value"),
-        "malicious_score": indicator.get("data", {}).get("risk", {}).get("malicious_score"),
-        "occurrences_count": indicator.get("data", {}).get("risk", {}).get("occurrences_count"),
-        "country": indicator.get("data", {}).get("enrichment", {}).get("geo", {}).get("country"),
-        "city": indicator.get("data", {}).get("enrichment", {}).get("geo", {}).get("city"),
-        "asn_number": indicator.get("data", {}).get("enrichment", {}).get("asn", {}).get("number"),
-        "asn_organization": indicator.get("data", {}).get("enrichment", {}).get("asn", {}).get("organization"),
-        "suspicious_urls": indicator.get("data", {}).get("enrichment", {}).get("suspicious_urls"),
-        "suspicious_domains": indicator.get("data", {}).get("enrichment", {}).get("suspicious_domains"),
-        "benign": indicator.get("data", {}).get("benign"),
+        "type": indicator_data.get("entity", {}).get("type"),
+        "value": indicator_data.get("entity", {}).get("value"),
+        "malicious_score": (indicator_data.get("risk") or {}).get("malicious_score"),
+        "occurrences_count": (indicator_data.get("risk") or {}).get("occurrences_count"),
+        "country": (indicator_data.get("enrichment", {}).get("geo") or {}).get("country"),
+        "city": (indicator_data.get("enrichment", {}).get("geo") or {}).get("city"),
+        "asn_number": (indicator_data.get("enrichment", {}).get("asn") or {}).get("number"),
+        "asn_organization": (indicator_data.get("enrichment", {}).get("asn") or {}).get("organization"),
+        "suspicious_urls": indicator_data.get("enrichment", {}).get("suspicious_urls", []),
+        "suspicious_domains": indicator_data.get("enrichment", {}).get("suspicious_domains", []),
+        "benign": indicator_data.get("benign"),
     }]
 
     human_readable = tableToMarkdown(
@@ -508,9 +512,10 @@ def get_ipv4_command(
         removeNull=False,
     )
 
-    detected_activities: list = indicator.get("data", {}).get("risk", {}).get("detected_activities") or []
+    detected_activities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("detected_activities", [])
 
     for activity in detected_activities:
+        activity = activity or {}  # Ensure each activity is a valid dictionary
         activities_formatted = [{
             "type": activity.get("type", ""),
             "observation_date": activity.get("observation_date", ""),
@@ -528,9 +533,10 @@ def get_ipv4_command(
             removeNull=False,
         )
 
-    related_entities: list = indicator.get("data", {}).get("risk", {}).get("related_entities") or []
+    related_entities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("related_entities", [])
 
     for entity in related_entities:
+        entity = entity or {}
         entities_formatted = [{
             "entity_id": entity.get("entity_id", ""),
             "entity_type": entity.get("entity_type", ""),
@@ -573,32 +579,30 @@ def get_domain_command(
 
     indicator = client.retrieve_domain_from_api(value)
 
+    indicator_data = indicator.get("data", {})
     indicator_formatted = [{
-        "type": indicator.get("data", {}).get("entity", {}).get("type"),
-        "value": indicator.get("data", {}).get("entity", {}).get("value"),
-        "malicious_score": indicator.get("data", {}).get("risk", {}).get("malicious_score"),
-        "ips": indicator.get("data", {}).get("enrichment", {}).get("ips"),
-        "occurrences_count": indicator.get("data", {}).get("risk", {}).get("occurrences_count"),
-        "registrant_name": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get("registrant_name"),
-        "registrant_email": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get("registrant_email"),
-        "registrant_organization": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get(
-            "registrant_organization"),
-        "registrant_country": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get("registrant_country"),
-        "registrant_telephone": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get("registrant_telephone"),
-        "technical_contact_email": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get(
-            "technical_contact_email"),
-        "technical_contact_name": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get("technical_contact_name"),
-        "technical_contact_organization": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get(
+        "type": (indicator_data.get("entity") or {}).get("type"),
+        "value": (indicator_data.get("entity") or {}).get("value"),
+        "malicious_score": (indicator_data.get("risk") or {}).get("malicious_score"),
+        "ips": (indicator_data.get("enrichment") or {}).get("ips"),
+        "occurrences_count": (indicator_data.get("risk") or {}).get("occurrences_count"),
+        "registrant_name": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_name"),
+        "registrant_email": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_email"),
+        "registrant_organization": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_organization"),
+        "registrant_country": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_country"),
+        "registrant_telephone": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_telephone"),
+        "technical_contact_email": (indicator_data.get("enrichment", {}).get("whois") or {}).get("technical_contact_email"),
+        "technical_contact_name": (indicator_data.get("enrichment", {}).get("whois") or {}).get("technical_contact_name"),
+        "technical_contact_organization": (indicator_data.get("enrichment", {}).get("whois") or {}).get(
             "technical_contact_organization"),
-        "registrar_name": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get("registrar_name"),
-        "admin_contact_name": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get("admin_contact_name"),
-        "admin_contact_organization": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get(
-            "admin_contact_organization"),
-        "admin_contact_email": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get("admin_contact_email"),
-        "created_date": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get("created_date"),
-        "updated_date": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get("updated_date"),
-        "expiration_date": indicator.get("data", {}).get("enrichment", {}).get("whois", {}).get("expiration_date"),
-        "benign": indicator.get("data", {}).get("benign"),
+        "registrar_name": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrar_name"),
+        "admin_contact_name": (indicator_data.get("enrichment", {}).get("whois") or {}).get("admin_contact_name"),
+        "admin_contact_organization": (indicator_data.get("enrichment", {}).get("whois") or {}).get("admin_contact_organization"),
+        "admin_contact_email": (indicator_data.get("enrichment", {}).get("whois") or {}).get("admin_contact_email"),
+        "created_date": (indicator_data.get("enrichment", {}).get("whois") or {}).get("created_date"),
+        "updated_date": (indicator_data.get("enrichment", {}).get("whois") or {}).get("updated_date"),
+        "expiration_date": (indicator_data.get("enrichment", {}).get("whois") or {}).get("expiration_date"),
+        "benign": indicator_data.get("benign"),
     }]
 
     human_readable = tableToMarkdown(
@@ -621,15 +625,15 @@ def get_domain_command(
         removeNull=False,
     )
 
-    detected_activities: list = indicator.get("data", {}).get("risk", {}).get("detected_activities") or []
+    detected_activities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("detected_activities", [])
 
-    for activity in detected_activities:
+    for activity in detected_activities or []:
         activities_formatted = [{
-            "type": activity.get("type", ""),
-            "observation_date": activity.get("observation_date", ""),
-            "description": activity.get("description", ""),
-            "confidence": activity.get("confidence", ""),
-            "occurrences_count": activity.get("occurrences_count", ""),
+            "type": (activity or {}).get("type", ""),
+            "observation_date": (activity or {}).get("observation_date", ""),
+            "description": (activity or {}).get("description", ""),
+            "confidence": (activity or {}).get("confidence", ""),
+            "occurrences_count": (activity or {}).get("occurrences_count", ""),
         }]
 
         human_readable += tableToMarkdown(
@@ -641,13 +645,13 @@ def get_domain_command(
             removeNull=False,
         )
 
-    related_entities: list = indicator.get("data", {}).get("risk", {}).get("related_entities") or []
+    related_entities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("related_entities", [])
 
-    for entity in related_entities:
+    for entity in related_entities or []:
         entities_formatted = [{
-            "entity_id": entity.get("entity_id", ""),
-            "entity_type": entity.get("entity_type", ""),
-            "entity_name": entity.get("entity_name", ""),
+            "entity_id": (entity or {}).get("entity_id", ""),
+            "entity_type": (entity or {}).get("entity_type", ""),
+            "entity_name": (entity or {}).get("entity_name", ""),
         }]
 
         human_readable += tableToMarkdown(
@@ -686,14 +690,15 @@ def get_file_sha256_command(
 
     indicator = client.retrieve_file_sha256_from_api(value)
 
+    indicator_data = indicator.get("data", {})
     indicator_formatted = [{
-        "type": indicator.get("data", {}).get("entity", {}).get("type"),
-        "value": indicator.get("data", {}).get("entity", {}).get("value"),
-        "malicious_score": indicator.get("data", {}).get("risk", {}).get("malicious_score"),
-        "filenames": indicator.get("data", {}).get("enrichment", {}).get("filenames"),
-        "first_seen": indicator.get("data", {}).get("enrichment", {}).get("first_seen"),
-        "download_urls": indicator.get("data", {}).get("enrichment", {}).get("download_urls"),
-        "benign": indicator.get("data", {}).get("benign"),
+        "type": indicator_data.get("entity", {}).get("type", ""),
+        "value": indicator_data.get("entity", {}).get("value", ""),
+        "malicious_score": indicator_data.get("risk", {}).get("malicious_score", ""),
+        "filenames": indicator_data.get("enrichment", {}).get("filenames", []),
+        "first_seen": indicator_data.get("enrichment", {}).get("first_seen", ""),
+        "download_urls": indicator_data.get("enrichment", {}).get("download_urls", []),
+        "benign": indicator_data.get("benign", ""),
     }]
 
     human_readable = tableToMarkdown(
@@ -713,9 +718,10 @@ def get_file_sha256_command(
         removeNull=False,
     )
 
-    detected_activities: list = indicator.get("data", {}).get("risk", {}).get("detected_activities") or []
+    detected_activities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("detected_activities", [])
 
-    for activity in detected_activities:
+    for activity in detected_activities or []:
+        activity = activity or {}
         activities_formatted = [{
             "type": activity.get("type", ""),
             "observation_date": activity.get("observation_date", ""),
@@ -733,9 +739,10 @@ def get_file_sha256_command(
             removeNull=False,
         )
 
-    related_entities: list = indicator.get("data", {}).get("risk", {}).get("related_entities") or []
+    related_entities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("related_entities", [])
 
-    for entity in related_entities:
+    for entity in related_entities or []:
+        entity = entity or {}
         entities_formatted = [{
             "entity_id": entity.get("entity_id", ""),
             "entity_type": entity.get("entity_type", ""),
