@@ -334,6 +334,6 @@ def test_commit_git_azure_devops():
 
 
 def test_commit_git_invalid_integration():
-    with pytest.raises(DemistoException, 
+    with pytest.raises(DemistoException,
                        match="Unexpected git_integration=.* Possible values: Gitlab, GitHub, Bitbucket and AzureDevOps."):
         commit_git("Unknown", "main", MagicMock(), [], [], False)
