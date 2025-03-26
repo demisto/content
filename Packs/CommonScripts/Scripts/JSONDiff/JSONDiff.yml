@@ -1,7 +1,6 @@
 commonfields:
   id: JSONDiff
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: JSONDiff
 script: ''
 type: python
@@ -21,7 +20,6 @@ outputs:
   description: The JSON differences in a structured format
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.12.8.1983910
 tests:
