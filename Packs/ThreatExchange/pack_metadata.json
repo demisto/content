@@ -2,7 +2,7 @@
     "name": "ThreatExchange",
     "description": "Receive threat intelligence about applications, IP addresses, URLs and hashes, a service by Facebook",
     "support": "xsoar",
-    "currentVersion": "2.0.13",
+    "currentVersion": "2.0.14",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
